@@ -1,22 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
-import { VideoView } from 'expo-video';
-
-import { GameColors } from '@/constants/game';
-import { getPetVideo } from '@/constants/pet-videos';
-import type { PetVideoKey } from '@/constants/pet-videos';
+import { GameColors } from "@/constants/game";
+import type { PetVideoKey } from "@/constants/pet-videos";
+import { getPetVideo } from "@/constants/pet-videos";
 import {
   PET_VIDEO_KEYS,
   usePetVideoPlayers,
-} from '@/hooks/use-pet-video-players';
-import type { PetAnimationState } from '@/types/game';
-import { moderateScale } from '@/utils/scale';
+} from "@/hooks/use-pet-video-players";
+import type { PetAnimationState } from "@/types/game";
+import { moderateScale } from "@/utils/scale";
+import { VideoView } from "expo-video";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 const DEFAULT_SIZE = 200;
 
 type PetVideoAvatarProps = {
   mood: PetAnimationState;
   size?: number;
+  loop?: boolean;
   onAnimationComplete?: () => void;
   onPress?: () => void;
 };
@@ -24,11 +24,13 @@ type PetVideoAvatarProps = {
 export function PetVideoAvatar({
   mood,
   size = moderateScale(DEFAULT_SIZE),
+  loop = false,
   onAnimationComplete,
   onPress,
 }: PetVideoAvatarProps) {
   const players = usePetVideoPlayers();
   const onCompleteRef = useRef(onAnimationComplete);
+  const loopRef = useRef(loop);
   const moodRef = useRef(mood);
   const activeKeyRef = useRef<PetVideoKey>(getPetVideo(mood).videoKey);
   const [activeKey, setActiveKey] = useState<PetVideoKey>(activeKeyRef.current);
@@ -37,6 +39,14 @@ export function PetVideoAvatar({
   useEffect(() => {
     onCompleteRef.current = onAnimationComplete;
   }, [onAnimationComplete]);
+
+  useEffect(() => {
+    loopRef.current = loop;
+  }, [loop]);
+
+  const shouldLoop = useCallback((config: ReturnType<typeof getPetVideo>) => {
+    return loopRef.current || config.loop;
+  }, []);
 
   const revealSubRef = useRef<{ remove: () => void } | null>(null);
 
@@ -63,7 +73,8 @@ export function PetVideoAvatar({
       revealSubRef.current = null;
 
       const startSec = (config.startMs ?? 0) / 1000;
-      const nativeLoop = config.loop && (config.startMs ?? 0) === 0;
+      const looping = shouldLoop(config);
+      const nativeLoop = looping && (config.startMs ?? 0) === 0;
 
       nextPlayer.loop = nativeLoop;
       nextPlayer.currentTime = startSec;
@@ -75,7 +86,7 @@ export function PetVideoAvatar({
       }
 
       revealSubRef.current = nextPlayer.addListener(
-        'playingChange',
+        "playingChange",
         ({ isPlaying }) => {
           if (!isPlaying) return;
           revealSubRef.current?.remove();
@@ -84,7 +95,7 @@ export function PetVideoAvatar({
         },
       );
     },
-    [players, revealLayer],
+    [players, revealLayer, shouldLoop],
   );
 
   useEffect(() => {
@@ -92,17 +103,17 @@ export function PetVideoAvatar({
       readyRef.current = true;
     }
     applyMood(mood);
-  }, [applyMood, mood]);
+  }, [applyMood, loop, mood]);
 
   useEffect(() => {
     const subscriptions = PET_VIDEO_KEYS.map((key) =>
-      players[key].addListener('playToEnd', () => {
+      players[key].addListener("playToEnd", () => {
         if (activeKeyRef.current !== key) return;
 
         const config = getPetVideo(moodRef.current);
         const startSec = (config.startMs ?? 0) / 1000;
 
-        if (config.loop && (config.startMs ?? 0) > 0) {
+        if (shouldLoop(config)) {
           players[key].currentTime = startSec;
           players[key].play();
           return;
@@ -119,7 +130,7 @@ export function PetVideoAvatar({
       revealSubRef.current = null;
       subscriptions.forEach((sub) => sub.remove());
     };
-  }, [players]);
+  }, [players, shouldLoop]);
 
   const content = (
     <View style={[styles.container, { width: size, height: size }]}>
@@ -127,13 +138,10 @@ export function PetVideoAvatar({
         <VideoView
           key={key}
           player={players[key]}
-          style={[
-            styles.videoLayer,
-            { opacity: activeKey === key ? 1 : 0 },
-          ]}
+          style={[styles.videoLayer, { opacity: activeKey === key ? 1 : 0 }]}
           contentFit="contain"
           nativeControls={false}
-          {...(Platform.OS === 'android' ? { surfaceType: 'textureView' } : {})}
+          {...(Platform.OS === "android" ? { surfaceType: "textureView" } : {})}
         />
       ))}
     </View>
@@ -157,13 +165,13 @@ export function PetVideoAvatar({
 
 const styles = StyleSheet.create({
   pressable: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
     backgroundColor: GameColors.petVideoBg,
     borderRadius: moderateScale(12),
   },

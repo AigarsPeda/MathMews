@@ -1,15 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import {
   DEFAULT_PET,
   DEFAULT_PROGRESS,
   DEFAULT_WALLET,
-} from '@/constants/game';
+} from "@/constants/game";
+import type { Progress } from "@/types/game";
 import {
   GAME_SAVE_STORAGE_KEY,
   GAME_SAVE_VERSION,
   type GameSave,
-} from '@/types/save';
+} from "@/types/save";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function createDefaultGameSave(): GameSave {
   return {
@@ -22,7 +22,7 @@ export function createDefaultGameSave(): GameSave {
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+  return typeof value === "object" && value !== null;
 }
 
 function parseGameSave(raw: string): GameSave | null {
@@ -30,18 +30,28 @@ function parseGameSave(raw: string): GameSave | null {
     const parsed: unknown = JSON.parse(raw);
     if (!isRecord(parsed)) return null;
     if (parsed.version !== GAME_SAVE_VERSION) return null;
-    if (typeof parsed.hasCompletedOnboarding !== 'boolean') return null;
-    if (!isRecord(parsed.pet) || typeof parsed.pet.name !== 'string') {
+    if (typeof parsed.hasCompletedOnboarding !== "boolean") return null;
+    if (!isRecord(parsed.pet) || typeof parsed.pet.name !== "string") {
       return null;
     }
-    if (!isRecord(parsed.wallet) || typeof parsed.wallet.coins !== 'number') {
+    if (!isRecord(parsed.wallet) || typeof parsed.wallet.coins !== "number") {
       return null;
     }
-    if (!isRecord(parsed.progress) || typeof parsed.progress.streak !== 'number') {
-      return null;
-    }
+    if (!isRecord(parsed.progress)) return null;
+    if (typeof parsed.progress.streak !== "number") return null;
 
-    return parsed as GameSave;
+    const puzzlesSolved =
+      typeof parsed.progress.puzzlesSolved === "number"
+        ? parsed.progress.puzzlesSolved
+        : 0;
+
+    return {
+      ...(parsed as GameSave),
+      progress: {
+        ...(parsed.progress as Progress),
+        puzzlesSolved,
+      },
+    };
   } catch {
     return null;
   }

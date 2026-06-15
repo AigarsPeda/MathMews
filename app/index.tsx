@@ -1,6 +1,20 @@
-import * as Haptics from 'expo-haptics';
-import { Redirect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { CoinCounter } from "@/components/economy/CoinCounter";
+import { PetStage } from "@/components/pet/PetStage";
+import {
+  FEED_COST,
+  FEED_HUNGER_RESTORE,
+  GameColors,
+  ONE_SHOT_ANIMATIONS,
+  PET_HAPPINESS_BOOST,
+} from "@/constants/game";
+import { pickRandomExcitedMood } from "@/constants/pet-videos";
+import { useGame } from "@/contexts/GameProvider";
+import { usePetMood } from "@/hooks/use-pet-mood";
+import type { PetAnimationState } from "@/types/game";
+import { moderateScale } from "@/utils/scale";
+import * as Haptics from "expo-haptics";
+import { Redirect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -8,31 +22,17 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { CoinCounter } from '@/components/economy/CoinCounter';
-import { PetStage } from '@/components/pet';
-import { useGame } from '@/contexts/GameProvider';
-import {
-  FEED_COST,
-  FEED_HUNGER_RESTORE,
-  GameColors,
-  ONE_SHOT_ANIMATIONS,
-  PET_HAPPINESS_BOOST,
-} from '@/constants/game';
-import { pickRandomExcitedMood } from '@/constants/pet-videos';
-import { usePetMood } from '@/hooks/use-pet-mood';
-import type { PetAnimationState } from '@/types/game';
-import { moderateScale } from '@/utils/scale';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function triggerHaptic() {
-  if (Platform.OS !== 'web') {
+  if (Platform.OS !== "web") {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
   const {
     isReady,
     hasCompletedOnboarding,
@@ -86,15 +86,14 @@ export default function HomeScreen() {
         happiness: Math.min(100, current.stats.happiness + 5),
       },
     }));
-    setActionMood('eating');
+    setActionMood("eating");
     showMessage(`${pet.name} enjoyed the snack!`);
   }, [pet.name, setPet, setWallet, showMessage, wallet.coins]);
 
   const handlePlayPuzzle = useCallback(() => {
     triggerHaptic();
-    playActionMood('dancing');
-    showMessage('Puzzles are coming soon — keep practicing!');
-  }, [playActionMood, showMessage]);
+    router.push("/play");
+  }, [router]);
 
   const handleAnimationComplete = useCallback(() => {
     setActionMood((current) =>
@@ -117,7 +116,7 @@ export default function HomeScreen() {
   const canFeed = wallet.coins >= FEED_COST;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.screen}>
         <View style={styles.header}>
           <View style={styles.headerText}>
@@ -189,8 +188,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   loading: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: GameColors.background,
   },
   safe: {
@@ -205,9 +204,9 @@ const styles = StyleSheet.create({
     gap: moderateScale(10),
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: moderateScale(8),
   },
   headerText: {
@@ -215,12 +214,12 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: moderateScale(24),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
   },
   subtitle: {
     fontSize: moderateScale(14),
-    fontWeight: '500',
+    fontWeight: "500",
     color: GameColors.textMuted,
     marginTop: 2,
   },
@@ -229,7 +228,7 @@ const styles = StyleSheet.create({
     minHeight: 0,
   },
   messageToast: {
-    position: 'absolute',
+    position: "absolute",
     bottom: moderateScale(12),
     left: moderateScale(12),
     right: moderateScale(12),
@@ -243,23 +242,23 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: moderateScale(14),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   footer: {
     gap: moderateScale(10),
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: moderateScale(10),
   },
   actionBtn: {
     flex: 1,
     minHeight: moderateScale(56),
     borderRadius: moderateScale(16),
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: moderateScale(8),
     gap: 2,
   },
@@ -276,12 +275,12 @@ const styles = StyleSheet.create({
   },
   actionLabel: {
     fontSize: moderateScale(15),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
   },
   actionHint: {
     fontSize: moderateScale(12),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.textMuted,
   },
   primaryBtn: {
@@ -289,7 +288,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(20),
     paddingVertical: moderateScale(14),
     paddingHorizontal: moderateScale(20),
-    alignItems: 'center',
+    alignItems: "center",
     gap: 2,
     minHeight: moderateScale(56),
     shadowColor: GameColors.primaryDark,
@@ -300,12 +299,12 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     fontSize: moderateScale(18),
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
   primaryBtnHint: {
     fontSize: moderateScale(12),
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.85)',
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.85)",
   },
 });

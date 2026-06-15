@@ -33,4 +33,5 @@ export type Wallet = {
 
 export type Progress = {
   streak: number;
+  puzzlesSolved: number;
 };

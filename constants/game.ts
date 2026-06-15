@@ -1,28 +1,28 @@
-import type { PetAnimationState, PetMood } from '@/types/game';
+import type { PetAnimationState, PetMood } from "@/types/game";
 
 export const GameColors = {
-  background: '#FFF5EB',
-  card: '#FFFFFF',
-  cardBorder: '#FFE0CC',
-  primary: '#FF6B6B',
-  primaryDark: '#E85555',
-  secondary: '#4ECDC4',
-  coin: '#F7B731',
-  coinText: '#8B6914',
-  text: '#2D3436',
-  textMuted: '#636E72',
-  hunger: '#FF9F43',
-  happiness: '#FF6B9D',
-  success: '#6BCB77',
-  stageBg: '#FFFFFF',
-  stageBorder: '#4ECDC4',
+  background: "#FFF5EB",
+  card: "#FFFFFF",
+  cardBorder: "#FFE0CC",
+  primary: "#FF6B6B",
+  primaryDark: "#E85555",
+  secondary: "#4ECDC4",
+  coin: "#F7B731",
+  coinText: "#8B6914",
+  text: "#2D3436",
+  textMuted: "#636E72",
+  hunger: "#FF9F43",
+  happiness: "#FF6B9D",
+  success: "#6BCB77",
+  stageBg: "#FFFFFF",
+  stageBorder: "#4ECDC4",
   /** Matches white background in pet MP4 videos */
-  petVideoBg: '#FFFFFF',
+  petVideoBg: "#FFFFFF",
 } as const;
 
 export const DEFAULT_PET = {
-  type: 'dog' as const,
-  name: 'Buddy',
+  type: "dog" as const,
+  name: "Buddy",
   stats: {
     hunger: 72,
     happiness: 85,
@@ -31,11 +31,19 @@ export const DEFAULT_PET = {
 };
 
 export const DEFAULT_WALLET = { coins: 42 };
-export const DEFAULT_PROGRESS = { streak: 0 };
+export const DEFAULT_PROGRESS = { streak: 0, puzzlesSolved: 0 };
 
 export const FEED_COST = 10;
 export const FEED_HUNGER_RESTORE = 25;
 export const PET_HAPPINESS_BOOST = 10;
+
+export const PUZZLE_COIN_REWARDS = {
+  easy: 5,
+  medium: 10,
+  hard: 20,
+} as const;
+
+export const PUZZLE_HAPPINESS_BOOST = 5;
 
 export type MoodAnimationConfig = {
   frameMs: number;
@@ -56,28 +64,28 @@ export const MOOD_ANIMATION: Record<PetMood, MoodAnimationConfig> = {
 };
 
 export const MOOD_LABELS: Record<PetMood, string> = {
-  idle: 'Feeling good',
-  excited: 'So happy!',
-  excited2: 'So happy!',
-  dancing: 'Party time!',
-  eating: 'Yum yum!',
-  angry: 'Missed you!',
-  sad: 'Needs attention',
-  sleeping: 'Zzz…',
+  idle: "Feeling good",
+  excited: "So happy!",
+  excited2: "So happy!",
+  dancing: "Party time!",
+  eating: "Yum yum!",
+  angry: "Missed you!",
+  sad: "Needs attention",
+  sleeping: "Zzz…",
 };
 
 export const ANIMATION_LABELS: Record<PetAnimationState, string> = {
   ...MOOD_LABELS,
-  correct: 'Nice one!',
-  coinCatch: 'Coin caught!',
+  correct: "Nice one!",
+  coinCatch: "Coin caught!",
 };
 
 /** One-shot clips that return to the base mood when finished. */
 export const ONE_SHOT_ANIMATIONS: PetAnimationState[] = [
-  'excited',
-  'excited2',
-  'eating',
-  'dancing',
-  'correct',
-  'coinCatch',
+  "excited",
+  "excited2",
+  "eating",
+  "dancing",
+  "correct",
+  "coinCatch",
 ];
