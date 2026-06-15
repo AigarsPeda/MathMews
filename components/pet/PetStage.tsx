@@ -1,15 +1,9 @@
-import { useCallback, useState } from 'react';
-import {
-  type LayoutChangeEvent,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-
-import { PetAvatar } from '@/components/pet/PetAvatar';
-import { GameColors, MOOD_LABELS } from '@/constants/game';
-import type { PetMood, PetStats } from '@/types/game';
-import { moderateScale } from '@/utils/scale';
+import { PetAvatar } from "@/components/pet/PetAvatar";
+import { ANIMATION_LABELS, GameColors } from "@/constants/game";
+import type { PetAnimationState, PetStats } from "@/types/game";
+import { moderateScale } from "@/utils/scale";
+import { useCallback, useState } from "react";
+import { type LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
 
 const COMPACT_PET_MIN = 160;
 const COMPACT_PET_MAX = 280;
@@ -17,7 +11,7 @@ const COMPACT_PET_MAX = 280;
 type PetStageProps = {
   name: string;
   stats: PetStats;
-  mood: PetMood;
+  mood: PetAnimationState;
   compact?: boolean;
   onPetPress?: () => void;
   onAnimationComplete?: () => void;
@@ -97,7 +91,7 @@ export function PetStage({
       </View>
 
       <Text style={[styles.moodLabel, compact && styles.moodLabelCompact]}>
-        {MOOD_LABELS[mood]}
+        {ANIMATION_LABELS[mood]}
       </Text>
 
       <View
@@ -138,9 +132,9 @@ const styles = StyleSheet.create({
     borderColor: GameColors.stageBorder,
     paddingVertical: moderateScale(20),
     paddingHorizontal: moderateScale(20),
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(8),
-    width: '100%',
+    width: "100%",
   },
   stageCompact: {
     flex: 1,
@@ -154,7 +148,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(16),
     paddingVertical: moderateScale(8),
     paddingHorizontal: moderateScale(20),
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
   },
@@ -165,7 +159,7 @@ const styles = StyleSheet.create({
   },
   nameText: {
     fontSize: moderateScale(22),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
   },
   nameTextCompact: {
@@ -173,13 +167,13 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontSize: moderateScale(14),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.textMuted,
     marginTop: 2,
   },
   moodLabel: {
     fontSize: moderateScale(16),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.secondary,
   },
   moodLabelCompact: {
@@ -187,10 +181,10 @@ const styles = StyleSheet.create({
   },
   avatarWrap: {
     minHeight: moderateScale(200),
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: moderateScale(8),
-    width: '100%',
+    width: "100%",
     backgroundColor: GameColors.petVideoBg,
     borderRadius: moderateScale(12),
   },
@@ -198,12 +192,12 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: moderateScale(80),
     paddingVertical: moderateScale(4),
-    width: '100%',
+    width: "100%",
     backgroundColor: GameColors.petVideoBg,
     borderRadius: moderateScale(12),
   },
   stats: {
-    width: '100%',
+    width: "100%",
     gap: moderateScale(12),
     marginTop: moderateScale(4),
   },
@@ -212,44 +206,44 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   statRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(10),
   },
   statEmoji: {
     fontSize: moderateScale(22),
     width: moderateScale(28),
-    textAlign: 'center',
+    textAlign: "center",
   },
   statContent: {
     flex: 1,
     gap: moderateScale(4),
   },
   statHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   statLabel: {
     fontSize: moderateScale(14),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.text,
   },
   statValue: {
     fontSize: moderateScale(14),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
   },
   statTrack: {
     height: moderateScale(12),
     backgroundColor: GameColors.card,
     borderRadius: moderateScale(6),
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 1,
     borderColor: GameColors.cardBorder,
   },
   statFill: {
-    height: '100%',
+    height: "100%",
     borderRadius: moderateScale(6),
   },
 });

@@ -41,6 +41,16 @@ export const dogManifest: PetSpriteManifest = {
         { x: 264, y: 198 },
       ],
     },
+    excited2: {
+      source: require('@/images/excited.png'),
+      frames: 4,
+      focusFrames: [
+        { x: 537, y: 284 },
+        { x: 254, y: 279 },
+        { x: 532, y: 197 },
+        { x: 264, y: 198 },
+      ],
+    },
     dancing: {
       source: require('@/images/dancing.png'),
       frames: 4,

@@ -1,32 +1,25 @@
-import { Video, type AVPlaybackStatus, ResizeMode } from 'expo-av';
-import { useCallback, useEffect, useRef } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { VideoView } from 'expo-video';
 
 import { GameColors } from '@/constants/game';
-import { getPetVideo, type PetVideoConfig } from '@/constants/pet-videos';
-import type { PetMood } from '@/types/game';
+import { getPetVideo } from '@/constants/pet-videos';
+import type { PetVideoKey } from '@/constants/pet-videos';
+import {
+  PET_VIDEO_KEYS,
+  usePetVideoPlayers,
+} from '@/hooks/use-pet-video-players';
+import type { PetAnimationState } from '@/types/game';
 import { moderateScale } from '@/utils/scale';
 
 const DEFAULT_SIZE = 200;
 
 type PetVideoAvatarProps = {
-  mood: PetMood;
+  mood: PetAnimationState;
   size?: number;
   onAnimationComplete?: () => void;
   onPress?: () => void;
 };
-
-function isSameSource(a: PetVideoConfig, b: PetVideoConfig): boolean {
-  return a.source === b.source;
-}
-
-async function applyConfig(ref: Video, config: PetVideoConfig) {
-  const startMs = config.startMs ?? 0;
-  const nativeLoop = config.loop && startMs === 0;
-  await ref.setIsLoopingAsync(nativeLoop);
-  await ref.setPositionAsync(startMs);
-  await ref.playAsync();
-}
 
 export function PetVideoAvatar({
   mood,
@@ -34,87 +27,115 @@ export function PetVideoAvatar({
   onAnimationComplete,
   onPress,
 }: PetVideoAvatarProps) {
-  const videoRef = useRef<Video>(null);
+  const players = usePetVideoPlayers();
   const onCompleteRef = useRef(onAnimationComplete);
-  const configRef = useRef(getPetVideo(mood));
   const moodRef = useRef(mood);
+  const activeKeyRef = useRef<PetVideoKey>(getPetVideo(mood).videoKey);
+  const [activeKey, setActiveKey] = useState<PetVideoKey>(activeKeyRef.current);
   const readyRef = useRef(false);
-
-  const initialConfig = getPetVideo(mood);
 
   useEffect(() => {
     onCompleteRef.current = onAnimationComplete;
   }, [onAnimationComplete]);
 
-  const switchMood = useCallback(async (nextMood: PetMood) => {
-    const ref = videoRef.current;
-    if (!ref || !readyRef.current) return;
+  const revealSubRef = useRef<{ remove: () => void } | null>(null);
 
-    const prevConfig = configRef.current;
-    const nextConfig = getPetVideo(nextMood);
-    configRef.current = nextConfig;
-    moodRef.current = nextMood;
+  const revealLayer = useCallback(
+    (nextKey: PetVideoKey, prevKey: PetVideoKey) => {
+      if (prevKey !== nextKey) {
+        players[prevKey].pause();
+      }
+      activeKeyRef.current = nextKey;
+      setActiveKey(nextKey);
+    },
+    [players],
+  );
 
-    if (isSameSource(prevConfig, nextConfig)) {
-      await applyConfig(ref, nextConfig);
-      return;
-    }
+  const applyMood = useCallback(
+    (nextMood: PetAnimationState) => {
+      const config = getPetVideo(nextMood);
+      const nextKey = config.videoKey;
+      const nextPlayer = players[nextKey];
+      const prevKey = activeKeyRef.current;
 
-    const startMs = nextConfig.startMs ?? 0;
-    await ref.unloadAsync();
-    await ref.loadAsync(nextConfig.source, {
-      positionMillis: startMs,
-      shouldPlay: true,
-      isLooping: nextConfig.loop && startMs === 0,
-      isMuted: true,
-    });
-  }, []);
+      moodRef.current = nextMood;
+      revealSubRef.current?.remove();
+      revealSubRef.current = null;
+
+      const startSec = (config.startMs ?? 0) / 1000;
+      const nativeLoop = config.loop && (config.startMs ?? 0) === 0;
+
+      nextPlayer.loop = nativeLoop;
+      nextPlayer.currentTime = startSec;
+      nextPlayer.play();
+
+      if (nextKey === prevKey) {
+        revealLayer(nextKey, prevKey);
+        return;
+      }
+
+      revealSubRef.current = nextPlayer.addListener(
+        'playingChange',
+        ({ isPlaying }) => {
+          if (!isPlaying) return;
+          revealSubRef.current?.remove();
+          revealSubRef.current = null;
+          revealLayer(nextKey, prevKey);
+        },
+      );
+    },
+    [players, revealLayer],
+  );
 
   useEffect(() => {
-    if (moodRef.current === mood) return;
-    switchMood(mood);
-  }, [mood, switchMood]);
-
-  const handleLoad = useCallback(async () => {
-    readyRef.current = true;
-    const ref = videoRef.current;
-    if (!ref) return;
-    await applyConfig(ref, configRef.current);
-  }, []);
-
-  const handlePlaybackStatus = (status: AVPlaybackStatus) => {
-    if (!status.isLoaded) return;
-
-    const config = configRef.current;
-    const startMs = config.startMs ?? 0;
-
-    if (config.loop && startMs > 0 && status.didJustFinish) {
-      videoRef.current?.setPositionAsync(startMs).then(() => {
-        videoRef.current?.playAsync();
-      });
-      return;
+    if (!readyRef.current) {
+      readyRef.current = true;
     }
+    applyMood(mood);
+  }, [applyMood, mood]);
 
-    if (!config.loop && status.didJustFinish && !status.isLooping) {
-      queueMicrotask(() => onCompleteRef.current?.());
-    }
-  };
+  useEffect(() => {
+    const subscriptions = PET_VIDEO_KEYS.map((key) =>
+      players[key].addListener('playToEnd', () => {
+        if (activeKeyRef.current !== key) return;
+
+        const config = getPetVideo(moodRef.current);
+        const startSec = (config.startMs ?? 0) / 1000;
+
+        if (config.loop && (config.startMs ?? 0) > 0) {
+          players[key].currentTime = startSec;
+          players[key].play();
+          return;
+        }
+
+        if (!config.loop) {
+          queueMicrotask(() => onCompleteRef.current?.());
+        }
+      }),
+    );
+
+    return () => {
+      revealSubRef.current?.remove();
+      revealSubRef.current = null;
+      subscriptions.forEach((sub) => sub.remove());
+    };
+  }, [players]);
 
   const content = (
     <View style={[styles.container, { width: size, height: size }]}>
-      <Video
-        ref={videoRef}
-        source={initialConfig.source}
-        style={styles.video}
-        resizeMode={ResizeMode.CONTAIN}
-        shouldPlay={false}
-        isLooping={
-          initialConfig.loop && (initialConfig.startMs ?? 0) === 0
-        }
-        isMuted
-        onLoad={handleLoad}
-        onPlaybackStatusUpdate={handlePlaybackStatus}
-      />
+      {PET_VIDEO_KEYS.map((key) => (
+        <VideoView
+          key={key}
+          player={players[key]}
+          style={[
+            styles.videoLayer,
+            { opacity: activeKey === key ? 1 : 0 },
+          ]}
+          contentFit="contain"
+          nativeControls={false}
+          {...(Platform.OS === 'android' ? { surfaceType: 'textureView' } : {})}
+        />
+      ))}
     </View>
   );
 
@@ -146,9 +167,8 @@ const styles = StyleSheet.create({
     backgroundColor: GameColors.petVideoBg,
     borderRadius: moderateScale(12),
   },
-  video: {
-    width: '100%',
-    height: '100%',
+  videoLayer: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: GameColors.petVideoBg,
   },
 });

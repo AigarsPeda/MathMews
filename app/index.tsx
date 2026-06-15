@@ -1,6 +1,8 @@
 import * as Haptics from 'expo-haptics';
+import { Redirect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
+  ActivityIndicator,
   Platform,
   Pressable,
   StyleSheet,
@@ -11,20 +13,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CoinCounter } from '@/components/economy/CoinCounter';
 import { PetStage } from '@/components/pet';
+import { useGame } from '@/contexts/GameProvider';
 import {
-  DEFAULT_PET,
-  DEFAULT_PROGRESS,
-  DEFAULT_WALLET,
   FEED_COST,
   FEED_HUNGER_RESTORE,
   GameColors,
+  ONE_SHOT_ANIMATIONS,
   PET_HAPPINESS_BOOST,
 } from '@/constants/game';
+import { pickRandomExcitedMood } from '@/constants/pet-videos';
 import { usePetMood } from '@/hooks/use-pet-mood';
-import type { PetMood, PetProfile, Progress, Wallet } from '@/types/game';
+import type { PetAnimationState } from '@/types/game';
 import { moderateScale } from '@/utils/scale';
-
-const ONE_SHOT_MOODS: PetMood[] = ['excited', 'eating', 'dancing'];
 
 function triggerHaptic() {
   if (Platform.OS !== 'web') {
@@ -33,10 +33,16 @@ function triggerHaptic() {
 }
 
 export default function HomeScreen() {
-  const [pet, setPet] = useState<PetProfile>(DEFAULT_PET);
-  const [wallet, setWallet] = useState<Wallet>(DEFAULT_WALLET);
-  const [progress] = useState<Progress>(DEFAULT_PROGRESS);
-  const [actionMood, setActionMood] = useState<PetMood | null>(null);
+  const {
+    isReady,
+    hasCompletedOnboarding,
+    pet,
+    wallet,
+    progress,
+    setPet,
+    setWallet,
+  } = useGame();
+  const [actionMood, setActionMood] = useState<PetAnimationState | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   const baseMood = usePetMood(pet.stats);
@@ -47,13 +53,13 @@ export default function HomeScreen() {
     setTimeout(() => setMessage(null), 2500);
   }, []);
 
-  const playActionMood = useCallback((mood: PetMood) => {
+  const playActionMood = useCallback((mood: PetAnimationState) => {
     triggerHaptic();
     setActionMood(mood);
   }, []);
 
   const handlePetTap = useCallback(() => {
-    playActionMood('excited');
+    playActionMood(pickRandomExcitedMood());
     setPet((current) => ({
       ...current,
       stats: {
@@ -61,7 +67,7 @@ export default function HomeScreen() {
         happiness: Math.min(100, current.stats.happiness + PET_HAPPINESS_BOOST),
       },
     }));
-  }, [playActionMood]);
+  }, [playActionMood, setPet]);
 
   const handleFeed = useCallback(() => {
     if (wallet.coins < FEED_COST) {
@@ -82,7 +88,7 @@ export default function HomeScreen() {
     }));
     setActionMood('eating');
     showMessage(`${pet.name} enjoyed the snack!`);
-  }, [pet.name, showMessage, wallet.coins]);
+  }, [pet.name, setPet, setWallet, showMessage, wallet.coins]);
 
   const handlePlayPuzzle = useCallback(() => {
     triggerHaptic();
@@ -92,9 +98,21 @@ export default function HomeScreen() {
 
   const handleAnimationComplete = useCallback(() => {
     setActionMood((current) =>
-      current && ONE_SHOT_MOODS.includes(current) ? null : current,
+      current && ONE_SHOT_ANIMATIONS.includes(current) ? null : current,
     );
   }, []);
+
+  if (!isReady) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color={GameColors.primary} />
+      </View>
+    );
+  }
+
+  if (!hasCompletedOnboarding) {
+    return <Redirect href="/onboarding/name-pet" />;
+  }
 
   const canFeed = wallet.coins >= FEED_COST;
 
@@ -169,6 +187,12 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: GameColors.background,
+  },
   safe: {
     flex: 1,
     backgroundColor: GameColors.background,

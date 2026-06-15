@@ -1,9 +1,9 @@
 import { PetVideoAvatar } from '@/components/pet/PetVideoAvatar';
-import type { PetMood } from '@/types/game';
+import type { PetAnimationState } from '@/types/game';
 import { moderateScale } from '@/utils/scale';
 
 type PetAvatarProps = {
-  mood: PetMood;
+  mood: PetAnimationState;
   width?: number;
   onAnimationComplete?: () => void;
   onPress?: () => void;

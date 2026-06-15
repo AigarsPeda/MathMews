@@ -1,11 +1,17 @@
 export type PetMood =
   | 'idle'
   | 'excited'
+  | 'excited2'
   | 'dancing'
   | 'eating'
   | 'angry'
   | 'sad'
   | 'sleeping';
+
+/** Short puzzle / reward clips — not derived from pet stats. */
+export type PetReaction = 'correct' | 'coinCatch';
+
+export type PetAnimationState = PetMood | PetReaction;
 
 export type PetType = 'dog' | 'cat';
 

@@ -1,4 +1,4 @@
-import type { PetMood } from '@/types/game';
+import type { PetAnimationState, PetMood } from '@/types/game';
 
 export const GameColors = {
   background: '#FFF5EB',
@@ -47,6 +47,7 @@ export type MoodAnimationConfig = {
 export const MOOD_ANIMATION: Record<PetMood, MoodAnimationConfig> = {
   idle: { frameMs: 400, loop: true },
   excited: { frameMs: 200, loop: false, cycles: 2 },
+  excited2: { frameMs: 200, loop: false, cycles: 2 },
   dancing: { frameMs: 150, loop: false, cycles: 3 },
   eating: { frameMs: 300, loop: false, cycles: 1 },
   angry: { frameMs: 400, loop: true },
@@ -57,9 +58,26 @@ export const MOOD_ANIMATION: Record<PetMood, MoodAnimationConfig> = {
 export const MOOD_LABELS: Record<PetMood, string> = {
   idle: 'Feeling good',
   excited: 'So happy!',
+  excited2: 'So happy!',
   dancing: 'Party time!',
   eating: 'Yum yum!',
   angry: 'Missed you!',
   sad: 'Needs attention',
   sleeping: 'Zzz…',
 };
+
+export const ANIMATION_LABELS: Record<PetAnimationState, string> = {
+  ...MOOD_LABELS,
+  correct: 'Nice one!',
+  coinCatch: 'Coin caught!',
+};
+
+/** One-shot clips that return to the base mood when finished. */
+export const ONE_SHOT_ANIMATIONS: PetAnimationState[] = [
+  'excited',
+  'excited2',
+  'eating',
+  'dancing',
+  'correct',
+  'coinCatch',
+];
