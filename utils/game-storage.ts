@@ -3,7 +3,7 @@ import {
   DEFAULT_PROGRESS,
   DEFAULT_WALLET,
 } from "@/constants/game";
-import type { Progress } from "@/types/game";
+import type { Progress, PuzzleProgress } from "@/types/game";
 import {
   GAME_SAVE_STORAGE_KEY,
   GAME_SAVE_VERSION,
@@ -25,6 +25,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+function normalizePuzzleProgress(value: unknown): PuzzleProgress {
+  if (typeof value === "number") {
+    return { easy: value, medium: 0, hard: 0 };
+  }
+  if (!isRecord(value)) {
+    return { easy: 0, medium: 0, hard: 0 };
+  }
+
+  return {
+    easy: typeof value.easy === "number" ? value.easy : 0,
+    medium: typeof value.medium === "number" ? value.medium : 0,
+    hard: typeof value.hard === "number" ? value.hard : 0,
+  };
+}
+
 function parseGameSave(raw: string): GameSave | null {
   try {
     const parsed: unknown = JSON.parse(raw);
@@ -40,10 +55,7 @@ function parseGameSave(raw: string): GameSave | null {
     if (!isRecord(parsed.progress)) return null;
     if (typeof parsed.progress.streak !== "number") return null;
 
-    const puzzlesSolved =
-      typeof parsed.progress.puzzlesSolved === "number"
-        ? parsed.progress.puzzlesSolved
-        : 0;
+    const puzzlesSolved = normalizePuzzleProgress(parsed.progress.puzzlesSolved);
 
     return {
       ...(parsed as GameSave),

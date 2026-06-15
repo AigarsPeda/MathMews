@@ -1,0 +1,68 @@
+[
+  {
+    "id": "hard-01",
+    "difficulty": "hard",
+    "question": "A pizza is cut into 8 slices. You eat 3 slices and your friend eats 2. What fraction of the pizza is left?",
+    "choices": ["3/8", "5/8", "1/2"],
+    "correctIndex": 0,
+    "hint": "5 slices were eaten. How many slices remain out of 8?",
+    "explanation": "8 − 5 = 3 slices left, so 3/8 of the pizza remains.",
+    "topic": "logic",
+    "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-02",
+    "difficulty": "hard",
+    "question": "A train travels 60 miles in 2 hours. At the same speed, how far will it go in 5 hours?",
+    "choices": ["120 miles", "150 miles", "300 miles"],
+    "correctIndex": 1,
+    "hint": "Find miles per hour first, then multiply by 5.",
+    "explanation": "60 ÷ 2 = 30 mph. 30 × 5 = 150 miles.",
+    "topic": "logic",
+    "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-03",
+    "difficulty": "hard",
+    "question": "A store marks up a $40 toy by 25%. What is the new price?",
+    "choices": ["$45", "$50", "$65"],
+    "correctIndex": 1,
+    "hint": "25% of 40 is 10. Add that to the original price.",
+    "explanation": "25% of $40 = $10. $40 + $10 = $50.",
+    "topic": "logic",
+    "ageRange": [11, 13]
+  },
+  {
+    "id": "hard-04",
+    "difficulty": "hard",
+    "question": "What number comes next? 1, 1, 2, 3, 5, 8, ?",
+    "choices": ["11", "13", "15"],
+    "correctIndex": 1,
+    "hint": "Each number is the sum of the two before it.",
+    "explanation": "5 + 8 = 13.",
+    "topic": "patterns",
+    "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-05",
+    "difficulty": "hard",
+    "question": "A box has 4 rows of 6 cookies. You eat 5 cookies and give 7 to a friend. How many cookies are left?",
+    "choices": ["12", "14", "16"],
+    "correctIndex": 0,
+    "hint": "Find the total cookies, then subtract what you ate and gave away.",
+    "explanation": "4 × 6 = 24 cookies. 24 − 5 − 7 = 12 left.",
+    "topic": "multiplication",
+    "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-06",
+    "difficulty": "hard",
+    "question": "Three friends share 5 apples equally. How many whole apples does each friend get, with some left over?",
+    "choices": ["1 each, 2 left", "2 each, 1 left", "1 each, none left"],
+    "correctIndex": 0,
+    "hint": "Divide 5 by 3 and think about remainders.",
+    "explanation": "5 ÷ 3 = 1 with 2 left over.",
+    "topic": "logic",
+    "ageRange": [10, 12]
+  }
+]

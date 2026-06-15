@@ -14,6 +14,7 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="puzzles" options={{ headerShown: false }} />
           <Stack.Screen name="play" options={{ headerShown: false }} />
           <Stack.Screen
             name="onboarding/name-pet"

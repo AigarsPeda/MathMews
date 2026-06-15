@@ -12,6 +12,8 @@ type ResultOverlayProps = {
   message: string;
   detail: string;
   coinsEarned?: number;
+  coinType?: 'regular' | 'sparkle';
+  continueLabel?: string;
   onContinue: () => void;
   onGoHome?: () => void;
 };
@@ -23,6 +25,8 @@ export function ResultOverlay({
   message,
   detail,
   coinsEarned = 0,
+  coinType = 'regular',
+  continueLabel,
   onContinue,
   onGoHome,
 }: ResultOverlayProps) {
@@ -54,9 +58,24 @@ export function ResultOverlay({
           <Text style={styles.detail}>{detail}</Text>
 
           {correct && coinsEarned > 0 && (
-            <View style={styles.coinRow}>
-              <Text style={styles.coinEmoji}>🪙</Text>
-              <Text style={styles.coinText}>+{coinsEarned} coins</Text>
+            <View
+              style={[
+                styles.coinRow,
+                coinType === 'sparkle' && styles.sparkleCoinRow,
+              ]}
+            >
+              <Text style={styles.coinEmoji}>
+                {coinType === 'sparkle' ? '✨' : '🪙'}
+              </Text>
+              <Text
+                style={[
+                  styles.coinText,
+                  coinType === 'sparkle' && styles.sparkleCoinText,
+                ]}
+              >
+                +{coinsEarned}{' '}
+                {coinType === 'sparkle' ? 'sparkle coins' : 'coins'}
+              </Text>
             </View>
           )}
 
@@ -65,10 +84,12 @@ export function ResultOverlay({
               style={styles.primaryButton}
               onPress={onContinue}
               accessibilityRole="button"
-              accessibilityLabel={correct ? "Go to next puzzle" : "Try again"}
+              accessibilityLabel={
+                continueLabel ?? (correct ? 'Go to next puzzle' : 'Try again')
+              }
             >
               <Text style={styles.primaryButtonText}>
-                {correct ? "Next puzzle" : "Try again"}
+                {continueLabel ?? (correct ? 'Next puzzle' : 'Try again')}
               </Text>
             </Pressable>
 
@@ -136,21 +157,29 @@ const styles = StyleSheet.create({
     lineHeight: moderateScale(24),
   },
   coinRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: moderateScale(6),
     backgroundColor: GameColors.background,
     borderRadius: moderateScale(16),
     paddingVertical: moderateScale(6),
     paddingHorizontal: moderateScale(12),
   },
+  sparkleCoinRow: {
+    backgroundColor: '#F3EEFF',
+    borderWidth: 2,
+    borderColor: '#C9B6FF',
+  },
   coinEmoji: {
     fontSize: moderateScale(18),
   },
   coinText: {
     fontSize: moderateScale(16),
-    fontWeight: "700",
+    fontWeight: '700',
     color: GameColors.coinText,
+  },
+  sparkleCoinText: {
+    color: '#6B4FCF',
   },
   actions: {
     width: "100%",

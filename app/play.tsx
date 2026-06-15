@@ -6,13 +6,21 @@ import {
   GameColors,
   PUZZLE_COIN_REWARDS,
   PUZZLE_HAPPINESS_BOOST,
+  PUZZLE_REPLAY_COIN_REWARDS,
+  PUZZLE_REPLAY_HAPPINESS_BOOST,
 } from "@/constants/game";
-import { getPuzzleForSession } from "@/constants/puzzles";
+import {
+  canPlayPuzzleIndex,
+  getPuzzleForSession,
+  isPuzzleDifficulty,
+  PUZZLES_BY_DIFFICULTY,
+} from "@/constants/puzzles";
 import { useGame } from "@/contexts/GameProvider";
 import type { PetAnimationState } from "@/types/game";
+import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -36,6 +44,24 @@ function triggerHaptic(
 export default function PlayScreen() {
   const router = useRouter();
   const {
+    difficulty: difficultyParam,
+    index: indexParam,
+    replay: replayParam,
+  } = useLocalSearchParams<{
+    difficulty?: string;
+    index?: string;
+    replay?: string;
+  }>();
+  const rawDifficulty = Array.isArray(difficultyParam)
+    ? difficultyParam[0]
+    : difficultyParam;
+  const difficulty: PuzzleDifficulty = isPuzzleDifficulty(rawDifficulty ?? "")
+    ? rawDifficulty
+    : "easy";
+  const rawIndex = Array.isArray(indexParam) ? indexParam[0] : indexParam;
+  const parsedIndex =
+    rawIndex !== undefined && rawIndex !== "" ? Number.parseInt(rawIndex, 10) : NaN;
+  const {
     isReady,
     hasCompletedOnboarding,
     pet,
@@ -46,14 +72,24 @@ export default function PlayScreen() {
     setProgress,
   } = useGame();
 
-  const [sessionIndex, setSessionIndex] = useState(progress.puzzlesSolved);
+  const puzzles = PUZZLES_BY_DIFFICULTY[difficulty];
+  const savedIndex = progress.puzzlesSolved[difficulty];
+  const sessionIndex = Number.isFinite(parsedIndex) ? parsedIndex : savedIndex;
+  const isReplay =
+    replayParam === "true" ||
+    (Number.isFinite(parsedIndex) && parsedIndex < savedIndex);
   const puzzle = useMemo(
-    () => getPuzzleForSession(sessionIndex),
-    [sessionIndex],
+    () => getPuzzleForSession(difficulty, sessionIndex),
+    [difficulty, sessionIndex],
   );
 
   const puzzleNumber = sessionIndex + 1;
-  const coinReward = PUZZLE_COIN_REWARDS[puzzle.difficulty];
+  const coinReward = isReplay
+    ? PUZZLE_REPLAY_COIN_REWARDS[puzzle.difficulty]
+    : PUZZLE_COIN_REWARDS[puzzle.difficulty];
+  const happinessBoost = isReplay
+    ? PUZZLE_REPLAY_HAPPINESS_BOOST
+    : PUZZLE_HAPPINESS_BOOST;
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -80,7 +116,7 @@ export default function PlayScreen() {
             ...current.stats,
             happiness: Math.min(
               100,
-              current.stats.happiness + PUZZLE_HAPPINESS_BOOST,
+              current.stats.happiness + happinessBoost,
             ),
           },
         }));
@@ -88,36 +124,77 @@ export default function PlayScreen() {
         triggerHaptic();
       }
     },
-    [answered, coinReward, puzzle.correctIndex, setPet, setWallet],
+    [answered, coinReward, happinessBoost, puzzle.correctIndex, setPet, setWallet],
   );
 
+  const exitToPath = useCallback(() => {
+    router.replace("/puzzles");
+  }, [router]);
+
   const handleContinue = useCallback(() => {
+    if (isCorrect && isReplay) {
+      exitToPath();
+      return;
+    }
+
     if (isCorrect) {
       setProgress((current) => ({
         ...current,
-        puzzlesSolved: current.puzzlesSolved + 1,
+        puzzlesSolved: {
+          ...current.puzzlesSolved,
+          [difficulty]: current.puzzlesSolved[difficulty] + 1,
+        },
       }));
-      setSessionIndex((current) => current + 1);
-      setSelectedIndex(null);
-      setIsCorrect(false);
-      setCoinsEarned(0);
+      if (sessionIndex + 1 >= puzzles.length) {
+        exitToPath();
+        return;
+      }
+      router.push({
+        pathname: "/play",
+        params: { difficulty, index: String(sessionIndex + 1) },
+      });
       return;
     }
 
     setSelectedIndex(null);
     setIsCorrect(false);
     setCoinsEarned(0);
-  }, [isCorrect, setProgress]);
+  }, [
+    difficulty,
+    exitToPath,
+    isCorrect,
+    isReplay,
+    puzzles.length,
+    router,
+    sessionIndex,
+    setProgress,
+  ]);
 
   const handleGoHome = useCallback(() => {
-    if (isCorrect) {
+    if (isCorrect && !isReplay) {
       setProgress((current) => ({
         ...current,
-        puzzlesSolved: current.puzzlesSolved + 1,
+        puzzlesSolved: {
+          ...current.puzzlesSolved,
+          [difficulty]: current.puzzlesSolved[difficulty] + 1,
+        },
       }));
     }
+    if (isReplay || (isCorrect && sessionIndex + 1 >= puzzles.length)) {
+      exitToPath();
+      return;
+    }
     router.back();
-  }, [isCorrect, router, setProgress]);
+  }, [
+    difficulty,
+    exitToPath,
+    isCorrect,
+    isReplay,
+    puzzles.length,
+    router,
+    sessionIndex,
+    setProgress,
+  ]);
 
   if (!isReady) {
     return (
@@ -129,6 +206,14 @@ export default function PlayScreen() {
 
   if (!hasCompletedOnboarding) {
     return <Redirect href="/onboarding/name-pet" />;
+  }
+
+  if (sessionIndex < 0 || sessionIndex >= puzzles.length) {
+    return <Redirect href="/puzzles" />;
+  }
+
+  if (!canPlayPuzzleIndex(sessionIndex, savedIndex)) {
+    return <Redirect href="/puzzles" />;
   }
 
   return (
@@ -146,7 +231,9 @@ export default function PlayScreen() {
           <CoinCounter coins={wallet.coins} streak={progress.streak} />
         </View>
 
-        <Text style={styles.title}>Solve for {pet.name}</Text>
+        <Text style={styles.title}>
+          {isReplay ? `Replay nut #${puzzleNumber}` : `Solve for ${pet.name}`}
+        </Text>
 
         <ScrollView
           style={styles.scroll}
@@ -184,11 +271,15 @@ export default function PlayScreen() {
           visible={answered}
           correct={isCorrect}
           petMood={resultMood}
-          message={isCorrect ? "Great job!" : "Good try!"}
+          message={isCorrect ? (isReplay ? "Cracked it again!" : "Great job!") : "Good try!"}
           detail={isCorrect ? puzzle.explanation : puzzle.hint}
           coinsEarned={coinsEarned}
+          coinType={isReplay ? "sparkle" : "regular"}
+          continueLabel={
+            isCorrect ? (isReplay ? "Back to path" : "Next puzzle") : "Try again"
+          }
           onContinue={handleContinue}
-          onGoHome={handleGoHome}
+          onGoHome={isCorrect && !isReplay ? handleGoHome : undefined}
         />
       </View>
     </SafeAreaView>

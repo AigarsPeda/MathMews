@@ -92,7 +92,7 @@ export default function HomeScreen() {
 
   const handlePlayPuzzle = useCallback(() => {
     triggerHaptic();
-    router.push("/play");
+    router.push("/puzzles");
   }, [router]);
 
   const handleAnimationComplete = useCallback(() => {

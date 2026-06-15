@@ -31,7 +31,13 @@ export type Wallet = {
   coins: number;
 };
 
+export type PuzzleProgress = {
+  easy: number;
+  medium: number;
+  hard: number;
+};
+
 export type Progress = {
   streak: number;
-  puzzlesSolved: number;
+  puzzlesSolved: PuzzleProgress;
 };

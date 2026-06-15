@@ -31,7 +31,10 @@ export const DEFAULT_PET = {
 };
 
 export const DEFAULT_WALLET = { coins: 42 };
-export const DEFAULT_PROGRESS = { streak: 0, puzzlesSolved: 0 };
+export const DEFAULT_PROGRESS = {
+  streak: 0,
+  puzzlesSolved: { easy: 0, medium: 0, hard: 0 },
+};
 
 export const FEED_COST = 10;
 export const FEED_HUNGER_RESTORE = 25;
@@ -43,7 +46,15 @@ export const PUZZLE_COIN_REWARDS = {
   hard: 20,
 } as const;
 
+/** Bonus coins for replaying a puzzle you've already cracked. */
+export const PUZZLE_REPLAY_COIN_REWARDS = {
+  easy: 2,
+  medium: 4,
+  hard: 8,
+} as const;
+
 export const PUZZLE_HAPPINESS_BOOST = 5;
+export const PUZZLE_REPLAY_HAPPINESS_BOOST = 2;
 
 export type MoodAnimationConfig = {
   frameMs: number;
