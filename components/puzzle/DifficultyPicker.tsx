@@ -1,5 +1,5 @@
 import { DIFFICULTY_LABELS, PUZZLE_DIFFICULTIES } from '@/constants/puzzles';
-import { GameColors } from '@/constants/game';
+import { GameColors, getPuzzleCoinReward } from '@/constants/game';
 import type { PuzzleDifficulty } from '@/types/puzzle';
 import { moderateScale } from '@/utils/scale';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -14,6 +14,7 @@ export function DifficultyPicker({ selected, onSelect }: DifficultyPickerProps) 
     <View style={styles.row}>
       {PUZZLE_DIFFICULTIES.map((difficulty) => {
         const isSelected = selected === difficulty;
+        const coinReward = getPuzzleCoinReward(difficulty);
 
         return (
           <Pressable
@@ -22,10 +23,13 @@ export function DifficultyPicker({ selected, onSelect }: DifficultyPickerProps) 
             style={[styles.tab, isSelected && styles.tabSelected]}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
-            accessibilityLabel={`${DIFFICULTY_LABELS[difficulty]} difficulty`}
+            accessibilityLabel={`${DIFFICULTY_LABELS[difficulty]} difficulty, ${coinReward} coins per nut`}
           >
             <Text style={[styles.tabText, isSelected && styles.tabTextSelected]}>
               {DIFFICULTY_LABELS[difficulty]}
+            </Text>
+            <Text style={[styles.coinText, isSelected && styles.coinTextSelected]}>
+              🪙 {coinReward}
             </Text>
           </Pressable>
         );
@@ -41,14 +45,16 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    minHeight: moderateScale(44),
+    minHeight: moderateScale(52),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: moderateScale(14),
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
     backgroundColor: GameColors.card,
-    paddingHorizontal: moderateScale(8),
+    paddingHorizontal: moderateScale(6),
+    paddingVertical: moderateScale(8),
+    gap: moderateScale(2),
   },
   tabSelected: {
     borderColor: GameColors.secondary,
@@ -61,5 +67,13 @@ const styles = StyleSheet.create({
   },
   tabTextSelected: {
     color: GameColors.text,
+  },
+  coinText: {
+    fontSize: moderateScale(13),
+    fontWeight: '700',
+    color: GameColors.coinText,
+  },
+  coinTextSelected: {
+    color: GameColors.coinText,
   },
 });

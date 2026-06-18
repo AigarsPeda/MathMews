@@ -12,7 +12,14 @@ export default function RootLayout() {
   return (
     <GameProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            gestureEnabled: true,
+            gestureDirection: 'horizontal',
+          }}
+        >
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="puzzles" options={{ headerShown: false }} />
           <Stack.Screen name="play" options={{ headerShown: false }} />

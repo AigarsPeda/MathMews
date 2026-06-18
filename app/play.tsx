@@ -1,13 +1,16 @@
-import { CoinCounter } from "@/components/economy/CoinCounter";
+import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
+import { NoLivesPanel } from "@/components/economy/LivesCounter";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
 import {
   GameColors,
-  PUZZLE_COIN_REWARDS,
+  getPuzzleCoinReward,
+  LIFE_BUY_COST,
   PUZZLE_HAPPINESS_BOOST,
-  PUZZLE_REPLAY_COIN_REWARDS,
+  PUZZLE_HUNGER_COST,
   PUZZLE_REPLAY_HAPPINESS_BOOST,
+  PUZZLE_WRONG_HAPPINESS_PENALTY,
 } from "@/constants/game";
 import {
   canPlayPuzzleIndex,
@@ -18,10 +21,16 @@ import {
 import { useGame } from "@/contexts/GameProvider";
 import type { PetAnimationState } from "@/types/game";
 import type { PuzzleDifficulty } from "@/types/puzzle";
+import { clampStat, withPetCareUpdate } from "@/utils/pet-care";
+import {
+  applyLifeRegen,
+  canSpendLife,
+  loseLife,
+} from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -70,6 +79,7 @@ export default function PlayScreen() {
     setPet,
     setWallet,
     setProgress,
+    buyLife,
   } = useGame();
 
   const puzzles = PUZZLES_BY_DIFFICULTY[difficulty];
@@ -84,9 +94,7 @@ export default function PlayScreen() {
   );
 
   const puzzleNumber = sessionIndex + 1;
-  const coinReward = isReplay
-    ? PUZZLE_REPLAY_COIN_REWARDS[puzzle.difficulty]
-    : PUZZLE_COIN_REWARDS[puzzle.difficulty];
+  const coinReward = getPuzzleCoinReward(difficulty, isReplay);
   const happinessBoost = isReplay
     ? PUZZLE_REPLAY_HAPPINESS_BOOST
     : PUZZLE_HAPPINESS_BOOST;
@@ -95,8 +103,30 @@ export default function PlayScreen() {
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
 
+  const syncedLives = useMemo(
+    () => applyLifeRegen(progress.lives),
+    [progress.lives],
+  );
+  const hasLives = syncedLives.current > 0;
   const answered = selectedIndex !== null;
   const resultMood: PetAnimationState = isCorrect ? "correct" : "sad";
+
+  useEffect(() => {
+    setSelectedIndex(null);
+    setIsCorrect(false);
+    setCoinsEarned(0);
+  }, [difficulty, sessionIndex]);
+
+  const exitToPath = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace({
+      pathname: "/puzzles",
+      params: { difficulty },
+    });
+  }, [difficulty, router]);
 
   const handleChoice = useCallback(
     (index: number) => {
@@ -110,26 +140,40 @@ export default function PlayScreen() {
         triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
         setCoinsEarned(coinReward);
         setWallet((current) => ({ coins: current.coins + coinReward }));
-        setPet((current) => ({
-          ...current,
-          stats: {
-            ...current.stats,
-            happiness: Math.min(
-              100,
-              current.stats.happiness + happinessBoost,
-            ),
-          },
-        }));
+        setPet((current) =>
+          withPetCareUpdate(current, (stats) => ({
+            ...stats,
+            hunger: clampStat(stats.hunger - PUZZLE_HUNGER_COST),
+            happiness: clampStat(stats.happiness + happinessBoost),
+          })),
+        );
       } else {
         triggerHaptic();
+        setProgress((current) => ({
+          ...current,
+          lives: loseLife(current.lives),
+        }));
+        setPet((current) =>
+          withPetCareUpdate(current, (stats) => ({
+            ...stats,
+            hunger: clampStat(stats.hunger - PUZZLE_HUNGER_COST),
+            happiness: clampStat(
+              stats.happiness - PUZZLE_WRONG_HAPPINESS_PENALTY,
+            ),
+          })),
+        );
       }
     },
-    [answered, coinReward, happinessBoost, puzzle.correctIndex, setPet, setWallet],
+    [
+      answered,
+      coinReward,
+      happinessBoost,
+      puzzle.correctIndex,
+      setPet,
+      setProgress,
+      setWallet,
+    ],
   );
-
-  const exitToPath = useCallback(() => {
-    router.replace("/puzzles");
-  }, [router]);
 
   const handleContinue = useCallback(() => {
     if (isCorrect && isReplay) {
@@ -149,21 +193,29 @@ export default function PlayScreen() {
         exitToPath();
         return;
       }
-      router.push({
+      router.replace({
         pathname: "/play",
         params: { difficulty, index: String(sessionIndex + 1) },
       });
       return;
     }
 
-    setSelectedIndex(null);
-    setIsCorrect(false);
-    setCoinsEarned(0);
+    if (!isCorrect) {
+      if (!canSpendLife(progress.lives)) {
+        exitToPath();
+        return;
+      }
+      setSelectedIndex(null);
+      setIsCorrect(false);
+      setCoinsEarned(0);
+      return;
+    }
   }, [
     difficulty,
     exitToPath,
     isCorrect,
     isReplay,
+    progress.lives,
     puzzles.length,
     router,
     sessionIndex,
@@ -184,7 +236,7 @@ export default function PlayScreen() {
       exitToPath();
       return;
     }
-    router.back();
+    router.replace('/');
   }, [
     difficulty,
     exitToPath,
@@ -209,26 +261,75 @@ export default function PlayScreen() {
   }
 
   if (sessionIndex < 0 || sessionIndex >= puzzles.length) {
-    return <Redirect href="/puzzles" />;
+    return (
+      <Redirect
+        href={{ pathname: "/puzzles", params: { difficulty } }}
+      />
+    );
   }
 
   if (!canPlayPuzzleIndex(sessionIndex, savedIndex)) {
-    return <Redirect href="/puzzles" />;
+    return (
+      <Redirect
+        href={{ pathname: "/puzzles", params: { difficulty } }}
+      />
+    );
   }
+
+  if (!hasLives) {
+    return (
+      <SafeAreaView style={styles.safe} edges={["top"]}>
+        <View style={styles.screen}>
+          <View style={styles.header}>
+            <Pressable
+              onPress={exitToPath}
+              style={styles.backBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
+            >
+              <Text style={styles.backText}>← Back</Text>
+            </Pressable>
+            <GameHeaderStats
+              coins={wallet.coins}
+              streak={progress.streak}
+              lives={progress.lives}
+            />
+          </View>
+          <NoLivesPanel
+            lives={progress.lives}
+            coins={wallet.coins}
+            onBuyLife={buyLife}
+            onBack={exitToPath}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const livesAfterAnswer = applyLifeRegen(progress.lives);
+  const canRetry = livesAfterAnswer.current > 0;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <View style={styles.screen}>
         <View style={styles.header}>
           <Pressable
-            onPress={() => router.back()}
-            style={styles.backBtn}
+            onPress={exitToPath}
+            disabled={answered}
+            style={[styles.backBtn, answered && styles.backBtnDisabled]}
             accessibilityRole="button"
             accessibilityLabel="Go back"
+            accessibilityState={{ disabled: answered }}
           >
-            <Text style={styles.backText}>← Back</Text>
+            <Text style={[styles.backText, answered && styles.backTextDisabled]}>
+              ← Back
+            </Text>
           </Pressable>
-          <CoinCounter coins={wallet.coins} streak={progress.streak} />
+          <GameHeaderStats
+            coins={wallet.coins}
+            streak={progress.streak}
+            lives={progress.lives}
+          />
         </View>
 
         <Text style={styles.title}>
@@ -240,15 +341,19 @@ export default function PlayScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <PuzzleCard puzzle={puzzle} puzzleNumber={puzzleNumber} />
+          <PuzzleCard
+            puzzle={puzzle}
+            puzzleNumber={puzzleNumber}
+            coinReward={coinReward}
+          />
 
           <View style={styles.choices}>
             {puzzle.choices.map((choice, index) => {
               let result: "correct" | "wrong" | null = null;
               if (answered) {
-                if (index === puzzle.correctIndex) {
+                if (isCorrect && index === puzzle.correctIndex) {
                   result = "correct";
-                } else if (index === selectedIndex) {
+                } else if (!isCorrect && index === selectedIndex) {
                   result = "wrong";
                 }
               }
@@ -276,10 +381,19 @@ export default function PlayScreen() {
           coinsEarned={coinsEarned}
           coinType={isReplay ? "sparkle" : "regular"}
           continueLabel={
-            isCorrect ? (isReplay ? "Back to path" : "Next puzzle") : "Try again"
+            isCorrect
+              ? isReplay
+                ? "Back to path"
+                : "Next puzzle"
+              : canRetry
+                ? "Try again"
+                : "Back to path"
           }
           onContinue={handleContinue}
           onGoHome={isCorrect && !isReplay ? handleGoHome : undefined}
+          onBuyLife={!isCorrect && !canRetry ? buyLife : undefined}
+          buyLifeCost={LIFE_BUY_COST}
+          coins={wallet.coins}
         />
       </View>
     </SafeAreaView>
@@ -314,10 +428,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingRight: moderateScale(12),
   },
+  backBtnDisabled: {
+    opacity: 0.35,
+  },
   backText: {
     fontSize: moderateScale(16),
     fontWeight: "700",
     color: GameColors.text,
+  },
+  backTextDisabled: {
+    color: GameColors.textMuted,
   },
   title: {
     fontSize: moderateScale(24),

@@ -1,4 +1,4 @@
-import { CoinCounter } from "@/components/economy/CoinCounter";
+import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PetStage } from "@/components/pet/PetStage";
 import {
   FEED_COST,
@@ -11,6 +11,7 @@ import { pickRandomExcitedMood } from "@/constants/pet-videos";
 import { useGame } from "@/contexts/GameProvider";
 import { usePetMood } from "@/hooks/use-pet-mood";
 import type { PetAnimationState } from "@/types/game";
+import { clampStat, withPetCareUpdate } from "@/utils/pet-care";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useRouter } from "expo-router";
@@ -45,7 +46,7 @@ export default function HomeScreen() {
   const [actionMood, setActionMood] = useState<PetAnimationState | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  const baseMood = usePetMood(pet.stats);
+  const baseMood = usePetMood(pet);
   const displayMood = actionMood ?? baseMood;
 
   const showMessage = useCallback((text: string) => {
@@ -60,13 +61,12 @@ export default function HomeScreen() {
 
   const handlePetTap = useCallback(() => {
     playActionMood(pickRandomExcitedMood());
-    setPet((current) => ({
-      ...current,
-      stats: {
-        ...current.stats,
-        happiness: Math.min(100, current.stats.happiness + PET_HAPPINESS_BOOST),
-      },
-    }));
+    setPet((current) =>
+      withPetCareUpdate(current, (stats) => ({
+        ...stats,
+        happiness: clampStat(stats.happiness + PET_HAPPINESS_BOOST),
+      })),
+    );
   }, [playActionMood, setPet]);
 
   const handleFeed = useCallback(() => {
@@ -78,14 +78,13 @@ export default function HomeScreen() {
 
     triggerHaptic();
     setWallet((current) => ({ coins: current.coins - FEED_COST }));
-    setPet((current) => ({
-      ...current,
-      stats: {
-        ...current.stats,
-        hunger: Math.min(100, current.stats.hunger + FEED_HUNGER_RESTORE),
-        happiness: Math.min(100, current.stats.happiness + 5),
-      },
-    }));
+    setPet((current) =>
+      withPetCareUpdate(current, (stats) => ({
+        ...stats,
+        hunger: clampStat(stats.hunger + FEED_HUNGER_RESTORE),
+        happiness: clampStat(stats.happiness + 5),
+      })),
+    );
     setActionMood("eating");
     showMessage(`${pet.name} enjoyed the snack!`);
   }, [pet.name, setPet, setWallet, showMessage, wallet.coins]);
@@ -123,7 +122,11 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>Hi there!</Text>
             <Text style={styles.subtitle}>Take care of {pet.name}</Text>
           </View>
-          <CoinCounter coins={wallet.coins} streak={progress.streak} />
+          <GameHeaderStats
+            coins={wallet.coins}
+            streak={progress.streak}
+            lives={progress.lives}
+          />
         </View>
 
         <View style={styles.stageWrap}>

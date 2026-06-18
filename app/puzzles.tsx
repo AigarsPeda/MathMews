@@ -1,19 +1,22 @@
-import { CoinCounter } from '@/components/economy/CoinCounter';
+import { GameHeaderStats } from '@/components/economy/GameHeaderStats';
+import { NoLivesPanel } from '@/components/economy/LivesCounter';
 import { DifficultyPicker } from '@/components/puzzle/DifficultyPicker';
 import { PuzzlePathItem } from '@/components/puzzle/PuzzlePathItem';
-import { GameColors } from '@/constants/game';
+import { GameColors, getPuzzleCoinReward } from '@/constants/game';
 import {
   canPlayPuzzleIndex,
   DIFFICULTY_LABELS,
   getPuzzlePathState,
+  isPuzzleDifficulty,
   PUZZLES_BY_DIFFICULTY,
 } from '@/constants/puzzles';
 import { useGame } from '@/contexts/GameProvider';
 import type { PuzzleDifficulty } from '@/types/puzzle';
+import { canSpendLife } from '@/utils/lives';
 import { moderateScale } from '@/utils/scale';
 import * as Haptics from 'expo-haptics';
-import { Redirect, useRouter } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -33,8 +36,27 @@ function triggerHaptic() {
 
 export default function PuzzlesScreen() {
   const router = useRouter();
-  const { isReady, hasCompletedOnboarding, pet, wallet, progress } = useGame();
-  const [difficulty, setDifficulty] = useState<PuzzleDifficulty>('easy');
+  const { difficulty: difficultyParam } = useLocalSearchParams<{
+    difficulty?: string;
+  }>();
+  const rawDifficulty = Array.isArray(difficultyParam)
+    ? difficultyParam[0]
+    : difficultyParam;
+  const paramDifficulty = isPuzzleDifficulty(rawDifficulty ?? '')
+    ? rawDifficulty
+    : null;
+
+  const { isReady, hasCompletedOnboarding, pet, wallet, progress, buyLife } =
+    useGame();
+  const [difficulty, setDifficulty] = useState<PuzzleDifficulty>(
+    paramDifficulty ?? 'easy',
+  );
+
+  useEffect(() => {
+    if (paramDifficulty) {
+      setDifficulty(paramDifficulty);
+    }
+  }, [paramDifficulty]);
 
   const puzzles = PUZZLES_BY_DIFFICULTY[difficulty];
   const solvedCount = progress.puzzlesSolved[difficulty];
@@ -60,6 +82,7 @@ export default function PuzzlesScreen() {
 
   const handlePlayPuzzle = useCallback(
     (index: number, isReplay: boolean) => {
+      if (!canSpendLife(progress.lives)) return;
       if (!canPlayPuzzleIndex(index, solvedCount)) return;
       triggerHaptic();
       router.push({
@@ -71,8 +94,17 @@ export default function PuzzlesScreen() {
         },
       });
     },
-    [difficulty, router, solvedCount],
+    [difficulty, progress.lives, router, solvedCount],
   );
+
+  const handleBackHome = useCallback(() => {
+    triggerHaptic();
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/');
+  }, [router]);
 
   const handlePlayCurrent = useCallback(() => {
     if (solvedCount >= puzzles.length) return;
@@ -96,14 +128,18 @@ export default function PuzzlesScreen() {
       <View style={styles.screen}>
         <View style={styles.header}>
           <Pressable
-            onPress={() => router.back()}
+            onPress={handleBackHome}
             style={styles.backBtn}
             accessibilityRole="button"
             accessibilityLabel="Go back"
           >
             <Text style={styles.backText}>← Back</Text>
           </Pressable>
-          <CoinCounter coins={wallet.coins} streak={progress.streak} />
+          <GameHeaderStats
+            coins={wallet.coins}
+            streak={progress.streak}
+            lives={progress.lives}
+          />
         </View>
 
         <Text style={styles.title}>Puzzle path</Text>
@@ -114,10 +150,22 @@ export default function PuzzlesScreen() {
           onSelect={handleSelectDifficulty}
         />
 
+        {!canSpendLife(progress.lives) ? (
+          <NoLivesPanel
+            lives={progress.lives}
+            coins={wallet.coins}
+            onBuyLife={buyLife}
+          />
+        ) : (
+          <>
         <View style={styles.progressBlock}>
           <Text style={styles.progressText}>
             {Math.min(solvedCount, puzzles.length)} of {puzzles.length}{' '}
             {DIFFICULTY_LABELS[difficulty].toLowerCase()} nuts cracked
+          </Text>
+          <Text style={styles.coinHint}>
+            🪙 {getPuzzleCoinReward(difficulty)} coins per nut · ✨{' '}
+            {getPuzzleCoinReward(difficulty, true)} on replay
           </Text>
           <View style={styles.progressTrack}>
             <View
@@ -173,8 +221,10 @@ export default function PuzzlesScreen() {
             <Text style={styles.primaryBtnText}>
               Play nut #{solvedCount + 1}
             </Text>
-          </Pressable>
-        ) : null}
+            </Pressable>
+          ) : null}
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -237,6 +287,12 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14),
     fontWeight: '700',
     color: GameColors.text,
+    textAlign: 'center',
+  },
+  coinHint: {
+    fontSize: moderateScale(13),
+    fontWeight: '600',
+    color: GameColors.coinText,
     textAlign: 'center',
   },
   progressTrack: {

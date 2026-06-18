@@ -1,5 +1,5 @@
 import { PetAvatar } from "@/components/pet/PetAvatar";
-import { GameColors } from "@/constants/game";
+import { GameColors, LIFE_BUY_COST } from "@/constants/game";
 import type { PetAnimationState } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -16,6 +16,9 @@ type ResultOverlayProps = {
   continueLabel?: string;
   onContinue: () => void;
   onGoHome?: () => void;
+  onBuyLife?: () => void;
+  buyLifeCost?: number;
+  coins?: number;
 };
 
 export function ResultOverlay({
@@ -29,6 +32,9 @@ export function ResultOverlay({
   continueLabel,
   onContinue,
   onGoHome,
+  onBuyLife,
+  buyLifeCost = LIFE_BUY_COST,
+  coins = 0,
 }: ResultOverlayProps) {
   const insets = useSafeAreaInsets();
 
@@ -103,6 +109,19 @@ export function ResultOverlay({
                 <Text style={styles.secondaryButtonText}>Back to home</Text>
               </Pressable>
             )}
+
+            {!correct && onBuyLife && coins >= buyLifeCost ? (
+              <Pressable
+                style={styles.buyLifeButton}
+                onPress={onBuyLife}
+                accessibilityRole="button"
+                accessibilityLabel={`Buy a life for ${buyLifeCost} coins`}
+              >
+                <Text style={styles.buyLifeButtonText}>
+                  Buy a life · {buyLifeCost} 🪙
+                </Text>
+              </Pressable>
+            ) : null}
           </View>
         </View>
       </View>
@@ -215,5 +234,21 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     fontWeight: "700",
     color: GameColors.text,
+  },
+  buyLifeButton: {
+    width: "100%",
+    minHeight: moderateScale(48),
+    borderRadius: moderateScale(16),
+    borderWidth: 2,
+    borderColor: GameColors.primary,
+    backgroundColor: "#FFF8F6",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: moderateScale(12),
+  },
+  buyLifeButtonText: {
+    fontSize: moderateScale(16),
+    fontWeight: "800",
+    color: GameColors.primary,
   },
 });

@@ -3,18 +3,20 @@ import {
   DEFAULT_PROGRESS,
   DEFAULT_WALLET,
 } from "@/constants/game";
-import type { Progress, PuzzleProgress } from "@/types/game";
+import type { LivesState, PetProfile, Progress, PuzzleProgress } from "@/types/game";
 import {
   GAME_SAVE_STORAGE_KEY,
   GAME_SAVE_VERSION,
   type GameSave,
 } from "@/types/save";
+import { applyPetTimeDecay } from "@/utils/pet-care";
+import { applyLifeRegen, createDefaultLives } from "@/utils/lives";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function createDefaultGameSave(): GameSave {
   return {
     version: GAME_SAVE_VERSION,
-    pet: DEFAULT_PET,
+    pet: { ...DEFAULT_PET, lastCareAt: Date.now() },
     wallet: DEFAULT_WALLET,
     progress: DEFAULT_PROGRESS,
     hasCompletedOnboarding: false,
@@ -40,6 +42,45 @@ function normalizePuzzleProgress(value: unknown): PuzzleProgress {
   };
 }
 
+function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
+  const stats = isRecord(pet.stats) ? pet.stats : {};
+  return {
+    type: pet.type === 'cat' ? 'cat' : 'dog',
+    name: typeof pet.name === 'string' ? pet.name : DEFAULT_PET.name,
+    stats: {
+      hunger:
+        typeof stats.hunger === 'number' ? stats.hunger : DEFAULT_PET.stats.hunger,
+      happiness:
+        typeof stats.happiness === 'number'
+          ? stats.happiness
+          : DEFAULT_PET.stats.happiness,
+      level:
+        typeof stats.level === 'number' ? stats.level : DEFAULT_PET.stats.level,
+    },
+    lastCareAt:
+      typeof pet.lastCareAt === 'number' ? pet.lastCareAt : Date.now(),
+  };
+}
+
+function normalizeLives(value: unknown): LivesState {
+  if (!isRecord(value) || typeof value.current !== "number") {
+    return createDefaultLives();
+  }
+
+  const nextRegenAt =
+    value.nextRegenAt === null || typeof value.nextRegenAt === "number"
+      ? value.nextRegenAt
+      : null;
+
+  return applyLifeRegen(
+    {
+      current: value.current,
+      nextRegenAt,
+    },
+    Date.now(),
+  );
+}
+
 function parseGameSave(raw: string): GameSave | null {
   try {
     const parsed: unknown = JSON.parse(raw);
@@ -56,12 +97,16 @@ function parseGameSave(raw: string): GameSave | null {
     if (typeof parsed.progress.streak !== "number") return null;
 
     const puzzlesSolved = normalizePuzzleProgress(parsed.progress.puzzlesSolved);
+    const lives = normalizeLives(parsed.progress.lives);
+    const pet = applyPetTimeDecay(normalizePetProfile(parsed.pet));
 
     return {
       ...(parsed as GameSave),
+      pet,
       progress: {
         ...(parsed.progress as Progress),
         puzzlesSolved,
+        lives,
       },
     };
   } catch {

@@ -8,15 +8,25 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { AppState, type AppStateStatus } from 'react-native';
 
+import { LIFE_BUY_COST } from '@/constants/game';
 import type { PetProfile, Progress, Wallet } from '@/types/game';
 import type { GameSave } from '@/types/save';
 import { PET_NAME_MAX_LENGTH } from '@/types/save';
+import { applyPetTimeDecay } from '@/utils/pet-care';
+import {
+  applyLifeRegen,
+  buyOneLife,
+  canBuyLife,
+} from '@/utils/lives';
 import {
   createDefaultGameSave,
   loadGameSave,
   saveGameSave,
 } from '@/utils/game-storage';
+
+const CARE_TICK_MS = 60_000;
 
 type GameContextValue = {
   isReady: boolean;
@@ -27,6 +37,7 @@ type GameContextValue = {
   setPet: (updater: (current: PetProfile) => PetProfile) => void;
   setWallet: (updater: (current: Wallet) => Wallet) => void;
   setProgress: (updater: (current: Progress) => Progress) => void;
+  buyLife: () => boolean;
   completeOnboarding: (name: string) => Promise<boolean>;
 };
 
@@ -73,6 +84,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, [isReady, save]);
 
+  const tickGameTime = useCallback(() => {
+    setSave((current) => ({
+      ...current,
+      pet: applyPetTimeDecay(current.pet),
+      progress: {
+        ...current.progress,
+        lives: applyLifeRegen(current.progress.lives),
+      },
+    }));
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    const handleAppState = (state: AppStateStatus) => {
+      if (state === 'active') {
+        tickGameTime();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppState);
+    const interval = setInterval(tickGameTime, CARE_TICK_MS);
+
+    return () => {
+      subscription.remove();
+      clearInterval(interval);
+    };
+  }, [isReady, tickGameTime]);
+
   const setPet = useCallback(
     (updater: (current: PetProfile) => PetProfile) => {
       setSave((current) => ({ ...current, pet: updater(current.pet) }));
@@ -88,6 +128,29 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setSave((current) => ({ ...current, progress: updater(current.progress) }));
   }, []);
 
+  const buyLife = useCallback(() => {
+    const now = Date.now();
+    let purchased = false;
+
+    setSave((current) => {
+      if (!canBuyLife(current.progress.lives, current.wallet.coins, now)) {
+        return current;
+      }
+
+      purchased = true;
+      return {
+        ...current,
+        wallet: { coins: current.wallet.coins - LIFE_BUY_COST },
+        progress: {
+          ...current.progress,
+          lives: buyOneLife(current.progress.lives, now),
+        },
+      };
+    });
+
+    return purchased;
+  }, []);
+
   const completeOnboarding = useCallback(async (name: string) => {
     const trimmed = normalizePetName(name);
     if (!trimmed) return false;
@@ -97,6 +160,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       pet: {
         ...createDefaultGameSave().pet,
         name: trimmed,
+        lastCareAt: Date.now(),
       },
       hasCompletedOnboarding: true,
     };
@@ -116,6 +180,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setPet,
       setWallet,
       setProgress,
+      buyLife,
       completeOnboarding,
     }),
     [
@@ -126,8 +191,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       save.progress,
       save.wallet,
       setPet,
-      setProgress,
       setWallet,
+      setProgress,
+      buyLife,
     ],
   );
 

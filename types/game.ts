@@ -25,6 +25,8 @@ export type PetProfile = {
   type: PetType;
   name: string;
   stats: PetStats;
+  /** Unix ms — anchor for hunger/happiness decay between sessions. */
+  lastCareAt: number;
 };
 
 export type Wallet = {
@@ -37,7 +39,14 @@ export type PuzzleProgress = {
   hard: number;
 };
 
+export type LivesState = {
+  current: number;
+  /** When the next life regenerates (null when at max lives). */
+  nextRegenAt: number | null;
+};
+
 export type Progress = {
   streak: number;
   puzzlesSolved: PuzzleProgress;
+  lives: LivesState;
 };
