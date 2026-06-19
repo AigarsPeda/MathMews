@@ -48,7 +48,12 @@ export const LIFE_BUY_COST = 15;
 
 export const FEED_COST = 10;
 export const FEED_HUNGER_RESTORE = 25;
+export const FEED_HAPPINESS_BOOST = 5;
 export const PET_HAPPINESS_BOOST = 10;
+/** Max hunger / happiness (0–100). */
+export const MAX_PET_STAT = 100;
+/** Cooldown after a pet or feed action finishes. */
+export const PET_CARE_COOLDOWN_MS = 4_000;
 
 export const PUZZLE_COIN_REWARDS = {
   easy: 4,

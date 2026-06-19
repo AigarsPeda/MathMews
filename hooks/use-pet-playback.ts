@@ -1,10 +1,10 @@
-import { ANIMATION_LABELS, ONE_SHOT_ANIMATIONS } from '@/constants/game';
+import { ANIMATION_LABELS, ONE_SHOT_ANIMATIONS, PET_CARE_COOLDOWN_MS } from '@/constants/game';
 import { getPetScenario } from '@/constants/pet-scenarios';
+import { moodToSegment } from '@/constants/pet-scenarios';
 import { usePetVideoMood } from '@/hooks/use-pet-mood';
 import type { PetAnimationState, PetProfile } from '@/types/game';
 import type { PetAnimationScenario, PetVideoSegment } from '@/types/pet-animation';
-import { moodToSegment } from '@/constants/pet-scenarios';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ActiveScenario = {
   scenario: PetAnimationScenario;
@@ -21,6 +21,10 @@ export function usePetPlayback(pet: PetProfile) {
   const [activeScenario, setActiveScenario] = useState<ActiveScenario | null>(
     null,
   );
+  const [careActionBusy, setCareActionBusy] = useState(false);
+  const [careCooldownUntil, setCareCooldownUntil] = useState(0);
+  const [cooldownTick, setCooldownTick] = useState(0);
+  const careActionBusyRef = useRef(false);
 
   const playback = useMemo((): PetPlaybackState => {
     if (activeScenario) {
@@ -41,6 +45,31 @@ export function usePetPlayback(pet: PetProfile) {
     }
     return ANIMATION_LABELS[playback.mood];
   }, [playback]);
+
+  useEffect(() => {
+    const remaining = careCooldownUntil - Date.now();
+    if (remaining <= 0) return;
+    const id = setTimeout(() => setCooldownTick((n) => n + 1), remaining + 50);
+    return () => clearTimeout(id);
+  }, [careCooldownUntil, cooldownTick]);
+
+  const isCareBlocked = careActionBusy || Date.now() < careCooldownUntil;
+
+  const isCareAnimationPlaying = useMemo(() => {
+    if (activeScenario) return true;
+    return actionMood !== null && ONE_SHOT_ANIMATIONS.includes(actionMood);
+  }, [activeScenario, actionMood]);
+
+  const beginCareAction = useCallback(() => {
+    careActionBusyRef.current = true;
+    setCareActionBusy(true);
+  }, []);
+
+  const finishCareAction = useCallback(() => {
+    careActionBusyRef.current = false;
+    setCareActionBusy(false);
+    setCareCooldownUntil(Date.now() + PET_CARE_COOLDOWN_MS);
+  }, []);
 
   const playAction = useCallback(
     (wasAsleep: boolean, mood: PetAnimationState) => {
@@ -67,15 +96,21 @@ export function usePetPlayback(pet: PetProfile) {
         return;
       }
 
-      setActionMood((current) =>
-        current && ONE_SHOT_ANIMATIONS.includes(current) ? null : current,
-      );
+      setActionMood((current) => {
+        if (current && ONE_SHOT_ANIMATIONS.includes(current)) {
+          if (careActionBusyRef.current) {
+            finishCareAction();
+          }
+          return null;
+        }
+        return current;
+      });
 
       if (completedMood === 'fallingAsleep') {
         onFallAsleepComplete();
       }
     },
-    [activeScenario, onFallAsleepComplete],
+    [activeScenario, finishCareAction, onFallAsleepComplete],
   );
 
   return {
@@ -85,5 +120,8 @@ export function usePetPlayback(pet: PetProfile) {
     playAction,
     setActionMood,
     handleSegmentComplete,
+    isCareBlocked,
+    isCareAnimationPlaying,
+    beginCareAction,
   };
 }

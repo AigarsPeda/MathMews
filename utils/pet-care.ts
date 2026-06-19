@@ -13,6 +13,19 @@ export function clampStat(value: number): number {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
 
+export function isHappinessMax(stats: PetStats): boolean {
+  return stats.happiness >= 100;
+}
+
+export function isHungerMax(stats: PetStats): boolean {
+  return stats.hunger >= 100;
+}
+
+/** Feed has an effect unless hunger is already full (asleep pets can always be woken). */
+export function canFeedForEffect(stats: PetStats, isAsleep: boolean): boolean {
+  return isAsleep || !isHungerMax(stats);
+}
+
 export function applyPetTimeDecay(
   pet: PetProfile,
   now = Date.now(),

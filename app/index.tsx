@@ -2,6 +2,7 @@ import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PetStage } from "@/components/pet/PetStage";
 import {
   FEED_COST,
+  FEED_HAPPINESS_BOOST,
   FEED_HUNGER_RESTORE,
   GameColors,
   PET_HAPPINESS_BOOST,
@@ -11,7 +12,13 @@ import { useGame } from "@/contexts/GameProvider";
 import { usePetPlayback } from "@/hooks/use-pet-playback";
 import { shouldPetSleep } from "@/hooks/use-pet-mood";
 import type { PetStats } from "@/types/game";
-import { clampStat, withPetCareUpdate } from "@/utils/pet-care";
+import {
+  canFeedForEffect,
+  clampStat,
+  isHappinessMax,
+  isHungerMax,
+  withPetCareUpdate,
+} from "@/utils/pet-care";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useRouter } from "expo-router";
@@ -52,12 +59,23 @@ export default function HomeScreen() {
     baseVideoMood,
     playAction,
     handleSegmentComplete,
+    isCareBlocked,
+    isCareAnimationPlaying,
+    beginCareAction,
   } = usePetPlayback(pet);
 
   const showMessage = useCallback((text: string) => {
     setMessage(text);
     setTimeout(() => setMessage(null), 2500);
   }, []);
+
+  const rejectCareAction = useCallback(
+    (text: string) => {
+      triggerHaptic();
+      showMessage(text);
+    },
+    [showMessage],
+  );
 
   const playActionMood = useCallback(
     (wasAsleep: boolean, mood: Parameters<typeof playAction>[1]) => {
@@ -80,38 +98,63 @@ export default function HomeScreen() {
   );
 
   const handlePetTap = useCallback(() => {
-    recordInteraction();
+    if (isCareAnimationPlaying) return;
+
     const wasAsleep = pet.isAsleep === true;
+
+    recordInteraction();
     playActionMood(wasAsleep, pickRandomExcitedMood());
     wakePet((stats) => ({
       ...stats,
-      happiness: clampStat(stats.happiness + PET_HAPPINESS_BOOST),
+      happiness: isHappinessMax(stats)
+        ? stats.happiness
+        : clampStat(stats.happiness + PET_HAPPINESS_BOOST),
     }));
-  }, [pet.isAsleep, playActionMood, recordInteraction, wakePet]);
+  }, [isCareAnimationPlaying, pet.isAsleep, playActionMood, recordInteraction, wakePet]);
 
   const handleFeed = useCallback(() => {
-    recordInteraction();
-    if (wallet.coins < FEED_COST) {
-      triggerHaptic();
-      showMessage(`Need ${FEED_COST} coins to feed ${pet.name}!`);
+    const wasAsleep = pet.isAsleep === true;
+
+    if (isCareAnimationPlaying || isCareBlocked) {
+      rejectCareAction(`Give ${pet.name} a moment!`);
       return;
     }
 
-    const wasAsleep = pet.isAsleep === true;
+    if (!canFeedForEffect(pet.stats, wasAsleep)) {
+      rejectCareAction(`${pet.name} isn't hungry right now.`);
+      return;
+    }
+
+    if (wallet.coins < FEED_COST) {
+      rejectCareAction(`Need ${FEED_COST} coins to feed ${pet.name}!`);
+      return;
+    }
+
+    recordInteraction();
+    beginCareAction();
     triggerHaptic();
     setWallet((current) => ({ coins: current.coins - FEED_COST }));
     wakePet((stats) => ({
       ...stats,
-      hunger: clampStat(stats.hunger + FEED_HUNGER_RESTORE),
-      happiness: clampStat(stats.happiness + 5),
+      hunger: isHungerMax(stats)
+        ? stats.hunger
+        : clampStat(stats.hunger + FEED_HUNGER_RESTORE),
+      happiness: isHappinessMax(stats)
+        ? stats.happiness
+        : clampStat(stats.happiness + FEED_HAPPINESS_BOOST),
     }));
     playActionMood(wasAsleep, "eating");
     showMessage(`${pet.name} enjoyed the snack!`);
   }, [
+    beginCareAction,
+    isCareAnimationPlaying,
+    isCareBlocked,
     pet.isAsleep,
     pet.name,
+    pet.stats,
     playActionMood,
     recordInteraction,
+    rejectCareAction,
     setWallet,
     showMessage,
     wakePet,
@@ -147,7 +190,12 @@ export default function HomeScreen() {
     return <Redirect href="/onboarding/name-pet" />;
   }
 
-  const canFeed = wallet.coins >= FEED_COST;
+  const wasAsleep = pet.isAsleep === true;
+  const canFeedEffect =
+    canFeedForEffect(pet.stats, wasAsleep) && wallet.coins >= FEED_COST;
+  const feedDimmed =
+    !canFeedEffect || isCareBlocked || isCareAnimationPlaying;
+  const petAnimating = isCareAnimationPlaying;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
@@ -171,7 +219,7 @@ export default function HomeScreen() {
             stats={pet.stats}
             moodLabel={displayLabel}
             playback={playback}
-            onPetPress={handlePetTap}
+            onPetPress={petAnimating ? undefined : handlePetTap}
             onAnimationComplete={handleAnimationComplete}
           />
           {message && (
@@ -184,10 +232,16 @@ export default function HomeScreen() {
         <View style={styles.footer}>
           <View style={styles.actions}>
             <Pressable
-              style={[styles.actionBtn, styles.actionSecondary]}
+              style={[
+                styles.actionBtn,
+                styles.actionSecondary,
+                petAnimating && styles.actionDisabled,
+              ]}
               onPress={handlePetTap}
+              disabled={petAnimating}
               accessibilityRole="button"
               accessibilityLabel="Pet your companion"
+              accessibilityState={{ disabled: petAnimating }}
             >
               <Text style={styles.actionEmoji}>🐾</Text>
               <Text style={styles.actionLabel}>Pet</Text>
@@ -197,11 +251,16 @@ export default function HomeScreen() {
               style={[
                 styles.actionBtn,
                 styles.actionSecondary,
-                !canFeed && styles.actionDisabled,
+                feedDimmed && styles.actionDisabled,
               ]}
               onPress={handleFeed}
+              disabled={!canFeedEffect || isCareAnimationPlaying || isCareBlocked}
               accessibilityRole="button"
               accessibilityLabel={`Feed for ${FEED_COST} coins`}
+              accessibilityState={{
+                disabled:
+                  !canFeedEffect || isCareAnimationPlaying || isCareBlocked,
+              }}
             >
               <Text style={styles.actionEmoji}>🍖</Text>
               <Text style={styles.actionLabel}>Feed</Text>
