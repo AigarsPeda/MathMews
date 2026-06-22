@@ -1,8 +1,12 @@
 import { GameHeaderStats } from '@/components/economy/GameHeaderStats';
 import { NoLivesPanel } from '@/components/economy/LivesCounter';
 import { DifficultyPicker } from '@/components/puzzle/DifficultyPicker';
+import {
+  PuzzlePathProgressChip,
+  PuzzlePathProgressSheet,
+} from '@/components/puzzle/PuzzlePathProgress';
 import { PuzzlePathItem } from '@/components/puzzle/PuzzlePathItem';
-import { GameColors, getPuzzleCoinReward } from '@/constants/game';
+import { GameColors } from '@/constants/game';
 import {
   canPlayPuzzleIndex,
   DIFFICULTY_LABELS,
@@ -51,6 +55,7 @@ export default function PuzzlesScreen() {
   const [difficulty, setDifficulty] = useState<PuzzleDifficulty>(
     paramDifficulty ?? 'easy',
   );
+  const [showProgress, setShowProgress] = useState(false);
 
   useEffect(() => {
     if (paramDifficulty) {
@@ -62,11 +67,6 @@ export default function PuzzlesScreen() {
   const solvedCount = progress.puzzlesSolved[difficulty];
   const scrollRef = useRef<ScrollView>(null);
   const currentIndex = Math.min(solvedCount, Math.max(0, puzzles.length - 1));
-
-  const progressPercent =
-    puzzles.length > 0
-      ? Math.min(100, (Math.min(solvedCount, puzzles.length) / puzzles.length) * 100)
-      : 0;
 
   const scrollToCurrent = useCallback((y: number) => {
     scrollRef.current?.scrollTo({
@@ -161,21 +161,24 @@ export default function PuzzlesScreen() {
           />
         ) : (
           <>
-        <View style={styles.progressBlock}>
-          <Text style={styles.progressText}>
-            {Math.min(solvedCount, puzzles.length)} of {puzzles.length}{' '}
-            {DIFFICULTY_LABELS[difficulty].toLowerCase()} nuts cracked
-          </Text>
-          <Text style={styles.coinHint}>
-            🪙 {getPuzzleCoinReward(difficulty)} coins per nut · ✨{' '}
-            {getPuzzleCoinReward(difficulty, true)} on replay
-          </Text>
-          <View style={styles.progressTrack}>
-            <View
-              style={[styles.progressFill, { width: `${progressPercent}%` }]}
-            />
-          </View>
-        </View>
+        <PuzzlePathProgressChip
+          difficulty={difficulty}
+          solvedCount={solvedCount}
+          totalCount={puzzles.length}
+          onPress={() => {
+            recordInteraction();
+            triggerHaptic();
+            setShowProgress(true);
+          }}
+        />
+
+        <PuzzlePathProgressSheet
+          visible={showProgress}
+          difficulty={difficulty}
+          solvedCount={solvedCount}
+          totalCount={puzzles.length}
+          onClose={() => setShowProgress(false)}
+        />
 
         <ScrollView
           ref={scrollRef}
@@ -276,38 +279,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: GameColors.textMuted,
     marginTop: moderateScale(-4),
-  },
-  progressBlock: {
-    backgroundColor: GameColors.card,
-    borderRadius: moderateScale(12),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    paddingVertical: moderateScale(10),
-    paddingHorizontal: moderateScale(12),
-    gap: moderateScale(8),
-  },
-  progressText: {
-    fontSize: moderateScale(14),
-    fontWeight: '700',
-    color: GameColors.text,
-    textAlign: 'center',
-  },
-  coinHint: {
-    fontSize: moderateScale(13),
-    fontWeight: '600',
-    color: GameColors.coinText,
-    textAlign: 'center',
-  },
-  progressTrack: {
-    height: moderateScale(8),
-    borderRadius: moderateScale(4),
-    backgroundColor: GameColors.background,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: moderateScale(4),
-    backgroundColor: GameColors.success,
   },
   scroll: {
     flex: 1,
