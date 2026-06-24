@@ -202,37 +202,34 @@ export default function HomeScreen() {
   }
 
   const wasAsleep = pet.isAsleep === true;
-  const canFeedEffect =
-    canFeedForEffect(pet.stats, wasAsleep) && wallet.coins >= FEED_COST;
+  const canFeedForHunger = canFeedForEffect(pet.stats, wasAsleep);
+  const canAffordFeed = wallet.coins >= FEED_COST;
   const feedDimmed =
-    !canFeedEffect || isCareBlocked || isCareAnimationPlaying;
+    !canFeedForHunger ||
+    !canAffordFeed ||
+    isCareBlocked ||
+    isCareAnimationPlaying;
   const petAnimating = isCareAnimationPlaying;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.screen}>
         <View style={styles.header}>
-          <View style={styles.headerText}>
-            <Text style={styles.greeting}>{t("home.greeting")}</Text>
-            <Text style={styles.subtitle}>
-              {t("home.subtitle", { name: pet.name })}
-            </Text>
-          </View>
-          <View style={styles.headerActions}>
+          <View style={styles.headerStats}>
             <GameHeaderStats
               coins={wallet.coins}
               streak={progress.streak}
               lives={progress.lives}
             />
-            <Pressable
-              onPress={handleOpenSettings}
-              style={styles.settingsBtn}
-              accessibilityRole="button"
-              accessibilityLabel={t("home.a11ySettings")}
-            >
-              <Text style={styles.settingsEmoji}>⚙️</Text>
-            </Pressable>
           </View>
+          <Pressable
+            onPress={handleOpenSettings}
+            style={styles.settingsBtn}
+            accessibilityRole="button"
+            accessibilityLabel={t("home.a11ySettings")}
+          >
+            <Text style={styles.settingsEmoji}>⚙️</Text>
+          </Pressable>
         </View>
 
         <View style={styles.stageWrap}>
@@ -277,13 +274,10 @@ export default function HomeScreen() {
                 feedDimmed && styles.actionDisabled,
               ]}
               onPress={handleFeed}
-              disabled={!canFeedEffect || isCareAnimationPlaying || isCareBlocked}
+              disabled={isCareAnimationPlaying}
               accessibilityRole="button"
               accessibilityLabel={t("home.a11yFeed", { cost: FEED_COST })}
-              accessibilityState={{
-                disabled:
-                  !canFeedEffect || isCareAnimationPlaying || isCareBlocked,
-              }}
+              accessibilityState={{ disabled: isCareAnimationPlaying }}
             >
               <Text style={styles.actionEmoji}>🍖</Text>
               <Text style={styles.actionLabel}>{t("home.feed")}</Text>
@@ -330,17 +324,14 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: moderateScale(8),
-  },
-  headerText: {
-    flex: 1,
-  },
-  headerActions: {
-    flexDirection: "row",
     alignItems: "center",
     gap: moderateScale(6),
+  },
+  headerStats: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
   settingsBtn: {
     minWidth: moderateScale(40),
@@ -354,17 +345,6 @@ const styles = StyleSheet.create({
   },
   settingsEmoji: {
     fontSize: moderateScale(18),
-  },
-  greeting: {
-    fontSize: moderateScale(24),
-    fontWeight: "800",
-    color: GameColors.text,
-  },
-  subtitle: {
-    fontSize: moderateScale(14),
-    fontWeight: "500",
-    color: GameColors.textMuted,
-    marginTop: 2,
   },
   stageWrap: {
     flex: 1,

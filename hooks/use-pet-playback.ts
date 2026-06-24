@@ -62,6 +62,13 @@ export function usePetPlayback(pet: PetProfile) {
     return actionMood !== null && ONE_SHOT_ANIMATIONS.includes(actionMood);
   }, [activeScenario, actionMood]);
 
+  // Recover if a care animation ends without clearing the busy flag.
+  useEffect(() => {
+    if (isCareAnimationPlaying || !careActionBusy) return;
+    careActionBusyRef.current = false;
+    setCareActionBusy(false);
+  }, [isCareAnimationPlaying, careActionBusy]);
+
   const beginCareAction = useCallback(() => {
     careActionBusyRef.current = true;
     setCareActionBusy(true);

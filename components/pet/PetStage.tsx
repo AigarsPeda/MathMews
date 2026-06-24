@@ -2,6 +2,7 @@ import { PetAvatar } from "@/components/pet/PetAvatar";
 import { GameColors } from "@/constants/game";
 import type { PetPlaybackState } from "@/hooks/use-pet-playback";
 import type { PetStats } from "@/types/game";
+import { getHungerDisplayPercent } from "@/utils/pet-care";
 import { moderateScale } from "@/utils/scale";
 import { useCallback, useState } from "react";
 import { type LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
@@ -120,7 +121,7 @@ export function PetStage({
         <StatBar
           emoji="🍖"
           label={t('pet.hunger')}
-          value={stats.hunger}
+          value={getHungerDisplayPercent(stats)}
           color={GameColors.hunger}
         />
         <StatBar
