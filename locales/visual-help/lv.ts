@@ -1,6 +1,6 @@
 export const visualHelpLv = {
   title: 'Ilustrēta palīdzība',
-  subtitle: 'Velc slīdni, lai soli pa solim redzētu stāstu.',
+  subtitle: 'Velc slīdni un atlaid, lai pārietu uz katru soli.',
   lockedHint: 'Atbloķē bērniem draudzīgu animāciju šim riekstam.',
   unlockPrice: '{{cost}} monētas — atbloķē uz visiem laikiem',
   unlockButton: 'Atbloķēt ilustrāciju · {{cost}} 🪙',
@@ -11,6 +11,9 @@ export const visualHelpLv = {
   a11yClose: 'Aizvērt ilustrēto palīdzību',
   a11yUnlock: 'Atbloķēt ilustrāciju par {{cost}} monētām',
   a11ySlider: 'Pārvietoties pa ilustrācijas animāciju',
+  a11yPrevStep: 'Iepriekšējais solis',
+  a11yNextStep: 'Nākamais solis',
+  a11yGoToStep: 'Doties uz {{step}}. soli no {{total}}',
   easy01: {
     s0: 'Mājai ir 12 āboli.',
     s1: 'Viņa iedod 4 ābolus sunim.',

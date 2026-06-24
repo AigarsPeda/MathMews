@@ -106,6 +106,66 @@ export function interpolateVisualFrame(
   };
 }
 
+export type VisualFrameBlend = {
+  from: VisualKeyframe;
+  to: VisualKeyframe;
+  blend: number;
+  segmentIndex: number;
+};
+
+export function getVisualFrameBlend(
+  keyframes: VisualKeyframe[],
+  progress: number,
+): VisualFrameBlend {
+  const clamped = Math.max(0, Math.min(1, progress));
+  if (keyframes.length === 0) {
+    const empty: VisualKeyframe = {
+      at: 0,
+      captionKey: '',
+      scene: { kind: 'equation', lines: ['?'] },
+    };
+    return { from: empty, to: empty, blend: 0, segmentIndex: 0 };
+  }
+  if (keyframes.length === 1) {
+    return {
+      from: keyframes[0],
+      to: keyframes[0],
+      blend: 0,
+      segmentIndex: 0,
+    };
+  }
+
+  const scaled = clamped * (keyframes.length - 1);
+  const segmentIndex = Math.min(Math.floor(scaled), keyframes.length - 2);
+  const blend = scaled - segmentIndex;
+
+  return {
+    from: keyframes[segmentIndex],
+    to: keyframes[segmentIndex + 1],
+    blend,
+    segmentIndex,
+  };
+}
+
+export function snapVisualHelpProgress(
+  progress: number,
+  stepCount: number,
+): number {
+  if (stepCount <= 1) return 0;
+  const scaled = Math.max(0, Math.min(1, progress)) * (stepCount - 1);
+  const nearestIndex = Math.round(scaled);
+  return nearestIndex / (stepCount - 1);
+}
+
+export function progressForVisualHelpStep(
+  stepIndex: number,
+  stepCount: number,
+): number {
+  if (stepCount <= 1) return 0;
+  const clampedIndex = Math.max(0, Math.min(stepIndex, stepCount - 1));
+  return clampedIndex / (stepCount - 1);
+}
+
 function kf(
   at: number,
   puzzleKey: string,

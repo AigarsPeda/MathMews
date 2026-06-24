@@ -1,6 +1,6 @@
 export const visualHelpEn = {
   title: 'Picture help',
-  subtitle: 'Drag the slider to move through the story step by step.',
+  subtitle: 'Drag the slider, then release to snap to each step.',
   lockedHint: 'Unlock a kid-friendly animated walkthrough for this nut.',
   unlockPrice: '{{cost}} coins — unlock forever',
   unlockButton: 'Unlock picture help · {{cost}} 🪙',
@@ -11,6 +11,9 @@ export const visualHelpEn = {
   a11yClose: 'Close picture help',
   a11yUnlock: 'Unlock picture help for {{cost}} coins',
   a11ySlider: 'Move through the picture help animation',
+  a11yPrevStep: 'Previous step',
+  a11yNextStep: 'Next step',
+  a11yGoToStep: 'Go to step {{step}} of {{total}}',
   easy01: {
     s0: 'Maya starts with 12 apples.',
     s1: 'She gives 4 apples to her dog.',
