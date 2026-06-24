@@ -1,12 +1,12 @@
 import { LifeRegenClock } from "@/components/economy/LifeRegenClock";
+import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors, LIFE_BUY_COST, MAX_LIVES } from "@/constants/game";
 import type { LivesState } from "@/types/game";
 import { applyLifeRegen, canBuyLife, msUntilNextLife } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type BuyLifeSheetProps = {
   visible: boolean;
@@ -36,7 +36,6 @@ export function BuyLifeSheet({
   onClose,
 }: BuyLifeSheetProps) {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const now = useRegenNow(visible);
 
   const synced = applyLifeRegen(lives, now);
@@ -50,96 +49,54 @@ export function BuyLifeSheet({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
+    <AppBottomSheet visible={visible} onClose={onClose}>
+      <View style={styles.card}>
+        <Text style={styles.emoji}>❤️</Text>
+        <Text style={styles.title}>{t("lives.title")}</Text>
+        <Text style={styles.count}>
+          {t("lives.count", { current: synced.current, max: MAX_LIVES })}
+        </Text>
+
+        {!isFull && regenMs !== null ? (
+          <View style={styles.regenWrap}>
+            <Text style={styles.regenLabel}>{t("lives.nextFreeLife")}</Text>
+            <LifeRegenClock regenMs={regenMs} compact={false} showProgress />
+          </View>
+        ) : null}
+
+        {isFull ? (
+          <Text style={styles.hint}>{t("lives.fullLives")}</Text>
+        ) : canBuy ? (
+          <Pressable
+            style={styles.buyBtn}
+            onPress={handleBuy}
+            accessibilityRole="button"
+            accessibilityLabel={t("lives.a11yBuy", { cost: LIFE_BUY_COST })}
+          >
+            <Text style={styles.buyBtnText}>
+              {t("lives.buyLife", { cost: LIFE_BUY_COST })}
+            </Text>
+          </Pressable>
+        ) : (
+          <Text style={styles.hint}>
+            {t("lives.needCoinsBuy", { cost: LIFE_BUY_COST, coins })}
+          </Text>
+        )}
+
         <Pressable
-          style={styles.backdrop}
+          style={styles.closeBtn}
           onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel={t("lives.a11yCloseMenu")}
-        />
-        <View style={styles.sheet}>
-          <View
-            style={[
-              styles.card,
-              { paddingBottom: insets.bottom + moderateScale(16) },
-            ]}
-          >
-            <Text style={styles.emoji}>❤️</Text>
-            <Text style={styles.title}>{t("lives.title")}</Text>
-            <Text style={styles.count}>
-              {t("lives.count", { current: synced.current, max: MAX_LIVES })}
-            </Text>
-
-            {!isFull && regenMs !== null ? (
-              <View style={styles.regenWrap}>
-                <Text style={styles.regenLabel}>{t("lives.nextFreeLife")}</Text>
-                <LifeRegenClock
-                  regenMs={regenMs}
-                  compact={false}
-                  showProgress
-                />
-              </View>
-            ) : null}
-
-            {isFull ? (
-              <Text style={styles.hint}>{t("lives.fullLives")}</Text>
-            ) : canBuy ? (
-              <Pressable
-                style={styles.buyBtn}
-                onPress={handleBuy}
-                accessibilityRole="button"
-                accessibilityLabel={t("lives.a11yBuy", { cost: LIFE_BUY_COST })}
-              >
-                <Text style={styles.buyBtnText}>
-                  {t("lives.buyLife", { cost: LIFE_BUY_COST })}
-                </Text>
-              </Pressable>
-            ) : (
-              <Text style={styles.hint}>
-                {t("lives.needCoinsBuy", { cost: LIFE_BUY_COST, coins })}
-              </Text>
-            )}
-
-            <Pressable
-              style={styles.closeBtn}
-              onPress={onClose}
-              accessibilityRole="button"
-              accessibilityLabel={t("common.close")}
-            >
-              <Text style={styles.closeBtnText}>{t("common.close")}</Text>
-            </Pressable>
-          </View>
-        </View>
+          accessibilityLabel={t("common.close")}
+        >
+          <Text style={styles.closeBtnText}>{t("common.close")}</Text>
+        </Pressable>
       </View>
-    </Modal>
+    </AppBottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(45, 52, 54, 0.35)",
-  },
-  sheet: {
-    width: "100%",
-    backgroundColor: GameColors.card,
-    borderTopLeftRadius: moderateScale(24),
-    borderTopRightRadius: moderateScale(24),
-    borderWidth: 2,
-    borderBottomWidth: 0,
-    borderColor: GameColors.cardBorder,
-    overflow: "hidden",
-  },
   card: {
     alignItems: "center",
     paddingTop: moderateScale(20),

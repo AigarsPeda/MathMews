@@ -9,9 +9,11 @@ import {
 import { GameColors } from "@/constants/game";
 import {
   canPlayPuzzleIndex,
+  getNextIncompleteDifficulty,
   getPuzzlePathState,
   getPuzzlesByDifficulty,
   isPuzzleDifficulty,
+  resolvePuzzlePathDifficulty,
 } from "@/constants/puzzles";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
@@ -68,12 +70,48 @@ export default function PuzzlesScreen() {
   );
   const [showProgress, setShowProgress] = useState(false);
   const difficultyLabelLower = useDifficultyLabelLower(difficulty);
+  const prevSolvedRef = useRef(progress.puzzlesSolved);
+  const didMountResolve = useRef(false);
 
   useEffect(() => {
-    if (paramDifficulty) {
-      setDifficulty(paramDifficulty);
+    if (!paramDifficulty) return;
+    setDifficulty(
+      resolvePuzzlePathDifficulty(
+        locale,
+        progress.puzzlesSolved,
+        paramDifficulty,
+      ),
+    );
+  }, [paramDifficulty, progress.puzzlesSolved, locale]);
+
+  useEffect(() => {
+    if (didMountResolve.current) return;
+    didMountResolve.current = true;
+    if (paramDifficulty) return;
+    setDifficulty(
+      resolvePuzzlePathDifficulty(locale, progress.puzzlesSolved, "easy"),
+    );
+  }, [locale, progress.puzzlesSolved, paramDifficulty]);
+
+  useEffect(() => {
+    const prev = prevSolvedRef.current;
+    prevSolvedRef.current = progress.puzzlesSolved;
+
+    const total = getPuzzlesByDifficulty(locale, difficulty).length;
+    const wasComplete = prev[difficulty] >= total;
+    const isComplete = progress.puzzlesSolved[difficulty] >= total;
+
+    if (!wasComplete && isComplete) {
+      const next = getNextIncompleteDifficulty(
+        locale,
+        progress.puzzlesSolved,
+        difficulty,
+      );
+      if (next) {
+        setDifficulty(next);
+      }
     }
-  }, [paramDifficulty]);
+  }, [progress.puzzlesSolved, difficulty, locale]);
 
   const puzzles = getPuzzlesByDifficulty(locale, difficulty);
   const solvedCount = progress.puzzlesSolved[difficulty];

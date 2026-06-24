@@ -7,6 +7,7 @@ import {
 } from "@/constants/visual-explanations";
 import type { VisualExplanation } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Slider from "@react-native-community/slider";
 import { useCallback, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -138,20 +139,26 @@ export function VisualExplanationPlayer({
           accessibilityRole="button"
           accessibilityLabel={t("visualHelp.a11yPrevStep")}
         >
-          <Text style={styles.sliderEmoji}>⏮️</Text>
+          <MaterialIcons
+            name="skip-previous"
+            size={moderateScale(24)}
+            color={canGoBack ? GameColors.text : GameColors.textMuted}
+          />
         </Pressable>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={1}
-          value={progress}
-          onValueChange={onProgressChange}
-          onSlidingComplete={handleSlidingComplete}
-          minimumTrackTintColor={GameColors.primary}
-          maximumTrackTintColor={GameColors.cardBorder}
-          thumbTintColor={GameColors.secondary}
-          accessibilityLabel={t("visualHelp.a11ySlider")}
-        />
+        <View style={styles.sliderWrap}>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={1}
+            value={progress}
+            onValueChange={onProgressChange}
+            onSlidingComplete={handleSlidingComplete}
+            minimumTrackTintColor={GameColors.primary}
+            maximumTrackTintColor={GameColors.cardBorder}
+            thumbTintColor={GameColors.primaryDark}
+            accessibilityLabel={t("visualHelp.a11ySlider")}
+          />
+        </View>
         <Pressable
           onPress={() => goToStep(activeStep + 1)}
           disabled={!canGoForward}
@@ -159,7 +166,11 @@ export function VisualExplanationPlayer({
           accessibilityRole="button"
           accessibilityLabel={t("visualHelp.a11yNextStep")}
         >
-          <Text style={styles.sliderEmoji}>⏭️</Text>
+          <MaterialIcons
+            name="skip-next"
+            size={moderateScale(24)}
+            color={canGoForward ? GameColors.text : GameColors.textMuted}
+          />
         </Pressable>
       </View>
 
@@ -203,7 +214,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   layer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: "center",
   },
   captionHost: {
@@ -222,17 +233,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(4),
   },
   captionOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: "center",
     alignItems: "center",
   },
   sliderRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: moderateScale(8),
+    gap: moderateScale(4),
   },
   stepBtn: {
-    minWidth: moderateScale(36),
+    width: moderateScale(32),
     minHeight: moderateScale(36),
     alignItems: "center",
     justifyContent: "center",
@@ -240,12 +251,13 @@ const styles = StyleSheet.create({
   stepBtnDisabled: {
     opacity: 0.35,
   },
-  slider: {
+  sliderWrap: {
     flex: 1,
-    height: moderateScale(40),
+    paddingHorizontal: moderateScale(10),
   },
-  sliderEmoji: {
-    fontSize: moderateScale(18),
+  slider: {
+    width: "100%",
+    height: moderateScale(40),
   },
   dots: {
     flexDirection: "row",
@@ -260,7 +272,7 @@ const styles = StyleSheet.create({
   },
   dotIdle: {
     width: moderateScale(8),
-    backgroundColor: GameColors.cardBorder,
+    backgroundColor: "#D5DBDB",
   },
   dotActive: {
     width: moderateScale(22),

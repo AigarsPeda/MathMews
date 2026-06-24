@@ -16,6 +16,7 @@ import {
 } from "@/constants/game";
 import {
   canPlayPuzzleIndex,
+  getNextIncompleteDifficulty,
   getPuzzleForSession,
   getPuzzlesByDifficulty,
   isPuzzleDifficulty,
@@ -142,17 +143,34 @@ export default function PlayScreen() {
     return purchaseVisualHelp(puzzle.id, visualHelpCost);
   }, [purchaseVisualHelp, puzzle.id, recordInteraction, visualHelpCost]);
 
-  const exitToPath = useCallback(() => {
-    recordInteraction();
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-    router.replace({
-      pathname: "/puzzles",
-      params: { difficulty },
-    });
-  }, [difficulty, recordInteraction, router]);
+  const exitToPath = useCallback(
+    (options?: { tierJustCompleted?: boolean }) => {
+      recordInteraction();
+      let pathDifficulty = difficulty;
+      if (options?.tierJustCompleted) {
+        const projectedSolved = {
+          ...progress.puzzlesSolved,
+          [difficulty]: progress.puzzlesSolved[difficulty] + 1,
+        };
+        pathDifficulty =
+          getNextIncompleteDifficulty(locale, projectedSolved, difficulty) ??
+          difficulty;
+      }
+      if (router.canGoBack()) {
+        router.back();
+        return;
+      }
+      router.replace({
+        pathname: "/puzzles",
+        params: { difficulty: pathDifficulty },
+      });
+    },
+    [difficulty, locale, progress.puzzlesSolved, recordInteraction, router],
+  );
+
+  const handleExitToPath = useCallback(() => {
+    exitToPath();
+  }, [exitToPath]);
 
   const handleChoice = useCallback(
     (index: number) => {
@@ -219,7 +237,7 @@ export default function PlayScreen() {
         },
       }));
       if (sessionIndex + 1 >= puzzles.length) {
-        exitToPath();
+        exitToPath({ tierJustCompleted: true });
         return;
       }
       router.replace({
@@ -262,8 +280,12 @@ export default function PlayScreen() {
         },
       }));
     }
-    if (isReplay || (isCorrect && sessionIndex + 1 >= puzzles.length)) {
+    if (isReplay) {
       exitToPath();
+      return;
+    }
+    if (isCorrect && sessionIndex + 1 >= puzzles.length) {
+      exitToPath({ tierJustCompleted: true });
       return;
     }
     router.replace("/");
@@ -304,7 +326,7 @@ export default function PlayScreen() {
         <View style={styles.screen}>
           <View style={styles.header}>
             <Pressable
-              onPress={exitToPath}
+              onPress={handleExitToPath}
               style={styles.backBtn}
               accessibilityRole="button"
               accessibilityLabel={t("play.a11yBack")}
@@ -336,7 +358,7 @@ export default function PlayScreen() {
       <View style={styles.screen}>
         <View style={styles.header}>
           <Pressable
-            onPress={exitToPath}
+            onPress={handleExitToPath}
             disabled={answered}
             style={[styles.backBtn, answered && styles.backBtnDisabled]}
             accessibilityRole="button"

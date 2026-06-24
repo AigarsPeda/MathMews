@@ -4,6 +4,7 @@ import easyLv from "@/assets/puzzles/lv/easy.json";
 import hardLv from "@/assets/puzzles/lv/hard.json";
 import mediumLv from "@/assets/puzzles/lv/medium.json";
 import mediumEn from "@/assets/puzzles/medium.json";
+import type { PuzzleProgress } from "@/types/game";
 import type { AppLocale } from "@/types/locale";
 import type { Puzzle, PuzzleDifficulty } from "@/types/puzzle";
 
@@ -65,4 +66,41 @@ export function canPlayPuzzleIndex(
   solvedCount: number,
 ): boolean {
   return puzzleIndex >= 0 && puzzleIndex <= solvedCount;
+}
+
+export function isDifficultyComplete(
+  locale: AppLocale,
+  difficulty: PuzzleDifficulty,
+  puzzlesSolved: PuzzleProgress,
+): boolean {
+  const total = getPuzzlesByDifficulty(locale, difficulty).length;
+  return puzzlesSolved[difficulty] >= total;
+}
+
+/** First difficulty after `after` that still has unsolved puzzles, if any. */
+export function getNextIncompleteDifficulty(
+  locale: AppLocale,
+  puzzlesSolved: PuzzleProgress,
+  after: PuzzleDifficulty,
+): PuzzleDifficulty | null {
+  const startIndex = PUZZLE_DIFFICULTIES.indexOf(after) + 1;
+  for (let i = startIndex; i < PUZZLE_DIFFICULTIES.length; i++) {
+    const difficulty = PUZZLE_DIFFICULTIES[i];
+    if (!isDifficultyComplete(locale, difficulty, puzzlesSolved)) {
+      return difficulty;
+    }
+  }
+  return null;
+}
+
+/** Prefer `requested` when it has work left; otherwise advance to the next incomplete tier. */
+export function resolvePuzzlePathDifficulty(
+  locale: AppLocale,
+  puzzlesSolved: PuzzleProgress,
+  requested: PuzzleDifficulty,
+): PuzzleDifficulty {
+  if (!isDifficultyComplete(locale, requested, puzzlesSolved)) {
+    return requested;
+  }
+  return getNextIncompleteDifficulty(locale, puzzlesSolved, requested) ?? requested;
 }

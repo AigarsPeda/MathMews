@@ -448,17 +448,38 @@ const VISUAL_EXPLANATIONS: Record<string, VisualExplanation> = {
   "hard-01": {
     puzzleId: "hard-01",
     keyframes: [
-      kf(0, "hard01", 0, { kind: "items", emoji: "🍕", count: 8 }),
-      kf(0.55, "hard01", 1, {
-        kind: "items",
+      kf(0, "hard01", 0, {
+        kind: "grid",
+        rows: 2,
+        cols: 4,
+        filled: 8,
         emoji: "🍕",
-        count: 8,
-        removed: 5,
       }),
-      kf(1, "hard01", 2, {
+      kf(0.25, "hard01", 1, {
+        kind: "groups",
+        emoji: "🍕",
+        groups: [
+          { count: 3, color: "#FF6B6B" },
+          { count: 2, color: "#4ECDC4" },
+        ],
+      }),
+      kf(0.5, "hard01", 2, {
+        kind: "compare",
+        left: { emoji: "🍕", count: 3, label: "you" },
+        right: { emoji: "🍕", count: 2, label: "friend" },
+        operator: "+",
+      }),
+      kf(0.75, "hard01", 3, {
+        kind: "grid",
+        rows: 2,
+        cols: 4,
+        filled: 3,
+        emoji: "🍕",
+      }),
+      kf(1, "hard01", 4, {
         kind: "equation",
-        lines: ["8 − 5 = ? slices", "What fraction is left? 🍕"],
-        highlightLine: 0,
+        lines: ["3 + 2 = 5 eaten", "8 − 5 = 3 left", "Fraction: 3 out of 8 → ?/8"],
+        highlightLine: 2,
       }),
     ],
   },

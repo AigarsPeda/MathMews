@@ -85,9 +85,11 @@ export const visualHelpEn = {
     s2: "Put 4 and 8 together — what number?",
   },
   hard01: {
-    s0: "The pizza has 8 slices.",
-    s1: "5 slices are eaten in total.",
-    s2: "How many slices left? What fraction of the pizza?",
+    s0: "The pizza is cut into 8 equal slices.",
+    s1: "You eat 3 slices. Your friend eats 2.",
+    s2: "Add the eaten slices: 3 + 2 = ?",
+    s3: "Subtract from the whole: 8 − 5 = 3 slices left.",
+    s4: "A fraction is part ÷ whole. 3 out of 8 → ?/8",
   },
   hard02: {
     s0: "60 miles in 2 hours.",

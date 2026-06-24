@@ -1,10 +1,10 @@
 import { PetAvatar } from "@/components/pet/PetAvatar";
+import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors, LIFE_BUY_COST } from "@/constants/game";
 import type { PetAnimationState } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ResultOverlayProps = {
   visible: boolean;
@@ -38,125 +38,98 @@ export function ResultOverlay({
   coins = 0,
 }: ResultOverlayProps) {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
-
-  if (!visible) return null;
 
   return (
-    <View style={styles.overlay}>
-      <View style={styles.sheet}>
-        <View
+    <AppBottomSheet visible={visible} onClose={onContinue}>
+      <View style={styles.card}>
+        <View style={styles.petWrap}>
+          <PetAvatar mood={petMood} width={moderateScale(120)} loop />
+        </View>
+
+        <Text
           style={[
-            styles.card,
-            { paddingBottom: insets.bottom + moderateScale(16) },
+            styles.title,
+            correct ? styles.titleSuccess : styles.titleHint,
           ]}
         >
-          <View style={styles.petWrap}>
-            <PetAvatar mood={petMood} width={moderateScale(120)} loop />
-          </View>
+          {message}
+        </Text>
+        <Text style={styles.detail}>{detail}</Text>
 
-          <Text
+        {correct && coinsEarned > 0 && (
+          <View
             style={[
-              styles.title,
-              correct ? styles.titleSuccess : styles.titleHint,
+              styles.coinRow,
+              coinType === "sparkle" && styles.sparkleCoinRow,
             ]}
           >
-            {message}
-          </Text>
-          <Text style={styles.detail}>{detail}</Text>
-
-          {correct && coinsEarned > 0 && (
-            <View
+            <Text style={styles.coinEmoji}>
+              {coinType === "sparkle" ? "✨" : "🪙"}
+            </Text>
+            <Text
               style={[
-                styles.coinRow,
-                coinType === "sparkle" && styles.sparkleCoinRow,
+                styles.coinText,
+                coinType === "sparkle" && styles.sparkleCoinText,
               ]}
             >
-              <Text style={styles.coinEmoji}>
-                {coinType === "sparkle" ? "✨" : "🪙"}
-              </Text>
-              <Text
-                style={[
-                  styles.coinText,
-                  coinType === "sparkle" && styles.sparkleCoinText,
-                ]}
-              >
-                +{coinsEarned}{" "}
-                {coinType === "sparkle"
-                  ? t("play.sparkleCoinsLabel")
-                  : t("play.coinsLabel")}
-              </Text>
-            </View>
-          )}
+              +{coinsEarned}{" "}
+              {coinType === "sparkle"
+                ? t("play.sparkleCoinsLabel")
+                : t("play.coinsLabel")}
+            </Text>
+          </View>
+        )}
 
-          <View style={styles.actions}>
+        <View style={styles.actions}>
+          <Pressable
+            style={styles.primaryButton}
+            onPress={onContinue}
+            accessibilityRole="button"
+            accessibilityLabel={
+              continueLabel ??
+              (correct ? t("play.a11yNext") : t("play.a11yTryAgain"))
+            }
+          >
+            <Text style={styles.primaryButtonText}>
+              {continueLabel ??
+                (correct ? t("play.nextPuzzle") : t("play.tryAgain"))}
+            </Text>
+          </Pressable>
+
+          {correct && onGoHome && (
             <Pressable
-              style={styles.primaryButton}
-              onPress={onContinue}
+              style={styles.secondaryButton}
+              onPress={onGoHome}
               accessibilityRole="button"
-              accessibilityLabel={
-                continueLabel ??
-                (correct ? t("play.a11yNext") : t("play.a11yTryAgain"))
-              }
+              accessibilityLabel={t("play.a11yHome")}
             >
-              <Text style={styles.primaryButtonText}>
-                {continueLabel ??
-                  (correct ? t("play.nextPuzzle") : t("play.tryAgain"))}
+              <Text style={styles.secondaryButtonText}>
+                {t("play.backToHome")}
               </Text>
             </Pressable>
+          )}
 
-            {correct && onGoHome && (
-              <Pressable
-                style={styles.secondaryButton}
-                onPress={onGoHome}
-                accessibilityRole="button"
-                accessibilityLabel={t("play.a11yHome")}
-              >
-                <Text style={styles.secondaryButtonText}>
-                  {t("play.backToHome")}
-                </Text>
-              </Pressable>
-            )}
-
-            {!correct && onBuyLife && coins >= buyLifeCost ? (
-              <Pressable
-                style={styles.buyLifeButton}
-                onPress={onBuyLife}
-                accessibilityRole="button"
-                accessibilityLabel={t("lives.a11yBuy", { cost: buyLifeCost })}
-              >
-                <Text style={styles.buyLifeButtonText}>
-                  {t("lives.buyLife", { cost: buyLifeCost })}
-                </Text>
-              </Pressable>
-            ) : null}
-          </View>
+          {!correct && onBuyLife && coins >= buyLifeCost ? (
+            <Pressable
+              style={styles.buyLifeButton}
+              onPress={onBuyLife}
+              accessibilityRole="button"
+              accessibilityLabel={t("lives.a11yBuy", { cost: buyLifeCost })}
+            >
+              <Text style={styles.buyLifeButtonText}>
+                {t("lives.buyLife", { cost: buyLifeCost })}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       </View>
-    </View>
+    </AppBottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(45, 52, 54, 0.35)",
-    justifyContent: "flex-end",
-    zIndex: 20,
-  },
-  sheet: {
-    width: "100%",
-    backgroundColor: GameColors.card,
-    borderTopLeftRadius: moderateScale(24),
-    borderTopRightRadius: moderateScale(24),
-    borderWidth: 2,
-    borderBottomWidth: 0,
-    borderColor: GameColors.cardBorder,
-    overflow: "hidden",
-  },
   card: {
     width: "100%",
-    backgroundColor: GameColors.card,
     paddingTop: moderateScale(20),
     paddingHorizontal: moderateScale(20),
     alignItems: "center",

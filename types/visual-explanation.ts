@@ -29,6 +29,7 @@ export type VisualScene =
       rows: number;
       cols: number;
       filled: number;
+      emoji?: string;
     }
   | {
       kind: "equation";

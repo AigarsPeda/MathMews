@@ -40,7 +40,10 @@
       ],
       "expo-font",
       "expo-video",
-      "expo-localization"
+      "expo-localization",
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

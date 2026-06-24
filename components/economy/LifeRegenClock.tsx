@@ -1,4 +1,5 @@
 import { GameColors, LIFE_REGEN_MINUTES } from "@/constants/game";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import { formatRegenClock, regenProgress } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
 import { useEffect, useMemo } from "react";
@@ -87,16 +88,14 @@ export function LifeRegenClock({
       </View>
 
       {showProgress ? (
-        <View
-          style={viewStyles.progressTrack}
+        <ProgressBar
+          progress={progress}
+          fillColor={GameColors.primary}
+          trackColor="rgba(255, 107, 107, 0.12)"
           accessibilityLabel={t("lives.a11yProgress", {
             percent: Math.round(progress * 100),
           })}
-        >
-          <View
-            style={[viewStyles.progressFill, { width: `${progress * 100}%` }]}
-          />
-        </View>
+        />
       ) : null}
 
       {!compact && showProgress ? (
@@ -135,18 +134,6 @@ const viewStyles = StyleSheet.create({
   digitGroup: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  progressTrack: {
-    height: moderateScale(4),
-    borderRadius: moderateScale(2),
-    backgroundColor: "rgba(255, 107, 107, 0.12)",
-    overflow: "hidden",
-    width: "100%",
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: moderateScale(2),
-    backgroundColor: GameColors.primary,
   },
 });
 

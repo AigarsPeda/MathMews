@@ -85,9 +85,11 @@ export const visualHelpLv = {
     s2: "Apvieno 4 un 8 — kāds skaitlis?",
   },
   hard01: {
-    s0: "Picai ir 8 šķēles.",
-    s1: "Kopā apēdas 5 šķēles.",
-    s2: "Cik šķēļu palika? Kāda daļa no picas?",
+    s0: "Pica ir sadalīta 8 vienādās šķēlēs.",
+    s1: "Tu apēd 3 šķēles. Tavs draugs apēd 2.",
+    s2: "Saskaiti apēstās: 3 + 2 = ?",
+    s3: "Atņem no veselās picas: 8 − 5 = 3 šķēles paliek.",
+    s4: "Daļa = daļa ÷ veselais. 3 no 8 → ?/8",
   },
   hard02: {
     s0: "60 jūdzes 2 stundās.",

@@ -1,11 +1,11 @@
 import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPlayer";
+import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors } from "@/constants/game";
 import { getVisualExplanation } from "@/constants/visual-explanations";
 import { moderateScale } from "@/utils/scale";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type VisualHelpSheetProps = {
   visible: boolean;
@@ -27,7 +27,6 @@ export function VisualHelpSheet({
   onClose,
 }: VisualHelpSheetProps) {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const explanation = getVisualExplanation(puzzleId);
   const [progress, setProgress] = useState(0);
   const [isUnlocked, setIsUnlocked] = useState(unlocked);
@@ -51,103 +50,68 @@ export function VisualHelpSheet({
   const canAfford = coins >= cost;
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        <Pressable
-          style={styles.backdrop}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={t("visualHelp.a11yClose")}
-        />
-        <View style={styles.sheet}>
-          <View
-            style={[
-              styles.card,
-              { paddingBottom: insets.bottom + moderateScale(16) },
-            ]}
-          >
-            <Text style={styles.emoji}>🎬</Text>
-            <Text style={styles.title}>{t("visualHelp.title")}</Text>
-            <Text style={styles.subtitle}>{t("visualHelp.subtitle")}</Text>
+    <AppBottomSheet visible={visible} onClose={onClose} expanded>
+      <View style={styles.card}>
+        <Text style={styles.emoji}>🎬</Text>
+        <Text style={styles.title}>{t("visualHelp.title")}</Text>
+        <Text style={styles.subtitle}>{t("visualHelp.subtitle")}</Text>
 
-            {isUnlocked ? (
-              <VisualExplanationPlayer
-                explanation={explanation}
-                progress={progress}
-                onProgressChange={setProgress}
-              />
-            ) : (
-              <View style={styles.lockCard}>
-                <Text style={styles.lockEmoji}>🔒</Text>
-                <Text style={styles.lockText}>
-                  {t("visualHelp.lockedHint")}
-                </Text>
-                <Text style={styles.lockPrice}>
-                  {t("visualHelp.unlockPrice", { cost })}
-                </Text>
-              </View>
-            )}
+        {isUnlocked ? (
+          <VisualExplanationPlayer
+            explanation={explanation}
+            progress={progress}
+            onProgressChange={setProgress}
+          />
+        ) : (
+          <View style={styles.lockCard}>
+            <Text style={styles.lockEmoji}>🔒</Text>
+            <Text style={styles.lockText}>{t("visualHelp.lockedHint")}</Text>
+            <Text style={styles.lockPrice}>
+              {t("visualHelp.unlockPrice", { cost })}
+            </Text>
+          </View>
+        )}
 
-            {!isUnlocked ? (
-              canAfford ? (
-                <Pressable
-                  style={styles.buyBtn}
-                  onPress={handlePurchase}
-                  accessibilityRole="button"
-                  accessibilityLabel={t("visualHelp.a11yUnlock", { cost })}
-                >
-                  <Text style={styles.buyBtnText}>
-                    {t("visualHelp.unlockButton", { cost })}
-                  </Text>
-                </Pressable>
-              ) : (
-                <Text style={styles.cantBuy}>
-                  {t("visualHelp.needCoins", { cost, coins })}
-                </Text>
-              )
-            ) : null}
-
+        {!isUnlocked ? (
+          canAfford ? (
             <Pressable
-              style={styles.closeBtn}
-              onPress={onClose}
+              style={styles.buyBtn}
+              onPress={handlePurchase}
               accessibilityRole="button"
-              accessibilityLabel={t("common.close")}
+              accessibilityLabel={t("visualHelp.a11yUnlock", { cost })}
             >
-              <Text style={styles.closeBtnText}>
-                {isUnlocked ? t("common.gotIt") : t("common.close")}
+              <Text style={styles.buyBtnText}>
+                {t("visualHelp.unlockButton", { cost })}
               </Text>
             </Pressable>
-          </View>
-        </View>
+          ) : (
+            <Text style={styles.cantBuy}>
+              {t("visualHelp.needCoins", { cost, coins })}
+            </Text>
+          )
+        ) : null}
+
+        <Pressable
+          style={[styles.closeBtn, isUnlocked && styles.closeBtnPrimary]}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={t("common.close")}
+        >
+          <Text
+            style={[
+              styles.closeBtnText,
+              isUnlocked && styles.closeBtnTextPrimary,
+            ]}
+          >
+            {isUnlocked ? t("common.gotIt") : t("common.close")}
+          </Text>
+        </Pressable>
       </View>
-    </Modal>
+    </AppBottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(45, 52, 54, 0.35)",
-  },
-  sheet: {
-    backgroundColor: GameColors.card,
-    borderTopLeftRadius: moderateScale(24),
-    borderTopRightRadius: moderateScale(24),
-    borderWidth: 2,
-    borderBottomWidth: 0,
-    borderColor: GameColors.cardBorder,
-    overflow: "hidden",
-    maxHeight: "92%",
-  },
   card: {
     paddingTop: moderateScale(20),
     paddingHorizontal: moderateScale(20),
@@ -176,8 +140,6 @@ const styles = StyleSheet.create({
     gap: moderateScale(8),
     backgroundColor: GameColors.background,
     borderRadius: moderateScale(16),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
     padding: moderateScale(20),
   },
   lockEmoji: {
@@ -218,15 +180,20 @@ const styles = StyleSheet.create({
     width: "100%",
     minHeight: moderateScale(48),
     borderRadius: moderateScale(14),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
     alignItems: "center",
     justifyContent: "center",
     marginTop: moderateScale(4),
   },
+  closeBtnPrimary: {
+    backgroundColor: GameColors.primary,
+  },
   closeBtnText: {
     fontSize: moderateScale(16),
     fontWeight: "700",
-    color: GameColors.text,
+    color: GameColors.textMuted,
+  },
+  closeBtnTextPrimary: {
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
 });

@@ -1,4 +1,6 @@
 import { GameColors, getPuzzleCoinReward } from "@/constants/game";
+import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import {
   useDifficultyLabel,
   useDifficultyLabelLower,
@@ -6,8 +8,7 @@ import {
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type PuzzlePathProgressSheetProps = {
   visible: boolean;
@@ -27,91 +28,70 @@ export function PuzzlePathProgressSheet({
   const { t } = useTranslation();
   const difficultyLabel = useDifficultyLabel(difficulty);
   const difficultyLabelLower = useDifficultyLabelLower(difficulty);
-  const insets = useSafeAreaInsets();
   const clampedSolved = Math.min(solvedCount, totalCount);
-  const progressPercent =
-    totalCount > 0 ? Math.min(100, (clampedSolved / totalCount) * 100) : 0;
+  const progress =
+    totalCount > 0 ? Math.min(1, clampedSolved / totalCount) : 0;
   const isComplete = clampedSolved >= totalCount && totalCount > 0;
   const firstClear = getPuzzleCoinReward(difficulty);
   const replay = getPuzzleCoinReward(difficulty, true);
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        <Pressable
-          style={styles.backdrop}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={t("progress.a11yClose")}
-        />
-        <View style={styles.sheet}>
-          <View
-            style={[
-              styles.card,
-              { paddingBottom: insets.bottom + moderateScale(16) },
-            ]}
-          >
-            <Text style={styles.emoji}>{isComplete ? "🎉" : "🥜"}</Text>
-            <Text style={styles.title}>
-              {t("progress.pathTitle", { difficulty: difficultyLabel })}
-            </Text>
-            <Text style={styles.count}>
-              {t("progress.countOf", {
-                solved: clampedSolved,
-                total: totalCount,
+    <AppBottomSheet visible={visible} onClose={onClose}>
+      <View style={styles.card}>
+        <Text style={styles.emoji}>{isComplete ? "🎉" : "🥜"}</Text>
+        <Text style={styles.title}>
+          {t("progress.pathTitle", { difficulty: difficultyLabel })}
+        </Text>
+        <Text style={styles.count}>
+          {t("progress.countOf", {
+            solved: clampedSolved,
+            total: totalCount,
+          })}
+        </Text>
+        <Text style={styles.subtitle}>
+          {isComplete
+            ? t("progress.allNutsCracked", {
+                difficulty: difficultyLabelLower,
+              })
+            : t("progress.nutsCracked", {
+                difficulty: difficultyLabelLower,
               })}
-            </Text>
-            <Text style={styles.subtitle}>
-              {isComplete
-                ? t("progress.allNutsCracked", {
-                    difficulty: difficultyLabelLower,
-                  })
-                : t("progress.nutsCracked", {
-                    difficulty: difficultyLabelLower,
-                  })}
-            </Text>
+        </Text>
 
-            <View style={styles.progressTrack}>
-              <View
-                style={[styles.progressFill, { width: `${progressPercent}%` }]}
-              />
-            </View>
-            <Text style={styles.percent}>
-              {t("common.percent", { value: Math.round(progressPercent) })}
+        <ProgressBar
+          progress={progress}
+          fillColor={GameColors.success}
+          style={styles.progressBar}
+        />
+        <Text style={styles.percent}>
+          {t("common.percent", { value: Math.round(progress * 100) })}
+        </Text>
+
+        <View style={styles.rewards}>
+          <View style={styles.rewardRow}>
+            <Text style={styles.rewardEmoji}>🪙</Text>
+            <Text style={styles.rewardText}>
+              {t("progress.coinsPerNut", { count: firstClear })}
             </Text>
-
-            <View style={styles.rewards}>
-              <View style={styles.rewardRow}>
-                <Text style={styles.rewardEmoji}>🪙</Text>
-                <Text style={styles.rewardText}>
-                  {t("progress.coinsPerNut", { count: firstClear })}
-                </Text>
-              </View>
-              <View style={styles.rewardRow}>
-                <Text style={styles.rewardEmoji}>✨</Text>
-                <Text style={styles.rewardText}>
-                  {t("progress.sparkleReplay", { count: replay })}
-                </Text>
-              </View>
-            </View>
-
-            <Pressable
-              style={styles.closeBtn}
-              onPress={onClose}
-              accessibilityRole="button"
-              accessibilityLabel={t("progress.a11yGotIt")}
-            >
-              <Text style={styles.closeBtnText}>{t("common.gotIt")}</Text>
-            </Pressable>
+          </View>
+          <View style={styles.rewardRow}>
+            <Text style={styles.rewardEmoji}>✨</Text>
+            <Text style={styles.rewardText}>
+              {t("progress.sparkleReplay", { count: replay })}
+            </Text>
           </View>
         </View>
+
+        <Pressable
+          style={styles.closeBtn}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={t("progress.a11yGotIt")}
+        >
+          <Text style={styles.closeBtnText}>{t("common.gotIt")}</Text>
+        </Pressable>
       </View>
-    </Modal>
+    </AppBottomSheet>
   );
 }
 
@@ -132,8 +112,8 @@ export function PuzzlePathProgressChip({
   const { t } = useTranslation();
   const difficultyLabelLower = useDifficultyLabelLower(difficulty);
   const clampedSolved = Math.min(solvedCount, totalCount);
-  const progressPercent =
-    totalCount > 0 ? Math.min(100, (clampedSolved / totalCount) * 100) : 0;
+  const progress =
+    totalCount > 0 ? Math.min(1, clampedSolved / totalCount) : 0;
 
   return (
     <Pressable
@@ -156,31 +136,12 @@ export function PuzzlePathProgressChip({
         </Text>
         <Text style={styles.chipChevron}>ⓘ</Text>
       </View>
-      <View style={styles.chipTrack}>
-        <View style={[styles.chipFill, { width: `${progressPercent}%` }]} />
-      </View>
+      <ProgressBar progress={progress} fillColor={GameColors.success} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(45, 52, 54, 0.35)",
-  },
-  sheet: {
-    backgroundColor: GameColors.card,
-    borderTopLeftRadius: moderateScale(24),
-    borderTopRightRadius: moderateScale(24),
-    borderWidth: 2,
-    borderBottomWidth: 0,
-    borderColor: GameColors.cardBorder,
-    overflow: "hidden",
-  },
   card: {
     paddingTop: moderateScale(20),
     paddingHorizontal: moderateScale(20),
@@ -209,18 +170,8 @@ const styles = StyleSheet.create({
     color: GameColors.text,
     textAlign: "center",
   },
-  progressTrack: {
-    width: "100%",
-    height: moderateScale(10),
-    borderRadius: moderateScale(5),
-    backgroundColor: GameColors.background,
-    overflow: "hidden",
+  progressBar: {
     marginTop: moderateScale(4),
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: moderateScale(5),
-    backgroundColor: GameColors.success,
   },
   percent: {
     fontSize: moderateScale(13),
@@ -231,10 +182,6 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: moderateScale(8),
     marginTop: moderateScale(4),
-    paddingVertical: moderateScale(10),
-    paddingHorizontal: moderateScale(12),
-    backgroundColor: GameColors.background,
-    borderRadius: moderateScale(12),
   },
   rewardRow: {
     flexDirection: "row",
@@ -289,16 +236,5 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     fontWeight: "700",
     color: GameColors.secondary,
-  },
-  chipTrack: {
-    height: moderateScale(5),
-    borderRadius: moderateScale(3),
-    backgroundColor: GameColors.background,
-    overflow: "hidden",
-  },
-  chipFill: {
-    height: "100%",
-    borderRadius: moderateScale(3),
-    backgroundColor: GameColors.success,
   },
 });

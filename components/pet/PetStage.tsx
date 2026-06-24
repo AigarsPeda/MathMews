@@ -1,4 +1,5 @@
 import { PetAvatar } from "@/components/pet/PetAvatar";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import { GameColors } from "@/constants/game";
 import type { PetPlaybackState } from "@/hooks/use-pet-playback";
 import type { PetStats } from "@/types/game";
@@ -43,14 +44,11 @@ function StatBar({
           <Text style={styles.statLabel}>{label}</Text>
           <Text style={styles.statValue}>{clamped}%</Text>
         </View>
-        <View style={styles.statTrack}>
-          <View
-            style={[
-              styles.statFill,
-              { width: `${clamped}%`, backgroundColor: color },
-            ]}
-          />
-        </View>
+        <ProgressBar
+          progress={clamped / 100}
+          fillColor={color}
+          trackColor={GameColors.card}
+        />
       </View>
     </View>
   );
@@ -244,17 +242,5 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14),
     fontWeight: "700",
     color: GameColors.textMuted,
-  },
-  statTrack: {
-    height: moderateScale(12),
-    backgroundColor: GameColors.card,
-    borderRadius: moderateScale(6),
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: GameColors.cardBorder,
-  },
-  statFill: {
-    height: "100%",
-    borderRadius: moderateScale(6),
   },
 });

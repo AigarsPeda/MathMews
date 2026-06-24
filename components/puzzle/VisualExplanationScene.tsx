@@ -54,7 +54,10 @@ function GroupsScene({
       {groups.map((group, groupIndex) => (
         <View
           key={`group-${groupIndex}`}
-          style={[styles.groupCard, { borderColor: group.color }]}
+          style={[
+            styles.groupCard,
+            { borderLeftWidth: 3, borderLeftColor: group.color },
+          ]}
         >
           <View style={styles.groupItems}>
             {Array.from({ length: Math.min(group.count, 8) }, (_, index) => (
@@ -158,28 +161,44 @@ function GridScene({
   rows,
   cols,
   filled,
+  emoji = "🧸",
 }: {
   rows: number;
   cols: number;
   filled: number;
+  emoji?: string;
 }) {
   const total = rows * cols;
+  const gridLabel =
+    emoji === "🍕"
+      ? `${filled} of ${total} slices left`
+      : `${rows} × ${cols} = ${total}`;
+
   return (
     <View style={styles.gridWrap}>
       {Array.from({ length: total }, (_, index) => {
-        const isFilled = index < filled;
+        const isRemaining = index < filled;
         return (
           <View
             key={`cell-${index}`}
-            style={[styles.gridCell, isFilled && styles.gridCellFilled]}
+            style={[
+              styles.gridCell,
+              isRemaining && styles.gridCellFilled,
+              !isRemaining && styles.gridCellEaten,
+            ]}
           >
-            <Text style={styles.gridEmoji}>{isFilled ? "🧸" : ""}</Text>
+            <Text
+              style={[
+                styles.gridEmoji,
+                !isRemaining && styles.gridEmojiEaten,
+              ]}
+            >
+              {emoji}
+            </Text>
           </View>
         );
       })}
-      <Text style={styles.gridLabel}>
-        {rows} × {cols} = {total}
-      </Text>
+      <Text style={styles.gridLabel}>{gridLabel}</Text>
     </View>
   );
 }
@@ -270,7 +289,12 @@ export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
         />
       ) : null}
       {scene.kind === "grid" ? (
-        <GridScene rows={scene.rows} cols={scene.cols} filled={scene.filled} />
+        <GridScene
+          rows={scene.rows}
+          cols={scene.cols}
+          filled={scene.filled}
+          emoji={scene.emoji}
+        />
       ) : null}
       {scene.kind === "equation" ? (
         <EquationScene
@@ -296,10 +320,8 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFF8F0",
-    borderRadius: moderateScale(20),
-    borderWidth: 2,
-    borderColor: GameColors.secondary,
+    backgroundColor: GameColors.background,
+    borderRadius: moderateScale(16),
     padding: moderateScale(16),
   },
   itemsWrap: {
@@ -336,8 +358,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   groupCard: {
-    borderWidth: 3,
-    borderRadius: moderateScale(16),
+    borderRadius: moderateScale(12),
     padding: moderateScale(10),
     alignItems: "center",
     gap: moderateScale(6),
@@ -367,7 +388,7 @@ const styles = StyleSheet.create({
   numberLineTrack: {
     width: "90%",
     height: moderateScale(4),
-    backgroundColor: GameColors.secondary,
+    backgroundColor: "#E8ECEF",
     borderRadius: moderateScale(2),
   },
   numberMarkWrap: {
@@ -404,11 +425,7 @@ const styles = StyleSheet.create({
   jumpLabel: {
     fontSize: moderateScale(18),
     fontWeight: "800",
-    color: GameColors.secondary,
-    backgroundColor: "#E8FAF8",
-    paddingHorizontal: moderateScale(12),
-    paddingVertical: moderateScale(4),
-    borderRadius: moderateScale(12),
+    color: GameColors.text,
   },
   sequenceRow: {
     flexDirection: "row",
@@ -425,14 +442,10 @@ const styles = StyleSheet.create({
     minWidth: moderateScale(44),
     minHeight: moderateScale(44),
     borderRadius: moderateScale(12),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    backgroundColor: GameColors.card,
     alignItems: "center",
     justifyContent: "center",
   },
   sequenceCellHighlight: {
-    borderColor: GameColors.primary,
     backgroundColor: "#FFF0EE",
   },
   sequenceValue: {
@@ -461,18 +474,21 @@ const styles = StyleSheet.create({
     width: moderateScale(36),
     height: moderateScale(36),
     borderRadius: moderateScale(8),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    backgroundColor: GameColors.card,
     alignItems: "center",
     justifyContent: "center",
   },
   gridCellFilled: {
-    borderColor: GameColors.secondary,
-    backgroundColor: "#E8FAF8",
+    backgroundColor: GameColors.card,
+  },
+  gridCellEaten: {
+    backgroundColor: "transparent",
   },
   gridEmoji: {
     fontSize: moderateScale(18),
+  },
+  gridEmojiEaten: {
+    opacity: 0.2,
+    textDecorationLine: "line-through",
   },
   gridLabel: {
     width: "100%",
@@ -507,12 +523,8 @@ const styles = StyleSheet.create({
   compareSide: {
     alignItems: "center",
     gap: moderateScale(4),
-    backgroundColor: GameColors.card,
-    borderRadius: moderateScale(14),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    padding: moderateScale(10),
-    minWidth: moderateScale(72),
+    paddingHorizontal: moderateScale(8),
+    minWidth: moderateScale(64),
   },
   compareEmoji: {
     fontSize: moderateScale(32),
@@ -525,7 +537,7 @@ const styles = StyleSheet.create({
   compareOperator: {
     fontSize: moderateScale(28),
     fontWeight: "800",
-    color: GameColors.secondary,
+    color: GameColors.textMuted,
   },
   compareResult: {
     fontSize: moderateScale(28),

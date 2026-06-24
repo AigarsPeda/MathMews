@@ -16,9 +16,9 @@ export type PetAnimationState = PetMood | PetReaction;
 export type PetType = "dog" | "cat";
 
 export type PetStats = {
+  level: number;
   hunger: number;
   happiness: number;
-  level: number;
 };
 
 export type PetProfile = {

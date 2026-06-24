@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(12),
   },
   videoLayer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: GameColors.petVideoBg,
   },
 });
