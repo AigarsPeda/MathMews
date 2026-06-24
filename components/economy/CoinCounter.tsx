@@ -1,8 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
-
-import { GameColors } from '@/constants/game';
-import { moderateScale } from '@/utils/scale';
+import { GameColors } from "@/constants/game";
+import { moderateScale } from "@/utils/scale";
+import { useTranslation } from "react-i18next";
+import { StyleSheet, Text, View } from "react-native";
 
 type CoinCounterProps = {
   coins: number;
@@ -22,7 +21,7 @@ export function CoinCounter({ coins, streak = 0 }: CoinCounterProps) {
         <View style={[styles.pill, styles.streakPill]}>
           <Text style={styles.streakEmoji}>🔥</Text>
           <Text style={styles.streakValue}>
-            {t('economy.streakDay', { count: streak })}
+            {t("economy.streakDay", { count: streak })}
           </Text>
         </View>
       )}
@@ -32,13 +31,13 @@ export function CoinCounter({ coins, streak = 0 }: CoinCounterProps) {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(10),
   },
   pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(6),
     backgroundColor: GameColors.card,
     borderRadius: moderateScale(20),
@@ -52,9 +51,9 @@ const styles = StyleSheet.create({
   },
   coinValue: {
     fontSize: moderateScale(18),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.coinText,
-    fontVariant: ['tabular-nums'],
+    fontVariant: ["tabular-nums"],
   },
   streakPill: {
     borderColor: GameColors.primary,
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
   },
   streakValue: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
   },
 });

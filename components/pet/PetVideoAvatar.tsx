@@ -1,14 +1,14 @@
-import { GameColors } from '@/constants/game';
-import type { PetVideoKey } from '@/constants/pet-videos';
+import { GameColors } from "@/constants/game";
+import type { PetVideoKey } from "@/constants/pet-videos";
 import {
   PET_VIDEO_KEYS,
   usePetVideoPlayers,
-} from '@/hooks/use-pet-video-players';
-import type { PetVideoSegment } from '@/types/pet-animation';
-import { moderateScale } from '@/utils/scale';
-import { VideoView } from 'expo-video';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+} from "@/contexts/PetVideoProvider";
+import type { PetVideoSegment } from "@/types/pet-animation";
+import { moderateScale } from "@/utils/scale";
+import { VideoView } from "expo-video";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 const DEFAULT_SIZE = 200;
 const SEGMENT_POLL_MS = 80;
@@ -35,9 +35,9 @@ function segmentToken(steps: PetVideoSegment[]) {
   return steps
     .map(
       (step, index) =>
-        `${step.videoKey}:${step.startMs ?? 0}:${step.endMs ?? 'end'}:${step.reverse ? 'rev' : 'fwd'}:${step.loop ? 'loop' : 'once'}:${index}`,
+        `${step.videoKey}:${step.startMs ?? 0}:${step.endMs ?? "end"}:${step.reverse ? "rev" : "fwd"}:${step.loop ? "loop" : "once"}:${index}`,
     )
-    .join('|');
+    .join("|");
 }
 
 export function PetVideoAvatar({
@@ -58,7 +58,7 @@ export function PetVideoAvatar({
   >(() => {});
 
   const initialKey =
-    scenarioSteps?.[0]?.videoKey ?? segment?.videoKey ?? 'idle';
+    scenarioSteps?.[0]?.videoKey ?? segment?.videoKey ?? "idle";
   const activeKeyRef = useRef<PetVideoKey>(initialKey);
   const [layers, setLayers] = useState<LayerStack>({
     under: null,
@@ -69,7 +69,7 @@ export function PetVideoAvatar({
   const segmentTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stepIndexRef = useRef(0);
   const stepsRef = useRef<PetVideoSegment[]>([]);
-  const playbackTokenRef = useRef('');
+  const playbackTokenRef = useRef("");
   const pendingRevealRef = useRef<{
     topKey: PetVideoKey;
     underKey: PetVideoKey | null;
@@ -348,7 +348,7 @@ export function PetVideoAvatar({
 
   useEffect(() => {
     const subscriptions = PET_VIDEO_KEYS.map((key) =>
-      players[key].addListener('playToEnd', () => {
+      players[key].addListener("playToEnd", () => {
         if (activeKeyRef.current !== key) return;
 
         const steps = stepsRef.current;
@@ -412,11 +412,9 @@ export function PetVideoAvatar({
             contentFit="contain"
             nativeControls={false}
             useExoShutter={false}
-            onFirstFrameRender={
-              isTop ? () => handleFirstFrame(key) : undefined
-            }
-            {...(Platform.OS === 'android'
-              ? { surfaceType: 'textureView' as const }
+            onFirstFrameRender={isTop ? () => handleFirstFrame(key) : undefined}
+            {...(Platform.OS === "android"
+              ? { surfaceType: "textureView" as const }
               : {})}
           />
         );
@@ -442,13 +440,13 @@ export function PetVideoAvatar({
 
 const styles = StyleSheet.create({
   pressable: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
     backgroundColor: GameColors.petVideoBg,
     borderRadius: moderateScale(12),
   },

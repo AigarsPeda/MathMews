@@ -1,10 +1,9 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import {
   isAppLocale,
   LOCALE_STORAGE_KEY,
   type AppLocale,
-} from '@/types/locale';
+} from "@/types/locale";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export async function loadSavedLocale(): Promise<AppLocale | null> {
   const raw = await AsyncStorage.getItem(LOCALE_STORAGE_KEY);

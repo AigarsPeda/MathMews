@@ -1,8 +1,8 @@
 import { GameColors } from "@/constants/game";
 import type { Puzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { StyleSheet, Text, View } from "react-native";
 
 type PuzzleCardProps = {
   puzzle: Puzzle;
@@ -10,7 +10,11 @@ type PuzzleCardProps = {
   coinReward?: number;
 };
 
-export function PuzzleCard({ puzzle, puzzleNumber, coinReward }: PuzzleCardProps) {
+export function PuzzleCard({
+  puzzle,
+  puzzleNumber,
+  coinReward,
+}: PuzzleCardProps) {
   const { t } = useTranslation();
 
   return (
@@ -18,7 +22,7 @@ export function PuzzleCard({ puzzle, puzzleNumber, coinReward }: PuzzleCardProps
       <View style={styles.badgeRow}>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>
-            {t('play.hardNut', { number: puzzleNumber })}
+            {t("play.hardNut", { number: puzzleNumber })}
           </Text>
         </View>
         {coinReward !== undefined ? (
@@ -42,13 +46,13 @@ const styles = StyleSheet.create({
     gap: moderateScale(12),
   },
   badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: moderateScale(8),
   },
   badge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     backgroundColor: GameColors.background,
     borderRadius: moderateScale(12),
     paddingVertical: moderateScale(4),
@@ -56,7 +60,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: moderateScale(14),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
   },
   coinBadge: {
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
   },
   coinBadgeText: {
     fontSize: moderateScale(14),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.coinText,
   },
   question: {

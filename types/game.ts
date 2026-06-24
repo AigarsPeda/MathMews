@@ -1,19 +1,19 @@
 export type PetMood =
-  | 'idle'
-  | 'excited'
-  | 'dancing'
-  | 'eating'
-  | 'angry'
-  | 'sad'
-  | 'fallingAsleep'
-  | 'sleeping';
+  | "idle"
+  | "excited"
+  | "dancing"
+  | "eating"
+  | "angry"
+  | "sad"
+  | "fallingAsleep"
+  | "sleeping";
 
 /** Short puzzle / reward clips — not derived from pet stats. */
-export type PetReaction = 'correct' | 'coinCatch';
+export type PetReaction = "correct" | "coinCatch";
 
 export type PetAnimationState = PetMood | PetReaction;
 
-export type PetType = 'dog' | 'cat';
+export type PetType = "dog" | "cat";
 
 export type PetStats = {
   hunger: number;

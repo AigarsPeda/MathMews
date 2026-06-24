@@ -522,13 +522,13 @@ const styles = StyleSheet.create({
     gap: moderateScale(12),
   },
   visualHelpBtn: {
-    backgroundColor: '#F3EEFF',
+    backgroundColor: "#F3EEFF",
     borderRadius: moderateScale(16),
     borderWidth: 2,
-    borderColor: '#C9B6FF',
+    borderColor: "#C9B6FF",
     paddingVertical: moderateScale(12),
     paddingHorizontal: moderateScale(14),
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(2),
   },
   visualHelpBtnDisabled: {
@@ -536,12 +536,12 @@ const styles = StyleSheet.create({
   },
   visualHelpBtnText: {
     fontSize: moderateScale(16),
-    fontWeight: '800',
-    color: '#6B4FCF',
+    fontWeight: "800",
+    color: "#6B4FCF",
   },
   visualHelpBtnHint: {
     fontSize: moderateScale(13),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.coinText,
   },
 });

@@ -1,16 +1,16 @@
-import { GameColors } from '@/constants/game';
-import { useLocale } from '@/contexts/LocaleProvider';
-import { APP_LOCALES, type AppLocale } from '@/types/locale';
-import { moderateScale } from '@/utils/scale';
-import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
-import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { GameColors } from "@/constants/game";
+import { useLocale } from "@/contexts/LocaleProvider";
+import { APP_LOCALES, type AppLocale } from "@/types/locale";
+import { moderateScale } from "@/utils/scale";
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function triggerHaptic() {
-  if (Platform.OS !== 'web') {
+  if (Platform.OS !== "web") {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 }
@@ -26,7 +26,7 @@ export default function SettingsScreen() {
       router.back();
       return;
     }
-    router.replace('/');
+    router.replace("/");
   }, [router]);
 
   const handleSelectLocale = useCallback(
@@ -39,22 +39,22 @@ export default function SettingsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.screen}>
         <Pressable
           onPress={handleBack}
           style={styles.backBtn}
           accessibilityRole="button"
-          accessibilityLabel={t('common.back')}
+          accessibilityLabel={t("common.back")}
         >
-          <Text style={styles.backText}>{t('common.back')}</Text>
+          <Text style={styles.backText}>{t("common.back")}</Text>
         </Pressable>
 
-        <Text style={styles.title}>{t('settings.title')}</Text>
+        <Text style={styles.title}>{t("settings.title")}</Text>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
-          <Text style={styles.sectionHint}>{t('settings.languageHint')}</Text>
+          <Text style={styles.sectionTitle}>{t("settings.language")}</Text>
+          <Text style={styles.sectionHint}>{t("settings.languageHint")}</Text>
 
           <View style={styles.options}>
             {APP_LOCALES.map((code) => {
@@ -100,17 +100,17 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     minHeight: moderateScale(48),
-    justifyContent: 'center',
-    alignSelf: 'flex-start',
+    justifyContent: "center",
+    alignSelf: "flex-start",
   },
   backText: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
   },
   title: {
     fontSize: moderateScale(28),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
   },
   section: {
@@ -123,12 +123,12 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: moderateScale(18),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
   },
   sectionHint: {
     fontSize: moderateScale(14),
-    fontWeight: '500',
+    fontWeight: "500",
     color: GameColors.textMuted,
     lineHeight: moderateScale(20),
   },
@@ -137,9 +137,9 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(4),
   },
   option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     minHeight: moderateScale(52),
     borderRadius: moderateScale(14),
     borderWidth: 2,
@@ -149,11 +149,11 @@ const styles = StyleSheet.create({
   },
   optionSelected: {
     borderColor: GameColors.secondary,
-    backgroundColor: '#E8FAF8',
+    backgroundColor: "#E8FAF8",
   },
   optionText: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
   },
   optionTextSelected: {
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   },
   check: {
     fontSize: moderateScale(18),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.secondary,
   },
 });

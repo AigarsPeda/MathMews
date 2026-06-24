@@ -3,15 +3,20 @@ import {
   DEFAULT_PROGRESS,
   DEFAULT_WALLET,
 } from "@/constants/game";
-import type { LivesState, PetProfile, Progress, PuzzleProgress } from "@/types/game";
+import { resolveAsleepOnLoad } from "@/hooks/use-pet-mood";
+import type {
+  LivesState,
+  PetProfile,
+  Progress,
+  PuzzleProgress,
+} from "@/types/game";
 import {
   GAME_SAVE_STORAGE_KEY,
   GAME_SAVE_VERSION,
   type GameSave,
 } from "@/types/save";
-import { applyPetTimeDecay } from "@/utils/pet-care";
-import { resolveAsleepOnLoad } from "@/hooks/use-pet-mood";
 import { applyLifeRegen, createDefaultLives } from "@/utils/lives";
+import { applyPetTimeDecay } from "@/utils/pet-care";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function createDefaultGameSave(): GameSave {
@@ -46,24 +51,26 @@ function normalizePuzzleProgress(value: unknown): PuzzleProgress {
 function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
   const stats = isRecord(pet.stats) ? pet.stats : {};
   return {
-    type: pet.type === 'cat' ? 'cat' : 'dog',
-    name: typeof pet.name === 'string' ? pet.name : DEFAULT_PET.name,
+    type: pet.type === "cat" ? "cat" : "dog",
+    name: typeof pet.name === "string" ? pet.name : DEFAULT_PET.name,
     stats: {
       hunger:
-        typeof stats.hunger === 'number' ? stats.hunger : DEFAULT_PET.stats.hunger,
+        typeof stats.hunger === "number"
+          ? stats.hunger
+          : DEFAULT_PET.stats.hunger,
       happiness:
-        typeof stats.happiness === 'number'
+        typeof stats.happiness === "number"
           ? stats.happiness
           : DEFAULT_PET.stats.happiness,
       level:
-        typeof stats.level === 'number' ? stats.level : DEFAULT_PET.stats.level,
+        typeof stats.level === "number" ? stats.level : DEFAULT_PET.stats.level,
     },
     lastCareAt:
-      typeof pet.lastCareAt === 'number' ? pet.lastCareAt : Date.now(),
+      typeof pet.lastCareAt === "number" ? pet.lastCareAt : Date.now(),
     lastInteractionAt:
-      typeof pet.lastInteractionAt === 'number'
+      typeof pet.lastInteractionAt === "number"
         ? pet.lastInteractionAt
-        : typeof pet.lastCareAt === 'number'
+        : typeof pet.lastCareAt === "number"
           ? pet.lastCareAt
           : Date.now(),
     isAsleep: pet.isAsleep === true,
@@ -89,7 +96,9 @@ function normalizeLives(value: unknown): LivesState {
   );
 }
 
-function parseGameSave(raw: string): { save: GameSave; awayMsAtSessionStart: number } | null {
+function parseGameSave(
+  raw: string,
+): { save: GameSave; awayMsAtSessionStart: number } | null {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!isRecord(parsed)) return null;
@@ -104,15 +113,19 @@ function parseGameSave(raw: string): { save: GameSave; awayMsAtSessionStart: num
     if (!isRecord(parsed.progress)) return null;
     if (typeof parsed.progress.streak !== "number") return null;
 
-    const puzzlesSolved = normalizePuzzleProgress(parsed.progress.puzzlesSolved);
+    const puzzlesSolved = normalizePuzzleProgress(
+      parsed.progress.puzzlesSolved,
+    );
     const lives = normalizeLives(parsed.progress.lives);
-    const visualHelpsUnlocked = Array.isArray(parsed.progress.visualHelpsUnlocked)
+    const visualHelpsUnlocked = Array.isArray(
+      parsed.progress.visualHelpsUnlocked,
+    )
       ? parsed.progress.visualHelpsUnlocked.filter(
-          (id): id is string => typeof id === 'string',
+          (id): id is string => typeof id === "string",
         )
       : [];
     const rawLastCareAt =
-      isRecord(parsed.pet) && typeof parsed.pet.lastCareAt === 'number'
+      isRecord(parsed.pet) && typeof parsed.pet.lastCareAt === "number"
         ? parsed.pet.lastCareAt
         : Date.now();
     const awayMs = Math.max(0, Date.now() - rawLastCareAt);

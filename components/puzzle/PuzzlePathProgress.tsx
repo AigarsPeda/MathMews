@@ -1,10 +1,13 @@
-import { GameColors, getPuzzleCoinReward } from '@/constants/game';
-import { useDifficultyLabel, useDifficultyLabelLower } from '@/hooks/use-difficulty-label';
-import type { PuzzleDifficulty } from '@/types/puzzle';
-import { moderateScale } from '@/utils/scale';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GameColors, getPuzzleCoinReward } from "@/constants/game";
+import {
+  useDifficultyLabel,
+  useDifficultyLabelLower,
+} from "@/hooks/use-difficulty-label";
+import type { PuzzleDifficulty } from "@/types/puzzle";
+import { moderateScale } from "@/utils/scale";
+import { useTranslation } from "react-i18next";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type PuzzlePathProgressSheetProps = {
   visible: boolean;
@@ -44,7 +47,7 @@ export function PuzzlePathProgressSheet({
           style={styles.backdrop}
           onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel={t('progress.a11yClose')}
+          accessibilityLabel={t("progress.a11yClose")}
         />
         <View style={styles.sheet}>
           <View
@@ -53,19 +56,22 @@ export function PuzzlePathProgressSheet({
               { paddingBottom: insets.bottom + moderateScale(16) },
             ]}
           >
-            <Text style={styles.emoji}>{isComplete ? '🎉' : '🥜'}</Text>
+            <Text style={styles.emoji}>{isComplete ? "🎉" : "🥜"}</Text>
             <Text style={styles.title}>
-              {t('progress.pathTitle', { difficulty: difficultyLabel })}
+              {t("progress.pathTitle", { difficulty: difficultyLabel })}
             </Text>
             <Text style={styles.count}>
-              {t('progress.countOf', { solved: clampedSolved, total: totalCount })}
+              {t("progress.countOf", {
+                solved: clampedSolved,
+                total: totalCount,
+              })}
             </Text>
             <Text style={styles.subtitle}>
               {isComplete
-                ? t('progress.allNutsCracked', {
+                ? t("progress.allNutsCracked", {
                     difficulty: difficultyLabelLower,
                   })
-                : t('progress.nutsCracked', {
+                : t("progress.nutsCracked", {
                     difficulty: difficultyLabelLower,
                   })}
             </Text>
@@ -76,20 +82,20 @@ export function PuzzlePathProgressSheet({
               />
             </View>
             <Text style={styles.percent}>
-              {t('common.percent', { value: Math.round(progressPercent) })}
+              {t("common.percent", { value: Math.round(progressPercent) })}
             </Text>
 
             <View style={styles.rewards}>
               <View style={styles.rewardRow}>
                 <Text style={styles.rewardEmoji}>🪙</Text>
                 <Text style={styles.rewardText}>
-                  {t('progress.coinsPerNut', { count: firstClear })}
+                  {t("progress.coinsPerNut", { count: firstClear })}
                 </Text>
               </View>
               <View style={styles.rewardRow}>
                 <Text style={styles.rewardEmoji}>✨</Text>
                 <Text style={styles.rewardText}>
-                  {t('progress.sparkleReplay', { count: replay })}
+                  {t("progress.sparkleReplay", { count: replay })}
                 </Text>
               </View>
             </View>
@@ -98,9 +104,9 @@ export function PuzzlePathProgressSheet({
               style={styles.closeBtn}
               onPress={onClose}
               accessibilityRole="button"
-              accessibilityLabel={t('progress.a11yGotIt')}
+              accessibilityLabel={t("progress.a11yGotIt")}
             >
-              <Text style={styles.closeBtnText}>{t('common.gotIt')}</Text>
+              <Text style={styles.closeBtnText}>{t("common.gotIt")}</Text>
             </Pressable>
           </View>
         </View>
@@ -134,7 +140,7 @@ export function PuzzlePathProgressChip({
       style={styles.chip}
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={t('progress.a11yChip', {
+      accessibilityLabel={t("progress.a11yChip", {
         solved: clampedSolved,
         total: totalCount,
         difficulty: difficultyLabelLower,
@@ -142,7 +148,7 @@ export function PuzzlePathProgressChip({
     >
       <View style={styles.chipRow}>
         <Text style={styles.chipText}>
-          {t('progress.chip', {
+          {t("progress.chip", {
             solved: clampedSolved,
             total: totalCount,
             difficulty: difficultyLabelLower,
@@ -151,9 +157,7 @@ export function PuzzlePathProgressChip({
         <Text style={styles.chipChevron}>ⓘ</Text>
       </View>
       <View style={styles.chipTrack}>
-        <View
-          style={[styles.chipFill, { width: `${progressPercent}%` }]}
-        />
+        <View style={[styles.chipFill, { width: `${progressPercent}%` }]} />
       </View>
     </Pressable>
   );
@@ -162,11 +166,11 @@ export function PuzzlePathProgressChip({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(45, 52, 54, 0.35)',
+    backgroundColor: "rgba(45, 52, 54, 0.35)",
   },
   sheet: {
     backgroundColor: GameColors.card,
@@ -175,12 +179,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderBottomWidth: 0,
     borderColor: GameColors.cardBorder,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   card: {
     paddingTop: moderateScale(20),
     paddingHorizontal: moderateScale(20),
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(8),
   },
   emoji: {
@@ -188,43 +192,43 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: moderateScale(14),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   count: {
     fontSize: moderateScale(32),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
     lineHeight: moderateScale(38),
   },
   subtitle: {
     fontSize: moderateScale(16),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   progressTrack: {
-    width: '100%',
+    width: "100%",
     height: moderateScale(10),
     borderRadius: moderateScale(5),
     backgroundColor: GameColors.background,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginTop: moderateScale(4),
   },
   progressFill: {
-    height: '100%',
+    height: "100%",
     borderRadius: moderateScale(5),
     backgroundColor: GameColors.success,
   },
   percent: {
     fontSize: moderateScale(13),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.textMuted,
   },
   rewards: {
-    width: '100%',
+    width: "100%",
     gap: moderateScale(8),
     marginTop: moderateScale(4),
     paddingVertical: moderateScale(10),
@@ -233,8 +237,8 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(12),
   },
   rewardRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(8),
   },
   rewardEmoji: {
@@ -243,22 +247,22 @@ const styles = StyleSheet.create({
   rewardText: {
     flex: 1,
     fontSize: moderateScale(14),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.text,
   },
   closeBtn: {
-    width: '100%',
+    width: "100%",
     minHeight: moderateScale(48),
     borderRadius: moderateScale(14),
     backgroundColor: GameColors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: moderateScale(8),
   },
   closeBtnText: {
     fontSize: moderateScale(16),
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
   chip: {
     backgroundColor: GameColors.card,
@@ -270,30 +274,30 @@ const styles = StyleSheet.create({
     gap: moderateScale(6),
   },
   chipRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: moderateScale(8),
   },
   chipText: {
     flex: 1,
     fontSize: moderateScale(13),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
   },
   chipChevron: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.secondary,
   },
   chipTrack: {
     height: moderateScale(5),
     borderRadius: moderateScale(3),
     backgroundColor: GameColors.background,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   chipFill: {
-    height: '100%',
+    height: "100%",
     borderRadius: moderateScale(3),
     backgroundColor: GameColors.success,
   },

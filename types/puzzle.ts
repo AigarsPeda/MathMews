@@ -1,11 +1,11 @@
-export type PuzzleDifficulty = 'easy' | 'medium' | 'hard';
+export type PuzzleDifficulty = "easy" | "medium" | "hard";
 
 export type PuzzleTopic =
-  | 'addition'
-  | 'subtraction'
-  | 'multiplication'
-  | 'logic'
-  | 'patterns';
+  | "addition"
+  | "subtraction"
+  | "multiplication"
+  | "logic"
+  | "patterns";
 
 export type Puzzle = {
   id: string;

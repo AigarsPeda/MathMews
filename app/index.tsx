@@ -9,8 +9,8 @@ import {
 } from "@/constants/game";
 import { pickRandomExcitedMood } from "@/constants/pet-videos";
 import { useGame } from "@/contexts/GameProvider";
-import { usePetPlayback } from "@/hooks/use-pet-playback";
 import { shouldPetSleep } from "@/hooks/use-pet-mood";
+import { usePetPlayback } from "@/hooks/use-pet-playback";
 import type { PetStats } from "@/types/game";
 import {
   canFeedForEffect,
@@ -112,7 +112,13 @@ export default function HomeScreen() {
         ? stats.happiness
         : clampStat(stats.happiness + PET_HAPPINESS_BOOST),
     }));
-  }, [isCareAnimationPlaying, pet.isAsleep, playActionMood, recordInteraction, wakePet]);
+  }, [
+    isCareAnimationPlaying,
+    pet.isAsleep,
+    playActionMood,
+    recordInteraction,
+    wakePet,
+  ]);
 
   const handleFeed = useCallback(() => {
     const wasAsleep = pet.isAsleep === true;

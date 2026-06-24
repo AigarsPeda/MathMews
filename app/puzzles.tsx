@@ -1,28 +1,28 @@
-import { GameHeaderStats } from '@/components/economy/GameHeaderStats';
-import { NoLivesPanel } from '@/components/economy/LivesCounter';
-import { DifficultyPicker } from '@/components/puzzle/DifficultyPicker';
+import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
+import { NoLivesPanel } from "@/components/economy/LivesCounter";
+import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
+import { PuzzlePathItem } from "@/components/puzzle/PuzzlePathItem";
 import {
   PuzzlePathProgressChip,
   PuzzlePathProgressSheet,
-} from '@/components/puzzle/PuzzlePathProgress';
-import { PuzzlePathItem } from '@/components/puzzle/PuzzlePathItem';
-import { GameColors } from '@/constants/game';
+} from "@/components/puzzle/PuzzlePathProgress";
+import { GameColors } from "@/constants/game";
 import {
   canPlayPuzzleIndex,
   getPuzzlePathState,
   getPuzzlesByDifficulty,
   isPuzzleDifficulty,
-} from '@/constants/puzzles';
-import { useGame } from '@/contexts/GameProvider';
-import { useLocale } from '@/contexts/LocaleProvider';
-import { useDifficultyLabelLower } from '@/hooks/use-difficulty-label';
-import type { PuzzleDifficulty } from '@/types/puzzle';
-import { canSpendLife } from '@/utils/lives';
-import { moderateScale } from '@/utils/scale';
-import * as Haptics from 'expo-haptics';
-import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+} from "@/constants/puzzles";
+import { useGame } from "@/contexts/GameProvider";
+import { useLocale } from "@/contexts/LocaleProvider";
+import { useDifficultyLabelLower } from "@/hooks/use-difficulty-label";
+import type { PuzzleDifficulty } from "@/types/puzzle";
+import { canSpendLife } from "@/utils/lives";
+import { moderateScale } from "@/utils/scale";
+import * as Haptics from "expo-haptics";
+import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Platform,
@@ -31,11 +31,11 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function triggerHaptic() {
-  if (Platform.OS !== 'web') {
+  if (Platform.OS !== "web") {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 }
@@ -50,14 +50,21 @@ export default function PuzzlesScreen() {
   const rawDifficulty = Array.isArray(difficultyParam)
     ? difficultyParam[0]
     : difficultyParam;
-  const paramDifficulty = isPuzzleDifficulty(rawDifficulty ?? '')
+  const paramDifficulty = isPuzzleDifficulty(rawDifficulty ?? "")
     ? rawDifficulty
     : null;
 
-  const { isReady, hasCompletedOnboarding, pet, wallet, progress, buyLife, recordInteraction } =
-    useGame();
+  const {
+    isReady,
+    hasCompletedOnboarding,
+    pet,
+    wallet,
+    progress,
+    buyLife,
+    recordInteraction,
+  } = useGame();
   const [difficulty, setDifficulty] = useState<PuzzleDifficulty>(
-    paramDifficulty ?? 'easy',
+    paramDifficulty ?? "easy",
   );
   const [showProgress, setShowProgress] = useState(false);
   const difficultyLabelLower = useDifficultyLabelLower(difficulty);
@@ -80,11 +87,14 @@ export default function PuzzlesScreen() {
     });
   }, []);
 
-  const handleSelectDifficulty = useCallback((next: PuzzleDifficulty) => {
-    recordInteraction();
-    triggerHaptic();
-    setDifficulty(next);
-  }, [recordInteraction]);
+  const handleSelectDifficulty = useCallback(
+    (next: PuzzleDifficulty) => {
+      recordInteraction();
+      triggerHaptic();
+      setDifficulty(next);
+    },
+    [recordInteraction],
+  );
 
   const handlePlayPuzzle = useCallback(
     (index: number, isReplay: boolean) => {
@@ -93,11 +103,11 @@ export default function PuzzlesScreen() {
       recordInteraction();
       triggerHaptic();
       router.push({
-        pathname: '/play',
+        pathname: "/play",
         params: {
           difficulty,
           index: String(index),
-          ...(isReplay ? { replay: 'true' } : {}),
+          ...(isReplay ? { replay: "true" } : {}),
         },
       });
     },
@@ -111,7 +121,7 @@ export default function PuzzlesScreen() {
       router.back();
       return;
     }
-    router.replace('/');
+    router.replace("/");
   }, [recordInteraction, router]);
 
   const handlePlayCurrent = useCallback(() => {
@@ -132,16 +142,16 @@ export default function PuzzlesScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
       <View style={styles.screen}>
         <View style={styles.header}>
           <Pressable
             onPress={handleBackHome}
             style={styles.backBtn}
             accessibilityRole="button"
-            accessibilityLabel={t('puzzlePath.a11yBack')}
+            accessibilityLabel={t("puzzlePath.a11yBack")}
           >
-            <Text style={styles.backText}>{t('common.back')}</Text>
+            <Text style={styles.backText}>{t("common.back")}</Text>
           </Pressable>
           <GameHeaderStats
             coins={wallet.coins}
@@ -150,9 +160,9 @@ export default function PuzzlesScreen() {
           />
         </View>
 
-        <Text style={styles.title}>{t('puzzlePath.title')}</Text>
+        <Text style={styles.title}>{t("puzzlePath.title")}</Text>
         <Text style={styles.subtitle}>
-          {t('puzzlePath.subtitle', { name: pet.name })}
+          {t("puzzlePath.subtitle", { name: pet.name })}
         </Text>
 
         <DifficultyPicker
@@ -168,74 +178,78 @@ export default function PuzzlesScreen() {
           />
         ) : (
           <>
-        <PuzzlePathProgressChip
-          difficulty={difficulty}
-          solvedCount={solvedCount}
-          totalCount={puzzles.length}
-          onPress={() => {
-            recordInteraction();
-            triggerHaptic();
-            setShowProgress(true);
-          }}
-        />
+            <PuzzlePathProgressChip
+              difficulty={difficulty}
+              solvedCount={solvedCount}
+              totalCount={puzzles.length}
+              onPress={() => {
+                recordInteraction();
+                triggerHaptic();
+                setShowProgress(true);
+              }}
+            />
 
-        <PuzzlePathProgressSheet
-          visible={showProgress}
-          difficulty={difficulty}
-          solvedCount={solvedCount}
-          totalCount={puzzles.length}
-          onClose={() => setShowProgress(false)}
-        />
+            <PuzzlePathProgressSheet
+              visible={showProgress}
+              difficulty={difficulty}
+              solvedCount={solvedCount}
+              totalCount={puzzles.length}
+              onClose={() => setShowProgress(false)}
+            />
 
-        <ScrollView
-          ref={scrollRef}
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {puzzles.map((puzzle, index) => {
-            const state = getPuzzlePathState(index, solvedCount);
-            return (
-              <PuzzlePathItem
-                key={puzzle.id}
-                puzzle={puzzle}
-                puzzleNumber={index + 1}
-                state={state}
-                onLayout={(y) => {
-                  if (index === currentIndex) {
-                    requestAnimationFrame(() => scrollToCurrent(y));
-                  }
-                }}
-                onPress={() => handlePlayPuzzle(index, state === 'completed')}
-              />
-            );
-          })}
+            <ScrollView
+              ref={scrollRef}
+              style={styles.scroll}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+            >
+              {puzzles.map((puzzle, index) => {
+                const state = getPuzzlePathState(index, solvedCount);
+                return (
+                  <PuzzlePathItem
+                    key={puzzle.id}
+                    puzzle={puzzle}
+                    puzzleNumber={index + 1}
+                    state={state}
+                    onLayout={(y) => {
+                      if (index === currentIndex) {
+                        requestAnimationFrame(() => scrollToCurrent(y));
+                      }
+                    }}
+                    onPress={() =>
+                      handlePlayPuzzle(index, state === "completed")
+                    }
+                  />
+                );
+              })}
 
-          {solvedCount >= puzzles.length ? (
-            <View style={styles.completeCard}>
-              <Text style={styles.completeEmoji}>🎉</Text>
-              <Text style={styles.completeTitle}>
-                {t('puzzlePath.allNutsCracked', {
-                  difficulty: difficultyLabelLower,
-                })}
-              </Text>
-              <Text style={styles.completeText}>{t('puzzlePath.tryAnother')}</Text>
-            </View>
-          ) : null}
-        </ScrollView>
+              {solvedCount >= puzzles.length ? (
+                <View style={styles.completeCard}>
+                  <Text style={styles.completeEmoji}>🎉</Text>
+                  <Text style={styles.completeTitle}>
+                    {t("puzzlePath.allNutsCracked", {
+                      difficulty: difficultyLabelLower,
+                    })}
+                  </Text>
+                  <Text style={styles.completeText}>
+                    {t("puzzlePath.tryAnother")}
+                  </Text>
+                </View>
+              ) : null}
+            </ScrollView>
 
-        {solvedCount < puzzles.length ? (
-          <Pressable
-            style={styles.primaryBtn}
-            onPress={handlePlayCurrent}
-            accessibilityRole="button"
-            accessibilityLabel={t('puzzlePath.playCurrent')}
-          >
-            <Text style={styles.primaryBtnText}>
-              {t('puzzlePath.playNut', { number: solvedCount + 1 })}
-            </Text>
-            </Pressable>
-          ) : null}
+            {solvedCount < puzzles.length ? (
+              <Pressable
+                style={styles.primaryBtn}
+                onPress={handlePlayCurrent}
+                accessibilityRole="button"
+                accessibilityLabel={t("puzzlePath.playCurrent")}
+              >
+                <Text style={styles.primaryBtnText}>
+                  {t("puzzlePath.playNut", { number: solvedCount + 1 })}
+                </Text>
+              </Pressable>
+            ) : null}
           </>
         )}
       </View>
@@ -246,8 +260,8 @@ export default function PuzzlesScreen() {
 const styles = StyleSheet.create({
   loading: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: GameColors.background,
   },
   safe: {
@@ -262,28 +276,28 @@ const styles = StyleSheet.create({
     gap: moderateScale(12),
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   backBtn: {
     minHeight: moderateScale(48),
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingRight: moderateScale(12),
   },
   backText: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
   },
   title: {
     fontSize: moderateScale(24),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
   },
   subtitle: {
     fontSize: moderateScale(14),
-    fontWeight: '500',
+    fontWeight: "500",
     color: GameColors.textMuted,
     marginTop: moderateScale(-4),
   },
@@ -298,14 +312,14 @@ const styles = StyleSheet.create({
     minHeight: moderateScale(52),
     borderRadius: moderateScale(16),
     backgroundColor: GameColors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: moderateScale(16),
   },
   primaryBtnText: {
     fontSize: moderateScale(17),
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
   completeCard: {
     backgroundColor: GameColors.card,
@@ -313,7 +327,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: GameColors.success,
     padding: moderateScale(16),
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(6),
     marginTop: moderateScale(4),
   },
@@ -322,14 +336,14 @@ const styles = StyleSheet.create({
   },
   completeTitle: {
     fontSize: moderateScale(18),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   completeText: {
     fontSize: moderateScale(14),
-    fontWeight: '500',
+    fontWeight: "500",
     color: GameColors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

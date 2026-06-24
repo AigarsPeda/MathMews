@@ -1,16 +1,16 @@
-import { VisualExplanationScene } from '@/components/puzzle/VisualExplanationScene';
-import { GameColors } from '@/constants/game';
+import { VisualExplanationScene } from "@/components/puzzle/VisualExplanationScene";
+import { GameColors } from "@/constants/game";
 import {
   getVisualFrameBlend,
   progressForVisualHelpStep,
   snapVisualHelpProgress,
-} from '@/constants/visual-explanations';
-import type { VisualExplanation } from '@/types/visual-explanation';
-import { moderateScale } from '@/utils/scale';
-import Slider from '@react-native-community/slider';
-import { useCallback, useMemo, type ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+} from "@/constants/visual-explanations";
+import type { VisualExplanation } from "@/types/visual-explanation";
+import { moderateScale } from "@/utils/scale";
+import Slider from "@react-native-community/slider";
+import { useCallback, useMemo, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 const SLIDE_DISTANCE = moderateScale(28);
 
@@ -26,7 +26,11 @@ type CrossfadeLayerProps = {
   children: ReactNode;
 };
 
-function CrossfadeLayer({ opacity, translateX, children }: CrossfadeLayerProps) {
+function CrossfadeLayer({
+  opacity,
+  translateX,
+  children,
+}: CrossfadeLayerProps) {
   if (opacity <= 0.01) return null;
 
   return (
@@ -60,10 +64,20 @@ export function VisualExplanationPlayer({
   );
 
   const showTransition = frameBlend.blend > 0.01 && frameBlend.blend < 0.99;
-  const outgoingOpacity = showTransition ? 1 - frameBlend.blend : frameBlend.blend < 0.5 ? 1 : 0;
-  const incomingOpacity = showTransition ? frameBlend.blend : frameBlend.blend >= 0.5 ? 1 : 0;
+  const outgoingOpacity = showTransition
+    ? 1 - frameBlend.blend
+    : frameBlend.blend < 0.5
+      ? 1
+      : 0;
+  const incomingOpacity = showTransition
+    ? frameBlend.blend
+    : frameBlend.blend >= 0.5
+      ? 1
+      : 0;
   const outgoingShift = showTransition ? -frameBlend.blend * SLIDE_DISTANCE : 0;
-  const incomingShift = showTransition ? (1 - frameBlend.blend) * SLIDE_DISTANCE : 0;
+  const incomingShift = showTransition
+    ? (1 - frameBlend.blend) * SLIDE_DISTANCE
+    : 0;
 
   const goToStep = useCallback(
     (stepIndex: number) => {
@@ -122,7 +136,7 @@ export function VisualExplanationPlayer({
           disabled={!canGoBack}
           style={[styles.stepBtn, !canGoBack && styles.stepBtnDisabled]}
           accessibilityRole="button"
-          accessibilityLabel={t('visualHelp.a11yPrevStep')}
+          accessibilityLabel={t("visualHelp.a11yPrevStep")}
         >
           <Text style={styles.sliderEmoji}>⏮️</Text>
         </Pressable>
@@ -136,14 +150,14 @@ export function VisualExplanationPlayer({
           minimumTrackTintColor={GameColors.primary}
           maximumTrackTintColor={GameColors.cardBorder}
           thumbTintColor={GameColors.secondary}
-          accessibilityLabel={t('visualHelp.a11ySlider')}
+          accessibilityLabel={t("visualHelp.a11ySlider")}
         />
         <Pressable
           onPress={() => goToStep(activeStep + 1)}
           disabled={!canGoForward}
           style={[styles.stepBtn, !canGoForward && styles.stepBtnDisabled]}
           accessibilityRole="button"
-          accessibilityLabel={t('visualHelp.a11yNextStep')}
+          accessibilityLabel={t("visualHelp.a11yNextStep")}
         >
           <Text style={styles.sliderEmoji}>⏭️</Text>
         </Pressable>
@@ -158,13 +172,16 @@ export function VisualExplanationPlayer({
               key={keyframe.captionKey}
               onPress={() => goToStep(index)}
               accessibilityRole="button"
-              accessibilityLabel={t('visualHelp.a11yGoToStep', {
+              accessibilityLabel={t("visualHelp.a11yGoToStep", {
                 step: index + 1,
                 total: stepCount,
               })}
             >
               <View
-                style={[styles.dot, isActive ? styles.dotActive : styles.dotIdle]}
+                style={[
+                  styles.dot,
+                  isActive ? styles.dotActive : styles.dotIdle,
+                ]}
               />
             </Pressable>
           );
@@ -176,49 +193,49 @@ export function VisualExplanationPlayer({
 
 const styles = StyleSheet.create({
   wrap: {
-    width: '100%',
+    width: "100%",
     gap: moderateScale(12),
   },
   stageHost: {
-    width: '100%',
+    width: "100%",
     minHeight: moderateScale(180),
-    position: 'relative',
-    justifyContent: 'center',
+    position: "relative",
+    justifyContent: "center",
   },
   layer: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   captionHost: {
     minHeight: moderateScale(48),
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    width: "100%",
   },
   caption: {
     fontSize: moderateScale(17),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: moderateScale(24),
     paddingHorizontal: moderateScale(4),
   },
   captionOverlay: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   sliderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(8),
   },
   stepBtn: {
     minWidth: moderateScale(36),
     minHeight: moderateScale(36),
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   stepBtnDisabled: {
     opacity: 0.35,
@@ -231,9 +248,9 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(18),
   },
   dots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     gap: moderateScale(6),
     minHeight: moderateScale(10),
   },

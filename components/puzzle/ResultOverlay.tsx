@@ -2,8 +2,8 @@ import { PetAvatar } from "@/components/pet/PetAvatar";
 import { GameColors, LIFE_BUY_COST } from "@/constants/game";
 import type { PetAnimationState } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ResultOverlayProps = {
@@ -13,7 +13,7 @@ type ResultOverlayProps = {
   message: string;
   detail: string;
   coinsEarned?: number;
-  coinType?: 'regular' | 'sparkle';
+  coinType?: "regular" | "sparkle";
   continueLabel?: string;
   onContinue: () => void;
   onGoHome?: () => void;
@@ -29,7 +29,7 @@ export function ResultOverlay({
   message,
   detail,
   coinsEarned = 0,
-  coinType = 'regular',
+  coinType = "regular",
   continueLabel,
   onContinue,
   onGoHome,
@@ -69,22 +69,22 @@ export function ResultOverlay({
             <View
               style={[
                 styles.coinRow,
-                coinType === 'sparkle' && styles.sparkleCoinRow,
+                coinType === "sparkle" && styles.sparkleCoinRow,
               ]}
             >
               <Text style={styles.coinEmoji}>
-                {coinType === 'sparkle' ? '✨' : '🪙'}
+                {coinType === "sparkle" ? "✨" : "🪙"}
               </Text>
               <Text
                 style={[
                   styles.coinText,
-                  coinType === 'sparkle' && styles.sparkleCoinText,
+                  coinType === "sparkle" && styles.sparkleCoinText,
                 ]}
               >
-                +{coinsEarned}{' '}
-                {coinType === 'sparkle'
-                  ? t('play.sparkleCoinsLabel')
-                  : t('play.coinsLabel')}
+                +{coinsEarned}{" "}
+                {coinType === "sparkle"
+                  ? t("play.sparkleCoinsLabel")
+                  : t("play.coinsLabel")}
               </Text>
             </View>
           )}
@@ -96,12 +96,12 @@ export function ResultOverlay({
               accessibilityRole="button"
               accessibilityLabel={
                 continueLabel ??
-                (correct ? t('play.a11yNext') : t('play.a11yTryAgain'))
+                (correct ? t("play.a11yNext") : t("play.a11yTryAgain"))
               }
             >
               <Text style={styles.primaryButtonText}>
                 {continueLabel ??
-                  (correct ? t('play.nextPuzzle') : t('play.tryAgain'))}
+                  (correct ? t("play.nextPuzzle") : t("play.tryAgain"))}
               </Text>
             </Pressable>
 
@@ -110,10 +110,10 @@ export function ResultOverlay({
                 style={styles.secondaryButton}
                 onPress={onGoHome}
                 accessibilityRole="button"
-                accessibilityLabel={t('play.a11yHome')}
+                accessibilityLabel={t("play.a11yHome")}
               >
                 <Text style={styles.secondaryButtonText}>
-                  {t('play.backToHome')}
+                  {t("play.backToHome")}
                 </Text>
               </Pressable>
             )}
@@ -123,10 +123,10 @@ export function ResultOverlay({
                 style={styles.buyLifeButton}
                 onPress={onBuyLife}
                 accessibilityRole="button"
-                accessibilityLabel={t('lives.a11yBuy', { cost: buyLifeCost })}
+                accessibilityLabel={t("lives.a11yBuy", { cost: buyLifeCost })}
               >
                 <Text style={styles.buyLifeButtonText}>
-                  {t('lives.buyLife', { cost: buyLifeCost })}
+                  {t("lives.buyLife", { cost: buyLifeCost })}
                 </Text>
               </Pressable>
             ) : null}
@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
     lineHeight: moderateScale(24),
   },
   coinRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(6),
     backgroundColor: GameColors.background,
     borderRadius: moderateScale(16),
@@ -193,20 +193,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(12),
   },
   sparkleCoinRow: {
-    backgroundColor: '#F3EEFF',
+    backgroundColor: "#F3EEFF",
     borderWidth: 2,
-    borderColor: '#C9B6FF',
+    borderColor: "#C9B6FF",
   },
   coinEmoji: {
     fontSize: moderateScale(18),
   },
   coinText: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.coinText,
   },
   sparkleCoinText: {
-    color: '#6B4FCF',
+    color: "#6B4FCF",
   },
   actions: {
     width: "100%",

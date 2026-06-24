@@ -1,10 +1,10 @@
-import { PUZZLE_DIFFICULTIES } from '@/constants/puzzles';
-import { GameColors, getPuzzleCoinReward } from '@/constants/game';
-import { useDifficultyLabel } from '@/hooks/use-difficulty-label';
-import type { PuzzleDifficulty } from '@/types/puzzle';
-import { moderateScale } from '@/utils/scale';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { GameColors, getPuzzleCoinReward } from "@/constants/game";
+import { PUZZLE_DIFFICULTIES } from "@/constants/puzzles";
+import { useDifficultyLabel } from "@/hooks/use-difficulty-label";
+import type { PuzzleDifficulty } from "@/types/puzzle";
+import { moderateScale } from "@/utils/scale";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type DifficultyPickerProps = {
   selected: PuzzleDifficulty;
@@ -30,7 +30,7 @@ function DifficultyTab({
       style={[styles.tab, isSelected && styles.tabSelected]}
       accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}
-      accessibilityLabel={t('difficultyPicker.a11y', {
+      accessibilityLabel={t("difficultyPicker.a11y", {
         difficulty: label,
         coins: coinReward,
       })}
@@ -45,7 +45,10 @@ function DifficultyTab({
   );
 }
 
-export function DifficultyPicker({ selected, onSelect }: DifficultyPickerProps) {
+export function DifficultyPicker({
+  selected,
+  onSelect,
+}: DifficultyPickerProps) {
   return (
     <View style={styles.row}>
       {PUZZLE_DIFFICULTIES.map((difficulty) => (
@@ -62,14 +65,14 @@ export function DifficultyPicker({ selected, onSelect }: DifficultyPickerProps) 
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: moderateScale(8),
   },
   tab: {
     flex: 1,
     minHeight: moderateScale(52),
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: moderateScale(14),
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
@@ -80,11 +83,11 @@ const styles = StyleSheet.create({
   },
   tabSelected: {
     borderColor: GameColors.secondary,
-    backgroundColor: '#E8FAF8',
+    backgroundColor: "#E8FAF8",
   },
   tabText: {
     fontSize: moderateScale(14),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
   },
   tabTextSelected: {
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
   },
   coinText: {
     fontSize: moderateScale(13),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.coinText,
   },
   coinTextSelected: {

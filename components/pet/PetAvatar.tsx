@@ -1,8 +1,8 @@
-import { PetVideoAvatar } from '@/components/pet/PetVideoAvatar';
-import { moodToSegment } from '@/constants/pet-scenarios';
-import type { PetPlaybackState } from '@/hooks/use-pet-playback';
-import type { PetAnimationState } from '@/types/game';
-import { moderateScale } from '@/utils/scale';
+import { PetVideoAvatar } from "@/components/pet/PetVideoAvatar";
+import { moodToSegment } from "@/constants/pet-scenarios";
+import type { PetPlaybackState } from "@/hooks/use-pet-playback";
+import type { PetAnimationState } from "@/types/game";
+import { moderateScale } from "@/utils/scale";
 
 type PetAvatarProps = {
   playback?: PetPlaybackState;
@@ -28,10 +28,10 @@ export function PetAvatar({
   const resolvedPlayback: PetPlaybackState =
     playback ??
     (mood
-      ? { kind: 'segment', segment: moodToSegment(mood), mood }
-      : { kind: 'segment', segment: moodToSegment('idle'), mood: 'idle' });
+      ? { kind: "segment", segment: moodToSegment(mood), mood }
+      : { kind: "segment", segment: moodToSegment("idle"), mood: "idle" });
 
-  if (resolvedPlayback.kind === 'scenario') {
+  if (resolvedPlayback.kind === "scenario") {
     return (
       <PetVideoAvatar
         scenarioSteps={resolvedPlayback.steps}

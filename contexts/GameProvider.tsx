@@ -1,3 +1,15 @@
+import { LIFE_BUY_COST } from "@/constants/game";
+import { resolveAsleepOnLoad } from "@/hooks/use-pet-mood";
+import type { PetProfile, Progress, Wallet } from "@/types/game";
+import type { GameSave } from "@/types/save";
+import { PET_NAME_MAX_LENGTH } from "@/types/save";
+import {
+  createDefaultGameSave,
+  loadGameSave,
+  saveGameSave,
+} from "@/utils/game-storage";
+import { applyLifeRegen, buyOneLife, canBuyLife } from "@/utils/lives";
+import { applyPetTimeDecay } from "@/utils/pet-care";
 import {
   createContext,
   useCallback,
@@ -7,25 +19,8 @@ import {
   useRef,
   useState,
   type ReactNode,
-} from 'react';
-import { AppState, type AppStateStatus } from 'react-native';
-
-import { LIFE_BUY_COST } from '@/constants/game';
-import type { PetProfile, Progress, Wallet } from '@/types/game';
-import type { GameSave } from '@/types/save';
-import { PET_NAME_MAX_LENGTH } from '@/types/save';
-import { applyPetTimeDecay } from '@/utils/pet-care';
-import { resolveAsleepOnLoad } from '@/hooks/use-pet-mood';
-import {
-  applyLifeRegen,
-  buyOneLife,
-  canBuyLife,
-} from '@/utils/lives';
-import {
-  createDefaultGameSave,
-  loadGameSave,
-  saveGameSave,
-} from '@/utils/game-storage';
+} from "react";
+import { AppState, type AppStateStatus } from "react-native";
 
 const CARE_TICK_MS = 60_000;
 
@@ -109,12 +104,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!isReady) return;
 
     const handleAppState = (state: AppStateStatus) => {
-      if (state === 'active') {
+      if (state === "active") {
         tickGameTime(true);
       }
     };
 
-    const subscription = AppState.addEventListener('change', handleAppState);
+    const subscription = AppState.addEventListener("change", handleAppState);
     const interval = setInterval(() => tickGameTime(false), CARE_TICK_MS);
 
     return () => {
@@ -123,20 +118,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
   }, [isReady, tickGameTime]);
 
-  const setPet = useCallback(
-    (updater: (current: PetProfile) => PetProfile) => {
-      setSave((current) => ({ ...current, pet: updater(current.pet) }));
-    },
-    [],
-  );
+  const setPet = useCallback((updater: (current: PetProfile) => PetProfile) => {
+    setSave((current) => ({ ...current, pet: updater(current.pet) }));
+  }, []);
 
   const setWallet = useCallback((updater: (current: Wallet) => Wallet) => {
     setSave((current) => ({ ...current, wallet: updater(current.wallet) }));
   }, []);
 
-  const setProgress = useCallback((updater: (current: Progress) => Progress) => {
-    setSave((current) => ({ ...current, progress: updater(current.progress) }));
-  }, []);
+  const setProgress = useCallback(
+    (updater: (current: Progress) => Progress) => {
+      setSave((current) => ({
+        ...current,
+        progress: updater(current.progress),
+      }));
+    },
+    [],
+  );
 
   const recordInteraction = useCallback(() => {
     const now = Date.now();
@@ -252,7 +250,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 export function useGame(): GameContextValue {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useGame must be used within a GameProvider');
+    throw new Error("useGame must be used within a GameProvider");
   }
   return context;
 }

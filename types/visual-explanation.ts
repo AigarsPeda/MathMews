@@ -1,45 +1,45 @@
 export type VisualScene =
   | {
-      kind: 'items';
+      kind: "items";
       emoji: string;
       count: number;
       removed?: number;
       maxVisible?: number;
     }
   | {
-      kind: 'groups';
+      kind: "groups";
       emoji: string;
       groups: { count: number; color: string }[];
     }
   | {
-      kind: 'numberline';
+      kind: "numberline";
       min: number;
       max: number;
       markers: number[];
       highlight?: number;
     }
   | {
-      kind: 'sequence';
-      values: (number | '?' | null)[];
+      kind: "sequence";
+      values: (number | "?" | null)[];
       highlightIndex?: number;
       jumpLabel?: string;
     }
   | {
-      kind: 'grid';
+      kind: "grid";
       rows: number;
       cols: number;
       filled: number;
     }
   | {
-      kind: 'equation';
+      kind: "equation";
       lines: string[];
       highlightLine?: number;
     }
   | {
-      kind: 'compare';
+      kind: "compare";
       left: { emoji: string; count: number; label?: string };
       right: { emoji: string; count: number; label?: string };
-      operator: '+' | '−' | '×' | '÷';
+      operator: "+" | "−" | "×" | "÷";
       result?: number;
     };
 

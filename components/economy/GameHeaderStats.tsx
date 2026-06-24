@@ -1,12 +1,12 @@
-import { BuyLifeSheet } from '@/components/economy/BuyLifeSheet';
-import { CoinCounter } from '@/components/economy/CoinCounter';
-import { LivesCounter } from '@/components/economy/LivesCounter';
-import { useGame } from '@/contexts/GameProvider';
-import type { LivesState } from '@/types/game';
-import { moderateScale } from '@/utils/scale';
-import * as Haptics from 'expo-haptics';
-import { useCallback, useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
+import { CoinCounter } from "@/components/economy/CoinCounter";
+import { LivesCounter } from "@/components/economy/LivesCounter";
+import { useGame } from "@/contexts/GameProvider";
+import type { LivesState } from "@/types/game";
+import { moderateScale } from "@/utils/scale";
+import * as Haptics from "expo-haptics";
+import { useCallback, useState } from "react";
+import { Platform, StyleSheet, View } from "react-native";
 
 type GameHeaderStatsProps = {
   coins: number;
@@ -17,12 +17,16 @@ type GameHeaderStatsProps = {
 function triggerHaptic(
   style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light,
 ) {
-  if (Platform.OS !== 'web') {
+  if (Platform.OS !== "web") {
     Haptics.impactAsync(style);
   }
 }
 
-export function GameHeaderStats({ coins, streak = 0, lives }: GameHeaderStatsProps) {
+export function GameHeaderStats({
+  coins,
+  streak = 0,
+  lives,
+}: GameHeaderStatsProps) {
   const { buyLife, recordInteraction } = useGame();
   const [showBuySheet, setShowBuySheet] = useState(false);
 
@@ -58,8 +62,8 @@ export function GameHeaderStats({ coins, streak = 0, lives }: GameHeaderStatsPro
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(8),
   },
 });

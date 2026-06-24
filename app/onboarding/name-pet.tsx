@@ -1,7 +1,11 @@
-import * as Haptics from 'expo-haptics';
-import { Redirect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { GameColors } from "@/constants/game";
+import { useGame } from "@/contexts/GameProvider";
+import { PET_NAME_MAX_LENGTH } from "@/types/save";
+import { moderateScale } from "@/utils/scale";
+import * as Haptics from "expo-haptics";
+import { Redirect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -11,16 +15,11 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { useGame } from '@/contexts/GameProvider';
-import { GameColors } from '@/constants/game';
-import { PET_NAME_MAX_LENGTH } from '@/types/save';
-import { moderateScale } from '@/utils/scale';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function triggerHaptic() {
-  if (Platform.OS !== 'web') {
+  if (Platform.OS !== "web") {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 }
@@ -29,7 +28,7 @@ export default function NamePetScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { isReady, hasCompletedOnboarding, completeOnboarding } = useGame();
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const trimmedName = name.trim();
@@ -45,7 +44,7 @@ export default function NamePetScreen() {
     setIsSubmitting(false);
 
     if (ok) {
-      router.replace('/');
+      router.replace("/");
     }
   }, [canContinue, completeOnboarding, router, trimmedName]);
 
@@ -62,25 +61,25 @@ export default function NamePetScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <View style={styles.screen}>
           <View style={styles.header}>
             <Text style={styles.emoji}>🐶</Text>
-            <Text style={styles.title}>{t('onboarding.title')}</Text>
-            <Text style={styles.subtitle}>{t('onboarding.subtitle')}</Text>
+            <Text style={styles.title}>{t("onboarding.title")}</Text>
+            <Text style={styles.subtitle}>{t("onboarding.subtitle")}</Text>
           </View>
 
           <View style={styles.form}>
-            <Text style={styles.label}>{t('onboarding.petName')}</Text>
+            <Text style={styles.label}>{t("onboarding.petName")}</Text>
             <TextInput
               style={styles.input}
               value={name}
               onChangeText={setName}
-              placeholder={t('onboarding.placeholder')}
+              placeholder={t("onboarding.placeholder")}
               placeholderTextColor={GameColors.textMuted}
               maxLength={PET_NAME_MAX_LENGTH}
               autoCapitalize="words"
@@ -88,10 +87,10 @@ export default function NamePetScreen() {
               returnKeyType="done"
               onSubmitEditing={handleContinue}
               autoFocus
-              accessibilityLabel={t('onboarding.a11yPetName')}
+              accessibilityLabel={t("onboarding.a11yPetName")}
             />
             <Text style={styles.hint}>
-              {t('onboarding.charCount', {
+              {t("onboarding.charCount", {
                 count: trimmedName.length,
                 max: PET_NAME_MAX_LENGTH,
               })}
@@ -106,11 +105,11 @@ export default function NamePetScreen() {
             onPress={handleContinue}
             disabled={!canContinue}
             accessibilityRole="button"
-            accessibilityLabel={t('onboarding.a11yContinue')}
+            accessibilityLabel={t("onboarding.a11yContinue")}
             accessibilityState={{ disabled: !canContinue }}
           >
             <Text style={styles.primaryBtnText}>
-              {isSubmitting ? t('common.saving') : t('onboarding.meetPet')}
+              {isSubmitting ? t("common.saving") : t("onboarding.meetPet")}
             </Text>
           </Pressable>
         </View>
@@ -125,8 +124,8 @@ const styles = StyleSheet.create({
   },
   loading: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: GameColors.background,
   },
   safe: {
@@ -138,11 +137,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(20),
     paddingTop: moderateScale(24),
     paddingBottom: moderateScale(16),
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     gap: moderateScale(24),
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(12),
   },
   emoji: {
@@ -150,15 +149,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: moderateScale(28),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: moderateScale(16),
-    fontWeight: '500',
+    fontWeight: "500",
     color: GameColors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: moderateScale(24),
     maxWidth: moderateScale(320),
   },
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
   },
   input: {
@@ -178,20 +177,20 @@ const styles = StyleSheet.create({
     backgroundColor: GameColors.card,
     paddingHorizontal: moderateScale(16),
     fontSize: moderateScale(18),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.text,
   },
   hint: {
     fontSize: moderateScale(14),
-    fontWeight: '500',
+    fontWeight: "500",
     color: GameColors.textMuted,
   },
   primaryBtn: {
     backgroundColor: GameColors.primary,
     borderRadius: moderateScale(20),
     minHeight: moderateScale(56),
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: moderateScale(14),
     paddingHorizontal: moderateScale(20),
     shadowColor: GameColors.primaryDark,
@@ -205,7 +204,7 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     fontSize: moderateScale(18),
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
 });

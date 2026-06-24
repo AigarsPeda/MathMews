@@ -1,6 +1,6 @@
-import { MOOD_ANIMATION } from '@/constants/game';
-import type { PetAnimationState, PetMood, PetProfile } from '@/types/game';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { MOOD_ANIMATION } from "@/constants/game";
+import type { PetAnimationState, PetMood, PetProfile } from "@/types/game";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const LOW_STAT_THRESHOLD = 30;
 const SLEEPING_HUNGER_THRESHOLD = 25;
@@ -53,17 +53,17 @@ export function derivePetMood(pet: PetProfile, now = Date.now()): PetMood {
   const { stats } = pet;
 
   if (shouldPetSleep(pet, now)) {
-    return 'sleeping';
+    return "sleeping";
   }
 
   if (
     stats.hunger < LOW_STAT_THRESHOLD ||
     stats.happiness < LOW_STAT_THRESHOLD
   ) {
-    return 'sad';
+    return "sad";
   }
 
-  return 'idle';
+  return "idle";
 }
 
 /** Picks lie-down intro vs asleep loop clip from sleeping.mp4. */
@@ -73,7 +73,7 @@ export function derivePetVideoMood(
   now = Date.now(),
 ): PetAnimationState {
   if (pet.isAsleep) {
-    return 'sleeping';
+    return "sleeping";
   }
 
   if (!shouldPetSleep(pet, now)) {
@@ -81,10 +81,10 @@ export function derivePetVideoMood(
   }
 
   if (fallAsleepDone) {
-    return 'sleeping';
+    return "sleeping";
   }
 
-  return 'fallingAsleep';
+  return "fallingAsleep";
 }
 
 export function usePetMood(pet: PetProfile): PetMood {
@@ -108,7 +108,13 @@ export function usePetVideoMood(pet: PetProfile) {
     if (!shouldPetSleep(pet, now)) {
       setFallAsleepDone(false);
     }
-  }, [pet.isAsleep, pet.lastInteractionAt, pet.stats.hunger, pet.stats.happiness, now]);
+  }, [
+    pet.isAsleep,
+    pet.lastInteractionAt,
+    pet.stats.hunger,
+    pet.stats.happiness,
+    now,
+  ]);
 
   const mood = useMemo(
     () => derivePetVideoMood(pet, fallAsleepDone, now),

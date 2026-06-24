@@ -1,11 +1,11 @@
-import { VisualExplanationPlayer } from '@/components/puzzle/VisualExplanationPlayer';
-import { GameColors } from '@/constants/game';
-import { getVisualExplanation } from '@/constants/visual-explanations';
-import { moderateScale } from '@/utils/scale';
-import { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPlayer";
+import { GameColors } from "@/constants/game";
+import { getVisualExplanation } from "@/constants/visual-explanations";
+import { moderateScale } from "@/utils/scale";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type VisualHelpSheetProps = {
   visible: boolean;
@@ -62,7 +62,7 @@ export function VisualHelpSheet({
           style={styles.backdrop}
           onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel={t('visualHelp.a11yClose')}
+          accessibilityLabel={t("visualHelp.a11yClose")}
         />
         <View style={styles.sheet}>
           <View
@@ -72,8 +72,8 @@ export function VisualHelpSheet({
             ]}
           >
             <Text style={styles.emoji}>🎬</Text>
-            <Text style={styles.title}>{t('visualHelp.title')}</Text>
-            <Text style={styles.subtitle}>{t('visualHelp.subtitle')}</Text>
+            <Text style={styles.title}>{t("visualHelp.title")}</Text>
+            <Text style={styles.subtitle}>{t("visualHelp.subtitle")}</Text>
 
             {isUnlocked ? (
               <VisualExplanationPlayer
@@ -84,9 +84,11 @@ export function VisualHelpSheet({
             ) : (
               <View style={styles.lockCard}>
                 <Text style={styles.lockEmoji}>🔒</Text>
-                <Text style={styles.lockText}>{t('visualHelp.lockedHint')}</Text>
+                <Text style={styles.lockText}>
+                  {t("visualHelp.lockedHint")}
+                </Text>
                 <Text style={styles.lockPrice}>
-                  {t('visualHelp.unlockPrice', { cost })}
+                  {t("visualHelp.unlockPrice", { cost })}
                 </Text>
               </View>
             )}
@@ -97,15 +99,15 @@ export function VisualHelpSheet({
                   style={styles.buyBtn}
                   onPress={handlePurchase}
                   accessibilityRole="button"
-                  accessibilityLabel={t('visualHelp.a11yUnlock', { cost })}
+                  accessibilityLabel={t("visualHelp.a11yUnlock", { cost })}
                 >
                   <Text style={styles.buyBtnText}>
-                    {t('visualHelp.unlockButton', { cost })}
+                    {t("visualHelp.unlockButton", { cost })}
                   </Text>
                 </Pressable>
               ) : (
                 <Text style={styles.cantBuy}>
-                  {t('visualHelp.needCoins', { cost, coins })}
+                  {t("visualHelp.needCoins", { cost, coins })}
                 </Text>
               )
             ) : null}
@@ -114,10 +116,10 @@ export function VisualHelpSheet({
               style={styles.closeBtn}
               onPress={onClose}
               accessibilityRole="button"
-              accessibilityLabel={t('common.close')}
+              accessibilityLabel={t("common.close")}
             >
               <Text style={styles.closeBtnText}>
-                {isUnlocked ? t('common.gotIt') : t('common.close')}
+                {isUnlocked ? t("common.gotIt") : t("common.close")}
               </Text>
             </Pressable>
           </View>
@@ -130,11 +132,11 @@ export function VisualHelpSheet({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(45, 52, 54, 0.35)',
+    backgroundColor: "rgba(45, 52, 54, 0.35)",
   },
   sheet: {
     backgroundColor: GameColors.card,
@@ -143,13 +145,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderBottomWidth: 0,
     borderColor: GameColors.cardBorder,
-    overflow: 'hidden',
-    maxHeight: '92%',
+    overflow: "hidden",
+    maxHeight: "92%",
   },
   card: {
     paddingTop: moderateScale(20),
     paddingHorizontal: moderateScale(20),
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(10),
   },
   emoji: {
@@ -157,20 +159,20 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: moderateScale(22),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: moderateScale(14),
-    fontWeight: '500',
+    fontWeight: "500",
     color: GameColors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: moderateScale(20),
   },
   lockCard: {
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     gap: moderateScale(8),
     backgroundColor: GameColors.background,
     borderRadius: moderateScale(16),
@@ -183,48 +185,48 @@ const styles = StyleSheet.create({
   },
   lockText: {
     fontSize: moderateScale(15),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.text,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: moderateScale(22),
   },
   lockPrice: {
     fontSize: moderateScale(18),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.coinText,
   },
   buyBtn: {
-    width: '100%',
+    width: "100%",
     minHeight: moderateScale(52),
     borderRadius: moderateScale(16),
     backgroundColor: GameColors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   buyBtnText: {
     fontSize: moderateScale(17),
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
   cantBuy: {
     fontSize: moderateScale(14),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.textMuted,
-    textAlign: 'center',
+    textAlign: "center",
   },
   closeBtn: {
-    width: '100%',
+    width: "100%",
     minHeight: moderateScale(48),
     borderRadius: moderateScale(14),
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: moderateScale(4),
   },
   closeBtnText: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
   },
 });

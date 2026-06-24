@@ -1,7 +1,7 @@
-import { GameColors } from '@/constants/game';
-import type { VisualScene } from '@/types/visual-explanation';
-import { moderateScale } from '@/utils/scale';
-import { StyleSheet, Text, View } from 'react-native';
+import { GameColors } from "@/constants/game";
+import type { VisualScene } from "@/types/visual-explanation";
+import { moderateScale } from "@/utils/scale";
+import { StyleSheet, Text, View } from "react-native";
 
 type VisualExplanationSceneProps = {
   scene: VisualScene;
@@ -119,7 +119,7 @@ function SequenceScene({
   highlightIndex,
   jumpLabel,
 }: {
-  values: (number | '?' | null)[];
+  values: (number | "?" | null)[];
   highlightIndex?: number;
   jumpLabel?: string;
 }) {
@@ -141,7 +141,7 @@ function SequenceScene({
                   highlightIndex === index && styles.sequenceValueHighlight,
                 ]}
               >
-                {value ?? '?'}
+                {value ?? "?"}
               </Text>
             </View>
             {index < values.length - 1 ? (
@@ -173,7 +173,7 @@ function GridScene({
             key={`cell-${index}`}
             style={[styles.gridCell, isFilled && styles.gridCellFilled]}
           >
-            <Text style={styles.gridEmoji}>{isFilled ? '🧸' : ''}</Text>
+            <Text style={styles.gridEmoji}>{isFilled ? "🧸" : ""}</Text>
           </View>
         );
       })}
@@ -216,7 +216,7 @@ function CompareScene({
 }: {
   left: { emoji: string; count: number; label?: string };
   right: { emoji: string; count: number; label?: string };
-  operator: '+' | '−' | '×' | '÷';
+  operator: "+" | "−" | "×" | "÷";
   result?: number;
 }) {
   return (
@@ -243,7 +243,7 @@ function CompareScene({
 export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
   return (
     <View style={styles.stage}>
-      {scene.kind === 'items' ? (
+      {scene.kind === "items" ? (
         <ItemGrid
           emoji={scene.emoji}
           count={scene.count}
@@ -251,10 +251,10 @@ export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
           maxVisible={scene.maxVisible}
         />
       ) : null}
-      {scene.kind === 'groups' ? (
+      {scene.kind === "groups" ? (
         <GroupsScene emoji={scene.emoji} groups={scene.groups} />
       ) : null}
-      {scene.kind === 'numberline' ? (
+      {scene.kind === "numberline" ? (
         <NumberLineScene
           min={scene.min}
           max={scene.max}
@@ -262,20 +262,23 @@ export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
           highlight={scene.highlight}
         />
       ) : null}
-      {scene.kind === 'sequence' ? (
+      {scene.kind === "sequence" ? (
         <SequenceScene
           values={scene.values}
           highlightIndex={scene.highlightIndex}
           jumpLabel={scene.jumpLabel}
         />
       ) : null}
-      {scene.kind === 'grid' ? (
+      {scene.kind === "grid" ? (
         <GridScene rows={scene.rows} cols={scene.cols} filled={scene.filled} />
       ) : null}
-      {scene.kind === 'equation' ? (
-        <EquationScene lines={scene.lines} highlightLine={scene.highlightLine} />
+      {scene.kind === "equation" ? (
+        <EquationScene
+          lines={scene.lines}
+          highlightLine={scene.highlightLine}
+        />
       ) : null}
-      {scene.kind === 'compare' ? (
+      {scene.kind === "compare" ? (
         <CompareScene
           left={scene.left}
           right={scene.right}
@@ -290,85 +293,85 @@ export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
 const styles = StyleSheet.create({
   stage: {
     minHeight: moderateScale(180),
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFF8F0',
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFF8F0",
     borderRadius: moderateScale(20),
     borderWidth: 2,
     borderColor: GameColors.secondary,
     padding: moderateScale(16),
   },
   itemsWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
     gap: moderateScale(4),
-    alignItems: 'center',
+    alignItems: "center",
   },
   itemEmoji: {
     fontSize: moderateScale(28),
   },
   itemRemoved: {
     opacity: 0.2,
-    textDecorationLine: 'line-through',
+    textDecorationLine: "line-through",
   },
   moreLabel: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
   },
   countBadge: {
-    width: '100%',
-    textAlign: 'center',
+    width: "100%",
+    textAlign: "center",
     marginTop: moderateScale(8),
     fontSize: moderateScale(22),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.primary,
   },
   groupsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: moderateScale(12),
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
   groupCard: {
     borderWidth: 3,
     borderRadius: moderateScale(16),
     padding: moderateScale(10),
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(6),
     backgroundColor: GameColors.card,
   },
   groupItems: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: moderateScale(2),
-    justifyContent: 'center',
+    justifyContent: "center",
     maxWidth: moderateScale(120),
   },
   groupCount: {
     fontSize: moderateScale(16),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
   },
   groupNumber: {
     fontSize: moderateScale(24),
-    fontWeight: '800',
+    fontWeight: "800",
   },
   numberLine: {
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     gap: moderateScale(8),
   },
   numberLineTrack: {
-    width: '90%',
+    width: "90%",
     height: moderateScale(4),
     backgroundColor: GameColors.secondary,
     borderRadius: moderateScale(2),
   },
   numberMarkWrap: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(4),
   },
   numberDot: {
@@ -383,7 +386,7 @@ const styles = StyleSheet.create({
   },
   numberMark: {
     fontSize: moderateScale(16),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
   },
   numberMarkHighlight: {
@@ -395,28 +398,28 @@ const styles = StyleSheet.create({
     color: GameColors.textMuted,
   },
   sequenceWrap: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(8),
   },
   jumpLabel: {
     fontSize: moderateScale(18),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.secondary,
-    backgroundColor: '#E8FAF8',
+    backgroundColor: "#E8FAF8",
     paddingHorizontal: moderateScale(12),
     paddingVertical: moderateScale(4),
     borderRadius: moderateScale(12),
   },
   sequenceRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
     gap: moderateScale(4),
   },
   sequenceCellWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   sequenceCell: {
     minWidth: moderateScale(44),
@@ -425,16 +428,16 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
     backgroundColor: GameColors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   sequenceCellHighlight: {
     borderColor: GameColors.primary,
-    backgroundColor: '#FFF0EE',
+    backgroundColor: "#FFF0EE",
   },
   sequenceValue: {
     fontSize: moderateScale(20),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
   },
   sequenceValueHighlight: {
@@ -443,14 +446,14 @@ const styles = StyleSheet.create({
   },
   sequenceArrow: {
     fontSize: moderateScale(18),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
     marginHorizontal: moderateScale(2),
   },
   gridWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
     gap: moderateScale(6),
     maxWidth: moderateScale(260),
   },
@@ -461,48 +464,48 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
     backgroundColor: GameColors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   gridCellFilled: {
     borderColor: GameColors.secondary,
-    backgroundColor: '#E8FAF8',
+    backgroundColor: "#E8FAF8",
   },
   gridEmoji: {
     fontSize: moderateScale(18),
   },
   gridLabel: {
-    width: '100%',
-    textAlign: 'center',
+    width: "100%",
+    textAlign: "center",
     marginTop: moderateScale(8),
     fontSize: moderateScale(18),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
   },
   equationWrap: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(8),
   },
   equationLine: {
     fontSize: moderateScale(22),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.text,
-    textAlign: 'center',
+    textAlign: "center",
   },
   equationLineHighlight: {
     color: GameColors.primary,
     fontSize: moderateScale(26),
-    fontWeight: '800',
+    fontWeight: "800",
   },
   compareWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(10),
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
   compareSide: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: moderateScale(4),
     backgroundColor: GameColors.card,
     borderRadius: moderateScale(14),
@@ -516,17 +519,17 @@ const styles = StyleSheet.create({
   },
   compareCount: {
     fontSize: moderateScale(24),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.text,
   },
   compareOperator: {
     fontSize: moderateScale(28),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.secondary,
   },
   compareResult: {
     fontSize: moderateScale(28),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.primary,
   },
 });

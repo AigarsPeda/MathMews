@@ -1,23 +1,23 @@
-import { GameColors } from '@/constants/game';
-import type { PuzzlePathState } from '@/constants/puzzles';
-import { useTopicLabel } from '@/hooks/use-topic-label';
-import type { Puzzle } from '@/types/puzzle';
-import { moderateScale } from '@/utils/scale';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { GameColors } from "@/constants/game";
+import type { PuzzlePathState } from "@/constants/puzzles";
+import { useTopicLabel } from "@/hooks/use-topic-label";
+import type { Puzzle } from "@/types/puzzle";
+import { moderateScale } from "@/utils/scale";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-const TOPIC_EMOJI: Record<Puzzle['topic'], string> = {
-  addition: '➕',
-  subtraction: '➖',
-  multiplication: '✖️',
-  logic: '🧠',
-  patterns: '🔢',
+const TOPIC_EMOJI: Record<Puzzle["topic"], string> = {
+  addition: "➕",
+  subtraction: "➖",
+  multiplication: "✖️",
+  logic: "🧠",
+  patterns: "🔢",
 };
 
 const STATE_LABEL_KEYS = {
-  completed: 'puzzlePath.stateCompleted',
-  current: 'puzzlePath.stateCurrent',
-  locked: 'puzzlePath.stateLocked',
+  completed: "puzzlePath.stateCompleted",
+  current: "puzzlePath.stateCurrent",
+  locked: "puzzlePath.stateLocked",
 } as const;
 
 type PuzzlePathItemProps = {
@@ -39,7 +39,7 @@ export function PuzzlePathItem({
 }: PuzzlePathItemProps) {
   const { t } = useTranslation();
   const topicLabel = useTopicLabel(puzzle.topic);
-  const isPlayable = state === 'current' || state === 'completed';
+  const isPlayable = state === "current" || state === "completed";
   const stateLabel = t(STATE_LABEL_KEYS[state]);
 
   return (
@@ -52,61 +52,61 @@ export function PuzzlePathItem({
         disabled={!isPlayable}
         style={[
           styles.card,
-          state === 'current' && styles.cardCurrent,
-          state === 'locked' && styles.cardLocked,
+          state === "current" && styles.cardCurrent,
+          state === "locked" && styles.cardLocked,
         ]}
         accessibilityRole="button"
         accessibilityState={{ disabled: !isPlayable }}
-        accessibilityLabel={t('puzzlePath.a11yPuzzle', {
+        accessibilityLabel={t("puzzlePath.a11yPuzzle", {
           number: puzzleNumber,
           state: stateLabel,
         })}
       >
         <View style={styles.cardHeader}>
           <View style={styles.headerLeft}>
-            {state === 'completed' ? (
+            {state === "completed" ? (
               <View style={styles.statusBadgeCompleted}>
                 <Text style={styles.statusBadgeText}>✓</Text>
               </View>
-            ) : state === 'locked' ? (
+            ) : state === "locked" ? (
               <Text style={styles.statusIcon}>🔒</Text>
             ) : null}
             <Text
               style={[
                 styles.badge,
-                state === 'current' && styles.badgeCurrent,
-                state === 'locked' && styles.badgeLocked,
+                state === "current" && styles.badgeCurrent,
+                state === "locked" && styles.badgeLocked,
               ]}
             >
-              {state !== 'locked'
-                ? t('puzzlePath.nutWithTopic', {
+              {state !== "locked"
+                ? t("puzzlePath.nutWithTopic", {
                     number: puzzleNumber,
                     topic: topicLabel,
                   })
-                : t('puzzlePath.nutBadge', { number: puzzleNumber })}
+                : t("puzzlePath.nutBadge", { number: puzzleNumber })}
             </Text>
           </View>
-          {state === 'current' ? (
+          {state === "current" ? (
             <View style={styles.playChip}>
-              <Text style={styles.playChipText}>{t('common.play')}</Text>
+              <Text style={styles.playChipText}>{t("common.play")}</Text>
             </View>
           ) : (
             <Text style={styles.topic}>{TOPIC_EMOJI[puzzle.topic]}</Text>
           )}
         </View>
 
-        {state === 'locked' ? (
+        {state === "locked" ? (
           <Text style={styles.lockedHint}>
             {lockedMessage ??
-              t('puzzlePath.unlockHint', { number: puzzleNumber - 1 })}
+              t("puzzlePath.unlockHint", { number: puzzleNumber - 1 })}
           </Text>
         ) : (
           <Text
             style={[
               styles.preview,
-              state === 'completed' && styles.previewCompleted,
+              state === "completed" && styles.previewCompleted,
             ]}
-            numberOfLines={state === 'current' ? 3 : 2}
+            numberOfLines={state === "current" ? 3 : 2}
           >
             {puzzle.question}
           </Text>
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   cardCurrent: {
     borderColor: GameColors.primary,
-    backgroundColor: '#FFF8F6',
+    backgroundColor: "#FFF8F6",
   },
   cardLocked: {
     backgroundColor: GameColors.background,
@@ -138,28 +138,28 @@ const styles = StyleSheet.create({
     gap: moderateScale(4),
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: moderateScale(8),
   },
   headerLeft: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(8),
   },
   statusBadgeCompleted: {
     width: moderateScale(24),
     height: moderateScale(24),
     borderRadius: moderateScale(12),
-    backgroundColor: '#E8F8EB',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#E8F8EB",
+    alignItems: "center",
+    justifyContent: "center",
   },
   statusBadgeText: {
     fontSize: moderateScale(13),
-    fontWeight: '800',
+    fontWeight: "800",
     color: GameColors.success,
   },
   statusIcon: {
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   badge: {
     flex: 1,
     fontSize: moderateScale(14),
-    fontWeight: '700',
+    fontWeight: "700",
     color: GameColors.textMuted,
   },
   badgeCurrent: {
@@ -185,15 +185,15 @@ const styles = StyleSheet.create({
   },
   playChipText: {
     fontSize: moderateScale(12),
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: "800",
+    color: "#FFFFFF",
   },
   topic: {
     fontSize: moderateScale(16),
   },
   preview: {
     fontSize: moderateScale(15),
-    fontWeight: '600',
+    fontWeight: "600",
     color: GameColors.text,
     lineHeight: moderateScale(22),
   },
@@ -202,8 +202,8 @@ const styles = StyleSheet.create({
   },
   lockedHint: {
     fontSize: moderateScale(14),
-    fontWeight: '500',
+    fontWeight: "500",
     color: GameColors.textMuted,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
 });

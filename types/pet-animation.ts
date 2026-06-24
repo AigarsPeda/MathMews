@@ -1,4 +1,4 @@
-import type { PetVideoKey } from '@/constants/pet-videos';
+import type { PetVideoKey } from "@/constants/pet-videos";
 
 /** One playable slice of a pet video — building block for moods and scenarios. */
 export type PetVideoSegment = {
@@ -10,7 +10,7 @@ export type PetVideoSegment = {
   reverse?: boolean;
 };
 
-export type PetScenarioId = 'fallAsleep' | 'wakeUp';
+export type PetScenarioId = "fallAsleep" | "wakeUp";
 
 export type PetAnimationScenario = {
   id: PetScenarioId;

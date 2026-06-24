@@ -1,9 +1,5 @@
-import {
-  LIFE_BUY_COST,
-  LIFE_REGEN_MINUTES,
-  MAX_LIVES,
-} from '@/constants/game';
-import type { LivesState } from '@/types/game';
+import { LIFE_BUY_COST, LIFE_REGEN_MINUTES, MAX_LIVES } from "@/constants/game";
+import type { LivesState } from "@/types/game";
 
 const REGEN_MS = LIFE_REGEN_MINUTES * 60 * 1000;
 
@@ -45,10 +41,7 @@ export function applyLifeRegen(
   };
 }
 
-export function loseLife(
-  lives: LivesState,
-  now = Date.now(),
-): LivesState {
+export function loseLife(lives: LivesState, now = Date.now()): LivesState {
   const synced = applyLifeRegen(lives, now);
   const current = Math.max(0, synced.current - 1);
 
@@ -89,10 +82,10 @@ export function formatRegenClock(ms: number): string {
   const seconds = totalSeconds % 60;
 
   if (hours > 0) {
-    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   }
 
-  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
 export function canSpendLife(lives: LivesState, now = Date.now()): boolean {
@@ -108,10 +101,7 @@ export function canBuyLife(
   return synced.current < MAX_LIVES && coins >= LIFE_BUY_COST;
 }
 
-export function buyOneLife(
-  lives: LivesState,
-  now = Date.now(),
-): LivesState {
+export function buyOneLife(lives: LivesState, now = Date.now()): LivesState {
   const synced = applyLifeRegen(lives, now);
   if (synced.current >= MAX_LIVES) {
     return synced;

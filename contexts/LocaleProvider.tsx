@@ -1,3 +1,6 @@
+import i18n, { getDeviceLocale } from "@/i18n";
+import type { AppLocale } from "@/types/locale";
+import { loadSavedLocale, saveLocale } from "@/utils/locale-storage";
 import {
   createContext,
   useCallback,
@@ -6,11 +9,7 @@ import {
   useMemo,
   useState,
   type ReactNode,
-} from 'react';
-
-import i18n, { getDeviceLocale } from '@/i18n';
-import type { AppLocale } from '@/types/locale';
-import { loadSavedLocale, saveLocale } from '@/utils/locale-storage';
+} from "react";
 
 type LocaleContextValue = {
   locale: AppLocale;
@@ -64,7 +63,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 export function useLocale(): LocaleContextValue {
   const context = useContext(LocaleContext);
   if (!context) {
-    throw new Error('useLocale must be used within a LocaleProvider');
+    throw new Error("useLocale must be used within a LocaleProvider");
   }
   return context;
 }

@@ -3,8 +3,8 @@ import {
   HAPPINESS_DECAY_PER_HOUR,
   HUNGER_DECAY_PER_HOUR,
   LOW_HUNGER_THRESHOLD,
-} from '@/constants/game';
-import type { PetProfile, PetStats } from '@/types/game';
+} from "@/constants/game";
+import type { PetProfile, PetStats } from "@/types/game";
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MIN_DECAY_MS = 30_000;

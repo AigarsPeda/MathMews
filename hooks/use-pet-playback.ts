@@ -1,11 +1,13 @@
-import { ONE_SHOT_ANIMATIONS, PET_CARE_COOLDOWN_MS } from '@/constants/game';
-import { getPetScenario } from '@/constants/pet-scenarios';
-import { moodToSegment } from '@/constants/pet-scenarios';
-import { usePetVideoMood } from '@/hooks/use-pet-mood';
-import type { PetAnimationState, PetProfile } from '@/types/game';
-import type { PetAnimationScenario, PetVideoSegment } from '@/types/pet-animation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { ONE_SHOT_ANIMATIONS, PET_CARE_COOLDOWN_MS } from "@/constants/game";
+import { getPetScenario, moodToSegment } from "@/constants/pet-scenarios";
+import { usePetVideoMood } from "@/hooks/use-pet-mood";
+import type { PetAnimationState, PetProfile } from "@/types/game";
+import type {
+  PetAnimationScenario,
+  PetVideoSegment,
+} from "@/types/pet-animation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type ActiveScenario = {
   scenario: PetAnimationScenario;
@@ -13,8 +15,12 @@ type ActiveScenario = {
 };
 
 export type PetPlaybackState =
-  | { kind: 'scenario'; scenario: PetAnimationScenario; steps: PetVideoSegment[] }
-  | { kind: 'segment'; segment: PetVideoSegment; mood: PetAnimationState };
+  | {
+      kind: "scenario";
+      scenario: PetAnimationScenario;
+      steps: PetVideoSegment[];
+    }
+  | { kind: "segment"; segment: PetVideoSegment; mood: PetAnimationState };
 
 export function usePetPlayback(pet: PetProfile) {
   const { t } = useTranslation();
@@ -31,18 +37,18 @@ export function usePetPlayback(pet: PetProfile) {
   const playback = useMemo((): PetPlaybackState => {
     if (activeScenario) {
       return {
-        kind: 'scenario',
+        kind: "scenario",
         scenario: activeScenario.scenario,
         steps: activeScenario.scenario.steps,
       };
     }
 
     const mood = actionMood ?? baseVideoMood;
-    return { kind: 'segment', segment: moodToSegment(mood), mood };
+    return { kind: "segment", segment: moodToSegment(mood), mood };
   }, [actionMood, activeScenario, baseVideoMood]);
 
   const displayLabel = useMemo(() => {
-    if (playback.kind === 'scenario') {
+    if (playback.kind === "scenario") {
       return t(`scenario.${playback.scenario.id}`);
     }
     return t(`mood.${playback.mood}`);
@@ -84,7 +90,7 @@ export function usePetPlayback(pet: PetProfile) {
     (wasAsleep: boolean, mood: PetAnimationState) => {
       if (wasAsleep) {
         setActiveScenario({
-          scenario: getPetScenario('wakeUp'),
+          scenario: getPetScenario("wakeUp"),
           thenMood: mood,
         });
         return;
@@ -115,7 +121,7 @@ export function usePetPlayback(pet: PetProfile) {
         return current;
       });
 
-      if (completedMood === 'fallingAsleep') {
+      if (completedMood === "fallingAsleep") {
         onFallAsleepComplete();
       }
     },
