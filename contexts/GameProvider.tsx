@@ -39,6 +39,7 @@ type GameContextValue = {
   setWallet: (updater: (current: Wallet) => Wallet) => void;
   setProgress: (updater: (current: Progress) => Progress) => void;
   buyLife: () => boolean;
+  purchaseVisualHelp: (puzzleId: string, cost: number) => boolean;
   completeOnboarding: (name: string) => Promise<boolean>;
   recordInteraction: () => void;
 };
@@ -168,6 +169,33 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return purchased;
   }, []);
 
+  const purchaseVisualHelp = useCallback((puzzleId: string, cost: number) => {
+    let purchased = false;
+
+    setSave((current) => {
+      if (current.wallet.coins < cost) return current;
+      if (current.progress.visualHelpsUnlocked.includes(puzzleId)) {
+        purchased = true;
+        return current;
+      }
+
+      purchased = true;
+      return {
+        ...current,
+        wallet: { coins: current.wallet.coins - cost },
+        progress: {
+          ...current.progress,
+          visualHelpsUnlocked: [
+            ...current.progress.visualHelpsUnlocked,
+            puzzleId,
+          ],
+        },
+      };
+    });
+
+    return purchased;
+  }, []);
+
   const completeOnboarding = useCallback(async (name: string) => {
     const trimmed = normalizePetName(name);
     if (!trimmed) return false;
@@ -198,6 +226,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setWallet,
       setProgress,
       buyLife,
+      purchaseVisualHelp,
       completeOnboarding,
       recordInteraction,
     }),
@@ -213,6 +242,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setWallet,
       setProgress,
       buyLife,
+      purchaseVisualHelp,
     ],
   );
 

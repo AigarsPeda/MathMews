@@ -1,0 +1,118 @@
+export const visualHelpLv = {
+  title: 'Ilustrēta palīdzība',
+  subtitle: 'Velc slīdni, lai soli pa solim redzētu stāstu.',
+  lockedHint: 'Atbloķē bērniem draudzīgu animāciju šim riekstam.',
+  unlockPrice: '{{cost}} monētas — atbloķē uz visiem laikiem',
+  unlockButton: 'Atbloķēt ilustrāciju · {{cost}} 🪙',
+  watchButton: 'Skatīt ilustrāciju',
+  watchFree: 'Skatīt vēlreiz',
+  needCoins: 'Vajag {{cost}} monētas. Tev ir {{coins}} 🪙',
+  a11yOpen: 'Atvērt ilustrēto palīdzību',
+  a11yClose: 'Aizvērt ilustrēto palīdzību',
+  a11yUnlock: 'Atbloķēt ilustrāciju par {{cost}} monētām',
+  a11ySlider: 'Pārvietoties pa ilustrācijas animāciju',
+  easy01: {
+    s0: 'Mājai ir 12 āboli.',
+    s1: 'Viņa iedod 4 ābolus sunim.',
+    s2: 'Saskaiti atlikušos ābolus.',
+    s3: '12 mīnus 4 ir 8!',
+  },
+  easy02: {
+    s0: 'Zemniekam ir 17 aitas.',
+    s1: 'Visas, izņemot 9, aizbēg.',
+    s2: 'Paliek tikai 9 aitas.',
+    s3: '«Visas, izņemot 9» nozīmē, ka 9 palika!',
+  },
+  easy03: {
+    s0: '5 sarkani un 3 zili baloni.',
+    s1: 'Apvieno abas grupas.',
+    s2: '5 plus 3 ir 8 baloni!',
+  },
+  easy04: {
+    s0: 'Secībā katru reizi pieskaita 2.',
+    s1: 'Pēc 8 nāk…',
+    s2: '8 plus 2 ir 10!',
+  },
+  easy05: {
+    s0: 'Sākumā ir 10 cepumi.',
+    s1: 'Tu apēd 3 cepumus.',
+    s2: '10 mīnus 3 ir 7 cepumi!',
+  },
+  easy06: {
+    s0: 'Iedomājies kasti ar 2 rindām.',
+    s1: 'Katrā rindā ir 4 rotaļlietas.',
+    s2: 'Abas rindas pilnas — 8 rotaļlietas!',
+    s3: '2 reiz 4 ir 8.',
+  },
+  easy07: {
+    s0: 'Skaties skaitļus starp 10 un 15.',
+    s1: 'Nepāra skaitļus nevar sadalīt pa pāriem.',
+    s2: '11 ir nepāra — tā ir atbilde!',
+  },
+  easy08: {
+    s0: '6 gliemežvāki un vēl 4.',
+    s1: 'Saliec vienā kaudzē.',
+    s2: '6 plus 4 ir 10 gliemežvāki!',
+  },
+  medium01: {
+    s0: 'Katrā iepakojumā ir 6 mafini.',
+    s1: 'Tiek pārdoti 4 iepakojumi.',
+    s2: '4 reiz 6 ir 24 mafini!',
+  },
+  medium02: {
+    s0: 'Džejdai ir 35 €.',
+    s1: 'Viņa tērē 18 € par grāmatu.',
+    s2: '35 mīnus 18 ir 17 €!',
+  },
+  medium03: {
+    s0: 'Katrs skaitlis dubultojas.',
+    s1: 'Dubulto 24, lai atrastu nākamo.',
+    s2: '24 reiz 2 ir 48!',
+  },
+  medium04: {
+    s0: 'Klasē ir 28 skolēni.',
+    s1: 'Sadala 4 vienādās komandās.',
+    s2: '28 dalīts ar 4 ir 7 katrā komandā!',
+  },
+  medium05: {
+    s0: '3 rindas pa 5 bumbiņām = 15.',
+    s1: 'Pievieno vēl 4 bumbiņas.',
+    s2: '15 plus 4 ir 19 bumbiņas!',
+  },
+  medium06: {
+    s0: 'Desmitu cipars ir 4.',
+    s1: 'Vienību cipars ir divreiz 4 jeb 8.',
+    s2: 'Kopā sanāk 48!',
+  },
+  hard01: {
+    s0: 'Picai ir 8 šķēles.',
+    s1: 'Kopā apēdas 5 šķēles.',
+    s2: 'Paliek 3 šķēles — tas ir 3/8 picas!',
+  },
+  hard02: {
+    s0: '60 jūdzes 2 stundās.',
+    s1: 'Ātrums ir 30 jūdzes stundā.',
+    s2: '5 stundās: 30 reiz 5 = 150 jūdzes!',
+  },
+  hard03: {
+    s0: 'Rotaļlieta maksā 40 €.',
+    s1: '25% piemaksa pievieno 10 €.',
+    s2: 'Jaunā cena ir 50 €!',
+  },
+  hard04: {
+    s0: 'Katrs skaitlis ir divu iepriekšējo summa.',
+    s1: 'Saskaiti 5 un 8.',
+    s2: '5 plus 8 ir 13!',
+  },
+  hard05: {
+    s0: '4 rindas pa 6 cepumiem = 24.',
+    s1: 'Apēd 5 cepumus.',
+    s2: 'Uzdāvini vēl 7 — paliek 12!',
+    s3: '24 mīnus 5 mīnus 7 ir 12.',
+  },
+  hard06: {
+    s0: '5 āboli 3 draugiem.',
+    s1: 'Katrs saņem 1 ābolu.',
+    s2: 'Pa 1 katram, 2 paliek pār!',
+  },
+};

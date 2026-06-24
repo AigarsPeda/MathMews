@@ -106,6 +106,11 @@ function parseGameSave(raw: string): { save: GameSave; awayMsAtSessionStart: num
 
     const puzzlesSolved = normalizePuzzleProgress(parsed.progress.puzzlesSolved);
     const lives = normalizeLives(parsed.progress.lives);
+    const visualHelpsUnlocked = Array.isArray(parsed.progress.visualHelpsUnlocked)
+      ? parsed.progress.visualHelpsUnlocked.filter(
+          (id): id is string => typeof id === 'string',
+        )
+      : [];
     const rawLastCareAt =
       isRecord(parsed.pet) && typeof parsed.pet.lastCareAt === 'number'
         ? parsed.pet.lastCareAt
@@ -124,6 +129,7 @@ function parseGameSave(raw: string): { save: GameSave; awayMsAtSessionStart: num
           ...(parsed.progress as Progress),
           puzzlesSolved,
           lives,
+          visualHelpsUnlocked,
         },
       },
       awayMsAtSessionStart: awayMs,

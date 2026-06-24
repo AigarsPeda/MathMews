@@ -39,7 +39,19 @@ export const DEFAULT_PROGRESS = {
   streak: 0,
   puzzlesSolved: { easy: 0, medium: 0, hard: 0 },
   lives: { current: 5, nextRegenAt: null },
+  visualHelpsUnlocked: [] as string[],
 };
+
+/** One-time coin cost to permanently unlock a puzzle's visual help. */
+export const VISUAL_HELP_COSTS = {
+  easy: 3,
+  medium: 5,
+  hard: 7,
+} as const;
+
+export function getVisualHelpCost(difficulty: PuzzleDifficulty): number {
+  return VISUAL_HELP_COSTS[difficulty];
+}
 
 export const MAX_LIVES = 5;
 /** Minutes until one life regenerates. */

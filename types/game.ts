@@ -53,4 +53,6 @@ export type Progress = {
   streak: number;
   puzzlesSolved: PuzzleProgress;
   lives: LivesState;
+  /** Puzzle ids with a permanently unlocked visual help. */
+  visualHelpsUnlocked: string[];
 };

@@ -1,0 +1,118 @@
+export const visualHelpEn = {
+  title: 'Picture help',
+  subtitle: 'Drag the slider to move through the story step by step.',
+  lockedHint: 'Unlock a kid-friendly animated walkthrough for this nut.',
+  unlockPrice: '{{cost}} coins — unlock forever',
+  unlockButton: 'Unlock picture help · {{cost}} 🪙',
+  watchButton: 'Watch picture help',
+  watchFree: 'Watch again',
+  needCoins: 'Need {{cost}} coins. You have {{coins}} 🪙',
+  a11yOpen: 'Open picture help',
+  a11yClose: 'Close picture help',
+  a11yUnlock: 'Unlock picture help for {{cost}} coins',
+  a11ySlider: 'Move through the picture help animation',
+  easy01: {
+    s0: 'Maya starts with 12 apples.',
+    s1: 'She gives 4 apples to her dog.',
+    s2: 'Count the apples that are left.',
+    s3: '12 minus 4 equals 8!',
+  },
+  easy02: {
+    s0: 'The farmer has 17 sheep.',
+    s1: 'All but 9 run away.',
+    s2: 'Only 9 sheep stay.',
+    s3: '"All but 9" means 9 stayed!',
+  },
+  easy03: {
+    s0: '5 red balloons and 3 blue balloons.',
+    s1: 'Put both groups together.',
+    s2: '5 plus 3 equals 8 balloons!',
+  },
+  easy04: {
+    s0: 'The pattern adds 2 each time.',
+    s1: 'After 8 comes…',
+    s2: '8 plus 2 equals 10!',
+  },
+  easy05: {
+    s0: 'You start with 10 cookies.',
+    s1: 'You eat 3 cookies.',
+    s2: '10 minus 3 equals 7 cookies left!',
+  },
+  easy06: {
+    s0: 'Imagine a box with 2 rows.',
+    s1: 'Each row has 4 toys.',
+    s2: 'Both rows are full — 8 toys!',
+    s3: '2 times 4 equals 8.',
+  },
+  easy07: {
+    s0: 'Look at numbers between 10 and 15.',
+    s1: 'Odd numbers cannot be split in pairs.',
+    s2: '11 is odd — that is the answer!',
+  },
+  easy08: {
+    s0: '6 shells plus 4 more shells.',
+    s1: 'Put them in one pile.',
+    s2: '6 plus 4 equals 10 shells!',
+  },
+  medium01: {
+    s0: 'Each pack has 6 muffins.',
+    s1: '4 packs are sold.',
+    s2: '4 times 6 equals 24 muffins!',
+  },
+  medium02: {
+    s0: 'Jade has $35.',
+    s1: 'She spends $18 on a book.',
+    s2: '$35 minus $18 equals $17 left!',
+  },
+  medium03: {
+    s0: 'Each number doubles.',
+    s1: 'Double 24 to find the next number.',
+    s2: '24 times 2 equals 48!',
+  },
+  medium04: {
+    s0: '28 students in the class.',
+    s1: 'Split into 4 equal teams.',
+    s2: '28 divided by 4 equals 7 per team!',
+  },
+  medium05: {
+    s0: '3 rows of 5 marbles = 15.',
+    s1: 'Add 4 more marbles.',
+    s2: '15 plus 4 equals 19 marbles!',
+  },
+  medium06: {
+    s0: 'Tens digit is 4.',
+    s1: 'Ones digit is twice 4, which is 8.',
+    s2: 'Put them together: 48!',
+  },
+  hard01: {
+    s0: 'The pizza has 8 slices.',
+    s1: '5 slices are eaten in total.',
+    s2: '3 slices left — that is 3/8 of the pizza!',
+  },
+  hard02: {
+    s0: '60 miles in 2 hours.',
+    s1: 'Speed is 30 miles per hour.',
+    s2: 'In 5 hours: 30 times 5 = 150 miles!',
+  },
+  hard03: {
+    s0: 'The toy costs $40.',
+    s1: '25% markup adds $10.',
+    s2: 'New price is $50!',
+  },
+  hard04: {
+    s0: 'Each number is the sum of the two before it.',
+    s1: 'Add 5 and 8.',
+    s2: '5 plus 8 equals 13!',
+  },
+  hard05: {
+    s0: '4 rows of 6 cookies = 24.',
+    s1: 'Eat 5 cookies.',
+    s2: 'Give away 7 more — 12 left!',
+    s3: '24 minus 5 minus 7 equals 12.',
+  },
+  hard06: {
+    s0: '5 apples for 3 friends.',
+    s1: 'Each friend gets 1 apple.',
+    s2: '1 each with 2 apples left over!',
+  },
+};

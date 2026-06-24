@@ -3,9 +3,11 @@ import { NoLivesPanel } from "@/components/economy/LivesCounter";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
+import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import {
   GameColors,
   getPuzzleCoinReward,
+  getVisualHelpCost,
   LIFE_BUY_COST,
   PUZZLE_HAPPINESS_BOOST,
   PUZZLE_HUNGER_COST,
@@ -18,6 +20,7 @@ import {
   getPuzzlesByDifficulty,
   isPuzzleDifficulty,
 } from "@/constants/puzzles";
+import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
 import type { PetAnimationState } from "@/types/game";
@@ -83,6 +86,7 @@ export default function PlayScreen() {
     setProgress,
     hasCompletedOnboarding,
     recordInteraction,
+    purchaseVisualHelp,
   } = useGame();
 
   const puzzles = getPuzzlesByDifficulty(locale, difficulty);
@@ -105,6 +109,11 @@ export default function PlayScreen() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
+  const [showVisualHelp, setShowVisualHelp] = useState(false);
+
+  const visualHelpCost = getVisualHelpCost(difficulty);
+  const visualHelpUnlocked = progress.visualHelpsUnlocked.includes(puzzle.id);
+  const hasVisualHelp = hasVisualExplanation(puzzle.id);
 
   const syncedLives = useMemo(
     () => applyLifeRegen(progress.lives),
@@ -118,7 +127,20 @@ export default function PlayScreen() {
     setSelectedIndex(null);
     setIsCorrect(false);
     setCoinsEarned(0);
+    setShowVisualHelp(false);
   }, [difficulty, sessionIndex]);
+
+  const handleOpenVisualHelp = useCallback(() => {
+    if (answered || !hasVisualHelp) return;
+    recordInteraction();
+    triggerHaptic();
+    setShowVisualHelp(true);
+  }, [answered, hasVisualHelp, recordInteraction]);
+
+  const handlePurchaseVisualHelp = useCallback(() => {
+    recordInteraction();
+    return purchaseVisualHelp(puzzle.id, visualHelpCost);
+  }, [purchaseVisualHelp, puzzle.id, recordInteraction, visualHelpCost]);
 
   const exitToPath = useCallback(() => {
     recordInteraction();
@@ -351,6 +373,30 @@ export default function PlayScreen() {
             coinReward={coinReward}
           />
 
+          {hasVisualHelp ? (
+            <Pressable
+              style={[
+                styles.visualHelpBtn,
+                answered && styles.visualHelpBtnDisabled,
+              ]}
+              onPress={handleOpenVisualHelp}
+              disabled={answered}
+              accessibilityRole="button"
+              accessibilityLabel={t("visualHelp.a11yOpen")}
+            >
+              <Text style={styles.visualHelpBtnText}>
+                {visualHelpUnlocked
+                  ? t("visualHelp.watchFree")
+                  : t("visualHelp.watchButton")}
+              </Text>
+              {!visualHelpUnlocked ? (
+                <Text style={styles.visualHelpBtnHint}>
+                  {t("visualHelp.unlockPrice", { cost: visualHelpCost })}
+                </Text>
+              ) : null}
+            </Pressable>
+          ) : null}
+
           <View style={styles.choices}>
             {puzzle.choices.map((choice, index) => {
               let result: "correct" | "wrong" | null = null;
@@ -404,6 +450,16 @@ export default function PlayScreen() {
           onBuyLife={!isCorrect && !canRetry ? buyLife : undefined}
           buyLifeCost={LIFE_BUY_COST}
           coins={wallet.coins}
+        />
+
+        <VisualHelpSheet
+          visible={showVisualHelp}
+          puzzleId={puzzle.id}
+          cost={visualHelpCost}
+          coins={wallet.coins}
+          unlocked={visualHelpUnlocked}
+          onPurchase={handlePurchaseVisualHelp}
+          onClose={() => setShowVisualHelp(false)}
         />
       </View>
     </SafeAreaView>
@@ -464,5 +520,28 @@ const styles = StyleSheet.create({
   },
   choices: {
     gap: moderateScale(12),
+  },
+  visualHelpBtn: {
+    backgroundColor: '#F3EEFF',
+    borderRadius: moderateScale(16),
+    borderWidth: 2,
+    borderColor: '#C9B6FF',
+    paddingVertical: moderateScale(12),
+    paddingHorizontal: moderateScale(14),
+    alignItems: 'center',
+    gap: moderateScale(2),
+  },
+  visualHelpBtnDisabled: {
+    opacity: 0.45,
+  },
+  visualHelpBtnText: {
+    fontSize: moderateScale(16),
+    fontWeight: '800',
+    color: '#6B4FCF',
+  },
+  visualHelpBtnHint: {
+    fontSize: moderateScale(13),
+    fontWeight: '600',
+    color: GameColors.coinText,
   },
 });
