@@ -42,17 +42,6 @@ export const DEFAULT_PROGRESS = {
   visualHelpsUnlocked: [] as string[],
 };
 
-/** One-time coin cost to permanently unlock a puzzle's visual help. */
-export const VISUAL_HELP_COSTS = {
-  easy: 3,
-  medium: 5,
-  hard: 7,
-} as const;
-
-export function getVisualHelpCost(difficulty: PuzzleDifficulty): number {
-  return VISUAL_HELP_COSTS[difficulty];
-}
-
 export const MAX_LIVES = 5;
 /** Minutes until one life regenerates. */
 export const LIFE_REGEN_MINUTES = 30;
@@ -72,6 +61,11 @@ export const PUZZLE_COIN_REWARDS = {
   medium: 7,
   hard: 9,
 } as const;
+
+/** Costs more than the first-clear coin reward for that difficulty. */
+export function getVisualHelpCost(difficulty: PuzzleDifficulty): number {
+  return PUZZLE_COIN_REWARDS[difficulty] + 1;
+}
 
 /** Bonus coins for replaying a puzzle you've already cracked. */
 export const PUZZLE_REPLAY_COIN_REWARDS = {
