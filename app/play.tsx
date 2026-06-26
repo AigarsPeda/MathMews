@@ -187,7 +187,9 @@ export default function PlayScreen() {
         setWallet((current) => ({ coins: current.coins + coinReward }));
         setProgress((current) => ({
           ...current,
-          puzzleStreak: current.puzzleStreak + 1,
+          puzzleStreak: isReplay
+            ? current.puzzleStreak
+            : current.puzzleStreak + 1,
         }));
         setPet((current) =>
           withPetCareUpdate(current, (stats) => ({
@@ -201,7 +203,7 @@ export default function PlayScreen() {
         setProgress((current) => ({
           ...current,
           lives: loseLife(current.lives),
-          puzzleStreak: 0,
+          puzzleStreak: isReplay ? current.puzzleStreak : 0,
         }));
         setPet((current) =>
           withPetCareUpdate(current, (stats) => ({
@@ -218,6 +220,7 @@ export default function PlayScreen() {
       answered,
       coinReward,
       happinessBoost,
+      isReplay,
       puzzle.correctIndex,
       recordInteraction,
       setPet,
