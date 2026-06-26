@@ -1,5 +1,6 @@
 import { MOOD_ANIMATION } from "@/constants/game";
 import type { PetAnimationState, PetMood, PetProfile } from "@/types/game";
+import { isPetHungry } from "@/utils/pet-care";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const LOW_STAT_THRESHOLD = 30;
@@ -29,6 +30,10 @@ export function isPetIdleSleepy(pet: PetProfile, now = Date.now()): boolean {
 }
 
 export function shouldPetSleep(pet: PetProfile, now = Date.now()): boolean {
+  // Hungry pets stay awake — low fullness shows as sad, not sleep.
+  if (isPetHungry(pet.stats)) {
+    return false;
+  }
   return isPetSleepy(pet) || isPetIdleSleepy(pet, now);
 }
 
@@ -56,9 +61,7 @@ export function derivePetMood(pet: PetProfile, now = Date.now()): PetMood {
     return "sleeping";
   }
 
-  // Sad / crying only reflects low happiness. Hunger is shown on the stat bar;
-  // stats.hunger is fullness (low = needs food), not mood.
-  if (stats.happiness < LOW_STAT_THRESHOLD) {
+  if (isPetHungry(stats) || stats.happiness < LOW_STAT_THRESHOLD) {
     return "sad";
   }
 

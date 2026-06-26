@@ -1,5 +1,9 @@
 import { MOOD_ANIMATION } from "@/constants/game";
-import { PET_VIDEO_SOURCES, type PetVideoKey } from "@/constants/pet-videos";
+import {
+  PET_MOOD_VIDEO_KEYS,
+  PET_VIDEO_SOURCES,
+  type PetVideoKey,
+} from "@/constants/pet-videos";
 import { useVideoPlayer, type VideoPlayer } from "expo-video";
 import {
   createContext,
@@ -19,7 +23,7 @@ const WARM_START_SEC: Record<PetVideoKey, number> = {
   happy_bounce: (MOOD_ANIMATION.excited.startMs ?? 0) / 1000,
   victory_spin: (MOOD_ANIMATION.dancing.startMs ?? 0) / 1000,
   eating: (MOOD_ANIMATION.eating.startMs ?? 0) / 1000,
-  sad: (MOOD_ANIMATION.sad.startMs ?? 0) / 1000,
+  sad: 0,
   sad2: (MOOD_ANIMATION.angry.startMs ?? 0) / 1000,
   sleeping: (MOOD_ANIMATION.sleeping.startMs ?? 0) / 1000,
   correct: 5,
@@ -33,11 +37,10 @@ function setupPlayer(player: VideoPlayer) {
   player.loop = false;
 }
 
-function warmPlayer(player: VideoPlayer, startSec: number) {
+function primePlayer(player: VideoPlayer, startSec: number) {
   const run = () => {
     player.currentTime = startSec;
-    player.play();
-    setTimeout(() => player.pause(), 80);
+    player.pause();
   };
 
   if (player.status === "readyToPlay") {
@@ -102,8 +105,8 @@ export function PetVideoProvider({ children }: { children: ReactNode }) {
   const players = usePetVideoPlayerPool();
 
   useEffect(() => {
-    for (const key of PET_VIDEO_KEYS) {
-      warmPlayer(players[key], WARM_START_SEC[key]);
+    for (const key of PET_MOOD_VIDEO_KEYS) {
+      primePlayer(players[key], WARM_START_SEC[key]);
     }
   }, [players]);
 

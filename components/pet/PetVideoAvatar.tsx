@@ -1,5 +1,5 @@
 import { GameColors } from "@/constants/game";
-import type { PetVideoKey } from "@/constants/pet-videos";
+import { PET_MOOD_VIDEO_KEYS, type PetVideoKey } from "@/constants/pet-videos";
 import {
   PET_VIDEO_KEYS,
   usePetVideoPlayers,
@@ -7,7 +7,7 @@ import {
 import type { PetVideoSegment } from "@/types/pet-animation";
 import { moderateScale } from "@/utils/scale";
 import { VideoView } from "expo-video";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 const DEFAULT_SIZE = 200;
@@ -162,11 +162,26 @@ export function PetVideoAvatar({
       stepIndex: number,
     ) => {
       clearSegmentTimer();
-      if (config.endMs === undefined) return;
-
       const startSec = (config.startMs ?? 0) / 1000;
-      const endSec = config.endMs / 1000;
       const looping = shouldLoop(config);
+
+      if (config.endMs === undefined) {
+        if (!looping) return;
+
+        segmentTimerRef.current = setInterval(() => {
+          if (activeKeyRef.current !== config.videoKey) return;
+
+          const duration = player.duration;
+          if (!Number.isFinite(duration) || duration <= startSec) return;
+          if (player.currentTime < duration - 0.08) return;
+
+          seekIfNeeded(player, startSec);
+          player.play();
+        }, SEGMENT_POLL_MS);
+        return;
+      }
+
+      const endSec = config.endMs / 1000;
 
       segmentTimerRef.current = setInterval(() => {
         if (activeKeyRef.current !== config.videoKey) return;
@@ -272,6 +287,12 @@ export function PetVideoAvatar({
       clearRevealFallback();
       pendingRevealRef.current = null;
 
+      for (const key of PET_VIDEO_KEYS) {
+        if (key !== nextKey) {
+          players[key].pause();
+        }
+      }
+
       const startSec = (config.startMs ?? 0) / 1000;
       const endSec =
         config.endMs !== undefined ? config.endMs / 1000 : undefined;
@@ -305,6 +326,24 @@ export function PetVideoAvatar({
         startPlayback();
         watchSegmentEnd(nextPlayer, config, stepIndex);
         activeKeyRef.current = nextKey;
+        return;
+      }
+
+      players[prevKey].pause();
+
+      if (looping && !config.reverse) {
+        pendingRevealRef.current = {
+          topKey: nextKey,
+          underKey: null,
+          stepIndex,
+          config,
+        };
+        setLayers({ under: null, top: nextKey });
+        setTopVisible(true);
+        startPlayback();
+        watchSegmentEnd(nextPlayer, config, stepIndex);
+        activeKeyRef.current = nextKey;
+        queueRevealFallback(nextKey);
         return;
       }
 
@@ -386,18 +425,23 @@ export function PetVideoAvatar({
     shouldLoop,
   ]);
 
-  const mountedKeys = Array.from(
-    new Set(
-      [layers.under, layers.top].filter(
-        (key): key is PetVideoKey => key !== null,
-      ),
-    ),
-  );
+  const mountedVideoKeys = useMemo(() => {
+    const keys = new Set<PetVideoKey>(PET_MOOD_VIDEO_KEYS);
+    keys.add(layers.top);
+    if (layers.under) {
+      keys.add(layers.under);
+    }
+    return PET_VIDEO_KEYS.filter((key) => keys.has(key));
+  }, [layers.top, layers.under]);
 
   const content = (
     <View style={[styles.container, { width: size, height: size }]}>
-      {mountedKeys.map((key) => {
+      {mountedVideoKeys.map((key) => {
         const isTop = key === layers.top;
+        const isUnder = key === layers.under;
+        const opacity =
+          isTop && topVisible ? 1 : isUnder && !topVisible ? 1 : 0;
+
         return (
           <VideoView
             key={key}
@@ -405,14 +449,16 @@ export function PetVideoAvatar({
             style={[
               styles.videoLayer,
               {
-                zIndex: isTop ? 2 : 1,
-                opacity: isTop ? (topVisible ? 1 : 0) : 1,
+                zIndex: isTop ? 2 : isUnder ? 1 : 0,
+                opacity,
               },
             ]}
             contentFit="contain"
             nativeControls={false}
             useExoShutter={false}
-            onFirstFrameRender={isTop ? () => handleFirstFrame(key) : undefined}
+            onFirstFrameRender={
+              isTop ? () => handleFirstFrame(key) : undefined
+            }
             {...(Platform.OS === "android"
               ? { surfaceType: "textureView" as const }
               : {})}

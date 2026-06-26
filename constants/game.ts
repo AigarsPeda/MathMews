@@ -120,8 +120,8 @@ export const MOOD_ANIMATION: Record<PetMood, MoodAnimationConfig> = {
   excited: { loop: false, startMs: 5500 },
   dancing: { loop: false, startMs: 5000 },
   eating: { loop: false, startMs: 5000 },
-  angry: { loop: true, startMs: 5000 },
   sad: { loop: true, startMs: 5000 },
+  angry: { loop: true, startMs: 5000 },
   /** sleeping.mp4 lie-down intro. */
   fallingAsleep: { loop: false, startMs: 0, endMs: 7550 },
   /** sleeping.mp4 breathing loop. */

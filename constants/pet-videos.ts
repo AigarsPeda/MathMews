@@ -17,6 +17,11 @@ export type PetVideoKey = keyof typeof PET_VIDEO_SOURCES;
 
 export const PET_VIDEO_KEYS = Object.keys(PET_VIDEO_SOURCES) as PetVideoKey[];
 
+/** Mood / care clips — kept mounted on the home pet. */
+export const PET_MOOD_VIDEO_KEYS = PET_VIDEO_KEYS.filter(
+  (key) => key !== "correct" && key !== "catches_a_coin",
+) as PetVideoKey[];
+
 export type PetVideoConfig = {
   loop: boolean;
   startMs?: number;
