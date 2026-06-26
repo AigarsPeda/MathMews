@@ -1,5 +1,5 @@
 import { LIFE_BUY_COST } from "@/constants/game";
-import { resolveAsleepOnLoad } from "@/hooks/use-pet-mood";
+import { resolveAsleepOnLoad } from "@/pet-display/engine/derive-mood";
 import type { PetProfile, Progress, Wallet } from "@/types/game";
 import type { GameSave } from "@/types/save";
 import { PET_NAME_MAX_LENGTH } from "@/types/save";

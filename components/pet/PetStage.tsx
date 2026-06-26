@@ -1,9 +1,9 @@
-import { PetAvatar } from "@/components/pet/PetAvatar";
+import { PetDisplay } from "@/pet-display/components/PetDisplay";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { GameColors } from "@/constants/game";
-import type { PetPlaybackState } from "@/hooks/use-pet-playback";
-import type { PetStats } from "@/types/game";
+import type { PetPlaybackState } from "@/pet-display/types";
+import type { PetStats, PetType } from "@/types/game";
 import { clampStat } from "@/utils/pet-care";
 import { moderateScale } from "@/utils/scale";
 import { useCallback, useState } from "react";
@@ -15,6 +15,7 @@ const COMPACT_PET_MAX = 300;
 
 type PetStageProps = {
   name: string;
+  petType: PetType;
   stats: PetStats;
   speechMessage: string;
   playback: PetPlaybackState;
@@ -57,6 +58,7 @@ function StatBar({
 
 export function PetStage({
   name,
+  petType,
   stats,
   speechMessage,
   playback,
@@ -111,7 +113,8 @@ export function PetStage({
               <View style={styles.speechAnchor}>
                 <PetSpeechBubble message={speechMessage} />
               </View>
-              <PetAvatar
+              <PetDisplay
+                petType={petType}
                 playback={playback}
                 width={avatarWidth}
                 onPress={onPetPress}

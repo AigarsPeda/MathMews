@@ -1,10 +1,11 @@
 import { GameColors } from "@/constants/game";
-import { PET_MOOD_VIDEO_KEYS, type PetVideoKey } from "@/constants/pet-videos";
 import {
-  PET_VIDEO_KEYS,
+  PET_MOOD_VIDEO_ASSET_KEYS,
+  PET_VIDEO_ASSET_KEYS,
   usePetVideoPlayers,
-} from "@/contexts/PetVideoProvider";
-import type { PetVideoSegment } from "@/types/pet-animation";
+  type PetVideoAssetKey,
+} from "@/pet-display/media/video/PetVideoMediaProvider";
+import type { PetMediaSegment } from "@/pet-display/types";
 import { moderateScale } from "@/utils/scale";
 import { VideoView } from "expo-video";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -16,9 +17,9 @@ const REVERSE_POLL_MS = 33;
 const REVERSE_STEP_SEC = REVERSE_POLL_MS / 1000;
 const SEEK_EPSILON_SEC = 0.04;
 
-type PetVideoAvatarProps = {
-  segment?: PetVideoSegment;
-  scenarioSteps?: PetVideoSegment[];
+type PetVideoRendererProps = {
+  segment?: PetMediaSegment;
+  scenarioSteps?: PetMediaSegment[];
   size?: number;
   loop?: boolean;
   onAnimationComplete?: () => void;
@@ -27,20 +28,24 @@ type PetVideoAvatarProps = {
 };
 
 type LayerStack = {
-  under: PetVideoKey | null;
-  top: PetVideoKey;
+  under: PetVideoAssetKey | null;
+  top: PetVideoAssetKey;
 };
 
-function segmentToken(steps: PetVideoSegment[]) {
+function segmentToken(steps: PetMediaSegment[]) {
   return steps
     .map(
       (step, index) =>
-        `${step.videoKey}:${step.startMs ?? 0}:${step.endMs ?? "end"}:${step.reverse ? "rev" : "fwd"}:${step.loop ? "loop" : "once"}:${index}`,
+        `${step.assetKey}:${step.startMs ?? 0}:${step.endMs ?? "end"}:${step.reverse ? "rev" : "fwd"}:${step.loop ? "loop" : "once"}:${index}`,
     )
     .join("|");
 }
 
-export function PetVideoAvatar({
+function asVideoKey(assetKey: string): PetVideoAssetKey {
+  return assetKey as PetVideoAssetKey;
+}
+
+export function PetVideoRenderer({
   segment,
   scenarioSteps,
   size = moderateScale(DEFAULT_SIZE),
@@ -48,18 +53,19 @@ export function PetVideoAvatar({
   onAnimationComplete,
   onStepComplete,
   onPress,
-}: PetVideoAvatarProps) {
+}: PetVideoRendererProps) {
   const players = usePetVideoPlayers();
   const onCompleteRef = useRef(onAnimationComplete);
   const onStepCompleteRef = useRef(onStepComplete);
   const loopRef = useRef(loop);
   const applySegmentRef = useRef<
-    (config: PetVideoSegment, stepIndex: number) => void
+    (config: PetMediaSegment, stepIndex: number) => void
   >(() => {});
 
-  const initialKey =
-    scenarioSteps?.[0]?.videoKey ?? segment?.videoKey ?? "idle";
-  const activeKeyRef = useRef<PetVideoKey>(initialKey);
+  const initialKey = asVideoKey(
+    scenarioSteps?.[0]?.assetKey ?? segment?.assetKey ?? "idle",
+  );
+  const activeKeyRef = useRef<PetVideoAssetKey>(initialKey);
   const [layers, setLayers] = useState<LayerStack>({
     under: null,
     top: initialKey,
@@ -68,13 +74,13 @@ export function PetVideoAvatar({
 
   const segmentTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stepIndexRef = useRef(0);
-  const stepsRef = useRef<PetVideoSegment[]>([]);
+  const stepsRef = useRef<PetMediaSegment[]>([]);
   const playbackTokenRef = useRef("");
   const pendingRevealRef = useRef<{
-    topKey: PetVideoKey;
-    underKey: PetVideoKey | null;
+    topKey: PetVideoAssetKey;
+    underKey: PetVideoAssetKey | null;
     stepIndex: number;
-    config: PetVideoSegment;
+    config: PetMediaSegment;
   } | null>(null);
   const revealFallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clearUnderTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -112,12 +118,12 @@ export function PetVideoAvatar({
     }
   }, []);
 
-  const shouldLoop = useCallback((config: PetVideoSegment) => {
+  const shouldLoop = useCallback((config: PetMediaSegment) => {
     return loopRef.current || config.loop === true;
   }, []);
 
   const seekIfNeeded = useCallback(
-    (player: (typeof players)[PetVideoKey], targetSec: number) => {
+    (player: (typeof players)[PetVideoAssetKey], targetSec: number) => {
       if (Math.abs(player.currentTime - targetSec) > SEEK_EPSILON_SEC) {
         player.currentTime = targetSec;
       }
@@ -140,7 +146,7 @@ export function PetVideoAvatar({
   }, []);
 
   const commitReveal = useCallback(
-    (topKey: PetVideoKey, underKey: PetVideoKey | null) => {
+    (topKey: PetVideoAssetKey, underKey: PetVideoAssetKey | null) => {
       activeKeyRef.current = topKey;
       if (underKey) {
         players[underKey].pause();
@@ -157,19 +163,20 @@ export function PetVideoAvatar({
 
   const watchSegmentEndForward = useCallback(
     (
-      player: (typeof players)[PetVideoKey],
-      config: PetVideoSegment,
+      player: (typeof players)[PetVideoAssetKey],
+      config: PetMediaSegment,
       stepIndex: number,
     ) => {
       clearSegmentTimer();
       const startSec = (config.startMs ?? 0) / 1000;
+      const assetKey = asVideoKey(config.assetKey);
       const looping = shouldLoop(config);
 
       if (config.endMs === undefined) {
         if (!looping) return;
 
         segmentTimerRef.current = setInterval(() => {
-          if (activeKeyRef.current !== config.videoKey) return;
+          if (activeKeyRef.current !== assetKey) return;
 
           const duration = player.duration;
           if (!Number.isFinite(duration) || duration <= startSec) return;
@@ -184,7 +191,7 @@ export function PetVideoAvatar({
       const endSec = config.endMs / 1000;
 
       segmentTimerRef.current = setInterval(() => {
-        if (activeKeyRef.current !== config.videoKey) return;
+        if (activeKeyRef.current !== assetKey) return;
         if (player.currentTime < endSec - 0.05) return;
 
         if (looping) {
@@ -204,8 +211,8 @@ export function PetVideoAvatar({
 
   const watchSegmentEndReverse = useCallback(
     (
-      player: (typeof players)[PetVideoKey],
-      config: PetVideoSegment,
+      player: (typeof players)[PetVideoAssetKey],
+      config: PetMediaSegment,
       stepIndex: number,
     ) => {
       clearSegmentTimer();
@@ -220,7 +227,7 @@ export function PetVideoAvatar({
       let reverseTime = endSec;
 
       segmentTimerRef.current = setInterval(() => {
-        if (activeKeyRef.current !== config.videoKey) return;
+        if (activeKeyRef.current !== asVideoKey(config.assetKey)) return;
 
         reverseTime -= REVERSE_STEP_SEC;
         if (reverseTime <= startSec) {
@@ -239,8 +246,8 @@ export function PetVideoAvatar({
 
   const watchSegmentEnd = useCallback(
     (
-      player: (typeof players)[PetVideoKey],
-      config: PetVideoSegment,
+      player: (typeof players)[PetVideoAssetKey],
+      config: PetMediaSegment,
       stepIndex: number,
     ) => {
       if (config.reverse) {
@@ -253,7 +260,7 @@ export function PetVideoAvatar({
   );
 
   const handleFirstFrame = useCallback(
-    (key: PetVideoKey) => {
+    (key: PetVideoAssetKey) => {
       const pending = pendingRevealRef.current;
       if (!pending || pending.topKey !== key) return;
 
@@ -267,7 +274,7 @@ export function PetVideoAvatar({
   );
 
   const queueRevealFallback = useCallback(
-    (topKey: PetVideoKey) => {
+    (topKey: PetVideoAssetKey) => {
       clearRevealFallback();
       revealFallbackRef.current = setTimeout(() => {
         handleFirstFrame(topKey);
@@ -277,8 +284,8 @@ export function PetVideoAvatar({
   );
 
   const applySegment = useCallback(
-    (config: PetVideoSegment, stepIndex: number) => {
-      const nextKey = config.videoKey;
+    (config: PetMediaSegment, stepIndex: number) => {
+      const nextKey = asVideoKey(config.assetKey);
       const nextPlayer = players[nextKey];
       const prevKey = activeKeyRef.current;
 
@@ -287,7 +294,7 @@ export function PetVideoAvatar({
       clearRevealFallback();
       pendingRevealRef.current = null;
 
-      for (const key of PET_VIDEO_KEYS) {
+      for (const key of PET_VIDEO_ASSET_KEYS) {
         if (key !== nextKey) {
           players[key].pause();
         }
@@ -386,7 +393,7 @@ export function PetVideoAvatar({
   }, [applySegment, scenarioSteps, segment]);
 
   useEffect(() => {
-    const subscriptions = PET_VIDEO_KEYS.map((key) =>
+    const subscriptions = PET_VIDEO_ASSET_KEYS.map((key) =>
       players[key].addListener("playToEnd", () => {
         if (activeKeyRef.current !== key) return;
 
@@ -426,12 +433,12 @@ export function PetVideoAvatar({
   ]);
 
   const mountedVideoKeys = useMemo(() => {
-    const keys = new Set<PetVideoKey>(PET_MOOD_VIDEO_KEYS);
+    const keys = new Set<PetVideoAssetKey>(PET_MOOD_VIDEO_ASSET_KEYS);
     keys.add(layers.top);
     if (layers.under) {
       keys.add(layers.under);
     }
-    return PET_VIDEO_KEYS.filter((key) => keys.has(key));
+    return PET_VIDEO_ASSET_KEYS.filter((key) => keys.has(key));
   }, [layers.top, layers.under]);
 
   const content = (

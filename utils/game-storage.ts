@@ -3,7 +3,7 @@ import {
   DEFAULT_PROGRESS,
   DEFAULT_WALLET,
 } from "@/constants/game";
-import { resolveAsleepOnLoad } from "@/hooks/use-pet-mood";
+import { resolveAsleepOnLoad } from "@/pet-display/engine/derive-mood";
 import type {
   LivesState,
   PetProfile,

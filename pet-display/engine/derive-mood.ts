@@ -30,17 +30,12 @@ export function isPetIdleSleepy(pet: PetProfile, now = Date.now()): boolean {
 }
 
 export function shouldPetSleep(pet: PetProfile, now = Date.now()): boolean {
-  // Hungry pets stay awake — low fullness shows as sad, not sleep.
   if (isPetHungry(pet.stats)) {
     return false;
   }
   return isPetSleepy(pet) || isPetIdleSleepy(pet, now);
 }
 
-/**
- * After time away: mark asleep so reopen skips the lie-down intro.
- * While the app stays open, idle sleep plays the lie-down intro first.
- */
 export function resolveAsleepOnLoad(
   pet: PetProfile,
   awayMs: number,
@@ -68,7 +63,6 @@ export function derivePetMood(pet: PetProfile, now = Date.now()): PetMood {
   return "idle";
 }
 
-/** Picks lie-down intro vs asleep loop clip from sleeping.mp4. */
 export function derivePetVideoMood(
   pet: PetProfile,
   fallAsleepDone: boolean,
@@ -89,11 +83,7 @@ export function derivePetVideoMood(
   return "fallingAsleep";
 }
 
-export function usePetMood(pet: PetProfile): PetMood {
-  return derivePetMood(pet);
-}
-
-export function usePetVideoMood(pet: PetProfile) {
+export function usePetBaseMood(pet: PetProfile) {
   const [fallAsleepDone, setFallAsleepDone] = useState(pet.isAsleep === true);
   const [now, setNow] = useState(Date.now());
 

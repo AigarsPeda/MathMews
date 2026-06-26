@@ -9,11 +9,10 @@ import {
   PET_HAPPINESS_BOOST,
   PUZZLE_STREAK_NOTIFY_MIN,
 } from "@/constants/game";
-import { pickRandomExcitedMood } from "@/constants/pet-videos";
+import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
+import { shouldPetSleep } from "@/pet-display/engine/derive-mood";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
-import { shouldPetSleep } from "@/hooks/use-pet-mood";
-import { usePetPlayback } from "@/hooks/use-pet-playback";
 import type { PetStats } from "@/types/game";
 import {
   canFeedForEffect,
@@ -66,13 +65,11 @@ export default function HomeScreen() {
 
   const {
     playback,
-    baseVideoMood,
-    playAction,
-    handleSegmentComplete,
+    baseMood: baseVideoMood,
+    send: sendPetCommand,
     isCareBlocked,
     isCareAnimationPlaying,
-    beginCareAction,
-  } = usePetPlayback(pet);
+  } = usePetDisplay(pet);
 
   const showSpeech = useCallback((text: string, durationMs = 2800) => {
     if (speechTimerRef.current) {
@@ -119,11 +116,11 @@ export default function HomeScreen() {
   );
 
   const playActionMood = useCallback(
-    (wasAsleep: boolean, mood: Parameters<typeof playAction>[1]) => {
+    (wasAsleep: boolean, mood: "excited" | "eating") => {
       triggerHaptic();
-      playAction(wasAsleep, mood);
+      sendPetCommand({ type: "playAction", wasAsleep, mood });
     },
-    [playAction],
+    [sendPetCommand],
   );
 
   const wakePet = useCallback(
@@ -144,7 +141,7 @@ export default function HomeScreen() {
     const wasAsleep = pet.isAsleep === true;
 
     recordInteraction();
-    playActionMood(wasAsleep, pickRandomExcitedMood());
+    playActionMood(wasAsleep, "excited");
     showSpeech(t(pickPetTapSpeechKey(), { name: pet.name }));
     wakePet((stats) => ({
       ...stats,
@@ -183,7 +180,7 @@ export default function HomeScreen() {
     }
 
     recordInteraction();
-    beginCareAction();
+    sendPetCommand({ type: "beginCareAction" });
     triggerHaptic();
     setWallet((current) => ({ coins: current.coins - FEED_COST }));
     wakePet((stats) => ({
@@ -198,7 +195,6 @@ export default function HomeScreen() {
     playActionMood(wasAsleep, "eating");
     showSpeech(t("home.enjoyedSnack", { name: pet.name }));
   }, [
-    beginCareAction,
     isCareAnimationPlaying,
     isCareBlocked,
     pet.isAsleep,
@@ -207,6 +203,7 @@ export default function HomeScreen() {
     playActionMood,
     recordInteraction,
     rejectCareAction,
+    sendPetCommand,
     setWallet,
     showSpeech,
     t,
@@ -229,13 +226,13 @@ export default function HomeScreen() {
   const handleAnimationComplete = useCallback(() => {
     const completedMood =
       playback.kind === "segment" ? playback.mood : baseVideoMood;
-    handleSegmentComplete(completedMood);
+    sendPetCommand({ type: "animationComplete", completedMood });
     if (completedMood === "fallingAsleep") {
       setPet((current) =>
         shouldPetSleep(current) ? { ...current, isAsleep: true } : current,
       );
     }
-  }, [baseVideoMood, handleSegmentComplete, playback, setPet]);
+  }, [baseVideoMood, playback, sendPetCommand, setPet]);
 
   if (!isReady) {
     return (
@@ -284,6 +281,7 @@ export default function HomeScreen() {
           <PetStage
             compact
             name={pet.name}
+            petType={pet.type}
             stats={pet.stats}
             speechMessage={speechMessage}
             playback={playback}

@@ -455,6 +455,7 @@ export default function PlayScreen() {
         <ResultOverlay
           visible={answered}
           correct={isCorrect}
+          petType={pet.type}
           petMood={resultMood}
           message={
             isCorrect

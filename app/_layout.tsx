@@ -1,7 +1,7 @@
 import { ExpoUIHost } from "@/components/ui/ExpoUIHost";
 import { GameProvider } from "@/contexts/GameProvider";
 import { LocaleProvider } from "@/contexts/LocaleProvider";
-import { PetVideoProvider } from "@/contexts/PetVideoProvider";
+import { PetDisplayProvider } from "@/pet-display/PetDisplayProvider";
 import "@/i18n";
 import {
   DarkTheme,
@@ -19,7 +19,7 @@ export default function RootLayout() {
   return (
     <LocaleProvider>
       <GameProvider>
-        <PetVideoProvider>
+        <PetDisplayProvider>
           <ExpoUIHost>
             <ThemeProvider
               value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
@@ -48,7 +48,7 @@ export default function RootLayout() {
               <StatusBar style="auto" />
             </ThemeProvider>
           </ExpoUIHost>
-        </PetVideoProvider>
+        </PetDisplayProvider>
       </GameProvider>
     </LocaleProvider>
   );

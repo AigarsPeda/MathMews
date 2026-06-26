@@ -1,30 +1,25 @@
-import { ONE_SHOT_ANIMATIONS, PET_CARE_COOLDOWN_MS } from "@/constants/game";
-import { getPetScenario, moodToSegment } from "@/constants/pet-scenarios";
-import { usePetVideoMood } from "@/hooks/use-pet-mood";
-import type { PetAnimationState, PetProfile } from "@/types/game";
+import { PET_CARE_COOLDOWN_MS } from "@/constants/game";
+import { usePetBaseMood } from "@/pet-display/engine/derive-mood";
+import { getPetMediaRegistry } from "@/pet-display/registry/dog-video-registry";
 import type {
-  PetAnimationScenario,
-  PetVideoSegment,
-} from "@/types/pet-animation";
+  PetDisplayCommand,
+  PetDisplayEngine,
+  PetMediaScenario,
+  PetPlaybackState,
+} from "@/pet-display/types";
+import type { PetAnimationState, PetProfile } from "@/types/game";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type ActiveScenario = {
-  scenario: PetAnimationScenario;
+  scenario: PetMediaScenario;
   thenMood: PetAnimationState | null;
 };
 
-export type PetPlaybackState =
-  | {
-      kind: "scenario";
-      scenario: PetAnimationScenario;
-      steps: PetVideoSegment[];
-    }
-  | { kind: "segment"; segment: PetVideoSegment; mood: PetAnimationState };
-
-export function usePetPlayback(pet: PetProfile) {
+export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
   const { t } = useTranslation();
-  const { mood: baseVideoMood, onFallAsleepComplete } = usePetVideoMood(pet);
+  const registry = getPetMediaRegistry(pet.type);
+  const { mood: baseMood, onFallAsleepComplete } = usePetBaseMood(pet);
   const [actionMood, setActionMood] = useState<PetAnimationState | null>(null);
   const [activeScenario, setActiveScenario] = useState<ActiveScenario | null>(
     null,
@@ -43,9 +38,13 @@ export function usePetPlayback(pet: PetProfile) {
       };
     }
 
-    const mood = actionMood ?? baseVideoMood;
-    return { kind: "segment", segment: moodToSegment(mood), mood };
-  }, [actionMood, activeScenario, baseVideoMood]);
+    const mood = actionMood ?? baseMood;
+    return {
+      kind: "segment",
+      segment: registry.getSegment(mood),
+      mood,
+    };
+  }, [actionMood, activeScenario, baseMood, registry]);
 
   const displayLabel = useMemo(() => {
     if (playback.kind === "scenario") {
@@ -65,10 +64,9 @@ export function usePetPlayback(pet: PetProfile) {
 
   const isCareAnimationPlaying = useMemo(() => {
     if (activeScenario) return true;
-    return actionMood !== null && ONE_SHOT_ANIMATIONS.includes(actionMood);
-  }, [activeScenario, actionMood]);
+    return actionMood !== null && registry.oneShotStates.includes(actionMood);
+  }, [actionMood, activeScenario, registry.oneShotStates]);
 
-  // Recover if a care animation ends without clearing the busy flag.
   useEffect(() => {
     if (isCareAnimationPlaying || !careActionBusy) return;
     careActionBusyRef.current = false;
@@ -90,17 +88,17 @@ export function usePetPlayback(pet: PetProfile) {
     (wasAsleep: boolean, mood: PetAnimationState) => {
       if (wasAsleep) {
         setActiveScenario({
-          scenario: getPetScenario("wakeUp"),
+          scenario: registry.getScenario("wakeUp"),
           thenMood: mood,
         });
         return;
       }
       setActionMood(mood);
     },
-    [],
+    [registry],
   );
 
-  const handleSegmentComplete = useCallback(
+  const handleAnimationComplete = useCallback(
     (completedMood: PetAnimationState) => {
       if (activeScenario) {
         const thenMood = activeScenario.thenMood;
@@ -112,7 +110,7 @@ export function usePetPlayback(pet: PetProfile) {
       }
 
       setActionMood((current) => {
-        if (current && ONE_SHOT_ANIMATIONS.includes(current)) {
+        if (current && registry.oneShotStates.includes(current)) {
           if (careActionBusyRef.current) {
             finishCareAction();
           }
@@ -125,18 +123,48 @@ export function usePetPlayback(pet: PetProfile) {
         onFallAsleepComplete();
       }
     },
-    [activeScenario, finishCareAction, onFallAsleepComplete],
+    [
+      activeScenario,
+      finishCareAction,
+      onFallAsleepComplete,
+      registry.oneShotStates,
+    ],
+  );
+
+  const send = useCallback(
+    (command: PetDisplayCommand) => {
+      switch (command.type) {
+        case "beginCareAction":
+          beginCareAction();
+          break;
+        case "petTap":
+          playAction(command.wasAsleep, registry.pickExcitedMood());
+          break;
+        case "playAction":
+          playAction(command.wasAsleep, command.mood);
+          break;
+        case "feed":
+          beginCareAction();
+          playAction(command.wasAsleep, "eating");
+          break;
+        case "playReaction":
+          setActiveScenario(null);
+          setActionMood(command.mood);
+          break;
+        case "animationComplete":
+          handleAnimationComplete(command.completedMood);
+          break;
+      }
+    },
+    [beginCareAction, handleAnimationComplete, playAction, registry],
   );
 
   return {
     playback,
+    baseMood,
     displayLabel,
-    baseVideoMood,
-    playAction,
-    setActionMood,
-    handleSegmentComplete,
     isCareBlocked,
     isCareAnimationPlaying,
-    beginCareAction,
+    send,
   };
 }

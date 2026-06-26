@@ -1,7 +1,7 @@
-import { PetAvatar } from "@/components/pet/PetAvatar";
+import { PetDisplay } from "@/pet-display/components/PetDisplay";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors, LIFE_BUY_COST } from "@/constants/game";
-import type { PetAnimationState } from "@/types/game";
+import type { PetAnimationState, PetType } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -9,6 +9,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 type ResultOverlayProps = {
   visible: boolean;
   correct: boolean;
+  petType: PetType;
   petMood: PetAnimationState;
   message: string;
   detail: string;
@@ -25,6 +26,7 @@ type ResultOverlayProps = {
 export function ResultOverlay({
   visible,
   correct,
+  petType,
   petMood,
   message,
   detail,
@@ -43,7 +45,7 @@ export function ResultOverlay({
     <AppBottomSheet visible={visible} onClose={onContinue}>
       <View style={styles.card}>
         <View style={styles.petWrap}>
-          <PetAvatar mood={petMood} width={moderateScale(120)} loop />
+          <PetDisplay petType={petType} mood={petMood} width={moderateScale(120)} loop />
         </View>
 
         <Text
