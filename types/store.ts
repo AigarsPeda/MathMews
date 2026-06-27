@@ -13,3 +13,7 @@ export type StorePurchaseResult =
 export type RoomPurchaseResult = StorePurchaseResult | "invalid_room";
 
 export type BedPurchaseResult = StorePurchaseResult | "invalid_item";
+
+export type ToyPurchaseResult = StorePurchaseResult | "invalid_item";
+
+export type DecorationPurchaseResult = StorePurchaseResult | "invalid_item";

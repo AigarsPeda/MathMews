@@ -1,11 +1,20 @@
 import { LIFE_BUY_COST } from "@/constants/game";
-import type { CatBedId } from "@/constants/cat-beds";
-import { resolveCatBedId } from "@/constants/cat-beds";
+import { resolveCatBedId, type CatBedId } from "@/constants/cat-beds";
+import { resolveCatToyId, type CatToyId } from "@/constants/cat-toys";
+import {
+  resolveCatDecorationId,
+  type CatDecorationId,
+} from "@/constants/cat-decorations";
 import type { CatRoomId } from "@/constants/cat-rooms";
 import { resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveAsleepOnLoad } from "@/pet-display/engine/derive-mood";
 import type { PetProfile, Progress, Wallet } from "@/types/game";
-import type { BedPurchaseResult, RoomPurchaseResult } from "@/types/store";
+import type {
+  BedPurchaseResult,
+  RoomPurchaseResult,
+  ToyPurchaseResult,
+  DecorationPurchaseResult,
+} from "@/types/store";
 import type { GameSave } from "@/types/save";
 import {
   isBedUnlocked,
@@ -15,6 +24,20 @@ import {
   isRoomUnlocked,
   tryPurchaseRoom,
 } from "@/utils/room-store";
+import {
+  isToyUnlocked,
+  tryPurchaseToy,
+} from "@/utils/toy-store";
+import {
+  isDecorationUnlocked,
+  tryPurchaseDecoration,
+} from "@/utils/decoration-store";
+import {
+  appendPlacedDecoration,
+  appendPlacedToy,
+  isDecorationPlacedInRoom,
+  isToyPlacedInRoom,
+} from "@/utils/room-placement";
 import { PET_NAME_MAX_LENGTH } from "@/types/save";
 import {
   createDefaultGameSave,
@@ -52,6 +75,10 @@ type GameContextValue = {
   equipRoom: (roomId: CatRoomId) => boolean;
   purchaseBed: (bedId: CatBedId) => BedPurchaseResult;
   equipBed: (bedId: CatBedId) => boolean;
+  purchaseToy: (toyId: CatToyId) => ToyPurchaseResult;
+  placeToyInRoom: (toyId: CatToyId) => boolean;
+  purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
+  placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   completeOnboarding: (name: string) => Promise<boolean>;
   recordInteraction: () => void;
 };
@@ -316,6 +343,135 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
+  const purchaseToy = useCallback((toyId: CatToyId): ToyPurchaseResult => {
+    const resolvedId = resolveCatToyId(toyId);
+    if (!resolvedId) {
+      return "invalid_item";
+    }
+
+    const current = saveRef.current;
+    const unlocked = current.progress.toysUnlocked as CatToyId[];
+    const attempt = tryPurchaseToy({
+      toyId: resolvedId,
+      walletCoins: current.wallet.coins,
+      toysUnlocked: unlocked,
+    });
+
+    if (attempt.result === "purchased") {
+      setSave({
+        ...current,
+        wallet: { coins: attempt.walletCoins },
+        progress: {
+          ...current.progress,
+          toysUnlocked: attempt.toysUnlocked,
+        },
+        pet: {
+          ...current.pet,
+          placedToys: appendPlacedToy(current.pet.placedToys, resolvedId),
+        },
+      });
+    }
+
+    return attempt.result;
+  }, []);
+
+  const placeToyInRoom = useCallback((toyId: CatToyId) => {
+    const resolvedId = resolveCatToyId(toyId);
+    if (!resolvedId) {
+      return false;
+    }
+
+    const current = saveRef.current;
+    const unlocked = current.progress.toysUnlocked as CatToyId[];
+
+    if (!isToyUnlocked(resolvedId, unlocked)) {
+      return false;
+    }
+
+    if (isToyPlacedInRoom(resolvedId, current.pet.placedToys)) {
+      return false;
+    }
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        placedToys: appendPlacedToy(current.pet.placedToys, resolvedId),
+      },
+    });
+
+    return true;
+  }, []);
+
+  const purchaseDecoration = useCallback(
+    (decorationId: CatDecorationId): DecorationPurchaseResult => {
+      const resolvedId = resolveCatDecorationId(decorationId);
+      if (!resolvedId) {
+        return "invalid_item";
+      }
+
+      const current = saveRef.current;
+      const unlocked = current.progress.decorationsUnlocked as CatDecorationId[];
+      const attempt = tryPurchaseDecoration({
+        decorationId: resolvedId,
+        walletCoins: current.wallet.coins,
+        decorationsUnlocked: unlocked,
+      });
+
+      if (attempt.result === "purchased") {
+        setSave({
+          ...current,
+          wallet: { coins: attempt.walletCoins },
+          progress: {
+            ...current.progress,
+            decorationsUnlocked: attempt.decorationsUnlocked,
+          },
+          pet: {
+            ...current.pet,
+            placedDecorations: appendPlacedDecoration(
+              current.pet.placedDecorations,
+              resolvedId,
+            ),
+          },
+        });
+      }
+
+      return attempt.result;
+    },
+    [],
+  );
+
+  const placeDecorationInRoom = useCallback((decorationId: CatDecorationId) => {
+    const resolvedId = resolveCatDecorationId(decorationId);
+    if (!resolvedId) {
+      return false;
+    }
+
+    const current = saveRef.current;
+    const unlocked = current.progress.decorationsUnlocked as CatDecorationId[];
+
+    if (!isDecorationUnlocked(resolvedId, unlocked)) {
+      return false;
+    }
+
+    if (isDecorationPlacedInRoom(resolvedId, current.pet.placedDecorations)) {
+      return false;
+    }
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        placedDecorations: appendPlacedDecoration(
+          current.pet.placedDecorations,
+          resolvedId,
+        ),
+      },
+    });
+
+    return true;
+  }, []);
+
   const completeOnboarding = useCallback(async (name: string) => {
     const trimmed = normalizePetName(name);
     if (!trimmed) return false;
@@ -352,6 +508,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       purchaseBed,
       equipBed,
+      purchaseToy,
+      placeToyInRoom,
+      purchaseDecoration,
+      placeDecorationInRoom,
       completeOnboarding,
       recordInteraction,
     }),
@@ -372,6 +532,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       purchaseBed,
       equipBed,
+      purchaseToy,
+      placeToyInRoom,
+      purchaseDecoration,
+      placeDecorationInRoom,
     ],
   );
 

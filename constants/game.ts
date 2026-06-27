@@ -48,6 +48,8 @@ export const DEFAULT_PROGRESS = {
   visualHelpsUnlocked: [] as string[],
   roomsUnlocked: [DEFAULT_CAT_ROOM_ID] as string[],
   bedsUnlocked: [] as string[],
+  toysUnlocked: [] as string[],
+  decorationsUnlocked: [] as string[],
 };
 
 export const MAX_LIVES = 5;

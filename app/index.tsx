@@ -29,6 +29,12 @@ import {
   getContextualSpeechMessage,
   pickPetTapSpeechKey,
 } from "@/utils/pet-speech";
+import type { CatDecorationId } from "@/constants/cat-decorations";
+import type { CatToyId } from "@/constants/cat-toys";
+import {
+  updatePlacedDecorationOffset,
+  updatePlacedToyOffset,
+} from "@/utils/room-placement";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useRouter } from "expo-router";
@@ -363,6 +369,8 @@ export default function HomeScreen() {
               roomPetOffset={pet.roomPetOffset}
               bedId={pet.bedId}
               roomBedOffset={pet.roomBedOffset}
+              placedToys={pet.placedToys}
+              placedDecorations={pet.placedDecorations}
               speechMessage={speechMessage}
               playback={playback}
               onPetPress={petAnimating ? undefined : handlePetTap}
@@ -371,6 +379,26 @@ export default function HomeScreen() {
               }
               onRoomBedOffsetChange={(offset) =>
                 setPet((current) => ({ ...current, roomBedOffset: offset }))
+              }
+              onPlacedToyOffsetChange={(toyId, offset) =>
+                setPet((current) => ({
+                  ...current,
+                  placedToys: updatePlacedToyOffset(
+                    current.placedToys,
+                    toyId as CatToyId,
+                    offset,
+                  ),
+                }))
+              }
+              onPlacedDecorationOffsetChange={(decorationId, offset) =>
+                setPet((current) => ({
+                  ...current,
+                  placedDecorations: updatePlacedDecorationOffset(
+                    current.placedDecorations,
+                    decorationId as CatDecorationId,
+                    offset,
+                  ),
+                }))
               }
               onAnimationComplete={handleAnimationComplete}
             />

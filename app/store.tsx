@@ -1,14 +1,35 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
+import { DecorationStoreCard } from "@/components/store/DecorationStoreCard";
+import { ToyStoreCard } from "@/components/store/ToyStoreCard";
 import { BedStoreCard } from "@/components/store/BedStoreCard";
 import { RoomStoreCard } from "@/components/store/RoomStoreCard";
 import { StoreTabBar, type StoreTab } from "@/components/store/StoreTabBar";
 import { NotificationBanner } from "@/components/ui/NotificationBanner";
 import { SlideInNotificationSlot } from "@/components/ui/SlideInNotificationSlot";
+import { CAT_DECORATION_IDS, type CatDecorationId } from "@/constants/cat-decorations";
+import { CAT_TOY_IDS, type CatToyId } from "@/constants/cat-toys";
 import { CAT_BED_IDS, type CatBedId } from "@/constants/cat-beds";
 import { CAT_ROOM_IDS, type CatRoomId } from "@/constants/cat-rooms";
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
-import type { BedPurchaseResult, RoomPurchaseResult } from "@/types/store";
+import type {
+  BedPurchaseResult,
+  RoomPurchaseResult,
+  ToyPurchaseResult,
+  DecorationPurchaseResult,
+} from "@/types/store";
+import {
+  getDecorationStorePrice,
+  isDecorationUnlocked,
+} from "@/utils/decoration-store";
+import {
+  isDecorationPlacedInRoom,
+  isToyPlacedInRoom,
+} from "@/utils/room-placement";
+import {
+  getToyStorePrice,
+  isToyUnlocked,
+} from "@/utils/toy-store";
 import {
   getBedStorePrice,
   isBedUnlocked,
@@ -59,13 +80,21 @@ export default function StoreScreen() {
     equipRoom,
     purchaseBed,
     equipBed,
+    purchaseToy,
+    placeToyInRoom,
+    purchaseDecoration,
+    placeDecorationInRoom,
     recordInteraction,
   } = useGame();
 
   const unlockedRooms = progress.roomsUnlocked as CatRoomId[];
   const unlockedBeds = progress.bedsUnlocked as CatBedId[];
+  const unlockedToys = progress.toysUnlocked as CatToyId[];
+  const unlockedDecorations = progress.decorationsUnlocked as CatDecorationId[];
   const equippedRoomId = pet.roomId as CatRoomId | undefined;
   const equippedBedId = pet.bedId as CatBedId | undefined;
+  const placedToys = pet.placedToys ?? [];
+  const placedDecorations = pet.placedDecorations ?? [];
   const [activeTab, setActiveTab] = useState<StoreTab>("rooms");
   const [feedback, setFeedback] = useState<StoreFeedback | null>(null);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
@@ -241,6 +270,156 @@ export default function StoreScreen() {
     [equipBed, recordInteraction, showFeedback, t],
   );
 
+  const showToyPurchaseMessage = useCallback(
+    (result: ToyPurchaseResult, toyId: CatToyId) => {
+      const toyName = t(`store.toyName.${toyId}`).replace(/\n/g, " ");
+      switch (result) {
+        case "purchased":
+          return {
+            emoji: "🧸",
+            message: t("store.purchasedToy", { name: toyName }),
+          };
+        case "already_owned":
+          return {
+            emoji: "✓",
+            message: t("store.alreadyOwnedToy"),
+          };
+        case "insufficient_funds": {
+          const price = getToyStorePrice(toyId);
+          const cost = price.kind === "coins" ? price.amount : 0;
+          return {
+            emoji: "🪙",
+            message: t("store.needCoinsToy", { cost }),
+          };
+        }
+        default:
+          return {
+            emoji: "⚠️",
+            message: t("store.unavailableToy"),
+          };
+      }
+    },
+    [t],
+  );
+
+  const handleBuyToy = useCallback(
+    (toyId: CatToyId) => {
+      recordInteraction();
+      triggerHaptic();
+      const result = purchaseToy(toyId);
+      if (result === "purchased") {
+        triggerHaptic();
+      }
+      if (result !== "already_owned") {
+        const { emoji, message } = showToyPurchaseMessage(result, toyId);
+        showFeedback(emoji, message);
+      }
+    },
+    [purchaseToy, recordInteraction, showFeedback, showToyPurchaseMessage],
+  );
+
+  const handlePlaceToy = useCallback(
+    (toyId: CatToyId) => {
+      recordInteraction();
+      triggerHaptic();
+      const placed = placeToyInRoom(toyId);
+      if (placed) {
+        showFeedback(
+          "✨",
+          t("store.placedToy", {
+            name: t(`store.toyName.${toyId}`).replace(/\n/g, " "),
+          }),
+        );
+      }
+    },
+    [placeToyInRoom, recordInteraction, showFeedback, t],
+  );
+
+  const showDecorationPurchaseMessage = useCallback(
+    (result: DecorationPurchaseResult, decorationId: CatDecorationId) => {
+      const decorationName = t(`store.decorationName.${decorationId}`).replace(
+        /\n/g,
+        " ",
+      );
+      switch (result) {
+        case "purchased":
+          return {
+            emoji: "🪴",
+            message: t("store.purchasedDecoration", { name: decorationName }),
+          };
+        case "already_owned":
+          return {
+            emoji: "✓",
+            message: t("store.alreadyOwnedDecoration"),
+          };
+        case "insufficient_funds": {
+          const price = getDecorationStorePrice(decorationId);
+          const cost = price.kind === "coins" ? price.amount : 0;
+          return {
+            emoji: "🪙",
+            message: t("store.needCoinsDecoration", { cost }),
+          };
+        }
+        default:
+          return {
+            emoji: "⚠️",
+            message: t("store.unavailableDecoration"),
+          };
+      }
+    },
+    [t],
+  );
+
+  const handleBuyDecoration = useCallback(
+    (decorationId: CatDecorationId) => {
+      recordInteraction();
+      triggerHaptic();
+      const result = purchaseDecoration(decorationId);
+      if (result === "purchased") {
+        triggerHaptic();
+      }
+      if (result !== "already_owned") {
+        const { emoji, message } = showDecorationPurchaseMessage(
+          result,
+          decorationId,
+        );
+        showFeedback(emoji, message);
+      }
+    },
+    [
+      purchaseDecoration,
+      recordInteraction,
+      showDecorationPurchaseMessage,
+      showFeedback,
+    ],
+  );
+
+  const handlePlaceDecoration = useCallback(
+    (decorationId: CatDecorationId) => {
+      recordInteraction();
+      triggerHaptic();
+      const placed = placeDecorationInRoom(decorationId);
+      if (placed) {
+        showFeedback(
+          "✨",
+          t("store.placedDecoration", {
+            name: t(`store.decorationName.${decorationId}`).replace(/\n/g, " "),
+          }),
+        );
+      }
+    },
+    [placeDecorationInRoom, recordInteraction, showFeedback, t],
+  );
+
+  const storeSubtitle =
+    activeTab === "rooms"
+      ? t("store.subtitleRooms")
+      : activeTab === "beds"
+        ? t("store.subtitleBeds")
+        : activeTab === "toys"
+          ? t("store.subtitleToys")
+          : t("store.subtitleDecorations");
+
   if (!isReady) {
     return (
       <View style={styles.loading}>
@@ -274,11 +453,7 @@ export default function StoreScreen() {
 
         <View style={styles.titleBlock}>
           <Text style={styles.title}>{t("store.title")}</Text>
-          <Text style={styles.subtitle}>
-            {activeTab === "rooms"
-              ? t("store.subtitleRooms")
-              : t("store.subtitleBeds")}
-          </Text>
+          <Text style={styles.subtitle}>{storeSubtitle}</Text>
         </View>
 
         <StoreTabBar active={activeTab} onChange={handleTabChange} />
@@ -321,24 +496,68 @@ export default function StoreScreen() {
                     />
                   );
                 })
-              : CAT_BED_IDS.map((bedId) => {
-                  const price = getBedStorePrice(bedId);
-                  const owned = isBedUnlocked(bedId, unlockedBeds);
-                  const canAfford =
-                    price.kind !== "coins" || wallet.coins >= price.amount;
+              : activeTab === "beds"
+                ? CAT_BED_IDS.map((bedId) => {
+                    const price = getBedStorePrice(bedId);
+                    const owned = isBedUnlocked(bedId, unlockedBeds);
+                    const canAfford =
+                      price.kind !== "coins" || wallet.coins >= price.amount;
 
-                  return (
-                    <BedStoreCard
-                      key={bedId}
-                      bedId={bedId}
-                      isOwned={owned}
-                      isEquipped={equippedBedId === bedId}
-                      canAfford={canAfford}
-                      onBuy={() => handleBuyBed(bedId)}
-                      onEquip={() => handleEquipBed(bedId)}
-                    />
-                  );
-                })}
+                    return (
+                      <BedStoreCard
+                        key={bedId}
+                        bedId={bedId}
+                        isOwned={owned}
+                        isEquipped={equippedBedId === bedId}
+                        canAfford={canAfford}
+                        onBuy={() => handleBuyBed(bedId)}
+                        onEquip={() => handleEquipBed(bedId)}
+                      />
+                    );
+                  })
+                : activeTab === "toys"
+                  ? CAT_TOY_IDS.map((toyId) => {
+                      const price = getToyStorePrice(toyId);
+                      const owned = isToyUnlocked(toyId, unlockedToys);
+                      const canAfford =
+                        price.kind !== "coins" || wallet.coins >= price.amount;
+
+                      return (
+                        <ToyStoreCard
+                          key={toyId}
+                          toyId={toyId}
+                          isOwned={owned}
+                          isPlaced={isToyPlacedInRoom(toyId, placedToys)}
+                          canAfford={canAfford}
+                          onBuy={() => handleBuyToy(toyId)}
+                          onPlace={() => handlePlaceToy(toyId)}
+                        />
+                      );
+                    })
+                  : CAT_DECORATION_IDS.map((decorationId) => {
+                      const price = getDecorationStorePrice(decorationId);
+                      const owned = isDecorationUnlocked(
+                        decorationId,
+                        unlockedDecorations,
+                      );
+                      const canAfford =
+                        price.kind !== "coins" || wallet.coins >= price.amount;
+
+                      return (
+                        <DecorationStoreCard
+                          key={decorationId}
+                          decorationId={decorationId}
+                          isOwned={owned}
+                          isPlaced={isDecorationPlacedInRoom(
+                            decorationId,
+                            placedDecorations,
+                          )}
+                          canAfford={canAfford}
+                          onBuy={() => handleBuyDecoration(decorationId)}
+                          onPlace={() => handlePlaceDecoration(decorationId)}
+                        />
+                      );
+                    })}
           </ScrollView>
         </View>
       </View>

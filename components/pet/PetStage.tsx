@@ -2,7 +2,14 @@ import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetRoomBackground } from "@/components/pet/PetRoomBackground";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
+import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { getCatBedSource } from "@/constants/cat-beds";
+import type { PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
+import type { CatDecorationId } from "@/constants/cat-decorations";
+import { getDecorationDragSize } from "@/constants/cat-decorations";
+import type { CatToyId } from "@/constants/cat-toys";
+import { getToyDisplaySize } from "@/constants/cat-toys";
 import { resolveSpriteDisplaySize } from "@/constants/cat-sprites";
 import { GameColors } from "@/constants/game";
 import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
@@ -46,12 +53,19 @@ type PetStageProps = {
   roomPetOffset?: { x: number; y: number };
   bedId?: string;
   roomBedOffset?: { x: number; y: number };
+  placedToys?: PlacedToy[];
+  placedDecorations?: PlacedDecoration[];
   speechMessage?: string | null;
   playback: PetPlaybackState;
   compact?: boolean;
   onPetPress?: () => void;
   onRoomPetOffsetChange?: (offset: { x: number; y: number }) => void;
   onRoomBedOffsetChange?: (offset: { x: number; y: number }) => void;
+  onPlacedToyOffsetChange?: (toyId: CatToyId, offset: RoomItemOffset) => void;
+  onPlacedDecorationOffsetChange?: (
+    decorationId: CatDecorationId,
+    offset: RoomItemOffset,
+  ) => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (stepIndex: number) => void;
 };
@@ -96,12 +110,16 @@ export function PetStage({
   roomPetOffset,
   bedId,
   roomBedOffset,
+  placedToys,
+  placedDecorations,
   speechMessage,
   playback,
   compact = false,
   onPetPress,
   onRoomPetOffsetChange,
   onRoomBedOffsetChange,
+  onPlacedToyOffsetChange,
+  onPlacedDecorationOffsetChange,
   onAnimationComplete,
   onStepComplete,
 }: PetStageProps) {
@@ -109,6 +127,8 @@ export function PetStage({
   const usesSprite = USE_CAT_SPRITE_PETS && petType === "cat";
   const bedSize = moderateScale(COMPACT_BED_SIZE);
   const bedSource = usesSprite ? getCatBedSource(bedId) : undefined;
+  const roomPlacedToys = usesSprite ? (placedToys ?? []) : [];
+  const roomPlacedDecorations = usesSprite ? (placedDecorations ?? []) : [];
   const [avatarWidth, setAvatarWidth] = useState(
     compactPetWidth(petType, compact),
   );
@@ -167,7 +187,7 @@ export function PetStage({
         initialOffset={roomPetOffset}
         onOffsetChange={onRoomPetOffsetChange}
         onPetTap={onPetPress}
-        layerZIndex={2}
+        layerZIndex={4}
       >
         {petCluster}
       </DraggableRoomPet>
@@ -192,6 +212,45 @@ export function PetStage({
       </DraggableRoomPet>
     ) : null;
 
+  const roomDecorationLayers = roomPlacedDecorations.map((placed) => {
+    const decorationId = placed.decorationId as CatDecorationId;
+    const decorationSize = moderateScale(getDecorationDragSize(decorationId));
+
+    return (
+      <DraggableRoomPet
+        key={decorationId}
+        petSize={decorationSize}
+        initialOffset={placed.offset}
+        onOffsetChange={(offset) =>
+          onPlacedDecorationOffsetChange?.(decorationId, offset)
+        }
+        layerZIndex={2}
+      >
+        <DecorationSpriteImage
+          decorationId={decorationId}
+          size={decorationSize}
+        />
+      </DraggableRoomPet>
+    );
+  });
+
+  const roomToyLayers = roomPlacedToys.map((placed) => {
+    const toyId = placed.toyId as CatToyId;
+    const toySize = moderateScale(getToyDisplaySize(toyId));
+
+    return (
+      <DraggableRoomPet
+        key={toyId}
+        petSize={toySize}
+        initialOffset={placed.offset}
+        onOffsetChange={(offset) => onPlacedToyOffsetChange?.(toyId, offset)}
+        layerZIndex={3}
+      >
+        <ToySpriteImage toyId={toyId} size={toySize} />
+      </DraggableRoomPet>
+    );
+  });
+
   return (
     <View style={[styles.stage, compact && styles.stageCompact]}>
       {!compact ? (
@@ -210,6 +269,8 @@ export function PetStage({
           >
             {usesSprite ? <PetRoomBackground roomId={roomId} /> : null}
             {roomBedLayer}
+            {roomDecorationLayers}
+            {roomToyLayers}
             {compact ? roomPetLayer : petCluster}
           </View>
 

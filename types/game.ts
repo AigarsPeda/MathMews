@@ -22,6 +22,21 @@ export type PetStats = {
   cleanliness: number;
 };
 
+export type RoomItemOffset = {
+  x: number;
+  y: number;
+};
+
+export type PlacedToy = {
+  toyId: string;
+  offset: RoomItemOffset;
+};
+
+export type PlacedDecoration = {
+  decorationId: string;
+  offset: RoomItemOffset;
+};
+
 export type PetProfile = {
   type: PetType;
   name: string;
@@ -40,6 +55,10 @@ export type PetProfile = {
   bedId?: string;
   /** Normalized offset for the equipped bed (-1..1). */
   roomBedOffset?: { x: number; y: number };
+  /** Toys currently placed in the cat room. */
+  placedToys?: PlacedToy[];
+  /** Decorations currently placed in the cat room. */
+  placedDecorations?: PlacedDecoration[];
 };
 
 export type Wallet = {
@@ -70,4 +89,8 @@ export type Progress = {
   roomsUnlocked: string[];
   /** Cat beds the player owns. */
   bedsUnlocked: string[];
+  /** Cat toys the player owns. */
+  toysUnlocked: string[];
+  /** Room decorations the player owns. */
+  decorationsUnlocked: string[];
 };

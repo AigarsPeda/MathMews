@@ -3,7 +3,7 @@ import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-export type StoreTab = "rooms" | "beds";
+export type StoreTab = "rooms" | "beds" | "toys" | "decorations";
 
 type StoreTabBarProps = {
   active: StoreTab;
@@ -58,6 +58,20 @@ export function StoreTabBar({ active, onChange }: StoreTabBarProps) {
         isActive={active === "beds"}
         onPress={onChange}
       />
+      <StoreTabButton
+        tab="toys"
+        emoji="🧸"
+        label={t("store.tabToys")}
+        isActive={active === "toys"}
+        onPress={onChange}
+      />
+      <StoreTabButton
+        tab="decorations"
+        emoji="🪴"
+        label={t("store.tabDecorations")}
+        isActive={active === "decorations"}
+        onPress={onChange}
+      />
     </View>
   );
 }
@@ -70,15 +84,15 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     minHeight: moderateScale(48),
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: moderateScale(6),
+    gap: moderateScale(2),
     borderRadius: moderateScale(14),
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
     backgroundColor: GameColors.card,
-    paddingHorizontal: moderateScale(10),
+    paddingHorizontal: moderateScale(6),
     paddingVertical: moderateScale(8),
   },
   tabActive: {
@@ -89,9 +103,10 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(18),
   },
   tabText: {
-    fontSize: moderateScale(15),
+    fontSize: moderateScale(11),
     fontWeight: "700",
     color: GameColors.textMuted,
+    textAlign: "center",
   },
   tabTextActive: {
     color: GameColors.text,

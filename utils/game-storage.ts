@@ -1,5 +1,11 @@
 import { DEFAULT_CAT_ROOM_ID, resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveCatBedId } from "@/constants/cat-beds";
+import type { CatDecorationId } from "@/constants/cat-decorations";
+import type { CatToyId } from "@/constants/cat-toys";
+import {
+  migrateLegacyPlacedDecorations,
+  migrateLegacyPlacedToys,
+} from "@/utils/room-placement";
 import {
   DEFAULT_PET,
   DEFAULT_PROGRESS,
@@ -21,6 +27,8 @@ import { applyLifeRegen, createDefaultLives } from "@/utils/lives";
 import { applyPetTimeDecay } from "@/utils/pet-care";
 import { normalizeRoomsUnlocked } from "@/utils/room-store";
 import { normalizeBedsUnlocked } from "@/utils/bed-store";
+import { normalizeToysUnlocked } from "@/utils/toy-store";
+import { normalizeDecorationsUnlocked } from "@/utils/decoration-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function createDefaultGameSave(): GameSave {
@@ -72,6 +80,22 @@ function normalizeRoomOffset(
 const normalizeRoomPetOffset = normalizeRoomOffset;
 const normalizeRoomBedOffset = normalizeRoomOffset;
 
+function filterPlacedToysForUnlocked(
+  placedToys: PetProfile["placedToys"],
+  toysUnlocked: string[],
+): PetProfile["placedToys"] {
+  return (placedToys ?? []).filter((item) => toysUnlocked.includes(item.toyId));
+}
+
+function filterPlacedDecorationsForUnlocked(
+  placedDecorations: PetProfile["placedDecorations"],
+  decorationsUnlocked: string[],
+): PetProfile["placedDecorations"] {
+  return (placedDecorations ?? []).filter((item) =>
+    decorationsUnlocked.includes(item.decorationId),
+  );
+}
+
 function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
   const stats = isRecord(pet.stats) ? pet.stats : {};
   const type = pet.type === "cat" ? "cat" : "dog";
@@ -112,6 +136,8 @@ function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
       typeof pet.bedId === "string" ? pet.bedId : undefined,
     ),
     roomBedOffset: normalizeRoomBedOffset(pet.roomBedOffset),
+    placedToys: migrateLegacyPlacedToys(pet),
+    placedDecorations: migrateLegacyPlacedDecorations(pet),
   };
 }
 
@@ -176,6 +202,20 @@ function parseGameSave(
       parsed.progress.bedsUnlocked,
       resolveCatBedId(normalizedPet.bedId),
     );
+    const placedToyIds = (normalizedPet.placedToys ?? []).map(
+      (item) => item.toyId,
+    ) as CatToyId[];
+    const placedDecorationIds = (normalizedPet.placedDecorations ?? []).map(
+      (item) => item.decorationId,
+    ) as CatDecorationId[];
+    const toysUnlocked = normalizeToysUnlocked(
+      parsed.progress.toysUnlocked,
+      placedToyIds,
+    );
+    const decorationsUnlocked = normalizeDecorationsUnlocked(
+      parsed.progress.decorationsUnlocked,
+      placedDecorationIds,
+    );
     const equippedRoomId = resolveCatRoomId(normalizedPet.roomId);
     const equippedBedId = resolveCatBedId(normalizedPet.bedId);
     const pet = resolveAsleepOnLoad(
@@ -189,6 +229,14 @@ function parseGameSave(
             equippedBedId && bedsUnlocked.includes(equippedBedId)
               ? equippedBedId
               : undefined,
+          placedToys: filterPlacedToysForUnlocked(
+            normalizedPet.placedToys,
+            toysUnlocked,
+          ),
+          placedDecorations: filterPlacedDecorationsForUnlocked(
+            normalizedPet.placedDecorations,
+            decorationsUnlocked,
+          ),
         },
         Date.now(),
       ),
@@ -210,6 +258,8 @@ function parseGameSave(
           visualHelpsUnlocked,
           roomsUnlocked,
           bedsUnlocked,
+          toysUnlocked,
+          decorationsUnlocked,
         },
       },
       awayMsAtSessionStart: awayMs,
