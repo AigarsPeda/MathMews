@@ -58,6 +58,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [save, setSave] = useState<GameSave>(createDefaultGameSave);
   const [isReady, setIsReady] = useState(false);
   const skipNextPersist = useRef(true);
+  const saveRef = useRef(save);
+
+  useEffect(() => {
+    saveRef.current = save;
+  }, [save]);
 
   useEffect(() => {
     let active = true;
@@ -205,22 +210,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const purchaseRoom = useCallback((roomId: CatRoomId): RoomPurchaseResult => {
     const resolvedId = resolveCatRoomId(roomId);
-    let result: RoomPurchaseResult = "invalid_room";
+    const current = saveRef.current;
+    const unlocked = current.progress.roomsUnlocked as CatRoomId[];
+    const attempt = tryPurchaseRoom({
+      roomId: resolvedId,
+      walletCoins: current.wallet.coins,
+      roomsUnlocked: unlocked,
+    });
 
-    setSave((current) => {
-      const unlocked = current.progress.roomsUnlocked as CatRoomId[];
-      const attempt = tryPurchaseRoom({
-        roomId: resolvedId,
-        walletCoins: current.wallet.coins,
-        roomsUnlocked: unlocked,
-      });
-
-      result = attempt.result;
-      if (attempt.result !== "purchased") {
-        return current;
-      }
-
-      return {
+    if (attempt.result === "purchased") {
+      setSave({
         ...current,
         wallet: { coins: attempt.walletCoins },
         progress: {
@@ -228,30 +227,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
           roomsUnlocked: attempt.roomsUnlocked,
         },
         pet: { ...current.pet, roomId: resolvedId },
-      };
-    });
+      });
+    }
 
-    return result;
+    return attempt.result;
   }, []);
 
   const equipRoom = useCallback((roomId: CatRoomId) => {
     const resolvedId = resolveCatRoomId(roomId);
-    let equipped = false;
+    const current = saveRef.current;
+    const unlocked = current.progress.roomsUnlocked as CatRoomId[];
 
-    setSave((current) => {
-      const unlocked = current.progress.roomsUnlocked as CatRoomId[];
-      if (!isRoomUnlocked(resolvedId, unlocked)) {
-        return current;
-      }
+    if (!isRoomUnlocked(resolvedId, unlocked)) {
+      return false;
+    }
 
-      equipped = true;
-      return {
-        ...current,
-        pet: { ...current.pet, roomId: resolvedId },
-      };
+    setSave({
+      ...current,
+      pet: { ...current.pet, roomId: resolvedId },
     });
 
-    return equipped;
+    return true;
   }, []);
 
   const completeOnboarding = useCallback(async (name: string) => {

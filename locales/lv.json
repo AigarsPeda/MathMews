@@ -54,6 +54,7 @@
     "buyFor": "{{cost}} 🪙",
     "equip": "Izvēlēties",
     "equipped": "Aktīva",
+    "equippedRoom": "Istaba {{number}} tagad ir tava māja!",
     "purchased": "Istaba {{number}} ir tava!",
     "alreadyOwned": "Šī istaba jau pieder tev.",
     "needCoins": "Vajag {{cost}} monētas šai istabai.",

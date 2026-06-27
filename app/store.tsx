@@ -1,5 +1,7 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { RoomStoreCard } from "@/components/store/RoomStoreCard";
+import { NotificationBanner } from "@/components/ui/NotificationBanner";
+import { SlideInNotificationSlot } from "@/components/ui/SlideInNotificationSlot";
 import { CAT_ROOM_IDS, type CatRoomId } from "@/constants/cat-rooms";
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
@@ -30,6 +32,13 @@ function triggerHaptic() {
   }
 }
 
+const FEEDBACK_VISIBLE_MS = 2800;
+
+type StoreFeedback = {
+  emoji: string;
+  message: string;
+};
+
 export default function StoreScreen() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -46,7 +55,8 @@ export default function StoreScreen() {
 
   const unlockedRooms = progress.roomsUnlocked as CatRoomId[];
   const equippedRoomId = pet.roomId as CatRoomId | undefined;
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<StoreFeedback | null>(null);
+  const [feedbackVisible, setFeedbackVisible] = useState(false);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -57,16 +67,24 @@ export default function StoreScreen() {
     };
   }, []);
 
-  const showFeedback = useCallback((text: string) => {
-    if (feedbackTimerRef.current) {
-      clearTimeout(feedbackTimerRef.current);
-    }
-    setFeedback(text);
-    feedbackTimerRef.current = setTimeout(() => {
-      setFeedback(null);
-      feedbackTimerRef.current = null;
-    }, 2600);
+  const handleFeedbackDismissed = useCallback(() => {
+    setFeedback(null);
   }, []);
+
+  const showFeedback = useCallback(
+    (emoji: string, message: string) => {
+      if (feedbackTimerRef.current) {
+        clearTimeout(feedbackTimerRef.current);
+      }
+      setFeedback({ emoji, message });
+      setFeedbackVisible(true);
+      feedbackTimerRef.current = setTimeout(() => {
+        setFeedbackVisible(false);
+        feedbackTimerRef.current = null;
+      }, FEEDBACK_VISIBLE_MS);
+    },
+    [],
+  );
 
   const handleBack = useCallback(() => {
     recordInteraction();
@@ -83,16 +101,28 @@ export default function StoreScreen() {
       const roomNumber = Number.parseInt(roomId.replace("room", ""), 10);
       switch (result) {
         case "purchased":
-          return t("store.purchased", { number: roomNumber });
+          return {
+            emoji: "🏠",
+            message: t("store.purchased", { number: roomNumber }),
+          };
         case "already_owned":
-          return t("store.alreadyOwned");
+          return {
+            emoji: "✓",
+            message: t("store.alreadyOwned"),
+          };
         case "insufficient_funds": {
           const price = getRoomStorePrice(roomId);
           const cost = price.kind === "coins" ? price.amount : 0;
-          return t("store.needCoins", { cost });
+          return {
+            emoji: "🪙",
+            message: t("store.needCoins", { cost }),
+          };
         }
         default:
-          return t("store.unavailable");
+          return {
+            emoji: "⚠️",
+            message: t("store.unavailable"),
+          };
       }
     },
     [t],
@@ -107,7 +137,8 @@ export default function StoreScreen() {
         triggerHaptic();
       }
       if (result !== "already_owned") {
-        showFeedback(showPurchaseMessage(result, roomId));
+        const { emoji, message } = showPurchaseMessage(result, roomId);
+        showFeedback(emoji, message);
       }
     },
     [purchaseRoom, recordInteraction, showFeedback, showPurchaseMessage],
@@ -117,9 +148,13 @@ export default function StoreScreen() {
     (roomId: CatRoomId) => {
       recordInteraction();
       triggerHaptic();
-      equipRoom(roomId);
+      const equipped = equipRoom(roomId);
+      if (equipped) {
+        const roomNumber = Number.parseInt(roomId.replace("room", ""), 10);
+        showFeedback("✨", t("store.equippedRoom", { number: roomNumber }));
+      }
     },
-    [equipRoom, recordInteraction],
+    [equipRoom, recordInteraction, showFeedback, t],
   );
 
   if (!isReady) {
@@ -156,37 +191,46 @@ export default function StoreScreen() {
         <View style={styles.titleBlock}>
           <Text style={styles.title}>{t("store.title")}</Text>
           <Text style={styles.subtitle}>{t("store.subtitle")}</Text>
-          {feedback ? (
-            <View style={styles.feedbackBanner}>
-              <Text style={styles.feedbackText}>{feedback}</Text>
-            </View>
-          ) : null}
         </View>
 
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.grid}
-          showsVerticalScrollIndicator={false}
-        >
-          {CAT_ROOM_IDS.map((roomId) => {
-            const price = getRoomStorePrice(roomId);
-            const owned = isRoomUnlocked(roomId, unlockedRooms);
-            const canAfford =
-              price.kind !== "coins" || wallet.coins >= price.amount;
-
-            return (
-              <RoomStoreCard
-                key={roomId}
-                roomId={roomId}
-                isOwned={owned}
-                isEquipped={equippedRoomId === roomId}
-                canAfford={canAfford}
-                onBuy={() => handleBuy(roomId)}
-                onEquip={() => handleEquip(roomId)}
+        <View style={styles.content}>
+          <SlideInNotificationSlot
+            visible={feedbackVisible}
+            onDismissComplete={handleFeedbackDismissed}
+          >
+            {feedback ? (
+              <NotificationBanner
+                emoji={feedback.emoji}
+                message={feedback.message}
               />
-            );
-          })}
-        </ScrollView>
+            ) : null}
+          </SlideInNotificationSlot>
+
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.grid}
+            showsVerticalScrollIndicator={false}
+          >
+            {CAT_ROOM_IDS.map((roomId) => {
+              const price = getRoomStorePrice(roomId);
+              const owned = isRoomUnlocked(roomId, unlockedRooms);
+              const canAfford =
+                price.kind !== "coins" || wallet.coins >= price.amount;
+
+              return (
+                <RoomStoreCard
+                  key={roomId}
+                  roomId={roomId}
+                  isOwned={owned}
+                  isEquipped={equippedRoomId === roomId}
+                  canAfford={canAfford}
+                  onBuy={() => handleBuy(roomId)}
+                  onEquip={() => handleEquip(roomId)}
+                />
+              );
+            })}
+          </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -228,6 +272,11 @@ const styles = StyleSheet.create({
   titleBlock: {
     gap: moderateScale(4),
   },
+  content: {
+    flex: 1,
+    minHeight: 0,
+    gap: moderateScale(10),
+  },
   title: {
     fontSize: moderateScale(24),
     fontWeight: "800",
@@ -238,23 +287,9 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: GameColors.textMuted,
   },
-  feedbackBanner: {
-    marginTop: moderateScale(6),
-    backgroundColor: GameColors.card,
-    borderWidth: 2,
-    borderColor: GameColors.primary,
-    borderRadius: moderateScale(12),
-    paddingVertical: moderateScale(10),
-    paddingHorizontal: moderateScale(12),
-  },
-  feedbackText: {
-    fontSize: moderateScale(14),
-    fontWeight: "600",
-    color: GameColors.text,
-    textAlign: "center",
-  },
   scroll: {
     flex: 1,
+    minHeight: 0,
   },
   grid: {
     flexDirection: "row",

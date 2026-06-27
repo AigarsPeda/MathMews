@@ -53,6 +53,7 @@
     "buyFor": "{{cost}} 🪙",
     "equip": "Equip",
     "equipped": "Equipped",
+    "equippedRoom": "Room {{number}} is now your home!",
     "purchased": "Room {{number}} is yours!",
     "alreadyOwned": "You already own this room.",
     "needCoins": "Need {{cost}} coins for this room.",
