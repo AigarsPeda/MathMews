@@ -1,28 +1,47 @@
+import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetRoomBackground } from "@/components/pet/PetRoomBackground";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
-import { ProgressBar } from "@/components/ui/ProgressBar";
-import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { RoomItemActionMenu } from "@/components/pet/RoomItemActionMenu";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getCatBedSource } from "@/constants/cat-beds";
-import type { PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { getDecorationDragSize } from "@/constants/cat-decorations";
+import { resolveSpriteDisplaySize } from "@/constants/cat-sprites";
 import type { CatToyId } from "@/constants/cat-toys";
 import { getToyDisplaySize } from "@/constants/cat-toys";
-import { resolveSpriteDisplaySize } from "@/constants/cat-sprites";
 import { GameColors } from "@/constants/game";
 import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
 import { PetDisplay } from "@/pet-display/components/PetDisplay";
 import type { PetPlaybackState } from "@/pet-display/types";
-import type { PetStats, PetType } from "@/types/game";
+import type {
+  PetStats,
+  PetType,
+  PlacedDecoration,
+  PlacedToy,
+  RoomItemOffset,
+} from "@/types/game";
+import { nestedBorderRadius } from "@/utils/border-radius";
 import { clampStat } from "@/utils/pet-care";
 import { moderateScale } from "@/utils/scale";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { type LayoutChangeEvent, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  type LayoutChangeEvent,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
+const COMPACT_STAGE_RADIUS = moderateScale(16);
+const COMPACT_STAGE_INSET = moderateScale(12);
+const COMPACT_ROOM_RADIUS = nestedBorderRadius(
+  COMPACT_STAGE_RADIUS,
+  COMPACT_STAGE_INSET,
+);
 const COMPACT_PET_MIN = 200;
 const COMPACT_PET_MAX = 300;
 const COMPACT_SPRITE_PET_SIZE = 96;
@@ -143,8 +162,9 @@ export function PetStage({
   const bedSource = usesSprite ? getCatBedSource(bedId) : undefined;
   const roomPlacedToys = usesSprite ? (placedToys ?? []) : [];
   const roomPlacedDecorations = usesSprite ? (placedDecorations ?? []) : [];
-  const [openRoomItemMenu, setOpenRoomItemMenu] =
-    useState<RoomItemMenu | null>(null);
+  const [openRoomItemMenu, setOpenRoomItemMenu] = useState<RoomItemMenu | null>(
+    null,
+  );
   const removeMenuLabel = t("home.removeFromRoom");
   const [avatarWidth, setAvatarWidth] = useState(
     compactPetWidth(petType, compact),
@@ -173,14 +193,17 @@ export function PetStage({
     [compact, usesSprite],
   );
 
-  const handleDecorationTap = useCallback((decorationId: CatDecorationId) => {
-    if (!onPlacedDecorationRemove) return;
-    setOpenRoomItemMenu((current) =>
-      current?.kind === "decoration" && current.id === decorationId
-        ? null
-        : { kind: "decoration", id: decorationId },
-    );
-  }, [onPlacedDecorationRemove]);
+  const handleDecorationTap = useCallback(
+    (decorationId: CatDecorationId) => {
+      if (!onPlacedDecorationRemove) return;
+      setOpenRoomItemMenu((current) =>
+        current?.kind === "decoration" && current.id === decorationId
+          ? null
+          : { kind: "decoration", id: decorationId },
+      );
+    },
+    [onPlacedDecorationRemove],
+  );
 
   const handleDecorationRemove = useCallback(
     (decorationId: CatDecorationId) => {
@@ -334,9 +357,7 @@ export function PetStage({
         petSize={toySize}
         initialOffset={placed.offset}
         onOffsetChange={(offset) => onPlacedToyOffsetChange?.(toyId, offset)}
-        onPetTap={
-          onPlacedToyRemove ? () => handleToyTap(toyId) : undefined
-        }
+        onPetTap={onPlacedToyRemove ? () => handleToyTap(toyId) : undefined}
         layerZIndex={isMenuOpen ? 10 : 3}
       >
         {isMenuOpen && onPlacedToyRemove ? (
@@ -370,7 +391,12 @@ export function PetStage({
               openRoomItemMenu && styles.avatarWrapMenuOpen,
             ]}
           >
-            {usesSprite ? <PetRoomBackground roomId={roomId} /> : null}
+            {usesSprite ? (
+              <PetRoomBackground
+                roomId={roomId}
+                cornerRadius={compact ? COMPACT_ROOM_RADIUS : 0}
+              />
+            ) : null}
             {roomBedLayer}
             {roomDecorationLayers}
             {roomToyLayers}
@@ -423,10 +449,10 @@ const styles = StyleSheet.create({
   },
   stageCompact: {
     flex: 1,
-    borderRadius: moderateScale(16),
-    paddingTop: moderateScale(12),
+    borderRadius: COMPACT_STAGE_RADIUS,
+    paddingTop: COMPACT_STAGE_INSET,
     paddingBottom: moderateScale(10),
-    paddingHorizontal: moderateScale(12),
+    paddingHorizontal: COMPACT_STAGE_INSET,
   },
   nameHeader: {
     alignItems: "center",
@@ -467,8 +493,8 @@ const styles = StyleSheet.create({
   avatarWrapCompact: {
     flex: 1,
     minHeight: moderateScale(260),
-    borderRadius: moderateScale(12),
-    overflow: "visible",
+    borderRadius: COMPACT_ROOM_RADIUS,
+    overflow: "hidden",
   },
   avatarWrapMenuOpen: {
     overflow: "visible",

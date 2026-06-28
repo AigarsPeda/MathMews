@@ -3,11 +3,24 @@ import { Image, StyleSheet, View } from "react-native";
 
 type PetRoomBackgroundProps = {
   roomId?: string;
+  cornerRadius?: number;
 };
 
-export function PetRoomBackground({ roomId }: PetRoomBackgroundProps) {
+export function PetRoomBackground({
+  roomId,
+  cornerRadius = 0,
+}: PetRoomBackgroundProps) {
   return (
-    <View style={styles.wrap} pointerEvents="none">
+    <View
+      style={[
+        styles.wrap,
+        cornerRadius > 0 && {
+          borderRadius: cornerRadius,
+          overflow: "hidden",
+        },
+      ]}
+      pointerEvents="none"
+    >
       <Image
         source={getCatRoomSource(roomId)}
         style={styles.image}
