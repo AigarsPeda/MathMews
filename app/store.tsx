@@ -87,10 +87,13 @@ export default function StoreScreen() {
     equipRoom,
     purchaseBed,
     equipBed,
+    removeBedFromRoom,
     purchaseToy,
     placeToyInRoom,
+    removeToyFromRoom,
     purchaseDecoration,
     placeDecorationInRoom,
+    removeDecorationFromRoom,
     purchaseSkin,
     equipSkin,
     recordInteraction,
@@ -281,6 +284,23 @@ export default function StoreScreen() {
     [equipBed, recordInteraction, showFeedback, t],
   );
 
+  const handleRemoveBed = useCallback(
+    (bedId: CatBedId) => {
+      recordInteraction();
+      triggerHaptic();
+      const removed = removeBedFromRoom();
+      if (removed) {
+        showFeedback(
+          "📦",
+          t("store.removedFromRoom", {
+            name: t(`store.bedName.${bedId}`),
+          }),
+        );
+      }
+    },
+    [recordInteraction, removeBedFromRoom, showFeedback, t],
+  );
+
   const showToyPurchaseMessage = useCallback(
     (result: ToyPurchaseResult, toyId: CatToyId) => {
       const toyName = t(`store.toyName.${toyId}`).replace(/\n/g, " ");
@@ -344,6 +364,23 @@ export default function StoreScreen() {
       }
     },
     [placeToyInRoom, recordInteraction, showFeedback, t],
+  );
+
+  const handleRemoveToy = useCallback(
+    (toyId: CatToyId) => {
+      recordInteraction();
+      triggerHaptic();
+      const removed = removeToyFromRoom(toyId);
+      if (removed) {
+        showFeedback(
+          "📦",
+          t("store.removedFromRoom", {
+            name: t(`store.toyName.${toyId}`).replace(/\n/g, " "),
+          }),
+        );
+      }
+    },
+    [recordInteraction, removeToyFromRoom, showFeedback, t],
   );
 
   const showDecorationPurchaseMessage = useCallback(
@@ -420,6 +457,23 @@ export default function StoreScreen() {
       }
     },
     [placeDecorationInRoom, recordInteraction, showFeedback, t],
+  );
+
+  const handleRemoveDecoration = useCallback(
+    (decorationId: CatDecorationId) => {
+      recordInteraction();
+      triggerHaptic();
+      const removed = removeDecorationFromRoom(decorationId);
+      if (removed) {
+        showFeedback(
+          "📦",
+          t("store.removedFromRoom", {
+            name: t(`store.decorationName.${decorationId}`).replace(/\n/g, " "),
+          }),
+        );
+      }
+    },
+    [recordInteraction, removeDecorationFromRoom, showFeedback, t],
   );
 
   const showSkinPurchaseMessage = useCallback(
@@ -607,6 +661,7 @@ export default function StoreScreen() {
                         canAfford={canAfford}
                         onBuy={() => handleBuyBed(bedId)}
                         onEquip={() => handleEquipBed(bedId)}
+                        onRemove={() => handleRemoveBed(bedId)}
                       />
                     );
                   })
@@ -626,6 +681,7 @@ export default function StoreScreen() {
                           canAfford={canAfford}
                           onBuy={() => handleBuyToy(toyId)}
                           onPlace={() => handlePlaceToy(toyId)}
+                          onRemove={() => handleRemoveToy(toyId)}
                         />
                       );
                     })
@@ -650,6 +706,7 @@ export default function StoreScreen() {
                           canAfford={canAfford}
                           onBuy={() => handleBuyDecoration(decorationId)}
                           onPlace={() => handlePlaceDecoration(decorationId)}
+                          onRemove={() => handleRemoveDecoration(decorationId)}
                         />
                       );
                     })}

@@ -3,6 +3,7 @@ import { PetRoomBackground } from "@/components/pet/PetRoomBackground";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
+import { RoomItemActionMenu } from "@/components/pet/RoomItemActionMenu";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { getCatBedSource } from "@/constants/cat-beds";
 import type { PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
@@ -20,7 +21,7 @@ import { clampStat } from "@/utils/pet-care";
 import { moderateScale } from "@/utils/scale";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { type LayoutChangeEvent, Image, StyleSheet, Text, View } from "react-native";
+import { type LayoutChangeEvent, Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 const COMPACT_PET_MIN = 200;
 const COMPACT_PET_MAX = 300;
@@ -67,6 +68,9 @@ type PetStageProps = {
     decorationId: CatDecorationId,
     offset: RoomItemOffset,
   ) => void;
+  onPlacedDecorationRemove?: (decorationId: CatDecorationId) => void;
+  onBedRemove?: () => void;
+  onPlacedToyRemove?: (toyId: CatToyId) => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (stepIndex: number) => void;
 };
@@ -102,6 +106,11 @@ function StatBar({
   );
 }
 
+type RoomItemMenu =
+  | { kind: "bed" }
+  | { kind: "decoration"; id: CatDecorationId }
+  | { kind: "toy"; id: CatToyId };
+
 export function PetStage({
   name,
   petType,
@@ -122,6 +131,9 @@ export function PetStage({
   onRoomBedOffsetChange,
   onPlacedToyOffsetChange,
   onPlacedDecorationOffsetChange,
+  onPlacedDecorationRemove,
+  onBedRemove,
+  onPlacedToyRemove,
   onAnimationComplete,
   onStepComplete,
 }: PetStageProps) {
@@ -131,6 +143,9 @@ export function PetStage({
   const bedSource = usesSprite ? getCatBedSource(bedId) : undefined;
   const roomPlacedToys = usesSprite ? (placedToys ?? []) : [];
   const roomPlacedDecorations = usesSprite ? (placedDecorations ?? []) : [];
+  const [openRoomItemMenu, setOpenRoomItemMenu] =
+    useState<RoomItemMenu | null>(null);
+  const removeMenuLabel = t("home.removeFromRoom");
   const [avatarWidth, setAvatarWidth] = useState(
     compactPetWidth(petType, compact),
   );
@@ -156,6 +171,55 @@ export function PetStage({
       setAvatarWidth(clamped);
     },
     [compact, usesSprite],
+  );
+
+  const handleDecorationTap = useCallback((decorationId: CatDecorationId) => {
+    if (!onPlacedDecorationRemove) return;
+    setOpenRoomItemMenu((current) =>
+      current?.kind === "decoration" && current.id === decorationId
+        ? null
+        : { kind: "decoration", id: decorationId },
+    );
+  }, [onPlacedDecorationRemove]);
+
+  const handleDecorationRemove = useCallback(
+    (decorationId: CatDecorationId) => {
+      setOpenRoomItemMenu(null);
+      onPlacedDecorationRemove?.(decorationId);
+    },
+    [onPlacedDecorationRemove],
+  );
+
+  const handleBedTap = useCallback(() => {
+    if (!onBedRemove) return;
+    setOpenRoomItemMenu((current) =>
+      current?.kind === "bed" ? null : { kind: "bed" },
+    );
+  }, [onBedRemove]);
+
+  const handleBedRemove = useCallback(() => {
+    setOpenRoomItemMenu(null);
+    onBedRemove?.();
+  }, [onBedRemove]);
+
+  const handleToyTap = useCallback(
+    (toyId: CatToyId) => {
+      if (!onPlacedToyRemove) return;
+      setOpenRoomItemMenu((current) =>
+        current?.kind === "toy" && current.id === toyId
+          ? null
+          : { kind: "toy", id: toyId },
+      );
+    },
+    [onPlacedToyRemove],
+  );
+
+  const handleToyRemove = useCallback(
+    (toyId: CatToyId) => {
+      setOpenRoomItemMenu(null);
+      onPlacedToyRemove?.(toyId);
+    },
+    [onPlacedToyRemove],
   );
 
   const petCluster = (
@@ -204,8 +268,15 @@ export function PetStage({
         petSize={bedSize}
         initialOffset={roomBedOffset ?? { x: -0.15, y: 0.3 }}
         onOffsetChange={onRoomBedOffsetChange}
-        layerZIndex={1}
+        onPetTap={onBedRemove ? handleBedTap : undefined}
+        layerZIndex={openRoomItemMenu?.kind === "bed" ? 10 : 1}
       >
+        {openRoomItemMenu?.kind === "bed" && onBedRemove ? (
+          <RoomItemActionMenu
+            label={removeMenuLabel}
+            onPress={handleBedRemove}
+          />
+        ) : null}
         <Image
           source={bedSource}
           style={{ width: bedSize, height: bedSize }}
@@ -218,6 +289,9 @@ export function PetStage({
   const roomDecorationLayers = roomPlacedDecorations.map((placed) => {
     const decorationId = placed.decorationId as CatDecorationId;
     const decorationSize = moderateScale(getDecorationDragSize(decorationId));
+    const isMenuOpen =
+      openRoomItemMenu?.kind === "decoration" &&
+      openRoomItemMenu.id === decorationId;
 
     return (
       <DraggableRoomPet
@@ -227,8 +301,19 @@ export function PetStage({
         onOffsetChange={(offset) =>
           onPlacedDecorationOffsetChange?.(decorationId, offset)
         }
-        layerZIndex={2}
+        onPetTap={
+          onPlacedDecorationRemove
+            ? () => handleDecorationTap(decorationId)
+            : undefined
+        }
+        layerZIndex={isMenuOpen ? 10 : 2}
       >
+        {isMenuOpen && onPlacedDecorationRemove ? (
+          <RoomItemActionMenu
+            label={removeMenuLabel}
+            onPress={() => handleDecorationRemove(decorationId)}
+          />
+        ) : null}
         <DecorationSpriteImage
           decorationId={decorationId}
           size={decorationSize}
@@ -240,6 +325,8 @@ export function PetStage({
   const roomToyLayers = roomPlacedToys.map((placed) => {
     const toyId = placed.toyId as CatToyId;
     const toySize = moderateScale(getToyDisplaySize(toyId));
+    const isMenuOpen =
+      openRoomItemMenu?.kind === "toy" && openRoomItemMenu.id === toyId;
 
     return (
       <DraggableRoomPet
@@ -247,8 +334,17 @@ export function PetStage({
         petSize={toySize}
         initialOffset={placed.offset}
         onOffsetChange={(offset) => onPlacedToyOffsetChange?.(toyId, offset)}
-        layerZIndex={3}
+        onPetTap={
+          onPlacedToyRemove ? () => handleToyTap(toyId) : undefined
+        }
+        layerZIndex={isMenuOpen ? 10 : 3}
       >
+        {isMenuOpen && onPlacedToyRemove ? (
+          <RoomItemActionMenu
+            label={removeMenuLabel}
+            onPress={() => handleToyRemove(toyId)}
+          />
+        ) : null}
         <ToySpriteImage toyId={toyId} size={toySize} />
       </DraggableRoomPet>
     );
@@ -268,12 +364,24 @@ export function PetStage({
       <View style={styles.petColumnMeasure} onLayout={handleAvatarLayout}>
         <View style={[styles.petColumn, compact && styles.petColumnCompact]}>
           <View
-            style={[styles.avatarWrap, compact && styles.avatarWrapCompact]}
+            style={[
+              styles.avatarWrap,
+              compact && styles.avatarWrapCompact,
+              openRoomItemMenu && styles.avatarWrapMenuOpen,
+            ]}
           >
             {usesSprite ? <PetRoomBackground roomId={roomId} /> : null}
             {roomBedLayer}
             {roomDecorationLayers}
             {roomToyLayers}
+            {openRoomItemMenu ? (
+              <Pressable
+                style={styles.menuBackdrop}
+                onPress={() => setOpenRoomItemMenu(null)}
+                accessibilityRole="button"
+                accessibilityLabel={t("home.dismissRoomItemMenu")}
+              />
+            ) : null}
             {compact ? roomPetLayer : petCluster}
           </View>
 
@@ -360,6 +468,15 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: moderateScale(260),
     borderRadius: moderateScale(12),
+    overflow: "visible",
+  },
+  avatarWrapMenuOpen: {
+    overflow: "visible",
+    zIndex: 1,
+  },
+  menuBackdrop: {
+    ...StyleSheet.absoluteFill,
+    zIndex: 5,
   },
   petStack: {
     width: "100%",

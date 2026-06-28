@@ -19,6 +19,7 @@ import {
   getContextualSpeechMessage,
   pickPetTapSpeechKey,
 } from "@/utils/pet-speech";
+import type { CatBedId } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
@@ -59,6 +60,9 @@ export default function HomeScreen() {
     setPet,
     setWallet,
     recordInteraction,
+    removeDecorationFromRoom,
+    removeBedFromRoom,
+    removeToyFromRoom,
   } = useGame();
   const [actionSpeech, setActionSpeech] = useState<string | null>(null);
   const speechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -266,6 +270,45 @@ export default function HomeScreen() {
     router.push("/store");
   }, [recordInteraction, router]);
 
+  const handleRemoveDecoration = useCallback(
+    (decorationId: CatDecorationId) => {
+      const removed = removeDecorationFromRoom(decorationId);
+      if (!removed) return;
+
+      recordInteraction();
+      triggerHaptic();
+      const name = t(`store.decorationName.${decorationId}`).replace(/\n/g, " ");
+      showSpeech(t("home.removedFromRoom", { name }));
+    },
+    [recordInteraction, removeDecorationFromRoom, showSpeech, t],
+  );
+
+  const handleRemoveBed = useCallback(() => {
+    const bedId = pet.bedId as CatBedId | undefined;
+    if (!bedId) return;
+
+    const removed = removeBedFromRoom();
+    if (!removed) return;
+
+    recordInteraction();
+    triggerHaptic();
+    const name = t(`store.bedName.${bedId}`);
+    showSpeech(t("home.removedFromRoom", { name }));
+  }, [pet.bedId, recordInteraction, removeBedFromRoom, showSpeech, t]);
+
+  const handleRemoveToy = useCallback(
+    (toyId: CatToyId) => {
+      const removed = removeToyFromRoom(toyId);
+      if (!removed) return;
+
+      recordInteraction();
+      triggerHaptic();
+      const name = t(`store.toyName.${toyId}`).replace(/\n/g, " ");
+      showSpeech(t("home.removedFromRoom", { name }));
+    },
+    [recordInteraction, removeToyFromRoom, showSpeech, t],
+  );
+
   const handlePlayPuzzle = useCallback(() => {
     recordInteraction();
     triggerHaptic();
@@ -392,6 +435,9 @@ export default function HomeScreen() {
                   ),
                 }))
               }
+              onPlacedDecorationRemove={handleRemoveDecoration}
+              onBedRemove={handleRemoveBed}
+              onPlacedToyRemove={handleRemoveToy}
               onAnimationComplete={handleAnimationComplete}
             />
           </View>

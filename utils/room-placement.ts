@@ -202,6 +202,22 @@ export function updatePlacedDecorationOffset(
   );
 }
 
+export function removePlacedDecoration(
+  placedDecorations: PlacedDecoration[] | undefined,
+  decorationId: CatDecorationId,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).filter(
+    (item) => item.decorationId !== decorationId,
+  );
+}
+
+export function removePlacedToy(
+  placedToys: PlacedToy[] | undefined,
+  toyId: CatToyId,
+): PlacedToy[] {
+  return (placedToys ?? []).filter((item) => item.toyId !== toyId);
+}
+
 export function collectPlacedToyIds(placedToys: PlacedToy[] | undefined): CatToyId[] {
   return (placedToys ?? [])
     .map((item) => item.toyId)

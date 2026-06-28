@@ -201,5 +201,6 @@ const styles = StyleSheet.create({
   petSlot: {
     position: "absolute",
     alignItems: "center",
+    justifyContent: "flex-end",
   },
 });

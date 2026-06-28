@@ -13,6 +13,7 @@ type BedStoreCardProps = {
   canAfford: boolean;
   onBuy: () => void;
   onEquip: () => void;
+  onRemove: () => void;
 };
 
 export function BedStoreCard({
@@ -22,6 +23,7 @@ export function BedStoreCard({
   canAfford,
   onBuy,
   onEquip,
+  onRemove,
 }: BedStoreCardProps) {
   const { t } = useTranslation();
   const price = getBedStorePrice(bedId);
@@ -48,25 +50,37 @@ export function BedStoreCard({
       <Text style={styles.title}>{t(`store.bedName.${bedId}`)}</Text>
 
       {isOwned ? (
-        <Pressable
-          onPress={onEquip}
-          disabled={isEquipped}
-          style={({ pressed }) => [
-            styles.actionBtn,
-            isEquipped ? styles.actionEquipped : styles.actionEquip,
-            pressed && !isEquipped && styles.actionPressed,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t("store.a11yEquipBed", {
-            name: t(`store.bedName.${bedId}`),
-          })}
-        >
-          <Text
-            style={[styles.actionText, isEquipped && styles.actionTextMuted]}
+        isEquipped ? (
+          <Pressable
+            onPress={onRemove}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionRemove,
+              pressed && styles.actionPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("store.a11yRemoveBed", {
+              name: t(`store.bedName.${bedId}`),
+            })}
           >
-            {isEquipped ? t("store.equipped") : t("store.equip")}
-          </Text>
-        </Pressable>
+            <Text style={styles.actionRemoveText}>{t("store.remove")}</Text>
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={onEquip}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionEquip,
+              pressed && styles.actionPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("store.a11yEquipBed", {
+              name: t(`store.bedName.${bedId}`),
+            })}
+          >
+            <Text style={styles.actionText}>{t("store.equip")}</Text>
+          </Pressable>
+        )
       ) : price.kind === "free" ? (
         <Pressable
           onPress={onBuy}
@@ -171,10 +185,10 @@ const styles = StyleSheet.create({
   actionEquip: {
     backgroundColor: GameColors.secondary,
   },
-  actionEquipped: {
+  actionRemove: {
     backgroundColor: GameColors.background,
     borderWidth: 2,
-    borderColor: GameColors.cardBorder,
+    borderColor: GameColors.primary,
   },
   actionDisabled: {
     opacity: 0.55,
@@ -191,5 +205,10 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14),
     fontWeight: "700",
     color: GameColors.textMuted,
+  },
+  actionRemoveText: {
+    fontSize: moderateScale(14),
+    fontWeight: "700",
+    color: GameColors.primary,
   },
 });

@@ -42,6 +42,8 @@ import {
   appendPlacedToy,
   isDecorationPlacedInRoom,
   isToyPlacedInRoom,
+  removePlacedDecoration,
+  removePlacedToy,
 } from "@/utils/room-placement";
 import { PET_NAME_MAX_LENGTH } from "@/types/save";
 import {
@@ -80,10 +82,13 @@ type GameContextValue = {
   equipRoom: (roomId: CatRoomId) => boolean;
   purchaseBed: (bedId: CatBedId) => BedPurchaseResult;
   equipBed: (bedId: CatBedId) => boolean;
+  removeBedFromRoom: () => boolean;
   purchaseToy: (toyId: CatToyId) => ToyPurchaseResult;
   placeToyInRoom: (toyId: CatToyId) => boolean;
+  removeToyFromRoom: (toyId: CatToyId) => boolean;
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
+  removeDecorationFromRoom: (decorationId: CatDecorationId) => boolean;
   purchaseSkin: (skinId: CatSkinId) => SkinPurchaseResult;
   equipSkin: (skinId: CatSkinId) => boolean;
   completeOnboarding: (options: {
@@ -353,6 +358,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
+  const removeBedFromRoom = useCallback(() => {
+    const current = saveRef.current;
+    if (!current.pet.bedId) {
+      return false;
+    }
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        bedId: undefined,
+      },
+    });
+
+    return true;
+  }, []);
+
   const purchaseToy = useCallback((toyId: CatToyId): ToyPurchaseResult => {
     const resolvedId = resolveCatToyId(toyId);
     if (!resolvedId) {
@@ -407,6 +429,28 @@ export function GameProvider({ children }: { children: ReactNode }) {
       pet: {
         ...current.pet,
         placedToys: appendPlacedToy(current.pet.placedToys, resolvedId),
+      },
+    });
+
+    return true;
+  }, []);
+
+  const removeToyFromRoom = useCallback((toyId: CatToyId) => {
+    const resolvedId = resolveCatToyId(toyId);
+    if (!resolvedId) {
+      return false;
+    }
+
+    const current = saveRef.current;
+    if (!isToyPlacedInRoom(resolvedId, current.pet.placedToys)) {
+      return false;
+    }
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        placedToys: removePlacedToy(current.pet.placedToys, resolvedId),
       },
     });
 
@@ -473,6 +517,31 @@ export function GameProvider({ children }: { children: ReactNode }) {
       pet: {
         ...current.pet,
         placedDecorations: appendPlacedDecoration(
+          current.pet.placedDecorations,
+          resolvedId,
+        ),
+      },
+    });
+
+    return true;
+  }, []);
+
+  const removeDecorationFromRoom = useCallback((decorationId: CatDecorationId) => {
+    const resolvedId = resolveCatDecorationId(decorationId);
+    if (!resolvedId) {
+      return false;
+    }
+
+    const current = saveRef.current;
+    if (!isDecorationPlacedInRoom(resolvedId, current.pet.placedDecorations)) {
+      return false;
+    }
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        placedDecorations: removePlacedDecoration(
           current.pet.placedDecorations,
           resolvedId,
         ),
@@ -583,10 +652,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       purchaseBed,
       equipBed,
+      removeBedFromRoom,
       purchaseToy,
       placeToyInRoom,
+      removeToyFromRoom,
       purchaseDecoration,
       placeDecorationInRoom,
+      removeDecorationFromRoom,
       purchaseSkin,
       equipSkin,
       completeOnboarding,
@@ -609,10 +681,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       purchaseBed,
       equipBed,
+      removeBedFromRoom,
       purchaseToy,
       placeToyInRoom,
+      removeToyFromRoom,
       purchaseDecoration,
       placeDecorationInRoom,
+      removeDecorationFromRoom,
       purchaseSkin,
       equipSkin,
     ],

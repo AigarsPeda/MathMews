@@ -14,6 +14,7 @@ type DecorationStoreCardProps = {
   canAfford: boolean;
   onBuy: () => void;
   onPlace: () => void;
+  onRemove: () => void;
 };
 
 export function DecorationStoreCard({
@@ -23,6 +24,7 @@ export function DecorationStoreCard({
   canAfford,
   onBuy,
   onPlace,
+  onRemove,
 }: DecorationStoreCardProps) {
   const { t } = useTranslation();
   const price = getDecorationStorePrice(decorationId);
@@ -46,25 +48,37 @@ export function DecorationStoreCard({
       </View>
 
       {isOwned ? (
-        <Pressable
-          onPress={onPlace}
-          disabled={isPlaced}
-          style={({ pressed }) => [
-            styles.actionBtn,
-            isPlaced ? styles.actionEquipped : styles.actionEquip,
-            pressed && !isPlaced && styles.actionPressed,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t("store.a11yPlaceDecoration", {
-            name: decorationLabelInline,
-          })}
-        >
-          <Text
-            style={[styles.actionText, isPlaced && styles.actionTextMuted]}
+        isPlaced ? (
+          <Pressable
+            onPress={onRemove}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionRemove,
+              pressed && styles.actionPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("store.a11yRemoveDecoration", {
+              name: decorationLabelInline,
+            })}
           >
-            {isPlaced ? t("store.placed") : t("store.place")}
-          </Text>
-        </Pressable>
+            <Text style={styles.actionRemoveText}>{t("store.remove")}</Text>
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={onPlace}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionEquip,
+              pressed && styles.actionPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("store.a11yPlaceDecoration", {
+              name: decorationLabelInline,
+            })}
+          >
+            <Text style={styles.actionText}>{t("store.place")}</Text>
+          </Pressable>
+        )
       ) : price.kind === "free" ? (
         <Pressable
           onPress={onBuy}
@@ -170,6 +184,11 @@ const styles = StyleSheet.create({
   actionEquip: {
     backgroundColor: GameColors.secondary,
   },
+  actionRemove: {
+    backgroundColor: GameColors.background,
+    borderWidth: 2,
+    borderColor: GameColors.primary,
+  },
   actionEquipped: {
     backgroundColor: GameColors.background,
     borderWidth: 2,
@@ -190,5 +209,10 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14),
     fontWeight: "700",
     color: GameColors.textMuted,
+  },
+  actionRemoveText: {
+    fontSize: moderateScale(14),
+    fontWeight: "700",
+    color: GameColors.primary,
   },
 });
