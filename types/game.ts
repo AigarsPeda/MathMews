@@ -9,7 +9,7 @@ export type PetMood =
   | "sleeping";
 
 /** Short puzzle / reward clips — not derived from pet stats. */
-export type PetReaction = "correct" | "coinCatch" | "bathing";
+export type PetReaction = "correct" | "coinCatch" | "playBox";
 
 export type PetAnimationState = PetMood | PetReaction;
 
@@ -59,6 +59,8 @@ export type PetProfile = {
   placedToys?: PlacedToy[];
   /** Decorations currently placed in the cat room. */
   placedDecorations?: PlacedDecoration[];
+  /** Cat fur color (`orange`, `grey`, `white`). */
+  catSkinId?: string;
 };
 
 export type Wallet = {
@@ -93,4 +95,6 @@ export type Progress = {
   toysUnlocked: string[];
   /** Room decorations the player owns. */
   decorationsUnlocked: string[];
+  /** Cat fur colors the player owns. */
+  skinsUnlocked: string[];
 };

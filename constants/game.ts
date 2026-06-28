@@ -1,4 +1,5 @@
 import { DEFAULT_CAT_ROOM_ID } from "@/constants/cat-rooms";
+import { DEFAULT_CAT_SKIN_ID } from "@/constants/cat-skins";
 import type { PetAnimationState, PetMood } from "@/types/game";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 
@@ -37,6 +38,7 @@ export const DEFAULT_PET = {
   lastInteractionAt: Date.now(),
   isAsleep: false,
   roomId: DEFAULT_CAT_ROOM_ID,
+  catSkinId: DEFAULT_CAT_SKIN_ID,
 };
 
 export const DEFAULT_WALLET = { coins: 42 };
@@ -50,6 +52,7 @@ export const DEFAULT_PROGRESS = {
   bedsUnlocked: [] as string[],
   toysUnlocked: [] as string[],
   decorationsUnlocked: [] as string[],
+  skinsUnlocked: [] as string[],
 };
 
 export const MAX_LIVES = 5;
@@ -58,13 +61,12 @@ export const LIFE_REGEN_MINUTES = 30;
 export const LIFE_BUY_COST = 15;
 
 export const FEED_COST = 10;
-export const BATH_COST = 7;
+export const BOX_PLAY_COST = 7;
 export const FEED_HUNGER_RESTORE = 25;
 export const FEED_HAPPINESS_BOOST = 5;
 export const PET_HAPPINESS_BOOST = 10;
-export const BATH_HAPPINESS_BOOST = 15;
-export const BATH_CLEANLINESS_RESTORE = 35;
-/** Max hunger / happiness / cleanliness (0–100). */
+export const BOX_PLAY_HAPPINESS_BOOST = 18;
+/** Max hunger / happiness (0–100). */
 export const MAX_PET_STAT = 100;
 /** Cooldown after a pet or feed action finishes. */
 export const PET_CARE_COOLDOWN_MS = 4_000;
@@ -95,8 +97,6 @@ export const PUZZLE_HUNGER_COST = 2;
 
 /** Show hungry speech when fullness is at or below this (0–100). */
 export const HUNGER_SPEECH_FULLNESS_MAX = 30;
-/** Show dirty speech when cleanliness is at or below this (0–100). */
-export const CLEANLINESS_SPEECH_DIRTY_MAX = 40;
 
 /** Show streak celebration speech and banner from this many correct answers in a row. */
 export const PUZZLE_STREAK_NOTIFY_MIN = 2;
@@ -104,7 +104,6 @@ export const PUZZLE_STREAK_NOTIFY_MIN = 2;
 /** Stat decay while the app is closed or idle (per hour). */
 export const HUNGER_DECAY_PER_HOUR = 5;
 export const HAPPINESS_DECAY_PER_HOUR = 1;
-export const CLEANLINESS_DECAY_PER_HOUR = 3;
 /** Extra happiness lost per hour when hunger drops below 50. */
 export const HAPPINESS_DECAY_LOW_HUNGER_PER_HOUR = 3;
 export const LOW_HUNGER_THRESHOLD = 50;
@@ -164,7 +163,7 @@ export const ANIMATION_LABELS: Record<PetAnimationState, string> = {
   ...MOOD_LABELS,
   correct: "Nice one!",
   coinCatch: "Coin caught!",
-  bathing: "Splish splash!",
+  playBox: "Box time!",
 };
 
 /** One-shot clips that return to the base mood when finished. */
@@ -172,7 +171,7 @@ export const ONE_SHOT_ANIMATIONS: PetAnimationState[] = [
   "excited",
   "eating",
   "dancing",
-  "bathing",
+  "playBox",
   "correct",
   "coinCatch",
 ];

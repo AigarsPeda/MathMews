@@ -47,6 +47,7 @@ function avatarDisplayWidth(
 type PetStageProps = {
   name: string;
   petType: PetType;
+  catSkinId?: string;
   stats: PetStats;
   wisdom: number;
   roomId?: string;
@@ -104,6 +105,7 @@ function StatBar({
 export function PetStage({
   name,
   petType,
+  catSkinId,
   stats,
   wisdom,
   roomId,
@@ -170,6 +172,7 @@ export function PetStage({
       ) : null}
       <PetDisplay
         petType={petType}
+        catSkinId={catSkinId}
         playback={playback}
         width={displayWidth}
         transparentBackground={usesSprite}
@@ -280,12 +283,6 @@ export function PetStage({
               label={t("pet.fed")}
               value={clampStat(stats.hunger)}
               color={GameColors.hunger}
-            />
-            <StatBar
-              emoji="✨"
-              label={t("pet.cleanliness")}
-              value={clampStat(stats.cleanliness)}
-              color={GameColors.cleanliness}
             />
             <StatBar
               emoji="💛"

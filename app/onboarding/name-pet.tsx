@@ -1,6 +1,13 @@
+import { CatSkinPicker } from "@/components/onboarding/CatSkinPicker";
 import { GameColors } from "@/constants/game";
+import {
+  DEFAULT_CAT_SKIN_ID,
+  type CatSkinId,
+} from "@/constants/cat-skins";
 import { useGame } from "@/contexts/GameProvider";
+import { useLocale } from "@/contexts/LocaleProvider";
 import { PET_NAME_MAX_LENGTH } from "@/types/save";
+import { APP_LOCALES, type AppLocale } from "@/types/locale";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useRouter } from "expo-router";
@@ -11,6 +18,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -27,12 +35,22 @@ function triggerHaptic() {
 export default function NamePetScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { locale, setLocale } = useLocale();
   const { isReady, hasCompletedOnboarding, completeOnboarding } = useGame();
   const [name, setName] = useState("");
+  const [catSkinId, setCatSkinId] = useState<CatSkinId>(DEFAULT_CAT_SKIN_ID);
+  const [selectedLocale, setSelectedLocale] = useState<AppLocale>(locale);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const trimmedName = name.trim();
   const canContinue = trimmedName.length > 0 && !isSubmitting;
+
+  const handleSelectLocale = useCallback((next: AppLocale) => {
+    if (next === selectedLocale) return;
+    triggerHaptic();
+    setSelectedLocale(next);
+    void setLocale(next);
+  }, [selectedLocale, setLocale]);
 
   const handleContinue = useCallback(async () => {
     if (!canContinue) return;
@@ -40,13 +58,26 @@ export default function NamePetScreen() {
     triggerHaptic();
     setIsSubmitting(true);
 
-    const ok = await completeOnboarding(trimmedName);
+    if (selectedLocale !== locale) {
+      await setLocale(selectedLocale);
+    }
+
+    const ok = await completeOnboarding({ name: trimmedName, catSkinId });
     setIsSubmitting(false);
 
     if (ok) {
       router.replace("/");
     }
-  }, [canContinue, completeOnboarding, router, trimmedName]);
+  }, [
+    canContinue,
+    catSkinId,
+    completeOnboarding,
+    locale,
+    router,
+    selectedLocale,
+    setLocale,
+    trimmedName,
+  ]);
 
   if (!isReady) {
     return (
@@ -66,14 +97,53 @@ export default function NamePetScreen() {
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.screen}>
-          <View style={styles.header}>
-            <Text style={styles.emoji}>🐱</Text>
-            <Text style={styles.title}>{t("onboarding.title")}</Text>
-            <Text style={styles.subtitle}>{t("onboarding.subtitle")}</Text>
+        <View style={styles.body}>
+          <ScrollView
+            style={styles.flex}
+            contentContainerStyle={styles.screen}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.header}>
+              <Text style={styles.title}>{t("onboarding.title")}</Text>
+              <Text style={styles.subtitle}>{t("onboarding.subtitle")}</Text>
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.label}>{t("onboarding.language")}</Text>
+              <View style={styles.localeOptions}>
+              {APP_LOCALES.map((code) => {
+                const selected = selectedLocale === code;
+                return (
+                  <Pressable
+                    key={code}
+                    onPress={() => handleSelectLocale(code)}
+                    style={[
+                      styles.localeOption,
+                      selected && styles.localeOptionSelected,
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={t(`locale.${code}`)}
+                  >
+                    <Text
+                      style={[
+                        styles.localeOptionText,
+                        selected && styles.localeOptionTextSelected,
+                      ]}
+                    >
+                      {t(`locale.${code}`)}
+                    </Text>
+                    {selected ? <Text style={styles.check}>✓</Text> : null}
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
 
-          <View style={styles.form}>
+          <CatSkinPicker value={catSkinId} onChange={setCatSkinId} />
+
+          <View style={styles.section}>
             <Text style={styles.label}>{t("onboarding.petName")}</Text>
             <TextInput
               style={styles.input}
@@ -86,7 +156,6 @@ export default function NamePetScreen() {
               autoCorrect={false}
               returnKeyType="done"
               onSubmitEditing={handleContinue}
-              autoFocus
               accessibilityLabel={t("onboarding.a11yPetName")}
             />
             <Text style={styles.hint}>
@@ -96,22 +165,25 @@ export default function NamePetScreen() {
               })}
             </Text>
           </View>
+          </ScrollView>
 
-          <Pressable
-            style={[
-              styles.primaryBtn,
-              !canContinue && styles.primaryBtnDisabled,
-            ]}
-            onPress={handleContinue}
-            disabled={!canContinue}
-            accessibilityRole="button"
-            accessibilityLabel={t("onboarding.a11yContinue")}
-            accessibilityState={{ disabled: !canContinue }}
-          >
-            <Text style={styles.primaryBtnText}>
-              {isSubmitting ? t("common.saving") : t("onboarding.meetPet")}
-            </Text>
-          </Pressable>
+          <View style={styles.footer}>
+            <Pressable
+              style={[
+                styles.primaryBtn,
+                !canContinue && styles.primaryBtnDisabled,
+              ]}
+              onPress={handleContinue}
+              disabled={!canContinue}
+              accessibilityRole="button"
+              accessibilityLabel={t("onboarding.a11yContinue")}
+              accessibilityState={{ disabled: !canContinue }}
+            >
+              <Text style={styles.primaryBtnText}>
+                {isSubmitting ? t("common.saving") : t("onboarding.meetPet")}
+              </Text>
+            </Pressable>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -132,46 +204,81 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: GameColors.background,
   },
-  screen: {
+  body: {
     flex: 1,
+  },
+  screen: {
     paddingHorizontal: moderateScale(20),
-    paddingTop: moderateScale(24),
-    paddingBottom: moderateScale(16),
-    justifyContent: "space-between",
-    gap: moderateScale(24),
+    paddingTop: moderateScale(8),
+    paddingBottom: moderateScale(12),
+    gap: moderateScale(14),
   },
   header: {
     alignItems: "center",
-    gap: moderateScale(12),
-  },
-  emoji: {
-    fontSize: moderateScale(64),
+    gap: moderateScale(4),
   },
   title: {
-    fontSize: moderateScale(28),
+    fontSize: moderateScale(24),
     fontWeight: "800",
     color: GameColors.text,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: moderateScale(16),
+    fontSize: moderateScale(14),
     fontWeight: "500",
     color: GameColors.textMuted,
     textAlign: "center",
-    lineHeight: moderateScale(24),
+    lineHeight: moderateScale(20),
     maxWidth: moderateScale(320),
   },
-  form: {
-    gap: moderateScale(8),
+  section: {
+    gap: moderateScale(6),
   },
   label: {
     fontSize: moderateScale(16),
     fontWeight: "700",
     color: GameColors.text,
   },
+  hint: {
+    fontSize: moderateScale(14),
+    fontWeight: "500",
+    color: GameColors.textMuted,
+  },
+  localeOptions: {
+    gap: moderateScale(8),
+  },
+  localeOption: {
+    minHeight: moderateScale(44),
+    borderRadius: moderateScale(12),
+    borderWidth: 2,
+    borderColor: GameColors.cardBorder,
+    backgroundColor: GameColors.card,
+    paddingHorizontal: moderateScale(16),
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  localeOptionSelected: {
+    borderColor: GameColors.primary,
+    backgroundColor: "#FFF8F5",
+  },
+  localeOptionText: {
+    fontSize: moderateScale(16),
+    fontWeight: "600",
+    color: GameColors.text,
+  },
+  localeOptionTextSelected: {
+    color: GameColors.primary,
+    fontWeight: "700",
+  },
+  check: {
+    fontSize: moderateScale(16),
+    fontWeight: "800",
+    color: GameColors.primary,
+  },
   input: {
-    minHeight: moderateScale(56),
-    borderRadius: moderateScale(16),
+    minHeight: moderateScale(48),
+    borderRadius: moderateScale(14),
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
     backgroundColor: GameColors.card,
@@ -180,15 +287,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: GameColors.text,
   },
-  hint: {
-    fontSize: moderateScale(14),
-    fontWeight: "500",
-    color: GameColors.textMuted,
+  footer: {
+    paddingHorizontal: moderateScale(20),
+    paddingTop: moderateScale(8),
+    paddingBottom: moderateScale(8),
+    borderTopWidth: 1,
+    borderTopColor: GameColors.cardBorder,
+    backgroundColor: GameColors.background,
   },
   primaryBtn: {
     backgroundColor: GameColors.primary,
-    borderRadius: moderateScale(20),
-    minHeight: moderateScale(56),
+    borderRadius: moderateScale(18),
+    minHeight: moderateScale(50),
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: moderateScale(14),

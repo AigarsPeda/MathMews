@@ -1,3 +1,5 @@
+import { CAT_SPRITE_CATALOG } from "@/constants/cat-sprite-catalog";
+import { CAT_SKIN_SHEET, CAT_SKIN_SOURCES } from "@/constants/cat-skins";
 import { CAT_SPRITE_FRAME_HEIGHT } from "@/constants/cat-sprites";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
@@ -10,14 +12,12 @@ import {
   useImage,
 } from "@shopify/react-native-skia";
 import { useEffect, useState, type ReactNode } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-const IDLE_SPRITE = require("@/assets/pets/Cat/Sprites/Classical/Individual/Idle.png");
-
+const IDLE = CAT_SPRITE_CATALOG.idle;
+const SHEET_SOURCE = CAT_SKIN_SOURCES.orange;
 const FRAME_SIZE = CAT_SPRITE_FRAME_HEIGHT;
-const FRAME_COUNT = 10;
-const SHEET_WIDTH = 320;
-const FPS = 6;
+const FPS = IDLE.fps;
 
 const NEAREST_SAMPLING = {
   filter: FilterMode.Nearest,
@@ -31,25 +31,26 @@ type AnimatedSplashCatProps = {
 function useSplashLayout(size: number) {
   const pixelScale = Math.max(4, Math.floor(size / FRAME_SIZE));
   const displaySize = FRAME_SIZE * pixelScale;
-  const scaledSheetWidth = SHEET_WIDTH * pixelScale;
-  const scaledSheetHeight = FRAME_SIZE * pixelScale;
+  const scaledSheetWidth = CAT_SKIN_SHEET.width * pixelScale;
+  const scaledSheetHeight = CAT_SKIN_SHEET.height * pixelScale;
 
   return { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight };
 }
 
-/** Crisp pixel-art idle loop — Skia nearest-neighbor, same as in-game cat. */
+/** Crisp pixel-art idle loop from the orange skin pack. */
 export function AnimatedSplashCat({
   size = moderateScale(192),
 }: AnimatedSplashCatProps) {
   const [frameIndex, setFrameIndex] = useState(0);
-  const skiaImage = useImage(IDLE_SPRITE);
+  const skiaImage = useImage(SHEET_SOURCE);
   const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
     useSplashLayout(size);
   const imageX = -frameIndex * FRAME_SIZE * pixelScale;
+  const imageY = -IDLE.row * FRAME_SIZE * pixelScale;
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFrameIndex((current) => (current + 1) % FRAME_COUNT);
+      setFrameIndex((current) => (current + 1) % IDLE.frameCount);
     }, 1000 / FPS);
 
     return () => clearInterval(interval);
@@ -61,23 +62,8 @@ export function AnimatedSplashCat({
     overflow: "hidden" as const,
   };
 
-  const stripStyle = {
-    width: scaledSheetWidth,
-    height: scaledSheetHeight,
-    transform: [{ translateX: imageX }],
-  };
-
   if (!skiaImage) {
-    return (
-      <View style={[styles.wrap, windowStyle]}>
-        <Image
-          source={IDLE_SPRITE}
-          style={stripStyle}
-          resizeMode="stretch"
-          accessibilityIgnoresInvertColors
-        />
-      </View>
-    );
+    return <View style={[styles.wrap, windowStyle]} />;
   }
 
   return (
@@ -87,7 +73,7 @@ export function AnimatedSplashCat({
           <SkiaImage
             image={skiaImage}
             x={imageX}
-            y={0}
+            y={imageY}
             width={scaledSheetWidth}
             height={scaledSheetHeight}
             fit="fill"

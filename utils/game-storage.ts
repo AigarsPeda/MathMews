@@ -1,7 +1,9 @@
 import { DEFAULT_CAT_ROOM_ID, resolveCatRoomId } from "@/constants/cat-rooms";
+import { resolveCatSkinId } from "@/constants/cat-skins";
 import { resolveCatBedId } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatToyId } from "@/constants/cat-toys";
+import type { CatSkinId } from "@/constants/cat-skins";
 import {
   migrateLegacyPlacedDecorations,
   migrateLegacyPlacedToys,
@@ -29,6 +31,7 @@ import { normalizeRoomsUnlocked } from "@/utils/room-store";
 import { normalizeBedsUnlocked } from "@/utils/bed-store";
 import { normalizeToysUnlocked } from "@/utils/toy-store";
 import { normalizeDecorationsUnlocked } from "@/utils/decoration-store";
+import { normalizeSkinsUnlocked } from "@/utils/skin-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function createDefaultGameSave(): GameSave {
@@ -138,6 +141,9 @@ function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
     roomBedOffset: normalizeRoomBedOffset(pet.roomBedOffset),
     placedToys: migrateLegacyPlacedToys(pet),
     placedDecorations: migrateLegacyPlacedDecorations(pet),
+    catSkinId: resolveCatSkinId(
+      typeof pet.catSkinId === "string" ? pet.catSkinId : undefined,
+    ),
   };
 }
 
@@ -216,6 +222,11 @@ function parseGameSave(
       parsed.progress.decorationsUnlocked,
       placedDecorationIds,
     );
+    const equippedSkinId = resolveCatSkinId(normalizedPet.catSkinId);
+    const skinsUnlocked = normalizeSkinsUnlocked(
+      parsed.progress.skinsUnlocked,
+      equippedSkinId,
+    );
     const equippedRoomId = resolveCatRoomId(normalizedPet.roomId);
     const equippedBedId = resolveCatBedId(normalizedPet.bedId);
     const pet = resolveAsleepOnLoad(
@@ -229,6 +240,9 @@ function parseGameSave(
             equippedBedId && bedsUnlocked.includes(equippedBedId)
               ? equippedBedId
               : undefined,
+          catSkinId: skinsUnlocked.includes(equippedSkinId)
+            ? equippedSkinId
+            : skinsUnlocked[0] ?? equippedSkinId,
           placedToys: filterPlacedToysForUnlocked(
             normalizedPet.placedToys,
             toysUnlocked,
@@ -260,6 +274,7 @@ function parseGameSave(
           bedsUnlocked,
           toysUnlocked,
           decorationsUnlocked,
+          skinsUnlocked,
         },
       },
       awayMsAtSessionStart: awayMs,

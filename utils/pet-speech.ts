@@ -2,7 +2,7 @@ import { PUZZLE_STREAK_NOTIFY_MIN } from "@/constants/game";
 import { hasIncompletePuzzles } from "@/constants/puzzles";
 import type { PetAnimationState, PetProfile, PuzzleProgress } from "@/types/game";
 import type { AppLocale } from "@/types/locale";
-import { isPetDirty, isPetHungry } from "@/utils/pet-care";
+import { isPetHungry } from "@/utils/pet-care";
 
 const PET_TAP_KEYS = [
   "pet.speech.petTap1",
@@ -47,9 +47,6 @@ export function getIdleSpeech({
   }
   if (pet.stats.happiness < 30) {
     return { key: "pet.speech.sad" };
-  }
-  if (isPetDirty(pet.stats)) {
-    return { key: "pet.speech.dirty" };
   }
   if (isPetHungry(pet.stats)) {
     return { key: "pet.speech.hungry" };

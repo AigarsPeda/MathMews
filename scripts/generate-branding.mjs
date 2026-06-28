@@ -1,7 +1,7 @@
 /**
  * Generates app icon, splash, and favicon assets from the cat Idle sprite sheet.
  *
- * Source: assets/pets/Cat/Sprites/Classical/Individual/Idle.png
+ * Source: assets/pets/Cat/CatPackDifferentSkins/OrangeCat.png (idle row)
  * Run: npm run branding
  */
 import fs from "node:fs/promises";
@@ -14,8 +14,10 @@ const outDir = path.join(root, "assets", "images");
 
 const SOURCE = path.join(
   root,
-  "assets/pets/Cat/Sprites/Classical/Individual/Idle.png",
+  "assets/pets/Cat/CatPackDifferentSkins/OrangeCat.png",
 );
+
+const IDLE_ROW = 0;
 
 const FRAME_SIZE = 32;
 const FRAME_COUNT = 10;
@@ -57,7 +59,7 @@ async function frameOnCanvas(frameIndex, { size, pad, background, monochrome }) 
   const frame = await sharp(SOURCE)
     .extract({
       left: frameIndex * FRAME_SIZE,
-      top: 0,
+      top: IDLE_ROW * FRAME_SIZE,
       width: FRAME_SIZE,
       height: FRAME_SIZE,
     })

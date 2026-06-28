@@ -18,9 +18,9 @@ export type SpriteSheetConfig = {
   fps: number;
   anchor?: "bottom-center" | "center";
   reverse?: boolean;
-  /** Match on-screen size to 32px sprites when source cells are larger (e.g. bath). */
+  /** Match on-screen size to 32px sprites when source cells are larger. */
   scaleReferenceHeight?: number;
-  /** Extra integer scale steps for large-frame animations (bath tub scene). */
+  /** Extra integer scale steps for large-frame animations. */
   pixelScaleBoost?: number;
   maxPixelScale?: number;
 };
@@ -35,7 +35,9 @@ export type PetMediaSegment = {
   sprite?: SpriteSheetConfig;
 };
 
-export type PetScenarioId = "fallAsleep" | "wakeUp";
+export type PetScenarioId = "fallAsleep" | "wakeUp" | "playBox";
+
+export type BuiltInPetScenarioId = Exclude<PetScenarioId, "playBox">;
 
 export type PetMediaScenario = {
   id: PetScenarioId;
@@ -68,7 +70,7 @@ export type PetMediaRegistry = {
   oneShotStates: readonly PetAnimationState[];
   pickExcitedMood: () => PetAnimationState;
   getSegment: (state: PetAnimationState) => PetMediaSegment;
-  getScenario: (id: PetScenarioId) => PetMediaScenario;
+  getScenario: (id: BuiltInPetScenarioId) => PetMediaScenario;
 };
 
 export type PetDisplayEngineState = {

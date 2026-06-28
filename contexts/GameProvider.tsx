@@ -1,10 +1,10 @@
 import { LIFE_BUY_COST } from "@/constants/game";
 import { resolveCatBedId, type CatBedId } from "@/constants/cat-beds";
 import { resolveCatToyId, type CatToyId } from "@/constants/cat-toys";
-import {
-  resolveCatDecorationId,
+import { resolveCatDecorationId,
   type CatDecorationId,
 } from "@/constants/cat-decorations";
+import { resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import type { CatRoomId } from "@/constants/cat-rooms";
 import { resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveAsleepOnLoad } from "@/pet-display/engine/derive-mood";
@@ -14,6 +14,7 @@ import type {
   RoomPurchaseResult,
   ToyPurchaseResult,
   DecorationPurchaseResult,
+  SkinPurchaseResult,
 } from "@/types/store";
 import type { GameSave } from "@/types/save";
 import {
@@ -32,6 +33,10 @@ import {
   isDecorationUnlocked,
   tryPurchaseDecoration,
 } from "@/utils/decoration-store";
+import {
+  isSkinUnlocked,
+  tryPurchaseSkin,
+} from "@/utils/skin-store";
 import {
   appendPlacedDecoration,
   appendPlacedToy,
@@ -79,7 +84,12 @@ type GameContextValue = {
   placeToyInRoom: (toyId: CatToyId) => boolean;
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
-  completeOnboarding: (name: string) => Promise<boolean>;
+  purchaseSkin: (skinId: CatSkinId) => SkinPurchaseResult;
+  equipSkin: (skinId: CatSkinId) => boolean;
+  completeOnboarding: (options: {
+    name: string;
+    catSkinId: CatSkinId;
+  }) => Promise<boolean>;
   recordInteraction: () => void;
 };
 
@@ -472,25 +482,90 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
-  const completeOnboarding = useCallback(async (name: string) => {
-    const trimmed = normalizePetName(name);
-    if (!trimmed) return false;
+  const purchaseSkin = useCallback((skinId: CatSkinId): SkinPurchaseResult => {
+    const resolvedId = resolveCatSkinId(skinId);
+    if (!resolvedId) {
+      return "invalid_item";
+    }
 
-    const nextSave: GameSave = {
-      ...createDefaultGameSave(),
+    const current = saveRef.current;
+    const unlocked = current.progress.skinsUnlocked as CatSkinId[];
+    const attempt = tryPurchaseSkin({
+      skinId: resolvedId,
+      walletCoins: current.wallet.coins,
+      skinsUnlocked: unlocked,
+    });
+
+    if (attempt.result === "purchased") {
+      setSave({
+        ...current,
+        wallet: { coins: attempt.walletCoins },
+        progress: {
+          ...current.progress,
+          skinsUnlocked: attempt.skinsUnlocked,
+        },
+        pet: {
+          ...current.pet,
+          catSkinId: resolvedId,
+        },
+      });
+    }
+
+    return attempt.result;
+  }, []);
+
+  const equipSkin = useCallback((skinId: CatSkinId) => {
+    const resolvedId = resolveCatSkinId(skinId);
+    if (!resolvedId) {
+      return false;
+    }
+
+    const current = saveRef.current;
+    const unlocked = current.progress.skinsUnlocked as CatSkinId[];
+
+    if (!isSkinUnlocked(resolvedId, unlocked)) {
+      return false;
+    }
+
+    setSave({
+      ...current,
       pet: {
-        ...createDefaultGameSave().pet,
-        name: trimmed,
-        type: "cat",
-        lastCareAt: Date.now(),
+        ...current.pet,
+        catSkinId: resolvedId,
       },
-      hasCompletedOnboarding: true,
-    };
+    });
 
-    setSave(nextSave);
-    await saveGameSave(nextSave);
     return true;
   }, []);
+
+  const completeOnboarding = useCallback(
+    async (options: { name: string; catSkinId: CatSkinId }) => {
+      const trimmed = normalizePetName(options.name);
+      if (!trimmed) return false;
+
+      const skinId = resolveCatSkinId(options.catSkinId);
+      const nextSave: GameSave = {
+        ...createDefaultGameSave(),
+        pet: {
+          ...createDefaultGameSave().pet,
+          name: trimmed,
+          type: "cat",
+          catSkinId: skinId,
+          lastCareAt: Date.now(),
+        },
+        progress: {
+          ...createDefaultGameSave().progress,
+          skinsUnlocked: [skinId],
+        },
+        hasCompletedOnboarding: true,
+      };
+
+      setSave(nextSave);
+      await saveGameSave(nextSave);
+      return true;
+    },
+    [],
+  );
 
   const value = useMemo<GameContextValue>(
     () => ({
@@ -512,6 +587,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       placeToyInRoom,
       purchaseDecoration,
       placeDecorationInRoom,
+      purchaseSkin,
+      equipSkin,
       completeOnboarding,
       recordInteraction,
     }),
@@ -536,6 +613,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       placeToyInRoom,
       purchaseDecoration,
       placeDecorationInRoom,
+      purchaseSkin,
+      equipSkin,
     ],
   );
 

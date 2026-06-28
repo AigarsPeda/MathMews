@@ -1,5 +1,7 @@
 import { PET_CARE_COOLDOWN_MS } from "@/constants/game";
+import { buildBoxPlaySequence } from "@/constants/cat-box-play";
 import { usePetBaseMood } from "@/pet-display/engine/derive-mood";
+import { createBoxPlayScenario } from "@/pet-display/registry/cat-sprite-registry";
 import { getPetMediaRegistry } from "@/pet-display/registry/dog-video-registry";
 import type {
   PetDisplayCommand,
@@ -18,9 +20,13 @@ type ActiveScenario = {
 
 export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
   const { t } = useTranslation();
-  const registry = getPetMediaRegistry(pet.type);
+  const registry = getPetMediaRegistry(pet.type, {
+    catSkinId: pet.catSkinId,
+  });
   const { mood: baseMood, onFallAsleepComplete } = usePetBaseMood(pet);
   const [actionMood, setActionMood] = useState<PetAnimationState | null>(null);
+  const [boxPlayScenario, setBoxPlayScenario] =
+    useState<PetMediaScenario | null>(null);
   const [activeScenario, setActiveScenario] = useState<ActiveScenario | null>(
     null,
   );
@@ -39,15 +45,26 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
     }
 
     const mood = actionMood ?? baseMood;
+    if (mood === "playBox" && boxPlayScenario) {
+      return {
+        kind: "scenario",
+        scenario: boxPlayScenario,
+        steps: boxPlayScenario.steps,
+      };
+    }
+
     return {
       kind: "segment",
       segment: registry.getSegment(mood),
       mood,
     };
-  }, [actionMood, activeScenario, baseMood, registry]);
+  }, [actionMood, activeScenario, baseMood, boxPlayScenario, registry]);
 
   const displayLabel = useMemo(() => {
     if (playback.kind === "scenario") {
+      if (playback.scenario.id === "playBox") {
+        return t("mood.playBox");
+      }
       return t(`scenario.${playback.scenario.id}`);
     }
     return t(`mood.${playback.mood}`);
@@ -86,6 +103,11 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
 
   const playAction = useCallback(
     (wasAsleep: boolean, mood: PetAnimationState) => {
+      if (mood === "playBox") {
+        setBoxPlayScenario(
+          createBoxPlayScenario(pet.catSkinId, buildBoxPlaySequence()),
+        );
+      }
       if (wasAsleep) {
         setActiveScenario({
           scenario: registry.getScenario("wakeUp"),
@@ -95,7 +117,7 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
       }
       setActionMood(mood);
     },
-    [registry],
+    [pet.catSkinId, registry],
   );
 
   const handleAnimationComplete = useCallback(
@@ -107,6 +129,10 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
           setActionMood(thenMood);
         }
         return;
+      }
+
+      if (completedMood === "playBox") {
+        setBoxPlayScenario(null);
       }
 
       setActionMood((current) => {

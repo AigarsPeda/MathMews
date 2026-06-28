@@ -1,5 +1,6 @@
 import { PetSpriteRenderer } from "@/pet-display/media/sprite/PetSpriteRenderer";
 import { PetVideoRenderer } from "@/pet-display/media/video/PetVideoRenderer";
+import { resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import { getPetMediaRegistry } from "@/pet-display/registry/dog-video-registry";
 import type {
   PetAnimationState,
@@ -14,6 +15,7 @@ type PetDisplayProps = {
   loop?: boolean;
   transparentBackground?: boolean;
   petType: PetType;
+  catSkinId?: CatSkinId | string;
   /** Convenience — builds a single-segment playback from a mood. */
   mood?: PetAnimationState;
   playback?: PetPlaybackState;
@@ -25,6 +27,7 @@ type PetDisplayProps = {
 export function PetDisplay({
   mood,
   petType,
+  catSkinId,
   playback,
   onPress,
   onStepComplete,
@@ -33,7 +36,9 @@ export function PetDisplay({
   transparentBackground = false,
   width = moderateScale(200),
 }: PetDisplayProps) {
-  const registry = getPetMediaRegistry(petType);
+  const registry = getPetMediaRegistry(petType, {
+    catSkinId: resolveCatSkinId(catSkinId),
+  });
 
   const resolvedPlayback = useMemo((): PetPlaybackState => {
     if (playback) return playback;

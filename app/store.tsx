@@ -1,4 +1,5 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
+import { CatSkinStoreCard } from "@/components/store/CatSkinStoreCard";
 import { DecorationStoreCard } from "@/components/store/DecorationStoreCard";
 import { ToyStoreCard } from "@/components/store/ToyStoreCard";
 import { BedStoreCard } from "@/components/store/BedStoreCard";
@@ -10,6 +11,7 @@ import { CAT_DECORATION_IDS, type CatDecorationId } from "@/constants/cat-decora
 import { CAT_TOY_IDS, type CatToyId } from "@/constants/cat-toys";
 import { CAT_BED_IDS, type CatBedId } from "@/constants/cat-beds";
 import { CAT_ROOM_IDS, type CatRoomId } from "@/constants/cat-rooms";
+import { CAT_SKIN_IDS, type CatSkinId } from "@/constants/cat-skins";
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
 import type {
@@ -17,6 +19,7 @@ import type {
   RoomPurchaseResult,
   ToyPurchaseResult,
   DecorationPurchaseResult,
+  SkinPurchaseResult,
 } from "@/types/store";
 import {
   getDecorationStorePrice,
@@ -38,6 +41,10 @@ import {
   getRoomStorePrice,
   isRoomUnlocked,
 } from "@/utils/room-store";
+import {
+  getSkinStorePrice,
+  isSkinUnlocked,
+} from "@/utils/skin-store";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useRouter } from "expo-router";
@@ -84,6 +91,8 @@ export default function StoreScreen() {
     placeToyInRoom,
     purchaseDecoration,
     placeDecorationInRoom,
+    purchaseSkin,
+    equipSkin,
     recordInteraction,
   } = useGame();
 
@@ -91,8 +100,10 @@ export default function StoreScreen() {
   const unlockedBeds = progress.bedsUnlocked as CatBedId[];
   const unlockedToys = progress.toysUnlocked as CatToyId[];
   const unlockedDecorations = progress.decorationsUnlocked as CatDecorationId[];
+  const unlockedSkins = progress.skinsUnlocked as CatSkinId[];
   const equippedRoomId = pet.roomId as CatRoomId | undefined;
   const equippedBedId = pet.bedId as CatBedId | undefined;
+  const equippedSkinId = pet.catSkinId as CatSkinId | undefined;
   const placedToys = pet.placedToys ?? [];
   const placedDecorations = pet.placedDecorations ?? [];
   const [activeTab, setActiveTab] = useState<StoreTab>("rooms");
@@ -411,14 +422,79 @@ export default function StoreScreen() {
     [placeDecorationInRoom, recordInteraction, showFeedback, t],
   );
 
+  const showSkinPurchaseMessage = useCallback(
+    (result: SkinPurchaseResult, skinId: CatSkinId) => {
+      const skinName = t(`store.skinName.${skinId}`);
+      switch (result) {
+        case "purchased":
+          return {
+            emoji: "🐱",
+            message: t("store.purchasedSkin", { name: skinName }),
+          };
+        case "already_owned":
+          return {
+            emoji: "✓",
+            message: t("store.alreadyOwnedSkin"),
+          };
+        case "insufficient_funds": {
+          const price = getSkinStorePrice(skinId);
+          const cost = price.kind === "coins" ? price.amount : 0;
+          return {
+            emoji: "🪙",
+            message: t("store.needCoinsSkin", { cost }),
+          };
+        }
+        default:
+          return {
+            emoji: "⚠️",
+            message: t("store.unavailableSkin"),
+          };
+      }
+    },
+    [t],
+  );
+
+  const handleBuySkin = useCallback(
+    (skinId: CatSkinId) => {
+      recordInteraction();
+      triggerHaptic();
+      const result = purchaseSkin(skinId);
+      if (result === "purchased") {
+        triggerHaptic();
+      }
+      if (result !== "already_owned") {
+        const { emoji, message } = showSkinPurchaseMessage(result, skinId);
+        showFeedback(emoji, message);
+      }
+    },
+    [purchaseSkin, recordInteraction, showSkinPurchaseMessage, showFeedback],
+  );
+
+  const handleEquipSkin = useCallback(
+    (skinId: CatSkinId) => {
+      recordInteraction();
+      triggerHaptic();
+      const equipped = equipSkin(skinId);
+      if (equipped) {
+        showFeedback(
+          "✨",
+          t("store.equippedSkin", { name: t(`store.skinName.${skinId}`) }),
+        );
+      }
+    },
+    [equipSkin, recordInteraction, showFeedback, t],
+  );
+
   const storeSubtitle =
     activeTab === "rooms"
       ? t("store.subtitleRooms")
-      : activeTab === "beds"
-        ? t("store.subtitleBeds")
-        : activeTab === "toys"
-          ? t("store.subtitleToys")
-          : t("store.subtitleDecorations");
+      : activeTab === "colors"
+        ? t("store.subtitleColors")
+        : activeTab === "beds"
+          ? t("store.subtitleBeds")
+          : activeTab === "toys"
+            ? t("store.subtitleToys")
+            : t("store.subtitleDecorations");
 
   if (!isReady) {
     return (
@@ -496,7 +572,26 @@ export default function StoreScreen() {
                     />
                   );
                 })
-              : activeTab === "beds"
+              : activeTab === "colors"
+                ? CAT_SKIN_IDS.map((skinId) => {
+                    const price = getSkinStorePrice(skinId);
+                    const owned = isSkinUnlocked(skinId, unlockedSkins);
+                    const canAfford =
+                      price.kind !== "coins" || wallet.coins >= price.amount;
+
+                    return (
+                      <CatSkinStoreCard
+                        key={skinId}
+                        skinId={skinId}
+                        isOwned={owned}
+                        isEquipped={equippedSkinId === skinId}
+                        canAfford={canAfford}
+                        onBuy={() => handleBuySkin(skinId)}
+                        onEquip={() => handleEquipSkin(skinId)}
+                      />
+                    );
+                  })
+                : activeTab === "beds"
                 ? CAT_BED_IDS.map((bedId) => {
                     const price = getBedStorePrice(bedId);
                     const owned = isBedUnlocked(bedId, unlockedBeds);

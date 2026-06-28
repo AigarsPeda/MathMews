@@ -17,3 +17,5 @@ export type BedPurchaseResult = StorePurchaseResult | "invalid_item";
 export type ToyPurchaseResult = StorePurchaseResult | "invalid_item";
 
 export type DecorationPurchaseResult = StorePurchaseResult | "invalid_item";
+
+export type SkinPurchaseResult = StorePurchaseResult | "invalid_item";

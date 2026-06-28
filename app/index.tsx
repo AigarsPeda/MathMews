@@ -1,17 +1,7 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PetStage } from "@/components/pet/PetStage";
 import { PuzzleStreakSlot } from "@/components/pet/PuzzleStreakSlot";
-import {
-  BATH_HAPPINESS_BOOST,
-  BATH_CLEANLINESS_RESTORE,
-  BATH_COST,
-  FEED_COST,
-  FEED_HAPPINESS_BOOST,
-  FEED_HUNGER_RESTORE,
-  GameColors,
-  PET_HAPPINESS_BOOST,
-  PUZZLE_STREAK_NOTIFY_MIN,
-} from "@/constants/game";
+import { BOX_PLAY_COST, BOX_PLAY_HAPPINESS_BOOST, FEED_COST, FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, GameColors, PET_HAPPINESS_BOOST, PUZZLE_STREAK_NOTIFY_MIN } from "@/constants/game";
 import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
 import { computePetWisdom } from "@/constants/puzzles";
 import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
@@ -22,7 +12,7 @@ import type { PetStats } from "@/types/game";
 import {
   boostStat,
   canFeedForEffect,
-  canBathForEffect,
+  canPlayBoxForEffect,
   withPetCareUpdate,
 } from "@/utils/pet-care";
 import {
@@ -130,7 +120,7 @@ export default function HomeScreen() {
   );
 
   const playActionMood = useCallback(
-    (wasAsleep: boolean, mood: "excited" | "eating" | "bathing") => {
+    (wasAsleep: boolean, mood: "excited" | "eating" | "playBox") => {
       triggerHaptic();
       sendPetCommand({ type: "playAction", wasAsleep, mood });
     },
@@ -193,7 +183,6 @@ export default function HomeScreen() {
 
     recordInteraction();
     sendPetCommand({ type: "beginCareAction" });
-    triggerHaptic();
     setWallet((current) => ({ coins: current.coins - FEED_COST }));
     wakePet((stats) => ({
       ...stats,
@@ -219,7 +208,7 @@ export default function HomeScreen() {
     wallet.coins,
   ]);
 
-  const handleBath = useCallback(() => {
+  const handlePlayBox = useCallback(() => {
     const wasAsleep = pet.isAsleep === true;
 
     if (isCareAnimationPlaying || isCareBlocked) {
@@ -227,29 +216,27 @@ export default function HomeScreen() {
       return;
     }
 
-    if (!canBathForEffect(pet.stats, wasAsleep)) {
-      rejectCareAction(t("home.alreadyPampered", { name: pet.name }));
+    if (!canPlayBoxForEffect(pet.stats, wasAsleep)) {
+      rejectCareAction(t("home.alreadyHappy", { name: pet.name }));
       return;
     }
 
-    if (wallet.coins < BATH_COST) {
+    if (wallet.coins < BOX_PLAY_COST) {
       rejectCareAction(
-        t("home.needCoinsBath", { cost: BATH_COST, name: pet.name }),
+        t("home.needCoinsPlayBox", { cost: BOX_PLAY_COST, name: pet.name }),
       );
       return;
     }
 
     recordInteraction();
     sendPetCommand({ type: "beginCareAction" });
-    triggerHaptic();
-    setWallet((current) => ({ coins: current.coins - BATH_COST }));
+    setWallet((current) => ({ coins: current.coins - BOX_PLAY_COST }));
     wakePet((stats) => ({
       ...stats,
-      cleanliness: boostStat(stats.cleanliness, BATH_CLEANLINESS_RESTORE),
-      happiness: boostStat(stats.happiness, BATH_HAPPINESS_BOOST),
+      happiness: boostStat(stats.happiness, BOX_PLAY_HAPPINESS_BOOST),
     }));
-    playActionMood(wasAsleep, "bathing");
-    showSpeech(t("home.enjoyedBath", { name: pet.name }));
+    playActionMood(wasAsleep, "playBox");
+    showSpeech(t("home.enjoyedPlayBox", { name: pet.name }));
   }, [
     isCareAnimationPlaying,
     isCareBlocked,
@@ -287,7 +274,11 @@ export default function HomeScreen() {
 
   const handleAnimationComplete = useCallback(() => {
     const completedMood =
-      playback.kind === "segment" ? playback.mood : baseVideoMood;
+      playback.kind === "segment"
+        ? playback.mood
+        : playback.kind === "scenario" && playback.scenario.id === "playBox"
+          ? "playBox"
+          : baseVideoMood;
     sendPetCommand({ type: "animationComplete", completedMood });
     if (completedMood === "fallingAsleep") {
       setPet((current) =>
@@ -310,27 +301,27 @@ export default function HomeScreen() {
 
   const wasAsleep = pet.isAsleep === true;
   const canFeedForHunger = canFeedForEffect(pet.stats, wasAsleep);
-  const canBathForHappiness = canBathForEffect(pet.stats, wasAsleep);
+  const canPlayBoxForHappiness = canPlayBoxForEffect(pet.stats, wasAsleep);
   const canAffordFeed = wallet.coins >= FEED_COST;
-  const canAffordBath = wallet.coins >= BATH_COST;
+  const canAffordPlayBox = wallet.coins >= BOX_PLAY_COST;
   const feedDimmed =
     !canFeedForHunger ||
     !canAffordFeed ||
     isCareBlocked ||
     isCareAnimationPlaying;
-  const bathDimmed =
-    !canBathForHappiness ||
-    !canAffordBath ||
+  const playBoxDimmed =
+    !canPlayBoxForHappiness ||
+    !canAffordPlayBox ||
     isCareBlocked ||
     isCareAnimationPlaying;
-  const showBathAction = USE_CAT_SPRITE_PETS && pet.type === "cat";
+  const isCatSpritePet = USE_CAT_SPRITE_PETS && pet.type === "cat";
   const petAnimating = isCareAnimationPlaying;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.screen}>
         <View style={styles.header}>
-          {showBathAction ? (
+          {isCatSpritePet ? (
             <Pressable
               onPress={handleOpenStore}
               style={styles.headerIconBtn}
@@ -363,6 +354,7 @@ export default function HomeScreen() {
               compact
               name={pet.name}
               petType={pet.type}
+              catSkinId={pet.catSkinId}
               stats={pet.stats}
               wisdom={computePetWisdom(progress.puzzlesSolved)}
               roomId={pet.roomId}
@@ -447,23 +439,23 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
 
-            {showBathAction ? (
+            {isCatSpritePet ? (
               <Pressable
                 style={[
                   styles.actionBtn,
                   styles.actionSecondary,
-                  bathDimmed && styles.actionDisabled,
+                  playBoxDimmed && styles.actionDisabled,
                 ]}
-                onPress={handleBath}
+                onPress={handlePlayBox}
                 disabled={isCareAnimationPlaying}
                 accessibilityRole="button"
-                accessibilityLabel={t("home.a11yBath", { cost: BATH_COST })}
+                accessibilityLabel={t("home.a11yPlayBox", { cost: BOX_PLAY_COST })}
                 accessibilityState={{ disabled: isCareAnimationPlaying }}
               >
-                <Text style={styles.actionEmoji}>🛁</Text>
-                <Text style={styles.actionLabel}>{t("home.bath")}</Text>
+                <Text style={styles.actionEmoji}>📦</Text>
+                <Text style={styles.actionLabel}>{t("home.playBox")}</Text>
                 <Text style={styles.actionHint}>
-                  {t("home.bathCost", { cost: BATH_COST })}
+                  {t("home.playBoxCost", { cost: BOX_PLAY_COST })}
                 </Text>
               </Pressable>
             ) : null}

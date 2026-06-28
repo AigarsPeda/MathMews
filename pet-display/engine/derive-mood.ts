@@ -56,7 +56,7 @@ export function derivePetMood(pet: PetProfile, now = Date.now()): PetMood {
     return "sleeping";
   }
 
-  if (isPetHungry(stats) || stats.happiness < LOW_STAT_THRESHOLD || stats.cleanliness < LOW_STAT_THRESHOLD) {
+  if (isPetHungry(stats) || stats.happiness < LOW_STAT_THRESHOLD) {
     return "sad";
   }
 
@@ -105,7 +105,6 @@ export function usePetBaseMood(pet: PetProfile) {
     pet.lastInteractionAt,
     pet.stats.hunger,
     pet.stats.happiness,
-    pet.stats.cleanliness,
     now,
   ]);
 

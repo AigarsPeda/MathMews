@@ -456,6 +456,7 @@ export default function PlayScreen() {
           visible={answered}
           correct={isCorrect}
           petType={pet.type}
+          catSkinId={pet.catSkinId}
           petMood={resultMood}
           message={
             isCorrect

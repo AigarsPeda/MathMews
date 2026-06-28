@@ -10,6 +10,7 @@ type ResultOverlayProps = {
   visible: boolean;
   correct: boolean;
   petType: PetType;
+  catSkinId?: string;
   petMood: PetAnimationState;
   message: string;
   detail: string;
@@ -27,6 +28,7 @@ export function ResultOverlay({
   visible,
   correct,
   petType,
+  catSkinId,
   petMood,
   message,
   detail,
@@ -47,6 +49,7 @@ export function ResultOverlay({
         <View style={styles.petWrap}>
           <PetDisplay
             petType={petType}
+            catSkinId={catSkinId}
             mood={petMood}
             width={moderateScale(120)}
             loop

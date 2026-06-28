@@ -1,9 +1,9 @@
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-export type StoreTab = "rooms" | "beds" | "toys" | "decorations";
+export type StoreTab = "rooms" | "beds" | "colors" | "toys" | "decorations";
 
 type StoreTabBarProps = {
   active: StoreTab;
@@ -43,12 +43,25 @@ export function StoreTabBar({ active, onChange }: StoreTabBarProps) {
   const { t } = useTranslation();
 
   return (
-    <View style={styles.row} accessibilityRole="tablist">
+    <ScrollView
+      horizontal
+      style={styles.scroll}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.row}
+      accessibilityRole="tablist"
+    >
       <StoreTabButton
         tab="rooms"
         emoji="🏠"
         label={t("store.tabRooms")}
         isActive={active === "rooms"}
+        onPress={onChange}
+      />
+      <StoreTabButton
+        tab="colors"
+        emoji="🐱"
+        label={t("store.tabColors")}
+        isActive={active === "colors"}
         onPress={onChange}
       />
       <StoreTabButton
@@ -72,17 +85,23 @@ export function StoreTabBar({ active, onChange }: StoreTabBarProps) {
         isActive={active === "decorations"}
         onPress={onChange}
       />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    flexGrow: 0,
+    flexShrink: 0,
+  },
   row: {
     flexDirection: "row",
+    alignItems: "center",
     gap: moderateScale(8),
+    paddingRight: moderateScale(4),
   },
   tab: {
-    flex: 1,
+    width: moderateScale(76),
     minHeight: moderateScale(48),
     flexDirection: "column",
     alignItems: "center",

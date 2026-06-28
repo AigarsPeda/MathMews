@@ -1,6 +1,8 @@
 import { ONE_SHOT_ANIMATIONS } from "@/constants/game";
+import type { BoxPlayAnimationId } from "@/constants/cat-box-play";
+import { DEFAULT_CAT_SKIN_ID, resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import {
-  CAT_SPRITE_ANIMATIONS,
+  getCatSpriteAnimations,
   type CatSpriteAnimationId,
 } from "@/pet-display/registry/cat-sprite-atlas";
 import type { PetAnimationState } from "@/types/game";
@@ -8,15 +10,17 @@ import type {
   PetMediaRegistry,
   PetMediaScenario,
   PetMediaSegment,
-  PetScenarioId,
+  BuiltInPetScenarioId,
   SpriteSheetConfig,
 } from "@/pet-display/types";
 
 function spriteSegment(
+  skinId: CatSkinId,
   animationId: CatSpriteAnimationId,
   options: { loop?: boolean; fps?: number; reverse?: boolean } = {},
 ): PetMediaSegment {
-  const base = CAT_SPRITE_ANIMATIONS[animationId];
+  const animations = getCatSpriteAnimations(skinId);
+  const base = animations[animationId];
   const sprite: SpriteSheetConfig = {
     ...base,
     fps: options.fps ?? base.fps,
@@ -41,7 +45,7 @@ const MOOD_ANIMATIONS: Record<PetAnimationState, CatSpriteAnimationId> = {
   sleeping: "sleep",
   correct: "excited",
   coinCatch: "waiting",
-  bathing: "bath",
+  playBox: "box2",
 };
 
 const MOOD_OPTIONS: Partial<
@@ -60,34 +64,72 @@ const MOOD_OPTIONS: Partial<
   sleeping: { loop: true, fps: 4 },
   correct: { loop: false, fps: 10 },
   coinCatch: { loop: false, fps: 6 },
-  bathing: { loop: false, fps: 6 },
+  playBox: { loop: false, fps: 8 },
 };
 
-function segmentFromMood(mood: PetAnimationState): PetMediaSegment {
-  return spriteSegment(MOOD_ANIMATIONS[mood], MOOD_OPTIONS[mood]);
+function createCatSpriteScenarios(
+  skinId: CatSkinId,
+): Record<BuiltInPetScenarioId, PetMediaScenario> {
+  return {
+    fallAsleep: {
+      id: "fallAsleep",
+      label: "Getting sleepy…",
+      steps: [
+        spriteSegment(skinId, "sleepy", { loop: false, fps: 5 }),
+        spriteSegment(skinId, "sleep", { loop: true, fps: 4 }),
+      ],
+    },
+    wakeUp: {
+      id: "wakeUp",
+      label: "Waking up…",
+      steps: [
+        spriteSegment(skinId, "sleepy", { loop: false, fps: 5, reverse: true }),
+      ],
+    },
+  };
 }
 
-const CAT_SPRITE_SCENARIOS: Record<PetScenarioId, PetMediaScenario> = {
-  fallAsleep: {
-    id: "fallAsleep",
-    label: "Getting sleepy…",
-    steps: [
-      spriteSegment("sleepy", { loop: false, fps: 5 }),
-      spriteSegment("sleep", { loop: true, fps: 4 }),
-    ],
-  },
-  wakeUp: {
-    id: "wakeUp",
-    label: "Waking up…",
-    steps: [spriteSegment("sleepy", { loop: false, fps: 5, reverse: true })],
-  },
-};
+export function createBoxPlaySegment(
+  skinId: CatSkinId | string | undefined,
+  animationId: BoxPlayAnimationId,
+): PetMediaSegment {
+  return spriteSegment(resolveCatSkinId(skinId), animationId, {
+    loop: false,
+    fps: 8,
+  });
+}
 
-export const catSpriteRegistry: PetMediaRegistry = {
-  petType: "cat",
-  mediaKind: "sprite",
-  oneShotStates: ONE_SHOT_ANIMATIONS,
-  pickExcitedMood: () => "excited",
-  getSegment: segmentFromMood,
-  getScenario: (id) => CAT_SPRITE_SCENARIOS[id],
-};
+export function createBoxPlayScenario(
+  skinId: CatSkinId | string | undefined,
+  sequence: readonly BoxPlayAnimationId[],
+): PetMediaScenario {
+  return {
+    id: "playBox",
+    label: "Box time!",
+    steps: sequence.map((animationId) =>
+      createBoxPlaySegment(skinId, animationId),
+    ),
+  };
+}
+
+export function createCatSpriteRegistry(
+  skinId: CatSkinId | string | undefined,
+): PetMediaRegistry {
+  const resolvedSkinId = resolveCatSkinId(skinId);
+  const scenarios = createCatSpriteScenarios(resolvedSkinId);
+
+  return {
+    petType: "cat",
+    mediaKind: "sprite",
+    oneShotStates: ONE_SHOT_ANIMATIONS,
+    pickExcitedMood: () => "excited",
+    getSegment: (mood) => {
+      const animationId = MOOD_ANIMATIONS[mood];
+      const options = MOOD_OPTIONS[mood] ?? {};
+      return spriteSegment(resolvedSkinId, animationId, options);
+    },
+    getScenario: (id) => scenarios[id],
+  };
+}
+
+export const catSpriteRegistry = createCatSpriteRegistry(DEFAULT_CAT_SKIN_ID);
