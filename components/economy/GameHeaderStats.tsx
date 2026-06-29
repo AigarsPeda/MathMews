@@ -1,4 +1,5 @@
 import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
+import { CoinPackSheet } from "@/components/economy/CoinPackSheet";
 import { CoinCounter } from "@/components/economy/CoinCounter";
 import { LivesCounter } from "@/components/economy/LivesCounter";
 import { useGame } from "@/contexts/GameProvider";
@@ -29,11 +30,18 @@ export function GameHeaderStats({
 }: GameHeaderStatsProps) {
   const { buyLife, recordInteraction } = useGame();
   const [showBuySheet, setShowBuySheet] = useState(false);
+  const [showCoinSheet, setShowCoinSheet] = useState(false);
 
   const handleOpenBuySheet = useCallback(() => {
     recordInteraction();
     triggerHaptic();
     setShowBuySheet(true);
+  }, [recordInteraction]);
+
+  const handleOpenCoinSheet = useCallback(() => {
+    recordInteraction();
+    triggerHaptic();
+    setShowCoinSheet(true);
   }, [recordInteraction]);
 
   const handleBuyLife = useCallback(() => {
@@ -48,13 +56,17 @@ export function GameHeaderStats({
   return (
     <View style={styles.row}>
       <LivesCounter lives={lives} compact onPress={handleOpenBuySheet} />
-      <CoinCounter coins={coins} streak={streak} />
+      <CoinCounter coins={coins} streak={streak} onPress={handleOpenCoinSheet} />
       <BuyLifeSheet
         visible={showBuySheet}
         lives={lives}
         coins={coins}
         onBuyLife={handleBuyLife}
         onClose={() => setShowBuySheet(false)}
+      />
+      <CoinPackSheet
+        visible={showCoinSheet}
+        onClose={() => setShowCoinSheet(false)}
       />
     </View>
   );

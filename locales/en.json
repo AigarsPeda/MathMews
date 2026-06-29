@@ -305,7 +305,24 @@
   },
   "economy": {
     "streakDay_one": "{{count}} day",
-    "streakDay_other": "{{count}} days"
+    "streakDay_other": "{{count}} days",
+    "a11yCoins": "You have {{coins}} coins. Tap to get more coins."
+  },
+  "iap": {
+    "getCoins": "Get coins",
+    "getCoinsHint": "Buy coin packs to feed your cat, decorate the room, and more.",
+    "packCoins": "{{count}} coins",
+    "buy": "Buy",
+    "priceLoading": "Loading…",
+    "notAvailable": "Coin purchases are only available in the iOS and Android app.",
+    "offeringsMissing": "Coin packs could not be loaded. In RevenueCat, add products to an offering (or set CoinPacksTEST as Current) and reload the app.",
+    "purchaseSuccess": "+{{count}} coins added!",
+    "purchaseFailed": "Purchase did not go through. Try again.",
+    "purchasePending": "Waiting for approval…",
+    "restore": "Restore purchases",
+    "restoring": "Restoring…",
+    "restoreDone": "Restore complete.",
+    "a11yBuyPack": "Buy {{count}} coins for {{price}}"
   },
   "difficultyPicker": {
     "a11y": "{{difficulty}} difficulty, {{coins}} coins per nut"

@@ -308,7 +308,24 @@
   "economy": {
     "streakDay_zero": "{{count}} dienu",
     "streakDay_one": "{{count}} diena",
-    "streakDay_other": "{{count}} dienas"
+    "streakDay_other": "{{count}} dienas",
+    "a11yCoins": "Tev ir {{coins}} monētas. Pieskaries, lai iegūtu vairāk."
+  },
+  "iap": {
+    "getCoins": "Iegūt monētas",
+    "getCoinsHint": "Pērc monētu pakas, lai barotu kaķi, rotāt istabu un citu.",
+    "packCoins": "{{count}} monētas",
+    "buy": "Pirkt",
+    "priceLoading": "Ielādē…",
+    "notAvailable": "Monētu pirkšana pieejama tikai iOS un Android lietotnē.",
+    "offeringsMissing": "Monētu pakas neizdevās ielādēt. RevenueCat pievieno produktus offeringam (vai iestati CoinPacksTEST kā Current) un pārlādē lietotni.",
+    "purchaseSuccess": "+{{count}} monētas pievienotas!",
+    "purchaseFailed": "Pirkums neizdevās. Mēģini vēlreiz.",
+    "purchasePending": "Gaida apstiprinājumu…",
+    "restore": "Atjaunot pirkumus",
+    "restoring": "Atjauno…",
+    "restoreDone": "Atjaunošana pabeigta.",
+    "a11yBuyPack": "Pirkt {{count}} monētas par {{price}}"
   },
   "difficultyPicker": {
     "a11y": "{{difficulty}} grūtība, {{coins}} monētas par riekstu"
