@@ -82,3 +82,5 @@ This is intentional — misconfigured store builds must not ship. Logic lives in
 ## Assets
 
 Cat sprites and room items: [Cat Mega Bundle on itch.io](https://toffeecraft.itch.io/cat-mega-bundle)
+
+https://aigarspeda.github.io/brainpet/privacy.html
