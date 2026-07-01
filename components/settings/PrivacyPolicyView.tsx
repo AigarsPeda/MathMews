@@ -29,17 +29,6 @@ export function PrivacyPolicyView({ style }: PrivacyPolicyViewProps) {
 
   return (
     <View style={[styles.wrap, style]}>
-      <Text style={styles.updated}>{content.lastUpdatedLabel}</Text>
-
-      <Pressable
-        onPress={handleViewOnline}
-        style={styles.onlineBtn}
-        accessibilityRole="link"
-        accessibilityLabel={content.viewOnline}
-      >
-        <Text style={styles.onlineBtnText}>{content.viewOnline}</Text>
-      </Pressable>
-
       {content.sections.map((section) => (
         <View key={section.title} style={styles.section}>
           <Text style={styles.sectionTitle}>{section.title}</Text>
@@ -50,6 +39,19 @@ export function PrivacyPolicyView({ style }: PrivacyPolicyViewProps) {
           ))}
         </View>
       ))}
+
+      <View style={styles.footer}>
+        <Text style={styles.updated}>{content.lastUpdatedLabel}</Text>
+
+        <Pressable
+          onPress={handleViewOnline}
+          style={styles.onlineBtn}
+          accessibilityRole="link"
+          accessibilityLabel={content.viewOnline}
+        >
+          <Text style={styles.onlineBtnText}>{content.viewOnline}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -57,6 +59,11 @@ export function PrivacyPolicyView({ style }: PrivacyPolicyViewProps) {
 const styles = StyleSheet.create({
   wrap: {
     gap: moderateScale(14),
+  },
+  footer: {
+    marginTop: moderateScale(8),
+    gap: moderateScale(4),
+    alignItems: "center",
   },
   updated: {
     fontSize: moderateScale(13),
