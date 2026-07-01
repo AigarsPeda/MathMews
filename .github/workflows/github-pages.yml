@@ -1,5 +1,5 @@
 # Publishes docs/ to https://aigarspeda.github.io/brainpet/
-# One-time setup: GitHub repo → Settings → Pages → Source: GitHub Actions
+# One-time setup: GitHub repo → Settings → Pages → Source: GitHub Actions (see docs/README.md)
 name: Deploy GitHub Pages
 
 on:
