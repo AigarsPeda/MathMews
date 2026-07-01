@@ -37,10 +37,10 @@ export function isSupabaseConfigured(): boolean {
 if (__DEV__) {
   if (!isSupabaseConfigured()) {
     console.warn(
-      "[BrainPet] Supabase not configured — add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to .env, then restart Expo.",
+      "[MathMews] Supabase not configured — add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to .env, then restart Expo.",
     );
   } else {
-    console.log("[BrainPet] Supabase configured:", supabaseUrl);
+    console.log("[MathMews] Supabase configured:", supabaseUrl);
   }
 }
 

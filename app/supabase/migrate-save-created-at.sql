@@ -1,4 +1,4 @@
--- BrainPet — add created_at to game_saves (when the save row was first created ≈ game start)
+-- Math Mews — add created_at to game_saves (when the save row was first created ≈ game start)
 -- Run once if your table was created before created_at existed.
 
 alter table public.game_saves add column if not exists created_at timestamptz;

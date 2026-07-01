@@ -1,4 +1,4 @@
-# BrainPet
+# Math Mews
 
 Educational math puzzle game with a virtual cat companion. Built with Expo SDK 56 and React Native.
 
@@ -13,7 +13,7 @@ For in-app purchases, use an [EAS development build](https://docs.expo.dev/devel
 
 ## In-app purchases (RevenueCat)
 
-BrainPet sells **coin packs only**. Real money credits `wallet.coins`; everything else (store, feed, lives, visual help) spends coins as usual. Full plan: [doc/IAP_PLAN.md](doc/IAP_PLAN.md).
+Math Mews sells **coin packs only**. Real money credits `wallet.coins`; everything else (store, feed, lives, visual help) spends coins as usual. Full plan: [doc/IAP_PLAN.md](doc/IAP_PLAN.md).
 
 ### Development — Test Store (no Apple / Google accounts yet)
 

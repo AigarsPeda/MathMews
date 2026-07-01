@@ -1,4 +1,4 @@
--- BrainPet — Supabase schema (game_saves only)
+-- Math Mews — Supabase schema (game_saves only)
 -- Multiple saves per user — each game has its own row (id), never overwritten by a new game.
 --
 -- Wallet + IAP history live inside save JSON:

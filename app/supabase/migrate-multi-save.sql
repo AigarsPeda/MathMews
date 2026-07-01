@@ -1,4 +1,4 @@
--- BrainPet — migrate game_saves from one row per user to many rows per user
+-- Math Mews — migrate game_saves from one row per user to many rows per user
 -- Run once in Supabase SQL Editor if your table still uses user_id as primary key.
 
 alter table public.game_saves add column if not exists id uuid;

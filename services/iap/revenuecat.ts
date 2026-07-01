@@ -67,7 +67,7 @@ export async function getOfferings(): Promise<PurchasesOfferings | null> {
     return await Purchases.getOfferings();
   } catch (error) {
     if (__DEV__) {
-      console.warn("[BrainPet IAP] getOfferings failed", error);
+      console.warn("[MathMews IAP] getOfferings failed", error);
     }
     return null;
   }
@@ -155,9 +155,9 @@ export async function fetchCoinPackCatalog(): Promise<CoinPackCatalogEntry[]> {
     const currentIds =
       offerings.current?.availablePackages.map((pkg) => pkg.product.identifier) ??
       [];
-    console.log("[BrainPet IAP] offerings.current packages:", currentIds);
+    console.log("[MathMews IAP] offerings.current packages:", currentIds);
     console.log(
-      "[BrainPet IAP] resolved coin packs:",
+      "[MathMews IAP] resolved coin packs:",
       packages.map((pkg) => pkg.product.identifier),
     );
   }
@@ -175,7 +175,7 @@ export async function fetchCoinPackCatalog(): Promise<CoinPackCatalogEntry[]> {
       }
     } catch (error) {
       if (__DEV__) {
-        console.warn("[BrainPet IAP] getProducts fallback failed", error);
+        console.warn("[MathMews IAP] getProducts fallback failed", error);
       }
     }
   }

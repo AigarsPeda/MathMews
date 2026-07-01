@@ -13,10 +13,10 @@
     "language": "Language",
     "languageHint": "Choose the language for menus and puzzles.",
     "licenses": "Open source licenses",
-    "licensesHint": "Third-party libraries used in BrainPet.",
+    "licensesHint": "Third-party libraries used in Math Mews.",
     "licensesEmpty": "No licenses found. Run npm run licenses to generate them.",
     "privacy": "Privacy policy",
-    "privacyHint": "How BrainPet handles data and purchases.",
+    "privacyHint": "How Math Mews handles data and purchases.",
     "progressBackup": {
       "appleId": "Apple ID",
       "googleAccount": "Google account",

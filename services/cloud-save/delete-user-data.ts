@@ -11,7 +11,7 @@ export async function deleteRemoteUserData(userId: string): Promise<boolean> {
     .eq("user_id", userId);
 
   if (error && __DEV__) {
-    console.warn("[BrainPet cloud] delete game_saves failed", error.message);
+    console.warn("[MathMews cloud] delete game_saves failed", error.message);
   }
 
   return !error;

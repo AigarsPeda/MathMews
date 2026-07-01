@@ -1,4 +1,4 @@
-# BrainPet — GitHub Pages (privacy policy)
+# Math Mews — GitHub Pages (privacy policy)
 
 **URL:** https://aigarspeda.github.io/brainpet/privacy.html
 

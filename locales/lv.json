@@ -13,10 +13,10 @@
     "language": "Valoda",
     "languageHint": "Izvēlies valodu izvēlnēm un uzdevumiem.",
     "licenses": "Atvērtā pirmkoda licences",
-    "licensesHint": "Trešo pušu bibliotēkas, ko izmanto BrainPet.",
+    "licensesHint": "Trešo pušu bibliotēkas, ko izmanto Math Mews.",
     "licensesEmpty": "Licences nav atrastas. Palaid npm run licenses, lai tās ģenerētu.",
     "privacy": "Privātuma politika",
-    "privacyHint": "Kā BrainPet apstrādā datus un pirkumus.",
+    "privacyHint": "Kā Math Mews apstrādā datus un pirkumus.",
     "progressBackup": {
       "appleId": "Apple ID",
       "googleAccount": "Google konts",

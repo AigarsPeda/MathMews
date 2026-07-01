@@ -41,14 +41,14 @@ export function assertValidReleaseRevenueCatKey(apiKey: string): void {
 
   if (!apiKey) {
     throw new Error(
-      `[BrainPet] RevenueCat production API key missing for ${platform}. ` +
+      `[MathMews] RevenueCat production API key missing for ${platform}. ` +
         `Set EXPO_PUBLIC_REVENUECAT_${platform.toUpperCase()}_API_KEY before shipping.`,
     );
   }
 
   if (isTestStoreApiKey(apiKey)) {
     throw new Error(
-      "[BrainPet] RevenueCat Test Store API key cannot be used in release builds. " +
+      "[MathMews] RevenueCat Test Store API key cannot be used in release builds. " +
         "Set platform-specific production keys before submitting to the App Store or Play Store.",
     );
   }

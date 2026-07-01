@@ -76,7 +76,7 @@ async function restoreSessionFromSecureBackup() {
   if (refreshError || !refreshData.session) {
     if (__DEV__) {
       console.warn(
-        "[BrainPet auth] secure session restore failed",
+        "[MathMews auth] secure session restore failed",
         refreshError?.message ?? setError?.message,
       );
     }
@@ -143,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       finishOAuthFromUrl(url)
         .then((result) => {
           if (!result.ok && __DEV__ && result.error) {
-            console.warn("[BrainPet auth] oauth callback failed", result.error);
+            console.warn("[MathMews auth] oauth callback failed", result.error);
           }
         })
         .catch(() => undefined);
@@ -179,7 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!active) return;
 
       if (sessionError && __DEV__) {
-        console.warn("[BrainPet auth] getSession failed", sessionError.message);
+        console.warn("[MathMews auth] getSession failed", sessionError.message);
       }
 
       let session = sessionData.session;
@@ -188,7 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session = await restoreSessionFromSecureBackup();
         if (__DEV__ && session) {
           console.log(
-            "[BrainPet auth] restored session from secure storage:",
+            "[MathMews auth] restored session from secure storage:",
             session.user.id,
           );
         }
@@ -207,7 +207,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         if (__DEV__) {
-          console.warn("[BrainPet auth] anonymous sign-in failed", error.message);
+          console.warn("[MathMews auth] anonymous sign-in failed", error.message);
         }
         setIsAuthReady(true);
         return;
@@ -215,7 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const nextUserId = data.user?.id ?? null;
       if (__DEV__ && nextUserId) {
-        console.log("[BrainPet auth] signed in anonymously:", nextUserId);
+        console.log("[MathMews auth] signed in anonymously:", nextUserId);
       }
 
       setUserId(nextUserId);
@@ -223,7 +223,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthReady(true);
     })().catch((error) => {
       if (__DEV__) {
-        console.warn("[BrainPet auth] unexpected error", error);
+        console.warn("[MathMews auth] unexpected error", error);
       }
       if (active) setIsAuthReady(true);
     });

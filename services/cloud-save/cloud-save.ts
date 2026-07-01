@@ -51,7 +51,7 @@ export async function listRemoteSaves(userId: string): Promise<CloudSaveSummary[
 
   if (error) {
     if (__DEV__) {
-      console.warn("[BrainPet cloud] list failed", error.message);
+      console.warn("[MathMews cloud] list failed", error.message);
     }
     return [];
   }
@@ -77,7 +77,7 @@ export async function pullRemoteSave(
 
   if (error) {
     if (__DEV__) {
-      console.warn("[BrainPet cloud] pull failed", error.message);
+      console.warn("[MathMews cloud] pull failed", error.message);
     }
     return null;
   }
@@ -100,7 +100,7 @@ export async function listRemoteSaveSnapshots(
 
   if (error) {
     if (__DEV__) {
-      console.warn("[BrainPet cloud] list snapshots failed", error.message);
+      console.warn("[MathMews cloud] list snapshots failed", error.message);
     }
     return [];
   }
@@ -130,13 +130,13 @@ export async function pushRemoteSave(
 
   if (error) {
     if (__DEV__) {
-      console.warn("[BrainPet cloud] push failed", error.message, error);
+      console.warn("[MathMews cloud] push failed", error.message, error);
     }
     return false;
   }
 
   if (__DEV__) {
-    console.log("[BrainPet cloud] push ok for save", saveId);
+    console.log("[MathMews cloud] push ok for save", saveId);
   }
 
   return true;
