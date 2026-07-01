@@ -1,5 +1,6 @@
 import { ExpoUIHost } from "@/components/ui/ExpoUIHost";
 import { SplashGate } from "@/components/branding/SplashGate";
+import { AuthProvider } from "@/contexts/AuthProvider";
 import { GameProvider } from "@/contexts/GameProvider";
 import { IAPProvider } from "@/contexts/IAPProvider";
 import { LocaleProvider } from "@/contexts/LocaleProvider";
@@ -22,6 +23,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <LocaleProvider>
+        <AuthProvider>
         <GameProvider>
           <IAPProvider>
           <SplashGate>
@@ -65,6 +67,7 @@ export default function RootLayout() {
           </SplashGate>
           </IAPProvider>
         </GameProvider>
+        </AuthProvider>
     </LocaleProvider>
     </GestureHandlerRootView>
   );

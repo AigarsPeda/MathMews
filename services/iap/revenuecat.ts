@@ -20,7 +20,13 @@ import Purchases, {
 let isConfigured = false;
 
 export type CoinPackPurchaseResult =
-  | { status: "purchased"; coins: number; productId: CoinPackProductId }
+  | {
+      status: "purchased";
+      coins: number;
+      productId: CoinPackProductId;
+      transactionId: string;
+      priceString: string | null;
+    }
   | { status: "cancelled" }
   | { status: "pending" }
   | { status: "error"; message: string };
@@ -212,10 +218,11 @@ export async function purchaseCoinPack(
       };
     }
 
+    let purchaseResult;
     if (entry.package) {
-      await Purchases.purchasePackage(entry.package);
+      purchaseResult = await Purchases.purchasePackage(entry.package);
     } else if (entry.storeProduct) {
-      await Purchases.purchaseStoreProduct(entry.storeProduct);
+      purchaseResult = await Purchases.purchaseStoreProduct(entry.storeProduct);
     } else {
       return {
         status: "error",
@@ -223,7 +230,13 @@ export async function purchaseCoinPack(
       };
     }
 
-    return { status: "purchased", coins: grant.coins, productId };
+    return {
+      status: "purchased",
+      coins: grant.coins,
+      productId,
+      transactionId: purchaseResult.transaction.transactionIdentifier,
+      priceString: entry.priceString,
+    };
   } catch (error) {
     if (isPurchasesError(error)) {
       if (error.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {

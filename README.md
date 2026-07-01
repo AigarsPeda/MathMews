@@ -6,7 +6,7 @@ Educational math puzzle game with a virtual cat companion. Built with Expo SDK 5
 
 ```bash
 npm install
-npm start
+npx expo run:ios
 ```
 
 For in-app purchases, use an [EAS development build](https://docs.expo.dev/develop/development-builds/introduction/) — IAP does not work in Expo Go.
@@ -63,10 +63,10 @@ Release builds (`__DEV__` false) **crash on launch** if:
 
 This is intentional — misconfigured store builds must not ship. Logic lives in `utils/revenuecat-keys.ts`; configuration runs in `contexts/IAPProvider.tsx`.
 
-| Build | API key | Apple / Google account |
-| ----- | ------- | ---------------------- |
-| Development (`__DEV__`) | Test Store (`test_…`) | Not required |
-| App Store / Play release | Platform keys via env | Required |
+| Build                    | API key               | Apple / Google account |
+| ------------------------ | --------------------- | ---------------------- |
+| Development (`__DEV__`)  | Test Store (`test_…`) | Not required           |
+| App Store / Play release | Platform keys via env | Required               |
 
 **Never** submit to the stores with a `test_` API key.
 

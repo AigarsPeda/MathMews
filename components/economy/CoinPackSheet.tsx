@@ -105,9 +105,13 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
     triggerHaptic();
 
     try {
-      await restorePurchases();
-      setStatusKind("info");
-      setStatusMessage(t("iap.restoreDone"));
+      const restoredCoins = await restorePurchases();
+      setStatusKind(restoredCoins > 0 ? "success" : "info");
+      setStatusMessage(
+        restoredCoins > 0
+          ? t("iap.restoreCoinsRestored", { count: restoredCoins })
+          : t("iap.restoreDone"),
+      );
     } catch {
       setStatusKind("error");
       setStatusMessage(t("iap.purchaseFailed"));

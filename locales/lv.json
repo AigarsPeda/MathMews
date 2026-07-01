@@ -2,6 +2,7 @@
   "common": {
     "back": "← Atpakaļ",
     "close": "Aizvērt",
+    "cancel": "Atcelt",
     "gotIt": "Sapratu",
     "play": "Spēlēt",
     "saving": "Saglabā…",
@@ -13,7 +14,46 @@
     "languageHint": "Izvēlies valodu izvēlnēm un uzdevumiem.",
     "licenses": "Atvērtā pirmkoda licences",
     "licensesHint": "Trešo pušu bibliotēkas, ko izmanto BrainPet.",
-    "licensesEmpty": "Licences nav atrastas. Palaid npm run licenses, lai tās ģenerētu."
+    "licensesEmpty": "Licences nav atrastas. Palaid npm run licenses, lai tās ģenerētu.",
+    "progressBackup": {
+      "appleId": "Apple ID",
+      "googleAccount": "Google konts",
+      "protectTitle": "Jauns tālrunis?",
+      "protectHint": "Nospied vienu reizi, lai progresu var atrast citā {{platform}} ierīcē. Bez paroles — izmanto to pašu {{platform}}.",
+      "protectedHint": "Progress ir saglabāts. Vari pāriet uz citu {{platform}} ierīci.",
+      "protectApple": "Saglabāt ar Apple",
+      "protectGoogle": "Saglabāt ar Google",
+      "protectSuccess": "Gatavs! Progress saglabāts jaunam tālrunim.",
+      "protectFailed": "Neizdevās saglabāt ar {{platform}}. Mēģini vecāka e-pastu zemāk.",
+      "protectedBadge": "Saglabāts ar {{platform}}",
+      "restoreTitle": "Jau spēlēji?",
+      "restoreHint": "Atgūsti savu mīluli šajā {{platform}}. Vecāks: izmanto to pašu {{platform}} kā vecajā tālrunī.",
+      "restoreApple": "Atjaunot ar Apple",
+      "restoreGoogle": "Atjaunot ar Google",
+      "restoreSuccess": "Laipni lūgti atpakaļ! Ielādējam progresu…",
+      "restoreFailed": "Nekas nav atrasts šim {{platform}}. Vispirms saglabā progresu vecajā tālrunī (Iestatījumi).",
+      "restoreFootnote": "Darbojas starp {{provider}} tālruņiem un planšetēm — ne iPhone ↔ Android.",
+      "useParentEmail": "Izmantot vecāka e-pastu",
+      "hideEmail": "Paslēpt e-pasta opciju",
+      "emailHint": "Vecāka e-pasts — nosūtām vienreizēju kodu. Bez paroles.",
+      "emailPlaceholder": "vecaks@epasts.lv",
+      "codePlaceholder": "6 ciparu kods",
+      "sendCode": "Nosūtīt kodu",
+      "verifyCode": "Apstiprināt kodu",
+      "emailCodeSent": "Pārbaudi e-pastu — tur būs kods.",
+      "emailFailed": "Neizdevās nosūtīt kodu. Pārbaudi e-pasta adresi.",
+      "invalidCode": "Nepareizs kods. Mēģini vēlreiz.",
+      "notConfigured": "Mākoņa saglabāšana vēl nav iestatīta."
+    },
+    "dataManagement": {
+      "title": "Sākt no jauna",
+      "hint": "Šo nevar atsaukt.",
+      "deleteAction": "Dzēst visus manus datus",
+      "deleteConfirmTitle": "Sākt no jauna?",
+      "deleteConfirmMessage": "Tas izdzēš tavu mīluli, monētas, atslēgās un pirkumus šajā ierīcē un mākonī. Sāksi pilnīgi jaunu spēli no sākuma.",
+      "deleteConfirmAction": "Jā, sākt no jauna",
+      "failed": "Kaut kas nogāja greizi. Mēģini vēlreiz."
+    }
   },
   "locale": {
     "en": "English",
@@ -325,6 +365,7 @@
     "restore": "Atjaunot pirkumus",
     "restoring": "Atjauno…",
     "restoreDone": "Atjaunošana pabeigta.",
+    "restoreCoinsRestored": "Atjaunoti {{count}} monētas no pirkumu vēstures.",
     "a11yBuyPack": "Pirkt {{count}} monētas par {{price}}"
   },
   "difficultyPicker": {

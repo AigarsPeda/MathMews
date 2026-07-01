@@ -1,6 +1,7 @@
+import { useAuth } from "@/contexts/AuthProvider";
 import { useGame } from "@/contexts/GameProvider";
 import type { CoinPackProductId } from "@/constants/iap-products";
-import { applyCoinGrant } from "@/services/iap/apply-coin-grant";
+import { COIN_PACK_PRODUCTS } from "@/constants/iap-products";
 import {
   configureRevenueCat,
   fetchCoinPackCatalog,
@@ -10,6 +11,7 @@ import {
   type CoinPackCatalogEntry,
   type CoinPackPurchaseResult,
 } from "@/services/iap/revenuecat";
+import Purchases from "react-native-purchases";
 import {
   createContext,
   useCallback,
@@ -25,14 +27,16 @@ type IAPContextValue = {
   isSupported: boolean;
   coinPackCatalog: CoinPackCatalogEntry[];
   purchaseCoinPack: (productId: CoinPackProductId) => Promise<CoinPackPurchaseResult>;
-  restorePurchases: () => Promise<void>;
+  restorePurchases: () => Promise<number>;
   refreshOfferings: () => Promise<void>;
 };
 
 const IAPContext = createContext<IAPContextValue | null>(null);
 
 export function IAPProvider({ children }: { children: ReactNode }) {
-  const { setWallet } = useGame();
+  const { isAuthReady, userId } = useAuth();
+  const { adjustCoins, syncToCloud, reloadProgressFromCloud, coinTransactions } =
+    useGame();
   const [isReady, setIsReady] = useState(false);
   const [coinPackCatalog, setCoinPackCatalog] = useState<CoinPackCatalogEntry[]>(
     [],
@@ -53,7 +57,6 @@ export function IAPProvider({ children }: { children: ReactNode }) {
 
     let active = true;
 
-    // Intentionally not caught — release builds must fail if keys are misconfigured.
     configureRevenueCat();
 
     refreshOfferings()
@@ -67,22 +70,59 @@ export function IAPProvider({ children }: { children: ReactNode }) {
     };
   }, [isSupported, refreshOfferings]);
 
+  useEffect(() => {
+    if (!isSupported || !isAuthReady || !userId) return;
+
+    Purchases.logIn(userId).catch(() => undefined);
+  }, [isAuthReady, isSupported, userId]);
+
+  const creditCoinPackPurchase = useCallback(
+    async (result: Extract<CoinPackPurchaseResult, { status: "purchased" }>) => {
+      const alreadyCredited = coinTransactions.some(
+        (tx) => tx.transactionId === result.transactionId,
+      );
+      if (alreadyCredited) {
+        return;
+      }
+
+      const productLabel = COIN_PACK_PRODUCTS[result.productId]
+        ? `${result.coins} coins`
+        : result.productId;
+
+      adjustCoins(result.coins, {
+        kind: "iap_purchase",
+        productId: result.productId,
+        transactionId: result.transactionId,
+        priceString: result.priceString ?? undefined,
+        label: productLabel,
+      });
+
+      await syncToCloud();
+    },
+    [adjustCoins, coinTransactions, syncToCloud],
+  );
+
   const handlePurchaseCoinPack = useCallback(
     async (productId: CoinPackProductId): Promise<CoinPackPurchaseResult> => {
       const result = await purchaseCoinPack(productId);
 
       if (result.status === "purchased") {
-        setWallet((wallet) => applyCoinGrant(wallet, result.coins));
+        await creditCoinPackPurchase(result);
       }
 
       return result;
     },
-    [setWallet],
+    [creditCoinPackPurchase],
   );
 
-  const handleRestorePurchases = useCallback(async () => {
-    await restoreRevenueCatPurchases();
-  }, []);
+  const handleRestorePurchases = useCallback(async (): Promise<number> => {
+    if (isSupported) {
+      await restoreRevenueCatPurchases();
+    }
+
+    await reloadProgressFromCloud();
+    return 0;
+  }, [isSupported, reloadProgressFromCloud]);
 
   const value = useMemo(
     () => ({

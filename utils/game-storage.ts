@@ -32,6 +32,7 @@ import { normalizeBedsUnlocked } from "@/utils/bed-store";
 import { normalizeToysUnlocked } from "@/utils/toy-store";
 import { normalizeDecorationsUnlocked } from "@/utils/decoration-store";
 import { normalizeSkinsUnlocked } from "@/utils/skin-store";
+import { normalizeCoinTransactions } from "@/utils/coin-ledger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function createDefaultGameSave(): GameSave {
@@ -261,6 +262,7 @@ function parseGameSave(
       save: {
         ...(parsed as GameSave),
         pet,
+        coinTransactions: normalizeCoinTransactions(parsed.coinTransactions),
         progress: {
           ...(parsed.progress as Progress),
           puzzleStreak:
@@ -289,6 +291,25 @@ export type LoadedGameSave = {
   awayMsAtSessionStart: number;
 };
 
+const GAME_SAVE_UPDATED_AT_KEY = "@brainpet/game-save-updated-at";
+
+export function parseGameSaveFromValue(value: unknown): LoadedGameSave | null {
+  if (value === null || value === undefined) return null;
+  try {
+    const raw = typeof value === "string" ? value : JSON.stringify(value);
+    return parseGameSave(raw);
+  } catch {
+    return null;
+  }
+}
+
+export async function getLocalSaveUpdatedAt(): Promise<number> {
+  const raw = await AsyncStorage.getItem(GAME_SAVE_UPDATED_AT_KEY);
+  if (!raw) return 0;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export async function loadGameSave(): Promise<LoadedGameSave | null> {
   const raw = await AsyncStorage.getItem(GAME_SAVE_STORAGE_KEY);
   if (!raw) return null;
@@ -296,9 +317,16 @@ export async function loadGameSave(): Promise<LoadedGameSave | null> {
 }
 
 export async function saveGameSave(save: GameSave): Promise<void> {
-  await AsyncStorage.setItem(GAME_SAVE_STORAGE_KEY, JSON.stringify(save));
+  const updatedAt = Date.now();
+  await AsyncStorage.multiSet([
+    [GAME_SAVE_STORAGE_KEY, JSON.stringify(save)],
+    [GAME_SAVE_UPDATED_AT_KEY, String(updatedAt)],
+  ]);
 }
 
 export async function clearGameSave(): Promise<void> {
-  await AsyncStorage.removeItem(GAME_SAVE_STORAGE_KEY);
+  await AsyncStorage.multiRemove([
+    GAME_SAVE_STORAGE_KEY,
+    GAME_SAVE_UPDATED_AT_KEY,
+  ]);
 }

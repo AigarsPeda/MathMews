@@ -1,3 +1,4 @@
+import { DataManagementSection } from "@/components/settings/DataManagementSection";
 import { LicensesLink } from "@/components/settings/LicensesLink";
 import { GameColors } from "@/constants/game";
 import { useLocale } from "@/contexts/LocaleProvider";
@@ -87,6 +88,8 @@ export default function SettingsScreen() {
             })}
           </View>
         </View>
+
+        <DataManagementSection />
 
         <LicensesLink />
       </ScrollView>

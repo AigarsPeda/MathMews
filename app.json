@@ -9,9 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.brainpet.app"
     },
     "android": {
+      "package": "com.brainpet.app",
       "adaptiveIcon": {
         "backgroundColor": "#FFF5EB",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -25,6 +27,9 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-dev-client",
+      "expo-apple-authentication",
+      "expo-secure-store",
       "expo-router",
       [
         "expo-splash-screen",

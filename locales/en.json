@@ -2,6 +2,7 @@
   "common": {
     "back": "← Back",
     "close": "Close",
+    "cancel": "Cancel",
     "gotIt": "Got it",
     "play": "Play",
     "saving": "Saving…",
@@ -13,7 +14,46 @@
     "languageHint": "Choose the language for menus and puzzles.",
     "licenses": "Open source licenses",
     "licensesHint": "Third-party libraries used in BrainPet.",
-    "licensesEmpty": "No licenses found. Run npm run licenses to generate them."
+    "licensesEmpty": "No licenses found. Run npm run licenses to generate them.",
+    "progressBackup": {
+      "appleId": "Apple ID",
+      "googleAccount": "Google account",
+      "protectTitle": "New phone?",
+      "protectHint": "Tap once so progress can be found on another {{platform}}. No password — uses the same {{platform}} you already have.",
+      "protectedHint": "Progress is saved. You can move to another {{platform}} device.",
+      "protectApple": "Save with Apple",
+      "protectGoogle": "Save with Google",
+      "protectSuccess": "Done! Progress is saved for a new phone.",
+      "protectFailed": "Could not save with {{platform}}. Try parent email below.",
+      "protectedBadge": "Saved with {{platform}}",
+      "restoreTitle": "Played before?",
+      "restoreHint": "Bring back your pet on this {{platform}}. Parent: use the same {{platform}} as on the old phone.",
+      "restoreApple": "Restore with Apple",
+      "restoreGoogle": "Restore with Google",
+      "restoreSuccess": "Welcome back! Loading your progress…",
+      "restoreFailed": "Nothing found for this {{platform}}. Save progress on the old phone first (Settings).",
+      "restoreFootnote": "Works between {{provider}} phones and tablets — not iPhone ↔ Android.",
+      "useParentEmail": "Use parent email instead",
+      "hideEmail": "Hide email option",
+      "emailHint": "Parent email — we send a one-time code. No password.",
+      "emailPlaceholder": "parent@email.com",
+      "codePlaceholder": "6-digit code",
+      "sendCode": "Send code",
+      "verifyCode": "Confirm code",
+      "emailCodeSent": "Check your email for the code.",
+      "emailFailed": "Could not send code. Check the email address.",
+      "invalidCode": "Wrong code. Try again.",
+      "notConfigured": "Cloud save is not set up yet."
+    },
+    "dataManagement": {
+      "title": "Start over",
+      "hint": "This cannot be undone.",
+      "deleteAction": "Delete all my data",
+      "deleteConfirmTitle": "Start over?",
+      "deleteConfirmMessage": "This deletes your pet, coins, unlocks, and purchases on this device and in the cloud. You will start a brand-new game from the beginning.",
+      "deleteConfirmAction": "Yes, start over",
+      "failed": "Something went wrong. Try again."
+    }
   },
   "locale": {
     "en": "English",
@@ -322,6 +362,7 @@
     "restore": "Restore purchases",
     "restoring": "Restoring…",
     "restoreDone": "Restore complete.",
+    "restoreCoinsRestored": "Restored {{count}} coins from your purchase history.",
     "a11yBuyPack": "Buy {{count}} coins for {{price}}"
   },
   "difficultyPicker": {

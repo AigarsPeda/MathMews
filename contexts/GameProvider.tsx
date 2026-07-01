@@ -46,7 +46,16 @@ import {
   removePlacedToy,
 } from "@/utils/room-placement";
 import { PET_NAME_MAX_LENGTH } from "@/types/save";
+import { useAuth } from "@/contexts/AuthProvider";
+import { useCloudSaveSync } from "@/hooks/use-cloud-save-sync";
+import { pullRemoteSave, pushRemoteSave } from "@/services/cloud-save/cloud-save";
+import type { CoinTransaction, CoinTransactionInput } from "@/types/coin-transaction";
+import { withCoinDelta } from "@/utils/coin-ledger";
+import { deleteRemoteUserData } from "@/services/cloud-save/delete-user-data";
+import { clearBackedUpSession } from "@/lib/auth-session-backup";
+import { supabase } from "@/lib/supabase";
 import {
+  clearGameSave,
   createDefaultGameSave,
   loadGameSave,
   saveGameSave,
@@ -73,8 +82,12 @@ type GameContextValue = {
   pet: PetProfile;
   wallet: Wallet;
   progress: Progress;
+  coinTransactions: CoinTransaction[];
   setPet: (updater: (current: PetProfile) => PetProfile) => void;
   setWallet: (updater: (current: Wallet) => Wallet) => void;
+  adjustCoins: (delta: number, meta: CoinTransactionInput) => boolean;
+  syncToCloud: () => Promise<void>;
+  reloadProgressFromCloud: () => Promise<void>;
   setProgress: (updater: (current: Progress) => Progress) => void;
   buyLife: () => boolean;
   purchaseVisualHelp: (puzzleId: string, cost: number) => boolean;
@@ -96,6 +109,7 @@ type GameContextValue = {
     catSkinId: CatSkinId;
   }) => Promise<boolean>;
   recordInteraction: () => void;
+  deleteAllUserData: () => Promise<{ ok: true } | { ok: false }>;
 };
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -105,10 +119,22 @@ function normalizePetName(name: string): string {
 }
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const { isAuthReady, userId } = useAuth();
   const [save, setSave] = useState<GameSave>(createDefaultGameSave);
   const [isReady, setIsReady] = useState(false);
   const skipNextPersist = useRef(true);
   const saveRef = useRef(save);
+  const cloudSyncRef = useRef<(() => Promise<void>) | null>(null);
+
+  useCloudSaveSync({
+    isGameReady: isReady,
+    isAuthReady,
+    userId,
+    save,
+    setSave,
+    skipNextPersist,
+    cloudSyncRef,
+  });
 
   useEffect(() => {
     saveRef.current = save;
@@ -189,6 +215,65 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const setWallet = useCallback((updater: (current: Wallet) => Wallet) => {
     setSave((current) => ({ ...current, wallet: updater(current.wallet) }));
   }, []);
+
+  const adjustCoins = useCallback(
+    (delta: number, meta: CoinTransactionInput): boolean => {
+      let applied = false;
+
+      setSave((current) => {
+        const next = withCoinDelta(current, delta, meta);
+        if (!next) return current;
+        applied = true;
+        return next;
+      });
+
+      return applied;
+    },
+    [],
+  );
+
+  const syncToCloud = useCallback(async () => {
+    await cloudSyncRef.current?.();
+  }, []);
+
+  const reloadProgressFromCloud = useCallback(async () => {
+    if (!userId) return;
+
+    const remote = await pullRemoteSave(userId);
+    if (!remote) return;
+
+    skipNextPersist.current = false;
+    setSave(remote.save);
+    await saveGameSave(remote.save);
+    await cloudSyncRef.current?.();
+  }, [userId]);
+
+  const deleteAllUserData = useCallback(async (): Promise<
+    { ok: true } | { ok: false }
+  > => {
+    try {
+      const currentUserId = userId;
+      if (currentUserId) {
+        await deleteRemoteUserData(currentUserId);
+      }
+
+      await clearGameSave();
+      await clearBackedUpSession();
+
+      if (supabase) {
+        await supabase.auth.signOut({ scope: "global" });
+        await supabase.auth.signInAnonymously();
+      }
+
+      const fresh = createDefaultGameSave();
+      skipNextPersist.current = true;
+      setSave(fresh);
+
+      return { ok: true };
+    } catch {
+      return { ok: false };
+    }
+  }, [userId]);
 
   const setProgress = useCallback(
     (updater: (current: Progress) => Progress) => {
@@ -643,8 +728,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       pet: save.pet,
       wallet: save.wallet,
       progress: save.progress,
+      coinTransactions: save.coinTransactions ?? [],
       setPet,
       setWallet,
+      adjustCoins,
+      syncToCloud,
+      reloadProgressFromCloud,
       setProgress,
       buyLife,
       purchaseVisualHelp,
@@ -663,17 +752,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipSkin,
       completeOnboarding,
       recordInteraction,
+      deleteAllUserData,
     }),
     [
       completeOnboarding,
+      deleteAllUserData,
       isReady,
       recordInteraction,
       save.hasCompletedOnboarding,
       save.pet,
+      save.coinTransactions,
       save.progress,
       save.wallet,
+      adjustCoins,
+      reloadProgressFromCloud,
       setPet,
       setWallet,
+      syncToCloud,
       setProgress,
       buyLife,
       purchaseVisualHelp,

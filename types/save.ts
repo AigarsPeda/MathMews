@@ -1,4 +1,5 @@
 import type { PetProfile, Progress, Wallet } from "@/types/game";
+import type { CoinTransaction } from "@/types/coin-transaction";
 
 export const GAME_SAVE_VERSION = 1 as const;
 export const GAME_SAVE_STORAGE_KEY = "@brainpet/game-save";
@@ -10,4 +11,6 @@ export type GameSave = {
   wallet: Wallet;
   progress: Progress;
   hasCompletedOnboarding: boolean;
+  /** Recent coin earns/spends for history UI and cloud sync. */
+  coinTransactions?: CoinTransaction[];
 };
