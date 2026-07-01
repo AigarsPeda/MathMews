@@ -1,3 +1,4 @@
+import { PrivacyLink } from "@/components/settings/PrivacyLink";
 import { DataManagementSection } from "@/components/settings/DataManagementSection";
 import { LicensesLink } from "@/components/settings/LicensesLink";
 import { GameColors } from "@/constants/game";
@@ -90,6 +91,8 @@ export default function SettingsScreen() {
         </View>
 
         <DataManagementSection />
+
+        <PrivacyLink />
 
         <LicensesLink />
       </ScrollView>

@@ -75,6 +75,8 @@ This is intentional — misconfigured store builds must not ship. Logic lives in
 - [doc/GAME_PLAN.md](doc/GAME_PLAN.md) — game design and implementation status
 - [doc/IAP_PLAN.md](doc/IAP_PLAN.md) — coin pack IAP rollout
 - [doc/SUPABASE_PLAN.md](doc/SUPABASE_PLAN.md) — local-first cloud save + remote puzzles
+- [doc/APP_STORE_PLAN.md](doc/APP_STORE_PLAN.md) — iOS App Store production checklist
+- [docs/privacy.html](docs/privacy.html) — public privacy policy (GitHub Pages)
 - [doc/STYLE_GUIDE.md](doc/STYLE_GUIDE.md) — UI and copy guidelines
 
 ## Assets

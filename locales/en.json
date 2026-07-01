@@ -15,6 +15,8 @@
     "licenses": "Open source licenses",
     "licensesHint": "Third-party libraries used in BrainPet.",
     "licensesEmpty": "No licenses found. Run npm run licenses to generate them.",
+    "privacy": "Privacy policy",
+    "privacyHint": "How BrainPet handles data and purchases.",
     "progressBackup": {
       "appleId": "Apple ID",
       "googleAccount": "Google account",
@@ -358,6 +360,13 @@
     "streakDay_one": "{{count}} day",
     "streakDay_other": "{{count}} days",
     "a11yCoins": "You have {{coins}} coins. Tap to get more coins."
+  },
+  "parentGate": {
+    "title": "Ask a grown-up",
+    "subtitle": "A parent or guardian needs to answer this before buying coins.",
+    "question": "What is {{a}} + {{b}}?",
+    "wrong": "That's not right — try again or ask a grown-up.",
+    "a11yChoice": "Answer {{value}}"
   },
   "iap": {
     "getCoins": "Get coins",

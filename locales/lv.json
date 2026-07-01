@@ -15,6 +15,8 @@
     "licenses": "Atvērtā pirmkoda licences",
     "licensesHint": "Trešo pušu bibliotēkas, ko izmanto BrainPet.",
     "licensesEmpty": "Licences nav atrastas. Palaid npm run licenses, lai tās ģenerētu.",
+    "privacy": "Privātuma politika",
+    "privacyHint": "Kā BrainPet apstrādā datus un pirkumus.",
     "progressBackup": {
       "appleId": "Apple ID",
       "googleAccount": "Google konts",
@@ -361,6 +363,13 @@
     "streakDay_one": "{{count}} diena",
     "streakDay_other": "{{count}} dienas",
     "a11yCoins": "Tev ir {{coins}} monētas. Pieskaries, lai iegūtu vairāk."
+  },
+  "parentGate": {
+    "title": "Jautā pieaugušajam",
+    "subtitle": "Pirms monētu pirkšanas vecākam jāatbild uz šo jautājumu.",
+    "question": "Cik ir {{a}} + {{b}}?",
+    "wrong": "Nepareizi — mēģini vēlreiz vai jautā pieaugušajam.",
+    "a11yChoice": "Atbilde {{value}}"
   },
   "iap": {
     "getCoins": "Iegūt monētas",

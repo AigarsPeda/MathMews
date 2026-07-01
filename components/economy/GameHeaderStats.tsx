@@ -1,8 +1,10 @@
 import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
 import { CoinPackSheet } from "@/components/economy/CoinPackSheet";
+import { ParentGateSheet } from "@/components/economy/ParentGateSheet";
 import { CoinCounter } from "@/components/economy/CoinCounter";
 import { LivesCounter } from "@/components/economy/LivesCounter";
 import { useGame } from "@/contexts/GameProvider";
+import { useIAP } from "@/contexts/IAPProvider";
 import type { LivesState } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
@@ -29,7 +31,9 @@ export function GameHeaderStats({
   lives,
 }: GameHeaderStatsProps) {
   const { buyLife, recordInteraction } = useGame();
+  const { isSupported } = useIAP();
   const [showBuySheet, setShowBuySheet] = useState(false);
+  const [showParentGate, setShowParentGate] = useState(false);
   const [showCoinSheet, setShowCoinSheet] = useState(false);
 
   const handleOpenBuySheet = useCallback(() => {
@@ -41,8 +45,17 @@ export function GameHeaderStats({
   const handleOpenCoinSheet = useCallback(() => {
     recordInteraction();
     triggerHaptic();
+    if (isSupported) {
+      setShowParentGate(true);
+      return;
+    }
     setShowCoinSheet(true);
-  }, [recordInteraction]);
+  }, [isSupported, recordInteraction]);
+
+  const handleParentGatePass = useCallback(() => {
+    setShowParentGate(false);
+    setShowCoinSheet(true);
+  }, []);
 
   const handleBuyLife = useCallback(() => {
     recordInteraction();
@@ -63,6 +76,11 @@ export function GameHeaderStats({
         coins={coins}
         onBuyLife={handleBuyLife}
         onClose={() => setShowBuySheet(false)}
+      />
+      <ParentGateSheet
+        visible={showParentGate}
+        onPass={handleParentGatePass}
+        onClose={() => setShowParentGate(false)}
       />
       <CoinPackSheet
         visible={showCoinSheet}
