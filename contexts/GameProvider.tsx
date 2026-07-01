@@ -48,15 +48,24 @@ import {
 import { PET_NAME_MAX_LENGTH } from "@/types/save";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useCloudSaveSync } from "@/hooks/use-cloud-save-sync";
-import { pullRemoteSave, pushRemoteSave } from "@/services/cloud-save/cloud-save";
+import { pullRemoteSave, pushRemoteSave, listRemoteSaveSnapshots } from "@/services/cloud-save/cloud-save";
+import type { CloudSaveSummary } from "@/services/cloud-save/merge-game-save";
+import { listRestorableCloudSaves, listSwitchableCloudSaves } from "@/services/cloud-save/restorable-cloud-save";
 import type { CoinTransaction, CoinTransactionInput } from "@/types/coin-transaction";
 import { withCoinDelta } from "@/utils/coin-ledger";
 import { deleteRemoteUserData } from "@/services/cloud-save/delete-user-data";
 import { clearBackedUpSession } from "@/lib/auth-session-backup";
 import { supabase } from "@/lib/supabase";
 import {
+  clearActiveSaveId,
+  createSaveId,
+  getActiveSaveId,
+  setActiveSaveId,
+} from "@/utils/save-id";
+import {
   clearGameSave,
   createDefaultGameSave,
+  getLocalSaveUpdatedAt,
   loadGameSave,
   saveGameSave,
 } from "@/utils/game-storage";
@@ -109,6 +118,14 @@ type GameContextValue = {
     catSkinId: CatSkinId;
   }) => Promise<boolean>;
   recordInteraction: () => void;
+  cloudRestoreCandidates: CloudSaveSummary[];
+  cloudRestoreCheckComplete: boolean;
+  cloudRestorePromptDismissed: boolean;
+  acceptCloudRestore: (saveId: string) => Promise<boolean>;
+  declineCloudRestore: () => void;
+  showCloudRestorePrompt: () => void;
+  fetchSwitchableCloudSaves: () => Promise<CloudSaveSummary[]>;
+  switchToCloudSave: (saveId: string) => Promise<boolean>;
   deleteAllUserData: () => Promise<{ ok: true } | { ok: false }>;
 };
 
@@ -122,9 +139,34 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const { isAuthReady, userId } = useAuth();
   const [save, setSave] = useState<GameSave>(createDefaultGameSave);
   const [isReady, setIsReady] = useState(false);
+  const [cloudRestoreCandidates, setCloudRestoreCandidates] = useState<
+    CloudSaveSummary[]
+  >([]);
+  const [cloudRestoreCheckComplete, setCloudRestoreCheckComplete] =
+    useState(false);
+  const [cloudRestorePromptDismissed, setCloudRestorePromptDismissed] =
+    useState(false);
   const skipNextPersist = useRef(true);
   const saveRef = useRef(save);
+  const activeSaveIdRef = useRef<string | null>(null);
   const cloudSyncRef = useRef<(() => Promise<void>) | null>(null);
+  const blockCloudPushRef = useRef(false);
+
+  const handleRestorableCloudSaves = useCallback((saves: CloudSaveSummary[]) => {
+    setCloudRestoreCandidates(saves);
+  }, []);
+
+  const handleInitialCloudCheckComplete = useCallback(() => {
+    setCloudRestoreCheckComplete(true);
+  }, []);
+
+  useEffect(() => {
+    setCloudRestoreCheckComplete(false);
+    setCloudRestoreCandidates([]);
+    setCloudRestorePromptDismissed(false);
+    blockCloudPushRef.current = false;
+    activeSaveIdRef.current = null;
+  }, [userId]);
 
   useCloudSaveSync({
     isGameReady: isReady,
@@ -133,7 +175,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     save,
     setSave,
     skipNextPersist,
+    activeSaveIdRef,
     cloudSyncRef,
+    onRestorableCloudSaves: handleRestorableCloudSaves,
+    onInitialCloudCheckComplete: handleInitialCloudCheckComplete,
+    blockCloudPushRef,
   });
 
   useEffect(() => {
@@ -143,9 +189,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true;
 
-    loadGameSave()
-      .then((loaded) => {
+    Promise.all([loadGameSave(), getActiveSaveId()])
+      .then(([loaded, saveId]) => {
         if (!active) return;
+        if (saveId) {
+          activeSaveIdRef.current = saveId;
+        }
         setSave(loaded?.save ?? createDefaultGameSave());
         setIsReady(true);
       })
@@ -239,7 +288,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const reloadProgressFromCloud = useCallback(async () => {
     if (!userId) return;
 
-    const remote = await pullRemoteSave(userId);
+    const saveId = activeSaveIdRef.current ?? (await getActiveSaveId());
+    if (!saveId) return;
+
+    const remote = await pullRemoteSave(userId, saveId);
     if (!remote) return;
 
     skipNextPersist.current = false;
@@ -258,6 +310,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
 
       await clearGameSave();
+      await clearActiveSaveId();
       await clearBackedUpSession();
 
       if (supabase) {
@@ -267,6 +320,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       const fresh = createDefaultGameSave();
       skipNextPersist.current = true;
+      activeSaveIdRef.current = null;
       setSave(fresh);
 
       return { ok: true };
@@ -692,12 +746,109 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
+  const startNewGameSlot = useCallback(async () => {
+    const newId = createSaveId();
+    await setActiveSaveId(newId);
+    activeSaveIdRef.current = newId;
+    blockCloudPushRef.current = true;
+
+    const fresh = createDefaultGameSave();
+    skipNextPersist.current = false;
+    setSave(fresh);
+    await clearGameSave();
+    await saveGameSave(fresh);
+    setCloudRestorePromptDismissed(true);
+  }, []);
+
+  const switchToCloudSave = useCallback(
+    async (saveId: string): Promise<boolean> => {
+      if (!userId) return false;
+
+      try {
+        const remote = await pullRemoteSave(userId, saveId);
+        if (!remote) return false;
+
+        blockCloudPushRef.current = false;
+        await setActiveSaveId(saveId);
+        activeSaveIdRef.current = saveId;
+        skipNextPersist.current = false;
+        setSave(remote.save);
+        await saveGameSave(remote.save);
+        await pushRemoteSave(userId, saveId, {
+          save: remote.save,
+          clientUpdatedAt: (await getLocalSaveUpdatedAt()) || Date.now(),
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [userId],
+  );
+
+  const acceptCloudRestore = useCallback(
+    async (saveId: string): Promise<boolean> => {
+      const ok = await switchToCloudSave(saveId);
+      if (ok) {
+        setCloudRestoreCandidates([]);
+        setCloudRestorePromptDismissed(false);
+      }
+      return ok;
+    },
+    [switchToCloudSave],
+  );
+
+  const fetchSwitchableCloudSaves = useCallback(async (): Promise<
+    CloudSaveSummary[]
+  > => {
+    if (!userId) return [];
+
+    const remotes = await listRemoteSaveSnapshots(userId);
+    const activeId = activeSaveIdRef.current ?? (await getActiveSaveId());
+    return listSwitchableCloudSaves(remotes, activeId);
+  }, [userId]);
+
+  const declineCloudRestore = useCallback(() => {
+    void startNewGameSlot();
+  }, [startNewGameSlot]);
+
+  const showCloudRestorePrompt = useCallback(() => {
+    if (!userId) {
+      setCloudRestorePromptDismissed(false);
+      return;
+    }
+
+    void (async () => {
+      const remotes = await listRemoteSaveSnapshots(userId);
+      const activeId = activeSaveIdRef.current ?? (await getActiveSaveId());
+      const candidates = listRestorableCloudSaves(
+        {
+          save: saveRef.current,
+          clientUpdatedAt: (await getLocalSaveUpdatedAt()) || 0,
+        },
+        remotes,
+        activeId,
+      );
+      setCloudRestoreCandidates(candidates);
+      setCloudRestorePromptDismissed(false);
+    })();
+  }, [userId]);
+
   const completeOnboarding = useCallback(
     async (options: { name: string; catSkinId: CatSkinId }) => {
       const trimmed = normalizePetName(options.name);
-      if (!trimmed) return false;
+      if (!trimmed || !userId) return false;
 
       const skinId = resolveCatSkinId(options.catSkinId);
+      blockCloudPushRef.current = false;
+
+      let saveId = activeSaveIdRef.current ?? (await getActiveSaveId());
+      if (!saveId) {
+        saveId = createSaveId();
+        await setActiveSaveId(saveId);
+        activeSaveIdRef.current = saveId;
+      }
+
       const nextSave: GameSave = {
         ...createDefaultGameSave(),
         pet: {
@@ -712,13 +863,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
           skinsUnlocked: [skinId],
         },
         hasCompletedOnboarding: true,
+        startedAt: Date.now(),
       };
 
       setSave(nextSave);
       await saveGameSave(nextSave);
+      await pushRemoteSave(userId, saveId, {
+        save: nextSave,
+        clientUpdatedAt: (await getLocalSaveUpdatedAt()) || Date.now(),
+      });
       return true;
     },
-    [],
+    [userId],
   );
 
   const value = useMemo<GameContextValue>(
@@ -752,10 +908,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipSkin,
       completeOnboarding,
       recordInteraction,
+      cloudRestoreCandidates,
+      cloudRestoreCheckComplete,
+      cloudRestorePromptDismissed,
+      acceptCloudRestore,
+      declineCloudRestore,
+      showCloudRestorePrompt,
+      fetchSwitchableCloudSaves,
+      switchToCloudSave,
       deleteAllUserData,
     }),
     [
+      acceptCloudRestore,
+      cloudRestoreCandidates,
+      cloudRestoreCheckComplete,
+      cloudRestorePromptDismissed,
       completeOnboarding,
+      declineCloudRestore,
+      fetchSwitchableCloudSaves,
+      showCloudRestorePrompt,
+      switchToCloudSave,
       deleteAllUserData,
       isReady,
       recordInteraction,

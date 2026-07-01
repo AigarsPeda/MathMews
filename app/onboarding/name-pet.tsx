@@ -1,4 +1,5 @@
 import { CatSkinPicker } from "@/components/onboarding/CatSkinPicker";
+import { RestoreProgressPrompt } from "@/components/onboarding/RestoreProgressPrompt";
 import { GameColors } from "@/constants/game";
 import {
   DEFAULT_CAT_SKIN_ID,
@@ -36,14 +37,29 @@ export default function NamePetScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { locale, setLocale } = useLocale();
-  const { isReady, hasCompletedOnboarding, completeOnboarding } = useGame();
+  const {
+    isReady,
+    hasCompletedOnboarding,
+    completeOnboarding,
+    cloudRestoreCandidates,
+    cloudRestoreCheckComplete,
+    cloudRestorePromptDismissed,
+    acceptCloudRestore,
+    declineCloudRestore,
+    showCloudRestorePrompt,
+  } = useGame();
   const [name, setName] = useState("");
   const [catSkinId, setCatSkinId] = useState<CatSkinId>(DEFAULT_CAT_SKIN_ID);
   const [selectedLocale, setSelectedLocale] = useState<AppLocale>(locale);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   const trimmedName = name.trim();
   const canContinue = trimmedName.length > 0 && !isSubmitting;
+  const showRestorePrompt =
+    cloudRestoreCandidates.length > 0 && !cloudRestorePromptDismissed;
+  const canRestoreLater =
+    cloudRestoreCandidates.length > 0 && cloudRestorePromptDismissed;
 
   const handleSelectLocale = useCallback((next: AppLocale) => {
     if (next === selectedLocale) return;
@@ -51,6 +67,22 @@ export default function NamePetScreen() {
     setSelectedLocale(next);
     void setLocale(next);
   }, [selectedLocale, setLocale]);
+
+  const handleRestore = useCallback(
+    async (saveId: string) => {
+      setIsRestoring(true);
+      const ok = await acceptCloudRestore(saveId);
+      setIsRestoring(false);
+      if (ok) {
+        router.replace("/");
+      }
+    },
+    [acceptCloudRestore, router],
+  );
+
+  const handleStartFresh = useCallback(() => {
+    declineCloudRestore();
+  }, [declineCloudRestore]);
 
   const handleContinue = useCallback(async () => {
     if (!canContinue) return;
@@ -79,7 +111,7 @@ export default function NamePetScreen() {
     trimmedName,
   ]);
 
-  if (!isReady) {
+  if (!isReady || !cloudRestoreCheckComplete) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={GameColors.primary} />
@@ -104,86 +136,116 @@ export default function NamePetScreen() {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.header}>
-              <Text style={styles.title}>{t("onboarding.title")}</Text>
-              <Text style={styles.subtitle}>{t("onboarding.subtitle")}</Text>
-            </View>
+            {showRestorePrompt ? (
+              <RestoreProgressPrompt
+                saves={cloudRestoreCandidates}
+                isWorking={isRestoring}
+                onRestore={(saveId) => void handleRestore(saveId)}
+                onStartFresh={handleStartFresh}
+              />
+            ) : (
+              <>
+                <View style={styles.header}>
+                  <Text style={styles.title}>{t("onboarding.title")}</Text>
+                  <Text style={styles.subtitle}>{t("onboarding.subtitle")}</Text>
+                </View>
 
-            <View style={styles.section}>
-              <Text style={styles.label}>{t("onboarding.language")}</Text>
-              <View style={styles.localeOptions}>
-              {APP_LOCALES.map((code) => {
-                const selected = selectedLocale === code;
-                return (
+                <View style={styles.section}>
+                  <Text style={styles.label}>{t("onboarding.language")}</Text>
+                  <View style={styles.localeOptions}>
+                    {APP_LOCALES.map((code) => {
+                      const selected = selectedLocale === code;
+                      return (
+                        <Pressable
+                          key={code}
+                          onPress={() => handleSelectLocale(code)}
+                          style={[
+                            styles.localeOption,
+                            selected && styles.localeOptionSelected,
+                          ]}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected }}
+                          accessibilityLabel={t(`locale.${code}`)}
+                        >
+                          <Text
+                            style={[
+                              styles.localeOptionText,
+                              selected && styles.localeOptionTextSelected,
+                            ]}
+                          >
+                            {t(`locale.${code}`)}
+                          </Text>
+                          {selected ? <Text style={styles.check}>✓</Text> : null}
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                <CatSkinPicker value={catSkinId} onChange={setCatSkinId} />
+
+                <View style={styles.section}>
+                  <Text style={styles.label}>{t("onboarding.petName")}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholder={t("onboarding.placeholder")}
+                    placeholderTextColor={GameColors.textMuted}
+                    maxLength={PET_NAME_MAX_LENGTH}
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                    returnKeyType="done"
+                    onSubmitEditing={handleContinue}
+                    accessibilityLabel={t("onboarding.a11yPetName")}
+                  />
+                  <Text style={styles.hint}>
+                    {t("onboarding.charCount", {
+                      count: trimmedName.length,
+                      max: PET_NAME_MAX_LENGTH,
+                    })}
+                  </Text>
+                </View>
+
+                {canRestoreLater ? (
                   <Pressable
-                    key={code}
-                    onPress={() => handleSelectLocale(code)}
-                    style={[
-                      styles.localeOption,
-                      selected && styles.localeOptionSelected,
-                    ]}
+                    onPress={() => {
+                      triggerHaptic();
+                      showCloudRestorePrompt();
+                    }}
+                    style={styles.restoreLaterButton}
                     accessibilityRole="button"
-                    accessibilityState={{ selected }}
-                    accessibilityLabel={t(`locale.${code}`)}
                   >
-                    <Text
-                      style={[
-                        styles.localeOptionText,
-                        selected && styles.localeOptionTextSelected,
-                      ]}
-                    >
-                      {t(`locale.${code}`)}
+                    <Text style={styles.restoreLaterText}>
+                      {t("onboarding.restore.restoreLaterMultiple", {
+                        count: cloudRestoreCandidates.length,
+                      })}
                     </Text>
-                    {selected ? <Text style={styles.check}>✓</Text> : null}
                   </Pressable>
-                );
-              })}
-            </View>
-          </View>
-
-          <CatSkinPicker value={catSkinId} onChange={setCatSkinId} />
-
-          <View style={styles.section}>
-            <Text style={styles.label}>{t("onboarding.petName")}</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder={t("onboarding.placeholder")}
-              placeholderTextColor={GameColors.textMuted}
-              maxLength={PET_NAME_MAX_LENGTH}
-              autoCapitalize="words"
-              autoCorrect={false}
-              returnKeyType="done"
-              onSubmitEditing={handleContinue}
-              accessibilityLabel={t("onboarding.a11yPetName")}
-            />
-            <Text style={styles.hint}>
-              {t("onboarding.charCount", {
-                count: trimmedName.length,
-                max: PET_NAME_MAX_LENGTH,
-              })}
-            </Text>
-          </View>
+                ) : null}
+              </>
+            )}
           </ScrollView>
 
-          <View style={styles.footer}>
-            <Pressable
-              style={[
-                styles.primaryBtn,
-                !canContinue && styles.primaryBtnDisabled,
-              ]}
-              onPress={handleContinue}
-              disabled={!canContinue}
-              accessibilityRole="button"
-              accessibilityLabel={t("onboarding.a11yContinue")}
-              accessibilityState={{ disabled: !canContinue }}
-            >
-              <Text style={styles.primaryBtnText}>
-                {isSubmitting ? t("common.saving") : t("onboarding.meetPet")}
-              </Text>
-            </Pressable>
-          </View>
+          {!showRestorePrompt ? (
+            <View style={styles.footer}>
+              <Pressable
+                style={[
+                  styles.primaryBtn,
+                  !canContinue && styles.primaryBtnDisabled,
+                ]}
+                onPress={handleContinue}
+                disabled={!canContinue}
+                accessibilityRole="button"
+                accessibilityLabel={t("onboarding.a11yContinue")}
+                accessibilityState={{ disabled: !canContinue }}
+              >
+                <Text style={styles.primaryBtnText}>
+                  {isSubmitting ? t("common.saving") : t("onboarding.meetPet")}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -316,5 +378,16 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(18),
     fontWeight: "800",
     color: "#FFFFFF",
+  },
+  restoreLaterButton: {
+    alignItems: "center",
+    paddingVertical: moderateScale(8),
+  },
+  restoreLaterText: {
+    fontSize: moderateScale(15),
+    fontWeight: "700",
+    color: GameColors.primary,
+    textAlign: "center",
+    textDecorationLine: "underline",
   },
 });

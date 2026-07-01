@@ -225,7 +225,18 @@
     "charCount": "{{count}}/{{max}} rakstzīmes",
     "meetPet": "Satikt savu draugu!",
     "a11yPetName": "Mājdzīvnieka vārds",
-    "a11yContinue": "Turpināt ar mājdzīvnieka vārdu"
+    "a11yContinue": "Turpināt ar mājdzīvnieka vārdu",
+    "restore": {
+      "title": "Laipni lūgti atpakaļ!",
+      "message": "Atradām saglabātu progresu — {{name}} ({{coins}} monētas). Ko vēlies darīt?",
+      "messageMultiple": "Atradām saglabātas spēles šajā kontā. Izvēlies vienu, lai turpinātu, vai sāc jaunu spēli.",
+      "saveMeta": "Sākts {{date}} · {{coins}} monētas",
+      "restoreOne": "Atjaunot",
+      "restoreAction": "Atjaunot progresu",
+      "startFreshAction": "Sākt jaunu spēli",
+      "restoreLater": "Atjaunot {{name}} saglabāto progresu",
+      "restoreLaterMultiple": "Atjaunot saglabātu spēli ({{count}})"
+    }
   },
   "pet": {
     "level": "{{level}}. līmenis",
@@ -363,10 +374,21 @@
     "purchaseFailed": "Pirkums neizdevās. Mēģini vēlreiz.",
     "purchasePending": "Gaida apstiprinājumu…",
     "restore": "Atjaunot pirkumus",
+    "restorePurchases": "Atjaunot pirkumus",
     "restoring": "Atjauno…",
     "restoreDone": "Atjaunošana pabeigta.",
     "restoreCoinsRestored": "Atjaunoti {{count}} monētas no pirkumu vēstures.",
     "a11yBuyPack": "Pirkt {{count}} monētas par {{price}}"
+  },
+  "cloudRestore": {
+    "openMenu": "Atjaunot saglabātās spēles",
+    "menuTitle": "Atjaunot saglabātās spēles",
+    "menuHint": "Izvēlies spēli, ko turpināt šajā ierīcē. Pašreizējā spēle paliek saglabāta mākonī.",
+    "empty": "Šajā kontā nav citu saglabātu spēļu.",
+    "gameSwitched": "Ielādēta {{name}} spēle.",
+    "switchFailed": "Neizdevās ielādēt šo spēli. Mēģini vēlreiz.",
+    "defaultPetName": "tavs mīlulis",
+    "a11yRestoreSave": "Atjaunot {{name}}, sākts {{date}}"
   },
   "difficultyPicker": {
     "a11y": "{{difficulty}} grūtība, {{coins}} monētas par riekstu"

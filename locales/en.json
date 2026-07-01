@@ -224,7 +224,18 @@
     "charCount": "{{count}}/{{max}} characters",
     "meetPet": "Meet my pet!",
     "a11yPetName": "Pet name",
-    "a11yContinue": "Continue with pet name"
+    "a11yContinue": "Continue with pet name",
+    "restore": {
+      "title": "Welcome back!",
+      "message": "We found saved progress for {{name}} ({{coins}} coins). What would you like to do?",
+      "messageMultiple": "We found saved games on this account. Pick one to continue, or start a new game.",
+      "saveMeta": "Started {{date}} · {{coins}} coins",
+      "restoreOne": "Restore",
+      "restoreAction": "Restore my progress",
+      "startFreshAction": "Start a new game",
+      "restoreLater": "Restore {{name}}'s saved progress",
+      "restoreLaterMultiple": "Restore a saved game ({{count}})"
+    }
   },
   "pet": {
     "level": "Level {{level}}",
@@ -360,10 +371,21 @@
     "purchaseFailed": "Purchase did not go through. Try again.",
     "purchasePending": "Waiting for approval…",
     "restore": "Restore purchases",
+    "restorePurchases": "Restore purchases",
     "restoring": "Restoring…",
     "restoreDone": "Restore complete.",
     "restoreCoinsRestored": "Restored {{count}} coins from your purchase history.",
     "a11yBuyPack": "Buy {{count}} coins for {{price}}"
+  },
+  "cloudRestore": {
+    "openMenu": "Restore saved games",
+    "menuTitle": "Restore saved games",
+    "menuHint": "Pick a game to continue on this device. Your current game stays saved in the cloud.",
+    "empty": "No other saved games on this account.",
+    "gameSwitched": "Loaded {{name}}'s game.",
+    "switchFailed": "Could not load that game. Try again.",
+    "defaultPetName": "your pet",
+    "a11yRestoreSave": "Restore {{name}}, started {{date}}"
   },
   "difficultyPicker": {
     "a11y": "{{difficulty}} difficulty, {{coins}} coins per nut"

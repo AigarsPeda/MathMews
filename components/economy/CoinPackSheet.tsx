@@ -1,6 +1,7 @@
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import type { CoinPackProductId } from "@/constants/iap-products";
 import { GameColors } from "@/constants/game";
+import { RestoreMenuContent } from "@/components/economy/RestoreMenuContent";
 import { useIAP } from "@/contexts/IAPProvider";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
@@ -35,9 +36,9 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
     isSupported,
     coinPackCatalog,
     purchaseCoinPack,
-    restorePurchases,
     refreshOfferings,
   } = useIAP();
+  const [view, setView] = useState<"coins" | "restore">("coins");
   const [purchasingId, setPurchasingId] = useState<CoinPackProductId | null>(
     null,
   );
@@ -45,12 +46,12 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
   const [statusKind, setStatusKind] = useState<"success" | "error" | "info" | null>(
     null,
   );
-  const [isRestoring, setIsRestoring] = useState(false);
 
   const displayItems = coinPackCatalog;
 
   useEffect(() => {
     if (!visible) {
+      setView("coins");
       setStatusMessage(null);
       setStatusKind(null);
       setPurchasingId(null);
@@ -97,132 +98,126 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
     [purchaseCoinPack, purchasingId, t],
   );
 
-  const handleRestore = useCallback(async () => {
-    if (isRestoring) return;
-    setIsRestoring(true);
-    setStatusMessage(null);
-    setStatusKind(null);
+  const handleOpenRestoreMenu = useCallback(() => {
     triggerHaptic();
-
-    try {
-      const restoredCoins = await restorePurchases();
-      setStatusKind(restoredCoins > 0 ? "success" : "info");
-      setStatusMessage(
-        restoredCoins > 0
-          ? t("iap.restoreCoinsRestored", { count: restoredCoins })
-          : t("iap.restoreDone"),
-      );
-    } catch {
-      setStatusKind("error");
-      setStatusMessage(t("iap.purchaseFailed"));
-    } finally {
-      setIsRestoring(false);
-    }
-  }, [isRestoring, restorePurchases, t]);
+    setView("restore");
+  }, []);
 
   const isLoadingOfferings = visible && isSupported && !isReady;
 
   return (
     <AppBottomSheet visible={visible} onClose={onClose} expanded>
-      <View style={styles.card}>
-        <Text style={styles.emoji}>🪙</Text>
-        <Text style={styles.title}>{t("iap.getCoins")}</Text>
-        <Text style={styles.subtitle}>{t("iap.getCoinsHint")}</Text>
-
-        {!isSupported ? (
-          <Text style={styles.hint}>{t("iap.notAvailable")}</Text>
-        ) : isLoadingOfferings ? (
-          <ActivityIndicator
-            color={GameColors.primary}
-            style={styles.loader}
+      {view === "restore" ? (
+        <>
+          <RestoreMenuContent
+            onBack={() => setView("coins")}
+            onClose={onClose}
           />
-        ) : (
-          <View style={styles.packList}>
-            {displayItems.map((item) => {
-              const isPurchasing = purchasingId === item.productId;
-              const canBuy =
-                (item.package != null || item.storeProduct != null) &&
-                !purchasingId;
-
-              return (
-                <Pressable
-                  key={item.productId}
-                  style={({ pressed }) => [
-                    styles.packRow,
-                    pressed && canBuy && styles.packRowPressed,
-                    !canBuy && styles.packRowDisabled,
-                  ]}
-                  onPress={() => void handlePurchase(item.productId)}
-                  disabled={!canBuy}
-                  accessibilityRole="button"
-                  accessibilityLabel={t("iap.a11yBuyPack", {
-                    count: item.coins,
-                    price: item.priceString ?? t("iap.priceLoading"),
-                  })}
-                >
-                  <View style={styles.packInfo}>
-                    <Text style={styles.packCoins}>
-                      {t("iap.packCoins", { count: item.coins })}
-                    </Text>
-                    <Text style={styles.packPrice}>
-                      {item.priceString ?? t("iap.priceLoading")}
-                    </Text>
-                  </View>
-                  {isPurchasing ? (
-                    <ActivityIndicator color={GameColors.primary} />
-                  ) : (
-                    <Text style={styles.packBuyLabel}>{t("iap.buy")}</Text>
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-        )}
-
-        {displayItems.length > 0 &&
-        displayItems.every(
-          (item) => item.package == null && item.storeProduct == null,
-        ) &&
-        isReady &&
-        isSupported ? (
-          <Text style={styles.hint}>{t("iap.offeringsMissing")}</Text>
-        ) : null}
-
-        {statusMessage ? (
-          <Text
-            style={[
-              styles.status,
-              statusKind === "success" && styles.statusSuccess,
-              statusKind === "error" && styles.statusError,
-            ]}
+          <Pressable
+            style={styles.closeBtn}
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={t("common.close")}
           >
-            {statusMessage}
-          </Text>
-        ) : null}
+            <Text style={styles.closeBtnText}>{t("common.close")}</Text>
+          </Pressable>
+        </>
+      ) : (
+        <View style={styles.card}>
+          <Text style={styles.emoji}>🪙</Text>
+          <Text style={styles.title}>{t("iap.getCoins")}</Text>
+          <Text style={styles.subtitle}>{t("iap.getCoinsHint")}</Text>
 
-        {isSupported ? (
+          {!isSupported ? (
+            <Text style={styles.hint}>{t("iap.notAvailable")}</Text>
+          ) : isLoadingOfferings ? (
+            <ActivityIndicator
+              color={GameColors.primary}
+              style={styles.loader}
+            />
+          ) : (
+            <View style={styles.packList}>
+              {displayItems.map((item) => {
+                const isPurchasing = purchasingId === item.productId;
+                const canBuy =
+                  (item.package != null || item.storeProduct != null) &&
+                  !purchasingId;
+
+                return (
+                  <Pressable
+                    key={item.productId}
+                    style={({ pressed }) => [
+                      styles.packRow,
+                      pressed && canBuy && styles.packRowPressed,
+                      !canBuy && styles.packRowDisabled,
+                    ]}
+                    onPress={() => void handlePurchase(item.productId)}
+                    disabled={!canBuy}
+                    accessibilityRole="button"
+                    accessibilityLabel={t("iap.a11yBuyPack", {
+                      count: item.coins,
+                      price: item.priceString ?? t("iap.priceLoading"),
+                    })}
+                  >
+                    <View style={styles.packInfo}>
+                      <Text style={styles.packCoins}>
+                        {t("iap.packCoins", { count: item.coins })}
+                      </Text>
+                      <Text style={styles.packPrice}>
+                        {item.priceString ?? t("iap.priceLoading")}
+                      </Text>
+                    </View>
+                    {isPurchasing ? (
+                      <ActivityIndicator color={GameColors.primary} />
+                    ) : (
+                      <Text style={styles.packBuyLabel}>{t("iap.buy")}</Text>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
+
+          {displayItems.length > 0 &&
+          displayItems.every(
+            (item) => item.package == null && item.storeProduct == null,
+          ) &&
+          isReady &&
+          isSupported ? (
+            <Text style={styles.hint}>{t("iap.offeringsMissing")}</Text>
+          ) : null}
+
+          {statusMessage ? (
+            <Text
+              style={[
+                styles.status,
+                statusKind === "success" && styles.statusSuccess,
+                statusKind === "error" && styles.statusError,
+              ]}
+            >
+              {statusMessage}
+            </Text>
+          ) : null}
+
           <Pressable
             style={styles.restoreBtn}
-            onPress={() => void handleRestore()}
-            disabled={isRestoring}
+            onPress={handleOpenRestoreMenu}
             accessibilityRole="button"
-            accessibilityLabel={t("iap.restore")}
+            accessibilityLabel={t("cloudRestore.openMenu")}
           >
-            <Text style={styles.restoreBtnText}>
-              {isRestoring ? t("iap.restoring") : t("iap.restore")}
-            </Text>
+            <Text style={styles.restoreBtnText}>{t("cloudRestore.openMenu")}</Text>
           </Pressable>
-        ) : null}
 
-        <Pressable
-          style={styles.closeBtn}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.close")}
-        >
-          <Text style={styles.closeBtnText}>{t("common.close")}</Text>
-        </Pressable>
-      </View>
+          <Pressable
+            style={styles.closeBtn}
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={t("common.close")}
+          >
+            <Text style={styles.closeBtnText}>{t("common.close")}</Text>
+          </Pressable>
+        </View>
+      )}
     </AppBottomSheet>
   );
 }

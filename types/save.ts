@@ -11,6 +11,8 @@ export type GameSave = {
   wallet: Wallet;
   progress: Progress;
   hasCompletedOnboarding: boolean;
+  /** Unix ms when the player finished onboarding / started this game. */
+  startedAt?: number;
   /** Recent coin earns/spends for history UI and cloud sync. */
   coinTransactions?: CoinTransaction[];
 };
