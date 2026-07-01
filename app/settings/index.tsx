@@ -90,11 +90,11 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <DataManagementSection />
-
         <PrivacyLink />
 
         <LicensesLink />
+
+        <DataManagementSection />
       </ScrollView>
     </SafeAreaView>
   );
