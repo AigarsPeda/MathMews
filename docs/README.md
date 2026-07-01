@@ -1,33 +1,48 @@
 # BrainPet — GitHub Pages (legal docs)
 
-Host the public privacy policy for App Store Connect.
+Public privacy policy for App Store Connect.
 
-## Setup (one time)
+**URL:** https://aigarspeda.github.io/brainpet/privacy.html
 
-1. Push this repo to GitHub (`AigarsPeda/brainpet`).
-2. On GitHub: **Settings → Pages**
-3. **Build and deployment → Source:** Deploy from a branch
-4. **Branch:** `main` (or your default branch) → folder **`/docs`**
-5. Save. After a minute or two the site is live at:
+---
 
-   **https://aigarspeda.github.io/brainpet/privacy.html**
+## If you see 404
 
-Use that URL in:
+The HTML file is in the repo, but **GitHub Pages must be turned on once**:
 
-- App Store Connect → **Privacy Policy URL**
-- `constants/legal.ts` → `PRIVACY_POLICY_URL` (already set to match)
+1. Open https://github.com/AigarsPeda/brainpet/settings/pages
+2. Under **Build and deployment → Source**, choose **GitHub Actions** (not “Deploy from a branch”).
+3. Push to `main` (or run the **Deploy GitHub Pages** workflow manually under Actions).
+4. Wait 1–2 minutes, then open the URL above.
 
-## Files
+You can also use **Deploy from a branch** → branch `main` → folder `/docs` — either method works; pick one only.
 
-| File | Purpose |
-| ---- | ------- |
-| `privacy.html` | Public English privacy policy (App Store) |
+### Verify the file is on GitHub
 
-When you change the policy, update:
+https://github.com/AigarsPeda/brainpet/blob/main/docs/privacy.html
 
-1. `docs/privacy.html`
-2. `legal/privacy-policy-content.ts` (in-app EN + LV)
-3. `constants/legal.ts` → `PRIVACY_POLICY_LAST_UPDATED`
+---
+
+## App Store Connect
+
+Paste this into **Privacy Policy URL**:
+
+```
+https://aigarspeda.github.io/brainpet/privacy.html
+```
+
+Same value as `PRIVACY_POLICY_URL` in `constants/legal.ts`.
+
+---
+
+## When you change the policy
+
+1. Edit `docs/privacy.html` (public English page)
+2. Edit `legal/privacy-policy-content.ts` (in-app EN + LV)
+3. Update `PRIVACY_POLICY_LAST_UPDATED` in `constants/legal.ts`
+4. Push to `main` — Pages redeploys automatically
+
+---
 
 ## Support email
 
