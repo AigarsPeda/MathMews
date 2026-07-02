@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const ACTIVE_SAVE_ID_KEY = "@brainpet/active-save-id";
+export const ACTIVE_SAVE_ID_KEY = "@mathmews/active-save-id";
 
 export function createSaveId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {

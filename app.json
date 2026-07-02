@@ -1,19 +1,19 @@
 {
   "expo": {
     "name": "Math Mews",
-    "slug": "BrainPet",
+    "slug": "MathMews",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "brainpet",
+    "scheme": "mathmews",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.brainpet.app"
+      "bundleIdentifier": "com.mathmews.app"
     },
     "android": {
-      "package": "com.brainpet.app",
+      "package": "com.mathmews.app",
       "adaptiveIcon": {
         "backgroundColor": "#FFF5EB",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

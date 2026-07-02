@@ -6,8 +6,33 @@ Educational math puzzle game with a virtual cat companion. Built with Expo SDK 5
 
 ```bash
 npm install
+```
+
+### iOS (simulator or device)
+
+The `ios/` folder is generated locally (gitignored). After a fresh clone or if you deleted `ios/`, regenerate the native project, then build:
+
+```bash
+npx expo prebuild --platform ios
 npx expo run:ios
 ```
+
+If the native project is out of date (e.g. app name or plugins changed), regenerate from scratch:
+
+```bash
+npx expo prebuild --platform ios --clean
+npx expo run:ios
+```
+
+Open **Simulator** first (`open -a Simulator`). If `run:ios` fails with a code signing error, add your Apple ID in **Xcode → Settings → Accounts**, then set **Team** on the **MathMews** target in `ios/MathMews.xcworkspace`.
+
+For day-to-day JS changes after the dev build is installed:
+
+```bash
+npx expo start
+```
+
+Press **`i`** to open on the simulator.
 
 For in-app purchases, use an [EAS development build](https://docs.expo.dev/develop/development-builds/introduction/) — IAP does not work in Expo Go.
 
@@ -25,7 +50,7 @@ During development you do **not** need:
 You **do** need a free [RevenueCat](https://www.revenuecat.com/) account and a **Test Store** in the dashboard:
 
 1. RevenueCat → **Apps & providers** → create **Test Store** (if not already present)
-2. Add consumable products matching `constants/iap-products.ts` (e.g. `brainpet_coins_100`)
+2. Add consumable products matching `constants/iap-products.ts` (e.g. `mathmews_coins_100`)
 3. Add products to your **default offering**
 
 When `__DEV__` is true, the app uses the **Test Store API key** from `constants/revenuecat.ts` automatically. Purchases show a RevenueCat test modal (success / fail / cancel) instead of the real App Store or Play billing UI.

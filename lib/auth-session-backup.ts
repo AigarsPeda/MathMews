@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
-const SESSION_BACKUP_KEY = "brainpet.auth.session";
+const SESSION_BACKUP_KEY = "mathmews.auth.session";
 
 type StoredSession = {
   refresh_token: string;

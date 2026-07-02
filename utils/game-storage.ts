@@ -291,7 +291,7 @@ export type LoadedGameSave = {
   awayMsAtSessionStart: number;
 };
 
-const GAME_SAVE_UPDATED_AT_KEY = "@brainpet/game-save-updated-at";
+const GAME_SAVE_UPDATED_AT_KEY = "@mathmews/game-save-updated-at";
 
 export function parseGameSaveFromValue(value: unknown): LoadedGameSave | null {
   if (value === null || value === undefined) return null;

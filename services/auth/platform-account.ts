@@ -16,7 +16,7 @@ export type PlatformAccountResult =
 
 export function getOAuthRedirectUri(): string {
   return makeRedirectUri({
-    scheme: "brainpet",
+    scheme: "mathmews",
     path: "auth/callback",
   });
 }
