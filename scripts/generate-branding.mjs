@@ -23,9 +23,11 @@ const FRAME_SIZE = 32;
 const FRAME_COUNT = 10;
 const BACKGROUND = "#FFF5EB";
 
-function measureHorizontalVisualCenter(data, channels = 4) {
+function measureVisualCenter(data, channels = 4) {
   let minX = FRAME_SIZE;
   let maxX = 0;
+  let minY = FRAME_SIZE;
+  let maxY = 0;
 
   for (let y = 0; y < FRAME_SIZE; y += 1) {
     for (let x = 0; x < FRAME_SIZE; x += 1) {
@@ -33,25 +35,34 @@ function measureHorizontalVisualCenter(data, channels = 4) {
       if (data[index + 3] > 20) {
         minX = Math.min(minX, x);
         maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
       }
     }
   }
 
-  if (maxX < minX) {
-    return FRAME_SIZE / 2;
+  if (maxX < minX || maxY < minY) {
+    const center = (FRAME_SIZE - 1) / 2;
+    return { x: center, y: center };
   }
 
-  return (minX + maxX) / 2;
+  return {
+    x: (minX + maxX) / 2,
+    y: (minY + maxY) / 2,
+  };
 }
 
 const OUTPUTS = {
-  icon: { size: 1024, pad: 0.2 },
-  favicon: { size: 48, pad: 0.1 },
-  androidForeground: { size: 1024, pad: 0.25 },
-  androidMonochrome: { size: 1024, pad: 0.25 },
+  icon: { size: 1024, pad: 0.08, lift: 0.01 },
+  favicon: { size: 48, pad: 0.06, lift: 0.01 },
+  androidForeground: { size: 1024, pad: 0.12, lift: 0.01 },
+  androidMonochrome: { size: 1024, pad: 0.12, lift: 0.01 },
 };
 
-async function frameOnCanvas(frameIndex, { size, pad, background, monochrome }) {
+async function frameOnCanvas(
+  frameIndex,
+  { size, pad, lift = 0, background, monochrome },
+) {
   const inner = Math.round(size * (1 - pad * 2));
   const scale = Math.max(1, Math.floor(inner / FRAME_SIZE));
   const framePx = FRAME_SIZE * scale;
@@ -69,9 +80,11 @@ async function frameOnCanvas(frameIndex, { size, pad, background, monochrome }) 
 
   const { data } = frame;
   const channels = 4;
-  const visualCenterX = measureHorizontalVisualCenter(data, channels);
-  const frameCenterX = (FRAME_SIZE - 1) / 2;
-  const sourceShiftX = frameCenterX - visualCenterX;
+  const visualCenter = measureVisualCenter(data, channels);
+  const frameCenter = (FRAME_SIZE - 1) / 2;
+  const sourceShiftX = frameCenter - visualCenter.x;
+  const sourceShiftY = frameCenter - visualCenter.y;
+  const liftPx = Math.round(size * lift);
 
   const canvas = Buffer.alloc(size * size * 4, 0);
   const bg = background ? parseHexColor(background) : null;
@@ -80,16 +93,13 @@ async function frameOnCanvas(frameIndex, { size, pad, background, monochrome }) 
     for (let x = 0; x < size; x += 1) {
       const canvasIndex = (y * size + x) * 4;
       const offsetX = Math.round((size - framePx) / 2 + sourceShiftX * scale);
-      const offsetY = Math.round((size - framePx) / 2);
+      const offsetY = Math.round(
+        (size - framePx) / 2 + sourceShiftY * scale - liftPx,
+      );
       const localX = x - offsetX;
       const localY = y - offsetY;
 
-      if (
-        localX < 0 ||
-        localY < 0 ||
-        localX >= framePx ||
-        localY >= framePx
-      ) {
+      if (localX < 0 || localY < 0 || localX >= framePx || localY >= framePx) {
         if (background && bg) {
           canvas[canvasIndex] = bg.r;
           canvas[canvasIndex + 1] = bg.g;

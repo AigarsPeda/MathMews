@@ -1,13 +1,25 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PetStage } from "@/components/pet/PetStage";
 import { PuzzleStreakSlot } from "@/components/pet/PuzzleStreakSlot";
-import { BOX_PLAY_COST, BOX_PLAY_HAPPINESS_BOOST, FEED_COST, FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, GameColors, PET_HAPPINESS_BOOST, PUZZLE_STREAK_NOTIFY_MIN } from "@/constants/game";
+import type { CatBedId } from "@/constants/cat-beds";
+import type { CatDecorationId } from "@/constants/cat-decorations";
+import type { CatToyId } from "@/constants/cat-toys";
+import {
+  BOX_PLAY_COST,
+  BOX_PLAY_HAPPINESS_BOOST,
+  FEED_COST,
+  FEED_HAPPINESS_BOOST,
+  FEED_HUNGER_RESTORE,
+  GameColors,
+  PET_HAPPINESS_BOOST,
+  PUZZLE_STREAK_NOTIFY_MIN,
+} from "@/constants/game";
 import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
 import { computePetWisdom } from "@/constants/puzzles";
-import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
-import { shouldPetSleep } from "@/pet-display/engine/derive-mood";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
+import { shouldPetSleep } from "@/pet-display/engine/derive-mood";
+import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
 import type { PetStats } from "@/types/game";
 import {
   boostStat,
@@ -19,9 +31,6 @@ import {
   getContextualSpeechMessage,
   pickPetTapSpeechKey,
 } from "@/utils/pet-speech";
-import type { CatBedId } from "@/constants/cat-beds";
-import type { CatDecorationId } from "@/constants/cat-decorations";
-import type { CatToyId } from "@/constants/cat-toys";
 import {
   updatePlacedDecorationOffset,
   updatePlacedToyOffset,
@@ -33,6 +42,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Image,
   Platform,
   Pressable,
   StyleSheet,
@@ -40,6 +50,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const STORE_ICON = require("@/assets/images/store-icon.png");
 
 function triggerHaptic() {
   if (Platform.OS !== "web") {
@@ -106,12 +118,18 @@ export default function HomeScreen() {
         },
         t,
       ),
-    [baseVideoMood, locale, pet, progress.puzzleStreak, progress.puzzlesSolved, t],
+    [
+      baseVideoMood,
+      locale,
+      pet,
+      progress.puzzleStreak,
+      progress.puzzlesSolved,
+      t,
+    ],
   );
 
   const showPuzzleStreak =
-    progress.puzzleStreak >= PUZZLE_STREAK_NOTIFY_MIN &&
-    actionSpeech === null;
+    progress.puzzleStreak >= PUZZLE_STREAK_NOTIFY_MIN && actionSpeech === null;
 
   const speechMessage = actionSpeech ?? contextualSpeech;
 
@@ -277,7 +295,10 @@ export default function HomeScreen() {
 
       recordInteraction();
       triggerHaptic();
-      const name = t(`store.decorationName.${decorationId}`).replace(/\n/g, " ");
+      const name = t(`store.decorationName.${decorationId}`).replace(
+        /\n/g,
+        " ",
+      );
       showSpeech(t("home.removedFromRoom", { name }));
     },
     [recordInteraction, removeDecorationFromRoom, showSpeech, t],
@@ -367,11 +388,16 @@ export default function HomeScreen() {
           {isCatSpritePet ? (
             <Pressable
               onPress={handleOpenStore}
-              style={styles.headerIconBtn}
+              style={[styles.headerIconBtn, styles.headerStoreBtn]}
               accessibilityRole="button"
               accessibilityLabel={t("home.a11yStore")}
             >
-              <Text style={styles.headerIconEmoji}>🛍️</Text>
+              <Image
+                source={STORE_ICON}
+                style={styles.headerStoreIcon}
+                resizeMode="contain"
+                accessibilityIgnoresInvertColors
+              />
             </Pressable>
           ) : null}
           <View style={styles.headerStats}>
@@ -495,7 +521,9 @@ export default function HomeScreen() {
                 onPress={handlePlayBox}
                 disabled={isCareAnimationPlaying}
                 accessibilityRole="button"
-                accessibilityLabel={t("home.a11yPlayBox", { cost: BOX_PLAY_COST })}
+                accessibilityLabel={t("home.a11yPlayBox", {
+                  cost: BOX_PLAY_COST,
+                })}
                 accessibilityState={{ disabled: isCareAnimationPlaying }}
               >
                 <Text style={styles.actionEmoji}>📦</Text>
@@ -569,8 +597,18 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
   },
+  headerStoreBtn: {
+    minWidth: moderateScale(46),
+    minHeight: moderateScale(46),
+    padding: 0,
+    overflow: "hidden",
+  },
   headerIconEmoji: {
     fontSize: moderateScale(18),
+  },
+  headerStoreIcon: {
+    width: moderateScale(30),
+    height: moderateScale(30),
   },
   stageWrap: {
     flex: 1,
