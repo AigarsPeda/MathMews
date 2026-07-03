@@ -124,5 +124,50 @@
     "explanation": "1/4 nozīmē 1 daļu no 4 vienādām daļām.",
     "topic": "fractions",
     "ageRange": [7, 9]
+  },
+  {
+    "id": "easy-12",
+    "type": "true_false",
+    "difficulty": "easy",
+    "question": "Ātri pārbaudi! Vai tas ir patiesība?",
+    "payload": { "statement": "3 × 4 = 11" },
+    "isTrue": false,
+    "hint": "Pamēģini sareizināt 3 un 4 galvā.",
+    "explanation": "3 × 4 = 12, nevis 11 — tātad tas nav patiesība.",
+    "topic": "multiplication",
+    "ageRange": [7, 9]
+  },
+  {
+    "id": "easy-13",
+    "type": "balance",
+    "difficulty": "easy",
+    "question": "Līdzsvaro svari!",
+    "payload": {
+      "leftDisplay": "7 + ?",
+      "rightValue": 10,
+      "choices": ["2", "3", "4"]
+    },
+    "correctIndex": 1,
+    "hint": "Ko pieskaitīt 7, lai sanāktu 10?",
+    "explanation": "7 + 3 = 10 — abas puses ir vienādas!",
+    "topic": "equality",
+    "ageRange": [6, 8]
+  },
+  {
+    "id": "easy-14",
+    "type": "number_line",
+    "difficulty": "easy",
+    "question": "Lēci skaitļu līnijā!",
+    "payload": {
+      "start": 12,
+      "jump": -5,
+      "min": 0,
+      "max": 24,
+      "correctValue": 7
+    },
+    "hint": "Sāc no 12 un lēci atpakaļ par 5.",
+    "explanation": "12 − 5 = 7 — tu nokļūsti uz 7!",
+    "topic": "subtraction",
+    "ageRange": [6, 8]
   }
 ]

@@ -124,5 +124,50 @@
     "explanation": "1/4 means 1 piece out of 4 equal parts.",
     "topic": "fractions",
     "ageRange": [7, 9]
+  },
+  {
+    "id": "easy-12",
+    "type": "true_false",
+    "difficulty": "easy",
+    "question": "Spot check! Is this true?",
+    "payload": { "statement": "3 × 4 = 11" },
+    "isTrue": false,
+    "hint": "Try multiplying 3 and 4 in your head.",
+    "explanation": "3 × 4 = 12, not 11 — so it is false.",
+    "topic": "multiplication",
+    "ageRange": [7, 9]
+  },
+  {
+    "id": "easy-13",
+    "type": "balance",
+    "difficulty": "easy",
+    "question": "Balance the scale!",
+    "payload": {
+      "leftDisplay": "7 + ?",
+      "rightValue": 10,
+      "choices": ["2", "3", "4"]
+    },
+    "correctIndex": 1,
+    "hint": "What do you add to 7 to get 10?",
+    "explanation": "7 + 3 = 10 — both sides match!",
+    "topic": "equality",
+    "ageRange": [6, 8]
+  },
+  {
+    "id": "easy-14",
+    "type": "number_line",
+    "difficulty": "easy",
+    "question": "Jump on the number line!",
+    "payload": {
+      "start": 12,
+      "jump": -5,
+      "min": 0,
+      "max": 24,
+      "correctValue": 7
+    },
+    "hint": "Start at 12 and jump back 5.",
+    "explanation": "12 − 5 = 7 — you land on 7!",
+    "topic": "subtraction",
+    "ageRange": [6, 8]
   }
 ]

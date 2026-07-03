@@ -109,5 +109,54 @@
     "explanation": "2/6 means 2 slices out of 6 equal parts.",
     "topic": "fractions",
     "ageRange": [8, 10]
+  },
+  {
+    "id": "medium-10",
+    "type": "pair_sum",
+    "difficulty": "medium",
+    "question": "Pick two numbers that make 10!",
+    "payload": {
+      "numbers": [3, 7, 4, 6, 2, 8],
+      "target": 10,
+      "correctIndices": [0, 1]
+    },
+    "hint": "Look for a pair that adds to 10.",
+    "explanation": "3 + 7 = 10 — smart pair!",
+    "topic": "mental_math",
+    "ageRange": [7, 9]
+  },
+  {
+    "id": "medium-11",
+    "type": "fix_mistake",
+    "difficulty": "medium",
+    "question": "Help Minka fix her mistake!",
+    "payload": {
+      "wrongWork": ["15 − 8 = 6"],
+      "choices": [
+        "She subtracted wrong — the answer is 7",
+        "She should add instead",
+        "8 is too big to subtract"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Count back from 15 or use your fingers.",
+    "explanation": "15 − 8 = 7. Minka subtracted one too many.",
+    "topic": "subtraction",
+    "ageRange": [7, 9]
+  },
+  {
+    "id": "medium-12",
+    "type": "estimate",
+    "difficulty": "medium",
+    "question": "About how much is this?",
+    "payload": {
+      "expression": "48 + 52",
+      "choices": ["About 50", "About 100", "About 150"]
+    },
+    "correctIndex": 1,
+    "hint": "Round each number to the nearest ten first.",
+    "explanation": "48 is close to 50 and 52 is close to 50 — together about 100.",
+    "topic": "estimation",
+    "ageRange": [9, 11]
   }
 ]

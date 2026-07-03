@@ -108,5 +108,42 @@
     "explanation": "3/8 nozīmē 3 daļas no 8 vienādām daļām.",
     "topic": "fractions",
     "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-10",
+    "type": "fair_share",
+    "difficulty": "hard",
+    "question": "Sadalīsim gardumus godīgi!",
+    "payload": {
+      "items": 10,
+      "people": 3,
+      "emoji": "🍪",
+      "choices": [
+        "Pa 3 katram, 1 paliek",
+        "Pa 4 katram, nekas nepaliek",
+        "Pa 3 katram, nekas nepaliek"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Dalī 10 ar 3 — cik katram? Vai kaut kas paliek?",
+    "explanation": "10 ÷ 3 = pa 3 katram un 1 cepums paliek pāri.",
+    "topic": "division",
+    "ageRange": [9, 11]
+  },
+  {
+    "id": "hard-11",
+    "type": "fraction_equivalent",
+    "difficulty": "hard",
+    "question": "Kura daļa ir tikpat daudz?",
+    "payload": {
+      "numerator": 1,
+      "denominator": 2,
+      "choices": ["2/4", "1/3", "2/3"]
+    },
+    "correctIndex": 0,
+    "hint": "Tikpat daudz nozīmē tādu pašu daļu no vesela.",
+    "explanation": "1/2 = 2/4 — abas ir puse no vesela.",
+    "topic": "fractions",
+    "ageRange": [9, 11]
   }
 ]

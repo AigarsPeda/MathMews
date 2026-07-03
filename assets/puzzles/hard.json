@@ -108,5 +108,42 @@
     "explanation": "3/8 means 3 slices out of 8 equal parts.",
     "topic": "fractions",
     "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-10",
+    "type": "fair_share",
+    "difficulty": "hard",
+    "question": "Share the treats fairly!",
+    "payload": {
+      "items": 10,
+      "people": 3,
+      "emoji": "🍪",
+      "choices": [
+        "3 each, 1 left over",
+        "4 each, none left",
+        "3 each, none left"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Divide 10 by 3 — how many each? Any left?",
+    "explanation": "10 ÷ 3 = 3 each with 1 cookie left over.",
+    "topic": "division",
+    "ageRange": [9, 11]
+  },
+  {
+    "id": "hard-11",
+    "type": "fraction_equivalent",
+    "difficulty": "hard",
+    "question": "Which fraction is the same amount?",
+    "payload": {
+      "numerator": 1,
+      "denominator": 2,
+      "choices": ["2/4", "1/3", "2/3"]
+    },
+    "correctIndex": 0,
+    "hint": "Same amount means the same part of a whole.",
+    "explanation": "1/2 = 2/4 — both are half of the whole.",
+    "topic": "fractions",
+    "ageRange": [9, 11]
   }
 ]

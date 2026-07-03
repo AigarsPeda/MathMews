@@ -178,6 +178,8 @@ export default function PlayScreen() {
   );
   const [operatorSubmitted, setOperatorSubmitted] = useState(false);
   const [fractionPieces, setFractionPieces] = useState(0);
+  const [numberLineValue, setNumberLineValue] = useState<number | null>(null);
+  const [pairIndices, setPairIndices] = useState<number[]>([]);
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
@@ -191,7 +193,11 @@ export default function PlayScreen() {
     [progress.lives],
   );
   const hasLives = syncedLives.current > 0;
-  const answered = selectedIndex !== null || operatorSubmitted;
+  const answered =
+    selectedIndex !== null ||
+    operatorSubmitted ||
+    numberLineValue !== null ||
+    pairIndices.length === 2;
   const resultMood: PetAnimationState = isCorrect ? "correct" : "sad";
 
   useEffect(() => {
@@ -199,6 +205,8 @@ export default function PlayScreen() {
     setSelectedOperators(createEmptyOperators(puzzle));
     setOperatorSubmitted(false);
     setFractionPieces(0);
+    setNumberLineValue(null);
+    setPairIndices([]);
     setIsCorrect(false);
     setCoinsEarned(0);
     setShowVisualHelp(false);
@@ -366,6 +374,85 @@ export default function PlayScreen() {
     setWallet,
   ]);
 
+  const handleSelectNumberLineValue = useCallback(
+    (value: number) => {
+      if (answered) return;
+      const correct = checkPuzzleAnswer(puzzle, { kind: "value", value });
+      setNumberLineValue(value);
+      applyAnswerResult({
+        correct,
+        coinReward,
+        happinessBoost,
+        isReplay,
+        recordInteraction,
+        setCoinsEarned,
+        setWallet,
+        setProgress,
+        setPet,
+        setIsCorrect,
+      });
+    },
+    [
+      answered,
+      coinReward,
+      happinessBoost,
+      isReplay,
+      puzzle,
+      recordInteraction,
+      setPet,
+      setProgress,
+      setWallet,
+    ],
+  );
+
+  const handleTogglePairIndex = useCallback(
+    (index: number) => {
+      if (answered) return;
+
+      let next: number[];
+      if (pairIndices.includes(index)) {
+        next = pairIndices.filter((i) => i !== index);
+      } else if (pairIndices.length >= 2) {
+        next = [index];
+      } else {
+        next = [...pairIndices, index];
+      }
+
+      setPairIndices(next);
+
+      if (next.length === 2) {
+        const correct = checkPuzzleAnswer(puzzle, {
+          kind: "pair",
+          indices: [next[0], next[1]],
+        });
+        applyAnswerResult({
+          correct,
+          coinReward,
+          happinessBoost,
+          isReplay,
+          recordInteraction,
+          setCoinsEarned,
+          setWallet,
+          setProgress,
+          setPet,
+          setIsCorrect,
+        });
+      }
+    },
+    [
+      answered,
+      coinReward,
+      happinessBoost,
+      isReplay,
+      pairIndices,
+      puzzle,
+      recordInteraction,
+      setPet,
+      setProgress,
+      setWallet,
+    ],
+  );
+
   const handleContinue = useCallback(() => {
     recordInteraction();
     if (isCorrect && isReplay) {
@@ -401,6 +488,8 @@ export default function PlayScreen() {
       setSelectedOperators(createEmptyOperators(puzzle));
       setOperatorSubmitted(false);
       setFractionPieces(0);
+      setNumberLineValue(null);
+      setPairIndices([]);
       setIsCorrect(false);
       setCoinsEarned(0);
       return;
@@ -572,6 +661,8 @@ export default function PlayScreen() {
             selectedIndex={selectedIndex}
             selectedOperators={selectedOperators}
             fractionPieces={fractionPieces}
+            numberLineValue={numberLineValue}
+            pairIndices={pairIndices}
             answered={answered}
             isCorrect={isCorrect}
             onSelectChoice={handleChoice}
@@ -579,6 +670,8 @@ export default function PlayScreen() {
             onCheckOperators={handleCheckOperators}
             onChangeFractionPieces={handleChangeFractionPieces}
             onCheckFraction={handleCheckFraction}
+            onSelectNumberLineValue={handleSelectNumberLineValue}
+            onTogglePairIndex={handleTogglePairIndex}
           />
         </ScrollView>
 

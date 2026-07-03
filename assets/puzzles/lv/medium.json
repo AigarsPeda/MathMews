@@ -109,5 +109,54 @@
     "explanation": "2/6 nozīmē 2 daļas no 6 vienādām daļām.",
     "topic": "fractions",
     "ageRange": [8, 10]
+  },
+  {
+    "id": "medium-10",
+    "type": "pair_sum",
+    "difficulty": "medium",
+    "question": "Izvēlies divus skaitļus, kas dod 10!",
+    "payload": {
+      "numbers": [3, 7, 4, 6, 2, 8],
+      "target": 10,
+      "correctIndices": [0, 1]
+    },
+    "hint": "Meklē pāri, kas saskaitot dod 10.",
+    "explanation": "3 + 7 = 10 — gudrs pāris!",
+    "topic": "mental_math",
+    "ageRange": [7, 9]
+  },
+  {
+    "id": "medium-11",
+    "type": "fix_mistake",
+    "difficulty": "medium",
+    "question": "Palīdzi Minkai labot kļūdu!",
+    "payload": {
+      "wrongWork": ["15 − 8 = 6"],
+      "choices": [
+        "Viņa atņēma nepareizi — atbilde ir 7",
+        "Viņai vajadzēja saskaitīt",
+        "8 ir par lielu, lai atņemtu"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Skaiti atpakaļ no 15 vai izmanto pirkstus.",
+    "explanation": "15 − 8 = 7. Minka atņēma par vienu par daudz.",
+    "topic": "subtraction",
+    "ageRange": [7, 9]
+  },
+  {
+    "id": "medium-12",
+    "type": "estimate",
+    "difficulty": "medium",
+    "question": "Cik aptuveni tas ir?",
+    "payload": {
+      "expression": "48 + 52",
+      "choices": ["Aptuveni 50", "Aptuveni 100", "Aptuveni 150"]
+    },
+    "correctIndex": 1,
+    "hint": "Vispirms noapaļo katru skaitli līdz tuvākajam desmitniekam.",
+    "explanation": "48 ir tuvu 50 un 52 ir tuvu 50 — kopā aptuveni 100.",
+    "topic": "estimation",
+    "ageRange": [9, 11]
   }
 ]
