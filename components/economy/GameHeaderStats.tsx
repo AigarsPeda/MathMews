@@ -5,6 +5,7 @@ import { CoinCounter } from "@/components/economy/CoinCounter";
 import { LivesCounter } from "@/components/economy/LivesCounter";
 import { useGame } from "@/contexts/GameProvider";
 import { useIAP } from "@/contexts/IAPProvider";
+import { HEADER_CHIP_SIZE } from "@/constants/game";
 import type { LivesState } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
@@ -69,7 +70,12 @@ export function GameHeaderStats({
   return (
     <View style={styles.row}>
       <LivesCounter lives={lives} compact onPress={handleOpenBuySheet} />
-      <CoinCounter coins={coins} streak={streak} onPress={handleOpenCoinSheet} />
+      <CoinCounter
+        coins={coins}
+        streak={streak}
+        compact
+        onPress={handleOpenCoinSheet}
+      />
       <BuyLifeSheet
         visible={showBuySheet}
         lives={lives}
@@ -95,5 +101,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: moderateScale(8),
+    height: moderateScale(HEADER_CHIP_SIZE),
   },
 });

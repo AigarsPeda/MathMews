@@ -1,4 +1,5 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
+import { HeaderChip } from "@/components/home/HeaderChip";
 import { PetStage } from "@/components/pet/PetStage";
 import { PuzzleStreakSlot } from "@/components/pet/PuzzleStreakSlot";
 import type { CatBedId } from "@/constants/cat-beds";
@@ -11,6 +12,7 @@ import {
   FEED_HAPPINESS_BOOST,
   FEED_HUNGER_RESTORE,
   GameColors,
+  HEADER_CHIP_SIZE,
   PET_HAPPINESS_BOOST,
   PUZZLE_STREAK_NOTIFY_MIN,
 } from "@/constants/game";
@@ -386,10 +388,8 @@ export default function HomeScreen() {
       <View style={styles.screen}>
         <View style={styles.header}>
           {isCatSpritePet ? (
-            <Pressable
+            <HeaderChip
               onPress={handleOpenStore}
-              style={[styles.headerIconBtn, styles.headerStoreBtn]}
-              accessibilityRole="button"
               accessibilityLabel={t("home.a11yStore")}
             >
               <Image
@@ -398,7 +398,7 @@ export default function HomeScreen() {
                 resizeMode="contain"
                 accessibilityIgnoresInvertColors
               />
-            </Pressable>
+            </HeaderChip>
           ) : null}
           <View style={styles.headerStats}>
             <GameHeaderStats
@@ -407,14 +407,12 @@ export default function HomeScreen() {
               lives={progress.lives}
             />
           </View>
-          <Pressable
+          <HeaderChip
             onPress={handleOpenSettings}
-            style={styles.headerIconBtn}
-            accessibilityRole="button"
             accessibilityLabel={t("home.a11ySettings")}
           >
             <Text style={styles.headerIconEmoji}>⚙️</Text>
-          </Pressable>
+          </HeaderChip>
         </View>
 
         <View style={styles.middle}>
@@ -587,28 +585,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
   },
-  headerIconBtn: {
-    minWidth: moderateScale(40),
-    minHeight: moderateScale(40),
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: moderateScale(12),
-    backgroundColor: GameColors.card,
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-  },
-  headerStoreBtn: {
-    minWidth: moderateScale(46),
-    minHeight: moderateScale(46),
-    padding: 0,
-    overflow: "hidden",
-  },
   headerIconEmoji: {
     fontSize: moderateScale(18),
   },
   headerStoreIcon: {
-    width: moderateScale(30),
-    height: moderateScale(30),
+    width: moderateScale(HEADER_CHIP_SIZE),
+    height: moderateScale(HEADER_CHIP_SIZE),
   },
   stageWrap: {
     flex: 1,

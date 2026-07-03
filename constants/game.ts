@@ -25,6 +25,9 @@ export const GameColors = {
   petVideoBg: "#FFFFFF",
 } as const;
 
+/** Home header control height (store, lives, coins, settings). */
+export const HEADER_CHIP_SIZE = 38;
+
 export const DEFAULT_PET = {
   type: "cat" as const,
   name: "Whiskers",

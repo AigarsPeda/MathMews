@@ -1,38 +1,60 @@
+import { HeaderChip } from "@/components/home/HeaderChip";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Pressable, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 type CoinCounterProps = {
   coins: number;
   streak?: number;
+  compact?: boolean;
   onPress?: () => void;
 };
 
-export function CoinCounter({ coins, streak = 0, onPress }: CoinCounterProps) {
+export function CoinCounter({
+  coins,
+  streak = 0,
+  compact = false,
+  onPress,
+}: CoinCounterProps) {
   const { t } = useTranslation();
 
   const content = (
     <>
-      <Text style={styles.coinEmoji}>🪙</Text>
-      <Text style={styles.coinValue}>{coins}</Text>
+      <Text style={[styles.coinEmoji, compact && styles.compactText]}>
+        🪙
+      </Text>
+      <Text style={[styles.coinValue, compact && styles.compactText]}>
+        {coins}
+      </Text>
     </>
+  );
+
+  const coinChip = compact ? (
+    <HeaderChip
+      shape="pill"
+      borderColor={GameColors.coin}
+      onPress={onPress}
+      accessibilityLabel={t("economy.a11yCoins", { coins })}
+    >
+      {content}
+    </HeaderChip>
+  ) : onPress ? (
+    <HeaderChip
+      shape="pill"
+      borderColor={GameColors.coin}
+      onPress={onPress}
+      accessibilityLabel={t("economy.a11yCoins", { coins })}
+    >
+      {content}
+    </HeaderChip>
+  ) : (
+    <View style={styles.pill}>{content}</View>
   );
 
   return (
     <View style={styles.row}>
-      {onPress ? (
-        <Pressable
-          onPress={onPress}
-          style={({ pressed }) => [styles.pill, pressed && styles.pillPressed]}
-          accessibilityRole="button"
-          accessibilityLabel={t("economy.a11yCoins", { coins })}
-        >
-          {content}
-        </Pressable>
-      ) : (
-        <View style={styles.pill}>{content}</View>
-      )}
+      {coinChip}
       {streak > 0 && (
         <View style={[styles.pill, styles.streakPill]}>
           <Text style={styles.streakEmoji}>🔥</Text>
@@ -62,10 +84,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: GameColors.coin,
   },
-  pillPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.98 }],
-  },
   coinEmoji: {
     fontSize: moderateScale(18),
   },
@@ -74,6 +92,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: GameColors.coinText,
     fontVariant: ["tabular-nums"],
+  },
+  compactText: {
+    fontSize: moderateScale(16),
   },
   streakPill: {
     borderColor: GameColors.primary,

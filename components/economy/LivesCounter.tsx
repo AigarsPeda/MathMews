@@ -1,4 +1,5 @@
 import { LifeRegenClock } from "@/components/economy/LifeRegenClock";
+import { HeaderChip } from "@/components/home/HeaderChip";
 import { GameColors, LIFE_BUY_COST, MAX_LIVES } from "@/constants/game";
 import type { LivesState } from "@/types/game";
 import { applyLifeRegen, msUntilNextLife } from "@/utils/lives";
@@ -47,15 +48,27 @@ export function LivesCounter({
     </>
   );
 
+  if (compact) {
+    return (
+      <HeaderChip
+        shape="pill"
+        borderColor={GameColors.primary}
+        onPress={onPress}
+        accessibilityLabel={t("lives.a11yLives", {
+          current: synced.current,
+          max: MAX_LIVES,
+        })}
+      >
+        {content}
+      </HeaderChip>
+    );
+  }
+
   if (onPress) {
     return (
       <Pressable
         onPress={onPress}
-        style={({ pressed }) => [
-          styles.pill,
-          compact && styles.pillCompact,
-          pressed && styles.pillPressed,
-        ]}
+        style={({ pressed }) => [styles.pill, pressed && styles.pillPressed]}
         accessibilityRole="button"
         accessibilityLabel={t("lives.a11yLives", {
           current: synced.current,
@@ -67,9 +80,7 @@ export function LivesCounter({
     );
   }
 
-  return (
-    <View style={[styles.pill, compact && styles.pillCompact]}>{content}</View>
-  );
+  return <View style={styles.pill}>{content}</View>;
 }
 
 type NoLivesPanelProps = {
@@ -149,10 +160,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(12),
     borderWidth: 2,
     borderColor: GameColors.primary,
-  },
-  pillCompact: {
-    paddingVertical: moderateScale(6),
-    paddingHorizontal: moderateScale(10),
   },
   pillPressed: {
     opacity: 0.85,
