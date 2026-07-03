@@ -64,5 +64,38 @@
     "explanation": "5 ÷ 3 = 1 with 2 left over.",
     "topic": "logic",
     "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-07",
+    "type": "target_build",
+    "difficulty": "hard",
+    "question": "Use +, −, ×, and ÷ to make the target!",
+    "payload": {
+      "numbers": [12, 6, 3, 2],
+      "target": 8,
+      "solution": ["÷", "+", "×"]
+    },
+    "hint": "Do the multiplication before the addition.",
+    "explanation": "12 ÷ 6 + 3 × 2 = 2 + 6 = 8.",
+    "topic": "operations",
+    "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-08",
+    "type": "operation_path",
+    "difficulty": "hard",
+    "question": "Build the path to 20!",
+    "payload": {
+      "start": 8,
+      "target": 20,
+      "steps": [
+        { "operand": 2, "operator": "×" },
+        { "operand": 4, "operator": "+" }
+      ]
+    },
+    "hint": "Double first, then add a little more.",
+    "explanation": "8 × 2 = 16, 16 + 4 = 20.",
+    "topic": "operations",
+    "ageRange": [10, 12]
   }
 ]

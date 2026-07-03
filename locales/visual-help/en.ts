@@ -124,4 +124,38 @@ export const visualHelpEn = {
     s1: "Each friend gets 1 apple.",
     s2: "How many each? Any apples left over?",
   },
+  easy09: {
+    s0: "Add the numbers: 0 through 4.",
+    s1: "Adding gives 10 — the total grows!",
+    s2: "Multiplying with 0 always gives 0.",
+    s3: "10 is bigger than 0 — the sum wins!",
+  },
+  easy10: {
+    s0: "Two similar multiplications with 262.",
+    s1: "Same number twice — pull out 262!",
+    s2: "262 × 1 = ? — find the shortcut!",
+  },
+  medium07: {
+    s0: "Start at 16. Can you reach 32?",
+    s1: "Divide by 4 first.",
+    s2: "Add 4 to get 8.",
+    s3: "Multiply by 4 to hit the goal!",
+  },
+  medium08: {
+    s0: "Add every number from 0 to 9.",
+    s1: "The sum is 45.",
+    s2: "Multiply them — one zero makes it 0!",
+    s3: "45 beats 0 — the sum is bigger!",
+  },
+  hard07: {
+    s0: "Use 12, 6, 3, and 2 to make 8.",
+    s1: "Multiply before you add!",
+    s2: "Divide 12 by 6 first.",
+    s3: "Add 2 and 6 — order matters!",
+  },
+  hard08: {
+    s0: "Start at 8. Reach 20!",
+    s1: "Double 8 to get 16.",
+    s2: "Add 4 more to finish!",
+  },
 };

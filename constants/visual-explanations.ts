@@ -647,4 +647,143 @@ const VISUAL_EXPLANATIONS: Record<string, VisualExplanation> = {
       }),
     ]),
   },
+  "easy-09": {
+    puzzleId: "easy-09",
+    keyframes: buildKeyframes([
+      kf("easy09", {
+        kind: "sequence",
+        values: [0, 1, 2, 3, 4],
+        jumpLabel: "+",
+      }),
+      kf("easy09", {
+        kind: "equation",
+        lines: ["0 + 1 + 2 + 3 + 4 = 10", "Adding makes the total grow!"],
+        highlightLine: 0,
+      }),
+      kf("easy09", {
+        kind: "equation",
+        lines: ["0 × 1 × 2 × 3 × 4 = 0", "Multiplying with 0 stays at 0!"],
+        highlightLine: 0,
+      }),
+      kf("easy09", {
+        kind: "compare",
+        left: { emoji: "➕", count: 10, label: "sum" },
+        right: { emoji: "✖️", count: 0, label: "product" },
+        operator: "+",
+      }),
+    ]),
+  },
+  "easy-10": {
+    puzzleId: "easy-10",
+    keyframes: buildKeyframes([
+      kf("easy10", {
+        kind: "equation",
+        lines: ["262 × 24", "262 × 23"],
+      }),
+      kf("easy10", {
+        kind: "equation",
+        lines: ["Same number: 262!", "262 × (24 − 23)"],
+        highlightLine: 1,
+      }),
+      kf("easy10", {
+        kind: "equation",
+        lines: ["262 × 1 = ?", "What's the shortcut?"],
+        highlightLine: 0,
+      }),
+    ]),
+  },
+  "medium-07": {
+    puzzleId: "medium-07",
+    keyframes: buildKeyframes([
+      kf("medium07", {
+        kind: "equation",
+        lines: ["Start: 16", "Goal: 32 🎯"],
+      }),
+      kf("medium07", {
+        kind: "equation",
+        lines: ["16 ÷ 4 = 4", "Split into a smaller number"],
+        highlightLine: 0,
+      }),
+      kf("medium07", {
+        kind: "equation",
+        lines: ["4 + 4 = 8", "Add the next step"],
+        highlightLine: 0,
+      }),
+      kf("medium07", {
+        kind: "equation",
+        lines: ["8 × 4 = 32", "Multiply to reach the goal!"],
+        highlightLine: 0,
+      }),
+    ]),
+  },
+  "medium-08": {
+    puzzleId: "medium-08",
+    keyframes: buildKeyframes([
+      kf("medium08", {
+        kind: "sequence",
+        values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        jumpLabel: "+",
+      }),
+      kf("medium08", {
+        kind: "equation",
+        lines: ["0 + 1 + … + 9 = 45", "Adding all numbers gives 45"],
+        highlightLine: 0,
+      }),
+      kf("medium08", {
+        kind: "equation",
+        lines: ["0 × 1 × … × 9 = 0", "One zero makes the product zero!"],
+        highlightLine: 0,
+      }),
+      kf("medium08", {
+        kind: "compare",
+        left: { emoji: "➕", count: 45, label: "sum" },
+        right: { emoji: "✖️", count: 0, label: "product" },
+        operator: "+",
+      }),
+    ]),
+  },
+  "hard-07": {
+    puzzleId: "hard-07",
+    keyframes: buildKeyframes([
+      kf("hard07", {
+        kind: "equation",
+        lines: ["12   6   3   2", "Make 8!"],
+        highlightLine: 0,
+      }),
+      kf("hard07", {
+        kind: "equation",
+        lines: ["Do × first!", "3 × 2 = 6"],
+        highlightLine: 1,
+      }),
+      kf("hard07", {
+        kind: "equation",
+        lines: ["12 ÷ 6 = 2", "Divide first on the left"],
+        highlightLine: 0,
+      }),
+      kf("hard07", {
+        kind: "equation",
+        lines: ["2 + 6 = 8", "Add last — order matters!"],
+        highlightLine: 0,
+      }),
+    ]),
+  },
+  "hard-08": {
+    puzzleId: "hard-08",
+    keyframes: buildKeyframes([
+      kf("hard08", {
+        kind: "equation",
+        lines: ["Start: 8", "Goal: 20 🎯"],
+      }),
+      kf("hard08", {
+        kind: "equation",
+        lines: ["8 × 2 = 16", "Double the start!"],
+        highlightLine: 0,
+      }),
+      kf("hard08", {
+        kind: "equation",
+        lines: ["16 + 4 = 20", "Add a little more to finish!"],
+        highlightLine: 0,
+      }),
+    ]),
+  },
 };

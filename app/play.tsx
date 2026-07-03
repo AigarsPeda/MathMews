@@ -1,7 +1,7 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { NoLivesPanel } from "@/components/economy/LivesCounter";
-import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
+import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import {
@@ -25,9 +25,10 @@ import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
 import type { PetAnimationState } from "@/types/game";
-import type { PuzzleDifficulty } from "@/types/puzzle";
+import type { MathOperator, Puzzle, PuzzleDifficulty } from "@/types/puzzle";
 import { applyLifeRegen, canSpendLife, loseLife } from "@/utils/lives";
 import { clampStat, withPetCareUpdate } from "@/utils/pet-care";
+import { checkPuzzleAnswer, getOperatorSlotCount } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
@@ -50,6 +51,70 @@ function triggerHaptic(
   if (Platform.OS !== "web") {
     Haptics.impactAsync(style);
   }
+}
+
+function createEmptyOperators(puzzle: Puzzle): (MathOperator | null)[] {
+  const count = getOperatorSlotCount(puzzle);
+  return count > 0 ? Array.from({ length: count }, () => null) : [];
+}
+
+function applyAnswerResult({
+  correct,
+  coinReward,
+  happinessBoost,
+  isReplay,
+  recordInteraction,
+  setCoinsEarned,
+  setWallet,
+  setProgress,
+  setPet,
+  setIsCorrect,
+}: {
+  correct: boolean;
+  coinReward: number;
+  happinessBoost: number;
+  isReplay: boolean;
+  recordInteraction: () => void;
+  setCoinsEarned: (value: number) => void;
+  setWallet: ReturnType<typeof useGame>["setWallet"];
+  setProgress: ReturnType<typeof useGame>["setProgress"];
+  setPet: ReturnType<typeof useGame>["setPet"];
+  setIsCorrect: (value: boolean) => void;
+}) {
+  recordInteraction();
+  setIsCorrect(correct);
+
+  if (correct) {
+    triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
+    setCoinsEarned(coinReward);
+    setWallet((current) => ({ coins: current.coins + coinReward }));
+    setProgress((current) => ({
+      ...current,
+      puzzleStreak: isReplay ? current.puzzleStreak : current.puzzleStreak + 1,
+    }));
+    setPet((current) =>
+      withPetCareUpdate(current, (stats) => ({
+        ...stats,
+        hunger: clampStat(stats.hunger - PUZZLE_HUNGER_COST),
+        happiness: clampStat(stats.happiness + happinessBoost),
+      })),
+    );
+    return;
+  }
+
+  triggerHaptic();
+  setProgress((current) => ({
+    ...current,
+    lives: loseLife(current.lives),
+    puzzleStreak: isReplay ? current.puzzleStreak : 0,
+  }));
+  setPet((current) =>
+    withPetCareUpdate(current, (stats) => ({
+      ...stats,
+      hunger: clampStat(stats.hunger - PUZZLE_HUNGER_COST),
+      happiness: clampStat(stats.happiness - PUZZLE_WRONG_HAPPINESS_PENALTY),
+    })),
+  );
 }
 
 export default function PlayScreen() {
@@ -108,6 +173,10 @@ export default function PlayScreen() {
     : PUZZLE_HAPPINESS_BOOST;
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedOperators, setSelectedOperators] = useState<(MathOperator | null)[]>(
+    () => createEmptyOperators(puzzle),
+  );
+  const [operatorSubmitted, setOperatorSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
@@ -121,15 +190,17 @@ export default function PlayScreen() {
     [progress.lives],
   );
   const hasLives = syncedLives.current > 0;
-  const answered = selectedIndex !== null;
+  const answered = selectedIndex !== null || operatorSubmitted;
   const resultMood: PetAnimationState = isCorrect ? "correct" : "sad";
 
   useEffect(() => {
     setSelectedIndex(null);
+    setSelectedOperators(createEmptyOperators(puzzle));
+    setOperatorSubmitted(false);
     setIsCorrect(false);
     setCoinsEarned(0);
     setShowVisualHelp(false);
-  }, [difficulty, sessionIndex]);
+  }, [difficulty, sessionIndex, puzzle]);
 
   const handleOpenVisualHelp = useCallback(() => {
     if (answered || !hasVisualHelp) return;
@@ -175,59 +246,82 @@ export default function PlayScreen() {
   const handleChoice = useCallback(
     (index: number) => {
       if (answered) return;
-      recordInteraction();
-
-      const correct = index === puzzle.correctIndex;
+      const correct = checkPuzzleAnswer(puzzle, { kind: "choice", index });
       setSelectedIndex(index);
-      setIsCorrect(correct);
-
-      if (correct) {
-        triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
-        setCoinsEarned(coinReward);
-        setWallet((current) => ({ coins: current.coins + coinReward }));
-        setProgress((current) => ({
-          ...current,
-          puzzleStreak: isReplay
-            ? current.puzzleStreak
-            : current.puzzleStreak + 1,
-        }));
-        setPet((current) =>
-          withPetCareUpdate(current, (stats) => ({
-            ...stats,
-            hunger: clampStat(stats.hunger - PUZZLE_HUNGER_COST),
-            happiness: clampStat(stats.happiness + happinessBoost),
-          })),
-        );
-      } else {
-        triggerHaptic();
-        setProgress((current) => ({
-          ...current,
-          lives: loseLife(current.lives),
-          puzzleStreak: isReplay ? current.puzzleStreak : 0,
-        }));
-        setPet((current) =>
-          withPetCareUpdate(current, (stats) => ({
-            ...stats,
-            hunger: clampStat(stats.hunger - PUZZLE_HUNGER_COST),
-            happiness: clampStat(
-              stats.happiness - PUZZLE_WRONG_HAPPINESS_PENALTY,
-            ),
-          })),
-        );
-      }
+      applyAnswerResult({
+        correct,
+        coinReward,
+        happinessBoost,
+        isReplay,
+        recordInteraction,
+        setCoinsEarned,
+        setWallet,
+        setProgress,
+        setPet,
+        setIsCorrect,
+      });
     },
     [
       answered,
       coinReward,
       happinessBoost,
       isReplay,
-      puzzle.correctIndex,
+      puzzle,
       recordInteraction,
       setPet,
       setProgress,
       setWallet,
     ],
   );
+
+  const handleSelectOperator = useCallback(
+    (stepIndex: number, operator: MathOperator) => {
+      if (answered) return;
+      setSelectedOperators((current) => {
+        const next = [...current];
+        next[stepIndex] = operator;
+        return next;
+      });
+    },
+    [answered],
+  );
+
+  const handleCheckOperators = useCallback(() => {
+    if (answered) return;
+    const operators = selectedOperators.filter(
+      (operator): operator is MathOperator => operator !== null,
+    );
+    if (operators.length !== selectedOperators.length) return;
+
+    const correct = checkPuzzleAnswer(puzzle, {
+      kind: "operators",
+      operators,
+    });
+    setOperatorSubmitted(true);
+    applyAnswerResult({
+      correct,
+      coinReward,
+      happinessBoost,
+      isReplay,
+      recordInteraction,
+      setCoinsEarned,
+      setWallet,
+      setProgress,
+      setPet,
+      setIsCorrect,
+    });
+  }, [
+    answered,
+    coinReward,
+    happinessBoost,
+    isReplay,
+    puzzle,
+    recordInteraction,
+    selectedOperators,
+    setPet,
+    setProgress,
+    setWallet,
+  ]);
 
   const handleContinue = useCallback(() => {
     recordInteraction();
@@ -261,6 +355,8 @@ export default function PlayScreen() {
         return;
       }
       setSelectedIndex(null);
+      setSelectedOperators(createEmptyOperators(puzzle));
+      setOperatorSubmitted(false);
       setIsCorrect(false);
       setCoinsEarned(0);
       return;
@@ -427,29 +523,16 @@ export default function PlayScreen() {
             </Pressable>
           ) : null}
 
-          <View style={styles.choices}>
-            {puzzle.choices.map((choice, index) => {
-              let result: "correct" | "wrong" | null = null;
-              if (answered) {
-                if (isCorrect && index === puzzle.correctIndex) {
-                  result = "correct";
-                } else if (!isCorrect && index === selectedIndex) {
-                  result = "wrong";
-                }
-              }
-
-              return (
-                <ChoiceButton
-                  key={`${puzzle.id}-${choice}`}
-                  label={choice}
-                  selected={selectedIndex === index}
-                  disabled={answered}
-                  result={result}
-                  onPress={() => handleChoice(index)}
-                />
-              );
-            })}
-          </View>
+          <PuzzleTaskView
+            puzzle={puzzle}
+            selectedIndex={selectedIndex}
+            selectedOperators={selectedOperators}
+            answered={answered}
+            isCorrect={isCorrect}
+            onSelectChoice={handleChoice}
+            onSelectOperator={handleSelectOperator}
+            onCheckOperators={handleCheckOperators}
+          />
         </ScrollView>
 
         <ResultOverlay
@@ -549,9 +632,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     gap: moderateScale(16),
     paddingBottom: moderateScale(24),
-  },
-  choices: {
-    gap: moderateScale(12),
   },
   visualHelpBtn: {
     backgroundColor: "#F3EEFF",

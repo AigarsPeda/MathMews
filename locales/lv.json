@@ -288,7 +288,25 @@
     "subtraction": "Atņemšana",
     "multiplication": "Reizināšana",
     "logic": "Loģika",
-    "patterns": "Secības"
+    "patterns": "Secības",
+    "comparison": "Salīdzini",
+    "mental_math": "Skaitļu detektīvs",
+    "operations": "Darbības"
+  },
+  "puzzleTypes": {
+    "multiple_choice": "Stāsts",
+    "compare": "Salīdzini",
+    "operation_path": "Darbību ceļš",
+    "target_build": "Uztaisi skaitli",
+    "goal": "Mērķis",
+    "make": "Uztaisi",
+    "checkAnswer": "Pārbaudīt",
+    "pickOperator": "Izvēlies {{operator}}",
+    "pickForStep": "Izvēlies darbību solim {{step}}",
+    "currentTotal": "Tavs rezultāts līdz šim: {{value}}",
+    "tryDifferentOps": "Pamēģini citas darbības!",
+    "tapToChangeOp": "Pieskaries laukumam vai izmanto pogas",
+    "yourResult": "Tavs rezultāts: {{value}}"
   },
   "puzzlePath": {
     "title": "Uzdevumu taka",

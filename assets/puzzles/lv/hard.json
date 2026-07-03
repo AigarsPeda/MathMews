@@ -64,5 +64,38 @@
     "explanation": "5 ÷ 3 = 1 ar atlikumu 2.",
     "topic": "logic",
     "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-07",
+    "type": "target_build",
+    "difficulty": "hard",
+    "question": "Izmanto +, −, × un ÷, lai iegūtu mērķa skaitli!",
+    "payload": {
+      "numbers": [12, 6, 3, 2],
+      "target": 8,
+      "solution": ["÷", "+", "×"]
+    },
+    "hint": "Vispirms reizini, tad saskaiti.",
+    "explanation": "12 ÷ 6 + 3 × 2 = 2 + 6 = 8.",
+    "topic": "operations",
+    "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-08",
+    "type": "operation_path",
+    "difficulty": "hard",
+    "question": "Uztaisi ceļu līdz 20!",
+    "payload": {
+      "start": 8,
+      "target": 20,
+      "steps": [
+        { "operand": 2, "operator": "×" },
+        { "operand": 4, "operator": "+" }
+      ]
+    },
+    "hint": "Vispirms dubulto, tad pieskaiti.",
+    "explanation": "8 × 2 = 16, 16 + 4 = 20.",
+    "topic": "operations",
+    "ageRange": [10, 12]
   }
 ]

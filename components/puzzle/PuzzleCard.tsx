@@ -1,5 +1,6 @@
 import { GameColors } from "@/constants/game";
 import type { Puzzle } from "@/types/puzzle";
+import { getPuzzleType } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
@@ -16,14 +17,24 @@ export function PuzzleCard({
   coinReward,
 }: PuzzleCardProps) {
   const { t } = useTranslation();
+  const puzzleType = getPuzzleType(puzzle);
 
   return (
     <View style={styles.card}>
       <View style={styles.badgeRow}>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>
-            {t("play.hardNut", { number: puzzleNumber })}
-          </Text>
+        <View style={styles.badgeGroup}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              {t("play.hardNut", { number: puzzleNumber })}
+            </Text>
+          </View>
+          {puzzleType !== "multiple_choice" ? (
+            <View style={styles.typeBadge}>
+              <Text style={styles.typeBadgeText}>
+                {t(`puzzleTypes.${puzzleType}`)}
+              </Text>
+            </View>
+          ) : null}
         </View>
         {coinReward !== undefined ? (
           <View style={styles.coinBadge}>
@@ -51,12 +62,33 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: moderateScale(8),
   },
+  badgeGroup: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: moderateScale(6),
+  },
   badge: {
     alignSelf: "flex-start",
     backgroundColor: GameColors.background,
     borderRadius: moderateScale(12),
     paddingVertical: moderateScale(4),
     paddingHorizontal: moderateScale(10),
+  },
+  typeBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "#F3EEFF",
+    borderRadius: moderateScale(12),
+    paddingVertical: moderateScale(4),
+    paddingHorizontal: moderateScale(10),
+    borderWidth: 1,
+    borderColor: "#C9B6FF",
+  },
+  typeBadgeText: {
+    fontSize: moderateScale(12),
+    fontWeight: "700",
+    color: "#6B4FCF",
   },
   badgeText: {
     fontSize: moderateScale(14),

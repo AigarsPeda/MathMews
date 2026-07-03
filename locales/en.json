@@ -286,7 +286,25 @@
     "subtraction": "Subtraction",
     "multiplication": "Multiplication",
     "logic": "Logic",
-    "patterns": "Patterns"
+    "patterns": "Patterns",
+    "comparison": "Compare",
+    "mental_math": "Number detective",
+    "operations": "Operations"
+  },
+  "puzzleTypes": {
+    "multiple_choice": "Story",
+    "compare": "Compare",
+    "operation_path": "Operation path",
+    "target_build": "Make the number",
+    "goal": "Goal",
+    "make": "Make",
+    "checkAnswer": "Check answer",
+    "pickOperator": "Pick {{operator}}",
+    "pickForStep": "Pick an operator for step {{step}}",
+    "currentTotal": "Your path so far: {{value}}",
+    "tryDifferentOps": "Try different operators!",
+    "tapToChangeOp": "Tap a slot or use the buttons below",
+    "yourResult": "Your result: {{value}}"
   },
   "puzzlePath": {
     "title": "Puzzle path",

@@ -124,4 +124,38 @@ export const visualHelpLv = {
     s1: "Katrs saņem 1 ābolu.",
     s2: "Cik katram? Vai kaut kas paliek pār?",
   },
+  easy09: {
+    s0: "Saskaiti skaitļus no 0 līdz 4.",
+    s1: "Saskaitīšana dod 10 — summa aug!",
+    s2: "Reizināšana ar 0 vienmēr dod 0.",
+    s3: "10 ir lielāks par 0 — uzvar summa!",
+  },
+  easy10: {
+    s0: "Divas līdzīgas reizināšanas ar 262.",
+    s1: "Tas pats skaitlis divreiz — iznes 262!",
+    s2: "262 × 1 = ? — atrodi īsāko ceļu!",
+  },
+  medium07: {
+    s0: "Sāc no 16. Vai vari sasniegt 32?",
+    s1: "Vispirms dali ar 4.",
+    s2: "Pieskaiti 4 — sanāk 8.",
+    s3: "Reizini ar 4, lai sasniegtu mērķi!",
+  },
+  medium08: {
+    s0: "Saskaiti visus skaitļus no 0 līdz 9.",
+    s1: "Summa ir 45.",
+    s2: "Reizini tos — viens nulle dod 0!",
+    s3: "45 ir lielāks par 0 — uzvar summa!",
+  },
+  hard07: {
+    s0: "Izmanto 12, 6, 3 un 2, lai iegūtu 8.",
+    s1: "Vispirms reizini, tad saskaiti!",
+    s2: "Vispirms dali 12 ar 6.",
+    s3: "Saskaiti 2 un 6 — secībai ir nozīme!",
+  },
+  hard08: {
+    s0: "Sāc no 8. Sasniegt 20!",
+    s1: "Dubulto 8 — sanāk 16.",
+    s2: "Pieskaiti vēl 4!",
+  },
 };

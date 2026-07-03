@@ -86,5 +86,32 @@
     "explanation": "6 + 4 = 10 shells.",
     "topic": "addition",
     "ageRange": [6, 8]
+  },
+  {
+    "id": "easy-09",
+    "type": "compare",
+    "difficulty": "easy",
+    "question": "Which gives a bigger number?",
+    "payload": {
+      "optionA": "Add: 0 + 1 + 2 + 3 + 4",
+      "optionB": "Multiply: 0 × 1 × 2 × 3 × 4"
+    },
+    "correctIndex": 0,
+    "hint": "Adding positive numbers grows. Multiplying with 0 stays at 0.",
+    "explanation": "0 + 1 + 2 + 3 + 4 = 10. Anything × 0 = 0.",
+    "topic": "comparison",
+    "ageRange": [7, 9]
+  },
+  {
+    "id": "easy-10",
+    "type": "multiple_choice",
+    "difficulty": "easy",
+    "question": "Spot the shortcut! What is 262 × 24 − 262 × 23?",
+    "choices": ["262", "524", "23"],
+    "correctIndex": 0,
+    "hint": "The same number appears in both parts.",
+    "explanation": "262 × (24 − 23) = 262 × 1 = 262.",
+    "topic": "mental_math",
+    "ageRange": [9, 11]
   }
 ]

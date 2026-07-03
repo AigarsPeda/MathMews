@@ -12,6 +12,9 @@ const TOPIC_EMOJI: Record<Puzzle["topic"], string> = {
   multiplication: "✖️",
   logic: "🧠",
   patterns: "🔢",
+  comparison: "⚖️",
+  mental_math: "🔍",
+  operations: "🛤️",
 };
 
 const STATE_LABEL_KEYS = {

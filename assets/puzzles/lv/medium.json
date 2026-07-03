@@ -64,5 +64,39 @@
     "explanation": "Skaitlis ir 48.",
     "topic": "logic",
     "ageRange": [9, 11]
+  },
+  {
+    "id": "medium-07",
+    "type": "operation_path",
+    "difficulty": "medium",
+    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
+    "payload": {
+      "start": 16,
+      "target": 32,
+      "steps": [
+        { "operand": 4, "operator": "÷" },
+        { "operand": 4, "operator": "+" },
+        { "operand": 4, "operator": "×" }
+      ]
+    },
+    "hint": "Sāc ar dalīšanu.",
+    "explanation": "16 ÷ 4 = 4, 4 + 4 = 8, 8 × 4 = 32.",
+    "topic": "operations",
+    "ageRange": [9, 11]
+  },
+  {
+    "id": "medium-08",
+    "type": "compare",
+    "difficulty": "medium",
+    "question": "Kas ir lielāks?",
+    "payload": {
+      "optionA": "Summa: 0 + 1 + 2 + … + 9",
+      "optionB": "Reizinājums: 0 × 1 × 2 × … × 9"
+    },
+    "correctIndex": 0,
+    "hint": "Vienā vietā ir reizināšana ar nulli.",
+    "explanation": "Summa ir 45. Reizinājums ir 0.",
+    "topic": "comparison",
+    "ageRange": [8, 10]
   }
 ]
