@@ -289,13 +289,15 @@
     "patterns": "Patterns",
     "comparison": "Compare",
     "mental_math": "Number detective",
-    "operations": "Operations"
+    "operations": "Operations",
+    "fractions": "Fractions"
   },
   "puzzleTypes": {
     "multiple_choice": "Story",
     "compare": "Compare",
     "operation_path": "Operation path",
     "target_build": "Make the number",
+    "fraction_build": "Build a fraction",
     "goal": "Goal",
     "make": "Make",
     "checkAnswer": "Check answer",
@@ -304,7 +306,10 @@
     "currentTotal": "Your path so far: {{value}}",
     "tryDifferentOps": "Try different operators!",
     "tapToChangeOp": "Tap a slot or use the buttons below",
-    "yourResult": "Your result: {{value}}"
+    "yourResult": "Your result: {{value}}",
+    "piece": "PIECE",
+    "addPiece": "Add one piece",
+    "removePiece": "Remove one piece"
   },
   "puzzlePath": {
     "title": "Puzzle path",

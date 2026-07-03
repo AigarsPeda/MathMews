@@ -291,13 +291,15 @@
     "patterns": "Secības",
     "comparison": "Salīdzini",
     "mental_math": "Skaitļu detektīvs",
-    "operations": "Darbības"
+    "operations": "Darbības",
+    "fractions": "Daļas"
   },
   "puzzleTypes": {
     "multiple_choice": "Stāsts",
     "compare": "Salīdzini",
     "operation_path": "Darbību ceļš",
     "target_build": "Uztaisi skaitli",
+    "fraction_build": "Uztaisi daļu",
     "goal": "Mērķis",
     "make": "Uztaisi",
     "checkAnswer": "Pārbaudīt",
@@ -306,7 +308,10 @@
     "currentTotal": "Tavs rezultāts līdz šim: {{value}}",
     "tryDifferentOps": "Pamēģini citas darbības!",
     "tapToChangeOp": "Pieskaries laukumam vai izmanto pogas",
-    "yourResult": "Tavs rezultāts: {{value}}"
+    "yourResult": "Tavs rezultāts: {{value}}",
+    "piece": "DAĻU",
+    "addPiece": "Pievienot daļu",
+    "removePiece": "Noņemt daļu"
   },
   "puzzlePath": {
     "title": "Uzdevumu taka",

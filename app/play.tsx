@@ -177,6 +177,7 @@ export default function PlayScreen() {
     () => createEmptyOperators(puzzle),
   );
   const [operatorSubmitted, setOperatorSubmitted] = useState(false);
+  const [fractionPieces, setFractionPieces] = useState(0);
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
@@ -197,6 +198,7 @@ export default function PlayScreen() {
     setSelectedIndex(null);
     setSelectedOperators(createEmptyOperators(puzzle));
     setOperatorSubmitted(false);
+    setFractionPieces(0);
     setIsCorrect(false);
     setCoinsEarned(0);
     setShowVisualHelp(false);
@@ -323,6 +325,47 @@ export default function PlayScreen() {
     setWallet,
   ]);
 
+  const handleChangeFractionPieces = useCallback(
+    (count: number) => {
+      if (answered) return;
+      setFractionPieces(count);
+    },
+    [answered],
+  );
+
+  const handleCheckFraction = useCallback(() => {
+    if (answered) return;
+
+    const correct = checkPuzzleAnswer(puzzle, {
+      kind: "fraction",
+      shaded: fractionPieces,
+    });
+    setOperatorSubmitted(true);
+    applyAnswerResult({
+      correct,
+      coinReward,
+      happinessBoost,
+      isReplay,
+      recordInteraction,
+      setCoinsEarned,
+      setWallet,
+      setProgress,
+      setPet,
+      setIsCorrect,
+    });
+  }, [
+    answered,
+    coinReward,
+    fractionPieces,
+    happinessBoost,
+    isReplay,
+    puzzle,
+    recordInteraction,
+    setPet,
+    setProgress,
+    setWallet,
+  ]);
+
   const handleContinue = useCallback(() => {
     recordInteraction();
     if (isCorrect && isReplay) {
@@ -357,6 +400,7 @@ export default function PlayScreen() {
       setSelectedIndex(null);
       setSelectedOperators(createEmptyOperators(puzzle));
       setOperatorSubmitted(false);
+      setFractionPieces(0);
       setIsCorrect(false);
       setCoinsEarned(0);
       return;
@@ -527,11 +571,14 @@ export default function PlayScreen() {
             puzzle={puzzle}
             selectedIndex={selectedIndex}
             selectedOperators={selectedOperators}
+            fractionPieces={fractionPieces}
             answered={answered}
             isCorrect={isCorrect}
             onSelectChoice={handleChoice}
             onSelectOperator={handleSelectOperator}
             onCheckOperators={handleCheckOperators}
+            onChangeFractionPieces={handleChangeFractionPieces}
+            onCheckFraction={handleCheckFraction}
           />
         </ScrollView>
 

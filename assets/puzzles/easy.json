@@ -113,5 +113,16 @@
     "explanation": "262 × (24 − 23) = 262 × 1 = 262.",
     "topic": "mental_math",
     "ageRange": [9, 11]
+  },
+  {
+    "id": "easy-11",
+    "type": "fraction_build",
+    "difficulty": "easy",
+    "question": "Create this fraction!",
+    "payload": { "numerator": 1, "denominator": 4 },
+    "hint": "Color 1 piece out of 4 equal parts.",
+    "explanation": "1/4 means 1 piece out of 4 equal parts.",
+    "topic": "fractions",
+    "ageRange": [7, 9]
   }
 ]

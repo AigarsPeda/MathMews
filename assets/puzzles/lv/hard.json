@@ -97,5 +97,16 @@
     "explanation": "8 × 2 = 16, 16 + 4 = 20.",
     "topic": "operations",
     "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-09",
+    "type": "fraction_build",
+    "difficulty": "hard",
+    "question": "Uztaisi šo daļu!",
+    "payload": { "numerator": 3, "denominator": 8 },
+    "hint": "Nokrāso 3 daļas no 8 vienādām daļām.",
+    "explanation": "3/8 nozīmē 3 daļas no 8 vienādām daļām.",
+    "topic": "fractions",
+    "ageRange": [10, 12]
   }
 ]

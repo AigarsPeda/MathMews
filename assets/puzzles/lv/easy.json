@@ -113,5 +113,16 @@
     "explanation": "262 × (24 − 23) = 262 × 1 = 262.",
     "topic": "mental_math",
     "ageRange": [9, 11]
+  },
+  {
+    "id": "easy-11",
+    "type": "fraction_build",
+    "difficulty": "easy",
+    "question": "Uztaisi šo daļu!",
+    "payload": { "numerator": 1, "denominator": 4 },
+    "hint": "Nokrāso 1 daļu no 4 vienādām daļām.",
+    "explanation": "1/4 nozīmē 1 daļu no 4 vienādām daļām.",
+    "topic": "fractions",
+    "ageRange": [7, 9]
   }
 ]

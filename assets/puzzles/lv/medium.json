@@ -98,5 +98,16 @@
     "explanation": "Summa ir 45. Reizinājums ir 0.",
     "topic": "comparison",
     "ageRange": [8, 10]
+  },
+  {
+    "id": "medium-09",
+    "type": "fraction_build",
+    "difficulty": "medium",
+    "question": "Uztaisi šo daļu!",
+    "payload": { "numerator": 2, "denominator": 6 },
+    "hint": "Picai ir 6 vienādas daļas. Nokrāso 2.",
+    "explanation": "2/6 nozīmē 2 daļas no 6 vienādām daļām.",
+    "topic": "fractions",
+    "ageRange": [8, 10]
   }
 ]

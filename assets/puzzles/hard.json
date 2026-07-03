@@ -97,5 +97,16 @@
     "explanation": "8 × 2 = 16, 16 + 4 = 20.",
     "topic": "operations",
     "ageRange": [10, 12]
+  },
+  {
+    "id": "hard-09",
+    "type": "fraction_build",
+    "difficulty": "hard",
+    "question": "Create this fraction!",
+    "payload": { "numerator": 3, "denominator": 8 },
+    "hint": "Color 3 pieces out of 8 equal slices.",
+    "explanation": "3/8 means 3 slices out of 8 equal parts.",
+    "topic": "fractions",
+    "ageRange": [10, 12]
   }
 ]

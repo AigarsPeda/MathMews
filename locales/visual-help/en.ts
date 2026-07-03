@@ -158,4 +158,19 @@ export const visualHelpEn = {
     s1: "Double 8 to get 16.",
     s2: "Add 4 more to finish!",
   },
+  easy11: {
+    s0: "Split the shape into 4 equal parts.",
+    s1: "Color 1 part.",
+    s2: "1 out of 4 — that is 1/4!",
+  },
+  medium09: {
+    s0: "Split the pie into 6 equal slices.",
+    s1: "Color 2 slices.",
+    s2: "2 out of 6 — that is 2/6!",
+  },
+  hard09: {
+    s0: "Split the pie into 8 equal slices.",
+    s1: "Color 3 slices.",
+    s2: "3 out of 8 — that is 3/8!",
+  },
 };

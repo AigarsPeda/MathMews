@@ -98,5 +98,16 @@
     "explanation": "The sum is 45. The product is 0.",
     "topic": "comparison",
     "ageRange": [8, 10]
+  },
+  {
+    "id": "medium-09",
+    "type": "fraction_build",
+    "difficulty": "medium",
+    "question": "Create this fraction!",
+    "payload": { "numerator": 2, "denominator": 6 },
+    "hint": "The pie has 6 equal slices. Color 2 of them.",
+    "explanation": "2/6 means 2 slices out of 6 equal parts.",
+    "topic": "fractions",
+    "ageRange": [8, 10]
   }
 ]

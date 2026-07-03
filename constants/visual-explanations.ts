@@ -786,4 +786,76 @@ const VISUAL_EXPLANATIONS: Record<string, VisualExplanation> = {
       }),
     ]),
   },
+  "easy-11": {
+    puzzleId: "easy-11",
+    keyframes: buildKeyframes([
+      kf("easy11", {
+        kind: "grid",
+        rows: 2,
+        cols: 2,
+        filled: 0,
+        emoji: "🍕",
+      }),
+      kf("easy11", {
+        kind: "grid",
+        rows: 2,
+        cols: 2,
+        filled: 1,
+        emoji: "🍕",
+      }),
+      kf("easy11", {
+        kind: "equation",
+        lines: ["1 piece out of 4", "That is 1/4!"],
+        highlightLine: 1,
+      }),
+    ]),
+  },
+  "medium-09": {
+    puzzleId: "medium-09",
+    keyframes: buildKeyframes([
+      kf("medium09", {
+        kind: "grid",
+        rows: 2,
+        cols: 3,
+        filled: 0,
+        emoji: "🍕",
+      }),
+      kf("medium09", {
+        kind: "grid",
+        rows: 2,
+        cols: 3,
+        filled: 2,
+        emoji: "🍕",
+      }),
+      kf("medium09", {
+        kind: "equation",
+        lines: ["2 slices out of 6", "That is 2/6!"],
+        highlightLine: 1,
+      }),
+    ]),
+  },
+  "hard-09": {
+    puzzleId: "hard-09",
+    keyframes: buildKeyframes([
+      kf("hard09", {
+        kind: "grid",
+        rows: 2,
+        cols: 4,
+        filled: 0,
+        emoji: "🍕",
+      }),
+      kf("hard09", {
+        kind: "grid",
+        rows: 2,
+        cols: 4,
+        filled: 3,
+        emoji: "🍕",
+      }),
+      kf("hard09", {
+        kind: "equation",
+        lines: ["3 slices out of 8", "That is 3/8!"],
+        highlightLine: 1,
+      }),
+    ]),
+  },
 };

@@ -8,13 +8,15 @@ export type PuzzleTopic =
   | "patterns"
   | "comparison"
   | "mental_math"
-  | "operations";
+  | "operations"
+  | "fractions";
 
 export type PuzzleType =
   | "multiple_choice"
   | "compare"
   | "operation_path"
-  | "target_build";
+  | "target_build"
+  | "fraction_build";
 
 export type MathOperator = "+" | "-" | "×" | "÷";
 
@@ -39,6 +41,11 @@ export type TargetBuildPayload = {
 export type ComparePayload = {
   optionA: string;
   optionB: string;
+};
+
+export type FractionBuildPayload = {
+  numerator: number;
+  denominator: number;
 };
 
 type PuzzleBase = {
@@ -73,10 +80,16 @@ export type TargetBuildPuzzle = PuzzleBase & {
   payload: TargetBuildPayload;
 };
 
+export type FractionBuildPuzzle = PuzzleBase & {
+  type: "fraction_build";
+  payload: FractionBuildPayload;
+};
+
 export type Puzzle =
   | MultipleChoicePuzzle
   | ComparePuzzle
   | OperationPathPuzzle
-  | TargetBuildPuzzle;
+  | TargetBuildPuzzle
+  | FractionBuildPuzzle;
 
 export const MATH_OPERATORS: MathOperator[] = ["+", "-", "×", "÷"];

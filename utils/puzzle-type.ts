@@ -1,5 +1,6 @@
 import type {
   ComparePuzzle,
+  FractionBuildPuzzle,
   MathOperator,
   MultipleChoicePuzzle,
   OperationPathPuzzle,
@@ -17,12 +18,17 @@ export function getPuzzlePreview(puzzle: Puzzle): string {
   return puzzle.question;
 }
 
-export function checkPuzzleAnswer(
-  puzzle: Puzzle,
-  answer:
-    | { kind: "choice"; index: number }
-    | { kind: "operators"; operators: MathOperator[] },
-): boolean {
+export type PuzzleAnswer =
+  | { kind: "choice"; index: number }
+  | { kind: "operators"; operators: MathOperator[] }
+  | { kind: "fraction"; shaded: number };
+
+export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean {
+  if (puzzle.type === "fraction_build") {
+    if (answer.kind !== "fraction") return false;
+    return answer.shaded === puzzle.payload.numerator;
+  }
+
   if (puzzle.type === "operation_path") {
     if (answer.kind !== "operators") return false;
     const result = runOperationPath(
@@ -89,13 +95,20 @@ export function asTargetBuildPuzzle(puzzle: Puzzle): TargetBuildPuzzle | null {
   return puzzle.type === "target_build" ? puzzle : null;
 }
 
+export function asFractionBuildPuzzle(
+  puzzle: Puzzle,
+): FractionBuildPuzzle | null {
+  return puzzle.type === "fraction_build" ? puzzle : null;
+}
+
 export function asMultipleChoicePuzzle(
   puzzle: Puzzle,
 ): MultipleChoicePuzzle | null {
   if (
     puzzle.type === "compare" ||
     puzzle.type === "operation_path" ||
-    puzzle.type === "target_build"
+    puzzle.type === "target_build" ||
+    puzzle.type === "fraction_build"
   ) {
     return null;
   }

@@ -158,4 +158,19 @@ export const visualHelpLv = {
     s1: "Dubulto 8 — sanāk 16.",
     s2: "Pieskaiti vēl 4!",
   },
+  easy11: {
+    s0: "Sadali formu 4 vienādās daļās.",
+    s1: "Nokrāso 1 daļu.",
+    s2: "1 no 4 — tas ir 1/4!",
+  },
+  medium09: {
+    s0: "Sadali picu 6 vienādās daļās.",
+    s1: "Nokrāso 2 daļas.",
+    s2: "2 no 6 — tas ir 2/6!",
+  },
+  hard09: {
+    s0: "Sadali picu 8 vienādās daļās.",
+    s1: "Nokrāso 3 daļas.",
+    s2: "3 no 8 — tas ir 3/8!",
+  },
 };
