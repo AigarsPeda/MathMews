@@ -7,10 +7,10 @@ import { RoomStoreCard } from "@/components/store/RoomStoreCard";
 import { StoreTabBar, type StoreTab } from "@/components/store/StoreTabBar";
 import { NotificationBanner } from "@/components/ui/NotificationBanner";
 import { SlideInNotificationSlot } from "@/components/ui/SlideInNotificationSlot";
-import { CAT_DECORATION_IDS, type CatDecorationId } from "@/constants/cat-decorations";
-import { CAT_TOY_IDS, type CatToyId } from "@/constants/cat-toys";
-import { CAT_BED_IDS, type CatBedId } from "@/constants/cat-beds";
+import type { CatDecorationId } from "@/constants/cat-decorations";
 import { CAT_ROOM_IDS, type CatRoomId } from "@/constants/cat-rooms";
+import { CAT_BED_IDS, type CatBedId } from "@/constants/cat-beds";
+import { CAT_TOY_IDS, type CatToyId } from "@/constants/cat-toys";
 import { CAT_SKIN_IDS, type CatSkinId } from "@/constants/cat-skins";
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
@@ -25,6 +25,11 @@ import {
   getDecorationStorePrice,
   isDecorationUnlocked,
 } from "@/utils/decoration-store";
+import {
+  DECORATION_IDS_BY_STORE_TAB,
+  DECORATION_STORE_SUBTITLE_KEY,
+  isDecorationStoreTab,
+} from "@/utils/decoration-store-sections";
 import {
   isDecorationPlacedInRoom,
   isToyPlacedInRoom,
@@ -109,7 +114,7 @@ export default function StoreScreen() {
   const equippedSkinId = pet.catSkinId as CatSkinId | undefined;
   const placedToys = pet.placedToys ?? [];
   const placedDecorations = pet.placedDecorations ?? [];
-  const [activeTab, setActiveTab] = useState<StoreTab>("rooms");
+  const [activeTab, setActiveTab] = useState<StoreTab>("living");
   const [feedback, setFeedback] = useState<StoreFeedback | null>(null);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -539,8 +544,43 @@ export default function StoreScreen() {
     [equipSkin, recordInteraction, showFeedback, t],
   );
 
-  const storeSubtitle =
-    activeTab === "rooms"
+  const renderDecorationCards = useCallback(
+    (decorationIds: readonly CatDecorationId[]) =>
+      decorationIds.map((decorationId) => {
+        const price = getDecorationStorePrice(decorationId);
+        const owned = isDecorationUnlocked(decorationId, unlockedDecorations);
+        const canAfford =
+          price.kind !== "coins" || wallet.coins >= price.amount;
+
+        return (
+          <DecorationStoreCard
+            key={decorationId}
+            decorationId={decorationId}
+            isOwned={owned}
+            isPlaced={isDecorationPlacedInRoom(
+              decorationId,
+              placedDecorations,
+            )}
+            canAfford={canAfford}
+            onBuy={() => handleBuyDecoration(decorationId)}
+            onPlace={() => handlePlaceDecoration(decorationId)}
+            onRemove={() => handleRemoveDecoration(decorationId)}
+          />
+        );
+      }),
+    [
+      handleBuyDecoration,
+      handlePlaceDecoration,
+      handleRemoveDecoration,
+      placedDecorations,
+      unlockedDecorations,
+      wallet.coins,
+    ],
+  );
+
+  const storeSubtitle = isDecorationStoreTab(activeTab)
+    ? t(DECORATION_STORE_SUBTITLE_KEY[activeTab])
+    : activeTab === "rooms"
       ? t("store.subtitleRooms")
       : activeTab === "colors"
         ? t("store.subtitleColors")
@@ -548,7 +588,7 @@ export default function StoreScreen() {
           ? t("store.subtitleBeds")
           : activeTab === "toys"
             ? t("store.subtitleToys")
-            : t("store.subtitleDecorations");
+            : "";
 
   if (!isReady) {
     return (
@@ -685,31 +725,11 @@ export default function StoreScreen() {
                         />
                       );
                     })
-                  : CAT_DECORATION_IDS.map((decorationId) => {
-                      const price = getDecorationStorePrice(decorationId);
-                      const owned = isDecorationUnlocked(
-                        decorationId,
-                        unlockedDecorations,
-                      );
-                      const canAfford =
-                        price.kind !== "coins" || wallet.coins >= price.amount;
-
-                      return (
-                        <DecorationStoreCard
-                          key={decorationId}
-                          decorationId={decorationId}
-                          isOwned={owned}
-                          isPlaced={isDecorationPlacedInRoom(
-                            decorationId,
-                            placedDecorations,
-                          )}
-                          canAfford={canAfford}
-                          onBuy={() => handleBuyDecoration(decorationId)}
-                          onPlace={() => handlePlaceDecoration(decorationId)}
-                          onRemove={() => handleRemoveDecoration(decorationId)}
-                        />
-                      );
-                    })}
+                : isDecorationStoreTab(activeTab)
+                  ? renderDecorationCards(
+                      DECORATION_IDS_BY_STORE_TAB[activeTab],
+                    )
+                  : null}
           </ScrollView>
         </View>
       </View>

@@ -1,0 +1,28 @@
+/** Auto-generated frame list for lava lamp animation. */
+
+export const LAVA_LAMP_ANIM_FRAMES = [
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-01.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-02.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-03.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-04.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-05.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-06.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-07.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-08.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-09.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-10.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-11.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-12.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-13.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-14.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-15.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-16.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-17.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-18.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-19.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-20.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-21.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-22.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-23.png"),
+  require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/frame-24.png"),
+] as const;

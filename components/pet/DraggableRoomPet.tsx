@@ -1,6 +1,14 @@
 import { moderateScale } from "@/utils/scale";
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { PanResponder, StyleSheet, View } from "react-native";
+import type { RoomMenuAnchorRect } from "@/components/pet/room-menu-types";
 
 export type RoomPetOffset = {
   x: number;
@@ -13,10 +21,13 @@ const DRAG_THRESHOLD = moderateScale(6);
 type DraggableRoomPetProps = {
   children: ReactNode;
   petSize: number;
+  /** Tap/drag target — defaults to petSize. Use a smaller value for narrow sprites. */
+  hitSize?: number;
   initialOffset?: RoomPetOffset;
   onOffsetChange?: (offset: RoomPetOffset) => void;
   onPetTap?: () => void;
   layerZIndex?: number;
+  onMenuAnchorLayout?: (rect: RoomMenuAnchorRect) => void;
 };
 
 function maxAxisOffset(roomSize: number, petSize: number) {
@@ -70,13 +81,16 @@ function clampPosition(
 export function DraggableRoomPet({
   children,
   petSize,
+  hitSize,
   initialOffset = DEFAULT_OFFSET,
   onOffsetChange,
   onPetTap,
   layerZIndex = 1,
+  onMenuAnchorLayout,
 }: DraggableRoomPetProps) {
   const [roomSize, setRoomSize] = useState({ width: 0, height: 0 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const petSlotRef = useRef<View>(null);
 
   const positionRef = useRef(position);
   positionRef.current = position;
@@ -90,7 +104,20 @@ export function DraggableRoomPet({
   const onPetTapRef = useRef(onPetTap);
   onPetTapRef.current = onPetTap;
 
+  const onMenuAnchorLayoutRef = useRef(onMenuAnchorLayout);
+  onMenuAnchorLayoutRef.current = onMenuAnchorLayout;
+
+  const reportMenuAnchor = useCallback(() => {
+    if (!onMenuAnchorLayoutRef.current) return;
+
+    petSlotRef.current?.measureInWindow((pageX, pageY, width, height) => {
+      onMenuAnchorLayoutRef.current?.({ pageX, pageY, width, height });
+    });
+  }, []);
+
   const resolvedOffset = initialOffset ?? DEFAULT_OFFSET;
+  const resolvedHitSize = Math.min(hitSize ?? petSize, petSize);
+  const hitInset = (petSize - resolvedHitSize) / 2;
 
   const syncPosition = useCallback(
     (width: number, height: number, size: number, offset: RoomPetOffset) => {
@@ -145,6 +172,7 @@ export function DraggableRoomPet({
         },
         onPanResponderRelease: () => {
           if (!gestureMovedRef.current) {
+            reportMenuAnchor();
             onPetTapRef.current?.();
             return;
           }
@@ -156,7 +184,7 @@ export function DraggableRoomPet({
           }
         },
       }),
-    [commitOffset, petSize, roomSize.height, roomSize.width],
+    [commitOffset, petSize, reportMenuAnchor, roomSize.height, roomSize.width],
   );
 
   const halfPet = petSize / 2;
@@ -164,6 +192,10 @@ export function DraggableRoomPet({
     roomSize.width > 0 ? roomSize.width / 2 - halfPet + position.x : 0;
   const top =
     roomSize.height > 0 ? roomSize.height / 2 - halfPet + position.y : 0;
+
+  useEffect(() => {
+    reportMenuAnchor();
+  }, [left, top, petSize, reportMenuAnchor]);
 
   return (
     <View
@@ -176,6 +208,8 @@ export function DraggableRoomPet({
       }}
     >
       <View
+        ref={petSlotRef}
+        onLayout={reportMenuAnchor}
         style={[
           styles.petSlot,
           {
@@ -186,9 +220,24 @@ export function DraggableRoomPet({
           },
         ]}
         collapsable={false}
-        {...panResponder.panHandlers}
+        pointerEvents="box-none"
       >
-        {children}
+        <View pointerEvents="none" style={styles.visualSlot}>
+          {children}
+        </View>
+        <View
+          style={[
+            styles.hitTarget,
+            {
+              width: resolvedHitSize,
+              height: resolvedHitSize,
+              left: hitInset,
+              top: hitInset,
+            },
+          ]}
+          collapsable={false}
+          {...panResponder.panHandlers}
+        />
       </View>
     </View>
   );
@@ -202,5 +251,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     justifyContent: "flex-end",
+  },
+  visualSlot: {
+    ...StyleSheet.absoluteFill,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  hitTarget: {
+    position: "absolute",
   },
 });

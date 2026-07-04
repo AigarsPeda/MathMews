@@ -22,7 +22,7 @@ import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
 import { shouldPetSleep } from "@/pet-display/engine/derive-mood";
 import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
-import type { PetStats } from "@/types/game";
+import type { PetStats, RoomLayerItem } from "@/types/game";
 import {
   boostStat,
   canFeedForEffect,
@@ -77,6 +77,9 @@ export default function HomeScreen() {
     removeDecorationFromRoom,
     removeBedFromRoom,
     removeToyFromRoom,
+    moveRoomLayerItem,
+    rotatePlacedDecoration,
+    scalePlacedDecoration,
   } = useGame();
   const [actionSpeech, setActionSpeech] = useState<string | null>(null);
   const speechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -290,6 +293,39 @@ export default function HomeScreen() {
     router.push("/store");
   }, [recordInteraction, router]);
 
+  const handleMoveRoomLayerItem = useCallback(
+    (item: RoomLayerItem, direction: "up" | "down") => {
+      const moved = moveRoomLayerItem(item, direction);
+      if (!moved) return;
+
+      recordInteraction();
+      triggerHaptic();
+    },
+    [moveRoomLayerItem, recordInteraction],
+  );
+
+  const handleRotatePlacedDecoration = useCallback(
+    (decorationId: CatDecorationId) => {
+      const rotated = rotatePlacedDecoration(decorationId);
+      if (!rotated) return;
+
+      recordInteraction();
+      triggerHaptic();
+    },
+    [recordInteraction, rotatePlacedDecoration],
+  );
+
+  const handleScalePlacedDecoration = useCallback(
+    (decorationId: CatDecorationId, direction: "up" | "down") => {
+      const scaled = scalePlacedDecoration(decorationId, direction);
+      if (!scaled) return;
+
+      recordInteraction();
+      triggerHaptic();
+    },
+    [recordInteraction, scalePlacedDecoration],
+  );
+
   const handleRemoveDecoration = useCallback(
     (decorationId: CatDecorationId) => {
       const removed = removeDecorationFromRoom(decorationId);
@@ -430,6 +466,7 @@ export default function HomeScreen() {
               roomBedOffset={pet.roomBedOffset}
               placedToys={pet.placedToys}
               placedDecorations={pet.placedDecorations}
+              roomLayerOrder={pet.roomLayerOrder}
               speechMessage={speechMessage}
               playback={playback}
               onPetPress={petAnimating ? undefined : handlePetTap}
@@ -460,6 +497,9 @@ export default function HomeScreen() {
                 }))
               }
               onPlacedDecorationRemove={handleRemoveDecoration}
+              onRotatePlacedDecoration={handleRotatePlacedDecoration}
+              onScalePlacedDecoration={handleScalePlacedDecoration}
+              onMoveRoomLayerItem={handleMoveRoomLayerItem}
               onBedRemove={handleRemoveBed}
               onPlacedToyRemove={handleRemoveToy}
               onAnimationComplete={handleAnimationComplete}

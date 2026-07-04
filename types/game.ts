@@ -35,7 +35,17 @@ export type PlacedToy = {
 export type PlacedDecoration = {
   decorationId: string;
   offset: RoomItemOffset;
+  /** Sprite variant when the decoration has rotation options. */
+  rotationIndex?: number;
+  /** Display scale multiplier (default 1). */
+  scale?: number;
 };
+
+/** Draw order for bed, placed decor, and toys (pet stays on top). */
+export type RoomLayerItem =
+  | { kind: "bed" }
+  | { kind: "decoration"; decorationId: string }
+  | { kind: "toy"; toyId: string };
 
 export type PetProfile = {
   type: PetType;
@@ -59,6 +69,8 @@ export type PetProfile = {
   placedToys?: PlacedToy[];
   /** Decorations currently placed in the cat room. */
   placedDecorations?: PlacedDecoration[];
+  /** Bottom-to-top draw order for room furniture (pet renders above this). */
+  roomLayerOrder?: RoomLayerItem[];
   /** Cat fur color (`orange`, `grey`, `white`). */
   catSkinId?: string;
 };

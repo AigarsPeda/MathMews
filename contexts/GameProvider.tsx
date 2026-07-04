@@ -4,11 +4,21 @@ import { resolveCatToyId, type CatToyId } from "@/constants/cat-toys";
 import { resolveCatDecorationId,
   type CatDecorationId,
 } from "@/constants/cat-decorations";
+import {
+  canRotateDecoration,
+  canScaleDecorationDown,
+  canScaleDecorationUp,
+  getDecorationRotationGroup,
+  getNextRotationIndex,
+  getPlacedDecorationScale,
+  resolveDecorationPlacement,
+  scaleDecorationBy,
+} from "@/constants/decoration-variants";
 import { resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import type { CatRoomId } from "@/constants/cat-rooms";
 import { resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveAsleepOnLoad } from "@/pet-display/engine/derive-mood";
-import type { PetProfile, Progress, Wallet } from "@/types/game";
+import type { PetProfile, Progress, RoomLayerItem, Wallet } from "@/types/game";
 import type {
   BedPurchaseResult,
   RoomPurchaseResult,
@@ -44,7 +54,14 @@ import {
   isToyPlacedInRoom,
   removePlacedDecoration,
   removePlacedToy,
+  updatePlacedDecorationRotation,
+  updatePlacedDecorationScale,
 } from "@/utils/room-placement";
+import {
+  moveRoomLayerItem as shiftRoomLayerItem,
+  normalizeRoomLayerOrder,
+  syncPetLayerOrder,
+} from "@/utils/room-layer-order";
 import { PET_NAME_MAX_LENGTH } from "@/types/save";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useCloudSaveSync } from "@/hooks/use-cloud-save-sync";
@@ -111,6 +128,12 @@ type GameContextValue = {
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   removeDecorationFromRoom: (decorationId: CatDecorationId) => boolean;
+  rotatePlacedDecoration: (decorationId: CatDecorationId) => boolean;
+  scalePlacedDecoration: (
+    decorationId: CatDecorationId,
+    direction: "up" | "down",
+  ) => boolean;
+  moveRoomLayerItem: (item: RoomLayerItem, direction: "up" | "down") => boolean;
   purchaseSkin: (skinId: CatSkinId) => SkinPurchaseResult;
   equipSkin: (skinId: CatSkinId) => boolean;
   completeOnboarding: (options: {
@@ -461,11 +484,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
           ...current.progress,
           bedsUnlocked: attempt.bedsUnlocked,
         },
-        pet: {
+        pet: syncPetLayerOrder({
           ...current.pet,
           bedId: resolvedId,
           roomBedOffset: current.pet.roomBedOffset ?? { x: -0.15, y: 0.3 },
-        },
+        }),
       });
     }
 
@@ -487,11 +510,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     setSave({
       ...current,
-      pet: {
+      pet: syncPetLayerOrder({
         ...current.pet,
         bedId: resolvedId,
         roomBedOffset: current.pet.roomBedOffset ?? { x: -0.15, y: 0.3 },
-      },
+      }),
     });
 
     return true;
@@ -505,10 +528,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     setSave({
       ...current,
-      pet: {
+      pet: syncPetLayerOrder({
         ...current.pet,
         bedId: undefined,
-      },
+      }),
     });
 
     return true;
@@ -536,10 +559,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
           ...current.progress,
           toysUnlocked: attempt.toysUnlocked,
         },
-        pet: {
+        pet: syncPetLayerOrder({
           ...current.pet,
           placedToys: appendPlacedToy(current.pet.placedToys, resolvedId),
-        },
+        }),
       });
     }
 
@@ -565,10 +588,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     setSave({
       ...current,
-      pet: {
+      pet: syncPetLayerOrder({
         ...current.pet,
         placedToys: appendPlacedToy(current.pet.placedToys, resolvedId),
-      },
+      }),
     });
 
     return true;
@@ -587,10 +610,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     setSave({
       ...current,
-      pet: {
+      pet: syncPetLayerOrder({
         ...current.pet,
         placedToys: removePlacedToy(current.pet.placedToys, resolvedId),
-      },
+      }),
     });
 
     return true;
@@ -619,13 +642,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
             ...current.progress,
             decorationsUnlocked: attempt.decorationsUnlocked,
           },
-          pet: {
+          pet: syncPetLayerOrder({
             ...current.pet,
             placedDecorations: appendPlacedDecoration(
               current.pet.placedDecorations,
               resolvedId,
             ),
-          },
+          }),
         });
       }
 
@@ -653,13 +676,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     setSave({
       ...current,
-      pet: {
+      pet: syncPetLayerOrder({
         ...current.pet,
         placedDecorations: appendPlacedDecoration(
           current.pet.placedDecorations,
           resolvedId,
         ),
-      },
+      }),
     });
 
     return true;
@@ -678,17 +701,120 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     setSave({
       ...current,
-      pet: {
+      pet: syncPetLayerOrder({
         ...current.pet,
         placedDecorations: removePlacedDecoration(
           current.pet.placedDecorations,
           resolvedId,
+        ),
+      }),
+    });
+
+    return true;
+  }, []);
+
+  const rotatePlacedDecoration = useCallback((decorationId: CatDecorationId) => {
+    const placement = resolveDecorationPlacement(decorationId);
+    if (!placement || !canRotateDecoration(placement.decorationId)) {
+      return false;
+    }
+
+    const canonicalId = placement.decorationId;
+    const group = getDecorationRotationGroup(canonicalId);
+    if (!group) {
+      return false;
+    }
+
+    const current = saveRef.current;
+    const placed = current.pet.placedDecorations?.find(
+      (item) => item.decorationId === canonicalId,
+    );
+    if (!placed) {
+      return false;
+    }
+
+    const currentIndex = placed.rotationIndex ?? 0;
+    const nextIndex = getNextRotationIndex(currentIndex, group.length);
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        placedDecorations: updatePlacedDecorationRotation(
+          current.pet.placedDecorations,
+          canonicalId,
+          nextIndex,
         ),
       },
     });
 
     return true;
   }, []);
+
+  const scalePlacedDecoration = useCallback(
+    (decorationId: CatDecorationId, direction: "up" | "down") => {
+      const placement = resolveDecorationPlacement(decorationId);
+      if (!placement) {
+        return false;
+      }
+
+      const canonicalId = placement.decorationId;
+      const current = saveRef.current;
+      const placed = current.pet.placedDecorations?.find(
+        (item) => item.decorationId === canonicalId,
+      );
+      if (!placed) {
+        return false;
+      }
+
+      const currentScale = getPlacedDecorationScale(placed);
+      if (
+        (direction === "up" && !canScaleDecorationUp(currentScale)) ||
+        (direction === "down" && !canScaleDecorationDown(currentScale))
+      ) {
+        return false;
+      }
+
+      const nextScale = scaleDecorationBy(currentScale, direction);
+
+      setSave({
+        ...current,
+        pet: {
+          ...current.pet,
+          placedDecorations: updatePlacedDecorationScale(
+            current.pet.placedDecorations,
+            canonicalId,
+            nextScale,
+          ),
+        },
+      });
+
+      return true;
+    },
+    [],
+  );
+
+  const moveRoomLayerItem = useCallback(
+    (item: RoomLayerItem, direction: "up" | "down") => {
+      const current = saveRef.current;
+      const order = normalizeRoomLayerOrder(current.pet);
+      const next = shiftRoomLayerItem(order, item, direction);
+      if (next === order) {
+        return false;
+      }
+
+      setSave({
+        ...current,
+        pet: {
+          ...current.pet,
+          roomLayerOrder: next,
+        },
+      });
+
+      return true;
+    },
+    [],
+  );
 
   const purchaseSkin = useCallback((skinId: CatSkinId): SkinPurchaseResult => {
     const resolvedId = resolveCatSkinId(skinId);
@@ -904,6 +1030,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseDecoration,
       placeDecorationInRoom,
       removeDecorationFromRoom,
+      rotatePlacedDecoration,
+      scalePlacedDecoration,
+      moveRoomLayerItem,
       purchaseSkin,
       equipSkin,
       completeOnboarding,
@@ -955,6 +1084,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseDecoration,
       placeDecorationInRoom,
       removeDecorationFromRoom,
+      rotatePlacedDecoration,
+      scalePlacedDecoration,
+      moveRoomLayerItem,
       purchaseSkin,
       equipSkin,
     ],

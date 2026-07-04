@@ -2,15 +2,29 @@ import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetRoomBackground } from "@/components/pet/PetRoomBackground";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
+import type { RoomItemMenuAction } from "@/components/pet/RoomItemActionMenu";
 import { RoomItemActionMenu } from "@/components/pet/RoomItemActionMenu";
+import type {
+  RoomMenuAnchorRect,
+  RoomMenuBounds,
+} from "@/components/pet/room-menu-types";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { getCatBedSource } from "@/constants/cat-beds";
+import { getBedDisplaySize, getCatBedSource } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
-import { getDecorationDragSize } from "@/constants/cat-decorations";
 import { resolveSpriteDisplaySize } from "@/constants/cat-sprites";
 import type { CatToyId } from "@/constants/cat-toys";
 import { getToyDisplaySize } from "@/constants/cat-toys";
+import {
+  canRotateDecoration,
+  canScaleDecorationDown,
+  canScaleDecorationUp,
+  getPlacedDecorationDragSize,
+  getPlacedDecorationHitSize,
+  getPlacedDecorationScale,
+  getPlacedDecorationSpriteId,
+  usesStyleVariantMenu,
+} from "@/constants/decoration-variants";
 import { GameColors } from "@/constants/game";
 import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
 import { PetDisplay } from "@/pet-display/components/PetDisplay";
@@ -21,19 +35,30 @@ import type {
   PlacedDecoration,
   PlacedToy,
   RoomItemOffset,
+  RoomLayerItem,
 } from "@/types/game";
 import { nestedBorderRadius } from "@/utils/border-radius";
 import { clampStat } from "@/utils/pet-care";
+import {
+  canMoveRoomLayerItem,
+  getRoomLayerZIndex,
+  isSameRoomLayerItem,
+  normalizeRoomLayerOrder,
+  roomLayerItemKey,
+  ROOM_MENU_BACKDROP_Z_INDEX,
+  ROOM_MENU_OPEN_Z_INDEX,
+  ROOM_PET_LAYER_Z_INDEX,
+} from "@/utils/room-layer-order";
 import { moderateScale } from "@/utils/scale";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  type LayoutChangeEvent,
   Image,
   Pressable,
   StyleSheet,
   Text,
   View,
+  type LayoutChangeEvent,
 } from "react-native";
 
 const COMPACT_STAGE_RADIUS = moderateScale(16);
@@ -45,7 +70,6 @@ const COMPACT_ROOM_RADIUS = nestedBorderRadius(
 const COMPACT_PET_MIN = 200;
 const COMPACT_PET_MAX = 300;
 const COMPACT_SPRITE_PET_SIZE = 96;
-const COMPACT_BED_SIZE = 72;
 
 function compactPetWidth(petType: PetType, compact: boolean) {
   const usesSprite = USE_CAT_SPRITE_PETS && petType === "cat";
@@ -76,6 +100,7 @@ type PetStageProps = {
   roomBedOffset?: { x: number; y: number };
   placedToys?: PlacedToy[];
   placedDecorations?: PlacedDecoration[];
+  roomLayerOrder?: RoomLayerItem[];
   speechMessage?: string | null;
   playback: PetPlaybackState;
   compact?: boolean;
@@ -88,6 +113,12 @@ type PetStageProps = {
     offset: RoomItemOffset,
   ) => void;
   onPlacedDecorationRemove?: (decorationId: CatDecorationId) => void;
+  onRotatePlacedDecoration?: (decorationId: CatDecorationId) => void;
+  onScalePlacedDecoration?: (
+    decorationId: CatDecorationId,
+    direction: "up" | "down",
+  ) => void;
+  onMoveRoomLayerItem?: (item: RoomLayerItem, direction: "up" | "down") => void;
   onBedRemove?: () => void;
   onPlacedToyRemove?: (toyId: CatToyId) => void;
   onAnimationComplete?: () => void;
@@ -125,10 +156,7 @@ function StatBar({
   );
 }
 
-type RoomItemMenu =
-  | { kind: "bed" }
-  | { kind: "decoration"; id: CatDecorationId }
-  | { kind: "toy"; id: CatToyId };
+type RoomItemMenu = RoomLayerItem;
 
 export function PetStage({
   name,
@@ -142,6 +170,7 @@ export function PetStage({
   roomBedOffset,
   placedToys,
   placedDecorations,
+  roomLayerOrder,
   speechMessage,
   playback,
   compact = false,
@@ -151,6 +180,9 @@ export function PetStage({
   onPlacedToyOffsetChange,
   onPlacedDecorationOffsetChange,
   onPlacedDecorationRemove,
+  onRotatePlacedDecoration,
+  onScalePlacedDecoration,
+  onMoveRoomLayerItem,
   onBedRemove,
   onPlacedToyRemove,
   onAnimationComplete,
@@ -158,14 +190,50 @@ export function PetStage({
 }: PetStageProps) {
   const { t } = useTranslation();
   const usesSprite = USE_CAT_SPRITE_PETS && petType === "cat";
-  const bedSize = moderateScale(COMPACT_BED_SIZE);
+  const bedSize = moderateScale(getBedDisplaySize(bedId));
   const bedSource = usesSprite ? getCatBedSource(bedId) : undefined;
   const roomPlacedToys = usesSprite ? (placedToys ?? []) : [];
   const roomPlacedDecorations = usesSprite ? (placedDecorations ?? []) : [];
+  const layerOrder = normalizeRoomLayerOrder({
+    bedId,
+    placedDecorations: roomPlacedDecorations,
+    placedToys: roomPlacedToys,
+    roomLayerOrder,
+  });
   const [openRoomItemMenu, setOpenRoomItemMenu] = useState<RoomItemMenu | null>(
     null,
   );
+  const avatarWrapRef = useRef<View>(null);
+  const [roomMenuBounds, setRoomMenuBounds] = useState<RoomMenuBounds | null>(
+    null,
+  );
+  const [menuAnchorRect, setMenuAnchorRect] = useState<RoomMenuAnchorRect | null>(
+    null,
+  );
+  const itemAnchorRectsRef = useRef<Map<string, RoomMenuAnchorRect>>(new Map());
+  const closeMenu = useCallback(() => {
+    setOpenRoomItemMenu(null);
+    setMenuAnchorRect(null);
+  }, []);
+  const measureRoomMenuBounds = useCallback(() => {
+    avatarWrapRef.current?.measureInWindow((pageX, pageY, width, height) => {
+      setRoomMenuBounds({ pageX, pageY, width, height });
+    });
+  }, []);
+  useEffect(() => {
+    if (!openRoomItemMenu) {
+      setMenuAnchorRect(null);
+      return;
+    }
+    measureRoomMenuBounds();
+  }, [measureRoomMenuBounds, openRoomItemMenu]);
   const removeMenuLabel = t("home.removeFromRoom");
+  const moveUpLabel = t("home.moveLayerUp");
+  const moveDownLabel = t("home.moveLayerDown");
+  const rotateLabel = t("home.rotateItem");
+  const changeLookLabel = t("home.changeLook");
+  const biggerLabel = t("home.makeBigger");
+  const smallerLabel = t("home.makeSmaller");
   const [avatarWidth, setAvatarWidth] = useState(
     compactPetWidth(petType, compact),
   );
@@ -193,56 +261,197 @@ export function PetStage({
     [compact, usesSprite],
   );
 
-  const handleDecorationTap = useCallback(
-    (decorationId: CatDecorationId) => {
-      if (!onPlacedDecorationRemove) return;
-      setOpenRoomItemMenu((current) =>
-        current?.kind === "decoration" && current.id === decorationId
-          ? null
-          : { kind: "decoration", id: decorationId },
+  const canManageRoomItem = useCallback(
+    (item: RoomLayerItem) => {
+      if (item.kind === "bed") {
+        return Boolean(onBedRemove || onMoveRoomLayerItem);
+      }
+      if (item.kind === "decoration") {
+        return Boolean(
+          onPlacedDecorationRemove ||
+          onMoveRoomLayerItem ||
+          onRotatePlacedDecoration ||
+          onScalePlacedDecoration,
+        );
+      }
+      return Boolean(onPlacedToyRemove || onMoveRoomLayerItem);
+    },
+    [
+      onBedRemove,
+      onMoveRoomLayerItem,
+      onPlacedDecorationRemove,
+      onPlacedToyRemove,
+      onRotatePlacedDecoration,
+      onScalePlacedDecoration,
+    ],
+  );
+
+  const buildRoomItemMenuActions = useCallback(
+    (item: RoomLayerItem) => {
+      const actions: RoomItemMenuAction[] = [];
+
+      if (onMoveRoomLayerItem) {
+        actions.push({
+          label: moveUpLabel,
+          icon: "north",
+          onPress: () => {
+            onMoveRoomLayerItem(item, "up");
+          },
+          disabled: !canMoveRoomLayerItem(layerOrder, item, "up"),
+        });
+        actions.push({
+          label: moveDownLabel,
+          icon: "south",
+          onPress: () => {
+            onMoveRoomLayerItem(item, "down");
+          },
+          disabled: !canMoveRoomLayerItem(layerOrder, item, "down"),
+        });
+      }
+
+      if (item.kind === "decoration") {
+        const decorationId = item.decorationId as CatDecorationId;
+        const placed = roomPlacedDecorations.find(
+          (entry) => entry.decorationId === decorationId,
+        );
+
+        if (onRotatePlacedDecoration && canRotateDecoration(decorationId)) {
+          const styleVariant = usesStyleVariantMenu(decorationId);
+          actions.push({
+            label: styleVariant ? changeLookLabel : rotateLabel,
+            icon: styleVariant ? "style" : "rotate-right",
+            onPress: () => {
+              onRotatePlacedDecoration(decorationId);
+            },
+          });
+        }
+
+        if (onScalePlacedDecoration && placed) {
+          const scale = getPlacedDecorationScale(placed);
+          actions.push({
+            label: biggerLabel,
+            icon: "zoom-in",
+            onPress: () => {
+              onScalePlacedDecoration(decorationId, "up");
+            },
+            disabled: !canScaleDecorationUp(scale),
+          });
+          actions.push({
+            label: smallerLabel,
+            icon: "zoom-out",
+            onPress: () => {
+              onScalePlacedDecoration(decorationId, "down");
+            },
+            disabled: !canScaleDecorationDown(scale),
+          });
+        }
+      }
+
+      if (item.kind === "bed" && onBedRemove) {
+        actions.push({
+          label: removeMenuLabel,
+          icon: "delete-outline",
+          onPress: () => {
+            closeMenu();
+            onBedRemove();
+          },
+          destructive: true,
+        });
+      }
+
+      if (item.kind === "decoration" && onPlacedDecorationRemove) {
+        actions.push({
+          label: removeMenuLabel,
+          icon: "delete-outline",
+          onPress: () => {
+            closeMenu();
+            onPlacedDecorationRemove(item.decorationId as CatDecorationId);
+          },
+          destructive: true,
+        });
+      }
+
+      if (item.kind === "toy" && onPlacedToyRemove) {
+        actions.push({
+          label: removeMenuLabel,
+          icon: "delete-outline",
+          onPress: () => {
+            closeMenu();
+            onPlacedToyRemove(item.toyId as CatToyId);
+          },
+          destructive: true,
+        });
+      }
+
+      return actions;
+    },
+    [
+      changeLookLabel,
+      biggerLabel,
+      closeMenu,
+      layerOrder,
+      moveDownLabel,
+      moveUpLabel,
+      onBedRemove,
+      onMoveRoomLayerItem,
+      onPlacedDecorationRemove,
+      onPlacedToyRemove,
+      onRotatePlacedDecoration,
+      onScalePlacedDecoration,
+      removeMenuLabel,
+      roomPlacedDecorations,
+      rotateLabel,
+      smallerLabel,
+    ],
+  );
+
+  const handleRoomItemTap = useCallback(
+    (item: RoomLayerItem) => {
+      if (!canManageRoomItem(item)) return;
+
+      if (
+        openRoomItemMenu &&
+        isSameRoomLayerItem(openRoomItemMenu, item)
+      ) {
+        closeMenu();
+        return;
+      }
+
+      setMenuAnchorRect(
+        itemAnchorRectsRef.current.get(roomLayerItemKey(item)) ?? null,
       );
+      measureRoomMenuBounds();
+      setOpenRoomItemMenu(item);
     },
-    [onPlacedDecorationRemove],
+    [canManageRoomItem, closeMenu, measureRoomMenuBounds, openRoomItemMenu],
   );
 
-  const handleDecorationRemove = useCallback(
-    (decorationId: CatDecorationId) => {
-      setOpenRoomItemMenu(null);
-      onPlacedDecorationRemove?.(decorationId);
+  const handleItemAnchorLayout = useCallback(
+    (item: RoomLayerItem, rect: RoomMenuAnchorRect) => {
+      itemAnchorRectsRef.current.set(roomLayerItemKey(item), rect);
+
+      if (
+        openRoomItemMenu &&
+        isSameRoomLayerItem(openRoomItemMenu, item)
+      ) {
+        setMenuAnchorRect(rect);
+      }
     },
-    [onPlacedDecorationRemove],
+    [openRoomItemMenu],
   );
 
-  const handleBedTap = useCallback(() => {
-    if (!onBedRemove) return;
-    setOpenRoomItemMenu((current) =>
-      current?.kind === "bed" ? null : { kind: "bed" },
-    );
-  }, [onBedRemove]);
-
-  const handleBedRemove = useCallback(() => {
-    setOpenRoomItemMenu(null);
-    onBedRemove?.();
-  }, [onBedRemove]);
-
-  const handleToyTap = useCallback(
-    (toyId: CatToyId) => {
-      if (!onPlacedToyRemove) return;
-      setOpenRoomItemMenu((current) =>
-        current?.kind === "toy" && current.id === toyId
-          ? null
-          : { kind: "toy", id: toyId },
-      );
+  const roomItemDragProps = useCallback(
+    (item: RoomLayerItem, layerZIndex: number) => {
+      const manageable = canManageRoomItem(item);
+      return {
+        layerZIndex,
+        onPetTap: manageable ? () => handleRoomItemTap(item) : undefined,
+        onMenuAnchorLayout: manageable
+          ? (rect: RoomMenuAnchorRect) => handleItemAnchorLayout(item, rect)
+          : undefined,
+      };
     },
-    [onPlacedToyRemove],
-  );
-
-  const handleToyRemove = useCallback(
-    (toyId: CatToyId) => {
-      setOpenRoomItemMenu(null);
-      onPlacedToyRemove?.(toyId);
-    },
-    [onPlacedToyRemove],
+    [canManageRoomItem, handleItemAnchorLayout, handleRoomItemTap],
   );
 
   const petCluster = (
@@ -277,7 +486,7 @@ export function PetStage({
         initialOffset={roomPetOffset}
         onOffsetChange={onRoomPetOffsetChange}
         onPetTap={onPetPress}
-        layerZIndex={4}
+        layerZIndex={ROOM_PET_LAYER_Z_INDEX}
       >
         {petCluster}
       </DraggableRoomPet>
@@ -285,91 +494,93 @@ export function PetStage({
       <View style={styles.petStack}>{petCluster}</View>
     );
 
-  const roomBedLayer =
-    compact && usesSprite && bedSource ? (
-      <DraggableRoomPet
-        petSize={bedSize}
-        initialOffset={roomBedOffset ?? { x: -0.15, y: 0.3 }}
-        onOffsetChange={onRoomBedOffsetChange}
-        onPetTap={onBedRemove ? handleBedTap : undefined}
-        layerZIndex={openRoomItemMenu?.kind === "bed" ? 10 : 1}
-      >
-        {openRoomItemMenu?.kind === "bed" && onBedRemove ? (
-          <RoomItemActionMenu
-            label={removeMenuLabel}
-            onPress={handleBedRemove}
-          />
-        ) : null}
-        <Image
-          source={bedSource}
-          style={{ width: bedSize, height: bedSize }}
-          resizeMode="contain"
-          accessibilityIgnoresInvertColors
-        />
-      </DraggableRoomPet>
-    ) : null;
-
-  const roomDecorationLayers = roomPlacedDecorations.map((placed) => {
-    const decorationId = placed.decorationId as CatDecorationId;
-    const decorationSize = moderateScale(getDecorationDragSize(decorationId));
-    const isMenuOpen =
-      openRoomItemMenu?.kind === "decoration" &&
-      openRoomItemMenu.id === decorationId;
-
-    return (
-      <DraggableRoomPet
-        key={decorationId}
-        petSize={decorationSize}
-        initialOffset={placed.offset}
-        onOffsetChange={(offset) =>
-          onPlacedDecorationOffsetChange?.(decorationId, offset)
-        }
-        onPetTap={
-          onPlacedDecorationRemove
-            ? () => handleDecorationTap(decorationId)
-            : undefined
-        }
-        layerZIndex={isMenuOpen ? 10 : 2}
-      >
-        {isMenuOpen && onPlacedDecorationRemove ? (
-          <RoomItemActionMenu
-            label={removeMenuLabel}
-            onPress={() => handleDecorationRemove(decorationId)}
-          />
-        ) : null}
-        <DecorationSpriteImage
-          decorationId={decorationId}
-          size={decorationSize}
-        />
-      </DraggableRoomPet>
+  const roomItemLayers = layerOrder.map((item, layerIndex) => {
+    const isMenuOpen = Boolean(
+      openRoomItemMenu && isSameRoomLayerItem(openRoomItemMenu, item),
     );
-  });
+    const layerZIndex = getRoomLayerZIndex(layerIndex, isMenuOpen);
 
-  const roomToyLayers = roomPlacedToys.map((placed) => {
-    const toyId = placed.toyId as CatToyId;
+    if (item.kind === "bed") {
+      if (!compact || !usesSprite || !bedSource) return null;
+
+      return (
+        <DraggableRoomPet
+          key="bed"
+          petSize={bedSize}
+          initialOffset={roomBedOffset ?? { x: -0.15, y: 0.3 }}
+          onOffsetChange={onRoomBedOffsetChange}
+          {...roomItemDragProps(item, layerZIndex)}
+        >
+          <Image
+            source={bedSource}
+            style={{ width: bedSize, height: bedSize }}
+            resizeMode="contain"
+            accessibilityIgnoresInvertColors
+          />
+        </DraggableRoomPet>
+      );
+    }
+
+    if (item.kind === "decoration") {
+      const decorationId = item.decorationId as CatDecorationId;
+      const placed = roomPlacedDecorations.find(
+        (entry) => entry.decorationId === decorationId,
+      );
+      if (!placed) return null;
+
+      const spriteId = getPlacedDecorationSpriteId(placed);
+      const decorationSize = moderateScale(getPlacedDecorationDragSize(placed));
+      const hitSize = moderateScale(getPlacedDecorationHitSize(placed));
+
+      return (
+        <DraggableRoomPet
+          key={`decoration:${decorationId}`}
+          petSize={decorationSize}
+          hitSize={hitSize}
+          initialOffset={placed.offset}
+          onOffsetChange={(offset) =>
+            onPlacedDecorationOffsetChange?.(decorationId, offset)
+          }
+          {...roomItemDragProps(item, layerZIndex)}
+        >
+          <DecorationSpriteImage
+            decorationId={spriteId}
+            size={decorationSize}
+          />
+        </DraggableRoomPet>
+      );
+    }
+
+    const toyId = item.toyId as CatToyId;
+    const placed = roomPlacedToys.find((entry) => entry.toyId === toyId);
+    if (!placed) return null;
+
     const toySize = moderateScale(getToyDisplaySize(toyId));
-    const isMenuOpen =
-      openRoomItemMenu?.kind === "toy" && openRoomItemMenu.id === toyId;
 
     return (
       <DraggableRoomPet
-        key={toyId}
+        key={`toy:${toyId}`}
         petSize={toySize}
         initialOffset={placed.offset}
         onOffsetChange={(offset) => onPlacedToyOffsetChange?.(toyId, offset)}
-        onPetTap={onPlacedToyRemove ? () => handleToyTap(toyId) : undefined}
-        layerZIndex={isMenuOpen ? 10 : 3}
+        {...roomItemDragProps(item, layerZIndex)}
       >
-        {isMenuOpen && onPlacedToyRemove ? (
-          <RoomItemActionMenu
-            label={removeMenuLabel}
-            onPress={() => handleToyRemove(toyId)}
-          />
-        ) : null}
         <ToySpriteImage toyId={toyId} size={toySize} />
       </DraggableRoomPet>
     );
   });
+
+  const activeMenuActions = openRoomItemMenu
+    ? buildRoomItemMenuActions(openRoomItemMenu)
+    : [];
+  const isMenuReady = Boolean(
+    openRoomItemMenu &&
+      menuAnchorRect &&
+      roomMenuBounds &&
+      activeMenuActions.length > 0,
+  );
+  const readyMenuAnchor = isMenuReady ? menuAnchorRect : null;
+  const readyRoomBounds = isMenuReady ? roomMenuBounds : null;
 
   return (
     <View style={[styles.stage, compact && styles.stageCompact]}>
@@ -385,6 +596,8 @@ export function PetStage({
       <View style={styles.petColumnMeasure} onLayout={handleAvatarLayout}>
         <View style={[styles.petColumn, compact && styles.petColumnCompact]}>
           <View
+            ref={avatarWrapRef}
+            onLayout={measureRoomMenuBounds}
             style={[
               styles.avatarWrap,
               compact && styles.avatarWrapCompact,
@@ -397,16 +610,23 @@ export function PetStage({
                 cornerRadius={compact ? COMPACT_ROOM_RADIUS : 0}
               />
             ) : null}
-            {roomBedLayer}
-            {roomDecorationLayers}
-            {roomToyLayers}
-            {openRoomItemMenu ? (
+            {roomItemLayers}
+            {isMenuReady ? (
               <Pressable
                 style={styles.menuBackdrop}
-                onPress={() => setOpenRoomItemMenu(null)}
+                onPress={closeMenu}
                 accessibilityRole="button"
                 accessibilityLabel={t("home.dismissRoomItemMenu")}
               />
+            ) : null}
+            {readyMenuAnchor && readyRoomBounds ? (
+              <View style={styles.floatingMenuLayer} pointerEvents="box-none">
+                <RoomItemActionMenu
+                  actions={activeMenuActions}
+                  anchorRect={readyMenuAnchor}
+                  roomBounds={readyRoomBounds}
+                />
+              </View>
             ) : null}
             {compact ? roomPetLayer : petCluster}
           </View>
@@ -502,7 +722,11 @@ const styles = StyleSheet.create({
   },
   menuBackdrop: {
     ...StyleSheet.absoluteFill,
-    zIndex: 5,
+    zIndex: ROOM_MENU_BACKDROP_Z_INDEX,
+  },
+  floatingMenuLayer: {
+    ...StyleSheet.absoluteFill,
+    zIndex: ROOM_MENU_OPEN_Z_INDEX + 1,
   },
   petStack: {
     width: "100%",

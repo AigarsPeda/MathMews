@@ -1,5 +1,4 @@
-import { getCatRoomSource } from "@/constants/cat-rooms";
-import type { CatRoomId } from "@/constants/cat-rooms";
+import { getCatRoomSource, type CatRoomId } from "@/constants/cat-rooms";
 import { GameColors } from "@/constants/game";
 import { getRoomStorePrice } from "@/utils/room-store";
 import { moderateScale } from "@/utils/scale";

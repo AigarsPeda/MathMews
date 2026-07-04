@@ -1,5 +1,9 @@
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
+import {
+  clampDecorationScale,
+  resolveDecorationPlacement,
+} from "@/constants/decoration-variants";
 import type { CatToyId } from "@/constants/cat-toys";
 import { isCatToyId, resolveCatToyId } from "@/constants/cat-toys";
 import type { PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
@@ -66,14 +70,33 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
     for (const entry of value) {
       if (typeof entry !== "object" || entry === null) continue;
       const record = entry as Record<string, unknown>;
-      const decorationId =
-        typeof record.decorationId === "string"
-          ? resolveCatDecorationId(record.decorationId)
-          : undefined;
+      if (typeof record.decorationId !== "string") continue;
+
+      const placement = resolveDecorationPlacement(
+        record.decorationId,
+        typeof record.rotationIndex === "number" ? record.rotationIndex : 0,
+      );
       const offset = normalizeRoomItemOffset(record.offset);
-      if (!decorationId || !offset) continue;
-      if (placed.some((item) => item.decorationId === decorationId)) continue;
-      placed.push({ decorationId, offset });
+      if (!placement || !offset) continue;
+
+      const scale =
+        typeof record.scale === "number"
+          ? clampDecorationScale(record.scale)
+          : undefined;
+
+      if (
+        placed.some((item) => item.decorationId === placement.decorationId)
+      ) {
+        continue;
+      }
+
+      placed.push({
+        decorationId: placement.decorationId,
+        offset,
+        rotationIndex:
+          placement.rotationIndex > 0 ? placement.rotationIndex : undefined,
+        scale: scale !== undefined && scale !== 1 ? scale : undefined,
+      });
     }
     return placed;
   }
@@ -200,6 +223,38 @@ export function updatePlacedDecorationOffset(
   return (placedDecorations ?? []).map((item) =>
     item.decorationId === decorationId ? { ...item, offset } : item,
   );
+}
+
+export function updatePlacedDecorationScale(
+  placedDecorations: PlacedDecoration[] | undefined,
+  decorationId: CatDecorationId,
+  scale: number,
+): PlacedDecoration[] {
+  const nextScale = clampDecorationScale(scale);
+
+  return (placedDecorations ?? []).map((item) => {
+    if (item.decorationId !== decorationId) return item;
+
+    return {
+      ...item,
+      scale: nextScale !== 1 ? nextScale : undefined,
+    };
+  });
+}
+
+export function updatePlacedDecorationRotation(
+  placedDecorations: PlacedDecoration[] | undefined,
+  decorationId: CatDecorationId,
+  rotationIndex: number,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).map((item) => {
+    if (item.decorationId !== decorationId) return item;
+
+    return {
+      ...item,
+      rotationIndex: rotationIndex > 0 ? rotationIndex : undefined,
+    };
+  });
 }
 
 export function removePlacedDecoration(

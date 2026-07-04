@@ -8,6 +8,7 @@ import {
   migrateLegacyPlacedDecorations,
   migrateLegacyPlacedToys,
 } from "@/utils/room-placement";
+import { normalizeRoomLayerOrder } from "@/utils/room-layer-order";
 import {
   DEFAULT_PET,
   DEFAULT_PROGRESS,
@@ -142,6 +143,16 @@ function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
     roomBedOffset: normalizeRoomBedOffset(pet.roomBedOffset),
     placedToys: migrateLegacyPlacedToys(pet),
     placedDecorations: migrateLegacyPlacedDecorations(pet),
+    roomLayerOrder: normalizeRoomLayerOrder({
+      bedId: resolveCatBedId(
+        typeof pet.bedId === "string" ? pet.bedId : undefined,
+      ),
+      placedToys: migrateLegacyPlacedToys(pet),
+      placedDecorations: migrateLegacyPlacedDecorations(pet),
+      roomLayerOrder: Array.isArray(pet.roomLayerOrder)
+        ? (pet.roomLayerOrder as PetProfile["roomLayerOrder"])
+        : undefined,
+    }),
     catSkinId: resolveCatSkinId(
       typeof pet.catSkinId === "string" ? pet.catSkinId : undefined,
     ),
