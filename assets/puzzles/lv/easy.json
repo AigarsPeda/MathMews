@@ -3,89 +3,37 @@
     "id": "easy-01",
     "difficulty": "easy",
     "question": "Mājai bija 12 āboli. Viņa iedeva 4 savam sunim. Cik ābolu Mājai palika?",
-    "choices": ["8", "9", "16"],
+    "choices": [
+      "8",
+      "9",
+      "16"
+    ],
     "correctIndex": 0,
     "hint": "Sāc ar 12 un atņem 4.",
     "explanation": "12 − 4 = 8 āboli palika.",
     "topic": "subtraction",
-    "ageRange": [6, 8]
+    "ageRange": [
+      6,
+      8
+    ]
   },
   {
     "id": "easy-02",
     "difficulty": "easy",
     "question": "Zemniekam ir 17 aitas. Visas, izņemot 9, aizbēg. Cik aitas palika?",
-    "choices": ["9", "8", "17"],
+    "choices": [
+      "9",
+      "8",
+      "17"
+    ],
     "correctIndex": 0,
     "hint": "«Visas, izņemot 9» nozīmē, ka 9 neaizbēga.",
     "explanation": "9 aitas palika pie zemnieka.",
     "topic": "logic",
-    "ageRange": [7, 9]
-  },
-  {
-    "id": "easy-03",
-    "difficulty": "easy",
-    "question": "Leo ir 5 sarkani un 3 zili baloni. Cik balonu kopā?",
-    "choices": ["7", "8", "15"],
-    "correctIndex": 1,
-    "hint": "Saskaiti sarkanos un zilos balonus.",
-    "explanation": "5 + 3 = 8 baloni.",
-    "topic": "addition",
-    "ageRange": [6, 8]
-  },
-  {
-    "id": "easy-04",
-    "difficulty": "easy",
-    "question": "Kāds skaitlis nāk nākamais? 2, 4, 6, 8, ?",
-    "choices": ["9", "10", "12"],
-    "correctIndex": 1,
-    "hint": "Skaitļi katru reizi palielinās par 2.",
-    "explanation": "8 + 2 = 10.",
-    "topic": "patterns",
-    "ageRange": [7, 9]
-  },
-  {
-    "id": "easy-05",
-    "difficulty": "easy",
-    "question": "Ir 10 cepumi. Tu apēd 3. Cik cepumu palika?",
-    "choices": ["6", "7", "13"],
-    "correctIndex": 1,
-    "hint": "No 10 atņem apēstos cepumus.",
-    "explanation": "10 − 3 = 7 cepumi palika.",
-    "topic": "subtraction",
-    "ageRange": [6, 8]
-  },
-  {
-    "id": "easy-06",
-    "difficulty": "easy",
-    "question": "Kastē ir 2 rindas pa 4 rotaļlietām. Cik rotaļlietu kastē?",
-    "choices": ["6", "8", "10"],
-    "correctIndex": 1,
-    "hint": "Reizini rindu skaitu ar rotaļlietām katrā rindā.",
-    "explanation": "2 × 4 = 8 rotaļlietas.",
-    "topic": "multiplication",
-    "ageRange": [8, 10]
-  },
-  {
-    "id": "easy-07",
-    "difficulty": "easy",
-    "question": "Esmu nepāra skaitlis. Esmu lielāks par 10, bet mazāks par 15. Kas es esmu?",
-    "choices": ["11", "12", "14"],
-    "correctIndex": 0,
-    "hint": "Uzskaiti nepāra skaitļus starp 10 un 15.",
-    "explanation": "Der 11 un 13, bet atbilžu variantos ir tikai 11.",
-    "topic": "logic",
-    "ageRange": [8, 10]
-  },
-  {
-    "id": "easy-08",
-    "difficulty": "easy",
-    "question": "Sam pludmalē atrada 6 gliemežvākus, tad vēl 4. Cik gliemežvāku Sam ir?",
-    "choices": ["10", "2", "9"],
-    "correctIndex": 0,
-    "hint": "Saskaiti abas gliemežvāku grupas.",
-    "explanation": "6 + 4 = 10 gliemežvāki.",
-    "topic": "addition",
-    "ageRange": [6, 8]
+    "ageRange": [
+      7,
+      9
+    ]
   },
   {
     "id": "easy-09",
@@ -100,42 +48,46 @@
     "hint": "Reizināšana ar 0 dod 0.",
     "explanation": "0 + 1 + 2 + 3 + 4 = 10. Jebkas × 0 = 0.",
     "topic": "comparison",
-    "ageRange": [7, 9]
+    "ageRange": [
+      7,
+      9
+    ]
   },
   {
-    "id": "easy-10",
-    "type": "multiple_choice",
+    "id": "easy-03",
     "difficulty": "easy",
-    "question": "Atrodi īsāko ceļu! Cik ir 262 × 24 − 262 × 23?",
-    "choices": ["262", "524", "23"],
-    "correctIndex": 0,
-    "hint": "Abās daļās ir tas pats skaitlis.",
-    "explanation": "262 × (24 − 23) = 262 × 1 = 262.",
-    "topic": "mental_math",
-    "ageRange": [9, 11]
+    "question": "Leo ir 5 sarkani un 3 zili baloni. Cik balonu kopā?",
+    "choices": [
+      "7",
+      "8",
+      "15"
+    ],
+    "correctIndex": 1,
+    "hint": "Saskaiti sarkanos un zilos balonus.",
+    "explanation": "5 + 3 = 8 baloni.",
+    "topic": "addition",
+    "ageRange": [
+      6,
+      8
+    ]
   },
   {
-    "id": "easy-11",
-    "type": "fraction_build",
+    "id": "easy-04",
     "difficulty": "easy",
-    "question": "Uztaisi šo daļu!",
-    "payload": { "numerator": 1, "denominator": 4 },
-    "hint": "Nokrāso 1 daļu no 4 vienādām daļām.",
-    "explanation": "1/4 nozīmē 1 daļu no 4 vienādām daļām.",
-    "topic": "fractions",
-    "ageRange": [7, 9]
-  },
-  {
-    "id": "easy-12",
-    "type": "true_false",
-    "difficulty": "easy",
-    "question": "Ātri pārbaudi! Vai tas ir patiesība?",
-    "payload": { "statement": "3 × 4 = 11" },
-    "isTrue": false,
-    "hint": "Pamēģini sareizināt 3 un 4 galvā.",
-    "explanation": "3 × 4 = 12, nevis 11 — tātad tas nav patiesība.",
-    "topic": "multiplication",
-    "ageRange": [7, 9]
+    "question": "Kāds skaitlis nāk nākamais? 2, 4, 6, 8, ?",
+    "choices": [
+      "9",
+      "10",
+      "12"
+    ],
+    "correctIndex": 1,
+    "hint": "Skaitļi katru reizi palielinās par 2.",
+    "explanation": "8 + 2 = 10.",
+    "topic": "patterns",
+    "ageRange": [
+      7,
+      9
+    ]
   },
   {
     "id": "easy-13",
@@ -145,13 +97,56 @@
     "payload": {
       "leftDisplay": "7 + ?",
       "rightValue": 10,
-      "choices": ["2", "3", "4"]
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ]
     },
     "correctIndex": 1,
     "hint": "Ko pieskaitīt 7, lai sanāktu 10?",
     "explanation": "7 + 3 = 10 — abas puses ir vienādas!",
     "topic": "equality",
-    "ageRange": [6, 8]
+    "ageRange": [
+      6,
+      8
+    ]
+  },
+  {
+    "id": "easy-05",
+    "difficulty": "easy",
+    "question": "Ir 10 cepumi. Tu apēd 3. Cik cepumu palika?",
+    "choices": [
+      "6",
+      "7",
+      "13"
+    ],
+    "correctIndex": 1,
+    "hint": "No 10 atņem apēstos cepumus.",
+    "explanation": "10 − 3 = 7 cepumi palika.",
+    "topic": "subtraction",
+    "ageRange": [
+      6,
+      8
+    ]
+  },
+  {
+    "id": "easy-06",
+    "difficulty": "easy",
+    "question": "Kastē ir 2 rindas pa 4 rotaļlietām. Cik rotaļlietu kastē?",
+    "choices": [
+      "6",
+      "8",
+      "10"
+    ],
+    "correctIndex": 1,
+    "hint": "Reizini rindu skaitu ar rotaļlietām katrā rindā.",
+    "explanation": "2 × 4 = 8 rotaļlietas.",
+    "topic": "multiplication",
+    "ageRange": [
+      8,
+      10
+    ]
   },
   {
     "id": "easy-14",
@@ -168,6 +163,98 @@
     "hint": "Sāc no 12 un lēci atpakaļ par 5.",
     "explanation": "12 − 5 = 7 — tu nokļūsti uz 7!",
     "topic": "subtraction",
-    "ageRange": [6, 8]
+    "ageRange": [
+      6,
+      8
+    ]
+  },
+  {
+    "id": "easy-07",
+    "difficulty": "easy",
+    "question": "Esmu nepāra skaitlis. Esmu lielāks par 10, bet mazāks par 15. Kas es esmu?",
+    "choices": [
+      "11",
+      "12",
+      "14"
+    ],
+    "correctIndex": 0,
+    "hint": "Uzskaiti nepāra skaitļus starp 10 un 15.",
+    "explanation": "Der 11 un 13, bet atbilžu variantos ir tikai 11.",
+    "topic": "logic",
+    "ageRange": [
+      8,
+      10
+    ]
+  },
+  {
+    "id": "easy-08",
+    "difficulty": "easy",
+    "question": "Sam pludmalē atrada 6 gliemežvākus, tad vēl 4. Cik gliemežvāku Sam ir?",
+    "choices": [
+      "10",
+      "2",
+      "9"
+    ],
+    "correctIndex": 0,
+    "hint": "Saskaiti abas gliemežvāku grupas.",
+    "explanation": "6 + 4 = 10 gliemežvāki.",
+    "topic": "addition",
+    "ageRange": [
+      6,
+      8
+    ]
+  },
+  {
+    "id": "easy-12",
+    "type": "true_false",
+    "difficulty": "easy",
+    "question": "Ātri pārbaudi! Vai tas ir patiesība?",
+    "payload": {
+      "statement": "3 × 4 = 11"
+    },
+    "isTrue": false,
+    "hint": "Pamēģini sareizināt 3 un 4 galvā.",
+    "explanation": "3 × 4 = 12, nevis 11 — tātad tas nav patiesība.",
+    "topic": "multiplication",
+    "ageRange": [
+      7,
+      9
+    ]
+  },
+  {
+    "id": "easy-10",
+    "type": "multiple_choice",
+    "difficulty": "easy",
+    "question": "Atrodi īsāko ceļu! Cik ir 262 × 24 − 262 × 23?",
+    "choices": [
+      "262",
+      "524",
+      "23"
+    ],
+    "correctIndex": 0,
+    "hint": "Abās daļās ir tas pats skaitlis.",
+    "explanation": "262 × (24 − 23) = 262 × 1 = 262.",
+    "topic": "mental_math",
+    "ageRange": [
+      9,
+      11
+    ]
+  },
+  {
+    "id": "easy-11",
+    "type": "fraction_build",
+    "difficulty": "easy",
+    "question": "Uztaisi šo daļu!",
+    "payload": {
+      "numerator": 1,
+      "denominator": 4
+    },
+    "hint": "Nokrāso 1 daļu no 4 vienādām daļām.",
+    "explanation": "1/4 nozīmē 1 daļu no 4 vienādām daļām.",
+    "topic": "fractions",
+    "ageRange": [
+      7,
+      9
+    ]
   }
 ]

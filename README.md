@@ -72,11 +72,23 @@ EXPO_PUBLIC_REVENUECAT_IOS_API_KEY=appl_...
 EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY=goog_...
 ```
 
-For EAS production builds, set secrets instead:
+For EAS production builds, set secrets instead (optional — v1 uses local Xcode):
 
 ```bash
 eas secret:create --name EXPO_PUBLIC_REVENUECAT_IOS_API_KEY --value appl_...
 eas secret:create --name EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY --value goog_...
+```
+
+### TestFlight / App Store (local Xcode)
+
+See [doc/APP_STORE_PLAN.md §5](doc/APP_STORE_PLAN.md#5-production-build-local-xcode). Summary:
+
+```bash
+cp .env.example .env   # fill production keys
+npx expo prebuild --platform ios
+# create ios/.xcode.env.local with same EXPO_PUBLIC_* exports
+open ios/MathMews.xcworkspace
+# Xcode → Archive → Distribute to App Store Connect
 ```
 
 ### Release build safety
@@ -100,7 +112,8 @@ This is intentional — misconfigured store builds must not ship. Logic lives in
 - [doc/GAME_PLAN.md](doc/GAME_PLAN.md) — game design and implementation status
 - [doc/IAP_PLAN.md](doc/IAP_PLAN.md) — coin pack IAP rollout
 - [doc/SUPABASE_PLAN.md](doc/SUPABASE_PLAN.md) — local-first cloud save + remote puzzles
-- [doc/APP_STORE_PLAN.md](doc/APP_STORE_PLAN.md) — iOS App Store production checklist
+- [doc/APP_STORE_PLAN.md](doc/APP_STORE_PLAN.md) — iOS App Store production checklist (full)
+- [doc/APP_STORE_CHECKLIST.md](doc/APP_STORE_CHECKLIST.md) — iOS App Store quick tick-list
 - [docs/privacy.html](docs/privacy.html) — public privacy policy (GitHub Pages)
 - [doc/STYLE_GUIDE.md](doc/STYLE_GUIDE.md) — UI and copy guidelines
 
@@ -109,3 +122,7 @@ This is intentional — misconfigured store builds must not ship. Logic lives in
 Cat sprites and room items: [Cat Mega Bundle on itch.io](https://toffeecraft.itch.io/cat-mega-bundle)
 
 https://aigarspeda.github.io/MathMews/privacy.html
+
+### ISOmetric sprites
+
+https://pixel-salvaje.itch.io/isometric-interiors

@@ -3,86 +3,19 @@
     "id": "medium-01",
     "difficulty": "medium",
     "question": "Maiznīca pārdod mafinus pa 6 iepakojumā. Ja pārdod 4 iepakojumus, cik mafinu tika pārdots?",
-    "choices": ["20", "24", "10"],
+    "choices": [
+      "20",
+      "24",
+      "10"
+    ],
     "correctIndex": 1,
     "hint": "Reizini iepakojumu skaitu ar mafiniem katrā.",
     "explanation": "4 × 6 = 24 mafini.",
     "topic": "multiplication",
-    "ageRange": [8, 10]
-  },
-  {
-    "id": "medium-02",
-    "difficulty": "medium",
-    "question": "Džejdai ir 35 €. Viņa nopērk grāmatu par 18 €. Cik naudas viņai paliek?",
-    "choices": ["17", "53", "27"],
-    "correctIndex": 0,
-    "hint": "No 35 € atņem grāmatas cenu.",
-    "explanation": "35 € − 18 € = 17 € palika.",
-    "topic": "subtraction",
-    "ageRange": [8, 10]
-  },
-  {
-    "id": "medium-03",
-    "difficulty": "medium",
-    "question": "Kāds skaitlis nāk nākamais? 3, 6, 12, 24, ?",
-    "choices": ["30", "36", "48"],
-    "correctIndex": 2,
-    "hint": "Katrs skaitlis ir dubultājs par iepriekšējo.",
-    "explanation": "24 × 2 = 48.",
-    "topic": "patterns",
-    "ageRange": [9, 11]
-  },
-  {
-    "id": "medium-04",
-    "difficulty": "medium",
-    "question": "Klasē ir 28 skolēni. Viņi sadalās 4 vienādās komandās. Cik skolēnu katrā komandā?",
-    "choices": ["6", "7", "8"],
-    "correctIndex": 1,
-    "hint": "Dali kopējo skolēnu skaitu ar komandu skaitu.",
-    "explanation": "28 ÷ 4 = 7 skolēni katrā komandā.",
-    "topic": "logic",
-    "ageRange": [9, 11]
-  },
-  {
-    "id": "medium-05",
-    "difficulty": "medium",
-    "question": "Kastē ir 3 rindas pa 5 bumbiņām. Tu pievieno vēl 4 bumbiņas. Cik bumbiņu kastē tagad?",
-    "choices": ["15", "19", "12"],
-    "correctIndex": 1,
-    "hint": "Vispirms nosaki bumbiņu skaitu kastē, tad pievieno 4.",
-    "explanation": "3 × 5 = 15, tad 15 + 4 = 19 bumbiņas.",
-    "topic": "multiplication",
-    "ageRange": [9, 11]
-  },
-  {
-    "id": "medium-06",
-    "difficulty": "medium",
-    "question": "Esmu divciparu skaitlis. Desmitu cipars ir 4, un vienību cipars ir divreiz lielāks par desmitu ciparu. Kas es esmu?",
-    "choices": ["48", "42", "84"],
-    "correctIndex": 0,
-    "hint": "Divreiz 4 ir 8, tātad skaitlis ir 4 un 8.",
-    "explanation": "Skaitlis ir 48.",
-    "topic": "logic",
-    "ageRange": [9, 11]
-  },
-  {
-    "id": "medium-07",
-    "type": "operation_path",
-    "difficulty": "medium",
-    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
-    "payload": {
-      "start": 16,
-      "target": 32,
-      "steps": [
-        { "operand": 4, "operator": "÷" },
-        { "operand": 4, "operator": "+" },
-        { "operand": 4, "operator": "×" }
-      ]
-    },
-    "hint": "Sāc ar dalīšanu.",
-    "explanation": "16 ÷ 4 = 4, 4 + 4 = 8, 8 × 4 = 32.",
-    "topic": "operations",
-    "ageRange": [9, 11]
+    "ageRange": [
+      8,
+      10
+    ]
   },
   {
     "id": "medium-08",
@@ -97,18 +30,112 @@
     "hint": "Vienā vietā ir reizināšana ar nulli.",
     "explanation": "Summa ir 45. Reizinājums ir 0.",
     "topic": "comparison",
-    "ageRange": [8, 10]
+    "ageRange": [
+      8,
+      10
+    ]
+  },
+  {
+    "id": "medium-02",
+    "difficulty": "medium",
+    "question": "Džejdai ir 35 €. Viņa nopērk grāmatu par 18 €. Cik naudas viņai paliek?",
+    "choices": [
+      "17",
+      "53",
+      "27"
+    ],
+    "correctIndex": 0,
+    "hint": "No 35 € atņem grāmatas cenu.",
+    "explanation": "35 € − 18 € = 17 € palika.",
+    "topic": "subtraction",
+    "ageRange": [
+      8,
+      10
+    ]
   },
   {
     "id": "medium-09",
     "type": "fraction_build",
     "difficulty": "medium",
     "question": "Uztaisi šo daļu!",
-    "payload": { "numerator": 2, "denominator": 6 },
+    "payload": {
+      "numerator": 2,
+      "denominator": 6
+    },
     "hint": "Picai ir 6 vienādas daļas. Nokrāso 2.",
     "explanation": "2/6 nozīmē 2 daļas no 6 vienādām daļām.",
     "topic": "fractions",
-    "ageRange": [8, 10]
+    "ageRange": [
+      8,
+      10
+    ]
+  },
+  {
+    "id": "medium-03",
+    "difficulty": "medium",
+    "question": "Kāds skaitlis nāk nākamais? 3, 6, 12, 24, ?",
+    "choices": [
+      "30",
+      "36",
+      "48"
+    ],
+    "correctIndex": 2,
+    "hint": "Katrs skaitlis ir dubultājs par iepriekšējo.",
+    "explanation": "24 × 2 = 48.",
+    "topic": "patterns",
+    "ageRange": [
+      9,
+      11
+    ]
+  },
+  {
+    "id": "medium-07",
+    "type": "operation_path",
+    "difficulty": "medium",
+    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
+    "payload": {
+      "start": 16,
+      "target": 32,
+      "steps": [
+        {
+          "operand": 4,
+          "operator": "÷"
+        },
+        {
+          "operand": 4,
+          "operator": "+"
+        },
+        {
+          "operand": 4,
+          "operator": "×"
+        }
+      ]
+    },
+    "hint": "Sāc ar dalīšanu.",
+    "explanation": "16 ÷ 4 = 4, 4 + 4 = 8, 8 × 4 = 32.",
+    "topic": "operations",
+    "ageRange": [
+      9,
+      11
+    ]
+  },
+  {
+    "id": "medium-04",
+    "difficulty": "medium",
+    "question": "Klasē ir 28 skolēni. Viņi sadalās 4 vienādās komandās. Cik skolēnu katrā komandā?",
+    "choices": [
+      "6",
+      "7",
+      "8"
+    ],
+    "correctIndex": 1,
+    "hint": "Dali kopējo skolēnu skaitu ar komandu skaitu.",
+    "explanation": "28 ÷ 4 = 7 skolēni katrā komandā.",
+    "topic": "logic",
+    "ageRange": [
+      9,
+      11
+    ]
   },
   {
     "id": "medium-10",
@@ -116,14 +143,45 @@
     "difficulty": "medium",
     "question": "Izvēlies divus skaitļus, kas dod 10!",
     "payload": {
-      "numbers": [3, 7, 4, 6, 2, 8],
+      "numbers": [
+        3,
+        7,
+        4,
+        6,
+        2,
+        8
+      ],
       "target": 10,
-      "correctIndices": [0, 1]
+      "correctIndices": [
+        0,
+        1
+      ]
     },
     "hint": "Meklē pāri, kas saskaitot dod 10.",
     "explanation": "3 + 7 = 10 — gudrs pāris!",
     "topic": "mental_math",
-    "ageRange": [7, 9]
+    "ageRange": [
+      7,
+      9
+    ]
+  },
+  {
+    "id": "medium-05",
+    "difficulty": "medium",
+    "question": "Kastē ir 3 rindas pa 5 bumbiņām. Tu pievieno vēl 4 bumbiņas. Cik bumbiņu kastē tagad?",
+    "choices": [
+      "15",
+      "19",
+      "12"
+    ],
+    "correctIndex": 1,
+    "hint": "Vispirms nosaki bumbiņu skaitu kastē, tad pievieno 4.",
+    "explanation": "3 × 5 = 15, tad 15 + 4 = 19 bumbiņas.",
+    "topic": "multiplication",
+    "ageRange": [
+      9,
+      11
+    ]
   },
   {
     "id": "medium-11",
@@ -131,7 +189,9 @@
     "difficulty": "medium",
     "question": "Palīdzi Minkai labot kļūdu!",
     "payload": {
-      "wrongWork": ["15 − 8 = 6"],
+      "wrongWork": [
+        "15 − 8 = 6"
+      ],
       "choices": [
         "Viņa atņēma nepareizi — atbilde ir 7",
         "Viņai vajadzēja saskaitīt",
@@ -142,7 +202,28 @@
     "hint": "Skaiti atpakaļ no 15 vai izmanto pirkstus.",
     "explanation": "15 − 8 = 7. Minka atņēma par vienu par daudz.",
     "topic": "subtraction",
-    "ageRange": [7, 9]
+    "ageRange": [
+      7,
+      9
+    ]
+  },
+  {
+    "id": "medium-06",
+    "difficulty": "medium",
+    "question": "Esmu divciparu skaitlis. Desmitu cipars ir 4, un vienību cipars ir divreiz lielāks par desmitu ciparu. Kas es esmu?",
+    "choices": [
+      "48",
+      "42",
+      "84"
+    ],
+    "correctIndex": 0,
+    "hint": "Divreiz 4 ir 8, tātad skaitlis ir 4 un 8.",
+    "explanation": "Skaitlis ir 48.",
+    "topic": "logic",
+    "ageRange": [
+      9,
+      11
+    ]
   },
   {
     "id": "medium-12",
@@ -151,12 +232,19 @@
     "question": "Cik aptuveni tas ir?",
     "payload": {
       "expression": "48 + 52",
-      "choices": ["Aptuveni 50", "Aptuveni 100", "Aptuveni 150"]
+      "choices": [
+        "Aptuveni 50",
+        "Aptuveni 100",
+        "Aptuveni 150"
+      ]
     },
     "correctIndex": 1,
     "hint": "Vispirms noapaļo katru skaitli līdz tuvākajam desmitniekam.",
     "explanation": "48 ir tuvu 50 un 52 ir tuvu 50 — kopā aptuveni 100.",
     "topic": "estimation",
-    "ageRange": [9, 11]
+    "ageRange": [
+      9,
+      11
+    ]
   }
 ]

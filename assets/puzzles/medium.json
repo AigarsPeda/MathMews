@@ -3,86 +3,19 @@
     "id": "medium-01",
     "difficulty": "medium",
     "question": "A bakery sells muffins in packs of 6. If they sell 4 packs, how many muffins did they sell?",
-    "choices": ["20", "24", "10"],
+    "choices": [
+      "20",
+      "24",
+      "10"
+    ],
     "correctIndex": 1,
     "hint": "Multiply packs by muffins in each pack.",
     "explanation": "4 × 6 = 24 muffins.",
     "topic": "multiplication",
-    "ageRange": [8, 10]
-  },
-  {
-    "id": "medium-02",
-    "difficulty": "medium",
-    "question": "Jade has $35. She buys a book for $18. How much money does she have left?",
-    "choices": ["17", "53", "27"],
-    "correctIndex": 0,
-    "hint": "Subtract the book price from $35.",
-    "explanation": "$35 − $18 = $17 left.",
-    "topic": "subtraction",
-    "ageRange": [8, 10]
-  },
-  {
-    "id": "medium-03",
-    "difficulty": "medium",
-    "question": "What number comes next? 3, 6, 12, 24, ?",
-    "choices": ["30", "36", "48"],
-    "correctIndex": 2,
-    "hint": "Each number doubles the one before it.",
-    "explanation": "24 × 2 = 48.",
-    "topic": "patterns",
-    "ageRange": [9, 11]
-  },
-  {
-    "id": "medium-04",
-    "difficulty": "medium",
-    "question": "A class has 28 students. They split into 4 equal teams. How many students are on each team?",
-    "choices": ["6", "7", "8"],
-    "correctIndex": 1,
-    "hint": "Divide the total students by the number of teams.",
-    "explanation": "28 ÷ 4 = 7 students per team.",
-    "topic": "logic",
-    "ageRange": [9, 11]
-  },
-  {
-    "id": "medium-05",
-    "difficulty": "medium",
-    "question": "A box has 3 rows of 5 marbles. You add 4 more marbles. How many marbles are in the box now?",
-    "choices": ["15", "19", "12"],
-    "correctIndex": 1,
-    "hint": "Find the marbles in the box first, then add 4.",
-    "explanation": "3 × 5 = 15, then 15 + 4 = 19 marbles.",
-    "topic": "multiplication",
-    "ageRange": [9, 11]
-  },
-  {
-    "id": "medium-06",
-    "difficulty": "medium",
-    "question": "I am a two-digit number. My tens digit is 4 and my ones digit is twice my tens digit. What number am I?",
-    "choices": ["48", "42", "84"],
-    "correctIndex": 0,
-    "hint": "Twice 4 is 8, so the number is 4 and 8.",
-    "explanation": "The number is 48.",
-    "topic": "logic",
-    "ageRange": [9, 11]
-  },
-  {
-    "id": "medium-07",
-    "type": "operation_path",
-    "difficulty": "medium",
-    "question": "Pick operators to reach the goal!",
-    "payload": {
-      "start": 16,
-      "target": 32,
-      "steps": [
-        { "operand": 4, "operator": "÷" },
-        { "operand": 4, "operator": "+" },
-        { "operand": 4, "operator": "×" }
-      ]
-    },
-    "hint": "Start by splitting 16 into a smaller number.",
-    "explanation": "16 ÷ 4 = 4, 4 + 4 = 8, 8 × 4 = 32.",
-    "topic": "operations",
-    "ageRange": [9, 11]
+    "ageRange": [
+      8,
+      10
+    ]
   },
   {
     "id": "medium-08",
@@ -97,18 +30,112 @@
     "hint": "One of them uses multiplication with zero.",
     "explanation": "The sum is 45. The product is 0.",
     "topic": "comparison",
-    "ageRange": [8, 10]
+    "ageRange": [
+      8,
+      10
+    ]
+  },
+  {
+    "id": "medium-02",
+    "difficulty": "medium",
+    "question": "Jade has $35. She buys a book for $18. How much money does she have left?",
+    "choices": [
+      "17",
+      "53",
+      "27"
+    ],
+    "correctIndex": 0,
+    "hint": "Subtract the book price from $35.",
+    "explanation": "$35 − $18 = $17 left.",
+    "topic": "subtraction",
+    "ageRange": [
+      8,
+      10
+    ]
   },
   {
     "id": "medium-09",
     "type": "fraction_build",
     "difficulty": "medium",
     "question": "Create this fraction!",
-    "payload": { "numerator": 2, "denominator": 6 },
+    "payload": {
+      "numerator": 2,
+      "denominator": 6
+    },
     "hint": "The pie has 6 equal slices. Color 2 of them.",
     "explanation": "2/6 means 2 slices out of 6 equal parts.",
     "topic": "fractions",
-    "ageRange": [8, 10]
+    "ageRange": [
+      8,
+      10
+    ]
+  },
+  {
+    "id": "medium-03",
+    "difficulty": "medium",
+    "question": "What number comes next? 3, 6, 12, 24, ?",
+    "choices": [
+      "30",
+      "36",
+      "48"
+    ],
+    "correctIndex": 2,
+    "hint": "Each number doubles the one before it.",
+    "explanation": "24 × 2 = 48.",
+    "topic": "patterns",
+    "ageRange": [
+      9,
+      11
+    ]
+  },
+  {
+    "id": "medium-07",
+    "type": "operation_path",
+    "difficulty": "medium",
+    "question": "Pick operators to reach the goal!",
+    "payload": {
+      "start": 16,
+      "target": 32,
+      "steps": [
+        {
+          "operand": 4,
+          "operator": "÷"
+        },
+        {
+          "operand": 4,
+          "operator": "+"
+        },
+        {
+          "operand": 4,
+          "operator": "×"
+        }
+      ]
+    },
+    "hint": "Start by splitting 16 into a smaller number.",
+    "explanation": "16 ÷ 4 = 4, 4 + 4 = 8, 8 × 4 = 32.",
+    "topic": "operations",
+    "ageRange": [
+      9,
+      11
+    ]
+  },
+  {
+    "id": "medium-04",
+    "difficulty": "medium",
+    "question": "A class has 28 students. They split into 4 equal teams. How many students are on each team?",
+    "choices": [
+      "6",
+      "7",
+      "8"
+    ],
+    "correctIndex": 1,
+    "hint": "Divide the total students by the number of teams.",
+    "explanation": "28 ÷ 4 = 7 students per team.",
+    "topic": "logic",
+    "ageRange": [
+      9,
+      11
+    ]
   },
   {
     "id": "medium-10",
@@ -116,14 +143,45 @@
     "difficulty": "medium",
     "question": "Pick two numbers that make 10!",
     "payload": {
-      "numbers": [3, 7, 4, 6, 2, 8],
+      "numbers": [
+        3,
+        7,
+        4,
+        6,
+        2,
+        8
+      ],
       "target": 10,
-      "correctIndices": [0, 1]
+      "correctIndices": [
+        0,
+        1
+      ]
     },
     "hint": "Look for a pair that adds to 10.",
     "explanation": "3 + 7 = 10 — smart pair!",
     "topic": "mental_math",
-    "ageRange": [7, 9]
+    "ageRange": [
+      7,
+      9
+    ]
+  },
+  {
+    "id": "medium-05",
+    "difficulty": "medium",
+    "question": "A box has 3 rows of 5 marbles. You add 4 more marbles. How many marbles are in the box now?",
+    "choices": [
+      "15",
+      "19",
+      "12"
+    ],
+    "correctIndex": 1,
+    "hint": "Find the marbles in the box first, then add 4.",
+    "explanation": "3 × 5 = 15, then 15 + 4 = 19 marbles.",
+    "topic": "multiplication",
+    "ageRange": [
+      9,
+      11
+    ]
   },
   {
     "id": "medium-11",
@@ -131,7 +189,9 @@
     "difficulty": "medium",
     "question": "Help Minka fix her mistake!",
     "payload": {
-      "wrongWork": ["15 − 8 = 6"],
+      "wrongWork": [
+        "15 − 8 = 6"
+      ],
       "choices": [
         "She subtracted wrong — the answer is 7",
         "She should add instead",
@@ -142,7 +202,28 @@
     "hint": "Count back from 15 or use your fingers.",
     "explanation": "15 − 8 = 7. Minka subtracted one too many.",
     "topic": "subtraction",
-    "ageRange": [7, 9]
+    "ageRange": [
+      7,
+      9
+    ]
+  },
+  {
+    "id": "medium-06",
+    "difficulty": "medium",
+    "question": "I am a two-digit number. My tens digit is 4 and my ones digit is twice my tens digit. What number am I?",
+    "choices": [
+      "48",
+      "42",
+      "84"
+    ],
+    "correctIndex": 0,
+    "hint": "Twice 4 is 8, so the number is 4 and 8.",
+    "explanation": "The number is 48.",
+    "topic": "logic",
+    "ageRange": [
+      9,
+      11
+    ]
   },
   {
     "id": "medium-12",
@@ -151,12 +232,19 @@
     "question": "About how much is this?",
     "payload": {
       "expression": "48 + 52",
-      "choices": ["About 50", "About 100", "About 150"]
+      "choices": [
+        "About 50",
+        "About 100",
+        "About 150"
+      ]
     },
     "correctIndex": 1,
     "hint": "Round each number to the nearest ten first.",
     "explanation": "48 is close to 50 and 52 is close to 50 — together about 100.",
     "topic": "estimation",
-    "ageRange": [9, 11]
+    "ageRange": [
+      9,
+      11
+    ]
   }
 ]

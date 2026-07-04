@@ -1,5 +1,5 @@
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
-import type { ComparePuzzle, MultipleChoicePuzzle } from "@/types/puzzle";
+import type { MultipleChoicePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
 
@@ -47,6 +47,8 @@ export function MultipleChoiceTask({
 
 const styles = StyleSheet.create({
   choices: {
+    flexGrow: 0,
+    alignSelf: "stretch",
     gap: moderateScale(12),
   },
 });

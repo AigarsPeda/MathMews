@@ -32,22 +32,23 @@ export function CompareTask({
         const isWrongPick = answered && !isCorrect && selected;
 
         return (
-          <Pressable
-            key={index}
-            style={[
-              styles.option,
-              selected && !answered && styles.optionSelected,
-              isCorrectOption && styles.optionCorrect,
-              isWrongPick && styles.optionWrong,
-              answered && !selected && !isCorrectOption && styles.optionMuted,
-            ]}
-            disabled={answered}
-            onPress={() => onSelect(index)}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: answered, selected }}
-          >
-            <Text style={styles.optionLabel}>{label}</Text>
-          </Pressable>
+          <View key={index} style={styles.optionShell}>
+            <Pressable
+              style={[
+                styles.option,
+                selected && !answered && styles.optionSelected,
+                isCorrectOption && styles.optionCorrect,
+                isWrongPick && styles.optionWrong,
+                answered && !selected && !isCorrectOption && styles.optionMuted,
+              ]}
+              disabled={answered}
+              onPress={() => onSelect(index)}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: answered, selected }}
+            >
+              <Text style={styles.optionLabel}>{label}</Text>
+            </Pressable>
+          </View>
         );
       })}
     </View>
@@ -57,10 +58,14 @@ export function CompareTask({
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
+    alignItems: "flex-start",
     gap: moderateScale(12),
   },
-  option: {
+  optionShell: {
     flex: 1,
+    flexShrink: 1,
+  },
+  option: {
     minHeight: moderateScale(120),
     borderRadius: moderateScale(18),
     borderWidth: 2,

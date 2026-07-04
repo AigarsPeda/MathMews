@@ -26,7 +26,7 @@ export function AppBottomSheet({
       onDismiss={onClose}
       snapPoints={snapPoints}
     >
-      <RNHostView style={styles.host}>
+      <RNHostView style={styles.host} hidden={!visible}>
         <View
           style={[
             styles.content,

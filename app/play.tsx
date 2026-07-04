@@ -656,66 +656,72 @@ export default function PlayScreen() {
             </Pressable>
           ) : null}
 
-          <PuzzleTaskView
-            puzzle={puzzle}
-            selectedIndex={selectedIndex}
-            selectedOperators={selectedOperators}
-            fractionPieces={fractionPieces}
-            numberLineValue={numberLineValue}
-            pairIndices={pairIndices}
-            answered={answered}
-            isCorrect={isCorrect}
-            onSelectChoice={handleChoice}
-            onSelectOperator={handleSelectOperator}
-            onCheckOperators={handleCheckOperators}
-            onChangeFractionPieces={handleChangeFractionPieces}
-            onCheckFraction={handleCheckFraction}
-            onSelectNumberLineValue={handleSelectNumberLineValue}
-            onTogglePairIndex={handleTogglePairIndex}
-          />
+          <View style={styles.taskArea}>
+            <PuzzleTaskView
+              puzzle={puzzle}
+              selectedIndex={selectedIndex}
+              selectedOperators={selectedOperators}
+              fractionPieces={fractionPieces}
+              numberLineValue={numberLineValue}
+              pairIndices={pairIndices}
+              answered={answered}
+              isCorrect={isCorrect}
+              onSelectChoice={handleChoice}
+              onSelectOperator={handleSelectOperator}
+              onCheckOperators={handleCheckOperators}
+              onChangeFractionPieces={handleChangeFractionPieces}
+              onCheckFraction={handleCheckFraction}
+              onSelectNumberLineValue={handleSelectNumberLineValue}
+              onTogglePairIndex={handleTogglePairIndex}
+            />
+          </View>
         </ScrollView>
 
-        <ResultOverlay
-          visible={answered}
-          correct={isCorrect}
-          petType={pet.type}
-          catSkinId={pet.catSkinId}
-          petMood={resultMood}
-          message={
-            isCorrect
-              ? isReplay
-                ? t("play.crackedAgain")
-                : t("play.greatJob")
-              : t("play.goodTry")
-          }
-          detail={isCorrect ? puzzle.explanation : puzzle.hint}
-          coinsEarned={coinsEarned}
-          coinType={isReplay ? "sparkle" : "regular"}
-          continueLabel={
-            isCorrect
-              ? isReplay
-                ? t("play.backToPath")
-                : t("play.nextPuzzle")
-              : canRetry
-                ? t("play.tryAgain")
-                : t("play.backToPath")
-          }
-          onContinue={handleContinue}
-          onGoHome={isCorrect && !isReplay ? handleGoHome : undefined}
-          onBuyLife={!isCorrect && !canRetry ? buyLife : undefined}
-          buyLifeCost={LIFE_BUY_COST}
-          coins={wallet.coins}
-        />
+        {answered ? (
+          <ResultOverlay
+            visible
+            correct={isCorrect}
+            petType={pet.type}
+            catSkinId={pet.catSkinId}
+            petMood={resultMood}
+            message={
+              isCorrect
+                ? isReplay
+                  ? t("play.crackedAgain")
+                  : t("play.greatJob")
+                : t("play.goodTry")
+            }
+            detail={isCorrect ? puzzle.explanation : puzzle.hint}
+            coinsEarned={coinsEarned}
+            coinType={isReplay ? "sparkle" : "regular"}
+            continueLabel={
+              isCorrect
+                ? isReplay
+                  ? t("play.backToPath")
+                  : t("play.nextPuzzle")
+                : canRetry
+                  ? t("play.tryAgain")
+                  : t("play.backToPath")
+            }
+            onContinue={handleContinue}
+            onGoHome={isCorrect && !isReplay ? handleGoHome : undefined}
+            onBuyLife={!isCorrect && !canRetry ? buyLife : undefined}
+            buyLifeCost={LIFE_BUY_COST}
+            coins={wallet.coins}
+          />
+        ) : null}
 
-        <VisualHelpSheet
-          visible={showVisualHelp}
-          puzzleId={puzzle.id}
-          cost={visualHelpCost}
-          coins={wallet.coins}
-          unlocked={visualHelpUnlocked}
-          onPurchase={handlePurchaseVisualHelp}
-          onClose={() => setShowVisualHelp(false)}
-        />
+        {showVisualHelp ? (
+          <VisualHelpSheet
+            visible
+            puzzleId={puzzle.id}
+            cost={visualHelpCost}
+            coins={wallet.coins}
+            unlocked={visualHelpUnlocked}
+            onPurchase={handlePurchaseVisualHelp}
+            onClose={() => setShowVisualHelp(false)}
+          />
+        ) : null}
       </View>
     </SafeAreaView>
   );
@@ -768,10 +774,16 @@ const styles = StyleSheet.create({
   },
   scroll: {
     flex: 1,
+    backgroundColor: GameColors.background,
   },
   scrollContent: {
+    flexGrow: 0,
     gap: moderateScale(16),
     paddingBottom: moderateScale(24),
+  },
+  taskArea: {
+    flexGrow: 0,
+    alignSelf: "stretch",
   },
   visualHelpBtn: {
     backgroundColor: "#F3EEFF",

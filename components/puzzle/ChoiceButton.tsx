@@ -46,6 +46,9 @@ export function ChoiceButton({
 
 const styles = StyleSheet.create({
   button: {
+    flexGrow: 0,
+    flexShrink: 0,
+    alignSelf: "stretch",
     minHeight: moderateScale(56),
     borderRadius: moderateScale(16),
     borderWidth: 2,
