@@ -4,6 +4,7 @@ import { SheetSprite } from "@/components/pet/SheetSprite";
 import {
   CAT_DECORATION_SHEET,
   CAT_DECORATION_SHEET_SIZE,
+  getAnimatedFrameSequence,
   getDecorationCatalogEntry,
   isAnimatedDecorationEntry,
   isImageDecorationEntry,
@@ -14,11 +15,13 @@ import { Image } from "react-native";
 type DecorationSpriteImageProps = {
   decorationId: CatDecorationId;
   size: number;
+  flipHorizontal?: boolean;
 };
 
 export function DecorationSpriteImage({
   decorationId,
   size,
+  flipHorizontal = false,
 }: DecorationSpriteImageProps) {
   const entry = getDecorationCatalogEntry(decorationId);
   if (!entry) {
@@ -27,9 +30,12 @@ export function DecorationSpriteImage({
 
   if (isAnimatedDecorationEntry(entry)) {
     if ("frames" in entry) {
+      const frames =
+        getAnimatedFrameSequence(entry, flipHorizontal) ?? entry.frames;
+
       return (
         <AnimatedFrameSprite
-          frames={entry.frames}
+          frames={frames}
           frameWidth={entry.frameWidth}
           frameHeight={entry.frameHeight}
           fps={entry.fps}
@@ -53,10 +59,14 @@ export function DecorationSpriteImage({
   }
 
   if (isImageDecorationEntry(entry)) {
+    const imageStyle = flipHorizontal
+      ? { width: size, height: size, transform: [{ scaleX: -1 as const }] }
+      : { width: size, height: size };
+
     return (
       <Image
         source={entry.source}
-        style={{ width: size, height: size }}
+        style={imageStyle}
         resizeMode="contain"
         accessibilityIgnoresInvertColors
       />
@@ -69,6 +79,7 @@ export function DecorationSpriteImage({
       sheetSize={CAT_DECORATION_SHEET_SIZE}
       frame={entry.frame}
       size={size}
+      flipHorizontal={flipHorizontal}
     />
   );
 }

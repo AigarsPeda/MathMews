@@ -12,10 +12,12 @@ import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getBedDisplaySize, getCatBedSource } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
+import { isPosterDecorationId } from "@/constants/cat-decorations";
 import { resolveSpriteDisplaySize } from "@/constants/cat-sprites";
 import type { CatToyId } from "@/constants/cat-toys";
 import { getToyDisplaySize } from "@/constants/cat-toys";
 import {
+  canFlipWallDecoration,
   canRotateDecoration,
   canScaleDecorationDown,
   canScaleDecorationUp,
@@ -23,6 +25,7 @@ import {
   getPlacedDecorationHitSize,
   getPlacedDecorationScale,
   getPlacedDecorationSpriteId,
+  getPlacedDecorationWallFlipped,
   usesStyleVariantMenu,
 } from "@/constants/decoration-variants";
 import { GameColors } from "@/constants/game";
@@ -114,6 +117,7 @@ type PetStageProps = {
   ) => void;
   onPlacedDecorationRemove?: (decorationId: CatDecorationId) => void;
   onRotatePlacedDecoration?: (decorationId: CatDecorationId) => void;
+  onFlipPlacedDecorationWall?: (decorationId: CatDecorationId) => void;
   onScalePlacedDecoration?: (
     decorationId: CatDecorationId,
     direction: "up" | "down",
@@ -181,6 +185,7 @@ export function PetStage({
   onPlacedDecorationOffsetChange,
   onPlacedDecorationRemove,
   onRotatePlacedDecoration,
+  onFlipPlacedDecorationWall,
   onScalePlacedDecoration,
   onMoveRoomLayerItem,
   onBedRemove,
@@ -231,6 +236,7 @@ export function PetStage({
   const moveUpLabel = t("home.moveLayerUp");
   const moveDownLabel = t("home.moveLayerDown");
   const rotateLabel = t("home.rotateItem");
+  const flipWallLabel = t("home.flipWall");
   const changeLookLabel = t("home.changeLook");
   const biggerLabel = t("home.makeBigger");
   const smallerLabel = t("home.makeSmaller");
@@ -271,6 +277,7 @@ export function PetStage({
           onPlacedDecorationRemove ||
           onMoveRoomLayerItem ||
           onRotatePlacedDecoration ||
+          onFlipPlacedDecorationWall ||
           onScalePlacedDecoration,
         );
       }
@@ -282,6 +289,7 @@ export function PetStage({
       onPlacedDecorationRemove,
       onPlacedToyRemove,
       onRotatePlacedDecoration,
+      onFlipPlacedDecorationWall,
       onScalePlacedDecoration,
     ],
   );
@@ -315,11 +323,31 @@ export function PetStage({
           (entry) => entry.decorationId === decorationId,
         );
 
+        const isPoster = isPosterDecorationId(decorationId);
+
+        if (
+          onFlipPlacedDecorationWall &&
+          canFlipWallDecoration(decorationId) &&
+          !isPoster
+        ) {
+          actions.push({
+            label: flipWallLabel,
+            icon: "rotate-right",
+            onPress: () => {
+              onFlipPlacedDecorationWall(decorationId);
+            },
+          });
+        }
+
         if (onRotatePlacedDecoration && canRotateDecoration(decorationId)) {
           const styleVariant = usesStyleVariantMenu(decorationId);
           actions.push({
-            label: styleVariant ? changeLookLabel : rotateLabel,
-            icon: styleVariant ? "style" : "rotate-right",
+            label: isPoster
+              ? flipWallLabel
+              : styleVariant
+                ? changeLookLabel
+                : rotateLabel,
+            icon: styleVariant && !isPoster ? "style" : "rotate-right",
             onPress: () => {
               onRotatePlacedDecoration(decorationId);
             },
@@ -387,6 +415,7 @@ export function PetStage({
     },
     [
       changeLookLabel,
+      flipWallLabel,
       biggerLabel,
       closeMenu,
       layerOrder,
@@ -396,6 +425,7 @@ export function PetStage({
       onMoveRoomLayerItem,
       onPlacedDecorationRemove,
       onPlacedToyRemove,
+      onFlipPlacedDecorationWall,
       onRotatePlacedDecoration,
       onScalePlacedDecoration,
       removeMenuLabel,
@@ -546,6 +576,7 @@ export function PetStage({
           <DecorationSpriteImage
             decorationId={spriteId}
             size={decorationSize}
+            flipHorizontal={getPlacedDecorationWallFlipped(placed)}
           />
         </DraggableRoomPet>
       );

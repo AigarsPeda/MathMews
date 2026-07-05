@@ -18,10 +18,6 @@ export const WINDOW_DECORATION_CATALOG = {
     frame: { x: 928, y: 4, w: 64, h: 123 },
     displaySize: 58,
   },
-  windowCurtains: {
-    frame: { x: 140, y: 299, w: 45, h: 108 },
-    displaySize: 52,
-  },
   window7A: {
     source: require("@/assets/pets/Cat/CatItems/Decorations/Windows/window-7a.png"),
     displaySize: 56,

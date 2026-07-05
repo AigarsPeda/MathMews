@@ -8,7 +8,8 @@ import {
   canRotateDecoration,
   canScaleDecorationDown,
   canScaleDecorationUp,
-  getDecorationRotationGroup,
+  canFlipWallDecoration,
+  getDecorationRotationCount,
   getNextRotationIndex,
   getPlacedDecorationScale,
   resolveDecorationPlacement,
@@ -56,6 +57,7 @@ import {
   removePlacedToy,
   updatePlacedDecorationRotation,
   updatePlacedDecorationScale,
+  updatePlacedDecorationWallFlip,
 } from "@/utils/room-placement";
 import {
   moveRoomLayerItem as shiftRoomLayerItem,
@@ -129,6 +131,7 @@ type GameContextValue = {
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   removeDecorationFromRoom: (decorationId: CatDecorationId) => boolean;
   rotatePlacedDecoration: (decorationId: CatDecorationId) => boolean;
+  flipPlacedDecorationWall: (decorationId: CatDecorationId) => boolean;
   scalePlacedDecoration: (
     decorationId: CatDecorationId,
     direction: "up" | "down",
@@ -720,8 +723,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
 
     const canonicalId = placement.decorationId;
-    const group = getDecorationRotationGroup(canonicalId);
-    if (!group) {
+    const rotationCount = getDecorationRotationCount(canonicalId);
+    if (rotationCount < 2) {
       return false;
     }
 
@@ -734,7 +737,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
 
     const currentIndex = placed.rotationIndex ?? 0;
-    const nextIndex = getNextRotationIndex(currentIndex, group.length);
+    const nextIndex = getNextRotationIndex(currentIndex, rotationCount);
 
     setSave({
       ...current,
@@ -744,6 +747,36 @@ export function GameProvider({ children }: { children: ReactNode }) {
           current.pet.placedDecorations,
           canonicalId,
           nextIndex,
+        ),
+      },
+    });
+
+    return true;
+  }, []);
+
+  const flipPlacedDecorationWall = useCallback((decorationId: CatDecorationId) => {
+    const placement = resolveDecorationPlacement(decorationId);
+    if (!placement || !canFlipWallDecoration(placement.decorationId)) {
+      return false;
+    }
+
+    const canonicalId = placement.decorationId;
+    const current = saveRef.current;
+    const placed = current.pet.placedDecorations?.find(
+      (item) => item.decorationId === canonicalId,
+    );
+    if (!placed) {
+      return false;
+    }
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        placedDecorations: updatePlacedDecorationWallFlip(
+          current.pet.placedDecorations,
+          canonicalId,
+          !placed.wallFlipped,
         ),
       },
     });
@@ -1031,6 +1064,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       placeDecorationInRoom,
       removeDecorationFromRoom,
       rotatePlacedDecoration,
+      flipPlacedDecorationWall,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,
@@ -1085,6 +1119,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       placeDecorationInRoom,
       removeDecorationFromRoom,
       rotatePlacedDecoration,
+      flipPlacedDecorationWall,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,

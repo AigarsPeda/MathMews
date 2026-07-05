@@ -95,6 +95,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         offset,
         rotationIndex:
           placement.rotationIndex > 0 ? placement.rotationIndex : undefined,
+        wallFlipped: record.wallFlipped === true ? true : undefined,
         scale: scale !== undefined && scale !== 1 ? scale : undefined,
       });
     }
@@ -253,6 +254,21 @@ export function updatePlacedDecorationRotation(
     return {
       ...item,
       rotationIndex: rotationIndex > 0 ? rotationIndex : undefined,
+    };
+  });
+}
+
+export function updatePlacedDecorationWallFlip(
+  placedDecorations: PlacedDecoration[] | undefined,
+  decorationId: CatDecorationId,
+  wallFlipped: boolean,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).map((item) => {
+    if (item.decorationId !== decorationId) return item;
+
+    return {
+      ...item,
+      wallFlipped: wallFlipped ? true : undefined,
     };
   });
 }

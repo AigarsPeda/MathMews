@@ -129,7 +129,9 @@ export const PLANT_DECORATION_STORE_IDS = [...PLANT_DECORATION_IDS];
 
 export const POSTER_DECORATION_STORE_IDS = [...POSTER_DECORATION_IDS];
 
-export const SOFA_DECORATION_STORE_IDS = [...SOFA_DECORATION_IDS];
+export const SOFA_DECORATION_STORE_IDS = SOFA_DECORATION_IDS.filter((id) =>
+  isCanonicalDecorationStoreId(id),
+);
 
 export const TV_DECORATION_STORE_IDS = [...TV_DECORATION_IDS];
 

@@ -60,6 +60,7 @@ type AnimatedDecorationCatalogEntry =
     }
   | {
       frames: readonly number[];
+      flippedFrames?: readonly number[];
       frameWidth: number;
       frameHeight: number;
       fps?: number;
@@ -574,6 +575,33 @@ export function isAnimatedDecorationEntry(
   return "frameWidth" in entry;
 }
 
+export function getAnimatedFrameSequence(
+  entry: AnimatedDecorationCatalogEntry,
+  flipHorizontal: boolean,
+): readonly number[] | undefined {
+  if (!("frames" in entry)) {
+    return undefined;
+  }
+
+  if (flipHorizontal && entry.flippedFrames && entry.flippedFrames.length > 0) {
+    return entry.flippedFrames;
+  }
+
+  return entry.frames;
+}
+
+export function hasFlippedAnimationFrames(
+  decorationId: CatDecorationId,
+): boolean {
+  const entry = getDecorationCatalogEntry(decorationId);
+  return (
+    entry !== undefined &&
+    "flippedFrames" in entry &&
+    Array.isArray(entry.flippedFrames) &&
+    entry.flippedFrames.length > 0
+  );
+}
+
 export function isCatDecorationId(value: string): value is CatDecorationId {
   return value in CAT_DECORATION_CATALOG;
 }
@@ -583,8 +611,11 @@ export function resolveCatDecorationId(
 ): CatDecorationId | undefined {
   if (!decorationId) return undefined;
 
-  if (isCatDecorationId(decorationId)) {
-    return decorationId;
+  const migrated =
+    decorationId === "windowCurtains" ? "plantPotted" : decorationId;
+
+  if (isCatDecorationId(migrated)) {
+    return migrated;
   }
 
   return undefined;
@@ -607,6 +638,13 @@ export function getDecorationStorePreviewSize(
   decorationId: string | undefined,
 ): number {
   return Math.round(getDecorationDisplaySize(decorationId) * 1.35);
+}
+
+/** Some animated items preview better on the opposite-wall frame set. */
+export function getDecorationStorePreviewWallFlipped(
+  decorationId: CatDecorationId,
+): boolean {
+  return decorationId === "bathroomWcAni";
 }
 
 /** Drag hit-box size — square large enough to cover the sprite. */

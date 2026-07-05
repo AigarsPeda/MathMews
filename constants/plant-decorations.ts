@@ -38,6 +38,10 @@ export const PLANT_DECORATION_CATALOG = {
     source: require("@/assets/pets/Cat/CatItems/Decorations/Plants/sunflower.png"),
     displaySize: 44,
   },
+  plantPotted: {
+    source: require("@/assets/pets/Cat/CatItems/Decorations/Plants/plant-potted.png"),
+    displaySize: 52,
+  },
   plantTallGreen: {
     frame: { x: 679, y: 484, w: 55, h: 92 },
     displaySize: 44,

@@ -37,6 +37,8 @@ export type PlacedDecoration = {
   offset: RoomItemOffset;
   /** Sprite variant when the decoration has rotation options. */
   rotationIndex?: number;
+  /** Mirror horizontally for the opposite isometric wall (windows). */
+  wallFlipped?: boolean;
   /** Display scale multiplier (default 1). */
   scale?: number;
 };

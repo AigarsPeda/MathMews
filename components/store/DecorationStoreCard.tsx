@@ -1,6 +1,6 @@
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import type { CatDecorationId } from "@/constants/cat-decorations";
-import { getDecorationStorePreviewSize } from "@/constants/cat-decorations";
+import { getDecorationStorePreviewSize, getDecorationStorePreviewWallFlipped } from "@/constants/cat-decorations";
 import { GameColors } from "@/constants/game";
 import { getDecorationStorePrice } from "@/utils/decoration-store";
 import { moderateScale } from "@/utils/scale";
@@ -35,7 +35,11 @@ export function DecorationStoreCard({
   return (
     <View style={[styles.card, isPlaced && styles.cardEquipped]}>
       <View style={styles.previewWrap}>
-        <DecorationSpriteImage decorationId={decorationId} size={previewSize} />
+        <DecorationSpriteImage
+          decorationId={decorationId}
+          size={previewSize}
+          flipHorizontal={getDecorationStorePreviewWallFlipped(decorationId)}
+        />
         {isPlaced ? (
           <View style={styles.equippedBadge}>
             <Text style={styles.equippedBadgeText}>{t("store.placed")}</Text>

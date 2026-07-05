@@ -1,7 +1,7 @@
 import {
   BATHROOM_BATH_FRAMES,
+  BATHROOM_WC_FLIPPED_FRAMES,
   BATHROOM_WC_FRAMES,
-  BATHROOM_WC_FURNITURE_DRAWERS_FRAMES,
   BATHROOM_WC_TAP_FRAMES,
 } from "@/constants/bathroom-animation-frames";
 
@@ -9,6 +9,7 @@ type ImageEntry = { source: number; displaySize: number; };
 
 type AnimatedEntry = {
   frames: readonly number[];
+  flippedFrames?: readonly number[];
   frameWidth: number;
   frameHeight: number;
   fps?: number;
@@ -118,17 +119,11 @@ export const BATHROOM_DECORATION_CATALOG = {
   },
   bathroomWcAni: {
     frames: BATHROOM_WC_FRAMES,
+    flippedFrames: BATHROOM_WC_FLIPPED_FRAMES,
     frameWidth: 64,
     frameHeight: 64,
     fps: 6,
     displaySize: 48,
-  },
-  bathroomWcFurnitureDrawersAni: {
-    frames: BATHROOM_WC_FURNITURE_DRAWERS_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 64,
   },
   bathroomWcTapAni: {
     frames: BATHROOM_WC_TAP_FRAMES,

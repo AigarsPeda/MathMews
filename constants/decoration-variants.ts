@@ -2,6 +2,9 @@ import {
   resolveCatDecorationId,
   getDecorationDisplaySize,
   getDecorationHitSize,
+  getDecorationCatalogEntry,
+  hasFlippedAnimationFrames,
+  isPosterDecorationId,
   isWindowDecorationId,
   type CatDecorationId,
 } from "@/constants/cat-decorations";
@@ -13,6 +16,7 @@ export const DECORATION_ROTATION_GROUPS: readonly (readonly CatDecorationId[])[]
     ["chairClassicA", "chairClassicB", "chairClassicC", "chairClassicD"],
     ["chairGamingA", "chairGamingB", "chairGamingC", "chairGamingD"],
     ["deskWoodA", "deskWoodB"],
+    ["sofaA", "sofaB"],
     ["window7A", "window7B", "window7C"],
     ["window8A", "window8B", "window8C"],
     ["window11A", "window11B", "window11C"],
@@ -44,6 +48,9 @@ export const DECORATION_SCALE_MIN = 0.7;
 export const DECORATION_SCALE_MAX = 2.2;
 export const DECORATION_SCALE_STEP = 0.1;
 
+/** Posters use one sprite mirrored horizontally for the opposite isometric wall. */
+export const POSTER_WALL_ORIENTATION_COUNT = 2;
+
 export function isDecorationRotationVariantOnly(
   decorationId: CatDecorationId,
 ): boolean {
@@ -62,9 +69,37 @@ export function getDecorationRotationGroup(
   return VARIANT_TO_GROUP.get(decorationId);
 }
 
+export function canFlipWallDecoration(decorationId: CatDecorationId): boolean {
+  return (
+    isPosterDecorationId(decorationId) ||
+    isWindowDecorationId(decorationId) ||
+    hasFlippedAnimationFrames(decorationId)
+  );
+}
+
+/** Posters reuse rotationIndex to store wall side (0 / 1). */
+export function usesWallFlipRotation(decorationId: CatDecorationId): boolean {
+  return isPosterDecorationId(decorationId);
+}
+
 export function canRotateDecoration(decorationId: CatDecorationId): boolean {
+  if (usesWallFlipRotation(decorationId)) {
+    return true;
+  }
+
   const group = getDecorationRotationGroup(decorationId);
   return group !== undefined && group.length > 1;
+}
+
+export function getDecorationRotationCount(
+  decorationId: CatDecorationId,
+): number {
+  if (usesWallFlipRotation(decorationId)) {
+    return POSTER_WALL_ORIENTATION_COUNT;
+  }
+
+  const group = getDecorationRotationGroup(decorationId);
+  return group?.length ?? 0;
 }
 
 export function usesStyleVariantMenu(decorationId: CatDecorationId): boolean {
@@ -80,6 +115,16 @@ export function resolveDecorationPlacement(
 
   const group = VARIANT_TO_GROUP.get(resolved);
   if (!group) {
+    if (usesWallFlipRotation(resolved)) {
+      return {
+        decorationId: resolved,
+        rotationIndex: Math.max(
+          0,
+          Math.min(rotationIndex, POSTER_WALL_ORIENTATION_COUNT - 1),
+        ),
+      };
+    }
+
     return { decorationId: resolved, rotationIndex: 0 };
   }
 
@@ -149,6 +194,18 @@ export function getNextRotationIndex(
   groupLength: number,
 ): number {
   return (currentIndex + 1) % groupLength;
+}
+
+export function getPlacedDecorationWallFlipped(
+  placed: PlacedDecoration,
+): boolean {
+  const decorationId = placed.decorationId as CatDecorationId;
+
+  if (isPosterDecorationId(decorationId)) {
+    return (placed.rotationIndex ?? 0) % 2 === 1;
+  }
+
+  return placed.wallFlipped === true;
 }
 
 export function getPlacedDecorationDragSize(placed: PlacedDecoration): number {

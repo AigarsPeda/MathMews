@@ -13,6 +13,7 @@ type SheetSpriteProps = {
   frame: SheetSpriteFrame;
   /** Max rendered width/height — aspect ratio preserved. */
   size: number;
+  flipHorizontal?: boolean;
 };
 
 /** Crops an arbitrary rectangle from a square sprite sheet. */
@@ -21,6 +22,7 @@ export function SheetSprite({
   sheetSize,
   frame,
   size,
+  flipHorizontal = false,
 }: SheetSpriteProps) {
   const scale = size / Math.max(frame.w, frame.h);
   const displayW = frame.w * scale;
@@ -28,7 +30,13 @@ export function SheetSprite({
   const sheetDisplay = sheetSize * scale;
 
   return (
-    <View style={[styles.cell, { width: displayW, height: displayH }]}>
+    <View
+      style={[
+        styles.cell,
+        { width: displayW, height: displayH },
+        flipHorizontal ? { transform: [{ scaleX: -1 as const }] } : null,
+      ]}
+    >
       <Image
         source={source}
         style={{
