@@ -211,4 +211,94 @@ export const visualHelpEn = {
     s1: "Imagine the same whole split two ways.",
     s2: "Pick the fraction that covers the same area.",
   },
+  multipleChoiceEasy: {
+    s0: "Picture the story in your head.",
+    s1: "Some items are added or taken away.",
+    s2: "Add or subtract to find the answer.",
+  },
+  multipleChoiceMedium: {
+    s0: "You start with money in the wallet.",
+    s1: "Spending means taking money away.",
+    s2: "Subtract what you spent from what you had.",
+  },
+  multipleChoiceHard: {
+    s0: "Distance ÷ time gives speed per hour.",
+    s1: "Find the rate first — that is the unit rate.",
+    s2: "Use the rate to solve the new part of the story.",
+  },
+  compare: {
+    s0: "Work out each side of the comparison.",
+    s1: "One might grow by adding, another might stay at zero.",
+    s2: "Pick the side that gives the bigger result.",
+  },
+  operationPath: {
+    s0: "You have a start number and a goal.",
+    s1: "Try making the number smaller or bigger each step.",
+    s2: "Chain operators until you reach the goal!",
+  },
+  targetBuild: {
+    s0: "You have numbers and a target to hit.",
+    s1: "Multiply and divide before add and subtract.",
+    s2: "Build the expression — order matters!",
+  },
+  fractionBuild: {
+    s0: "Split the shape into equal parts first.",
+    s1: "Shade the number of parts in the question.",
+    s2: "Fraction = shaded parts ÷ total equal parts.",
+  },
+  trueFalse: {
+    s0: "Do not trust a statement — calculate it yourself.",
+    s1: "Work out the math on your own.",
+    s2: "True only if your result matches what it says!",
+  },
+  balance: {
+    s0: "A balanced scale means both sides are equal.",
+    s1: "Find what is missing on the lighter side.",
+    s2: "What number makes the two sides match?",
+  },
+  numberLine: {
+    s0: "Mark your starting spot on the line.",
+    s1: "Jump forward for plus, backward for minus.",
+    s2: "Tap where you land — count each jump!",
+  },
+  pairSum: {
+    s0: "You need two numbers that add to the target.",
+    s1: "Try one number — what partner completes the sum?",
+    s2: "Any pair that adds to the target works!",
+  },
+  fixMistake: {
+    s0: "When an answer looks wrong, check the work.",
+    s1: "Calculate the problem yourself first.",
+    s2: "Name the mistake — wrong answer, wrong operation, or wrong numbers.",
+  },
+  estimate: {
+    s0: "Round each number to the nearest easy ten.",
+    s1: "Add or subtract the rounded numbers.",
+    s2: "Pick the choice closest to your rough total!",
+  },
+  fairShare: {
+    s0: "Share one item at a time to each person.",
+    s1: "Stop when you cannot give everyone another.",
+    s2: "Count per person and any leftovers.",
+  },
+  fractionEquivalent: {
+    s0: "Same amount can use different numbers of pieces.",
+    s1: "Imagine the same whole split two ways.",
+    s2: "Pick the fraction that covers the same area.",
+  },
+  patternNext: {
+    s0: "Look at how each number changes to the next.",
+    s1: "The same jump repeats every time.",
+    s2: "Use that jump to find the missing number.",
+  },
+  functionMachine: {
+    s0: "A number goes into the machine.",
+    s1: "The machine applies one rule: +, −, ×, or ÷.",
+    s2: "Find the rule that turns the input into the output!",
+  },
+  orderNumbers: {
+    s0: "The numbers are mixed up.",
+    s1: "Smallest goes on the left, biggest on the right.",
+    s2: "Swap tiles until they are in order, then check!",
+  },
 };

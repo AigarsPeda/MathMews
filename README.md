@@ -125,4 +125,6 @@ https://aigarspeda.github.io/MathMews/privacy.html
 
 ### ISOmetric sprites
 
-https://pixel-salvaje.itch.io/isometric-interiors
+https://oisougabo.itch.io/essential-isometric-house-pack
+https://oisougabo.itch.io/essential-isometric-bathroom
+https://oisougabo.itch.io/essential-isometric-bedroom-pack

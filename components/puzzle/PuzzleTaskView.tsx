@@ -5,10 +5,13 @@ import { FairShareTask } from "@/components/puzzle/FairShareTask";
 import { FixMistakeTask } from "@/components/puzzle/FixMistakeTask";
 import { FractionBuildTask } from "@/components/puzzle/FractionBuildTask";
 import { FractionEquivalentTask } from "@/components/puzzle/FractionEquivalentTask";
-import { MultipleChoiceTask } from "@/components/puzzle/MultipleChoiceTask";
+import { FunctionMachineTask } from "@/components/puzzle/FunctionMachineTask";
+import { OrderNumbersTask } from "@/components/puzzle/OrderNumbersTask";
+import { PatternNextTask } from "@/components/puzzle/PatternNextTask";
 import { NumberLineTask } from "@/components/puzzle/NumberLineTask";
 import { OperationPathTask } from "@/components/puzzle/OperationPathTask";
 import { PairSumTask } from "@/components/puzzle/PairSumTask";
+import { MultipleChoiceTask } from "@/components/puzzle/MultipleChoiceTask";
 import { TargetBuildTask } from "@/components/puzzle/TargetBuildTask";
 import { TrueFalseTask } from "@/components/puzzle/TrueFalseTask";
 import type { MathOperator, Puzzle } from "@/types/puzzle";
@@ -20,10 +23,13 @@ import {
   asFixMistakePuzzle,
   asFractionBuildPuzzle,
   asFractionEquivalentPuzzle,
+  asFunctionMachinePuzzle,
   asMultipleChoicePuzzle,
   asNumberLinePuzzle,
   asOperationPathPuzzle,
+  asOrderNumbersPuzzle,
   asPairSumPuzzle,
+  asPatternNextPuzzle,
   asTargetBuildPuzzle,
   asTrueFalsePuzzle,
 } from "@/utils/puzzle-type";
@@ -35,6 +41,9 @@ type PuzzleTaskViewProps = {
   fractionPieces: number;
   numberLineValue: number | null;
   pairIndices: number[];
+  numberOrder: number[];
+  orderSwapIndex: number | null;
+  orderSubmitted: boolean;
   answered: boolean;
   isCorrect: boolean;
   onSelectChoice: (index: number) => void;
@@ -44,6 +53,8 @@ type PuzzleTaskViewProps = {
   onCheckFraction: () => void;
   onSelectNumberLineValue: (value: number) => void;
   onTogglePairIndex: (index: number) => void;
+  onTapOrderIndex: (index: number) => void;
+  onCheckOrder: () => void;
 };
 
 export function PuzzleTaskView({
@@ -53,6 +64,9 @@ export function PuzzleTaskView({
   fractionPieces,
   numberLineValue,
   pairIndices,
+  numberOrder,
+  orderSwapIndex,
+  orderSubmitted,
   answered,
   isCorrect,
   onSelectChoice,
@@ -62,7 +76,50 @@ export function PuzzleTaskView({
   onCheckFraction,
   onSelectNumberLineValue,
   onTogglePairIndex,
+  onTapOrderIndex,
+  onCheckOrder,
 }: PuzzleTaskViewProps) {
+  const orderNumbersPuzzle = asOrderNumbersPuzzle(puzzle);
+  if (orderNumbersPuzzle) {
+    return (
+      <OrderNumbersTask
+        puzzle={orderNumbersPuzzle}
+        order={numberOrder}
+        selectedSwapIndex={orderSwapIndex}
+        answered={answered}
+        isCorrect={isCorrect}
+        onTapIndex={onTapOrderIndex}
+        onCheck={onCheckOrder}
+      />
+    );
+  }
+
+  const patternNextPuzzle = asPatternNextPuzzle(puzzle);
+  if (patternNextPuzzle) {
+    return (
+      <PatternNextTask
+        puzzle={patternNextPuzzle}
+        selectedIndex={selectedIndex}
+        isCorrect={isCorrect}
+        answered={answered}
+        onSelect={onSelectChoice}
+      />
+    );
+  }
+
+  const functionMachinePuzzle = asFunctionMachinePuzzle(puzzle);
+  if (functionMachinePuzzle) {
+    return (
+      <FunctionMachineTask
+        puzzle={functionMachinePuzzle}
+        selectedIndex={selectedIndex}
+        isCorrect={isCorrect}
+        answered={answered}
+        onSelect={onSelectChoice}
+      />
+    );
+  }
+
   const fractionPuzzle = asFractionBuildPuzzle(puzzle);
   if (fractionPuzzle) {
     return (

@@ -1,62 +1,205 @@
 [
   {
-    "id": "hard-01",
+    "id": "hard-mc-01",
     "difficulty": "hard",
-    "question": "Pica sadalīta 8 šķēlēs. Tu apēd 3 šķēles un draugs apēd 2. Kāda daļa picas palika?",
+    "topic": "logic",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "question": "Pica sagriezta 8 šķēlēs. Tu apēd 3, draugs apēd 2. Kāda daļa picas palika?",
     "choices": [
       "3/8",
       "5/8",
       "1/2"
     ],
     "correctIndex": 0,
-    "hint": "Apēdas 5 šķēles. Cik šķēļu palika no 8?",
-    "explanation": "8 − 5 = 3 šķēles palika, tātad palika 3/8 picas.",
+    "hint": "Apēdas 5 šķēles. Cik palika no 8?",
+    "explanation": "8 − 5 = 3 šķēles palika, tātad 3/8 picas."
+  },
+  {
+    "id": "hard-pat-1",
+    "difficulty": "hard",
+    "topic": "patterns",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "question": "Kāds skaitlis nāk nākamais secībā?",
+    "payload": {
+      "sequence": [
+        1,
+        1,
+        2,
+        3,
+        5
+      ],
+      "choices": [
+        "7",
+        "8",
+        "6"
+      ]
+    },
+    "correctIndex": 1,
+    "hint": "Skaties, kā mainās katrs skaitlis (Fibonacci).",
+    "explanation": "Nākamais skaitlis ir 8."
+  },
+  {
+    "id": "hard-mc-02",
+    "difficulty": "hard",
     "topic": "logic",
     "ageRange": [
       10,
       12
-    ]
-  },
-  {
-    "id": "hard-09",
-    "type": "fraction_build",
-    "difficulty": "hard",
-    "question": "Uztaisi šo daļu!",
-    "payload": {
-      "numerator": 3,
-      "denominator": 8
-    },
-    "hint": "Nokrāso 3 daļas no 8 vienādām daļām.",
-    "explanation": "3/8 nozīmē 3 daļas no 8 vienādām daļām.",
-    "topic": "fractions",
-    "ageRange": [
-      10,
-      12
-    ]
-  },
-  {
-    "id": "hard-02",
-    "difficulty": "hard",
-    "question": "Vilciens nobrauc 60 jūdzes 2 stundās. Ar tādu pašu ātrumu, cik tālu nobrauks 5 stundās?",
+    ],
+    "type": "multiple_choice",
+    "question": "Vilciens nobrauc 60 jūdzes 2 stundās. Ar to pašu ātrumu — cik tālu 5 stundās?",
     "choices": [
       "120 jūdzes",
       "150 jūdzes",
       "300 jūdzes"
     ],
     "correctIndex": 1,
-    "hint": "Vispirms nosaki jūdzes stundā, tad reizini ar 5.",
-    "explanation": "60 ÷ 2 = 30 jūdzes/h. 30 × 5 = 150 jūdzes.",
+    "hint": "Vispirms atrodi jūdzes stundā, tad reizini ar 5.",
+    "explanation": "60 ÷ 2 = 30 jūdzes/h. 30 × 5 = 150 jūdzes."
+  },
+  {
+    "id": "hard-fn-1",
+    "difficulty": "hard",
+    "topic": "operations",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "question": "Kādu noteikumu izmanto mašīna?",
+    "payload": {
+      "input": 3,
+      "output": 27,
+      "choices": [
+        "×3",
+        "+24",
+        "×9"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "Ko dari ar 3, lai iegūtu 27?",
+    "explanation": "3 ×9 = 27."
+  },
+  {
+    "id": "hard-mc-03",
+    "difficulty": "hard",
     "topic": "logic",
     "ageRange": [
       10,
       12
-    ]
+    ],
+    "type": "multiple_choice",
+    "question": "Veikals palielina 40 eiro rotaļlietas cenu par 25%. Kāda ir jaunā cena?",
+    "choices": [
+      "45 eiro",
+      "50 eiro",
+      "65 eiro"
+    ],
+    "correctIndex": 1,
+    "hint": "25% no 40 ir 10. Pieskaiti sākotnējai cenai.",
+    "explanation": "25% no 40 eiro = 10 eiro. 40 + 10 = 50 eiro."
   },
   {
-    "id": "hard-08",
-    "type": "operation_path",
+    "id": "hard-ord-1",
     "difficulty": "hard",
-    "question": "Uztaisi ceļu līdz 20!",
+    "topic": "comparison",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "order_numbers",
+    "question": "Sakārto skaitļus no mazākā līdz lielākajam!",
+    "payload": {
+      "numbers": [
+        120,
+        45,
+        89,
+        67
+      ],
+      "correctOrder": [
+        45,
+        67,
+        89,
+        120
+      ]
+    },
+    "hint": "Pieskaries diviem skaitļiem, lai tos apmainītu, tad pārbaudi.",
+    "explanation": "Pareizā secība ir 45, 67, 89, 120."
+  },
+  {
+    "id": "hard-mc-04",
+    "difficulty": "hard",
+    "topic": "multiplication",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "question": "Kastē ir 4 rindas pa 6 cepumiem. Tu apēd 5 un dāvini 7 draugam. Cik cepumu palika?",
+    "choices": [
+      "12",
+      "14",
+      "16"
+    ],
+    "correctIndex": 0,
+    "hint": "Atrodi kopējo skaitu, tad atņem apēstos un uzdāvinātos.",
+    "explanation": "4 × 6 = 24 cepumi. 24 − 5 − 7 = 12 palika."
+  },
+  {
+    "id": "hard-cmp-1",
+    "difficulty": "hard",
+    "topic": "comparison",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "compare",
+    "question": "Kurš izteiciens ir lielākais?",
+    "payload": {
+      "optionA": "2³ = 8",
+      "optionB": "4² = 16"
+    },
+    "correctIndex": 1,
+    "hint": "Aprēķini katru pakāpi.",
+    "explanation": "2³ = 8 un 4² = 16. 16 ir lielāks."
+  },
+  {
+    "id": "hard-mc-05",
+    "difficulty": "hard",
+    "topic": "logic",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "question": "Trīs draugi godīgi dalās 5 ābolus. Cik veselu ābolu katram, ja paliek pārpalikums?",
+    "choices": [
+      "1 katram, 2 paliek",
+      "2 katram, 1 paliek",
+      "1 katram, nekas nepaliek"
+    ],
+    "correctIndex": 0,
+    "hint": "Dalī 5 ar 3 un domā par atlikumu.",
+    "explanation": "5 ÷ 3 = 1 katram ar 2 atlikušiem."
+  },
+  {
+    "id": "hard-op-1",
+    "difficulty": "hard",
+    "topic": "operations",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "question": "Pick operators to reach the goal!",
     "payload": {
       "start": 8,
       "target": 20,
@@ -71,37 +214,38 @@
         }
       ]
     },
-    "hint": "Vispirms dubulto, tad pieskaiti.",
-    "explanation": "8 × 2 = 16, 16 + 4 = 20.",
+    "hint": "Try one operator at a time.",
+    "explanation": "Start 8, reach 20."
+  },
+  {
+    "id": "hard-mc-06",
+    "difficulty": "hard",
+    "topic": "multiplication",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "question": "Dārzs ir 12 m garš un 5 m plats. Kāds ir tā laukums?",
+    "choices": [
+      "17 m²",
+      "60 m²",
+      "34 m²"
+    ],
+    "correctIndex": 1,
+    "hint": "Laukumam reizini garumu ar platumu.",
+    "explanation": "12 × 5 = 60 kvadrātmetri."
+  },
+  {
+    "id": "hard-tgt-1",
+    "difficulty": "hard",
     "topic": "operations",
     "ageRange": [
       10,
       12
-    ]
-  },
-  {
-    "id": "hard-03",
-    "difficulty": "hard",
-    "question": "Veikals palielina 40 € rotaļlietas cenu par 25%. Kāda ir jaunā cena?",
-    "choices": [
-      "45 €",
-      "50 €",
-      "65 €"
     ],
-    "correctIndex": 1,
-    "hint": "25% no 40 ir 10. Pieskaiti sākotnējai cenai.",
-    "explanation": "25% no 40 € = 10 €. 40 € + 10 € = 50 €.",
-    "topic": "logic",
-    "ageRange": [
-      11,
-      13
-    ]
-  },
-  {
-    "id": "hard-07",
     "type": "target_build",
-    "difficulty": "hard",
-    "question": "Izmanto +, −, × un ÷, lai iegūtu mērķa skaitli!",
+    "question": "Use +, −, ×, and ÷ to make the target!",
     "payload": {
       "numbers": [
         12,
@@ -116,113 +260,645 @@
         "×"
       ]
     },
-    "hint": "Vispirms reizini, tad saskaiti.",
-    "explanation": "12 ÷ 6 + 3 × 2 = 2 + 6 = 8.",
-    "topic": "operations",
+    "hint": "Think about order of operations.",
+    "explanation": "Build 8 from 12, 6, 3, 2."
+  },
+  {
+    "id": "hard-frac-1",
+    "difficulty": "hard",
+    "topic": "fractions",
     "ageRange": [
       10,
       12
-    ]
-  },
-  {
-    "id": "hard-04",
-    "difficulty": "hard",
-    "question": "Kāds skaitlis nāk nākamais? 1, 1, 2, 3, 5, 8, ?",
-    "choices": [
-      "11",
-      "13",
-      "15"
     ],
-    "correctIndex": 1,
-    "hint": "Katrs skaitlis ir divu iepriekšējo summa.",
-    "explanation": "5 + 8 = 13.",
-    "topic": "patterns",
+    "type": "fraction_build",
+    "question": "Create this fraction!",
+    "payload": {
+      "numerator": 3,
+      "denominator": 8
+    },
+    "hint": "Color 3 piece(s) out of 8 equal parts.",
+    "explanation": "3/8 means 3 piece(s) out of 8."
+  },
+  {
+    "id": "hard-tf-1",
+    "difficulty": "hard",
+    "topic": "multiplication",
     "ageRange": [
       10,
       12
-    ]
+    ],
+    "type": "true_false",
+    "question": "Pārbaudi! Vai tas ir patiesi?",
+    "payload": {
+      "statement": "2⁴ = 16"
+    },
+    "isTrue": true,
+    "hint": "Aprēķini soli pa solim.",
+    "explanation": "2 × 2 × 2 × 2 = 16."
   },
   {
-    "id": "hard-10",
-    "type": "fair_share",
+    "id": "hard-bal-1",
     "difficulty": "hard",
-    "question": "Sadalīsim gardumus godīgi!",
+    "topic": "equality",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "balance",
+    "question": "Līdzsvaro svarus!",
+    "payload": {
+      "leftDisplay": "3 × ?",
+      "rightValue": 24,
+      "choices": [
+        "8",
+        "6",
+        "9"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Kas padara abas puses vienādas?",
+    "explanation": "3 × 8 = 24."
+  },
+  {
+    "id": "hard-nl-1",
+    "difficulty": "hard",
+    "topic": "subtraction",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "number_line",
+    "question": "Lēci pa skaitļu līniju!",
+    "payload": {
+      "start": 35,
+      "jump": -12,
+      "min": 0,
+      "max": 50,
+      "correctValue": 23
+    },
+    "hint": "Sāc no 35 un lēci -12.",
+    "explanation": "35 − 12 = 23."
+  },
+  {
+    "id": "hard-pair-1",
+    "difficulty": "hard",
+    "topic": "mental_math",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pair_sum",
+    "question": "Izvēlies divus skaitļus, kas dod mērķi!",
+    "payload": {
+      "numbers": [
+        12,
+        8,
+        15,
+        5,
+        20,
+        7
+      ],
+      "target": 20,
+      "correctIndices": [
+        0,
+        3
+      ]
+    },
+    "hint": "Meklē pāri, kas dod 20.",
+    "explanation": "12 + 5 = 20."
+  },
+  {
+    "id": "hard-fix-1",
+    "difficulty": "hard",
+    "topic": "subtraction",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fix_mistake",
+    "question": "Kādu kļūdu Minka pieļāva?",
+    "payload": {
+      "wrongWork": [
+        "48 ÷ 6 = 7"
+      ],
+      "choices": [
+        "Viņa nepareizi dalīja — 48 ÷ 6 = 8",
+        "Viņai vajadzēja reizināt, ne dalīt",
+        "48 ÷ 6 = 6"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Cik reizes 6 ietilpst 48?",
+    "explanation": "48 ÷ 6 = 8, nevis 7 — Minka nepareizi dalīja."
+  },
+  {
+    "id": "hard-est-1",
+    "difficulty": "hard",
+    "topic": "estimation",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "estimate",
+    "question": "Cik aptuveni tas ir?",
+    "payload": {
+      "expression": "198 + 203",
+      "choices": [
+        "Aptuveni 300",
+        "Aptuveni 500",
+        "Aptuveni 400"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "Vispirms noapaļo uz ērtiem skaitļiem.",
+    "explanation": "198 + 203 ir tuvu 400."
+  },
+  {
+    "id": "hard-share-1",
+    "difficulty": "hard",
+    "topic": "division",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fair_share",
+    "question": "Sadalī gardumus godīgi!",
     "payload": {
       "items": 10,
       "people": 3,
       "emoji": "🍪",
       "choices": [
-        "Pa 3 katram, 1 paliek",
-        "Pa 4 katram, nekas nepaliek",
-        "Pa 3 katram, nekas nepaliek"
+        "3 katram, 1 paliek",
+        "4 katram, nekas nepaliek",
+        "3 katram, nekas nepaliek"
       ]
     },
     "correctIndex": 0,
-    "hint": "Dalī 10 ar 3 — cik katram? Vai kaut kas paliek?",
-    "explanation": "10 ÷ 3 = pa 3 katram un 1 cepums paliek pāri.",
-    "topic": "division",
-    "ageRange": [
-      9,
-      11
-    ]
+    "hint": "Dalī 10 ar 3.",
+    "explanation": "3 katram, 1 paliek."
   },
   {
-    "id": "hard-05",
+    "id": "hard-feq-1",
     "difficulty": "hard",
-    "question": "Kastē ir 4 rindas pa 6 cepumiem. Tu apēd 5 cepumus un dāvini draugam 7. Cik cepumu palika?",
-    "choices": [
-      "12",
-      "14",
-      "16"
-    ],
-    "correctIndex": 0,
-    "hint": "Nosaki kopējo cepumu skaitu, tad atņem apēstos un uzdāvinātos.",
-    "explanation": "4 × 6 = 24 cepumi. 24 − 5 − 7 = 12 palika.",
-    "topic": "multiplication",
+    "topic": "fractions",
     "ageRange": [
       10,
       12
-    ]
-  },
-  {
-    "id": "hard-11",
+    ],
     "type": "fraction_equivalent",
-    "difficulty": "hard",
-    "question": "Kura daļa ir tikpat daudz?",
+    "question": "Which fraction is the same amount?",
     "payload": {
       "numerator": 1,
       "denominator": 2,
       "choices": [
         "2/4",
-        "1/3",
-        "2/3"
+        "2/3",
+        "1/3"
       ]
     },
     "correctIndex": 0,
-    "hint": "Tikpat daudz nozīmē tādu pašu daļu no vesela.",
-    "explanation": "1/2 = 2/4 — abas ir puse no vesela.",
-    "topic": "fractions",
-    "ageRange": [
-      9,
-      11
-    ]
+    "hint": "Same amount means the same part of a whole.",
+    "explanation": "1/2 = 2/4."
   },
   {
-    "id": "hard-06",
+    "id": "hard-pat-2",
     "difficulty": "hard",
-    "question": "Trīs draugi dalās 5 ābolus vienlīdzīgi. Cik veselu ābolu katrs saņem, ja paliek pārpalikums?",
-    "choices": [
-      "1 katram, 2 palika",
-      "2 katram, 1 palika",
-      "1 katram, nekas nepalika"
-    ],
-    "correctIndex": 0,
-    "hint": "Dali 5 ar 3 un domā par atlikumu.",
-    "explanation": "5 ÷ 3 = 1 ar atlikumu 2.",
-    "topic": "logic",
+    "topic": "patterns",
     "ageRange": [
       10,
       12
-    ]
+    ],
+    "type": "pattern_next",
+    "question": "Kāds skaitlis nāk nākamais secībā?",
+    "payload": {
+      "sequence": [
+        2,
+        3,
+        5,
+        8,
+        13
+      ],
+      "choices": [
+        "21",
+        "18",
+        "20"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Skaties, kā mainās katrs skaitlis (Fibonacci).",
+    "explanation": "Nākamais skaitlis ir 21."
+  },
+  {
+    "id": "hard-fn-2",
+    "difficulty": "hard",
+    "topic": "operations",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "question": "Kādu noteikumu izmanto mašīna?",
+    "payload": {
+      "input": 48,
+      "output": 6,
+      "choices": [
+        "÷6",
+        "−42",
+        "÷8"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "Ko dari ar 48, lai iegūtu 6?",
+    "explanation": "48 ÷8 = 6."
+  },
+  {
+    "id": "hard-ord-2",
+    "difficulty": "hard",
+    "topic": "comparison",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "order_numbers",
+    "question": "Sakārto skaitļus no mazākā līdz lielākajam!",
+    "payload": {
+      "numbers": [
+        200,
+        150,
+        175,
+        125
+      ],
+      "correctOrder": [
+        125,
+        150,
+        175,
+        200
+      ]
+    },
+    "hint": "Pieskaries diviem skaitļiem, lai tos apmainītu, tad pārbaudi.",
+    "explanation": "Pareizā secība ir 125, 150, 175, 200."
+  },
+  {
+    "id": "hard-mc-07",
+    "difficulty": "hard",
+    "topic": "multiplication",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "question": "Tu ietaupi 8 eiro nedēļā. Cik būs pēc 7 nedēļām?",
+    "choices": [
+      "48 eiro",
+      "56 eiro",
+      "64 eiro"
+    ],
+    "correctIndex": 1,
+    "hint": "Reizini nedēļas ietaupījumu ar 7.",
+    "explanation": "8 × 7 = 56 eiro."
+  },
+  {
+    "id": "hard-cmp-2",
+    "difficulty": "hard",
+    "topic": "comparison",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "compare",
+    "question": "Kurš ir lielāks?",
+    "payload": {
+      "optionA": "½ no 100",
+      "optionB": "⅓ no 99"
+    },
+    "correctIndex": 0,
+    "hint": "Atrodi katru vērtību.",
+    "explanation": "½ no 100 = 50. ⅓ no 99 = 33."
+  },
+  {
+    "id": "hard-op-2",
+    "difficulty": "hard",
+    "topic": "operations",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "question": "Pick operators to reach the goal!",
+    "payload": {
+      "start": 36,
+      "target": 9,
+      "steps": [
+        {
+          "operand": 4,
+          "operator": "÷"
+        }
+      ]
+    },
+    "hint": "Cik reizes 4 ietilpst 36?",
+    "explanation": "36 ÷ 4 = 9 — sasniedz mērķi!"
+  },
+  {
+    "id": "hard-tgt-2",
+    "difficulty": "hard",
+    "topic": "operations",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "question": "Use +, −, ×, and ÷ to make the target!",
+    "payload": {
+      "numbers": [
+        20,
+        5,
+        2,
+        3
+      ],
+      "target": 11,
+      "solution": [
+        "÷",
+        "+",
+        "+"
+      ]
+    },
+    "hint": "Think about order of operations.",
+    "explanation": "Build 11 from 20, 5, 2, 3."
+  },
+  {
+    "id": "hard-frac-2",
+    "difficulty": "hard",
+    "topic": "fractions",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_build",
+    "question": "Create this fraction!",
+    "payload": {
+      "numerator": 5,
+      "denominator": 8
+    },
+    "hint": "Color 5 piece(s) out of 8 equal parts.",
+    "explanation": "5/8 means 5 piece(s) out of 8."
+  },
+  {
+    "id": "hard-tf-2",
+    "difficulty": "hard",
+    "topic": "multiplication",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "question": "Pārbaudi! Vai tas ir patiesi?",
+    "payload": {
+      "statement": "15% no 200 ir 25"
+    },
+    "isTrue": false,
+    "hint": "Aprēķini soli pa solim.",
+    "explanation": "15% no 200 = 30."
+  },
+  {
+    "id": "hard-bal-2",
+    "difficulty": "hard",
+    "topic": "equality",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "balance",
+    "question": "Līdzsvaro svarus!",
+    "payload": {
+      "leftDisplay": "? + 14",
+      "rightValue": 30,
+      "choices": [
+        "18",
+        "14",
+        "16"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "Kas padara abas puses vienādas?",
+    "explanation": "16 + 14 = 30."
+  },
+  {
+    "id": "hard-nl-2",
+    "difficulty": "hard",
+    "topic": "subtraction",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "number_line",
+    "question": "Lēci pa skaitļu līniju!",
+    "payload": {
+      "start": 18,
+      "jump": 9,
+      "min": 0,
+      "max": 40,
+      "correctValue": 27
+    },
+    "hint": "Sāc no 18 un lēci +9.",
+    "explanation": "18 + 9 = 27."
+  },
+  {
+    "id": "hard-pair-2",
+    "difficulty": "hard",
+    "topic": "mental_math",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pair_sum",
+    "question": "Izvēlies divus skaitļus, kas dod mērķi!",
+    "payload": {
+      "numbers": [
+        9,
+        11,
+        6,
+        14,
+        3,
+        17
+      ],
+      "target": 20,
+      "correctIndices": [
+        1,
+        3
+      ]
+    },
+    "hint": "Meklē pāri, kas dod 20.",
+    "explanation": "11 + 14 = 20."
+  },
+  {
+    "id": "hard-fix-2",
+    "difficulty": "hard",
+    "topic": "subtraction",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fix_mistake",
+    "question": "Kādu kļūdu Minka pieļāva?",
+    "payload": {
+      "wrongWork": [
+        "25% no 80 = 15"
+      ],
+      "choices": [
+        "Viņa nepareizi atrada 25% — 25% no 80 = 20",
+        "Viņai vajadzēja atrast pusi, ne 25%",
+        "25% no 80 = 15 ir pareizi"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "25% ir tas pats, kas viena ceturtā daļa. Cik ir 80 ÷ 4?",
+    "explanation": "25% no 80 = 20, nevis 15 — Minka aprēķināja nepareizi."
+  },
+  {
+    "id": "hard-est-2",
+    "difficulty": "hard",
+    "topic": "estimation",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "estimate",
+    "question": "Cik aptuveni tas ir?",
+    "payload": {
+      "expression": "49 × 21",
+      "choices": [
+        "Aptuveni 500",
+        "Aptuveni 2000",
+        "Aptuveni 1000"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "Vispirms noapaļo uz ērtiem skaitļiem.",
+    "explanation": "49 × 21 ir tuvu 1000."
+  },
+  {
+    "id": "hard-share-2",
+    "difficulty": "hard",
+    "topic": "division",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fair_share",
+    "question": "Sadalī gardumus godīgi!",
+    "payload": {
+      "items": 7,
+      "people": 2,
+      "emoji": "🍎",
+      "choices": [
+        "3 katram, 1 paliek",
+        "4 katram, nekas nepaliek",
+        "2 katram, nekas nepaliek"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Dalī 7 ar 2.",
+    "explanation": "3 katram, 1 paliek."
+  },
+  {
+    "id": "hard-feq-2",
+    "difficulty": "hard",
+    "topic": "fractions",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "question": "Which fraction is the same amount?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 3,
+      "choices": [
+        "2/4",
+        "4/6",
+        "3/6"
+      ]
+    },
+    "correctIndex": 1,
+    "hint": "Same amount means the same part of a whole.",
+    "explanation": "2/3 = 4/6."
+  },
+  {
+    "id": "hard-pat-3",
+    "difficulty": "hard",
+    "topic": "patterns",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "question": "Kāds skaitlis nāk nākamais secībā?",
+    "payload": {
+      "sequence": [
+        1,
+        4,
+        9,
+        16
+      ],
+      "choices": [
+        "25",
+        "24",
+        "20"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Skaties, kā mainās katrs skaitlis (squares).",
+    "explanation": "Nākamais skaitlis ir 25."
+  },
+  {
+    "id": "hard-fn-3",
+    "difficulty": "hard",
+    "topic": "operations",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "question": "Kādu noteikumu izmanto mašīna?",
+    "payload": {
+      "input": 5,
+      "output": 26,
+      "choices": [
+        "×4",
+        "+21",
+        "×5+1"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "Ko dari ar 5, lai iegūtu 26?",
+    "explanation": "5 ×5+1 = 26."
+  },
+  {
+    "id": "hard-ord-3",
+    "difficulty": "hard",
+    "topic": "comparison",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "order_numbers",
+    "question": "Sakārto skaitļus no mazākā līdz lielākajam!",
+    "payload": {
+      "numbers": [
+        99,
+        33,
+        66,
+        11
+      ],
+      "correctOrder": [
+        11,
+        33,
+        66,
+        99
+      ]
+    },
+    "hint": "Pieskaries diviem skaitļiem, lai tos apmainītu, tad pārbaudi.",
+    "explanation": "Pareizā secība ir 11, 33, 66, 99."
   }
 ]

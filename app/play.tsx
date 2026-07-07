@@ -28,7 +28,11 @@ import type { PetAnimationState } from "@/types/game";
 import type { MathOperator, Puzzle, PuzzleDifficulty } from "@/types/puzzle";
 import { applyLifeRegen, canSpendLife, loseLife } from "@/utils/lives";
 import { clampStat, withPetCareUpdate } from "@/utils/pet-care";
-import { checkPuzzleAnswer, getOperatorSlotCount } from "@/utils/puzzle-type";
+import {
+  asOrderNumbersPuzzle,
+  checkPuzzleAnswer,
+  getOperatorSlotCount,
+} from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
@@ -56,6 +60,29 @@ function triggerHaptic(
 function createEmptyOperators(puzzle: Puzzle): (MathOperator | null)[] {
   const count = getOperatorSlotCount(puzzle);
   return count > 0 ? Array.from({ length: count }, () => null) : [];
+}
+
+function shuffleNumbers(values: number[], seed: string): number[] {
+  const next = [...values];
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) | 0;
+  }
+  for (let i = next.length - 1; i > 0; i--) {
+    hash = (hash * 1664525 + 1013904223) | 0;
+    const j = Math.abs(hash) % (i + 1);
+    [next[i], next[j]] = [next[j], next[i]];
+  }
+  if (next.every((value, index) => value === values[index])) {
+    [next[0], next[1]] = [next[1], next[0]];
+  }
+  return next;
+}
+
+function createInitialOrder(puzzle: Puzzle): number[] {
+  const orderPuzzle = asOrderNumbersPuzzle(puzzle);
+  if (!orderPuzzle) return [];
+  return shuffleNumbers(orderPuzzle.payload.numbers, puzzle.id);
 }
 
 function applyAnswerResult({
@@ -180,13 +207,18 @@ export default function PlayScreen() {
   const [fractionPieces, setFractionPieces] = useState(0);
   const [numberLineValue, setNumberLineValue] = useState<number | null>(null);
   const [pairIndices, setPairIndices] = useState<number[]>([]);
+  const [numberOrder, setNumberOrder] = useState<number[]>(() =>
+    createInitialOrder(puzzle),
+  );
+  const [orderSwapIndex, setOrderSwapIndex] = useState<number | null>(null);
+  const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
 
   const visualHelpCost = getVisualHelpCost(difficulty);
   const visualHelpUnlocked = progress.visualHelpsUnlocked.includes(puzzle.id);
-  const hasVisualHelp = hasVisualExplanation(puzzle.id);
+  const hasVisualHelp = hasVisualExplanation(puzzle);
 
   const syncedLives = useMemo(
     () => applyLifeRegen(progress.lives),
@@ -197,7 +229,8 @@ export default function PlayScreen() {
     selectedIndex !== null ||
     operatorSubmitted ||
     numberLineValue !== null ||
-    pairIndices.length === 2;
+    pairIndices.length === 2 ||
+    orderSubmitted;
   const resultMood: PetAnimationState = isCorrect ? "correct" : "sad";
 
   useEffect(() => {
@@ -207,6 +240,9 @@ export default function PlayScreen() {
     setFractionPieces(0);
     setNumberLineValue(null);
     setPairIndices([]);
+    setNumberOrder(createInitialOrder(puzzle));
+    setOrderSwapIndex(null);
+    setOrderSubmitted(false);
     setIsCorrect(false);
     setCoinsEarned(0);
     setShowVisualHelp(false);
@@ -453,6 +489,63 @@ export default function PlayScreen() {
     ],
   );
 
+  const handleTapOrderIndex = useCallback(
+    (index: number) => {
+      if (answered) return;
+
+      if (orderSwapIndex === null) {
+        setOrderSwapIndex(index);
+        return;
+      }
+
+      if (orderSwapIndex === index) {
+        setOrderSwapIndex(null);
+        return;
+      }
+
+      setNumberOrder((current) => {
+        const next = [...current];
+        [next[orderSwapIndex], next[index]] = [next[index], next[orderSwapIndex]];
+        return next;
+      });
+      setOrderSwapIndex(null);
+    },
+    [answered, orderSwapIndex],
+  );
+
+  const handleCheckOrder = useCallback(() => {
+    if (answered) return;
+
+    const correct = checkPuzzleAnswer(puzzle, {
+      kind: "order",
+      numbers: numberOrder,
+    });
+    setOrderSubmitted(true);
+    applyAnswerResult({
+      correct,
+      coinReward,
+      happinessBoost,
+      isReplay,
+      recordInteraction,
+      setCoinsEarned,
+      setWallet,
+      setProgress,
+      setPet,
+      setIsCorrect,
+    });
+  }, [
+    answered,
+    coinReward,
+    happinessBoost,
+    isReplay,
+    numberOrder,
+    puzzle,
+    recordInteraction,
+    setPet,
+    setProgress,
+    setWallet,
+  ]);
+
   const handleContinue = useCallback(() => {
     recordInteraction();
     if (isCorrect && isReplay) {
@@ -490,6 +583,9 @@ export default function PlayScreen() {
       setFractionPieces(0);
       setNumberLineValue(null);
       setPairIndices([]);
+      setNumberOrder(createInitialOrder(puzzle));
+      setOrderSwapIndex(null);
+      setOrderSubmitted(false);
       setIsCorrect(false);
       setCoinsEarned(0);
       return;
@@ -664,6 +760,9 @@ export default function PlayScreen() {
               fractionPieces={fractionPieces}
               numberLineValue={numberLineValue}
               pairIndices={pairIndices}
+              numberOrder={numberOrder}
+              orderSwapIndex={orderSwapIndex}
+              orderSubmitted={orderSubmitted}
               answered={answered}
               isCorrect={isCorrect}
               onSelectChoice={handleChoice}
@@ -673,6 +772,8 @@ export default function PlayScreen() {
               onCheckFraction={handleCheckFraction}
               onSelectNumberLineValue={handleSelectNumberLineValue}
               onTogglePairIndex={handleTogglePairIndex}
+              onTapOrderIndex={handleTapOrderIndex}
+              onCheckOrder={handleCheckOrder}
             />
           </View>
         </ScrollView>
@@ -714,7 +815,7 @@ export default function PlayScreen() {
         {showVisualHelp ? (
           <VisualHelpSheet
             visible
-            puzzleId={puzzle.id}
+            puzzle={puzzle}
             cost={visualHelpCost}
             coins={wallet.coins}
             unlocked={visualHelpUnlocked}

@@ -4,11 +4,14 @@ import type {
   FixMistakePuzzle,
   FractionBuildPuzzle,
   FractionEquivalentPuzzle,
+  FunctionMachinePuzzle,
   MathOperator,
   MultipleChoicePuzzle,
   NumberLinePuzzle,
   OperationPathPuzzle,
+  OrderNumbersPuzzle,
   PairSumPuzzle,
+  PatternNextPuzzle,
   Puzzle,
   PuzzleType,
   TargetBuildPuzzle,
@@ -31,6 +34,9 @@ const INTERACTIVE_TYPES = new Set<PuzzleType>([
   "estimate",
   "fair_share",
   "fraction_equivalent",
+  "pattern_next",
+  "function_machine",
+  "order_numbers",
 ]);
 
 export function getPuzzleType(puzzle: Puzzle): PuzzleType {
@@ -46,7 +52,8 @@ export type PuzzleAnswer =
   | { kind: "operators"; operators: MathOperator[] }
   | { kind: "fraction"; shaded: number }
   | { kind: "value"; value: number }
-  | { kind: "pair"; indices: [number, number] };
+  | { kind: "pair"; indices: [number, number] }
+  | { kind: "order"; numbers: number[] };
 
 export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean {
   if (puzzle.type === "fraction_build") {
@@ -81,12 +88,18 @@ export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean
   if (puzzle.type === "pair_sum") {
     if (answer.kind !== "pair") return false;
     const [a, b] = answer.indices;
+    if (a === b) return false;
     const nums = puzzle.payload.numbers;
-    const [correctA, correctB] = puzzle.payload.correctIndices;
-    const matchesCorrect =
-      (a === correctA && b === correctB) || (a === correctB && b === correctA);
-    if (!matchesCorrect) return false;
     return nums[a] + nums[b] === puzzle.payload.target;
+  }
+
+  if (puzzle.type === "order_numbers") {
+    if (answer.kind !== "order") return false;
+    const correct = puzzle.payload.correctOrder;
+    return (
+      answer.numbers.length === correct.length &&
+      answer.numbers.every((value, index) => value === correct[index])
+    );
   }
 
   if (puzzle.type === "true_false") {
@@ -106,7 +119,9 @@ export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean
     puzzle.type === "fix_mistake" ||
     puzzle.type === "estimate" ||
     puzzle.type === "fair_share" ||
-    puzzle.type === "fraction_equivalent"
+    puzzle.type === "fraction_equivalent" ||
+    puzzle.type === "pattern_next" ||
+    puzzle.type === "function_machine"
   ) {
     return answer.index === puzzle.correctIndex;
   }
@@ -190,6 +205,20 @@ export function asFractionEquivalentPuzzle(
   puzzle: Puzzle,
 ): FractionEquivalentPuzzle | null {
   return puzzle.type === "fraction_equivalent" ? puzzle : null;
+}
+
+export function asPatternNextPuzzle(puzzle: Puzzle): PatternNextPuzzle | null {
+  return puzzle.type === "pattern_next" ? puzzle : null;
+}
+
+export function asFunctionMachinePuzzle(
+  puzzle: Puzzle,
+): FunctionMachinePuzzle | null {
+  return puzzle.type === "function_machine" ? puzzle : null;
+}
+
+export function asOrderNumbersPuzzle(puzzle: Puzzle): OrderNumbersPuzzle | null {
+  return puzzle.type === "order_numbers" ? puzzle : null;
 }
 
 export function asMultipleChoicePuzzle(

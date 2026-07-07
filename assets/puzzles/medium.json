@@ -1,7 +1,13 @@
 [
   {
-    "id": "medium-01",
+    "id": "medium-mc-01",
     "difficulty": "medium",
+    "topic": "multiplication",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
     "question": "A bakery sells muffins in packs of 6. If they sell 4 packs, how many muffins did they sell?",
     "choices": [
       "20",
@@ -10,34 +16,44 @@
     ],
     "correctIndex": 1,
     "hint": "Multiply packs by muffins in each pack.",
-    "explanation": "4 × 6 = 24 muffins.",
-    "topic": "multiplication",
+    "explanation": "4 × 6 = 24 muffins."
+  },
+  {
+    "id": "medium-pat-1",
+    "difficulty": "medium",
+    "topic": "patterns",
     "ageRange": [
       8,
       10
-    ]
-  },
-  {
-    "id": "medium-08",
-    "type": "compare",
-    "difficulty": "medium",
-    "question": "Which is greater?",
+    ],
+    "type": "pattern_next",
+    "question": "What number comes next in the pattern?",
     "payload": {
-      "optionA": "Sum: 0 + 1 + 2 + … + 9",
-      "optionB": "Product: 0 × 1 × 2 × … × 9"
+      "sequence": [
+        3,
+        6,
+        12,
+        24
+      ],
+      "choices": [
+        "36",
+        "48",
+        "30"
+      ]
     },
-    "correctIndex": 0,
-    "hint": "One of them uses multiplication with zero.",
-    "explanation": "The sum is 45. The product is 0.",
-    "topic": "comparison",
+    "correctIndex": 1,
+    "hint": "Look at how each number changes (×2).",
+    "explanation": "The next number is 48."
+  },
+  {
+    "id": "medium-mc-02",
+    "difficulty": "medium",
+    "topic": "subtraction",
     "ageRange": [
       8,
       10
-    ]
-  },
-  {
-    "id": "medium-02",
-    "difficulty": "medium",
+    ],
+    "type": "multiple_choice",
     "question": "Jade has $35. She buys a book for $18. How much money does she have left?",
     "choices": [
       "17",
@@ -46,52 +62,142 @@
     ],
     "correctIndex": 0,
     "hint": "Subtract the book price from $35.",
-    "explanation": "$35 − $18 = $17 left.",
-    "topic": "subtraction",
+    "explanation": "$35 − $18 = $17 left."
+  },
+  {
+    "id": "medium-fn-1",
+    "difficulty": "medium",
+    "topic": "operations",
     "ageRange": [
       8,
       10
-    ]
-  },
-  {
-    "id": "medium-09",
-    "type": "fraction_build",
-    "difficulty": "medium",
-    "question": "Create this fraction!",
-    "payload": {
-      "numerator": 2,
-      "denominator": 6
-    },
-    "hint": "The pie has 6 equal slices. Color 2 of them.",
-    "explanation": "2/6 means 2 slices out of 6 equal parts.",
-    "topic": "fractions",
-    "ageRange": [
-      8,
-      10
-    ]
-  },
-  {
-    "id": "medium-03",
-    "difficulty": "medium",
-    "question": "What number comes next? 3, 6, 12, 24, ?",
-    "choices": [
-      "30",
-      "36",
-      "48"
     ],
-    "correctIndex": 2,
-    "hint": "Each number doubles the one before it.",
-    "explanation": "24 × 2 = 48.",
-    "topic": "patterns",
-    "ageRange": [
-      9,
-      11
-    ]
+    "type": "function_machine",
+    "question": "What rule does the machine use?",
+    "payload": {
+      "input": 6,
+      "output": 18,
+      "choices": [
+        "×3",
+        "+12",
+        "×2"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "What do you do to 6 to get 18?",
+    "explanation": "6 ×3 = 18."
   },
   {
-    "id": "medium-07",
-    "type": "operation_path",
+    "id": "medium-mc-03",
     "difficulty": "medium",
+    "topic": "logic",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "question": "A class has 28 students. They split into 4 equal teams. How many students are on each team?",
+    "choices": [
+      "6",
+      "7",
+      "8"
+    ],
+    "correctIndex": 1,
+    "hint": "Divide the total students by the number of teams.",
+    "explanation": "28 ÷ 4 = 7 students per team."
+  },
+  {
+    "id": "medium-ord-1",
+    "difficulty": "medium",
+    "topic": "comparison",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "order_numbers",
+    "question": "Put the numbers in order from smallest to largest!",
+    "payload": {
+      "numbers": [
+        45,
+        12,
+        28,
+        19
+      ],
+      "correctOrder": [
+        12,
+        19,
+        28,
+        45
+      ]
+    },
+    "hint": "Tap two numbers to swap them, then check your order.",
+    "explanation": "The correct order is 12, 19, 28, 45."
+  },
+  {
+    "id": "medium-mc-04",
+    "difficulty": "medium",
+    "topic": "multiplication",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "question": "A box has 3 rows of 5 marbles. You add 4 more marbles. How many marbles are in the box now?",
+    "choices": [
+      "15",
+      "19",
+      "12"
+    ],
+    "correctIndex": 1,
+    "hint": "Find the marbles in the box first, then add 4.",
+    "explanation": "3 × 5 = 15, then 15 + 4 = 19 marbles."
+  },
+  {
+    "id": "medium-cmp-1",
+    "difficulty": "medium",
+    "topic": "comparison",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "question": "Which is greater?",
+    "payload": {
+      "optionA": "Sum: 0 + 1 + 2 + … + 9",
+      "optionB": "Product: 0 × 1 × 2 × … × 9"
+    },
+    "correctIndex": 0,
+    "hint": "One of them uses multiplication with zero.",
+    "explanation": "The sum is 45. The product is 0."
+  },
+  {
+    "id": "medium-mc-05",
+    "difficulty": "medium",
+    "topic": "logic",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "question": "I am a two-digit number. My tens digit is 4 and my ones digit is twice my tens digit. What number am I?",
+    "choices": [
+      "48",
+      "42",
+      "84"
+    ],
+    "correctIndex": 0,
+    "hint": "Twice 4 is 8, so the number is 4 and 8.",
+    "explanation": "The number is 48."
+  },
+  {
+    "id": "medium-op-1",
+    "difficulty": "medium",
+    "topic": "operations",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
     "question": "Pick operators to reach the goal!",
     "payload": {
       "start": 16,
@@ -111,37 +217,142 @@
         }
       ]
     },
-    "hint": "Start by splitting 16 into a smaller number.",
-    "explanation": "16 ÷ 4 = 4, 4 + 4 = 8, 8 × 4 = 32.",
+    "hint": "Try one operator at a time.",
+    "explanation": "Start 16, reach 32."
+  },
+  {
+    "id": "medium-mc-06",
+    "difficulty": "medium",
+    "topic": "subtraction",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "question": "A bus has 42 seats. 27 are taken. How many empty seats are left?",
+    "choices": [
+      "15",
+      "16",
+      "69"
+    ],
+    "correctIndex": 0,
+    "hint": "Subtract taken seats from the total.",
+    "explanation": "42 − 27 = 15 empty seats."
+  },
+  {
+    "id": "medium-tgt-1",
+    "difficulty": "medium",
     "topic": "operations",
     "ageRange": [
-      9,
-      11
-    ]
-  },
-  {
-    "id": "medium-04",
-    "difficulty": "medium",
-    "question": "A class has 28 students. They split into 4 equal teams. How many students are on each team?",
-    "choices": [
-      "6",
-      "7",
-      "8"
+      8,
+      10
     ],
-    "correctIndex": 1,
-    "hint": "Divide the total students by the number of teams.",
-    "explanation": "28 ÷ 4 = 7 students per team.",
-    "topic": "logic",
-    "ageRange": [
-      9,
-      11
-    ]
+    "type": "target_build",
+    "question": "Use +, −, ×, and ÷ to make the target!",
+    "payload": {
+      "numbers": [
+        8,
+        4,
+        2,
+        3
+      ],
+      "target": 10,
+      "solution": [
+        "÷",
+        "+",
+        "×"
+      ]
+    },
+    "hint": "Think about order of operations.",
+    "explanation": "Build 10 from 8, 4, 2, 3."
   },
   {
-    "id": "medium-10",
-    "type": "pair_sum",
+    "id": "medium-frac-1",
     "difficulty": "medium",
-    "question": "Pick two numbers that make 10!",
+    "topic": "fractions",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "question": "Create this fraction!",
+    "payload": {
+      "numerator": 2,
+      "denominator": 6
+    },
+    "hint": "Color 2 piece(s) out of 6 equal parts.",
+    "explanation": "2/6 means 2 piece(s) out of 6."
+  },
+  {
+    "id": "medium-tf-1",
+    "difficulty": "medium",
+    "topic": "multiplication",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "true_false",
+    "question": "Spot check! Is this true?",
+    "payload": {
+      "statement": "7 × 8 = 54"
+    },
+    "isTrue": false,
+    "hint": "Work it out step by step.",
+    "explanation": "7 × 8 = 56, not 54."
+  },
+  {
+    "id": "medium-bal-1",
+    "difficulty": "medium",
+    "topic": "equality",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "question": "Balance the scale!",
+    "payload": {
+      "leftDisplay": "12 + ?",
+      "rightValue": 20,
+      "choices": [
+        "10",
+        "6",
+        "8"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "What makes both sides equal?",
+    "explanation": "12 + 8 = 20."
+  },
+  {
+    "id": "medium-nl-1",
+    "difficulty": "medium",
+    "topic": "subtraction",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "question": "Jump on the number line!",
+    "payload": {
+      "start": 20,
+      "jump": -8,
+      "min": 0,
+      "max": 30,
+      "correctValue": 12
+    },
+    "hint": "Start at 20 and jump -8.",
+    "explanation": "20 − 8 = 12."
+  },
+  {
+    "id": "medium-pair-1",
+    "difficulty": "medium",
+    "topic": "mental_math",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "pair_sum",
+    "question": "Pick two numbers that make the target!",
     "payload": {
       "numbers": [
         3,
@@ -158,93 +369,542 @@
       ]
     },
     "hint": "Look for a pair that adds to 10.",
-    "explanation": "3 + 7 = 10 — smart pair!",
-    "topic": "mental_math",
-    "ageRange": [
-      7,
-      9
-    ]
+    "explanation": "3 + 7 = 10."
   },
   {
-    "id": "medium-05",
+    "id": "medium-fix-1",
     "difficulty": "medium",
-    "question": "A box has 3 rows of 5 marbles. You add 4 more marbles. How many marbles are in the box now?",
-    "choices": [
-      "15",
-      "19",
-      "12"
+    "topic": "subtraction",
+    "ageRange": [
+      8,
+      10
     ],
-    "correctIndex": 1,
-    "hint": "Find the marbles in the box first, then add 4.",
-    "explanation": "3 × 5 = 15, then 15 + 4 = 19 marbles.",
-    "topic": "multiplication",
-    "ageRange": [
-      9,
-      11
-    ]
-  },
-  {
-    "id": "medium-11",
     "type": "fix_mistake",
-    "difficulty": "medium",
-    "question": "Help Minka fix her mistake!",
+    "question": "What mistake did Minka make?",
     "payload": {
       "wrongWork": [
         "15 − 8 = 6"
       ],
       "choices": [
-        "She subtracted wrong — the answer is 7",
-        "She should add instead",
-        "8 is too big to subtract"
+        "She subtracted wrong — 15 − 8 = 7",
+        "She should add instead of subtract",
+        "15 − 8 = 9"
       ]
     },
     "correctIndex": 0,
-    "hint": "Count back from 15 or use your fingers.",
-    "explanation": "15 − 8 = 7. Minka subtracted one too many.",
-    "topic": "subtraction",
-    "ageRange": [
-      7,
-      9
-    ]
+    "hint": "Count back from 15 by 8.",
+    "explanation": "15 − 8 = 7, not 6 — Minka subtracted wrong."
   },
   {
-    "id": "medium-06",
+    "id": "medium-est-1",
     "difficulty": "medium",
-    "question": "I am a two-digit number. My tens digit is 4 and my ones digit is twice my tens digit. What number am I?",
-    "choices": [
-      "48",
-      "42",
-      "84"
+    "topic": "estimation",
+    "ageRange": [
+      8,
+      10
     ],
-    "correctIndex": 0,
-    "hint": "Twice 4 is 8, so the number is 4 and 8.",
-    "explanation": "The number is 48.",
-    "topic": "logic",
-    "ageRange": [
-      9,
-      11
-    ]
-  },
-  {
-    "id": "medium-12",
     "type": "estimate",
-    "difficulty": "medium",
     "question": "About how much is this?",
     "payload": {
       "expression": "48 + 52",
       "choices": [
-        "About 50",
         "About 100",
-        "About 150"
+        "About 150",
+        "About 50"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Round to friendly numbers first.",
+    "explanation": "48 + 52 is close to 100."
+  },
+  {
+    "id": "medium-share-1",
+    "difficulty": "medium",
+    "topic": "division",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "question": "Share the treats fairly!",
+    "payload": {
+      "items": 10,
+      "people": 3,
+      "emoji": "🍪",
+      "choices": [
+        "3 each, none left",
+        "3 each, 1 left over",
+        "4 each, none left"
       ]
     },
     "correctIndex": 1,
-    "hint": "Round each number to the nearest ten first.",
-    "explanation": "48 is close to 50 and 52 is close to 50 — together about 100.",
+    "hint": "Divide 10 by 3.",
+    "explanation": "3 each, 1 left over."
+  },
+  {
+    "id": "medium-feq-1",
+    "difficulty": "medium",
+    "topic": "fractions",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_equivalent",
+    "question": "Which fraction is the same amount?",
+    "payload": {
+      "numerator": 1,
+      "denominator": 2,
+      "choices": [
+        "2/3",
+        "2/4",
+        "1/3"
+      ]
+    },
+    "correctIndex": 1,
+    "hint": "Same amount means the same part of a whole.",
+    "explanation": "1/2 = 2/4."
+  },
+  {
+    "id": "medium-pat-2",
+    "difficulty": "medium",
+    "topic": "patterns",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "pattern_next",
+    "question": "What number comes next in the pattern?",
+    "payload": {
+      "sequence": [
+        100,
+        90,
+        80,
+        70
+      ],
+      "choices": [
+        "60",
+        "65",
+        "50"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Look at how each number changes (−10).",
+    "explanation": "The next number is 60."
+  },
+  {
+    "id": "medium-fn-2",
+    "difficulty": "medium",
+    "topic": "operations",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "question": "What rule does the machine use?",
+    "payload": {
+      "input": 20,
+      "output": 5,
+      "choices": [
+        "÷2",
+        "−15",
+        "÷4"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "What do you do to 20 to get 5?",
+    "explanation": "20 ÷4 = 5."
+  },
+  {
+    "id": "medium-ord-2",
+    "difficulty": "medium",
+    "topic": "comparison",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "order_numbers",
+    "question": "Put the numbers in order from smallest to largest!",
+    "payload": {
+      "numbers": [
+        33,
+        7,
+        21,
+        14
+      ],
+      "correctOrder": [
+        7,
+        14,
+        21,
+        33
+      ]
+    },
+    "hint": "Tap two numbers to swap them, then check your order.",
+    "explanation": "The correct order is 7, 14, 21, 33."
+  },
+  {
+    "id": "medium-mc-07",
+    "difficulty": "medium",
+    "topic": "multiplication",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "question": "Each shelf holds 8 books. There are 6 shelves. How many books fit?",
+    "choices": [
+      "42",
+      "48",
+      "56"
+    ],
+    "correctIndex": 1,
+    "hint": "Multiply shelves by books per shelf.",
+    "explanation": "6 × 8 = 48 books."
+  },
+  {
+    "id": "medium-cmp-2",
+    "difficulty": "medium",
+    "topic": "comparison",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "question": "Which is larger?",
+    "payload": {
+      "optionA": "15 × 2",
+      "optionB": "10 + 18"
+    },
+    "correctIndex": 0,
+    "hint": "Calculate each side.",
+    "explanation": "15 × 2 = 30. 10 + 18 = 28. 30 is greater."
+  },
+  {
+    "id": "medium-op-2",
+    "difficulty": "medium",
+    "topic": "operations",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "question": "Pick operators to reach the goal!",
+    "payload": {
+      "start": 48,
+      "target": 12,
+      "steps": [
+        {
+          "operand": 2,
+          "operator": "÷"
+        },
+        {
+          "operand": 2,
+          "operator": "÷"
+        }
+      ]
+    },
+    "hint": "Halving can help — try ÷ 2.",
+    "explanation": "48 ÷ 2 = 24, then 24 ÷ 2 = 12."
+  },
+  {
+    "id": "medium-tgt-2",
+    "difficulty": "medium",
+    "topic": "operations",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "question": "Use +, −, ×, and ÷ to make the target!",
+    "payload": {
+      "numbers": [
+        6,
+        3,
+        2,
+        1
+      ],
+      "target": 5,
+      "solution": [
+        "+",
+        "−",
+        "+"
+      ]
+    },
+    "hint": "Think about order of operations.",
+    "explanation": "Build 5 from 6, 3, 2, 1."
+  },
+  {
+    "id": "medium-frac-2",
+    "difficulty": "medium",
+    "topic": "fractions",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "question": "Create this fraction!",
+    "payload": {
+      "numerator": 3,
+      "denominator": 6
+    },
+    "hint": "Color 3 piece(s) out of 6 equal parts.",
+    "explanation": "3/6 means 3 piece(s) out of 6."
+  },
+  {
+    "id": "medium-tf-2",
+    "difficulty": "medium",
+    "topic": "multiplication",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "true_false",
+    "question": "Spot check! Is this true?",
+    "payload": {
+      "statement": "Half of 18 is 9"
+    },
+    "isTrue": true,
+    "hint": "Work it out step by step.",
+    "explanation": "18 ÷ 2 = 9."
+  },
+  {
+    "id": "medium-bal-2",
+    "difficulty": "medium",
+    "topic": "equality",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "question": "Balance the scale!",
+    "payload": {
+      "leftDisplay": "15 − ?",
+      "rightValue": 7,
+      "choices": [
+        "9",
+        "6",
+        "8"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "What makes both sides equal?",
+    "explanation": "15 − 8 = 7."
+  },
+  {
+    "id": "medium-nl-2",
+    "difficulty": "medium",
+    "topic": "subtraction",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "question": "Jump on the number line!",
+    "payload": {
+      "start": 15,
+      "jump": 6,
+      "min": 0,
+      "max": 30,
+      "correctValue": 21
+    },
+    "hint": "Start at 15 and jump +6.",
+    "explanation": "15 + 6 = 21."
+  },
+  {
+    "id": "medium-pair-2",
+    "difficulty": "medium",
+    "topic": "mental_math",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "pair_sum",
+    "question": "Pick two numbers that make the target!",
+    "payload": {
+      "numbers": [
+        5,
+        9,
+        4,
+        11,
+        2,
+        7
+      ],
+      "target": 14,
+      "correctIndices": [
+        1,
+        3
+      ]
+    },
+    "hint": "Look for a pair that adds to 14.",
+    "explanation": "9 + 11 = 14."
+  },
+  {
+    "id": "medium-fix-2",
+    "difficulty": "medium",
+    "topic": "subtraction",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fix_mistake",
+    "question": "What mistake did Minka make?",
+    "payload": {
+      "wrongWork": [
+        "6 × 7 = 41"
+      ],
+      "choices": [
+        "She multiplied wrong — 6 × 7 = 42",
+        "She should add instead of multiply",
+        "6 × 7 = 40"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Try 6 × 7 in your head or on your fingers.",
+    "explanation": "6 × 7 = 42, not 41 — Minka multiplied wrong."
+  },
+  {
+    "id": "medium-est-2",
+    "difficulty": "medium",
     "topic": "estimation",
     "ageRange": [
-      9,
-      11
-    ]
+      8,
+      10
+    ],
+    "type": "estimate",
+    "question": "About how much is this?",
+    "payload": {
+      "expression": "97 − 48",
+      "choices": [
+        "About 50",
+        "About 70",
+        "About 30"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Round to friendly numbers first.",
+    "explanation": "97 − 48 is close to 50."
+  },
+  {
+    "id": "medium-share-2",
+    "difficulty": "medium",
+    "topic": "division",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "question": "Share the treats fairly!",
+    "payload": {
+      "items": 7,
+      "people": 2,
+      "emoji": "🍎",
+      "choices": [
+        "3 each, 1 left over",
+        "2 each, none left",
+        "4 each, none left"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Divide 7 by 2.",
+    "explanation": "3 each, 1 left over."
+  },
+  {
+    "id": "medium-feq-2",
+    "difficulty": "medium",
+    "topic": "fractions",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_equivalent",
+    "question": "Which fraction is the same amount?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 3,
+      "choices": [
+        "4/6",
+        "2/4",
+        "3/6"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Same amount means the same part of a whole.",
+    "explanation": "2/3 = 4/6."
+  },
+  {
+    "id": "medium-pat-3",
+    "difficulty": "medium",
+    "topic": "patterns",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "pattern_next",
+    "question": "What number comes next in the pattern?",
+    "payload": {
+      "sequence": [
+        2,
+        6,
+        18,
+        54
+      ],
+      "choices": [
+        "162",
+        "72",
+        "108"
+      ]
+    },
+    "correctIndex": 0,
+    "hint": "Look at how each number changes (×3).",
+    "explanation": "The next number is 162."
+  },
+  {
+    "id": "medium-fn-3",
+    "difficulty": "medium",
+    "topic": "operations",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "question": "What rule does the machine use?",
+    "payload": {
+      "input": 7,
+      "output": 15,
+      "choices": [
+        "+6",
+        "×2",
+        "+8"
+      ]
+    },
+    "correctIndex": 2,
+    "hint": "What do you do to 7 to get 15?",
+    "explanation": "7 +8 = 15."
+  },
+  {
+    "id": "medium-ord-3",
+    "difficulty": "medium",
+    "topic": "comparison",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "order_numbers",
+    "question": "Put the numbers in order from smallest to largest!",
+    "payload": {
+      "numbers": [
+        50,
+        25,
+        75,
+        10
+      ],
+      "correctOrder": [
+        10,
+        25,
+        50,
+        75
+      ]
+    },
+    "hint": "Tap two numbers to swap them, then check your order.",
+    "explanation": "The correct order is 10, 25, 50, 75."
   }
 ]

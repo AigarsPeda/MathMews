@@ -27,7 +27,10 @@ export type PuzzleType =
   | "fix_mistake"
   | "estimate"
   | "fair_share"
-  | "fraction_equivalent";
+  | "fraction_equivalent"
+  | "pattern_next"
+  | "function_machine"
+  | "order_numbers";
 
 export type MathOperator = "+" | "-" | "×" | "÷";
 
@@ -104,6 +107,22 @@ export type FractionEquivalentPayload = {
   numerator: number;
   denominator: number;
   choices: string[];
+};
+
+export type PatternNextPayload = {
+  sequence: number[];
+  choices: string[];
+};
+
+export type FunctionMachinePayload = {
+  input: number;
+  output: number;
+  choices: string[];
+};
+
+export type OrderNumbersPayload = {
+  numbers: number[];
+  correctOrder: number[];
 };
 
 type PuzzleBase = {
@@ -189,6 +208,23 @@ export type FractionEquivalentPuzzle = PuzzleBase & {
   correctIndex: number;
 };
 
+export type PatternNextPuzzle = PuzzleBase & {
+  type: "pattern_next";
+  payload: PatternNextPayload;
+  correctIndex: number;
+};
+
+export type FunctionMachinePuzzle = PuzzleBase & {
+  type: "function_machine";
+  payload: FunctionMachinePayload;
+  correctIndex: number;
+};
+
+export type OrderNumbersPuzzle = PuzzleBase & {
+  type: "order_numbers";
+  payload: OrderNumbersPayload;
+};
+
 export type Puzzle =
   | MultipleChoicePuzzle
   | ComparePuzzle
@@ -202,6 +238,9 @@ export type Puzzle =
   | FixMistakePuzzle
   | EstimatePuzzle
   | FairSharePuzzle
-  | FractionEquivalentPuzzle;
+  | FractionEquivalentPuzzle
+  | PatternNextPuzzle
+  | FunctionMachinePuzzle
+  | OrderNumbersPuzzle;
 
 export const MATH_OPERATORS: MathOperator[] = ["+", "-", "×", "÷"];

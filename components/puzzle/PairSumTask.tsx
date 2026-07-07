@@ -34,7 +34,10 @@ export function PairSumTask({
         {numbers.map((num, index) => {
           const selected = selectedIndices.includes(index);
           const isCorrectTile =
-            answered && (index === correctA || index === correctB);
+            answered &&
+            (isCorrect
+              ? selected
+              : index === correctA || index === correctB);
           const isWrongTile =
             answered && !isCorrect && selected && !isCorrectTile;
 

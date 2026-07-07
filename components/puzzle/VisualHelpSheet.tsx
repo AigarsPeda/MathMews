@@ -2,6 +2,7 @@ import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPl
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors } from "@/constants/game";
 import { getVisualExplanation } from "@/constants/visual-explanations";
+import type { Puzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,7 +12,7 @@ type VisualHelpSheetProps = {
   cost: number;
   coins: number;
   visible: boolean;
-  puzzleId: string;
+  puzzle: Puzzle;
   unlocked: boolean;
   onClose: () => void;
   onPurchase: () => boolean;
@@ -21,14 +22,14 @@ export function VisualHelpSheet({
   cost,
   coins,
   visible,
-  puzzleId,
+  puzzle,
   unlocked,
   onClose,
   onPurchase,
 }: VisualHelpSheetProps) {
   const { t } = useTranslation();
   const [progress, setProgress] = useState(0);
-  const explanation = getVisualExplanation(puzzleId);
+  const explanation = getVisualExplanation(puzzle);
   const [isUnlocked, setIsUnlocked] = useState(unlocked);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export function VisualHelpSheet({
       setProgress(0);
       setIsUnlocked(unlocked);
     }
-  }, [visible, unlocked, puzzleId]);
+  }, [visible, unlocked, puzzle.id]);
 
   const handlePurchase = useCallback(() => {
     const ok = onPurchase();

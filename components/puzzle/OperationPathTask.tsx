@@ -16,10 +16,30 @@ type OperationPathTaskProps = {
   onCheck: () => void;
 };
 
-function NumberBubble({ value, large = false }: { value: number; large?: boolean }) {
+function NumberBubble({
+  value,
+  large = false,
+  placeholder = false,
+}: {
+  value: number | "?";
+  large?: boolean;
+  placeholder?: boolean;
+}) {
   return (
-    <View style={[styles.numberBubble, large && styles.numberBubbleLarge]}>
-      <Text style={[styles.numberText, large && styles.numberTextLarge]}>
+    <View
+      style={[
+        styles.numberBubble,
+        large && styles.numberBubbleLarge,
+        placeholder && styles.numberBubblePlaceholder,
+      ]}
+    >
+      <Text
+        style={[
+          styles.numberText,
+          large && styles.numberTextLarge,
+          placeholder && styles.numberTextPlaceholder,
+        ]}
+      >
         {value}
       </Text>
     </View>
@@ -52,8 +72,6 @@ export function OperationPathTask({
 
   const allSelected = selectedOperators.every((operator) => operator !== null);
   const activeStepIndex = selectedOperators.findIndex((operator) => operator === null);
-  const previewStepIndex =
-    activeStepIndex === -1 ? steps.length - 1 : activeStepIndex;
 
   const runningValues = useMemo(() => {
     const values: number[] = [start];
@@ -77,36 +95,47 @@ export function OperationPathTask({
       </View>
 
       <View style={styles.pathCard}>
+        <View style={styles.startRow}>
+          <Text style={styles.startLabel}>{t("puzzleTypes.operationPathStart")}</Text>
+          <NumberBubble value={start} />
+        </View>
+
         {steps.map((step, index) => {
-          const leftValue = runningValues[index] ?? start;
           const selected = selectedOperators[index];
-          const isActive = !answered && index === activeStepIndex;
           const isDone = selected !== null;
+          const isActive = !answered && index === activeStepIndex;
+          const isFuture = !answered && !isDone && index > activeStepIndex;
+          if (isFuture) return null;
+
+          const leftValue = runningValues[index] ?? start;
           const rightValue = runningValues[index + 1];
 
           return (
             <View key={`${puzzle.id}-step-${index}`} style={styles.stepBlock}>
+              <Text style={styles.stepLabel}>
+                {t("puzzleTypes.operationPathStep", {
+                  step: index + 1,
+                  total: steps.length,
+                })}
+              </Text>
+
               <View style={styles.stepRow}>
                 <NumberBubble value={leftValue} />
-                <View style={styles.operatorSlotWrap}>
-                  <View
-                    style={[
-                      styles.operatorSlot,
-                      isActive && styles.operatorSlotActive,
-                      answered &&
-                        selected === step.operator &&
-                        isCorrect &&
-                        styles.operatorSlotCorrect,
-                      answered &&
-                        selected !== null &&
-                        selected !== step.operator &&
-                        styles.operatorSlotWrong,
-                    ]}
-                  >
-                    <Text style={styles.operatorSlotText}>
-                      {selected ?? "?"}
-                    </Text>
-                  </View>
+                <View
+                  style={[
+                    styles.operatorSlot,
+                    isActive && styles.operatorSlotActive,
+                    answered &&
+                      selected === step.operator &&
+                      isCorrect &&
+                      styles.operatorSlotCorrect,
+                    answered &&
+                      selected !== null &&
+                      selected !== step.operator &&
+                      styles.operatorSlotWrong,
+                  ]}
+                >
+                  <Text style={styles.operatorSlotText}>{selected ?? "?"}</Text>
                 </View>
                 <NumberBubble value={step.operand} />
                 {isDone && rightValue !== undefined ? (
@@ -114,7 +143,12 @@ export function OperationPathTask({
                     <Text style={styles.equals}>=</Text>
                     <NumberBubble value={rightValue} />
                   </>
-                ) : null}
+                ) : (
+                  <>
+                    <Text style={styles.equals}>=</Text>
+                    <NumberBubble value="?" placeholder />
+                  </>
+                )}
               </View>
 
               {isActive ? (
@@ -140,6 +174,14 @@ export function OperationPathTask({
             </View>
           );
         })}
+
+        {!answered &&
+        activeStepIndex >= 0 &&
+        activeStepIndex < steps.length - 1 ? (
+          <Text style={styles.futureHint}>
+            {t("puzzleTypes.operationPathKeepGoing")}
+          </Text>
+        ) : null}
       </View>
 
       {currentValue !== null && filledOperators.length > 0 ? (
@@ -163,9 +205,9 @@ export function OperationPathTask({
         <Text style={styles.retryHint}>{t("puzzleTypes.tryDifferentOps")}</Text>
       ) : null}
 
-      {!answered && activeStepIndex === previewStepIndex && !allSelected ? (
+      {!answered && activeStepIndex >= 0 && !allSelected ? (
         <Text style={styles.stepHint}>
-          {t("puzzleTypes.pickForStep", { step: previewStepIndex + 1 })}
+          {t("puzzleTypes.pickForStep", { step: activeStepIndex + 1 })}
         </Text>
       ) : null}
     </View>
@@ -193,15 +235,38 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
     padding: moderateScale(14),
-    gap: moderateScale(16),
+    gap: moderateScale(14),
+  },
+  startRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: moderateScale(10),
+    paddingBottom: moderateScale(4),
+    borderBottomWidth: 1,
+    borderBottomColor: GameColors.cardBorder,
+  },
+  startLabel: {
+    fontSize: moderateScale(14),
+    fontWeight: "700",
+    color: GameColors.textMuted,
   },
   stepBlock: {
     gap: moderateScale(10),
+  },
+  stepLabel: {
+    fontSize: moderateScale(13),
+    fontWeight: "700",
+    color: GameColors.secondary,
+    textAlign: "center",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
   },
   stepRow: {
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
+    justifyContent: "center",
     gap: moderateScale(8),
   },
   numberBubble: {
@@ -220,6 +285,10 @@ const styles = StyleSheet.create({
     minHeight: moderateScale(52),
     borderColor: GameColors.coin,
   },
+  numberBubblePlaceholder: {
+    borderStyle: "dashed",
+    backgroundColor: "transparent",
+  },
   numberText: {
     fontSize: moderateScale(18),
     fontWeight: "800",
@@ -230,8 +299,8 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(22),
     color: GameColors.coinText,
   },
-  operatorSlotWrap: {
-    alignItems: "center",
+  numberTextPlaceholder: {
+    color: GameColors.textMuted,
   },
   operatorSlot: {
     width: moderateScale(44),
@@ -288,6 +357,13 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(24),
     fontWeight: "800",
     color: GameColors.text,
+  },
+  futureHint: {
+    fontSize: moderateScale(13),
+    fontWeight: "600",
+    color: GameColors.textMuted,
+    textAlign: "center",
+    fontStyle: "italic",
   },
   progressText: {
     fontSize: moderateScale(15),

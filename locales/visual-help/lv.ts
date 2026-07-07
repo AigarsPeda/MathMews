@@ -211,4 +211,94 @@ export const visualHelpLv = {
     s1: "Iedomājies to pašu veselo sadalītu divos veidos.",
     s2: "Izvēlies daļu, kas aizņem tikpat lielu laukumu.",
   },
+  multipleChoiceEasy: {
+    s0: "Iedomājies stāstu galvā.",
+    s1: "Dažas lietas tiek pievienotas vai aizņemtas.",
+    s2: "Saskaiti vai atņem, lai atrastu atbildi.",
+  },
+  multipleChoiceMedium: {
+    s0: "Sāc ar naudu makā.",
+    s1: "Tērēšana nozīmē naudas atņemšanu.",
+    s2: "No sākuma atņem to, ko iztērēji.",
+  },
+  multipleChoiceHard: {
+    s0: "Attālums ÷ laiks dod ātrumu stundā.",
+    s1: "Vispirms atrodi ātrumu — tas ir vienības likme.",
+    s2: "Izmanto likmi, lai atrisinātu jauno stāsta daļu.",
+  },
+  compare: {
+    s0: "Aprēķini katru salīdzinājuma pusi.",
+    s1: "Viena var augt ar saskaitīšanu, otra palikt pie nulles.",
+    s2: "Izvēlies pusi, kas dod lielāku rezultātu.",
+  },
+  operationPath: {
+    s0: "Tev ir sākuma skaitlis un mērķis.",
+    s1: "Mēģini katrā solī skaitli padarīt mazāku vai lielāku.",
+    s2: "Saista darbības, līdz sasniedz mērķi!",
+  },
+  targetBuild: {
+    s0: "Tev ir skaitļi un mērķis.",
+    s1: "Vispirms reizini un dali, tad saskaiti un atņem.",
+    s2: "Uzbūvē izteiksmi — secībai ir nozīme!",
+  },
+  fractionBuild: {
+    s0: "Vispirms sadali formu vienādās daļās.",
+    s1: "Nokrāso tik daļu, cik jautājums prasa.",
+    s2: "Daļa = nokrāsotās ÷ visas vienādās daļas.",
+  },
+  trueFalse: {
+    s0: "Netici apgalvojumam — pats pārbaudi ar aprēķinu.",
+    s1: "Pats izpildi matemātiku.",
+    s2: "Patiesi tikai tad, ja tavs rezultāts sakrīt!",
+  },
+  balance: {
+    s0: "Līdzsvaroti svari nozīmē — abas puses ir vienādas.",
+    s1: "Atrodi, kas trūkst vieglākajā pusē.",
+    s2: "Kāds skaitlis abas puses padara vienādas?",
+  },
+  numberLine: {
+    s0: "Atzīmē sākuma vietu uz līnijas.",
+    s1: "Uz priekšu plusa dēļ, atpakaļ mīnusa dēļ.",
+    s2: "Pieskaries vietai, kur nokļūsti — skaiti katru lēcienu!",
+  },
+  pairSum: {
+    s0: "Vajag divus skaitļus, kas dod mērķa summu.",
+    s1: "Izmēģini vienu — kurš partneris pabeidz summu?",
+    s2: "Der jebkurš pāris, kas dod mērķi!",
+  },
+  fixMistake: {
+    s0: "Ja atbilde šķiet nepareiza, pārbaudi darbu.",
+    s1: "Vispirms pats aprēķini uzdevumu.",
+    s2: "Nosaki kļūdu — nepareiza atbilde, darbība vai skaitļi.",
+  },
+  estimate: {
+    s0: "Noapaļo katru skaitli līdz tuvākajam ērtajam desmitniekam.",
+    s1: "Saskaiti vai atņem noapaļotos skaitļus.",
+    s2: "Izvēlies tuvāko variantu!",
+  },
+  fairShare: {
+    s0: "Dali pa vienam katram cilvēkam.",
+    s1: "Apstājies, kad vairs nevar visiem iedot vēl vienu.",
+    s2: "Saskaiti katram un vai kaut kas paliek pār.",
+  },
+  fractionEquivalent: {
+    s0: "Tikpat daudz var izskatīties ar atšķirīgu daļu skaitu.",
+    s1: "Iedomājies to pašu veselo sadalītu divos veidos.",
+    s2: "Izvēlies daļu, kas aizņem tikpat lielu laukumu.",
+  },
+  patternNext: {
+    s0: "Skaties, kā katrs skaitlis mainās.",
+    s1: "Tas pats lēciens atkārtojas katru reizi.",
+    s2: "Izmanto to, lai atrastu trūkstošo skaitli!",
+  },
+  functionMachine: {
+    s0: "Skaitlis ieiet mašīnā.",
+    s1: "Mašīna izmanto vienu noteikumu: +, −, × vai ÷.",
+    s2: "Atrodi noteikumu, kas no ieejas dod izeju!",
+  },
+  orderNumbers: {
+    s0: "Skaitļi ir sajaukti.",
+    s1: "Mazākais pa kreisi, lielākais pa labi.",
+    s2: "Apmaini vietām, līdz secība ir pareiza!",
+  },
 };
