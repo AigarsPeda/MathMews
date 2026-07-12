@@ -37,6 +37,7 @@ import {
   updatePlacedDecorationOffset,
   updatePlacedToyOffset,
 } from "@/utils/room-placement";
+import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useRouter } from "expo-router";
@@ -51,7 +52,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const STORE_ICON = require("@/assets/images/store-icon.png");
 
@@ -64,6 +64,7 @@ function triggerHaptic() {
 export default function HomeScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const screenInsets = useScreenInsets();
   const { locale } = useLocale();
   const {
     isReady,
@@ -432,7 +433,7 @@ export default function HomeScreen() {
   const petAnimating = isCareAnimationPlaying;
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
+    <View style={[styles.safe, screenInsets]}>
       <View style={styles.screen}>
         <View style={styles.header}>
           {isCatSpritePet ? (
@@ -602,7 +603,7 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -619,9 +620,6 @@ const styles = StyleSheet.create({
   },
   screen: {
     flex: 1,
-    paddingHorizontal: moderateScale(16),
-    paddingTop: moderateScale(Platform.OS === "android" ? 20 : 4),
-    paddingBottom: moderateScale(8),
   },
   middle: {
     flex: 1,

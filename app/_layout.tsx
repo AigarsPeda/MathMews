@@ -17,6 +17,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import "react-native-reanimated";
 
 export default function RootLayout() {
@@ -24,6 +25,7 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
       <LocaleProvider>
         <AuthProvider>
         <GameProvider>
@@ -71,6 +73,7 @@ export default function RootLayout() {
         </GameProvider>
         </AuthProvider>
     </LocaleProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
