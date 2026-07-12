@@ -180,7 +180,7 @@ export default function PuzzlesScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top"]}>
+    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.screen}>
         <View style={styles.header}>
           <Pressable
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: moderateScale(16),
     paddingTop: moderateScale(4),
-    paddingBottom: moderateScale(8),
+    paddingBottom: moderateScale(4),
     gap: moderateScale(12),
   },
   header: {

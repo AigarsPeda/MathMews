@@ -6,7 +6,14 @@ import type { Puzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 type VisualHelpSheetProps = {
   cost: number;
@@ -52,72 +59,88 @@ export function VisualHelpSheet({
 
   return (
     <AppBottomSheet visible={visible} onClose={onClose} expanded>
-      <View style={styles.card}>
-        <Text style={styles.emoji}>🎬</Text>
-        <Text style={styles.title}>{t("visualHelp.title")}</Text>
-        <Text style={styles.subtitle}>{t("visualHelp.subtitle")}</Text>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled={Platform.OS === "android"}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.card}>
+          <Text style={styles.emoji}>🎬</Text>
+          <Text style={styles.title}>{t("visualHelp.title")}</Text>
+          <Text style={styles.subtitle}>{t("visualHelp.subtitle")}</Text>
 
-        {isUnlocked ? (
-          <VisualExplanationPlayer
-            explanation={explanation}
-            progress={progress}
-            onProgressChange={setProgress}
-          />
-        ) : (
-          <View style={styles.lockCard}>
-            <Text style={styles.lockEmoji}>🔒</Text>
-            <Text style={styles.lockText}>{t("visualHelp.lockedHint")}</Text>
-            <Text style={styles.lockPrice}>
-              {t("visualHelp.unlockPrice", { cost })}
-            </Text>
-          </View>
-        )}
-
-        {!isUnlocked ? (
-          canAfford ? (
-            <Pressable
-              style={styles.buyBtn}
-              onPress={handlePurchase}
-              accessibilityRole="button"
-              accessibilityLabel={t("visualHelp.a11yUnlock", { cost })}
-            >
-              <Text style={styles.buyBtnText}>
-                {t("visualHelp.unlockButton", { cost })}
-              </Text>
-            </Pressable>
+          {isUnlocked ? (
+            <VisualExplanationPlayer
+              explanation={explanation}
+              progress={progress}
+              onProgressChange={setProgress}
+            />
           ) : (
-            <Text style={styles.cantBuy}>
-              {t("visualHelp.needCoins", { cost, coins })}
-            </Text>
-          )
-        ) : null}
+            <View style={styles.lockCard}>
+              <Text style={styles.lockEmoji}>🔒</Text>
+              <Text style={styles.lockText}>{t("visualHelp.lockedHint")}</Text>
+              <Text style={styles.lockPrice}>
+                {t("visualHelp.unlockPrice", { cost })}
+              </Text>
+            </View>
+          )}
 
-        <Pressable
-          style={[styles.closeBtn, isUnlocked && styles.closeBtnPrimary]}
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.close")}
-        >
-          <Text
-            style={[
-              styles.closeBtnText,
-              isUnlocked && styles.closeBtnTextPrimary,
-            ]}
+          {!isUnlocked ? (
+            canAfford ? (
+              <Pressable
+                style={styles.buyBtn}
+                onPress={handlePurchase}
+                accessibilityRole="button"
+                accessibilityLabel={t("visualHelp.a11yUnlock", { cost })}
+              >
+                <Text style={styles.buyBtnText}>
+                  {t("visualHelp.unlockButton", { cost })}
+                </Text>
+              </Pressable>
+            ) : (
+              <Text style={styles.cantBuy}>
+                {t("visualHelp.needCoins", { cost, coins })}
+              </Text>
+            )
+          ) : null}
+
+          <Pressable
+            style={[styles.closeBtn, isUnlocked && styles.closeBtnPrimary]}
+            onPress={onClose}
+            accessibilityRole="button"
+            accessibilityLabel={t("common.close")}
           >
-            {isUnlocked ? t("common.gotIt") : t("common.close")}
-          </Text>
-        </Pressable>
-      </View>
+            <Text
+              style={[
+                styles.closeBtnText,
+                isUnlocked && styles.closeBtnTextPrimary,
+              ]}
+            >
+              {isUnlocked ? t("common.gotIt") : t("common.close")}
+            </Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     </AppBottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    flex: 1,
+    width: "100%",
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: moderateScale(8),
+  },
   card: {
     alignItems: "center",
     gap: moderateScale(10),
-    paddingTop: moderateScale(20),
-    paddingHorizontal: moderateScale(20),
+    paddingTop: moderateScale(12),
+    paddingHorizontal: moderateScale(4),
   },
   emoji: {
     fontSize: moderateScale(36),

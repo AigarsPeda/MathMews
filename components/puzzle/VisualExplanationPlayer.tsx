@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
   wrap: {
     width: "100%",
     gap: moderateScale(12),
+    overflow: "hidden",
   },
   stageHost: {
     width: "100%",
@@ -267,6 +268,7 @@ const styles = StyleSheet.create({
   sliderWrap: {
     flex: 1,
     paddingHorizontal: moderateScale(10),
+    overflow: "hidden",
   },
   slider: {
     width: "100%",

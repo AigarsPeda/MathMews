@@ -447,20 +447,23 @@ export default function HomeScreen() {
                 accessibilityIgnoresInvertColors
               />
             </HeaderChip>
-          ) : null}
-          <View style={styles.headerStats}>
+          ) : (
+            <View style={styles.headerSideSlot} />
+          )}
+          <View style={styles.headerSpacer} />
+          <View style={styles.headerRight}>
             <GameHeaderStats
               coins={wallet.coins}
               streak={progress.streak}
               lives={progress.lives}
             />
+            <HeaderChip
+              onPress={handleOpenSettings}
+              accessibilityLabel={t("home.a11ySettings")}
+            >
+              <Text style={styles.headerIconEmoji}>⚙️</Text>
+            </HeaderChip>
           </View>
-          <HeaderChip
-            onPress={handleOpenSettings}
-            accessibilityLabel={t("home.a11ySettings")}
-          >
-            <Text style={styles.headerIconEmoji}>⚙️</Text>
-          </HeaderChip>
         </View>
 
         <View style={styles.middle}>
@@ -617,7 +620,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingHorizontal: moderateScale(16),
-    paddingTop: moderateScale(4),
+    paddingTop: moderateScale(Platform.OS === "android" ? 20 : 4),
     paddingBottom: moderateScale(8),
   },
   middle: {
@@ -632,11 +635,18 @@ const styles = StyleSheet.create({
     gap: moderateScale(6),
     marginBottom: moderateScale(10),
   },
-  headerStats: {
+  headerSideSlot: {
+    width: moderateScale(HEADER_CHIP_SIZE),
+  },
+  headerSpacer: {
     flex: 1,
-    minWidth: 0,
+    minWidth: moderateScale(12),
+  },
+  headerRight: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: moderateScale(6),
+    flexShrink: 0,
   },
   headerIconEmoji: {
     fontSize: moderateScale(18),
