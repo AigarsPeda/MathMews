@@ -95,7 +95,9 @@ export function DecorationStoreCard({
                 : isOwned
                   ? price.kind === "free"
                     ? t("store.buyAnother")
-                    : t("store.buyAnotherFor", { cost: price.amount })
+                    : t("store.buyAnotherFor", {
+                        cost: price.kind === "coins" ? price.amount : 0,
+                      })
                   : t("store.buyFor", {
                       cost: price.kind === "coins" ? price.amount : 0,
                     })}

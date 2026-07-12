@@ -8,6 +8,7 @@ type AnimatedFrameSpriteProps = {
   fps?: number;
   /** Max rendered width/height — aspect ratio preserved. */
   size: number;
+  flipHorizontal?: boolean;
 };
 
 /** Cycles through separate frame images (Tiny House multi-file animations). */
@@ -17,6 +18,7 @@ export function AnimatedFrameSprite({
   frameHeight,
   fps = 8,
   size,
+  flipHorizontal = false,
 }: AnimatedFrameSpriteProps) {
   const [frameIndex, setFrameIndex] = useState(0);
   const scale = size / Math.max(frameWidth, frameHeight);
@@ -41,7 +43,11 @@ export function AnimatedFrameSprite({
     <View style={[styles.cell, { width: displayW, height: displayH }]}>
       <Image
         source={frames[frameIndex]}
-        style={{ width: displayW, height: displayH }}
+        style={{
+          width: displayW,
+          height: displayH,
+          transform: flipHorizontal ? [{ scaleX: -1 as const }] : undefined,
+        }}
         resizeMode="contain"
         accessibilityIgnoresInvertColors
       />

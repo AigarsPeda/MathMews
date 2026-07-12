@@ -86,6 +86,7 @@
     "moveLayerDown": "Move down",
     "rotateItem": "Rotate",
     "flipWall": "Flip wall",
+    "flipBed": "Flip bed",
     "changeLook": "Change look",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",

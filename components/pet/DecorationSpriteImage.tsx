@@ -40,6 +40,7 @@ export function DecorationSpriteImage({
           frameHeight={entry.frameHeight}
           fps={entry.fps}
           size={size}
+          flipHorizontal={flipHorizontal}
         />
       );
     }

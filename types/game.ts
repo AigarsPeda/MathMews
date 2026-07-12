@@ -71,6 +71,10 @@ export type PetProfile = {
   bedId?: string;
   /** Normalized offset for the equipped bed (-1..1). */
   roomBedOffset?: { x: number; y: number };
+  /** Mirror human beds horizontally in the room. */
+  bedFlipped?: boolean;
+  /** Display scale multiplier for the equipped bed (default 1). */
+  bedScale?: number;
   /** Toys currently placed in the cat room. */
   placedToys?: PlacedToy[];
   /** Decorations currently placed in the cat room. */

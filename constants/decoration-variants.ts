@@ -8,6 +8,7 @@ import {
   isWindowDecorationId,
   type CatDecorationId,
 } from "@/constants/cat-decorations";
+import { isTvDecorationId } from "@/constants/tv-decorations";
 import type { PlacedDecoration } from "@/types/game";
 
 export const DECORATION_ROTATION_GROUPS: readonly (readonly CatDecorationId[])[] =
@@ -73,6 +74,7 @@ export function canFlipWallDecoration(decorationId: CatDecorationId): boolean {
   return (
     isPosterDecorationId(decorationId) ||
     isWindowDecorationId(decorationId) ||
+    isTvDecorationId(decorationId) ||
     hasFlippedAnimationFrames(decorationId)
   );
 }

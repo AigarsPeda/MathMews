@@ -79,6 +79,8 @@ export default function HomeScreen() {
     recordInteraction,
     removeDecorationFromRoom,
     removeBedFromRoom,
+    flipEquippedBed,
+    scaleEquippedBed,
     removeToyFromRoom,
     moveRoomLayerItem,
     rotatePlacedDecoration,
@@ -385,6 +387,25 @@ export default function HomeScreen() {
     showSpeech(t("home.removedFromRoom", { name }));
   }, [pet.bedId, recordInteraction, removeBedFromRoom, showSpeech, t]);
 
+  const handleFlipBed = useCallback(() => {
+    const flipped = flipEquippedBed();
+    if (!flipped) return;
+
+    recordInteraction();
+    triggerHaptic();
+  }, [flipEquippedBed, recordInteraction]);
+
+  const handleScaleBed = useCallback(
+    (direction: "up" | "down") => {
+      const scaled = scaleEquippedBed(direction);
+      if (!scaled) return;
+
+      recordInteraction();
+      triggerHaptic();
+    },
+    [recordInteraction, scaleEquippedBed],
+  );
+
   const handleRemoveToy = useCallback(
     (instanceId: string) => {
       const placed = findPlacedToyByInstance(pet.placedToys, instanceId);
@@ -500,6 +521,8 @@ export default function HomeScreen() {
               roomPetOffset={pet.roomPetOffset}
               bedId={pet.bedId}
               roomBedOffset={pet.roomBedOffset}
+              bedFlipped={pet.bedFlipped}
+              bedScale={pet.bedScale}
               placedToys={pet.placedToys}
               placedDecorations={pet.placedDecorations}
               roomLayerOrder={pet.roomLayerOrder}
@@ -538,6 +561,8 @@ export default function HomeScreen() {
               onScalePlacedDecoration={handleScalePlacedDecoration}
               onMoveRoomLayerItem={handleMoveRoomLayerItem}
               onBedRemove={handleRemoveBed}
+              onFlipBed={handleFlipBed}
+              onScaleBed={handleScaleBed}
               onPlacedToyRemove={handleRemoveToy}
               onAnimationComplete={handleAnimationComplete}
             />

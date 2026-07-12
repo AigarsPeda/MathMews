@@ -58,3 +58,25 @@ export function getCatBedSource(bedId: string | undefined): number | undefined {
 export function getBedDisplaySize(bedId: string | undefined): number {
   return isHumanBedId(bedId ?? "") ? 112 : 72;
 }
+
+import { clampDecorationScale } from "@/constants/decoration-variants";
+
+/** Human-scale beds can be mirrored in the room (isometric wall flip). */
+export function canFlipBed(bedId: string | undefined): boolean {
+  return isHumanBedId(bedId ?? "");
+}
+
+export {
+  clampDecorationScale as clampBedScale,
+  canScaleDecorationDown as canScaleBedDown,
+  canScaleDecorationUp as canScaleBedUp,
+  scaleDecorationBy as scaleBedBy,
+} from "@/constants/decoration-variants";
+
+export function getEquippedBedScale(scale: number | undefined): number {
+  if (typeof scale !== "number" || !Number.isFinite(scale)) {
+    return 1;
+  }
+
+  return clampDecorationScale(scale);
+}

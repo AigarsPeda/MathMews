@@ -10,7 +10,7 @@ import type {
 } from "@/components/pet/room-menu-types";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { getBedDisplaySize, getCatBedSource } from "@/constants/cat-beds";
+import { getBedDisplaySize, getCatBedSource, canFlipBed, canScaleBedDown, canScaleBedUp, getEquippedBedScale } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { isPosterDecorationId } from "@/constants/cat-decorations";
 import { resolveSpriteDisplaySize } from "@/constants/cat-sprites";
@@ -101,6 +101,8 @@ type PetStageProps = {
   roomPetOffset?: { x: number; y: number };
   bedId?: string;
   roomBedOffset?: { x: number; y: number };
+  bedFlipped?: boolean;
+  bedScale?: number;
   placedToys?: PlacedToy[];
   placedDecorations?: PlacedDecoration[];
   roomLayerOrder?: RoomLayerItem[];
@@ -124,6 +126,8 @@ type PetStageProps = {
   ) => void;
   onMoveRoomLayerItem?: (item: RoomLayerItem, direction: "up" | "down") => void;
   onBedRemove?: () => void;
+  onFlipBed?: () => void;
+  onScaleBed?: (direction: "up" | "down") => void;
   onPlacedToyRemove?: (instanceId: string) => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (stepIndex: number) => void;
@@ -172,6 +176,8 @@ export function PetStage({
   roomPetOffset,
   bedId,
   roomBedOffset,
+  bedFlipped,
+  bedScale,
   placedToys,
   placedDecorations,
   roomLayerOrder,
@@ -189,13 +195,16 @@ export function PetStage({
   onScalePlacedDecoration,
   onMoveRoomLayerItem,
   onBedRemove,
+  onFlipBed,
+  onScaleBed,
   onPlacedToyRemove,
   onAnimationComplete,
   onStepComplete,
 }: PetStageProps) {
   const { t } = useTranslation();
   const usesSprite = USE_CAT_SPRITE_PETS && petType === "cat";
-  const bedSize = moderateScale(getBedDisplaySize(bedId));
+  const bedScaleMultiplier = getEquippedBedScale(bedScale);
+  const bedSize = moderateScale(getBedDisplaySize(bedId) * bedScaleMultiplier);
   const bedSource = usesSprite ? getCatBedSource(bedId) : undefined;
   const roomPlacedToys = usesSprite ? (placedToys ?? []) : [];
   const roomPlacedDecorations = usesSprite ? (placedDecorations ?? []) : [];
@@ -237,6 +246,7 @@ export function PetStage({
   const moveDownLabel = t("home.moveLayerDown");
   const rotateLabel = t("home.rotateItem");
   const flipWallLabel = t("home.flipWall");
+  const flipBedLabel = t("home.flipBed");
   const changeLookLabel = t("home.changeLook");
   const biggerLabel = t("home.makeBigger");
   const smallerLabel = t("home.makeSmaller");
@@ -270,7 +280,9 @@ export function PetStage({
   const canManageRoomItem = useCallback(
     (item: RoomLayerItem) => {
       if (item.kind === "bed") {
-        return Boolean(onBedRemove || onMoveRoomLayerItem);
+        return Boolean(
+          onBedRemove || onMoveRoomLayerItem || onFlipBed || onScaleBed,
+        );
       }
       if (item.kind === "decoration") {
         return Boolean(
@@ -285,6 +297,8 @@ export function PetStage({
     },
     [
       onBedRemove,
+      onFlipBed,
+      onScaleBed,
       onMoveRoomLayerItem,
       onPlacedDecorationRemove,
       onPlacedToyRemove,
@@ -376,6 +390,36 @@ export function PetStage({
         }
       }
 
+      if (item.kind === "bed" && onFlipBed && canFlipBed(bedId)) {
+        actions.push({
+          label: flipBedLabel,
+          icon: "rotate-right",
+          onPress: () => {
+            onFlipBed();
+          },
+        });
+      }
+
+      if (item.kind === "bed" && onScaleBed && bedId) {
+        const scale = getEquippedBedScale(bedScale);
+        actions.push({
+          label: biggerLabel,
+          icon: "zoom-in",
+          onPress: () => {
+            onScaleBed("up");
+          },
+          disabled: !canScaleBedUp(scale),
+        });
+        actions.push({
+          label: smallerLabel,
+          icon: "zoom-out",
+          onPress: () => {
+            onScaleBed("down");
+          },
+          disabled: !canScaleBedDown(scale),
+        });
+      }
+
       if (item.kind === "bed" && onBedRemove) {
         actions.push({
           label: removeMenuLabel,
@@ -415,7 +459,10 @@ export function PetStage({
       return actions;
     },
     [
+      bedId,
+      bedScale,
       changeLookLabel,
+      flipBedLabel,
       flipWallLabel,
       biggerLabel,
       closeMenu,
@@ -423,6 +470,8 @@ export function PetStage({
       moveDownLabel,
       moveUpLabel,
       onBedRemove,
+      onFlipBed,
+      onScaleBed,
       onMoveRoomLayerItem,
       onPlacedDecorationRemove,
       onPlacedToyRemove,
@@ -544,7 +593,11 @@ export function PetStage({
         >
           <Image
             source={bedSource}
-            style={{ width: bedSize, height: bedSize }}
+            style={{
+              width: bedSize,
+              height: bedSize,
+              transform: bedFlipped ? [{ scaleX: -1 }] : undefined,
+            }}
             resizeMode="contain"
             accessibilityIgnoresInvertColors
           />

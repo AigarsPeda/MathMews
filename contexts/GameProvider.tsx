@@ -1,5 +1,13 @@
 import { LIFE_BUY_COST } from "@/constants/game";
-import { resolveCatBedId, type CatBedId } from "@/constants/cat-beds";
+import {
+  resolveCatBedId,
+  type CatBedId,
+  canFlipBed,
+  canScaleBedDown,
+  canScaleBedUp,
+  getEquippedBedScale,
+  scaleBedBy,
+} from "@/constants/cat-beds";
 import { resolveCatToyId, type CatToyId } from "@/constants/cat-toys";
 import { resolveCatDecorationId,
   type CatDecorationId,
@@ -129,6 +137,8 @@ type GameContextValue = {
   purchaseBed: (bedId: CatBedId) => BedPurchaseResult;
   equipBed: (bedId: CatBedId) => boolean;
   removeBedFromRoom: () => boolean;
+  flipEquippedBed: () => boolean;
+  scaleEquippedBed: (direction: "up" | "down") => boolean;
   purchaseToy: (toyId: CatToyId) => ToyPurchaseResult;
   placeToyInRoom: (toyId: CatToyId) => boolean;
   removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
@@ -499,6 +509,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
           ...current.pet,
           bedId: resolvedId,
           roomBedOffset: current.pet.roomBedOffset ?? { x: -0.15, y: 0.3 },
+          bedFlipped:
+            current.pet.bedId === resolvedId ? current.pet.bedFlipped : undefined,
+          bedScale:
+            current.pet.bedId === resolvedId ? current.pet.bedScale : undefined,
         }),
       });
     }
@@ -525,6 +539,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
         ...current.pet,
         bedId: resolvedId,
         roomBedOffset: current.pet.roomBedOffset ?? { x: -0.15, y: 0.3 },
+        bedFlipped:
+          current.pet.bedId === resolvedId ? current.pet.bedFlipped : undefined,
+        bedScale:
+          current.pet.bedId === resolvedId ? current.pet.bedScale : undefined,
       }),
     });
 
@@ -542,7 +560,55 @@ export function GameProvider({ children }: { children: ReactNode }) {
       pet: syncPetLayerOrder({
         ...current.pet,
         bedId: undefined,
+        bedFlipped: undefined,
+        bedScale: undefined,
       }),
+    });
+
+    return true;
+  }, []);
+
+  const flipEquippedBed = useCallback(() => {
+    const current = saveRef.current;
+    const resolvedId = resolveCatBedId(current.pet.bedId);
+    if (!resolvedId || !canFlipBed(resolvedId)) {
+      return false;
+    }
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        bedFlipped: current.pet.bedFlipped ? undefined : true,
+      },
+    });
+
+    return true;
+  }, []);
+
+  const scaleEquippedBed = useCallback((direction: "up" | "down") => {
+    const current = saveRef.current;
+    const resolvedId = resolveCatBedId(current.pet.bedId);
+    if (!resolvedId) {
+      return false;
+    }
+
+    const currentScale = getEquippedBedScale(current.pet.bedScale);
+    if (
+      (direction === "up" && !canScaleBedUp(currentScale)) ||
+      (direction === "down" && !canScaleBedDown(currentScale))
+    ) {
+      return false;
+    }
+
+    const nextScale = scaleBedBy(currentScale, direction);
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        bedScale: nextScale !== 1 ? nextScale : undefined,
+      },
     });
 
     return true;
@@ -1095,6 +1161,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseBed,
       equipBed,
       removeBedFromRoom,
+      flipEquippedBed,
+      scaleEquippedBed,
       purchaseToy,
       placeToyInRoom,
       removeToyFromRoom,
@@ -1150,6 +1218,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseBed,
       equipBed,
       removeBedFromRoom,
+      flipEquippedBed,
+      scaleEquippedBed,
       purchaseToy,
       placeToyInRoom,
       removeToyFromRoom,
