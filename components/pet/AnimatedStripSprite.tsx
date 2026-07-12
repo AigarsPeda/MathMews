@@ -1,5 +1,7 @@
+import { useIsMounted } from "@/hooks/use-is-mounted";
+import { Image } from "expo-image";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type AnimatedStripSpriteProps = {
   source: number;
@@ -25,6 +27,7 @@ export function AnimatedStripSprite({
   size,
 }: AnimatedStripSpriteProps) {
   const [frameIndex, setFrameIndex] = useState(0);
+  const isMounted = useIsMounted();
   const scale = size / Math.max(frameWidth, frameHeight);
   const displayW = frameWidth * scale;
   const displayH = frameHeight * scale;
@@ -34,16 +37,21 @@ export function AnimatedStripSprite({
 
   useEffect(() => {
     const interval = setInterval(() => {
+      if (!isMounted.current) {
+        return;
+      }
       setFrameIndex((current) => (current + 1) % frameCount);
     }, 1000 / fps);
 
     return () => clearInterval(interval);
-  }, [frameCount, fps]);
+  }, [frameCount, fps, isMounted]);
 
   return (
     <View style={[styles.cell, { width: displayW, height: displayH }]}>
       <Image
         source={source}
+        cachePolicy="memory-disk"
+        transition={0}
         style={{
           width: sheetDisplayW,
           height: sheetDisplayH,
@@ -51,8 +59,7 @@ export function AnimatedStripSprite({
           left: -frameX,
           top: 0,
         }}
-        resizeMode="stretch"
-        accessibilityIgnoresInvertColors
+        contentFit="fill"
       />
     </View>
   );

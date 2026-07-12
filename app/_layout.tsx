@@ -1,4 +1,5 @@
 import "@/lib/init-splash-screen";
+import "@/lib/init-game-asset-prefetch";
 import "@/components/branding/AnimatedSplashCat";
 import { SplashGate } from "@/components/branding/SplashGate";
 import { ExpoUIHost } from "@/components/ui/ExpoUIHost";

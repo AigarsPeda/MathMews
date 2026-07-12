@@ -4,12 +4,14 @@ import {
 } from "@/components/branding/AnimatedSplashCat";
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
+import { gameAssetsPrefetchPromise } from "@/lib/init-game-asset-prefetch";
 import { moderateScale } from "@/utils/scale";
 import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
 import {
   type ReactNode,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -27,9 +29,24 @@ export function SplashGate({ children }: SplashGateProps) {
   const { isReady } = useGame();
   const [showOverlay, setShowOverlay] = useState(true);
   const [brandingReady, setBrandingReady] = useState(false);
+  const [assetsReady, setAssetsReady] = useState(false);
   const nativeSplashHiddenRef = useRef(false);
   const handleBrandingReady = useCallback(() => {
     setBrandingReady(true);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    gameAssetsPrefetchPromise.finally(() => {
+      if (!cancelled) {
+        setAssetsReady(true);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const hideNativeSplash = useCallback(() => {
@@ -39,14 +56,14 @@ export function SplashGate({ children }: SplashGateProps) {
   }, []);
 
   useLayoutEffect(() => {
-    if (!isReady || !brandingReady) return;
+    if (!isReady || !brandingReady || !assetsReady) return;
 
     const timer = setTimeout(() => {
       setShowOverlay(false);
     }, MIN_SPLASH_MS);
 
     return () => clearTimeout(timer);
-  }, [brandingReady, isReady]);
+  }, [assetsReady, brandingReady, isReady]);
 
   if (showOverlay) {
     return (

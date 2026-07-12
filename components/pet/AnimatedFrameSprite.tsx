@@ -1,5 +1,7 @@
+import { useIsMounted } from "@/hooks/use-is-mounted";
+import { Image } from "expo-image";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type AnimatedFrameSpriteProps = {
   frames: readonly number[];
@@ -21,35 +23,49 @@ export function AnimatedFrameSprite({
   flipHorizontal = false,
 }: AnimatedFrameSpriteProps) {
   const [frameIndex, setFrameIndex] = useState(0);
+  const isMounted = useIsMounted();
+
   const scale = size / Math.max(frameWidth, frameHeight);
   const displayW = frameWidth * scale;
   const displayH = frameHeight * scale;
 
   useEffect(() => {
-    if (frames.length <= 1) return;
+    setFrameIndex(0);
+    if (frames.length <= 1) {
+      return;
+    }
 
     const interval = setInterval(() => {
+      if (!isMounted.current) {
+        return;
+      }
       setFrameIndex((current) => (current + 1) % frames.length);
     }, 1000 / fps);
 
     return () => clearInterval(interval);
-  }, [frames, fps]);
+  }, [frames, fps, isMounted]);
 
   if (frames.length === 0) {
     return null;
   }
 
   return (
-    <View style={[styles.cell, { width: displayW, height: displayH }]}>
-      <Image
-        source={frames[frameIndex]}
-        style={{
+    <View
+      style={[
+        styles.cell,
+        {
           width: displayW,
           height: displayH,
           transform: flipHorizontal ? [{ scaleX: -1 as const }] : undefined,
-        }}
-        resizeMode="contain"
-        accessibilityIgnoresInvertColors
+        },
+      ]}
+    >
+      <Image
+        source={frames[frameIndex]}
+        cachePolicy="memory-disk"
+        transition={0}
+        style={{ width: displayW, height: displayH }}
+        contentFit="contain"
       />
     </View>
   );

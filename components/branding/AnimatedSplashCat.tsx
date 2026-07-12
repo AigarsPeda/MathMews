@@ -2,6 +2,7 @@ import { CAT_SKIN_SHEET, CAT_SKIN_SOURCES } from "@/constants/cat-skins";
 import { CAT_SPRITE_CATALOG } from "@/constants/cat-sprite-catalog";
 import { CAT_SPRITE_FRAME_HEIGHT } from "@/constants/cat-sprites";
 import { GameColors } from "@/constants/game";
+import { useIsMounted } from "@/hooks/use-is-mounted";
 import { moderateScale } from "@/utils/scale";
 import {
   Canvas,
@@ -12,14 +13,12 @@ import {
   useImage,
 } from "@shopify/react-native-skia";
 import { useEffect, useState, type ReactNode } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 const IDLE = CAT_SPRITE_CATALOG.idle;
 const SHEET_SOURCE = CAT_SKIN_SOURCES.orange;
 const FRAME_SIZE = CAT_SPRITE_FRAME_HEIGHT;
 const FPS = IDLE.fps;
-
-void Image.prefetch(Image.resolveAssetSource(SHEET_SOURCE).uri);
 
 const NEAREST_SAMPLING = {
   filter: FilterMode.Nearest,
@@ -47,6 +46,7 @@ export function AnimatedSplashCat({
 }: AnimatedSplashCatProps) {
   const skiaImage = useImage(SHEET_SOURCE);
   const [frameIndex, setFrameIndex] = useState(0);
+  const isMounted = useIsMounted();
   const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
     useSplashLayout(size);
 
@@ -54,18 +54,23 @@ export function AnimatedSplashCat({
   const imageY = -IDLE.row * FRAME_SIZE * pixelScale;
 
   useEffect(() => {
-    if (skiaImage) onReady?.();
-  }, [onReady, skiaImage]);
+    if (skiaImage && isMounted.current) {
+      onReady?.();
+    }
+  }, [isMounted, onReady, skiaImage]);
 
   useEffect(() => {
     if (!skiaImage) return;
 
     const interval = setInterval(() => {
+      if (!isMounted.current) {
+        return;
+      }
       setFrameIndex((current) => (current + 1) % IDLE.frameCount);
     }, 1000 / FPS);
 
     return () => clearInterval(interval);
-  }, [skiaImage]);
+  }, [isMounted, skiaImage]);
 
   const windowStyle = {
     width: displaySize,
