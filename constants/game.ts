@@ -54,7 +54,9 @@ export const DEFAULT_PROGRESS = {
   roomsUnlocked: [DEFAULT_CAT_ROOM_ID] as string[],
   bedsUnlocked: [] as string[],
   toysUnlocked: [] as string[],
+  toyQuantities: {} as Record<string, number>,
   decorationsUnlocked: [] as string[],
+  decorationQuantities: {} as Record<string, number>,
   skinsUnlocked: [] as string[],
 };
 

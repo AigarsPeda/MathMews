@@ -6,6 +6,8 @@ import {
   type CatToyId,
 } from "@/constants/cat-toys";
 import type { StorePrice, ToyPurchaseResult } from "@/types/store";
+import type { PlacedToy, Progress } from "@/types/game";
+import { countPlacedToys } from "@/utils/room-placement";
 
 const TOY_ORDER: CatToyId[] = [
   "orangeBall",
@@ -63,6 +65,49 @@ export function normalizeToysUnlocked(
   return CAT_TOY_IDS.filter((id) => unlocked.has(id));
 }
 
+export function getToyOwnedCount(
+  toyId: CatToyId,
+  progress: Pick<Progress, "toysUnlocked" | "toyQuantities">,
+): number {
+  if (!isToyUnlocked(toyId, progress.toysUnlocked as CatToyId[])) {
+    return 0;
+  }
+
+  const saved = progress.toyQuantities?.[toyId];
+  return typeof saved === "number" && saved > 0 ? saved : 1;
+}
+
+export function normalizeToyQuantities(
+  value: unknown,
+  toysUnlocked: CatToyId[],
+  placedToys: PlacedToy[] = [],
+): Record<string, number> {
+  const quantities: Record<string, number> = {};
+
+  if (value && typeof value === "object") {
+    for (const [id, count] of Object.entries(value as Record<string, unknown>)) {
+      if (isCatToyId(id) && typeof count === "number" && count > 0) {
+        quantities[id] = count;
+      }
+    }
+  }
+
+  for (const id of toysUnlocked) {
+    if ((quantities[id] ?? 0) < 1) {
+      quantities[id] = 1;
+    }
+  }
+
+  for (const id of toysUnlocked) {
+    const placedCount = countPlacedToys(id, placedToys);
+    if (placedCount > (quantities[id] ?? 0)) {
+      quantities[id] = placedCount;
+    }
+  }
+
+  return quantities;
+}
+
 export function tryPurchaseToy(params: {
   toyId: CatToyId;
   walletCoins: number;
@@ -91,19 +136,15 @@ export function tryPurchaseToy(params: {
     };
   }
 
-  if (isToyUnlocked(toyId, params.toysUnlocked)) {
-    return {
-      result: "already_owned",
-      walletCoins: params.walletCoins,
-      toysUnlocked: params.toysUnlocked,
-    };
-  }
+  const alreadyUnlocked = isToyUnlocked(toyId, params.toysUnlocked);
 
   if (price.kind === "free") {
     return {
       result: "purchased",
       walletCoins: params.walletCoins,
-      toysUnlocked: [...params.toysUnlocked, toyId],
+      toysUnlocked: alreadyUnlocked
+        ? params.toysUnlocked
+        : [...params.toysUnlocked, toyId],
     };
   }
 
@@ -118,6 +159,8 @@ export function tryPurchaseToy(params: {
   return {
     result: "purchased",
     walletCoins: params.walletCoins - price.amount,
-    toysUnlocked: [...params.toysUnlocked, toyId],
+    toysUnlocked: alreadyUnlocked
+      ? params.toysUnlocked
+      : [...params.toysUnlocked, toyId],
   };
 }

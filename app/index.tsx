@@ -34,8 +34,10 @@ import {
   pickPetTapSpeechKey,
 } from "@/utils/pet-speech";
 import {
-  updatePlacedDecorationOffset,
-  updatePlacedToyOffset,
+  updatePlacedDecorationOffsetByInstance,
+  updatePlacedToyOffsetByInstance,
+  findPlacedDecorationByInstance,
+  findPlacedToyByInstance,
 } from "@/utils/room-placement";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { moderateScale } from "@/utils/scale";
@@ -307,8 +309,8 @@ export default function HomeScreen() {
   );
 
   const handleRotatePlacedDecoration = useCallback(
-    (decorationId: CatDecorationId) => {
-      const rotated = rotatePlacedDecoration(decorationId);
+    (instanceId: string) => {
+      const rotated = rotatePlacedDecoration(instanceId);
       if (!rotated) return;
 
       recordInteraction();
@@ -318,8 +320,8 @@ export default function HomeScreen() {
   );
 
   const handleFlipPlacedDecorationWall = useCallback(
-    (decorationId: CatDecorationId) => {
-      const flipped = flipPlacedDecorationWall(decorationId);
+    (instanceId: string) => {
+      const flipped = flipPlacedDecorationWall(instanceId);
       if (!flipped) return;
 
       recordInteraction();
@@ -329,8 +331,8 @@ export default function HomeScreen() {
   );
 
   const handleScalePlacedDecoration = useCallback(
-    (decorationId: CatDecorationId, direction: "up" | "down") => {
-      const scaled = scalePlacedDecoration(decorationId, direction);
+    (instanceId: string, direction: "up" | "down") => {
+      const scaled = scalePlacedDecoration(instanceId, direction);
       if (!scaled) return;
 
       recordInteraction();
@@ -340,19 +342,34 @@ export default function HomeScreen() {
   );
 
   const handleRemoveDecoration = useCallback(
-    (decorationId: CatDecorationId) => {
-      const removed = removeDecorationFromRoom(decorationId);
+    (instanceId: string) => {
+      const placed = findPlacedDecorationByInstance(
+        pet.placedDecorations,
+        instanceId,
+      );
+      if (!placed) return;
+
+      const removed = removeDecorationFromRoom(
+        placed.decorationId as CatDecorationId,
+        instanceId,
+      );
       if (!removed) return;
 
       recordInteraction();
       triggerHaptic();
-      const name = t(`store.decorationName.${decorationId}`).replace(
+      const name = t(`store.decorationName.${placed.decorationId}`).replace(
         /\n/g,
         " ",
       );
       showSpeech(t("home.removedFromRoom", { name }));
     },
-    [recordInteraction, removeDecorationFromRoom, showSpeech, t],
+    [
+      pet.placedDecorations,
+      recordInteraction,
+      removeDecorationFromRoom,
+      showSpeech,
+      t,
+    ],
   );
 
   const handleRemoveBed = useCallback(() => {
@@ -369,16 +386,19 @@ export default function HomeScreen() {
   }, [pet.bedId, recordInteraction, removeBedFromRoom, showSpeech, t]);
 
   const handleRemoveToy = useCallback(
-    (toyId: CatToyId) => {
-      const removed = removeToyFromRoom(toyId);
+    (instanceId: string) => {
+      const placed = findPlacedToyByInstance(pet.placedToys, instanceId);
+      if (!placed) return;
+
+      const removed = removeToyFromRoom(placed.toyId as CatToyId, instanceId);
       if (!removed) return;
 
       recordInteraction();
       triggerHaptic();
-      const name = t(`store.toyName.${toyId}`).replace(/\n/g, " ");
+      const name = t(`store.toyName.${placed.toyId}`).replace(/\n/g, " ");
       showSpeech(t("home.removedFromRoom", { name }));
     },
-    [recordInteraction, removeToyFromRoom, showSpeech, t],
+    [pet.placedToys, recordInteraction, removeToyFromRoom, showSpeech, t],
   );
 
   const handlePlayPuzzle = useCallback(() => {
@@ -492,22 +512,22 @@ export default function HomeScreen() {
               onRoomBedOffsetChange={(offset) =>
                 setPet((current) => ({ ...current, roomBedOffset: offset }))
               }
-              onPlacedToyOffsetChange={(toyId, offset) =>
+              onPlacedToyOffsetChange={(instanceId, offset) =>
                 setPet((current) => ({
                   ...current,
-                  placedToys: updatePlacedToyOffset(
+                  placedToys: updatePlacedToyOffsetByInstance(
                     current.placedToys,
-                    toyId as CatToyId,
+                    instanceId,
                     offset,
                   ),
                 }))
               }
-              onPlacedDecorationOffsetChange={(decorationId, offset) =>
+              onPlacedDecorationOffsetChange={(instanceId, offset) =>
                 setPet((current) => ({
                   ...current,
-                  placedDecorations: updatePlacedDecorationOffset(
+                  placedDecorations: updatePlacedDecorationOffsetByInstance(
                     current.placedDecorations,
-                    decorationId as CatDecorationId,
+                    instanceId,
                     offset,
                   ),
                 }))

@@ -3,12 +3,56 @@ import { isCarpetDecorationId, resolveCatDecorationId } from "@/constants/cat-de
 
 export function roomLayerItemKey(item: RoomLayerItem): string {
   if (item.kind === "bed") return "bed";
-  if (item.kind === "decoration") return `decoration:${item.decorationId}`;
-  return `toy:${item.toyId}`;
+  if (item.kind === "decoration") return `decoration:${item.instanceId}`;
+  return `toy:${item.instanceId}`;
 }
 
 export function isSameRoomLayerItem(a: RoomLayerItem, b: RoomLayerItem): boolean {
   return roomLayerItemKey(a) === roomLayerItemKey(b);
+}
+
+function attachInstanceIdsToLayerOrder(
+  order: RoomLayerItem[],
+  pet: Pick<PetProfile, "placedDecorations" | "placedToys">,
+): RoomLayerItem[] {
+  const usedToyInstances = new Set<string>();
+  const usedDecorationInstances = new Set<string>();
+
+  return order.map((item) => {
+    if (item.kind === "bed") return item;
+
+    if (item.kind === "toy") {
+      if (item.instanceId) {
+        usedToyInstances.add(item.instanceId);
+        return item;
+      }
+
+      const match = (pet.placedToys ?? []).find(
+        (placed) =>
+          placed.toyId === item.toyId &&
+          !usedToyInstances.has(placed.instanceId),
+      );
+      if (!match) return item;
+
+      usedToyInstances.add(match.instanceId);
+      return { ...item, instanceId: match.instanceId };
+    }
+
+    if (item.instanceId) {
+      usedDecorationInstances.add(item.instanceId);
+      return item;
+    }
+
+    const match = (pet.placedDecorations ?? []).find(
+      (placed) =>
+        placed.decorationId === item.decorationId &&
+        !usedDecorationInstances.has(placed.instanceId),
+    );
+    if (!match) return item;
+
+    usedDecorationInstances.add(match.instanceId);
+    return { ...item, instanceId: match.instanceId };
+  });
 }
 
 function buildDefaultRoomLayerOrder(
@@ -17,7 +61,11 @@ function buildDefaultRoomLayerOrder(
   const order: RoomLayerItem[] = [];
 
   for (const placed of pet.placedDecorations ?? []) {
-    order.push({ kind: "decoration", decorationId: placed.decorationId });
+    order.push({
+      kind: "decoration",
+      decorationId: placed.decorationId,
+      instanceId: placed.instanceId,
+    });
   }
 
   if (pet.bedId) {
@@ -25,7 +73,11 @@ function buildDefaultRoomLayerOrder(
   }
 
   for (const placed of pet.placedToys ?? []) {
-    order.push({ kind: "toy", toyId: placed.toyId });
+    order.push({
+      kind: "toy",
+      toyId: placed.toyId,
+      instanceId: placed.instanceId,
+    });
   }
 
   return order;
@@ -37,7 +89,13 @@ function collectValidLayerKeys(
   const keys = new Set<string>();
 
   for (const placed of pet.placedDecorations ?? []) {
-    keys.add(roomLayerItemKey({ kind: "decoration", decorationId: placed.decorationId }));
+    keys.add(
+      roomLayerItemKey({
+        kind: "decoration",
+        decorationId: placed.decorationId,
+        instanceId: placed.instanceId,
+      }),
+    );
   }
 
   if (pet.bedId) {
@@ -45,7 +103,13 @@ function collectValidLayerKeys(
   }
 
   for (const placed of pet.placedToys ?? []) {
-    keys.add(roomLayerItemKey({ kind: "toy", toyId: placed.toyId }));
+    keys.add(
+      roomLayerItemKey({
+        kind: "toy",
+        toyId: placed.toyId,
+        instanceId: placed.instanceId,
+      }),
+    );
   }
 
   return keys;
@@ -69,14 +133,24 @@ export function normalizeRoomLayerOrder(
 ): RoomLayerItem[] {
   const validKeys = collectValidLayerKeys(pet);
   const saved = pet.roomLayerOrder ?? [];
-  const order = saved
-    .map(migrateRoomLayerItem)
-    .filter((item) => validKeys.has(roomLayerItemKey(item)));
+  const order = attachInstanceIdsToLayerOrder(
+    saved.map(migrateRoomLayerItem).filter((item) => {
+      if (item.kind === "bed") {
+        return validKeys.has(roomLayerItemKey(item));
+      }
+      if (item.kind === "toy") {
+        return Boolean(item.instanceId) && validKeys.has(roomLayerItemKey(item));
+      }
+      return Boolean(item.instanceId) && validKeys.has(roomLayerItemKey(item));
+    }),
+    pet,
+  );
 
   for (const placed of pet.placedDecorations ?? []) {
     const item: RoomLayerItem = {
       kind: "decoration",
       decorationId: placed.decorationId,
+      instanceId: placed.instanceId,
     };
     if (!order.some((entry) => isSameRoomLayerItem(entry, item))) {
       if (isCarpetDecorationId(placed.decorationId)) {
@@ -104,7 +178,11 @@ export function normalizeRoomLayerOrder(
   }
 
   for (const placed of pet.placedToys ?? []) {
-    const item: RoomLayerItem = { kind: "toy", toyId: placed.toyId };
+    const item: RoomLayerItem = {
+      kind: "toy",
+      toyId: placed.toyId,
+      instanceId: placed.instanceId,
+    };
     if (!order.some((entry) => isSameRoomLayerItem(entry, item))) {
       order.push(item);
     }

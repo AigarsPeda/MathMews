@@ -23,6 +23,7 @@ import type {
 } from "@/types/store";
 import {
   getDecorationStorePrice,
+  getDecorationOwnedCount,
   isDecorationUnlocked,
 } from "@/utils/decoration-store";
 import {
@@ -31,11 +32,12 @@ import {
   isDecorationStoreTab,
 } from "@/utils/decoration-store-sections";
 import {
-  isDecorationPlacedInRoom,
-  isToyPlacedInRoom,
+  countPlacedDecorations,
+  countPlacedToys,
 } from "@/utils/room-placement";
 import {
   getToyStorePrice,
+  getToyOwnedCount,
   isToyUnlocked,
 } from "@/utils/toy-store";
 import {
@@ -346,10 +348,8 @@ export default function StoreScreen() {
       if (result === "purchased") {
         triggerHaptic();
       }
-      if (result !== "already_owned") {
-        const { emoji, message } = showToyPurchaseMessage(result, toyId);
-        showFeedback(emoji, message);
-      }
+      const { emoji, message } = showToyPurchaseMessage(result, toyId);
+      showFeedback(emoji, message);
     },
     [purchaseToy, recordInteraction, showFeedback, showToyPurchaseMessage],
   );
@@ -431,13 +431,11 @@ export default function StoreScreen() {
       if (result === "purchased") {
         triggerHaptic();
       }
-      if (result !== "already_owned") {
-        const { emoji, message } = showDecorationPurchaseMessage(
-          result,
-          decorationId,
-        );
-        showFeedback(emoji, message);
-      }
+      const { emoji, message } = showDecorationPurchaseMessage(
+        result,
+        decorationId,
+      );
+      showFeedback(emoji, message);
     },
     [
       purchaseDecoration,
@@ -557,10 +555,11 @@ export default function StoreScreen() {
             key={decorationId}
             decorationId={decorationId}
             isOwned={owned}
-            isPlaced={isDecorationPlacedInRoom(
+            placedCount={countPlacedDecorations(
               decorationId,
               placedDecorations,
             )}
+            ownedCount={getDecorationOwnedCount(decorationId, progress)}
             canAfford={canAfford}
             onBuy={() => handleBuyDecoration(decorationId)}
             onPlace={() => handlePlaceDecoration(decorationId)}
@@ -573,6 +572,7 @@ export default function StoreScreen() {
       handlePlaceDecoration,
       handleRemoveDecoration,
       placedDecorations,
+      progress,
       unlockedDecorations,
       wallet.coins,
     ],
@@ -717,7 +717,8 @@ export default function StoreScreen() {
                           key={toyId}
                           toyId={toyId}
                           isOwned={owned}
-                          isPlaced={isToyPlacedInRoom(toyId, placedToys)}
+                          placedCount={countPlacedToys(toyId, placedToys)}
+                          ownedCount={getToyOwnedCount(toyId, progress)}
                           canAfford={canAfford}
                           onBuy={() => handleBuyToy(toyId)}
                           onPlace={() => handlePlaceToy(toyId)}

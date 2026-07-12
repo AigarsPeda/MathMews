@@ -29,11 +29,15 @@ export type RoomItemOffset = {
 
 export type PlacedToy = {
   toyId: string;
+  /** Unique id per placed instance (supports multiple of the same toy). */
+  instanceId: string;
   offset: RoomItemOffset;
 };
 
 export type PlacedDecoration = {
   decorationId: string;
+  /** Unique id per placed instance (supports multiple of the same decoration). */
+  instanceId: string;
   offset: RoomItemOffset;
   /** Sprite variant when the decoration has rotation options. */
   rotationIndex?: number;
@@ -46,8 +50,8 @@ export type PlacedDecoration = {
 /** Draw order for bed, placed decor, and toys (pet stays on top). */
 export type RoomLayerItem =
   | { kind: "bed" }
-  | { kind: "decoration"; decorationId: string }
-  | { kind: "toy"; toyId: string };
+  | { kind: "decoration"; decorationId: string; instanceId: string }
+  | { kind: "toy"; toyId: string; instanceId: string };
 
 export type PetProfile = {
   type: PetType;
@@ -107,8 +111,12 @@ export type Progress = {
   bedsUnlocked: string[];
   /** Cat toys the player owns. */
   toysUnlocked: string[];
+  /** How many of each toy type the player has purchased. */
+  toyQuantities?: Record<string, number>;
   /** Room decorations the player owns. */
   decorationsUnlocked: string[];
+  /** How many of each decoration type the player has purchased. */
+  decorationQuantities?: Record<string, number>;
   /** Cat fur colors the player owns. */
   skinsUnlocked: string[];
 };

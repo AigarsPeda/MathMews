@@ -10,7 +10,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 type ToyStoreCardProps = {
   toyId: CatToyId;
   isOwned: boolean;
-  isPlaced: boolean;
+  placedCount: number;
+  ownedCount: number;
   canAfford: boolean;
   onBuy: () => void;
   onPlace: () => void;
@@ -20,7 +21,8 @@ type ToyStoreCardProps = {
 export function ToyStoreCard({
   toyId,
   isOwned,
-  isPlaced,
+  placedCount,
+  ownedCount,
   canAfford,
   onBuy,
   onPlace,
@@ -31,14 +33,20 @@ export function ToyStoreCard({
   const previewSize = moderateScale(getToyStorePreviewSize(toyId));
   const toyLabel = t(`store.toyName.${toyId}`);
   const toyLabelInline = toyLabel.replace(/\n/g, " ");
+  const canPlace = isOwned && placedCount < ownedCount;
+  const canBuyAgain =
+    price.kind === "free" || (price.kind === "coins" && canAfford);
+  const showBuy = !isOwned ? price.kind !== "iap" : canBuyAgain;
 
   return (
-    <View style={[styles.card, isPlaced && styles.cardEquipped]}>
+    <View style={[styles.card, placedCount > 0 && styles.cardEquipped]}>
       <View style={styles.previewWrap}>
         <ToySpriteImage toyId={toyId} size={previewSize} />
-        {isPlaced ? (
+        {placedCount > 0 ? (
           <View style={styles.equippedBadge}>
-            <Text style={styles.equippedBadgeText}>{t("store.placed")}</Text>
+            <Text style={styles.equippedBadgeText}>
+              {t("store.inRoomCount", { count: placedCount })}
+            </Text>
           </View>
         ) : null}
       </View>
@@ -47,23 +55,53 @@ export function ToyStoreCard({
         <Text style={styles.title}>{toyLabel}</Text>
       </View>
 
-      {isOwned ? (
-        isPlaced ? (
+      <View style={styles.actions}>
+        {showBuy ? (
           <Pressable
-            onPress={onRemove}
+            onPress={onBuy}
+            disabled={price.kind === "coins" && !canAfford}
             style={({ pressed }) => [
               styles.actionBtn,
-              styles.actionRemove,
-              pressed && styles.actionPressed,
+              styles.actionBuy,
+              price.kind === "coins" && !canAfford && styles.actionDisabled,
+              pressed &&
+                (price.kind !== "coins" || canAfford) &&
+                styles.actionPressed,
             ]}
             accessibilityRole="button"
-            accessibilityLabel={t("store.a11yRemoveToy", {
-              name: toyLabelInline,
-            })}
+            accessibilityLabel={
+              isOwned
+                ? t("store.a11yBuyAnotherToy", {
+                    name: toyLabelInline,
+                    cost: price.kind === "coins" ? price.amount : 0,
+                  })
+                : price.kind === "free"
+                  ? t("store.a11yClaimToy", { name: toyLabelInline })
+                  : t("store.a11yBuyToy", {
+                      name: toyLabelInline,
+                      cost: price.kind === "coins" ? price.amount : 0,
+                    })
+            }
           >
-            <Text style={styles.actionRemoveText}>{t("store.remove")}</Text>
+            <Text style={styles.actionText}>
+              {!isOwned && price.kind === "free"
+                ? t("store.free")
+                : isOwned
+                  ? price.kind === "free"
+                    ? t("store.buyAnother")
+                    : t("store.buyAnotherFor", { cost: price.amount })
+                  : t("store.buyFor", {
+                      cost: price.kind === "coins" ? price.amount : 0,
+                    })}
+            </Text>
           </Pressable>
-        ) : (
+        ) : price.kind === "iap" ? (
+          <View style={[styles.actionBtn, styles.actionDisabled]}>
+            <Text style={styles.actionTextMuted}>{t("store.comingSoon")}</Text>
+          </View>
+        ) : null}
+
+        {canPlace ? (
           <Pressable
             onPress={onPlace}
             style={({ pressed }) => [
@@ -78,47 +116,25 @@ export function ToyStoreCard({
           >
             <Text style={styles.actionText}>{t("store.place")}</Text>
           </Pressable>
-        )
-      ) : price.kind === "free" ? (
-        <Pressable
-          onPress={onBuy}
-          style={({ pressed }) => [
-            styles.actionBtn,
-            styles.actionBuy,
-            pressed && styles.actionPressed,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t("store.a11yClaimToy", {
-            name: toyLabelInline,
-          })}
-        >
-          <Text style={styles.actionText}>{t("store.free")}</Text>
-        </Pressable>
-      ) : price.kind === "coins" ? (
-        <Pressable
-          onPress={onBuy}
-          disabled={!canAfford}
-          style={({ pressed }) => [
-            styles.actionBtn,
-            styles.actionBuy,
-            !canAfford && styles.actionDisabled,
-            pressed && canAfford && styles.actionPressed,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t("store.a11yBuyToy", {
-            name: toyLabelInline,
-            cost: price.amount,
-          })}
-        >
-          <Text style={styles.actionText}>
-            {t("store.buyFor", { cost: price.amount })}
-          </Text>
-        </Pressable>
-      ) : (
-        <View style={[styles.actionBtn, styles.actionDisabled]}>
-          <Text style={styles.actionTextMuted}>{t("store.comingSoon")}</Text>
-        </View>
-      )}
+        ) : null}
+
+        {placedCount > 0 ? (
+          <Pressable
+            onPress={onRemove}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionRemove,
+              pressed && styles.actionPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("store.a11yRemoveToy", {
+              name: toyLabelInline,
+            })}
+          >
+            <Text style={styles.actionRemoveText}>{t("store.remove")}</Text>
+          </Pressable>
+        ) : null}
+      </View>
     </View>
   );
 }
@@ -171,6 +187,9 @@ const styles = StyleSheet.create({
     color: GameColors.text,
     textAlign: "center",
   },
+  actions: {
+    gap: moderateScale(6),
+  },
   actionBtn: {
     minHeight: moderateScale(40),
     borderRadius: moderateScale(12),
@@ -188,11 +207,6 @@ const styles = StyleSheet.create({
     backgroundColor: GameColors.background,
     borderWidth: 2,
     borderColor: GameColors.primary,
-  },
-  actionEquipped: {
-    backgroundColor: GameColors.background,
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
   },
   actionDisabled: {
     opacity: 0.55,

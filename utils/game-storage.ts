@@ -30,8 +30,11 @@ import { applyLifeRegen, createDefaultLives } from "@/utils/lives";
 import { applyPetTimeDecay } from "@/utils/pet-care";
 import { normalizeRoomsUnlocked } from "@/utils/room-store";
 import { normalizeBedsUnlocked } from "@/utils/bed-store";
-import { normalizeToysUnlocked } from "@/utils/toy-store";
-import { normalizeDecorationsUnlocked } from "@/utils/decoration-store";
+import { normalizeToysUnlocked, normalizeToyQuantities } from "@/utils/toy-store";
+import {
+  normalizeDecorationsUnlocked,
+  normalizeDecorationQuantities,
+} from "@/utils/decoration-store";
 import { normalizeSkinsUnlocked } from "@/utils/skin-store";
 import { normalizeCoinTransactions } from "@/utils/coin-ledger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -234,6 +237,16 @@ function parseGameSave(
       parsed.progress.decorationsUnlocked,
       placedDecorationIds,
     );
+    const toyQuantities = normalizeToyQuantities(
+      parsed.progress.toyQuantities,
+      toysUnlocked,
+      normalizedPet.placedToys ?? [],
+    );
+    const decorationQuantities = normalizeDecorationQuantities(
+      parsed.progress.decorationQuantities,
+      decorationsUnlocked,
+      normalizedPet.placedDecorations ?? [],
+    );
     const equippedSkinId = resolveCatSkinId(normalizedPet.catSkinId);
     const skinsUnlocked = normalizeSkinsUnlocked(
       parsed.progress.skinsUnlocked,
@@ -286,7 +299,9 @@ function parseGameSave(
           roomsUnlocked,
           bedsUnlocked,
           toysUnlocked,
+          toyQuantities,
           decorationsUnlocked,
+          decorationQuantities,
           skinsUnlocked,
         },
       },

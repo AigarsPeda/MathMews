@@ -12,6 +12,10 @@ function clampOffsetAxis(value: number) {
   return Math.max(-1, Math.min(1, value));
 }
 
+export function createPlacementInstanceId(): string {
+  return `pi-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export function normalizeRoomItemOffset(
   value: unknown,
 ): RoomItemOffset | undefined {
@@ -41,11 +45,22 @@ export function defaultPlacementOffset(
   };
 }
 
+function resolvePlacementInstanceId(
+  record: Record<string, unknown>,
+  toyId: string,
+  index: number,
+): string {
+  if (typeof record.instanceId === "string" && record.instanceId.length > 0) {
+    return record.instanceId;
+  }
+  return `legacy-${toyId}-${index}`;
+}
+
 export function normalizePlacedToys(value: unknown): PlacedToy[] {
   const placed: PlacedToy[] = [];
 
   if (Array.isArray(value)) {
-    for (const entry of value) {
+    for (const [index, entry] of value.entries()) {
       if (typeof entry !== "object" || entry === null) continue;
       const record = entry as Record<string, unknown>;
       const toyId =
@@ -54,8 +69,11 @@ export function normalizePlacedToys(value: unknown): PlacedToy[] {
           : undefined;
       const offset = normalizeRoomItemOffset(record.offset);
       if (!toyId || !offset) continue;
-      if (placed.some((item) => item.toyId === toyId)) continue;
-      placed.push({ toyId, offset });
+      placed.push({
+        toyId,
+        instanceId: resolvePlacementInstanceId(record, toyId, index),
+        offset,
+      });
     }
     return placed;
   }
@@ -67,7 +85,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
   const placed: PlacedDecoration[] = [];
 
   if (Array.isArray(value)) {
-    for (const entry of value) {
+    for (const [index, entry] of value.entries()) {
       if (typeof entry !== "object" || entry === null) continue;
       const record = entry as Record<string, unknown>;
       if (typeof record.decorationId !== "string") continue;
@@ -84,14 +102,13 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
           ? clampDecorationScale(record.scale)
           : undefined;
 
-      if (
-        placed.some((item) => item.decorationId === placement.decorationId)
-      ) {
-        continue;
-      }
-
       placed.push({
         decorationId: placement.decorationId,
+        instanceId: resolvePlacementInstanceId(
+          record,
+          placement.decorationId,
+          index,
+        ),
         offset,
         rotationIndex:
           placement.rotationIndex > 0 ? placement.rotationIndex : undefined,
@@ -120,6 +137,7 @@ export function migrateLegacyPlacedToys(pet: Record<string, unknown>): PlacedToy
   return [
     {
       toyId: legacyToyId,
+      instanceId: createPlacementInstanceId(),
       offset:
         normalizeRoomItemOffset(pet.roomToyOffset) ??
         defaultPlacementOffset(0, "toy"),
@@ -146,6 +164,7 @@ export function migrateLegacyPlacedDecorations(
   return [
     {
       decorationId: legacyDecorationId,
+      instanceId: createPlacementInstanceId(),
       offset:
         normalizeRoomItemOffset(pet.roomDecorationOffset) ??
         defaultPlacementOffset(0, "decoration"),
@@ -153,34 +172,45 @@ export function migrateLegacyPlacedDecorations(
   ];
 }
 
+export function countPlacedToys(
+  toyId: CatToyId,
+  placedToys: PlacedToy[] | undefined,
+): number {
+  return (placedToys ?? []).filter((item) => item.toyId === toyId).length;
+}
+
+export function countPlacedDecorations(
+  decorationId: CatDecorationId,
+  placedDecorations: PlacedDecoration[] | undefined,
+): number {
+  return (placedDecorations ?? []).filter(
+    (item) => item.decorationId === decorationId,
+  ).length;
+}
+
 export function isToyPlacedInRoom(
   toyId: CatToyId,
   placedToys: PlacedToy[] | undefined,
 ): boolean {
-  return (placedToys ?? []).some((item) => item.toyId === toyId);
+  return countPlacedToys(toyId, placedToys) > 0;
 }
 
 export function isDecorationPlacedInRoom(
   decorationId: CatDecorationId,
   placedDecorations: PlacedDecoration[] | undefined,
 ): boolean {
-  return (placedDecorations ?? []).some(
-    (item) => item.decorationId === decorationId,
-  );
+  return countPlacedDecorations(decorationId, placedDecorations) > 0;
 }
 
 export function appendPlacedToy(
   placedToys: PlacedToy[] | undefined,
   toyId: CatToyId,
 ): PlacedToy[] {
-  if (isToyPlacedInRoom(toyId, placedToys)) {
-    return placedToys ?? [];
-  }
-
   return [
     ...(placedToys ?? []),
     {
       toyId,
+      instanceId: createPlacementInstanceId(),
       offset: defaultPlacementOffset((placedToys ?? []).length, "toy"),
     },
   ];
@@ -190,14 +220,11 @@ export function appendPlacedDecoration(
   placedDecorations: PlacedDecoration[] | undefined,
   decorationId: CatDecorationId,
 ): PlacedDecoration[] {
-  if (isDecorationPlacedInRoom(decorationId, placedDecorations)) {
-    return placedDecorations ?? [];
-  }
-
   return [
     ...(placedDecorations ?? []),
     {
       decorationId,
+      instanceId: createPlacementInstanceId(),
       offset: defaultPlacementOffset(
         (placedDecorations ?? []).length,
         "decoration",
@@ -206,35 +233,51 @@ export function appendPlacedDecoration(
   ];
 }
 
-export function updatePlacedToyOffset(
+export function findPlacedToyByInstance(
   placedToys: PlacedToy[] | undefined,
-  toyId: CatToyId,
+  instanceId: string,
+): PlacedToy | undefined {
+  return (placedToys ?? []).find((item) => item.instanceId === instanceId);
+}
+
+export function findPlacedDecorationByInstance(
+  placedDecorations: PlacedDecoration[] | undefined,
+  instanceId: string,
+): PlacedDecoration | undefined {
+  return (placedDecorations ?? []).find(
+    (item) => item.instanceId === instanceId,
+  );
+}
+
+export function updatePlacedToyOffsetByInstance(
+  placedToys: PlacedToy[] | undefined,
+  instanceId: string,
   offset: RoomItemOffset,
 ): PlacedToy[] {
   return (placedToys ?? []).map((item) =>
-    item.toyId === toyId ? { ...item, offset } : item,
+    item.instanceId === instanceId ? { ...item, offset } : item,
   );
 }
 
-export function updatePlacedDecorationOffset(
+export function updatePlacedDecorationOffsetByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
-  decorationId: CatDecorationId,
+  instanceId: string,
   offset: RoomItemOffset,
 ): PlacedDecoration[] {
   return (placedDecorations ?? []).map((item) =>
-    item.decorationId === decorationId ? { ...item, offset } : item,
+    item.instanceId === instanceId ? { ...item, offset } : item,
   );
 }
 
-export function updatePlacedDecorationScale(
+export function updatePlacedDecorationScaleByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
-  decorationId: CatDecorationId,
+  instanceId: string,
   scale: number,
 ): PlacedDecoration[] {
   const nextScale = clampDecorationScale(scale);
 
   return (placedDecorations ?? []).map((item) => {
-    if (item.decorationId !== decorationId) return item;
+    if (item.instanceId !== instanceId) return item;
 
     return {
       ...item,
@@ -243,13 +286,13 @@ export function updatePlacedDecorationScale(
   });
 }
 
-export function updatePlacedDecorationRotation(
+export function updatePlacedDecorationRotationByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
-  decorationId: CatDecorationId,
+  instanceId: string,
   rotationIndex: number,
 ): PlacedDecoration[] {
   return (placedDecorations ?? []).map((item) => {
-    if (item.decorationId !== decorationId) return item;
+    if (item.instanceId !== instanceId) return item;
 
     return {
       ...item,
@@ -258,13 +301,13 @@ export function updatePlacedDecorationRotation(
   });
 }
 
-export function updatePlacedDecorationWallFlip(
+export function updatePlacedDecorationWallFlipByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
-  decorationId: CatDecorationId,
+  instanceId: string,
   wallFlipped: boolean,
 ): PlacedDecoration[] {
   return (placedDecorations ?? []).map((item) => {
-    if (item.decorationId !== decorationId) return item;
+    if (item.instanceId !== instanceId) return item;
 
     return {
       ...item,
@@ -273,20 +316,58 @@ export function updatePlacedDecorationWallFlip(
   });
 }
 
-export function removePlacedDecoration(
-  placedDecorations: PlacedDecoration[] | undefined,
-  decorationId: CatDecorationId,
-): PlacedDecoration[] {
-  return (placedDecorations ?? []).filter(
-    (item) => item.decorationId !== decorationId,
-  );
-}
-
-export function removePlacedToy(
+export function removeOnePlacedToy(
   placedToys: PlacedToy[] | undefined,
   toyId: CatToyId,
 ): PlacedToy[] {
-  return (placedToys ?? []).filter((item) => item.toyId !== toyId);
+  const list = placedToys ?? [];
+  let removeIndex = -1;
+
+  for (let index = list.length - 1; index >= 0; index -= 1) {
+    if (list[index]?.toyId === toyId) {
+      removeIndex = index;
+      break;
+    }
+  }
+
+  if (removeIndex < 0) return list;
+
+  return [...list.slice(0, removeIndex), ...list.slice(removeIndex + 1)];
+}
+
+export function removeOnePlacedDecoration(
+  placedDecorations: PlacedDecoration[] | undefined,
+  decorationId: CatDecorationId,
+): PlacedDecoration[] {
+  const list = placedDecorations ?? [];
+  let removeIndex = -1;
+
+  for (let index = list.length - 1; index >= 0; index -= 1) {
+    if (list[index]?.decorationId === decorationId) {
+      removeIndex = index;
+      break;
+    }
+  }
+
+  if (removeIndex < 0) return list;
+
+  return [...list.slice(0, removeIndex), ...list.slice(removeIndex + 1)];
+}
+
+export function removePlacedToyByInstance(
+  placedToys: PlacedToy[] | undefined,
+  instanceId: string,
+): PlacedToy[] {
+  return (placedToys ?? []).filter((item) => item.instanceId !== instanceId);
+}
+
+export function removePlacedDecorationByInstance(
+  placedDecorations: PlacedDecoration[] | undefined,
+  instanceId: string,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).filter(
+    (item) => item.instanceId !== instanceId,
+  );
 }
 
 export function collectPlacedToyIds(placedToys: PlacedToy[] | undefined): CatToyId[] {

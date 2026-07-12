@@ -39,10 +39,12 @@ import {
 import {
   isToyUnlocked,
   tryPurchaseToy,
+  getToyOwnedCount,
 } from "@/utils/toy-store";
 import {
   isDecorationUnlocked,
   tryPurchaseDecoration,
+  getDecorationOwnedCount,
 } from "@/utils/decoration-store";
 import {
   isSkinUnlocked,
@@ -51,13 +53,16 @@ import {
 import {
   appendPlacedDecoration,
   appendPlacedToy,
-  isDecorationPlacedInRoom,
-  isToyPlacedInRoom,
-  removePlacedDecoration,
-  removePlacedToy,
-  updatePlacedDecorationRotation,
-  updatePlacedDecorationScale,
-  updatePlacedDecorationWallFlip,
+  countPlacedDecorations,
+  countPlacedToys,
+  findPlacedDecorationByInstance,
+  removeOnePlacedDecoration,
+  removeOnePlacedToy,
+  removePlacedDecorationByInstance,
+  removePlacedToyByInstance,
+  updatePlacedDecorationRotationByInstance,
+  updatePlacedDecorationScaleByInstance,
+  updatePlacedDecorationWallFlipByInstance,
 } from "@/utils/room-placement";
 import {
   moveRoomLayerItem as shiftRoomLayerItem,
@@ -126,14 +131,17 @@ type GameContextValue = {
   removeBedFromRoom: () => boolean;
   purchaseToy: (toyId: CatToyId) => ToyPurchaseResult;
   placeToyInRoom: (toyId: CatToyId) => boolean;
-  removeToyFromRoom: (toyId: CatToyId) => boolean;
+  removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
-  removeDecorationFromRoom: (decorationId: CatDecorationId) => boolean;
-  rotatePlacedDecoration: (decorationId: CatDecorationId) => boolean;
-  flipPlacedDecorationWall: (decorationId: CatDecorationId) => boolean;
-  scalePlacedDecoration: (
+  removeDecorationFromRoom: (
     decorationId: CatDecorationId,
+    instanceId?: string,
+  ) => boolean;
+  rotatePlacedDecoration: (instanceId: string) => boolean;
+  flipPlacedDecorationWall: (instanceId: string) => boolean;
+  scalePlacedDecoration: (
+    instanceId: string,
     direction: "up" | "down",
   ) => boolean;
   moveRoomLayerItem: (item: RoomLayerItem, direction: "up" | "down") => boolean;
@@ -555,12 +563,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     if (attempt.result === "purchased") {
+      const ownedCount = getToyOwnedCount(resolvedId, current.progress);
       setSave({
         ...current,
         wallet: { coins: attempt.walletCoins },
         progress: {
           ...current.progress,
           toysUnlocked: attempt.toysUnlocked,
+          toyQuantities: {
+            ...current.progress.toyQuantities,
+            [resolvedId]: ownedCount + 1,
+          },
         },
         pet: syncPetLayerOrder({
           ...current.pet,
@@ -585,7 +598,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    if (isToyPlacedInRoom(resolvedId, current.pet.placedToys)) {
+    const ownedCount = getToyOwnedCount(resolvedId, current.progress);
+    const placedCount = countPlacedToys(resolvedId, current.pet.placedToys);
+    if (placedCount >= ownedCount) {
       return false;
     }
 
@@ -600,14 +615,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
-  const removeToyFromRoom = useCallback((toyId: CatToyId) => {
+  const removeToyFromRoom = useCallback((toyId: CatToyId, instanceId?: string) => {
     const resolvedId = resolveCatToyId(toyId);
     if (!resolvedId) {
       return false;
     }
 
     const current = saveRef.current;
-    if (!isToyPlacedInRoom(resolvedId, current.pet.placedToys)) {
+    const nextPlacedToys = instanceId
+      ? removePlacedToyByInstance(current.pet.placedToys, instanceId)
+      : removeOnePlacedToy(current.pet.placedToys, resolvedId);
+
+    if (nextPlacedToys.length === (current.pet.placedToys ?? []).length) {
       return false;
     }
 
@@ -615,7 +634,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...current,
       pet: syncPetLayerOrder({
         ...current.pet,
-        placedToys: removePlacedToy(current.pet.placedToys, resolvedId),
+        placedToys: nextPlacedToys,
       }),
     });
 
@@ -638,12 +657,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
       });
 
       if (attempt.result === "purchased") {
+        const ownedCount = getDecorationOwnedCount(resolvedId, current.progress);
         setSave({
           ...current,
           wallet: { coins: attempt.walletCoins },
           progress: {
             ...current.progress,
             decorationsUnlocked: attempt.decorationsUnlocked,
+            decorationQuantities: {
+              ...current.progress.decorationQuantities,
+              [resolvedId]: ownedCount + 1,
+            },
           },
           pet: syncPetLayerOrder({
             ...current.pet,
@@ -673,7 +697,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    if (isDecorationPlacedInRoom(resolvedId, current.pet.placedDecorations)) {
+    const ownedCount = getDecorationOwnedCount(resolvedId, current.progress);
+    const placedCount = countPlacedDecorations(
+      resolvedId,
+      current.pet.placedDecorations,
+    );
+    if (placedCount >= ownedCount) {
       return false;
     }
 
@@ -691,33 +720,55 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
-  const removeDecorationFromRoom = useCallback((decorationId: CatDecorationId) => {
-    const resolvedId = resolveCatDecorationId(decorationId);
-    if (!resolvedId) {
-      return false;
-    }
+  const removeDecorationFromRoom = useCallback(
+    (decorationId: CatDecorationId, instanceId?: string) => {
+      const resolvedId = resolveCatDecorationId(decorationId);
+      if (!resolvedId) {
+        return false;
+      }
 
+      const current = saveRef.current;
+      const nextPlacedDecorations = instanceId
+        ? removePlacedDecorationByInstance(
+            current.pet.placedDecorations,
+            instanceId,
+          )
+        : removeOnePlacedDecoration(
+            current.pet.placedDecorations,
+            resolvedId,
+          );
+
+      if (
+        nextPlacedDecorations.length ===
+        (current.pet.placedDecorations ?? []).length
+      ) {
+        return false;
+      }
+
+      setSave({
+        ...current,
+        pet: syncPetLayerOrder({
+          ...current.pet,
+          placedDecorations: nextPlacedDecorations,
+        }),
+      });
+
+      return true;
+    },
+    [],
+  );
+
+  const rotatePlacedDecoration = useCallback((instanceId: string) => {
     const current = saveRef.current;
-    if (!isDecorationPlacedInRoom(resolvedId, current.pet.placedDecorations)) {
+    const placed = findPlacedDecorationByInstance(
+      current.pet.placedDecorations,
+      instanceId,
+    );
+    if (!placed) {
       return false;
     }
 
-    setSave({
-      ...current,
-      pet: syncPetLayerOrder({
-        ...current.pet,
-        placedDecorations: removePlacedDecoration(
-          current.pet.placedDecorations,
-          resolvedId,
-        ),
-      }),
-    });
-
-    return true;
-  }, []);
-
-  const rotatePlacedDecoration = useCallback((decorationId: CatDecorationId) => {
-    const placement = resolveDecorationPlacement(decorationId);
+    const placement = resolveDecorationPlacement(placed.decorationId);
     if (!placement || !canRotateDecoration(placement.decorationId)) {
       return false;
     }
@@ -728,14 +779,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    const current = saveRef.current;
-    const placed = current.pet.placedDecorations?.find(
-      (item) => item.decorationId === canonicalId,
-    );
-    if (!placed) {
-      return false;
-    }
-
     const currentIndex = placed.rotationIndex ?? 0;
     const nextIndex = getNextRotationIndex(currentIndex, rotationCount);
 
@@ -743,9 +786,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...current,
       pet: {
         ...current.pet,
-        placedDecorations: updatePlacedDecorationRotation(
+        placedDecorations: updatePlacedDecorationRotationByInstance(
           current.pet.placedDecorations,
-          canonicalId,
+          instanceId,
           nextIndex,
         ),
       },
@@ -754,18 +797,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
-  const flipPlacedDecorationWall = useCallback((decorationId: CatDecorationId) => {
-    const placement = resolveDecorationPlacement(decorationId);
-    if (!placement || !canFlipWallDecoration(placement.decorationId)) {
+  const flipPlacedDecorationWall = useCallback((instanceId: string) => {
+    const current = saveRef.current;
+    const placed = findPlacedDecorationByInstance(
+      current.pet.placedDecorations,
+      instanceId,
+    );
+    if (!placed) {
       return false;
     }
 
-    const canonicalId = placement.decorationId;
-    const current = saveRef.current;
-    const placed = current.pet.placedDecorations?.find(
-      (item) => item.decorationId === canonicalId,
-    );
-    if (!placed) {
+    const placement = resolveDecorationPlacement(placed.decorationId);
+    if (!placement || !canFlipWallDecoration(placement.decorationId)) {
       return false;
     }
 
@@ -773,9 +816,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...current,
       pet: {
         ...current.pet,
-        placedDecorations: updatePlacedDecorationWallFlip(
+        placedDecorations: updatePlacedDecorationWallFlipByInstance(
           current.pet.placedDecorations,
-          canonicalId,
+          instanceId,
           !placed.wallFlipped,
         ),
       },
@@ -785,16 +828,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const scalePlacedDecoration = useCallback(
-    (decorationId: CatDecorationId, direction: "up" | "down") => {
-      const placement = resolveDecorationPlacement(decorationId);
-      if (!placement) {
-        return false;
-      }
-
-      const canonicalId = placement.decorationId;
+    (instanceId: string, direction: "up" | "down") => {
       const current = saveRef.current;
-      const placed = current.pet.placedDecorations?.find(
-        (item) => item.decorationId === canonicalId,
+      const placed = findPlacedDecorationByInstance(
+        current.pet.placedDecorations,
+        instanceId,
       );
       if (!placed) {
         return false;
@@ -814,9 +852,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         ...current,
         pet: {
           ...current.pet,
-          placedDecorations: updatePlacedDecorationScale(
+          placedDecorations: updatePlacedDecorationScaleByInstance(
             current.pet.placedDecorations,
-            canonicalId,
+            instanceId,
             nextScale,
           ),
         },

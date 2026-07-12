@@ -10,7 +10,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 type DecorationStoreCardProps = {
   decorationId: CatDecorationId;
   isOwned: boolean;
-  isPlaced: boolean;
+  placedCount: number;
+  ownedCount: number;
   canAfford: boolean;
   onBuy: () => void;
   onPlace: () => void;
@@ -20,7 +21,8 @@ type DecorationStoreCardProps = {
 export function DecorationStoreCard({
   decorationId,
   isOwned,
-  isPlaced,
+  placedCount,
+  ownedCount,
   canAfford,
   onBuy,
   onPlace,
@@ -31,18 +33,24 @@ export function DecorationStoreCard({
   const previewSize = moderateScale(getDecorationStorePreviewSize(decorationId));
   const decorationLabel = t(`store.decorationName.${decorationId}`);
   const decorationLabelInline = decorationLabel.replace(/\n/g, " ");
+  const canPlace = isOwned && placedCount < ownedCount;
+  const canBuyAgain =
+    price.kind === "free" || (price.kind === "coins" && canAfford);
+  const showBuy = !isOwned ? price.kind !== "iap" : canBuyAgain;
 
   return (
-    <View style={[styles.card, isPlaced && styles.cardEquipped]}>
+    <View style={[styles.card, placedCount > 0 && styles.cardEquipped]}>
       <View style={styles.previewWrap}>
         <DecorationSpriteImage
           decorationId={decorationId}
           size={previewSize}
           flipHorizontal={getDecorationStorePreviewWallFlipped(decorationId)}
         />
-        {isPlaced ? (
+        {placedCount > 0 ? (
           <View style={styles.equippedBadge}>
-            <Text style={styles.equippedBadgeText}>{t("store.placed")}</Text>
+            <Text style={styles.equippedBadgeText}>
+              {t("store.inRoomCount", { count: placedCount })}
+            </Text>
           </View>
         ) : null}
       </View>
@@ -51,23 +59,55 @@ export function DecorationStoreCard({
         <Text style={styles.title}>{decorationLabel}</Text>
       </View>
 
-      {isOwned ? (
-        isPlaced ? (
+      <View style={styles.actions}>
+        {showBuy ? (
           <Pressable
-            onPress={onRemove}
+            onPress={onBuy}
+            disabled={price.kind === "coins" && !canAfford}
             style={({ pressed }) => [
               styles.actionBtn,
-              styles.actionRemove,
-              pressed && styles.actionPressed,
+              styles.actionBuy,
+              price.kind === "coins" && !canAfford && styles.actionDisabled,
+              pressed &&
+                (price.kind !== "coins" || canAfford) &&
+                styles.actionPressed,
             ]}
             accessibilityRole="button"
-            accessibilityLabel={t("store.a11yRemoveDecoration", {
-              name: decorationLabelInline,
-            })}
+            accessibilityLabel={
+              isOwned
+                ? t("store.a11yBuyAnotherDecoration", {
+                    name: decorationLabelInline,
+                    cost: price.kind === "coins" ? price.amount : 0,
+                  })
+                : price.kind === "free"
+                  ? t("store.a11yClaimDecoration", {
+                      name: decorationLabelInline,
+                    })
+                  : t("store.a11yBuyDecoration", {
+                      name: decorationLabelInline,
+                      cost: price.kind === "coins" ? price.amount : 0,
+                    })
+            }
           >
-            <Text style={styles.actionRemoveText}>{t("store.remove")}</Text>
+            <Text style={styles.actionText}>
+              {!isOwned && price.kind === "free"
+                ? t("store.free")
+                : isOwned
+                  ? price.kind === "free"
+                    ? t("store.buyAnother")
+                    : t("store.buyAnotherFor", { cost: price.amount })
+                  : t("store.buyFor", {
+                      cost: price.kind === "coins" ? price.amount : 0,
+                    })}
+            </Text>
           </Pressable>
-        ) : (
+        ) : price.kind === "iap" ? (
+          <View style={[styles.actionBtn, styles.actionDisabled]}>
+            <Text style={styles.actionTextMuted}>{t("store.comingSoon")}</Text>
+          </View>
+        ) : null}
+
+        {canPlace ? (
           <Pressable
             onPress={onPlace}
             style={({ pressed }) => [
@@ -82,47 +122,25 @@ export function DecorationStoreCard({
           >
             <Text style={styles.actionText}>{t("store.place")}</Text>
           </Pressable>
-        )
-      ) : price.kind === "free" ? (
-        <Pressable
-          onPress={onBuy}
-          style={({ pressed }) => [
-            styles.actionBtn,
-            styles.actionBuy,
-            pressed && styles.actionPressed,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t("store.a11yClaimDecoration", {
-            name: decorationLabelInline,
-          })}
-        >
-          <Text style={styles.actionText}>{t("store.free")}</Text>
-        </Pressable>
-      ) : price.kind === "coins" ? (
-        <Pressable
-          onPress={onBuy}
-          disabled={!canAfford}
-          style={({ pressed }) => [
-            styles.actionBtn,
-            styles.actionBuy,
-            !canAfford && styles.actionDisabled,
-            pressed && canAfford && styles.actionPressed,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t("store.a11yBuyDecoration", {
-            name: decorationLabelInline,
-            cost: price.amount,
-          })}
-        >
-          <Text style={styles.actionText}>
-            {t("store.buyFor", { cost: price.amount })}
-          </Text>
-        </Pressable>
-      ) : (
-        <View style={[styles.actionBtn, styles.actionDisabled]}>
-          <Text style={styles.actionTextMuted}>{t("store.comingSoon")}</Text>
-        </View>
-      )}
+        ) : null}
+
+        {placedCount > 0 ? (
+          <Pressable
+            onPress={onRemove}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionRemove,
+              pressed && styles.actionPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("store.a11yRemoveDecoration", {
+              name: decorationLabelInline,
+            })}
+          >
+            <Text style={styles.actionRemoveText}>{t("store.remove")}</Text>
+          </Pressable>
+        ) : null}
+      </View>
     </View>
   );
 }
@@ -169,11 +187,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    fontSize: moderateScale(14),
-    lineHeight: moderateScale(18),
+    fontSize: moderateScale(15),
+    lineHeight: moderateScale(20),
     fontWeight: "700",
     color: GameColors.text,
     textAlign: "center",
+  },
+  actions: {
+    gap: moderateScale(6),
   },
   actionBtn: {
     minHeight: moderateScale(40),
@@ -192,11 +213,6 @@ const styles = StyleSheet.create({
     backgroundColor: GameColors.background,
     borderWidth: 2,
     borderColor: GameColors.primary,
-  },
-  actionEquipped: {
-    backgroundColor: GameColors.background,
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
   },
   actionDisabled: {
     opacity: 0.55,

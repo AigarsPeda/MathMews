@@ -110,21 +110,21 @@ type PetStageProps = {
   onPetPress?: () => void;
   onRoomPetOffsetChange?: (offset: { x: number; y: number }) => void;
   onRoomBedOffsetChange?: (offset: { x: number; y: number }) => void;
-  onPlacedToyOffsetChange?: (toyId: CatToyId, offset: RoomItemOffset) => void;
+  onPlacedToyOffsetChange?: (instanceId: string, offset: RoomItemOffset) => void;
   onPlacedDecorationOffsetChange?: (
-    decorationId: CatDecorationId,
+    instanceId: string,
     offset: RoomItemOffset,
   ) => void;
-  onPlacedDecorationRemove?: (decorationId: CatDecorationId) => void;
-  onRotatePlacedDecoration?: (decorationId: CatDecorationId) => void;
-  onFlipPlacedDecorationWall?: (decorationId: CatDecorationId) => void;
+  onPlacedDecorationRemove?: (instanceId: string) => void;
+  onRotatePlacedDecoration?: (instanceId: string) => void;
+  onFlipPlacedDecorationWall?: (instanceId: string) => void;
   onScalePlacedDecoration?: (
-    decorationId: CatDecorationId,
+    instanceId: string,
     direction: "up" | "down",
   ) => void;
   onMoveRoomLayerItem?: (item: RoomLayerItem, direction: "up" | "down") => void;
   onBedRemove?: () => void;
-  onPlacedToyRemove?: (toyId: CatToyId) => void;
+  onPlacedToyRemove?: (instanceId: string) => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (stepIndex: number) => void;
 };
@@ -320,8 +320,9 @@ export function PetStage({
       if (item.kind === "decoration") {
         const decorationId = item.decorationId as CatDecorationId;
         const placed = roomPlacedDecorations.find(
-          (entry) => entry.decorationId === decorationId,
+          (entry) => entry.instanceId === item.instanceId,
         );
+        if (!placed) return actions;
 
         const isPoster = isPosterDecorationId(decorationId);
 
@@ -334,7 +335,7 @@ export function PetStage({
             label: flipWallLabel,
             icon: "rotate-right",
             onPress: () => {
-              onFlipPlacedDecorationWall(decorationId);
+              onFlipPlacedDecorationWall(item.instanceId);
             },
           });
         }
@@ -349,18 +350,18 @@ export function PetStage({
                 : rotateLabel,
             icon: styleVariant && !isPoster ? "style" : "rotate-right",
             onPress: () => {
-              onRotatePlacedDecoration(decorationId);
+              onRotatePlacedDecoration(item.instanceId);
             },
           });
         }
 
-        if (onScalePlacedDecoration && placed) {
+        if (onScalePlacedDecoration) {
           const scale = getPlacedDecorationScale(placed);
           actions.push({
             label: biggerLabel,
             icon: "zoom-in",
             onPress: () => {
-              onScalePlacedDecoration(decorationId, "up");
+              onScalePlacedDecoration(item.instanceId, "up");
             },
             disabled: !canScaleDecorationUp(scale),
           });
@@ -368,7 +369,7 @@ export function PetStage({
             label: smallerLabel,
             icon: "zoom-out",
             onPress: () => {
-              onScalePlacedDecoration(decorationId, "down");
+              onScalePlacedDecoration(item.instanceId, "down");
             },
             disabled: !canScaleDecorationDown(scale),
           });
@@ -393,7 +394,7 @@ export function PetStage({
           icon: "delete-outline",
           onPress: () => {
             closeMenu();
-            onPlacedDecorationRemove(item.decorationId as CatDecorationId);
+            onPlacedDecorationRemove(item.instanceId);
           },
           destructive: true,
         });
@@ -405,7 +406,7 @@ export function PetStage({
           icon: "delete-outline",
           onPress: () => {
             closeMenu();
-            onPlacedToyRemove(item.toyId as CatToyId);
+            onPlacedToyRemove(item.instanceId);
           },
           destructive: true,
         });
@@ -552,9 +553,8 @@ export function PetStage({
     }
 
     if (item.kind === "decoration") {
-      const decorationId = item.decorationId as CatDecorationId;
       const placed = roomPlacedDecorations.find(
-        (entry) => entry.decorationId === decorationId,
+        (entry) => entry.instanceId === item.instanceId,
       );
       if (!placed) return null;
 
@@ -564,12 +564,12 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
-          key={`decoration:${decorationId}`}
+          key={`decoration:${item.instanceId}`}
           petSize={decorationSize}
           hitSize={hitSize}
           initialOffset={placed.offset}
           onOffsetChange={(offset) =>
-            onPlacedDecorationOffsetChange?.(decorationId, offset)
+            onPlacedDecorationOffsetChange?.(item.instanceId, offset)
           }
           {...roomItemDragProps(item, layerZIndex)}
         >
@@ -582,18 +582,22 @@ export function PetStage({
       );
     }
 
-    const toyId = item.toyId as CatToyId;
-    const placed = roomPlacedToys.find((entry) => entry.toyId === toyId);
+    const placed = roomPlacedToys.find(
+      (entry) => entry.instanceId === item.instanceId,
+    );
     if (!placed) return null;
 
+    const toyId = item.toyId as CatToyId;
     const toySize = moderateScale(getToyDisplaySize(toyId));
 
     return (
       <DraggableRoomPet
-        key={`toy:${toyId}`}
+        key={`toy:${item.instanceId}`}
         petSize={toySize}
         initialOffset={placed.offset}
-        onOffsetChange={(offset) => onPlacedToyOffsetChange?.(toyId, offset)}
+        onOffsetChange={(offset) =>
+          onPlacedToyOffsetChange?.(item.instanceId, offset)
+        }
         {...roomItemDragProps(item, layerZIndex)}
       >
         <ToySpriteImage toyId={toyId} size={toySize} />

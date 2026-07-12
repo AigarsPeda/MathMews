@@ -72,6 +72,8 @@ import {
   isWindowDecorationId,
 } from "@/constants/window-decorations";
 import type { DecorationPurchaseResult, StorePrice } from "@/types/store";
+import type { PlacedDecoration, Progress } from "@/types/game";
+import { countPlacedDecorations } from "@/utils/room-placement";
 
 const DECORATION_ORDER: CatDecorationId[] = [...CAT_DECORATION_IDS];
 
@@ -304,6 +306,50 @@ export function normalizeDecorationsUnlocked(
   return CAT_DECORATION_IDS.filter((id) => unlocked.has(id));
 }
 
+export function getDecorationOwnedCount(
+  decorationId: CatDecorationId,
+  progress: Pick<Progress, "decorationsUnlocked" | "decorationQuantities">,
+): number {
+  if (!isDecorationUnlocked(decorationId, progress.decorationsUnlocked as CatDecorationId[])) {
+    return 0;
+  }
+
+  const saved = progress.decorationQuantities?.[decorationId];
+  return typeof saved === "number" && saved > 0 ? saved : 1;
+}
+
+export function normalizeDecorationQuantities(
+  value: unknown,
+  decorationsUnlocked: CatDecorationId[],
+  placedDecorations: PlacedDecoration[] = [],
+): Record<string, number> {
+  const quantities: Record<string, number> = {};
+
+  if (value && typeof value === "object") {
+    for (const [id, count] of Object.entries(value as Record<string, unknown>)) {
+      const resolved = resolveCatDecorationId(id);
+      if (resolved && typeof count === "number" && count > 0) {
+        quantities[resolved] = count;
+      }
+    }
+  }
+
+  for (const id of decorationsUnlocked) {
+    if ((quantities[id] ?? 0) < 1) {
+      quantities[id] = 1;
+    }
+  }
+
+  for (const id of decorationsUnlocked) {
+    const placedCount = countPlacedDecorations(id, placedDecorations);
+    if (placedCount > (quantities[id] ?? 0)) {
+      quantities[id] = placedCount;
+    }
+  }
+
+  return quantities;
+}
+
 export function tryPurchaseDecoration(params: {
   decorationId: CatDecorationId;
   walletCoins: number;
@@ -332,19 +378,18 @@ export function tryPurchaseDecoration(params: {
     };
   }
 
-  if (isDecorationUnlocked(decorationId, params.decorationsUnlocked)) {
-    return {
-      result: "already_owned",
-      walletCoins: params.walletCoins,
-      decorationsUnlocked: params.decorationsUnlocked,
-    };
-  }
+  const alreadyUnlocked = isDecorationUnlocked(
+    decorationId,
+    params.decorationsUnlocked,
+  );
 
   if (price.kind === "free") {
     return {
       result: "purchased",
       walletCoins: params.walletCoins,
-      decorationsUnlocked: [...params.decorationsUnlocked, decorationId],
+      decorationsUnlocked: alreadyUnlocked
+        ? params.decorationsUnlocked
+        : [...params.decorationsUnlocked, decorationId],
     };
   }
 
@@ -359,6 +404,8 @@ export function tryPurchaseDecoration(params: {
   return {
     result: "purchased",
     walletCoins: params.walletCoins - price.amount,
-    decorationsUnlocked: [...params.decorationsUnlocked, decorationId],
+    decorationsUnlocked: alreadyUnlocked
+      ? params.decorationsUnlocked
+      : [...params.decorationsUnlocked, decorationId],
   };
 }
