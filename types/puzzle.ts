@@ -30,7 +30,8 @@ export type PuzzleType =
   | "fraction_equivalent"
   | "pattern_next"
   | "function_machine"
-  | "order_numbers";
+  | "order_numbers"
+  | "fraction_match";
 
 export type MathOperator = "+" | "-" | "×" | "÷";
 
@@ -123,6 +124,16 @@ export type FunctionMachinePayload = {
 export type OrderNumbersPayload = {
   numbers: number[];
   correctOrder: number[];
+};
+
+export type FractionMatchPair = {
+  numerator: number;
+  denominator: number;
+  visual?: "pie" | "grid";
+};
+
+export type FractionMatchPayload = {
+  pairs: FractionMatchPair[];
 };
 
 type PuzzleBase = {
@@ -225,6 +236,11 @@ export type OrderNumbersPuzzle = PuzzleBase & {
   payload: OrderNumbersPayload;
 };
 
+export type FractionMatchPuzzle = PuzzleBase & {
+  type: "fraction_match";
+  payload: FractionMatchPayload;
+};
+
 export type Puzzle =
   | MultipleChoicePuzzle
   | ComparePuzzle
@@ -241,6 +257,7 @@ export type Puzzle =
   | FractionEquivalentPuzzle
   | PatternNextPuzzle
   | FunctionMachinePuzzle
-  | OrderNumbersPuzzle;
+  | OrderNumbersPuzzle
+  | FractionMatchPuzzle;
 
 export const MATH_OPERATORS: MathOperator[] = ["+", "-", "×", "÷"];

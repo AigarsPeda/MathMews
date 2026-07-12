@@ -5,6 +5,7 @@ import { FairShareTask } from "@/components/puzzle/FairShareTask";
 import { FixMistakeTask } from "@/components/puzzle/FixMistakeTask";
 import { FractionBuildTask } from "@/components/puzzle/FractionBuildTask";
 import { FractionEquivalentTask } from "@/components/puzzle/FractionEquivalentTask";
+import { FractionMatchTask } from "@/components/puzzle/FractionMatchTask";
 import { FunctionMachineTask } from "@/components/puzzle/FunctionMachineTask";
 import { OrderNumbersTask } from "@/components/puzzle/OrderNumbersTask";
 import { PatternNextTask } from "@/components/puzzle/PatternNextTask";
@@ -23,6 +24,7 @@ import {
   asFixMistakePuzzle,
   asFractionBuildPuzzle,
   asFractionEquivalentPuzzle,
+  asFractionMatchPuzzle,
   asFunctionMachinePuzzle,
   asMultipleChoicePuzzle,
   asNumberLinePuzzle,
@@ -44,6 +46,10 @@ type PuzzleTaskViewProps = {
   numberOrder: number[];
   orderSwapIndex: number | null;
   orderSubmitted: boolean;
+  fractionMatchMatchedIds: string[];
+  fractionMatchSelectedId: string | null;
+  fractionMatchWrongIds: string[];
+  fractionMatchAnswered: boolean;
   answered: boolean;
   isCorrect: boolean;
   onSelectChoice: (index: number) => void;
@@ -55,6 +61,7 @@ type PuzzleTaskViewProps = {
   onTogglePairIndex: (index: number) => void;
   onTapOrderIndex: (index: number) => void;
   onCheckOrder: () => void;
+  onTapFractionMatchCard: (cardId: string) => void;
 };
 
 export function PuzzleTaskView({
@@ -67,6 +74,10 @@ export function PuzzleTaskView({
   numberOrder,
   orderSwapIndex,
   orderSubmitted,
+  fractionMatchMatchedIds,
+  fractionMatchSelectedId,
+  fractionMatchWrongIds,
+  fractionMatchAnswered,
   answered,
   isCorrect,
   onSelectChoice,
@@ -78,7 +89,23 @@ export function PuzzleTaskView({
   onTogglePairIndex,
   onTapOrderIndex,
   onCheckOrder,
+  onTapFractionMatchCard,
 }: PuzzleTaskViewProps) {
+  const fractionMatchPuzzle = asFractionMatchPuzzle(puzzle);
+  if (fractionMatchPuzzle) {
+    return (
+      <FractionMatchTask
+        puzzle={fractionMatchPuzzle}
+        matchedIds={fractionMatchMatchedIds}
+        selectedId={fractionMatchSelectedId}
+        wrongIds={fractionMatchWrongIds}
+        answered={answered}
+        isCorrect={isCorrect}
+        onTapCard={onTapFractionMatchCard}
+      />
+    );
+  }
+
   const orderNumbersPuzzle = asOrderNumbersPuzzle(puzzle);
   if (orderNumbersPuzzle) {
     return (

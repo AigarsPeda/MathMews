@@ -286,6 +286,11 @@ export const visualHelpLv = {
     s1: "Iedomājies to pašu veselo sadalītu divos veidos.",
     s2: "Izvēlies daļu, kas aizņem tikpat lielu laukumu.",
   },
+  fractionMatch: {
+    s0: "Attēls rāda daļas no vienas veselas formas.",
+    s1: "Saskaiti iekrāsotās daļas un kopējo vienādo daļu skaitu.",
+    s2: "Savieno katru daļu ar attēlu, kas rāda tikpat daudz!",
+  },
   patternNext: {
     s0: "Skaties, kā katrs skaitlis mainās.",
     s1: "Tas pats lēciens atkārtojas katru reizi.",

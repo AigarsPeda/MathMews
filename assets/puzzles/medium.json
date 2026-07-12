@@ -815,20 +815,29 @@
       8,
       10
     ],
-    "type": "fraction_equivalent",
-    "question": "Which fraction is the same amount?",
+    "type": "fraction_match",
+    "question": "Match each fraction to its picture!",
     "payload": {
-      "numerator": 2,
-      "denominator": 3,
-      "choices": [
-        "4/6",
-        "2/4",
-        "3/6"
+      "pairs": [
+        {
+          "numerator": 1,
+          "denominator": 4,
+          "visual": "grid"
+        },
+        {
+          "numerator": 1,
+          "denominator": 2,
+          "visual": "pie"
+        },
+        {
+          "numerator": 3,
+          "denominator": 8,
+          "visual": "grid"
+        }
       ]
     },
-    "correctIndex": 0,
-    "hint": "Same amount means the same part of a whole.",
-    "explanation": "2/3 = 4/6."
+    "hint": "Count shaded parts and total equal parts in each picture.",
+    "explanation": "The numerator is shaded parts; the denominator is total equal parts."
   },
   {
     "id": "medium-pat-3",
@@ -906,5 +915,37 @@
     },
     "hint": "Tap two numbers to swap them, then check your order.",
     "explanation": "The correct order is 10, 25, 50, 75."
+  },
+  {
+    "id": "medium-frac-4",
+    "difficulty": "medium",
+    "topic": "fractions",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_match",
+    "question": "Match each fraction to its picture!",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 2,
+          "denominator": 4,
+          "visual": "pie"
+        },
+        {
+          "numerator": 3,
+          "denominator": 4,
+          "visual": "grid"
+        },
+        {
+          "numerator": 1,
+          "denominator": 6,
+          "visual": "grid"
+        }
+      ]
+    },
+    "hint": "Count shaded parts and total equal parts in each picture.",
+    "explanation": "The numerator is shaded parts; the denominator is total equal parts."
   }
 ]

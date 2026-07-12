@@ -1,5 +1,7 @@
-import { ExpoUIHost } from "@/components/ui/ExpoUIHost";
+import "@/lib/init-splash-screen";
+import "@/components/branding/AnimatedSplashCat";
 import { SplashGate } from "@/components/branding/SplashGate";
+import { ExpoUIHost } from "@/components/ui/ExpoUIHost";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { GameProvider } from "@/contexts/GameProvider";
 import { IAPProvider } from "@/contexts/IAPProvider";
@@ -25,8 +27,8 @@ export default function RootLayout() {
       <LocaleProvider>
         <AuthProvider>
         <GameProvider>
-          <IAPProvider>
           <SplashGate>
+            <IAPProvider>
             <PetDisplayProvider>
               <ExpoUIHost>
                 <ThemeProvider
@@ -64,8 +66,8 @@ export default function RootLayout() {
                 </ThemeProvider>
               </ExpoUIHost>
             </PetDisplayProvider>
+            </IAPProvider>
           </SplashGate>
-          </IAPProvider>
         </GameProvider>
         </AuthProvider>
     </LocaleProvider>

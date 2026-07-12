@@ -809,20 +809,29 @@
       10,
       12
     ],
-    "type": "fraction_equivalent",
-    "question": "Which fraction is the same amount?",
+    "type": "fraction_match",
+    "question": "Savieno katru daļu ar tās attēlu!",
     "payload": {
-      "numerator": 2,
-      "denominator": 3,
-      "choices": [
-        "2/4",
-        "4/6",
-        "3/6"
+      "pairs": [
+        {
+          "numerator": 5,
+          "denominator": 6,
+          "visual": "pie"
+        },
+        {
+          "numerator": 3,
+          "denominator": 8,
+          "visual": "grid"
+        },
+        {
+          "numerator": 2,
+          "denominator": 9,
+          "visual": "grid"
+        }
       ]
     },
-    "correctIndex": 1,
-    "hint": "Same amount means the same part of a whole.",
-    "explanation": "2/3 = 4/6."
+    "hint": "Pievērs uzmanību — dažos attēlos ir daudz mazu vienādu daļu.",
+    "explanation": "Savieno iekrāsoto daudzumu ar daļu: iekrāsotās ÷ kopā."
   },
   {
     "id": "hard-pat-3",
@@ -900,5 +909,37 @@
     },
     "hint": "Pieskaries diviem skaitļiem, lai tos apmainītu, tad pārbaudi.",
     "explanation": "Pareizā secība ir 11, 33, 66, 99."
+  },
+  {
+    "id": "hard-frac-4",
+    "difficulty": "hard",
+    "topic": "fractions",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_match",
+    "question": "Savieno katru daļu ar tās attēlu!",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 7,
+          "denominator": 8,
+          "visual": "pie"
+        },
+        {
+          "numerator": 4,
+          "denominator": 9,
+          "visual": "grid"
+        },
+        {
+          "numerator": 1,
+          "denominator": 5,
+          "visual": "pie"
+        }
+      ]
+    },
+    "hint": "Pievērs uzmanību — dažos attēlos ir daudz mazu vienādu daļu.",
+    "explanation": "Savieno iekrāsoto daudzumu ar daļu: iekrāsotās ÷ kopā."
   }
 ]

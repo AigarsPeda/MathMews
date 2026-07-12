@@ -1,5 +1,5 @@
-import { CAT_SPRITE_CATALOG } from "@/constants/cat-sprite-catalog";
 import { CAT_SKIN_SHEET, CAT_SKIN_SOURCES } from "@/constants/cat-skins";
+import { CAT_SPRITE_CATALOG } from "@/constants/cat-sprite-catalog";
 import { CAT_SPRITE_FRAME_HEIGHT } from "@/constants/cat-sprites";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
@@ -12,12 +12,14 @@ import {
   useImage,
 } from "@shopify/react-native-skia";
 import { useEffect, useState, type ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 const IDLE = CAT_SPRITE_CATALOG.idle;
 const SHEET_SOURCE = CAT_SKIN_SOURCES.orange;
 const FRAME_SIZE = CAT_SPRITE_FRAME_HEIGHT;
 const FPS = IDLE.fps;
+
+void Image.prefetch(Image.resolveAssetSource(SHEET_SOURCE).uri);
 
 const NEAREST_SAMPLING = {
   filter: FilterMode.Nearest,
@@ -26,6 +28,7 @@ const NEAREST_SAMPLING = {
 
 type AnimatedSplashCatProps = {
   size?: number;
+  onReady?: () => void;
 };
 
 function useSplashLayout(size: number) {
@@ -40,21 +43,29 @@ function useSplashLayout(size: number) {
 /** Crisp pixel-art idle loop from the orange skin pack. */
 export function AnimatedSplashCat({
   size = moderateScale(192),
+  onReady,
 }: AnimatedSplashCatProps) {
-  const [frameIndex, setFrameIndex] = useState(0);
   const skiaImage = useImage(SHEET_SOURCE);
+  const [frameIndex, setFrameIndex] = useState(0);
   const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
     useSplashLayout(size);
+
   const imageX = -frameIndex * FRAME_SIZE * pixelScale;
   const imageY = -IDLE.row * FRAME_SIZE * pixelScale;
 
   useEffect(() => {
+    if (skiaImage) onReady?.();
+  }, [onReady, skiaImage]);
+
+  useEffect(() => {
+    if (!skiaImage) return;
+
     const interval = setInterval(() => {
       setFrameIndex((current) => (current + 1) % IDLE.frameCount);
     }, 1000 / FPS);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [skiaImage]);
 
   const windowStyle = {
     width: displaySize,
@@ -71,12 +82,12 @@ export function AnimatedSplashCat({
       <Canvas style={{ width: displaySize, height: displaySize }}>
         <Group clip={{ x: 0, y: 0, width: displaySize, height: displaySize }}>
           <SkiaImage
-            image={skiaImage}
             x={imageX}
             y={imageY}
+            fit="fill"
+            image={skiaImage}
             width={scaledSheetWidth}
             height={scaledSheetHeight}
-            fit="fill"
             sampling={NEAREST_SAMPLING}
           />
         </Group>
@@ -91,14 +102,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   backdrop: {
-    ...StyleSheet.absoluteFill,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: GameColors.background,
-    zIndex: 100,
   },
 });
 
-export function SplashBackdrop({ children }: { children: ReactNode }) {
-  return <View style={styles.backdrop}>{children}</View>;
+export function SplashBackdrop({
+  children,
+  onLayout,
+}: {
+  children: ReactNode;
+  onLayout?: () => void;
+}) {
+  return (
+    <View style={styles.backdrop} onLayout={onLayout}>
+      {children}
+    </View>
+  );
 }

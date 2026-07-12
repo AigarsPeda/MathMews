@@ -29,10 +29,15 @@ import type { MathOperator, Puzzle, PuzzleDifficulty } from "@/types/puzzle";
 import { applyLifeRegen, canSpendLife, loseLife } from "@/utils/lives";
 import { clampStat, withPetCareUpdate } from "@/utils/pet-care";
 import {
+  asFractionMatchPuzzle,
   asOrderNumbersPuzzle,
   checkPuzzleAnswer,
   getOperatorSlotCount,
 } from "@/utils/puzzle-type";
+import {
+  buildFractionMatchCards,
+  isFractionMatchPair,
+} from "@/utils/fraction-match";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
@@ -212,6 +217,16 @@ export default function PlayScreen() {
   );
   const [orderSwapIndex, setOrderSwapIndex] = useState<number | null>(null);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
+  const [fractionMatchMatchedIds, setFractionMatchMatchedIds] = useState<string[]>(
+    [],
+  );
+  const [fractionMatchSelectedId, setFractionMatchSelectedId] = useState<
+    string | null
+  >(null);
+  const [fractionMatchWrongIds, setFractionMatchWrongIds] = useState<string[]>(
+    [],
+  );
+  const [fractionMatchAnswered, setFractionMatchAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
@@ -230,7 +245,8 @@ export default function PlayScreen() {
     operatorSubmitted ||
     numberLineValue !== null ||
     pairIndices.length === 2 ||
-    orderSubmitted;
+    orderSubmitted ||
+    fractionMatchAnswered;
   const resultMood: PetAnimationState = isCorrect ? "correct" : "sad";
 
   useEffect(() => {
@@ -243,6 +259,10 @@ export default function PlayScreen() {
     setNumberOrder(createInitialOrder(puzzle));
     setOrderSwapIndex(null);
     setOrderSubmitted(false);
+    setFractionMatchMatchedIds([]);
+    setFractionMatchSelectedId(null);
+    setFractionMatchWrongIds([]);
+    setFractionMatchAnswered(false);
     setIsCorrect(false);
     setCoinsEarned(0);
     setShowVisualHelp(false);
@@ -546,6 +566,88 @@ export default function PlayScreen() {
     setWallet,
   ]);
 
+  const handleTapFractionMatchCard = useCallback(
+    (cardId: string) => {
+      if (fractionMatchAnswered) return;
+
+      const matchPuzzle = asFractionMatchPuzzle(puzzle);
+      if (!matchPuzzle) return;
+
+      if (fractionMatchMatchedIds.includes(cardId)) return;
+
+      if (fractionMatchSelectedId === null) {
+        setFractionMatchSelectedId(cardId);
+        return;
+      }
+
+      if (fractionMatchSelectedId === cardId) {
+        setFractionMatchSelectedId(null);
+        return;
+      }
+
+      const cards = buildFractionMatchCards(matchPuzzle);
+      const first = cards.find((card) => card.id === fractionMatchSelectedId);
+      const second = cards.find((card) => card.id === cardId);
+      if (!first || !second) return;
+
+      if (isFractionMatchPair(first, second)) {
+        const nextMatched = [...fractionMatchMatchedIds, first.id, second.id];
+        setFractionMatchMatchedIds(nextMatched);
+        setFractionMatchSelectedId(null);
+
+        if (nextMatched.length === matchPuzzle.payload.pairs.length * 2) {
+          const correct = checkPuzzleAnswer(puzzle, {
+            kind: "fraction_match",
+            matchedCount: matchPuzzle.payload.pairs.length,
+          });
+          setFractionMatchAnswered(true);
+          applyAnswerResult({
+            correct,
+            coinReward,
+            happinessBoost,
+            isReplay,
+            recordInteraction,
+            setCoinsEarned,
+            setWallet,
+            setProgress,
+            setPet,
+            setIsCorrect,
+          });
+        }
+        return;
+      }
+
+      setFractionMatchWrongIds([first.id, second.id]);
+      setFractionMatchSelectedId(null);
+      setFractionMatchAnswered(true);
+      applyAnswerResult({
+        correct: false,
+        coinReward,
+        happinessBoost,
+        isReplay,
+        recordInteraction,
+        setCoinsEarned,
+        setWallet,
+        setProgress,
+        setPet,
+        setIsCorrect,
+      });
+    },
+    [
+      coinReward,
+      fractionMatchAnswered,
+      fractionMatchMatchedIds,
+      fractionMatchSelectedId,
+      happinessBoost,
+      isReplay,
+      puzzle,
+      recordInteraction,
+      setPet,
+      setProgress,
+      setWallet,
+    ],
+  );
+
   const handleContinue = useCallback(() => {
     recordInteraction();
     if (isCorrect && isReplay) {
@@ -586,6 +688,10 @@ export default function PlayScreen() {
       setNumberOrder(createInitialOrder(puzzle));
       setOrderSwapIndex(null);
       setOrderSubmitted(false);
+      setFractionMatchMatchedIds([]);
+      setFractionMatchSelectedId(null);
+      setFractionMatchWrongIds([]);
+      setFractionMatchAnswered(false);
       setIsCorrect(false);
       setCoinsEarned(0);
       return;
@@ -763,6 +869,10 @@ export default function PlayScreen() {
               numberOrder={numberOrder}
               orderSwapIndex={orderSwapIndex}
               orderSubmitted={orderSubmitted}
+              fractionMatchMatchedIds={fractionMatchMatchedIds}
+              fractionMatchSelectedId={fractionMatchSelectedId}
+              fractionMatchWrongIds={fractionMatchWrongIds}
+              fractionMatchAnswered={fractionMatchAnswered}
               answered={answered}
               isCorrect={isCorrect}
               onSelectChoice={handleChoice}
@@ -774,6 +884,7 @@ export default function PlayScreen() {
               onTogglePairIndex={handleTogglePairIndex}
               onTapOrderIndex={handleTapOrderIndex}
               onCheckOrder={handleCheckOrder}
+              onTapFractionMatchCard={handleTapFractionMatchCard}
             />
           </View>
         </ScrollView>

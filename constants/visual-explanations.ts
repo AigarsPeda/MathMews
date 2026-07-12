@@ -466,6 +466,25 @@ const VISUAL_TEMPLATES: Record<string, VisualKeyframe[]> = {
       highlightLine: 0,
     }),
   ]),
+  fraction_match: buildKeyframes([
+    kf("fractionMatch", {
+      kind: "grid",
+      rows: 2,
+      cols: 3,
+      filled: 1,
+      emoji: "🍰",
+    }),
+    kf("fractionMatch", {
+      kind: "equation",
+      lines: ["Shaded parts ÷ total parts", "That is the fraction!"],
+      highlightLine: 0,
+    }),
+    kf("fractionMatch", {
+      kind: "equation",
+      lines: ["Tap a fraction", "Then tap the picture that matches"],
+      highlightLine: 1,
+    }),
+  ]),
   pattern_next: buildKeyframes([
     kf("patternNext", {
       kind: "sequence",

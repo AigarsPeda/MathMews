@@ -4,6 +4,7 @@ import type {
   FixMistakePuzzle,
   FractionBuildPuzzle,
   FractionEquivalentPuzzle,
+  FractionMatchPuzzle,
   FunctionMachinePuzzle,
   MathOperator,
   MultipleChoicePuzzle,
@@ -37,6 +38,7 @@ const INTERACTIVE_TYPES = new Set<PuzzleType>([
   "pattern_next",
   "function_machine",
   "order_numbers",
+  "fraction_match",
 ]);
 
 export function getPuzzleType(puzzle: Puzzle): PuzzleType {
@@ -53,7 +55,8 @@ export type PuzzleAnswer =
   | { kind: "fraction"; shaded: number }
   | { kind: "value"; value: number }
   | { kind: "pair"; indices: [number, number] }
-  | { kind: "order"; numbers: number[] };
+  | { kind: "order"; numbers: number[] }
+  | { kind: "fraction_match"; matchedCount: number };
 
 export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean {
   if (puzzle.type === "fraction_build") {
@@ -100,6 +103,11 @@ export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean
       answer.numbers.length === correct.length &&
       answer.numbers.every((value, index) => value === correct[index])
     );
+  }
+
+  if (puzzle.type === "fraction_match") {
+    if (answer.kind !== "fraction_match") return false;
+    return answer.matchedCount === puzzle.payload.pairs.length;
   }
 
   if (puzzle.type === "true_false") {
@@ -219,6 +227,10 @@ export function asFunctionMachinePuzzle(
 
 export function asOrderNumbersPuzzle(puzzle: Puzzle): OrderNumbersPuzzle | null {
   return puzzle.type === "order_numbers" ? puzzle : null;
+}
+
+export function asFractionMatchPuzzle(puzzle: Puzzle): FractionMatchPuzzle | null {
+  return puzzle.type === "fraction_match" ? puzzle : null;
 }
 
 export function asMultipleChoicePuzzle(

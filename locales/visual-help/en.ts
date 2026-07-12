@@ -286,6 +286,11 @@ export const visualHelpEn = {
     s1: "Imagine the same whole split two ways.",
     s2: "Pick the fraction that covers the same area.",
   },
+  fractionMatch: {
+    s0: "A picture shows parts of one whole shape.",
+    s1: "Count shaded parts and total equal parts.",
+    s2: "Match each fraction to the picture with the same amount!",
+  },
   patternNext: {
     s0: "Look at how each number changes to the next.",
     s1: "The same jump repeats every time.",
