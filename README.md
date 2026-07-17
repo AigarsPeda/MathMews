@@ -114,6 +114,7 @@ This is intentional — misconfigured store builds must not ship. Logic lives in
 - [doc/SUPABASE_PLAN.md](doc/SUPABASE_PLAN.md) — local-first cloud save + remote puzzles
 - [doc/APP_STORE_PLAN.md](doc/APP_STORE_PLAN.md) — iOS App Store production checklist (full)
 - [doc/APP_STORE_CHECKLIST.md](doc/APP_STORE_CHECKLIST.md) — iOS App Store quick tick-list
+- [doc/PLAY_STORE_CHECKLIST.md](doc/PLAY_STORE_CHECKLIST.md) — Google Play quick tick-list
 - [docs/privacy.html](docs/privacy.html) — public privacy policy (GitHub Pages)
 - [doc/STYLE_GUIDE.md](doc/STYLE_GUIDE.md) — UI and copy guidelines
 
