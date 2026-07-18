@@ -1,6 +1,6 @@
 import { DEFAULT_CAT_ROOM_ID } from "@/constants/cat-rooms";
 import { DEFAULT_CAT_SKIN_ID } from "@/constants/cat-skins";
-import type { PetAnimationState, PetMood } from "@/types/game";
+import type { PetAnimationState, PetMood, TopicStatsMap } from "@/types/game";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 
 export const GameColors = {
@@ -58,6 +58,7 @@ export const DEFAULT_PROGRESS = {
   decorationsUnlocked: [] as string[],
   decorationQuantities: {} as Record<string, number>,
   skinsUnlocked: [] as string[],
+  topicStats: {} as TopicStatsMap,
 };
 
 export const MAX_LIVES = 5;
@@ -102,9 +103,6 @@ export const PUZZLE_HUNGER_COST = 2;
 
 /** Show hungry speech when fullness is at or below this (0–100). */
 export const HUNGER_SPEECH_FULLNESS_MAX = 30;
-
-/** Show streak celebration speech and banner from this many correct answers in a row. */
-export const PUZZLE_STREAK_NOTIFY_MIN = 2;
 
 /** Stat decay while the app is closed or idle (per hour). */
 export const HUNGER_DECAY_PER_HOUR = 5;

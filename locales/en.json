@@ -8,6 +8,24 @@
     "saving": "Saving…",
     "percent": "{{value}}%"
   },
+  "stats": {
+    "title": "Math stats",
+    "subtitle": "How you're doing across puzzle topics. Practice the ones marked for more work!",
+    "chip": "Math stats",
+    "a11yOpen": "Open math topic stats",
+    "totalAttempts": "Attempts",
+    "accuracy": "Accuracy",
+    "mistakes": "Mistakes",
+    "toughestTitle": "Needs the most practice",
+    "toughestBody": "{{topic}} — {{wrong}} mistakes so far ({{accuracy}} correct).",
+    "toughestBodyTied": "{{topics}} — {{wrong}} mistakes each so far ({{accuracy}} correct).",
+    "byTopic": "By topic",
+    "byTopicHint": "Sorted by mistake rate — toughest topics first.",
+    "needsPractice": "Practice more",
+    "attemptsDetail": "{{correct}} correct · {{wrong}} wrong · {{attempts}} total",
+    "emptyTitle": "No attempts yet",
+    "emptyBody": "Solve a few puzzles and your topic stats will show up here."
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",
@@ -69,8 +87,6 @@
     "feedCost": "{{cost}} 🪙",
     "solvePuzzle": "🥜 Solve a Puzzle",
     "solvePuzzleHint": "Earn coins for {{name}}",
-    "puzzleStreak_one": "{{count}} puzzle correct in a row!",
-    "puzzleStreak_other": "{{count}} puzzles correct in a row!",
     "giveMoment": "Give {{name}} a moment!",
     "notHungry": "{{name}} isn't hungry right now.",
     "alreadyHappy": "{{name}} is already super happy!",
@@ -512,8 +528,6 @@
       "sleepy": "I'm getting sleepy…",
       "sleeping": "Zzz…",
       "solvePuzzles": "Let's solve a puzzle!",
-      "streak_one": "{{count}} in a row — amazing!",
-      "streak_other": "{{count}} in a row — keep going!",
       "petTap1": "That tickles!",
       "petTap2": "Hehe, again!",
       "petTap3": "You're the best!"

@@ -9,6 +9,7 @@ import type {
   RoomMenuBounds,
 } from "@/components/pet/room-menu-types";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
+import { MathStatsChip } from "@/components/puzzle/MathStatsChip";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getBedDisplaySize, getCatBedSource, canFlipBed, canScaleBedDown, canScaleBedUp, getEquippedBedScale } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
@@ -129,6 +130,7 @@ type PetStageProps = {
   onFlipBed?: () => void;
   onScaleBed?: (direction: "up" | "down") => void;
   onPlacedToyRemove?: (instanceId: string) => void;
+  onOpenMathStats?: () => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (stepIndex: number) => void;
 };
@@ -198,6 +200,7 @@ export function PetStage({
   onFlipBed,
   onScaleBed,
   onPlacedToyRemove,
+  onOpenMathStats,
   onAnimationComplete,
   onStepComplete,
 }: PetStageProps) {
@@ -720,6 +723,9 @@ export function PetStage({
           </View>
 
           <View style={[styles.stats, compact && styles.statsCompact]}>
+            {compact && onOpenMathStats ? (
+              <MathStatsChip compact onPress={onOpenMathStats} />
+            ) : null}
             <StatBar
               emoji="🍖"
               label={t("pet.fed")}

@@ -101,6 +101,30 @@ export type LivesState = {
   nextRegenAt: number | null;
 };
 
+export type TopicAttemptStats = {
+  correct: number;
+  wrong: number;
+};
+
+/** Per puzzle topic (`addition`, `fractions`, …). */
+export type TopicStatsMap = Partial<
+  Record<
+    | "addition"
+    | "subtraction"
+    | "multiplication"
+    | "logic"
+    | "patterns"
+    | "comparison"
+    | "mental_math"
+    | "operations"
+    | "fractions"
+    | "equality"
+    | "estimation"
+    | "division",
+    TopicAttemptStats
+  >
+>;
+
 export type Progress = {
   streak: number;
   /** Consecutive puzzle answers answered correctly (resets on a wrong answer). */
@@ -123,4 +147,6 @@ export type Progress = {
   decorationQuantities?: Record<string, number>;
   /** Cat fur colors the player owns. */
   skinsUnlocked: string[];
+  /** Per-topic correct/wrong attempt counts for the stats screen. */
+  topicStats?: TopicStatsMap;
 };

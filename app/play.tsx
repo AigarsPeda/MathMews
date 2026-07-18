@@ -25,7 +25,7 @@ import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
 import type { PetAnimationState } from "@/types/game";
-import type { MathOperator, Puzzle, PuzzleDifficulty } from "@/types/puzzle";
+import type { MathOperator, Puzzle, PuzzleDifficulty, PuzzleTopic } from "@/types/puzzle";
 import { applyLifeRegen, canSpendLife, loseLife } from "@/utils/lives";
 import { clampStat, withPetCareUpdate } from "@/utils/pet-care";
 import {
@@ -39,6 +39,7 @@ import {
   isFractionMatchPair,
 } from "@/utils/fraction-match";
 import { moderateScale } from "@/utils/scale";
+import { recordTopicAttempt } from "@/utils/topic-stats";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -92,6 +93,7 @@ function createInitialOrder(puzzle: Puzzle): number[] {
 
 function applyAnswerResult({
   correct,
+  topic,
   coinReward,
   happinessBoost,
   isReplay,
@@ -103,6 +105,7 @@ function applyAnswerResult({
   setIsCorrect,
 }: {
   correct: boolean;
+  topic: PuzzleTopic;
   coinReward: number;
   happinessBoost: number;
   isReplay: boolean;
@@ -123,6 +126,7 @@ function applyAnswerResult({
     setProgress((current) => ({
       ...current,
       puzzleStreak: isReplay ? current.puzzleStreak : current.puzzleStreak + 1,
+      topicStats: recordTopicAttempt(current.topicStats, topic, true),
     }));
     setPet((current) =>
       withPetCareUpdate(current, (stats) => ({
@@ -139,6 +143,7 @@ function applyAnswerResult({
     ...current,
     lives: loseLife(current.lives),
     puzzleStreak: isReplay ? current.puzzleStreak : 0,
+    topicStats: recordTopicAttempt(current.topicStats, topic, false),
   }));
   setPet((current) =>
     withPetCareUpdate(current, (stats) => ({
@@ -316,6 +321,7 @@ export default function PlayScreen() {
       setSelectedIndex(index);
       applyAnswerResult({
         correct,
+        topic: puzzle.topic,
         coinReward,
         happinessBoost,
         isReplay,
@@ -366,6 +372,7 @@ export default function PlayScreen() {
     setOperatorSubmitted(true);
     applyAnswerResult({
       correct,
+      topic: puzzle.topic,
       coinReward,
       happinessBoost,
       isReplay,
@@ -407,6 +414,7 @@ export default function PlayScreen() {
     setOperatorSubmitted(true);
     applyAnswerResult({
       correct,
+      topic: puzzle.topic,
       coinReward,
       happinessBoost,
       isReplay,
@@ -437,6 +445,7 @@ export default function PlayScreen() {
       setNumberLineValue(value);
       applyAnswerResult({
         correct,
+        topic: puzzle.topic,
         coinReward,
         happinessBoost,
         isReplay,
@@ -483,6 +492,7 @@ export default function PlayScreen() {
         });
         applyAnswerResult({
           correct,
+          topic: puzzle.topic,
           coinReward,
           happinessBoost,
           isReplay,
@@ -543,6 +553,7 @@ export default function PlayScreen() {
     setOrderSubmitted(true);
     applyAnswerResult({
       correct,
+      topic: puzzle.topic,
       coinReward,
       happinessBoost,
       isReplay,
@@ -603,6 +614,7 @@ export default function PlayScreen() {
           setFractionMatchAnswered(true);
           applyAnswerResult({
             correct,
+            topic: puzzle.topic,
             coinReward,
             happinessBoost,
             isReplay,
@@ -622,6 +634,7 @@ export default function PlayScreen() {
       setFractionMatchAnswered(true);
       applyAnswerResult({
         correct: false,
+        topic: puzzle.topic,
         coinReward,
         happinessBoost,
         isReplay,

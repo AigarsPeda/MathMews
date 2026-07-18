@@ -1,4 +1,3 @@
-import { PUZZLE_STREAK_NOTIFY_MIN } from "@/constants/game";
 import { hasIncompletePuzzles } from "@/constants/puzzles";
 import type { PetAnimationState, PetProfile, PuzzleProgress } from "@/types/game";
 import type { AppLocale } from "@/types/locale";
@@ -37,7 +36,6 @@ export function getIdleSpeech({
   mood,
   locale,
   puzzlesSolved,
-  puzzleStreak,
 }: IdleSpeechContext): IdleSpeech {
   if (pet.isAsleep || mood === "sleeping") {
     return { key: "pet.speech.sleeping" };
@@ -50,9 +48,6 @@ export function getIdleSpeech({
   }
   if (isPetHungry(pet.stats)) {
     return { key: "pet.speech.hungry" };
-  }
-  if (puzzleStreak >= PUZZLE_STREAK_NOTIFY_MIN) {
-    return { key: "pet.speech.streak", params: { count: puzzleStreak } };
   }
   if (hasIncompletePuzzles(locale, puzzlesSolved)) {
     return { key: "pet.speech.solvePuzzles" };

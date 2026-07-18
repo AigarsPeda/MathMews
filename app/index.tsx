@@ -1,7 +1,6 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { PetStage } from "@/components/pet/PetStage";
-import { PuzzleStreakSlot } from "@/components/pet/PuzzleStreakSlot";
 import type { CatBedId } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatToyId } from "@/constants/cat-toys";
@@ -14,7 +13,6 @@ import {
   GameColors,
   HEADER_CHIP_SIZE,
   PET_HAPPINESS_BOOST,
-  PUZZLE_STREAK_NOTIFY_MIN,
 } from "@/constants/game";
 import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
 import { computePetWisdom } from "@/constants/puzzles";
@@ -138,9 +136,6 @@ export default function HomeScreen() {
       t,
     ],
   );
-
-  const showPuzzleStreak =
-    progress.puzzleStreak >= PUZZLE_STREAK_NOTIFY_MIN && actionSpeech === null;
 
   const speechMessage = actionSpeech ?? contextualSpeech;
 
@@ -297,6 +292,12 @@ export default function HomeScreen() {
     recordInteraction();
     triggerHaptic();
     router.push("/store");
+  }, [recordInteraction, router]);
+
+  const handleOpenMathStats = useCallback(() => {
+    recordInteraction();
+    triggerHaptic();
+    router.push("/stats");
   }, [recordInteraction, router]);
 
   const handleMoveRoomLayerItem = useCallback(
@@ -564,14 +565,10 @@ export default function HomeScreen() {
               onFlipBed={handleFlipBed}
               onScaleBed={handleScaleBed}
               onPlacedToyRemove={handleRemoveToy}
+              onOpenMathStats={handleOpenMathStats}
               onAnimationComplete={handleAnimationComplete}
             />
           </View>
-
-          <PuzzleStreakSlot
-            visible={showPuzzleStreak}
-            count={progress.puzzleStreak}
-          />
         </View>
 
         <View style={styles.footer}>

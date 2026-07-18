@@ -36,6 +36,7 @@ import {
   normalizeDecorationQuantities,
 } from "@/utils/decoration-store";
 import { normalizeSkinsUnlocked } from "@/utils/skin-store";
+import { normalizeTopicStats } from "@/utils/topic-stats";
 import { normalizeCoinTransactions } from "@/utils/coin-ledger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -315,6 +316,7 @@ function parseGameSave(
           decorationsUnlocked,
           decorationQuantities,
           skinsUnlocked,
+          topicStats: normalizeTopicStats(parsed.progress.topicStats),
         },
       },
       awayMsAtSessionStart: awayMs,

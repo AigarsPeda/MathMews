@@ -5,21 +5,7 @@ import type { Puzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-
-const TOPIC_EMOJI: Record<Puzzle["topic"], string> = {
-  addition: "➕",
-  subtraction: "➖",
-  multiplication: "✖️",
-  logic: "🧠",
-  patterns: "🔢",
-  comparison: "⚖️",
-  mental_math: "🔍",
-  operations: "🛤️",
-  fractions: "🍕",
-  equality: "🤝",
-  estimation: "📊",
-  division: "➗",
-};
+import { TOPIC_EMOJI } from "@/constants/topics";
 
 const STATE_LABEL_KEYS = {
   completed: "puzzlePath.stateCompleted",

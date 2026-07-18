@@ -6,6 +6,7 @@ import {
   PuzzlePathProgressChip,
   PuzzlePathProgressSheet,
 } from "@/components/puzzle/PuzzlePathProgress";
+import { MathStatsChip } from "@/components/puzzle/MathStatsChip";
 import { GameColors } from "@/constants/game";
 import {
   canPlayPuzzleIndex,
@@ -224,6 +225,14 @@ export default function PuzzlesScreen() {
                 recordInteraction();
                 triggerHaptic();
                 setShowProgress(true);
+              }}
+            />
+
+            <MathStatsChip
+              onPress={() => {
+                recordInteraction();
+                triggerHaptic();
+                router.push("/stats");
               }}
             />
 
