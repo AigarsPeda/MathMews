@@ -1,4 +1,4 @@
-/** Per-coat, per-animation textures generated from the editable Blender clips. */
+/** Small store-preview textures. Gameplay uses CAT_3D_ANIMATION_PAGES. */
 export const CAT_3D_ANIMATION_SOURCES = {
   orange: {
     idle: require("@/assets/3d/atlases/cat-orange-idle.png"),

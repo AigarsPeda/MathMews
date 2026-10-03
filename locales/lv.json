@@ -1,4 +1,7 @@
 {
+  "loading": {
+    "label": "Ielādē spēli"
+  },
   "common": {
     "back": "← Atpakaļ",
     "close": "Aizvērt",
@@ -101,12 +104,15 @@
     "moveLayerUp": "Uz augšu",
     "moveLayerDown": "Uz leju",
     "rotateItem": "Pagriezt",
-    "flipWall": "Apgriezt sienu",
+    "flipWall": "Pagriezt pret otru sienu",
     "flipBed": "Apgriezt gultu",
     "changeLook": "Mainīt izskatu",
     "makeBigger": "Lielāks",
     "makeSmaller": "Mazāks",
     "dismissRoomItemMenu": "Aizvērt priekšmeta izvēlni",
+    "zoomCat": "Pietuvināt kaķi",
+    "resetZoom": "Atjaunot istabas skatu",
+    "zoomLevel": "{{zoom}} reizes pietuvināts",
     "a11yPet": "Apmīļot savu draugu",
     "a11yFeed": "Barot par {{cost}} monētām",
     "a11yPlayBox": "Spēlēt ar kasti par {{cost}} monētām",
@@ -718,7 +724,7 @@
     "packCoins": "{{count}} monētas",
     "buy": "Pirkt",
     "priceLoading": "Ielādē…",
-    "notAvailable": "Monētu pirkšana pieejama tikai iOS un Android lietotnē.",
+    "notAvailable": "Monētu pirkšana pašlaik nav pieejama.",
     "offeringsMissing": "Monētu pakas neizdevās ielādēt. RevenueCat pievieno produktus offeringam (vai iestati CoinPacksTEST kā Current) un pārlādē lietotni.",
     "purchaseSuccess": "+{{count}} monētas pievienotas!",
     "purchaseFailed": "Pirkums neizdevās. Mēģini vēlreiz.",

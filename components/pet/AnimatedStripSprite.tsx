@@ -1,74 +1,28 @@
-import { useIsMounted } from "@/hooks/use-is-mounted";
-import { Image } from "expo-image";
-import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Canvas, Group, Image as SkiaImage, useImage } from "@shopify/react-native-skia";
+import { useDerivedValue } from "react-native-reanimated";
+import { View } from "react-native";
+import { useSpriteClock } from "@/pet-display/media/sprite/use-sprite-clock";
 
 type AnimatedStripSpriteProps = {
-  source: number;
-  flipHorizontal?: boolean;
-  sheetWidth: number;
-  sheetHeight: number;
-  frameWidth: number;
-  frameHeight: number;
-  frameCount: number;
-  fps?: number;
-  /** Max rendered width/height — aspect ratio preserved. */
-  size: number;
+  source: number; flipHorizontal?: boolean; sheetWidth: number; sheetHeight: number;
+  frameWidth: number; frameHeight: number; frameCount: number; fps?: number; size: number;
 };
 
-/** Horizontal sprite-strip loop (e.g. room gadgets). */
-export function AnimatedStripSprite({
-  source,
-  flipHorizontal = false,
-  sheetWidth,
-  sheetHeight,
-  frameWidth,
-  frameHeight,
-  frameCount,
-  fps = 8,
-  size,
-}: AnimatedStripSpriteProps) {
-  const [frameIndex, setFrameIndex] = useState(0);
-  const isMounted = useIsMounted();
+/** Room loops use UI-thread image coordinates, with no timer or layout per frame. */
+export function AnimatedStripSprite({ source, flipHorizontal = false, sheetWidth,
+  sheetHeight, frameWidth, frameHeight, frameCount, fps = 8, size }: AnimatedStripSpriteProps) {
+  const image = useImage(source);
+  const frame = useSpriteClock({ frameCount, fps, loop: true, readyPages: image ? [0] : [] });
   const scale = size / Math.max(frameWidth, frameHeight);
-  const displayW = frameWidth * scale;
-  const displayH = frameHeight * scale;
-  const sheetDisplayW = sheetWidth * scale;
-  const sheetDisplayH = sheetHeight * scale;
-  const frameX = frameIndex * frameWidth * scale;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!isMounted.current) {
-        return;
-      }
-      setFrameIndex((current) => (current + 1) % frameCount);
-    }, 1000 / fps);
-
-    return () => clearInterval(interval);
-  }, [frameCount, fps, isMounted]);
-
+  const width = frameWidth * scale, height = frameHeight * scale;
+  const x = useDerivedValue(() => -frame.value * width);
   return (
-    <View style={[styles.cell, { width: displayW, height: displayH, transform: [{ scaleX: flipHorizontal ? -1 : 1 }] }]}>
-      <Image
-        source={source}
-        cachePolicy="memory-disk"
-        transition={0}
-        style={{
-          width: sheetDisplayW,
-          height: sheetDisplayH,
-          position: "absolute",
-          left: -frameX,
-          top: 0,
-        }}
-        contentFit="fill"
-      />
+    <View style={{ width, height, transform: [{ scaleX: flipHorizontal ? -1 : 1 }] }}>
+      <Canvas style={{ width, height }}>
+        {image ? <Group clip={{ x: 0, y: 0, width, height }}>
+          <SkiaImage image={image} x={x} y={0} width={sheetWidth * scale} height={sheetHeight * scale} fit="fill" />
+        </Group> : null}
+      </Canvas>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  cell: {
-    overflow: "hidden",
-  },
-});

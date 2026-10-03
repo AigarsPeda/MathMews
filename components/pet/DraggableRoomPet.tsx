@@ -21,6 +21,7 @@ const DRAG_THRESHOLD = moderateScale(6);
 type DraggableRoomPetProps = {
   children: ReactNode;
   petSize: number;
+  allowDrag?: boolean;
   /** Tap/drag target — defaults to petSize. Use a smaller value for narrow sprites. */
   hitSize?: number;
   initialOffset?: RoomPetOffset;
@@ -81,6 +82,7 @@ function clampPosition(
 export function DraggableRoomPet({
   children,
   petSize,
+  allowDrag = true,
   hitSize,
   initialOffset = DEFAULT_OFFSET,
   onOffsetChange,
@@ -150,12 +152,13 @@ export function DraggableRoomPet({
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: (_, gesture) =>
-          Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
+          allowDrag && Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
         onPanResponderGrant: () => {
           gestureMovedRef.current = false;
           dragStartRef.current = { ...positionRef.current };
         },
         onPanResponderMove: (_, gesture) => {
+          if (!allowDrag) return;
           if (Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD) {
             gestureMovedRef.current = true;
           }
@@ -184,7 +187,7 @@ export function DraggableRoomPet({
           }
         },
       }),
-    [commitOffset, petSize, reportMenuAnchor, roomSize.height, roomSize.width],
+    [allowDrag, commitOffset, petSize, reportMenuAnchor, roomSize.height, roomSize.width],
   );
 
   const halfPet = petSize / 2;

@@ -1,4 +1,7 @@
 {
+  "loading": {
+    "label": "Loading game"
+  },
   "common": {
     "back": "← Back",
     "close": "Close",
@@ -101,12 +104,15 @@
     "moveLayerUp": "Move up",
     "moveLayerDown": "Move down",
     "rotateItem": "Rotate",
-    "flipWall": "Flip wall",
+    "flipWall": "Face other wall",
     "flipBed": "Flip bed",
     "changeLook": "Change look",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
     "dismissRoomItemMenu": "Dismiss item menu",
+    "zoomCat": "Zoom in on cat",
+    "resetZoom": "Reset room view",
+    "zoomLevel": "{{zoom}} times zoom",
     "a11yPet": "Pet your companion",
     "a11yFeed": "Feed for {{cost}} coins",
     "a11yPlayBox": "Play with box for {{cost}} coins",
@@ -717,7 +723,7 @@
     "packCoins": "{{count}} coins",
     "buy": "Buy",
     "priceLoading": "Loading…",
-    "notAvailable": "Coin purchases are only available in the iOS and Android app.",
+    "notAvailable": "Coin purchases are unavailable right now.",
     "offeringsMissing": "Coin packs could not be loaded. In RevenueCat, add products to an offering (or set CoinPacksTEST as Current) and reload the app.",
     "purchaseSuccess": "+{{count}} coins added!",
     "purchaseFailed": "Purchase did not go through. Try again.",

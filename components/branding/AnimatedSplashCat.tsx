@@ -1,6 +1,7 @@
 import { CAT_SKIN_SHEET, CAT_SKIN_SOURCES } from "@/constants/cat-skins";
 import { CAT_SPRITE_CATALOG } from "@/constants/cat-sprite-catalog";
-import { CAT_SPRITE_FRAME_HEIGHT } from "@/constants/cat-sprites";
+import { useSpriteClock } from "@/pet-display/media/sprite/use-sprite-clock";
+import { useDerivedValue } from "react-native-reanimated";
 import { GameColors } from "@/constants/game";
 import { useIsMounted } from "@/hooks/use-is-mounted";
 import { moderateScale } from "@/utils/scale";
@@ -12,12 +13,12 @@ import {
   Image as SkiaImage,
   useImage,
 } from "@shopify/react-native-skia";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
 const IDLE = CAT_SPRITE_CATALOG.idle;
 const SHEET_SOURCE = CAT_SKIN_SOURCES.orange;
-const FRAME_SIZE = CAT_SPRITE_FRAME_HEIGHT;
+const FRAME_SIZE = CAT_SKIN_SHEET.frameSize;
 const FPS = IDLE.fps;
 
 const SMOOTH_SAMPLING = {
@@ -45,32 +46,19 @@ export function AnimatedSplashCat({
   onReady,
 }: AnimatedSplashCatProps) {
   const skiaImage = useImage(SHEET_SOURCE);
-  const [frameIndex, setFrameIndex] = useState(0);
+  const frameIndex = useSpriteClock({ frameCount: IDLE.frameCount, fps: FPS, loop: true, readyPages: skiaImage ? [0] : [] });
   const isMounted = useIsMounted();
   const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
     useSplashLayout(size);
 
-  const imageX = -(frameIndex % 8) * FRAME_SIZE * pixelScale;
-  const imageY = -Math.floor(frameIndex / 8) * FRAME_SIZE * pixelScale;
+  const imageX = useDerivedValue(() => -(frameIndex.value % CAT_SKIN_SHEET.cols) * FRAME_SIZE * pixelScale);
+  const imageY = useDerivedValue(() => -Math.floor(frameIndex.value / CAT_SKIN_SHEET.cols) * FRAME_SIZE * pixelScale);
 
   useEffect(() => {
     if (skiaImage && isMounted.current) {
       onReady?.();
     }
   }, [isMounted, onReady, skiaImage]);
-
-  useEffect(() => {
-    if (!skiaImage) return;
-
-    const interval = setInterval(() => {
-      if (!isMounted.current) {
-        return;
-      }
-      setFrameIndex((current) => (current + 1) % IDLE.frameCount);
-    }, 1000 / FPS);
-
-    return () => clearInterval(interval);
-  }, [isMounted, skiaImage]);
 
   const windowStyle = {
     width: displaySize,

@@ -16,17 +16,23 @@ import {
   ThemeProvider,
 } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Dimensions, View, useColorScheme } from "react-native";
+import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context";
 import "react-native-reanimated";
+
+// The scene may start React before UIKit reports safe-area measurements.
+// Render the loading screen immediately; native measurements update afterward.
+const INITIAL_SAFE_AREA = initialWindowMetrics ?? {
+  frame: { x: 0, y: 0, width: Dimensions.get("window").width, height: Dimensions.get("window").height },
+  insets: { top: 0, right: 0, bottom: 0, left: 0 },
+};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
+    <View style={{ flex: 1 }}>
+      <SafeAreaProvider initialMetrics={INITIAL_SAFE_AREA}>
       <LocaleProvider>
         <AuthProvider>
         <GameProvider>
@@ -76,6 +82,6 @@ export default function RootLayout() {
         </AuthProvider>
     </LocaleProvider>
       </SafeAreaProvider>
-    </GestureHandlerRootView>
+    </View>
   );
 }

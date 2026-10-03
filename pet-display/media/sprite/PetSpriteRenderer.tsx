@@ -7,10 +7,14 @@ import {
   Group,
   Image as SkiaImage,
   MipmapMode,
-  useImage,
+  type SkImage,
 } from "@shopify/react-native-skia";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
+import { useAnimatedReaction, useDerivedValue, useSharedValue, type SharedValue } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
+import { useAtlasPages } from "./use-atlas-pages";
+import { useSpriteClock } from "./use-sprite-clock";
 
 const DEFAULT_SIZE = 200;
 const VIEW_PADDING = 0.9;
@@ -23,6 +27,7 @@ type PetSpriteRendererProps = {
   segment?: PetMediaSegment;
   scenarioSteps?: PetMediaSegment[];
   size?: number;
+  resolutionScale?: number;
   loop?: boolean;
   transparentBackground?: boolean;
   onAnimationComplete?: () => void;
@@ -34,7 +39,7 @@ function segmentToken(steps: PetMediaSegment[]) {
   return steps
     .map(
       (step, index) =>
-        `${step.assetKey}:${step.sprite?.source ?? 0}:${step.sprite?.fps ?? 0}:${step.loop ? "loop" : "once"}:${index}`,
+        `${step.assetKey}:${step.sprite?.source ?? 0}:${step.sprite?.fps ?? 0}:${step.sprite?.reverse ? "reverse" : "forward"}:${step.loop ? "loop" : "once"}:${index}`,
     )
     .join("|");
 }
@@ -66,120 +71,44 @@ function layoutFrame(
   };
 }
 
-function SpriteFrame({
-  sprite,
-  frameIndex,
-  displaySize,
-}: {
-  sprite: SpriteSheetConfig;
-  frameIndex: number;
-  displaySize: number;
+type DrawnFrame = { image: SkImage | null; col: number; row: number; columns: number; rows: number };
+
+// Only the playback controller changes between clips. The drawing surface and
+// its last frame survive while the next clip's first texture is being decoded.
+function SpriteStep({ segment, loop, onStepDone, drawn }: {
+  segment: PetMediaSegment; loop: boolean; onStepDone: () => void; drawn: SharedValue<DrawnFrame>;
 }) {
-  const image = useImage(sprite.source);
-  const layout = useMemo(
-    () => layoutFrame(sprite, frameIndex, displaySize),
-    [displaySize, frameIndex, sprite],
-  );
-
-  return (
-    <View
-      style={[
-        styles.frameWindow,
-        {
-          width: layout.containerSize,
-          height: layout.containerSize,
-          justifyContent: layout.anchor === "center" ? "center" : "flex-end",
-        },
-      ]}
-    >
-      <Canvas style={{ width: layout.frameWidth, height: layout.frameHeight }}>
-        {image ? (
-          <Group
-            clip={{
-              x: 0,
-              y: 0,
-              width: layout.frameWidth,
-              height: layout.frameHeight,
-            }}
-          >
-            <SkiaImage
-              image={image}
-              x={layout.imageX}
-              y={layout.imageY}
-              width={layout.sheetWidth}
-              height={layout.sheetHeight}
-              fit="fill"
-              sampling={SMOOTH_SAMPLING}
-            />
-          </Group>
-        ) : null}
-      </Canvas>
-    </View>
-  );
-}
-
-function useFrameAnimation(
-  segment: PetMediaSegment | undefined,
-  loopPlayback: boolean,
-  onStepDone: () => void,
-) {
-  const sprite = segment?.sprite;
-  const frameCount = sprite?.frames.length ?? 0;
-  const shouldLoop = loopPlayback || segment?.loop === true;
-  const [index, setIndex] = useState(() => sprite?.reverse ? Math.max(frameCount - 1, 0) : 0);
-  const doneRef = useRef(false);
-
-  useEffect(() => {
-    if (!sprite || frameCount === 0) return;
-
-    const frameMs = 1000 / sprite.fps;
-    const timer = setInterval(() => {
-      setIndex((current) => {
-        const delta = sprite.reverse ? -1 : 1;
-        const next = current + delta;
-
-        if (sprite.reverse) {
-          if (next < 0) {
-            if (shouldLoop) return frameCount - 1;
-            if (!doneRef.current) {
-              doneRef.current = true;
-              queueMicrotask(onStepDone);
-            }
-            return 0;
-          }
-          return next;
-        }
-
-        if (next >= frameCount) {
-          if (shouldLoop) return 0;
-          if (!doneRef.current) {
-            doneRef.current = true;
-            queueMicrotask(onStepDone);
-          }
-          return frameCount - 1;
-        }
-
-        return next;
-      });
-    }, frameMs);
-
-    return () => clearInterval(timer);
-  }, [frameCount, onStepDone, shouldLoop, sprite]);
-
-  return index;
-}
-
-function SpriteStep({ segment, loop, onStepDone, displaySize }: {
-  segment: PetMediaSegment; loop: boolean; onStepDone: () => void; displaySize: number;
-}) {
-  const frameIndex = useFrameAnimation(segment, loop, onStepDone);
-  return segment.sprite ? <SpriteFrame sprite={segment.sprite} frameIndex={frameIndex} displaySize={displaySize} /> : null;
+  const sprite = segment.sprite!;
+  const sources = useMemo(() => sprite.pages ?? [sprite.source], [sprite]);
+  const cellsPerPage = sprite.framesPerPage ?? sprite.frames.length;
+  const reverse = sprite.reverse === true;
+  const shouldLoop = loop || segment.loop === true;
+  const [page, setPage] = useState(reverse ? sources.length - 1 : 0);
+  const decoded = useAtlasPages(sources, page, reverse, shouldLoop);
+  const readyPages = decoded.map(entry => entry.page);
+  const frameIndex = useSpriteClock({ frameCount: sprite.frames.length, fps: sprite.fps,
+    loop: shouldLoop, reverse, framesPerPage: cellsPerPage, readyPages, onComplete: onStepDone });
+  useAnimatedReaction(() => Math.floor(frameIndex.get() / cellsPerPage), (next, previous) => {
+    if (next !== previous) scheduleOnRN(setPage, next);
+  });
+  useAnimatedReaction(() => {
+    const index = frameIndex.get();
+    const image = decoded.find(entry => entry.page === Math.floor(index / cellsPerPage))?.image;
+    if (!image) return null;
+    const coord = sprite.frames[index] ?? sprite.frames[0];
+    return { image, col: coord.col, row: coord.row,
+      columns: sprite.sheetWidth / sprite.frameWidth, rows: sprite.sheetHeight / sprite.frameHeight };
+  }, next => {
+    if (next) drawn.set(next);
+  });
+  return null;
 }
 
 export function PetSpriteRenderer({
   segment,
   scenarioSteps,
   size = moderateScale(DEFAULT_SIZE),
+  resolutionScale = 1,
   loop = false,
   transparentBackground = false,
   onAnimationComplete,
@@ -206,6 +135,15 @@ export function PetSpriteRenderer({
   }, [onStepComplete]);
 
   const active = steps[stepIndex];
+  const drawn = useSharedValue<DrawnFrame>({ image: null, col: 0, row: 0, columns: 1, rows: 1 });
+  const layout = active?.sprite ? layoutFrame(active.sprite, 0, size) : null;
+  const cellW = (layout?.frameWidth ?? size) * resolutionScale;
+  const cellH = (layout?.frameHeight ?? size) * resolutionScale;
+  const image = useDerivedValue(() => drawn.get().image);
+  const imageX = useDerivedValue(() => -drawn.get().col * cellW);
+  const imageY = useDerivedValue(() => -drawn.get().row * cellH);
+  const sheetWidth = useDerivedValue(() => drawn.get().columns * cellW);
+  const sheetHeight = useDerivedValue(() => drawn.get().rows * cellH);
 
   const finishStep = useCallback(() => {
     onStepRef.current?.(stepIndex);
@@ -231,8 +169,19 @@ export function PetSpriteRenderer({
     >
       {active?.sprite ? (
         <SpriteStep key={`${token}:${stepIndex}`} segment={active} loop={loop}
-          onStepDone={finishStep} displaySize={size} />
+          onStepDone={finishStep} drawn={drawn} />
       ) : null}
+      <View style={[styles.frameWindow, { width: containerSize, height: containerSize,
+        justifyContent: layout?.anchor === "center" ? "center" : "flex-end" }]}>
+        <View style={{ width: layout?.frameWidth ?? size, height: layout?.frameHeight ?? size }}>
+          <Canvas style={{ width: cellW, height: cellH, transformOrigin: "top left", transform: [{ scale: 1 / resolutionScale }] }}>
+            <Group clip={{ x: 0, y: 0, width: cellW, height: cellH }}>
+              <SkiaImage image={image} x={imageX} y={imageY} width={sheetWidth} height={sheetHeight}
+                fit="fill" sampling={SMOOTH_SAMPLING} />
+            </Group>
+          </Canvas>
+        </View>
+      </View>
     </View>
   );
 

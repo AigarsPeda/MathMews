@@ -1,11 +1,14 @@
 /** Check complete catalog coverage, valid atlas bounds, and pet-state transitions. */
 import fs from 'node:fs';
+import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import ts from 'typescript';
 import sharp from 'sharp';
+import { createHash } from 'node:crypto';
 const root=process.cwd(),cache=new Map();
+const blenderRoot=path.resolve(process.env.BRAINPET_BLENDER_ASSET_DIR||path.join(root,'..','BrainPet-blender-assest'));
 function load(relative){
  const file=path.resolve(root,relative);if(cache.has(file))return cache.get(file).exports;
  const module={exports:{}};cache.set(file,module);
@@ -23,28 +26,61 @@ const inventory=JSON.parse(fs.readFileSync('scripts/3d/inventory.json','utf8')).
 assert.equal(inventory.length,288,'Inventory ID count changed');
 const decor=load('constants/cat-decorations.ts'),beds=load('constants/cat-beds.ts'),toys=load('constants/cat-toys.ts'),rooms=load('constants/cat-rooms.ts');
 for(const entry of inventory){
- assert.ok(fs.existsSync(`assets/3d/blender/${entry.kind==='room'?'rooms':'items'}/${entry.id}.blend`),`Missing editable model ${entry.id}`);
+ assert.ok(fs.existsSync(path.join(blenderRoot,entry.kind==='room'?'rooms':'items',`${entry.id}.blend`)),`Missing editable model ${entry.id} in ${blenderRoot}. Restore the Blender library or run npm run assets:3d -- --refresh.`);
  const source=entry.kind==='decoration'?decor.CAT_DECORATION_CATALOG[entry.id]?.source:entry.kind==='room'?rooms.CAT_ROOM_SOURCES[entry.id]:entry.kind==='bed'?beds.CAT_BED_SOURCES[entry.id.slice(4)]:toys.getCatToySource(entry.id.slice(4));
  assert.ok(source?.startsWith('assets/3d/'),`Unmigrated ${entry.id}`);
  if(entry.kind==='decoration')assert.equal(decor.getDecorationDisplaySize(entry.id),entry.displaySize);
  const metadata=await sharp(source).metadata();assert.equal(metadata.format,'png');assert.ok(metadata.hasAlpha);
 }
 assert.equal(load('constants/decoration-variants.ts').canFlipWallDecoration('bathroomWcAni'),true);
+const variants=load('constants/decoration-variants.ts');
+for(const id of variants.WALL_FACING_DECORATION_IDS){
+ assert.ok(id in decor.CAT_DECORATION_CATALOG,`Invalid wall-facing catalog ID ${id}`);
+ assert.equal(variants.canFlipWallDecoration(id),true,`Missing other-wall control ${id}`);
+ const placed={instanceId:'orientation-check',decorationId:id,rotationIndex:0,wallFlipped:true};
+ assert.equal(variants.getPlacedDecorationWallFlipped(placed),true,`Lost saved wall facing ${id}`);
+ assert.equal(variants.getPlacedDecorationWallFlipped({...placed,wallFlipped:false}),false,`Cannot face original wall ${id}`);
+ assert.equal(variants.getPlacedDecorationSpriteId(placed),id,`Wall facing changed item/style ${id}`);
+}
+for(const entry of inventory.filter(e=>e.kind==='decoration'&&/poster|window|canvas|diploma|pictureframe|portrait|photos|shelving|longshelf|smallshelf|mirror|corkboard|aircon|^officeAc$|ClockAni|ProjectorScreen/i.test(e.id))){
+ assert.equal(variants.canFlipWallDecoration(entry.id),true,`Wall-mounted item cannot face both walls: ${entry.id}`);
+}
+// A portrait's non-square alpha bounds must not introduce black letterboxing.
+const icon=await sharp('assets/images/icon.png').ensureAlpha().raw().toBuffer({resolveWithObject:true});
+assert.equal(icon.info.width,1024);assert.equal(icon.info.height,1024);
+for(let i=3;i<icon.data.length;i+=4)assert.equal(icon.data[i],255,'iOS icon must be fully opaque');
+for(const x of [120,900])for(let y=140;y<885;y++){
+ const i=(y*1024+x)*4;
+ assert.ok(icon.data[i]+icon.data[i+1]+icon.data[i+2]>80,'Black letterbox stripe in app icon');
+}
+const splash=await sharp('assets/images/splash-brand.png').metadata();
+assert.ok(splash.width>=640&&splash.height>=640,'Native splash is missing its branded image');
+console.log(`Verified both-wall controls for ${variants.WALL_FACING_DECORATION_IDS.length} additional items and launch branding.`);
 const {getCatSpriteAnimations}=load('pet-display/registry/cat-sprite-atlas.ts');
 const {createCatSpriteRegistry}=load('pet-display/registry/cat-sprite-registry.ts');
 for(const skin of ['orange','grey','white']){
  const clips=getCatSpriteAnimations(skin);const registry=createCatSpriteRegistry(skin);
  for(const [id,clip] of Object.entries(clips)){
-  const metadata=await sharp(clip.source).metadata();assert.equal(metadata.width,clip.sheetWidth,id);assert.equal(metadata.height,clip.sheetHeight,id);
+  const sources=clip.pages??[clip.source];
+  assert.equal(sources.length,Math.ceil(clip.frames.length/(clip.framesPerPage??clip.frames.length)),`${skin}/${id} page count`);
+  for(const source of sources){const metadata=await sharp(source).metadata();assert.equal(metadata.width,clip.sheetWidth,id);assert.equal(metadata.height,clip.sheetHeight,id);}
+  assert.ok(clip.sheetWidth*clip.sheetHeight*4<=9*1024*1024,`${skin}/${id} exceeds texture page budget`);
   const hashes=new Set();
-  for(const frame of clip.frames){
-   const pixels=await sharp(clip.source).extract({left:frame.col*192,top:frame.row*192,width:192,height:192}).raw().toBuffer();
+  let decodedSource=null,decodedPixels=null;
+  for(const [index,frame] of clip.frames.entries()){
+   const source=sources[Math.floor(index/(clip.framesPerPage??clip.frames.length))];
+   const w=clip.frameWidth,h=clip.frameHeight;
+   if(source!==decodedSource){decodedPixels=await sharp(source).ensureAlpha().raw().toBuffer();decodedSource=source;}
+   const pixels=Buffer.allocUnsafe(w*h*4);
+   for(let y=0;y<h;y++){
+    const start=((frame.row*h+y)*clip.sheetWidth+frame.col*w)*4;
+    decodedPixels.copy(pixels,y*w*4,start,start+w*4);
+   }
    let occupied=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>20)occupied++;
-   assert.ok(occupied>1500,`${skin}/${id} contains an empty frame`);
-   // A silhouette touching the cell boundary would be cropped during playback.
-   for(let x=0;x<192;x++)assert.ok(pixels[x*4+3]<30&&pixels[(191*192+x)*4+3]<30,`${skin}/${id} clipped vertically`);
-   for(let y=0;y<192;y++)assert.ok(pixels[y*192*4+3]<30&&pixels[(y*192+191)*4+3]<30,`${skin}/${id} clipped horizontally`);
-   hashes.add(pixels.toString('base64'));
+   assert.ok(occupied>w*h*.04,`${skin}/${id} contains an empty frame`);
+   for(let x=0;x<w;x++)assert.ok(pixels[x*4+3]<30&&pixels[((h-1)*w+x)*4+3]<30,`${skin}/${id} clipped vertically`);
+   for(let y=0;y<h;y++)assert.ok(pixels[y*w*4+3]<30&&pixels[(y*w+w-1)*4+3]<30,`${skin}/${id} clipped horizontally`);
+   hashes.add(createHash('sha256').update(pixels).digest('hex'));
   }
   assert.ok(hashes.size>1,`${skin}/${id} has no motion`);
  }
@@ -71,3 +107,17 @@ assert.equal(mood.derivePetVideoMood(sleepy,true,now,true),'sleeping');
 assert.equal(mood.derivePetMood({...pet,stats:{...pet.stats,hunger:10}},now),'sad');
 assert.equal(mood.derivePetVideoMood(pet,false,now,false),'idle');
 console.log(`Verified ${inventory.length} retained item IDs, 66 moving cat clips, 28 moving objects, atlas bounds and rest/sleep/wake states.`);
+
+const {advanceSpritePlayback:advance}=load('pet-display/media/sprite/sprite-playback.ts');
+for(const reverse of [false,true]){
+ let state={frame:reverse?47:0,elapsed:0,finished:false};
+ for(let i=0;i<120;i++)state=advance(state.frame,state.elapsed,1000/60,48,24,reverse,false,4,Array.from({length:12},(_,i)=>i));
+ assert.equal(state.finished,true,'One-shot finishes at its authored duration');
+ assert.equal(state.frame,reverse?0:47,'Forward/reverse hold their final frame');
+}
+assert.equal(advance(3,0,1000/24,8,24,false,true,4,[0]).frame,3,'Missing next page holds last decoded frame');
+assert.equal(advance(3,0,1000/24,8,24,false,true,4,[0,1]).frame,4,'Preloaded next page advances normally');
+assert.equal(advance(7,0,1000/24,8,24,false,true,4,[0,1]).frame,0,'Loop returns to first page');
+assert.equal(advance(4,0,1000/24,8,24,true,true,4,[0,1]).frame,3,'Reverse crosses pages backwards');
+assert.equal(advance(0,0,0,8,24,false,true,4,[0,1]).frame,0,'Paused clock preserves progress');
+console.log('Verified paged playback, reverse completion, texture budgets and loading stalls.');

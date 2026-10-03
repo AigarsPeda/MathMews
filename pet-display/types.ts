@@ -10,6 +10,9 @@ export type SpriteFrameCoord = { col: number; row: number };
 
 export type SpriteSheetConfig = {
   source: number;
+  /** Optional bounded texture pages, with frame coordinates local to each page. */
+  pages?: readonly number[];
+  framesPerPage?: number;
   frameWidth: number;
   frameHeight: number;
   sheetWidth: number;

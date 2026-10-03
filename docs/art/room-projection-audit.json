@@ -1,0 +1,2026 @@
+{
+  "cameraDirection": [
+    8,
+    -8,
+    6.1
+  ],
+  "checkedScenes": 288,
+  "results": [
+    {
+      "id": "shelfWood",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "shelfBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "shelfGreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "tableTan",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "tablePink",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "tableBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "tablePurple",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "carpetTile",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "carpetSmall",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "carpetClassic",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "carpetRound",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "carpetRed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairOfficeA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairOfficeB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairOfficeMain",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairClassicA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairClassicB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairClassicC",
+      "kind": "decoration",
+      "rotationDegrees": 180,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairClassicD",
+      "kind": "decoration",
+      "rotationDegrees": 270,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairGamingA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairGamingB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "chairGamingC",
+      "kind": "decoration",
+      "rotationDegrees": 180,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "chairGamingD",
+      "kind": "decoration",
+      "rotationDegrees": 270,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "deskWoodA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "deskWoodB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "deskOffice",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "computerBendedScreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerNewImacA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerNewImacB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerNewKeyboard",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerOldImacA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerOldImacB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerOldKeyboard",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerOldPcA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerOldPcB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerPcTower",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerRotationScreenA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerRotationScreenB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerRotationScreenC",
+      "kind": "decoration",
+      "rotationDegrees": 180,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerVerticalScreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerWacomTablet",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerMacbookClosed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerMacbookOpen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleAtari",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleDreamcast",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleGameboy",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleGameboyAdvance",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleGamecube",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "consoleNes",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleNes4",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleNes4B",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleN64",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "consoleSwitch",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consolePsp",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consolePs1",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consolePs2",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consolePs3",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consolePs4",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consolePs5",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleSnes",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleSegaGenesis",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleWii",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleXbox",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleXbox360",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "consoleXboxX",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "lavaLampOff",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "japaneseBonsai",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseCandle",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseCartonBox",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "japaneseClothesCase",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseCanvas",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "japaneseCanvasLetters",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseLamp",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japanesePlant",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseSeat",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseShelf",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseTable",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseToriGate",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseBaseCup",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseCup",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseDish",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseTea",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseVase",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseCloset",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseClosetBase",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "japaneseClosetDrawerClosed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseClosetDrawerOpen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseClosetDoor1Closed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseClosetDoor1Open",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseClosetDoor2Closed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseClosetDoor2Open",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseDoorAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "japaneseSlidingDoorAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "livingAirCon",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "livingBook",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "livingSmallTable",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "livingSpeaker",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "livingTable",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "livingShelvingA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "livingShelvingB",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeAc",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "officeBlueprint",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeBoardEmpty",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeBoardFull",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeCalculator",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeCartonBox",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "officeCorkboardA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeCorkboardB",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeDiploma",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeDrawingTable",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "officeFireExtinguisher",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeGlassWall",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeHeadset",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeKitchenTable",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeLongRack",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePaper1",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePaper2",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePaper3",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePaper4",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePaper5",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePaper6",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePartition",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePencilHolder",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePhotosA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePhotosB",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "officePictureFrame",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "officeProjectorStand",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeRack",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeRolledPapers",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeRuler",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeRumbaRobot",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "officeStickyNote1",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNote2",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNote3",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNote4",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNote5",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNote6",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNoteBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNoteGreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNotePink",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeStickyNoteRed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeTelephone",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeTrashEmpty",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeTrashFull",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeTrashSquare",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeTvOff",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeWhiteBox",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "officeWhiteboardEraser",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeClockAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeCopyMachineDarkAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeCopyMachineWhiteAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeDocumentShredderAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeMedicalKitAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeMetallicClosetAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officePrinterAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeProjectorAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeProjectorScreenAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "officeWaterDispenserAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "officeWoodClosetAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomBathCarpet",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomBathWindow",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomDuck",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomHanger",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "bathroomHangingTowel",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "bathroomLongShelf",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomMirror",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474582,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomShowerBin",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomShowerFloor",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomShowerTap",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomShowerTray",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomSmallShelf",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomSoapGreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomSoapRed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomSoapYellow",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomTapShower",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomTapWall",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomTissues",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomToiletPaper",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomTowelBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "bathroomTowelGreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "bathroomTowelRed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "bathroomWcFurniture",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomBathAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomWcAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bathroomWcTapAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksBookGreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksPile",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksNotebooks",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksRingBinderBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksRingBinderDark",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksRingBinderGreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksRingBinderOrange",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksRingBinderRed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "booksRingBinderYellow",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "catTreeTan",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "catTreeBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "catTreePink",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "portraitCat",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bowlTan",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bowlBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bowlPurple",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bowlPink",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "yarnRed",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "yarnBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "foodBag",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "plantSmall",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "plantA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "plantB",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantE",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantCactusA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantCactusB",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantSunflower",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantPotted",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantTallGreen",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantTallPink",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantTallBlue",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "plantTallPurple",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "poster1",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "poster2",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "poster3",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "poster4",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "poster5",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "poster16",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "poster17",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "posterMap",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "posterFire",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "posterMedical",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "sofaA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "sofaB",
+      "kind": "decoration",
+      "rotationDegrees": 90,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "sofaPillow",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "tvBigOff",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "tvBigAniA",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "tvBigAniB",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "tvDvdAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "windowPlain",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "windowBlinds",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "window7A",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "window7B",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "window7C",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "window8A",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "window8B",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "window8C",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "window11A",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "window11B",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "window11C",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "windowJapaneseL",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "windowJapaneseR",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "cleaningRobot",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "computerBendedScreenAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerMacbookAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "computerPcTowerAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "lavaLampAni",
+      "kind": "decoration",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474583
+    },
+    {
+      "id": "bed-brown",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-green",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-blue",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-red",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-pink",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-purple",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-houseA",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-houseB",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-houseC",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-houseD",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-houseE",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-houseF",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "bed-houseG",
+      "kind": "bed",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "toy-orangeBall",
+      "kind": "toy",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "toy-blueBall",
+      "kind": "toy",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "toy-pinkBall",
+      "kind": "toy",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "toy-mouse",
+      "kind": "toy",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "toy-scratchPostGreen",
+      "kind": "toy",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "toy-scratchPostBlue",
+      "kind": "toy",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "toy-scratchPostPurple",
+      "kind": "toy",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "toy-scratchPostRed",
+      "kind": "toy",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room1",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room2",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room3",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room4",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room5",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room6",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room7",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room8",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room9",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room10",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room11",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room12",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room13",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room14",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    },
+    {
+      "id": "room15",
+      "kind": "room",
+      "rotationDegrees": 0,
+      "xSlope": -0.474583,
+      "ySlope": 0.474582
+    }
+  ]
+}

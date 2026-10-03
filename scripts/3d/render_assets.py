@@ -3,11 +3,20 @@ import bpy, math, json, os, sys, random
 from mathutils import Vector
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
+sys.path.insert(0,str(ROOT/'scripts/3d'))
+from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts
 OUT=ROOT/'assets/3d'
 OUT.mkdir(parents=True,exist_ok=True)
+BLENDER_OUT=Path(os.environ.get('BRAINPET_BLENDER_ASSET_DIR',str(ROOT.parent/'BrainPet-blender-assest'))).expanduser().resolve()
+BLENDER_OUT.mkdir(parents=True,exist_ok=True)
 ARGS=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ONLY=ARGS[ARGS.index('--only')+1] if '--only' in ARGS else None
 SIZE=256
+ROOM_VIEW_DIRECTION=(8,-8,6.1)
+CAT_FRAME_SIZE=768
+ROTATION_GROUPS=[['chairOfficeA','chairOfficeB'],['chairClassicA','chairClassicB','chairClassicC','chairClassicD'],['chairGamingA','chairGamingB','chairGamingC','chairGamingD'],['deskWoodA','deskWoodB'],['sofaA','sofaB'],['computerNewImacA','computerNewImacB'],['computerOldImacA','computerOldImacB'],['computerOldPcA','computerOldPcB'],['computerRotationScreenA','computerRotationScreenB','computerRotationScreenC']]
+ROTATION_BASE={id:group[0] for group in ROTATION_GROUPS for id in group}
+
 PALETTE={'cream':'FEFBEC','white':'FFF9F0','coral':'FF827E','teal':'72C6BF','gold':'EBC16B','sage':'B9CCAD','rose':'C2ABA9','blue':'A9D5F0','lilac':'C2B6D7','wood':'C9996D','dark':'454852','ink':'30323C','grey':'919AA6','orange':'EFA45E','pink':'EFAAA8','green':'83AE88','red':'D87973','purple':'AF9CC6','brown':'A58872','black':'494B54','silver':'BCC7CF','paper':'F7EBD6'}
 MATS={}
 def material(name,hexcolor=None,roughness=.72,metallic=0):
@@ -88,94 +97,27 @@ def frame_camera(objects,margin=1.17):
   if o.type not in ('MESH','CURVE'):continue
   e=o.evaluated_get(deps);coords.extend(e.matrix_world@Vector(v) for v in e.bound_box)
  if not coords:return
- center=sum(coords,Vector())/len(coords);camera.location=center+Vector((6,-9,7));aim(camera,center)
+ center=sum(coords,Vector())/len(coords);camera.location=center+Vector(ROOM_VIEW_DIRECTION);aim(camera,center)
  bpy.context.view_layer.update();inv=camera.matrix_world.inverted();points=[inv@v for v in coords];w=max(v.x for v in points)-min(v.x for v in points);h=max(v.y for v in points)-min(v.y for v in points)
  camera.data.ortho_scale=max(w,h)*margin
 
 def cat(skin='orange'):
- coat=material('Fur '+skin,{'orange':'E9A15B','grey':'929DA8','white':'F5F0E5'}[skin],.85)
- cream=material('Cream muzzle','FFF0D8');root=empty('Cat motion root');body=empty('Body',(0,0,.66),root)
- sphere('Pear shaped body',(0,0,0),(.42,.35,.58),coat,body)
- sphere('Cream chest',(0,-.29,.02),(.30,.075,.40),cream,body)
- hip=sphere('Rounded haunches',(0,.10,-.20),(.48,.37,.30),coat,body)
- feet=[]
- for side in [-1,1]:
-  feet.append(sphere('Front paw '+str(side),(side*.23,-.30,.16),(.16,.21,.16),cream,root))
-  sphere('Back paw '+str(side),(side*.39,.08,.13),(.19,.22,.13),coat,root)
- head=empty('Head',(0,-.075,1.39),root)
- sphere('Round head',(0,0,0),(.57,.43,.46),coat,head)
- sphere('Cheek left',(-.23,-.33,-.17),(.25,.16,.18),cream,head);sphere('Cheek right',(.23,-.33,-.17),(.25,.16,.18),cream,head)
- ears=[]
- for side in [-1,1]:
-  ear=empty('Ear '+str(side),(side*.37,0,.33),head);ears.append(ear)
-  bpy.ops.mesh.primitive_cone_add(vertices=3,radius1=.26,radius2=.025,depth=.46,location=(0,0,.15));o=bpy.context.object;o.scale=(1,.67,1);o.rotation_euler.z=math.pi/6;o.parent=ear;finish(o,'Soft triangular ear',coat)
-  bevel=o.modifiers.new('Rounded ear','BEVEL');bevel.width=.075;bevel.segments=4;o.modifiers.new('Ear normals','WEIGHTED_NORMAL')
-  mesh=bpy.data.meshes.new('Inner ear');mesh.from_pydata([(-.10,-.14,.025),(.10,-.14,.025),(0,-.08,.30)],[],[(0,1,2)]);inner=bpy.data.objects.new('Pink inner ear',mesh);bpy.context.collection.objects.link(inner);inner.parent=ear;inner.data.materials.append(mat('pink'));inner.modifiers.new('Ear thickness','SOLIDIFY').thickness=.02;bevel=inner.modifiers.new('Soft inset','BEVEL');bevel.width=.025;bevel.segments=3
- eyes=[];glints=[]
- for side in [-1,1]:
-  eye=sphere('Eye '+str(side),(side*.22,-.394,.035),(.105,.065,.14),'ink',head);eyes.append(eye)
-  glints.append(sphere('Eye glint '+str(side),(side*.22-.025,-.45,.078),(.029,.013,.036),'white',head))
- mouth=sphere('Yawn mouth',(0,-.499,-.23),(.045,.012,.003),'brown',head)
- sphere('Little pink nose',(0,-.496,-.14),(.074,.047,.046),'pink',head)
- curve('Smile left',[(0,-.487,-.18),(-.045,-.479,-.22),(-.085,-.46,-.20)],.012,'brown',head)
- curve('Smile right',[(0,-.487,-.18),(.045,-.479,-.22),(.085,-.46,-.20)],.012,'brown',head)
- for side in [-1,1]:
-  for j in range(2):curve('Whisker',[(side*.27,-.46,-.16-j*.05),(side*.51,-.40,-.13-j*.065)],.008,'brown',head)
- if skin!='white':
-  for x in [-.16,0,.16]:sphere('Forehead stripe',(x,-.285,.29),(.041,.025,.13),material('Stripe '+skin,{'orange':'B67642','grey':'697888'}[skin]),head)
- tail=empty('Tail pivot',(.33,.16,.23),root)
- curve('Curled tail',[(0,0,0),(.43,.14,.05),(.61,.12,.37),(.51,.04,.50)],.115,coat,tail)
- for side in [-1,1]:sphere('Cheek blush',(side*.38,-.38,-.12),(.085,.025,.048),'pink',head)
- return {'root':root,'body':body,'head':head,'ears':ears,'eyes':eyes,'glints':glints,'mouth':mouth,'feet':feet,'tail':tail}
+ return create_cat(skin)
 
 def cat_pose(rig,state,t):
- root=rig['root'];body=rig['body'];head=rig['head'];tail=rig['tail'];phase=t*math.tau
- root.location=(0,0,0);root.rotation_euler=(0,0,0);body.location=(0,0,.66);body.scale=(1,1,1);head.location=(0,-.075,1.39);head.rotation_euler=(0,0,0);head.scale=(1,1,1);tail.rotation_euler=(0,0,.10*math.sin(phase))
- rig['mouth'].scale.z=.003
- for eye in rig['eyes']:eye.scale=(.105,.065,.14)
- for ear in rig['ears']:ear.rotation_euler=(0,0,0)
- for side,paw in zip([-1,1],rig['feet']):paw.location=(side*.23,-.30,.16);paw.rotation_euler=(0,0,0)
- body.scale.z=1+.016*math.sin(phase);head.rotation_euler.z=.025*math.sin(phase)
- blink=max(0,1-abs(t-.72)/.055)
- for eye in rig['eyes']:eye.scale.z=.14*(1-.9*blink)
- if state in ('correct','dance','excited'):
-  hop=max(0,math.sin(t*math.pi*2))*math.sin(t*math.pi)
-  root.location.z=.26*hop;body.scale.z=1-.09*hop;head.rotation_euler.z=.07*math.sin(phase)
-  for ear in rig['ears']:ear.rotation_euler.x=-.12*hop
- if state in ('sad','incorrect','cry','angryCute','surprised'):
-  head.rotation_euler.y=.17*math.sin(math.pi*t);head.location.z-=.10*math.sin(math.pi*t)
-  for side,ear in zip([-1,1],rig['ears']):ear.rotation_euler.y=side*.22*math.sin(math.pi*t)
- if state in ('layDown','sleep','sleepy'):
-  settle=1 if state in ('layDown','sleep') else (t*t*(3-2*t))
-  body.location=(0,.10*settle,.66-.38*settle);body.scale=(1+.25*settle,1+.40*settle,(1-.48*settle)*(1+.025*math.sin(phase)))
-  head.location=(0,-.075-.125*settle,1.39-.83*settle);head.rotation_euler.x=.10*settle
-  for eye in rig['eyes']:eye.scale.z=.14*(1-.92*settle) if state!='layDown' else .13
-  for side,paw in zip([-1,1],rig['feet']):paw.location=(side*.23,-.30-.16*settle,.16-.02*settle)
-  tail.rotation_euler.z=.3*settle
- if state in ['sleepy','restSleep']:rig['mouth'].scale.z=.003+.08*math.sin(math.pi*t)**4
- if state=='restSleep':
-  cat_pose(rig,'layDown',t)
-  for eye in rig['eyes']:eye.scale.z=.13*(1-.92*t*t*(3-2*t))
- if state=='eating':
-  lean=math.sin(math.pi*min(1,t*2)) if t<.25 else (math.sin(math.pi*min(1,(1-t)*2)) if t>.75 else 1)
-  head.location.z-=.66*lean;head.location.y-=.26*lean;head.rotation_euler.x=.45*lean+.06*math.sin(phase*3)
- if state in ('box1','box2','box3'):
-  root.location.z=-.20+(.15*math.sin(math.pi*t) if state=='box3' else .06*math.sin(phase));head.rotation_euler.z=(.06 if state=='box1' else .16)*math.sin(phase);tail.rotation_euler.z=.25*math.sin(phase*(2 if state=='box1' else 1))
- if state=='waiting':head.rotation_euler.x=-.12*math.sin(math.pi*t)
- if state in ('idle2','blinkIdle','blinkSit'):head.rotation_euler.y=.10*math.sin(phase)
- for eye,glint in zip(rig['eyes'],rig['glints']):
-  glint.scale.z=.036*min(1,max(0,(eye.scale.z-.025)/.10));glint.location.z=.035+eye.scale.z*.30
+ pose_cat(rig,state,t)
 
 def bowl(color='teal',loc=(0,-.85,.08)):
  cylinder('Bowl base',loc,.36,.13,color);torus('Bowl rim',(loc[0],loc[1],loc[2]+.08),.30,.065,color);cylinder('Food',(loc[0],loc[1],loc[2]+.085),.27,.035,'brown')
 
 def sample():
- scene=setup(640);rig=cat();scene.camera.location=(4,-10,5);aim(scene.camera,(0,0,1.02));scene.camera.data.ortho_scale=2.9
- cat_pose(rig,'idle',0);render(OUT/'cat-preview.png');bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'blender'/'cat.blend'),compress=True)
+ scene=setup(640);rig=cat();configure_cat_camera(scene)
+ cat_pose(rig,'preview',.35);render(OUT/'cat-preview.png');bpy.ops.wm.save_as_mainfile(filepath=str(BLENDER_OUT/'cat.blend'),compress=True)
 
 
 
 def color_for(id):
+ id=ROTATION_BASE.get(id,id)
  lower=id.lower()
  for key in ['purple','lilac','orange','pink','green','blue','red','white','dark','brown','tan','yellow']:
   if key in lower:return {'tan':'wood','yellow':'gold'}.get(key,key)
@@ -303,14 +245,20 @@ def window(id):
  low=id.lower();w=1.45;h=1.7
  box('Window frame',(0,0,h/2),(w,.15,h),'wood' if 'japanese' in low else 'cream',.04)
  box('Window glass',(0,-.09,h/2),(w-.18,.025,h-.18),'blue',.025)
- for x in [-.35,.35]:box('Window muntin',(x,-.125,h/2),(.055,.055,h-.15),'cream',.01)
+ for x in ([-.35,.35] if '11' in low else [0]):box('Window muntin',(x,-.125,h/2),(.055,.055,h-.15),'cream',.01)
  box('Window crossbar',(0,-.13,h*.55),(w-.12,.055,.055),'cream',.01)
  box('Sill',(0,-.12,.03),(w+.16,.35,.10),'cream',.045)
  if 'blinds' in low:
   for z in range(9):box('Blind slat',(0,-.18,.35+z*.15),(w-.08,.08,.10),'paper',.025)
  elif any(v in low for v in ['7','8','11']):
-  for x in [-.70,.70]:
-   for j in range(3):cylinder('Curtain fold',(x+j*.07, -.18,.90),.07,1.73,color_for(id))
+  style=ord(id[-1])-ord('A') if id[-1] in 'ABC' else 0
+  curtain_color=['sage','pink','lilac'][style]
+  for side in [-1,1]:
+   for j in range(2+style):cylinder('Curtain fold',(side*(.69-j*.055),-.18,.90),.06,1.73,curtain_color)
+  if '8' in low:box('Curtain pelmet',(0,-.18,1.65),(w+.10,.17,.20),curtain_color,.055)
+ elif 'japanese' in low:
+  for z in [.35,.68,1.01,1.34]:box('Shoji lattice',(0,-.13,z),(w-.12,.055,.035),'wood',.009)
+  box('Sliding panel',( .34 if id.endswith('R') else -.34,-.15,h/2),(.57,.045,h-.14),'paper',.018)
 
 
 def book(id):
@@ -623,9 +571,14 @@ def build_item(entry,t=0):
  objects=list(set(bpy.context.scene.objects)-before);root=empty(id+' orientation')
  for o in objects:
   if o.parent is None:o.parent=root
- groups=[['chairOfficeA','chairOfficeB'],['chairClassicA','chairClassicB','chairClassicC','chairClassicD'],['chairGamingA','chairGamingB','chairGamingC','chairGamingD'],['deskWoodA','deskWoodB'],['sofaA','sofaB'],['computerNewImacA','computerNewImacB'],['computerOldImacA','computerOldImacB'],['computerOldPcA','computerOldPcB'],['computerRotationScreenA','computerRotationScreenB','computerRotationScreenC'],['window7A','window7B','window7C'],['window8A','window8B','window8C'],['window11A','window11B','window11C'],['windowJapaneseL','windowJapaneseR']]
+ # Window look variants all remain in the same wall plane. Wall side is
+ # mirrored separately by the app, never inferred from the style index.
+ groups=ROTATION_GROUPS
  for group in groups:
   if id in group:root.rotation_euler.z=group.index(id)*math.pi/2
+ # The fourth monitor variant changes the screen to portrait, facing forward.
+ root['asset_id']=id;root['orientation_degrees']=round(math.degrees(root.rotation_euler.z))
+ bpy.context.scene['projection_direction']=list(ROOM_VIEW_DIRECTION)
  bpy.context.view_layer.update();return objects,root
 
 
@@ -641,7 +594,7 @@ def room(entry):
  for x in [-1.6,-.8,0,.8,1.6]:box('Subtle floor joint',(x,0,.071),(.011,4.8,.002),'paper',0)
  objects=[o for o in scene.objects if o.type=='MESH'];scene.camera.location=(8,-8,7);aim(scene.camera,(0,0,.9));scene.camera.data.ortho_scale=7.85
  render(OUT/'rooms'/f"{entry['id']}.png")
- library=OUT/'blender'/'rooms';library.mkdir(parents=True,exist_ok=True);bpy.ops.wm.save_as_mainfile(filepath=str(library/(entry['id']+'.blend')),compress=True)
+ library=BLENDER_OUT/'rooms';library.mkdir(parents=True,exist_ok=True);bpy.ops.wm.save_as_mainfile(filepath=str(library/(entry['id']+'.blend')),compress=True)
 
 
 def animate_furniture(objects,t):
@@ -683,7 +636,7 @@ def render_furniture(entries):
     for o in [root,*objects]:
      for prop in ['location','rotation_euler','scale']:o.keyframe_insert(data_path=prop,frame=i+1)
    render(dest/(f'{i:03}.png' if animated else f'{id}.png'))
-  library=OUT/'blender'/'items';library.mkdir(parents=True,exist_ok=True)
+  library=BLENDER_OUT/'items';library.mkdir(parents=True,exist_ok=True)
   bpy.ops.wm.save_as_mainfile(filepath=str(library/f'{id}.blend'),compress=True)
   print('ASSET_DONE',id,flush=True)
 
@@ -694,7 +647,7 @@ def render_cats():
   for state,(count,fps) in CAT_CLIPS.items():
    dest=OUT/'frames'/('cat-'+skin+'-'+state);dest.mkdir(parents=True,exist_ok=True)
    if '--refresh' not in ARGS and all((dest/f'{i:03}.png').exists() for i in range(count)):continue
-   scene=setup(192);rig=cat(skin);scene.camera.location=(4,-10,5);aim(scene.camera,(0,0,1.02));scene.camera.data.ortho_scale=2.9
+   scene=setup(CAT_FRAME_SIZE);rig=cat(skin);configure_cat_camera(scene)
    if state=='eating':bowl()
    if state.startswith('box'):
     # Open cardboard box with a low front so the cat stays visible.
@@ -704,16 +657,12 @@ def render_cats():
    scene.render.fps=fps;scene.frame_start=1;scene.frame_end=count
    for i in range(count):
     scene.frame_set(i+1);t=i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep'] else i/count
-    cat_pose(rig,'sleepy' if state=='lieDown' else state,t)
-    if state=='lieDown':
-     for eye in rig['eyes']:eye.scale.z=.13
-     rig['mouth'].scale.z=.003
-     for eye,glint in zip(rig['eyes'],rig['glints']):glint.scale.z=.036;glint.location.z=.035+.13*.30
-    for obj in [rig['root'],rig['body'],rig['head'],rig['tail'],rig['mouth'],*rig['ears'],*rig['eyes'],*rig['glints'],*rig['feet']]:
+    cat_pose(rig,state,t)
+    for obj in animated_parts(rig):
      for prop in ['location','rotation_euler','scale']:obj.keyframe_insert(data_path=prop,frame=i+1,group='Math Mews '+state)
     render(dest/f'{i:03}.png')
    if skin=='orange':
-    library=OUT/'blender';library.mkdir(exist_ok=True);bpy.ops.wm.save_as_mainfile(filepath=str(library/(state+'.blend')),compress=True)
+    library=BLENDER_OUT;bpy.ops.wm.save_as_mainfile(filepath=str(library/(state+'.blend')),compress=True)
    print('CAT_DONE',skin,state,flush=True)
 
 
@@ -735,7 +684,7 @@ def branding():
    curve('Growth line',[(-.62,-.39,.8),(0,-.39,1.19),(.6,-.39,1.58)],.04,'gold')
    sphere('Reward coin',(.60,-.39,1.62),(.15,.06,.15),'gold')
   frame_camera([o for o in scene.objects if o.type in ['MESH','CURVE']],1.15)
-  render(OUT/(id+'-icon.png'));bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'blender'/(id+'.blend')),compress=True)
+  render(OUT/(id+'-icon.png'));bpy.ops.wm.save_as_mainfile(filepath=str(BLENDER_OUT/(id+'.blend')),compress=True)
 
 def main():
  entries=json.loads((ROOT/'scripts/3d/inventory.json').read_text())['entries']
@@ -745,6 +694,7 @@ def main():
   (OUT/'rooms').mkdir(exist_ok=True)
   room(next(e for e in entries if e['id']=='room1'));render_furniture([e for e in entries if e['id'] in ['sofaA','livingTable','plantSmall','chairClassicA','bed-brown']]);return
  if ONLY=='cat':render_cats();return
+ if ONLY=='rotations':render_furniture([e for e in entries if e['id'] in ROTATION_BASE]);return
  if ONLY and ONLY.startswith('room') and ONLY!='rooms':room(next(e for e in entries if e['id']==ONLY));return
  if ONLY and ONLY not in ['furniture','rooms']:
   render_furniture([e for e in entries if e['id']==ONLY]);return
@@ -755,4 +705,4 @@ def main():
  if ONLY in [None,'furniture']:render_furniture(entries)
  if ONLY is None:render_cats()
 
-main()
+if __name__=='__main__':main()

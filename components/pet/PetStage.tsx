@@ -54,10 +54,12 @@ import {
   ROOM_PET_LAYER_Z_INDEX,
 } from "@/utils/room-layer-order";
 import { moderateScale } from "@/utils/scale";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 import {
   Image,
+  PanResponder,
   Pressable,
   StyleSheet,
   Text,
@@ -206,11 +208,17 @@ export function PetStage({
 }: PetStageProps) {
   const { t } = useTranslation();
   const usesSprite = USE_CAT_SPRITE_PETS && petType === "cat";
+  const [zoom, setZoom] = useState(1);
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
+  const reduceMotion = useReducedMotion();
   const bedScaleMultiplier = getEquippedBedScale(bedScale);
   const bedSize = moderateScale(getBedDisplaySize(bedId) * bedScaleMultiplier);
   const bedSource = usesSprite ? getCatBedSource(bedId) : undefined;
   const roomPlacedToys = usesSprite ? (placedToys ?? []) : [];
-  const roomPlacedDecorations = usesSprite ? (placedDecorations ?? []) : [];
+  const roomPlacedDecorations = useMemo(
+    () => usesSprite ? (placedDecorations ?? []) : [],
+    [placedDecorations, usesSprite],
+  );
   const layerOrder = normalizeRoomLayerOrder({
     bedId,
     placedDecorations: roomPlacedDecorations,
@@ -239,7 +247,6 @@ export function PetStage({
   }, []);
   useEffect(() => {
     if (!openRoomItemMenu) {
-      setMenuAnchorRect(null);
       return;
     }
     measureRoomMenuBounds();
@@ -259,6 +266,43 @@ export function PetStage({
   const displayWidth = usesSprite
     ? resolveSpriteDisplaySize(avatarWidth)
     : avatarWidth;
+  const sceneX = useSharedValue(0);
+  const sceneY = useSharedValue(0);
+  const sceneScale = useSharedValue(1);
+  const panStartX = useSharedValue(0);
+  const panStartY = useSharedValue(0);
+  const maxPanX = Math.max(0, (zoom - 1) * viewport.width / 2);
+  const maxPanY = Math.max(0, (zoom - 1) * viewport.height / 2);
+  useEffect(() => {
+    const focusX = (roomPetOffset?.x ?? 0) * Math.max(0, (viewport.width-displayWidth)/2);
+    const focusY = (roomPetOffset?.y ?? .12) * Math.max(0, (viewport.height-displayWidth)/2);
+    const duration = reduceMotion ? 0 : 220;
+    sceneX.set(withTiming(Math.max(-maxPanX, Math.min(maxPanX, -focusX * zoom)), { duration }));
+    sceneY.set(withTiming(Math.max(-maxPanY, Math.min(maxPanY, -focusY * zoom)), { duration }));
+    sceneScale.set(withTiming(zoom, { duration }));
+  }, [displayWidth, maxPanX, maxPanY, reduceMotion, roomPetOffset?.x, roomPetOffset?.y, sceneScale, sceneX, sceneY, viewport.height, viewport.width, zoom]);
+  // Capture moves above the item's JS responders. Using another native gesture
+  // recognizer here lets those responders cancel the pan before it can start.
+  const panRoom = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponderCapture: (_, gesture) =>
+      compact && usesSprite && zoom > 1 && Math.hypot(gesture.dx, gesture.dy) > 6,
+    onPanResponderGrant: () => {
+      panStartX.set(sceneX.get());
+      panStartY.set(sceneY.get());
+    },
+    onPanResponderMove: (_, gesture) => {
+      sceneX.set(Math.max(-maxPanX, Math.min(maxPanX, panStartX.get() + gesture.dx)));
+      sceneY.set(Math.max(-maxPanY, Math.min(maxPanY, panStartY.get() + gesture.dy)));
+    },
+    onPanResponderTerminationRequest: () => false,
+  }), [compact, maxPanX, maxPanY, panStartX, panStartY, sceneX, sceneY, usesSprite, zoom]);
+  const sceneZoomStyle = useAnimatedStyle(() => {
+    return { transform: [
+      { translateX: sceneX.get() },
+      { translateY: sceneY.get() },
+      { scale: sceneScale.get() },
+    ] };
+  });
   const petDisplayWidth = avatarDisplayWidth(
     petType,
     avatarWidth,
@@ -282,6 +326,7 @@ export function PetStage({
 
   const canManageRoomItem = useCallback(
     (item: RoomLayerItem) => {
+      if (zoom !== 1) return false;
       if (item.kind === "bed") {
         return Boolean(
           onBedRemove || onMoveRoomLayerItem || onFlipBed || onScaleBed,
@@ -299,6 +344,7 @@ export function PetStage({
       return Boolean(onPlacedToyRemove || onMoveRoomLayerItem);
     },
     [
+      zoom,
       onBedRemove,
       onFlipBed,
       onScaleBed,
@@ -544,7 +590,7 @@ export function PetStage({
         !compact && { width: petDisplayWidth },
       ]}
     >
-      {speechMessage ? (
+      {speechMessage && zoom === 1 ? (
         <View style={compact ? styles.speechAbovePet : styles.speechAnchor}>
           <PetSpeechBubble message={speechMessage} />
         </View>
@@ -554,6 +600,7 @@ export function PetStage({
         catSkinId={catSkinId}
         playback={playback}
         width={displayWidth}
+        resolutionScale={3}
         transparentBackground={usesSprite}
         onPress={compact && usesSprite ? undefined : onPetPress}
         onAnimationComplete={onAnimationComplete}
@@ -565,9 +612,10 @@ export function PetStage({
   const roomPetLayer =
     compact && usesSprite ? (
       <DraggableRoomPet
+        allowDrag={zoom === 1}
         petSize={displayWidth}
         initialOffset={roomPetOffset}
-        onOffsetChange={onRoomPetOffsetChange}
+        onOffsetChange={zoom === 1 ? onRoomPetOffsetChange : undefined}
         onPetTap={onPetPress}
         layerZIndex={ROOM_PET_LAYER_Z_INDEX}
       >
@@ -588,6 +636,7 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
+        allowDrag={zoom === 1}
           key="bed"
           petSize={bedSize}
           initialOffset={roomBedOffset ?? { x: -0.15, y: 0.3 }}
@@ -620,6 +669,7 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
+        allowDrag={zoom === 1}
           key={`decoration:${item.instanceId}`}
           petSize={decorationSize}
           hitSize={hitSize}
@@ -648,6 +698,7 @@ export function PetStage({
 
     return (
       <DraggableRoomPet
+        allowDrag={zoom === 1}
         key={`toy:${item.instanceId}`}
         petSize={toySize}
         initialOffset={placed.offset}
@@ -688,13 +739,18 @@ export function PetStage({
         <View style={[styles.petColumn, compact && styles.petColumnCompact]}>
           <View
             ref={avatarWrapRef}
-            onLayout={measureRoomMenuBounds}
+            onLayout={event => {
+              const { width, height } = event.nativeEvent.layout;
+              setViewport({ width, height });
+              measureRoomMenuBounds();
+            }}
             style={[
               styles.avatarWrap,
               compact && styles.avatarWrapCompact,
               openRoomItemMenu && styles.avatarWrapMenuOpen,
             ]}
           >
+            <Animated.View {...panRoom.panHandlers} style={[compact ? StyleSheet.absoluteFill : { width: "100%", minHeight: displayWidth, alignItems: "center" }, compact && usesSprite ? sceneZoomStyle : undefined]}>
             {usesSprite ? (
               <PetRoomBackground
                 roomId={roomId}
@@ -720,6 +776,19 @@ export function PetStage({
               </View>
             ) : null}
             {compact ? roomPetLayer : petCluster}
+            </Animated.View>
+            {compact && usesSprite ? (
+              <Pressable style={styles.zoomButton}
+                onPress={() => { closeMenu(); setZoom(current => current === 3 ? 1 : current+1); }}
+                accessibilityRole="button"
+                accessibilityLabel={t(zoom === 3 ? "home.resetZoom" : "home.zoomCat")}
+                accessibilityValue={{ text: t("home.zoomLevel", { zoom }) }}>
+                <Text style={styles.zoomLabel}>{zoom === 3 ? "−" : "+"} {zoom}×</Text>
+              </Pressable>
+            ) : null}
+            {zoom > 1 && speechMessage ? (
+              <View pointerEvents="none" style={styles.zoomSpeech}><PetSpeechBubble message={speechMessage} /></View>
+            ) : null}
           </View>
 
           <View style={[styles.stats, compact && styles.statsCompact]}>
@@ -796,6 +865,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: moderateScale(2),
   },
+  zoomButton: {
+    position: "absolute", right: 12, bottom: 12, zIndex: ROOM_MENU_OPEN_Z_INDEX+2,
+    minWidth: 60, minHeight: 44, borderRadius: 22, backgroundColor: GameColors.card,
+    borderColor: GameColors.cardBorder, borderWidth: 1, alignItems: "center", justifyContent: "center",
+  },
+  zoomLabel: { color: GameColors.text, fontSize: 16, fontWeight: "700" },
+  zoomSpeech: { position: "absolute", top: 12, left: 12, right: 80, zIndex: ROOM_MENU_OPEN_Z_INDEX+1 },
   avatarWrap: {
     minHeight: moderateScale(120),
     alignItems: "center",

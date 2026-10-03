@@ -57,7 +57,7 @@ export function collectGameAssetModules(): number[] {
   return [...modules];
 }
 
-async function prefetchAssetModule(moduleId: number): Promise<void> {
+async function prefetchAssetModule(moduleId: number): Promise<boolean> {
   try {
     const asset = Asset.fromModule(moduleId);
     if (!asset.downloaded) {
@@ -66,24 +66,30 @@ async function prefetchAssetModule(moduleId: number): Promise<void> {
 
     const uri = asset.localUri ?? asset.uri;
     if (uri) {
-      await ExpoImage.prefetch(uri, "disk");
+      return await ExpoImage.prefetch(uri, "disk");
     }
 
   } catch {
     // Best-effort — one missing asset should not block the app.
   }
+  return false;
 }
 
-async function prefetchBatch(moduleIds: number[]): Promise<void> {
-  await Promise.all(moduleIds.map((moduleId) => prefetchAssetModule(moduleId)));
-}
+export type AssetPrefetchProgress = { completed: number; total: number; failed: number };
 
 /** Warm the image cache while the splash screen is visible. */
-export async function prefetchGameAssets(): Promise<void> {
+export async function prefetchGameAssets(onProgress?: (progress: AssetPrefetchProgress) => void): Promise<void> {
   const moduleIds = collectGameAssetModules();
+  let completed = 0;
+  let failed = 0;
+  onProgress?.({ completed, failed, total: moduleIds.length });
 
   for (let index = 0; index < moduleIds.length; index += PREFETCH_BATCH_SIZE) {
     const batch = moduleIds.slice(index, index + PREFETCH_BATCH_SIZE);
-    await prefetchBatch(batch);
+    await Promise.all(batch.map(async moduleId => {
+      if (!await prefetchAssetModule(moduleId)) failed++;
+      completed++;
+      onProgress?.({ completed, failed, total: moduleIds.length });
+    }));
   }
 }

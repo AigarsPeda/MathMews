@@ -8,10 +8,10 @@ export const DEFAULT_CAT_SKIN_ID: CatSkinId = "orange";
 /** Original Blender renders. */
 export const CAT_SKIN_SHEET = {
   width: 1536,
-  height: 576,
+  height: 2304,
   frameSize: 192,
   cols: 8,
-  rows: 3,
+  rows: 12,
 } as const;
 
 export const CAT_SKIN_SOURCES: Record<CatSkinId, number> = {

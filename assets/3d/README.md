@@ -6,13 +6,17 @@ The app uses rendered images rather than a live 3D scene. This keeps its existin
 
 ## Editable sources
 
-- `blender/cat.blend` is the cat model with named, parented body parts.
-- `blender/idle.blend`, `correct.blend`, `incorrect.blend`, `lieDown.blend`, `restSleep.blend`, `sleep.blend`, `eating.blend` and the other clips contain editable transform keyframes. These use a hierarchy of parts rather than an armature.
-- `blender/items/` contains each furniture, bed and toy model. Animated objects include keyframes.
-- `blender/rooms/` contains all 15 room scenes.
-- `blender/store.blend` and `blender/stats.blend` contain the matching app graphics.
+The 313 editable Blender scenes live in `/Users/aigarspeda/Desktop/BrainPet-blender-assest`, outside the app repository. Paths below are relative to that folder.
 
-Orange, grey and white coats use the same model and animation. Their materials are defined in `scripts/3d/render_assets.py`.
+- `cat.blend` is the cat model with named, parented body parts.
+- `idle.blend`, `correct.blend`, `incorrect.blend`, `lieDown.blend`, `restSleep.blend`, `sleep.blend`, `eating.blend` and the other clips contain editable transform keyframes. These use a hierarchy of parts rather than an armature.
+- `items/` contains 273 furniture, bed and toy models. Animated objects include keyframes.
+- `rooms/` contains all 15 room scenes.
+- `store.blend` and `stats.blend` contain the matching app graphics.
+
+`migration-sha256.json` records the size and SHA-256 checksum of every scene when it was moved. The copy matched the original files before the project copies were removed. Checksums describe that migration, so they will change when you edit a scene.
+
+Orange, grey and white coats use the same model and animation. The approved expressive cat's geometry, procedural materials and poses are defined in `scripts/3d/cat_model.py`; `scripts/3d/render_assets.py` renders the collection. The approved concept is in `docs/art/cat-approved-concept.png`, and `HANDOFF.md` describes its proportions, palette, expressions and exact recreation settings. The external library also contains `reference/cat-approved-concept.png` and `reference/CAT_DESIGN.md`.
 
 ## Rebuilding
 
@@ -25,6 +29,12 @@ npm run assets:verify
 ```
 
 The first command skips existing renders. The second rebuilds everything. Set `BLENDER_BIN` if Blender is installed elsewhere.
+
+The renderer and verifier default to the sibling folder `../BrainPet-blender-assest`. To use another source folder, set `BRAINPET_BLENDER_ASSET_DIR` to its absolute path. Rendered PNGs, WebP pages and atlases always stay in `assets/3d/` inside the app repository.
+
+On a fresh clone, copy the external Blender library beside the repository, or regenerate it with `npm run assets:3d -- --refresh`. Asset verification requires the editable library as well as the runtime images.
+
+To rebuild only the cat's 66 clips and branding, run `npm run assets:3d -- --only cat --refresh`. Rooms, furniture and their item IDs stay as they are. The cat scenes include editable transform keyframes for its brows, mouth, frown, ears, eyes, catchlights, paws and tears.
 
 To render one object directly:
 
@@ -39,10 +49,13 @@ The renderer uses Blender 5.2.2 LTS and Eevee. `--cycles` selects Cycles. Preser
 
 - Static furniture, beds and scratching posts are 256 px transparent PNGs.
 - Rooms are 1024 px PNGs.
-- Animation cells are 192 px. Atlases have eight columns, with one texture per cat clip and coat.
-- The 22 cat clips run at 12–20 fps. Correct reactions last 1.2 seconds, incorrect reactions 1.5 seconds, and feeding 2 seconds.
+- Cat gameplay cells are 768 px at 24 fps. Four cells fit into each 1536×1536 WebP page. Only the current/next pair is decoded, with a theoretical RGBA budget of 18 MiB before GPU overhead/transient replacements.
+- The 22 cat clips run at 24 fps. Idle lasts 4 seconds, correct 2.5 seconds, incorrect 2 seconds, and feeding 3 seconds. The splash uses a separate full 192 px idle sheet.
 - Furniture and small-toy loops use eight frames at 12 fps.
-- Cat sprites use smooth linear sampling and fractional scaling.
-- Individual render frames and Blender backups are ignored by Git. Metro excludes source scenes and intermediate frames. The editable `.blend` files are retained in Git and are not bundled into the app.
+- Cat sprites use smooth linear sampling and fractional scaling. Reanimated advances frames on the UI thread; background/covered screens pause. Reduce Motion freezes loops. Gameplay can zoom to 3× without writing placement offsets.
+- Cat WebP pages use quality 90 and alpha quality 100. The full set is about 83.1 MiB, 88.54% smaller than the HD PNG equivalent. See `docs/art/cat-texture-metrics.json`.
+- Individual render frames and Blender backups are ignored by Git. Metro excludes source scenes and intermediate frames. Editable `.blend` files live outside the repository and are not bundled into the app. Back up the external folder to preserve manual Blender edits; the previous scenes remain recoverable from Git history.
 
-`npm run assets:verify` checks all 288 retained item IDs, texture dimensions, nonempty cat frames, unclipped cat silhouettes, motion, reaction playback, mirroring and rest/sleep/wake transitions.
+`npm run assets:verify` checks all 288 retained item IDs, texture dimensions/page budgets, nonempty cat frames, unclipped cat silhouettes, motion, forward/reverse completion, page-loading stalls, mirroring and rest/sleep/wake transitions.
+
+All placeable items use the room projection direction `(8,-8,6.1)`. Window style changes keep the wall plane unchanged; wall mirroring is independent. Rotation variants share colours. Audit every scene with Blender running `scripts/3d/audit_projection.py`; regenerate labelled contact boards with `node scripts/3d/review-assets.mjs`. Results/research are in `HANDOFF.md` and `docs/art/room-projection-audit.json`.

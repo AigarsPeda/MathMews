@@ -1,0 +1,18 @@
+{
+  "pages": 1089,
+  "pngBytes": 760570260,
+  "webpBytes": 87171698,
+  "savedPercent": 88.53863967807524,
+  "decodedPageMiB": 9,
+  "steadyDecodedPairMiB": 18,
+  "fullIdleAtlasMiB": 216,
+  "earRefinement": {
+    "date": "2026-10-03",
+    "webpBytes": 89831264,
+    "pages": 1089,
+    "frames": 4356,
+    "cellSize": 768,
+    "decodedPageBytes": 9437184,
+    "decodedPairBytes": 18874368
+  }
+}

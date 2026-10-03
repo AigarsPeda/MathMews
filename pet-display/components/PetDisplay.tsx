@@ -12,6 +12,7 @@ import { useMemo } from "react";
 
 type PetDisplayProps = {
   width?: number;
+  resolutionScale?: number;
   loop?: boolean;
   transparentBackground?: boolean;
   petType: PetType;
@@ -35,6 +36,7 @@ export function PetDisplay({
   loop = false,
   transparentBackground = false,
   width = moderateScale(200),
+  resolutionScale = 1,
 }: PetDisplayProps) {
   const registry = getPetMediaRegistry(petType, {
     catSkinId: resolveCatSkinId(catSkinId),
@@ -57,6 +59,7 @@ export function PetDisplay({
         <PetSpriteRenderer
           loop={loop}
           size={width}
+          resolutionScale={resolutionScale}
           transparentBackground={transparentBackground}
           scenarioSteps={resolvedPlayback.steps}
           onAnimationComplete={onAnimationComplete}
@@ -70,6 +73,7 @@ export function PetDisplay({
       <PetSpriteRenderer
         loop={loop}
         size={width}
+        resolutionScale={resolutionScale}
         transparentBackground={transparentBackground}
         segment={resolvedPlayback.segment}
         onAnimationComplete={onAnimationComplete}

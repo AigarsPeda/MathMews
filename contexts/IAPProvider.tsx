@@ -38,10 +38,11 @@ export function IAPProvider({ children }: { children: ReactNode }) {
   const { adjustCoins, syncToCloud, reloadProgressFromCloud, coinTransactions } =
     useGame();
   const [isReady, setIsReady] = useState(false);
+  const [configurationFailed, setConfigurationFailed] = useState(false);
   const [coinPackCatalog, setCoinPackCatalog] = useState<CoinPackCatalogEntry[]>(
     [],
   );
-  const isSupported = isRevenueCatSupported();
+  const isSupported = isRevenueCatSupported() && !configurationFailed;
 
   const refreshOfferings = useCallback(async () => {
     if (!isSupported) return;
@@ -51,15 +52,24 @@ export function IAPProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isSupported) {
-      setIsReady(true);
       return;
     }
 
     let active = true;
 
-    configureRevenueCat();
-
-    refreshOfferings()
+    // Keep the strict release-key check, but isolate an unavailable purchase
+    // service from gameplay. Configuration must not crash the app after splash.
+    Promise.resolve().then(() => {
+      try {
+        configureRevenueCat();
+        return true;
+      } catch (error) {
+        if (active) setConfigurationFailed(true);
+        console.warn("[MathMews IAP] Purchases unavailable: invalid store configuration", error);
+        return false;
+      }
+    })
+      .then(configured => configured ? refreshOfferings() : undefined)
       .catch(() => undefined)
       .finally(() => {
         if (active) setIsReady(true);
@@ -71,10 +81,10 @@ export function IAPProvider({ children }: { children: ReactNode }) {
   }, [isSupported, refreshOfferings]);
 
   useEffect(() => {
-    if (!isSupported || !isAuthReady || !userId) return;
+    if (!isReady || !isSupported || !isAuthReady || !userId) return;
 
     Purchases.logIn(userId).catch(() => undefined);
-  }, [isAuthReady, isSupported, userId]);
+  }, [isAuthReady, isReady, isSupported, userId]);
 
   const creditCoinPackPurchase = useCallback(
     async (result: Extract<CoinPackPurchaseResult, { status: "purchased" }>) => {
@@ -126,7 +136,7 @@ export function IAPProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({
-      isReady,
+      isReady: isReady || !isSupported,
       isSupported,
       coinPackCatalog,
       purchaseCoinPack: handlePurchaseCoinPack,
