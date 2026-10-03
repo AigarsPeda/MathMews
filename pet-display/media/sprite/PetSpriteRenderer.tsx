@@ -1,4 +1,3 @@
-import { resolveSpritePixelScale } from "@/constants/cat-sprites";
 import { GameColors } from "@/constants/game";
 import type { PetMediaSegment, SpriteSheetConfig } from "@/pet-display/types";
 import { moderateScale } from "@/utils/scale";
@@ -15,8 +14,8 @@ import { Pressable, StyleSheet, View } from "react-native";
 
 const DEFAULT_SIZE = 200;
 const VIEW_PADDING = 0.9;
-const NEAREST_SAMPLING = {
-  filter: FilterMode.Nearest,
+const SMOOTH_SAMPLING = {
+  filter: FilterMode.Linear,
   mipmap: MipmapMode.None,
 };
 
@@ -47,11 +46,7 @@ function layoutFrame(
 ) {
   const coord = sprite.frames[frameIndex] ?? sprite.frames[0];
   const desiredFrameHeight = Math.floor(displaySize * VIEW_PADDING);
-  const scale = resolveSpritePixelScale(sprite.frameHeight, desiredFrameHeight, {
-    scaleReferenceHeight: sprite.scaleReferenceHeight,
-    pixelScaleBoost: sprite.pixelScaleBoost,
-    maxPixelScale: sprite.maxPixelScale,
-  });
+  const scale = desiredFrameHeight / sprite.frameHeight;
   const frameWidth = sprite.frameWidth * scale;
   const frameHeight = sprite.frameHeight * scale;
   const sheetWidth = sprite.sheetWidth * scale;
@@ -114,7 +109,7 @@ function SpriteFrame({
               width={layout.sheetWidth}
               height={layout.sheetHeight}
               fit="fill"
-              sampling={NEAREST_SAMPLING}
+              sampling={SMOOTH_SAMPLING}
             />
           </Group>
         ) : null}
@@ -128,16 +123,11 @@ function useFrameAnimation(
   loopPlayback: boolean,
   onStepDone: () => void,
 ) {
-  const [index, setIndex] = useState(0);
-  const doneRef = useRef(false);
   const sprite = segment?.sprite;
   const frameCount = sprite?.frames.length ?? 0;
   const shouldLoop = loopPlayback || segment?.loop === true;
-
-  useEffect(() => {
-    setIndex(sprite?.reverse ? Math.max(frameCount - 1, 0) : 0);
-    doneRef.current = false;
-  }, [frameCount, segment?.assetKey, sprite?.reverse]);
+  const [index, setIndex] = useState(() => sprite?.reverse ? Math.max(frameCount - 1, 0) : 0);
+  const doneRef = useRef(false);
 
   useEffect(() => {
     if (!sprite || frameCount === 0) return;
@@ -179,6 +169,13 @@ function useFrameAnimation(
   return index;
 }
 
+function SpriteStep({ segment, loop, onStepDone, displaySize }: {
+  segment: PetMediaSegment; loop: boolean; onStepDone: () => void; displaySize: number;
+}) {
+  const frameIndex = useFrameAnimation(segment, loop, onStepDone);
+  return segment.sprite ? <SpriteFrame sprite={segment.sprite} frameIndex={frameIndex} displaySize={displaySize} /> : null;
+}
+
 export function PetSpriteRenderer({
   segment,
   scenarioSteps,
@@ -189,9 +186,14 @@ export function PetSpriteRenderer({
   onStepComplete,
   onPress,
 }: PetSpriteRendererProps) {
-  const steps = scenarioSteps ?? (segment ? [segment] : []);
+  const steps = useMemo(() => scenarioSteps ?? (segment ? [segment] : []), [scenarioSteps, segment]);
   const [stepIndex, setStepIndex] = useState(0);
-  const tokenRef = useRef("");
+  const token = segmentToken(steps);
+  const [previousToken, setPreviousToken] = useState(token);
+  if (previousToken !== token) {
+    setPreviousToken(token);
+    setStepIndex(0);
+  }
   const onCompleteRef = useRef(onAnimationComplete);
   const onStepRef = useRef(onStepComplete);
 
@@ -202,13 +204,6 @@ export function PetSpriteRenderer({
   useEffect(() => {
     onStepRef.current = onStepComplete;
   }, [onStepComplete]);
-
-  useEffect(() => {
-    const token = segmentToken(steps);
-    if (token === tokenRef.current) return;
-    tokenRef.current = token;
-    setStepIndex(0);
-  }, [steps]);
 
   const active = steps[stepIndex];
 
@@ -222,12 +217,9 @@ export function PetSpriteRenderer({
     onCompleteRef.current?.();
   }, [stepIndex, steps.length]);
 
-  const frameIndex = useFrameAnimation(active, loop, finishStep);
 
-  const containerSize = useMemo(() => {
-    if (!active?.sprite) return size;
-    return layoutFrame(active.sprite, 0, size).containerSize;
-  }, [active?.sprite, size]);
+  const containerSize = active?.sprite
+    ? layoutFrame(active.sprite, 0, size).containerSize : size;
 
   const content = (
     <View
@@ -238,11 +230,8 @@ export function PetSpriteRenderer({
       ]}
     >
       {active?.sprite ? (
-        <SpriteFrame
-          sprite={active.sprite}
-          frameIndex={frameIndex}
-          displaySize={size}
-        />
+        <SpriteStep key={`${token}:${stepIndex}`} segment={active} loop={loop}
+          onStepDone={finishStep} displaySize={size} />
       ) : null}
     </View>
   );

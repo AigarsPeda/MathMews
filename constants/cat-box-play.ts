@@ -1,9 +1,9 @@
-/** Box play animations from `CatPackDifferentSkins` rows 9–11. */
+/** Three Blender box-play clips, chained by the pet engine. */
 export const BOX_PLAY_ANIMATION_IDS = ["box2", "box1", "box3"] as const;
 
 export type BoxPlayAnimationId = (typeof BOX_PLAY_ANIMATION_IDS)[number];
 
-/** Long box2 bookends with shuffled short clips in the middle (~4s at 8 fps). */
+/** Long box2 bookends with shuffled shorter clips in the middle. */
 export function buildBoxPlaySequence(): BoxPlayAnimationId[] {
   const middle =
     Math.random() < 0.5

@@ -122,12 +122,8 @@ This is intentional — misconfigured store builds must not ship. Logic lives in
 
 ## Assets
 
-Cat sprites and room items: [Cat Mega Bundle on itch.io](https://toffeecraft.itch.io/cat-mega-bundle)
+The cat, rooms, furniture, beds, toys and app graphics use original Blender models in `assets/3d/`. The game renders transparent images and animation atlases while retaining its existing room controls and saved inventory IDs.
 
-https://aigarspeda.github.io/MathMews/privacy.html
+See [3D asset instructions](assets/3d/README.md) for editable models and regeneration. Run `npm run assets:verify` to check asset coverage and animation states, or `npm run assets:3d` to render and pack the collection.
 
-### ISOmetric sprites
-
-https://oisougabo.itch.io/essential-isometric-house-pack
-https://oisougabo.itch.io/essential-isometric-bathroom
-https://oisougabo.itch.io/essential-isometric-bedroom-pack
+The migration notes and verification results are in [HANDOFF.md](HANDOFF.md).

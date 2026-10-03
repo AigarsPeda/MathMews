@@ -1,10 +1,5 @@
-/** Room decorations — sprite sheet + standalone carpets (Tiny House pack). */
-import {
-  BENDED_SCREEN_ANIM_FRAMES,
-  MACBOOK_ANIM_FRAMES,
-  PC_TOWER_ANIM_FRAMES,
-} from "@/constants/computer-animation-frames";
-import { LAVA_LAMP_ANIM_FRAMES } from "@/constants/lava-lamp-animation-frames";
+/** Original Blender furniture, with stable inventory IDs. */
+
 import { JAPANESE_DECORATION_CATALOG } from "@/constants/japanese-decorations";
 import { LIVING_ROOM_DECORATION_CATALOG } from "@/constants/living-room-decorations";
 import { OFFICE_DECORATION_CATALOG } from "@/constants/office-decorations";
@@ -26,370 +21,131 @@ import {
   isWindowDecorationId,
 } from "@/constants/window-decorations";
 
-export const CAT_DECORATION_SHEET = require("@/assets/pets/Cat/CatItems/Decorations/CatRoomDecorations.png");
-export const CAT_DECORATION_SHEET_SIZE = 1024;
-
-export type DecorationFrame = {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-};
-
-type SheetDecorationCatalogEntry = {
-  frame: DecorationFrame;
-  /** Max display dimension in the room before `moderateScale`. */
-  displaySize: number;
-};
-
 type ImageDecorationCatalogEntry = {
   source: number;
   displaySize: number;
 };
 
-type AnimatedDecorationCatalogEntry =
-  | {
-      source: number;
-      sheetWidth: number;
-      sheetHeight: number;
-      frameWidth: number;
-      frameHeight: number;
-      frameCount: number;
-      fps?: number;
-      displaySize: number;
-    }
-  | {
-      frames: readonly number[];
-      flippedFrames?: readonly number[];
-      frameWidth: number;
-      frameHeight: number;
-      fps?: number;
-      displaySize: number;
-    };
+type AnimatedDecorationCatalogEntry = {
+  source: number;
+  sheetWidth: number;
+  sheetHeight: number;
+  frameWidth: number;
+  frameHeight: number;
+  frameCount: number;
+  fps?: number;
+  displaySize: number;
+};
+export type DecorationCatalogEntry = ImageDecorationCatalogEntry | AnimatedDecorationCatalogEntry;
 
-export type DecorationCatalogEntry =
-  | SheetDecorationCatalogEntry
-  | ImageDecorationCatalogEntry
-  | AnimatedDecorationCatalogEntry;
-
-const CAT_DECORATION_SHEET_CATALOG = {
-  shelfWood: { frame: { x: 191, y: 17, w: 64, h: 110 }, displaySize: 52 },
-  shelfBlue: { frame: { x: 287, y: 16, w: 64, h: 110 }, displaySize: 52 },
-  shelfGreen: { frame: { x: 383, y: 16, w: 64, h: 110 }, displaySize: 52 },
-  tableTan: { frame: { x: 202, y: 138, w: 110, h: 82 }, displaySize: 40 },
-  tablePink: { frame: { x: 329, y: 138, w: 110, h: 82 }, displaySize: 40 },
-  tableBlue: { frame: { x: 202, y: 236, w: 110, h: 82 }, displaySize: 40 },
-  tablePurple: { frame: { x: 329, y: 236, w: 110, h: 82 }, displaySize: 40 },
-} as const satisfies Record<string, SheetDecorationCatalogEntry>;
+const BASIC_FURNITURE_CATALOG = {
+  shelfWood: { source: require("@/assets/3d/decoration/shelfWood.png"), displaySize: 52 },
+  shelfBlue: { source: require("@/assets/3d/decoration/shelfBlue.png"), displaySize: 52 },
+  shelfGreen: { source: require("@/assets/3d/decoration/shelfGreen.png"), displaySize: 52 },
+  tableTan: { source: require("@/assets/3d/decoration/tableTan.png"), displaySize: 40 },
+  tablePink: { source: require("@/assets/3d/decoration/tablePink.png"), displaySize: 40 },
+  tableBlue: { source: require("@/assets/3d/decoration/tableBlue.png"), displaySize: 40 },
+  tablePurple: { source: require("@/assets/3d/decoration/tablePurple.png"), displaySize: 40 },
+} as const satisfies Record<string, ImageDecorationCatalogEntry>;
 
 export const SHEET_DECORATION_IDS = Object.keys(
-  CAT_DECORATION_SHEET_CATALOG,
+  BASIC_FURNITURE_CATALOG,
 ) as SheetDecorationId[];
 
-/** Floor carpets — `assets/.../Decorations/Carpets/`. */
+/** Floor carpets. */
 const CARPET_DECORATION_CATALOG = {
-  carpetTile: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Carpets/carpet-tile.png"),
-    displaySize: 72,
-  },
-  carpetSmall: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Carpets/carpet-small.png"),
-    displaySize: 28,
-  },
-  carpetClassic: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Carpets/carpet-classic.png"),
-    displaySize: 64,
-  },
-  carpetRound: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Carpets/carpet-round.png"),
-    displaySize: 48,
-  },
-  carpetRed: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Carpets/carpet-red.png"),
-    displaySize: 80,
-  },
+  carpetTile: { source: require("@/assets/3d/decoration/carpetTile.png"), displaySize: 72 },
+  carpetSmall: { source: require("@/assets/3d/decoration/carpetSmall.png"), displaySize: 28 },
+  carpetClassic: { source: require("@/assets/3d/decoration/carpetClassic.png"), displaySize: 64 },
+  carpetRound: { source: require("@/assets/3d/decoration/carpetRound.png"), displaySize: 48 },
+  carpetRed: { source: require("@/assets/3d/decoration/carpetRed.png"), displaySize: 80 },
 } as const satisfies Record<string, ImageDecorationCatalogEntry>;
 
-/** Chairs — `assets/.../Decorations/Chairs/`. */
+/** Chairs. */
 const CHAIR_DECORATION_CATALOG = {
-  chairOfficeA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-office-a.png"),
-    displaySize: 48,
-  },
-  chairOfficeB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-office-b.png"),
-    displaySize: 48,
-  },
-  chairOfficeMain: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-office-main.png"),
-    displaySize: 48,
-  },
-  chairClassicA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-classic-a.png"),
-    displaySize: 48,
-  },
-  chairClassicB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-classic-b.png"),
-    displaySize: 48,
-  },
-  chairClassicC: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-classic-c.png"),
-    displaySize: 48,
-  },
-  chairClassicD: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-classic-d.png"),
-    displaySize: 48,
-  },
-  chairGamingA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-gaming-a.png"),
-    displaySize: 50,
-  },
-  chairGamingB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-gaming-b.png"),
-    displaySize: 50,
-  },
-  chairGamingC: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-gaming-c.png"),
-    displaySize: 50,
-  },
-  chairGamingD: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Chairs/chair-gaming-d.png"),
-    displaySize: 50,
-  },
+  chairOfficeA: { source: require("@/assets/3d/decoration/chairOfficeA.png"), displaySize: 48 },
+  chairOfficeB: { source: require("@/assets/3d/decoration/chairOfficeB.png"), displaySize: 48 },
+  chairOfficeMain: { source: require("@/assets/3d/decoration/chairOfficeMain.png"), displaySize: 48 },
+  chairClassicA: { source: require("@/assets/3d/decoration/chairClassicA.png"), displaySize: 48 },
+  chairClassicB: { source: require("@/assets/3d/decoration/chairClassicB.png"), displaySize: 48 },
+  chairClassicC: { source: require("@/assets/3d/decoration/chairClassicC.png"), displaySize: 48 },
+  chairClassicD: { source: require("@/assets/3d/decoration/chairClassicD.png"), displaySize: 48 },
+  chairGamingA: { source: require("@/assets/3d/decoration/chairGamingA.png"), displaySize: 50 },
+  chairGamingB: { source: require("@/assets/3d/decoration/chairGamingB.png"), displaySize: 50 },
+  chairGamingC: { source: require("@/assets/3d/decoration/chairGamingC.png"), displaySize: 50 },
+  chairGamingD: { source: require("@/assets/3d/decoration/chairGamingD.png"), displaySize: 50 },
 } as const satisfies Record<string, ImageDecorationCatalogEntry>;
 
-/** Desks — `assets/.../Decorations/Desks/` (128px tiles). */
+/** Desks. */
 const DESK_DECORATION_CATALOG = {
-  deskWoodA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Desks/desk-wood-a.png"),
-    displaySize: 80,
-  },
-  deskWoodB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Desks/desk-wood-b.png"),
-    displaySize: 80,
-  },
-  deskOffice: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Desks/desk-office.png"),
-    displaySize: 80,
-  },
+  deskWoodA: { source: require("@/assets/3d/decoration/deskWoodA.png"), displaySize: 80 },
+  deskWoodB: { source: require("@/assets/3d/decoration/deskWoodB.png"), displaySize: 80 },
+  deskOffice: { source: require("@/assets/3d/decoration/deskOffice.png"), displaySize: 80 },
 } as const satisfies Record<string, ImageDecorationCatalogEntry>;
 
-/** Computers — `assets/.../Decorations/Computers/`. */
+/** Computers. */
 const COMPUTER_DECORATION_CATALOG = {
-  computerBendedScreen: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/bended-screen.png"),
-    displaySize: 44,
-  },
-  computerNewImacA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/new-imac-a.png"),
-    displaySize: 44,
-  },
-  computerNewImacB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/new-imac-b.png"),
-    displaySize: 44,
-  },
-  computerNewKeyboard: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/new-keyboard.png"),
-    displaySize: 32,
-  },
-  computerOldImacA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/old-imac-a.png"),
-    displaySize: 44,
-  },
-  computerOldImacB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/old-imac-b.png"),
-    displaySize: 44,
-  },
-  computerOldKeyboard: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/old-keyboard.png"),
-    displaySize: 28,
-  },
-  computerOldPcA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/old-pc-a.png"),
-    displaySize: 44,
-  },
-  computerOldPcB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/old-pc-b.png"),
-    displaySize: 44,
-  },
-  computerPcTower: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/pc-tower.png"),
-    displaySize: 44,
-  },
-  computerRotationScreenA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/rotation-screen-a.png"),
-    displaySize: 44,
-  },
-  computerRotationScreenB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/rotation-screen-b.png"),
-    displaySize: 44,
-  },
-  computerRotationScreenC: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/rotation-screen-c.png"),
-    displaySize: 44,
-  },
-  computerVerticalScreen: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/vertical-screen.png"),
-    displaySize: 44,
-  },
-  computerWacomTablet: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/wacom-tablet.png"),
-    displaySize: 28,
-  },
-  computerMacbookClosed: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/macbook-closed.png"),
-    displaySize: 32,
-  },
-  computerMacbookOpen: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Computers/macbook-open.png"),
-    displaySize: 32,
-  },
+  computerBendedScreen: { source: require("@/assets/3d/decoration/computerBendedScreen.png"), displaySize: 44 },
+  computerNewImacA: { source: require("@/assets/3d/decoration/computerNewImacA.png"), displaySize: 44 },
+  computerNewImacB: { source: require("@/assets/3d/decoration/computerNewImacB.png"), displaySize: 44 },
+  computerNewKeyboard: { source: require("@/assets/3d/decoration/computerNewKeyboard.png"), displaySize: 32 },
+  computerOldImacA: { source: require("@/assets/3d/decoration/computerOldImacA.png"), displaySize: 44 },
+  computerOldImacB: { source: require("@/assets/3d/decoration/computerOldImacB.png"), displaySize: 44 },
+  computerOldKeyboard: { source: require("@/assets/3d/decoration/computerOldKeyboard.png"), displaySize: 28 },
+  computerOldPcA: { source: require("@/assets/3d/decoration/computerOldPcA.png"), displaySize: 44 },
+  computerOldPcB: { source: require("@/assets/3d/decoration/computerOldPcB.png"), displaySize: 44 },
+  computerPcTower: { source: require("@/assets/3d/decoration/computerPcTower.png"), displaySize: 44 },
+  computerRotationScreenA: { source: require("@/assets/3d/decoration/computerRotationScreenA.png"), displaySize: 44 },
+  computerRotationScreenB: { source: require("@/assets/3d/decoration/computerRotationScreenB.png"), displaySize: 44 },
+  computerRotationScreenC: { source: require("@/assets/3d/decoration/computerRotationScreenC.png"), displaySize: 44 },
+  computerVerticalScreen: { source: require("@/assets/3d/decoration/computerVerticalScreen.png"), displaySize: 44 },
+  computerWacomTablet: { source: require("@/assets/3d/decoration/computerWacomTablet.png"), displaySize: 28 },
+  computerMacbookClosed: { source: require("@/assets/3d/decoration/computerMacbookClosed.png"), displaySize: 32 },
+  computerMacbookOpen: { source: require("@/assets/3d/decoration/computerMacbookOpen.png"), displaySize: 32 },
 } as const satisfies Record<string, ImageDecorationCatalogEntry>;
 
-/** Game consoles — `assets/.../Decorations/Consoles/`. */
+/** Game consoles. */
 const CONSOLE_DECORATION_CATALOG = {
-  consoleAtari: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/atari.png"),
-    displaySize: 40,
-  },
-  consoleDreamcast: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/dreamcast.png"),
-    displaySize: 40,
-  },
-  consoleGameboy: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/gameboy.png"),
-    displaySize: 40,
-  },
-  consoleGameboyAdvance: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/gameboy-advance.png"),
-    displaySize: 40,
-  },
-  consoleGamecube: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/gamecube.png"),
-    displaySize: 40,
-  },
-  consoleNes: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/nes.png"),
-    displaySize: 40,
-  },
-  consoleNes4: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/nes-4.png"),
-    displaySize: 40,
-  },
-  consoleNes4B: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/nes-4b.png"),
-    displaySize: 40,
-  },
-  consoleN64: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/nintendo-64.png"),
-    displaySize: 40,
-  },
-  consoleSwitch: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/nintendo-switch.png"),
-    displaySize: 40,
-  },
-  consolePsp: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/psp.png"),
-    displaySize: 40,
-  },
-  consolePs1: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/playstation.png"),
-    displaySize: 40,
-  },
-  consolePs2: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/playstation-2.png"),
-    displaySize: 40,
-  },
-  consolePs3: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/playstation-3.png"),
-    displaySize: 40,
-  },
-  consolePs4: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/playstation-4.png"),
-    displaySize: 40,
-  },
-  consolePs5: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/playstation-5.png"),
-    displaySize: 40,
-  },
-  consoleSnes: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/snes.png"),
-    displaySize: 40,
-  },
-  consoleSegaGenesis: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/sega-genesis.png"),
-    displaySize: 40,
-  },
-  consoleWii: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/wii.png"),
-    displaySize: 40,
-  },
-  consoleXbox: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/xbox.png"),
-    displaySize: 40,
-  },
-  consoleXbox360: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/xbox-360.png"),
-    displaySize: 40,
-  },
-  consoleXboxX: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Consoles/xbox-x.png"),
-    displaySize: 40,
-  },
+  consoleAtari: { source: require("@/assets/3d/decoration/consoleAtari.png"), displaySize: 40 },
+  consoleDreamcast: { source: require("@/assets/3d/decoration/consoleDreamcast.png"), displaySize: 40 },
+  consoleGameboy: { source: require("@/assets/3d/decoration/consoleGameboy.png"), displaySize: 40 },
+  consoleGameboyAdvance: { source: require("@/assets/3d/decoration/consoleGameboyAdvance.png"), displaySize: 40 },
+  consoleGamecube: { source: require("@/assets/3d/decoration/consoleGamecube.png"), displaySize: 40 },
+  consoleNes: { source: require("@/assets/3d/decoration/consoleNes.png"), displaySize: 40 },
+  consoleNes4: { source: require("@/assets/3d/decoration/consoleNes4.png"), displaySize: 40 },
+  consoleNes4B: { source: require("@/assets/3d/decoration/consoleNes4B.png"), displaySize: 40 },
+  consoleN64: { source: require("@/assets/3d/decoration/consoleN64.png"), displaySize: 40 },
+  consoleSwitch: { source: require("@/assets/3d/decoration/consoleSwitch.png"), displaySize: 40 },
+  consolePsp: { source: require("@/assets/3d/decoration/consolePsp.png"), displaySize: 40 },
+  consolePs1: { source: require("@/assets/3d/decoration/consolePs1.png"), displaySize: 40 },
+  consolePs2: { source: require("@/assets/3d/decoration/consolePs2.png"), displaySize: 40 },
+  consolePs3: { source: require("@/assets/3d/decoration/consolePs3.png"), displaySize: 40 },
+  consolePs4: { source: require("@/assets/3d/decoration/consolePs4.png"), displaySize: 40 },
+  consolePs5: { source: require("@/assets/3d/decoration/consolePs5.png"), displaySize: 40 },
+  consoleSnes: { source: require("@/assets/3d/decoration/consoleSnes.png"), displaySize: 40 },
+  consoleSegaGenesis: { source: require("@/assets/3d/decoration/consoleSegaGenesis.png"), displaySize: 40 },
+  consoleWii: { source: require("@/assets/3d/decoration/consoleWii.png"), displaySize: 40 },
+  consoleXbox: { source: require("@/assets/3d/decoration/consoleXbox.png"), displaySize: 40 },
+  consoleXbox360: { source: require("@/assets/3d/decoration/consoleXbox360.png"), displaySize: 40 },
+  consoleXboxX: { source: require("@/assets/3d/decoration/consoleXboxX.png"), displaySize: 40 },
 } as const satisfies Record<string, ImageDecorationCatalogEntry>;
 
 /** Lava lamp — animated + off state. */
 const LAVA_LAMP_DECORATION_CATALOG = {
-  lavaLampOff: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/LavaLamp/lava-lamp-off.png"),
-    displaySize: 40,
-  },
+  lavaLampOff: { source: require("@/assets/3d/decoration/lavaLampOff.png"), displaySize: 40 },
 } as const satisfies Record<string, ImageDecorationCatalogEntry>;
 
 /** Animated gadgets — horizontal sprite strips + multi-frame loops. */
 const ANIMATED_DECORATION_CATALOG = {
-  cleaningRobot: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/CleaningRobot/cleaning-robot-ani.png"),
-    sheetWidth: 1024,
-    sheetHeight: 64,
-    frameWidth: 64,
-    frameHeight: 64,
-    frameCount: 16,
-    fps: 8,
-    displaySize: 36,
-  },
-  computerBendedScreenAni: {
-    frames: BENDED_SCREEN_ANIM_FRAMES,
-    frameWidth: 64,
-    frameHeight: 64,
-    fps: 8,
-    displaySize: 44,
-  },
-  computerMacbookAni: {
-    frames: MACBOOK_ANIM_FRAMES,
-    frameWidth: 32,
-    frameHeight: 32,
-    fps: 8,
-    displaySize: 36,
-  },
-  computerPcTowerAni: {
-    frames: PC_TOWER_ANIM_FRAMES,
-    frameWidth: 64,
-    frameHeight: 64,
-    fps: 8,
-    displaySize: 44,
-  },
-  lavaLampAni: {
-    frames: LAVA_LAMP_ANIM_FRAMES,
-    frameWidth: 64,
-    frameHeight: 64,
-    fps: 6,
-    displaySize: 40,
-  },
+  cleaningRobot: { source: require("@/assets/3d/atlases/cleaningRobot.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 36 },
+  computerBendedScreenAni: { source: require("@/assets/3d/atlases/computerBendedScreenAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 44 },
+  computerMacbookAni: { source: require("@/assets/3d/atlases/computerMacbookAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 36 },
+  computerPcTowerAni: { source: require("@/assets/3d/atlases/computerPcTowerAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 44 },
+  lavaLampAni: { source: require("@/assets/3d/atlases/lavaLampAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 40 },
 } as const satisfies Record<string, AnimatedDecorationCatalogEntry>;
 
 export const CAT_DECORATION_CATALOG = {
-  ...CAT_DECORATION_SHEET_CATALOG,
+  ...BASIC_FURNITURE_CATALOG,
   ...CARPET_DECORATION_CATALOG,
   ...CHAIR_DECORATION_CATALOG,
   ...DESK_DECORATION_CATALOG,
@@ -410,7 +166,7 @@ export const CAT_DECORATION_CATALOG = {
   ...ANIMATED_DECORATION_CATALOG,
 } as const;
 
-export type SheetDecorationId = keyof typeof CAT_DECORATION_SHEET_CATALOG;
+export type SheetDecorationId = keyof typeof BASIC_FURNITURE_CATALOG;
 export type CarpetDecorationId = keyof typeof CARPET_DECORATION_CATALOG;
 export type ChairDecorationId = keyof typeof CHAIR_DECORATION_CATALOG;
 export type DeskDecorationId = keyof typeof DESK_DECORATION_CATALOG;
@@ -575,31 +331,9 @@ export function isAnimatedDecorationEntry(
   return "frameWidth" in entry;
 }
 
-export function getAnimatedFrameSequence(
-  entry: AnimatedDecorationCatalogEntry,
-  flipHorizontal: boolean,
-): readonly number[] | undefined {
-  if (!("frames" in entry)) {
-    return undefined;
-  }
-
-  if (flipHorizontal && entry.flippedFrames && entry.flippedFrames.length > 0) {
-    return entry.flippedFrames;
-  }
-
-  return entry.frames;
-}
-
-export function hasFlippedAnimationFrames(
-  decorationId: CatDecorationId,
-): boolean {
-  const entry = getDecorationCatalogEntry(decorationId);
-  return (
-    entry !== undefined &&
-    "flippedFrames" in entry &&
-    Array.isArray(entry.flippedFrames) &&
-    entry.flippedFrames.length > 0
-  );
+/** Modern animation strips are mirrored by the renderer. */
+export function hasFlippedAnimationFrames(decorationId: CatDecorationId): boolean {
+  return decorationId === "bathroomWcAni";
 }
 
 export function isCatDecorationId(value: string): value is CatDecorationId {

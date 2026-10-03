@@ -35,7 +35,7 @@ export type PetMediaSegment = {
   sprite?: SpriteSheetConfig;
 };
 
-export type PetScenarioId = "fallAsleep" | "wakeUp" | "playBox";
+export type PetScenarioId = "fallAsleep" | "wakeUp" | "standUp" | "playBox";
 
 export type BuiltInPetScenarioId = Exclude<PetScenarioId, "playBox">;
 

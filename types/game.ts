@@ -6,10 +6,12 @@ export type PetMood =
   | "angry"
   | "sad"
   | "fallingAsleep"
-  | "sleeping";
+  | "sleeping"
+  | "lyingDown"
+  | "resting";
 
 /** Short puzzle / reward clips — not derived from pet stats. */
-export type PetReaction = "correct" | "coinCatch" | "playBox";
+export type PetReaction = "correct" | "incorrect" | "coinCatch" | "playBox";
 
 export type PetAnimationState = PetMood | PetReaction;
 

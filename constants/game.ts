@@ -134,6 +134,8 @@ export type MoodAnimationConfig = {
 
 export const MOOD_ANIMATION: Record<PetMood, MoodAnimationConfig> = {
   idle: { loop: true },
+  lyingDown: { loop: false },
+  resting: { loop: true },
   excited: { loop: false, startMs: 5500 },
   dancing: { loop: false, startMs: 5000 },
   eating: { loop: false, startMs: 5000 },
@@ -153,6 +155,8 @@ export const MOOD_ANIMATION: Record<PetMood, MoodAnimationConfig> = {
 
 export const MOOD_LABELS: Record<PetMood, string> = {
   idle: "Feeling good",
+  lyingDown: "Settling down…",
+  resting: "Taking a break",
   excited: "So happy!",
   dancing: "Party time!",
   eating: "Yum yum!",
@@ -165,6 +169,7 @@ export const MOOD_LABELS: Record<PetMood, string> = {
 export const ANIMATION_LABELS: Record<PetAnimationState, string> = {
   ...MOOD_LABELS,
   correct: "Nice one!",
+  incorrect: "Let’s try again",
   coinCatch: "Coin caught!",
   playBox: "Box time!",
 };
@@ -176,5 +181,6 @@ export const ONE_SHOT_ANIMATIONS: PetAnimationState[] = [
   "dancing",
   "playBox",
   "correct",
+  "incorrect",
   "coinCatch",
 ];

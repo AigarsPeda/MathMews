@@ -20,8 +20,8 @@ const SHEET_SOURCE = CAT_SKIN_SOURCES.orange;
 const FRAME_SIZE = CAT_SPRITE_FRAME_HEIGHT;
 const FPS = IDLE.fps;
 
-const NEAREST_SAMPLING = {
-  filter: FilterMode.Nearest,
+const SMOOTH_SAMPLING = {
+  filter: FilterMode.Linear,
   mipmap: MipmapMode.None,
 };
 
@@ -31,7 +31,7 @@ type AnimatedSplashCatProps = {
 };
 
 function useSplashLayout(size: number) {
-  const pixelScale = Math.max(4, Math.floor(size / FRAME_SIZE));
+  const pixelScale = size / FRAME_SIZE;
   const displaySize = FRAME_SIZE * pixelScale;
   const scaledSheetWidth = CAT_SKIN_SHEET.width * pixelScale;
   const scaledSheetHeight = CAT_SKIN_SHEET.height * pixelScale;
@@ -39,7 +39,7 @@ function useSplashLayout(size: number) {
   return { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight };
 }
 
-/** Crisp pixel-art idle loop from the orange skin pack. */
+/** Smooth breathing and blinking from the Blender cat. */
 export function AnimatedSplashCat({
   size = moderateScale(192),
   onReady,
@@ -50,8 +50,8 @@ export function AnimatedSplashCat({
   const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
     useSplashLayout(size);
 
-  const imageX = -frameIndex * FRAME_SIZE * pixelScale;
-  const imageY = -IDLE.row * FRAME_SIZE * pixelScale;
+  const imageX = -(frameIndex % 8) * FRAME_SIZE * pixelScale;
+  const imageY = -Math.floor(frameIndex / 8) * FRAME_SIZE * pixelScale;
 
   useEffect(() => {
     if (skiaImage && isMounted.current) {
@@ -93,7 +93,7 @@ export function AnimatedSplashCat({
             image={skiaImage}
             width={scaledSheetWidth}
             height={scaledSheetHeight}
-            sampling={NEAREST_SAMPLING}
+            sampling={SMOOTH_SAMPLING}
           />
         </Group>
       </Canvas>

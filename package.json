@@ -14,7 +14,9 @@
     "build:dev:android": "npx eas-cli@24.10.0 build --profile development --platform android",
     "licenses": "node scripts/licenses.mjs",
     "branding": "node scripts/generate-branding.mjs",
-    "dependencies": "npm run licenses"
+    "dependencies": "npm run licenses",
+    "assets:3d": "node scripts/3d/build.mjs",
+    "assets:verify": "node scripts/3d/verify.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

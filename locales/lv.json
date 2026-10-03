@@ -534,6 +534,9 @@
     }
   },
   "mood": {
+    "incorrect": "Mēģināsim vēlreiz",
+    "lyingDown": "Iekārtojas…",
+    "resting": "Atpūšas",
     "idle": "Jūtas labi",
     "excited": "Tik priecīgs!",
     "dancing": "Ballītes laiks!",
@@ -547,6 +550,7 @@
     "playBox": "Laiks kastei!"
   },
   "scenario": {
+    "standUp": "Izstaipās…",
     "fallAsleep": "Sāk gulēt…",
     "wakeUp": "Mostas…"
   },

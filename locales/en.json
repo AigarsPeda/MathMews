@@ -399,7 +399,7 @@
       "window7A": "Window 7",
       "window8A": "Window 8",
       "window11A": "Window 11",
-      "windowJapaneseL": "Japanese\nWindow",
+      "windowJapaneseL": "Japanese\nWindow"
     },
     "free": "Free",
     "buyFor": "{{cost}} 🪙",
@@ -534,6 +534,9 @@
     }
   },
   "mood": {
+    "incorrect": "Let’s try again",
+    "lyingDown": "Settling down…",
+    "resting": "Taking a break",
     "idle": "Feeling good",
     "excited": "So happy!",
     "dancing": "Party time!",
@@ -547,6 +550,7 @@
     "playBox": "Box time!"
   },
   "scenario": {
+    "standUp": "Stretching…",
     "fallAsleep": "Getting sleepy…",
     "wakeUp": "Waking up…"
   },

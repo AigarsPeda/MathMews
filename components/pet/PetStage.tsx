@@ -73,7 +73,7 @@ const COMPACT_ROOM_RADIUS = nestedBorderRadius(
 );
 const COMPACT_PET_MIN = 200;
 const COMPACT_PET_MAX = 300;
-const COMPACT_SPRITE_PET_SIZE = 96;
+const COMPACT_SPRITE_PET_SIZE = 120;
 
 function compactPetWidth(petType: PetType, compact: boolean) {
   const usesSprite = USE_CAT_SPRITE_PETS && petType === "cat";

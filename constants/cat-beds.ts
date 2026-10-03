@@ -1,22 +1,22 @@
-/** Cat pet beds — `assets/pets/Cat/CatItems/Beds/`. */
+/** Original Blender renders. */
 const CAT_PET_BED_SOURCES = {
-  brown: require("@/assets/pets/Cat/CatItems/Beds/CatBedBrown.png"),
-  green: require("@/assets/pets/Cat/CatItems/Beds/CatBedGreen.png"),
-  blue: require("@/assets/pets/Cat/CatItems/Beds/CatBedBlue.png"),
-  red: require("@/assets/pets/Cat/CatItems/Beds/CatBedRed.png"),
-  pink: require("@/assets/pets/Cat/CatItems/Beds/CatBedPink.png"),
-  purple: require("@/assets/pets/Cat/CatItems/Beds/CatBedPurple.png"),
+  brown: require("@/assets/3d/bed/bed-brown.png"),
+  green: require("@/assets/3d/bed/bed-green.png"),
+  blue: require("@/assets/3d/bed/bed-blue.png"),
+  red: require("@/assets/3d/bed/bed-red.png"),
+  pink: require("@/assets/3d/bed/bed-pink.png"),
+  purple: require("@/assets/3d/bed/bed-purple.png"),
 } as const;
 
-/** Human-scale room beds — Tiny House pack (`assets/.../Beds/Human/`). */
+/** Human-scale beds, rendered from the Blender models. */
 const HUMAN_BED_SOURCES = {
-  houseA: require("@/assets/pets/Cat/CatItems/Beds/Human/bed-a.png"),
-  houseB: require("@/assets/pets/Cat/CatItems/Beds/Human/bed-b.png"),
-  houseC: require("@/assets/pets/Cat/CatItems/Beds/Human/bed-c.png"),
-  houseD: require("@/assets/pets/Cat/CatItems/Beds/Human/bed-d.png"),
-  houseE: require("@/assets/pets/Cat/CatItems/Beds/Human/bed-e.png"),
-  houseF: require("@/assets/pets/Cat/CatItems/Beds/Human/bed-f.png"),
-  houseG: require("@/assets/pets/Cat/CatItems/Beds/Human/bed-g.png"),
+  houseA: require("@/assets/3d/bed/bed-houseA.png"),
+  houseB: require("@/assets/3d/bed/bed-houseB.png"),
+  houseC: require("@/assets/3d/bed/bed-houseC.png"),
+  houseD: require("@/assets/3d/bed/bed-houseD.png"),
+  houseE: require("@/assets/3d/bed/bed-houseE.png"),
+  houseF: require("@/assets/3d/bed/bed-houseF.png"),
+  houseG: require("@/assets/3d/bed/bed-houseG.png"),
 } as const;
 
 export const CAT_BED_SOURCES = {

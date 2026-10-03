@@ -252,7 +252,7 @@ export default function PlayScreen() {
     pairIndices.length === 2 ||
     orderSubmitted ||
     fractionMatchAnswered;
-  const resultMood: PetAnimationState = isCorrect ? "correct" : "sad";
+  const resultMood: PetAnimationState = isCorrect ? "correct" : "incorrect";
 
   useEffect(() => {
     setSelectedIndex(null);

@@ -5,34 +5,13 @@ type ImageEntry = {
 
 /** Living room pack — shown in the dedicated store tab. */
 export const LIVING_ROOM_DECORATION_CATALOG = {
-  livingAirCon: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/LivingRoom/air-con.png"),
-    displaySize: 44,
-  },
-  livingBook: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/LivingRoom/book.png"),
-    displaySize: 24,
-  },
-  livingSmallTable: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/LivingRoom/small-table.png"),
-    displaySize: 52,
-  },
-  livingSpeaker: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/LivingRoom/speaker.png"),
-    displaySize: 40,
-  },
-  livingTable: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/LivingRoom/table.png"),
-    displaySize: 56,
-  },
-  livingShelvingA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/LivingRoom/shelving-a.png"),
-    displaySize: 56,
-  },
-  livingShelvingB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/LivingRoom/shelving-b.png"),
-    displaySize: 56,
-  },
+  livingAirCon: { source: require("@/assets/3d/decoration/livingAirCon.png"), displaySize: 44 },
+  livingBook: { source: require("@/assets/3d/decoration/livingBook.png"), displaySize: 24 },
+  livingSmallTable: { source: require("@/assets/3d/decoration/livingSmallTable.png"), displaySize: 52 },
+  livingSpeaker: { source: require("@/assets/3d/decoration/livingSpeaker.png"), displaySize: 40 },
+  livingTable: { source: require("@/assets/3d/decoration/livingTable.png"), displaySize: 56 },
+  livingShelvingA: { source: require("@/assets/3d/decoration/livingShelvingA.png"), displaySize: 56 },
+  livingShelvingB: { source: require("@/assets/3d/decoration/livingShelvingB.png"), displaySize: 56 },
 } as const satisfies Record<string, ImageEntry>;
 
 export type LivingRoomDecorationId = keyof typeof LIVING_ROOM_DECORATION_CATALOG;

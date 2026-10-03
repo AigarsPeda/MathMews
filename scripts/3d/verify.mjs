@@ -1,0 +1,73 @@
+/** Check complete catalog coverage, valid atlas bounds, and pet-state transitions. */
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import ts from 'typescript';
+import sharp from 'sharp';
+const root=process.cwd(),cache=new Map();
+function load(relative){
+ const file=path.resolve(root,relative);if(cache.has(file))return cache.get(file).exports;
+ const module={exports:{}};cache.set(file,module);
+ const compiled=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+ function require(ref){
+  if(ref==='react')return {};
+  const resolved=ref.startsWith('@/')?path.join(root,ref.slice(2)):path.resolve(path.dirname(file),ref);
+  if(/\.(png|gif|webp|mp4)$/.test(resolved)){assert.ok(fs.existsSync(resolved),'Missing asset '+ref);return path.relative(root,resolved);}
+  assert.ok(ref.startsWith('@/')||ref.startsWith('.'),'Unexpected import '+ref);
+  return load(fs.existsSync(resolved)?resolved:resolved+'.ts');
+ }
+ vm.runInNewContext(compiled,{exports:module.exports,module,require,Date,Math,Map,Set,console,queueMicrotask},{filename:file});return module.exports;
+}
+const inventory=JSON.parse(fs.readFileSync('scripts/3d/inventory.json','utf8')).entries;
+assert.equal(inventory.length,288,'Inventory ID count changed');
+const decor=load('constants/cat-decorations.ts'),beds=load('constants/cat-beds.ts'),toys=load('constants/cat-toys.ts'),rooms=load('constants/cat-rooms.ts');
+for(const entry of inventory){
+ assert.ok(fs.existsSync(`assets/3d/blender/${entry.kind==='room'?'rooms':'items'}/${entry.id}.blend`),`Missing editable model ${entry.id}`);
+ const source=entry.kind==='decoration'?decor.CAT_DECORATION_CATALOG[entry.id]?.source:entry.kind==='room'?rooms.CAT_ROOM_SOURCES[entry.id]:entry.kind==='bed'?beds.CAT_BED_SOURCES[entry.id.slice(4)]:toys.getCatToySource(entry.id.slice(4));
+ assert.ok(source?.startsWith('assets/3d/'),`Unmigrated ${entry.id}`);
+ if(entry.kind==='decoration')assert.equal(decor.getDecorationDisplaySize(entry.id),entry.displaySize);
+ const metadata=await sharp(source).metadata();assert.equal(metadata.format,'png');assert.ok(metadata.hasAlpha);
+}
+assert.equal(load('constants/decoration-variants.ts').canFlipWallDecoration('bathroomWcAni'),true);
+const {getCatSpriteAnimations}=load('pet-display/registry/cat-sprite-atlas.ts');
+const {createCatSpriteRegistry}=load('pet-display/registry/cat-sprite-registry.ts');
+for(const skin of ['orange','grey','white']){
+ const clips=getCatSpriteAnimations(skin);const registry=createCatSpriteRegistry(skin);
+ for(const [id,clip] of Object.entries(clips)){
+  const metadata=await sharp(clip.source).metadata();assert.equal(metadata.width,clip.sheetWidth,id);assert.equal(metadata.height,clip.sheetHeight,id);
+  const hashes=new Set();
+  for(const frame of clip.frames){
+   const pixels=await sharp(clip.source).extract({left:frame.col*192,top:frame.row*192,width:192,height:192}).raw().toBuffer();
+   let occupied=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>20)occupied++;
+   assert.ok(occupied>1500,`${skin}/${id} contains an empty frame`);
+   // A silhouette touching the cell boundary would be cropped during playback.
+   for(let x=0;x<192;x++)assert.ok(pixels[x*4+3]<30&&pixels[(191*192+x)*4+3]<30,`${skin}/${id} clipped vertically`);
+   for(let y=0;y<192;y++)assert.ok(pixels[y*192*4+3]<30&&pixels[(y*192+191)*4+3]<30,`${skin}/${id} clipped horizontally`);
+   hashes.add(pixels.toString('base64'));
+  }
+  assert.ok(hashes.size>1,`${skin}/${id} has no motion`);
+ }
+ for(const reaction of ['correct','incorrect','eating','excited'])assert.equal(registry.getSegment(reaction).loop,false);
+ assert.notEqual(registry.getSegment('correct').sprite.source,registry.getSegment('incorrect').sprite.source);
+ assert.equal(registry.getScenario('wakeUp').steps[0].sprite.reverse,true);
+ assert.equal(registry.getScenario('standUp').steps[0].sprite.reverse,true);
+}
+for(const entry of inventory.filter(e=>e.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id))){
+ const hashes=new Set();const atlas=`assets/3d/atlases/${entry.id}.png`;
+ for(let i=0;i<8;i++)hashes.add((await sharp(atlas).extract({left:i*192,top:0,width:192,height:192}).raw().toBuffer()).toString('base64'));
+ assert.ok(hashes.size>1,`${entry.id} has no motion`);
+}
+const mood=load('pet-display/engine/derive-mood.ts');const now=1_000_000_000;
+const pet={type:'cat',lastInteractionAt:now,lastCareAt:now,stats:{hunger:80,happiness:80,cleanliness:80,level:1}};
+assert.equal(mood.derivePetVideoMood(pet,false,now,false),'idle');
+const resting={...pet,lastInteractionAt:now-4*60*1000};
+assert.equal(mood.derivePetVideoMood(resting,false,now,false),'lyingDown');
+assert.equal(mood.derivePetVideoMood(resting,false,now,true),'resting');
+const sleepy={...pet,lastInteractionAt:now-31*60*1000};
+assert.equal(mood.derivePetVideoMood(sleepy,false,now,false),'lyingDown');
+assert.equal(mood.derivePetVideoMood(sleepy,false,now,true),'fallingAsleep');
+assert.equal(mood.derivePetVideoMood(sleepy,true,now,true),'sleeping');
+assert.equal(mood.derivePetMood({...pet,stats:{...pet.stats,hunger:10}},now),'sad');
+assert.equal(mood.derivePetVideoMood(pet,false,now,false),'idle');
+console.log(`Verified ${inventory.length} retained item IDs, 66 moving cat clips, 28 moving objects, atlas bounds and rest/sleep/wake states.`);

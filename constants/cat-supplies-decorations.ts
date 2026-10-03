@@ -1,21 +1,21 @@
 type SheetDecorationCatalogEntry = {
-  frame: { x: number; y: number; w: number; h: number };
+  source: number;
   displaySize: number;
 };
 
-/** Cat trees, bowls, toys, and food — dedicated store tab (sprite sheet). */
+/** Cat trees, bowls, toys, and food — dedicated store tab (Blender renders). */
 export const CAT_SUPPLIES_DECORATION_CATALOG = {
-  catTreeTan: { frame: { x: 582, y: 16, w: 85, h: 175 }, displaySize: 64 },
-  catTreeBlue: { frame: { x: 681, y: 16, w: 85, h: 175 }, displaySize: 64 },
-  catTreePink: { frame: { x: 771, y: 15, w: 85, h: 175 }, displaySize: 64 },
-  portraitCat: { frame: { x: 132, y: 193, w: 23, h: 29 }, displaySize: 30 },
-  bowlTan: { frame: { x: 332, y: 438, w: 43, h: 37 }, displaySize: 24 },
-  bowlBlue: { frame: { x: 267, y: 438, w: 43, h: 37 }, displaySize: 24 },
-  bowlPurple: { frame: { x: 396, y: 438, w: 43, h: 37 }, displaySize: 24 },
-  bowlPink: { frame: { x: 461, y: 438, w: 43, h: 37 }, displaySize: 24 },
-  yarnRed: { frame: { x: 551, y: 614, w: 18, h: 18 }, displaySize: 20 },
-  yarnBlue: { frame: { x: 582, y: 614, w: 18, h: 18 }, displaySize: 20 },
-  foodBag: { frame: { x: 14, y: 289, w: 100, h: 128 }, displaySize: 50 },
+  catTreeTan: { source: require("@/assets/3d/decoration/catTreeTan.png"), displaySize: 64 },
+  catTreeBlue: { source: require("@/assets/3d/decoration/catTreeBlue.png"), displaySize: 64 },
+  catTreePink: { source: require("@/assets/3d/decoration/catTreePink.png"), displaySize: 64 },
+  portraitCat: { source: require("@/assets/3d/decoration/portraitCat.png"), displaySize: 30 },
+  bowlTan: { source: require("@/assets/3d/decoration/bowlTan.png"), displaySize: 24 },
+  bowlBlue: { source: require("@/assets/3d/decoration/bowlBlue.png"), displaySize: 24 },
+  bowlPurple: { source: require("@/assets/3d/decoration/bowlPurple.png"), displaySize: 24 },
+  bowlPink: { source: require("@/assets/3d/decoration/bowlPink.png"), displaySize: 24 },
+  yarnRed: { source: require("@/assets/3d/decoration/yarnRed.png"), displaySize: 20 },
+  yarnBlue: { source: require("@/assets/3d/decoration/yarnBlue.png"), displaySize: 20 },
+  foodBag: { source: require("@/assets/3d/decoration/foodBag.png"), displaySize: 50 },
 } as const satisfies Record<string, SheetDecorationCatalogEntry>;
 
 export type CatSuppliesDecorationId = keyof typeof CAT_SUPPLIES_DECORATION_CATALOG;

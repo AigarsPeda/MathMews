@@ -23,7 +23,7 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
   const registry = getPetMediaRegistry(pet.type, {
     catSkinId: pet.catSkinId,
   });
-  const { mood: baseMood, onFallAsleepComplete } = usePetBaseMood(pet);
+  const { mood: baseMood, onFallAsleepComplete, onLieDownComplete } = usePetBaseMood(pet);
   const [actionMood, setActionMood] = useState<PetAnimationState | null>(null);
   const [boxPlayScenario, setBoxPlayScenario] =
     useState<PetMediaScenario | null>(null);
@@ -108,16 +108,16 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
           createBoxPlayScenario(pet.catSkinId, buildBoxPlaySequence()),
         );
       }
-      if (wasAsleep) {
+      if (wasAsleep || baseMood === "resting" || baseMood === "lyingDown" || baseMood === "fallingAsleep" || baseMood === "sleeping") {
         setActiveScenario({
-          scenario: registry.getScenario("wakeUp"),
+          scenario: registry.getScenario(wasAsleep || baseMood === "sleeping" ? "wakeUp" : "standUp"),
           thenMood: mood,
         });
         return;
       }
       setActionMood(mood);
     },
-    [pet.catSkinId, registry],
+    [pet.catSkinId, registry, baseMood],
   );
 
   const handleAnimationComplete = useCallback(
@@ -145,6 +145,7 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
         return current;
       });
 
+      if (completedMood === "lyingDown") onLieDownComplete();
       if (completedMood === "fallingAsleep") {
         onFallAsleepComplete();
       }
@@ -153,6 +154,7 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
       activeScenario,
       finishCareAction,
       onFallAsleepComplete,
+      onLieDownComplete,
       registry.oneShotStates,
     ],
   );

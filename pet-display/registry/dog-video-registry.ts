@@ -54,6 +54,9 @@ const MOOD_ASSET_KEYS: Record<PetAnimationState, DogVideoAssetKey> = {
   fallingAsleep: "sleeping",
   sleeping: "sleeping",
   correct: "correct",
+  incorrect: "sad",
+  lyingDown: "sleeping",
+  resting: "sleeping",
   coinCatch: "catches_a_coin",
   playBox: "happy_bounce",
 };
@@ -76,6 +79,7 @@ function segmentFromMood(mood: PetAnimationState): PetMediaSegment {
     };
   }
 
+  if (mood === "incorrect") return { assetKey: "sad", loop: false, startMs: 5000 };
   if (mood === "playBox") {
     return {
       assetKey: MOOD_ASSET_KEYS.playBox,
@@ -93,6 +97,7 @@ function segmentFromMood(mood: PetAnimationState): PetMediaSegment {
 }
 
 const DOG_SCENARIOS: Record<BuiltInPetScenarioId, PetMediaScenario> = {
+  standUp: { id: "standUp", label: "Stretching…", steps: [{ assetKey: "sleeping", loop: false, reverse: true, startMs: 0, endMs: 7550 }] },
   fallAsleep: {
     id: "fallAsleep",
     label: "Getting sleepy…",

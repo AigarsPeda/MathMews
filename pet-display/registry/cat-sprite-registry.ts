@@ -41,9 +41,12 @@ const MOOD_ANIMATIONS: Record<PetAnimationState, CatSpriteAnimationId> = {
   eating: "eating",
   angry: "surprised",
   sad: "sad",
-  fallingAsleep: "sleepy",
+  fallingAsleep: "restSleep",
   sleeping: "sleep",
-  correct: "excited",
+  correct: "correct",
+  incorrect: "incorrect",
+  resting: "layDown",
+  lyingDown: "lieDown",
   coinCatch: "waiting",
   playBox: "box2",
 };
@@ -54,17 +57,20 @@ const MOOD_OPTIONS: Partial<
     { loop?: boolean; fps?: number; reverse?: boolean }
   >
 > = {
-  idle: { loop: true, fps: 6 },
-  excited: { loop: false, fps: 10 },
-  dancing: { loop: false, fps: 10 },
-  eating: { loop: false, fps: 8 },
-  sad: { loop: true, fps: 5 },
-  angry: { loop: true, fps: 8 },
-  fallingAsleep: { loop: false, fps: 5 },
-  sleeping: { loop: true, fps: 4 },
-  correct: { loop: false, fps: 10 },
-  coinCatch: { loop: false, fps: 6 },
-  playBox: { loop: false, fps: 8 },
+  idle: { loop: true },
+  resting: { loop: true },
+  lyingDown: { loop: false },
+  incorrect: { loop: false },
+  excited: { loop: false },
+  dancing: { loop: false },
+  eating: { loop: false },
+  sad: { loop: true },
+  angry: { loop: true },
+  fallingAsleep: { loop: false },
+  sleeping: { loop: true },
+  correct: { loop: false },
+  coinCatch: { loop: false },
+  playBox: { loop: false },
 };
 
 function createCatSpriteScenarios(
@@ -75,15 +81,19 @@ function createCatSpriteScenarios(
       id: "fallAsleep",
       label: "Getting sleepy…",
       steps: [
-        spriteSegment(skinId, "sleepy", { loop: false, fps: 5 }),
-        spriteSegment(skinId, "sleep", { loop: true, fps: 4 }),
+        spriteSegment(skinId, "sleepy", { loop: false }),
+        spriteSegment(skinId, "sleep", { loop: true }),
       ],
+    },
+    standUp: {
+      id: "standUp", label: "Stretching…",
+      steps: [spriteSegment(skinId, "lieDown", { loop: false, reverse: true })],
     },
     wakeUp: {
       id: "wakeUp",
       label: "Waking up…",
       steps: [
-        spriteSegment(skinId, "sleepy", { loop: false, fps: 5, reverse: true }),
+        spriteSegment(skinId, "sleepy", { loop: false, reverse: true }),
       ],
     },
   };
@@ -95,7 +105,6 @@ export function createBoxPlaySegment(
 ): PetMediaSegment {
   return spriteSegment(resolveCatSkinId(skinId), animationId, {
     loop: false,
-    fps: 8,
   });
 }
 

@@ -5,6 +5,7 @@ import { StyleSheet, View } from "react-native";
 
 type AnimatedStripSpriteProps = {
   source: number;
+  flipHorizontal?: boolean;
   sheetWidth: number;
   sheetHeight: number;
   frameWidth: number;
@@ -18,6 +19,7 @@ type AnimatedStripSpriteProps = {
 /** Horizontal sprite-strip loop (e.g. room gadgets). */
 export function AnimatedStripSprite({
   source,
+  flipHorizontal = false,
   sheetWidth,
   sheetHeight,
   frameWidth,
@@ -47,7 +49,7 @@ export function AnimatedStripSprite({
   }, [frameCount, fps, isMounted]);
 
   return (
-    <View style={[styles.cell, { width: displayW, height: displayH }]}>
+    <View style={[styles.cell, { width: displayW, height: displayH, transform: [{ scaleX: flipHorizontal ? -1 : 1 }] }]}>
       <Image
         source={source}
         cachePolicy="memory-disk"
