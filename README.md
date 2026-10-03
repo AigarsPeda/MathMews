@@ -1,6 +1,6 @@
 # Math Mews
 
-Educational math puzzle game with a virtual cat companion. Built with Expo SDK 56 and React Native.
+Educational math puzzle game with a virtual cat companion. Built with Expo SDK 57 and React Native.
 
 ## Getting started
 
@@ -24,15 +24,17 @@ npx expo prebuild --platform ios --clean
 npx expo run:ios
 ```
 
-Open **Simulator** first (`open -a Simulator`). If `run:ios` fails with a code signing error, add your Apple ID in **Xcode → Settings → Accounts**, then set **Team** on the **MathMews** target in `ios/MathMews.xcworkspace`.
+Open the simulator first through **Xcode → Open Developer Tool → Device Hub** on Xcode 27, or **Simulator** on earlier Xcode versions. If `run:ios` fails with a code signing error, add your Apple ID in **Xcode → Settings → Accounts**, then set **Team** on the **MathMews** target in `ios/MathMews.xcworkspace`.
+
+The iOS configuration enables scene support for Xcode 27 and keeps CocoaPods resource bundles at the app's minimum iOS version, 16.4. These settings are reapplied when Expo regenerates `ios/`.
 
 For day-to-day JS changes after the dev build is installed:
 
 ```bash
-npx expo start
+npx expo start --dev-client
 ```
 
-Press **`i`** to open on the simulator.
+Press **`i`** to open on the simulator. If Expo reports a simulator-launch timeout with Device Hub, open **Math Mews** directly in the booted device while Metro is running.
 
 For in-app purchases, use an [EAS development build](https://docs.expo.dev/develop/development-builds/introduction/) — IAP does not work in Expo Go.
 
