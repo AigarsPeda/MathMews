@@ -1,4 +1,5 @@
 import { RoomEditorSheet, type RoomEditorControls } from "@/components/pet/RoomEditorSheet";
+import { RoomItemMoveControls } from "@/components/pet/RoomItemMoveControls";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { buildRoomActivity, type RoomActivityKind } from "@/utils/room-activities";
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-sprite-registry";
@@ -265,7 +266,7 @@ export function PetStage({
   const closeMenu = useCallback(() => {
     setOpenRoomItemMenu(null);
     setMenuAnchorRect(null);
-  }, []);
+  }, [setOpenRoomItemMenu, setMenuAnchorRect]);
   const measureRoomMenuBounds = useCallback(() => {
     avatarWrapRef.current?.measureInWindow((pageX, pageY, width, height) => {
       setRoomMenuBounds({ pageX, pageY, width, height });
@@ -293,6 +294,10 @@ export function PetStage({
   const [catCommandsOpen, setCatCommandsOpen] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [snap, setSnap] = useState(false);
+  const [selectedMoveItem, setSelectedMoveItem] = useState<RoomLayerItem | null>(null);
+  const movingItem = decorating && selectedMoveItem
+    ? layerOrder.find(item => isSameRoomLayerItem(item, selectedMoveItem))
+    : undefined;
   const displayWidth = usesSprite
     ? resolveSpriteDisplaySize(avatarWidth)
     : avatarWidth;
@@ -412,7 +417,7 @@ export function PetStage({
 
       setAvatarWidth(clamped);
     },
-    [compact, usesSprite],
+    [compact, usesSprite, setAvatarWidth],
   );
 
   const canManageRoomItem = useCallback(
@@ -653,6 +658,7 @@ export function PetStage({
   const handleRoomItemTap = useCallback(
     (item: RoomLayerItem) => {
       if (!canManageRoomItem(item)) return;
+      setSelectedMoveItem(null);
 
       if (
         openRoomItemMenu &&
@@ -669,7 +675,8 @@ export function PetStage({
       measureRoomMenuBounds();
       setOpenRoomItemMenu(item);
     },
-    [canManageRoomItem, closeMenu, measureRoomMenuBounds, openRoomItemMenu],
+    [canManageRoomItem, closeMenu, measureRoomMenuBounds, openRoomItemMenu,
+      setSelectedMoveItem, setCatCommandsOpen, setMenuAnchorRect, setOpenRoomItemMenu],
   );
 
   const handleItemAnchorLayout = useCallback(
@@ -683,10 +690,19 @@ export function PetStage({
         setMenuAnchorRect(rect);
       }
     },
-    [openRoomItemMenu],
+    [openRoomItemMenu, setMenuAnchorRect],
   );
 
   const itemLabel = useCallback((item: RoomLayerItem) => t(item.kind === "bed" ? `store.bedName.${bedId}` : item.kind === "toy" ? `store.toyName.${item.toyId}` : `store.decorationName.${item.decorationId}`).replace(/\n/g, " "), [bedId, t]);
+  const itemPicture = (item: RoomLayerItem) => {
+    const size = moderateScale(64);
+    if (item.kind === "bed") return <Image source={getCatBedSource(bedId)} style={{ width: size, height: size }} resizeMode="contain" />;
+    if (item.kind === "toy") return <ToySpriteImage toyId={item.toyId as CatToyId} size={size} />;
+    const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
+    if (!placed) return null;
+    return <DecorationSpriteImage decorationId={getPlacedDecorationSpriteId(placed)} size={size}
+      flipHorizontal={getPlacedDecorationWallFlipped(placed)} />;
+  };
   const nudgeItem = (item: RoomLayerItem, direction: "left" | "right" | "up" | "down") => {
     const offset = item.kind === "bed" ? roomBedOffset ?? { x: -0.15, y: 0.3 }
       : item.kind === "toy" ? roomPlacedToys.find(entry => entry.instanceId === item.instanceId)?.offset
@@ -704,7 +720,8 @@ export function PetStage({
       const manageable = canManageRoomItem(item);
       return {
         accessibilityLabel: itemLabel(item),
-        selected: Boolean(openRoomItemMenu && isSameRoomLayerItem(openRoomItemMenu, item)),
+        selected: Boolean((openRoomItemMenu && isSameRoomLayerItem(openRoomItemMenu, item)) ||
+          (movingItem && isSameRoomLayerItem(movingItem, item))),
         snapToGrid: snap,
         layerZIndex,
         allowDrag: decorating && zoom === 1,
@@ -715,7 +732,7 @@ export function PetStage({
           : undefined,
       };
     },
-    [canManageRoomItem, decorating, handleItemAnchorLayout, handleRoomItemTap, zoom, openRoomItemMenu, snap, itemLabel],
+    [canManageRoomItem, decorating, handleItemAnchorLayout, handleRoomItemTap, zoom, openRoomItemMenu, snap, itemLabel, movingItem],
   );
 
   const petCluster = (
@@ -984,14 +1001,15 @@ export function PetStage({
             ) : null}
             {compact && usesSprite ? (
               <Pressable style={[styles.decorateButton, decorating && styles.decorateButtonActive]}
-                onPress={() => { closeMenu(); setCatCommandsOpen(false); setZoom(1); setDecorating(current => !current); }}
+                onPress={() => { closeMenu(); setSelectedMoveItem(null); setShowEditor(false); setCatCommandsOpen(false); setZoom(1); setDecorating(current => !current); }}
                 accessibilityRole="button" accessibilityLabel={t(decorating ? "home.finishDecorating" : "home.decorateRoom")}
                 accessibilityState={{ selected: decorating }}>
                 <MaterialIcons name={decorating ? "check" : "weekend"} size={moderateScale(18)} color={GameColors.text} />
                 <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
               </Pressable>
             ) : null}
-            {decorating ? <Pressable style={[styles.decorateButton, { top: undefined, bottom: 10 }]} onPress={() => setShowEditor(true)} accessibilityRole="button">
+            {decorating ? <Pressable style={[styles.decorateButton, { top: undefined, bottom: 10 }]}
+              onPress={() => { closeMenu(); setShowEditor(true); }} accessibilityRole="button" accessibilityLabel={t("home.roomTools")}>
               <Text style={styles.decorateLabel}>{t("home.roomTools")}</Text>
             </Pressable> : null}
             {compact && usesSprite ? (
@@ -1005,11 +1023,14 @@ export function PetStage({
             ) : null}
           </View>
 
-          {decorating && <Text style={{ color: GameColors.textMuted, fontSize: 14, padding: 8 }}>{t("home.decorateHint")}</Text>}
+          {movingItem ? <RoomItemMoveControls name={itemLabel(movingItem)}
+            onMove={direction => nudgeItem(movingItem, direction)} onDone={() => setSelectedMoveItem(null)} />
+            : decorating && <Text style={{ color: GameColors.textMuted, fontSize: 14, padding: 8 }}>{t("home.decorateHint")}</Text>}
           <RoomEditorSheet visible={showEditor} onClose={() => setShowEditor(false)} controls={roomEditor}
-            items={layerOrder.map(item => ({ item, label: itemLabel(item) }))} onSelect={handleRoomItemTap} onMove={nudgeItem}
+            items={layerOrder.map(item => ({ item, label: itemLabel(item), picture: itemPicture(item) }))}
+            onSelect={item => { closeMenu(); setSelectedMoveItem(item); setShowEditor(false); }}
             snap={snap} onSnap={() => setSnap(current => !current)} />
-          <View style={[styles.stats, compact && styles.statsCompact]}>
+          {!decorating && <View style={[styles.stats, compact && styles.statsCompact]}>
             {compact && onOpenMathStats ? (
               <MathStatsChip compact onPress={onOpenMathStats} />
             ) : null}
@@ -1031,7 +1052,7 @@ export function PetStage({
               value={wisdom}
               color={GameColors.wisdom}
             />
-          </View>
+          </View>}
         </View>
       </View>
     </View>

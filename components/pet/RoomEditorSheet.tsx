@@ -1,53 +1,113 @@
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors } from "@/constants/game";
 import type { RoomLayerItem } from "@/types/game";
+import { roomLayerItemKey } from "@/utils/room-layer-order";
+import { moderateScale } from "@/utils/scale";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 
 export type RoomEditorControls = {
-  undo: () => void; canUndo: boolean; saveLayout: () => void; restoreLayout: () => void;
-  canRestore: boolean; tidy: () => void;
+  undo: () => void;
+  canUndo: boolean;
+  saveLayout: () => void;
+  restoreLayout: () => void;
+  canRestore: boolean;
 };
 
-export function RoomEditorSheet({ visible, onClose, controls, items, onSelect, onMove, snap, onSnap }: {
-  visible: boolean; onClose: () => void; controls?: RoomEditorControls;
-  items: { item: RoomLayerItem; label: string }[];
+type Props = {
+  visible: boolean;
+  onClose: () => void;
+  controls?: RoomEditorControls;
+  items: { item: RoomLayerItem; label: string; picture: ReactNode }[];
   onSelect: (item: RoomLayerItem) => void;
-  onMove: (item: RoomLayerItem, direction: "left" | "right" | "up" | "down") => void;
-  snap: boolean; onSnap: () => void;
-}) {
+  snap: boolean;
+  onSnap: () => void;
+};
+
+export function RoomEditorSheet({ visible, onClose, controls, items, onSelect, snap, onSnap }: Props) {
   const { t } = useTranslation();
-  const button = (label: string, onPress: () => void, disabled = false, accessibilityLabel = label) => (
-    <Pressable key={label} accessibilityLabel={accessibilityLabel} accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled}
-      onPress={onPress} style={[styles.button, disabled && styles.disabled]}><Text style={styles.label}>{label}</Text></Pressable>
-  );
+  // Opening the picker always starts with its simple view.
   return <AppBottomSheet visible={visible} onClose={onClose} expanded>
-    <ScrollView contentContainerStyle={styles.content}>
-      <Text style={styles.title}>{t("home.roomTools")}</Text>
-      <Text style={styles.label}>{t("home.decorateHint")}</Text>
-      <View style={styles.row}>
-        {controls && button(t("home.undo"), controls.undo, !controls.canUndo)}
-        {controls && button(t("home.saveLayout"), controls.saveLayout)}
-        {controls && button(t("home.restoreLayout"), controls.restoreLayout, !controls.canRestore)}
-        {controls && button(t("home.tidyRoom"), controls.tidy)}
-        <Pressable accessibilityRole="switch" accessibilityState={{ checked: snap }} style={styles.button} onPress={onSnap}>
-          <Text style={styles.label}>{t(snap ? "home.snapOn" : "home.snapOff")}</Text>
-        </Pressable>
-      </View>
-      <Text style={styles.title}>{t("home.roomObjects")}</Text>
-      {items.length === 0 && <Text style={styles.label}>{t("home.noRoomObjects")}</Text>}
-      {items.map(({ item, label }, index) => <View key={index} style={styles.object}>
-        {button(label, () => { onClose(); onSelect(item); })}
-        <View style={styles.row}>{(["left", "right", "up", "down"] as const).map(direction =>
-          button(t(`home.nudge${direction}`), () => onMove(item, direction), false, `${label}: ${t(`home.nudge${direction}`)}`))}</View>
-      </View>)}
-      {button(t("common.close"), onClose)}
-    </ScrollView>
+    {visible && <RoomPicker controls={controls} items={items} onSelect={onSelect}
+      onClose={onClose} snap={snap} onSnap={onSnap} t={t} />}
   </AppBottomSheet>;
 }
+
+function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t }: Omit<Props, "visible"> & {
+  t: ReturnType<typeof useTranslation>["t"];
+}) {
+  const [moreOptions, setMoreOptions] = useState(false);
+  return <ScrollView contentContainerStyle={styles.content}>
+    <Text style={styles.title}>{t("home.roomTools")}</Text>
+    <Text style={styles.hint}>{t("home.chooseItemHint")}</Text>
+    {controls && <Pressable style={styles.undo} accessibilityRole="button" accessibilityLabel={t("home.undo")}
+      accessibilityState={{ disabled: !controls.canUndo }} disabled={!controls.canUndo}
+      onPress={controls.undo}>
+      <MaterialIcons name="undo" size={22} color={controls.canUndo ? GameColors.text : GameColors.textMuted} />
+      <Text style={[styles.label, !controls.canUndo && styles.muted]}>{t("home.undo")}</Text>
+    </Pressable>}
+    {items.length === 0 && <Text style={styles.hint}>{t("home.noRoomObjects")}</Text>}
+    <View style={styles.items}>
+      {items.map(({ item, label, picture }) => <Pressable key={roomLayerItemKey(item)}
+        accessibilityRole="button" accessibilityLabel={t("home.chooseItem", { name: label })}
+        onPress={() => onSelect(item)} style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
+        <View style={styles.picture} pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants">
+          {picture}
+        </View>
+        <Text style={styles.itemName}>{label}</Text>
+      </Pressable>)}
+    </View>
+    <Pressable style={styles.more} accessibilityRole="button" accessibilityLabel={t("home.moreRoomOptions")} accessibilityState={{ expanded: moreOptions }}
+      onPress={() => setMoreOptions(current => !current)}>
+      <Text style={styles.label}>{t("home.moreRoomOptions")}</Text>
+      <MaterialIcons name={moreOptions ? "expand-less" : "expand-more"} size={24} color={GameColors.text} />
+    </Pressable>
+    {moreOptions && <View style={styles.options}>
+      <View style={styles.snapRow}>
+        <View style={styles.snapCopy}>
+          <Text style={styles.label}>{t("home.lineThingsUp")}</Text>
+          <Text style={styles.hint}>{t("home.lineThingsUpHint")}</Text>
+        </View>
+        <Switch value={snap} onValueChange={onSnap} accessibilityLabel={t("home.lineThingsUp")}
+          trackColor={{ true: GameColors.secondary }} />
+      </View>
+      {controls && <>
+        <Text style={styles.hint}>{t("home.savedRoomHint")}</Text>
+        <Pressable style={styles.optionButton} accessibilityRole="button" accessibilityLabel={t("home.saveLayout")} onPress={controls.saveLayout}>
+          <Text style={styles.label}>{t("home.saveLayout")}</Text>
+          <MaterialIcons name="bookmark-border" size={22} color={GameColors.text} />
+        </Pressable>
+        {controls.canRestore && <Pressable style={styles.optionButton} accessibilityRole="button" accessibilityLabel={t("home.restoreLayout")}
+          onPress={() => { controls.restoreLayout(); onClose(); }}>
+          <Text style={styles.label}>{t("home.restoreLayout")}</Text>
+          <MaterialIcons name="restore" size={22} color={GameColors.text} />
+        </Pressable>}
+      </>}
+    </View>}
+    <Pressable style={styles.close} accessibilityRole="button" onPress={onClose}>
+      <Text style={styles.label}>{t("common.close")}</Text>
+    </Pressable>
+  </ScrollView>;
+}
+
 const styles = StyleSheet.create({
-  content: { padding: 20, gap: 14 }, title: { fontSize: 20, fontWeight: "800", color: GameColors.text },
-  label: { fontSize: 16, color: GameColors.text }, row: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  button: { minHeight: 48, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: GameColors.background, borderRadius: 12, justifyContent: "center" },
-  disabled: { opacity: 0.45 }, object: { gap: 8, paddingBottom: 12, borderBottomWidth: 1, borderColor: GameColors.cardBorder },
+  content: { padding: moderateScale(20), gap: moderateScale(12) },
+  title: { fontSize: moderateScale(24), fontWeight: "800", color: GameColors.text },
+  label: { fontSize: moderateScale(16), fontWeight: "600", color: GameColors.text, flexShrink: 1 },
+  hint: { fontSize: moderateScale(15), lineHeight: moderateScale(21), color: GameColors.textMuted },
+  muted: { color: GameColors.textMuted },
+  undo: { flexDirection: "row", alignItems: "center", gap: 8, minHeight: 48, alignSelf: "flex-start" },
+  items: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(12) },
+  item: { flexGrow: 1, flexBasis: "45%", maxWidth: "49%", alignItems: "center", justifyContent: "center", padding: moderateScale(12), gap: 8, backgroundColor: GameColors.background, borderRadius: moderateScale(14) },
+  picture: { width: moderateScale(72), height: moderateScale(72), alignItems: "center", justifyContent: "center" },
+  itemName: { fontSize: moderateScale(15), fontWeight: "600", color: GameColors.text, textAlign: "center" },
+  pressed: { backgroundColor: GameColors.cardBorder },
+  more: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 48, marginTop: 8 },
+  options: { gap: 12 },
+  snapRow: { flexDirection: "row", alignItems: "center", gap: 16 },
+  snapCopy: { flex: 1, gap: 4 },
+  optionButton: { minHeight: 48, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
+  close: { minHeight: 48, alignItems: "center", justifyContent: "center", backgroundColor: GameColors.background, borderRadius: 14, marginTop: 8 },
 });
