@@ -29,10 +29,5 @@ export function useRoomEditor(pet: PetProfile, setPet: (update: (pet: PetProfile
     const layout = current.savedRoomLayouts?.[current.roomId ?? "room1"];
     return layout ? { ...current, ...layout } : current;
   }), [setPet]);
-  const tidy = useCallback(() => setPet(current => ({ ...current,
-    roomBedOffset: { x: -0.45, y: 0.35 }, roomPetOffset: { x: 0, y: 0.15 },
-    placedToys: current.placedToys?.map((item, i) => ({ ...item, offset: { x: -0.4 + (i % 4) * 0.25, y: Math.min(.85, 0.4 + Math.floor(i / 4) * 0.1) } })),
-    placedDecorations: current.placedDecorations?.map((item, i) => ({ ...item, offset: { x: -0.6 + (i % 4) * 0.4, y: Math.min(.8, -0.35 + Math.floor(i / 4) * 0.25) } })),
-  })), [setPet]);
-  return { undo, canUndo: history.length > 0, saveLayout, restoreLayout, canRestore: Boolean(pet.savedRoomLayouts?.[pet.roomId ?? "room1"]), tidy };
+  return { undo, canUndo: history.length > 0, saveLayout, restoreLayout, canRestore: Boolean(pet.savedRoomLayouts?.[pet.roomId ?? "room1"]) };
 }
