@@ -11,6 +11,8 @@ from mathutils import Vector
 HEAD_RADII = (.70, .55, .63)
 HEAD_HOME = (0, -.035, 1.10)
 BODY_HOME = (0, .08, .44)
+TAIL_REST_POINTS = [(0, 0, 0), (.24, .14, .045), (.43, .12, .27), (.42, .04, .48)]
+TAIL_BOX_POINTS = [(0, 0, 0), (.12, .10, .27), (.42, .12, .50), (.45, .04, .72)]
 COATS = {'orange': 'EFA45E', 'grey': '929DA8', 'white': 'E9E4DA'}
 STRIPES = {'orange': 'B47C50', 'grey': '667380', 'white': 'C7C0B5'}
 CREAM = 'FFF5E5'
@@ -284,13 +286,12 @@ def create_cat(skin='orange', boxed=False):
     frown.scale = (0, 0, 0)
     tail = group('Short curved tail pivot', (.34, .14, .24), root)
     # In the box, rise inside the opening before curling out above the rim.
-    tail_points = [(0, 0, 0), (.12, .10, .27), (.42, .12, .50), (.45, .04, .72)] if boxed else [
-        (0, 0, 0), (.24, .14, .045), (.43, .12, .27), (.42, .04, .48)]
-    line('Plump orange tail', tail_points, .102, coat, tail)
-    ball('Cream tail tip', tail_points[-1], (.097, .098, .095), cream, tail)
+    tail_curve = line('Plump orange tail', TAIL_REST_POINTS, .102, coat, tail)
+    tail_tip = ball('Cream tail tip', TAIL_REST_POINTS[-1], (.097, .098, .095), cream, tail)
     return dict(root=root, body=body, head=head, ears=ears, eyes=eyes, glints=glints,
                 brows=brows, mouth=mouth, frown=frown, tears=tears, feet=feet,
-                back_feet=back_feet, legs=legs, back_legs=back_legs, tail=tail)
+                back_feet=back_feet, legs=legs, back_legs=back_legs, tail=tail,
+                tail_curve=tail_curve, tail_tip=tail_tip, boxed=boxed)
 
 
 def smoothstep(t):
@@ -306,7 +307,20 @@ def smooth_window(t,start,end,ramp):
     return smoothstep((t-start)/ramp)*smoothstep((end-t)/ramp)
 
 
+def care_action_time(state, t):
+    """Leave room for props to enter and leave around the existing actions."""
+    if state == 'eating':
+        return max(0, min(1, (t - .125) / .75))
+    if state == 'box1':
+        return max(0, min(1, (t - .25) / .75))
+    if state == 'box3':
+        return min(1, t / (2/3))
+    return t
+
+
 def pose_cat(rig, state, t):
+    clip_t = t
+    t = care_action_time(state, t)
     root, body, head, tail = (rig[key] for key in ('root', 'body', 'head', 'tail'))
     phase = t * math.tau
     envelope = math.sin(math.pi * t)
@@ -315,6 +329,7 @@ def pose_cat(rig, state, t):
     head.location, head.scale = HEAD_HOME, (1, 1, 1)
     head.rotation_euler = (.025 * math.sin(phase), .095 * math.sin(phase), -.025 * math.sin(phase))
     tail.location = (.34, .14, .24)
+    tail.scale = (1, 1, 1)
     tail.rotation_euler = (.035 * math.sin(phase * 5), 0, .25 * math.sin(phase * 2))
     rig['mouth'].scale = (1, 1, .48)
     rig['frown'].scale = (0, 0, 0)
@@ -333,7 +348,27 @@ def pose_cat(rig, state, t):
         for side, ear in zip((-1,1), rig['ears']):
             ear.rotation_euler.x += .18 * pulse(t,.22 + side*.018,.055)
         rig['feet'][1].location.z += .045 * pulse(t,.58,.12)
-    if state in ('correct', 'dance', 'excited', 'preview'):
+    if state == 'excited':
+        # Lean into the touch, wriggle from side to side, then relax.
+        pet = smooth_window(t, .04, .96, .16)
+        wriggle = math.sin(phase * 2.5) * pet
+        nuzzle = math.sin(phase * 1.5) * pet
+        root.rotation_euler.z = .23 * wriggle
+        body.location.x = .055 * wriggle
+        body.scale = (1 + .065 * pet, 1 - .025 * pet, 1 - .07 * pet)
+        head.location.x = .09 * nuzzle
+        head.location.z -= .07 * pet
+        head.rotation_euler = (.08 * pet, .26 * nuzzle, -.08 * wriggle)
+        tail.rotation_euler.z = .44 * math.sin(phase * 3) * pet
+        rig['mouth'].scale = (1 + .10 * pet, 1, .48 + .30 * pet)
+        eye_height = .105 * (1 - .84 * pet)
+        for side, paw, ear in zip((-1, 1), rig['feet'], rig['ears']):
+            kick = max(0, side * math.sin(phase * 2.5)) * pet
+            paw.location.x += side * .07 * kick
+            paw.location.z += .15 * kick
+            paw.rotation_euler.y = side * .30 * kick
+            ear.rotation_euler.x += .12 * math.sin(phase * 3 - side * .4) * pet
+    if state in ('correct', 'dance', 'preview'):
         cheer = 1 if state == 'preview' else smooth_window(t,.08,.90,.12)
         anticipation = pulse(t,.075,.075) if state != 'preview' else 0
         hop = pulse(t,.25,.12) + .68 * pulse(t,.48,.105) if state != 'preview' else 0
@@ -398,20 +433,75 @@ def pose_cat(rig, state, t):
             rig['mouth'].scale.z += .85 * envelope ** 4
     if state == 'eating':
         lean = smooth_window(t,.03,.90,.15)
-        head.location.z -= .44 * lean
-        head.location.y -= .21 * lean
-        head.rotation_euler.x = .30 * lean + .035 * math.sin(phase * 5)
-        rig['mouth'].scale.z = .35 + .20 * math.sin(phase * 5) ** 2
+        munch = math.sin(phase * 5)
+        head.location.z -= (.44 + .045 * munch) * lean
+        head.location.y -= (.21 + .025 * munch) * lean
+        head.rotation_euler = (.30 * lean + .045 * munch * lean,
+                               .07 * math.sin(phase * 2) * lean, 0)
+        rig['mouth'].scale.z = .48 * (1 - lean) + (.28 + .35 * munch ** 2) * lean
+        eye_height = .105 * (1 - .35 * lean)
+        tail.rotation_euler.z = .22 * math.sin(phase * 3) * lean
     if state in ('box1', 'box2', 'box3'):
-        root.location.z = -.08 + (.11 * envelope if state == 'box3' else .045 * math.sin(phase))
-        head.rotation_euler.y = .12 * math.sin(phase)
-        # Keep paws above the box floor and behind its front wall during bobs.
+        normal_pose = {obj: (obj.location.copy(), obj.rotation_euler.copy(), obj.scale.copy())
+                       for obj in animated_parts(rig)}
+        normal_eye_height = eye_height
+        # Shared hidden pose makes the three one-shot clips join exactly.
+        if state == 'box1':
+            hide = smoothstep((t - .45) / .36)
+            hop = .20 * pulse(t, .30, .17)
+            crouch = pulse(t, .12, .12)
+            look = 0
+        elif state == 'box2':
+            peek = smooth_window(t, .16, .77, .16)
+            hide, hop, crouch = 1 - .56 * peek, 0, 0
+            look = .20 * math.sin(phase * 1.5) * peek
+        else:
+            hide = 1 - smoothstep((t - .16) / .45)
+            hop, crouch = 0, 0
+            look = .10 * math.sin(phase * 2) * smooth_window(t, .62, .98, .12)
+        root.location.z = -.08 + hop
+        body.location = (0, .02, .45 - .187 * hide - .025 * crouch)
+        body.scale = (.94 - .32 * hide + .06 * crouch,
+                      .82 - .27 * hide, .50 - .41 * hide - .04 * crouch)
+        head.location = (0, -.035, 1.10 - .83 * hide - .06 * crouch)
+        head.scale = (1 - .62 * hide, 1 - .62 * hide, 1 - .955 * hide)
+        head.rotation_euler = (.06 * crouch, look, 0)
         for side, paw, back_paw in zip((-1, 1), rig['feet'], rig['back_feet']):
-            paw.location, paw.scale = (side * .23, -.13, .30 - root.location.z), (.15, .17, .11)
-            back_paw.location, back_paw.scale = (side * .34, .12, .29 - root.location.z), (.17, .17, .11)
-        tail.location = (.40, .14, .37 - root.location.z)
-        tail.rotation_euler = (0, 0, .20 * math.sin(phase * (2 if state == 'box1' else 1)))
-        rig['mouth'].scale.z = .65
+            paw.location = (side * .23, -.13, .38 - .12 * hide)
+            paw.scale = (.15 - .02 * hide, .17 - .02 * hide, .11 - .084 * hide)
+            back_paw.location = (side * .34, .12, .37 - .11 * hide)
+            back_paw.scale = (.17 - .02 * hide, .17 - .02 * hide, .11 - .084 * hide)
+        # Curl inward before ducking, so the tail never crosses a side wall.
+        tuck = smoothstep(min(1, hide * 3))
+        tail.location = (.40 - .10 * hide, .14 - .02 * hide, .45 - .185 * hide)
+        tail.scale = (1 - .65 * tuck, 1 - .65 * tuck, 1 - .975 * hide)
+        tail.rotation_euler = (0, 0, .12 * math.sin(phase * 2) * (1 - hide))
+        eye_height = .105 * (1 - .60 * hide)
+        rig['mouth'].scale.z = .48 + .17 * (1 - hide)
+        activity = (smoothstep((clip_t - .14) / .11) if state == 'box1' else
+                    1 - smoothstep((clip_t - 2/3) / .08) if state == 'box3' else 1)
+        transfer_hop = (smooth_window(clip_t, 0, .27, .055) if state == 'box1' else
+                        smooth_window(clip_t, 2/3, .98, .08) if state == 'box3' else 0)
+        for obj, (location, rotation, scale) in normal_pose.items():
+            obj.location = location.lerp(obj.location, activity)
+            obj.rotation_euler = tuple(a + (b-a)*activity for a, b in zip(rotation, obj.rotation_euler))
+            obj.scale = scale.lerp(obj.scale, activity)
+        eye_height = normal_eye_height + (eye_height-normal_eye_height)*activity
+        # Lift and tuck the whole cat while the box moves underneath it.
+        root.location.z += .28 * transfer_hop
+        body.scale.z *= 1 - .70 * transfer_hop
+        for paw in rig['feet']:
+            paw.location.z += .30 * transfer_hop
+            paw.scale.z *= 1 - .50 * transfer_hop
+        for paw in rig['back_feet']:
+            paw.location.z += .35 * transfer_hop
+            paw.scale.z *= 1 - .33 * transfer_hop
+        tail.location.z += .16 * transfer_hop
+        root['box_activity'], root['transfer_hop'] = float(activity), float(transfer_hop)
+        if rig['boxed']:
+            for point, rest, curled in zip(rig['tail_curve'].data.splines[0].bezier_points, TAIL_REST_POINTS, TAIL_BOX_POINTS):
+                point.co = Vector(rest).lerp(Vector(curled), activity)
+            rig['tail_tip'].location = Vector(TAIL_REST_POINTS[-1]).lerp(Vector(TAIL_BOX_POINTS[-1]), activity)
     if state == 'waiting':
         head.rotation_euler.x = -.10 * envelope
         rig['feet'][1].location.z += .16 * envelope
@@ -432,6 +522,9 @@ def pose_cat(rig, state, t):
             direction = tip - shoulder
             limb.location = (shoulder + tip) / 2
             limb.rotation_euler = direction.to_track_quat('Z', 'Y').to_euler()
+            if state in ('box1', 'box2', 'box3'):
+                radius += (.14 - .115 * hide - radius) * activity
+                radius *= 1 - .36 * transfer_hop
             limb.scale = (radius, radius, direction.length / 2 + radius)
 
 
@@ -443,6 +536,6 @@ def configure_cat_camera(scene):
 
 
 def animated_parts(rig):
-    return [rig[key] for key in ('root', 'body', 'head', 'tail', 'mouth', 'frown')] + [
+    return [rig[key] for key in ('root', 'body', 'head', 'tail', 'tail_tip', 'mouth', 'frown')] + [
         obj for key in ('ears', 'eyes', 'glints', 'brows', 'feet', 'back_feet', 'legs', 'back_legs', 'tears') for obj in rig[key]
     ]

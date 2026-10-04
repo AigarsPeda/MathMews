@@ -4,7 +4,7 @@ import { Buffer } from 'node:buffer';
 import sharp from 'sharp';
 
 const skins = ['orange', 'grey', 'white'];
-const poses = [['box1', 9], ['box2', 15], ['box3', 24]];
+const poses = [['box1', 6], ['box1', 47], ['box2', 24], ['box2', 59], ['box3', 57], ['box3', 71]];
 const cellSize = 320, rowHeight = 350;
 const composites = [];
 let labels = '';
@@ -17,10 +17,10 @@ for (const [row, [clip, frame]] of poses.entries()) {
   }
 }
 composites.push({
-  input: Buffer.from(`<svg width="960" height="1050"><g font-family="Arial" font-size="14" fill="#454852" text-anchor="middle">${labels}</g></svg>`),
+  input: Buffer.from(`<svg width="960" height="${rowHeight * poses.length}"><g font-family="Arial" font-size="14" fill="#454852" text-anchor="middle">${labels}</g></svg>`),
   left: 0, top: 0,
 });
 await fs.mkdir('docs/art', { recursive: true });
-await sharp({ create: { width: 960, height: 1050, channels: 4, background: '#FFF5EB' } })
+await sharp({ create: { width: 960, height: rowHeight * poses.length, channels: 4, background: '#FFF5EB' } })
   .composite(composites).png().toFile('docs/art/cat-box-keyposes.png');
 console.log('Reviewed all nine box clips in docs/art/cat-box-keyposes.png.');

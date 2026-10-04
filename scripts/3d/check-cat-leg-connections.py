@@ -11,7 +11,7 @@ for skin in ('orange', 'grey', 'white'):
     rig = scope['cat'](skin)
     for state, (count, fps) in clips.items():
         for i in range(count):
-            t = i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep'] else i/count
+            t = i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3'] else i/count
             scope['cat_pose'](rig,state,t)
             for side, leg, foot, back_leg, back_foot in zip((-1,1),rig['legs'],rig['feet'],rig['back_legs'],rig['back_feet']):
                 for limb, paw, anchor in ((leg,foot,(side*.23,-.18,0)),(back_leg,back_foot,(side*.32,.12,-.16))):

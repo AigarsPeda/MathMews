@@ -87,13 +87,13 @@ function createCatSpriteScenarios(
     },
     standUp: {
       id: "standUp", label: "Stretching…",
-      steps: [spriteSegment(skinId, "lieDown", { loop: false, reverse: true })],
+      steps: [spriteSegment(skinId, "lieDown", { loop: false, reverse: true, fps: 72 })],
     },
     wakeUp: {
       id: "wakeUp",
       label: "Waking up…",
       steps: [
-        spriteSegment(skinId, "sleepy", { loop: false, reverse: true }),
+        spriteSegment(skinId, "sleepy", { loop: false, reverse: true, fps: 72 }),
       ],
     },
   };

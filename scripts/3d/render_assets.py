@@ -4,7 +4,7 @@ from mathutils import Vector
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
-from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts
+from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, smoothstep, care_action_time
 OUT=ROOT/'assets/3d'
 OUT.mkdir(parents=True,exist_ok=True)
 BLENDER_OUT=Path(os.environ.get('BRAINPET_BLENDER_ASSET_DIR',str(ROOT.parent/'BrainPet-blender-assest'))).expanduser().resolve()
@@ -109,6 +109,51 @@ def cat_pose(rig,state,t):
 
 def bowl(color='teal',loc=(0,-.85,.08)):
  cylinder('Bowl base',loc,.36,.13,color);torus('Bowl rim',(loc[0],loc[1],loc[2]+.08),.30,.065,color);cylinder('Food',(loc[0],loc[1],loc[2]+.085),.27,.035,'brown')
+
+def eating_food():
+ # Small pieces in the bowl and eight deterministic spills, saved as keyframes.
+ for i in range(14):
+  angle=i*2.4;radius=.055+.012*i
+  sphere('Bowl kibble',(radius*math.cos(angle),-.85+radius*math.sin(angle),.193),(.037,.032,.026),'brown' if i%2 else 'gold')
+ return [sphere(f'Spilled kibble {i+1}',(0,-.85,.19),(.04,.033,.028),
+                'brown' if i%2 else 'gold') for i in range(8)]
+
+def pose_eating_food(pieces,t):
+ for i,piece in enumerate(pieces):
+  born=.18+i*.065
+  flight=max(0,min(1,(t-born)/.18))
+  angle=-2.85+i*.37
+  radius=.10+(.38+.025*(i%3))*flight
+  # Arc clears the rim, followed by one diminishing bounce on the floor.
+  bounce=math.sin(math.pi*max(0,min(1,(t-born-.18)/.10)))
+  z=.19*(1-flight)+.035*flight+.32*math.sin(math.pi*flight)
+  if flight==1:z+=.075*bounce
+  piece.location=(radius*math.cos(angle),-.85+radius*math.sin(angle),z)
+  appear=smoothstep((t-born)/.025)
+  piece.scale=(.04*appear,.033*appear,.028*appear)
+  piece.rotation_euler=(flight*2.4,flight*3.1,angle)
+
+def care_props(state):
+ # Keep the moving prop separate from the cat and the spilled floor pieces.
+ before=set(bpy.context.scene.objects)
+ food=[]
+ if state=='eating':
+  bowl();food=eating_food()
+ else:cat_play_box()
+ moving=[obj for obj in bpy.context.scene.objects if obj not in before and obj not in food]
+ slide=bpy.data.objects.new('Care prop slide',None);bpy.context.collection.objects.link(slide)
+ for obj in moving:obj.parent=slide
+ return slide,food
+
+def pose_care_props(slide,food,state,t):
+ enter=smoothstep(t/.125) if state=='eating' else smoothstep(t/.25) if state=='box1' else 1
+ leave=smoothstep((t-.875)/.125) if state=='eating' else smoothstep((t-.75)/.25) if state=='box3' else 0
+ # Camera-right lies in the floor plane, so this is a horizontal screen slide.
+ right=bpy.context.scene.camera.rotation_euler.to_matrix()@Vector((1,0,0))
+ slide.location=right*(-2.4*(1-enter+leave))
+ if food:
+  pose_eating_food(food,care_action_time(state,t))
+  for piece in food:piece.scale*=1-leave
 
 def sample():
  scene=setup(640);rig=cat();configure_cat_camera(scene)
@@ -660,15 +705,19 @@ def render_cats():
    dest=OUT/'frames'/('cat-'+skin+'-'+state);dest.mkdir(parents=True,exist_ok=True)
    if '--refresh' not in ARGS and all((dest/f'{i:03}.png').exists() for i in range(count)):continue
    scene=setup(CAT_FRAME_SIZE);rig=cat(skin,boxed=state.startswith('box'));configure_cat_camera(scene)
-   if state=='eating':bowl()
-   if state.startswith('box'):
-    cat_play_box()
+   slide,food=care_props(state) if state=='eating' or state.startswith('box') else (None,[])
    scene.render.fps=fps;scene.frame_start=1;scene.frame_end=count
    for i in range(count):
-    scene.frame_set(i+1);t=i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep'] else i/count
+    scene.frame_set(i+1);t=i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3'] else i/count
     cat_pose(rig,state,t)
-    for obj in animated_parts(rig):
+    if slide:pose_care_props(slide,food,state,t)
+    for obj in animated_parts(rig)+food+([slide] if slide else []):
      for prop in ['location','rotation_euler','scale']:obj.keyframe_insert(data_path=prop,frame=i+1,group='Math Mews '+state)
+    if rig['boxed']:
+     # Animated point coordinates do not refresh AUTO handles on saved playback.
+     for point in range(4):
+      for prop in ['co','handle_left','handle_right']:rig['tail_curve'].data.keyframe_insert(data_path=f'splines[0].bezier_points[{point}].{prop}',frame=i+1)
+     for prop in ['box_activity','transfer_hop']:rig['root'].keyframe_insert(data_path=f'["{prop}"]',frame=i+1)
     render(dest/f'{i:03}.png')
    if skin=='orange':
     library=BLENDER_OUT;bpy.ops.wm.save_as_mainfile(filepath=str(library/(state+'.blend')),compress=True)

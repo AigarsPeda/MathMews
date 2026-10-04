@@ -5,6 +5,9 @@ import sharp from 'sharp';
 const root=process.cwd(),out=path.join(root,'assets/3d');
 const entries=JSON.parse(await fs.readFile('scripts/3d/inventory.json','utf8')).entries;
 const clips=JSON.parse(await fs.readFile('scripts/3d/clips.json','utf8'));
+const clipFlag=process.argv.indexOf('--clips');
+const selected=clipFlag<0?null:new Set((process.argv[clipFlag+1]??'').split(','));
+if(selected&&[...selected].some(id=>!(id in clips)))throw new Error('Unknown clip in --clips');
 const frameSize=768,pageColumns=2,framesPerPage=4;
 await fs.mkdir(path.join(out,'atlases'),{recursive:true});
 await fs.mkdir(path.join(out,'cat-pages'),{recursive:true});
@@ -52,18 +55,18 @@ for(const skin of ['orange','grey','white']){
  for(const [id,[count]] of Object.entries(clips)){
   const name='cat-'+skin+'-'+id;
   // The splash has a small full idle sheet; other portraits need only four cells.
-  await pack(name,id === "idle" ? count : 4,192,id === "idle" ? 8 : 2);
+  if(!selected||selected.has(id))await pack(name,id === "idle" ? count : 4,192,id === "idle" ? 8 : 2);
   sources+=`    ${id}: require("@/assets/3d/atlases/${name}.png"),\n`;
-  const pageCount=await packPages(name,count);
+  const pageCount=!selected||selected.has(id)?await packPages(name,count):Math.ceil(count/framesPerPage);
   pages+=`    ${id}: [${Array.from({length:pageCount},(_,i)=>`require("@/assets/3d/cat-pages/${name}-${String(i).padStart(2,'0')}.webp")`).join(', ')}],\n`;
  }
  sources+='  },\n';pages+='  },\n';
 }
 sources+='} as const;\n';pages+='} as const;\n';
 // Use the actual decoded first splash cell, including its framing and sampling.
-await sharp(path.join(out,'atlases/cat-orange-idle.png'))
+if(!selected||selected.has('idle'))await sharp(path.join(out,'atlases/cat-orange-idle.png'))
  .extract({left:0,top:0,width:192,height:192}).png().toFile(path.join(out,'cat-splash.png'));
 await fs.writeFile('constants/cat-3d-animation-sources.ts',sources);
 await fs.writeFile('constants/cat-3d-animation-pages.ts',pages);
-for(const e of entries)if(e.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id))await pack(e.id,8);
-console.log('Packed 66 HD cat clips with 9 MiB texture pages, small portraits and 28 animated objects.');
+if(!selected)for(const e of entries)if(e.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id))await pack(e.id,8);
+console.log(selected?`Packed ${selected.size*3} selected HD cat clips and portraits.`:'Packed 66 HD cat clips with 9 MiB texture pages, small portraits and 28 animated objects.');

@@ -61,8 +61,14 @@ assert.deepEqual(splashPortrait,splashFrame,'Splash portrait must match the firs
 console.log(`Verified both-wall controls for ${variants.WALL_FACING_DECORATION_IDS.length} additional items and launch branding.`);
 const {getCatSpriteAnimations}=load('pet-display/registry/cat-sprite-atlas.ts');
 const {createCatSpriteRegistry}=load('pet-display/registry/cat-sprite-registry.ts');
+const {buildBoxPlaySequence}=load('constants/cat-box-play.ts');
+const {createBoxPlayScenario}=load('pet-display/registry/cat-sprite-registry.ts');
+assert.deepEqual(Array.from(buildBoxPlaySequence()),['box1','box2','box3'],'Box story must jump, peek, then settle');
 for(const skin of ['orange','grey','white']){
  const clips=getCatSpriteAnimations(skin);const registry=createCatSpriteRegistry(skin);
+ const boxStory=createBoxPlayScenario(skin,buildBoxPlaySequence());
+ assert.equal(boxStory.steps.length,3);
+ for(const step of boxStory.steps)assert.equal(step.loop,false,'Box story must advance through one-shot clips');
  for(const [id,clip] of Object.entries(clips)){
   const sources=clip.pages??[clip.source];
   assert.equal(sources.length,Math.ceil(clip.frames.length/(clip.framesPerPage??clip.frames.length)),`${skin}/${id} page count`);
@@ -82,7 +88,12 @@ for(const skin of ['orange','grey','white']){
    let occupied=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>20)occupied++;
    assert.ok(occupied>w*h*.04,`${skin}/${id} contains an empty frame`);
    for(let x=0;x<w;x++)assert.ok(pixels[x*4+3]<30&&pixels[((h-1)*w+x)*4+3]<30,`${skin}/${id} clipped vertically`);
-   for(let y=0;y<h;y++)assert.ok(pixels[y*w*4+3]<30&&pixels[(y*w+w-1)*4+3]<30,`${skin}/${id} clipped horizontally`);
+   const t=index/(clip.frames.length-1);
+   const slidesAtLeft=id==='eating'&&(t<.125||t>.875)||id==='box1'&&t<.25||id==='box3'&&t>.75;
+   for(let y=0;y<h;y++){
+    if(!slidesAtLeft)assert.ok(pixels[y*w*4+3]<30,`${skin}/${id} clipped on left outside prop slide`);
+    assert.ok(pixels[(y*w+w-1)*4+3]<30,`${skin}/${id} clipped on right`);
+   }
    hashes.add(createHash('sha256').update(pixels).digest('hex'));
   }
   assert.ok(hashes.size>1,`${skin}/${id} has no motion`);
@@ -91,6 +102,12 @@ for(const skin of ['orange','grey','white']){
  assert.notEqual(registry.getSegment('correct').sprite.source,registry.getSegment('incorrect').sprite.source);
  assert.equal(registry.getScenario('wakeUp').steps[0].sprite.reverse,true);
  assert.equal(registry.getScenario('standUp').steps[0].sprite.reverse,true);
+ for(const [id,maxDuration] of [['wakeUp',850],['standUp',700]]){
+  const step=registry.getScenario(id).steps[0];
+  assert.equal(step.loop,false,`${skin}/${id} must finish before the care action`);
+  assert.ok(step.sprite.frames.length/step.sprite.fps*1000<=maxDuration,`${skin}/${id} responds too slowly`);
+ }
+ assert.equal(registry.getScenario('fallAsleep').steps[0].sprite.fps,24,'Going to sleep keeps its gentle timing');
 }
 for(const entry of inventory.filter(e=>e.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id))){
  const hashes=new Set();const atlas=`assets/3d/atlases/${entry.id}.png`;

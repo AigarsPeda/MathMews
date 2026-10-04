@@ -25,6 +25,8 @@ def check_scene(label):
     sides = sorted((bounds(obj) for obj in bpy.context.scene.objects if obj.name.startswith('Box side')), key=lambda box: box[0][0])
     assert len(sides) == 2, 'Missing box side walls'
     front, back, floor = [bounds(bpy.context.scene.objects[name]) for name in ('Box front', 'Box back', 'Box bottom')]
+    activity = bpy.context.scene.objects['Dumpling cat motion root'].get('box_activity', 1)
+    walls = [*sides, front, back]
     tail_points = []
     for obj in bpy.context.scene.objects:
         paw = obj.name.startswith(('Front paw ', 'Back paw '))
@@ -36,6 +38,13 @@ def check_scene(label):
         if tail:
             tail_points.extend(points)
         for point in points:
+            # During entry/exit the cat can be outside the moving box. Test the
+            # actual wall volumes rather than requiring it to stay inside.
+            for wall in walls:
+                assert not all(lo + .001 < point[axis] < hi - .001 for axis, (lo, hi) in enumerate(wall)), (label, obj.name, 'inside moving wall', point[:])
+            if activity < .999:
+                assert point.z >= -.025, (label, obj.name, 'below ground', point[:])
+                continue
             # Measure the actual walls, including those in saved Blender scenes.
             assert point.z >= sides[0][2][1] or point.x > sides[0][0][1], (label, obj.name, 'left wall', point[:])
             assert point.z >= sides[1][2][1] or point.x < sides[1][0][0], (label, obj.name, 'right wall', point[:])
@@ -44,10 +53,17 @@ def check_scene(label):
             if paw or tail:
                 assert point.z > floor[2][1], (label, obj.name, 'below floor', point[:])
             if paw:
-                assert point.z < front[2][1], (label, obj.name, 'paw above front rim', point[:])
+                # Paws may clear the rim during the jump, but stay inside the
+                # opening horizontally, including while airborne.
+                assert sides[0][0][1] < point.x < sides[1][0][0], (label, obj.name, 'paw outside opening', point[:])
+                assert front[1][1] < point.y < back[1][0], (label, obj.name, 'paw outside opening', point[:])
     assert tail_points, 'Missing tail geometry'
     rim_height = max(front[2][1], back[2][1], *(side[2][1] for side in sides))
-    assert any(point.x > sides[1][0][1] and point.z > rim_height for point in tail_points), (label, 'tail must curl above the rim')
+    tail = bpy.context.scene.objects['Short curved tail pivot']
+    if activity > .999 and tail.scale.z > .99:
+        assert any(point.x > sides[1][0][1] and point.z > rim_height for point in tail_points), (label, 'visible tail must curl above the rim')
+    if activity > .999 and tail.scale.z < .09:
+        assert max(point.z for point in tail_points) < front[2][1], (label, 'hidden tail above rim')
 
 checked = 0
 if '--baked' in sys.argv:
@@ -62,9 +78,11 @@ else:
         for state in ('box1', 'box2', 'box3'):
             scope['setup'](64)
             rig = scope['cat'](skin, boxed=True)
-            scope['cat_play_box']()
+            scope['configure_cat_camera'](bpy.context.scene)
+            slide, food = scope['care_props'](state)
             for frame in range(clips[state][0]):
-                scope['cat_pose'](rig, state, frame/clips[state][0])
+                scope['cat_pose'](rig, state, frame/(clips[state][0]-1))
+                scope['pose_care_props'](slide, food, state, frame/(clips[state][0]-1))
                 check_scene((skin, state, frame))
                 for paw in rig['back_feet']:
                     assert paw in scope['animated_parts'](rig), 'Tucked back paws must be baked'
