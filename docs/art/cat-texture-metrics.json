@@ -57,5 +57,17 @@
     "cellSize": 768,
     "decodedPageBytes": 9437184,
     "decodedPairBytes": 18874368
+  },
+  "playActivities": {
+    "date": "2026-10-04",
+    "webpBytes": 112668618,
+    "pages": 1386,
+    "frames": 5544,
+    "addedClips": 9,
+    "addedFrames": 1008,
+    "addedPages": 252,
+    "cellSize": 768,
+    "decodedPageBytes": 9437184,
+    "decodedPairBytes": 18874368
   }
 }

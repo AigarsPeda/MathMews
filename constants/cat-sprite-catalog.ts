@@ -22,6 +22,9 @@ export const CAT_SPRITE_CATALOG = {
   incorrect: { frameCount: 48, fps: 24 },
   lieDown: { frameCount: 48, fps: 24 },
   restSleep: { frameCount: 60, fps: 24 },
+  ballToss: { frameCount: 120, fps: 24 },
+  yarnRoll: { frameCount: 96, fps: 24 },
+  featherChase: { frameCount: 120, fps: 24 },
 } as const;
 export type CatSpriteAnimationId = keyof typeof CAT_SPRITE_CATALOG;
 export type CatSpriteCatalogEntry = (typeof CAT_SPRITE_CATALOG)[CatSpriteAnimationId];

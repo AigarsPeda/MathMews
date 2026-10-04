@@ -89,7 +89,7 @@ for(const skin of ['orange','grey','white']){
    assert.ok(occupied>w*h*.04,`${skin}/${id} contains an empty frame`);
    for(let x=0;x<w;x++)assert.ok(pixels[x*4+3]<30&&pixels[((h-1)*w+x)*4+3]<30,`${skin}/${id} clipped vertically`);
    const t=index/(clip.frames.length-1);
-   const slidesAtLeft=id==='eating'&&(t<.125||t>.875)||id==='box1'&&t<.25||id==='box3'&&t>.75;
+   const slidesAtLeft=id==='eating'&&(t<.125||t>.875)||id==='box1'&&t<.25||id==='box3'&&t>.75||['ballToss','yarnRoll','featherChase'].includes(id)&&(t<.15||t>.85);
    for(let y=0;y<h;y++){
     if(!slidesAtLeft)assert.ok(pixels[y*w*4+3]<30,`${skin}/${id} clipped on left outside prop slide`);
     assert.ok(pixels[(y*w+w-1)*4+3]<30,`${skin}/${id} clipped on right`);
@@ -98,7 +98,7 @@ for(const skin of ['orange','grey','white']){
   }
   assert.ok(hashes.size>1,`${skin}/${id} has no motion`);
  }
- for(const reaction of ['correct','incorrect','eating','excited'])assert.equal(registry.getSegment(reaction).loop,false);
+ for(const reaction of ['correct','incorrect','eating','excited','playBall','playYarn','playFeather'])assert.equal(registry.getSegment(reaction).loop,false);
  assert.notEqual(registry.getSegment('correct').sprite.source,registry.getSegment('incorrect').sprite.source);
  assert.equal(registry.getScenario('wakeUp').steps[0].sprite.reverse,true);
  assert.equal(registry.getScenario('standUp').steps[0].sprite.reverse,true);
@@ -126,7 +126,7 @@ assert.equal(mood.derivePetVideoMood(sleepy,false,now,true),'fallingAsleep');
 assert.equal(mood.derivePetVideoMood(sleepy,true,now,true),'sleeping');
 assert.equal(mood.derivePetMood({...pet,stats:{...pet.stats,hunger:10}},now),'sad');
 assert.equal(mood.derivePetVideoMood(pet,false,now,false),'idle');
-console.log(`Verified ${inventory.length} retained item IDs, 66 moving cat clips, 28 moving objects, atlas bounds and rest/sleep/wake states.`);
+console.log(`Verified ${inventory.length} retained item IDs, ${Object.keys(getCatSpriteAnimations('orange')).length*3} moving cat clips, 28 moving objects, atlas bounds and rest/sleep/wake states.`);
 
 const {advanceSpritePlayback:advance}=load('pet-display/media/sprite/sprite-playback.ts');
 for(const reverse of [false,true]){

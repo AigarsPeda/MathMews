@@ -11,7 +11,7 @@ for skin in ('orange', 'grey', 'white'):
     rig = scope['cat'](skin)
     for state, (count, fps) in clips.items():
         for i in range(count):
-            t = i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3'] else i/count
+            t = i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*scope['PLAY_CLIPS']] else i/count
             scope['cat_pose'](rig,state,t)
             for side, leg, foot, back_leg, back_foot in zip((-1,1),rig['legs'],rig['feet'],rig['back_legs'],rig['back_feet']):
                 for limb, paw, anchor in ((leg,foot,(side*.23,-.18,0)),(back_leg,back_foot,(side*.32,.12,-.16))):
@@ -20,4 +20,4 @@ for skin in ('orange', 'grey', 'white'):
                         local = limb.matrix_basis.inverted() @ end
                         assert local.length < .999, (skin,state,i,limb.name,'disconnected endpoint',local[:])
                     assert limb in scope['animated_parts'](rig), 'Connector must survive baked animation playback'
-print('Verified torso/paw overlap and keyed leg controls at every pose in all 66 clips.')
+print(f'Verified torso/paw overlap and keyed leg controls at every pose in all {len(clips)*3} clips.')

@@ -6,7 +6,7 @@ The app uses rendered images rather than a live 3D scene. This keeps its existin
 
 ## Editable sources
 
-The 313 editable Blender scenes live in `/Users/aigarspeda/Desktop/BrainPet-blender-assest`, outside the app repository. Paths below are relative to that folder.
+The 316 editable Blender scenes live in `/Users/aigarspeda/Desktop/BrainPet-blender-assest`, outside the app repository. Paths below are relative to that folder.
 
 - `cat.blend` is the cat model with named, parented body parts.
 - `idle.blend`, `correct.blend`, `incorrect.blend`, `lieDown.blend`, `restSleep.blend`, `sleep.blend`, `eating.blend` and the other clips contain editable transform keyframes. These use a hierarchy of parts rather than an armature.
@@ -34,7 +34,7 @@ The renderer and verifier default to the sibling folder `../BrainPet-blender-ass
 
 On a fresh clone, copy the external Blender library beside the repository, or regenerate it with `npm run assets:3d -- --refresh`. Asset verification requires the editable library as well as the runtime images.
 
-To rebuild only the cat's 66 clips and branding, run `npm run assets:3d -- --only cat --refresh`. Rooms, furniture and their item IDs stay as they are. The cat scenes include editable transform keyframes for its brows, mouth, frown, ears, eyes, catchlights, paws and tears.
+To rebuild only the cat's 75 clips and branding, run `npm run assets:3d -- --only cat --refresh`. Rooms, furniture and their item IDs stay as they are. The cat scenes include editable transform keyframes for its brows, mouth, frown, ears, eyes, catchlights, paws and tears.
 
 The short front and back legs overlap the torso and paws in every pose. Their transforms are keyed along with the paw controls, so waving and lying down keep those connections. Check all procedural poses with Blender running `scripts/3d/check-cat-leg-connections.py`. For interrupted renders, the renderer accepts `--skin grey --clips sleep,dance --refresh` to rebuild selected clips.
 
@@ -43,6 +43,10 @@ The three box clips use `create_cat(..., boxed=True)` and play in order: `box1` 
 The `excited` clip is the petting reaction: side-to-side wriggles, head nuzzles, alternating paw lifts and a relaxed expression. Eating includes a half-second bowl entrance from the left, three seconds of munching/food spills, and a half-second exit to the left after the cat lifts its head. Spilled pieces stay on the floor and shrink away during cleanup. Both actions start/end with no visible prop and the normal sitting pose. Rebuild these 15 clips with the renderer's `--only cat --clips excited,box1,box2,box3,eating --refresh`, then run `node scripts/3d/pack.mjs --clips excited,box1,box2,box3,eating`. The packer's optional clip filter preserves all other textures.
 
 Check the posed box geometry with Blender running `scripts/3d/check-cat-box-containment.py`, and story joins/food trajectories with `scripts/3d/check-cat-care-actions.py`. Append `-- --baked` to check the saved orange scenes. `node scripts/3d/review-cat-box.mjs` produces the story contact board, and `node scripts/3d/review-cat-care.mjs` creates looping GIF previews for all three coats from the actual packed gameplay textures.
+
+The free Play menu has Ball toss, Box peekaboo, Yarn roll and Feather chase. The button/menu include toy icons and text labels, with no prices or coin icons. Playing never changes the coin balance, including when it is zero. Playing remains available at 100% happiness; boosts cap at 100%. Every activity wakes/stands the cat first if needed and uses the existing care cooldown. The new `ballToss` and `featherChase` clips last 5 seconds; `yarnRoll` lasts 4 seconds. Toys enter and leave at the left sprite-frame edge, and all three clips recover to the normal sitting pose. Their orange `.blend` files contain keyed cat and toy controls.
+
+Rebuild them with Blender running `scripts/3d/render_assets.py -- --only cat --clips ballToss,yarnRoll,featherChase --refresh`, followed by `node scripts/3d/pack.mjs --clips ballToss,yarnRoll,featherChase`. `scripts/3d/check-cat-play.py` checks toy floor clearance, hidden endpoints, idle recovery and the saved controls. `node scripts/check-cat-play.mjs` checks the actual Home handlers and display engine without touching saved coins. `node scripts/3d/review-cat-play.mjs` creates `docs/art/cat-play-{orange,grey,white}.gif` from the packed runtime pages.
 
 `pack.mjs` extracts `cat-splash.png` directly from the first orange idle atlas cell. The launch logo and the loading animation use that same pose. Run `node scripts/check-splash-continuity.mjs` after packing to check pixel identity and startup readiness.
 
@@ -60,11 +64,11 @@ The renderer uses Blender 5.2.2 LTS and Eevee. `--cycles` selects Cycles. Preser
 - Static furniture, beds and scratching posts are 256 px transparent PNGs.
 - Rooms are 1024 px PNGs.
 - Cat gameplay cells are 768 px at 24 fps. Four cells fit into each 1536×1536 WebP page. Only the current/next pair is decoded, with a theoretical RGBA budget of 18 MiB before GPU overhead/transient replacements.
-- The 22 cat clips run at 24 fps, with 4,536 frames across all coats. Idle lasts 4 seconds, correct/petting 2.5 seconds, incorrect 2 seconds, feeding 4 seconds including prop slides, and the complete box story 7.5 seconds. The splash uses a separate full 192 px idle sheet.
+- The 25 cat clips run at 24 fps, with 5,544 frames across all coats. Idle lasts 4 seconds, correct/petting 2.5 seconds, incorrect 2 seconds, feeding 4 seconds including prop slides, and the complete box story 7.5 seconds. The splash uses a separate full 192 px idle sheet.
 - Cat wake-up and standing scenarios reuse the reverse `sleepy`/`lieDown` clips at 72 fps, taking about 0.83/0.67 seconds before care actions. Forward sleep/rest animations retain 24 fps.
 - Furniture and small-toy loops use eight frames at 12 fps.
 - Cat sprites use smooth linear sampling and fractional scaling. Reanimated advances frames on the UI thread; background/covered screens pause. Reduce Motion freezes loops. Gameplay can zoom to 3× without writing placement offsets.
-- Cat WebP pages use quality 90 and alpha quality 100. The current 1,134 pages total 90,154,338 bytes, about 86.0 MiB. Props intentionally cross the left cell edge during entry/exit; other cell borders and stationary/action phases remain transparent. See `docs/art/cat-texture-metrics.json` for current and earlier measurements.
+- Cat WebP pages use quality 90 and alpha quality 100. The current 1,386 pages total 112,668,618 bytes, about 107.4 MiB. Props intentionally cross the left cell edge during entry/exit; other cell borders and stationary/action phases remain transparent. See `docs/art/cat-texture-metrics.json` for current and earlier measurements.
 - Individual render frames and Blender backups are ignored by Git. Metro excludes source scenes and intermediate frames. Editable `.blend` files live outside the repository and are not bundled into the app. Back up the external folder to preserve manual Blender edits; the previous scenes remain recoverable from Git history.
 
 `npm run assets:verify` checks all 288 retained item IDs, texture dimensions/page budgets, nonempty cat frames, unclipped cat silhouettes, motion, forward/reverse completion, page-loading stalls, mirroring and rest/sleep/wake transitions.

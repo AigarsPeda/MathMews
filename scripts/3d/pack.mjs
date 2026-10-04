@@ -69,4 +69,4 @@ if(!selected||selected.has('idle'))await sharp(path.join(out,'atlases/cat-orange
 await fs.writeFile('constants/cat-3d-animation-sources.ts',sources);
 await fs.writeFile('constants/cat-3d-animation-pages.ts',pages);
 if(!selected)for(const e of entries)if(e.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id))await pack(e.id,8);
-console.log(selected?`Packed ${selected.size*3} selected HD cat clips and portraits.`:'Packed 66 HD cat clips with 9 MiB texture pages, small portraits and 28 animated objects.');
+console.log(selected?`Packed ${selected.size*3} selected HD cat clips and portraits.`:`Packed ${Object.keys(clips).length*3} HD cat clips with 9 MiB texture pages, small portraits and 28 animated objects.`);

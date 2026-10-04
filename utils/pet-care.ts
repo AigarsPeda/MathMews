@@ -22,10 +22,6 @@ export function boostStat(current: number, amount: number): number {
   return isStatMax(current) ? current : clampStat(current + amount);
 }
 
-export function isHappinessMax(stats: PetStats): boolean {
-  return isStatMax(stats.happiness);
-}
-
 export function isHungerMax(stats: PetStats): boolean {
   return isStatMax(stats.hunger);
 }
@@ -38,11 +34,6 @@ export function isPetHungry(stats: PetStats): boolean {
 /** Feed has an effect unless hunger is already full (asleep pets can always be woken). */
 export function canFeedForEffect(stats: PetStats, isAsleep: boolean): boolean {
   return isAsleep || !isHungerMax(stats);
-}
-
-/** Box play helps when happiness can still rise (asleep pets can always be woken). */
-export function canPlayBoxForEffect(stats: PetStats, isAsleep: boolean): boolean {
-  return isAsleep || !isHappinessMax(stats);
 }
 
 export function applyPetTimeDecay(

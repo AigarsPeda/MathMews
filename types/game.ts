@@ -11,7 +11,7 @@ export type PetMood =
   | "resting";
 
 /** Short puzzle / reward clips — not derived from pet stats. */
-export type PetReaction = "correct" | "incorrect" | "coinCatch" | "playBox";
+export type PetReaction = "correct" | "incorrect" | "coinCatch" | "playBox" | "playBall" | "playYarn" | "playFeather";
 
 export type PetAnimationState = PetMood | PetReaction;
 

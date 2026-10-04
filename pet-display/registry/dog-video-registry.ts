@@ -59,6 +59,9 @@ const MOOD_ASSET_KEYS: Record<PetAnimationState, DogVideoAssetKey> = {
   resting: "sleeping",
   coinCatch: "catches_a_coin",
   playBox: "happy_bounce",
+  playBall: "happy_bounce",
+  playYarn: "happy_bounce",
+  playFeather: "happy_bounce",
 };
 
 const REACTION_CONFIG: Record<
@@ -80,9 +83,9 @@ function segmentFromMood(mood: PetAnimationState): PetMediaSegment {
   }
 
   if (mood === "incorrect") return { assetKey: "sad", loop: false, startMs: 5000 };
-  if (mood === "playBox") {
+  if (mood === "playBox" || mood === "playBall" || mood === "playYarn" || mood === "playFeather") {
     return {
-      assetKey: MOOD_ASSET_KEYS.playBox,
+      assetKey: MOOD_ASSET_KEYS[mood],
       loop: false,
     };
   }

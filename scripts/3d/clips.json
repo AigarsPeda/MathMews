@@ -86,5 +86,17 @@
   "restSleep": [
     60,
     24
+  ],
+  "ballToss": [
+    120,
+    24
+  ],
+  "yarnRoll": [
+    96,
+    24
+  ],
+  "featherChase": [
+    120,
+    24
   ]
 }

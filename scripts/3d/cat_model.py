@@ -441,6 +441,48 @@ def pose_cat(rig, state, t):
         rig['mouth'].scale.z = .48 * (1 - lean) + (.28 + .35 * munch ** 2) * lean
         eye_height = .105 * (1 - .35 * lean)
         tail.rotation_euler.z = .22 * math.sin(phase * 3) * lean
+    if state in ('ballToss', 'yarnRoll', 'featherChase'):
+        play = smooth_window(t, .14, .88, .10)
+        if state == 'ballToss':
+            # Watch the bounce, bat with the left paw, then send it back.
+            swats = [pulse(t, .34, .10), pulse(t, .61, .10)]
+            head.rotation_euler.y = .18 * math.sin(phase * 1.5) * play
+            head.rotation_euler.x = .10 * play
+            body.location.x = .055 * (swats[1] - swats[0])
+            for side, paw, swat in zip((-1, 1), rig['feet'], swats):
+                paw.location.x += side * .075 * swat
+                paw.location.y -= .30 * swat
+                paw.location.z += .11 * swat
+                paw.rotation_euler.y = side * .30 * swat
+        elif state == 'yarnRoll':
+            # Cuddle the yarn between both paws and knead it back and forth.
+            cuddle = smooth_window(t, .25, .77, .12)
+            head.location.z -= .18 * cuddle
+            head.location.y -= .09 * cuddle
+            head.rotation_euler = (.16 * cuddle, .14 * math.sin(phase * 3) * cuddle, 0)
+            body.scale.z = 1 - .08 * cuddle
+            for side, paw in zip((-1, 1), rig['feet']):
+                knead = (.5 + .5 * math.sin(phase * 5 + side * math.pi/2)) * cuddle
+                paw.location = (side * (.23 - .07 * cuddle), -.31 - .30 * cuddle,
+                                .18 + .12 * knead)
+                paw.rotation_euler.x = -.20 * knead
+            eye_height = .105 * (1 - .38 * cuddle)
+        else:
+            # Follow the dangling feathers, reach alternately, then pounce.
+            reaches = [pulse(t, .32, .09), pulse(t, .52, .09)]
+            hop = pulse(t, .71, .11)
+            root.location.z = .13 * hop
+            body.scale.z = 1 - .10 * pulse(t, .61, .055)
+            head.rotation_euler = (-.12 * play, .20 * math.sin(phase * 2) * play, 0)
+            for side, paw, reach in zip((-1, 1), rig['feet'], reaches):
+                paw.location.x += side * .15 * reach
+                paw.location.y -= .14 * reach + .08 * hop
+                paw.location.z += .36 * reach + .24 * hop
+                paw.rotation_euler.y = side * .48 * reach
+        tail.rotation_euler.z = .38 * math.sin(phase * 3) * play
+        rig['mouth'].scale.z = .48 + .20 * play
+        for side, ear in zip((-1, 1), rig['ears']):
+            ear.rotation_euler.x += .09 * math.sin(phase * 3 - side * .3) * play
     if state in ('box1', 'box2', 'box3'):
         normal_pose = {obj: (obj.location.copy(), obj.rotation_euler.copy(), obj.scale.copy())
                        for obj in animated_parts(rig)}

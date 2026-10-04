@@ -67,7 +67,6 @@ export const LIFE_REGEN_MINUTES = 30;
 export const LIFE_BUY_COST = 15;
 
 export const FEED_COST = 10;
-export const BOX_PLAY_COST = 7;
 export const FEED_HUNGER_RESTORE = 25;
 export const FEED_HAPPINESS_BOOST = 5;
 export const PET_HAPPINESS_BOOST = 10;
@@ -172,6 +171,9 @@ export const ANIMATION_LABELS: Record<PetAnimationState, string> = {
   incorrect: "Let’s try again",
   coinCatch: "Coin caught!",
   playBox: "Box time!",
+  playBall: "Catch the ball!",
+  playYarn: "Yarn time!",
+  playFeather: "Chase the feathers!",
 };
 
 /** One-shot clips that return to the base mood when finished. */
@@ -180,6 +182,9 @@ export const ONE_SHOT_ANIMATIONS: PetAnimationState[] = [
   "eating",
   "dancing",
   "playBox",
+  "playBall",
+  "playYarn",
+  "playFeather",
   "correct",
   "incorrect",
   "coinCatch",

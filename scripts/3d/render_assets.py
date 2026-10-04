@@ -4,7 +4,7 @@ from mathutils import Vector
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
-from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, smoothstep, care_action_time
+from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, smoothstep, smooth_window, pulse, care_action_time
 OUT=ROOT/'assets/3d'
 OUT.mkdir(parents=True,exist_ok=True)
 BLENDER_OUT=Path(os.environ.get('BRAINPET_BLENDER_ASSET_DIR',str(ROOT.parent/'BrainPet-blender-assest'))).expanduser().resolve()
@@ -154,6 +154,49 @@ def pose_care_props(slide,food,state,t):
  if food:
   pose_eating_food(food,care_action_time(state,t))
   for piece in food:piece.scale*=1-leave
+
+PLAY_CLIPS=('ballToss','yarnRoll','featherChase')
+
+def play_props(state):
+ root=empty('Play toy motion')
+ if state=='ballToss':
+  sphere('Coral play ball',(0,0,0),(.14,.14,.14),'coral',root)
+  torus('Ball cream stripe',(0,0,0),.138,.009,'cream',root,rotation=(math.pi/2,0,0))
+ elif state=='yarnRoll':
+  sphere('Mint yarn ball',(0,0,0),(.18,.16,.17),'teal',root)
+  for i in range(7):
+   ring=torus('Wound yarn',(0,0,0),.165,.012,'sage',root,rotation=(math.pi/2+i*.23,i*.32,0))
+   ring.scale=(1,1,.88)
+  curve('Loose yarn',[(0,0,0),(-.22,-.04,-.13),(-.34,-.09,-.14),(-.47,-.04,-.14)],.014,'teal',root)
+ else:
+  # A short ribbon and three soft feathers; the toy stays inside the camera.
+  curve('Feather ribbon',[(0,0,0),(-.10,.02,.17),(-.28,.04,.28)],.018,'gold',root)
+  for i,color in enumerate(('coral','teal','gold')):
+   feather=sphere('Chase feather',((i-1)*.075,0,-.09),(.065,.027,.18),color,root)
+   feather.rotation_euler.y=(i-1)*.32
+ return root
+
+def play_toy_location(state,t):
+ # Enter/leave across the left edge. The visible play stays close to the paws.
+ enter=smoothstep(t/.15);leave=smoothstep((t-.85)/.15)
+ right=bpy.context.scene.camera.rotation_euler.to_matrix()@Vector((1,0,0))
+ if state=='ballToss':
+  across=smoothstep((t-.34)/.20)*(1-smoothstep((t-.61)/.20))
+  location=Vector((-.32+.98*across,-.65,.15+.19*pulse(t,.22,.10)+.11*pulse(t,.47,.10)))
+ elif state=='yarnRoll':
+  cuddle=smooth_window(t,.25,.77,.12)
+  location=Vector((-.36*(1-cuddle)+.055*math.sin(t*math.tau*5)*cuddle,-.73,.18))
+ else:
+  play=smooth_window(t,.15,.85,.10)
+  location=Vector((-.50*math.sin((t-.22)*math.tau*2.5)*play*(1-smoothstep((t-.58)/.10)),
+                   -.66,.77+.19*pulse(t,.70,.13)))
+ return location+right*(-2.6*(1-enter+leave))
+
+def pose_play_props(toy,state,t):
+ toy.location=play_toy_location(state,t)
+ toy.rotation_euler=((0,t*math.tau*3,0) if state=='ballToss' else
+                     (0,0,.18*math.sin(t*math.tau*5)) if state=='yarnRoll' else
+                     (0,.24*math.sin(t*math.tau*4),.15*math.sin(t*math.tau*3)))
 
 def sample():
  scene=setup(640);rig=cat();configure_cat_camera(scene)
@@ -706,12 +749,14 @@ def render_cats():
    if '--refresh' not in ARGS and all((dest/f'{i:03}.png').exists() for i in range(count)):continue
    scene=setup(CAT_FRAME_SIZE);rig=cat(skin,boxed=state.startswith('box'));configure_cat_camera(scene)
    slide,food=care_props(state) if state=='eating' or state.startswith('box') else (None,[])
+   play_toy=play_props(state) if state in PLAY_CLIPS else None
    scene.render.fps=fps;scene.frame_start=1;scene.frame_end=count
    for i in range(count):
-    scene.frame_set(i+1);t=i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3'] else i/count
+    scene.frame_set(i+1);t=i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*PLAY_CLIPS] else i/count
     cat_pose(rig,state,t)
     if slide:pose_care_props(slide,food,state,t)
-    for obj in animated_parts(rig)+food+([slide] if slide else []):
+    if play_toy:pose_play_props(play_toy,state,t)
+    for obj in animated_parts(rig)+food+([slide] if slide else [])+([play_toy] if play_toy else []):
      for prop in ['location','rotation_euler','scale']:obj.keyframe_insert(data_path=prop,frame=i+1,group='Math Mews '+state)
     if rig['boxed']:
      # Animated point coordinates do not refresh AUTO handles on saved playback.

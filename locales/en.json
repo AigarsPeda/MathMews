@@ -96,9 +96,7 @@
     "needCoinsFeed": "Need {{cost}} coins to feed {{name}}!",
     "enjoyedSnack": "{{name}} enjoyed the snack!",
     "playBox": "Play box",
-    "playBoxCost": "{{cost}} 🪙",
     "enjoyedPlayBox": "{{name}} loves the box!",
-    "needCoinsPlayBox": "Need {{cost}} coins to play with {{name}}!",
     "removedFromRoom": "{{name}} was put away.",
     "removeFromRoom": "Remove",
     "moveLayerUp": "Move up",
@@ -115,10 +113,25 @@
     "zoomLevel": "{{zoom}} times zoom",
     "a11yPet": "Pet your companion",
     "a11yFeed": "Feed for {{cost}} coins",
-    "a11yPlayBox": "Play with box for {{cost}} coins",
     "a11ySolve": "Solve a math puzzle",
     "a11yStore": "Open pet store",
-    "a11ySettings": "Open settings"
+    "a11ySettings": "Open settings",
+    "play": "Play",
+    "choosePlay": "Choose a game",
+    "a11yPlayMenu": "Choose how to play with your cat",
+    "dismissPlayMenu": "Close play menu",
+    "playStyle": {
+      "ball": "Ball toss",
+      "box": "Box peekaboo",
+      "yarn": "Yarn roll",
+      "feather": "Feather chase"
+    },
+    "playSpeech": {
+      "ball": "Catch it, {{name}}!",
+      "box": "Where did {{name}} go?",
+      "yarn": "{{name}} loves the yarn!",
+      "feather": "Get those feathers, {{name}}!"
+    }
   },
   "store": {
     "title": "Pet Store",
@@ -553,7 +566,10 @@
     "sleeping": "Zzz…",
     "correct": "Nice one!",
     "coinCatch": "Coin caught!",
-    "playBox": "Box time!"
+    "playBox": "Box time!",
+    "playBall": "Catch the ball!",
+    "playYarn": "Yarn time!",
+    "playFeather": "Chase the feathers!"
   },
   "scenario": {
     "standUp": "Stretching…",

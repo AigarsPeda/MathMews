@@ -96,9 +96,23 @@
     "needCoinsFeed": "Vajag {{cost}} monētas, lai barotu {{name}}!",
     "enjoyedSnack": "{{name}} baudīja uzkodu!",
     "playBox": "Spēlēt ar kasti",
-    "playBoxCost": "{{cost}} 🪙",
     "enjoyedPlayBox": "{{name}} mīl kasti!",
-    "needCoinsPlayBox": "Vajag {{cost}} monētas, lai spēlētu ar {{name}}!",
+    "play": "Spēlēties",
+    "choosePlay": "Izvēlies spēli",
+    "a11yPlayMenu": "Izvēlies, kā spēlēties ar savu kaķi",
+    "dismissPlayMenu": "Aizvērt spēļu izvēlni",
+    "playStyle": {
+      "ball": "Bumbas mešana",
+      "box": "Paslēpes kastē",
+      "yarn": "Dziju kamoliņš",
+      "feather": "Spalvu ķeršana"
+    },
+    "playSpeech": {
+      "ball": "Ķer, {{name}}!",
+      "box": "Kur paslēpās {{name}}?",
+      "yarn": "{{name}} patīk kamoliņš!",
+      "feather": "Ķer spalvas, {{name}}!"
+    },
     "removedFromRoom": "{{name}} ir noņemts no istabas.",
     "removeFromRoom": "Noņemt",
     "moveLayerUp": "Uz augšu",
@@ -115,7 +129,6 @@
     "zoomLevel": "{{zoom}} reizes pietuvināts",
     "a11yPet": "Apmīļot savu draugu",
     "a11yFeed": "Barot par {{cost}} monētām",
-    "a11yPlayBox": "Spēlēt ar kasti par {{cost}} monētām",
     "a11ySolve": "Atrisināt matemātikas uzdevumu",
     "a11yStore": "Atvērt mājdzīvnieku veikalu",
     "a11ySettings": "Atvērt iestatījumus"
@@ -553,7 +566,10 @@
     "sleeping": "Zzz…",
     "correct": "Lieliski!",
     "coinCatch": "Monēta noķerta!",
-    "playBox": "Laiks kastei!"
+    "playBox": "Laiks kastei!",
+    "playBall": "Ķer bumbu!",
+    "playYarn": "Laiks kamoliņam!",
+    "playFeather": "Ķer spalvas!"
   },
   "scenario": {
     "standUp": "Izstaipās…",

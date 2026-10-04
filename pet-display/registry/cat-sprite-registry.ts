@@ -49,6 +49,9 @@ const MOOD_ANIMATIONS: Record<PetAnimationState, CatSpriteAnimationId> = {
   lyingDown: "lieDown",
   coinCatch: "waiting",
   playBox: "box2",
+  playBall: "ballToss",
+  playYarn: "yarnRoll",
+  playFeather: "featherChase",
 };
 
 const MOOD_OPTIONS: Partial<
@@ -71,6 +74,9 @@ const MOOD_OPTIONS: Partial<
   correct: { loop: false },
   coinCatch: { loop: false },
   playBox: { loop: false },
+  playBall: { loop: false },
+  playYarn: { loop: false },
+  playFeather: { loop: false },
 };
 
 function createCatSpriteScenarios(

@@ -1,12 +1,12 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
+import { PlayMenuButton } from "@/components/home/PlayMenuButton";
+import type { CatPlayActivity } from "@/constants/cat-play";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { PetStage } from "@/components/pet/PetStage";
 import type { CatBedId } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
-  BOX_PLAY_COST,
-  BOX_PLAY_HAPPINESS_BOOST,
   FEED_COST,
   FEED_HAPPINESS_BOOST,
   FEED_HUNGER_RESTORE,
@@ -20,11 +20,10 @@ import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
 import { shouldPetSleep } from "@/pet-display/engine/derive-mood";
 import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
-import type { PetStats, RoomLayerItem } from "@/types/game";
+import type { PetAnimationState, PetStats, RoomLayerItem } from "@/types/game";
 import {
   boostStat,
   canFeedForEffect,
-  canPlayBoxForEffect,
   withPetCareUpdate,
 } from "@/utils/pet-care";
 import {
@@ -86,6 +85,7 @@ export default function HomeScreen() {
     scalePlacedDecoration,
   } = useGame();
   const [actionSpeech, setActionSpeech] = useState<string | null>(null);
+  const careActionPendingRef = useRef(false);
   const speechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
@@ -95,6 +95,10 @@ export default function HomeScreen() {
     isCareBlocked,
     isCareAnimationPlaying,
   } = usePetDisplay(pet);
+
+  useEffect(() => {
+    if (!isCareBlocked && !isCareAnimationPlaying) careActionPendingRef.current = false;
+  }, [isCareBlocked, isCareAnimationPlaying]);
 
   const showSpeech = useCallback((text: string, durationMs = 2800) => {
     if (speechTimerRef.current) {
@@ -148,7 +152,7 @@ export default function HomeScreen() {
   );
 
   const playActionMood = useCallback(
-    (wasAsleep: boolean, mood: "excited" | "eating" | "playBox") => {
+    (wasAsleep: boolean, mood: PetAnimationState) => {
       triggerHaptic();
       sendPetCommand({ type: "playAction", wasAsleep, mood });
     },
@@ -168,7 +172,7 @@ export default function HomeScreen() {
   );
 
   const handlePetTap = useCallback(() => {
-    if (isCareAnimationPlaying) return;
+    if (isCareAnimationPlaying || careActionPendingRef.current) return;
 
     const wasAsleep = pet.isAsleep === true;
 
@@ -192,7 +196,7 @@ export default function HomeScreen() {
   const handleFeed = useCallback(() => {
     const wasAsleep = pet.isAsleep === true;
 
-    if (isCareAnimationPlaying || isCareBlocked) {
+    if (isCareAnimationPlaying || isCareBlocked || careActionPendingRef.current) {
       rejectCareAction(t("home.giveMoment", { name: pet.name }));
       return;
     }
@@ -209,6 +213,7 @@ export default function HomeScreen() {
       return;
     }
 
+    careActionPendingRef.current = true;
     recordInteraction();
     sendPetCommand({ type: "beginCareAction" });
     setWallet((current) => ({ coins: current.coins - FEED_COST }));
@@ -236,50 +241,26 @@ export default function HomeScreen() {
     wallet.coins,
   ]);
 
-  const handlePlayBox = useCallback(() => {
+  const handlePlay = useCallback((activity: CatPlayActivity) => {
     const wasAsleep = pet.isAsleep === true;
 
-    if (isCareAnimationPlaying || isCareBlocked) {
+    if (isCareAnimationPlaying || isCareBlocked || careActionPendingRef.current) {
       rejectCareAction(t("home.giveMoment", { name: pet.name }));
       return;
     }
-
-    if (!canPlayBoxForEffect(pet.stats, wasAsleep)) {
-      rejectCareAction(t("home.alreadyHappy", { name: pet.name }));
-      return;
-    }
-
-    if (wallet.coins < BOX_PLAY_COST) {
-      rejectCareAction(
-        t("home.needCoinsPlayBox", { cost: BOX_PLAY_COST, name: pet.name }),
-      );
-      return;
-    }
-
+    careActionPendingRef.current = true;
     recordInteraction();
     sendPetCommand({ type: "beginCareAction" });
-    setWallet((current) => ({ coins: current.coins - BOX_PLAY_COST }));
     wakePet((stats) => ({
       ...stats,
-      happiness: boostStat(stats.happiness, BOX_PLAY_HAPPINESS_BOOST),
+      happiness: boostStat(stats.happiness, activity.happinessBoost),
     }));
-    playActionMood(wasAsleep, "playBox");
-    showSpeech(t("home.enjoyedPlayBox", { name: pet.name }));
+    playActionMood(wasAsleep, activity.mood);
+    showSpeech(t(`home.playSpeech.${activity.id}`, { name: pet.name }));
   }, [
-    isCareAnimationPlaying,
-    isCareBlocked,
-    pet.isAsleep,
-    pet.name,
-    pet.stats,
-    playActionMood,
-    recordInteraction,
-    rejectCareAction,
-    sendPetCommand,
-    setWallet,
-    showSpeech,
-    t,
-    wakePet,
-    wallet.coins,
+    isCareAnimationPlaying, isCareBlocked, pet.isAsleep, pet.name,
+    playActionMood, recordInteraction, rejectCareAction, sendPetCommand,
+    showSpeech, t, wakePet,
   ]);
 
   const handleOpenSettings = useCallback(() => {
@@ -458,17 +439,10 @@ export default function HomeScreen() {
 
   const wasAsleep = pet.isAsleep === true;
   const canFeedForHunger = canFeedForEffect(pet.stats, wasAsleep);
-  const canPlayBoxForHappiness = canPlayBoxForEffect(pet.stats, wasAsleep);
   const canAffordFeed = wallet.coins >= FEED_COST;
-  const canAffordPlayBox = wallet.coins >= BOX_PLAY_COST;
   const feedDimmed =
     !canFeedForHunger ||
     !canAffordFeed ||
-    isCareBlocked ||
-    isCareAnimationPlaying;
-  const playBoxDimmed =
-    !canPlayBoxForHappiness ||
-    !canAffordPlayBox ||
     isCareBlocked ||
     isCareAnimationPlaying;
   const isCatSpritePet = USE_CAT_SPRITE_PETS && pet.type === "cat";
@@ -609,26 +583,10 @@ export default function HomeScreen() {
             </Pressable>
 
             {isCatSpritePet ? (
-              <Pressable
-                style={[
-                  styles.actionBtn,
-                  styles.actionSecondary,
-                  playBoxDimmed && styles.actionDisabled,
-                ]}
-                onPress={handlePlayBox}
-                disabled={isCareAnimationPlaying}
-                accessibilityRole="button"
-                accessibilityLabel={t("home.a11yPlayBox", {
-                  cost: BOX_PLAY_COST,
-                })}
-                accessibilityState={{ disabled: isCareAnimationPlaying }}
-              >
-                <Text style={styles.actionEmoji}>📦</Text>
-                <Text style={styles.actionLabel}>{t("home.playBox")}</Text>
-                <Text style={styles.actionHint}>
-                  {t("home.playBoxCost", { cost: BOX_PLAY_COST })}
-                </Text>
-              </Pressable>
+              <PlayMenuButton
+                disabled={isCareBlocked || isCareAnimationPlaying}
+                onSelect={handlePlay}
+              />
             ) : null}
           </View>
 
