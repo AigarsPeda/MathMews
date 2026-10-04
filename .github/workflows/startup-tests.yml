@@ -19,6 +19,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
+      - run: npx eslint . --max-warnings 0
       - run: npm run test:startup
       - run: npm run test:game
-      - run: npm run assets:verify
+      - run: npm run assets:verify -- --runtime-only

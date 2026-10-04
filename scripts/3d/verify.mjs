@@ -8,6 +8,8 @@ import ts from 'typescript';
 import sharp from 'sharp';
 import { createHash } from 'node:crypto';
 const root=process.cwd(),cache=new Map();
+// CI checks the shipped assets; editable Blender sources live outside this repository.
+const runtimeOnly=process.argv.includes('--runtime-only');
 const blenderRoot=path.resolve(process.env.BRAINPET_BLENDER_ASSET_DIR||path.join(root,'..','BrainPet-blender-assest'));
 function load(relative){
  const file=path.resolve(root,relative);if(cache.has(file))return cache.get(file).exports;
@@ -26,7 +28,7 @@ const inventory=JSON.parse(fs.readFileSync('scripts/3d/inventory.json','utf8')).
 assert.equal(inventory.length,288,'Inventory ID count changed');
 const decor=load('constants/cat-decorations.ts'),beds=load('constants/cat-beds.ts'),toys=load('constants/cat-toys.ts'),rooms=load('constants/cat-rooms.ts');
 for(const entry of inventory){
- assert.ok(fs.existsSync(path.join(blenderRoot,entry.kind==='room'?'rooms':'items',`${entry.id}.blend`)),`Missing editable model ${entry.id} in ${blenderRoot}. Restore the Blender library or run npm run assets:3d -- --refresh.`);
+ if(!runtimeOnly)assert.ok(fs.existsSync(path.join(blenderRoot,entry.kind==='room'?'rooms':'items',`${entry.id}.blend`)),`Missing editable model ${entry.id} in ${blenderRoot}. Restore the Blender library or run npm run assets:3d -- --refresh.`);
  const source=entry.kind==='decoration'?decor.CAT_DECORATION_CATALOG[entry.id]?.source:entry.kind==='room'?rooms.CAT_ROOM_SOURCES[entry.id]:entry.kind==='bed'?beds.CAT_BED_SOURCES[entry.id.slice(4)]:toys.getCatToySource(entry.id.slice(4));
  assert.ok(source?.startsWith('assets/3d/'),`Unmigrated ${entry.id}`);
  if(entry.kind==='decoration')assert.equal(decor.getDecorationDisplaySize(entry.id),entry.displaySize);
