@@ -1,3 +1,4 @@
+import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
 import { LIFE_BUY_COST } from "@/constants/game";
 import {
   resolveCatBedId,
@@ -68,6 +69,7 @@ import {
   removeOnePlacedToy,
   removePlacedDecorationByInstance,
   removePlacedToyByInstance,
+  togglePlacedAirConditionerByInstance,
   updatePlacedDecorationRotationByInstance,
   updatePlacedDecorationScaleByInstance,
   updatePlacedDecorationWallFlipByInstance,
@@ -150,6 +152,7 @@ type GameContextValue = {
   ) => boolean;
   rotatePlacedDecoration: (instanceId: string) => boolean;
   flipPlacedDecorationWall: (instanceId: string) => boolean;
+  togglePlacedAirConditioner: (instanceId: string) => boolean;
   scalePlacedDecoration: (
     instanceId: string,
     direction: "up" | "down",
@@ -893,6 +896,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, []);
 
+  const togglePlacedAirConditioner = useCallback((instanceId: string) => {
+    const current = saveRef.current;
+    const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
+    if (!placed || !isAirConditionerDecorationId(placed.decorationId)) return false;
+
+    setSave({
+      ...current,
+      pet: {
+        ...current.pet,
+        placedDecorations: togglePlacedAirConditionerByInstance(current.pet.placedDecorations, instanceId),
+      },
+    });
+    return true;
+  }, []);
+
   const scalePlacedDecoration = useCallback(
     (instanceId: string, direction: "up" | "down") => {
       const current = saveRef.current;
@@ -1171,6 +1189,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeDecorationFromRoom,
       rotatePlacedDecoration,
       flipPlacedDecorationWall,
+      togglePlacedAirConditioner,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,
@@ -1228,6 +1247,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeDecorationFromRoom,
       rotatePlacedDecoration,
       flipPlacedDecorationWall,
+      togglePlacedAirConditioner,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,

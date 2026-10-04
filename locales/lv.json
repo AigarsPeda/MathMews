@@ -121,6 +121,8 @@
     "flipWall": "Pagriezt pret otru sienu",
     "flipBed": "Apgriezt gultu",
     "changeLook": "Mainīt izskatu",
+    "turnOnAirConditioner": "Ieslēgt",
+    "turnOffAirConditioner": "Izslēgt",
     "makeBigger": "Lielāks",
     "makeSmaller": "Mazāks",
     "dismissRoomItemMenu": "Aizvērt priekšmeta izvēlni",

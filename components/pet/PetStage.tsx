@@ -1,3 +1,4 @@
+import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetRoomBackground } from "@/components/pet/PetRoomBackground";
@@ -125,6 +126,7 @@ type PetStageProps = {
   onPlacedDecorationRemove?: (instanceId: string) => void;
   onRotatePlacedDecoration?: (instanceId: string) => void;
   onFlipPlacedDecorationWall?: (instanceId: string) => void;
+  onTogglePlacedAirConditioner?: (instanceId: string) => void;
   onScalePlacedDecoration?: (
     instanceId: string,
     direction: "up" | "down",
@@ -198,6 +200,7 @@ export function PetStage({
   onPlacedDecorationRemove,
   onRotatePlacedDecoration,
   onFlipPlacedDecorationWall,
+  onTogglePlacedAirConditioner,
   onScalePlacedDecoration,
   onMoveRoomLayerItem,
   onBedRemove,
@@ -220,6 +223,9 @@ export function PetStage({
   const roomPlacedDecorations = useMemo(
     () => usesSprite ? (placedDecorations ?? []) : [],
     [placedDecorations, usesSprite],
+  );
+  const airConditionerOn = roomPlacedDecorations.some(
+    placed => isAirConditionerDecorationId(placed.decorationId) && placed.poweredOn,
   );
   const layerOrder = normalizeRoomLayerOrder({
     bedId,
@@ -360,7 +366,8 @@ export function PetStage({
           onMoveRoomLayerItem ||
           onRotatePlacedDecoration ||
           onFlipPlacedDecorationWall ||
-          onScalePlacedDecoration,
+          onScalePlacedDecoration ||
+          (onTogglePlacedAirConditioner && isAirConditionerDecorationId(item.decorationId)),
         );
       }
       return Boolean(onPlacedToyRemove || onMoveRoomLayerItem);
@@ -376,6 +383,7 @@ export function PetStage({
       onRotatePlacedDecoration,
       onFlipPlacedDecorationWall,
       onScalePlacedDecoration,
+      onTogglePlacedAirConditioner,
     ],
   );
 
@@ -408,6 +416,14 @@ export function PetStage({
           (entry) => entry.instanceId === item.instanceId,
         );
         if (!placed) return actions;
+
+        if (onTogglePlacedAirConditioner && isAirConditionerDecorationId(decorationId)) {
+          actions.unshift({
+            label: t(placed.poweredOn ? "home.turnOffAirConditioner" : "home.turnOnAirConditioner"),
+            icon: "power-settings-new",
+            onPress: () => onTogglePlacedAirConditioner(item.instanceId),
+          });
+        }
 
         const isPoster = isPosterDecorationId(decorationId);
 
@@ -549,10 +565,12 @@ export function PetStage({
       onFlipPlacedDecorationWall,
       onRotatePlacedDecoration,
       onScalePlacedDecoration,
+      onTogglePlacedAirConditioner,
       removeMenuLabel,
       roomPlacedDecorations,
       rotateLabel,
       smallerLabel,
+      t,
     ],
   );
 
@@ -706,6 +724,9 @@ export function PetStage({
             decorationId={spriteId}
             size={decorationSize}
             flipHorizontal={getPlacedDecorationWallFlipped(placed)}
+            roomMotion
+            poweredOn={placed.poweredOn}
+            breezy={airConditionerOn}
           />
         </DraggableRoomPet>
       );
@@ -789,6 +810,13 @@ export function PetStage({
                 accessibilityLabel={t("home.dismissRoomItemMenu")}
               />
             ) : null}
+            {compact ? roomPetLayer : petCluster}
+            </Animated.View>
+            {compact && usesSprite && speechMessage ? (
+              <Animated.View pointerEvents="none" onLayout={handleSpeechLayout} style={[styles.speechOverlay, speechPositionStyle]}>
+                <PetSpeechBubble message={speechMessage} />
+              </Animated.View>
+            ) : null}
             {readyMenuAnchor && readyRoomBounds ? (
               <View style={styles.floatingMenuLayer} pointerEvents="box-none">
                 <RoomItemActionMenu
@@ -797,13 +825,6 @@ export function PetStage({
                   roomBounds={readyRoomBounds}
                 />
               </View>
-            ) : null}
-            {compact ? roomPetLayer : petCluster}
-            </Animated.View>
-            {compact && usesSprite && speechMessage ? (
-              <Animated.View pointerEvents="none" onLayout={handleSpeechLayout} style={[styles.speechOverlay, speechPositionStyle]}>
-                <PetSpeechBubble message={speechMessage} />
-              </Animated.View>
             ) : null}
             {compact && usesSprite ? (
               <Pressable style={styles.zoomButton}
@@ -920,7 +941,7 @@ const styles = StyleSheet.create({
   },
   floatingMenuLayer: {
     ...StyleSheet.absoluteFill,
-    zIndex: ROOM_MENU_OPEN_Z_INDEX + 1,
+    zIndex: ROOM_MENU_OPEN_Z_INDEX + 3,
   },
   petStack: {
     width: "100%",
@@ -944,7 +965,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    zIndex: ROOM_MENU_OPEN_Z_INDEX + 1,
+    zIndex: ROOM_PET_LAYER_Z_INDEX + 1,
     width: moderateScale(200),
     alignItems: "flex-start",
   },

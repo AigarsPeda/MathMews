@@ -105,6 +105,8 @@
     "flipWall": "Face other wall",
     "flipBed": "Flip bed",
     "changeLook": "Change look",
+    "turnOnAirConditioner": "Turn on",
+    "turnOffAirConditioner": "Turn off",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
     "dismissRoomItemMenu": "Dismiss item menu",

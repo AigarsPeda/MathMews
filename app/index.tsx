@@ -82,6 +82,7 @@ export default function HomeScreen() {
     moveRoomLayerItem,
     rotatePlacedDecoration,
     flipPlacedDecorationWall,
+    togglePlacedAirConditioner,
     scalePlacedDecoration,
   } = useGame();
   const [actionSpeech, setActionSpeech] = useState<string | null>(null);
@@ -314,6 +315,12 @@ export default function HomeScreen() {
     [flipPlacedDecorationWall, recordInteraction],
   );
 
+  const handleTogglePlacedAirConditioner = useCallback((instanceId: string) => {
+    if (!togglePlacedAirConditioner(instanceId)) return;
+    recordInteraction();
+    triggerHaptic();
+  }, [recordInteraction, togglePlacedAirConditioner]);
+
   const handleScalePlacedDecoration = useCallback(
     (instanceId: string, direction: "up" | "down") => {
       const scaled = scalePlacedDecoration(instanceId, direction);
@@ -533,6 +540,7 @@ export default function HomeScreen() {
               onPlacedDecorationRemove={handleRemoveDecoration}
               onRotatePlacedDecoration={handleRotatePlacedDecoration}
               onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
+              onTogglePlacedAirConditioner={handleTogglePlacedAirConditioner}
               onScalePlacedDecoration={handleScalePlacedDecoration}
               onMoveRoomLayerItem={handleMoveRoomLayerItem}
               onBedRemove={handleRemoveBed}

@@ -45,6 +45,8 @@ export type PlacedDecoration = {
   rotationIndex?: number;
   /** Mirror horizontally for the opposite isometric wall (windows). */
   wallFlipped?: boolean;
+  /** Air-conditioner power, saved separately for each placed unit. */
+  poweredOn?: boolean;
   /** Display scale multiplier (default 1). */
   scale?: number;
 };

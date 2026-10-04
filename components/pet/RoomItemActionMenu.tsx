@@ -4,7 +4,7 @@ import { moderateScale } from "@/utils/scale";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import type { ComponentProps } from "react";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export type RoomItemMenuAction = {
   label: string;
@@ -67,19 +67,28 @@ export function RoomItemActionMenu({
 
   const anchorLeft = anchorRect.pageX - roomBounds.pageX;
   const anchorTop = anchorRect.pageY - roomBounds.pageY;
-  const menuTop =
+  const desiredMenuTop =
     placement === "above"
       ? anchorTop - measuredHeight - MENU_GAP
       : anchorTop + anchorRect.height + MENU_GAP;
+
+  const menuTop = Math.max(ROOM_EDGE_PADDING, Math.min(
+    desiredMenuTop, roomBounds.height - measuredHeight - ROOM_EDGE_PADDING,
+  ));
+  const menuWidth = Math.min(moderateScale(184), roomBounds.width - ROOM_EDGE_PADDING * 2);
+  const menuLeft = Math.max(ROOM_EDGE_PADDING, Math.min(
+    anchorLeft + anchorRect.width / 2 - menuWidth / 2,
+    roomBounds.width - menuWidth - ROOM_EDGE_PADDING,
+  ));
 
   return (
     <View
       style={[
         styles.anchor,
         {
-          left: anchorLeft,
+          left: menuLeft,
           top: menuTop,
-          width: anchorRect.width,
+          width: menuWidth,
         },
       ]}
       pointerEvents="box-none"
@@ -94,7 +103,9 @@ export function RoomItemActionMenu({
         }}
       >
         {placement === "below" ? <View style={styles.arrowUp} /> : null}
-        <View style={styles.menu}>
+        <View style={[styles.menu, { width: menuWidth }]}>
+          <ScrollView style={{ maxHeight: roomBounds.height - ROOM_EDGE_PADDING * 2 - ARROW_SIZE }}
+            showsVerticalScrollIndicator={false} bounces={false}>
           {actions.map((action, index) => {
             const iconColor = action.disabled
               ? GameColors.textMuted
@@ -134,6 +145,7 @@ export function RoomItemActionMenu({
               </Pressable>
             );
           })}
+          </ScrollView>
         </View>
         {placement === "above" ? <View style={styles.arrowDown} /> : null}
       </View>
@@ -161,7 +173,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: moderateScale(2) },
     elevation: 8,
     overflow: "hidden",
-    minWidth: moderateScale(168),
+
   },
   action: {
     flexDirection: "row",
