@@ -15,7 +15,7 @@ Build a native iOS/Android math game with an expressive Blender-rendered compani
 
 ## Start here
 
-The working tree contains many uncommitted code and generated-art changes. Inspect its current diff before editing; preserve work from other chats. Do not assume an older Release package contains the current source or artwork.
+The code and generated artwork are committed in `de929a8` (`feat: add custom icons and expressive plush cat visuals`). Git was clean when checked on 2026-10-04, before this documentation update. Native build/install verification remains listed under Next steps.
 
 Protect the existing game: profile `Ios28`, save `fc4fbe64-9d64-4dc6-a144-ec42cd02afdf`, user `f1c08daf-2037-4a26-a738-36a4b2b72247`. A one-time 100,000-coin test grant was already applied. Preserve the live balance, progress, placement, and inventory; do not repeat the grant or restore a historical balance. The last observation in this chat was 99,592 coins, not a target balance.
 
@@ -126,7 +126,7 @@ Successful practices: use the shared Blender model for every coat/clip; inspect 
 1. Build/install current native artwork and check cold launch on a physical iPhone. Recheck after platform upgrades. Test Android native menus and artwork on a device; do not infer device results from source-level checks.
 2. Get user confirmation that whole-cat flashing is gone during zoom and clip transitions.
 3. Profile the oldest supported iPhone and Android hardware before claiming FPS, memory, or battery performance. Configure real store purchases before release.
-4. Review the current shared diff and split work into coherent commits when requested. Do not use the archive's old Play-only commit suggestion for the whole current diff.
+4. Keep this handoff aligned with future commits and verification results. The code/art commit is complete; the archive's older commit suggestions are historical.
 5. Synchronize external Blender reference notes and older general asset documentation when extending that work. `assets/3d/README.md` still contains historical clip/page/material descriptions; use `clips.json`, the current model/packer, and the focused art READMEs for current values.
 
 ## Commands and environment
