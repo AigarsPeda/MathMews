@@ -23,8 +23,10 @@ for(const id of ['store','stats'])await sharp(path.join(root,`assets/3d/${id}-ic
 await sharp({create:{width:1,height:1,channels:4,background:'#FFF5EB'}}).png().toFile(path.join(out,'splash-background.png'));
 // Native launch branding is available before JavaScript starts. Its transparent
 // margins match the cream background rather than introducing letterbox bars.
-const splashCat=await sharp(portrait).resize(480,480,{fit:'contain',background:'#00000000'}).png().toBuffer();
-const title=Buffer.from('<svg width="640" height="110"><text x="320" y="75" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="800" font-size="68" fill="#293334">Math Mews</text></svg>');
-await sharp({create:{width:640,height:650,channels:4,background:'#00000000'}})
- .composite([{input:splashCat,left:80,top:10},{input:title,left:0,top:490}]).png().toFile(path.join(out,'splash-brand.png'));
+// A 240 pt square in both the native launch screen and React Native. Its cat
+// occupies the same 192 pt window and starts on the idle sheet's first cell.
+const splashCat=await sharp(path.join(root,'assets/3d/cat-splash.png')).resize(512,512).png().toBuffer();
+const title=Buffer.from('<svg width="640" height="112"><text x="320" y="86" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="800" font-size="85.333" fill="#293334">Math Mews</text></svg>');
+await sharp({create:{width:640,height:640,channels:4,background:'#00000000'}})
+ .composite([{input:splashCat,left:64,top:0},{input:title,left:0,top:528}]).png().toFile(path.join(out,'splash-brand.png'));
 console.log('Generated modern 3D branding.');

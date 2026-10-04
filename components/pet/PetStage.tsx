@@ -76,6 +76,8 @@ const COMPACT_ROOM_RADIUS = nestedBorderRadius(
 const COMPACT_PET_MIN = 200;
 const COMPACT_PET_MAX = 300;
 const COMPACT_SPRITE_PET_SIZE = 120;
+const SPEECH_TAIL_X = moderateScale(23);
+const SPEECH_ANCHOR_X = moderateScale(30) + SPEECH_TAIL_X;
 
 function compactPetWidth(petType: PetType, compact: boolean) {
   const usesSprite = USE_CAT_SPRITE_PETS && petType === "cat";
@@ -269,6 +271,9 @@ export function PetStage({
   const sceneX = useSharedValue(0);
   const sceneY = useSharedValue(0);
   const sceneScale = useSharedValue(1);
+  const petSceneX = useSharedValue(0);
+  const petSceneY = useSharedValue(0);
+  const speechHeight = useSharedValue(0);
   const panStartX = useSharedValue(0);
   const panStartY = useSharedValue(0);
   const maxPanX = Math.max(0, (zoom - 1) * viewport.width / 2);
@@ -303,6 +308,23 @@ export function PetStage({
       { scale: sceneScale.get() },
     ] };
   });
+  const handlePetPositionChange = useCallback((position: { x: number; y: number }) => {
+    petSceneX.set(position.x);
+    petSceneY.set(position.y);
+  }, [petSceneX, petSceneY]);
+  const handleSpeechLayout = useCallback((event: LayoutChangeEvent) => {
+    speechHeight.set(event.nativeEvent.layout.height);
+  }, [speechHeight]);
+  const speechPositionStyle = useAnimatedStyle(() => ({
+    // Project the tail into the viewport; keep the text at native screen size.
+    opacity: speechHeight.get() > 0 ? 1 : 0,
+    transform: [
+      { translateX: viewport.width / 2 + sceneX.get() +
+        (petSceneX.get() - displayWidth / 2 + SPEECH_ANCHOR_X) * sceneScale.get() - SPEECH_TAIL_X },
+      { translateY: viewport.height / 2 + sceneY.get() +
+        (petSceneY.get() - displayWidth * .2) * sceneScale.get() - speechHeight.get() },
+    ],
+  }));
   const petDisplayWidth = avatarDisplayWidth(
     petType,
     avatarWidth,
@@ -590,8 +612,8 @@ export function PetStage({
         !compact && { width: petDisplayWidth },
       ]}
     >
-      {speechMessage && zoom === 1 ? (
-        <View style={compact ? styles.speechAbovePet : styles.speechAnchor}>
+      {speechMessage && !(compact && usesSprite) ? (
+        <View pointerEvents="none" style={compact ? styles.speechAbovePet : styles.speechAnchor}>
           <PetSpeechBubble message={speechMessage} />
         </View>
       ) : null}
@@ -616,6 +638,7 @@ export function PetStage({
         petSize={displayWidth}
         initialOffset={roomPetOffset}
         onOffsetChange={zoom === 1 ? onRoomPetOffsetChange : undefined}
+        onPositionChange={handlePetPositionChange}
         onPetTap={onPetPress}
         layerZIndex={ROOM_PET_LAYER_Z_INDEX}
       >
@@ -777,6 +800,11 @@ export function PetStage({
             ) : null}
             {compact ? roomPetLayer : petCluster}
             </Animated.View>
+            {compact && usesSprite && speechMessage ? (
+              <Animated.View pointerEvents="none" onLayout={handleSpeechLayout} style={[styles.speechOverlay, speechPositionStyle]}>
+                <PetSpeechBubble message={speechMessage} />
+              </Animated.View>
+            ) : null}
             {compact && usesSprite ? (
               <Pressable style={styles.zoomButton}
                 onPress={() => { closeMenu(); setZoom(current => current === 3 ? 1 : current+1); }}
@@ -785,9 +813,6 @@ export function PetStage({
                 accessibilityValue={{ text: t("home.zoomLevel", { zoom }) }}>
                 <Text style={styles.zoomLabel}>{zoom === 3 ? "−" : "+"} {zoom}×</Text>
               </Pressable>
-            ) : null}
-            {zoom > 1 && speechMessage ? (
-              <View pointerEvents="none" style={styles.zoomSpeech}><PetSpeechBubble message={speechMessage} /></View>
             ) : null}
           </View>
 
@@ -871,7 +896,6 @@ const styles = StyleSheet.create({
     borderColor: GameColors.cardBorder, borderWidth: 1, alignItems: "center", justifyContent: "center",
   },
   zoomLabel: { color: GameColors.text, fontSize: 16, fontWeight: "700" },
-  zoomSpeech: { position: "absolute", top: 12, left: 12, right: 80, zIndex: ROOM_MENU_OPEN_Z_INDEX+1 },
   avatarWrap: {
     minHeight: moderateScale(120),
     alignItems: "center",
@@ -915,6 +939,14 @@ const styles = StyleSheet.create({
     left: moderateScale(30),
     alignItems: "flex-start",
     zIndex: 2,
+  },
+  speechOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: ROOM_MENU_OPEN_Z_INDEX + 1,
+    width: moderateScale(200),
+    alignItems: "flex-start",
   },
   avatarCluster: {
     position: "relative",

@@ -36,6 +36,12 @@ On a fresh clone, copy the external Blender library beside the repository, or re
 
 To rebuild only the cat's 66 clips and branding, run `npm run assets:3d -- --only cat --refresh`. Rooms, furniture and their item IDs stay as they are. The cat scenes include editable transform keyframes for its brows, mouth, frown, ears, eyes, catchlights, paws and tears.
 
+The short front and back legs overlap the torso and paws in every pose. Their transforms are keyed along with the paw controls, so waving and lying down keep those connections. Check all procedural poses with Blender running `scripts/3d/check-cat-leg-connections.py`. For interrupted renders, the renderer accepts `--skin grey --clips sleep,dance --refresh` to rebuild selected clips.
+
+The three box clips use `create_cat(..., boxed=True)`: the tail rises inside the box before curling above the rim. All four paws stay tucked behind the walls and above the floor during body bobs; back-paw transforms are keyed too. Rebuild these nine clips with the renderer's `--only cat --clips box1,box2,box3 --refresh`, then run `node scripts/3d/pack.mjs`. Check the actual posed geometry with Blender running `scripts/3d/check-cat-box-containment.py`; append `-- --baked` to check every frame in the saved orange scenes. `node scripts/3d/review-cat-box.mjs` produces `docs/art/cat-box-keyposes.png` for all coats and clips.
+
+`pack.mjs` extracts `cat-splash.png` directly from the first orange idle atlas cell. The launch logo and the loading animation use that same pose. Run `node scripts/check-splash-continuity.mjs` after packing to check pixel identity and startup readiness.
+
 To render one object directly:
 
 ```sh
@@ -53,7 +59,7 @@ The renderer uses Blender 5.2.2 LTS and Eevee. `--cycles` selects Cycles. Preser
 - The 22 cat clips run at 24 fps. Idle lasts 4 seconds, correct 2.5 seconds, incorrect 2 seconds, and feeding 3 seconds. The splash uses a separate full 192 px idle sheet.
 - Furniture and small-toy loops use eight frames at 12 fps.
 - Cat sprites use smooth linear sampling and fractional scaling. Reanimated advances frames on the UI thread; background/covered screens pause. Reduce Motion freezes loops. Gameplay can zoom to 3× without writing placement offsets.
-- Cat WebP pages use quality 90 and alpha quality 100. The full set is about 83.1 MiB, 88.54% smaller than the HD PNG equivalent. See `docs/art/cat-texture-metrics.json`.
+- Cat WebP pages use quality 90 and alpha quality 100. The current 1,089 pages total 89,574,090 bytes, about 85.4 MiB. See `docs/art/cat-texture-metrics.json` for current and earlier measurements.
 - Individual render frames and Blender backups are ignored by Git. Metro excludes source scenes and intermediate frames. Editable `.blend` files live outside the repository and are not bundled into the app. Back up the external folder to preserve manual Blender edits; the previous scenes remain recoverable from Git history.
 
 `npm run assets:verify` checks all 288 retained item IDs, texture dimensions/page budgets, nonempty cat frames, unclipped cat silhouettes, motion, forward/reverse completion, page-loading stalls, mirroring and rest/sleep/wake transitions.

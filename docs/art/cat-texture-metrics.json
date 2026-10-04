@@ -14,5 +14,25 @@
     "cellSize": 768,
     "decodedPageBytes": 9437184,
     "decodedPairBytes": 18874368
+  },
+  "legConnections": {
+    "date": "2026-10-03",
+    "webpBytes": 90000996,
+    "pages": 1089,
+    "frames": 4356,
+    "cellSize": 768,
+    "decodedPageBytes": 9437184,
+    "decodedPairBytes": 18874368
+  },
+  "boxContainment": {
+    "date": "2026-10-03",
+    "webpBytes": 89574090,
+    "pages": 1089,
+    "frames": 4356,
+    "updatedClips": 9,
+    "updatedFrames": 432,
+    "cellSize": 768,
+    "decodedPageBytes": 9437184,
+    "decodedPairBytes": 18874368
   }
 }

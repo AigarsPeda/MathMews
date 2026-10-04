@@ -55,6 +55,9 @@ for(const x of [120,900])for(let y=140;y<885;y++){
 }
 const splash=await sharp('assets/images/splash-brand.png').metadata();
 assert.ok(splash.width>=640&&splash.height>=640,'Native splash is missing its branded image');
+const splashPortrait=await sharp('assets/3d/cat-splash.png').ensureAlpha().raw().toBuffer();
+const splashFrame=await sharp('assets/3d/atlases/cat-orange-idle.png').extract({left:0,top:0,width:192,height:192}).ensureAlpha().raw().toBuffer();
+assert.deepEqual(splashPortrait,splashFrame,'Splash portrait must match the first idle animation cell');
 console.log(`Verified both-wall controls for ${variants.WALL_FACING_DECORATION_IDS.length} additional items and launch branding.`);
 const {getCatSpriteAnimations}=load('pet-display/registry/cat-sprite-atlas.ts');
 const {createCatSpriteRegistry}=load('pet-display/registry/cat-sprite-registry.ts');

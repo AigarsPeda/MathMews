@@ -4,12 +4,11 @@ import { GameColors } from "@/constants/game";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useGame } from "@/contexts/GameProvider";
 import { getGameAssetLoadingSnapshot, subscribeGameAssetLoading } from "@/lib/init-game-asset-prefetch";
-import { moderateScale } from "@/utils/scale";
 import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
 import { type ReactNode, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 const MIN_SPLASH_MS = 1_200;
 const DATA_MAX_WAIT_MS = 12_000;
@@ -22,10 +21,16 @@ export function SplashGate({ children }: { children: ReactNode }) {
   const assets = useSyncExternalStore(subscribeGameAssetLoading, getGameAssetLoadingSnapshot, getGameAssetLoadingSnapshot);
   const [showOverlay, setShowOverlay] = useState(true);
   const [brandingReady, setBrandingReady] = useState(false);
+  const [logoReady, setLogoReady] = useState(false);
+  const [catReady, setCatReady] = useState(false);
+  const [layoutReady, setLayoutReady] = useState(false);
   const [minimumElapsed, setMinimumElapsed] = useState(false);
   const [dataWaitElapsed, setDataWaitElapsed] = useState(false);
   const nativeSplashHiddenRef = useRef(false);
-  const handleBrandingReady = useCallback(() => setBrandingReady(true), []);
+  const handleBrandingReady = useCallback(() => {
+    setBrandingReady(true);
+    setCatReady(true);
+  }, []);
 
   useEffect(() => {
     const minimum = setTimeout(() => setMinimumElapsed(true), MIN_SPLASH_MS);
@@ -34,7 +39,7 @@ export function SplashGate({ children }: { children: ReactNode }) {
   }, []);
 
   const dataComplete = isAuthReady && cloudRestoreCheckComplete;
-  const canOpen = isReady && assets.mayContinue && (dataComplete || dataWaitElapsed) && minimumElapsed;
+  const canOpen = logoReady && catReady && layoutReady && isReady && assets.mayContinue && (dataComplete || dataWaitElapsed) && minimumElapsed;
   useEffect(() => {
     if (!canOpen || !showOverlay) return;
     // Let the final status paint before mounting gameplay.
@@ -45,9 +50,13 @@ export function SplashGate({ children }: { children: ReactNode }) {
   const hideNativeSplash = useCallback(() => {
     if (nativeSplashHiddenRef.current) return;
     nativeSplashHiddenRef.current = true;
-    // This view already contains a title, fallback portrait and progress track.
+    // The identical native logo has loaded into the laid-out React view.
     requestAnimationFrame(() => { SplashScreen.hideAsync().catch(() => {}); });
   }, []);
+
+  useEffect(() => {
+    if (logoReady && catReady && layoutReady) hideNativeSplash();
+  }, [catReady, hideNativeSplash, layoutReady, logoReady]);
 
   if (!showOverlay) return <>{children}</>;
 
@@ -59,16 +68,16 @@ export function SplashGate({ children }: { children: ReactNode }) {
 
   return (
     <View style={styles.gate}>
-      <SplashBackdrop onLayout={hideNativeSplash}>
-        <View style={styles.content}>
+      <SplashBackdrop>
+        <View style={styles.content} onLayout={() => setLayoutReady(true)} accessible accessibilityRole="header" accessibilityLabel={APP_NAME}>
+          <Image source={require("@/assets/images/splash-brand.png")} style={styles.brandingImage} resizeMode="contain" onLoad={() => setLogoReady(true)} />
           <View style={styles.cat}>
-            {!brandingReady ? <Image source={require("@/assets/3d/cat-preview.png")} style={StyleSheet.absoluteFill} resizeMode="contain" /> : null}
-            <AnimatedSplashCat onReady={handleBrandingReady} />
+            <AnimatedSplashCat size={192} playing={brandingReady} onReady={handleBrandingReady} />
+            {!brandingReady ? <Image source={require("@/assets/3d/cat-splash.png")} style={styles.portrait} resizeMode="contain" onLoad={() => setCatReady(true)} /> : null}
           </View>
-          <Text style={styles.title} accessibilityRole="header">{APP_NAME}</Text>
-          <View style={styles.loading}>
-            <ProgressBar progress={progress} fillColor={GameColors.primary} trackColor={GameColors.cardBorder} accessibilityLabel={t("loading.label")} />
-          </View>
+        </View>
+        <View style={styles.loading}>
+          <ProgressBar progress={progress} fillColor={GameColors.primary} trackColor={GameColors.cardBorder} accessibilityLabel={t("loading.label")} />
         </View>
       </SplashBackdrop>
     </View>
@@ -77,8 +86,11 @@ export function SplashGate({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   gate: { flex: 1 },
-  content: { alignItems: "center", gap: moderateScale(16), width: "100%", paddingHorizontal: moderateScale(32) },
-  cat: { width: moderateScale(192), height: moderateScale(192) },
-  title: { fontWeight: "800", textAlign: "center", color: GameColors.text, fontSize: moderateScale(32), letterSpacing: moderateScale(.5) },
-  loading: { width: "100%", maxWidth: 280, gap: moderateScale(10), marginTop: moderateScale(16) },
+  content: { width: 240, height: 240, overflow: "hidden" },
+  // Image supplies its asset's intrinsic dimensions before applying styles.
+  // Absolute-fill offsets alone do not override the 640 px source size.
+  brandingImage: { ...StyleSheet.absoluteFill, width: 240, height: 240 },
+  portrait: { ...StyleSheet.absoluteFill, width: 192, height: 192 },
+  cat: { position: "absolute", left: 24, top: 0, width: 192, height: 192, overflow: "hidden", backgroundColor: GameColors.background },
+  loading: { position: "absolute", top: "50%", marginTop: 152, width: "72%", maxWidth: 280 },
 });

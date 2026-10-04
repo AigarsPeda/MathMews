@@ -60,6 +60,9 @@ for(const skin of ['orange','grey','white']){
  sources+='  },\n';pages+='  },\n';
 }
 sources+='} as const;\n';pages+='} as const;\n';
+// Use the actual decoded first splash cell, including its framing and sampling.
+await sharp(path.join(out,'atlases/cat-orange-idle.png'))
+ .extract({left:0,top:0,width:192,height:192}).png().toFile(path.join(out,'cat-splash.png'));
 await fs.writeFile('constants/cat-3d-animation-sources.ts',sources);
 await fs.writeFile('constants/cat-3d-animation-pages.ts',pages);
 for(const e of entries)if(e.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id))await pack(e.id,8);

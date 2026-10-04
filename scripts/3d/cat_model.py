@@ -229,7 +229,7 @@ def face_ball(name, x, z, scale, material, head, offset=.016):
     return obj
 
 
-def create_cat(skin='orange'):
+def create_cat(skin='orange', boxed=False):
     coat = fur_material(skin)
     cream = solid_material('Ivory', CREAM, .78)
     blush = solid_material('Rosy cheeks', BLUSH, .82)
@@ -246,10 +246,12 @@ def create_cat(skin='orange'):
     body = group('Short pear body', BODY_HOME, root)
     ball('Cream pear body', (0, 0, 0), (.46, .39, .45), fur_material(skin, 'body'), body)
     ball('Round haunches', (0, .09, -.11), (.48, .36, .31), fur_material(skin, 'body'), body)
-    feet = []
+    feet, back_feet, legs, back_legs = [], [], [], []
     for side in (-1, 1):
         feet.append(ball('Front paw ' + str(side), (side * .23, -.31, .18), (.16, .21, .20), fur_material(skin, 'paw'), root))
-        ball('Back paw ' + str(side), (side * .36, .16, .14), (.18, .20, .15), cream, root)
+        back_feet.append(ball('Back paw ' + str(side), (side * .36, .16, .14), (.18, .20, .15), cream, root))
+        legs.append(ball('Short front leg ' + str(side), (0, 0, 0), (.14, .14, .25), cream, root))
+        back_legs.append(ball('Short back leg ' + str(side), (0, 0, 0), (.15, .15, .20), cream, root))
     head = group('Oversized round head', HEAD_HOME, root)
     ball('Ivory face and orange crown', (0, 0, 0), HEAD_RADII, fur_material(skin, 'head'), head)
     ears = []
@@ -281,10 +283,14 @@ def create_cat(skin='orange'):
     line('Gentle frown', [(-.062, 0, -.020), (0, -.006, .015), (.062, 0, -.020)], .013, caramel, frown)
     frown.scale = (0, 0, 0)
     tail = group('Short curved tail pivot', (.34, .14, .24), root)
-    line('Plump orange tail', [(0, 0, 0), (.24, .14, .045), (.43, .12, .27), (.42, .04, .48)], .102, coat, tail)
-    ball('Cream tail tip', (.42, .04, .48), (.097, .098, .095), cream, tail)
+    # In the box, rise inside the opening before curling out above the rim.
+    tail_points = [(0, 0, 0), (.12, .10, .27), (.42, .12, .50), (.45, .04, .72)] if boxed else [
+        (0, 0, 0), (.24, .14, .045), (.43, .12, .27), (.42, .04, .48)]
+    line('Plump orange tail', tail_points, .102, coat, tail)
+    ball('Cream tail tip', tail_points[-1], (.097, .098, .095), cream, tail)
     return dict(root=root, body=body, head=head, ears=ears, eyes=eyes, glints=glints,
-                brows=brows, mouth=mouth, frown=frown, tears=tears, feet=feet, tail=tail)
+                brows=brows, mouth=mouth, frown=frown, tears=tears, feet=feet,
+                back_feet=back_feet, legs=legs, back_legs=back_legs, tail=tail)
 
 
 def smoothstep(t):
@@ -308,6 +314,7 @@ def pose_cat(rig, state, t):
     body.location, body.scale = BODY_HOME, (1, 1, 1 + .025 * math.sin(phase * 2))
     head.location, head.scale = HEAD_HOME, (1, 1, 1)
     head.rotation_euler = (.025 * math.sin(phase), .095 * math.sin(phase), -.025 * math.sin(phase))
+    tail.location = (.34, .14, .24)
     tail.rotation_euler = (.035 * math.sin(phase * 5), 0, .25 * math.sin(phase * 2))
     rig['mouth'].scale = (1, 1, .48)
     rig['frown'].scale = (0, 0, 0)
@@ -318,6 +325,8 @@ def pose_cat(rig, state, t):
         brow.rotation_euler = (0, side * -.04, 0)
         paw.location, paw.rotation_euler, paw.scale = (side * .23, -.31, .18), (0, 0, 0), (.16, .21, .20)
         tear.scale = (0, 0, 0)
+    for side, paw in zip((-1, 1), rig['back_feet']):
+        paw.location, paw.scale = (side * .36, .16, .14), (.18, .20, .15)
     if state in ('idle', 'idle2', 'blinkIdle', 'blinkSit', 'waiting'):
         # Two breaths, a look to either side, a double ear flick and a paw shift.
         head.location.z += .014 * math.sin(phase * 2)
@@ -396,7 +405,12 @@ def pose_cat(rig, state, t):
     if state in ('box1', 'box2', 'box3'):
         root.location.z = -.08 + (.11 * envelope if state == 'box3' else .045 * math.sin(phase))
         head.rotation_euler.y = .12 * math.sin(phase)
-        tail.rotation_euler.z = .20 * math.sin(phase * (2 if state == 'box1' else 1))
+        # Keep paws above the box floor and behind its front wall during bobs.
+        for side, paw, back_paw in zip((-1, 1), rig['feet'], rig['back_feet']):
+            paw.location, paw.scale = (side * .23, -.13, .30 - root.location.z), (.15, .17, .11)
+            back_paw.location, back_paw.scale = (side * .34, .12, .29 - root.location.z), (.17, .17, .11)
+        tail.location = (.40, .14, .37 - root.location.z)
+        tail.rotation_euler = (0, 0, .20 * math.sin(phase * (2 if state == 'box1' else 1)))
         rig['mouth'].scale.z = .65
     if state == 'waiting':
         head.rotation_euler.x = -.10 * envelope
@@ -405,6 +419,20 @@ def pose_cat(rig, state, t):
         eye.scale = (.091, .050, eye_height)
         opening = max(0, min(1, (eye_height - .010) / .065))
         glint.scale = (.023 * opening, .012 * opening, .027 * opening)
+    # Root-local endpoints follow the posed torso and paws. Both ends overlap
+    # their meshes, including during waves, breathing and lying down.
+    body_transform = body.matrix_basis
+    for side, paw, leg, back_paw, back_leg in zip(
+            (-1, 1), rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
+        for limb, foot, anchor, radius in (
+                (leg, paw, (side * .23, -.18, 0), .14),
+                (back_leg, back_paw, (side * .32, .12, -.16), .15)):
+            shoulder = body_transform @ Vector(anchor)
+            tip = foot.location.copy()
+            direction = tip - shoulder
+            limb.location = (shoulder + tip) / 2
+            limb.rotation_euler = direction.to_track_quat('Z', 'Y').to_euler()
+            limb.scale = (radius, radius, direction.length / 2 + radius)
 
 
 def configure_cat_camera(scene):
@@ -416,5 +444,5 @@ def configure_cat_camera(scene):
 
 def animated_parts(rig):
     return [rig[key] for key in ('root', 'body', 'head', 'tail', 'mouth', 'frown')] + [
-        obj for key in ('ears', 'eyes', 'glints', 'brows', 'feet', 'tears') for obj in rig[key]
+        obj for key in ('ears', 'eyes', 'glints', 'brows', 'feet', 'back_feet', 'legs', 'back_legs', 'tears') for obj in rig[key]
     ]

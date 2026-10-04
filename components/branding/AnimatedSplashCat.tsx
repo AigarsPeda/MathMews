@@ -13,7 +13,7 @@ import {
   Image as SkiaImage,
   useImage,
 } from "@shopify/react-native-skia";
-import { useEffect, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
 const IDLE = CAT_SPRITE_CATALOG.idle;
@@ -28,6 +28,7 @@ const SMOOTH_SAMPLING = {
 
 type AnimatedSplashCatProps = {
   size?: number;
+  playing?: boolean;
   onReady?: () => void;
 };
 
@@ -43,22 +44,32 @@ function useSplashLayout(size: number) {
 /** Smooth breathing and blinking from the Blender cat. */
 export function AnimatedSplashCat({
   size = moderateScale(192),
+  playing = true,
   onReady,
 }: AnimatedSplashCatProps) {
   const skiaImage = useImage(SHEET_SOURCE);
-  const frameIndex = useSpriteClock({ frameCount: IDLE.frameCount, fps: FPS, loop: true, readyPages: skiaImage ? [0] : [] });
+  const frameIndex = useSpriteClock({ frameCount: IDLE.frameCount, fps: FPS, loop: true, readyPages: skiaImage && playing ? [0] : [] });
   const isMounted = useIsMounted();
+  const [windowLaidOut, setWindowLaidOut] = useState(false);
+  const handleWindowLayout = useCallback(() => setWindowLaidOut(true), []);
   const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
     useSplashLayout(size);
 
-  const imageX = useDerivedValue(() => -(frameIndex.value % CAT_SKIN_SHEET.cols) * FRAME_SIZE * pixelScale);
-  const imageY = useDerivedValue(() => -Math.floor(frameIndex.value / CAT_SKIN_SHEET.cols) * FRAME_SIZE * pixelScale);
+  const imageX = useDerivedValue(() => -(frameIndex.get() % CAT_SKIN_SHEET.cols) * FRAME_SIZE * pixelScale);
+  const imageY = useDerivedValue(() => -Math.floor(frameIndex.get() / CAT_SKIN_SHEET.cols) * FRAME_SIZE * pixelScale);
 
   useEffect(() => {
-    if (skiaImage && isMounted.current) {
-      onReady?.();
-    }
-  }, [isMounted, onReady, skiaImage]);
+    if (!skiaImage || !windowLaidOut) return;
+    // Decoding alone does not mean the Canvas has painted. Hold frame zero
+    // beneath the portrait until the laid-out surface gets a drawing turn.
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        if (isMounted.current) onReady?.();
+      });
+    });
+    return () => { cancelAnimationFrame(firstFrame); cancelAnimationFrame(secondFrame); };
+  }, [isMounted, onReady, skiaImage, windowLaidOut]);
 
   const windowStyle = {
     width: displaySize,
@@ -67,12 +78,12 @@ export function AnimatedSplashCat({
   };
 
   if (!skiaImage) {
-    return <View style={[styles.wrap, windowStyle]} />;
+    return <View onLayout={handleWindowLayout} style={[styles.wrap, windowStyle]} />;
   }
 
   return (
-    <View style={[styles.wrap, windowStyle]}>
-      <Canvas style={{ width: displaySize, height: displaySize }}>
+    <View onLayout={handleWindowLayout} style={[styles.wrap, windowStyle]}>
+      <Canvas colorSpace="srgb" style={{ width: displaySize, height: displaySize }}>
         <Group clip={{ x: 0, y: 0, width: displaySize, height: displaySize }}>
           <SkiaImage
             x={imageX}

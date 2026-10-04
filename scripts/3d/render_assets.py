@@ -101,8 +101,8 @@ def frame_camera(objects,margin=1.17):
  bpy.context.view_layer.update();inv=camera.matrix_world.inverted();points=[inv@v for v in coords];w=max(v.x for v in points)-min(v.x for v in points);h=max(v.y for v in points)-min(v.y for v in points)
  camera.data.ortho_scale=max(w,h)*margin
 
-def cat(skin='orange'):
- return create_cat(skin)
+def cat(skin='orange',boxed=False):
+ return create_cat(skin,boxed=boxed)
 
 def cat_pose(rig,state,t):
  pose_cat(rig,state,t)
@@ -642,18 +642,27 @@ def render_furniture(entries):
 
 CAT_CLIPS=json.loads((ROOT/'scripts/3d/clips.json').read_text())
 
+def cat_play_box():
+ # Open cardboard box with a low front so the cat stays visible.
+ box('Box bottom',(0,0,.08),(1.35,.92,.12),'wood',.05)
+ for x in [-.65,.65]:box('Box side',(x,0,.28),(.08,.94,.43),'wood',.035)
+ box('Box front',(0,-.43,.25),(1.31,.08,.36),'wood',.025)
+ box('Box back',(0,.43,.30),(1.31,.08,.47),'wood',.025)
+
 def render_cats():
- for skin in ['orange','grey','white']:
+ skins=[ARGS[ARGS.index('--skin')+1]] if '--skin' in ARGS else ['orange','grey','white']
+ states=ARGS[ARGS.index('--clips')+1].split(',') if '--clips' in ARGS else list(CAT_CLIPS)
+ if any(skin not in ['orange','grey','white'] for skin in skins):raise ValueError('Unknown cat coat')
+ if any(state not in CAT_CLIPS for state in states):raise ValueError('Unknown cat clip')
+ for skin in skins:
   for state,(count,fps) in CAT_CLIPS.items():
+   if state not in states:continue
    dest=OUT/'frames'/('cat-'+skin+'-'+state);dest.mkdir(parents=True,exist_ok=True)
    if '--refresh' not in ARGS and all((dest/f'{i:03}.png').exists() for i in range(count)):continue
-   scene=setup(CAT_FRAME_SIZE);rig=cat(skin);configure_cat_camera(scene)
+   scene=setup(CAT_FRAME_SIZE);rig=cat(skin,boxed=state.startswith('box'));configure_cat_camera(scene)
    if state=='eating':bowl()
    if state.startswith('box'):
-    # Open cardboard box with a low front so the cat stays visible.
-    box('Box bottom',(0,0,.08),(1.35,.92,.12),'wood',.05)
-    for x in [-.65,.65]:box('Box side',(x,0,.28),(.08,.94,.43),'wood',.035)
-    box('Box front',(0,-.43,.25),(1.31,.08,.36),'wood',.025);box('Box back',(0,.43,.30),(1.31,.08,.47),'wood',.025)
+    cat_play_box()
    scene.render.fps=fps;scene.frame_start=1;scene.frame_end=count
    for i in range(count):
     scene.frame_set(i+1);t=i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep'] else i/count

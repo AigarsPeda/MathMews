@@ -3,6 +3,7 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -26,6 +27,8 @@ type DraggableRoomPetProps = {
   hitSize?: number;
   initialOffset?: RoomPetOffset;
   onOffsetChange?: (offset: RoomPetOffset) => void;
+  /** Live position in room pixels relative to the room's center. */
+  onPositionChange?: (position: { x: number; y: number }) => void;
   onPetTap?: () => void;
   layerZIndex?: number;
   onMenuAnchorLayout?: (rect: RoomMenuAnchorRect) => void;
@@ -86,12 +89,16 @@ export function DraggableRoomPet({
   hitSize,
   initialOffset = DEFAULT_OFFSET,
   onOffsetChange,
+  onPositionChange,
   onPetTap,
   layerZIndex = 1,
   onMenuAnchorLayout,
 }: DraggableRoomPetProps) {
   const [roomSize, setRoomSize] = useState({ width: 0, height: 0 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  useLayoutEffect(() => {
+    onPositionChange?.(position);
+  }, [onPositionChange, position]);
   const petSlotRef = useRef<View>(null);
 
   const positionRef = useRef(position);
