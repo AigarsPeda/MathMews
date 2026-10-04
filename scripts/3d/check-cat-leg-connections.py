@@ -13,8 +13,8 @@ for skin in ('orange', 'grey', 'white'):
         for i in range(count):
             t = i/(count-1) if state in ['jumpOn','jumpOff','curlUp','sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*scope['PLAY_CLIPS']] else i/count
             scope['cat_pose'](rig,state,t)
-            for side, leg, foot, back_leg, back_foot in zip((-1,1),rig['legs'],rig['feet'],rig['back_legs'],rig['back_feet']):
-                for limb, paw, anchor in ((leg,foot,(side*.23,-.18,0)),(back_leg,back_foot,(side*.32,.12,-.16))):
+            for anchors, leg, foot, back_leg, back_foot in zip(rig['leg_anchors'],rig['legs'],rig['feet'],rig['back_legs'],rig['back_feet']):
+                for limb, paw, anchor in ((leg,foot,anchors[0]),(back_leg,back_foot,anchors[1])):
                     shoulder = rig['body'].matrix_basis @ Vector(anchor)
                     for end in (shoulder, paw.location):
                         local = limb.matrix_basis.inverted() @ end

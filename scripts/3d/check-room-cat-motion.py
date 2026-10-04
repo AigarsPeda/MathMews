@@ -22,11 +22,20 @@ for skin in ('orange', 'grey', 'white'):
                     # Forward torso travel is half a Blender unit per cycle.
                     assert abs((paw.location.y - y) / .0001 - .5) < .001, 'A planted paw must remain fixed against forward floor travel'
                     scope['cat_pose'](rig, state, t)
-            for side, front, front_leg, back, back_leg in zip((-1, 1), rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
-                for limb, paw, anchor in ((front_leg, front, (side*.23, -.18, 0)), (back_leg, back, (side*.32, .12, -.16))):
+            for anchors, front, front_leg, back, back_leg in zip(rig['leg_anchors'], rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
+                for limb, paw, anchor in ((front_leg, front, anchors[0]), (back_leg, back, anchors[1])):
                     shoulder = rig['body'].matrix_basis @ Vector(anchor)
+                    # Roots must be embedded in the pear torso, not just joined
+                    # to a paw by a long diagonal connector.
+                    z = anchor.z / .45
+                    x = anchor.x / (.44 * (1 - .16 * z))
+                    y = anchor.y / (.44 * (1 - .10 * z))
+                    assert x*x + y*y + z*z < .85, 'Shoulders and hips must overlap the torso deeply'
+                    assert abs(shoulder.x - paw.location.x) < .04, 'Walking paws must stay beneath the torso instead of splaying sideways'
+                    assert abs(shoulder.y - paw.location.y) < .34, 'Legs must attach near their chest/hip end of the body'
                     for end in (shoulder, paw.location):
                         assert (limb.matrix_basis.inverted() @ end).length < .999, 'Walking must keep the legs connected'
+                assert (rig['body'].matrix_basis @ anchors[1]).y - (rig['body'].matrix_basis @ anchors[0]).y > .70, 'Shoulders and hips must span the standing torso'
     scope['cat_pose'](rig, 'idle', 0)
     sitting = [(obj.location.copy(), obj.scale.copy()) for obj in scope['animated_parts'](rig)]
     scope['cat_pose'](rig, 'jumpOn', 1)

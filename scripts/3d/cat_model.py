@@ -332,6 +332,7 @@ def pose_cat(rig, state, t):
     root, body, head, tail = (rig[key] for key in ('root', 'body', 'head', 'tail'))
     phase = t * math.tau
     envelope = math.sin(math.pi * t)
+    standing = 0
     root.location, root.rotation_euler = (0, 0, 0), (0, 0, 0)
     body.location, body.scale = BODY_HOME, (1, 1, 1 + .025 * math.sin(phase * 2))
     head.location, head.scale = HEAD_HOME, (1, 1, 1)
@@ -357,6 +358,7 @@ def pose_cat(rig, state, t):
             ear.rotation_euler.x += .18 * pulse(t,.22 + side*.018,.055)
         rig['feet'][1].location.z += .045 * pulse(t,.58,.12)
     if state.startswith('walk'):
+        standing = 1
         # A four-beat walk: each planted paw travels backward at constant speed
         # relative to the torso, then lifts and swings forward. Stance occupies
         # 64% of the cycle, so at least two paws always support the body.
@@ -368,6 +370,11 @@ def pose_cat(rig, state, t):
         head.scale = (.94, .94, .94)
         head.location = (0, -.32, 1.02 + .006 * math.cos(phase * 2))
         head.rotation_euler = (.04, .025 * math.sin(phase), 0)
+        for side, front, back in zip((-1, 1), rig['feet'], rig['back_feet']):
+            front.location.x = side * .23
+            front.scale = (.14, .17, .12)
+            back.location.x = side * .27
+            back.scale = (.16, .18, .105)
         for paw, offset, y, height in (
                 (rig['back_feet'][0], 0, .43, .105), (rig['feet'][0], .25, -.49, .12),
                 (rig['back_feet'][1], .50, .43, .105), (rig['feet'][1], .75, -.49, .12)):
@@ -392,6 +399,7 @@ def pose_cat(rig, state, t):
         settle = smoothstep((t - .70) / .30)
         launch = smoothstep(t / .20)
         seated = settle if onto else 1 - launch
+        standing = 1 - seated
         crouch = pulse(t, .14, .14)
         landing = pulse(t, .77, .07)
         squash = .09 * crouch + .075 * landing
@@ -404,9 +412,9 @@ def pose_cat(rig, state, t):
         head.rotation_euler = (-.10 * tuck, 0, 0)
         for side, front, back in zip((-1, 1), rig['feet'], rig['back_feet']):
             front.location = (side * .23, -.49 + .18 * seated + .14 * tuck, .12 + .06 * seated + .20 * tuck)
-            front.scale.z = .12 + .08 * seated
-            back.location = (side * .36, .43 - .27 * seated - .14 * tuck, .105 + .035 * seated + .22 * tuck)
-            back.scale.z = .105 + .045 * seated
+            front.scale = (.14 + .02 * seated, .17 + .04 * seated, .12 + .08 * seated)
+            back.location = (side * (.27 + .09 * seated), .43 - .27 * seated - .14 * tuck, .105 + .035 * seated + .22 * tuck)
+            back.scale = (.16 + .02 * seated, .18 + .02 * seated, .105 + .045 * seated)
         tail.location = (0, .65 - .21 * seated, .44 - .09 * seated)
         tail.rotation_euler = (0, 0, -.12 * tuck)
     if state in ('curlUp', 'curlSleep'):
@@ -633,14 +641,19 @@ def pose_cat(rig, state, t):
         eye.scale = (.091, .050, eye_height)
         opening = max(0, min(1, (eye_height - .010) / .065))
         glint.scale = (.023 * opening, .012 * opening, .027 * opening)
-    # Root-local endpoints follow the posed torso and paws. Both ends overlap
-    # their meshes, including during waves, breathing and lying down.
+    # Standing shoulders/hips sit over their paws, inside the chest and rump.
+    # Blend back to the seated attachments during sofa takeoff and landing.
+    rig['leg_anchors'] = [
+        (Vector((side * .23, -.18, 0)).lerp(Vector((side * .22, -.29, -.05)), standing),
+         Vector((side * .32, .12, -.16)).lerp(Vector((side * .25, .29, -.075)), standing))
+        for side in (-1, 1)
+    ]
     body_transform = body.matrix_basis
-    for side, paw, leg, back_paw, back_leg in zip(
-            (-1, 1), rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
+    for anchors, paw, leg, back_paw, back_leg in zip(
+            rig['leg_anchors'], rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
         for limb, foot, anchor, radius in (
-                (leg, paw, (side * .23, -.18, 0), .14),
-                (back_leg, back_paw, (side * .32, .12, -.16), .15)):
+                (leg, paw, anchors[0], .14),
+                (back_leg, back_paw, anchors[1], .15)):
             shoulder = body_transform @ Vector(anchor)
             tip = foot.location.copy()
             direction = tip - shoulder
