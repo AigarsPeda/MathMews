@@ -147,15 +147,25 @@ assert.equal(reportedPosition.x, -15, 'Live cat coordinates must be reported bef
 assert.equal(reportedPosition.y, 50);
 console.log('Verified cat-attached speech at 1×/2×/3×, live cat movement, panning and native text size during zoom.');
 
-stateIndex = 0; sharedIndex = 0;
-const menuItem = flatten(draggableModule.exports.DraggableRoomPet({
-  children: null, petSize: 120, allowDrag: true,
-  menuActions: [{ label: 'Remove', icon: 'delete-outline', onPress() {} }],
-}));
-const menuDragTarget = menuItem.find(({ node }) => node.props.onPanResponderMove).node;
-assert.equal(menuDragTarget.props.onStartShouldSetPanResponder(), false, 'Native menus own taps on room items');
-assert.equal(menuDragTarget.props.onMoveShouldSetPanResponderCapture(null, { dx: 2, dy: 1 }), false);
-assert.equal(menuDragTarget.props.onMoveShouldSetPanResponderCapture(null, { dx: 25, dy: -10 }), true,
-  'Dragging must take over from the native menu after the movement threshold');
-assert.ok(menuItem.some(({ node }) => node.type === 'RoomActionMenu'), 'Room-item taps must use the native menu trigger');
-console.log('Verified native room menus retain furniture dragging without claiming taps.');
+for (const [allowDrag, interactive] of [[true, true], [false, true], [true, false]]) {
+  stateIndex = 0; sharedIndex = 0;
+  const menuItem = flatten(draggableModule.exports.DraggableRoomPet({
+    children: null, petSize: 120, allowDrag, interactive,
+    menuActions: [{ label: 'Remove', icon: 'delete-outline', onPress() {} }],
+  }));
+  const menu = menuItem.find(({ node }) => node.type === 'RoomActionMenu')?.node;
+  assert.ok(menu, 'Room-item taps must use the native menu trigger');
+  const menuDragTarget = menuItem.find(({ node }) => node.props.onPanResponderMove).node;
+  const menuLabel = menu.props.children[0];
+  assert.equal(menuLabel.props.onPanResponderMove, menuDragTarget.props.onPanResponderMove,
+    'The nested native menu label must retain the furniture drag handler');
+  for (const target of [menuDragTarget, menuLabel]) {
+    assert.equal(target.props.onStartShouldSetPanResponder(), allowDrag && interactive,
+      'Editable menu labels must receive drag events from touch start; locked items must not');
+    assert.equal(target.props.onMoveShouldSetPanResponderCapture(null, { dx: 2, dy: 1 }), false);
+    assert.equal(target.props.onMoveShouldSetPanResponderCapture(null, { dx: 25, dy: -10 }), allowDrag && interactive,
+      'Only editable, interactive room items may capture a drag past the movement threshold');
+    assert.equal(target.props.onMoveShouldSetPanResponder(null, { dx: 25, dy: -10 }), allowDrag && interactive);
+  }
+}
+console.log('Verified native room menus retain furniture drag responders.');
