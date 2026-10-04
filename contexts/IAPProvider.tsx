@@ -35,7 +35,7 @@ const IAPContext = createContext<IAPContextValue | null>(null);
 
 export function IAPProvider({ children }: { children: ReactNode }) {
   const { isAuthReady, userId } = useAuth();
-  const { adjustCoins, syncToCloud, reloadProgressFromCloud, coinTransactions } =
+  const { adjustCoins, syncToCloud, reloadProgressFromCloud, coinTransactions, creditedPurchaseIds } =
     useGame();
   const [isReady, setIsReady] = useState(false);
   const [configurationFailed, setConfigurationFailed] = useState(false);
@@ -88,7 +88,7 @@ export function IAPProvider({ children }: { children: ReactNode }) {
 
   const creditCoinPackPurchase = useCallback(
     async (result: Extract<CoinPackPurchaseResult, { status: "purchased" }>) => {
-      const alreadyCredited = coinTransactions.some(
+      const alreadyCredited = creditedPurchaseIds.includes(result.transactionId) || coinTransactions.some(
         (tx) => tx.transactionId === result.transactionId,
       );
       if (alreadyCredited) {
@@ -109,7 +109,7 @@ export function IAPProvider({ children }: { children: ReactNode }) {
 
       await syncToCloud();
     },
-    [adjustCoins, coinTransactions, syncToCloud],
+    [adjustCoins, coinTransactions, creditedPurchaseIds, syncToCloud],
   );
 
   const handlePurchaseCoinPack = useCallback(

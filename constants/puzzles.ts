@@ -55,8 +55,9 @@ export type PuzzlePathState = "completed" | "current" | "locked";
 export function getPuzzlePathState(
   puzzleIndex: number,
   solvedCount: number,
+  completed?: boolean,
 ): PuzzlePathState {
-  if (puzzleIndex < solvedCount) return "completed";
+  if (completed === true || (completed === undefined && puzzleIndex < solvedCount)) return "completed";
   if (puzzleIndex === solvedCount) return "current";
   return "locked";
 }
@@ -64,8 +65,9 @@ export function getPuzzlePathState(
 export function canPlayPuzzleIndex(
   puzzleIndex: number,
   solvedCount: number,
+  completed = false,
 ): boolean {
-  return puzzleIndex >= 0 && puzzleIndex <= solvedCount;
+  return puzzleIndex >= 0 && (completed || puzzleIndex <= solvedCount);
 }
 
 export function isDifficultyComplete(

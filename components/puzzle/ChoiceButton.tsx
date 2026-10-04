@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { Pressable, StyleSheet, Text } from "react-native";
@@ -17,6 +18,7 @@ export function ChoiceButton({
   result = null,
   onPress,
 }: ChoiceButtonProps) {
+  const { t } = useTranslation();
   const showCorrect = result === "correct";
   const showWrong = result === "wrong";
 
@@ -32,7 +34,7 @@ export function ChoiceButton({
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityLabel={`Answer ${label}`}
+      accessibilityLabel={t("play.answerLabel", { answer: label })}
       accessibilityState={{ disabled, selected }}
     >
       <Text

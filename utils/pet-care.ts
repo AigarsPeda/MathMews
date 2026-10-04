@@ -8,7 +8,6 @@ import {
 import type { PetProfile, PetStats } from "@/types/game";
 
 const MS_PER_HOUR = 60 * 60 * 1000;
-const MIN_DECAY_MS = 30_000;
 
 export function clampStat(value: number): number {
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -19,7 +18,7 @@ export function isStatMax(value: number): boolean {
 }
 
 export function boostStat(current: number, amount: number): number {
-  return isStatMax(current) ? current : clampStat(current + amount);
+  return Math.max(0, Math.min(100, current + amount));
 }
 
 export function isHungerMax(stats: PetStats): boolean {
@@ -41,17 +40,16 @@ export function applyPetTimeDecay(
   now = Date.now(),
 ): PetProfile {
   const elapsedMs = now - pet.lastCareAt;
-  if (elapsedMs < MIN_DECAY_MS) {
+  if (elapsedMs <= 0) {
     return pet;
   }
 
-  const hours = elapsedMs / MS_PER_HOUR;
-  const hunger = clampStat(pet.stats.hunger - HUNGER_DECAY_PER_HOUR * hours);
+  const hours = Math.min(elapsedMs / MS_PER_HOUR, 6);
+  const hunger = Math.max(0, Math.min(100, pet.stats.hunger - HUNGER_DECAY_PER_HOUR * hours));
 
   let happinessLoss = HAPPINESS_DECAY_PER_HOUR * hours;
-  if (hunger < LOW_HUNGER_THRESHOLD) {
-    happinessLoss += HAPPINESS_DECAY_LOW_HUNGER_PER_HOUR * hours;
-  }
+  const hoursUntilLow = Math.max(0, (pet.stats.hunger - LOW_HUNGER_THRESHOLD) / HUNGER_DECAY_PER_HOUR);
+  happinessLoss += HAPPINESS_DECAY_LOW_HUNGER_PER_HOUR * Math.max(0, hours - hoursUntilLow);
 
   return {
     ...pet,
@@ -59,7 +57,7 @@ export function applyPetTimeDecay(
     stats: {
       ...pet.stats,
       hunger,
-      happiness: clampStat(pet.stats.happiness - happinessLoss),
+      happiness: Math.max(0, Math.min(100, pet.stats.happiness - happinessLoss)),
     },
   };
 }

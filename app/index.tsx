@@ -1,3 +1,5 @@
+import { getStoreGoalDetails } from "@/utils/store-goal";
+import { useRoomEditor } from "@/hooks/use-room-editor";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PlayMenuButton } from "@/components/home/PlayMenuButton";
 import type { CatPlayActivity } from "@/constants/cat-play";
@@ -8,8 +10,6 @@ import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
   FEED_COST,
-  FEED_HAPPINESS_BOOST,
-  FEED_HUNGER_RESTORE,
   GameColors,
   HEADER_CHIP_SIZE,
   PET_HAPPINESS_BOOST,
@@ -76,7 +76,7 @@ export default function HomeScreen() {
     wallet,
     progress,
     setPet,
-    setWallet,
+    feedPet,
     recordInteraction,
     removeDecorationFromRoom,
     removeBedFromRoom,
@@ -89,6 +89,7 @@ export default function HomeScreen() {
     togglePlacedAirConditioner,
     scalePlacedDecoration,
   } = useGame();
+  const roomEditor = useRoomEditor(pet, setPet);
   const [actionSpeech, setActionSpeech] = useState<string | null>(null);
   const careActionPendingRef = useRef(false);
   const speechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -192,15 +193,7 @@ export default function HomeScreen() {
       ...stats,
       happiness: boostStat(stats.happiness, PET_HAPPINESS_BOOST),
     }));
-  }, [
-    isCareAnimationPlaying,
-    pet.isAsleep,
-    playActionMood,
-    recordInteraction,
-    showSpeech,
-    t,
-    wakePet,
-  ]);
+  }, [isCareAnimationPlaying, pet.isAsleep, pet.name, playActionMood, recordInteraction, showSpeech, t, wakePet]);
 
   const handleFeed = useCallback(() => {
     const wasAsleep = pet.isAsleep === true;
@@ -225,30 +218,10 @@ export default function HomeScreen() {
     careActionPendingRef.current = true;
     recordInteraction();
     sendPetCommand({ type: "beginCareAction" });
-    setWallet((current) => ({ coins: current.coins - FEED_COST }));
-    wakePet((stats) => ({
-      ...stats,
-      hunger: boostStat(stats.hunger, FEED_HUNGER_RESTORE),
-      happiness: boostStat(stats.happiness, FEED_HAPPINESS_BOOST),
-    }));
+    feedPet();
     playActionMood(wasAsleep, "eating");
     showSpeech(t("home.enjoyedSnack", { name: pet.name }));
-  }, [
-    isCareAnimationPlaying,
-    isCareBlocked,
-    pet.isAsleep,
-    pet.name,
-    pet.stats,
-    playActionMood,
-    recordInteraction,
-    rejectCareAction,
-    sendPetCommand,
-    setWallet,
-    showSpeech,
-    t,
-    wakePet,
-    wallet.coins,
-  ]);
+  }, [isCareAnimationPlaying, isCareBlocked, pet.isAsleep, pet.name, pet.stats, playActionMood, recordInteraction, rejectCareAction, sendPetCommand, feedPet, showSpeech, t, wallet.coins]);
 
   const handlePlay = useCallback((activity: CatPlayActivity) => {
     const wasAsleep = pet.isAsleep === true;
@@ -455,6 +428,8 @@ export default function HomeScreen() {
   const wasAsleep = pet.isAsleep === true;
   const canFeedForHunger = canFeedForEffect(pet.stats, wasAsleep);
   const canAffordFeed = wallet.coins >= FEED_COST;
+
+  const savingGoal = getStoreGoalDetails(progress.storeGoal, wallet.coins, t);
   const feedDimmed =
     !canFeedForHunger ||
     !canAffordFeed ||
@@ -501,6 +476,7 @@ export default function HomeScreen() {
         <View style={styles.middle}>
           <View style={styles.stageWrap}>
             <PetStage
+          roomEditor={roomEditor}
               compact
               name={pet.name}
               petType={pet.type}
@@ -599,7 +575,7 @@ export default function HomeScreen() {
               <Text style={styles.actionEmoji}>🍖</Text>
               <Text style={styles.actionLabel}>{t("home.feed")}</Text>
               <Text style={styles.actionHint}>
-                {t("home.feedCost", { cost: FEED_COST })}
+                {!canFeedForHunger ? t("home.alreadyFull") : !canAffordFeed ? t("store.needCoins", { cost: FEED_COST }) : isCareBlocked || isCareAnimationPlaying ? t("home.careBusy") : t("home.feedCost", { cost: FEED_COST })}
               </Text>
             </Pressable>
 
@@ -619,7 +595,7 @@ export default function HomeScreen() {
           >
             <Text style={styles.primaryBtnText}>{t("home.solvePuzzle")}</Text>
             <Text style={styles.primaryBtnHint}>
-              {t("home.solvePuzzleHint", { name: pet.name })}
+              {savingGoal ? t("store.goalProgress", { name: savingGoal.name, remaining: savingGoal.remaining }) : t("home.solvePuzzleHint", { name: pet.name })}
             </Text>
           </Pressable>
         </View>

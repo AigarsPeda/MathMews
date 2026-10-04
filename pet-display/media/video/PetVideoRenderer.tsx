@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/immutability -- expo-video players expose mutable native playback properties; changes below run in effects and events. */
+import { useSpriteActivity } from "@/pet-display/media/sprite/use-sprite-clock";
+import { DOG_VIDEO_SOURCES } from "@/pet-display/registry/dog-video-registry";
 import { GameColors } from "@/constants/game";
 import {
-  PET_MOOD_VIDEO_ASSET_KEYS,
   PET_VIDEO_ASSET_KEYS,
   usePetVideoPlayers,
   type PetVideoAssetKey,
@@ -57,6 +59,10 @@ export function PetVideoRenderer({
   onPress,
 }: PetVideoRendererProps) {
   const players = usePetVideoPlayers();
+  const { active, reduceMotion } = useSpriteActivity();
+  const loaded = useRef(new Set<PetVideoAssetKey>());
+  const activityRef = useRef({ active, reduceMotion });
+  useEffect(() => { activityRef.current = { active, reduceMotion }; }, [active, reduceMotion]);
   const onCompleteRef = useRef(onAnimationComplete);
   const onStepCompleteRef = useRef(onStepComplete);
   const loopRef = useRef(loop);
@@ -75,7 +81,9 @@ export function PetVideoRenderer({
   const [topVisible, setTopVisible] = useState(true);
 
   const segmentTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const completionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stepIndexRef = useRef(0);
+  const completedStepsRef = useRef(new Set<number>());
   const stepsRef = useRef<PetMediaSegment[]>([]);
   const playbackTokenRef = useRef("");
   const pendingRevealRef = useRef<{
@@ -134,6 +142,9 @@ export function PetVideoRenderer({
   );
 
   const finishStep = useCallback((stepIndex: number) => {
+    if (stepIndex !== stepIndexRef.current || completedStepsRef.current.has(stepIndex)) return;
+    completedStepsRef.current.add(stepIndex);
+    if (completionTimerRef.current) { clearTimeout(completionTimerRef.current); completionTimerRef.current = null; }
     queueMicrotask(() => onStepCompleteRef.current?.(stepIndex));
 
     const steps = stepsRef.current;
@@ -178,7 +189,7 @@ export function PetVideoRenderer({
         if (!looping) return;
 
         segmentTimerRef.current = setInterval(() => {
-          if (activeKeyRef.current !== assetKey) return;
+          if (!activityRef.current.active || activityRef.current.reduceMotion || activeKeyRef.current !== assetKey) return;
 
           const duration = player.duration;
           if (!Number.isFinite(duration) || duration <= startSec) return;
@@ -193,7 +204,7 @@ export function PetVideoRenderer({
       const endSec = config.endMs / 1000;
 
       segmentTimerRef.current = setInterval(() => {
-        if (activeKeyRef.current !== assetKey) return;
+        if (!activityRef.current.active || activityRef.current.reduceMotion || activeKeyRef.current !== assetKey) return;
         if (player.currentTime < endSec - 0.05) return;
 
         if (looping) {
@@ -229,7 +240,7 @@ export function PetVideoRenderer({
       let reverseTime = endSec;
 
       segmentTimerRef.current = setInterval(() => {
-        if (activeKeyRef.current !== asVideoKey(config.assetKey)) return;
+        if (!activityRef.current.active || activityRef.current.reduceMotion || activeKeyRef.current !== asVideoKey(config.assetKey)) return;
 
         reverseTime -= REVERSE_STEP_SEC;
         if (reverseTime <= startSec) {
@@ -287,9 +298,12 @@ export function PetVideoRenderer({
 
   const applySegment = useCallback(
     (config: PetMediaSegment, stepIndex: number) => {
+      if (completionTimerRef.current) { clearTimeout(completionTimerRef.current); completionTimerRef.current = null; }
       const nextKey = asVideoKey(config.assetKey);
       const nextPlayer = players[nextKey];
       const prevKey = activeKeyRef.current;
+      activeKeyRef.current = nextKey;
+      if (!loaded.current.has(nextKey)) { nextPlayer.replace(DOG_VIDEO_SOURCES[nextKey]); loaded.current.add(nextKey); }
 
       clearSegmentTimer();
       clearUnderTimer();
@@ -315,6 +329,13 @@ export function PetVideoRenderer({
       nextPlayer.playbackRate = 1;
       nextPlayer.loop = nativeLoop;
 
+      if (activityRef.current.reduceMotion || !activityRef.current.active) {
+        setLayers({ under: null, top: nextKey }); setTopVisible(true); activeKeyRef.current = nextKey;
+        seekIfNeeded(nextPlayer, startSec); nextPlayer.pause();
+        if (activityRef.current.active && !looping) completionTimerRef.current = setTimeout(() => finishStep(stepIndex), 600);
+        return;
+      }
+      if (!looping) completionTimerRef.current = setTimeout(() => finishStep(stepIndex), Math.max(15000, (endSec ?? 0) * 1000 + 5000));
       if (config.reverse && endSec !== undefined) {
         setLayers({ under: null, top: nextKey });
         setTopVisible(true);
@@ -326,7 +347,7 @@ export function PetVideoRenderer({
 
       const startPlayback = () => {
         seekIfNeeded(nextPlayer, startSec);
-        nextPlayer.play();
+        if (activityRef.current.active && !activityRef.current.reduceMotion) nextPlayer.play();
       };
 
       if (nextKey === prevKey) {
@@ -371,6 +392,7 @@ export function PetVideoRenderer({
       clearRevealFallback,
       clearSegmentTimer,
       clearUnderTimer,
+      finishStep,
       players,
       queueRevealFallback,
       seekIfNeeded,
@@ -379,7 +401,7 @@ export function PetVideoRenderer({
     ],
   );
 
-  applySegmentRef.current = applySegment;
+  useEffect(() => { applySegmentRef.current = applySegment; }, [applySegment]);
 
   useEffect(() => {
     const steps = scenarioSteps ?? (segment ? [segment] : []);
@@ -389,15 +411,27 @@ export function PetVideoRenderer({
     if (token === playbackTokenRef.current) return;
 
     playbackTokenRef.current = token;
+    completedStepsRef.current.clear();
     stepsRef.current = steps;
     stepIndexRef.current = 0;
     applySegment(steps[0], 0);
   }, [applySegment, scenarioSteps, segment]);
 
   useEffect(() => {
+    const config = stepsRef.current[stepIndexRef.current];
+    if (config) applySegment(config, stepIndexRef.current);
+    return () => {
+      clearSegmentTimer(); clearRevealFallback(); clearUnderTimer();
+      if (completionTimerRef.current) clearTimeout(completionTimerRef.current);
+      pendingRevealRef.current = null;
+      for (const key of PET_VIDEO_ASSET_KEYS) players[key].pause();
+    };
+  }, [active, reduceMotion, applySegment, clearSegmentTimer, clearRevealFallback, clearUnderTimer, players]);
+
+  useEffect(() => {
     const subscriptions = PET_VIDEO_ASSET_KEYS.map((key) =>
       players[key].addListener("playToEnd", () => {
-        if (activeKeyRef.current !== key) return;
+        if (!activityRef.current.active || activityRef.current.reduceMotion || activeKeyRef.current !== key) return;
 
         const steps = stepsRef.current;
         const stepIndex = stepIndexRef.current;
@@ -434,8 +468,26 @@ export function PetVideoRenderer({
     shouldLoop,
   ]);
 
+  useEffect(() => {
+    const subscriptions = PET_VIDEO_ASSET_KEYS.map(key => players[key].addListener("statusChange", event => {
+      if (activeKeyRef.current !== key || !activityRef.current.active) return;
+      const config = stepsRef.current[stepIndexRef.current];
+      if (!config) return;
+      if (event.status === "error") {
+        clearSegmentTimer(); clearRevealFallback();
+        finishStep(stepIndexRef.current);
+      } else if (event.status === "readyToPlay") {
+        const time = config.reverse ? (config.endMs ?? 0) / 1000 : (config.startMs ?? 0) / 1000;
+        seekIfNeeded(players[key], time);
+        if (!activityRef.current.reduceMotion && !config.reverse) players[key].play();
+        else players[key].pause();
+      }
+    }));
+    return () => subscriptions.forEach(subscription => subscription.remove());
+  }, [players, clearSegmentTimer, clearRevealFallback, finishStep, seekIfNeeded]);
+
   const mountedVideoKeys = useMemo(() => {
-    const keys = new Set<PetVideoAssetKey>(PET_MOOD_VIDEO_ASSET_KEYS);
+    const keys = new Set<PetVideoAssetKey>();
     keys.add(layers.top);
     if (layers.under) {
       keys.add(layers.under);

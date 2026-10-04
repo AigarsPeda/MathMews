@@ -17,7 +17,9 @@
     "branding": "node scripts/generate-branding.mjs",
     "dependencies": "npm run licenses",
     "assets:3d": "node scripts/3d/build.mjs",
-    "assets:verify": "node scripts/3d/verify.mjs"
+    "assets:verify": "node scripts/3d/verify.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:game": "node scripts/check-game.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

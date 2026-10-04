@@ -32,7 +32,7 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
   );
   const [careActionBusy, setCareActionBusy] = useState(false);
   const [careCooldownUntil, setCareCooldownUntil] = useState(0);
-  const [cooldownTick, setCooldownTick] = useState(0);
+  const [careCooldownActive, setCareCooldownActive] = useState(false);
   const careActionBusyRef = useRef(false);
 
   const playback = useMemo((): PetPlaybackState => {
@@ -73,11 +73,11 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
   useEffect(() => {
     const remaining = careCooldownUntil - Date.now();
     if (remaining <= 0) return;
-    const id = setTimeout(() => setCooldownTick((n) => n + 1), remaining + 50);
+    const id = setTimeout(() => setCareCooldownActive(false), remaining + 50);
     return () => clearTimeout(id);
-  }, [careCooldownUntil, cooldownTick]);
+  }, [careCooldownUntil]);
 
-  const isCareBlocked = careActionBusy || Date.now() < careCooldownUntil;
+  const isCareBlocked = careActionBusy || careCooldownActive;
 
   const isCareAnimationPlaying = useMemo(() => {
     if (activeScenario) return true;
@@ -87,6 +87,8 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
   useEffect(() => {
     if (isCareAnimationPlaying || !careActionBusy) return;
     careActionBusyRef.current = false;
+    // A cancelled/unsupported playback releases the engine-owned care lock.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCareActionBusy(false);
   }, [isCareAnimationPlaying, careActionBusy]);
 
@@ -98,6 +100,7 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
   const finishCareAction = useCallback(() => {
     careActionBusyRef.current = false;
     setCareActionBusy(false);
+    setCareCooldownActive(true);
     setCareCooldownUntil(Date.now() + PET_CARE_COOLDOWN_MS);
   }, []);
 

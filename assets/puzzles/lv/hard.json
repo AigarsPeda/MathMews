@@ -16,7 +16,19 @@
     ],
     "correctIndex": 0,
     "hint": "Apēdas 5 šķēles. Cik palika no 8?",
-    "explanation": "8 − 5 = 3 šķēles palika, tātad 3/8 picas."
+    "explanation": "8 − 5 = 3 šķēles palika, tātad 3/8 picas.",
+    "visualHelp": {
+      "scene": {
+        "kind": "fraction",
+        "numerator": 8,
+        "denominator": 8
+      },
+      "worked": {
+        "kind": "fraction",
+        "numerator": 3,
+        "denominator": 8
+      }
+    }
   },
   {
     "id": "hard-pat-1",
@@ -151,7 +163,22 @@
     ],
     "correctIndex": 0,
     "hint": "Atrodi kopējo skaitu, tad atņem apēstos un uzdāvinātos.",
-    "explanation": "4 × 6 = 24 cepumi. 24 − 5 − 7 = 12 palika."
+    "explanation": "4 × 6 = 24 cepumi. 24 − 5 − 7 = 12 palika.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 4,
+        "cols": 6,
+        "filled": 24,
+        "emoji": "🍪"
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🍪",
+        "count": 24,
+        "removed": 12
+      }
+    }
   },
   {
     "id": "hard-cmp-1",
@@ -188,7 +215,36 @@
     ],
     "correctIndex": 0,
     "hint": "Dalī 5 ar 3 un domā par atlikumu.",
-    "explanation": "5 ÷ 3 = 1 katram ar 2 atlikušiem."
+    "explanation": "5 ÷ 3 = 1 katram ar 2 atlikušiem.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🍎",
+        "count": 5
+      },
+      "worked": {
+        "kind": "groups",
+        "emoji": "🍎",
+        "groups": [
+          {
+            "count": 1,
+            "color": "#23766F"
+          },
+          {
+            "count": 1,
+            "color": "#23766F"
+          },
+          {
+            "count": 1,
+            "color": "#23766F"
+          },
+          {
+            "count": 2,
+            "color": "#99501A"
+          }
+        ]
+      }
+    }
   },
   {
     "id": "hard-op-1",
@@ -199,7 +255,7 @@
       12
     ],
     "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
+    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
     "payload": {
       "start": 8,
       "target": 20,
@@ -214,8 +270,8 @@
         }
       ]
     },
-    "hint": "Try one operator at a time.",
-    "explanation": "Start 8, reach 20."
+    "hint": "Izvēlies vienu darbību katrā solī.",
+    "explanation": "Sāc ar 8 un iegūsti 20."
   },
   {
     "id": "hard-mc-06",
@@ -234,7 +290,21 @@
     ],
     "correctIndex": 1,
     "hint": "Laukumam reizini garumu ar platumu.",
-    "explanation": "12 × 5 = 60 kvadrātmetri."
+    "explanation": "12 × 5 = 60 kvadrātmetri.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 5,
+        "cols": 12,
+        "filled": 60
+      },
+      "worked": {
+        "kind": "grid",
+        "rows": 5,
+        "cols": 12,
+        "filled": 60
+      }
+    }
   },
   {
     "id": "hard-tgt-1",
@@ -245,7 +315,7 @@
       12
     ],
     "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
+    "question": "Izvēlies +, −, × un ÷, lai iegūtu mērķa skaitli!",
     "payload": {
       "numbers": [
         12,
@@ -260,8 +330,8 @@
         "×"
       ]
     },
-    "hint": "Think about order of operations.",
-    "explanation": "Build 8 from 12, 6, 3, 2."
+    "hint": "Vispirms reizini un dali, pēc tam saskaiti un atņem.",
+    "explanation": "12 ÷ 6 + 3 × 2 = 8."
   },
   {
     "id": "hard-frac-1",
@@ -272,13 +342,13 @@
       12
     ],
     "type": "fraction_build",
-    "question": "Create this fraction!",
+    "question": "Izveido šo daļu!",
     "payload": {
       "numerator": 3,
       "denominator": 8
     },
-    "hint": "Color 3 piece(s) out of 8 equal parts.",
-    "explanation": "3/8 means 3 piece(s) out of 8."
+    "hint": "Iekrāso 3 no 8 vienādām daļām.",
+    "explanation": "3/8 nozīmē 3 no 8 vienādām daļām."
   },
   {
     "id": "hard-tf-1",
@@ -362,11 +432,11 @@
       "target": 20,
       "correctIndices": [
         0,
-        3
+        1
       ]
     },
     "hint": "Meklē pāri, kas dod 20.",
-    "explanation": "12 + 5 = 20."
+    "explanation": "12 + 8 = 20."
   },
   {
     "id": "hard-fix-1",
@@ -447,7 +517,7 @@
       12
     ],
     "type": "fraction_equivalent",
-    "question": "Which fraction is the same amount?",
+    "question": "Kura daļa apzīmē to pašu daudzumu?",
     "payload": {
       "numerator": 1,
       "denominator": 2,
@@ -458,7 +528,7 @@
       ]
     },
     "correctIndex": 0,
-    "hint": "Same amount means the same part of a whole.",
+    "hint": "Vienādas daļas apzīmē vienādu veseluma daļu.",
     "explanation": "1/2 = 2/4."
   },
   {
@@ -556,7 +626,23 @@
     ],
     "correctIndex": 1,
     "hint": "Reizini nedēļas ietaupījumu ar 7.",
-    "explanation": "8 × 7 = 56 eiro."
+    "explanation": "8 × 7 = 56 eiro.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 7,
+        "cols": 8,
+        "filled": 56,
+        "emoji": "🪙"
+      },
+      "worked": {
+        "kind": "grid",
+        "rows": 7,
+        "cols": 8,
+        "filled": 56,
+        "emoji": "🪙"
+      }
+    }
   },
   {
     "id": "hard-cmp-2",
@@ -585,7 +671,7 @@
       12
     ],
     "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
+    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
     "payload": {
       "start": 36,
       "target": 9,
@@ -608,7 +694,7 @@
       12
     ],
     "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
+    "question": "Izvēlies +, −, × un ÷, lai iegūtu mērķa skaitli!",
     "payload": {
       "numbers": [
         20,
@@ -619,12 +705,12 @@
       "target": 11,
       "solution": [
         "÷",
-        "+",
+        "×",
         "+"
       ]
     },
-    "hint": "Think about order of operations.",
-    "explanation": "Build 11 from 20, 5, 2, 3."
+    "hint": "Vispirms reizini un dali, pēc tam saskaiti un atņem.",
+    "explanation": "20 ÷ 5 × 2 + 3 = 11."
   },
   {
     "id": "hard-frac-2",
@@ -635,13 +721,13 @@
       12
     ],
     "type": "fraction_build",
-    "question": "Create this fraction!",
+    "question": "Izveido šo daļu!",
     "payload": {
       "numerator": 5,
       "denominator": 8
     },
-    "hint": "Color 5 piece(s) out of 8 equal parts.",
-    "explanation": "5/8 means 5 piece(s) out of 8."
+    "hint": "Iekrāso 5 no 8 vienādām daļām.",
+    "explanation": "5/8 nozīmē 5 no 8 vienādām daļām."
   },
   {
     "id": "hard-tf-2",
@@ -724,12 +810,12 @@
       ],
       "target": 20,
       "correctIndices": [
-        1,
-        3
+        0,
+        1
       ]
     },
     "hint": "Meklē pāri, kas dod 20.",
-    "explanation": "11 + 14 = 20."
+    "explanation": "9 + 11 = 20."
   },
   {
     "id": "hard-fix-2",

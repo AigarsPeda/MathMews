@@ -13,6 +13,8 @@ export function getDeviceLocale(): AppLocale {
   return isAppLocale(code) ? code : 'en';
 }
 
+// Register on the shared i18next instance.
+// eslint-disable-next-line import/no-named-as-default-member
 void i18n.use(initReactI18next).init({
   resources: {
     en: { translation: { ...en, visualHelp: visualHelpEn } },

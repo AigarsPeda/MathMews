@@ -27,7 +27,9 @@
     "needsPractice": "Practice more",
     "attemptsDetail": "{{correct}} correct · {{wrong}} wrong · {{attempts}} total",
     "emptyTitle": "No attempts yet",
-    "emptyBody": "Solve a few puzzles and your topic stats will show up here."
+    "emptyBody": "Solve a few puzzles and your topic stats will show up here.",
+    "recentAccuracy": "Recent {{count}} attempts: {{accuracy}} correct",
+    "reviewTopic": "Practice {{topic}}"
   },
   "settings": {
     "title": "Settings",
@@ -99,8 +101,8 @@
     "enjoyedPlayBox": "{{name}} loves the box!",
     "removedFromRoom": "{{name}} was put away.",
     "removeFromRoom": "Remove",
-    "moveLayerUp": "Move up",
-    "moveLayerDown": "Move down",
+    "moveLayerUp": "Bring forward",
+    "moveLayerDown": "Send backward",
     "rotateItem": "Rotate",
     "flipWall": "Face other wall",
     "flipBed": "Flip bed",
@@ -143,7 +145,23 @@
       "box": "Where did {{name}} go?",
       "yarn": "{{name}} loves the yarn!",
       "feather": "Get those feathers, {{name}}!"
-    }
+    },
+    "roomTools": "Room tools",
+    "decorateHint": "Drag to move. Tap for options. Changes save automatically.",
+    "undo": "Undo",
+    "saveLayout": "Save layout",
+    "restoreLayout": "Restore layout",
+    "tidyRoom": "Tidy room",
+    "snapOn": "Snap to grid: On",
+    "snapOff": "Snap to grid: Off",
+    "roomObjects": "Objects in this room",
+    "noRoomObjects": "Add owned items from the store.",
+    "nudgeleft": "Left",
+    "nudgeright": "Right",
+    "nudgeup": "Up",
+    "nudgedown": "Down",
+    "alreadyFull": "Already full",
+    "careBusy": "Finishing an action"
   },
   "store": {
     "title": "Pet Store",
@@ -514,7 +532,17 @@
     "tabTvs": "TVs",
     "subtitleTvs": "Screens for movie night.",
     "tabWindows": "Windows",
-    "subtitleWindows": "Let the light in."
+    "subtitleWindows": "Let the light in.",
+    "tabDecorations": "Decor",
+    "ownedOnly": "Owned",
+    "preview": "Preview in my room",
+    "chooseCategory": "Decoration categories",
+    "saveGoal": "Save as my goal",
+    "goalProgress": "Saving for {{name}} · {{remaining}} coins to go",
+    "goalReady": "You have enough coins!",
+    "previewNote": "Try it here before buying.",
+    "closePreview": "Close preview",
+    "previewItem": "Preview {{name}} in my room"
   },
   "onboarding": {
     "title": "Meet your cat!",
@@ -696,7 +724,7 @@
   "play": {
     "solveFor": "Solve for {{name}}",
     "replayNut": "Replay nut #{{number}}",
-    "hardNut": "🥜 Hard Nut #{{number}}",
+    "hardNut": "🥜 Puzzle #{{number}}",
     "greatJob": "Great job!",
     "crackedAgain": "Cracked it again!",
     "goodTry": "Good try!",
@@ -711,7 +739,28 @@
     "a11yBack": "Go back",
     "a11yNext": "Go to next puzzle",
     "a11yTryAgain": "Try again",
-    "a11yHome": "Back to home"
+    "a11yHome": "Back to home",
+    "answerLabel": "Answer {{answer}}",
+    "checkAnswer": "Check answer",
+    "mechanicIntro": {
+      "multiple_choice": "Choose an answer, then tap Check answer.",
+      "compare": "Choose the larger result, then check your answer.",
+      "operation_path": "Choose an operation for each step, then check the result.",
+      "target_build": "Fill each gap. Multiplication and division come first. Then check.",
+      "fraction_build": "Tap to shade the fraction, then check.",
+      "true_false": "Choose True or False, then check your answer.",
+      "balance": "Choose the number that makes both sides equal, then check.",
+      "number_line": "Tap where the jump lands, then check.",
+      "pair_sum": "Choose two numbers that add to the target, then check.",
+      "fix_mistake": "Choose the correction, then check.",
+      "estimate": "Choose the closest estimate, then check.",
+      "fair_share": "Share equally. Remember to count any leftovers. Choose, then check.",
+      "fraction_equivalent": "Choose a fraction with the same value, then check.",
+      "pattern_next": "Find the rule. Choose what comes next, then check.",
+      "function_machine": "Choose the rule that changes input to output, then check.",
+      "order_numbers": "Tap two numbers to swap them. When ready, check the order.",
+      "fraction_match": "Match each fraction with its picture. A missed match keeps your completed pairs."
+    }
   },
   "lives": {
     "title": "Lives",
@@ -774,6 +823,7 @@
     "a11yRestoreSave": "Restore {{name}}, started {{date}}"
   },
   "difficultyPicker": {
-    "a11y": "{{difficulty}} difficulty, {{coins}} coins per nut"
+    "a11y": "{{difficulty}} difficulty, {{coins}} coins per nut",
+    "ages": "Ages {{min}}–{{max}}"
   }
 }

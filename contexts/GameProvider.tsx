@@ -1,3 +1,6 @@
+import { switchRoomLayout } from "@/utils/room-layout";
+import { applyPuzzleAnswer, applyFeed } from "@/utils/game-operations";
+import type { Puzzle } from "@/types/puzzle";
 import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
 import { LIFE_BUY_COST } from "@/constants/game";
 import {
@@ -85,7 +88,7 @@ import { useCloudSaveSync } from "@/hooks/use-cloud-save-sync";
 import { pullRemoteSave, pushRemoteSave, listRemoteSaveSnapshots } from "@/services/cloud-save/cloud-save";
 import type { CloudSaveSummary } from "@/services/cloud-save/merge-game-save";
 import { listRestorableCloudSaves, listSwitchableCloudSaves } from "@/services/cloud-save/restorable-cloud-save";
-import type { CoinTransaction, CoinTransactionInput } from "@/types/coin-transaction";
+import type { CoinTransaction, CoinTransactionInput, CoinTransactionKind } from "@/types/coin-transaction";
 import { withCoinDelta } from "@/utils/coin-ledger";
 import { deleteRemoteUserData } from "@/services/cloud-save/delete-user-data";
 import { clearBackedUpSession } from "@/lib/auth-session-backup";
@@ -120,12 +123,15 @@ import { AppState, type AppStateStatus } from "react-native";
 const CARE_TICK_MS = 60_000;
 
 type GameContextValue = {
+  answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string) => number;
+  feedPet: () => boolean;
   isReady: boolean;
   hasCompletedOnboarding: boolean;
   pet: PetProfile;
   wallet: Wallet;
   progress: Progress;
   coinTransactions: CoinTransaction[];
+  creditedPurchaseIds: string[];
   setPet: (updater: (current: PetProfile) => PetProfile) => void;
   setWallet: (updater: (current: Wallet) => Wallet) => void;
   adjustCoins: (delta: number, meta: CoinTransactionInput) => boolean;
@@ -184,7 +190,7 @@ function normalizePetName(name: string): string {
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const { isAuthReady, userId } = useAuth();
-  const [save, setSave] = useState<GameSave>(createDefaultGameSave);
+  const [save, setSaveState] = useState<GameSave>(createDefaultGameSave);
   const [isReady, setIsReady] = useState(false);
   const [cloudRestoreCandidates, setCloudRestoreCandidates] = useState<
     CloudSaveSummary[]
@@ -195,9 +201,34 @@ export function GameProvider({ children }: { children: ReactNode }) {
     useState(false);
   const skipNextPersist = useRef(true);
   const saveRef = useRef(save);
+  // Commands read and commit the latest snapshot before React renders it.
+  const setSave = useCallback((update: GameSave | ((current: GameSave) => GameSave)) => {
+    const next = typeof update === "function" ? update(saveRef.current) : update;
+    saveRef.current = next;
+    setSaveState(next);
+  }, []);
+  const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string) => {
+    const result = applyPuzzleAnswer(saveRef.current, puzzle, correct, attemptId);
+    setSave(result.save);
+    return result.coins;
+  }, [setSave]);
+  const feedPet = useCallback(() => {
+    const next = applyFeed(saveRef.current);
+    if (!next) return false;
+    setSave(next);
+    return true;
+  }, [setSave]);
   const activeSaveIdRef = useRef<string | null>(null);
+  const getSave = useCallback(() => saveRef.current, []);
   const cloudSyncRef = useRef<(() => Promise<void>) | null>(null);
   const blockCloudPushRef = useRef(false);
+
+  const commitPurchase = useCallback((current: GameSave, next: GameSave, kind: CoinTransactionKind, itemId: string) => {
+    if (current.progress.storeGoal?.kind === kind.replace("store_", "") && current.progress.storeGoal.id === itemId) next = { ...next, progress: { ...next.progress, storeGoal: undefined } };
+    const delta = next.wallet.coins - current.wallet.coins;
+    const funded = delta ? withCoinDelta({ ...next, wallet: current.wallet }, delta, { kind, itemId }) : next;
+    if (funded) setSave(funded);
+  }, [setSave]);
 
   const handleRestorableCloudSaves = useCallback((saves: CloudSaveSummary[]) => {
     setCloudRestoreCandidates(saves);
@@ -208,6 +239,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Account changes invalidate restore candidates belonging to the previous account.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCloudRestoreCheckComplete(false);
     setCloudRestoreCandidates([]);
     setCloudRestorePromptDismissed(false);
@@ -220,6 +253,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     isAuthReady,
     userId,
     save,
+    getSave,
     setSave,
     skipNextPersist,
     activeSaveIdRef,
@@ -229,9 +263,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
     blockCloudPushRef,
   });
 
-  useEffect(() => {
-    saveRef.current = save;
-  }, [save]);
 
   useEffect(() => {
     let active = true;
@@ -254,7 +285,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [setSave]);
 
   useEffect(() => {
     if (!isReady) return;
@@ -284,7 +315,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         },
       };
     });
-  }, []);
+  }, [setSave]);
 
   useEffect(() => {
     if (!isReady) return;
@@ -306,11 +337,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const setPet = useCallback((updater: (current: PetProfile) => PetProfile) => {
     setSave((current) => ({ ...current, pet: updater(current.pet) }));
-  }, []);
+  }, [setSave]);
 
   const setWallet = useCallback((updater: (current: Wallet) => Wallet) => {
     setSave((current) => ({ ...current, wallet: updater(current.wallet) }));
-  }, []);
+  }, [setSave]);
 
   const adjustCoins = useCallback(
     (delta: number, meta: CoinTransactionInput): boolean => {
@@ -325,7 +356,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       return applied;
     },
-    [],
+    [setSave],
   );
 
   const syncToCloud = useCallback(async () => {
@@ -345,7 +376,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setSave(remote.save);
     await saveGameSave(remote.save);
     await cloudSyncRef.current?.();
-  }, [userId]);
+  }, [userId, setSave]);
 
   const deleteAllUserData = useCallback(async (): Promise<
     { ok: true } | { ok: false }
@@ -374,7 +405,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     } catch {
       return { ok: false };
     }
-  }, [userId]);
+  }, [userId, setSave]);
 
   const setProgress = useCallback(
     (updater: (current: Progress) => Progress) => {
@@ -383,7 +414,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         progress: updater(current.progress),
       }));
     },
-    [],
+    [setSave],
   );
 
   const recordInteraction = useCallback(() => {
@@ -392,57 +423,24 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...current,
       pet: { ...current.pet, lastInteractionAt: now },
     }));
-  }, []);
+  }, [setSave]);
 
   const buyLife = useCallback(() => {
-    const now = Date.now();
-    let purchased = false;
+    const current = saveRef.current;
+    if (!canBuyLife(current.progress.lives, current.wallet.coins)) return false;
+    const funded = withCoinDelta(current, -LIFE_BUY_COST, { kind: "life_purchase" });
+    if (!funded) return false;
+    setSave({ ...funded, progress: { ...funded.progress, lives: buyOneLife(current.progress.lives) } });
+    return true;
+  }, [setSave]);
 
-    setSave((current) => {
-      if (!canBuyLife(current.progress.lives, current.wallet.coins, now)) {
-        return current;
-      }
-
-      purchased = true;
-      return {
-        ...current,
-        wallet: { coins: current.wallet.coins - LIFE_BUY_COST },
-        progress: {
-          ...current.progress,
-          lives: buyOneLife(current.progress.lives, now),
-        },
-      };
-    });
-
-    return purchased;
-  }, []);
-
-  const purchaseVisualHelp = useCallback((puzzleId: string, cost: number) => {
-    let purchased = false;
-
-    setSave((current) => {
-      if (current.wallet.coins < cost) return current;
-      if (current.progress.visualHelpsUnlocked.includes(puzzleId)) {
-        purchased = true;
-        return current;
-      }
-
-      purchased = true;
-      return {
-        ...current,
-        wallet: { coins: current.wallet.coins - cost },
-        progress: {
-          ...current.progress,
-          visualHelpsUnlocked: [
-            ...current.progress.visualHelpsUnlocked,
-            puzzleId,
-          ],
-        },
-      };
-    });
-
-    return purchased;
-  }, []);
+  const purchaseVisualHelp = useCallback((puzzleId: string, _cost: number) => {
+    const current = saveRef.current;
+    if (!current.progress.visualHelpsUnlocked.includes(puzzleId)) {
+      setSave({ ...current, progress: { ...current.progress, visualHelpsUnlocked: [...current.progress.visualHelpsUnlocked, puzzleId] } });
+    }
+    return true;
+  }, [setSave]);
 
   const purchaseRoom = useCallback((roomId: CatRoomId): RoomPurchaseResult => {
     const resolvedId = resolveCatRoomId(roomId);
@@ -455,19 +453,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     if (attempt.result === "purchased") {
-      setSave({
+      commitPurchase(current, {
         ...current,
         wallet: { coins: attempt.walletCoins },
         progress: {
           ...current.progress,
           roomsUnlocked: attempt.roomsUnlocked,
         },
-        pet: { ...current.pet, roomId: resolvedId },
-      });
+        pet: switchRoomLayout(current.pet, resolvedId),
+      }, "store_room", resolvedId);
     }
 
     return attempt.result;
-  }, []);
+  }, [commitPurchase]);
 
   const equipRoom = useCallback((roomId: CatRoomId) => {
     const resolvedId = resolveCatRoomId(roomId);
@@ -480,11 +478,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     setSave({
       ...current,
-      pet: { ...current.pet, roomId: resolvedId },
+      pet: switchRoomLayout(current.pet, resolvedId),
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const purchaseBed = useCallback((bedId: CatBedId): BedPurchaseResult => {
     const resolvedId = resolveCatBedId(bedId);
@@ -501,7 +499,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     if (attempt.result === "purchased") {
-      setSave({
+      commitPurchase(current, {
         ...current,
         wallet: { coins: attempt.walletCoins },
         progress: {
@@ -517,11 +515,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
           bedScale:
             current.pet.bedId === resolvedId ? current.pet.bedScale : undefined,
         }),
-      });
+      }, "store_bed", resolvedId);
     }
 
     return attempt.result;
-  }, []);
+  }, [commitPurchase]);
 
   const equipBed = useCallback((bedId: CatBedId) => {
     const resolvedId = resolveCatBedId(bedId);
@@ -550,7 +548,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const removeBedFromRoom = useCallback(() => {
     const current = saveRef.current;
@@ -569,7 +567,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const flipEquippedBed = useCallback(() => {
     const current = saveRef.current;
@@ -587,7 +585,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const scaleEquippedBed = useCallback((direction: "up" | "down") => {
     const current = saveRef.current;
@@ -615,7 +613,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const purchaseToy = useCallback((toyId: CatToyId): ToyPurchaseResult => {
     const resolvedId = resolveCatToyId(toyId);
@@ -633,7 +631,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     if (attempt.result === "purchased") {
       const ownedCount = getToyOwnedCount(resolvedId, current.progress);
-      setSave({
+      commitPurchase(current, {
         ...current,
         wallet: { coins: attempt.walletCoins },
         progress: {
@@ -648,11 +646,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
           ...current.pet,
           placedToys: appendPlacedToy(current.pet.placedToys, resolvedId),
         }),
-      });
+      }, "store_toy", resolvedId);
     }
 
     return attempt.result;
-  }, []);
+  }, [commitPurchase]);
 
   const placeToyInRoom = useCallback((toyId: CatToyId) => {
     const resolvedId = resolveCatToyId(toyId);
@@ -682,7 +680,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const removeToyFromRoom = useCallback((toyId: CatToyId, instanceId?: string) => {
     const resolvedId = resolveCatToyId(toyId);
@@ -708,7 +706,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const purchaseDecoration = useCallback(
     (decorationId: CatDecorationId): DecorationPurchaseResult => {
@@ -727,7 +725,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       if (attempt.result === "purchased") {
         const ownedCount = getDecorationOwnedCount(resolvedId, current.progress);
-        setSave({
+        commitPurchase(current, {
           ...current,
           wallet: { coins: attempt.walletCoins },
           progress: {
@@ -745,12 +743,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
               resolvedId,
             ),
           }),
-        });
+        }, "store_decoration", resolvedId);
       }
 
       return attempt.result;
     },
-    [],
+    [commitPurchase],
   );
 
   const placeDecorationInRoom = useCallback((decorationId: CatDecorationId) => {
@@ -787,7 +785,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const removeDecorationFromRoom = useCallback(
     (decorationId: CatDecorationId, instanceId?: string) => {
@@ -824,7 +822,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       return true;
     },
-    [],
+    [setSave],
   );
 
   const rotatePlacedDecoration = useCallback((instanceId: string) => {
@@ -864,7 +862,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const flipPlacedDecorationWall = useCallback((instanceId: string) => {
     const current = saveRef.current;
@@ -894,7 +892,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const togglePlacedAirConditioner = useCallback((instanceId: string) => {
     const current = saveRef.current;
@@ -909,7 +907,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       },
     });
     return true;
-  }, []);
+  }, [setSave]);
 
   const scalePlacedDecoration = useCallback(
     (instanceId: string, direction: "up" | "down") => {
@@ -946,7 +944,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       return true;
     },
-    [],
+    [setSave],
   );
 
   const moveRoomLayerItem = useCallback(
@@ -968,7 +966,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       return true;
     },
-    [],
+    [setSave],
   );
 
   const purchaseSkin = useCallback((skinId: CatSkinId): SkinPurchaseResult => {
@@ -986,7 +984,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     if (attempt.result === "purchased") {
-      setSave({
+      commitPurchase(current, {
         ...current,
         wallet: { coins: attempt.walletCoins },
         progress: {
@@ -997,11 +995,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
           ...current.pet,
           catSkinId: resolvedId,
         },
-      });
+      }, "store_skin", skinId);
     }
 
     return attempt.result;
-  }, []);
+  }, [commitPurchase]);
 
   const equipSkin = useCallback((skinId: CatSkinId) => {
     const resolvedId = resolveCatSkinId(skinId);
@@ -1025,7 +1023,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, []);
+  }, [setSave]);
 
   const startNewGameSlot = useCallback(async () => {
     const newId = createSaveId();
@@ -1039,7 +1037,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     await clearGameSave();
     await saveGameSave(fresh);
     setCloudRestorePromptDismissed(true);
-  }, []);
+  }, [setSave]);
 
   const switchToCloudSave = useCallback(
     async (saveId: string): Promise<boolean> => {
@@ -1054,17 +1052,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
         activeSaveIdRef.current = saveId;
         skipNextPersist.current = false;
         setSave(remote.save);
-        await saveGameSave(remote.save);
+        const clientUpdatedAt = await saveGameSave(remote.save);
         await pushRemoteSave(userId, saveId, {
           save: remote.save,
-          clientUpdatedAt: (await getLocalSaveUpdatedAt()) || Date.now(),
+          clientUpdatedAt,
         });
         return true;
       } catch {
         return false;
       }
     },
-    [userId],
+    [userId, setSave],
   );
 
   const acceptCloudRestore = useCallback(
@@ -1148,24 +1146,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
       };
 
       setSave(nextSave);
-      await saveGameSave(nextSave);
+      const clientUpdatedAt = await saveGameSave(nextSave);
       await pushRemoteSave(userId, saveId, {
         save: nextSave,
-        clientUpdatedAt: (await getLocalSaveUpdatedAt()) || Date.now(),
+        clientUpdatedAt,
       });
       return true;
     },
-    [userId],
+    [userId, setSave],
   );
 
   const value = useMemo<GameContextValue>(
     () => ({
+      answerPuzzle,
+      feedPet,
       isReady,
       hasCompletedOnboarding: save.hasCompletedOnboarding,
       pet: save.pet,
       wallet: save.wallet,
       progress: save.progress,
       coinTransactions: save.coinTransactions ?? [],
+      creditedPurchaseIds: save.creditedPurchaseIds ?? [],
       setPet,
       setWallet,
       adjustCoins,
@@ -1221,7 +1222,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       recordInteraction,
       save.hasCompletedOnboarding,
       save.pet,
+      answerPuzzle,
+      feedPet,
       save.coinTransactions,
+      save.creditedPurchaseIds,
       save.progress,
       save.wallet,
       adjustCoins,

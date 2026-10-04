@@ -7,8 +7,8 @@ export const GameColors = {
   background: "#FFF5EB",
   card: "#FFFFFF",
   cardBorder: "#FFE0CC",
-  primary: "#FF6B6B",
-  primaryDark: "#E85555",
+  primary: "#C73948",
+  primaryDark: "#A52C3B",
   secondary: "#4ECDC4",
   coin: "#F7B731",
   coinText: "#8B6914",
@@ -18,7 +18,7 @@ export const GameColors = {
   happiness: "#FF6B9D",
   cleanliness: "#74B9FF",
   wisdom: "#A29BFE",
-  success: "#6BCB77",
+  success: "#247A3C",
   stageBg: "#FFFFFF",
   stageBorder: "#4ECDC4",
   /** Matches white background in pet MP4 videos */
@@ -26,7 +26,7 @@ export const GameColors = {
 } as const;
 
 /** Home header control height (store, lives, coins, settings). */
-export const HEADER_CHIP_SIZE = 38;
+export const HEADER_CHIP_SIZE = 44;
 
 export const DEFAULT_PET = {
   type: "cat" as const,
@@ -66,7 +66,7 @@ export const MAX_LIVES = 5;
 export const LIFE_REGEN_MINUTES = 30;
 export const LIFE_BUY_COST = 15;
 
-export const FEED_COST = 10;
+export const FEED_COST = 4;
 export const FEED_HUNGER_RESTORE = 25;
 export const FEED_HAPPINESS_BOOST = 5;
 export const PET_HAPPINESS_BOOST = 10;
@@ -82,23 +82,23 @@ export const PUZZLE_COIN_REWARDS = {
   hard: 9,
 } as const;
 
-/** Costs more than the first-clear coin reward for that difficulty. */
-export function getVisualHelpCost(difficulty: PuzzleDifficulty): number {
-  return PUZZLE_COIN_REWARDS[difficulty] + 1;
+/** Worked help is part of learning and is always free. */
+export function getVisualHelpCost(_difficulty: PuzzleDifficulty): number {
+  return 0;
 }
 
 /** Bonus coins for replaying a puzzle you've already cracked. */
 export const PUZZLE_REPLAY_COIN_REWARDS = {
-  easy: 1,
-  medium: 2,
-  hard: 3,
+  easy: 2,
+  medium: 3,
+  hard: 4,
 } as const;
 
 export const PUZZLE_HAPPINESS_BOOST = 5;
 export const PUZZLE_REPLAY_HAPPINESS_BOOST = 2;
-export const PUZZLE_WRONG_HAPPINESS_PENALTY = 4;
+export const PUZZLE_WRONG_HAPPINESS_PENALTY = 0;
 /** Hunger spent per puzzle attempt (thinking makes them peckish). */
-export const PUZZLE_HUNGER_COST = 2;
+export const PUZZLE_HUNGER_COST = 0;
 
 /** Show hungry speech when fullness is at or below this (0–100). */
 export const HUNGER_SPEECH_FULLNESS_MAX = 30;

@@ -1,9 +1,10 @@
+import { captureRoomLayout } from "@/utils/room-layout";
+import { getCompletedPuzzleIds, getSolvedCounts } from "@/utils/game-operations";
 import { DEFAULT_CAT_ROOM_ID, resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveCatSkinId } from "@/constants/cat-skins";
 import { resolveCatBedId, canFlipBed, clampBedScale } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatToyId } from "@/constants/cat-toys";
-import type { CatSkinId } from "@/constants/cat-skins";
 import {
   migrateLegacyPlacedDecorations,
   migrateLegacyPlacedToys,
@@ -43,9 +44,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export function createDefaultGameSave(): GameSave {
   return {
     version: GAME_SAVE_VERSION,
-    pet: { ...DEFAULT_PET, lastCareAt: Date.now() },
+    pet: { ...DEFAULT_PET, lastCareAt: Date.now(), lastInteractionAt: Date.now(), bedId: "brown", placedToys: [{ toyId: "orangeBall", instanceId: "starter-ball", offset: { x: 0.5, y: 0.4 } }] },
     wallet: DEFAULT_WALLET,
-    progress: DEFAULT_PROGRESS,
+    progress: { ...DEFAULT_PROGRESS, bedsUnlocked: ["brown"], toysUnlocked: ["orangeBall"], toyQuantities: { orangeBall: 1 }, completedPuzzleIds: [], processedAttemptIds: [] },
     hasCompletedOnboarding: false,
   };
 }
@@ -105,6 +106,14 @@ function filterPlacedDecorationsForUnlocked(
   );
 }
 
+function normalizeRoomLayouts(value: unknown): PetProfile["roomLayouts"] {
+  if (!isRecord(value)) return undefined;
+  return Object.fromEntries(Object.entries(value).filter(([id]) => resolveCatRoomId(id) === id).map(([id, layout]) => {
+    const normalized = normalizePetProfile({ ...(isRecord(layout) ? layout : {}), type: "cat", roomLayouts: undefined, savedRoomLayouts: undefined });
+    return [id, captureRoomLayout(normalized)];
+  }));
+}
+
 function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
   const stats = isRecord(pet.stats) ? pet.stats : {};
   const type = pet.type === "cat" ? "cat" : "dog";
@@ -140,6 +149,8 @@ function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
       typeof pet.roomId === "string"
         ? resolveCatRoomId(pet.roomId)
         : DEFAULT_CAT_ROOM_ID,
+    roomLayouts: normalizeRoomLayouts(pet.roomLayouts),
+    savedRoomLayouts: normalizeRoomLayouts(pet.savedRoomLayouts),
     roomPetOffset: normalizeRoomPetOffset(pet.roomPetOffset),
     bedId: resolveCatBedId(
       typeof pet.bedId === "string" ? pet.bedId : undefined,
@@ -211,9 +222,11 @@ function parseGameSave(
     if (!isRecord(parsed.progress)) return null;
     if (typeof parsed.progress.streak !== "number") return null;
 
-    const puzzlesSolved = normalizePuzzleProgress(
+    const legacySolved = normalizePuzzleProgress(
       parsed.progress.puzzlesSolved,
     );
+    const completedPuzzleIds = getCompletedPuzzleIds({ puzzlesSolved: legacySolved, completedPuzzleIds: Array.isArray(parsed.progress.completedPuzzleIds) ? parsed.progress.completedPuzzleIds.filter((id): id is string => typeof id === "string") : undefined });
+    const puzzlesSolved = getSolvedCounts(completedPuzzleIds);
     const lives = normalizeLives(parsed.progress.lives);
     const visualHelpsUnlocked = Array.isArray(
       parsed.progress.visualHelpsUnlocked,
@@ -299,7 +312,9 @@ function parseGameSave(
       save: {
         ...(parsed as GameSave),
         pet,
+        wallet: { coins: Math.max(0, Math.floor(parsed.wallet.coins)) },
         coinTransactions: normalizeCoinTransactions(parsed.coinTransactions),
+        creditedPurchaseIds: [...new Set([...(Array.isArray(parsed.creditedPurchaseIds) ? parsed.creditedPurchaseIds.filter((id): id is string => typeof id === "string") : []), ...normalizeCoinTransactions(parsed.coinTransactions).filter(tx => tx.kind === "iap_purchase" && tx.transactionId).map(tx => tx.transactionId!)])],
         progress: {
           ...(parsed.progress as Progress),
           puzzleStreak:
@@ -307,6 +322,9 @@ function parseGameSave(
               ? parsed.progress.puzzleStreak
               : 0,
           puzzlesSolved,
+        completedPuzzleIds,
+        processedAttemptIds: Array.isArray(parsed.progress.processedAttemptIds) ? parsed.progress.processedAttemptIds.filter((id): id is string => typeof id === "string").slice(-200) : [],
+        lastPuzzleDay: typeof parsed.progress.lastPuzzleDay === "string" ? parsed.progress.lastPuzzleDay : undefined,
           lives,
           visualHelpsUnlocked,
           roomsUnlocked,
@@ -356,17 +374,24 @@ export async function loadGameSave(): Promise<LoadedGameSave | null> {
   return parseGameSave(raw);
 }
 
-export async function saveGameSave(save: GameSave): Promise<void> {
-  const updatedAt = Date.now();
-  await AsyncStorage.multiSet([
-    [GAME_SAVE_STORAGE_KEY, JSON.stringify(save)],
-    [GAME_SAVE_UPDATED_AT_KEY, String(updatedAt)],
-  ]);
+let persistQueue: Promise<void> = Promise.resolve();
+let lastQueuedAt = 0;
+export function saveGameSave(save: GameSave): Promise<number> {
+  const updatedAt = Math.max(Date.now(), lastQueuedAt + 1);
+  lastQueuedAt = updatedAt;
+  const raw = JSON.stringify(save);
+  const write = persistQueue.catch(() => undefined).then(() => AsyncStorage.multiSet([
+    [GAME_SAVE_STORAGE_KEY, raw], [GAME_SAVE_UPDATED_AT_KEY, String(updatedAt)],
+  ]));
+  persistQueue = write;
+  return write.then(() => updatedAt);
 }
 
-export async function clearGameSave(): Promise<void> {
-  await AsyncStorage.multiRemove([
+export function clearGameSave(): Promise<void> {
+  const write = persistQueue.catch(() => undefined).then(() => AsyncStorage.multiRemove([
     GAME_SAVE_STORAGE_KEY,
     GAME_SAVE_UPDATED_AT_KEY,
-  ]);
+  ]));
+  persistQueue = write;
+  return write;
 }

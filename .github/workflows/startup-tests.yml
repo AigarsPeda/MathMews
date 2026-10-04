@@ -1,4 +1,4 @@
-name: Startup regression tests
+name: Game regression tests
 
 on:
   pull_request:
@@ -18,4 +18,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run typecheck
       - run: npm run test:startup
+      - run: npm run test:game
+      - run: npm run assets:verify

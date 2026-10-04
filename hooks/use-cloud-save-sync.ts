@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability -- Caller-owned MutableRefObjects coordinate save identity and cloud callbacks; writes occur only in effects and events. */
 import {
   isCloudSaveAvailable,
   listRemoteSaveSnapshots,
@@ -30,6 +31,7 @@ type UseCloudSaveSyncOptions = {
   isAuthReady: boolean;
   userId: string | null;
   save: GameSave;
+  getSave?: () => GameSave;
   setSave: Dispatch<SetStateAction<GameSave>>;
   skipNextPersist: MutableRefObject<boolean>;
   activeSaveIdRef: MutableRefObject<string | null>;
@@ -44,6 +46,7 @@ export function useCloudSaveSync({
   isAuthReady,
   userId,
   save,
+  getSave,
   setSave,
   skipNextPersist,
   activeSaveIdRef,
@@ -81,12 +84,13 @@ export function useCloudSaveSync({
       return;
     }
 
-    const clientUpdatedAt = await getLocalSaveUpdatedAt();
+    const snapshot = getSave?.() ?? saveRef.current;
+    const clientUpdatedAt = await saveGameSave(snapshot);
     await pushRemoteSave(userId, saveId, {
-      save: saveRef.current,
+      save: snapshot,
       clientUpdatedAt: clientUpdatedAt || Date.now(),
     });
-  }, [activeSaveIdRef, blockCloudPushRef, userId]);
+  }, [activeSaveIdRef, blockCloudPushRef, getSave, userId]);
 
   useEffect(() => {
     if (!cloudSyncRef) return;

@@ -111,6 +111,8 @@ const petX = shared(0), petY = shared(0);
 let interaction = 1, enabled = true, hookRoom = ownedMouse;
 function render() {
   index = 0; effects = [];
+  // The VM supplies a dependency-aware hook dispatcher instead of mounting React.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const result = useRoomActivity(hookRoom, enabled, interaction, petX, petY);
   effects.forEach(fn => fn()); return result;
 }
@@ -137,7 +139,7 @@ enabled = false; render(); advance(60_000); assert.equal(render().activity, null
 assert.equal(timers.size, 0);
 enabled = true; visibility = { active: false, reduceMotion: false }; render(); advance(60_000); assert.equal(render().activity, null);
 visibility = { active: true, reduceMotion: true }; render(); advance(60_000); assert.equal(render().activity, null);
-visibility = { active: true, reduceMotion: false }; render(); advance(ROOM_IDLE_DELAY_MS); assert.equal(render().activity.plan.kind, 'mouseChase');
+visibility = { active: true, reduceMotion: false }; render(); advance(ROOM_IDLE_DELAY_MS + 2800); assert.equal(render().activity.plan.kind, 'mouseChase');
 const total = render().activity.plan.steps.reduce((sum, step) => sum + step.durationMs, 0);
 advance(total); assert.equal(render().activity, null, 'Completed activity returns to the saved placement');
 assert.equal(petX.get(), -30); assert.equal(petY.get(), 30);
@@ -304,3 +306,15 @@ render(); render(); advance(900); render(); advance(0);
 assert.equal(render().activity.plan.kind, 'sofaSit');
 assert.equal(render().activity.plan.steps[0].hold, true, 'A menu tap during ascent must sit after landing instead of jumping home');
 console.log('Verified interaction recording preserves commands queued during jumps.');
+
+// Reduced motion suppresses ambient movement but retains explicit commands.
+enabled = false; render(); advance(0);
+visibility = { active: true, reduceMotion: true }; enabled = true; render();
+render().startActivity('sofaSleep'); render(); advance(0);
+assert.equal(render().activity.plan.kind, 'sofaSleep');
+assert.equal(render().activity.plan.steps[0].animation, undefined, 'Static actions must not request a walking clip');
+advance(2400); render();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].hold, true, 'Reduced-motion sleep reaches the held pose');
+render().returnHome(); render(); advance(2400); render();
+assert.equal(render().activity, null);
+console.log('Verified deliberate sofa commands and return-home completion under Reduce Motion.');

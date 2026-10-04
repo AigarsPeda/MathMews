@@ -126,12 +126,11 @@ export function OperationPathTask({
                     styles.operatorSlot,
                     isActive && styles.operatorSlotActive,
                     answered &&
-                      selected === step.operator &&
                       isCorrect &&
                       styles.operatorSlotCorrect,
                     answered &&
                       selected !== null &&
-                      selected !== step.operator &&
+                      !isCorrect &&
                       styles.operatorSlotWrong,
                   ]}
                 >

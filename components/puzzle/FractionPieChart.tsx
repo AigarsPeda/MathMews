@@ -26,7 +26,6 @@ function createWedgePath(
 ) {
   const sweepRadians = (2 * Math.PI) / total;
   const startRadians = -Math.PI / 2 + index * sweepRadians;
-  const endRadians = startRadians + sweepRadians;
   const steps = Math.max(12, Math.ceil(total * 2));
 
   const path = Skia.Path.Make();

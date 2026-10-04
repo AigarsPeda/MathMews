@@ -166,7 +166,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isSupabaseConfigured() || !supabase) {
-      setIsAuthReady(true);
       return;
     }
 

@@ -1,3 +1,4 @@
+import { RoomEditorSheet, type RoomEditorControls } from "@/components/pet/RoomEditorSheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { buildRoomActivity, type RoomActivityKind } from "@/utils/room-activities";
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-sprite-registry";
@@ -103,6 +104,7 @@ function avatarDisplayWidth(
 }
 
 type PetStageProps = {
+  roomEditor?: RoomEditorControls;
   name: string;
   petType: PetType;
   catSkinId?: string;
@@ -185,6 +187,7 @@ function StatBar({
 type RoomItemMenu = RoomLayerItem;
 
 export function PetStage({
+  roomEditor,
   name,
   petType,
   catSkinId,
@@ -288,6 +291,8 @@ export function PetStage({
   );
   const [decorating, setDecorating] = useState(false);
   const [catCommandsOpen, setCatCommandsOpen] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [snap, setSnap] = useState(false);
   const displayWidth = usesSprite
     ? resolveSpriteDisplaySize(avatarWidth)
     : avatarWidth;
@@ -681,10 +686,26 @@ export function PetStage({
     [openRoomItemMenu],
   );
 
+  const itemLabel = useCallback((item: RoomLayerItem) => t(item.kind === "bed" ? `store.bedName.${bedId}` : item.kind === "toy" ? `store.toyName.${item.toyId}` : `store.decorationName.${item.decorationId}`).replace(/\n/g, " "), [bedId, t]);
+  const nudgeItem = (item: RoomLayerItem, direction: "left" | "right" | "up" | "down") => {
+    const offset = item.kind === "bed" ? roomBedOffset ?? { x: -0.15, y: 0.3 }
+      : item.kind === "toy" ? roomPlacedToys.find(entry => entry.instanceId === item.instanceId)?.offset
+      : roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId)?.offset;
+    if (!offset) return;
+    const next = { x: Math.max(-1, Math.min(1, offset.x + (direction === "left" ? -0.1 : direction === "right" ? 0.1 : 0))),
+      y: Math.max(-1, Math.min(1, offset.y + (direction === "up" ? -0.1 : direction === "down" ? 0.1 : 0))) };
+    if (item.kind === "bed") onRoomBedOffsetChange?.(next);
+    else if (item.kind === "toy") onPlacedToyOffsetChange?.(item.instanceId, next);
+    else onPlacedDecorationOffsetChange?.(item.instanceId, next);
+  };
+
   const roomItemDragProps = useCallback(
     (item: RoomLayerItem, layerZIndex: number) => {
       const manageable = canManageRoomItem(item);
       return {
+        accessibilityLabel: itemLabel(item),
+        selected: Boolean(openRoomItemMenu && isSameRoomLayerItem(openRoomItemMenu, item)),
+        snapToGrid: snap,
         layerZIndex,
         allowDrag: decorating && zoom === 1,
         interactive: decorating || manageable,
@@ -694,7 +715,7 @@ export function PetStage({
           : undefined,
       };
     },
-    [canManageRoomItem, decorating, handleItemAnchorLayout, handleRoomItemTap, zoom],
+    [canManageRoomItem, decorating, handleItemAnchorLayout, handleRoomItemTap, zoom, openRoomItemMenu, snap, itemLabel],
   );
 
   const petCluster = (
@@ -729,6 +750,8 @@ export function PetStage({
   const roomPetLayer =
     compact && usesSprite ? (
       <DraggableRoomPet
+        accessibilityLabel={t("home.a11yPet")}
+        snapToGrid={snap}
         allowDrag={decorating && zoom === 1}
         animatedPosition={{ x: petSceneX, y: petSceneY }}
         petSize={displayWidth}
@@ -968,6 +991,9 @@ export function PetStage({
                 <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
               </Pressable>
             ) : null}
+            {decorating ? <Pressable style={[styles.decorateButton, { top: undefined, bottom: 10 }]} onPress={() => setShowEditor(true)} accessibilityRole="button">
+              <Text style={styles.decorateLabel}>{t("home.roomTools")}</Text>
+            </Pressable> : null}
             {compact && usesSprite ? (
               <Pressable style={styles.zoomButton}
                 onPress={() => { closeMenu(); setZoom(current => current === 3 ? 1 : current+1); }}
@@ -979,6 +1005,10 @@ export function PetStage({
             ) : null}
           </View>
 
+          {decorating && <Text style={{ color: GameColors.textMuted, fontSize: 14, padding: 8 }}>{t("home.decorateHint")}</Text>}
+          <RoomEditorSheet visible={showEditor} onClose={() => setShowEditor(false)} controls={roomEditor}
+            items={layerOrder.map(item => ({ item, label: itemLabel(item) }))} onSelect={handleRoomItemTap} onMove={nudgeItem}
+            snap={snap} onSnap={() => setSnap(current => !current)} />
           <View style={[styles.stats, compact && styles.statsCompact]}>
             {compact && onOpenMathStats ? (
               <MathStatsChip compact onPress={onOpenMathStats} />

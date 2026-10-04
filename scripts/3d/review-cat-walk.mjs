@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 /** Preview floor travel with the actual packed walk, at the gameplay cadence. */
 import fs from 'node:fs/promises';
 import sharp from 'sharp';

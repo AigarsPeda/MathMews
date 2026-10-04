@@ -10,7 +10,7 @@ import {
   type SkImage,
 } from "@shopify/react-native-skia";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import { useAnimatedReaction, useDerivedValue, useSharedValue, type SharedValue } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import { useAtlasPages } from "./use-atlas-pages";
@@ -75,8 +75,8 @@ type DrawnFrame = { image: SkImage | null; col: number; row: number; columns: nu
 
 // Only the playback controller changes between clips. The drawing surface and
 // its last frame survive while the next clip's first texture is being decoded.
-function SpriteStep({ segment, loop, onStepDone, drawn }: {
-  segment: PetMediaSegment; loop: boolean; onStepDone: () => void; drawn: SharedValue<DrawnFrame>;
+function SpriteStep({ segment, loop, onStepDone, onTextureFailure, drawn }: {
+  segment: PetMediaSegment; loop: boolean; onStepDone: () => void; onTextureFailure: () => void; drawn: SharedValue<DrawnFrame>;
 }) {
   const sprite = segment.sprite!;
   const sources = useMemo(() => sprite.pages ?? [sprite.source], [sprite]);
@@ -84,7 +84,10 @@ function SpriteStep({ segment, loop, onStepDone, drawn }: {
   const reverse = sprite.reverse === true;
   const shouldLoop = loop || segment.loop === true;
   const [page, setPage] = useState(reverse ? sources.length - 1 : 0);
-  const decoded = useAtlasPages(sources, page, reverse, shouldLoop);
+  const recoveryDone = useRef(false);
+  const decoded = useAtlasPages(sources, page, reverse, shouldLoop, () => {
+    if (!recoveryDone.current) { recoveryDone.current = true; onTextureFailure(); onStepDone(); }
+  });
   const readyPages = decoded.map(entry => entry.page);
   const frameIndex = useSpriteClock({ frameCount: sprite.frames.length, fps: sprite.fps,
     loop: shouldLoop, reverse, framesPerPage: cellsPerPage, readyPages, onComplete: onStepDone });
@@ -134,11 +137,13 @@ export function PetSpriteRenderer({
     onStepRef.current = onStepComplete;
   }, [onStepComplete]);
 
+  const [showFallback, setShowFallback] = useState(false);
   const active = steps[stepIndex];
   const drawn = useSharedValue<DrawnFrame>({ image: null, col: 0, row: 0, columns: 1, rows: 1 });
   const layout = active?.sprite ? layoutFrame(active.sprite, 0, size) : null;
   const cellW = (layout?.frameWidth ?? size) * resolutionScale;
   const cellH = (layout?.frameHeight ?? size) * resolutionScale;
+  useAnimatedReaction(() => Boolean(drawn.get().image), (ready, previous) => { if (ready && !previous) scheduleOnRN(setShowFallback, false); });
   const image = useDerivedValue(() => drawn.get().image);
   const imageX = useDerivedValue(() => -drawn.get().col * cellW);
   const imageY = useDerivedValue(() => -drawn.get().row * cellH);
@@ -169,8 +174,9 @@ export function PetSpriteRenderer({
     >
       {active?.sprite ? (
         <SpriteStep key={`${token}:${stepIndex}`} segment={active} loop={loop}
-          onStepDone={finishStep} drawn={drawn} />
+          onStepDone={finishStep} onTextureFailure={() => { if (!drawn.get().image) setShowFallback(true); }} drawn={drawn} />
       ) : null}
+      {showFallback ? <Image source={require("@/assets/3d/cat-preview.png")} style={{ position: "absolute", width: size, height: size }} resizeMode="contain" /> : null}
       <View style={[styles.frameWindow, { width: containerSize, height: containerSize,
         justifyContent: layout?.anchor === "center" ? "center" : "flex-end" }]}>
         <View style={{ width: layout?.frameWidth ?? size, height: layout?.frameHeight ?? size }}>

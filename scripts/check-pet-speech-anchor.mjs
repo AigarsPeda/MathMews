@@ -123,9 +123,10 @@ vm.runInNewContext(draggableSource, {
   require: id => { assert.ok(id in mocks, id); return mocks[id]; },
 });
 states.splice(0, states.length);
+sharedValues.splice(0, sharedValues.length);
 let reportedPosition;
 function renderDraggable() {
-  stateIndex = 0;
+  stateIndex = 0; sharedIndex = 0;
   return flatten(draggableModule.exports.DraggableRoomPet({
     children: null, petSize: 120, initialOffset: offset,
     onPositionChange: position => { reportedPosition = position; },

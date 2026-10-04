@@ -1,11 +1,11 @@
 export const visualHelpLv = {
   title: "Ilustrēta palīdzība",
-  subtitle: "Katrs solis iemāca ideju — riekstu atrisini pats!",
+  subtitle: "Šī uzdevuma risinājums. Vienmēr bez maksas.",
   lockedHint: "Atbloķē īsu skaidrojumu, kas iemāca, kā domāt par šāda veida uzdevumu.",
   unlockPrice: "{{cost}} monētas — atbloķē uz visiem laikiem",
   unlockButton: "Atbloķēt ilustrāciju · {{cost}} 🪙",
   watchButton: "Skatīt ilustrāciju",
-  watchFree: "Skatīt vēlreiz",
+  watchFree: "Skatīt skaidrojumu · Bez maksas",
   needCoins: "Vajag {{cost}} monētas. Tev ir {{coins}} 🪙",
   a11yOpen: "Atvērt ilustrēto palīdzību",
   a11yClose: "Aizvērt ilustrēto palīdzību",

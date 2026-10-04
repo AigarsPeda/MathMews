@@ -1,4 +1,5 @@
 export type VisualScene =
+  | { kind: "fraction"; numerator: number; denominator: number }
   | {
       kind: "items";
       emoji: string;

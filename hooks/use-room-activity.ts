@@ -37,7 +37,7 @@ export function useRoomActivity(
   const handledRequest = useRef(0);
   const [request, setRequest] = useState<ActivityRequest | null>(null);
   const [state, setState] = useState<ActivityState | null>(null);
-  const activity = enabled && active && !reduceMotion ? state : null;
+  const activity = enabled && active ? state : null;
   const requestActivity = useCallback((kind: ActivityRequest["kind"]) => {
     const current = running.current;
     if (current && isCatJump(current.plan.steps[current.stepIndex].animation)) {
@@ -72,18 +72,18 @@ export function useRoomActivity(
         running.current = null;
         facing.set(1);
         setState(null);
-        timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS);
+        timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS + (turn.current % 5) * 700);
         return;
       }
-      const duration = step.moveMs ?? 0;
+      const duration = reduceMotion ? 0 : step.moveMs ?? 0;
       let visibleStep = step;
-      if (isCatWalk(step.animation)) {
+      if (!reduceMotion && isCatWalk(step.animation)) {
         const motion = getCatWalkMotion({ x: petX.get(), y: petY.get() }, step.position, options.petSize * (step.scale ?? 1));
         facing.set(motion.facing);
         visibleStep = { ...step, animation: motion.animation, animationFps: Math.max(12, Math.min(60, 24 * motion.cycles / Math.max(.1, duration / 1000))) };
       }
       const timing = { duration, easing: isCatWalk(step.animation) ? Easing.linear : Easing.inOut(Easing.quad) };
-      if (isCatJump(step.animation)) {
+      if (!reduceMotion && isCatJump(step.animation)) {
         facing.set(1);
         const jump = getCatJumpMotion(petY.get(), step.position.y, options.petSize, duration);
         // Keep the paws planted during the crouch, then rise and fall onto
@@ -107,6 +107,11 @@ export function useRoomActivity(
         objectY.set(withDelay(delay, withTiming(step.objectPosition.y, { duration: objectDuration })));
         objectRotation.set(withDelay(delay, withTiming(step.objectRotation ?? 0, { duration: objectDuration })));
       }
+      if (reduceMotion) {
+        petX.set(step.position.x); petY.set(step.position.y); scale.set(step.scale ?? 1);
+        if (step.objectPosition) { objectX.set(step.objectPosition.x); objectY.set(step.objectPosition.y); }
+        visibleStep = { ...step, animation: undefined };
+      }
       const next = { plan: { ...plan, steps: plan.steps.map((item, index) => index === stepIndex ? visibleStep : item) }, stepIndex };
       running.current = next;
       setState(next);
@@ -121,7 +126,7 @@ export function useRoomActivity(
           running.current = { plan: { ...plan, steps: plan.steps.map((item, index) => index === stepIndex ? landedStep : item) }, stepIndex };
           setRequest(current => ({ id: (current?.id ?? 0) + 1, kind }));
         } else runStep(plan, stepIndex + 1);
-      }, step.durationMs);
+      }, reduceMotion ? 600 : step.durationMs);
     };
     const startPlan = (plan: RoomActivityPlan) => {
       if (plan.objectStart) {
@@ -132,12 +137,13 @@ export function useRoomActivity(
       runStep(plan, 0);
     };
     const startIdle = () => {
+      if (reduceMotion) return;
       const plan = buildRoomActivity(options, turn.current++);
       if (plan) startPlan(plan);
-      else timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS);
+      else timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS + (turn.current % 5) * 700);
     };
     const current = running.current;
-    if (!enabled || !active || reduceMotion) {
+    if (!enabled || !active) {
       running.current = null;
       pendingCommand.current = null;
       petX.set(home.x); petY.set(home.y); scale.set(1); facing.set(1);
@@ -160,7 +166,7 @@ export function useRoomActivity(
         timer = setTimeout(() => runStep(returning, 0), 0);
       } else {
         petX.set(home.x); petY.set(home.y); scale.set(1); facing.set(1);
-        timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS);
+        timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS + (turn.current % 5) * 700);
       }
     }
     return () => {

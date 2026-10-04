@@ -6,7 +6,8 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 const root = process.cwd(), cache = new Map();
-let states = [], stateIndex = 0, game, display, clockOffset = 0;
+let states = [], stateIndex = 0, game, display, clockOffset = 0, captureEffects = false, effects = [];
+const timers = new Map(); let timerId = 0;
 class TestDate extends Date { static now() { return Date.now() + clockOffset; } }
 const react = {
   useState: initial => {
@@ -18,7 +19,7 @@ const react = {
     const i = stateIndex++;
     if (!(i in states)) states[i] = { current };
     return states[i];
-  }, useMemo: fn => fn(), useCallback: fn => fn, useEffect: () => {},
+  }, useMemo: fn => fn(), useCallback: fn => fn, useEffect: fn => { if (captureEffects) effects.push(fn); },
 };
 const mocks = {
   react,
@@ -48,7 +49,7 @@ function load(file) {
   }).outputText;
   vm.runInNewContext(code, {
     module, exports: module.exports, Date: TestDate, Math, Map, Set,
-    setTimeout: () => 1, clearTimeout: () => {},
+    setTimeout: (fn, ms) => { const id = ++timerId; timers.set(id, { fn, at: TestDate.now() + ms }); return id; }, clearTimeout: id => timers.delete(id),
     require: id => {
       if (id in mocks) return mocks[id];
       const resolved = id.startsWith('@/') ? path.join(root, id.slice(2)) : path.resolve(path.dirname(absolute), id);
@@ -88,7 +89,7 @@ for (const activity of activities) {
     assert.equal(test.menu.disabled, false, 'Full happiness must leave Play available');
     test.menu.onSelect(activity);
     assert.equal(game.wallet.coins, coins, 'All play must leave coins unchanged');
-    assert.equal(game.pet.stats.happiness, Math.min(100, happiness + activity.happinessBoost));
+    assert.ok(Math.abs(game.pet.stats.happiness - Math.min(100, happiness + activity.happinessBoost)) < .001, "Tiny elapsed care decay preserves the play boost");
     assert.equal(test.commands.at(-1).mood, activity.mood);
     const commandCount = test.commands.length;
     test.menu.onSelect(activity); test.feed();
@@ -107,9 +108,9 @@ for (const activity of activities) {
 
 const { usePetDisplayEngine: renderDisplayEngine } = load('pet-display/engine/use-pet-display-engine.ts');
 const { getPetMediaRegistry } = load('pet-display/registry/dog-video-registry.ts');
-function engine(pet) { stateIndex = 0; return renderDisplayEngine(pet); }
+function engine(pet) { stateIndex = 0; effects = []; captureEffects = true; const result = renderDisplayEngine(pet); captureEffects = false; effects.forEach(fn => fn()); return result; }
 for (const skin of ['orange', 'grey', 'white']) for (const activity of activities) for (const baseMood of ['idle', 'resting', 'sleeping']) {
-  states = []; display.baseMood = baseMood;
+  states = []; timers.clear(); display.baseMood = baseMood;
   const pet = { ...game.pet, catSkinId: skin }, registry = getPetMediaRegistry('cat', { catSkinId: skin });
   let current = engine(pet);
   current.send({ type: 'beginCareAction' });
@@ -131,7 +132,7 @@ for (const skin of ['orange', 'grey', 'white']) for (const activity of activitie
   assert.equal(current.isCareAnimationPlaying, false, 'Play must release busy state');
   assert.equal(current.isCareBlocked, true, 'Completed play retains the existing cooldown');
   assert.equal(current.playback.kind, 'segment');
-  clockOffset = 4_001; current = engine(pet);
+  clockOffset = 4_101; for (const [id, timer] of timers) if (timer.at <= TestDate.now()) { timers.delete(id); timer.fn(); } current = engine(pet);
   assert.equal(current.isCareBlocked, false, 'Busy state must clear after the cooldown');
   clockOffset = 0;
 }

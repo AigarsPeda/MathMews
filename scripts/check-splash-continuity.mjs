@@ -115,7 +115,7 @@ const mocks = {
   'react-native': { View: 'View', StyleSheet: { create: value => value, absoluteFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 } } },
   'react-native-reanimated': { useDerivedValue: fn => ({ get: fn }) },
   '@shopify/react-native-skia': { Canvas: 'Canvas', Group: 'Group', Image: 'SkiaImage', FilterMode: { Linear: 1 }, MipmapMode: { None: 0 }, useImage: () => texture },
-  '@/constants/cat-skins': { CAT_SKIN_SOURCES: { orange: 1 }, CAT_SKIN_SHEET: { frameSize: 192, width: 1536, height: 2304, cols: 8 } },
+  '@/constants/cat-splash': { CAT_SPLASH_SOURCE: 1, CAT_SPLASH_SHEET: { frameSize: 192, width: 1536, height: 2304, cols: 8 } },
   '@/constants/cat-sprite-catalog': { CAT_SPRITE_CATALOG: { idle: { frameCount: 96, fps: 24 } } },
   '@/pet-display/media/sprite/use-sprite-clock': { useSpriteClock: options => { readyPages = options.readyPages; return { get: () => 0 }; } },
   '@/constants/game': { GameColors: {} },

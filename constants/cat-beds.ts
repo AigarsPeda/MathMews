@@ -1,3 +1,4 @@
+import { clampDecorationScale } from "@/constants/decoration-variants";
 /** Original Blender renders. */
 const CAT_PET_BED_SOURCES = {
   brown: require("@/assets/3d/bed/bed-brown.png"),
@@ -59,7 +60,6 @@ export function getBedDisplaySize(bedId: string | undefined): number {
   return isHumanBedId(bedId ?? "") ? 112 : 72;
 }
 
-import { clampDecorationScale } from "@/constants/decoration-variants";
 
 /** Human-scale beds can be mirrored in the room (isometric wall flip). */
 export function canFlipBed(bedId: string | undefined): boolean {

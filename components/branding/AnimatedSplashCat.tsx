@@ -1,4 +1,4 @@
-import { CAT_SKIN_SHEET, CAT_SKIN_SOURCES } from "@/constants/cat-skins";
+import { CAT_SPLASH_SHEET, CAT_SPLASH_SOURCE } from "@/constants/cat-splash";
 import { CAT_SPRITE_CATALOG } from "@/constants/cat-sprite-catalog";
 import { useSpriteClock } from "@/pet-display/media/sprite/use-sprite-clock";
 import { useDerivedValue } from "react-native-reanimated";
@@ -17,8 +17,8 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
 const IDLE = CAT_SPRITE_CATALOG.idle;
-const SHEET_SOURCE = CAT_SKIN_SOURCES.orange;
-const FRAME_SIZE = CAT_SKIN_SHEET.frameSize;
+const SHEET_SOURCE = CAT_SPLASH_SOURCE;
+const FRAME_SIZE = CAT_SPLASH_SHEET.frameSize;
 const FPS = IDLE.fps;
 
 const SMOOTH_SAMPLING = {
@@ -35,8 +35,8 @@ type AnimatedSplashCatProps = {
 function useSplashLayout(size: number) {
   const pixelScale = size / FRAME_SIZE;
   const displaySize = FRAME_SIZE * pixelScale;
-  const scaledSheetWidth = CAT_SKIN_SHEET.width * pixelScale;
-  const scaledSheetHeight = CAT_SKIN_SHEET.height * pixelScale;
+  const scaledSheetWidth = CAT_SPLASH_SHEET.width * pixelScale;
+  const scaledSheetHeight = CAT_SPLASH_SHEET.height * pixelScale;
 
   return { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight };
 }
@@ -55,8 +55,8 @@ export function AnimatedSplashCat({
   const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
     useSplashLayout(size);
 
-  const imageX = useDerivedValue(() => -(frameIndex.get() % CAT_SKIN_SHEET.cols) * FRAME_SIZE * pixelScale);
-  const imageY = useDerivedValue(() => -Math.floor(frameIndex.get() / CAT_SKIN_SHEET.cols) * FRAME_SIZE * pixelScale);
+  const imageX = useDerivedValue(() => -(frameIndex.get() % CAT_SPLASH_SHEET.cols) * FRAME_SIZE * pixelScale);
+  const imageY = useDerivedValue(() => -Math.floor(frameIndex.get() / CAT_SPLASH_SHEET.cols) * FRAME_SIZE * pixelScale);
 
   useEffect(() => {
     if (!skiaImage || !windowLaidOut) return;

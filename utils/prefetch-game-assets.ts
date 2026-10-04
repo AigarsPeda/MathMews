@@ -4,7 +4,7 @@ import {
 } from "@/constants/cat-decorations";
 import { CAT_BED_SOURCES } from "@/constants/cat-beds";
 import { CAT_ROOM_SOURCES } from "@/constants/cat-rooms";
-import { CAT_SKIN_SOURCES } from "@/constants/cat-skins";
+import { CAT_SPLASH_SOURCE } from "@/constants/cat-splash";
 import {
   CAT_TOY_SOURCES,
 } from "@/constants/cat-toys";
@@ -33,7 +33,6 @@ function collectFromDecorationEntry(
 export function collectGameAssetModules(): number[] {
   const modules = new Set<number>();
 
-
   for (const entry of Object.values(CAT_DECORATION_CATALOG)) {
     collectFromDecorationEntry(entry, modules);
   }
@@ -50,9 +49,7 @@ export function collectGameAssetModules(): number[] {
     addAssetModule(modules, source);
   }
 
-  for (const source of Object.values(CAT_SKIN_SOURCES)) {
-    addAssetModule(modules, source);
-  }
+  addAssetModule(modules, CAT_SPLASH_SOURCE);
 
   return [...modules];
 }

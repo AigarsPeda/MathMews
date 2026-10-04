@@ -191,7 +191,7 @@ export async function verifyParentEmailCode(
   const trimmed = email.trim().toLowerCase();
   const token = code.trim();
 
-  const attempts: Array<"email" | "email_change" | "signup"> = [
+  const attempts: ("email" | "email_change" | "signup")[] = [
     "email",
     "email_change",
     "signup",

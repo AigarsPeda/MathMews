@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 /** Preview the packed jump poses against both sofa orientations at room coordinates. */
 import fs from 'node:fs';
 import path from 'node:path';

@@ -1,5 +1,4 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
-import { NoLivesPanel } from "@/components/economy/LivesCounter";
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
 import { PuzzlePathItem } from "@/components/puzzle/PuzzlePathItem";
 import {
@@ -10,7 +9,6 @@ import { MathStatsChip } from "@/components/puzzle/MathStatsChip";
 import { GameColors } from "@/constants/game";
 import {
   canPlayPuzzleIndex,
-  getNextIncompleteDifficulty,
   getPuzzlePathState,
   getPuzzlesByDifficulty,
   isPuzzleDifficulty,
@@ -20,11 +18,10 @@ import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
 import { useDifficultyLabelLower } from "@/hooks/use-difficulty-label";
 import type { PuzzleDifficulty } from "@/types/puzzle";
-import { canSpendLife } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -63,56 +60,12 @@ export default function PuzzlesScreen() {
     pet,
     wallet,
     progress,
-    buyLife,
     recordInteraction,
   } = useGame();
-  const [difficulty, setDifficulty] = useState<PuzzleDifficulty>(
-    paramDifficulty ?? "easy",
-  );
+  const [chosenDifficulty, setDifficulty] = useState<PuzzleDifficulty | null>(null);
+  const difficulty = chosenDifficulty ?? resolvePuzzlePathDifficulty(locale, progress.puzzlesSolved, paramDifficulty ?? "easy");
   const [showProgress, setShowProgress] = useState(false);
   const difficultyLabelLower = useDifficultyLabelLower(difficulty);
-  const prevSolvedRef = useRef(progress.puzzlesSolved);
-  const didMountResolve = useRef(false);
-
-  useEffect(() => {
-    if (!paramDifficulty) return;
-    setDifficulty(
-      resolvePuzzlePathDifficulty(
-        locale,
-        progress.puzzlesSolved,
-        paramDifficulty,
-      ),
-    );
-  }, [paramDifficulty, progress.puzzlesSolved, locale]);
-
-  useEffect(() => {
-    if (didMountResolve.current) return;
-    didMountResolve.current = true;
-    if (paramDifficulty) return;
-    setDifficulty(
-      resolvePuzzlePathDifficulty(locale, progress.puzzlesSolved, "easy"),
-    );
-  }, [locale, progress.puzzlesSolved, paramDifficulty]);
-
-  useEffect(() => {
-    const prev = prevSolvedRef.current;
-    prevSolvedRef.current = progress.puzzlesSolved;
-
-    const total = getPuzzlesByDifficulty(locale, difficulty).length;
-    const wasComplete = prev[difficulty] >= total;
-    const isComplete = progress.puzzlesSolved[difficulty] >= total;
-
-    if (!wasComplete && isComplete) {
-      const next = getNextIncompleteDifficulty(
-        locale,
-        progress.puzzlesSolved,
-        difficulty,
-      );
-      if (next) {
-        setDifficulty(next);
-      }
-    }
-  }, [progress.puzzlesSolved, difficulty, locale]);
 
   const puzzles = getPuzzlesByDifficulty(locale, difficulty);
   const solvedCount = progress.puzzlesSolved[difficulty];
@@ -137,8 +90,7 @@ export default function PuzzlesScreen() {
 
   const handlePlayPuzzle = useCallback(
     (index: number, isReplay: boolean) => {
-      if (!canSpendLife(progress.lives)) return;
-      if (!canPlayPuzzleIndex(index, solvedCount)) return;
+      if (!canPlayPuzzleIndex(index, solvedCount, progress.completedPuzzleIds?.includes(puzzles[index]?.id))) return;
       recordInteraction();
       triggerHaptic();
       router.push({
@@ -150,7 +102,7 @@ export default function PuzzlesScreen() {
         },
       });
     },
-    [difficulty, progress.lives, recordInteraction, router, solvedCount],
+    [difficulty, recordInteraction, router, solvedCount, progress.completedPuzzleIds, puzzles],
   );
 
   const handleBackHome = useCallback(() => {
@@ -209,13 +161,7 @@ export default function PuzzlesScreen() {
           onSelect={handleSelectDifficulty}
         />
 
-        {!canSpendLife(progress.lives) ? (
-          <NoLivesPanel
-            lives={progress.lives}
-            coins={wallet.coins}
-            onBuyLife={buyLife}
-          />
-        ) : (
+        {(
           <>
             <PuzzlePathProgressChip
               difficulty={difficulty}
@@ -251,7 +197,7 @@ export default function PuzzlesScreen() {
               showsVerticalScrollIndicator={false}
             >
               {puzzles.map((puzzle, index) => {
-                const state = getPuzzlePathState(index, solvedCount);
+                const state = getPuzzlePathState(index, solvedCount, progress.completedPuzzleIds?.includes(puzzle.id));
                 return (
                   <PuzzlePathItem
                     key={puzzle.id}

@@ -1,7 +1,7 @@
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export type StoreTab =
   | "rooms"
@@ -68,163 +68,16 @@ function StoreTabButton({
 export function StoreTabBar({ active, onChange }: StoreTabBarProps) {
   const { t } = useTranslation();
 
-  return (
-    <ScrollView
-      horizontal
-      style={styles.scroll}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.row}
-      accessibilityRole="tablist"
-    >
-      <StoreTabButton
-        tab="living"
-        emoji="☕"
-        label={t("store.tabLiving")}
-        isActive={active === "living"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="catItems"
-        emoji="🐾"
-        label={t("store.tabCatItems")}
-        isActive={active === "catItems"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="toys"
-        emoji="🧸"
-        label={t("store.tabToys")}
-        isActive={active === "toys"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="furniture"
-        emoji="🪑"
-        label={t("store.tabFurniture")}
-        isActive={active === "furniture"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="plants"
-        emoji="🌿"
-        label={t("store.tabPlants")}
-        isActive={active === "plants"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="sofas"
-        emoji="🛋️"
-        label={t("store.tabSofas")}
-        isActive={active === "sofas"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="carpets"
-        emoji="🧶"
-        label={t("store.tabCarpets")}
-        isActive={active === "carpets"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="chairs"
-        emoji="💺"
-        label={t("store.tabChairs")}
-        isActive={active === "chairs"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="desks"
-        emoji="🖥️"
-        label={t("store.tabDesks")}
-        isActive={active === "desks"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="computers"
-        emoji="💻"
-        label={t("store.tabComputers")}
-        isActive={active === "computers"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="consoles"
-        emoji="🎮"
-        label={t("store.tabConsoles")}
-        isActive={active === "consoles"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="windows"
-        emoji="🪟"
-        label={t("store.tabWindows")}
-        isActive={active === "windows"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="tvs"
-        emoji="📺"
-        label={t("store.tabTvs")}
-        isActive={active === "tvs"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="posters"
-        emoji="🖼️"
-        label={t("store.tabPosters")}
-        isActive={active === "posters"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="office"
-        emoji="💼"
-        label={t("store.tabOffice")}
-        isActive={active === "office"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="bathroom"
-        emoji="🛁"
-        label={t("store.tabBathroom")}
-        isActive={active === "bathroom"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="books"
-        emoji="📚"
-        label={t("store.tabBooks")}
-        isActive={active === "books"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="japanese"
-        emoji="⛩️"
-        label={t("store.tabJapanese")}
-        isActive={active === "japanese"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="rooms"
-        emoji="🏠"
-        label={t("store.tabRooms")}
-        isActive={active === "rooms"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="colors"
-        emoji="🐱"
-        label={t("store.tabColors")}
-        isActive={active === "colors"}
-        onPress={onChange}
-      />
-      <StoreTabButton
-        tab="beds"
-        emoji="🛏️"
-        label={t("store.tabBeds")}
-        isActive={active === "beds"}
-        onPress={onChange}
-      />
-    </ScrollView>
-  );
+  const tabs = [
+    ["rooms", "🏠", "store.tabRooms"], ["beds", "🛏️", "store.tabBeds"],
+    ["toys", "🧸", "store.tabToys"], ["living", "🪴", "store.tabDecorations"],
+    ["colors", "🐱", "store.tabColors"],
+  ] as const;
+  const primary = ["rooms", "beds", "toys", "colors"].includes(active) ? active : "living";
+  return <View style={styles.row} accessibilityRole="tablist">
+    {tabs.map(([tab, emoji, key]) => <StoreTabButton key={tab} tab={tab} emoji={emoji}
+      label={t(key)} isActive={primary === tab} onPress={onChange} />)}
+  </View>;
 }
 
 const styles = StyleSheet.create({
@@ -239,7 +92,8 @@ const styles = StyleSheet.create({
     paddingRight: moderateScale(4),
   },
   tab: {
-    width: moderateScale(80),
+    flex: 1,
+    minWidth: 0,
     minHeight: moderateScale(48),
     flexDirection: "column",
     alignItems: "center",

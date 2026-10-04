@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     color: GameColors.success,
   },
   titleHint: {
-    color: "#FF9F43",
+    color: "#99501A",
   },
   detail: {
     fontSize: moderateScale(16),

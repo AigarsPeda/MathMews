@@ -12,6 +12,7 @@ export function getTopicAttemptStats(
   return {
     correct: typeof entry.correct === "number" ? Math.max(0, entry.correct) : 0,
     wrong: typeof entry.wrong === "number" ? Math.max(0, entry.wrong) : 0,
+    recent: entry.recent ?? [],
   };
 }
 
@@ -26,6 +27,7 @@ export function recordTopicAttempt(
     [topic]: {
       correct: current.correct + (correct ? 1 : 0),
       wrong: current.wrong + (correct ? 0 : 1),
+      recent: [...(current.recent ?? []), correct].slice(-10),
     },
   };
 }
@@ -49,6 +51,8 @@ export type TopicStatsRow = {
   attempts: number;
   accuracy: number | null;
   mistakeRate: number | null;
+  recentAttempts: number;
+  recentAccuracy: number | null;
 };
 
 export function buildTopicStatsRows(
@@ -68,6 +72,8 @@ export function buildTopicStatsRows(
       attempts,
       accuracy: topicAccuracy(normalized),
       mistakeRate: topicMistakeRate(normalized),
+      recentAttempts: normalized.recent?.length ?? 0,
+      recentAccuracy: normalized.recent?.length ? normalized.recent.filter(Boolean).length / normalized.recent.length : null,
     });
   }
 
@@ -80,9 +86,11 @@ export function buildTopicStatsRows(
   });
 }
 
-/** Topics tied for highest mistake rate (and wrong count). Empty if none have mistakes. */
+/** Lifetime details for topics still needing practice; recent improvement clears the flag. */
 export function findToughestTopicRows(rows: TopicStatsRow[]): TopicStatsRow[] {
-  const withMistakes = rows.filter((row) => row.wrong > 0);
+  const withMistakes = rows.filter((row) => row.recentAttempts >= 3
+    ? (row.recentAccuracy ?? 1) < 0.8
+    : row.wrong > 0);
   const lead = withMistakes[0];
   if (!lead || lead.mistakeRate === null) return [];
 
@@ -108,7 +116,8 @@ export function normalizeTopicStats(value: unknown): TopicStatsMap {
         ? Math.max(0, Math.floor(record.wrong))
         : 0;
     if (correct === 0 && wrong === 0) continue;
-    result[topic as PuzzleTopic] = { correct, wrong };
+    const recent = Array.isArray(record.recent) ? record.recent.filter((outcome): outcome is boolean => typeof outcome === "boolean").slice(-10) : [];
+    result[topic as PuzzleTopic] = { correct, wrong, recent };
   }
   return result;
 }

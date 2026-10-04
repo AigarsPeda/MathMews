@@ -27,7 +27,9 @@
     "needsPractice": "Vairāk treniņa",
     "attemptsDetail": "{{correct}} pareizi · {{wrong}} kļūdas · {{attempts}} kopā",
     "emptyTitle": "Vēl nav mēģinājumu",
-    "emptyBody": "Atrisini dažus uzdevumus, un tēmu statistika parādīsies šeit."
+    "emptyBody": "Atrisini dažus uzdevumus, un tēmu statistika parādīsies šeit.",
+    "recentAccuracy": "Pēdējie {{count}} mēģinājumi: {{accuracy}} pareizi",
+    "reviewTopic": "Vingrinies: {{topic}}"
   },
   "settings": {
     "title": "Iestatījumi",
@@ -115,8 +117,8 @@
     },
     "removedFromRoom": "{{name}} ir noņemts no istabas.",
     "removeFromRoom": "Noņemt",
-    "moveLayerUp": "Uz augšu",
-    "moveLayerDown": "Uz leju",
+    "moveLayerUp": "Priekšplānā",
+    "moveLayerDown": "Aizmugurē",
     "rotateItem": "Pagriezt",
     "flipWall": "Pagriezt pret otru sienu",
     "flipBed": "Apgriezt gultu",
@@ -143,7 +145,23 @@
     "a11yFeed": "Barot par {{cost}} monētām",
     "a11ySolve": "Atrisināt matemātikas uzdevumu",
     "a11yStore": "Atvērt mājdzīvnieku veikalu",
-    "a11ySettings": "Atvērt iestatījumus"
+    "a11ySettings": "Atvērt iestatījumus",
+    "roomTools": "Istabas rīki",
+    "decorateHint": "Velc, lai pārvietotu. Pieskaries opcijām. Izmaiņas saglabājas automātiski.",
+    "undo": "Atsaukt",
+    "saveLayout": "Saglabāt izkārtojumu",
+    "restoreLayout": "Atjaunot izkārtojumu",
+    "tidyRoom": "Sakārtot istabu",
+    "snapOn": "Režģis: ieslēgts",
+    "snapOff": "Režģis: izslēgts",
+    "roomObjects": "Priekšmeti istabā",
+    "noRoomObjects": "Pievieno iegādātos priekšmetus no veikala.",
+    "nudgeleft": "Pa kreisi",
+    "nudgeright": "Pa labi",
+    "nudgeup": "Uz augšu",
+    "nudgedown": "Uz leju",
+    "alreadyFull": "Jau paēdis",
+    "careBusy": "Pabeidz darbību"
   },
   "store": {
     "title": "Mājdzīvnieku veikals",
@@ -430,7 +448,7 @@
       "window7A": "Logs 7",
       "window8A": "Logs 8",
       "window11A": "Logs 11",
-      "windowJapaneseL": "Japāņu\nlogs",
+      "windowJapaneseL": "Japāņu\nlogs"
     },
     "free": "Bezmaksas",
     "buyFor": "{{cost}} 🪙",
@@ -514,7 +532,17 @@
     "tabTvs": "TV",
     "subtitleTvs": "Ekrāni filmu vakaram.",
     "tabWindows": "Logi",
-    "subtitleWindows": "Ielaisti gaismu istabā."
+    "subtitleWindows": "Ielaisti gaismu istabā.",
+    "tabDecorations": "Dekori",
+    "ownedOnly": "Mani",
+    "preview": "Apskatīt manā istabā",
+    "chooseCategory": "Dekoru kategorijas",
+    "saveGoal": "Saglabāt kā mērķi",
+    "goalProgress": "Krāju: {{name}} · vēl {{remaining}} monētas",
+    "goalReady": "Tev pietiek monētu!",
+    "previewNote": "Apskati pirms pirkuma.",
+    "closePreview": "Aizvērt priekšskatījumu",
+    "previewItem": "Apskatīt: {{name}}, manā istabā"
   },
   "onboarding": {
     "title": "Iepazīsties ar savu kaķi!",
@@ -696,7 +724,7 @@
   "play": {
     "solveFor": "Atrisini {{name}}",
     "replayNut": "Atkārtot riekstu #{{number}}",
-    "hardNut": "🥜 Grūtais rieksts #{{number}}",
+    "hardNut": "🥜 Uzdevums #{{number}}",
     "greatJob": "Lieliski!",
     "crackedAgain": "Atkal izdevās!",
     "goodTry": "Labs mēģinājums!",
@@ -711,7 +739,28 @@
     "a11yBack": "Atpakaļ",
     "a11yNext": "Uz nākamo uzdevumu",
     "a11yTryAgain": "Mēģināt vēlreiz",
-    "a11yHome": "Uz sākumu"
+    "a11yHome": "Uz sākumu",
+    "answerLabel": "Atbilde {{answer}}",
+    "checkAnswer": "Pārbaudīt atbildi",
+    "mechanicIntro": {
+      "multiple_choice": "Izvēlies atbildi, tad nospied Pārbaudīt atbildi.",
+      "compare": "Izvēlies lielāko rezultātu, tad pārbaudi atbildi.",
+      "operation_path": "Izvēlies darbību katram solim, tad pārbaudi rezultātu.",
+      "target_build": "Aizpildi atstarpes. Reizināšana un dalīšana jāveic vispirms. Tad pārbaudi.",
+      "fraction_build": "Pieskaries, lai iekrāsotu daļu, tad pārbaudi.",
+      "true_false": "Izvēlies Patiesi vai Aplami, tad pārbaudi atbildi.",
+      "balance": "Izvēlies skaitli, kas abas puses padara vienādas, tad pārbaudi.",
+      "number_line": "Pieskaries vietai, kur beidzas lēciens, tad pārbaudi.",
+      "pair_sum": "Izvēlies divus skaitļus, kuru summa ir mērķis, tad pārbaudi.",
+      "fix_mistake": "Izvēlies labojumu, tad pārbaudi.",
+      "estimate": "Izvēlies tuvāko aptuveno vērtību, tad pārbaudi.",
+      "fair_share": "Sadali vienādi. Atceries saskaitīt atlikumu. Izvēlies un pārbaudi.",
+      "fraction_equivalent": "Izvēlies daļu ar tādu pašu vērtību, tad pārbaudi.",
+      "pattern_next": "Atrodi likumu. Izvēlies nākamo skaitli, tad pārbaudi.",
+      "function_machine": "Izvēlies likumu, kas pārveido ievadi par izvadi, tad pārbaudi.",
+      "order_numbers": "Pieskaries diviem skaitļiem, lai tos samainītu. Tad pārbaudi secību.",
+      "fraction_match": "Savieno katru daļu ar attēlu. Nepareiza izvēle saglabā jau savienotos pārus."
+    }
   },
   "lives": {
     "title": "Dzīvības",
@@ -775,6 +824,7 @@
     "a11yRestoreSave": "Atjaunot {{name}}, sākts {{date}}"
   },
   "difficultyPicker": {
-    "a11y": "{{difficulty}} grūtība, {{coins}} monētas par riekstu"
+    "a11y": "{{difficulty}} grūtība, {{coins}} monētas par riekstu",
+    "ages": "{{min}}–{{max}} gadi"
   }
 }
