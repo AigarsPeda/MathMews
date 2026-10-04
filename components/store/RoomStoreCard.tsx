@@ -1,9 +1,10 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { getCatRoomSource, type CatRoomId } from "@/constants/cat-rooms";
 import { GameColors } from "@/constants/game";
 import { getRoomStorePrice } from "@/utils/room-store";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 type RoomStoreCardProps = {
   roomId: CatRoomId;

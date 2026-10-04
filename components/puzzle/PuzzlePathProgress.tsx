@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { GameColors, getPuzzleCoinReward } from "@/constants/game";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -38,7 +39,7 @@ export function PuzzlePathProgressSheet({
   return (
     <AppBottomSheet visible={visible} onClose={onClose}>
       <View style={styles.card}>
-        <Text style={styles.emoji}>{isComplete ? "🎉" : "🥜"}</Text>
+        <AppIcon name={isComplete ? "sparkle" : "nut"} size={moderateScale(44)} />
         <Text style={styles.title}>
           {t("progress.pathTitle", { difficulty: difficultyLabel })}
         </Text>
@@ -69,13 +70,13 @@ export function PuzzlePathProgressSheet({
 
         <View style={styles.rewards}>
           <View style={styles.rewardRow}>
-            <Text style={styles.rewardEmoji}>🪙</Text>
+            <AppIcon name="coin" size={moderateScale(18) * 1.2} />
             <Text style={styles.rewardText}>
               {t("progress.coinsPerNut", { count: firstClear })}
             </Text>
           </View>
           <View style={styles.rewardRow}>
-            <Text style={styles.rewardEmoji}>✨</Text>
+            <AppIcon name="sparkle" size={moderateScale(18) * 1.2} />
             <Text style={styles.rewardText}>
               {t("progress.sparkleReplay", { count: replay })}
             </Text>
@@ -134,7 +135,7 @@ export function PuzzlePathProgressChip({
             difficulty: difficultyLabelLower,
           })}
         </Text>
-        <Text style={styles.chipChevron}>ⓘ</Text>
+        <AppIcon name="chevron-right" size={moderateScale(18)} />
       </View>
       <ProgressBar progress={progress} fillColor={GameColors.success} />
     </Pressable>
@@ -147,9 +148,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(20),
     alignItems: "center",
     gap: moderateScale(8),
-  },
-  emoji: {
-    fontSize: moderateScale(36),
   },
   title: {
     fontSize: moderateScale(14),
@@ -187,9 +185,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: moderateScale(8),
-  },
-  rewardEmoji: {
-    fontSize: moderateScale(18),
   },
   rewardText: {
     flex: 1,
@@ -231,10 +226,5 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(13),
     fontWeight: "700",
     color: GameColors.text,
-  },
-  chipChevron: {
-    fontSize: moderateScale(16),
-    fontWeight: "700",
-    color: GameColors.secondary,
   },
 });

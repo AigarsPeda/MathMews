@@ -1,3 +1,5 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { LifeRegenClock } from "@/components/economy/LifeRegenClock";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors, LIFE_BUY_COST, MAX_LIVES } from "@/constants/game";
@@ -6,7 +8,7 @@ import { applyLifeRegen, canBuyLife, msUntilNextLife } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type BuyLifeSheetProps = {
   visible: boolean;
@@ -51,7 +53,7 @@ export function BuyLifeSheet({
   return (
     <AppBottomSheet visible={visible} onClose={onClose}>
       <View style={styles.card}>
-        <Text style={styles.emoji}>❤️</Text>
+        <AppIcon name="heart" size={moderateScale(32) * 1.2} />
         <Text style={styles.title}>{t("lives.title")}</Text>
         <Text style={styles.count}>
           {t("lives.count", { current: synced.current, max: MAX_LIVES })}
@@ -102,9 +104,6 @@ const styles = StyleSheet.create({
     paddingTop: moderateScale(20),
     paddingHorizontal: moderateScale(20),
     gap: moderateScale(8),
-  },
-  emoji: {
-    fontSize: moderateScale(32),
   },
   title: {
     fontSize: moderateScale(22),

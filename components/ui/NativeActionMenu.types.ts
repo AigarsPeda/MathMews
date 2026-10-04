@@ -1,10 +1,17 @@
-import type { MenuAction } from "@expo/ui/community/menu";
+import type { AppIconName } from "@/constants/app-icons";
 import type { ReactElement } from "react";
+
+export type NativeMenuAction = {
+  id: string;
+  title: string;
+  icon: AppIconName;
+  attributes?: { disabled?: boolean; destructive?: boolean };
+};
 
 export type NativeActionMenuProps = {
   width: number;
   height: number;
-  actions: (MenuAction & { id: string })[];
+  actions: NativeMenuAction[];
   title: string;
   label: string;
   blocked: boolean;

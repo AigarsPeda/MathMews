@@ -1,6 +1,7 @@
 import { RoomEditorSheet, type RoomEditorControls } from "@/components/pet/RoomEditorSheet";
 import { RoomItemMoveControls } from "@/components/pet/RoomItemMoveControls";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { AppIcon } from "@/components/ui/AppIcon";
+import type { AppIconName } from "@/constants/app-icons";
 import { buildRoomActivity, roomOffsetToPoint, type RoomActivityKind } from "@/utils/room-activities";
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-sprite-registry";
 import { useRoomActivity } from "@/hooks/use-room-activity";
@@ -151,12 +152,12 @@ type PetStageProps = {
 };
 
 function StatBar({
-  emoji,
+  icon,
   label,
   value,
   color,
 }: {
-  emoji: string;
+  icon: AppIconName;
   label: string;
   value: number;
   color: string;
@@ -165,7 +166,7 @@ function StatBar({
 
   return (
     <View style={styles.statRow}>
-      <Text style={styles.statEmoji}>{emoji}</Text>
+      <AppIcon name={icon} size={moderateScale(28)} />
       <View style={styles.statContent}>
         <View style={styles.statHeader}>
           <Text style={styles.statLabel}>{label}</Text>
@@ -456,7 +457,7 @@ export function PetStage({
         const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
         if (placed) actions.push({
           label: t(placed.poweredOn ? "home.turnOffAirConditioner" : "home.turnOnAirConditioner"),
-          icon: "power-settings-new",
+          icon: "power",
           onPress: () => onTogglePlacedAirConditioner(item.instanceId),
         });
         return actions;
@@ -465,7 +466,7 @@ export function PetStage({
       if (onMoveRoomLayerItem && item.kind === "decoration" && isRoomBackgroundDecoration(item.decorationId)) {
         actions.push({
           label: moveUpLabel,
-          icon: "north",
+          icon: "arrow-up",
           onPress: () => {
             onMoveRoomLayerItem(item, "up");
           },
@@ -473,7 +474,7 @@ export function PetStage({
         });
         actions.push({
           label: moveDownLabel,
-          icon: "south",
+          icon: "arrow-down",
           onPress: () => {
             onMoveRoomLayerItem(item, "down");
           },
@@ -491,7 +492,7 @@ export function PetStage({
         if (onTogglePlacedAirConditioner && isAirConditionerDecorationId(decorationId)) {
           actions.unshift({
             label: t(placed.poweredOn ? "home.turnOffAirConditioner" : "home.turnOnAirConditioner"),
-            icon: "power-settings-new",
+            icon: "power",
             onPress: () => onTogglePlacedAirConditioner(item.instanceId),
           });
         }
@@ -505,7 +506,7 @@ export function PetStage({
         ) {
           actions.push({
             label: flipWallLabel,
-            icon: "rotate-right",
+            icon: "rotate",
             onPress: () => {
               onFlipPlacedDecorationWall(item.instanceId);
             },
@@ -520,7 +521,7 @@ export function PetStage({
               : styleVariant
                 ? changeLookLabel
                 : rotateLabel,
-            icon: styleVariant && !isPoster ? "style" : "rotate-right",
+            icon: styleVariant && !isPoster ? "palette" : "rotate",
             onPress: () => {
               onRotatePlacedDecoration(item.instanceId);
             },
@@ -564,7 +565,7 @@ export function PetStage({
       if (item.kind === "bed" && onFlipBed && canFlipBed(bedId)) {
         actions.push({
           label: flipBedLabel,
-          icon: "rotate-right",
+          icon: "rotate",
           onPress: () => {
             onFlipBed();
           },
@@ -594,7 +595,7 @@ export function PetStage({
       if (item.kind === "bed" && onBedRemove) {
         actions.push({
           label: removeMenuLabel,
-          icon: "delete-outline",
+          icon: "trash",
           onPress: () => {
             onBedRemove();
           },
@@ -605,7 +606,7 @@ export function PetStage({
       if (item.kind === "decoration" && onPlacedDecorationRemove) {
         actions.push({
           label: removeMenuLabel,
-          icon: "delete-outline",
+          icon: "trash",
           onPress: () => {
             onPlacedDecorationRemove(item.instanceId);
           },
@@ -616,7 +617,7 @@ export function PetStage({
       if (item.kind === "toy" && onPlacedToyRemove) {
         actions.push({
           label: removeMenuLabel,
-          icon: "delete-outline",
+          icon: "trash",
           onPress: () => {
             onPlacedToyRemove(item.instanceId);
           },
@@ -703,7 +704,7 @@ export function PetStage({
       ]}
     >
       {visibleSpeech && !(compact && usesSprite) ? (
-        <View pointerEvents="none" style={compact ? styles.speechAbovePet : styles.speechAnchor}>
+        <View collapsable={false} pointerEvents="none" style={compact ? styles.speechAbovePet : styles.speechAnchor}>
           <PetSpeechBubble message={visibleSpeech} />
         </View>
       ) : null}
@@ -849,8 +850,7 @@ export function PetStage({
     if (!buildRoomActivity(activityOptions, 0, kind)) continue;
     catCommandActions.push({
       label: t(`home.catCommands.${kind}`),
-      icon: kind.startsWith("sofa") ? "weekend" : "sports-baseball",
-      emoji: kind === "sofaSit" ? "🛋️" : kind === "sofaSleep" ? "😴" : kind === "mouseChase" ? "🐭" : "🧸",
+      icon: kind === "sofaSit" ? "sofa" : kind === "sofaSleep" ? "sleep" : kind === "mouseChase" ? "mouse" : "play",
       onPress: () => { onRoomInteraction?.(); startActivity(kind); },
     });
   }
@@ -859,7 +859,7 @@ export function PetStage({
     onPress: () => { handleRoomTouch(); },
   });
   else if (onPetPress) catCommandActions.unshift({
-    label: t("home.pet"), icon: "pets",
+    label: t("home.pet"), icon: "paw",
     onPress: () => { onPetPress(); },
   });
   return (
@@ -907,7 +907,7 @@ export function PetStage({
               scale={activityScale} facing={activityFacing} size={displayWidth} width={viewport.width} height={viewport.height} /> : null}
             </Animated.View>
             {compact && usesSprite && visibleSpeech ? (
-              <Animated.View pointerEvents="none" onLayout={handleSpeechLayout} style={[styles.speechOverlay, speechPositionStyle]}>
+              <Animated.View collapsable={false} pointerEvents="none" onLayout={handleSpeechLayout} style={[styles.speechOverlay, speechPositionStyle]}>
                 <PetSpeechBubble message={visibleSpeech} />
               </Animated.View>
             ) : null}
@@ -915,7 +915,7 @@ export function PetStage({
               <RoomActionMenu style={styles.catCommandMenu} actions={catCommandActions}
                 label={t("home.catActions")} blocked={roomActivityBlocked}>
                 <View style={styles.catCommandButton}>
-                  <MaterialIcons name="pets" size={moderateScale(18)} color={GameColors.text} />
+                  <AppIcon name="paw" size={moderateScale(22)} />
                   <Text style={styles.decorateLabel}>{t("home.catActions")}</Text>
                 </View>
               </RoomActionMenu>
@@ -930,7 +930,7 @@ export function PetStage({
                 }}
                 accessibilityRole="button" accessibilityLabel={t(decorating ? "home.finishDecorating" : "home.decorateRoom")}
                 accessibilityState={{ selected: decorating, disabled: waitingToDecorate }}>
-                <MaterialIcons name={decorating ? "check" : "weekend"} size={moderateScale(18)} color={GameColors.text} />
+                <AppIcon name={decorating ? "check" : "sofa"} size={moderateScale(22)} />
                 <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
               </Pressable>
             ) : null}
@@ -961,19 +961,19 @@ export function PetStage({
               <MathStatsChip compact onPress={onOpenMathStats} />
             ) : null}
             <StatBar
-              emoji="🍖"
+              icon="feed"
               label={t("pet.fed")}
               value={clampStat(stats.hunger)}
               color={GameColors.hunger}
             />
             <StatBar
-              emoji="💛"
+              icon="heart"
               label={t("pet.happiness")}
               value={stats.happiness}
               color={GameColors.happiness}
             />
             <StatBar
-              emoji="🧠"
+              icon="brain"
               label={t("pet.wisdom")}
               value={wisdom}
               color={GameColors.wisdom}
@@ -1094,7 +1094,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     zIndex: ROOM_PET_LAYER_Z_INDEX + 1,
-    width: moderateScale(200),
+    width: moderateScale(170),
     alignItems: "flex-start",
   },
   avatarCluster: {
@@ -1121,11 +1121,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: moderateScale(10),
-  },
-  statEmoji: {
-    fontSize: moderateScale(22),
-    width: moderateScale(28),
-    textAlign: "center",
   },
   statContent: {
     flex: 1,

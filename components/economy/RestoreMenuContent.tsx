@@ -1,3 +1,5 @@
+import { AppIcon } from "@/components/ui/AppIcon";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { CloudSaveList } from "@/components/cloud-save/CloudSaveList";
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
@@ -134,11 +136,11 @@ export function RestoreMenuContent({
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}
         >
-          <Text style={styles.backBtnText}>{t("common.back")}</Text>
+          <BackButtonLabel style={styles.backBtnText} />
         </Pressable>
       ) : null}
 
-      <Text style={styles.emoji}>🐱</Text>
+      <AppIcon name="cat" size={moderateScale(32) * 1.2} />
       <Text style={styles.title}>{t("cloudRestore.menuTitle")}</Text>
       <Text style={styles.subtitle}>{t("cloudRestore.menuHint")}</Text>
 
@@ -201,9 +203,6 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     fontWeight: "700",
     color: GameColors.primary,
-  },
-  emoji: {
-    fontSize: moderateScale(32),
   },
   title: {
     fontSize: moderateScale(22),

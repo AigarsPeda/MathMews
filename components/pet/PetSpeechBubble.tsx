@@ -1,15 +1,19 @@
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, Text, View } from "react-native";
+import Animated, { FadeIn, FadeOut, useReducedMotion } from "react-native-reanimated";
 
 type PetSpeechBubbleProps = {
   message: string;
 };
 
 export function PetSpeechBubble({ message }: PetSpeechBubbleProps) {
+  const reduceMotion = useReducedMotion();
   return (
-    <View
+    <Animated.View
       style={styles.wrap}
+      entering={reduceMotion ? undefined : FadeIn.duration(140)}
+      exiting={reduceMotion ? undefined : FadeOut.duration(180)}
       accessibilityRole="text"
       accessibilityLiveRegion="polite"
     >
@@ -17,20 +21,20 @@ export function PetSpeechBubble({ message }: PetSpeechBubbleProps) {
         <Text style={styles.text}>{message}</Text>
       </View>
       <View style={styles.tail} />
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
     alignItems: "center",
-    maxWidth: moderateScale(200),
+    maxWidth: moderateScale(170),
   },
   bubble: {
     backgroundColor: GameColors.background,
     borderRadius: moderateScale(14),
-    paddingVertical: moderateScale(8),
-    paddingHorizontal: moderateScale(12),
+    paddingVertical: moderateScale(5),
+    paddingHorizontal: moderateScale(9),
     borderWidth: 1,
     borderColor: GameColors.cardBorder,
   },

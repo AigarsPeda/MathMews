@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { PetDisplay } from "@/pet-display/components/PetDisplay";
 import { GameColors } from "@/constants/game";
 import {
@@ -61,7 +62,7 @@ export function CatSkinPicker({ value, onChange }: CatSkinPickerProps) {
                 >
                   {t(`onboarding.catSkin.${skinId}`)}
                 </Text>
-                {selected ? <Text style={styles.check}>✓</Text> : null}
+                {selected ? <AppIcon name="check" size={moderateScale(12) * 1.2} /> : null}
               </View>
             </Pressable>
           );
@@ -120,11 +121,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   optionTextSelected: {
-    color: GameColors.primary,
-  },
-  check: {
-    fontSize: moderateScale(12),
-    fontWeight: "800",
     color: GameColors.primary,
   },
 });

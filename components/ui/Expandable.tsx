@@ -1,6 +1,5 @@
-import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { AppIcon } from "@/components/ui/AppIcon";
 import {
   useCallback,
   useEffect,
@@ -129,11 +128,7 @@ export function Expandable({
         <View style={styles.headerContent}>{header}</View>
         {showChevron ? (
           <Animated.View style={chevronStyle}>
-            <MaterialIcons
-              name="expand-more"
-              size={moderateScale(22)}
-              color={GameColors.textMuted}
-            />
+            <AppIcon name="chevron-down" size={moderateScale(22)} />
           </Animated.View>
         ) : null}
       </Pressable>

@@ -1,3 +1,5 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { LifeRegenClock } from "@/components/economy/LifeRegenClock";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { GameColors, LIFE_BUY_COST, MAX_LIVES } from "@/constants/game";
@@ -6,7 +8,7 @@ import { applyLifeRegen, msUntilNextLife } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 function useRegenNow() {
   const [now, setNow] = useState(() => Date.now());
@@ -38,7 +40,7 @@ export function LivesCounter({
 
   const content = (
     <>
-      <Text style={styles.emoji}>❤️</Text>
+      <AppIcon name="heart" size={moderateScale(16) * 1.2} />
       <Text style={styles.value}>
         {t("lives.count", { current: synced.current, max: MAX_LIVES })}
       </Text>
@@ -105,7 +107,7 @@ export function NoLivesPanel({
 
   return (
     <View style={styles.panel}>
-      <Text style={styles.panelEmoji}>💔</Text>
+      <AppIcon name="broken-heart" size={moderateScale(40) * 1.2} />
       <Text style={styles.panelTitle}>{t("lives.outOfLives")}</Text>
       {regenMs !== null ? (
         <View style={styles.panelClockWrap}>
@@ -165,9 +167,6 @@ const styles = StyleSheet.create({
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
-  emoji: {
-    fontSize: moderateScale(16),
-  },
   value: {
     fontSize: moderateScale(16),
     fontWeight: "700",
@@ -195,9 +194,6 @@ const styles = StyleSheet.create({
     borderColor: GameColors.cardBorder,
     padding: moderateScale(24),
     gap: moderateScale(10),
-  },
-  panelEmoji: {
-    fontSize: moderateScale(40),
   },
   panelTitle: {
     fontSize: moderateScale(22),

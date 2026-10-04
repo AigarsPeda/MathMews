@@ -8,7 +8,8 @@ import ts from 'typescript';
 const root = process.cwd(), cache = new Map();
 let states = [], stateIndex = 0, game, display, clockOffset = 0, captureEffects = false, effects = [];
 const timers = new Map(); let timerId = 0;
-const routes = []; let focusCleanup;
+const routes = []; let focusCleanups = [];
+const focusCleanup = () => { for (const cleanup of focusCleanups) cleanup?.(); };
 class TestDate extends Date { static now() { return Date.now() + clockOffset; } }
 const react = {
   useState: initial => {
@@ -29,7 +30,7 @@ const mocks = {
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   'expo-haptics': {}, 'expo-router': {
     useRouter: () => ({ push: route => routes.push(route) }),
-    useFocusEffect: fn => { focusCleanup = fn(); },
+    useFocusEffect: fn => { focusCleanups.push(fn()); },
   },
   '@/contexts/GameProvider': { useGame: () => game },
   '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
@@ -40,6 +41,7 @@ const mocks = {
   '@/constants/puzzles': { computePetWisdom: () => 0, hasIncompletePuzzles: () => false },
 };
 for (const [file, name] of [
+  ['components/ui/AppIcon', 'AppIcon'], ['components/ui/IconText', 'IconText'],
   ['components/economy/GameHeaderStats', 'GameHeaderStats'], ['components/home/HeaderChip', 'HeaderChip'],
   ['components/home/PlayMenuButton', 'PlayMenuButton'], ['components/pet/PetStage', 'PetStage'],
 ]) mocks[`@/${file}`] = { [name]: name };
@@ -72,6 +74,7 @@ const { CAT_PLAY_ACTIVITIES: activities } = load('constants/cat-play.ts');
 const Home = load('app/index.tsx').default;
 function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {}) {
   states = []; stateIndex = 0;
+  focusCleanups = [];
   routes.length = 0;
   const now = Date.now(), commands = [], debits = [];
   game = {

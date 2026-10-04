@@ -1,3 +1,7 @@
+import { AppIcon } from "@/components/ui/AppIcon";
+import { IconText as Text } from "@/components/ui/IconText";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
+import type { AppIconName } from "@/constants/app-icons";
 import { StorePreviewSheet, type StorePreviewItem } from "@/components/store/StorePreviewSheet";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { getStoreGoalDetails } from "@/utils/store-goal";
@@ -67,7 +71,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -81,7 +84,7 @@ function triggerHaptic() {
 const FEEDBACK_VISIBLE_MS = 2800;
 
 type StoreFeedback = {
-  emoji: string;
+  icon: AppIconName;
   message: string;
 };
 
@@ -143,11 +146,11 @@ export default function StoreScreen() {
   }, []);
 
   const showFeedback = useCallback(
-    (emoji: string, message: string) => {
+    (icon: AppIconName, message: string) => {
       if (feedbackTimerRef.current) {
         clearTimeout(feedbackTimerRef.current);
       }
-      setFeedback({ emoji, message });
+      setFeedback({ icon, message });
       setFeedbackVisible(true);
       feedbackTimerRef.current = setTimeout(() => {
         setFeedbackVisible(false);
@@ -177,30 +180,30 @@ export default function StoreScreen() {
   }, [recordInteraction, router]);
 
   const showPurchaseMessage = useCallback(
-    (result: RoomPurchaseResult, roomId: CatRoomId) => {
+    (result: RoomPurchaseResult, roomId: CatRoomId): StoreFeedback => {
       const roomNumber = Number.parseInt(roomId.replace("room", ""), 10);
       switch (result) {
         case "purchased":
           return {
-            emoji: "🏠",
+            icon: "home",
             message: t("store.purchased", { number: roomNumber }),
           };
         case "already_owned":
           return {
-            emoji: "✓",
+            icon: "check",
             message: t("store.alreadyOwned"),
           };
         case "insufficient_funds": {
           const price = getRoomStorePrice(roomId);
           const cost = price.kind === "coins" ? price.amount : 0;
           return {
-            emoji: "🪙",
+            icon: "coin",
             message: t("store.needCoins", { cost }),
           };
         }
         default:
           return {
-            emoji: "⚠️",
+            icon: "warning",
             message: t("store.unavailable"),
           };
       }
@@ -217,8 +220,8 @@ export default function StoreScreen() {
         triggerHaptic();
       }
       if (result !== "already_owned") {
-        const { emoji, message } = showPurchaseMessage(result, roomId);
-        showFeedback(emoji, message);
+        const { icon, message } = showPurchaseMessage(result, roomId);
+        showFeedback(icon, message);
       }
     },
     [purchaseRoom, recordInteraction, showFeedback, showPurchaseMessage],
@@ -231,37 +234,37 @@ export default function StoreScreen() {
       const equipped = equipRoom(roomId);
       if (equipped) {
         const roomNumber = Number.parseInt(roomId.replace("room", ""), 10);
-        showFeedback("✨", t("store.equippedRoom", { number: roomNumber }));
+        showFeedback("sparkle", t("store.equippedRoom", { number: roomNumber }));
       }
     },
     [equipRoom, recordInteraction, showFeedback, t],
   );
 
   const showBedPurchaseMessage = useCallback(
-    (result: BedPurchaseResult, bedId: CatBedId) => {
+    (result: BedPurchaseResult, bedId: CatBedId): StoreFeedback => {
       const bedName = t(`store.bedName.${bedId}`);
       switch (result) {
         case "purchased":
           return {
-            emoji: "🛏️",
+            icon: "bed",
             message: t("store.purchasedBed", { name: bedName }),
           };
         case "already_owned":
           return {
-            emoji: "✓",
+            icon: "check",
             message: t("store.alreadyOwnedBed"),
           };
         case "insufficient_funds": {
           const price = getBedStorePrice(bedId);
           const cost = price.kind === "coins" ? price.amount : 0;
           return {
-            emoji: "🪙",
+            icon: "coin",
             message: t("store.needCoinsBed", { cost }),
           };
         }
         default:
           return {
-            emoji: "⚠️",
+            icon: "warning",
             message: t("store.unavailableBed"),
           };
       }
@@ -278,8 +281,8 @@ export default function StoreScreen() {
         triggerHaptic();
       }
       if (result !== "already_owned") {
-        const { emoji, message } = showBedPurchaseMessage(result, bedId);
-        showFeedback(emoji, message);
+        const { icon, message } = showBedPurchaseMessage(result, bedId);
+        showFeedback(icon, message);
       }
     },
     [purchaseBed, recordInteraction, showBedPurchaseMessage, showFeedback],
@@ -292,7 +295,7 @@ export default function StoreScreen() {
       const equipped = equipBed(bedId);
       if (equipped) {
         showFeedback(
-          "✨",
+          "sparkle",
           t("store.equippedBed", { name: t(`store.bedName.${bedId}`) }),
         );
       }
@@ -307,7 +310,7 @@ export default function StoreScreen() {
       const removed = removeBedFromRoom();
       if (removed) {
         showFeedback(
-          "📦",
+          "box",
           t("store.removedFromRoom", {
             name: t(`store.bedName.${bedId}`),
           }),
@@ -318,30 +321,30 @@ export default function StoreScreen() {
   );
 
   const showToyPurchaseMessage = useCallback(
-    (result: ToyPurchaseResult, toyId: CatToyId) => {
+    (result: ToyPurchaseResult, toyId: CatToyId): StoreFeedback => {
       const toyName = t(`store.toyName.${toyId}`).replace(/\n/g, " ");
       switch (result) {
         case "purchased":
           return {
-            emoji: "🧸",
+            icon: "play",
             message: t("store.purchasedToy", { name: toyName }),
           };
         case "already_owned":
           return {
-            emoji: "✓",
+            icon: "check",
             message: t("store.alreadyOwnedToy"),
           };
         case "insufficient_funds": {
           const price = getToyStorePrice(toyId);
           const cost = price.kind === "coins" ? price.amount : 0;
           return {
-            emoji: "🪙",
+            icon: "coin",
             message: t("store.needCoinsToy", { cost }),
           };
         }
         default:
           return {
-            emoji: "⚠️",
+            icon: "warning",
             message: t("store.unavailableToy"),
           };
       }
@@ -357,8 +360,8 @@ export default function StoreScreen() {
       if (result === "purchased") {
         triggerHaptic();
       }
-      const { emoji, message } = showToyPurchaseMessage(result, toyId);
-      showFeedback(emoji, message);
+      const { icon, message } = showToyPurchaseMessage(result, toyId);
+      showFeedback(icon, message);
     },
     [purchaseToy, recordInteraction, showFeedback, showToyPurchaseMessage],
   );
@@ -370,7 +373,7 @@ export default function StoreScreen() {
       const placed = placeToyInRoom(toyId);
       if (placed) {
         showFeedback(
-          "✨",
+          "sparkle",
           t("store.placedToy", {
             name: t(`store.toyName.${toyId}`).replace(/\n/g, " "),
           }),
@@ -387,7 +390,7 @@ export default function StoreScreen() {
       const removed = removeToyFromRoom(toyId);
       if (removed) {
         showFeedback(
-          "📦",
+          "box",
           t("store.removedFromRoom", {
             name: t(`store.toyName.${toyId}`).replace(/\n/g, " "),
           }),
@@ -398,7 +401,7 @@ export default function StoreScreen() {
   );
 
   const showDecorationPurchaseMessage = useCallback(
-    (result: DecorationPurchaseResult, decorationId: CatDecorationId) => {
+    (result: DecorationPurchaseResult, decorationId: CatDecorationId): StoreFeedback => {
       const decorationName = t(`store.decorationName.${decorationId}`).replace(
         /\n/g,
         " ",
@@ -406,25 +409,25 @@ export default function StoreScreen() {
       switch (result) {
         case "purchased":
           return {
-            emoji: "🪴",
+            icon: "plant",
             message: t("store.purchasedDecoration", { name: decorationName }),
           };
         case "already_owned":
           return {
-            emoji: "✓",
+            icon: "check",
             message: t("store.alreadyOwnedDecoration"),
           };
         case "insufficient_funds": {
           const price = getDecorationStorePrice(decorationId);
           const cost = price.kind === "coins" ? price.amount : 0;
           return {
-            emoji: "🪙",
+            icon: "coin",
             message: t("store.needCoinsDecoration", { cost }),
           };
         }
         default:
           return {
-            emoji: "⚠️",
+            icon: "warning",
             message: t("store.unavailableDecoration"),
           };
       }
@@ -440,11 +443,11 @@ export default function StoreScreen() {
       if (result === "purchased") {
         triggerHaptic();
       }
-      const { emoji, message } = showDecorationPurchaseMessage(
+      const { icon, message } = showDecorationPurchaseMessage(
         result,
         decorationId,
       );
-      showFeedback(emoji, message);
+      showFeedback(icon, message);
     },
     [
       purchaseDecoration,
@@ -461,7 +464,7 @@ export default function StoreScreen() {
       const placed = placeDecorationInRoom(decorationId);
       if (placed) {
         showFeedback(
-          "✨",
+          "sparkle",
           t("store.placedDecoration", {
             name: t(`store.decorationName.${decorationId}`).replace(/\n/g, " "),
           }),
@@ -478,7 +481,7 @@ export default function StoreScreen() {
       const removed = removeDecorationFromRoom(decorationId);
       if (removed) {
         showFeedback(
-          "📦",
+          "box",
           t("store.removedFromRoom", {
             name: t(`store.decorationName.${decorationId}`).replace(/\n/g, " "),
           }),
@@ -489,30 +492,30 @@ export default function StoreScreen() {
   );
 
   const showSkinPurchaseMessage = useCallback(
-    (result: SkinPurchaseResult, skinId: CatSkinId) => {
+    (result: SkinPurchaseResult, skinId: CatSkinId): StoreFeedback => {
       const skinName = t(`store.skinName.${skinId}`);
       switch (result) {
         case "purchased":
           return {
-            emoji: "🐱",
+            icon: "cat",
             message: t("store.purchasedSkin", { name: skinName }),
           };
         case "already_owned":
           return {
-            emoji: "✓",
+            icon: "check",
             message: t("store.alreadyOwnedSkin"),
           };
         case "insufficient_funds": {
           const price = getSkinStorePrice(skinId);
           const cost = price.kind === "coins" ? price.amount : 0;
           return {
-            emoji: "🪙",
+            icon: "coin",
             message: t("store.needCoinsSkin", { cost }),
           };
         }
         default:
           return {
-            emoji: "⚠️",
+            icon: "warning",
             message: t("store.unavailableSkin"),
           };
       }
@@ -529,8 +532,8 @@ export default function StoreScreen() {
         triggerHaptic();
       }
       if (result !== "already_owned") {
-        const { emoji, message } = showSkinPurchaseMessage(result, skinId);
-        showFeedback(emoji, message);
+        const { icon, message } = showSkinPurchaseMessage(result, skinId);
+        showFeedback(icon, message);
       }
     },
     [purchaseSkin, recordInteraction, showSkinPurchaseMessage, showFeedback],
@@ -543,7 +546,7 @@ export default function StoreScreen() {
       const equipped = equipSkin(skinId);
       if (equipped) {
         showFeedback(
-          "✨",
+          "sparkle",
           t("store.equippedSkin", { name: t(`store.skinName.${skinId}`) }),
         );
       }
@@ -614,7 +617,7 @@ export default function StoreScreen() {
             accessibilityRole="button"
             accessibilityLabel={t("common.back")}
           >
-            <Text style={styles.backText}>{t("common.back")}</Text>
+            <BackButtonLabel style={styles.backText} />
           </Pressable>
           <GameHeaderStats
             coins={wallet.coins}
@@ -630,8 +633,8 @@ export default function StoreScreen() {
 
         <StoreTabBar active={activeTab} onChange={handleTabChange} />
         <View style={styles.filters}>
-          {isDecorationStoreTab(activeTab) ? <Pressable style={styles.filter} accessibilityRole="button" onPress={() => setShowCategories(true)}><Text style={styles.filterText}>{t(`store.tab${activeTab[0].toUpperCase()}${activeTab.slice(1)}`)} ▾</Text></Pressable> : null}
-          <Pressable style={styles.filter} accessibilityRole="checkbox" accessibilityState={{ checked: ownedOnly }} onPress={() => setOwnedOnly(value => !value)}><Text style={styles.filterText}>{ownedOnly ? "☑" : "☐"} {t("store.ownedOnly")}</Text></Pressable>
+          {isDecorationStoreTab(activeTab) ? <Pressable style={styles.filter} accessibilityRole="button" onPress={() => setShowCategories(true)}><Text style={styles.filterText}>{t(`store.tab${activeTab[0].toUpperCase()}${activeTab.slice(1)}`)}</Text><AppIcon name="chevron-down" size={moderateScale(14)} /></Pressable> : null}
+          <Pressable style={styles.filter} accessibilityRole="checkbox" accessibilityState={{ checked: ownedOnly }} onPress={() => setOwnedOnly(value => !value)}><View style={styles.checkbox}>{ownedOnly && <AppIcon name="check" size={moderateScale(16)} />}</View><Text style={styles.filterText}>{t("store.ownedOnly")}</Text></Pressable>
         </View>
         {goal ? <Text style={styles.goal}>{t("store.goalProgress", { name: goal.name, remaining: goal.remaining })}</Text> : null}
 
@@ -642,7 +645,7 @@ export default function StoreScreen() {
           >
             {feedback ? (
               <NotificationBanner
-                emoji={feedback.emoji}
+                icon={feedback.icon}
                 message={feedback.message}
               />
             ) : null}
@@ -762,7 +765,8 @@ export default function StoreScreen() {
 
 const styles = StyleSheet.create({
   filters: { flexDirection: "row", justifyContent: "space-between", gap: 8 },
-  filter: { minHeight: 44, paddingHorizontal: 12, justifyContent: "center", borderRadius: 12, backgroundColor: GameColors.card },
+  checkbox: { width: moderateScale(18), height: moderateScale(18), borderWidth: 1.5, borderColor: GameColors.textMuted, borderRadius: 3, alignItems: "center", justifyContent: "center" },
+  filter: { flexDirection: "row", alignItems: "center", gap: moderateScale(6), minHeight: 44, paddingHorizontal: 12, justifyContent: "center", borderRadius: 12, backgroundColor: GameColors.card },
   filterText: { color: GameColors.text, fontSize: 14, fontWeight: "700" },
   goal: { color: GameColors.text, fontSize: 14 },
   categories: { padding: 20, gap: 8 },

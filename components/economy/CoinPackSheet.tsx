@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import type { CoinPackProductId } from "@/constants/iap-products";
 import { GameColors } from "@/constants/game";
@@ -117,7 +118,7 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
         </>
       ) : (
         <View style={styles.card}>
-          <Text style={styles.emoji}>🪙</Text>
+          <AppIcon name="coin" size={moderateScale(32) * 1.2} />
           <Text style={styles.title}>{t("iap.getCoins")}</Text>
           <Text style={styles.subtitle}>{t("iap.getCoinsHint")}</Text>
 
@@ -221,9 +222,6 @@ const styles = StyleSheet.create({
     paddingTop: moderateScale(12),
     paddingHorizontal: moderateScale(20),
     gap: moderateScale(8),
-  },
-  emoji: {
-    fontSize: moderateScale(32),
   },
   title: {
     fontSize: moderateScale(22),

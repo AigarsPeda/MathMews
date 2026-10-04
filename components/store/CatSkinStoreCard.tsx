@@ -1,10 +1,11 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { PetDisplay } from "@/pet-display/components/PetDisplay";
 import type { CatSkinId } from "@/constants/cat-skins";
 import { GameColors } from "@/constants/game";
 import { getSkinStorePrice } from "@/utils/skin-store";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type CatSkinStoreCardProps = {
   skinId: CatSkinId;

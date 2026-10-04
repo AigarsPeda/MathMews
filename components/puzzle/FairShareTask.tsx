@@ -1,9 +1,10 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
 import { GameColors } from "@/constants/game";
 import type { FairSharePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type FairShareTaskProps = {
   puzzle: FairSharePuzzle;

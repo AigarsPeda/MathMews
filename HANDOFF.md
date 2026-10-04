@@ -2,152 +2,152 @@
 
 Updated: 2026-10-04. Project: `/Users/aigarspeda/Desktop/BrainPet`.
 
-## Goal
+## Goal and user decisions
 
-Keep the equivalent game working with modern Blender-rendered 3D art: expressive cat reactions, room decorating, puzzles, rewards, pet care, sleep, inventory and saved progress. The user approved the cream dumpling cat and requested a 3× close-up, panning, upright ears, correct item facing, clean branding and simple loading progress.
+Build a native iOS/Android math game with an expressive Blender-rendered companion, room decorating, puzzles, rewards, pet care, sleep, inventory, and saved progress.
 
-Recent requests completed: a free Play dropdown with Box peekaboo, Ball toss, Yarn roll and Feather chase, available at 100% happiness and with zero coins. The user subsequently made all play free. Toy icons are restored on the Play button and activities; prices and coin icons stay removed. Earlier care animation, quick-rise and prop-slide fixes remain intact.
+- The app will not be used on the web. Use native menus wherever practical.
+- Keep the approved cream dumpling cat, pastel room style, upright cupped ears, and 1×/2×/3× zoom with panning.
+- Use the app's original colorful Blender icons across the interface and native menus.
+- All four Play activities are free, including at zero coins and 100% happiness.
+- Facial expressions, whiskers, and plush surfaces must match across all coats and animations.
+- Keep the room visible. Casual speech is brief; loading shows the cat, title, and one honest progress bar.
+
+## Start here
+
+The working tree contains many uncommitted code and generated-art changes. Inspect its current diff before editing; preserve work from other chats. Do not assume an older Release package contains the current source or artwork.
+
+Protect the existing game: profile `Ios28`, save `fc4fbe64-9d64-4dc6-a144-ec42cd02afdf`, user `f1c08daf-2037-4a26-a738-36a4b2b72247`. A one-time 100,000-coin test grant was already applied. Preserve the live balance, progress, placement, and inventory; do not repeat the grant or restore a historical balance. The last observation in this chat was 99,592 coins, not a target balance.
+
+The previous handoff is preserved in [the historical archive](docs/handoff/2026-10-04-before-organization.md). It contains detailed geometry notes, older build logs, recordings, and hash reports. Those reports are historical, and temporary paths may have expired.
 
 ## Current progress
 
-- Added `npm run test:startup` and `.github/workflows/startup-tests.yml` for PRs and pushes to main. The native test executes the actual ordered Expo plugins in a temporary Xcode project, checking Info.plist, all PNG scales, identical system/Expo artwork, valid copy-phase references and two prebuild passes. Continuity checks also cover immediate static branding, slow animation decode, early native auto-hide prevention, pending-frame cleanup, local-save gating and honest progress after asset failure or remote timeout. The suite, packaged-app check and targeted lint pass. Negative tests in temporary copies confirm reversed plugin order, missing `isBuildFile` and wrong source artwork fail. The native test also passes with Expo's Jimp fallback used on hosts without Sharp CLI. No generated ios/ folder or simulator is required for CI; iOS system rendering still requires a cold-launch visual check after platform upgrades.
+### Native controls and icons
 
-- Fixed the earliest iOS cream-only launch gap with `plugins/with-ios-launch-image.js`. Register it before `expo-splash-screen`, since Info.plist mods run in reverse order. The system now uses `UILaunchScreen` with ordinary bundled `MewsLaunch{,@2x,@3x}.png` resources; the asset-catalog-only version still produced a blank system snapshot on iOS 27 Simulator. Keep Expo's default `SplashScreen.storyboard` for its React-root cover. Both stages share a centered 320 pt launch image containing the existing centered 240 pt brand and an empty 240×8 pt loading track at screen center +152 pt. React keeps the exact idle first-cell portrait, then starts animation and measured progress. The PNGs are generated and linked by the plugin, so prebuild preserves the fix. Android keeps its previous native image configuration.
+Play, Cat actions, and room-item menus share `NativeActionMenu`. iOS uses SwiftUI `Host`/`Menu`; Android uses Compose `DropdownMenu`. Measure the React Native trigger wrapper with `onLayout` and supply explicit dimensions. Preserve disabled/destructive behavior, accessibility labels, and furniture drag responders.
 
-- Replaced the single Play box button with a native tap-to-open Play menu on iOS/Android, plus a web fallback. Choices are Ball toss, Box peekaboo, Yarn roll and Feather chase, all free. The Play trigger/menu show toy icons and labels, with no prices or coin icons. Play no longer reads or updates the wallet; zero coins do not block it. Full happiness no longer blocks any play; boosts cap at 100%, and each activity retains wake/stand handling, busy protection and the existing four-second cooldown. A synchronous ref rejects duplicate activity selections before React renders. Feed shares that guard. English/Latvian text and accessibility labels are included.
-- Added `ballToss`/`featherChase` at 120 frames/5 s and `yarnRoll` at 96 frames/4 s to all three coats. Ball toss follows a bounce and alternating paw bats; yarn play cuddles/kneads a mint ball; feather chase tracks dangling feathers, reaches with alternating paws and pounces. Props enter/leave across the left sprite edge and actions start/end in the normal sitting pose. Added nine clips/1,008 frames/252 pages and three editable orange scenes. Current totals are 25 clips per coat, 75 clips, 5,544 frames, 1,386 WebP pages and 112,668,618 bytes, about 107.4 MiB. Existing textures, including splash/idle/care assets, are unchanged. Preview GIFs are `docs/art/cat-play-{orange,grey,white}.gif`.
+The family contains 68 transparent 256×256 PNG icons. iOS loads local bundled raster images into SwiftUI labels; Android uses `tint={null}` to preserve color. Use `AppIcon` for standalone images and `IconText` for translated inline markers. Keep math notation and diagrams as native text/drawings. The cat icon uses the shared production cat head.
 
-- Replaced all 288 catalog assets: 15 rooms and 273 placeable beds, toys and decorations. Catalog IDs, prices, ownership and saves remain compatible. Old pixel assets were removed after verification; previous versions remain in Git history.
-- Created 316 editable Blender scenes in `/Users/aigarspeda/Desktop/BrainPet-blender-assest`. Runtime assets remain in the repository. Do not move the Blender sources back into the app bundle.
-- Rebuilt orange, grey and white cats: currently 25 clips per coat, 75 clips and 5,544 frames. Ears are now closed, cupped meshes with raised rims and recessed pink interiors.
-- Added short front/back leg meshes between the torso and paws. Their overlapping endpoints follow the posed body and paw controls; transforms are keyed in all editable orange animation scenes. Procedural checks cover every pose in all three coats, and the saved scenes pass every baked frame.
-- Repaired all nine box-playing clips (432 frames). Front/back paws are tucked behind the walls and held above the floor during body bobs. The box-specific tail rises through the opening before curling outward above the rim. Updated the three editable orange box scenes, all nine preview atlases and 108 runtime pages; hashes confirm other runtime images are unchanged.
-- Rebuilt 15 care clips across all coats, 828 frames: petting now wriggles, nuzzles, lifts alternate paws and relaxes its eyes; eating bobs through munch beats while eight food pieces spill over the rim and bounce outside the bowl. Box play is a fixed six-second story, `box1 → box2 → box3`: hop and hide, peek and hide again, then emerge and sit. The two hidden joins match exactly. Paws stay inside the opening during the hop, and the tail tucks inward before ducking. Updated the five editable orange action scenes, 15 preview atlases and 207 runtime pages. All other textures, including startup assets, have identical hashes.
-- Cat `wakeUp`/`standUp` scenarios now play the existing reverse clips at 72 fps: 60-frame waking takes 0.833 s instead of 2.5 s, and 48-frame standing takes 0.667 s instead of 2 s. This applies before care actions, including tickling/petting, to all coats. Going to sleep and lying down retain 24 fps. No frames, source scenes or sprite playback logic changed.
-- Bowl and box now slide horizontally across the left sprite-frame edge instead of popping in/out. The cat waits for the bowl, eats, then lifts its head before the bowl leaves; spilled food stays on the floor and shrinks away during cleanup. Box entry/exit includes a tucked hop so walls pass beneath the cat, with the tail blending between normal and box curves. Both actions start/end in the normal sitting pose without a visible prop. Feeding is now 96 frames/4 s; box1 is 48/2 s, box2 60/2.5 s, box3 72/3 s, for a 7.5 s box story. Current total is 4,536 frames and 1,134 runtime pages. Rebuilt 12 clips/828 frames, four editable orange scenes, 12 preview atlases and 207 selected pages. Hash audit found 124 changed existing textures and 45 new pages, all within these four actions; unrelated and startup textures are unchanged.
-- Startup now uses `assets/3d/cat-splash.png`, extracted without rerendering from the first orange idle atlas cell. The native logo and loading screen share a centered 240 pt square, with a 192 pt cat at `(24, 0)`. Keep the portrait over the Canvas until the sheet is decoded, the native drawing window is laid out and two drawing turns pass. Playback holds frame zero until that handoff. Either the portrait or Canvas can satisfy cat readiness, so a faster animation decode cannot strand startup.
-- Fixed the oversized duplicate cat and missing loading title. Native React Image injects a bundled asset's intrinsic dimensions before user styles; absolute-fill offsets did not override the 640 px branding PNG. SplashGate now explicitly sizes the branding Image to 240×240 pt and the portrait to 192×192 pt, with clipped logo/cat containers. Keep those explicit dimensions even when using absolute fill. React Native 0.86 exposes `StyleSheet.absoluteFill`, not `absoluteFillObject`.
-- Added 1×/2×/3× zoom and clamped horizontal/vertical panning. The user confirmed manual panning works. Editing remains at 1×; camera movement does not change saved item positions.
-- Speech now stays anchored above the cat at every zoom. A viewport overlay projects its tail using the same shared camera transform and the cat's live center-relative position. Text stays at native screen size; the bubble follows cat dragging as well as scene panning. Its measured height keeps longer messages above the anchor and preserves accessibility bounds.
-- Audited all room/item projections and rotation variants. Added “Face other wall” for 75 additional directional items, including the cat portrait. This changes the existing `wallFlipped` save field; players still move the item to the desired position.
-- Fixed black app-icon padding with transparent contain padding before compositing onto cream. Native branding uses `assets/images/splash-brand.png`.
-- Removed “Drag to explore” and all visible loading asset names, counts and status messages. Loading shows cat, title and one progress bar.
-- Changed rendering to prevent whole-cat flashes: a single Canvas survives clip changes, and a shared descriptor retains the last visible image and coordinates until the next texture loads. Gameplay uses a fixed 3× drawing resolution, so zoom only transforms the room. Regression checks pass; visual confirmation remains pending. Natural eye-blink animations remain.
-- Added initial safe-area metrics, with a window-frame/zero-inset fallback, so the root provider can render the loading screen immediately instead of waiting with empty children. Native inset updates remain enabled.
-- Missing/invalid production RevenueCat configuration now disables purchases without crashing gameplay. Release builds still reject Test Store keys.
+See [icon documentation and rebuild instructions](docs/art/app-icons/README.md) and [the family review](docs/art/app-icons/review.png).
 
-The Play menu/new activities are uncommitted. Earlier care/prop fixes were already committed before this work. Preserve the user’s current changes and saved game.
+### Cat art and animation
 
-## Approved art and reproduction
+All three coats share the same geometry and facial rig. Six tapered whiskers follow the head; expressions include a content smile, happy crescent eyes, sleepy lids, curiosity, surprise, and gentle disappointment with encouraging recovery. Existing mouth, tongue, brows, tears, and eye highlights remain.
 
-Reference: `docs/art/cat-approved-concept.png`, also copied into the external Blender library’s `reference/` folder. The concept image guides the model; gameplay uses rendered frames.
+The shared plush material covers coat, ivory limbs/muzzle, cheeks, and inner ears. It uses local Generated coordinates, directional noise, roughness `0.90`, sheen `0.40`, noise scale `130`, bump strength `0.38`, and distance `0.012`. Furred spheres use denser geometry to remove visible faceting. Eyes remain glossy. Preserve proportions, animation controls, camera framing, and timing.
 
-- Silhouette: oversized nearly spherical head, squat pear body, no visible neck, short thick paws and rounded haunches. Keep the cream dumpling proportions.
-- Face: glossy near-black round eyes with catchlights, curved caramel brows, tiny coral triangular nose, small readable mouth/tongue and large rosy cheeks. Features follow the head curvature.
-- Coat: ivory face/chest/belly/paws, apricot crown patches around a tapered cream forehead blaze, three caramel stripes, warm paw marks and a short curved tail with a cream tip. Grey/white variants share geometry and animation.
-- Ears: rounded upright triangular shells, convex backs, plump rims and real recessed cups. Roots are head-local `(±0.46, -0.075, 0.435)`, rest pitch `0.14` radians, six outline rings, approximately `0.39` depth and subdivision level 2. Preserve this pitch during ear animation. `sculpted_ear` in `scripts/3d/cat_model.py` is the exact definition.
-- Cat palette: ivory `#FFF5E5`, apricot `#EFA45E`, stripes `#B47C50`, cheeks `#F09AAE`, inner ears `#D9798E`, nose `#EA8B7B`, eyes `#201A18`, mouth `#672F30`, tongue `#EC8593`. UI remains cream `#FFF5EB`, coral `#FF6B6B`, teal `#4ECDC4`, gold `#F7B731`; rooms use dusty rose, sage, powder blue and pale wood.
-- Materials: smooth matte/velvet surfaces, subtle bump and sheen, glossy eyes. Avoid individual hair strands, heavy texture noise and pixel filtering. Fur roughness `0.78`, sheen `0.20`, noise scale `145`, bump strength `0.08`, distance `0.004`.
-- Coordinates: front −Y, up +Z. Head radii `(0.70, 0.55, 0.63)` at `(0, -0.035, 1.10)`; body radii `(0.46, 0.39, 0.45)` at `(0, 0.08, 0.44)`; front paw radii `(0.16, 0.21, 0.20)` at `(±0.23, -0.31, 0.18)`. Cat camera `(3.2, -10, 4.0)` aims at `(0.04, 0, 0.94)`, orthographic scale `2.70`.
-- Leg roots are body-local `(±0.23, -0.18, 0)` in front and `(±0.32, 0.12, -0.16)` behind. Root-local ellipsoids connect these transformed roots to the paw centers, with radius `0.14`/`0.15` and length `endpoint distance + 2 × radius`. Preserve the overlap and include `legs`/`back_legs` in `animated_parts`; otherwise waving or saved-scene playback can detach paws.
-- For box clips, create the rig with `boxed=True`. The tail uses local points `(0,0,0)`, `(0.12,0.10,0.27)`, `(0.42,0.12,0.50)`, `(0.45,0.04,0.72)` and a seated world pivot at `(0.40,0.14,0.37)`. The hidden pose folds the body/head below the visible opening, tucks paws at world Z `0.18` and retracts the tail to pivot `(0.30,0.12,0.185)` with scale `(0.35,0.35,0.025)`. `pose_cat` contains the exact blends. Paws rise with the root during the hop but remain horizontally inside the opening. Include `back_feet` and connector legs in keyed parts, and reset the normal tail pivot/scale before every pose. Box clips use `t = frame / (count - 1)` so authored endpoint poses meet exactly.
-- `care_action_time` separates prop transitions from the action poses. `care_props` groups bowl/static kibble or box parts under the keyed `Care prop slide` control; spilled pieces stay independent. `pose_care_props` moves along camera-right by up to −2.4 units, keeping the floor height and screen Y fixed. The sprite frame clips the prop at its left edge; this is a baked local animation rather than a separate room-edge overlay. Cat geometry stays within its cell. Curve point coordinates and both handles must be keyed for all box frames, with the tail tip keyed too. Store `box_activity`/`transfer_hop` as floats so Blender doesn't round their animated values.
-- Animation: quick anticipation, readable peak/hold and recovery; squash on hop landings, delayed ears/tail/paws and continuous loop endpoints. Wrong answers use curiosity and encouraging recovery. Resting stays open-eyed; sleep is closed-eyed. Correct lasts 2.5 s, incorrect 2 s, feeding/dance 3 s, idle 4 s, lying down 2 s and settling to sleep 2.5 s. Reverse clips stand/wake the cat.
+Current source/asset counts checked during this organization:
 
-Scenes use named transform controls and keyframes, not skeletal armatures. Procedural materials are self-contained. The generator overwrites manual scene edits; render hand-edited scenes directly or update the Python builder first.
+| Item | Current count |
+| --- | ---: |
+| Cat animation families per coat | 35 |
+| Clips across orange, grey, and white | 105 |
+| Cat frames across all coats | 6,336 |
+| Cat WebP pages | 1,500 |
+| Separate play-prop WebP pages | 84 |
+| Combined compressed cat/prop pages | 112.35 MiB |
+| Largest decoded RGBA page | 9 MiB |
+| Catalog assets | 288: 15 rooms and 273 placeables |
 
-## Implementation and source map
+Cat pages use WebP quality `83`, alpha quality `100`. The combined compressed limit is 120 MiB. Standard cells are 768 px, four per 1536×1536 page. Room movement uses 384 px cells, twelve per 1536×1152 page. Each active layer retains current/next pages; this is not a measured total app-memory budget.
 
-- External library: `cat.blend`, animation `*.blend`, `items/`, `rooms/`, `reference/`. `BRAINPET_BLENDER_ASSET_DIR` overrides its default path. Back up this folder separately from Git.
-- `constants/cat-play.ts`, `components/home/PlayMenuButton.tsx`, `NativePlayMenu.ios.tsx` and `NativePlayMenu.tsx`: free play choices and platform menus. iOS uses an explicitly sized SwiftUI Host/Menu plus a native accessibility label. The community MenuView's `matchContents` made the trigger too narrow and left its accessibility label empty. Measure the ordinary RN wrapper with `onLayout`, then pass explicit width/height to the menu and trigger.
-- `scripts/check-cat-play.mjs`: runs the actual Home handlers and display engine in memory, checking zero coins/full happiness, unchanged wallets, boosts, duplicate selection/feed, waking/standing, one-shot completion and cooldown release across every coat. `scripts/3d/check-cat-play.py` checks source/saved animation transforms, idle endpoints and toy floor clearance. `scripts/3d/review-cat-play.mjs` previews the actual packed pages.
-- `scripts/3d/cat_model.py`, `render_assets.py`, `clips.json`, `inventory.json`: model, poses, timings and stable asset IDs.
-- `scripts/3d/check-cat-box-containment.py`: actual mesh-to-wall checks for every box pose; `-- --baked` checks saved scenes. `scripts/3d/review-cat-box.mjs` creates `docs/art/cat-box-keyposes.png` for all nine clips.
-- `scripts/3d/check-cat-care-actions.py`: matching box joins, petting recovery/twists and food trajectories; `-- --baked` also checks saved joins and all food keyframes. `scripts/3d/review-cat-care.mjs` creates `docs/art/cat-care-{orange,grey,white}.gif` from the packed gameplay pages. `pack.mjs --clips excited,box1,box2,box3,eating` rebuilds selected textures without touching other clips.
-- `scripts/3d/pack.mjs`, `verify.mjs`, `audit_projection.py`, `review-assets.mjs`: packing, checks, camera audit and review boards. Start with `assets/3d/README.md` for regeneration.
-- `pet-display/media/sprite/`: UI-thread clock, bounded page loading and stable Canvas. Playback pauses when backgrounded/covered; Reduce Motion holds loops and still completes semantic actions.
-- `components/pet/PetStage.tsx`: zoom/panning and room controls. PanResponder captures scene drags; shared values apply transforms without per-frame React state updates.
-- `components/ui/ExpoUIHost.tsx`: RNHostView bridges React Native content into Expo UI; GestureHandlerRootView sits inside that bridge.
-- `constants/decoration-variants.ts`: facing controls. Existing rotation groups/window styles stay separate from wall mirroring. All placeables use room camera direction `(8, -8, 6.1)`; styles must retain their colours when rotated.
-- `components/branding/SplashGate.tsx`, `lib/init-game-asset-prefetch.ts`, `utils/prefetch-game-assets.ts`: real asset progress plus local-save/auth/cloud readiness. Minimum display 1.2 s; after 12 s, local gameplay can continue while pending network/assets finish. Deadlines never fake completed loads.
-- `scripts/generate-branding.mjs`: icon/splash generation. Keep transparent contain padding (`#00000000`) to prevent black side bars.
-- `docs/art/`: approved concept, expression/key-pose boards, celebration GIF, item review boards, projection audit and texture measurements.
+The bowl and box slide through the left sprite edge. Feeding is four seconds; `box1 → box2 → box3` lasts 7.5 seconds with matching hidden joins. Ball toss and Feather chase last five seconds; Yarn roll lasts four. Actions recover to the normal sitting pose. Reverse wake/stand clips run at 72 fps, about 0.83/0.67 seconds; forward sleep/rest retains 24 fps.
 
-Keep Blender sources and Skia sprites for the fixed camera. Cat cells are 768 px at 24 fps, packed four per 1536×1536 WebP page. The splash uses a smaller 192 px idle sheet. Current cat payload: 112,668,618 bytes across 1,386 pages. One decoded RGBA page is 9 MiB; steady current/next is 18 MiB. A clip handoff can retain one previous page temporarily (27 MiB theoretical), excluding GPU/native caches. Physical-device FPS, battery and Android performance are unmeasured. Live 3D is a future option if free camera rotation/lighting becomes necessary; its compatibility has not been verified here.
+The room supports standing walk views, sofa jumping/sitting/sleeping, toy interactions, interruption/return-home handling, and queued commands during jumps. Room props have separate synchronized layers. Camera movement preserves saved placement; editing stays at 1×. The shop waits for the active cat to return before navigating.
 
-## Saved game and purchases
+See [facial rig](docs/art/cat-faces/README.md), [plush coat](docs/art/cat-coat/README.md), [expression review](docs/art/cat-faces/review.png), and [coat comparison](docs/art/cat-coat/comparison.png). Care/play GIFs for all coats and walk/sofa GIFs are in `docs/art/`.
 
-Preserve profile `Ios28`, save `fc4fbe64-9d64-4dc6-a144-ec42cd02afdf`, user `f1c08daf-2037-4a26-a738-36a4b2b72247`. The one-time testing grant of 100,000 coins is complete. Preserve the current balance and progress; do not grant again or restore an old backup.
+### Speech and rendering
 
-Cloud sync is local-first whole-save snapshots. It compares `client_updated_at` on initial pull, uploads after a three-second debounce on changes and on backgrounding, and has no live remote subscription. Pet care changes the save periodically. Editing only remote `save.wallet.coins` leaves the running client and timestamp unchanged; a later local upload can overwrite that edit. Sync behavior was not changed.
+`usePetSpeech` shows contextual reminders for 3.5 seconds and action responses for 2.8 seconds by default. Action feedback takes priority; its expiry does not restore the reminder. Timers clear when Home loses focus, and returning uses the latest context.
 
-Development uses RevenueCat Test Store. Real purchases require `EXPO_PUBLIC_REVENUECAT_IOS_API_KEY` / `EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY`; do not allow test keys in Release. The provider now catches configuration failure, reports purchases unavailable and waits for successful configuration before Purchases.logIn.
+The bubble has a 170 pt scaled maximum width, reduced padding, and a brief opacity fade that respects Reduce Motion. Text stays at native screen size in a viewport overlay. The projected tail follows the cat during zoom, panning, and dragging; measured height accommodates wrapped text. Speech does not intercept room touches and is hidden during room activities/decorating.
+
+Sprite rendering keeps one Canvas through clip changes and retains the last visible texture/coordinates until the next page is ready. Playback pauses while backgrounded/covered; Reduce Motion holds loops while still completing semantic actions. User confirmation of intermittent whole-cat flashing remains pending; intentional eye blinks are separate.
+
+### Startup, branding, and purchases
+
+`with-ios-launch-image` must stay before `expo-splash-screen` in the plugin list because Info.plist mods execute in reverse order. iOS system launch uses ordinary bundled `MewsLaunch{,@2x,@3x}.png` files with `UILaunchScreen`; Expo's storyboard supplies the React-root cover. Both use the same 320 pt launch artwork containing the 240 pt brand and loading track.
+
+React startup uses a 240×240 pt branding image and a 192×192 pt portrait, with explicit dimensions and clipping. The portrait matches the first orange idle cell and stays until the Canvas is ready. Initial safe-area metrics permit immediate rendering. Loading reflects actual asset/local-save/auth/cloud readiness; after a timeout, local gameplay can continue without pretending pending work completed.
+
+Plush artwork, portraits, splash sheets, and branding have been regenerated. Both native projects were prebuilt with the new artwork. Native app icons and system launch images require the next native build/install to take effect; gameplay artwork was checked through the development app.
+
+Missing/invalid RevenueCat configuration disables purchases without crashing gameplay. Development uses Test Store; production needs real iOS/Android API keys and must reject Test Store keys in Release.
+
+Cloud sync is local-first whole-save snapshots, with timestamp comparison on initial pull, a three-second upload debounce, and background upload. There is no live remote subscription. Editing only the remote wallet can be overwritten by a later local snapshot. Preserve the current save rather than editing remote balances for UI tests.
+
+## Implementation map
+
+| Area | Primary files |
+| --- | --- |
+| Home/care/free play | `app/index.tsx`, `constants/cat-play.ts`, `components/home/PlayMenuButton.tsx` |
+| Native menu adapters | `components/ui/NativeActionMenu.ios.tsx`, `NativeActionMenu.tsx`, `NativeActionMenu.types.ts` |
+| Shared icon system | `components/ui/AppIcon.tsx`, `IconText.tsx`, `constants/app-icons.ts`, `inline-icons.ts`, `assets/icons/` |
+| Room controls/motion | `components/pet/PetStage.tsx`, `hooks/use-room-activity.ts`, `use-room-editor.ts`, `utils/room-activities.ts`, `constants/cat-room-motion.ts` |
+| Speech | `hooks/use-pet-speech.ts`, `utils/pet-speech.ts`, `components/pet/PetSpeechBubble.tsx` |
+| Display engine/sprites | `pet-display/engine/`, `pet-display/media/sprite/` |
+| Blender generation | `scripts/3d/cat_model.py`, `render_assets.py`, `clips.json`, `inventory.json` |
+| Packing/branding | `scripts/3d/pack.mjs`, `scripts/generate-branding.mjs` |
+| Startup | `plugins/with-ios-launch-image.js`, `components/branding/SplashGate.tsx`, `lib/init-game-asset-prefetch.ts`, `utils/prefetch-game-assets.ts` |
+| Save synchronization | `hooks/use-cloud-save-sync.ts`, `services/cloud-save/` |
+| Operation-path puzzle | `components/puzzle/OperationPathTask.tsx`, `scripts/check-operation-path.mjs` |
+
+Production editable Blender scenes live in `/Users/aigarspeda/Desktop/BrainPet-blender-assest`, outside the runtime bundle. `BRAINPET_BLENDER_ASSET_DIR` overrides that location. Back up the library separately from Git. Editable icon/face review scenes also live under `docs/art/*/source/`; they are not runtime assets.
+
+The Python generator recreates scenes and overwrites manual changes. Update the builder first, or render hand-edited `.blend` scenes directly. Runtime PNG/WebP assets stay in this repository; Metro excludes source scenes and intermediate render frames.
 
 ## What worked and verification
 
-- Toy-icon correction: restored the tennis-ball icon above Play and the feather/yarn/box/ball icons beside menu choices on native/web. All activities remain free, without prices or coin icons. TypeScript, targeted UI/constants lint, free-play regression and diff checks pass. Release passed `/tmp/brainpet-play-icons-release.log`; `/tmp/brainpet-play-icons-final/MathMews.app` is installed, with executable/JS hashes checked. Native screenshots confirm the button icon and all four menu icons are visible, with no prices. The saved balance remains 99,656. Preserve the user's current cat placement.
+Latest completed checks in this chat on 2026-10-04:
 
-- Free-play revision: removed activity costs, wallet checks/deductions, toy/coin icons and price labels from native/web Play menus. Regression checks exercise every activity at both zero/100 coins and 40/100 happiness, verifying unchanged wallets, boosts, duplicate protection and wake/stand/recovery. TypeScript, targeted UI/scripts lint and diff checks pass; Home retains its pre-existing `pet.name` dependency warning. Release passed `/tmp/brainpet-free-play-release.log`; `/tmp/brainpet-free-play-final/MathMews.app` is installed, with executable/JS hashes verified. The native button/menu show text only, and Ball toss started at 100% happiness, woke the sleeping cat and kept the balance at 99,656. Animation textures and their controls were unchanged. Preview GIF labels were regenerated without prices.
+- `npm run test:game`, `npm run typecheck`, and repository-wide `npm run lint` passed after the speech change. Older lint-failure statements in the archive are superseded by this result.
+- Game checks cover puzzles/rewards, save/care behavior, page loading and continuity, room activities/depth/decorating, native menus, icons, free play, speech anchoring/timers, and texture budgets. Operation-path checks cover visible/editable choices, dependent results, and explicit submission.
+- The preceding art rebuild passed full asset verification, startup checks, and Blender face/care/play/room-motion checks, including saved facial/care scenes. These were not rerun solely for this documentation edit.
+- Native iPhone simulator checks covered happy petting, neutral/sleeping expressions, plush idle/petting at 3×, and compact petting speech disappearing without the reminder returning.
+- An earlier packaged Release cold-launch recording showed continuous native/loading branding after the launch-image fix. The newly regenerated native artwork still needs build/install verification; physical-iPhone cold launch remains outstanding.
 
-- Initial priced Play menu Release passed `/tmp/brainpet-play-release-final.log`; the final build is `/tmp/brainpet-play-menu-final/MathMews.app`. Installed executable, JS and all 1,390 bundled cat textures match source/packaged hashes. The native menu opens at 100% happiness and while asleep, shows all four prices, has a full-width trigger matching adjacent buttons and exposes "Choose how to play with your cat" to accessibility. The profile remained Ios28 and the balance 99,656 before/after both installs. No paid play selection, save edits or grants were made by this agent; charging and playback were checked in memory and through packed-frame previews.
-- Play checks passed: 1,008 procedural toy poses, all 336 saved orange frames, matching idle endpoints, toys fully off-camera at both endpoints and actual toy mesh floor clearance. Connected legs pass all 75 clips/5,544 poses. Full asset verification, TypeScript, new UI/scripts ESLint, sprite continuity, splash continuity, speech anchoring and diff checks pass. Targeted Home lint retains its pre-existing `pet.name` dependency warning; repository-wide lint was not rerun. The three packed play GIFs and orange contact sheet were visually reviewed.
-
-- Prop-slide checks passed: 4,536 procedural leg poses, 540 procedural box poses, 180 saved box frames, matching box joins including curve handles, off-screen prop endpoints, normal sitting recovery and 768 saved food poses. Rendered endpoint comparisons against idle have mean channel differences below 0.02 on the 0–255 scale. Full asset checks, splash pixel/continuity checks, speech anchoring, TypeScript, targeted review/verifier ESLint and diff checks passed. Left-edge clipping is allowed only during the authored prop slides; other borders and action phases remain checked.
-- Prop-slide Release passed `/tmp/brainpet-props-release.log`; `/tmp/brainpet-props-final/MathMews.app` is the current installed build. Its executable, JavaScript and all 1,138 bundled cat textures match source/packaged hashes. Reopened gameplay retained Ios28 and 99,656 coins, matching the pre-install balance. Paid actions were reviewed through the packed-texture GIFs and Blender checks without spending coins. `docs/art/cat-care-{orange,grey,white}.gif` and the box contact board now show the prop transitions.
-- Quick-rise checks passed for every coat using the actual registry and UI clock advancement: waking finishes after 50 display ticks at 60 Hz, standing after 40, both on frame zero/upright. Full asset verification includes wake/stand duration limits and unchanged sleep timing. TypeScript, registry/verifier ESLint and diff checks passed. Release passed `/tmp/brainpet-quick-wake-release.log`; the current installed build is `/tmp/brainpet-quick-wake-final/MathMews.app`. Gameplay reopened with the existing Ios28 profile and 99,656 coins. The observed pre-install balance was 99,691; no paid actions, save edits or balance restoration were performed by this agent. Preserve the latest balance. Sleep-to-petting timing was checked through the registry/clock rather than changing the saved pet into a sleeping state.
-- Care animation checks passed: all 4,356 procedural leg poses, 432 box poses, 144 saved box frames, exact hidden joins in all coats and saved clips, petting start/end recovery and 576 saved food poses. Full asset verification, startup pixel/continuity checks, speech anchoring, TypeScript and targeted script/constants ESLint passed. All 222 changed textures are within the 15 requested care clips; unrelated textures match their prior hashes. Looping previews and the six-pose box board cover all coats.
-- Care Release build passed `/tmp/brainpet-care-release.log`, and `/tmp/brainpet-care-final/MathMews.app` is installed. The executable, JavaScript and all 1,093 bundled cat textures match source/packaged hashes. Gameplay reopened with Ios28 and the user's current 99,691 coins, unchanged from immediately before installation. The free petting action visibly used the new relaxed-eye/paw-lift pose in the native app. Feed/box were reviewed through packed-texture previews and geometry checks without spending saved coins; both care stats were full and those paid actions were unavailable.
-- Full asset checks passed: all 288 IDs, 66 clips/4,356 frames, silhouette/cell bounds, motion, reverse standing/waking, loop boundaries and completion behavior. Projection audit passed all 288 scenes; 224 animated item frames passed boundary checks.
-- Blender audits passed for 23 cat/model scenes with closed cupped ears and all 22 editable animation scenes with their controls, expressions, timing and materials.
-- All 75 added facing controls passed catalog/persistence checks. The portrait was faced both ways and restored. Native icon and simplified loading UI were visually checked; the user confirmed panning.
-- TypeScript and targeted ESLint passed for the final renderer, stage, startup and IAP changes. Repository-wide lint has pre-existing failures; do not claim it is clean.
-- `node scripts/check-startup-loading.mjs` passed failure counts, unique assets, deadline recovery, continued loading and subscription cleanup.
-- `node scripts/check-sprite-continuity.mjs` passed against the actual renderer: stable Canvas, retained frame during delayed clip/page loads and atomic image/coordinate changes.
-- `node scripts/check-pet-speech-anchor.mjs` passed against the actual stage and draggable: 1×/2×/3×, intermediate zoom scales, live drag coordinates before release, shared pan displacement and unscaled text. TypeScript and stage/script ESLint pass. DraggableRoomPet has the same six pre-existing React hook lint errors as HEAD.
-- Speech-anchor Release build passed: `/tmp/brainpet-speech-anchor-release4.log`; packaged build `/tmp/brainpet-speech-anchor-final4/MathMews.app` is installed. The bubble was visually checked at 1× and 3×, with sharp text and an accessibility entry. Profile `Ios28` and 99,715 coins remain. Automated simulator drags still behave as taps; panning behavior is covered by the regression check, awaiting the user's manual interaction check.
-- `node scripts/check-splash-continuity.mjs` passed exact first-cell pixel equality, layout-before-decode readiness, frame-zero playback and the animation-before-portrait decode race. `scripts/3d/check-cat-leg-connections.py` passed all 4,356 procedural poses; the saved orange scenes also passed all keyed frames.
-- Splash bounds regression models native Image's intrinsic asset dimensions and checks explicit 240 pt logo/192 pt portrait bounds plus clipping. TypeScript and targeted splash/script ESLint pass. Release build passed `/tmp/brainpet-splash-bounds-release-final.log` and is installed from `/tmp/brainpet-splash-bounds-final/MathMews.app`; executable and JavaScript hashes match. Cold launch visibly showed one centered animated cat, the Math Mews title and progress, then gameplay with profile Ios28 and the user's current 99,698 coins. Recording: `/tmp/brainpet-splash-bounds-recordings/cold-launch.mp4`.
-- Recording frames confirm identical native/loading title pixel bounds `(355, 1573, 854, 1642)` and no oversized duplicate. The corrected loading screenshot is `docs/art/startup-loading.png`. The pre-logo cream-only pause is still visible; the native configuration was not changed during this sizing fix.
-- Box geometry audits passed all 432 procedural frames across three coats and all 144 keyed frames in the saved orange scenes. Paws clear the walls and floor, and the tail clears each measured rim before extending outside. The all-66-clips leg-connection audit still passes. All nine box clips were visually reviewed in `docs/art/cat-box-keyposes.png`.
-- Box-fix Release passed `/tmp/brainpet-box-release.log` and is installed from `/tmp/brainpet-box-final/MathMews.app`. Executable, JavaScript bundle and all 1,093 bundled cat textures (including 1,089 animation pages) match source/packaged hashes. Full asset verification, splash continuity, speech anchoring and targeted review-script lint pass. Reopened gameplay retained `Ios28` and 99,715 coins; box playback was reviewed from rendered frames without spending coins in the saved game.
-- Connected-leg Release build passed: `/tmp/brainpet-connected-release-final2.log`; installed binary is `/tmp/brainpet-connected-final2/MathMews.app`. All 1,089 packaged pages, startup portrait and branding matched the regenerated assets. Binary and JavaScript bundle hashes were checked before and during cold launch. Gameplay retained profile `Ios28` and the displayed 99,715 coins. Use the native wrapping View's `onLayout`, since Skia Canvas `onLayout` is unsupported on Fabric. The splash Canvas explicitly uses sRGB.
-- Final Release build succeeded: `/tmp/brainpet-refinement-release10.log`. Its binary was installed and hash-checked against `/tmp/brainpet-final-safe-area/MathMews.app`. Native configuration introspection passed. Earlier gameplay checks covered puzzles/rewards, feeding, rest/wake, care recovery, zoom and retained furniture.
+Successful practices: use the shared Blender model for every coat/clip; inspect actual packed pages in preview GIFs; test action/navigation behavior with deterministic clocks; measure native trigger wrappers; retain the last sprite frame during decoding; use packaged cold launches to assess system splash behavior.
 
 ## What did not work
 
-- The launch-image Info.plist dictionary alone did not fix the gap when `UIImageName` referenced only the compiled asset catalog. An isolated launch looked promising because its native root appeared earlier; the normal app's full recording still exposed the gap. Ordinary PNG resources addressed it. Ensure `isBuildFile: true` when adding them to Xcode, and check the actual built .app with `node scripts/check-splash-continuity.mjs /absolute/path/MathMews.app`. Xcode optimizes these PNGs with CgBI, so ordinary libpng/Sharp cannot decode the packaged files; the check reads their IHDR dimensions.
-
-- The community iOS MenuView used `matchContents` horizontally, shrinking the Play card to its intrinsic text width and exposing an unnamed accessibility popup. Fixed by measuring the RN wrapper and using SwiftUI Host/Menu with explicit dimensions and an accessibility modifier. Keep the native Android community menu and web fallback.
-
-- Keying only tail-curve coordinates left its AUTO handles in their final rest shape during saved playback, despite correct procedural renders. Key coordinates and both handles to preserve the baked shape. Integer-valued initial custom controls caused Blender to round `box_activity` during playback; keep the initial values explicitly floating-point. Both issues were fixed and saved-scene collision checks pass.
-- CUA simulator drags behaved like taps; the user’s manual panning confirmation is the valid interaction check.
-- Rendering speech inside the scaled scene with inverse child scaling caused visibly degraded text and placed the bubble too high at 3×. Keep the final overlay at screen size and project only its position. A zero-size wrapper hid its accessibility entry; use the measured normal-layout bubble instead.
-- Debug/Release build replacements interrupted startup verification. Check the installed binary and use a packaged cold launch; development reloads do not reliably reproduce native splash behavior.
-- A brief native blank launch was observed before the final safe-area change. Clearing launch snapshots and explicit storyboard sizing did not resolve it. Temporary native scene/cover experiments were removed. Do not reintroduce them without evidence; final cold-launch verification remains below.
-- Rendering in the sandbox lacked graphics access; approved Blender CLI execution worked. Intermediate render frames/Blender files are excluded from Metro to avoid repeated refreshes.
-- The hash-verified connected-leg Release still shows a brief cream-only phase before native/React branding appears. Native diagnostics found a loaded, visible 240 pt launch UIImageView once Expo created its root. A custom early UIWindow and a retained UIKit storyboard scene window did not close the earlier gap; both prototypes, their plugin and all diagnostic code were removed. Keep the normal `EXExpoAppSceneDelegate`. This does not change the exact loading portrait/idle-cell match, but the whole cold-launch sequence is not visually verified as seamless.
+- Asset-catalog-only launch images left a cream-only system snapshot. Use ordinary bundled PNGs with valid Xcode copy-phase references and `isBuildFile: true`. Removed custom early-window/storyboard-scene experiments did not solve the gap; keep normal `EXExpoAppSceneDelegate` behavior.
+- Intrinsic sizing shrank native menu triggers and left accessibility labels empty. Keep explicit measured dimensions. Earlier community-menu implementations have been replaced by the current SwiftUI/Compose adapters.
+- Speech inside the scaled scene became blurry and misplaced at 3×. Keep the screen-size overlay; zero-size wrappers also hid accessibility bounds.
+- A permanent contextual fallback brought the reminder back after action speech. Keep the current timed lifecycle and action priority.
+- Tail curves need keyed point coordinates and both Bezier handles; stale AUTO handles broke saved playback. Animated custom controls such as `box_activity` must start as floats, not integers.
+- Automated simulator drags sometimes behaved as taps. The user's manual panning confirmation is the interaction evidence; deterministic tests cover transform math.
+- Development reloads and mixed Debug/Release installs did not reliably reproduce system splash behavior. Verify the actual installed packaged build for cold-launch claims.
+- Sandboxed Blender rendering lacked graphics access. Approved Blender CLI execution worked; keep source scenes/intermediate frames out of Metro.
 
 ## Next steps
 
-1. Verify the launch-image fix on a physical iPhone. The final plugin-generated Release simulator recording `/tmp/brainpet-startup-fix/verified.mp4` shows the cat during the opening transition, a continuous empty track, then animated breathing/blinking and real progress before gameplay. No cream-only interval remains in that recording. Release build `/tmp/brainpet-startup-fix/release-linked-build.log` passed; installed executable, bundle, Info.plist and all three PNG hashes match `/tmp/brainpet-startup-fix/verified/MathMews.app`. Gameplay retained Ios28 and 99,656 coins. Packaged splash continuity, startup loading, TypeScript and targeted ESLint checks pass. Do not repeat the removed early-window/storyboard-scene prototypes.
-2. Confirm the user’s intermittent whole-cat flashing is gone during zoom and clip transitions. The rendering fix and regression check pass; distinguish intentional eye blinking from disappearance.
-3. Profile the oldest supported iPhone and Android device before making FPS/memory/battery claims. Production coin purchases also need real store configuration.
-4. Review/commit the current changes. Keep the external Blender reference notes synchronized with this file.
+1. Build/install current native artwork and check cold launch on a physical iPhone. Recheck after platform upgrades. Test Android native menus and artwork on a device; do not infer device results from source-level checks.
+2. Get user confirmation that whole-cat flashing is gone during zoom and clip transitions.
+3. Profile the oldest supported iPhone and Android hardware before claiming FPS, memory, or battery performance. Configure real store purchases before release.
+4. Review the current shared diff and split work into coherent commits when requested. Do not use the archive's old Play-only commit suggestion for the whole current diff.
+5. Synchronize external Blender reference notes and older general asset documentation when extending that work. `assets/3d/README.md` still contains historical clip/page/material descriptions; use `clips.json`, the current model/packer, and the focused art READMEs for current values.
 
-Environment: Expo 57.0.26, React Native 0.86.3, React 19.2.3, Skia 2.6.2, Reanimated 4.5.1; iOS minimum 16.4 and Xcode 27 scene support. Blender: `/Applications/Blender.app/Contents/MacOS/Blender`. Simulator UI: Device Hub, iPhone 18 Pro/iOS 27, UDID `85A0697F-2C5B-43EC-91BC-77CC3DBCE9D5`; bundle `com.mathmews.app`.
+## Commands and environment
 
-Run from the project root:
+Run checks from the project root:
 
 ```sh
-npm run ios
-npm run assets:3d -- --only cat --refresh
+npm run test:game
+npm run test:startup
+npm run typecheck
+npm run lint
 npm run assets:verify
-node scripts/check-cat-play.mjs
-node scripts/check-startup-loading.mjs
-node scripts/check-sprite-continuity.mjs
-node scripts/check-splash-continuity.mjs
-node scripts/check-pet-speech-anchor.mjs
-npx tsc --noEmit
 ```
 
-Suggested commit for the latest work: `feat: add free cat play menu and new toy animations`.
+Regeneration is only needed after art changes. The cat rebuild packs assets, generates branding, and verifies the collection:
+
+```sh
+npm run assets:3d -- --only cat --refresh
+npm run assets:icons
+```
+
+For expressions/icons and their selective rebuilds, use the focused documentation linked above. A shared coat/face change must regenerate every coat/clip plus portraits, splash, the cat icon, and branding. Rebuild native projects afterward for system artwork. Geometry checks are in `scripts/3d/check-cat-{faces,care-actions,play,box-containment,leg-connections}.py` and `check-room-cat-motion.py`; saved-scene checks use `-- --baked` where supported.
+
+Environment: Expo 57.0.26, React Native 0.86.3, React 19.2.3, Skia 2.6.2, Reanimated 4.5.1; iOS minimum 16.4 with scene support. App ID: `com.mathmews.app`. Blender executable: `/Applications/Blender.app/Contents/MacOS/Blender`. Native UI checks used Device Hub with iPhone 18 Pro / iOS 27 Simulator. `npm run ios` runs prebuild before launching the iOS app.

@@ -7,7 +7,7 @@ import {
 } from "@/constants/visual-explanations";
 import type { VisualExplanation } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { AppIcon } from "@/components/ui/AppIcon";
 import Slider from "@react-native-community/slider";
 import { useCallback, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -123,17 +123,17 @@ export function VisualExplanationPlayer({
         {showTransition ? (
           <>
             <Text style={[styles.caption, { opacity: outgoingOpacity }]}>
-              {frameBlend.from.captionKey}
+              {t(frameBlend.from.captionKey)}
             </Text>
             <View style={styles.captionOverlay} pointerEvents="none">
               <Text style={[styles.caption, { opacity: incomingOpacity }]}>
-                {frameBlend.to.captionKey}
+                {t(frameBlend.to.captionKey)}
               </Text>
             </View>
           </>
         ) : (
           <Text style={styles.caption}>
-            {frameBlend.blend >= 0.5 ? frameBlend.to.captionKey : frameBlend.from.captionKey}
+            {t(frameBlend.blend >= 0.5 ? frameBlend.to.captionKey : frameBlend.from.captionKey)}
           </Text>
         )}
       </View>
@@ -146,11 +146,7 @@ export function VisualExplanationPlayer({
           accessibilityRole="button"
           accessibilityLabel={t("visualHelp.a11yPrevStep")}
         >
-          <MaterialIcons
-            name="skip-previous"
-            size={moderateScale(24)}
-            color={canGoBack ? GameColors.text : GameColors.textMuted}
-          />
+          <AppIcon name="arrow-left" size={moderateScale(24)} />
         </Pressable>
         <View style={styles.sliderWrap}>
           <Slider
@@ -173,11 +169,7 @@ export function VisualExplanationPlayer({
           accessibilityRole="button"
           accessibilityLabel={t("visualHelp.a11yNextStep")}
         >
-          <MaterialIcons
-            name="skip-next"
-            size={moderateScale(24)}
-            color={canGoForward ? GameColors.text : GameColors.textMuted}
-          />
+          <AppIcon name="arrow-right" size={moderateScale(24)} />
         </Pressable>
       </View>
 

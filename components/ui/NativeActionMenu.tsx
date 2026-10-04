@@ -1,18 +1,34 @@
-import { MenuView } from "@expo/ui/community/menu";
-import { View } from "react-native";
+import { APP_ICON_SOURCES } from "@/constants/app-icons";
+import { DropdownMenu, DropdownMenuItem, Host, Icon, RNHostView, Text } from "@expo/ui/jetpack-compose";
+import { GameColors } from "@/constants/game";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 import type { NativeActionMenuProps } from "./NativeActionMenu.types";
 
-export function NativeActionMenu({ width, height, actions, title, label, blocked, children, onSelect }: NativeActionMenuProps) {
-  return (
-    <View pointerEvents={blocked ? "none" : "auto"}><MenuView style={{ width, height }} title={title} actions={actions}
-      onPressAction={({ nativeEvent }) => {
-        const action = actions.find(item => item.id === nativeEvent.event);
-        if (!blocked && action && !action.attributes?.disabled) onSelect(action.id);
-      }}>
-      <View accessible accessibilityRole="button" accessibilityLabel={label}
-        accessibilityState={{ disabled: blocked }} style={{ width, height }}>
-        {children}
-      </View>
-    </MenuView></View>
-  );
+/** Native Material menu, with untinted artwork rather than template icons. */
+export function NativeActionMenu({ width, height, actions, label, blocked, children, onSelect }: NativeActionMenuProps) {
+  const [expanded, setExpanded] = useState(false);
+  return <View style={{ width, height }} pointerEvents={blocked ? "none" : "auto"}>
+    <Host matchContents>
+      <DropdownMenu expanded={!blocked && expanded} onDismissRequest={() => setExpanded(false)}>
+        <DropdownMenu.Trigger><RNHostView matchContents>
+          <Pressable accessible accessibilityRole="button" accessibilityLabel={label}
+            accessibilityState={{ disabled: blocked }} disabled={blocked}
+            onPress={() => setExpanded(true)} style={{ width, height }}>
+            {children}
+          </Pressable>
+        </RNHostView></DropdownMenu.Trigger>
+        <DropdownMenu.Items>{actions.map(action => <DropdownMenuItem key={action.id}
+          enabled={!blocked && !action.attributes?.disabled}
+          elementColors={action.attributes?.destructive ? { textColor: GameColors.primary } : undefined}
+          onClick={() => {
+            setExpanded(false);
+            if (!blocked && !action.attributes?.disabled) onSelect(action.id);
+          }}>
+          <DropdownMenuItem.Text><Text>{action.title}</Text></DropdownMenuItem.Text>
+          <DropdownMenuItem.LeadingIcon><Icon source={APP_ICON_SOURCES[action.icon]} size={28} tint={null} /></DropdownMenuItem.LeadingIcon>
+        </DropdownMenuItem>)}</DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  </View>;
 }

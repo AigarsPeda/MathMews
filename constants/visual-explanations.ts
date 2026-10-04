@@ -1,4 +1,3 @@
-import { applyMathOperator } from "@/utils/puzzle-math";
 import type { Puzzle } from "@/types/puzzle";
 import type {
   VisualExplanation,
@@ -7,96 +6,201 @@ import type {
 } from "@/types/visual-explanation";
 import { getPuzzleType } from "@/utils/puzzle-type";
 
-export function getVisualHelpTemplateKey(puzzle: Puzzle): string {
+// These examples use their own quantities. Never build help from the active
+// puzzle's question, hint, answer, payload, or authored solution scenes.
+function example(caption: string, scenes: [VisualScene, VisualScene, VisualScene]): VisualKeyframe[] {
+  return scenes.map((scene, index) => ({
+    at: index / 2,
+    captionKey: `visualHelp.${caption}.s${index}`,
+    scene,
+  }));
+}
+
+function equation(...lines: string[]): VisualScene {
+  return { kind: "equation", lines };
+}
+
+const VISUAL_EXAMPLES = {
+  subtraction: example("easy01", [
+    { kind: "items", emoji: "🍎", count: 7 },
+    { kind: "items", emoji: "🍎", count: 7, removed: 2 },
+    equation("7 − 2 = 5"),
+  ]),
+  addition: example("easy03", [
+    { kind: "groups", emoji: "🎈", groups: [{ count: 2, color: "#C73948" }, { count: 4, color: "#23766F" }] },
+    { kind: "items", emoji: "🎈", count: 6 },
+    equation("2 + 4 = 6"),
+  ]),
+  multiplication: example("medium01", [
+    { kind: "grid", rows: 3, cols: 3, filled: 3, emoji: "🧸" },
+    { kind: "grid", rows: 3, cols: 3, filled: 9, emoji: "🧸" },
+    equation("3 × 3 = 9"),
+  ]),
+  division: example("medium04", [
+    { kind: "items", emoji: "🍪", count: 8 },
+    { kind: "groups", emoji: "🍪", groups: [{ count: 4, color: "#23766F" }, { count: 4, color: "#C73948" }] },
+    equation("8 ÷ 2 = 4"),
+  ]),
+  all_but: example("allButExample", [
+    { kind: "items", emoji: "🐑", count: 6 },
+    { kind: "items", emoji: "🐑", count: 6, removed: 4 },
+    { kind: "items", emoji: "🐑", count: 2 },
+  ]),
+  odd_range: example("oddRange", [
+    equation("4 < ? < 7"),
+    { kind: "sequence", values: [5, 6] },
+    { kind: "numberline", min: 4, max: 7, markers: [4, 5, 6, 7], highlight: 5 },
+  ]),
+  place_value: example("placeValueExample", [
+    equation("3 × 10", "? × 1"),
+    equation("3 × 2 = 6"),
+    equation("30 + 6 = 36"),
+  ]),
+  multiply_add: example("medium05", [
+    { kind: "grid", rows: 2, cols: 3, filled: 6, emoji: "🔵" },
+    { kind: "groups", emoji: "🔵", groups: [{ count: 6, color: "#23766F" }, { count: 2, color: "#C73948" }] },
+    equation("2 × 3 = 6", "6 + 2 = 8"),
+  ]),
+  multiply_subtract: example("hard05", [
+    { kind: "grid", rows: 3, cols: 3, filled: 9, emoji: "🍪" },
+    equation("9 − 2 = 7"),
+    equation("7 − 1 = 6"),
+  ]),
+  fraction_left: example("fractionLeft", [
+    { kind: "fraction", numerator: 6, denominator: 6 },
+    equation("1 + 2 = 3", "6 − 3 = 3"),
+    { kind: "fraction", numerator: 3, denominator: 6 },
+  ]),
+  rate: example("hard02", [
+    equation("24 ÷ 3 = ?"),
+    equation("24 ÷ 3 = 8"),
+    equation("8 × 4 = 32"),
+  ]),
+  percent: example("percentExample", [
+    equation("25% × 20 = ?"),
+    equation("20 ÷ 4 = 5"),
+    equation("20 + 5 = 25"),
+  ]),
+  compare: example("compare", [
+    equation("2 + 4", "2 × 0"),
+    equation("2 + 4 = 6", "2 × 0 = 0"),
+    equation("6 > 0"),
+  ]),
+  operation_path: example("operationPath", [
+    equation("9 → ? → 10"),
+    equation("9 ÷ 3 = 3"),
+    equation("3 + 7 = 10"),
+  ]),
+  target_build: example("targetBuild", [
+    equation("3 ? 2 ? 5 = 13"),
+    equation("2 × 5 = 10"),
+    equation("3 + 2 × 5 = 13"),
+  ]),
+  fraction_build: example("fractionBuild", [
+    { kind: "fraction", numerator: 0, denominator: 5 },
+    { kind: "fraction", numerator: 2, denominator: 5 },
+    equation("2 / 5"),
+  ]),
+  true_false: example("trueFalse", [
+    equation("3 × 3 = 8"),
+    equation("3 + 3 + 3 = 9"),
+    equation("9 ≠ 8"),
+  ]),
+  balance: example("balance", [
+    equation("4 + ? = 10"),
+    equation("10 − 4 = 6"),
+    equation("4 + 6 = 10"),
+  ]),
+  number_line: example("numberLine", [
+    { kind: "numberline", min: 0, max: 10, markers: [4], highlight: 4 },
+    { kind: "numberline", min: 0, max: 10, markers: [4, 5, 6, 7], highlight: 7 },
+    equation("4 + 3 = 7"),
+  ]),
+  pair_sum: example("pairSum", [
+    equation("2 + ? = 8"),
+    { kind: "sequence", values: [2, 6, 3, 1], addendIndices: [0, 1] },
+    equation("2 + 6 = 8"),
+  ]),
+  fix_mistake: example("fixMistake", [
+    equation("9 − 3 = 7"),
+    equation("9 − 3 = 6"),
+    equation("6 ≠ 7"),
+  ]),
+  estimate: example("estimate", [
+    equation("32 + 46 ≈ ?"),
+    equation("32 ≈ 30", "46 ≈ 50"),
+    equation("30 + 50 = 80"),
+  ]),
+  fair_share: example("fairShare", [
+    { kind: "items", emoji: "🍪", count: 9 },
+    { kind: "groups", emoji: "🍪", groups: [{ count: 4, color: "#23766F" }, { count: 4, color: "#23766F" }, { count: 1, color: "#99501A" }] },
+    equation("9 = 2 × 4 + 1"),
+  ]),
+  fraction_equivalent: example("fractionEquivalent", [
+    { kind: "fraction", numerator: 1, denominator: 3 },
+    { kind: "fraction", numerator: 2, denominator: 6 },
+    equation("1 / 3 = 2 / 6"),
+  ]),
+  fraction_match: example("fractionMatch", [
+    { kind: "fraction", numerator: 3, denominator: 5 },
+    equation("3 / 5"),
+    { kind: "fraction", numerator: 3, denominator: 5 },
+  ]),
+  pattern_next: example("patternNext", [
+    { kind: "sequence", values: [3, 6, 9, "?"] },
+    { kind: "sequence", values: [3, 6, 9, "?"], jumpLabel: "+3" },
+    { kind: "sequence", values: [3, 6, 9, 12], highlightIndex: 3, jumpLabel: "+3" },
+  ]),
+  function_machine: example("functionMachine", [
+    equation("4 → ? → 12"),
+    equation("4 × 3 = 12"),
+    equation("4 → ×3 → 12"),
+  ]),
+  order_numbers: example("orderNumbers", [
+    { kind: "sequence", values: [8, 2, 6] },
+    { kind: "sequence", values: [2, 8, 6], highlightIndex: 0 },
+    { kind: "sequence", values: [2, 6, 8] },
+  ]),
+};
+
+type ExampleKey = keyof typeof VISUAL_EXAMPLES;
+
+// Story puzzles need a concept match, rather than one example per difficulty.
+const STORY_EXAMPLES: Record<string, ExampleKey> = {
+  "easy-mc-02": "all_but",
+  "easy-mc-06": "odd_range",
+  "medium-mc-03": "division",
+  "medium-mc-04": "multiply_add",
+  "medium-mc-05": "place_value",
+  "hard-mc-01": "fraction_left",
+  "hard-mc-02": "rate",
+  "hard-mc-03": "percent",
+  "hard-mc-04": "multiply_subtract",
+  "hard-mc-05": "fair_share",
+};
+
+export function getVisualHelpTemplateKey(puzzle: Puzzle): ExampleKey {
   const type = getPuzzleType(puzzle);
-  if (type === "multiple_choice") {
-    return `multiple_choice-${puzzle.difficulty}`;
+  if (type !== "multiple_choice") return type;
+  if (STORY_EXAMPLES[puzzle.id]) return STORY_EXAMPLES[puzzle.id];
+  switch (puzzle.topic) {
+    case "addition": return "addition";
+    case "subtraction": return "subtraction";
+    case "multiplication": return "multiplication";
+    case "division": return "division";
+    case "fractions": return "fraction_build";
+    case "comparison": return "compare";
+    case "patterns": return "pattern_next";
+    case "equality": return "balance";
+    case "estimation": return "estimate";
+    case "mental_math": return "pair_sum";
+    case "operations": return "target_build";
+    case "logic": return "odd_range";
   }
-  return type;
 }
 
 export function getVisualExplanation(puzzle: Puzzle): VisualExplanation {
-  let scene: VisualScene = { kind: "equation", lines: [puzzle.question] };
-  let worked: VisualScene = { kind: "equation", lines: [puzzle.explanation] };
-  switch (puzzle.type) {
-    case "target_build": {
-      const expression = puzzle.payload.numbers.map((number, i) => `${number}${puzzle.payload.solution[i] ? ` ${puzzle.payload.solution[i]} ` : ""}`).join("");
-      scene = { kind: "equation", lines: [puzzle.payload.numbers.join("  ?  "), `= ${puzzle.payload.target}`] };
-      worked = { kind: "equation", lines: [`${expression} = ${puzzle.payload.target}`, puzzle.explanation] };
-      break;
-    }
-    case "operation_path": {
-      let value = puzzle.payload.start;
-      const lines = puzzle.payload.steps.map(step => { const before = value; value = applyMathOperator(value, step.operand, step.operator)!; return `${before} ${step.operator} ${step.operand} = ${value}`; });
-      worked = { kind: "equation", lines };
-      break;
-    }
-    case "fraction_build":
-    case "fraction_equivalent": {
-      const { numerator, denominator } = puzzle.payload;
-      scene = { kind: "fraction", numerator: 0, denominator };
-      worked = { kind: "fraction", numerator, denominator };
-      break;
-    }
-    case "number_line": {
-      const { min, max, start, correctValue } = puzzle.payload;
-      scene = { kind: "numberline", min, max, markers: [start], highlight: start };
-      worked = { kind: "numberline", min, max, markers: [...new Set([start, correctValue])], highlight: correctValue };
-      break;
-    }
-    case "order_numbers":
-      scene = { kind: "sequence", values: puzzle.payload.numbers };
-      worked = { kind: "sequence", values: puzzle.payload.correctOrder };
-      break;
-    case "pattern_next":
-      scene = { kind: "sequence", values: [...puzzle.payload.sequence, "?"] };
-      worked = { kind: "sequence", values: [...puzzle.payload.sequence, Number(puzzle.payload.choices[puzzle.correctIndex])] };
-      break;
-    case "pair_sum": {
-      const { numbers, correctIndices, target } = puzzle.payload;
-      scene = { kind: "sequence", values: numbers };
-      worked = { kind: "equation", lines: [`${numbers[correctIndices[0]]} + ${numbers[correctIndices[1]]} = ${target}`] };
-      break;
-    }
-    case "balance":
-      scene = { kind: "equation", lines: [`${puzzle.payload.leftDisplay} = ${puzzle.payload.rightValue}`] };
-      worked = { kind: "equation", lines: [`${puzzle.payload.leftDisplay.replace("?", puzzle.payload.choices[puzzle.correctIndex])} = ${puzzle.payload.rightValue}`, puzzle.explanation] };
-      break;
-    case "function_machine":
-      scene = { kind: "sequence", values: [puzzle.payload.input, "?", puzzle.payload.output] };
-      worked = { kind: "equation", lines: [`${puzzle.payload.input} → ${puzzle.payload.choices[puzzle.correctIndex]} → ${puzzle.payload.output}`] };
-      break;
-    case "compare":
-      scene = { kind: "equation", lines: [puzzle.payload.optionA, puzzle.payload.optionB] };
-      break;
-    case "fix_mistake":
-      scene = { kind: "equation", lines: puzzle.payload.wrongWork };
-      worked = { kind: "equation", lines: [puzzle.payload.choices[puzzle.correctIndex], puzzle.explanation] };
-      break;
-    case "estimate":
-      scene = { kind: "equation", lines: [puzzle.payload.expression] };
-      worked = { kind: "equation", lines: [puzzle.payload.choices[puzzle.correctIndex], puzzle.explanation] };
-      break;
-    case "fraction_match":
-      scene = { kind: "fraction", ...puzzle.payload.pairs[0] };
-      worked = { kind: "equation", lines: puzzle.payload.pairs.map(pair => `${pair.numerator}/${pair.denominator}`) };
-      break;
-    case "true_false":
-      scene = { kind: "equation", lines: [puzzle.payload.statement] };
-      break;
-    case "fair_share": {
-      const { items, people, emoji } = puzzle.payload;
-      scene = { kind: "items", emoji, count: items };
-      worked = { kind: "groups", emoji, groups: [...Array.from({ length: people }, () => ({ count: Math.floor(items / people), color: "#247A3C" })), ...(items % people ? [{ count: items % people, color: "#99501A" }] : [])] };
-      break;
-    }
-  }
-  if (puzzle.visualHelp) { scene = puzzle.visualHelp.scene; worked = puzzle.visualHelp.worked; }
-  return { puzzleId: puzzle.id, keyframes: [
-    { at: 0, captionKey: puzzle.question, scene },
-    { at: 0.5, captionKey: puzzle.hint, scene: { kind: "equation", lines: [puzzle.hint] } },
-    { at: 1, captionKey: puzzle.explanation, scene: worked },
-  ] };
+  return { puzzleId: puzzle.id, keyframes: VISUAL_EXAMPLES[getVisualHelpTemplateKey(puzzle)] };
 }
 
 export function hasVisualExplanation(_puzzle: Puzzle): boolean { return true; }

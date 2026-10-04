@@ -3,7 +3,7 @@ import { GameColors } from "@/constants/game";
 import type { RoomLayerItem } from "@/types/game";
 import { roomLayerItemKey } from "@/utils/room-layer-order";
 import { moderateScale } from "@/utils/scale";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
@@ -45,7 +45,7 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t }: Omi
     {controls && <Pressable style={styles.undo} accessibilityRole="button" accessibilityLabel={t("home.undo")}
       accessibilityState={{ disabled: !controls.canUndo }} disabled={!controls.canUndo}
       onPress={controls.undo}>
-      <MaterialIcons name="undo" size={22} color={controls.canUndo ? GameColors.text : GameColors.textMuted} />
+      <AppIcon name="undo" size={22} style={{ opacity: controls.canUndo ? 1 : 0.4 }} />
       <Text style={[styles.label, !controls.canUndo && styles.muted]}>{t("home.undo")}</Text>
     </Pressable>}
     {items.length === 0 && <Text style={styles.hint}>{t("home.noRoomObjects")}</Text>}
@@ -62,7 +62,7 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t }: Omi
     <Pressable style={styles.more} accessibilityRole="button" accessibilityLabel={t("home.moreRoomOptions")} accessibilityState={{ expanded: moreOptions }}
       onPress={() => setMoreOptions(current => !current)}>
       <Text style={styles.label}>{t("home.moreRoomOptions")}</Text>
-      <MaterialIcons name={moreOptions ? "expand-less" : "expand-more"} size={24} color={GameColors.text} />
+      <AppIcon name={moreOptions ? "chevron-up" : "chevron-down"} size={24} />
     </Pressable>
     {moreOptions && <View style={styles.options}>
       <View style={styles.snapRow}>
@@ -77,12 +77,12 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t }: Omi
         <Text style={styles.hint}>{t("home.savedRoomHint")}</Text>
         <Pressable style={styles.optionButton} accessibilityRole="button" accessibilityLabel={t("home.saveLayout")} onPress={controls.saveLayout}>
           <Text style={styles.label}>{t("home.saveLayout")}</Text>
-          <MaterialIcons name="bookmark-border" size={22} color={GameColors.text} />
+          <AppIcon name="save" size={22} />
         </Pressable>
         {controls.canRestore && <Pressable style={styles.optionButton} accessibilityRole="button" accessibilityLabel={t("home.restoreLayout")}
           onPress={() => { controls.restoreLayout(); onClose(); }}>
           <Text style={styles.label}>{t("home.restoreLayout")}</Text>
-          <MaterialIcons name="restore" size={22} color={GameColors.text} />
+          <AppIcon name="restore" size={22} />
         </Pressable>}
       </>}
     </View>}

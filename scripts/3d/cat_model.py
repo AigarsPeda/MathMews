@@ -36,6 +36,33 @@ def math_node(nodes, links, operation, *inputs):
     return node.outputs[0]
 
 
+def plush_surface(material, coordinates=None):
+    """Short, matte fibres fixed to each object's local surface."""
+    nodes, links = material.node_tree.nodes, material.node_tree.links
+    bsdf = nodes.get('Principled BSDF')
+    bsdf.inputs['Roughness'].default_value = .90
+    bsdf.inputs['Sheen Weight'].default_value = .40
+    if coordinates is None:
+        coordinates = nodes.new('ShaderNodeTexCoord')
+    direction = nodes.new('ShaderNodeVectorMath')
+    direction.operation = 'MULTIPLY'
+    direction.inputs[1].default_value = (1, 1, .45)
+    links.new(coordinates.outputs['Generated'], direction.inputs[0])
+    grain = nodes.new('ShaderNodeTexNoise')
+    grain.name = 'Short plush fibre grain'
+    grain.inputs['Scale'].default_value = 130
+    grain.inputs['Detail'].default_value = 2
+    grain.inputs['Roughness'].default_value = .65
+    links.new(direction.outputs[0], grain.inputs['Vector'])
+    bump = nodes.new('ShaderNodeBump')
+    bump.name = 'Soft plush surface'
+    bump.inputs['Strength'].default_value = .38
+    bump.inputs['Distance'].default_value = .012
+    links.new(grain.outputs['Fac'], bump.inputs['Height'])
+    links.new(bump.outputs['Normal'], bsdf.inputs['Normal'])
+    material['surface'] = 'Short matte plush fibres'
+
+
 def fur_material(skin, pattern='plain'):
     name = f'Dumpling fur {skin} {pattern}'
     existing = bpy.data.materials.get(name)
@@ -45,21 +72,16 @@ def fur_material(skin, pattern='plain'):
     material.use_nodes = True
     nodes, links = material.node_tree.nodes, material.node_tree.links
     bsdf = nodes.get('Principled BSDF')
-    bsdf.inputs['Roughness'].default_value = .78
-    bsdf.inputs['Sheen Weight'].default_value = .20
     base = CREAM if pattern in ('head', 'body', 'paw') else STRIPES[skin] if pattern == 'tail' else COATS[skin]
     bsdf.inputs['Base Color'].default_value = rgba(base)
     material.diffuse_color = rgba(base)
     coordinates = nodes.new('ShaderNodeTexCoord')
+    plush_surface(material, coordinates)
+    # Coat masks retain their own isotropic noise so fibres never distort them.
     noise = nodes.new('ShaderNodeTexNoise')
     noise.inputs['Scale'].default_value = 145
     noise.inputs['Detail'].default_value = 2
     links.new(coordinates.outputs['Generated'], noise.inputs['Vector'])
-    bump = nodes.new('ShaderNodeBump')
-    bump.inputs['Strength'].default_value = .08
-    bump.inputs['Distance'].default_value = .004
-    links.new(noise.outputs['Fac'], bump.inputs['Height'])
-    links.new(bump.outputs['Normal'], bsdf.inputs['Normal'])
     if pattern in ('plain', 'body', 'tail'):
         return material
     separate = nodes.new('ShaderNodeSeparateXYZ')
@@ -118,6 +140,13 @@ def solid_material(name, color, roughness=.65):
     return material
 
 
+def plush_material(name, color):
+    material = solid_material(name, color, .90)
+    if not material.get('surface'):
+        plush_surface(material)
+    return material
+
+
 def group(name, location=(0, 0, 0), parent=None):
     obj = bpy.data.objects.new(name, None)
     bpy.context.collection.objects.link(obj)
@@ -127,7 +156,9 @@ def group(name, location=(0, 0, 0), parent=None):
 
 
 def ball(name, location, scale, material, parent):
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=48, ring_count=24, radius=1)
+    plush = bool(material.get('surface'))
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=64 if plush else 48,
+                                      ring_count=48 if plush else 24, radius=1)
     obj = bpy.context.object
     obj.name, obj.parent = name, parent
     obj.location, obj.scale = location, scale
@@ -235,9 +266,9 @@ def face_ball(name, x, z, scale, material, head, offset=.016):
 
 def create_cat(skin='orange', boxed=False):
     coat = fur_material(skin)
-    cream = solid_material('Ivory', CREAM, .78)
-    blush = solid_material('Rosy cheeks', BLUSH, .82)
-    pink = solid_material('Inner ear', 'D9798E', .85)
+    cream = plush_material('Ivory', CREAM)
+    blush = plush_material('Rosy cheeks', BLUSH)
+    pink = plush_material('Inner ear', 'D9798E')
     dark = solid_material('Glossy eyes', '201A18', .10)
     white = solid_material('Eye catchlight', 'FFFFFF', .16)
     caramel = solid_material('Brow ' + skin, STRIPES[skin], .80)
@@ -277,17 +308,38 @@ def create_cat(skin='orange', boxed=False):
         sculpted_ear('Cupped ear shell ' + str(side), coat, pink, ear)
         ears.append(ear)
     eyes, glints, brows, tears = [], [], [], []
+    happy_lids, sleepy_lids, whiskers = [], [], []
+    whisker_material = solid_material('Soft warm whiskers', '786A61', .78)
     for side in (-1, 1):
         x = side * .25
         eyes.append(face_ball('Glossy round eye ' + str(side), x, .065, (.091, .050, .105), dark, head))
         glints.append(face_ball('Eye sparkle ' + str(side), x - .023, .10, (.023, .012, .027), white, head, .067))
+        for label, points, collection in (
+            ('Happy crescent eyelid', [(-.087, 0, -.020), (0, -.010, .034), (.087, 0, -.020)], happy_lids),
+            ('Relaxed closed eyelid', [(-.087, 0, .008), (0, -.010, -.019), (.087, 0, .008)], sleepy_lids),
+        ):
+            lid = group(label + ' ' + str(side), (x, face_y(x, .065) - .060, .065), head)
+            lid.rotation_euler = eyes[-1].rotation_euler.copy()
+            line(label + ' curve ' + str(side), points, .013, dark, lid)
+            lid.scale = (0, 0, 0)
+            collection.append(lid)
         brow = group('Expressive brow ' + str(side), (x, face_y(x, .235) - .022, .235), head)
-        line('Gentle brow arch ' + str(side), [(-.042, 0, -.008), (0, -.002, .017), (.042, 0, -.008)], .013, caramel, brow)
+        line('Gentle brow arch ' + str(side), [(-.055, 0, -.008), (0, -.002, .019), (.055, 0, -.008)], .014, caramel, brow)
         brows.append(brow)
         face_ball('Rosy cheek ' + str(side), side * .45, -.09, (.12, .027, .105), blush, head)
         tear = face_ball('Tear ' + str(side), x + side * .035, -.09, (.027, .015, .055), solid_material('Tear', 'A9D5F0', .25), head)
         tear.scale = (0, 0, 0)
         tears.append(tear)
+        fan = group('Whisker fan ' + str(side), (side * .31, face_y(.31, -.16) - .030, -.16), head)
+        for index, spread in enumerate((.095, .008, -.090)):
+            whisker = line('Whisker ' + str(side) + ' ' + str(index + 1),
+                           [(0, 0, (index - 1) * -.020),
+                            (side * .27, -.030, spread * .55),
+                            (side * .56, .010, spread)], .010, whisker_material, fan)
+            whisker.data.use_fill_caps = True
+            for point, taper in zip(whisker.data.splines[0].bezier_points, (.80, 1, .28)):
+                point.radius = taper
+        whiskers.append(fan)
     nose = rounded_prism('Tiny coral nose', [(-.037, .016), (.037, .016), (0, -.022)], .032, solid_material('Nose', 'EA8B7B', .55), head, .009)
     nose.location = (0, -.573, -.095)
     # Tiny upper lips, rather than the previous large separate muzzle spheres.
@@ -299,6 +351,10 @@ def create_cat(skin='orange', boxed=False):
     frown = group('Sad mouth', (0, face_y(0, -.22) - .027, -.22), head)
     line('Gentle frown', [(-.062, 0, -.020), (0, -.006, .015), (.062, 0, -.020)], .013, caramel, frown)
     frown.scale = (0, 0, 0)
+    smile = group('Content cat smile', (0, face_y(0, -.185) - .046, -.185), head)
+    for side in (-1, 1):
+        line('Curved smile ' + str(side), [(0, 0, .016), (side * .037, -.005, -.023),
+                                         (side * .084, .004, .012)], .011, mouth_color, smile)
     tail = group('Short curved tail pivot', TAIL_HOME, root)
     # In the box, rise inside the opening before curling out above the rim.
     tail_coat = fur_material(skin, 'tail')
@@ -307,7 +363,8 @@ def create_cat(skin='orange', boxed=False):
     return dict(root=root, body=body, torso=torso, head=head, ears=ears, eyes=eyes, glints=glints,
                 brows=brows, mouth=mouth, frown=frown, tears=tears, feet=feet,
                 back_feet=back_feet, legs=legs, back_legs=back_legs, tail=tail,
-                tail_curve=tail_curve, tail_tip=tail_tip, boxed=boxed)
+                tail_curve=tail_curve, tail_tip=tail_tip, boxed=boxed,
+                smile=smile, happy_lids=happy_lids, sleepy_lids=sleepy_lids, whiskers=whiskers)
 
 
 def smoothstep(t):
@@ -332,6 +389,54 @@ def care_action_time(state, t):
     if state == 'box3':
         return min(1, t / (2/3))
     return t
+
+
+def pose_face(rig, state, t, eye_height):
+    """Readable expressions share the action's anticipation and recovery beats."""
+    happy = 0
+    if state == 'preview':
+        happy = 1
+    elif state in ('correct', 'dance'):
+        happy = smooth_window(t, .08, .90, .12)
+    elif state == 'excited':
+        happy = smooth_window(t, .04, .96, .16)
+    sad = 0
+    if state == 'incorrect':
+        sad = smooth_window(t, .10, .68, .12)
+    elif state in ('sad', 'cry', 'angryCute'):
+        sad = .70 + .12 * math.sin(t * math.tau)
+    surprised = math.sin(math.pi * t) if state == 'surprised' else 0
+    eating = smooth_window(t, .03, .90, .15) if state == 'eating' else 0
+    play = smooth_window(t, .14, .88, .10) if state in ('ballToss', 'yarnRoll', 'featherChase') else 0
+    yawn = math.sin(math.pi * t) ** 4 if state in ('sleepy', 'restSleep') else 0
+    box = float(rig['root'].get('box_activity', 0)) if state.startswith('box') else 0
+    open_mouth = max(happy, surprised, eating, .45 * play, yawn, .18 * box)
+    rig['mouth'].scale *= open_mouth
+    smile = max(0, 1 - open_mouth - 2 * sad)
+    rig['smile'].scale = (smile, smile, smile)
+
+    closed = smoothstep((.050 - eye_height) / .040)
+    lid_strength = max(closed, happy)
+    eye_width = .091 * (1 + .20 * surprised)
+    for eye, glint, happy_lid, sleepy_lid in zip(rig['eyes'], rig['glints'], rig['happy_lids'], rig['sleepy_lids']):
+        visible = 1 - lid_strength
+        eye.scale = (eye_width * visible, .050 * visible, eye_height * visible * (1 - .20 * sad))
+        opening = max(0, min(1, (eye_height - .010) / .065)) * visible
+        glint.scale = (.023 * opening, .012 * opening, .027 * opening)
+        happy_lid.scale = (happy, happy, happy)
+        relaxed = max(0, closed - happy)
+        sleepy_lid.scale = (relaxed, relaxed, relaxed)
+
+    for side, fan, brow in zip((-1, 1), rig['whiskers'], rig['brows']):
+        fan.rotation_euler = (0, side * (-.12 * happy + .14 * sad + .012 * math.sin(t * math.tau * 2)), 0)
+        if state == 'surprised':
+            brow.location.z = .235 + .080 * surprised
+        elif state == 'waiting':
+            brow.location.z = .235 + (.06 if side == -1 else -.02) * math.sin(math.pi * t)
+            brow.rotation_euler.y += side * .18 * math.sin(math.pi * t)
+    rig['root']['facial_expression'] = ('happy' if happy > .5 else 'surprised' if surprised > .5 else
+                                       'disappointed' if sad > .4 else 'sleepy' if closed > .5 else
+                                       'curious' if state == 'waiting' else 'content')
 
 
 def pose_cat(rig, state, t):
@@ -647,10 +752,7 @@ def pose_cat(rig, state, t):
     if state == 'waiting':
         head.rotation_euler.x = -.10 * envelope
         rig['feet'][1].location.z += .16 * envelope
-    for eye, glint in zip(rig['eyes'], rig['glints']):
-        eye.scale = (.091, .050, eye_height)
-        opening = max(0, min(1, (eye_height - .010) / .065))
-        glint.scale = (.023 * opening, .012 * opening, .027 * opening)
+    pose_face(rig, state, t, eye_height)
     # Standing shoulders/hips sit over their paws, inside the chest and rump.
     # Blend back to the seated attachments during sofa takeoff and landing.
     rig['leg_anchors'] = [
@@ -712,6 +814,7 @@ def configure_cat_camera(scene):
 
 
 def animated_parts(rig):
-    return [rig[key] for key in ('root', 'body', 'head', 'tail', 'tail_tip', 'mouth', 'frown')] + [
-        obj for key in ('ears', 'eyes', 'glints', 'brows', 'feet', 'back_feet', 'legs', 'back_legs', 'tears') for obj in rig[key]
+    return [rig[key] for key in ('root', 'body', 'head', 'tail', 'tail_tip', 'mouth', 'frown', 'smile')] + [
+        obj for key in ('ears', 'eyes', 'glints', 'brows', 'feet', 'back_feet', 'legs', 'back_legs', 'tears',
+                        'happy_lids', 'sleepy_lids', 'whiskers') for obj in rig[key]
     ]

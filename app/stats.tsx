@@ -1,6 +1,9 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES } from "@/constants/puzzles";
 import { useLocale } from "@/contexts/LocaleProvider";
-import { TOPIC_EMOJI } from "@/constants/topics";
+import { TOPIC_ICON } from "@/constants/topics";
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
 import { useTopicLabel } from "@/hooks/use-topic-label";
@@ -20,7 +23,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -47,7 +49,7 @@ function TopicRow({ row }: { row: TopicStatsRow }) {
   return (
     <View style={[styles.row, isWeak && styles.rowWeak]}>
       <View style={styles.rowHeader}>
-        <Text style={styles.rowEmoji}>{TOPIC_EMOJI[row.topic]}</Text>
+        <AppIcon name={TOPIC_ICON[row.topic]} size={moderateScale(28)} />
         <View style={styles.rowTitleWrap}>
           <Text style={styles.rowTitle}>{label}</Text>
           {isWeak ? (
@@ -129,7 +131,7 @@ export default function StatsScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}
         >
-          <Text style={styles.backText}>{t("common.back")}</Text>
+          <BackButtonLabel style={styles.backText} />
         </Pressable>
 
         <Text style={styles.title}>{t("stats.title")}</Text>
@@ -321,9 +323,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: moderateScale(10),
-  },
-  rowEmoji: {
-    fontSize: moderateScale(22),
   },
   rowTitleWrap: {
     flex: 1,

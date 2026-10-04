@@ -1,3 +1,5 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { shufflePuzzleChoices } from "@/utils/puzzle-practice";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
@@ -44,7 +46,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -510,11 +511,9 @@ function PlaySession() {
             accessibilityLabel={t("play.a11yBack")}
             accessibilityState={{ disabled: answered }}
           >
-            <Text
+            <BackButtonLabel
               style={[styles.backText, answered && styles.backTextDisabled]}
-            >
-              {t("common.back")}
-            </Text>
+            />
           </Pressable>
           <GameHeaderStats
             coins={wallet.coins}

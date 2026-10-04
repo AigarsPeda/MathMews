@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { CatSkinPicker } from "@/components/onboarding/CatSkinPicker";
 import { RestoreProgressPrompt } from "@/components/onboarding/RestoreProgressPrompt";
 import { GameColors } from "@/constants/game";
@@ -175,7 +176,7 @@ export default function NamePetScreen() {
                           >
                             {t(`locale.${code}`)}
                           </Text>
-                          {selected ? <Text style={styles.check}>✓</Text> : null}
+                          {selected ? <AppIcon name="check" size={moderateScale(16) * 1.2} /> : null}
                         </Pressable>
                       );
                     })}
@@ -332,11 +333,6 @@ const styles = StyleSheet.create({
   localeOptionTextSelected: {
     color: GameColors.primary,
     fontWeight: "700",
-  },
-  check: {
-    fontSize: moderateScale(16),
-    fontWeight: "800",
-    color: GameColors.primary,
   },
   input: {
     minHeight: moderateScale(48),

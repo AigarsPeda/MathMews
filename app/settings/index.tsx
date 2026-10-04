@@ -1,3 +1,6 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { PrivacyLink } from "@/components/settings/PrivacyLink";
 import { DataManagementSection } from "@/components/settings/DataManagementSection";
 import { LicensesLink } from "@/components/settings/LicensesLink";
@@ -9,7 +12,7 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function triggerHaptic() {
@@ -54,7 +57,7 @@ export default function SettingsScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}
         >
-          <Text style={styles.backText}>{t("common.back")}</Text>
+          <BackButtonLabel style={styles.backText} />
         </Pressable>
 
         <Text style={styles.title}>{t("settings.title")}</Text>
@@ -83,7 +86,7 @@ export default function SettingsScreen() {
                   >
                     {t(`locale.${code}`)}
                   </Text>
-                  {selected ? <Text style={styles.check}>✓</Text> : null}
+                  {selected ? <AppIcon name="check" size={moderateScale(18) * 1.2} /> : null}
                 </Pressable>
               );
             })}
@@ -174,10 +177,5 @@ const styles = StyleSheet.create({
   },
   optionTextSelected: {
     color: GameColors.text,
-  },
-  check: {
-    fontSize: moderateScale(18),
-    fontWeight: "800",
-    color: GameColors.secondary,
   },
 });

@@ -1,3 +1,4 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { getDecorationStorePreviewSize, getDecorationStorePreviewWallFlipped } from "@/constants/cat-decorations";
@@ -5,7 +6,7 @@ import { GameColors } from "@/constants/game";
 import { getDecorationStorePrice } from "@/utils/decoration-store";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type DecorationStoreCardProps = {
   decorationId: CatDecorationId;

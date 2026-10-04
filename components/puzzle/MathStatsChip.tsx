@@ -1,9 +1,9 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 
-const STATS_ICON = require("@/assets/images/stats-icon.png");
 
 type MathStatsChipProps = {
   onPress: () => void;
@@ -22,16 +22,11 @@ export function MathStatsChip({ onPress, compact = false }: MathStatsChipProps) 
       accessibilityRole="button"
       accessibilityLabel={t("stats.a11yOpen")}
     >
-      <Image
-        source={STATS_ICON}
-        style={[styles.icon, compact && styles.iconCompact]}
-        resizeMode="contain"
-        accessibilityIgnoresInvertColors
-      />
+      <AppIcon name="stats" size={moderateScale(compact ? 24 : 26)} />
       <Text style={[styles.text, compact && styles.textCompact]}>
         {t("stats.chip")}
       </Text>
-      <Text style={[styles.chevron, compact && styles.chevronCompact]}>›</Text>
+      <AppIcon name="chevron-right" size={moderateScale(18)} />
     </Pressable>
   );
 }
@@ -58,14 +53,6 @@ const styles = StyleSheet.create({
     minHeight: moderateScale(40),
     gap: moderateScale(6),
   },
-  icon: {
-    width: moderateScale(22),
-    height: moderateScale(20),
-  },
-  iconCompact: {
-    width: moderateScale(20),
-    height: moderateScale(18),
-  },
   text: {
     flex: 1,
     fontSize: moderateScale(15),
@@ -74,15 +61,5 @@ const styles = StyleSheet.create({
   },
   textCompact: {
     fontSize: moderateScale(14),
-  },
-  chevron: {
-    fontSize: moderateScale(22),
-    fontWeight: "700",
-    color: GameColors.textMuted,
-    lineHeight: moderateScale(24),
-  },
-  chevronCompact: {
-    fontSize: moderateScale(20),
-    lineHeight: moderateScale(22),
   },
 });

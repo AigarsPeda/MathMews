@@ -1,12 +1,12 @@
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 const DIRECTIONS = [
-  ["left", "arrow-back"], ["right", "arrow-forward"],
-  ["up", "arrow-upward"], ["down", "arrow-downward"],
+  ["left", "arrow-left"], ["right", "arrow-right"],
+  ["up", "arrow-up"], ["down", "arrow-down"],
 ] as const;
 
 export type RoomMoveDirection = typeof DIRECTIONS[number][0];
@@ -23,7 +23,7 @@ export function RoomItemMoveControls({ name, onMove, onDone }: {
       <Text style={styles.title}>{t("home.moveSelectedItem", { name })}</Text>
       <Pressable accessibilityRole="button" accessibilityLabel={t("home.finishMoving", { name })}
         onPress={onDone} style={styles.done}>
-        <MaterialIcons name="check" size={20} color={GameColors.text} />
+        <AppIcon name="check" size={20} />
         <Text style={styles.doneText}>{t("home.finishDecorating")}</Text>
       </Pressable>
     </View>
@@ -31,7 +31,7 @@ export function RoomItemMoveControls({ name, onMove, onDone }: {
       {DIRECTIONS.map(([direction, icon]) => <Pressable key={direction}
         accessibilityRole="button" accessibilityLabel={t("home.moveItem" + direction, { name })}
         onPress={() => onMove(direction)} style={({ pressed }) => [styles.arrow, pressed && styles.pressed]}>
-        <MaterialIcons name={icon} size={24} color={GameColors.text} />
+        <AppIcon name={icon} size={24} />
         <Text style={styles.arrowText}>{t("home.nudge" + direction)}</Text>
       </Pressable>)}
     </View>

@@ -1,6 +1,6 @@
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { AppIcon } from "@/components/ui/AppIcon";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
@@ -33,11 +33,7 @@ export function PrivacyLink() {
         <Text style={styles.sectionTitle}>{t("settings.privacy")}</Text>
         <Text style={styles.sectionHint}>{t("settings.privacyHint")}</Text>
       </View>
-      <MaterialIcons
-        name="chevron-right"
-        size={moderateScale(24)}
-        color={GameColors.textMuted}
-      />
+      <AppIcon name="chevron-right" size={moderateScale(24)} />
     </Pressable>
   );
 }

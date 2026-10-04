@@ -29,6 +29,10 @@ const { getPuzzlesByDifficulty } = load('@/constants/puzzles');
 const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
 const { shufflePuzzleChoices } = load("@/utils/puzzle-practice");
 const { getVisualExplanation } = load('@/constants/visual-explanations');
+const helpLocales = {
+  en: load('@/locales/visual-help/en').visualHelpEn,
+  lv: load('@/locales/visual-help/lv').visualHelpLv,
+};
 let count = 0;
 for (const tier of ['easy', 'medium', 'hard']) {
   const en = getPuzzlesByDifficulty('en', tier), lv = getPuzzlesByDifficulty('lv', tier);
@@ -57,7 +61,28 @@ for (const tier of ['easy', 'medium', 'hard']) {
       if ('correctIndex' in variant) assert.equal(checkPuzzleAnswer(variant, { kind: 'choice', index: variant.correctIndex }), true);
     }
     const help = getVisualExplanation(p);
-    assert.equal(help.puzzleId, p.id); assert.equal(help.keyframes.at(-1).captionKey, p.explanation);
+    assert.equal(help.puzzleId, p.id);
+    assert.ok(help.keyframes.length >= 3);
+    for (const frame of help.keyframes) {
+      assert.notEqual(frame.captionKey, p.question);
+      assert.notEqual(frame.captionKey, p.hint);
+      assert.notEqual(frame.captionKey, p.explanation);
+      const caption = frame.captionKey.split('.').slice(1).reduce((value, key) => value?.[key], helpLocales[locale]);
+      assert.ok(typeof caption === 'string' && caption.length > 0, `${locale}/${p.id}: help caption must be localized`);
+    }
+    const privateFields = new Set(['question', 'hint', 'explanation', 'payload', 'visualHelp', 'correctIndex', 'choices', 'isTrue']);
+    const independentPuzzle = new Proxy(p, {
+      get(target, key) {
+        assert.ok(!privateFields.has(key), `${p.id}: help must not read task content or answers (${key})`);
+        return target[key];
+      },
+    });
+    assert.deepEqual(getVisualExplanation(independentPuzzle), help);
+    if (p.id === 'easy-mc-06') {
+      assert.equal(help.keyframes[0].scene.lines[0], '4 < ? < 7');
+      assert.equal(help.keyframes.at(-1).scene.highlight, 5);
+      assert.ok(!JSON.stringify(help.keyframes).includes('11'), "Odd-number example must not reveal this puzzle's answer");
+    }
     const checkNumbers = value => { if (typeof value === 'number') assert.ok(Number.isFinite(value), `${p.id}: visual values must be finite`); else if (value && typeof value === 'object') Object.values(value).forEach(checkNumbers); };
     checkNumbers(help);
   }

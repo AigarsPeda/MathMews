@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { CloudSaveList } from "@/components/cloud-save/CloudSaveList";
 import { GameColors } from "@/constants/game";
 import type { CloudSaveSummary } from "@/services/cloud-save/merge-game-save";
@@ -35,7 +36,7 @@ export function RestoreProgressPrompt({
 
   return (
     <View style={styles.card}>
-      <Text style={styles.emoji}>🐱</Text>
+      <AppIcon name="cat" size={moderateScale(32) * 1.2} />
       <Text style={styles.title}>{t("onboarding.restore.title")}</Text>
       <Text style={styles.message}>{t("onboarding.restore.messageMultiple")}</Text>
 
@@ -73,10 +74,6 @@ const styles = StyleSheet.create({
     borderColor: GameColors.cardBorder,
     padding: moderateScale(16),
     gap: moderateScale(12),
-  },
-  emoji: {
-    fontSize: moderateScale(32),
-    textAlign: "center",
   },
   title: {
     fontSize: moderateScale(20),

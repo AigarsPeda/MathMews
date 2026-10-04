@@ -1,7 +1,7 @@
 import { GameColors } from "@/constants/game";
 import type { MathOperator, OperationPathPuzzle } from "@/types/puzzle";
 import { MATH_OPERATORS } from "@/types/puzzle";
-import { applyMathOperator, runOperationPath } from "@/utils/puzzle-math";
+import { applyMathOperator } from "@/utils/puzzle-math";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
@@ -57,35 +57,22 @@ export function OperationPathTask({
   const { t } = useTranslation();
   const { start, target, steps } = puzzle.payload;
 
-  const filledOperators = useMemo(
-    () =>
-      selectedOperators.filter(
-        (operator): operator is MathOperator => operator !== null,
-      ),
-    [selectedOperators],
-  );
-
-  const currentValue = useMemo(() => {
-    if (filledOperators.length === 0) return start;
-    return runOperationPath(start, steps.slice(0, filledOperators.length), filledOperators);
-  }, [filledOperators, start, steps]);
-
-  const allSelected = selectedOperators.every((operator) => operator !== null);
-  const activeStepIndex = selectedOperators.findIndex((operator) => operator === null);
+  const allSelected = steps.every((_, index) => selectedOperators[index] != null);
 
   const runningValues = useMemo(() => {
-    const values: number[] = [start];
-    let value = start;
+    const values: (number | null)[] = [start];
     for (let i = 0; i < steps.length; i++) {
       const operator = selectedOperators[i];
-      if (!operator) break;
-      const next = applyMathOperator(value, steps[i].operand, operator);
-      if (next === null) break;
-      value = next;
-      values.push(value);
+      const value = values[i];
+      values.push(
+        operator && value !== null
+          ? applyMathOperator(value, steps[i].operand, operator)
+          : null,
+      );
     }
     return values;
   }, [selectedOperators, start, steps]);
+  const currentValue = runningValues[steps.length];
 
   return (
     <View style={styles.wrap}>
@@ -94,6 +81,10 @@ export function OperationPathTask({
         <NumberBubble value={target} large />
       </View>
 
+      {!answered ? (
+        <Text style={styles.stepHint}>{t("puzzleTypes.operationPathEditHint")}</Text>
+      ) : null}
+
       <View style={styles.pathCard}>
         <View style={styles.startRow}>
           <Text style={styles.startLabel}>{t("puzzleTypes.operationPathStart")}</Text>
@@ -101,13 +92,8 @@ export function OperationPathTask({
         </View>
 
         {steps.map((step, index) => {
-          const selected = selectedOperators[index];
-          const isDone = selected !== null;
-          const isActive = !answered && index === activeStepIndex;
-          const isFuture = !answered && !isDone && index > activeStepIndex;
-          if (isFuture) return null;
-
-          const leftValue = runningValues[index] ?? start;
+          const selected = selectedOperators[index] ?? null;
+          const leftValue = runningValues[index];
           const rightValue = runningValues[index + 1];
 
           return (
@@ -120,11 +106,14 @@ export function OperationPathTask({
               </Text>
 
               <View style={styles.stepRow}>
-                <NumberBubble value={leftValue} />
+                <NumberBubble
+                  value={leftValue ?? "?"}
+                  placeholder={leftValue === null}
+                />
                 <View
                   style={[
                     styles.operatorSlot,
-                    isActive && styles.operatorSlotActive,
+                    !answered && selected === null && styles.operatorSlotActive,
                     answered &&
                       isCorrect &&
                       styles.operatorSlotCorrect,
@@ -137,33 +126,30 @@ export function OperationPathTask({
                   <Text style={styles.operatorSlotText}>{selected ?? "?"}</Text>
                 </View>
                 <NumberBubble value={step.operand} />
-                {isDone && rightValue !== undefined ? (
-                  <>
-                    <Text style={styles.equals}>=</Text>
-                    <NumberBubble value={rightValue} />
-                  </>
-                ) : (
-                  <>
-                    <Text style={styles.equals}>=</Text>
-                    <NumberBubble value="?" placeholder />
-                  </>
-                )}
+                <Text style={styles.equals}>=</Text>
+                <NumberBubble
+                  value={rightValue ?? "?"}
+                  placeholder={rightValue === null}
+                />
               </View>
 
-              {isActive ? (
+              {!answered ? (
                 <View style={styles.operatorPicker}>
                   {MATH_OPERATORS.map((operator) => (
                     <Pressable
                       key={operator}
                       style={({ pressed }) => [
                         styles.operatorBtn,
+                        selected === operator && styles.operatorBtnSelected,
                         pressed && styles.operatorBtnPressed,
                       ]}
                       onPress={() => onSelectOperator(index, operator)}
                       accessibilityRole="button"
-                      accessibilityLabel={t("puzzleTypes.pickOperator", {
+                      accessibilityLabel={t("puzzleTypes.pickOperatorForStep", {
                         operator,
+                        step: index + 1,
                       })}
+                      accessibilityState={{ selected: selected === operator }}
                     >
                       <Text style={styles.operatorBtnText}>{operator}</Text>
                     </Pressable>
@@ -173,19 +159,11 @@ export function OperationPathTask({
             </View>
           );
         })}
-
-        {!answered &&
-        activeStepIndex >= 0 &&
-        activeStepIndex < steps.length - 1 ? (
-          <Text style={styles.futureHint}>
-            {t("puzzleTypes.operationPathKeepGoing")}
-          </Text>
-        ) : null}
       </View>
 
-      {currentValue !== null && filledOperators.length > 0 ? (
+      {currentValue !== null ? (
         <Text style={styles.progressText}>
-          {t("puzzleTypes.currentTotal", { value: currentValue })}
+          {t("puzzleTypes.yourResult", { value: currentValue })}
         </Text>
       ) : null}
 
@@ -202,12 +180,6 @@ export function OperationPathTask({
 
       {answered && !isCorrect ? (
         <Text style={styles.retryHint}>{t("puzzleTypes.tryDifferentOps")}</Text>
-      ) : null}
-
-      {!answered && activeStepIndex >= 0 && !allSelected ? (
-        <Text style={styles.stepHint}>
-          {t("puzzleTypes.pickForStep", { step: activeStepIndex + 1 })}
-        </Text>
       ) : null}
     </View>
   );
@@ -352,17 +324,14 @@ const styles = StyleSheet.create({
     opacity: 0.85,
     transform: [{ scale: 0.97 }],
   },
+  operatorBtnSelected: {
+    borderColor: GameColors.secondary,
+    backgroundColor: "rgba(78, 205, 196, 0.12)",
+  },
   operatorBtnText: {
     fontSize: moderateScale(24),
     fontWeight: "800",
     color: GameColors.text,
-  },
-  futureHint: {
-    fontSize: moderateScale(13),
-    fontWeight: "600",
-    color: GameColors.textMuted,
-    textAlign: "center",
-    fontStyle: "italic",
   },
   progressText: {
     fontSize: moderateScale(15),

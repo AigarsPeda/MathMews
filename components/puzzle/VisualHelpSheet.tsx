@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPlayer";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors } from "@/constants/game";
@@ -46,7 +47,7 @@ export function VisualHelpSheet({
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.card}>
-          <Text style={styles.emoji}>🎬</Text>
+          <AppIcon name="film" size={moderateScale(36) * 1.2} />
           <Text style={styles.title}>{t("visualHelp.title")}</Text>
           <Text style={styles.subtitle}>{t("visualHelp.subtitle")}</Text>
 
@@ -87,9 +88,6 @@ const styles = StyleSheet.create({
     gap: moderateScale(10),
     paddingTop: moderateScale(12),
     paddingHorizontal: moderateScale(4),
-  },
-  emoji: {
-    fontSize: moderateScale(36),
   },
   title: {
     fontWeight: "800",

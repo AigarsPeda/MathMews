@@ -20,7 +20,8 @@
     "assets:3d": "node scripts/3d/build.mjs",
     "assets:verify": "node scripts/3d/verify.mjs",
     "typecheck": "tsc --noEmit",
-    "test:game": "node scripts/check-game.mjs"
+    "test:game": "node scripts/check-game.mjs",
+    "assets:icons": "node scripts/3d/build-app-icons.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",
@@ -31,6 +32,7 @@
     "@supabase/supabase-js": "^2.117.2",
     "expo": "^57.0.26",
     "expo-apple-authentication": "~57.0.2",
+    "expo-asset": "~57.0.18",
     "expo-auth-session": "~57.0.13",
     "expo-build-properties": "^57.0.22",
     "expo-constants": "~57.0.20",

@@ -8,13 +8,54 @@ import math
 import os
 import sys
 from pathlib import Path
+from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / 'docs/art/icon-study'
+OUT = Path(os.environ.get('BRAINPET_ICON_OUTPUT', ROOT / 'docs/art/icon-study'))
 OUT.mkdir(parents=True, exist_ok=True)
 os.environ['BRAINPET_BLENDER_ASSET_DIR'] = str(OUT / 'source')
 sys.path.insert(0, str(ROOT / 'scripts/3d'))
 import render_assets as art
+
+# UI symbols need level axes and a readable face at small sizes.
+FRONT_ICONS = {
+    'paw', 'settings', 'sleep', 'puzzles', 'heart', 'broken-heart', 'brain',
+    'coin', 'flame', 'sparkle', 'film', 'lock', 'search', 'zoom-in', 'zoom-out',
+    'check', 'warning', 'rotate', 'undo', 'restore', 'save', 'pause', 'video-play',
+    'power', 'addition', 'subtraction', 'multiplication', 'division', 'equality',
+    'patterns', 'fractions', 'operations',
+    'arrow-up', 'arrow-down', 'arrow-left', 'arrow-right',
+    'chevron-up', 'chevron-down', 'chevron-right',
+}
+
+
+def frame_icon(scene, front=False):
+    # Curve bounding boxes include unused control-point space. Frame the actual
+    # evaluated surface so yarn and the other icons share the same optical size.
+    bpy.context.view_layer.update()
+    deps = bpy.context.evaluated_depsgraph_get()
+    points = []
+    for obj in scene.objects:
+        if obj.type not in {'MESH', 'CURVE', 'FONT'}:
+            continue
+        evaluated = obj.evaluated_get(deps)
+        mesh = evaluated.to_mesh()
+        points.extend(evaluated.matrix_world @ vertex.co for vertex in mesh.vertices)
+        evaluated.to_mesh_clear()
+    center = Vector(tuple((min(p[i] for p in points)+max(p[i] for p in points))/2 for i in range(3)))
+    direction = (0, -9, 0) if front else art.ROOM_VIEW_DIRECTION
+    scene.camera.location = center + Vector(direction)
+    scene.camera.name = 'Front-facing icon camera' if front else 'Isometric object camera'
+    scene['icon_view'] = 'front' if front else 'isometric'
+    art.aim(scene.camera, center)
+    bpy.context.view_layer.update()
+    inverse = scene.camera.matrix_world.inverted()
+    projected = [inverse @ point for point in points]
+    min_x, max_x = min(p.x for p in projected), max(p.x for p in projected)
+    min_y, max_y = min(p.y for p in projected), max(p.y for p in projected)
+    shift = scene.camera.rotation_euler.to_matrix() @ Vector(((min_x+max_x)/2, (min_y+max_y)/2, 0))
+    scene.camera.location += shift
+    scene.camera.data.ortho_scale = max(max_x-min_x, max_y-min_y)*1.22
 
 
 def extruded_shape(name, points, color, depth=.18, position=(0, 0, 0)):
@@ -149,16 +190,43 @@ def home():
 
 builders = [('paw', paw), ('feed', feed), ('play', play), ('sofa', lambda: art.sofa('sofaA')),
             ('sleep', sleep), ('puzzles', puzzles), ('settings', settings), ('home', home)]
-for name, build in builders:
-    scene = bpy.data.scenes.new('Icon '+name)
-    bpy.context.window.scene = scene
-    art.setup(512)
-    scene.render.engine = 'CYCLES'
-    scene.cycles.device = 'CPU'
-    scene.cycles.samples = 48
-    scene.cycles.use_denoising = True
-    build()
-    art.frame_camera(list(scene.objects), 1.22)
-    art.render(OUT / (name+'.png'))
-    print('ICON_DONE', name, flush=True)
-bpy.ops.wm.save_as_mainfile(filepath=str(OUT / 'source/starter-icons.blend'), compress=True)
+def render_set(icon_builders, output=OUT, size=512, filename="icons.blend"):
+    output.mkdir(parents=True, exist_ok=True)
+    for name, build in icon_builders:
+        scene = bpy.data.scenes.new('Icon '+name)
+        scene.world = bpy.data.worlds.new('Icon lighting '+name)
+        bpy.context.window.scene = scene
+        art.setup(size)
+        scene.render.engine = 'CYCLES'
+        scene.cycles.device = 'CPU'
+        scene.cycles.samples = 48
+        scene.cycles.use_denoising = True
+        build()
+        frame_icon(scene, front=name in FRONT_ICONS)
+        art.render(output / (name+'.png'))
+        print('ICON_DONE', name, flush=True)
+    (output / 'source').mkdir(exist_ok=True)
+    bpy.ops.wm.save_as_mainfile(filepath=str(output / 'source' / filename), compress=True)
+
+
+def select_builders(icon_builders, output, filename):
+    if '--only' not in sys.argv:
+        return icon_builders
+    selected = set(sys.argv[sys.argv.index('--only') + 1].split(','))
+    if not selected.issubset({name for name, build in icon_builders}):
+        raise ValueError('Unknown icon in --only')
+    library = output / 'source' / filename
+    if not library.exists():
+        raise FileNotFoundError('Render the complete icon library before a partial rebuild')
+    bpy.ops.wm.open_mainfile(filepath=str(library))
+    for name in selected:
+        scene = bpy.data.scenes.get('Icon ' + name)
+        if scene:
+            for obj in list(scene.objects):
+                bpy.data.objects.remove(obj, do_unlink=True)
+            bpy.data.scenes.remove(scene)
+    return [(name, build) for name, build in icon_builders if name in selected]
+
+
+if __name__ == '__main__':
+    render_set(select_builders(builders, OUT, 'starter-icons.blend'), filename="starter-icons.blend")

@@ -1,3 +1,5 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { PrivacyPolicyView } from "@/components/settings/PrivacyPolicyView";
 import { GameColors } from "@/constants/game";
 import { useLocale } from "@/contexts/LocaleProvider";
@@ -7,7 +9,7 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function triggerHaptic() {
@@ -40,7 +42,7 @@ export default function PrivacyScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}
         >
-          <Text style={styles.backText}>{t("common.back")}</Text>
+          <BackButtonLabel style={styles.backText} />
         </Pressable>
 
         <Text style={styles.title}>{content.screenTitle}</Text>

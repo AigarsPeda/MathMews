@@ -1,11 +1,13 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { GameColors } from "@/constants/game";
 import type { PuzzlePathState } from "@/constants/puzzles";
 import { useTopicLabel } from "@/hooks/use-topic-label";
 import type { Puzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { TOPIC_EMOJI } from "@/constants/topics";
+import { Pressable, StyleSheet, View } from "react-native";
+import { TOPIC_ICON } from "@/constants/topics";
 
 const STATE_LABEL_KEYS = {
   completed: "puzzlePath.stateCompleted",
@@ -59,10 +61,10 @@ export function PuzzlePathItem({
           <View style={styles.headerLeft}>
             {state === "completed" ? (
               <View style={styles.statusBadgeCompleted}>
-                <Text style={styles.statusBadgeText}>✓</Text>
+                <AppIcon name="check" size={moderateScale(13) * 1.2} />
               </View>
             ) : state === "locked" ? (
-              <Text style={styles.statusIcon}>🔒</Text>
+              <AppIcon name="lock" size={moderateScale(16) * 1.2} />
             ) : null}
             <Text
               style={[
@@ -84,7 +86,7 @@ export function PuzzlePathItem({
               <Text style={styles.playChipText}>{t("common.play")}</Text>
             </View>
           ) : (
-            <Text style={styles.topic}>{TOPIC_EMOJI[puzzle.topic]}</Text>
+            <AppIcon name={TOPIC_ICON[puzzle.topic]} size={moderateScale(24)} />
           )}
         </View>
 
@@ -149,14 +151,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#E8F8EB",
     alignItems: "center",
     justifyContent: "center",
-  },
-  statusBadgeText: {
-    fontSize: moderateScale(13),
-    fontWeight: "800",
-    color: GameColors.success,
-  },
-  statusIcon: {
-    fontSize: moderateScale(16),
   },
   badge: {
     flex: 1,

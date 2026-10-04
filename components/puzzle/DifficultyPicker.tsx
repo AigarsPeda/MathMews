@@ -1,10 +1,11 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { GameColors, getPuzzleCoinReward } from "@/constants/game";
 import { PUZZLE_DIFFICULTIES } from "@/constants/puzzles";
 import { useDifficultyLabel } from "@/hooks/use-difficulty-label";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type DifficultyPickerProps = {
   selected: PuzzleDifficulty;

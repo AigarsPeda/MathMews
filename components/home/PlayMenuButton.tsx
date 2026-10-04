@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { CAT_PLAY_ACTIVITIES, getCatPlayActivity, type CatPlayActivity } from "@/constants/cat-play";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
@@ -16,13 +17,14 @@ export function PlayMenuButton({ disabled, onSelect }: Props) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const actions = CAT_PLAY_ACTIVITIES.map((activity) => ({
     id: activity.id,
-    title: `${activity.emoji} ${t(`home.playStyle.${activity.id}`)}`,
+    title: t(`home.playStyle.${activity.id}`),
+    icon: activity.icon,
     attributes: { disabled },
   }));
   const trigger = (
     <View style={[styles.button, size.width > 0 && size, disabled && styles.disabled]}>
-      <Text style={styles.emoji}>🎾</Text>
-      <Text style={styles.label}>{t("home.play")} ⌄</Text>
+      <AppIcon name="play" size={moderateScale(30)} />
+      <View style={styles.labelRow}><Text style={styles.label}>{t("home.play")}</Text><AppIcon name="chevron-down" size={moderateScale(13)} /></View>
     </View>
   );
 
@@ -53,6 +55,6 @@ const styles = StyleSheet.create({
     alignItems: "center", justifyContent: "center", paddingVertical: moderateScale(8), gap: 2,
   },
   disabled: { opacity: 0.55 },
-  emoji: { fontSize: moderateScale(24) },
+  labelRow: { flexDirection: "row", alignItems: "center", gap: 3 },
   label: { fontSize: moderateScale(15), fontWeight: "700", color: GameColors.text },
 });

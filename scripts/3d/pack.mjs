@@ -45,7 +45,8 @@ async function packPages(id,count){
    if(metadata.width!==frameSize||metadata.height!==frameSize)throw new Error(`Rerender HD frame ${frame}`);
    cells.push({input:walking?await sharp(frame).resize(cellSize,cellSize).png().toBuffer():frame,left:cell%columns*cellSize,top:Math.floor(cell/columns)*cellSize});
   }
-  await sharp({create:{width:cellSize*columns,height:cellSize*Math.ceil(cellsPerPage/columns),channels:4,background:'#00000000'}}).composite(cells).webp({quality:90,alphaQuality:100,effort:5}).toFile(path.join(out,'cat-pages',name));
+  // Keep plush grain within the mobile budget, with lossless whisker edges.
+  await sharp({create:{width:cellSize*columns,height:cellSize*Math.ceil(cellsPerPage/columns),channels:4,background:'#00000000'}}).composite(cells).webp({quality:83,alphaQuality:100,effort:5}).toFile(path.join(out,'cat-pages',name));
  }
  return pageCount;
 }

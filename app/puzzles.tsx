@@ -1,3 +1,6 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
 import { PuzzlePathItem } from "@/components/puzzle/PuzzlePathItem";
@@ -29,7 +32,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -142,7 +144,7 @@ export default function PuzzlesScreen() {
             accessibilityRole="button"
             accessibilityLabel={t("puzzlePath.a11yBack")}
           >
-            <Text style={styles.backText}>{t("common.back")}</Text>
+            <BackButtonLabel style={styles.backText} />
           </Pressable>
           <GameHeaderStats
             coins={wallet.coins}
@@ -218,7 +220,7 @@ export default function PuzzlesScreen() {
 
               {solvedCount >= puzzles.length ? (
                 <View style={styles.completeCard}>
-                  <Text style={styles.completeEmoji}>🎉</Text>
+                  <AppIcon name="sparkle" size={moderateScale(32) * 1.2} />
                   <Text style={styles.completeTitle}>
                     {t("puzzlePath.allNutsCracked", {
                       difficulty: difficultyLabelLower,
@@ -323,9 +325,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: moderateScale(6),
     marginTop: moderateScale(4),
-  },
-  completeEmoji: {
-    fontSize: moderateScale(32),
   },
   completeTitle: {
     fontSize: moderateScale(18),

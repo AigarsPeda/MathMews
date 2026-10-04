@@ -1,3 +1,5 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { PetDisplay } from "@/pet-display/components/PetDisplay";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors, LIFE_BUY_COST } from "@/constants/game";
@@ -5,7 +7,7 @@ import type { PetAnimationState, PetType } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type ResultOverlayProps = {
   visible: boolean;
@@ -69,9 +71,7 @@ export function ResultOverlay({
               coinType === "sparkle" && styles.sparkleCoinRow,
             ]}
           >
-            <Text style={styles.coinEmoji}>
-              {coinType === "sparkle" ? "✨" : "🪙"}
-            </Text>
+            <AppIcon name={coinType === "sparkle" ? "sparkle" : "coin"} size={moderateScale(28)} />
             <Text
               style={[
                 styles.coinText,
@@ -181,9 +181,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3EEFF",
     borderWidth: 2,
     borderColor: "#C9B6FF",
-  },
-  coinEmoji: {
-    fontSize: moderateScale(18),
   },
   coinText: {
     fontSize: moderateScale(16),

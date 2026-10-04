@@ -1,10 +1,11 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { getCatBedSource } from "@/constants/cat-beds";
 import type { CatBedId } from "@/constants/cat-beds";
 import { GameColors } from "@/constants/game";
 import { getBedStorePrice } from "@/utils/bed-store";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 type BedStoreCardProps = {
   bedId: CatBedId;

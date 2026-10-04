@@ -1,9 +1,10 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { GameColors } from "@/constants/game";
 import type { Puzzle } from "@/types/puzzle";
 import { getPuzzleType } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type PuzzleCardProps = {
   puzzle: Puzzle;

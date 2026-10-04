@@ -1,6 +1,6 @@
 export const visualHelpEn = {
   title: "Picture help",
-  subtitle: "A worked example for this puzzle. Always free.",
+  subtitle: "A separate example to help you solve this kind of puzzle. Always free.",
   lockedHint: "Unlock a short walkthrough that teaches how to think about this kind of problem.",
   unlockPrice: "{{cost}} coins — unlock forever",
   unlockButton: "Unlock picture help · {{cost}} 🪙",
@@ -14,6 +14,31 @@ export const visualHelpEn = {
   a11yPrevStep: "Previous step",
   a11yNextStep: "Next step",
   a11yGoToStep: "Go to step {{step}} of {{total}}",
+  oddRange: {
+    s0: "Example: find an odd number greater than 4 and less than 7.",
+    s1: "5 and 6 fit the range. An odd number leaves one item without a pair.",
+    s2: "5 fits both clues. Try checking every clue in your puzzle too.",
+  },
+  allButExample: {
+    s0: "Example: there are 6 sheep. All but 2 leave. How many stay?",
+    s1: "All but 2 means 2 stay, so 4 leave.",
+    s2: "2 sheep stay. Look for the number that did not leave.",
+  },
+  placeValueExample: {
+    s0: "Example: the tens digit is 3. The ones digit is twice the tens digit.",
+    s1: "Twice 3 is 6, so the ones digit is 6.",
+    s2: "3 tens and 6 ones make 36. Use your puzzle's clues the same way.",
+  },
+  fractionLeft: {
+    s0: "Example: a pizza has 6 equal slices. Two friends eat 1 slice and 2 slices.",
+    s1: "They eat 3 slices altogether. Subtract to find the 3 slices left.",
+    s2: "3 of the 6 slices are left, so the fraction is 3/6.",
+  },
+  percentExample: {
+    s0: "Example: a toy costs 20 coins and its price goes up by 25%.",
+    s1: "25% is one quarter. Divide 20 by 4 to find the increase of 5 coins.",
+    s2: "Add the increase to the starting price. The example's new price is 25 coins.",
+  },
   easy01: {
     s0: "Start with a group of things.",
     s1: "Some are taken away — cross them off in your head.",

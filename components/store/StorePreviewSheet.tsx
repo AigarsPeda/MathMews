@@ -1,3 +1,4 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { PetRoomBackground } from "@/components/pet/PetRoomBackground";
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
@@ -15,7 +16,7 @@ import { GameColors } from "@/constants/game";
 import type { PetProfile, Progress } from "@/types/game";
 import type { StorePrice } from "@/types/store";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 export type StorePreviewItem = { kind: NonNullable<Progress["storeGoal"]>["kind"]; id: string; name: string; price: StorePrice; owned: boolean; onBuy: () => void };
 

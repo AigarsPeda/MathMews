@@ -1,6 +1,6 @@
 export const visualHelpLv = {
   title: "Ilustrēta palīdzība",
-  subtitle: "Šī uzdevuma risinājums. Vienmēr bez maksas.",
+  subtitle: "Cits piemērs, kas palīdz saprast, kā risināt šāda veida uzdevumu. Vienmēr bez maksas.",
   lockedHint: "Atbloķē īsu skaidrojumu, kas iemāca, kā domāt par šāda veida uzdevumu.",
   unlockPrice: "{{cost}} monētas — atbloķē uz visiem laikiem",
   unlockButton: "Atbloķēt ilustrāciju · {{cost}} 🪙",
@@ -14,6 +14,31 @@ export const visualHelpLv = {
   a11yPrevStep: "Iepriekšējais solis",
   a11yNextStep: "Nākamais solis",
   a11yGoToStep: "Doties uz {{step}}. soli no {{total}}",
+  oddRange: {
+    s0: "Piemērs: atrodi nepāra skaitli, kas ir lielāks par 4 un mazāks par 7.",
+    s1: "5 un 6 ir šajā intervālā. Nepāra skaitlim viens priekšmets paliek bez pāra.",
+    s2: "5 atbilst abām norādēm. Arī savā uzdevumā pārbaudi katru norādi.",
+  },
+  allButExample: {
+    s0: "Piemērs: ir 6 aitas. Visas, izņemot 2, aiziet. Cik paliek?",
+    s1: "Visas, izņemot 2, nozīmē, ka 2 paliek, bet 4 aiziet.",
+    s2: "Paliek 2 aitas. Meklē skaitu, kas neaizgāja.",
+  },
+  placeValueExample: {
+    s0: "Piemērs: desmitu cipars ir 3. Vienu cipars ir divreiz lielāks.",
+    s1: "Divreiz 3 ir 6, tātad vienu cipars ir 6.",
+    s2: "3 desmiti un 6 vieni veido 36. Tāpat izmanto sava uzdevuma norādes.",
+  },
+  fractionLeft: {
+    s0: "Piemērs: picai ir 6 vienādas šķēles. Divi draugi apēd 1 šķēli un 2 šķēles.",
+    s1: "Kopā viņi apēd 3 šķēles. Atņem tās, lai atrastu atlikušās 3 šķēles.",
+    s2: "Paliek 3 no 6 šķēlēm, tātad atlikusī daļa ir 3/6.",
+  },
+  percentExample: {
+    s0: "Piemērs: rotaļlieta maksā 20 monētas, un tās cena pieaug par 25%.",
+    s1: "25% ir viena ceturtdaļa. Dali 20 ar 4, lai iegūtu pieaugumu par 5 monētām.",
+    s2: "Pieskaiti pieaugumu sākuma cenai. Piemērā jaunā cena ir 25 monētas.",
+  },
   easy01: {
     s0: "Sāc ar lietu grupu.",
     s1: "Dažas tiek aizņemtas — izdomā, ka tās pazūd.",

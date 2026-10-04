@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
@@ -21,9 +22,7 @@ export function CoinCounter({
 
   const content = (
     <>
-      <Text style={[styles.coinEmoji, compact && styles.compactText]}>
-        🪙
-      </Text>
+      <AppIcon name="coin" size={moderateScale(compact ? 22 : 25)} />
       <Text style={[styles.coinValue, compact && styles.compactText]}>
         {coins}
       </Text>
@@ -57,7 +56,7 @@ export function CoinCounter({
       {coinChip}
       {streak > 0 && (
         <View style={[styles.pill, styles.streakPill]}>
-          <Text style={styles.streakEmoji}>🔥</Text>
+          <AppIcon name="flame" size={moderateScale(16) * 1.2} />
           <Text style={styles.streakValue}>
             {t("economy.streakDay", { count: streak })}
           </Text>
@@ -84,9 +83,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: GameColors.coin,
   },
-  coinEmoji: {
-    fontSize: moderateScale(18),
-  },
   coinValue: {
     fontSize: moderateScale(18),
     fontWeight: "700",
@@ -98,9 +94,6 @@ const styles = StyleSheet.create({
   },
   streakPill: {
     borderColor: GameColors.primary,
-  },
-  streakEmoji: {
-    fontSize: moderateScale(16),
   },
   streakValue: {
     fontSize: moderateScale(16),

@@ -1,3 +1,5 @@
+import { AppIcon } from "@/components/ui/AppIcon";
+import type { AppIconName } from "@/constants/app-icons";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
@@ -34,13 +36,13 @@ type StoreTabBarProps = {
 function StoreTabButton({
   tab,
   label,
-  emoji,
+  icon,
   isActive,
   onPress,
 }: {
   tab: StoreTab;
   label: string;
-  emoji: string;
+  icon: AppIconName;
   isActive: boolean;
   onPress: (tab: StoreTab) => void;
 }) {
@@ -52,7 +54,7 @@ function StoreTabButton({
       accessibilityState={{ selected: isActive }}
       accessibilityLabel={label}
     >
-      <Text style={styles.tabEmoji}>{emoji}</Text>
+      <AppIcon name={icon} size={moderateScale(26)} />
       <Text
         style={[styles.tabText, isActive && styles.tabTextActive]}
         numberOfLines={2}
@@ -69,13 +71,13 @@ export function StoreTabBar({ active, onChange }: StoreTabBarProps) {
   const { t } = useTranslation();
 
   const tabs = [
-    ["rooms", "🏠", "store.tabRooms"], ["beds", "🛏️", "store.tabBeds"],
-    ["toys", "🧸", "store.tabToys"], ["living", "🪴", "store.tabDecorations"],
-    ["colors", "🐱", "store.tabColors"],
+    ["rooms", "home", "store.tabRooms"], ["beds", "bed", "store.tabBeds"],
+    ["toys", "play", "store.tabToys"], ["living", "plant", "store.tabDecorations"],
+    ["colors", "cat", "store.tabColors"],
   ] as const;
   const primary = ["rooms", "beds", "toys", "colors"].includes(active) ? active : "living";
   return <View style={styles.row} accessibilityRole="tablist">
-    {tabs.map(([tab, emoji, key]) => <StoreTabButton key={tab} tab={tab} emoji={emoji}
+    {tabs.map(([tab, icon, key]) => <StoreTabButton key={tab} tab={tab} icon={icon}
       label={t(key)} isActive={primary === tab} onPress={onChange} />)}
   </View>;
 }
@@ -109,9 +111,6 @@ const styles = StyleSheet.create({
   tabActive: {
     borderColor: GameColors.secondary,
     backgroundColor: "#E8FAF8",
-  },
-  tabEmoji: {
-    fontSize: moderateScale(18),
   },
   tabText: {
     fontSize: moderateScale(11),

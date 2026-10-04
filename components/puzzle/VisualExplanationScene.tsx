@@ -1,8 +1,9 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { FractionPieChart } from "@/components/puzzle/FractionPieChart";
 import { GameColors } from "@/constants/game";
 import type { VisualScene } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type VisualExplanationSceneProps = {
   scene: VisualScene;

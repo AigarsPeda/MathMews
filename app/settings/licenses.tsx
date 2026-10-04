@@ -1,3 +1,5 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { LicenseList } from "@/components/settings/LicenseList";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
@@ -5,7 +7,7 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function triggerHaptic() {
@@ -32,7 +34,7 @@ export default function LicensesScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}
         >
-          <Text style={styles.backText}>{t("common.back")}</Text>
+          <BackButtonLabel style={styles.backText} />
         </Pressable>
 
         <Text style={styles.title}>{t("settings.licenses")}</Text>

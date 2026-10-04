@@ -1,3 +1,4 @@
+import { IconText as Text } from "@/components/ui/IconText";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { getToyStorePreviewSize } from "@/constants/cat-toys";
 import type { CatToyId } from "@/constants/cat-toys";
@@ -5,7 +6,7 @@ import { GameColors } from "@/constants/game";
 import { getToyStorePrice } from "@/utils/toy-store";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type ToyStoreCardProps = {
   toyId: CatToyId;

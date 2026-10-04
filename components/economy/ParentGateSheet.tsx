@@ -1,3 +1,4 @@
+import { AppIcon } from "@/components/ui/AppIcon";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors } from "@/constants/game";
 import {
@@ -63,7 +64,7 @@ export function ParentGateSheet({
   return (
     <AppBottomSheet visible={visible} onClose={onClose}>
       <View style={styles.card}>
-        <Text style={styles.emoji}>🧑‍🧒</Text>
+        <AppIcon name="parent" size={moderateScale(32) * 1.2} />
         <Text style={styles.title}>{t("parentGate.title")}</Text>
         <Text style={styles.subtitle}>{t("parentGate.subtitle")}</Text>
 
@@ -111,9 +112,6 @@ const styles = StyleSheet.create({
     paddingTop: moderateScale(8),
     paddingHorizontal: moderateScale(20),
     gap: moderateScale(10),
-  },
-  emoji: {
-    fontSize: moderateScale(32),
   },
   title: {
     fontSize: moderateScale(22),

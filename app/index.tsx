@@ -1,3 +1,5 @@
+import { IconText as Text } from "@/components/ui/IconText";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { getStoreGoalDetails } from "@/utils/store-goal";
 import { useRoomEditor } from "@/hooks/use-room-editor";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
@@ -37,22 +39,19 @@ import {
   findPlacedToyByInstance,
 } from "@/utils/room-placement";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
+import { usePetSpeech } from "@/hooks/use-pet-speech";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Image,
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
-
-const STORE_ICON = require("@/assets/images/store-icon.png");
 
 function triggerHaptic() {
   if (Platform.OS !== "web") {
@@ -97,9 +96,7 @@ export default function HomeScreen() {
     scalePlacedDecoration,
   } = useGame();
   const roomEditor = useRoomEditor(pet, setPet);
-  const [actionSpeech, setActionSpeech] = useState<string | null>(null);
   const careActionPendingRef = useRef(false);
-  const speechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     playback,
@@ -112,25 +109,6 @@ export default function HomeScreen() {
   useEffect(() => {
     if (!isCareBlocked && !isCareAnimationPlaying) careActionPendingRef.current = false;
   }, [isCareBlocked, isCareAnimationPlaying]);
-
-  const showSpeech = useCallback((text: string, durationMs = 2800) => {
-    if (speechTimerRef.current) {
-      clearTimeout(speechTimerRef.current);
-    }
-    setActionSpeech(text);
-    speechTimerRef.current = setTimeout(() => {
-      setActionSpeech(null);
-      speechTimerRef.current = null;
-    }, durationMs);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (speechTimerRef.current) {
-        clearTimeout(speechTimerRef.current);
-      }
-    };
-  }, []);
 
   const contextualSpeech = useMemo(
     () =>
@@ -154,7 +132,7 @@ export default function HomeScreen() {
     ],
   );
 
-  const speechMessage = actionSpeech ?? contextualSpeech;
+  const { speechMessage, showSpeech } = usePetSpeech(contextualSpeech);
 
   const rejectCareAction = useCallback(
     (text: string) => {
@@ -465,12 +443,7 @@ export default function HomeScreen() {
               onPress={handleOpenStore}
               accessibilityLabel={t("home.a11yStore")}
             >
-              <Image
-                source={STORE_ICON}
-                style={styles.headerStoreIcon}
-                resizeMode="contain"
-                accessibilityIgnoresInvertColors
-              />
+              <AppIcon name="store" size={moderateScale(40)} />
             </HeaderChip>
           ) : (
             <View style={styles.headerSideSlot} />
@@ -486,7 +459,7 @@ export default function HomeScreen() {
               onPress={handleOpenSettings}
               accessibilityLabel={t("home.a11ySettings")}
             >
-              <Text style={styles.headerIconEmoji}>⚙️</Text>
+              <AppIcon name="settings" size={moderateScale(18) * 1.2} />
             </HeaderChip>
           </View>
         </View>
@@ -575,7 +548,7 @@ export default function HomeScreen() {
               accessibilityLabel={t("home.a11yPet")}
               accessibilityState={{ disabled: petAnimating }}
             >
-              <Text style={styles.actionEmoji}>🐾</Text>
+              <AppIcon name="paw" size={moderateScale(24) * 1.2} />
               <Text style={styles.actionLabel}>{t("home.pet")}</Text>
             </Pressable>
 
@@ -591,7 +564,7 @@ export default function HomeScreen() {
               accessibilityLabel={t("home.a11yFeed", { cost: FEED_COST })}
               accessibilityState={{ disabled: isCareAnimationPlaying }}
             >
-              <Text style={styles.actionEmoji}>🍖</Text>
+              <AppIcon name="feed" size={moderateScale(24) * 1.2} />
               <Text style={styles.actionLabel}>{t("home.feed")}</Text>
               <Text style={styles.actionHint}>
                 {!canFeedForHunger ? t("home.alreadyFull") : !canAffordFeed ? t("store.needCoins", { cost: FEED_COST }) : isCareBlocked || isCareAnimationPlaying ? t("home.careBusy") : t("home.feedCost", { cost: FEED_COST })}
@@ -612,7 +585,7 @@ export default function HomeScreen() {
             accessibilityRole="button"
             accessibilityLabel={t("home.a11ySolve")}
           >
-            <Text style={styles.primaryBtnText}>{t("home.solvePuzzle")}</Text>
+            <View style={styles.primaryTitle}><AppIcon name="puzzles" size={moderateScale(28)} /><Text style={styles.primaryBtnText}>{t("home.solvePuzzle")}</Text></View>
             <Text style={styles.primaryBtnHint}>
               {savingGoal ? t("store.goalProgress", { name: savingGoal.name, remaining: savingGoal.remaining }) : t("home.solvePuzzleHint", { name: pet.name })}
             </Text>
@@ -662,13 +635,6 @@ const styles = StyleSheet.create({
     gap: moderateScale(6),
     flexShrink: 0,
   },
-  headerIconEmoji: {
-    fontSize: moderateScale(18),
-  },
-  headerStoreIcon: {
-    width: moderateScale(HEADER_CHIP_SIZE),
-    height: moderateScale(HEADER_CHIP_SIZE),
-  },
   stageWrap: {
     flex: 1,
     minHeight: 0,
@@ -697,9 +663,6 @@ const styles = StyleSheet.create({
   actionDisabled: {
     opacity: 0.55,
   },
-  actionEmoji: {
-    fontSize: moderateScale(24),
-  },
   actionLabel: {
     fontSize: moderateScale(15),
     fontWeight: "700",
@@ -710,6 +673,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: GameColors.textMuted,
   },
+  primaryTitle: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: moderateScale(6) },
   primaryBtn: {
     backgroundColor: GameColors.primary,
     borderRadius: moderateScale(20),

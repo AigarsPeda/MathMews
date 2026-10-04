@@ -1,0 +1,48 @@
+{
+  "status": "review-only",
+  "renderer": "Blender",
+  "size": 512,
+  "source": "source/starter-icons.blend",
+  "icons": [
+    {
+      "id": "paw",
+      "label": "Pet",
+      "file": "paw.png"
+    },
+    {
+      "id": "feed",
+      "label": "Feed",
+      "file": "feed.png"
+    },
+    {
+      "id": "play",
+      "label": "Play",
+      "file": "play.png"
+    },
+    {
+      "id": "sofa",
+      "label": "Sofa",
+      "file": "sofa.png"
+    },
+    {
+      "id": "sleep",
+      "label": "Sleep",
+      "file": "sleep.png"
+    },
+    {
+      "id": "puzzles",
+      "label": "Puzzles",
+      "file": "puzzles.png"
+    },
+    {
+      "id": "settings",
+      "label": "Settings",
+      "file": "settings.png"
+    },
+    {
+      "id": "home",
+      "label": "Home",
+      "file": "home.png"
+    }
+  ]
+}
