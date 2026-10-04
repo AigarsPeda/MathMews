@@ -16,7 +16,20 @@
     ],
     "correctIndex": 0,
     "hint": "Sāc ar 12 un atņem 4.",
-    "explanation": "12 − 4 = 8 āboli palika."
+    "explanation": "12 − 4 = 8 āboli palika.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🍎",
+        "count": 12
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🍎",
+        "count": 12,
+        "removed": 4
+      }
+    }
   },
   {
     "id": "easy-pat-1",
@@ -62,7 +75,19 @@
     ],
     "correctIndex": 0,
     "hint": "«Visas, izņemot 9» nozīmē, ka 9 neaizbēga.",
-    "explanation": "9 aitas palika pie zemnieka."
+    "explanation": "9 aitas palika pie zemnieka.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🐑",
+        "count": 17
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🐑",
+        "count": 9
+      }
+    }
   },
   {
     "id": "easy-fn-1",
@@ -104,7 +129,28 @@
     ],
     "correctIndex": 1,
     "hint": "Saskaiti sarkanos un zilos balonus.",
-    "explanation": "5 + 3 = 8 baloni."
+    "explanation": "5 + 3 = 8 baloni.",
+    "visualHelp": {
+      "scene": {
+        "kind": "groups",
+        "emoji": "🎈",
+        "groups": [
+          {
+            "count": 5,
+            "color": "#C73948"
+          },
+          {
+            "count": 3,
+            "color": "#23766F"
+          }
+        ]
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🎈",
+        "count": 8
+      }
+    }
   },
   {
     "id": "easy-ord-1",
@@ -150,7 +196,20 @@
     ],
     "correctIndex": 1,
     "hint": "No 10 atņem apēstos cepumus.",
-    "explanation": "10 − 3 = 7 cepumi palika."
+    "explanation": "10 − 3 = 7 cepumi palika.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🍪",
+        "count": 10
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🍪",
+        "count": 10,
+        "removed": 3
+      }
+    }
   },
   {
     "id": "easy-cmp-1",
@@ -187,7 +246,23 @@
     ],
     "correctIndex": 1,
     "hint": "Reizini rindas ar rotaļlietām katrā rindā.",
-    "explanation": "2 × 4 = 8 rotaļlietas."
+    "explanation": "2 × 4 = 8 rotaļlietas.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 2,
+        "cols": 4,
+        "filled": 8,
+        "emoji": "🧸"
+      },
+      "worked": {
+        "kind": "grid",
+        "rows": 2,
+        "cols": 4,
+        "filled": 8,
+        "emoji": "🧸"
+      }
+    }
   },
   {
     "id": "easy-op-1",
@@ -198,7 +273,7 @@
       8
     ],
     "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
+    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
     "payload": {
       "start": 10,
       "target": 14,
@@ -213,8 +288,8 @@
         }
       ]
     },
-    "hint": "Try one operator at a time.",
-    "explanation": "Start 10, reach 14."
+    "hint": "Izvēlies vienu darbību katrā solī.",
+    "explanation": "Sāc ar 10 un iegūsti 14."
   },
   {
     "id": "easy-mc-06",
@@ -225,15 +300,15 @@
       8
     ],
     "type": "multiple_choice",
-    "question": "Es esmu nepāra skaitlis. Esmu lielāks par 10, bet mazāks par 15. Kas es esmu?",
+    "question": "Es esmu nepāra skaitlis, lielāks par 10 un mazāks par 13. Kas es esmu?",
     "choices": [
       "11",
       "12",
       "14"
     ],
     "correctIndex": 0,
-    "hint": "Uzskaiti nepāra skaitļus starp 10 un 15.",
-    "explanation": "Der 11 un 13, bet izvēlēs ir tikai 11."
+    "hint": "Pārbaudi 11 un 12. Kurš ir nepāra skaitlis?",
+    "explanation": "11 ir nepāra skaitlis. 12 ir pāra skaitlis."
   },
   {
     "id": "easy-tgt-1",
@@ -244,7 +319,7 @@
       8
     ],
     "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
+    "question": "Izvēlies +, −, × un ÷, lai iegūtu mērķa skaitli!",
     "payload": {
       "numbers": [
         2,
@@ -257,8 +332,8 @@
         "+"
       ]
     },
-    "hint": "Think about order of operations.",
-    "explanation": "Build 9 from 2, 3, 4."
+    "hint": "Vispirms reizini un dali, pēc tam saskaiti un atņem.",
+    "explanation": "2 + 3 + 4 = 9."
   },
   {
     "id": "easy-frac-1",
@@ -269,13 +344,13 @@
       8
     ],
     "type": "fraction_build",
-    "question": "Create this fraction!",
+    "question": "Izveido šo daļu!",
     "payload": {
       "numerator": 1,
       "denominator": 4
     },
-    "hint": "Color 1 piece(s) out of 4 equal parts.",
-    "explanation": "1/4 means 1 piece(s) out of 4."
+    "hint": "Iekrāso 1 no 4 vienādām daļām.",
+    "explanation": "1/4 nozīmē 1 no 4 vienādām daļām."
   },
   {
     "id": "easy-tf-1",
@@ -444,7 +519,7 @@
       8
     ],
     "type": "fraction_equivalent",
-    "question": "Which fraction is the same amount?",
+    "question": "Kura daļa apzīmē to pašu daudzumu?",
     "payload": {
       "numerator": 1,
       "denominator": 2,
@@ -455,7 +530,7 @@
       ]
     },
     "correctIndex": 2,
-    "hint": "Same amount means the same part of a whole.",
+    "hint": "Vienādas daļas apzīmē vienādu veseluma daļu.",
     "explanation": "1/2 = 2/4."
   },
   {
@@ -552,7 +627,28 @@
     ],
     "correctIndex": 0,
     "hint": "Saskaiti abas gliemežvāku grupas.",
-    "explanation": "6 + 4 = 10 gliemežvāki."
+    "explanation": "6 + 4 = 10 gliemežvāki.",
+    "visualHelp": {
+      "scene": {
+        "kind": "groups",
+        "emoji": "🐚",
+        "groups": [
+          {
+            "count": 6,
+            "color": "#C73948"
+          },
+          {
+            "count": 4,
+            "color": "#23766F"
+          }
+        ]
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🐚",
+        "count": 10
+      }
+    }
   },
   {
     "id": "easy-cmp-2",
@@ -581,7 +677,7 @@
       8
     ],
     "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
+    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
     "payload": {
       "start": 20,
       "target": 10,
@@ -604,7 +700,7 @@
       8
     ],
     "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
+    "question": "Izvēlies +, −, × un ÷, lai iegūtu mērķa skaitli!",
     "payload": {
       "numbers": [
         10,
@@ -613,12 +709,12 @@
       ],
       "target": 5,
       "solution": [
-        "−",
-        "÷"
+        "-",
+        "-"
       ]
     },
-    "hint": "Think about order of operations.",
-    "explanation": "Build 5 from 10, 2, 3."
+    "hint": "Vispirms reizini un dali, pēc tam saskaiti un atņem.",
+    "explanation": "10 - 2 - 3 = 5."
   },
   {
     "id": "easy-frac-2",
@@ -629,13 +725,13 @@
       8
     ],
     "type": "fraction_build",
-    "question": "Create this fraction!",
+    "question": "Izveido šo daļu!",
     "payload": {
       "numerator": 2,
       "denominator": 4
     },
-    "hint": "Color 2 piece(s) out of 4 equal parts.",
-    "explanation": "2/4 means 2 piece(s) out of 4."
+    "hint": "Iekrāso 2 no 4 vienādām daļām.",
+    "explanation": "2/4 nozīmē 2 no 4 vienādām daļām."
   },
   {
     "id": "easy-tf-2",
@@ -718,12 +814,12 @@
       ],
       "target": 9,
       "correctIndices": [
-        1,
-        3
+        0,
+        4
       ]
     },
     "hint": "Meklē pāri, kas dod 9.",
-    "explanation": "6 + 1 = 9."
+    "explanation": "4 + 5 = 9."
   },
   {
     "id": "easy-fix-2",

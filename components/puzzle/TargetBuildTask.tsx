@@ -66,12 +66,11 @@ export function TargetBuildTask({
                     styles.operatorSlot,
                     activeSlot === index && !answered && styles.operatorSlotActive,
                     answered &&
-                      selectedOperators[index] === puzzle.payload.solution[index] &&
                       isCorrect &&
                       styles.operatorSlotCorrect,
                     answered &&
                       selectedOperators[index] !== null &&
-                      selectedOperators[index] !== puzzle.payload.solution[index] &&
+                      !isCorrect &&
                       styles.operatorSlotWrong,
                   ]}
                   disabled={answered}

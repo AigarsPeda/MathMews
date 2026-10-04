@@ -4,7 +4,7 @@ import { GameColors } from "@/constants/game";
 import { getVisualExplanation } from "@/constants/visual-explanations";
 import type { Puzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Platform,
@@ -26,37 +26,16 @@ type VisualHelpSheetProps = {
 };
 
 export function VisualHelpSheet({
-  cost,
-  coins,
   visible,
   puzzle,
-  unlocked,
   onClose,
-  onPurchase,
 }: VisualHelpSheetProps) {
   const { t } = useTranslation();
   const [progress, setProgress] = useState(0);
   const explanation = getVisualExplanation(puzzle);
-  const [isUnlocked, setIsUnlocked] = useState(unlocked);
-
-  useEffect(() => {
-    if (visible) {
-      setProgress(0);
-      setIsUnlocked(unlocked);
-    }
-  }, [visible, unlocked, puzzle.id]);
-
-  const handlePurchase = useCallback(() => {
-    const ok = onPurchase();
-    if (ok) {
-      setIsUnlocked(true);
-    }
-  }, [onPurchase]);
-
-  if (!explanation) return null;
-
-  const canAfford = coins >= cost;
-
+  const key = `${visible}-${puzzle.id}`;
+  const [previousKey, setPreviousKey] = useState(key);
+  if (key !== previousKey) { setPreviousKey(key); setProgress(0); }
   return (
     <AppBottomSheet visible={visible} onClose={onClose} expanded>
       <ScrollView
@@ -71,43 +50,10 @@ export function VisualHelpSheet({
           <Text style={styles.title}>{t("visualHelp.title")}</Text>
           <Text style={styles.subtitle}>{t("visualHelp.subtitle")}</Text>
 
-          {isUnlocked ? (
-            <VisualExplanationPlayer
-              explanation={explanation}
-              progress={progress}
-              onProgressChange={setProgress}
-            />
-          ) : (
-            <View style={styles.lockCard}>
-              <Text style={styles.lockEmoji}>🔒</Text>
-              <Text style={styles.lockText}>{t("visualHelp.lockedHint")}</Text>
-              <Text style={styles.lockPrice}>
-                {t("visualHelp.unlockPrice", { cost })}
-              </Text>
-            </View>
-          )}
-
-          {!isUnlocked ? (
-            canAfford ? (
-              <Pressable
-                style={styles.buyBtn}
-                onPress={handlePurchase}
-                accessibilityRole="button"
-                accessibilityLabel={t("visualHelp.a11yUnlock", { cost })}
-              >
-                <Text style={styles.buyBtnText}>
-                  {t("visualHelp.unlockButton", { cost })}
-                </Text>
-              </Pressable>
-            ) : (
-              <Text style={styles.cantBuy}>
-                {t("visualHelp.needCoins", { cost, coins })}
-              </Text>
-            )
-          ) : null}
+          <VisualExplanationPlayer explanation={explanation} progress={progress} onProgressChange={setProgress} />
 
           <Pressable
-            style={[styles.closeBtn, isUnlocked && styles.closeBtnPrimary]}
+            style={[styles.closeBtn, styles.closeBtnPrimary]}
             onPress={onClose}
             accessibilityRole="button"
             accessibilityLabel={t("common.close")}
@@ -115,10 +61,10 @@ export function VisualHelpSheet({
             <Text
               style={[
                 styles.closeBtnText,
-                isUnlocked && styles.closeBtnTextPrimary,
+                styles.closeBtnTextPrimary,
               ]}
             >
-              {isUnlocked ? t("common.gotIt") : t("common.close")}
+              {t("common.gotIt")}
             </Text>
           </Pressable>
         </View>

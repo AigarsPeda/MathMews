@@ -5,7 +5,6 @@ import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
   Platform,
   Pressable,
   StyleSheet,

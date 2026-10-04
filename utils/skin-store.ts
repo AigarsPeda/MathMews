@@ -1,3 +1,4 @@
+import STORE_PRICES from "@/data/store-prices.json";
 import {
   CAT_SKIN_IDS,
   isCatSkinId,
@@ -5,19 +6,15 @@ import {
 } from "@/constants/cat-skins";
 import type { SkinPurchaseResult } from "@/types/store";
 
-const SKIN_ORDER: CatSkinId[] = ["orange", "grey", "white"];
 
-function skinIndex(skinId: CatSkinId): number {
-  const index = SKIN_ORDER.indexOf(skinId);
-  return index >= 0 ? index : 0;
-}
+
 
 /** Store pricing — starter color is unlocked at onboarding, not sold free here. */
 export function getSkinStorePrice(
   skinId: CatSkinId,
 ): { kind: "coins"; amount: number } {
-  const index = skinIndex(skinId);
-  return { kind: "coins", amount: 20 + index * 10 };
+  const amount = STORE_PRICES.skin[skinId];
+  return { kind: "coins", amount };
 }
 
 export function isSkinUnlocked(

@@ -1,3 +1,4 @@
+import { applyMathOperator } from "@/utils/puzzle-math";
 import type { Puzzle } from "@/types/puzzle";
 import type {
   VisualExplanation,
@@ -14,15 +15,91 @@ export function getVisualHelpTemplateKey(puzzle: Puzzle): string {
   return type;
 }
 
-export function getVisualExplanation(puzzle: Puzzle): VisualExplanation | null {
-  const template = VISUAL_TEMPLATES[getVisualHelpTemplateKey(puzzle)];
-  if (!template) return null;
-  return { puzzleId: puzzle.id, keyframes: template };
+export function getVisualExplanation(puzzle: Puzzle): VisualExplanation {
+  let scene: VisualScene = { kind: "equation", lines: [puzzle.question] };
+  let worked: VisualScene = { kind: "equation", lines: [puzzle.explanation] };
+  switch (puzzle.type) {
+    case "target_build": {
+      const expression = puzzle.payload.numbers.map((number, i) => `${number}${puzzle.payload.solution[i] ? ` ${puzzle.payload.solution[i]} ` : ""}`).join("");
+      scene = { kind: "equation", lines: [puzzle.payload.numbers.join("  ?  "), `= ${puzzle.payload.target}`] };
+      worked = { kind: "equation", lines: [`${expression} = ${puzzle.payload.target}`, puzzle.explanation] };
+      break;
+    }
+    case "operation_path": {
+      let value = puzzle.payload.start;
+      const lines = puzzle.payload.steps.map(step => { const before = value; value = applyMathOperator(value, step.operand, step.operator)!; return `${before} ${step.operator} ${step.operand} = ${value}`; });
+      worked = { kind: "equation", lines };
+      break;
+    }
+    case "fraction_build":
+    case "fraction_equivalent": {
+      const { numerator, denominator } = puzzle.payload;
+      scene = { kind: "fraction", numerator: 0, denominator };
+      worked = { kind: "fraction", numerator, denominator };
+      break;
+    }
+    case "number_line": {
+      const { min, max, start, correctValue } = puzzle.payload;
+      scene = { kind: "numberline", min, max, markers: [start], highlight: start };
+      worked = { kind: "numberline", min, max, markers: [...new Set([start, correctValue])], highlight: correctValue };
+      break;
+    }
+    case "order_numbers":
+      scene = { kind: "sequence", values: puzzle.payload.numbers };
+      worked = { kind: "sequence", values: puzzle.payload.correctOrder };
+      break;
+    case "pattern_next":
+      scene = { kind: "sequence", values: [...puzzle.payload.sequence, "?"] };
+      worked = { kind: "sequence", values: [...puzzle.payload.sequence, Number(puzzle.payload.choices[puzzle.correctIndex])] };
+      break;
+    case "pair_sum": {
+      const { numbers, correctIndices, target } = puzzle.payload;
+      scene = { kind: "sequence", values: numbers };
+      worked = { kind: "equation", lines: [`${numbers[correctIndices[0]]} + ${numbers[correctIndices[1]]} = ${target}`] };
+      break;
+    }
+    case "balance":
+      scene = { kind: "equation", lines: [`${puzzle.payload.leftDisplay} = ${puzzle.payload.rightValue}`] };
+      worked = { kind: "equation", lines: [`${puzzle.payload.leftDisplay.replace("?", puzzle.payload.choices[puzzle.correctIndex])} = ${puzzle.payload.rightValue}`, puzzle.explanation] };
+      break;
+    case "function_machine":
+      scene = { kind: "sequence", values: [puzzle.payload.input, "?", puzzle.payload.output] };
+      worked = { kind: "equation", lines: [`${puzzle.payload.input} → ${puzzle.payload.choices[puzzle.correctIndex]} → ${puzzle.payload.output}`] };
+      break;
+    case "compare":
+      scene = { kind: "equation", lines: [puzzle.payload.optionA, puzzle.payload.optionB] };
+      break;
+    case "fix_mistake":
+      scene = { kind: "equation", lines: puzzle.payload.wrongWork };
+      worked = { kind: "equation", lines: [puzzle.payload.choices[puzzle.correctIndex], puzzle.explanation] };
+      break;
+    case "estimate":
+      scene = { kind: "equation", lines: [puzzle.payload.expression] };
+      worked = { kind: "equation", lines: [puzzle.payload.choices[puzzle.correctIndex], puzzle.explanation] };
+      break;
+    case "fraction_match":
+      scene = { kind: "fraction", ...puzzle.payload.pairs[0] };
+      worked = { kind: "equation", lines: puzzle.payload.pairs.map(pair => `${pair.numerator}/${pair.denominator}`) };
+      break;
+    case "true_false":
+      scene = { kind: "equation", lines: [puzzle.payload.statement] };
+      break;
+    case "fair_share": {
+      const { items, people, emoji } = puzzle.payload;
+      scene = { kind: "items", emoji, count: items };
+      worked = { kind: "groups", emoji, groups: [...Array.from({ length: people }, () => ({ count: Math.floor(items / people), color: "#247A3C" })), ...(items % people ? [{ count: items % people, color: "#99501A" }] : [])] };
+      break;
+    }
+  }
+  if (puzzle.visualHelp) { scene = puzzle.visualHelp.scene; worked = puzzle.visualHelp.worked; }
+  return { puzzleId: puzzle.id, keyframes: [
+    { at: 0, captionKey: puzzle.question, scene },
+    { at: 0.5, captionKey: puzzle.hint, scene: { kind: "equation", lines: [puzzle.hint] } },
+    { at: 1, captionKey: puzzle.explanation, scene: worked },
+  ] };
 }
 
-export function hasVisualExplanation(puzzle: Puzzle): boolean {
-  return getVisualHelpTemplateKey(puzzle) in VISUAL_TEMPLATES;
-}
+export function hasVisualExplanation(_puzzle: Puzzle): boolean { return true; }
 
 type InterpolatedFrame = {
   captionKey: string;
@@ -183,357 +260,3 @@ export function progressForVisualHelpStep(
   const clampedIndex = Math.max(0, Math.min(stepIndex, stepCount - 1));
   return clampedIndex / (stepCount - 1);
 }
-
-type KeyframeInput = {
-  puzzleKey: string;
-  scene: VisualScene;
-};
-
-function kf(puzzleKey: string, scene: VisualScene): KeyframeInput {
-  return { puzzleKey, scene };
-}
-
-function buildKeyframes(inputs: KeyframeInput[]): VisualKeyframe[] {
-  const count = inputs.length;
-  return inputs.map((input, index) => ({
-    at: count <= 1 ? 0 : index / (count - 1),
-    captionKey: `visualHelp.${input.puzzleKey}.s${index}`,
-    scene: input.scene,
-  }));
-}
-
-const VISUAL_TEMPLATES: Record<string, VisualKeyframe[]> = {
-  "multiple_choice-easy": buildKeyframes([
-    kf("multipleChoiceEasy", { kind: "items", emoji: "🍎", count: 8 }),
-    kf("multipleChoiceEasy", {
-      kind: "items",
-      emoji: "🍎",
-      count: 8,
-      removed: 3,
-    }),
-    kf("multipleChoiceEasy", {
-      kind: "equation",
-      lines: ["Picture the story", "Add or subtract to find the answer"],
-      highlightLine: 1,
-    }),
-  ]),
-  "multiple_choice-medium": buildKeyframes([
-    kf("multipleChoiceMedium", {
-      kind: "equation",
-      lines: ["Money you have 💵"],
-    }),
-    kf("multipleChoiceMedium", {
-      kind: "compare",
-      left: { emoji: "💵", count: 20, label: "start" },
-      right: { emoji: "📚", count: 7, label: "spent" },
-      operator: "−",
-    }),
-    kf("multipleChoiceMedium", {
-      kind: "equation",
-      lines: ["Start − spent", "What stays in the wallet?"],
-      highlightLine: 0,
-    }),
-  ]),
-  "multiple_choice-hard": buildKeyframes([
-    kf("multipleChoiceHard", {
-      kind: "compare",
-      left: { emoji: "🚂", count: 40, label: "mi" },
-      right: { emoji: "⏱️", count: 4, label: "hr" },
-      operator: "÷",
-    }),
-    kf("multipleChoiceHard", {
-      kind: "equation",
-      lines: ["Distance ÷ time = speed", "Find the rate first"],
-      highlightLine: 0,
-    }),
-    kf("multipleChoiceHard", {
-      kind: "equation",
-      lines: ["Use the rate for the new amount", "Multiply or divide as needed"],
-      highlightLine: 0,
-    }),
-  ]),
-  compare: buildKeyframes([
-    kf("compare", {
-      kind: "sequence",
-      values: [1, 2, 3, 4],
-      jumpLabel: "+",
-    }),
-    kf("compare", {
-      kind: "equation",
-      lines: ["Work each side separately", "Then pick the bigger result"],
-      highlightLine: 0,
-    }),
-    kf("compare", {
-      kind: "compare",
-      left: { emoji: "➕", count: 5, label: "A" },
-      right: { emoji: "✖️", count: 0, label: "B" },
-      operator: "+",
-    }),
-  ]),
-  operation_path: buildKeyframes([
-    kf("operationPath", {
-      kind: "equation",
-      lines: ["Start number → goal 🎯"],
-    }),
-    kf("operationPath", {
-      kind: "equation",
-      lines: ["Try ÷ to make smaller", "Or × to make bigger"],
-      highlightLine: 0,
-    }),
-    kf("operationPath", {
-      kind: "equation",
-      lines: ["Check after each step", "Chain operators to reach the goal!"],
-      highlightLine: 0,
-    }),
-  ]),
-  target_build: buildKeyframes([
-    kf("targetBuild", {
-      kind: "equation",
-      lines: ["Numbers + operators", "One target to hit"],
-      highlightLine: 0,
-    }),
-    kf("targetBuild", {
-      kind: "equation",
-      lines: ["× and ÷ first!", "Before + and −"],
-      highlightLine: 0,
-    }),
-    kf("targetBuild", {
-      kind: "equation",
-      lines: ["Build the expression", "Order matters — try on your nut!"],
-      highlightLine: 0,
-    }),
-  ]),
-  fraction_build: buildKeyframes([
-    kf("fractionBuild", {
-      kind: "grid",
-      rows: 2,
-      cols: 3,
-      filled: 0,
-      emoji: "🍕",
-    }),
-    kf("fractionBuild", {
-      kind: "grid",
-      rows: 2,
-      cols: 3,
-      filled: 2,
-      emoji: "🍕",
-    }),
-    kf("fractionBuild", {
-      kind: "equation",
-      lines: ["Equal slices first", "Shaded ÷ total = fraction"],
-      highlightLine: 1,
-    }),
-  ]),
-  true_false: buildKeyframes([
-    kf("trueFalse", {
-      kind: "equation",
-      lines: ["Statement says an answer", "Do not trust it yet"],
-      highlightLine: 0,
-    }),
-    kf("trueFalse", {
-      kind: "equation",
-      lines: ["Calculate yourself", "? × ? = ?"],
-      highlightLine: 0,
-    }),
-    kf("trueFalse", {
-      kind: "equation",
-      lines: ["Compare your result", "True only if they match!"],
-      highlightLine: 1,
-    }),
-  ]),
-  balance: buildKeyframes([
-    kf("balance", {
-      kind: "equation",
-      lines: ["Left side ↔ right side", "Must be equal when balanced"],
-    }),
-    kf("balance", {
-      kind: "equation",
-      lines: ["Find the missing piece", "? makes both sides match"],
-      highlightLine: 1,
-    }),
-  ]),
-  number_line: buildKeyframes([
-    kf("numberLine", {
-      kind: "numberline",
-      min: 0,
-      max: 15,
-      markers: [6],
-      highlight: 6,
-    }),
-    kf("numberLine", {
-      kind: "numberline",
-      min: 0,
-      max: 15,
-      markers: [6, 9],
-      highlight: 9,
-    }),
-    kf("numberLine", {
-      kind: "equation",
-      lines: ["+ jumps right", "− jumps left — count each step"],
-      highlightLine: 0,
-    }),
-  ]),
-  pair_sum: buildKeyframes([
-    kf("pairSum", {
-      kind: "sequence",
-      values: [2, 5, 8, 1],
-    }),
-    kf("pairSum", {
-      kind: "sequence",
-      values: [2, 5, 8, 1],
-      addendIndices: [0, 1],
-    }),
-    kf("pairSum", {
-      kind: "equation",
-      lines: ["Pick two numbers", "Do they add to the target?"],
-      highlightLine: 1,
-    }),
-  ]),
-  fix_mistake: buildKeyframes([
-    kf("fixMistake", {
-      kind: "equation",
-      lines: ["Someone wrote an answer", "Does it look right?"],
-      highlightLine: 0,
-    }),
-    kf("fixMistake", {
-      kind: "equation",
-      lines: ["8 + 5 = ?", "Work it out yourself"],
-      highlightLine: 0,
-    }),
-    kf("fixMistake", {
-      kind: "equation",
-      lines: ["Compare to what they wrote", "What mistake did they make?"],
-      highlightLine: 1,
-    }),
-  ]),
-  estimate: buildKeyframes([
-    kf("estimate", {
-      kind: "equation",
-      lines: ["Round to the nearest ten", "Make numbers easy"],
-      highlightLine: 0,
-    }),
-    kf("estimate", {
-      kind: "equation",
-      lines: ["Add the rounded numbers", "Get a rough total"],
-      highlightLine: 0,
-    }),
-    kf("estimate", {
-      kind: "equation",
-      lines: ["Pick the closest choice", "It does not need to be exact!"],
-      highlightLine: 0,
-    }),
-  ]),
-  fair_share: buildKeyframes([
-    kf("fairShare", {
-      kind: "items",
-      emoji: "🍪",
-      count: 7,
-      maxVisible: 7,
-    }),
-    kf("fairShare", {
-      kind: "groups",
-      emoji: "🍪",
-      groups: [
-        { count: 2, color: "#FF6B6B" },
-        { count: 2, color: "#4ECDC4" },
-        { count: 2, color: "#F7B731" },
-      ],
-    }),
-    kf("fairShare", {
-      kind: "equation",
-      lines: ["Deal one round at a time", "Per person + leftovers"],
-      highlightLine: 0,
-    }),
-  ]),
-  fraction_equivalent: buildKeyframes([
-    kf("fractionEquivalent", {
-      kind: "grid",
-      rows: 1,
-      cols: 2,
-      filled: 1,
-      emoji: "🍕",
-    }),
-    kf("fractionEquivalent", {
-      kind: "grid",
-      rows: 2,
-      cols: 4,
-      filled: 4,
-      emoji: "🍕",
-    }),
-    kf("fractionEquivalent", {
-      kind: "equation",
-      lines: ["Same area, more slices", "Which fraction matches?"],
-      highlightLine: 0,
-    }),
-  ]),
-  fraction_match: buildKeyframes([
-    kf("fractionMatch", {
-      kind: "grid",
-      rows: 2,
-      cols: 3,
-      filled: 1,
-      emoji: "🍰",
-    }),
-    kf("fractionMatch", {
-      kind: "equation",
-      lines: ["Shaded parts ÷ total parts", "That is the fraction!"],
-      highlightLine: 0,
-    }),
-    kf("fractionMatch", {
-      kind: "equation",
-      lines: ["Tap a fraction", "Then tap the picture that matches"],
-      highlightLine: 1,
-    }),
-  ]),
-  pattern_next: buildKeyframes([
-    kf("patternNext", {
-      kind: "sequence",
-      values: [2, 4, 6, 8, "?"],
-      jumpLabel: "+2",
-    }),
-    kf("patternNext", {
-      kind: "sequence",
-      values: [2, 4, 6, 8, "?"],
-      highlightIndex: 3,
-      jumpLabel: "+2",
-    }),
-    kf("patternNext", {
-      kind: "equation",
-      lines: ["Same jump every time", "Use it for the next number"],
-      highlightLine: 0,
-    }),
-  ]),
-  function_machine: buildKeyframes([
-    kf("functionMachine", {
-      kind: "equation",
-      lines: ["A number goes IN →", "🔢 → ❓"],
-      highlightLine: 0,
-    }),
-    kf("functionMachine", {
-      kind: "equation",
-      lines: ["The machine uses ONE rule", "+  −  ×  or  ÷"],
-      highlightLine: 0,
-    }),
-    kf("functionMachine", {
-      kind: "equation",
-      lines: ["A different number comes OUT", "Which rule fits both?"],
-      highlightLine: 1,
-    }),
-  ]),
-  order_numbers: buildKeyframes([
-    kf("orderNumbers", {
-      kind: "sequence",
-      values: [15, 3, 9, 7],
-    }),
-    kf("orderNumbers", {
-      kind: "equation",
-      lines: ["Smallest on the left", "Biggest on the right"],
-      highlightLine: 0,
-    }),
-    kf("orderNumbers", {
-      kind: "sequence",
-      values: [3, 7, 9, 15],
-      highlightIndex: 0,
-    }),
-  ]),
-};

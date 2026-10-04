@@ -123,21 +123,17 @@ export function VisualExplanationPlayer({
         {showTransition ? (
           <>
             <Text style={[styles.caption, { opacity: outgoingOpacity }]}>
-              {t(frameBlend.from.captionKey)}
+              {frameBlend.from.captionKey}
             </Text>
             <View style={styles.captionOverlay} pointerEvents="none">
               <Text style={[styles.caption, { opacity: incomingOpacity }]}>
-                {t(frameBlend.to.captionKey)}
+                {frameBlend.to.captionKey}
               </Text>
             </View>
           </>
         ) : (
           <Text style={styles.caption}>
-            {t(
-              frameBlend.blend >= 0.5
-                ? frameBlend.to.captionKey
-                : frameBlend.from.captionKey,
-            )}
+            {frameBlend.blend >= 0.5 ? frameBlend.to.captionKey : frameBlend.from.captionKey}
           </Text>
         )}
       </View>

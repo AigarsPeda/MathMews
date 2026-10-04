@@ -16,7 +16,19 @@
     ],
     "correctIndex": 0,
     "hint": "5 slices were eaten. How many slices remain out of 8?",
-    "explanation": "8 − 5 = 3 slices left, so 3/8 of the pizza remains."
+    "explanation": "8 − 5 = 3 slices left, so 3/8 of the pizza remains.",
+    "visualHelp": {
+      "scene": {
+        "kind": "fraction",
+        "numerator": 8,
+        "denominator": 8
+      },
+      "worked": {
+        "kind": "fraction",
+        "numerator": 3,
+        "denominator": 8
+      }
+    }
   },
   {
     "id": "hard-pat-1",
@@ -151,7 +163,22 @@
     ],
     "correctIndex": 0,
     "hint": "Find the total cookies, then subtract what you ate and gave away.",
-    "explanation": "4 × 6 = 24 cookies. 24 − 5 − 7 = 12 left."
+    "explanation": "4 × 6 = 24 cookies. 24 − 5 − 7 = 12 left.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 4,
+        "cols": 6,
+        "filled": 24,
+        "emoji": "🍪"
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🍪",
+        "count": 24,
+        "removed": 12
+      }
+    }
   },
   {
     "id": "hard-cmp-1",
@@ -188,7 +215,36 @@
     ],
     "correctIndex": 0,
     "hint": "Divide 5 by 3 and think about remainders.",
-    "explanation": "5 ÷ 3 = 1 with 2 left over."
+    "explanation": "5 ÷ 3 = 1 with 2 left over.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🍎",
+        "count": 5
+      },
+      "worked": {
+        "kind": "groups",
+        "emoji": "🍎",
+        "groups": [
+          {
+            "count": 1,
+            "color": "#23766F"
+          },
+          {
+            "count": 1,
+            "color": "#23766F"
+          },
+          {
+            "count": 1,
+            "color": "#23766F"
+          },
+          {
+            "count": 2,
+            "color": "#99501A"
+          }
+        ]
+      }
+    }
   },
   {
     "id": "hard-op-1",
@@ -234,7 +290,21 @@
     ],
     "correctIndex": 1,
     "hint": "Multiply length by width for area.",
-    "explanation": "12 × 5 = 60 square metres."
+    "explanation": "12 × 5 = 60 square metres.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 5,
+        "cols": 12,
+        "filled": 60
+      },
+      "worked": {
+        "kind": "grid",
+        "rows": 5,
+        "cols": 12,
+        "filled": 60
+      }
+    }
   },
   {
     "id": "hard-tgt-1",
@@ -261,7 +331,7 @@
       ]
     },
     "hint": "Think about order of operations.",
-    "explanation": "Build 8 from 12, 6, 3, 2."
+    "explanation": "12 ÷ 6 + 3 × 2 = 8."
   },
   {
     "id": "hard-frac-1",
@@ -362,11 +432,11 @@
       "target": 20,
       "correctIndices": [
         0,
-        3
+        1
       ]
     },
     "hint": "Look for a pair that adds to 20.",
-    "explanation": "12 + 5 = 20."
+    "explanation": "12 + 8 = 20."
   },
   {
     "id": "hard-fix-1",
@@ -556,7 +626,23 @@
     ],
     "correctIndex": 1,
     "hint": "Multiply weekly savings by 7.",
-    "explanation": "8 × 7 = $56 saved."
+    "explanation": "8 × 7 = $56 saved.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 7,
+        "cols": 8,
+        "filled": 56,
+        "emoji": "🪙"
+      },
+      "worked": {
+        "kind": "grid",
+        "rows": 7,
+        "cols": 8,
+        "filled": 56,
+        "emoji": "🪙"
+      }
+    }
   },
   {
     "id": "hard-cmp-2",
@@ -619,12 +705,12 @@
       "target": 11,
       "solution": [
         "÷",
-        "+",
+        "×",
         "+"
       ]
     },
     "hint": "Think about order of operations.",
-    "explanation": "Build 11 from 20, 5, 2, 3."
+    "explanation": "20 ÷ 5 × 2 + 3 = 11."
   },
   {
     "id": "hard-frac-2",
@@ -724,12 +810,12 @@
       ],
       "target": 20,
       "correctIndices": [
-        1,
-        3
+        0,
+        1
       ]
     },
     "hint": "Look for a pair that adds to 20.",
-    "explanation": "11 + 14 = 20."
+    "explanation": "9 + 11 = 20."
   },
   {
     "id": "hard-fix-2",

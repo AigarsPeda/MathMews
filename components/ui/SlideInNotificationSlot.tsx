@@ -27,11 +27,11 @@ export function SlideInNotificationSlot({
 }: SlideInNotificationSlotProps) {
   const slotHeight = useSharedValue(0);
   const translateX = useSharedValue(SLIDE_OFFSCREEN);
-  const [bannerMounted, setBannerMounted] = useState(false);
+  const [bannerMounted, setBannerMounted] = useState(visible);
+  if (visible && !bannerMounted) setBannerMounted(true);
 
   useEffect(() => {
     if (visible) {
-      setBannerMounted(true);
       translateX.value = SLIDE_OFFSCREEN;
       slotHeight.value = withTiming(
         NOTIFICATION_SLOT_HEIGHT,

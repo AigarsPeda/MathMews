@@ -16,7 +16,23 @@
     ],
     "correctIndex": 1,
     "hint": "Reizini iepakojumus ar mafiniem katrā.",
-    "explanation": "4 × 6 = 24 mafini."
+    "explanation": "4 × 6 = 24 mafini.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 4,
+        "cols": 6,
+        "filled": 24,
+        "emoji": "🧁"
+      },
+      "worked": {
+        "kind": "grid",
+        "rows": 4,
+        "cols": 6,
+        "filled": 24,
+        "emoji": "🧁"
+      }
+    }
   },
   {
     "id": "medium-pat-1",
@@ -62,7 +78,20 @@
     ],
     "correctIndex": 0,
     "hint": "No 35 atņem grāmatas cenu.",
-    "explanation": "35 − 18 = 17 eiro paliek."
+    "explanation": "35 − 18 = 17 eiro paliek.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🪙",
+        "count": 35
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🪙",
+        "count": 35,
+        "removed": 18
+      }
+    }
   },
   {
     "id": "medium-fn-1",
@@ -104,7 +133,36 @@
     ],
     "correctIndex": 1,
     "hint": "Dalī kopējo skolēnu skaitu ar komandu skaitu.",
-    "explanation": "28 ÷ 4 = 7 skolēni katrā komandā."
+    "explanation": "28 ÷ 4 = 7 skolēni katrā komandā.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🧑",
+        "count": 28
+      },
+      "worked": {
+        "kind": "groups",
+        "emoji": "🧑",
+        "groups": [
+          {
+            "count": 7,
+            "color": "#23766F"
+          },
+          {
+            "count": 7,
+            "color": "#23766F"
+          },
+          {
+            "count": 7,
+            "color": "#23766F"
+          },
+          {
+            "count": 7,
+            "color": "#23766F"
+          }
+        ]
+      }
+    }
   },
   {
     "id": "medium-ord-1",
@@ -150,7 +208,30 @@
     ],
     "correctIndex": 1,
     "hint": "Vispirms atrodi bumbiņas kastē, tad pieskaiti 4.",
-    "explanation": "3 × 5 = 15, tad 15 + 4 = 19 bumbiņas."
+    "explanation": "3 × 5 = 15, tad 15 + 4 = 19 bumbiņas.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 3,
+        "cols": 5,
+        "filled": 15,
+        "emoji": "🔵"
+      },
+      "worked": {
+        "kind": "groups",
+        "emoji": "🔵",
+        "groups": [
+          {
+            "count": 15,
+            "color": "#23766F"
+          },
+          {
+            "count": 4,
+            "color": "#C73948"
+          }
+        ]
+      }
+    }
   },
   {
     "id": "medium-cmp-1",
@@ -198,7 +279,7 @@
       10
     ],
     "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
+    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
     "payload": {
       "start": 16,
       "target": 32,
@@ -217,8 +298,8 @@
         }
       ]
     },
-    "hint": "Try one operator at a time.",
-    "explanation": "Start 16, reach 32."
+    "hint": "Izvēlies vienu darbību katrā solī.",
+    "explanation": "Sāc ar 16 un iegūsti 32."
   },
   {
     "id": "medium-mc-06",
@@ -237,7 +318,22 @@
     ],
     "correctIndex": 0,
     "hint": "No kopējā atņem aizņemtās vietas.",
-    "explanation": "42 − 27 = 15 brīvas vietas."
+    "explanation": "42 − 27 = 15 brīvas vietas.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 6,
+        "cols": 7,
+        "filled": 42,
+        "emoji": "💺"
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "💺",
+        "count": 42,
+        "removed": 27
+      }
+    }
   },
   {
     "id": "medium-tgt-1",
@@ -248,7 +344,7 @@
       10
     ],
     "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
+    "question": "Izvēlies +, −, × un ÷, lai iegūtu mērķa skaitli!",
     "payload": {
       "numbers": [
         8,
@@ -258,13 +354,13 @@
       ],
       "target": 10,
       "solution": [
-        "÷",
+        "-",
         "+",
         "×"
       ]
     },
-    "hint": "Think about order of operations.",
-    "explanation": "Build 10 from 8, 4, 2, 3."
+    "hint": "Vispirms reizini un dali, pēc tam saskaiti un atņem.",
+    "explanation": "8 - 4 + 2 × 3 = 10."
   },
   {
     "id": "medium-frac-1",
@@ -275,13 +371,13 @@
       10
     ],
     "type": "fraction_build",
-    "question": "Create this fraction!",
+    "question": "Izveido šo daļu!",
     "payload": {
       "numerator": 2,
       "denominator": 6
     },
-    "hint": "Color 2 piece(s) out of 6 equal parts.",
-    "explanation": "2/6 means 2 piece(s) out of 6."
+    "hint": "Iekrāso 2 no 6 vienādām daļām.",
+    "explanation": "2/6 nozīmē 2 no 6 vienādām daļām."
   },
   {
     "id": "medium-tf-1",
@@ -450,7 +546,7 @@
       10
     ],
     "type": "fraction_equivalent",
-    "question": "Which fraction is the same amount?",
+    "question": "Kura daļa apzīmē to pašu daudzumu?",
     "payload": {
       "numerator": 1,
       "denominator": 2,
@@ -461,7 +557,7 @@
       ]
     },
     "correctIndex": 1,
-    "hint": "Same amount means the same part of a whole.",
+    "hint": "Vienādas daļas apzīmē vienādu veseluma daļu.",
     "explanation": "1/2 = 2/4."
   },
   {
@@ -558,7 +654,23 @@
     ],
     "correctIndex": 1,
     "hint": "Reizini plauktus ar grāmatām katrā.",
-    "explanation": "6 × 8 = 48 grāmatas."
+    "explanation": "6 × 8 = 48 grāmatas.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 6,
+        "cols": 8,
+        "filled": 48,
+        "emoji": "📕"
+      },
+      "worked": {
+        "kind": "grid",
+        "rows": 6,
+        "cols": 8,
+        "filled": 48,
+        "emoji": "📕"
+      }
+    }
   },
   {
     "id": "medium-cmp-2",
@@ -587,7 +699,7 @@
       10
     ],
     "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
+    "question": "Izvēlies darbības, lai sasniegtu mērķi!",
     "payload": {
       "start": 48,
       "target": 12,
@@ -614,7 +726,7 @@
       10
     ],
     "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
+    "question": "Izvēlies +, −, × un ÷, lai iegūtu mērķa skaitli!",
     "payload": {
       "numbers": [
         6,
@@ -624,13 +736,13 @@
       ],
       "target": 5,
       "solution": [
+        "÷",
         "+",
-        "−",
         "+"
       ]
     },
-    "hint": "Think about order of operations.",
-    "explanation": "Build 5 from 6, 3, 2, 1."
+    "hint": "Vispirms reizini un dali, pēc tam saskaiti un atņem.",
+    "explanation": "6 ÷ 3 + 2 + 1 = 5."
   },
   {
     "id": "medium-frac-2",
@@ -641,13 +753,13 @@
       10
     ],
     "type": "fraction_build",
-    "question": "Create this fraction!",
+    "question": "Izveido šo daļu!",
     "payload": {
       "numerator": 3,
       "denominator": 6
     },
-    "hint": "Color 3 piece(s) out of 6 equal parts.",
-    "explanation": "3/6 means 3 piece(s) out of 6."
+    "hint": "Iekrāso 3 no 6 vienādām daļām.",
+    "explanation": "3/6 nozīmē 3 no 6 vienādām daļām."
   },
   {
     "id": "medium-tf-2",
@@ -730,12 +842,12 @@
       ],
       "target": 14,
       "correctIndices": [
-        1,
-        3
+        0,
+        1
       ]
     },
     "hint": "Meklē pāri, kas dod 14.",
-    "explanation": "9 + 11 = 14."
+    "explanation": "5 + 9 = 14."
   },
   {
     "id": "medium-fix-2",

@@ -13,6 +13,7 @@ type DecorationStoreCardProps = {
   placedCount: number;
   ownedCount: number;
   canAfford: boolean;
+  onPreview: () => void;
   onBuy: () => void;
   onPlace: () => void;
   onRemove: () => void;
@@ -24,6 +25,7 @@ export function DecorationStoreCard({
   placedCount,
   ownedCount,
   canAfford,
+  onPreview,
   onBuy,
   onPlace,
   onRemove,
@@ -40,7 +42,7 @@ export function DecorationStoreCard({
 
   return (
     <View style={[styles.card, placedCount > 0 && styles.cardEquipped]}>
-      <View style={styles.previewWrap}>
+      <Pressable style={styles.previewWrap} onPress={onPreview} accessibilityRole="button" accessibilityLabel={t("store.previewItem", { name: decorationLabelInline })}>
         <DecorationSpriteImage
           decorationId={decorationId}
           size={previewSize}
@@ -53,7 +55,7 @@ export function DecorationStoreCard({
             </Text>
           </View>
         ) : null}
-      </View>
+      </Pressable>
 
       <View style={styles.titleWrap}>
         <Text style={styles.title}>{decorationLabel}</Text>
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: moderateScale(6),
     right: moderateScale(6),
-    backgroundColor: GameColors.secondary,
+    backgroundColor: "#23766F",
     borderRadius: moderateScale(8),
     paddingHorizontal: moderateScale(8),
     paddingVertical: moderateScale(3),
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   titleWrap: {
-    minHeight: moderateScale(40),
+    minHeight: moderateScale(48),
     justifyContent: "center",
   },
   title: {
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
     gap: moderateScale(6),
   },
   actionBtn: {
-    minHeight: moderateScale(40),
+    minHeight: moderateScale(48),
     borderRadius: moderateScale(12),
     alignItems: "center",
     justifyContent: "center",
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
     backgroundColor: GameColors.primary,
   },
   actionEquip: {
-    backgroundColor: GameColors.secondary,
+    backgroundColor: "#23766F",
   },
   actionRemove: {
     backgroundColor: GameColors.background,

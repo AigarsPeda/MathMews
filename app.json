@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mathmews.app"
+      "bundleIdentifier": "com.mathmews.app",
+      "buildNumber": "2"
     },
     "android": {
       "package": "com.mathmews.app",
@@ -39,14 +40,20 @@
       "expo-apple-authentication",
       "expo-secure-store",
       "expo-router",
+      "./plugins/with-ios-launch-image",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-background.png",
-          "resizeMode": "cover",
+          "image": "./assets/images/splash-brand.png",
+          "resizeMode": "contain",
           "backgroundColor": "#FFF5EB",
           "dark": {
             "backgroundColor": "#FFF5EB"
+          },
+          "imageWidth": 240,
+          "ios": {
+            "image": "./assets/images/splash-launch.png",
+            "imageWidth": 320
           }
         }
       ],

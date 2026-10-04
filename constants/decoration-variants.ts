@@ -2,7 +2,6 @@ import {
   resolveCatDecorationId,
   getDecorationDisplaySize,
   getDecorationHitSize,
-  getDecorationCatalogEntry,
   hasFlippedAnimationFrames,
   isPosterDecorationId,
   isWindowDecorationId,
@@ -35,6 +34,39 @@ export const DECORATION_ROTATION_GROUPS: readonly (readonly CatDecorationId[])[]
 
 const VARIANT_TO_GROUP = new Map<CatDecorationId, readonly CatDecorationId[]>();
 const ROTATION_VARIANT_ONLY_IDS = new Set<CatDecorationId>();
+
+/** Wall mounts and furniture with a visible front can face either room wall.
+ * Keep this independent of catalog category: portraitCat is sold in cat supplies.
+ * Mirroring also applies to every frame of an animated item.
+ */
+export const WALL_FACING_DECORATION_IDS: readonly CatDecorationId[] = [
+  "portraitCat", "japaneseCanvas", "japaneseCanvasLetters",
+  "livingAirCon", "officeAc", "officeClockAni", "officeDiploma",
+  "officePhotosA", "officePhotosB", "officePictureFrame",
+  "officeBoardEmpty", "officeBoardFull", "officeCorkboardA", "officeCorkboardB",
+  "officeGlassWall", "officePartition", "officeProjectorScreenAni",
+  "officeTvOff", "japaneseDoorAni", "japaneseSlidingDoorAni",
+  "livingShelvingA", "livingShelvingB", "japaneseShelf",
+  "bathroomLongShelf", "bathroomSmallShelf", "bathroomMirror",
+  "bathroomBathWindow", "bathroomHanger", "bathroomHangingTowel",
+  "bathroomShowerTap", "bathroomTapShower", "bathroomTapWall",
+  "shelfWood", "shelfBlue", "shelfGreen", "officeRack", "officeLongRack",
+  "japaneseCloset", "japaneseClosetBase", "japaneseClothesCase",
+  "japaneseClosetDrawerClosed", "japaneseClosetDrawerOpen",
+  "japaneseClosetDoor1Closed", "japaneseClosetDoor1Open",
+  "japaneseClosetDoor2Closed", "japaneseClosetDoor2Open",
+  "officeMetallicClosetAni", "officeWoodClosetAni", "bathroomWcFurniture",
+  "bathroomBathAni", "bathroomWcAni", "bathroomWcTapAni",
+  "chairOfficeMain", "deskOffice", "japaneseSeat", "officeDrawingTable",
+  "officeKitchenTable", "officeProjectorStand", "japaneseToriGate",
+  "livingSpeaker", "officeCopyMachineDarkAni", "officeCopyMachineWhiteAni",
+  "officeDocumentShredderAni", "officePrinterAni", "officeProjectorAni",
+  "officeWaterDispenserAni", "officeMedicalKitAni",
+  "computerBendedScreen", "computerBendedScreenAni", "computerPcTower",
+  "computerPcTowerAni", "computerMacbookOpen", "computerMacbookClosed",
+  "computerMacbookAni", "computerWacomTablet",
+];
+const WALL_FACING_IDS = new Set(WALL_FACING_DECORATION_IDS);
 
 for (const group of DECORATION_ROTATION_GROUPS) {
   for (let index = 1; index < group.length; index += 1) {
@@ -75,6 +107,7 @@ export function canFlipWallDecoration(decorationId: CatDecorationId): boolean {
     isPosterDecorationId(decorationId) ||
     isWindowDecorationId(decorationId) ||
     isTvDecorationId(decorationId) ||
+    WALL_FACING_IDS.has(decorationId) ||
     hasFlippedAnimationFrames(decorationId)
   );
 }

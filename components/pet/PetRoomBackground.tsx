@@ -34,7 +34,7 @@ export function PetRoomBackground({
 const styles = StyleSheet.create({
   wrap: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "#E8D8C8",
+    backgroundColor: "#FFF5EB",
   },
   image: {
     width: "100%",

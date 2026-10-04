@@ -10,6 +10,7 @@ type RoomStoreCardProps = {
   isOwned: boolean;
   isEquipped: boolean;
   canAfford: boolean;
+  onPreview: () => void;
   onBuy: () => void;
   onEquip: () => void;
 };
@@ -19,6 +20,7 @@ export function RoomStoreCard({
   isOwned,
   isEquipped,
   canAfford,
+  onPreview,
   onBuy,
   onEquip,
 }: RoomStoreCardProps) {
@@ -33,7 +35,7 @@ export function RoomStoreCard({
         isEquipped && styles.cardEquipped,
       ]}
     >
-      <View style={styles.previewWrap}>
+      <Pressable style={styles.previewWrap} onPress={onPreview} accessibilityRole="button" accessibilityLabel={t("store.previewItem", { name: t("store.roomName", { number: roomNumber }) })}>
         <Image
           source={getCatRoomSource(roomId)}
           style={styles.preview}
@@ -45,7 +47,7 @@ export function RoomStoreCard({
             <Text style={styles.equippedBadgeText}>{t("store.equipped")}</Text>
           </View>
         ) : null}
-      </View>
+      </Pressable>
 
       <Text style={styles.title}>
         {t("store.roomName", { number: roomNumber })}
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: moderateScale(6),
     right: moderateScale(6),
-    backgroundColor: GameColors.secondary,
+    backgroundColor: "#23766F",
     borderRadius: moderateScale(8),
     paddingHorizontal: moderateScale(8),
     paddingVertical: moderateScale(3),
@@ -159,7 +161,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   actionBtn: {
-    minHeight: moderateScale(40),
+    minHeight: moderateScale(48),
     borderRadius: moderateScale(12),
     alignItems: "center",
     justifyContent: "center",
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
     backgroundColor: GameColors.primary,
   },
   actionEquip: {
-    backgroundColor: GameColors.secondary,
+    backgroundColor: "#23766F",
   },
   actionEquipped: {
     backgroundColor: GameColors.background,

@@ -1,3 +1,4 @@
+import STORE_PRICES from "@/data/store-prices.json";
 import {
   CAT_ROOM_IDS,
   DEFAULT_CAT_ROOM_ID,
@@ -7,17 +8,12 @@ import {
 } from "@/constants/cat-rooms";
 import type { RoomPurchaseResult, StorePrice } from "@/types/store";
 
-function roomNumber(roomId: CatRoomId): number {
-  return Number.parseInt(roomId.replace("room", ""), 10);
-}
+
 
 /** Catalog pricing — change amounts here; swap kind to `iap` per room later. */
 export function getRoomStorePrice(roomId: CatRoomId): StorePrice {
-  const number = roomNumber(roomId);
-  if (number <= 1) {
-    return { kind: "free" };
-  }
-  return { kind: "coins", amount: 15 + number * 5 };
+  const amount = STORE_PRICES.room[roomId];
+  return amount === 0 ? { kind: "free" } : { kind: "coins", amount };
 }
 
 export function isRoomUnlocked(

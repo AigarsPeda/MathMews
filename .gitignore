@@ -43,3 +43,8 @@ app-example
 /ios
 /android
 doc
+# Blender render intermediates and backup scenes
+assets/3d/frames/
+assets/3d/blender/
+*.blend1
+scripts/3d/__pycache__/

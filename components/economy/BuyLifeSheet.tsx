@@ -17,7 +17,7 @@ type BuyLifeSheetProps = {
 };
 
 function useRegenNow(active: boolean) {
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (!active) return;

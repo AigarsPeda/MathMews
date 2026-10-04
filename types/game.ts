@@ -6,10 +6,12 @@ export type PetMood =
   | "angry"
   | "sad"
   | "fallingAsleep"
-  | "sleeping";
+  | "sleeping"
+  | "lyingDown"
+  | "resting";
 
 /** Short puzzle / reward clips — not derived from pet stats. */
-export type PetReaction = "correct" | "coinCatch" | "playBox";
+export type PetReaction = "correct" | "incorrect" | "coinCatch" | "playBox" | "playBall" | "playYarn" | "playFeather";
 
 export type PetAnimationState = PetMood | PetReaction;
 
@@ -43,6 +45,8 @@ export type PlacedDecoration = {
   rotationIndex?: number;
   /** Mirror horizontally for the opposite isometric wall (windows). */
   wallFlipped?: boolean;
+  /** Air-conditioner power, saved separately for each placed unit. */
+  poweredOn?: boolean;
   /** Display scale multiplier (default 1). */
   scale?: number;
 };
@@ -54,6 +58,8 @@ export type RoomLayerItem =
   | { kind: "toy"; toyId: string; instanceId: string };
 
 export type PetProfile = {
+  roomLayouts?: Record<string, import("@/utils/room-layout").RoomLayout>;
+  savedRoomLayouts?: Record<string, import("@/utils/room-layout").RoomLayout>;
   type: PetType;
   name: string;
   stats: PetStats;
@@ -104,6 +110,8 @@ export type LivesState = {
 export type TopicAttemptStats = {
   correct: number;
   wrong: number;
+  /** Last ten outcomes for this topic, oldest first. */
+  recent?: boolean[];
 };
 
 /** Per puzzle topic (`addition`, `fractions`, …). */
@@ -126,8 +134,12 @@ export type TopicStatsMap = Partial<
 >;
 
 export type Progress = {
+  storeGoal?: { kind: "room" | "bed" | "toy" | "decoration" | "skin"; id: string };
+  completedPuzzleIds?: string[];
+  processedAttemptIds?: string[];
+  lastPuzzleDay?: string;
   streak: number;
-  /** Consecutive puzzle answers answered correctly (resets on a wrong answer). */
+  /** Correct first completions; mistakes leave the learning streak intact. */
   puzzleStreak: number;
   puzzlesSolved: PuzzleProgress;
   lives: LivesState;

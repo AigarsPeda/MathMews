@@ -31,8 +31,8 @@ export function resolveRevenueCatApiKey(): string {
 }
 
 /**
- * Release builds must not ship without real platform keys.
- * Throws intentionally so misconfigured store builds fail immediately.
+ * Release purchases require real platform keys. Throw before configuring the
+ * SDK; the provider can keep gameplay available with purchases disabled.
  */
 export function assertValidReleaseRevenueCatKey(apiKey: string): void {
   if (__DEV__) return;

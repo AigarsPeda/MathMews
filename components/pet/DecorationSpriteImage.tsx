@@ -1,10 +1,7 @@
-import { AnimatedFrameSprite } from "@/components/pet/AnimatedFrameSprite";
+import { RoomDecorationMotion } from "@/components/pet/RoomDecorationMotion";
+import { isAirConditionerDecorationId, PLANT_FOLIAGE_SPLIT } from "@/constants/decoration-motion";
 import { AnimatedStripSprite } from "@/components/pet/AnimatedStripSprite";
-import { SheetSprite } from "@/components/pet/SheetSprite";
 import {
-  CAT_DECORATION_SHEET,
-  CAT_DECORATION_SHEET_SIZE,
-  getAnimatedFrameSequence,
   getDecorationCatalogEntry,
   isAnimatedDecorationEntry,
   isImageDecorationEntry,
@@ -16,12 +13,18 @@ type DecorationSpriteImageProps = {
   decorationId: CatDecorationId;
   size: number;
   flipHorizontal?: boolean;
+  roomMotion?: boolean;
+  poweredOn?: boolean;
+  breezy?: boolean;
 };
 
 export function DecorationSpriteImage({
   decorationId,
   size,
   flipHorizontal = false,
+  roomMotion = false,
+  poweredOn = false,
+  breezy = false,
 }: DecorationSpriteImageProps) {
   const entry = getDecorationCatalogEntry(decorationId);
   if (!entry) {
@@ -29,22 +32,6 @@ export function DecorationSpriteImage({
   }
 
   if (isAnimatedDecorationEntry(entry)) {
-    if ("frames" in entry) {
-      const frames =
-        getAnimatedFrameSequence(entry, flipHorizontal) ?? entry.frames;
-
-      return (
-        <AnimatedFrameSprite
-          frames={frames}
-          frameWidth={entry.frameWidth}
-          frameHeight={entry.frameHeight}
-          fps={entry.fps}
-          size={size}
-          flipHorizontal={flipHorizontal}
-        />
-      );
-    }
-
     return (
       <AnimatedStripSprite
         source={entry.source}
@@ -55,11 +42,16 @@ export function DecorationSpriteImage({
         frameCount={entry.frameCount}
         fps={entry.fps}
         size={size}
+        flipHorizontal={flipHorizontal}
       />
     );
   }
 
   if (isImageDecorationEntry(entry)) {
+    if (roomMotion && (isAirConditionerDecorationId(decorationId) || PLANT_FOLIAGE_SPLIT[decorationId] !== undefined)) {
+      return <RoomDecorationMotion decorationId={decorationId} source={entry.source}
+        size={size} flipHorizontal={flipHorizontal} poweredOn={poweredOn} breezy={breezy} />;
+    }
     const imageStyle = flipHorizontal
       ? { width: size, height: size, transform: [{ scaleX: -1 as const }] }
       : { width: size, height: size };
@@ -74,13 +66,5 @@ export function DecorationSpriteImage({
     );
   }
 
-  return (
-    <SheetSprite
-      source={CAT_DECORATION_SHEET}
-      sheetSize={CAT_DECORATION_SHEET_SIZE}
-      frame={entry.frame}
-      size={size}
-      flipHorizontal={flipHorizontal}
-    />
-  );
+  return null;
 }

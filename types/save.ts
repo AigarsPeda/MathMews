@@ -15,4 +15,6 @@ export type GameSave = {
   startedAt?: number;
   /** Recent coin earns/spends for history UI and cloud sync. */
   coinTransactions?: CoinTransaction[];
+  /** Durable receipt IDs, independent of the bounded history shown in the UI. */
+  creditedPurchaseIds?: string[];
 };

@@ -9,12 +9,17 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "test:startup": "node scripts/check-native-launch.mjs && node scripts/check-splash-continuity.mjs && node scripts/check-startup-loading.mjs",
     "build:dev:ios": "npx eas-cli@24.10.0 build --profile development --platform ios",
     "build:dev:ios-device": "npx eas-cli@24.10.0 build --profile development-device --platform ios",
     "build:dev:android": "npx eas-cli@24.10.0 build --profile development --platform android",
     "licenses": "node scripts/licenses.mjs",
     "branding": "node scripts/generate-branding.mjs",
-    "dependencies": "npm run licenses"
+    "dependencies": "npm run licenses",
+    "assets:3d": "node scripts/3d/build.mjs",
+    "assets:verify": "node scripts/3d/verify.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:game": "node scripts/check-game.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

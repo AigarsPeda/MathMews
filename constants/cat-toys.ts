@@ -1,11 +1,11 @@
-/** Cat toy items — small GIFs and large sprite-sheet toys. */
-export const CAT_LARGE_TOY_SHEET = require("@/assets/pets/Cat/CatItems/CatToys/LargeToys/toyss.png");
+/** Cat toy items — animated balls and mouse, with larger scratching posts. */
 
-export const CAT_TOY_SOURCES = {
-  orangeBall: require("@/assets/pets/Cat/CatItems/CatToys/Toys/OrangeBall.gif"),
-  blueBall: require("@/assets/pets/Cat/CatItems/CatToys/Toys/BlueBall.gif"),
-  pinkBall: require("@/assets/pets/Cat/CatItems/CatToys/Toys/PinkBall.gif"),
-  mouse: require("@/assets/pets/Cat/CatItems/CatToys/Toys/Mouse.gif"),
+
+const CAT_SMALL_TOY_SOURCES = {
+  orangeBall: require("@/assets/3d/atlases/toy-orangeBall.png"),
+  blueBall: require("@/assets/3d/atlases/toy-blueBall.png"),
+  pinkBall: require("@/assets/3d/atlases/toy-pinkBall.png"),
+  mouse: require("@/assets/3d/atlases/toy-mouse.png"),
 } as const;
 
 export const CAT_LARGE_TOY_FRAMES = {
@@ -15,11 +15,19 @@ export const CAT_LARGE_TOY_FRAMES = {
   scratchPostRed: { col: 1, row: 1 },
 } as const;
 
-export type CatSmallToyId = keyof typeof CAT_TOY_SOURCES;
+export const CAT_TOY_SOURCES = {
+  ...CAT_SMALL_TOY_SOURCES,
+  scratchPostGreen: require("@/assets/3d/toy/toy-scratchPostGreen.png"),
+  scratchPostBlue: require("@/assets/3d/toy/toy-scratchPostBlue.png"),
+  scratchPostPurple: require("@/assets/3d/toy/toy-scratchPostPurple.png"),
+  scratchPostRed: require("@/assets/3d/toy/toy-scratchPostRed.png"),
+} as const;
+
+export type CatSmallToyId = keyof typeof CAT_SMALL_TOY_SOURCES;
 export type CatLargeToyId = keyof typeof CAT_LARGE_TOY_FRAMES;
 export type CatToyId = CatSmallToyId | CatLargeToyId;
 
-export const CAT_SMALL_TOY_IDS = Object.keys(CAT_TOY_SOURCES) as CatSmallToyId[];
+export const CAT_SMALL_TOY_IDS = Object.keys(CAT_SMALL_TOY_SOURCES) as CatSmallToyId[];
 export const CAT_LARGE_TOY_IDS = Object.keys(CAT_LARGE_TOY_FRAMES) as CatLargeToyId[];
 export const CAT_TOY_IDS = [...CAT_SMALL_TOY_IDS, ...CAT_LARGE_TOY_IDS] as CatToyId[];
 
@@ -62,7 +70,7 @@ export function getLargeToyFrame(
 
 export function getCatToySource(toyId: string | undefined): number | undefined {
   const resolved = resolveCatToyId(toyId);
-  if (!resolved || isLargeToyId(resolved)) {
+  if (!resolved) {
     return undefined;
   }
   return CAT_TOY_SOURCES[resolved];

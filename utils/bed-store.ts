@@ -1,47 +1,21 @@
+import STORE_PRICES from "@/data/store-prices.json";
 import {
   CAT_BED_IDS,
   isCatBedId,
-  isHumanBedId,
   resolveCatBedId,
   type CatBedId,
 } from "@/constants/cat-beds";
 import type { BedPurchaseResult, StorePrice } from "@/types/store";
 
-const BED_ORDER: CatBedId[] = [
-  "brown",
-  "green",
-  "blue",
-  "red",
-  "pink",
-  "purple",
-  "houseA",
-  "houseB",
-  "houseC",
-  "houseD",
-  "houseE",
-  "houseF",
-  "houseG",
-];
 
-const CAT_PET_BED_COUNT = 6;
 
-function bedIndex(bedId: CatBedId): number {
-  const index = BED_ORDER.indexOf(bedId);
-  return index >= 0 ? index : 0;
-}
+
+
 
 /** Catalog pricing — change amounts here; swap kind to `iap` per bed later. */
 export function getBedStorePrice(bedId: CatBedId): StorePrice {
-  if (isHumanBedId(bedId)) {
-    const humanIndex = bedIndex(bedId) - CAT_PET_BED_COUNT;
-    return { kind: "coins", amount: 45 + humanIndex * 10 };
-  }
-
-  const index = bedIndex(bedId);
-  if (index <= 0) {
-    return { kind: "free" };
-  }
-  return { kind: "coins", amount: 10 + index * 5 };
+  const amount = STORE_PRICES.bed[bedId];
+  return amount === 0 ? { kind: "free" } : { kind: "coins", amount };
 }
 
 export function isBedUnlocked(

@@ -31,6 +31,7 @@ export function ProgressBar({
         style,
       ]}
       accessibilityRole="progressbar"
+      accessible={Boolean(accessibilityLabel)}
       accessibilityLabel={accessibilityLabel}
       accessibilityValue={{
         min: 0,

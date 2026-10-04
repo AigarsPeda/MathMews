@@ -65,7 +65,9 @@ export function RestoreMenuContent({
   }, [fetchSwitchableCloudSaves]);
 
   useEffect(() => {
-    void loadSaves();
+    let cancelled = false;
+    queueMicrotask(() => { if (!cancelled) void loadSaves(); });
+    return () => { cancelled = true; };
   }, [loadSaves]);
 
   const handleSwitchSave = useCallback(

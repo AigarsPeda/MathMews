@@ -1,49 +1,18 @@
-import {
-  BIG_TV_A_ANIM_FRAMES,
-  BIG_TV_B_ANIM_FRAMES,
-  TV_DVD_ANIM_FRAMES,
-} from "@/constants/tv-animation-frames";
+
 
 type ImageEntry = {
   source: number;
   displaySize: number;
 };
 
-type AnimatedEntry = {
-  frames: readonly number[];
-  frameWidth: number;
-  frameHeight: number;
-  fps?: number;
-  displaySize: number;
-};
+type AnimatedEntry = { source: number; sheetWidth: number; sheetHeight: number; frameWidth: number; frameHeight: number; frameCount: number; fps?: number; displaySize: number };
 
 /** Television pack — shown in the dedicated store tab. */
 export const TV_DECORATION_CATALOG = {
-  tvBigOff: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/TVs/big-tv-off.png"),
-    displaySize: 56,
-  },
-  tvBigAniA: {
-    frames: BIG_TV_A_ANIM_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 6,
-    displaySize: 56,
-  },
-  tvBigAniB: {
-    frames: BIG_TV_B_ANIM_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 6,
-    displaySize: 56,
-  },
-  tvDvdAni: {
-    frames: TV_DVD_ANIM_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 56,
-  },
+  tvBigOff: { source: require("@/assets/3d/decoration/tvBigOff.png"), displaySize: 56 },
+  tvBigAniA: { source: require("@/assets/3d/atlases/tvBigAniA.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 56 },
+  tvBigAniB: { source: require("@/assets/3d/atlases/tvBigAniB.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 56 },
+  tvDvdAni: { source: require("@/assets/3d/atlases/tvDvdAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 56 },
 } as const satisfies Record<string, ImageEntry | AnimatedEntry>;
 
 export type TvDecorationId = keyof typeof TV_DECORATION_CATALOG;

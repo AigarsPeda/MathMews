@@ -49,19 +49,12 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
 
   const displayItems = coinPackCatalog;
 
-  useEffect(() => {
-    if (!visible) {
-      setView("coins");
-      setStatusMessage(null);
-      setStatusKind(null);
-      setPurchasingId(null);
-      return;
-    }
-
-    setStatusMessage(null);
-    setStatusKind(null);
-    void refreshOfferings();
-  }, [refreshOfferings, visible]);
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible); setStatusMessage(null); setStatusKind(null);
+    if (!visible) { setView("coins"); setPurchasingId(null); }
+  }
+  useEffect(() => { if (visible) void refreshOfferings(); }, [refreshOfferings, visible]);
 
   const handlePurchase = useCallback(
     async (productId: CoinPackProductId) => {

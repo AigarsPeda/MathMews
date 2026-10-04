@@ -49,19 +49,23 @@ export function withCoinDelta(
   save: GameSave,
   delta: number,
   meta: CoinTransactionInput,
+  now = Date.now(),
 ): GameSave | null {
+  if (!Number.isFinite(delta)) return null;
+  if (meta.transactionId && (save.creditedPurchaseIds?.includes(meta.transactionId) || save.coinTransactions?.some(tx => tx.transactionId === meta.transactionId))) return save;
   const balanceAfter = save.wallet.coins + delta;
-  if (balanceAfter < 0) return null;
+  if (!Number.isFinite(balanceAfter) || balanceAfter < 0) return null;
 
   return {
     ...save,
     wallet: { coins: balanceAfter },
+    creditedPurchaseIds: meta.kind === "iap_purchase" && meta.transactionId ? [...(save.creditedPurchaseIds ?? []), meta.transactionId] : save.creditedPurchaseIds,
     coinTransactions: appendCoinTransaction(save.coinTransactions, {
       id: createCoinTransactionId(),
       kind: meta.kind,
       amount: delta,
       balanceAfter,
-      at: Date.now(),
+      at: now,
       itemId: meta.itemId,
       productId: meta.productId,
       transactionId: meta.transactionId,

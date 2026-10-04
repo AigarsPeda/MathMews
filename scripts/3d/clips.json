@@ -1,0 +1,124 @@
+{
+  "idle": [
+    96,
+    24
+  ],
+  "idle2": [
+    96,
+    24
+  ],
+  "sleep": [
+    72,
+    24
+  ],
+  "dance": [
+    72,
+    24
+  ],
+  "sleepy": [
+    60,
+    24
+  ],
+  "excited": [
+    60,
+    24
+  ],
+  "layDown": [
+    72,
+    24
+  ],
+  "sad": [
+    72,
+    24
+  ],
+  "cry": [
+    60,
+    24
+  ],
+  "box2": [
+    60,
+    24
+  ],
+  "box1": [
+    48,
+    24
+  ],
+  "box3": [
+    72,
+    24
+  ],
+  "surprised": [
+    48,
+    24
+  ],
+  "eating": [
+    96,
+    24
+  ],
+  "waiting": [
+    72,
+    24
+  ],
+  "blinkIdle": [
+    96,
+    24
+  ],
+  "angryCute": [
+    48,
+    24
+  ],
+  "blinkSit": [
+    96,
+    24
+  ],
+  "correct": [
+    60,
+    24
+  ],
+  "incorrect": [
+    48,
+    24
+  ],
+  "lieDown": [
+    48,
+    24
+  ],
+  "restSleep": [
+    60,
+    24
+  ],
+  "ballToss": [
+    120,
+    24
+  ],
+  "yarnRoll": [
+    96,
+    24
+  ],
+  "featherChase": [
+    120,
+    24
+  ],
+  "walk": [
+    24,
+    24
+  ],
+  "walkAway": [24, 24],
+  "walkToward": [24, 24],
+  "walkAwayDiagonal": [24, 24],
+  "walkTowardDiagonal": [24, 24],
+  "jumpOn": [24, 24],
+  "jumpOff": [24, 24],
+  "curlUp": [
+    24,
+    24
+  ],
+  "curlSleep": [
+    24,
+    12
+  ],
+  "batToy": [
+    48,
+    24
+  ]
+}

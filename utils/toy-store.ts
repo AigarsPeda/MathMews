@@ -1,7 +1,7 @@
+import STORE_PRICES from "@/data/store-prices.json";
 import {
   CAT_TOY_IDS,
   isCatToyId,
-  isLargeToyId,
   resolveCatToyId,
   type CatToyId,
 } from "@/constants/cat-toys";
@@ -9,32 +9,13 @@ import type { StorePrice, ToyPurchaseResult } from "@/types/store";
 import type { PlacedToy, Progress } from "@/types/game";
 import { countPlacedToys } from "@/utils/room-placement";
 
-const TOY_ORDER: CatToyId[] = [
-  "orangeBall",
-  "blueBall",
-  "pinkBall",
-  "mouse",
-  "scratchPostGreen",
-  "scratchPostBlue",
-  "scratchPostPurple",
-  "scratchPostRed",
-];
 
-function toyIndex(toyId: CatToyId): number {
-  const index = TOY_ORDER.indexOf(toyId);
-  return index >= 0 ? index : 0;
-}
+
 
 /** Catalog pricing — change amounts here; swap kind to `iap` per toy later. */
 export function getToyStorePrice(toyId: CatToyId): StorePrice {
-  const index = toyIndex(toyId);
-  if (index <= 0) {
-    return { kind: "free" };
-  }
-  if (isLargeToyId(toyId)) {
-    return { kind: "coins", amount: 22 + (index - 4) * 6 };
-  }
-  return { kind: "coins", amount: 8 + index * 4 };
+  const amount = STORE_PRICES.toy[toyId];
+  return amount === 0 ? { kind: "free" } : { kind: "coins", amount };
 }
 
 export function isToyUnlocked(

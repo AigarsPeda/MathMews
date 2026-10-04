@@ -1,298 +1,70 @@
-import {
-  OFFICE_CLOCK_FRAMES,
-  OFFICE_COPY_MACHINE_DARK_FRAMES,
-  OFFICE_COPY_MACHINE_WHITE_FRAMES,
-  OFFICE_DOCUMENT_SHREDDER_FRAMES,
-  OFFICE_MEDICAL_KIT_FRAMES,
-  OFFICE_METALLIC_CLOSET_FRAMES,
-  OFFICE_PRINTER_FRAMES,
-  OFFICE_PROJECTOR_FRAMES,
-  OFFICE_PROJECTOR_SCREEN_FRAMES,
-  OFFICE_WATER_DISPENSER_FRAMES,
-  OFFICE_WOOD_CLOSET_FRAMES,
-} from "@/constants/office-animation-frames";
+
 
 type ImageEntry = { source: number; displaySize: number; };
 
-type AnimatedEntry = {
-  frames: readonly number[];
-  frameWidth: number;
-  frameHeight: number;
-  fps?: number;
-  displaySize: number;
-};
+type AnimatedEntry = { source: number; sheetWidth: number; sheetHeight: number; frameWidth: number; frameHeight: number; frameCount: number; fps?: number; displaySize: number };
 
 /** Office pack — shown in the dedicated store tab. */
 export const OFFICE_DECORATION_CATALOG = {
-  officeAc: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/ac.png"),
-    displaySize: 48,
-  },
-  officeBlueprint: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/blueprint.png"),
-    displaySize: 48,
-  },
-  officeBoardEmpty: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/board-empty.png"),
-    displaySize: 64,
-  },
-  officeBoardFull: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/board-full.png"),
-    displaySize: 64,
-  },
-  officeCalculator: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/calculator.png"),
-    displaySize: 26,
-  },
-  officeCartonBox: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/carton-box.png"),
-    displaySize: 48,
-  },
-  officeCorkboardA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/corkboard-1.png"),
-    displaySize: 64,
-  },
-  officeCorkboardB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/corkboard-2.png"),
-    displaySize: 64,
-  },
-  officeDiploma: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/diploma.png"),
-    displaySize: 48,
-  },
-  officeDrawingTable: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/drawing-table.png"),
-    displaySize: 64,
-  },
-  officeFireExtinguisher: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/fire-extinguisher.png"),
-    displaySize: 48,
-  },
-  officeGlassWall: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/glass-wall.png"),
-    displaySize: 80,
-  },
-  officeHeadset: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/headset.png"),
-    displaySize: 26,
-  },
-  officeKitchenTable: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/office-kitchen-table.png"),
-    displaySize: 64,
-  },
-  officeLongRack: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/long-rack.png"),
-    displaySize: 48,
-  },
-  officePaper1: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/paper-1.png"),
-    displaySize: 26,
-  },
-  officePaper2: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/paper-2.png"),
-    displaySize: 26,
-  },
-  officePaper3: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/paper-3.png"),
-    displaySize: 26,
-  },
-  officePaper4: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/paper-4.png"),
-    displaySize: 26,
-  },
-  officePaper5: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/paper-5.png"),
-    displaySize: 26,
-  },
-  officePaper6: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/paper-6.png"),
-    displaySize: 26,
-  },
-  officePartition: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/office-partition.png"),
-    displaySize: 64,
-  },
-  officePencilHolder: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/pencil-holder.png"),
-    displaySize: 26,
-  },
-  officePhotosA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/photos-1.png"),
-    displaySize: 26,
-  },
-  officePhotosB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/photos-2.png"),
-    displaySize: 48,
-  },
-  officePictureFrame: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/picture-frame.png"),
-    displaySize: 26,
-  },
-  officeProjectorStand: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/projector-stand.png"),
-    displaySize: 48,
-  },
-  officeRack: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/rack.png"),
-    displaySize: 80,
-  },
-  officeRolledPapers: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/rolled-papers.png"),
-    displaySize: 48,
-  },
-  officeRuler: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/ruler.png"),
-    displaySize: 48,
-  },
-  officeRumbaRobot: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/rumba-robot.png"),
-    displaySize: 48,
-  },
-  officeStickyNote1: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-1.png"),
-    displaySize: 16,
-  },
-  officeStickyNote2: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-2.png"),
-    displaySize: 26,
-  },
-  officeStickyNote3: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-3.png"),
-    displaySize: 16,
-  },
-  officeStickyNote4: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-4.png"),
-    displaySize: 16,
-  },
-  officeStickyNote5: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-5.png"),
-    displaySize: 16,
-  },
-  officeStickyNote6: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-6.png"),
-    displaySize: 16,
-  },
-  officeStickyNoteBlue: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-blue.png"),
-    displaySize: 16,
-  },
-  officeStickyNoteGreen: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-green.png"),
-    displaySize: 16,
-  },
-  officeStickyNotePink: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-pink.png"),
-    displaySize: 16,
-  },
-  officeStickyNoteRed: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/sticky-note-red.png"),
-    displaySize: 16,
-  },
-  officeTelephone: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/telephone.png"),
-    displaySize: 26,
-  },
-  officeTrashEmpty: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/trash-empty.png"),
-    displaySize: 26,
-  },
-  officeTrashFull: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/trash-full.png"),
-    displaySize: 48,
-  },
-  officeTrashSquare: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/trash-square.png"),
-    displaySize: 48,
-  },
-  officeTvOff: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/tv-off.png"),
-    displaySize: 64,
-  },
-  officeWhiteBox: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/white-box.png"),
-    displaySize: 48,
-  },
-  officeWhiteboardEraser: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Office/whiteboard-eraser.png"),
-    displaySize: 26,
-  },
-  officeClockAni: {
-    frames: OFFICE_CLOCK_FRAMES,
-    frameWidth: 64,
-    frameHeight: 64,
-    fps: 6,
-    displaySize: 48,
-  },
-  officeCopyMachineDarkAni: {
-    frames: OFFICE_COPY_MACHINE_DARK_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 64,
-  },
-  officeCopyMachineWhiteAni: {
-    frames: OFFICE_COPY_MACHINE_WHITE_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 64,
-  },
-  officeDocumentShredderAni: {
-    frames: OFFICE_DOCUMENT_SHREDDER_FRAMES,
-    frameWidth: 64,
-    frameHeight: 64,
-    fps: 6,
-    displaySize: 48,
-  },
-  officeMedicalKitAni: {
-    frames: OFFICE_MEDICAL_KIT_FRAMES,
-    frameWidth: 64,
-    frameHeight: 64,
-    fps: 6,
-    displaySize: 48,
-  },
-  officeMetallicClosetAni: {
-    frames: OFFICE_METALLIC_CLOSET_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 64,
-  },
-  officePrinterAni: {
-    frames: OFFICE_PRINTER_FRAMES,
-    frameWidth: 64,
-    frameHeight: 64,
-    fps: 6,
-    displaySize: 48,
-  },
-  officeProjectorAni: {
-    frames: OFFICE_PROJECTOR_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 64,
-  },
-  officeProjectorScreenAni: {
-    frames: OFFICE_PROJECTOR_SCREEN_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 64,
-  },
-  officeWaterDispenserAni: {
-    frames: OFFICE_WATER_DISPENSER_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 64,
-  },
-  officeWoodClosetAni: {
-    frames: OFFICE_WOOD_CLOSET_FRAMES,
-    frameWidth: 128,
-    frameHeight: 128,
-    fps: 8,
-    displaySize: 64,
-  },
+  officeAc: { source: require("@/assets/3d/decoration/officeAc.png"), displaySize: 48 },
+  officeBlueprint: { source: require("@/assets/3d/decoration/officeBlueprint.png"), displaySize: 48 },
+  officeBoardEmpty: { source: require("@/assets/3d/decoration/officeBoardEmpty.png"), displaySize: 64 },
+  officeBoardFull: { source: require("@/assets/3d/decoration/officeBoardFull.png"), displaySize: 64 },
+  officeCalculator: { source: require("@/assets/3d/decoration/officeCalculator.png"), displaySize: 26 },
+  officeCartonBox: { source: require("@/assets/3d/decoration/officeCartonBox.png"), displaySize: 48 },
+  officeCorkboardA: { source: require("@/assets/3d/decoration/officeCorkboardA.png"), displaySize: 64 },
+  officeCorkboardB: { source: require("@/assets/3d/decoration/officeCorkboardB.png"), displaySize: 64 },
+  officeDiploma: { source: require("@/assets/3d/decoration/officeDiploma.png"), displaySize: 48 },
+  officeDrawingTable: { source: require("@/assets/3d/decoration/officeDrawingTable.png"), displaySize: 64 },
+  officeFireExtinguisher: { source: require("@/assets/3d/decoration/officeFireExtinguisher.png"), displaySize: 48 },
+  officeGlassWall: { source: require("@/assets/3d/decoration/officeGlassWall.png"), displaySize: 80 },
+  officeHeadset: { source: require("@/assets/3d/decoration/officeHeadset.png"), displaySize: 26 },
+  officeKitchenTable: { source: require("@/assets/3d/decoration/officeKitchenTable.png"), displaySize: 64 },
+  officeLongRack: { source: require("@/assets/3d/decoration/officeLongRack.png"), displaySize: 48 },
+  officePaper1: { source: require("@/assets/3d/decoration/officePaper1.png"), displaySize: 26 },
+  officePaper2: { source: require("@/assets/3d/decoration/officePaper2.png"), displaySize: 26 },
+  officePaper3: { source: require("@/assets/3d/decoration/officePaper3.png"), displaySize: 26 },
+  officePaper4: { source: require("@/assets/3d/decoration/officePaper4.png"), displaySize: 26 },
+  officePaper5: { source: require("@/assets/3d/decoration/officePaper5.png"), displaySize: 26 },
+  officePaper6: { source: require("@/assets/3d/decoration/officePaper6.png"), displaySize: 26 },
+  officePartition: { source: require("@/assets/3d/decoration/officePartition.png"), displaySize: 64 },
+  officePencilHolder: { source: require("@/assets/3d/decoration/officePencilHolder.png"), displaySize: 26 },
+  officePhotosA: { source: require("@/assets/3d/decoration/officePhotosA.png"), displaySize: 26 },
+  officePhotosB: { source: require("@/assets/3d/decoration/officePhotosB.png"), displaySize: 48 },
+  officePictureFrame: { source: require("@/assets/3d/decoration/officePictureFrame.png"), displaySize: 26 },
+  officeProjectorStand: { source: require("@/assets/3d/decoration/officeProjectorStand.png"), displaySize: 48 },
+  officeRack: { source: require("@/assets/3d/decoration/officeRack.png"), displaySize: 80 },
+  officeRolledPapers: { source: require("@/assets/3d/decoration/officeRolledPapers.png"), displaySize: 48 },
+  officeRuler: { source: require("@/assets/3d/decoration/officeRuler.png"), displaySize: 48 },
+  officeRumbaRobot: { source: require("@/assets/3d/decoration/officeRumbaRobot.png"), displaySize: 48 },
+  officeStickyNote1: { source: require("@/assets/3d/decoration/officeStickyNote1.png"), displaySize: 16 },
+  officeStickyNote2: { source: require("@/assets/3d/decoration/officeStickyNote2.png"), displaySize: 26 },
+  officeStickyNote3: { source: require("@/assets/3d/decoration/officeStickyNote3.png"), displaySize: 16 },
+  officeStickyNote4: { source: require("@/assets/3d/decoration/officeStickyNote4.png"), displaySize: 16 },
+  officeStickyNote5: { source: require("@/assets/3d/decoration/officeStickyNote5.png"), displaySize: 16 },
+  officeStickyNote6: { source: require("@/assets/3d/decoration/officeStickyNote6.png"), displaySize: 16 },
+  officeStickyNoteBlue: { source: require("@/assets/3d/decoration/officeStickyNoteBlue.png"), displaySize: 16 },
+  officeStickyNoteGreen: { source: require("@/assets/3d/decoration/officeStickyNoteGreen.png"), displaySize: 16 },
+  officeStickyNotePink: { source: require("@/assets/3d/decoration/officeStickyNotePink.png"), displaySize: 16 },
+  officeStickyNoteRed: { source: require("@/assets/3d/decoration/officeStickyNoteRed.png"), displaySize: 16 },
+  officeTelephone: { source: require("@/assets/3d/decoration/officeTelephone.png"), displaySize: 26 },
+  officeTrashEmpty: { source: require("@/assets/3d/decoration/officeTrashEmpty.png"), displaySize: 26 },
+  officeTrashFull: { source: require("@/assets/3d/decoration/officeTrashFull.png"), displaySize: 48 },
+  officeTrashSquare: { source: require("@/assets/3d/decoration/officeTrashSquare.png"), displaySize: 48 },
+  officeTvOff: { source: require("@/assets/3d/decoration/officeTvOff.png"), displaySize: 64 },
+  officeWhiteBox: { source: require("@/assets/3d/decoration/officeWhiteBox.png"), displaySize: 48 },
+  officeWhiteboardEraser: { source: require("@/assets/3d/decoration/officeWhiteboardEraser.png"), displaySize: 26 },
+  officeClockAni: { source: require("@/assets/3d/atlases/officeClockAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 48 },
+  officeCopyMachineDarkAni: { source: require("@/assets/3d/atlases/officeCopyMachineDarkAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 64 },
+  officeCopyMachineWhiteAni: { source: require("@/assets/3d/atlases/officeCopyMachineWhiteAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 64 },
+  officeDocumentShredderAni: { source: require("@/assets/3d/atlases/officeDocumentShredderAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 48 },
+  officeMedicalKitAni: { source: require("@/assets/3d/atlases/officeMedicalKitAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 48 },
+  officeMetallicClosetAni: { source: require("@/assets/3d/atlases/officeMetallicClosetAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 64 },
+  officePrinterAni: { source: require("@/assets/3d/atlases/officePrinterAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 48 },
+  officeProjectorAni: { source: require("@/assets/3d/atlases/officeProjectorAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 64 },
+  officeProjectorScreenAni: { source: require("@/assets/3d/atlases/officeProjectorScreenAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 64 },
+  officeWaterDispenserAni: { source: require("@/assets/3d/atlases/officeWaterDispenserAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 64 },
+  officeWoodClosetAni: { source: require("@/assets/3d/atlases/officeWoodClosetAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 64 },
 } as const satisfies Record<string, ImageEntry | AnimatedEntry>;
 
 export type OfficeDecorationId = keyof typeof OFFICE_DECORATION_CATALOG;

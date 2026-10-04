@@ -6,7 +6,7 @@ import {
 } from "@/utils/parent-gate-challenge";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -35,11 +35,11 @@ export function ParentGateSheet({
   );
   const [showWrong, setShowWrong] = useState(false);
 
-  useEffect(() => {
-    if (!visible) return;
-    setChallenge(createParentGateChallenge());
-    setShowWrong(false);
-  }, [visible]);
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
+    if (visible) { setChallenge(createParentGateChallenge()); setShowWrong(false); }
+  }
 
   const handleChoice = useCallback(
     (choice: number) => {

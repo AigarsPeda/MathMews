@@ -1,3 +1,4 @@
+import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
@@ -113,6 +114,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         rotationIndex:
           placement.rotationIndex > 0 ? placement.rotationIndex : undefined,
         wallFlipped: record.wallFlipped === true ? true : undefined,
+        poweredOn: isAirConditionerDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
         scale: scale !== undefined && scale !== 1 ? scale : undefined,
       });
     }
@@ -266,6 +268,17 @@ export function updatePlacedDecorationOffsetByInstance(
 ): PlacedDecoration[] {
   return (placedDecorations ?? []).map((item) =>
     item.instanceId === instanceId ? { ...item, offset } : item,
+  );
+}
+
+export function togglePlacedAirConditionerByInstance(
+  placedDecorations: PlacedDecoration[] | undefined,
+  instanceId: string,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).map((item) =>
+    item.instanceId === instanceId && isAirConditionerDecorationId(item.decorationId)
+      ? { ...item, poweredOn: !item.poweredOn }
+      : item,
   );
 }
 

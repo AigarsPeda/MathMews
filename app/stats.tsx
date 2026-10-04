@@ -1,3 +1,5 @@
+import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES } from "@/constants/puzzles";
+import { useLocale } from "@/contexts/LocaleProvider";
 import { TOPIC_EMOJI } from "@/constants/topics";
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
@@ -38,7 +40,9 @@ function TopicRow({ row }: { row: TopicStatsRow }) {
   const { t } = useTranslation();
   const label = useTopicLabel(row.topic);
   const accuracy = formatPercent(row.accuracy);
-  const isWeak = (row.mistakeRate ?? 0) >= 0.4 && row.attempts >= 3;
+  const isWeak = row.recentAttempts >= 3
+    ? (row.recentAccuracy ?? 1) <= 0.6
+    : (row.mistakeRate ?? 0) >= 0.4 && row.attempts >= 3;
 
   return (
     <View style={[styles.row, isWeak && styles.rowWeak]}>
@@ -63,6 +67,7 @@ function TopicRow({ row }: { row: TopicStatsRow }) {
           ]}
         />
       </View>
+      {row.recentAttempts > 0 ? <Text style={styles.rowMeta}>{t("stats.recentAccuracy", { count: row.recentAttempts, accuracy: formatPercent(row.recentAccuracy) })}</Text> : null}
       <Text style={styles.rowMeta}>
         {t("stats.attemptsDetail", {
           correct: row.correct,
@@ -77,7 +82,8 @@ function TopicRow({ row }: { row: TopicStatsRow }) {
 export default function StatsScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { progress } = useGame();
+  const { progress, recordInteraction } = useGame();
+  const { locale } = useLocale();
 
   const rows = useMemo(
     () => buildTopicStatsRows(progress.topicStats),
@@ -88,6 +94,18 @@ export default function StatsScreen() {
     [progress.topicStats],
   );
   const toughestRows = useMemo(() => findToughestTopicRows(rows), [rows]);
+
+  const review = (() => {
+    const candidates = rows.filter(row => row.recentAttempts >= 3 && (row.recentAccuracy ?? 1) < 0.8)
+      .sort((a, b) => (a.recentAccuracy ?? 1) - (b.recentAccuracy ?? 1));
+    for (const row of candidates) for (const difficulty of PUZZLE_DIFFICULTIES) {
+      const puzzles = getPuzzlesByDifficulty(locale, difficulty);
+      const index = puzzles.findIndex((puzzle, i) => puzzle.topic === row.topic &&
+        (progress.completedPuzzleIds?.includes(puzzle.id) || i <= progress.puzzlesSolved[difficulty]));
+      if (index >= 0) return { topic: row.topic, difficulty, index };
+    }
+    return null;
+  })();
 
   const handleBack = useCallback(() => {
     triggerHaptic();
@@ -156,6 +174,15 @@ export default function StatsScreen() {
             </Text>
           </View>
         ) : null}
+
+        {review ? <Pressable
+          style={styles.reviewButton}
+          accessibilityRole="button"
+          onPress={() => {
+            recordInteraction(); triggerHaptic();
+            router.push({ pathname: "/play", params: { difficulty: review.difficulty, index: String(review.index) } });
+          }}
+        ><Text style={styles.reviewText}>{t("stats.reviewTopic", { topic: t(`topic.${review.topic}`) })}</Text></Pressable> : null}
 
         <Text style={styles.sectionTitle}>{t("stats.byTopic")}</Text>
         <Text style={styles.sectionHint}>{t("stats.byTopicHint")}</Text>
@@ -243,6 +270,8 @@ const styles = StyleSheet.create({
     color: GameColors.textMuted,
     textAlign: "center",
   },
+  reviewButton: { minHeight: moderateScale(48), padding: moderateScale(14), justifyContent: "center", backgroundColor: GameColors.primary, borderRadius: moderateScale(14) },
+  reviewText: { color: "#FFFFFF", fontSize: moderateScale(15), fontWeight: "700", textAlign: "center" },
   insightCard: {
     backgroundColor: "#FFF0F0",
     borderRadius: moderateScale(16),

@@ -16,7 +16,20 @@
     ],
     "correctIndex": 0,
     "hint": "Start with 12 and take away 4.",
-    "explanation": "12 − 4 = 8 apples left."
+    "explanation": "12 − 4 = 8 apples left.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🍎",
+        "count": 12
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🍎",
+        "count": 12,
+        "removed": 4
+      }
+    }
   },
   {
     "id": "easy-pat-1",
@@ -62,7 +75,19 @@
     ],
     "correctIndex": 0,
     "hint": "\"All but 9\" means 9 did not run away.",
-    "explanation": "9 sheep stayed with the farmer."
+    "explanation": "9 sheep stayed with the farmer.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🐑",
+        "count": 17
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🐑",
+        "count": 9
+      }
+    }
   },
   {
     "id": "easy-fn-1",
@@ -104,7 +129,28 @@
     ],
     "correctIndex": 1,
     "hint": "Add the red and blue balloons together.",
-    "explanation": "5 + 3 = 8 balloons."
+    "explanation": "5 + 3 = 8 balloons.",
+    "visualHelp": {
+      "scene": {
+        "kind": "groups",
+        "emoji": "🎈",
+        "groups": [
+          {
+            "count": 5,
+            "color": "#C73948"
+          },
+          {
+            "count": 3,
+            "color": "#23766F"
+          }
+        ]
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🎈",
+        "count": 8
+      }
+    }
   },
   {
     "id": "easy-ord-1",
@@ -150,7 +196,20 @@
     ],
     "correctIndex": 1,
     "hint": "Subtract the cookies you ate from 10.",
-    "explanation": "10 − 3 = 7 cookies left."
+    "explanation": "10 − 3 = 7 cookies left.",
+    "visualHelp": {
+      "scene": {
+        "kind": "items",
+        "emoji": "🍪",
+        "count": 10
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🍪",
+        "count": 10,
+        "removed": 3
+      }
+    }
   },
   {
     "id": "easy-cmp-1",
@@ -187,7 +246,23 @@
     ],
     "correctIndex": 1,
     "hint": "Multiply rows by toys in each row.",
-    "explanation": "2 × 4 = 8 toys."
+    "explanation": "2 × 4 = 8 toys.",
+    "visualHelp": {
+      "scene": {
+        "kind": "grid",
+        "rows": 2,
+        "cols": 4,
+        "filled": 8,
+        "emoji": "🧸"
+      },
+      "worked": {
+        "kind": "grid",
+        "rows": 2,
+        "cols": 4,
+        "filled": 8,
+        "emoji": "🧸"
+      }
+    }
   },
   {
     "id": "easy-op-1",
@@ -225,15 +300,15 @@
       8
     ],
     "type": "multiple_choice",
-    "question": "I am an odd number. I am greater than 10 but less than 15. What am I?",
+    "question": "I am an odd number, greater than 10 and less than 13. What am I?",
     "choices": [
       "11",
       "12",
       "14"
     ],
     "correctIndex": 0,
-    "hint": "List the odd numbers between 10 and 15.",
-    "explanation": "11 and 13 work, but only 11 is in the choices."
+    "hint": "Check 11 and 12. Which is odd?",
+    "explanation": "11 is odd. 12 is even."
   },
   {
     "id": "easy-tgt-1",
@@ -258,7 +333,7 @@
       ]
     },
     "hint": "Think about order of operations.",
-    "explanation": "Build 9 from 2, 3, 4."
+    "explanation": "2 + 3 + 4 = 9."
   },
   {
     "id": "easy-frac-1",
@@ -552,7 +627,28 @@
     ],
     "correctIndex": 0,
     "hint": "Add the two groups of shells.",
-    "explanation": "6 + 4 = 10 shells."
+    "explanation": "6 + 4 = 10 shells.",
+    "visualHelp": {
+      "scene": {
+        "kind": "groups",
+        "emoji": "🐚",
+        "groups": [
+          {
+            "count": 6,
+            "color": "#C73948"
+          },
+          {
+            "count": 4,
+            "color": "#23766F"
+          }
+        ]
+      },
+      "worked": {
+        "kind": "items",
+        "emoji": "🐚",
+        "count": 10
+      }
+    }
   },
   {
     "id": "easy-cmp-2",
@@ -613,12 +709,12 @@
       ],
       "target": 5,
       "solution": [
-        "−",
-        "÷"
+        "-",
+        "-"
       ]
     },
     "hint": "Think about order of operations.",
-    "explanation": "Build 5 from 10, 2, 3."
+    "explanation": "10 - 2 - 3 = 5."
   },
   {
     "id": "easy-frac-2",
@@ -718,12 +814,12 @@
       ],
       "target": 9,
       "correctIndices": [
-        1,
-        3
+        0,
+        4
       ]
     },
     "hint": "Look for a pair that adds to 9.",
-    "explanation": "6 + 1 = 9."
+    "explanation": "4 + 5 = 9."
   },
   {
     "id": "easy-fix-2",

@@ -3,6 +3,7 @@ import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors, LIFE_BUY_COST } from "@/constants/game";
 import type { PetAnimationState, PetType } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -47,14 +48,8 @@ export function ResultOverlay({
     <AppBottomSheet visible={visible} onClose={onContinue}>
       <View style={styles.card}>
         <View style={styles.petWrap}>
-          <PetDisplay
-            petType={petType}
-            catSkinId={catSkinId}
-            mood={petMood}
-            width={moderateScale(120)}
-            loop
-            transparentBackground
-          />
+          <ResultPet key={`${visible}-${petMood}`} petType={petType}
+            catSkinId={catSkinId} petMood={petMood} />
         </View>
 
         <Text
@@ -138,6 +133,12 @@ export function ResultOverlay({
   );
 }
 
+function ResultPet({ petType, catSkinId, petMood }: Pick<ResultOverlayProps, "petType" | "catSkinId" | "petMood">) {
+  const [finished, setFinished] = useState(false);
+  return <PetDisplay petType={petType} catSkinId={catSkinId} mood={finished ? "idle" : petMood}
+    width={moderateScale(120)} onAnimationComplete={() => setFinished(true)} transparentBackground />;
+}
+
 const styles = StyleSheet.create({
   card: {
     width: "100%",
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     color: GameColors.success,
   },
   titleHint: {
-    color: "#FF9F43",
+    color: "#99501A",
   },
   detail: {
     fontSize: moderateScale(16),

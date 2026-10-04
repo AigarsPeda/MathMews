@@ -1,6 +1,5 @@
 import {
   DOG_MOOD_VIDEO_ASSET_KEYS,
-  DOG_VIDEO_PRIME_SEC,
   DOG_VIDEO_SOURCES,
   type DogVideoAssetKey,
 } from "@/pet-display/registry/dog-video-registry";
@@ -8,7 +7,6 @@ import { useVideoPlayer, type VideoPlayer } from "expo-video";
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   type ReactNode,
 } from "react";
@@ -28,41 +26,20 @@ function setupPlayer(player: VideoPlayer) {
   player.loop = false;
 }
 
-function primePlayer(player: VideoPlayer, startSec: number) {
-  const run = () => {
-    player.currentTime = startSec;
-    player.pause();
-  };
-
-  if (player.status === "readyToPlay") {
-    run();
-    return;
-  }
-
-  const sub = player.addListener("statusChange", ({ status }) => {
-    if (status !== "readyToPlay") return;
-    sub.remove();
-    run();
-  });
-}
-
 function usePetVideoPlayerPool(): PetVideoPlayerPool {
-  const idle = useVideoPlayer(DOG_VIDEO_SOURCES.idle, setupPlayer);
-  const happy_bounce = useVideoPlayer(
-    DOG_VIDEO_SOURCES.happy_bounce,
+  const idle = useVideoPlayer(null, setupPlayer);
+  const happy_bounce = useVideoPlayer(null,
     setupPlayer,
   );
-  const victory_spin = useVideoPlayer(
-    DOG_VIDEO_SOURCES.victory_spin,
+  const victory_spin = useVideoPlayer(null,
     setupPlayer,
   );
-  const sad = useVideoPlayer(DOG_VIDEO_SOURCES.sad, setupPlayer);
-  const sad2 = useVideoPlayer(DOG_VIDEO_SOURCES.sad2, setupPlayer);
-  const eating = useVideoPlayer(DOG_VIDEO_SOURCES.eating, setupPlayer);
-  const correct = useVideoPlayer(DOG_VIDEO_SOURCES.correct, setupPlayer);
-  const sleeping = useVideoPlayer(DOG_VIDEO_SOURCES.sleeping, setupPlayer);
-  const catches_a_coin = useVideoPlayer(
-    DOG_VIDEO_SOURCES.catches_a_coin,
+  const sad = useVideoPlayer(null, setupPlayer);
+  const sad2 = useVideoPlayer(null, setupPlayer);
+  const eating = useVideoPlayer(null, setupPlayer);
+  const correct = useVideoPlayer(null, setupPlayer);
+  const sleeping = useVideoPlayer(null, setupPlayer);
+  const catches_a_coin = useVideoPlayer(null,
     setupPlayer,
   );
 
@@ -95,11 +72,7 @@ function usePetVideoPlayerPool(): PetVideoPlayerPool {
 export function PetVideoMediaProvider({ children }: { children: ReactNode }) {
   const players = usePetVideoPlayerPool();
 
-  useEffect(() => {
-    for (const key of DOG_MOOD_VIDEO_ASSET_KEYS) {
-      primePlayer(players[key], DOG_VIDEO_PRIME_SEC[key]);
-    }
-  }, [players]);
+
 
   return (
     <PetVideoContext.Provider value={players}>

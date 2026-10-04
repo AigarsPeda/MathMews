@@ -1,11 +1,11 @@
 export const visualHelpEn = {
   title: "Picture help",
-  subtitle: "Learn the idea step by step — then solve the nut yourself!",
+  subtitle: "A worked example for this puzzle. Always free.",
   lockedHint: "Unlock a short walkthrough that teaches how to think about this kind of problem.",
   unlockPrice: "{{cost}} coins — unlock forever",
   unlockButton: "Unlock picture help · {{cost}} 🪙",
   watchButton: "Watch picture help",
-  watchFree: "Watch again",
+  watchFree: "Watch picture help · Free",
   needCoins: "Need {{cost}} coins. You have {{coins}} 🪙",
   a11yOpen: "Open picture help",
   a11yClose: "Close picture help",

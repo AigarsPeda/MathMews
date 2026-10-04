@@ -11,6 +11,7 @@ type CatSkinStoreCardProps = {
   isOwned: boolean;
   isEquipped: boolean;
   canAfford: boolean;
+  onPreview: () => void;
   onBuy: () => void;
   onEquip: () => void;
 };
@@ -20,6 +21,7 @@ export function CatSkinStoreCard({
   isOwned,
   isEquipped,
   canAfford,
+  onPreview,
   onBuy,
   onEquip,
 }: CatSkinStoreCardProps) {
@@ -29,7 +31,7 @@ export function CatSkinStoreCard({
 
   return (
     <View style={[styles.card, isEquipped && styles.cardEquipped]}>
-      <View style={styles.previewWrap}>
+      <Pressable style={styles.previewWrap} onPress={onPreview} accessibilityRole="button" accessibilityLabel={t("store.previewItem", { name: skinName })}>
         <PetDisplay
           petType="cat"
           catSkinId={skinId}
@@ -43,7 +45,7 @@ export function CatSkinStoreCard({
             <Text style={styles.equippedBadgeText}>{t("store.equipped")}</Text>
           </View>
         ) : null}
-      </View>
+      </Pressable>
 
       <Text style={styles.title}>{skinName}</Text>
 
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: moderateScale(6),
     right: moderateScale(6),
-    backgroundColor: GameColors.secondary,
+    backgroundColor: "#23766F",
     borderRadius: moderateScale(8),
     paddingHorizontal: moderateScale(8),
     paddingVertical: moderateScale(3),
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   actionBtn: {
-    minHeight: moderateScale(40),
+    minHeight: moderateScale(48),
     borderRadius: moderateScale(12),
     alignItems: "center",
     justifyContent: "center",
@@ -148,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: GameColors.primary,
   },
   actionEquip: {
-    backgroundColor: GameColors.secondary,
+    backgroundColor: "#23766F",
   },
   actionEquipped: {
     backgroundColor: GameColors.background,

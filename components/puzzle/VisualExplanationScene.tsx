@@ -1,3 +1,4 @@
+import { FractionPieChart } from "@/components/puzzle/FractionPieChart";
 import { GameColors } from "@/constants/game";
 import type { VisualScene } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
@@ -290,6 +291,7 @@ function CompareScene({
 export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
   return (
     <View style={styles.stage}>
+      {scene.kind === "fraction" ? <FractionPieChart shaded={scene.numerator} denominator={scene.denominator} /> : null}
       {scene.kind === "items" ? (
         <ItemGrid
           emoji={scene.emoji}

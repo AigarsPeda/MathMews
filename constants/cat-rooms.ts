@@ -1,20 +1,20 @@
-/** Cat room backgrounds — all assets in `assets/pets/Cat/CatItems/Rooms/`. */
+/** Original Blender renders. */
 export const CAT_ROOM_SOURCES = {
-  room1: require("@/assets/pets/Cat/CatItems/Rooms/Room1.png"),
-  room2: require("@/assets/pets/Cat/CatItems/Rooms/Room2.png"),
-  room3: require("@/assets/pets/Cat/CatItems/Rooms/Room3.png"),
-  room4: require("@/assets/pets/Cat/CatItems/Rooms/Room4.png"),
-  room5: require("@/assets/pets/Cat/CatItems/Rooms/Room5.png"),
-  room6: require("@/assets/pets/Cat/CatItems/Rooms/Room6.png"),
-  room7: require("@/assets/pets/Cat/CatItems/Rooms/Room7.png"),
-  room8: require("@/assets/pets/Cat/CatItems/Rooms/Room8.png"),
-  room9: require("@/assets/pets/Cat/CatItems/Rooms/Room9.png"),
-  room10: require("@/assets/pets/Cat/CatItems/Rooms/Room10.png"),
-  room11: require("@/assets/pets/Cat/CatItems/Rooms/Room11.png"),
-  room12: require("@/assets/pets/Cat/CatItems/Rooms/Room12.png"),
-  room13: require("@/assets/pets/Cat/CatItems/Rooms/Room13.png"),
-  room14: require("@/assets/pets/Cat/CatItems/Rooms/Room14.png"),
-  room15: require("@/assets/pets/Cat/CatItems/Rooms/Room15.png"),
+  room1: require("@/assets/3d/rooms/room1.png"),
+  room2: require("@/assets/3d/rooms/room2.png"),
+  room3: require("@/assets/3d/rooms/room3.png"),
+  room4: require("@/assets/3d/rooms/room4.png"),
+  room5: require("@/assets/3d/rooms/room5.png"),
+  room6: require("@/assets/3d/rooms/room6.png"),
+  room7: require("@/assets/3d/rooms/room7.png"),
+  room8: require("@/assets/3d/rooms/room8.png"),
+  room9: require("@/assets/3d/rooms/room9.png"),
+  room10: require("@/assets/3d/rooms/room10.png"),
+  room11: require("@/assets/3d/rooms/room11.png"),
+  room12: require("@/assets/3d/rooms/room12.png"),
+  room13: require("@/assets/3d/rooms/room13.png"),
+  room14: require("@/assets/3d/rooms/room14.png"),
+  room15: require("@/assets/3d/rooms/room15.png"),
 } as const;
 
 export type CatRoomId = keyof typeof CAT_ROOM_SOURCES;

@@ -1,6 +1,7 @@
-import { CAT_SKIN_SHEET, CAT_SKIN_SOURCES } from "@/constants/cat-skins";
+import { CAT_SPLASH_SHEET, CAT_SPLASH_SOURCE } from "@/constants/cat-splash";
 import { CAT_SPRITE_CATALOG } from "@/constants/cat-sprite-catalog";
-import { CAT_SPRITE_FRAME_HEIGHT } from "@/constants/cat-sprites";
+import { useSpriteClock } from "@/pet-display/media/sprite/use-sprite-clock";
+import { useDerivedValue } from "react-native-reanimated";
 import { GameColors } from "@/constants/game";
 import { useIsMounted } from "@/hooks/use-is-mounted";
 import { moderateScale } from "@/utils/scale";
@@ -12,65 +13,63 @@ import {
   Image as SkiaImage,
   useImage,
 } from "@shopify/react-native-skia";
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
 const IDLE = CAT_SPRITE_CATALOG.idle;
-const SHEET_SOURCE = CAT_SKIN_SOURCES.orange;
-const FRAME_SIZE = CAT_SPRITE_FRAME_HEIGHT;
+const SHEET_SOURCE = CAT_SPLASH_SOURCE;
+const FRAME_SIZE = CAT_SPLASH_SHEET.frameSize;
 const FPS = IDLE.fps;
 
-const NEAREST_SAMPLING = {
-  filter: FilterMode.Nearest,
+const SMOOTH_SAMPLING = {
+  filter: FilterMode.Linear,
   mipmap: MipmapMode.None,
 };
 
 type AnimatedSplashCatProps = {
   size?: number;
+  playing?: boolean;
   onReady?: () => void;
 };
 
 function useSplashLayout(size: number) {
-  const pixelScale = Math.max(4, Math.floor(size / FRAME_SIZE));
+  const pixelScale = size / FRAME_SIZE;
   const displaySize = FRAME_SIZE * pixelScale;
-  const scaledSheetWidth = CAT_SKIN_SHEET.width * pixelScale;
-  const scaledSheetHeight = CAT_SKIN_SHEET.height * pixelScale;
+  const scaledSheetWidth = CAT_SPLASH_SHEET.width * pixelScale;
+  const scaledSheetHeight = CAT_SPLASH_SHEET.height * pixelScale;
 
   return { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight };
 }
 
-/** Crisp pixel-art idle loop from the orange skin pack. */
+/** Smooth breathing and blinking from the Blender cat. */
 export function AnimatedSplashCat({
   size = moderateScale(192),
+  playing = true,
   onReady,
 }: AnimatedSplashCatProps) {
   const skiaImage = useImage(SHEET_SOURCE);
-  const [frameIndex, setFrameIndex] = useState(0);
+  const frameIndex = useSpriteClock({ frameCount: IDLE.frameCount, fps: FPS, loop: true, readyPages: skiaImage && playing ? [0] : [] });
   const isMounted = useIsMounted();
+  const [windowLaidOut, setWindowLaidOut] = useState(false);
+  const handleWindowLayout = useCallback(() => setWindowLaidOut(true), []);
   const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
     useSplashLayout(size);
 
-  const imageX = -frameIndex * FRAME_SIZE * pixelScale;
-  const imageY = -IDLE.row * FRAME_SIZE * pixelScale;
+  const imageX = useDerivedValue(() => -(frameIndex.get() % CAT_SPLASH_SHEET.cols) * FRAME_SIZE * pixelScale);
+  const imageY = useDerivedValue(() => -Math.floor(frameIndex.get() / CAT_SPLASH_SHEET.cols) * FRAME_SIZE * pixelScale);
 
   useEffect(() => {
-    if (skiaImage && isMounted.current) {
-      onReady?.();
-    }
-  }, [isMounted, onReady, skiaImage]);
-
-  useEffect(() => {
-    if (!skiaImage) return;
-
-    const interval = setInterval(() => {
-      if (!isMounted.current) {
-        return;
-      }
-      setFrameIndex((current) => (current + 1) % IDLE.frameCount);
-    }, 1000 / FPS);
-
-    return () => clearInterval(interval);
-  }, [isMounted, skiaImage]);
+    if (!skiaImage || !windowLaidOut) return;
+    // Decoding alone does not mean the Canvas has painted. Hold frame zero
+    // beneath the portrait until the laid-out surface gets a drawing turn.
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        if (isMounted.current) onReady?.();
+      });
+    });
+    return () => { cancelAnimationFrame(firstFrame); cancelAnimationFrame(secondFrame); };
+  }, [isMounted, onReady, skiaImage, windowLaidOut]);
 
   const windowStyle = {
     width: displaySize,
@@ -79,12 +78,12 @@ export function AnimatedSplashCat({
   };
 
   if (!skiaImage) {
-    return <View style={[styles.wrap, windowStyle]} />;
+    return <View onLayout={handleWindowLayout} style={[styles.wrap, windowStyle]} />;
   }
 
   return (
-    <View style={[styles.wrap, windowStyle]}>
-      <Canvas style={{ width: displaySize, height: displaySize }}>
+    <View onLayout={handleWindowLayout} style={[styles.wrap, windowStyle]}>
+      <Canvas colorSpace="srgb" style={{ width: displaySize, height: displaySize }}>
         <Group clip={{ x: 0, y: 0, width: displaySize, height: displaySize }}>
           <SkiaImage
             x={imageX}
@@ -93,7 +92,7 @@ export function AnimatedSplashCat({
             image={skiaImage}
             width={scaledSheetWidth}
             height={scaledSheetHeight}
-            sampling={NEAREST_SAMPLING}
+            sampling={SMOOTH_SAMPLING}
           />
         </Group>
       </Canvas>

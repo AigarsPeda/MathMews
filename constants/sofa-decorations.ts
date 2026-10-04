@@ -5,18 +5,9 @@ type ImageEntry = {
 
 /** Sofa pack — shown in the dedicated store tab. */
 export const SOFA_DECORATION_CATALOG = {
-  sofaA: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Sofas/sofa-a.png"),
-    displaySize: 88,
-  },
-  sofaB: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Sofas/sofa-b.png"),
-    displaySize: 88,
-  },
-  sofaPillow: {
-    source: require("@/assets/pets/Cat/CatItems/Decorations/Sofas/pillow.png"),
-    displaySize: 28,
-  },
+  sofaA: { source: require("@/assets/3d/decoration/sofaA.png"), displaySize: 88 },
+  sofaB: { source: require("@/assets/3d/decoration/sofaB.png"), displaySize: 88 },
+  sofaPillow: { source: require("@/assets/3d/decoration/sofaPillow.png"), displaySize: 28 },
 } as const satisfies Record<string, ImageEntry>;
 
 export type SofaDecorationId = keyof typeof SOFA_DECORATION_CATALOG;

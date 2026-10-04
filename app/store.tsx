@@ -1,3 +1,6 @@
+import { StorePreviewSheet, type StorePreviewItem } from "@/components/store/StorePreviewSheet";
+import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
+import { getStoreGoalDetails } from "@/utils/store-goal";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { CatSkinStoreCard } from "@/components/store/CatSkinStoreCard";
 import { DecorationStoreCard } from "@/components/store/DecorationStoreCard";
@@ -27,6 +30,7 @@ import {
   isDecorationUnlocked,
 } from "@/utils/decoration-store";
 import {
+  DECORATION_STORE_TABS,
   DECORATION_IDS_BY_STORE_TAB,
   DECORATION_STORE_SUBTITLE_KEY,
   isDecorationStoreTab,
@@ -55,7 +59,7 @@ import {
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -90,6 +94,7 @@ export default function StoreScreen() {
     pet,
     wallet,
     progress,
+    setProgress,
     purchaseRoom,
     equipRoom,
     purchaseBed,
@@ -115,8 +120,12 @@ export default function StoreScreen() {
   const equippedBedId = pet.bedId as CatBedId | undefined;
   const equippedSkinId = pet.catSkinId as CatSkinId | undefined;
   const placedToys = pet.placedToys ?? [];
-  const placedDecorations = pet.placedDecorations ?? [];
+  const placedDecorations = useMemo(() => pet.placedDecorations ?? [], [pet.placedDecorations]);
   const [activeTab, setActiveTab] = useState<StoreTab>("living");
+  const [ownedOnly, setOwnedOnly] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
+  const [preview, setPreview] = useState<StorePreviewItem | null>(null);
+  const goal = getStoreGoalDetails(progress.storeGoal, wallet.coins, t);
   const [feedback, setFeedback] = useState<StoreFeedback | null>(null);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -544,7 +553,7 @@ export default function StoreScreen() {
 
   const renderDecorationCards = useCallback(
     (decorationIds: readonly CatDecorationId[]) =>
-      decorationIds.map((decorationId) => {
+      decorationIds.filter(id => !ownedOnly || unlockedDecorations.includes(id)).map((decorationId) => {
         const price = getDecorationStorePrice(decorationId);
         const owned = isDecorationUnlocked(decorationId, unlockedDecorations);
         const canAfford =
@@ -561,21 +570,14 @@ export default function StoreScreen() {
             )}
             ownedCount={getDecorationOwnedCount(decorationId, progress)}
             canAfford={canAfford}
-            onBuy={() => handleBuyDecoration(decorationId)}
+            onPreview={() => setPreview({ kind: "decoration", id: decorationId, name: t(`store.decorationName.${decorationId}`), price: getDecorationStorePrice(decorationId), owned, onBuy: () => handleBuyDecoration(decorationId) })}
+                        onBuy={() => handleBuyDecoration(decorationId)}
             onPlace={() => handlePlaceDecoration(decorationId)}
             onRemove={() => handleRemoveDecoration(decorationId)}
           />
         );
       }),
-    [
-      handleBuyDecoration,
-      handlePlaceDecoration,
-      handleRemoveDecoration,
-      placedDecorations,
-      progress,
-      unlockedDecorations,
-      wallet.coins,
-    ],
+    [ownedOnly, handleBuyDecoration, handlePlaceDecoration, handleRemoveDecoration, placedDecorations, progress, unlockedDecorations, wallet.coins, t],
   );
 
   const storeSubtitle = isDecorationStoreTab(activeTab)
@@ -627,6 +629,11 @@ export default function StoreScreen() {
         </View>
 
         <StoreTabBar active={activeTab} onChange={handleTabChange} />
+        <View style={styles.filters}>
+          {isDecorationStoreTab(activeTab) ? <Pressable style={styles.filter} accessibilityRole="button" onPress={() => setShowCategories(true)}><Text style={styles.filterText}>{t(`store.tab${activeTab[0].toUpperCase()}${activeTab.slice(1)}`)} ▾</Text></Pressable> : null}
+          <Pressable style={styles.filter} accessibilityRole="checkbox" accessibilityState={{ checked: ownedOnly }} onPress={() => setOwnedOnly(value => !value)}><Text style={styles.filterText}>{ownedOnly ? "☑" : "☐"} {t("store.ownedOnly")}</Text></Pressable>
+        </View>
+        {goal ? <Text style={styles.goal}>{t("store.goalProgress", { name: goal.name, remaining: goal.remaining })}</Text> : null}
 
         <View style={styles.content}>
           <SlideInNotificationSlot
@@ -648,7 +655,7 @@ export default function StoreScreen() {
             showsVerticalScrollIndicator={false}
           >
             {activeTab === "rooms"
-              ? CAT_ROOM_IDS.map((roomId) => {
+              ? CAT_ROOM_IDS.filter(id => !ownedOnly || unlockedRooms.includes(id)).map((roomId) => {
                   const price = getRoomStorePrice(roomId);
                   const owned = isRoomUnlocked(roomId, unlockedRooms);
                   const canAfford =
@@ -661,13 +668,14 @@ export default function StoreScreen() {
                       isOwned={owned}
                       isEquipped={equippedRoomId === roomId}
                       canAfford={canAfford}
-                      onBuy={() => handleBuy(roomId)}
+                      onPreview={() => setPreview({ kind: "room", id: roomId, name: t("store.roomName", { number: Number(roomId.replace("room", "")) }), price: getRoomStorePrice(roomId), owned, onBuy: () => handleBuy(roomId) })}
+                        onBuy={() => handleBuy(roomId)}
                       onEquip={() => handleEquip(roomId)}
                     />
                   );
                 })
               : activeTab === "colors"
-                ? CAT_SKIN_IDS.map((skinId) => {
+                ? CAT_SKIN_IDS.filter(id => !ownedOnly || unlockedSkins.includes(id)).map((skinId) => {
                     const price = getSkinStorePrice(skinId);
                     const owned = isSkinUnlocked(skinId, unlockedSkins);
                     const canAfford =
@@ -680,13 +688,14 @@ export default function StoreScreen() {
                         isOwned={owned}
                         isEquipped={equippedSkinId === skinId}
                         canAfford={canAfford}
+                        onPreview={() => setPreview({ kind: "skin", id: skinId, name: t(`store.skinName.${skinId}`), price: getSkinStorePrice(skinId), owned, onBuy: () => handleBuySkin(skinId) })}
                         onBuy={() => handleBuySkin(skinId)}
                         onEquip={() => handleEquipSkin(skinId)}
                       />
                     );
                   })
                 : activeTab === "beds"
-                ? CAT_BED_IDS.map((bedId) => {
+                ? CAT_BED_IDS.filter(id => !ownedOnly || unlockedBeds.includes(id)).map((bedId) => {
                     const price = getBedStorePrice(bedId);
                     const owned = isBedUnlocked(bedId, unlockedBeds);
                     const canAfford =
@@ -699,6 +708,7 @@ export default function StoreScreen() {
                         isOwned={owned}
                         isEquipped={equippedBedId === bedId}
                         canAfford={canAfford}
+                        onPreview={() => setPreview({ kind: "bed", id: bedId, name: t(`store.bedName.${bedId}`), price: getBedStorePrice(bedId), owned, onBuy: () => handleBuyBed(bedId) })}
                         onBuy={() => handleBuyBed(bedId)}
                         onEquip={() => handleEquipBed(bedId)}
                         onRemove={() => handleRemoveBed(bedId)}
@@ -706,7 +716,7 @@ export default function StoreScreen() {
                     );
                   })
                 : activeTab === "toys"
-                  ? CAT_TOY_IDS.map((toyId) => {
+                  ? CAT_TOY_IDS.filter(id => !ownedOnly || unlockedToys.includes(id)).map((toyId) => {
                       const price = getToyStorePrice(toyId);
                       const owned = isToyUnlocked(toyId, unlockedToys);
                       const canAfford =
@@ -720,7 +730,8 @@ export default function StoreScreen() {
                           placedCount={countPlacedToys(toyId, placedToys)}
                           ownedCount={getToyOwnedCount(toyId, progress)}
                           canAfford={canAfford}
-                          onBuy={() => handleBuyToy(toyId)}
+                          onPreview={() => setPreview({ kind: "toy", id: toyId, name: t(`store.toyName.${toyId}`), price: getToyStorePrice(toyId), owned, onBuy: () => handleBuyToy(toyId) })}
+                        onBuy={() => handleBuyToy(toyId)}
                           onPlace={() => handlePlaceToy(toyId)}
                           onRemove={() => handleRemoveToy(toyId)}
                         />
@@ -734,11 +745,28 @@ export default function StoreScreen() {
           </ScrollView>
         </View>
       </View>
+      <AppBottomSheet visible={showCategories} onClose={() => setShowCategories(false)} expanded>
+        <ScrollView contentContainerStyle={styles.categories}>
+          <Text style={styles.title}>{t("store.chooseCategory")}</Text>
+          {DECORATION_STORE_TABS.map(tab => <Pressable key={tab} style={styles.category} accessibilityRole="button" onPress={() => { handleTabChange(tab); setShowCategories(false); }}><Text style={styles.filterText}>{t(`store.tab${tab[0].toUpperCase()}${tab.slice(1)}`)}</Text></Pressable>)}
+        </ScrollView>
+      </AppBottomSheet>
+      <StorePreviewSheet item={preview} pet={pet} coins={wallet.coins} onClose={() => setPreview(null)} onSaveGoal={() => {
+        if (!preview) return;
+        setProgress(current => ({ ...current, storeGoal: { kind: preview.kind, id: preview.id } }));
+        setPreview(null);
+      }} />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  filters: { flexDirection: "row", justifyContent: "space-between", gap: 8 },
+  filter: { minHeight: 44, paddingHorizontal: 12, justifyContent: "center", borderRadius: 12, backgroundColor: GameColors.card },
+  filterText: { color: GameColors.text, fontSize: 14, fontWeight: "700" },
+  goal: { color: GameColors.text, fontSize: 14 },
+  categories: { padding: 20, gap: 8 },
+  category: { minHeight: 48, padding: 14, borderRadius: 12, backgroundColor: GameColors.background },
   loading: {
     flex: 1,
     alignItems: "center",

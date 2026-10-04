@@ -1,41 +1,12 @@
-import { ToySheetSprite } from "@/components/pet/ToySheetSprite";
-import {
-  CAT_LARGE_TOY_SHEET,
-  getCatToySource,
-  getLargeToyFrame,
-  type CatToyId,
-} from "@/constants/cat-toys";
-import { Image, type ImageSourcePropType } from "react-native";
-
-type ToySpriteImageProps = {
-  toyId: CatToyId;
-  size: number;
-};
-
-export function ToySpriteImage({ toyId, size }: ToySpriteImageProps) {
-  const frame = getLargeToyFrame(toyId);
-  if (frame) {
-    return (
-      <ToySheetSprite
-        source={CAT_LARGE_TOY_SHEET}
-        col={frame.col}
-        row={frame.row}
-        size={size}
-      />
-    );
-  }
-
+import { AnimatedStripSprite } from "@/components/pet/AnimatedStripSprite";
+import { getCatToySource, isLargeToyId, type CatToyId } from "@/constants/cat-toys";
+import { Image } from "expo-image";
+export function ToySpriteImage({ toyId, size }: { toyId: CatToyId; size: number }) {
   const source = getCatToySource(toyId);
-  if (!source) {
-    return null;
-  }
-
-  return (
-    <Image
-      source={source as ImageSourcePropType}
-      style={{ width: size, height: size }}
-      resizeMode="contain"
-      accessibilityIgnoresInvertColors
-    />
+  if (!source) return null;
+  if (!isLargeToyId(toyId)) return (
+    <AnimatedStripSprite source={source} sheetWidth={1536} sheetHeight={192}
+      frameWidth={192} frameHeight={192} frameCount={8} fps={12} size={size} />
   );
+  return <Image source={source} style={{ width: size, height: size }} contentFit="contain" />;
 }

@@ -137,6 +137,8 @@ export type FractionMatchPayload = {
 };
 
 type PuzzleBase = {
+  /** Authored quantities for worked help, shared across locales. */
+  visualHelp?: { scene: import("@/types/visual-explanation").VisualScene; worked: import("@/types/visual-explanation").VisualScene };
   id: string;
   difficulty: PuzzleDifficulty;
   question: string;
