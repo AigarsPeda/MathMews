@@ -39,7 +39,7 @@ import {
 import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -61,11 +61,17 @@ function triggerHaptic() {
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const waitingToOpenStore = useRef(false);
+  useFocusEffect(useCallback(() => () => { waitingToOpenStore.current = false; }, []));
   const roomActivityRef = useRef<{ active: boolean; returnHome: () => void } | null>(null);
   const handleRoomActivityChange = useCallback((active: boolean, returnHome: () => void) => {
     roomActivityRef.current = { active, returnHome };
-  }, []);
-  const router = useRouter();
+    if (!active && waitingToOpenStore.current) {
+      waitingToOpenStore.current = false;
+      router.push("/store");
+    }
+  }, [router]);
   const { t } = useTranslation();
   const screenInsets = useScreenInsets();
   const { locale } = useLocale();
@@ -83,6 +89,7 @@ export default function HomeScreen() {
     flipEquippedBed,
     scaleEquippedBed,
     removeToyFromRoom,
+    scalePlacedToy,
     moveRoomLayerItem,
     rotatePlacedDecoration,
     flipPlacedDecorationWall,
@@ -254,6 +261,11 @@ export default function HomeScreen() {
   const handleOpenStore = useCallback(() => {
     recordInteraction();
     triggerHaptic();
+    if (roomActivityRef.current?.active) {
+      waitingToOpenStore.current = true;
+      roomActivityRef.current.returnHome();
+      return;
+    }
     router.push("/store");
   }, [recordInteraction, router]);
 
@@ -301,6 +313,12 @@ export default function HomeScreen() {
     recordInteraction();
     triggerHaptic();
   }, [recordInteraction, togglePlacedAirConditioner]);
+
+  const handleScalePlacedToy = useCallback((instanceId: string, direction: "up" | "down") => {
+    if (!scalePlacedToy(instanceId, direction)) return;
+    recordInteraction();
+    triggerHaptic();
+  }, [recordInteraction, scalePlacedToy]);
 
   const handleScalePlacedDecoration = useCallback(
     (instanceId: string, direction: "up" | "down") => {
@@ -536,6 +554,7 @@ export default function HomeScreen() {
               onFlipBed={handleFlipBed}
               onScaleBed={handleScaleBed}
               onPlacedToyRemove={handleRemoveToy}
+              onScalePlacedToy={handleScalePlacedToy}
               onOpenMathStats={handleOpenMathStats}
               onAnimationComplete={handleAnimationComplete}
             />

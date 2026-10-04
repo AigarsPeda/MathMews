@@ -230,8 +230,8 @@ export function canMoveRoomLayerItem(
 }
 
 export const ROOM_PET_LAYER_Z_INDEX = 100;
-export const ROOM_MENU_BACKDROP_Z_INDEX = 150;
-export const ROOM_MENU_OPEN_Z_INDEX = 200;
+export const ROOM_MENU_BACKDROP_Z_INDEX = 600_000;
+export const ROOM_MENU_OPEN_Z_INDEX = 600_100;
 
 export function getRoomLayerZIndex(layerIndex: number, menuOpen: boolean): number {
   return menuOpen ? ROOM_MENU_OPEN_Z_INDEX : layerIndex + 1;

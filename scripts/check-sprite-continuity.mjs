@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 let pages = [], frame = 0;
+let propPages = [];
 const reactions = [];
 const shared = value => ({ get: () => value, set: next => { value = next; } });
 const React = {
@@ -13,13 +14,15 @@ const React = {
 };
 const mocks = {
   react: React,
+  '@/contexts/StartupVisualContext': { useStartupVisualReady: () => {} },
   'react-native': { View: 'View', Pressable: 'Pressable', StyleSheet: { create: value => value } },
   '@shopify/react-native-skia': { Canvas: 'Canvas', Group: 'Group', Image: 'SkiaImage', FilterMode: { Linear: 1 }, MipmapMode: { None: 0 } },
   'react-native-reanimated': { useSharedValue: shared, useDerivedValue: fn => ({ get: fn }), useAnimatedReaction: (read, apply) => reactions.push(() => apply(read(), null)) },
   'react-native-worklets': { scheduleOnRN: (fn, ...args) => fn(...args) },
   '@/constants/game': { GameColors: {} }, '@/utils/scale': { moderateScale: x => x },
-  './use-atlas-pages': { useAtlasPages: () => pages },
+  './use-atlas-pages': { useAtlasPages: sources => sources[0] === 3 ? propPages : pages },
   './use-sprite-clock': { useSpriteClock: () => ({ get: () => frame }) },
+  './room-play-prop': { EMPTY_PLAY_PROP: { image: null, col: 0, row: 0, groundY: .8 } },
 };
 const module = { exports: {} };
 const source = ts.transpileModule(fs.readFileSync('pet-display/media/sprite/PetSpriteRenderer.tsx', 'utf8'), {
@@ -55,3 +58,15 @@ update(reaction, [], 3);
 assert.equal(image.props.image.get(), nextTexture, 'A delayed page must not erase the cat');
 assert.equal(canvas.props.style.width, 324, 'The drawing surface keeps its close-up resolution');
 console.log('Verified a stable Canvas, delayed clip/page continuity, and atomic texture/coordinate changes.');
+const toyTexture = { id: 'yarn-page' };
+const play = { assetKey: 'yarnRoll', sprite: { ...sprite, playProp: { pages: [3], groundY: [.8,.82,.84,.86] } } };
+propPages = [{ page: 0, image: toyTexture }];
+update(play, [{ page: 0, image: oldTexture }], 2);
+assert.equal(controller.props.playProp.get().image, toyTexture, 'Separate toy must follow the same decoded frame as the cat');
+assert.equal(controller.props.playProp.get().col, 2);
+assert.equal(controller.props.playProp.get().groundY, .84, 'Room depth must use the toy ground contact rather than its bounce height');
+update(reaction, [], 0);
+assert.equal(controller.props.playProp.get().image, toyTexture, 'A pending transition must retain both layers together');
+update(reaction, [{ page: 0, image: nextTexture }], 0);
+assert.equal(controller.props.playProp.get().image, null, 'The toy must disappear atomically when the next cat clip is ready');
+console.log('Verified synchronized toy frames, independent ground depth and atomic play-prop removal.');

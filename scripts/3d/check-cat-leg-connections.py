@@ -16,8 +16,10 @@ for skin in ('orange', 'grey', 'white'):
             for anchors, leg, foot, back_leg, back_foot in zip(rig['leg_anchors'],rig['legs'],rig['feet'],rig['back_legs'],rig['back_feet']):
                 for limb, paw, anchor in ((leg,foot,anchors[0]),(back_leg,back_foot,anchors[1])):
                     shoulder = rig['body'].matrix_basis @ Vector(anchor)
-                    for end in (shoulder, paw.location):
-                        local = limb.matrix_basis.inverted() @ end
-                        assert local.length < .999, (skin,state,i,limb.name,'disconnected endpoint',local[:])
+                    points = limb.data.splines[0].bezier_points
+                    assert (points[0].co-shoulder).length < 1e-5, (skin,state,i,limb.name,'detached shoulder/hip')
+                    assert (points[-1].co-paw.location).length < 1e-5, (skin,state,i,limb.name,'detached paw')
+                    assert all(point.radius > 0 for point in points), 'Joint volume must stay positive'
+                    assert points[-1].radius < points[0].radius, 'Legs must taper toward the wrist and toe'
                     assert limb in scope['animated_parts'](rig), 'Connector must survive baked animation playback'
 print(f'Verified torso/paw overlap and keyed leg controls at every pose in all {len(clips)*3} clips.')

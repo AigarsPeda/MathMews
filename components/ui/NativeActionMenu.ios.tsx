@@ -1,8 +1,8 @@
 import { Button, Host, Menu, RNHostView, Section } from "@expo/ui/swift-ui";
 import { accessibilityLabel, buttonStyle, disabled, frame } from "@expo/ui/swift-ui/modifiers";
-import type { NativePlayMenuProps } from "./NativePlayMenu.types";
+import type { NativeActionMenuProps } from "./NativeActionMenu.types";
 
-export function NativePlayMenu({ width, height, actions, title, label, blocked, children, onSelect }: NativePlayMenuProps) {
+export function NativeActionMenu({ width, height, actions, title, label, blocked, children, onSelect }: NativeActionMenuProps) {
   return (
     <Host style={{ width, height }} ignoreSafeArea="all">
       <Menu
@@ -12,8 +12,10 @@ export function NativePlayMenu({ width, height, actions, title, label, blocked, 
         <Section title={title}>
           {actions.map((action) => (
             <Button key={action.id} label={action.title}
+              systemImage={typeof action.image === "string" ? action.image : undefined}
+              role={action.attributes?.destructive ? "destructive" : undefined}
               modifiers={[disabled(action.attributes?.disabled ?? false)]}
-              onPress={() => onSelect(action.id)} />
+              onPress={() => { if (!blocked && !action.attributes?.disabled) onSelect(action.id); }} />
           ))}
         </Section>
       </Menu>

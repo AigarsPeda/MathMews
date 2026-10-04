@@ -108,6 +108,29 @@ const back = switchRoomLayout(changed, 'room1'); assert.deepEqual(captureRoomLay
 assert.deepEqual(captureRoomLayout(switchRoomLayout(back, 'room2')), captureRoomLayout(changed));
 const layoutSave = { ...start, pet: { ...back, savedRoomLayouts: { room1: captureRoomLayout(back) } } };
 assert.equal(parseGameSaveFromValue(layoutSave).save.pet.savedRoomLayouts.room1.bedId, 'brown');
+const { normalizePlacedToys, updatePlacedToyScaleByInstance } = load('@/utils/room-placement');
+const { getPlacedToyScale, getPlacedToyDisplaySize } = load('@/constants/cat-toys');
+const { scaleDecorationBy, canScaleDecorationUp, canScaleDecorationDown } = load('@/constants/decoration-variants');
+const post = { toyId: 'scratchPostRed', instanceId: 'post', offset: { x: .2, y: .3 } };
+const otherPost = { ...post, instanceId: 'other-post' };
+const scaledPosts = updatePlacedToyScaleByInstance([post, otherPost], 'post', scaleDecorationBy(1, 'up'));
+assert.equal(scaledPosts[0].scale, 1.1);
+assert.equal(scaledPosts[1], otherPost, 'Resizing one scratching post preserves other instances');
+assert.equal(post.scale, undefined, 'Resizing preserves undo history');
+assert.ok(getPlacedToyDisplaySize(scaledPosts[0]) > getPlacedToyDisplaySize(post));
+assert.equal(updatePlacedToyScaleByInstance(scaledPosts, 'post', scaleDecorationBy(1.1, 'down'))[0].scale, undefined);
+for (const [input, expected] of [[99, 2.2], [-99, .7], [NaN, 1], [Infinity, 1], [undefined, 1]]) {
+  const normalized = normalizePlacedToys([{ ...post, scale: input }])[0];
+  assert.equal(getPlacedToyScale(normalized), expected);
+}
+assert.equal(canScaleDecorationUp(2.2), false); assert.equal(canScaleDecorationDown(.7), false);
+const toyLayout = captureRoomLayout({ ...start.pet, placedToys: scaledPosts });
+const toySave = parseGameSaveFromValue(JSON.stringify({ ...start, pet: { ...start.pet, placedToys: scaledPosts,
+  roomLayouts: { room2: toyLayout }, savedRoomLayouts: { room1: toyLayout } } })).save;
+assert.equal(toySave.pet.placedToys[0].scale, 1.1, 'Toy size survives closing and reopening the app');
+assert.equal(toySave.pet.roomLayouts.room2.placedToys[0].scale, 1.1, 'Per-room layouts retain toy size');
+assert.equal(toySave.pet.savedRoomLayouts.room1.placedToys[0].scale, 1.1, 'Saved room layouts retain toy size');
+console.log('Verified scratching-post resizing, instance isolation, bounds, legacy defaults, and saved sizes.');
 assert.deepEqual(JSON.parse(JSON.stringify(getSolvedCounts([puzzle.id]))), { easy: 1, medium: 0, hard: 0 });
 await Promise.all([saveGameSave(start), saveGameSave(first.save), clearGameSave()]);
 assert.equal(await loadGameSave(), null, 'Clearing cannot race an older queued save');

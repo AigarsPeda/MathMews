@@ -8,6 +8,7 @@ import { GameProvider } from "@/contexts/GameProvider";
 import { IAPProvider } from "@/contexts/IAPProvider";
 import { LocaleProvider } from "@/contexts/LocaleProvider";
 import { PetDisplayProvider } from "@/pet-display/PetDisplayProvider";
+import { GameColors } from "@/constants/game";
 import "@/i18n";
 import {
   DarkTheme,
@@ -15,7 +16,6 @@ import {
   Stack,
   ThemeProvider,
 } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Dimensions, View, useColorScheme } from "react-native";
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context";
 import "react-native-reanimated";
@@ -31,7 +31,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: GameColors.background }}>
       <SafeAreaProvider initialMetrics={INITIAL_SAFE_AREA}>
       <LocaleProvider>
         <AuthProvider>
@@ -49,6 +49,7 @@ export default function RootLayout() {
                       animation: "slide_from_right",
                       gestureEnabled: true,
                       gestureDirection: "horizontal",
+                      statusBarStyle: colorScheme === "dark" ? "light" : "dark",
                     }}
                   >
                     <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -72,7 +73,6 @@ export default function RootLayout() {
                       options={{ presentation: "modal", title: "Modal" }}
                     />
                   </Stack>
-                  <StatusBar style="auto" />
                 </ThemeProvider>
               </ExpoUIHost>
             </PetDisplayProvider>

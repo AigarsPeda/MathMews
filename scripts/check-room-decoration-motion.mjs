@@ -19,11 +19,14 @@ const React = {
   },
 };
 const shared = (initial = 0) => { let value = initial; return { get: () => value, set: next => { value = next; } }; };
-let roomActivityForTest = null, requestedActivity, returnedHome = 0;
+let roomActivityForTest = null, requestedActivity, returnedHome = 0, roomActivityEnabled;
 const objectX = shared(), objectY = shared(), objectRotation = shared();
 const mocks = {
   '@/pet-display/registry/dog-video-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
-  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, startActivity(kind) { requestedActivity = kind; } }) },
+  '@/hooks/use-room-activity': { useRoomActivity: (_, enabled) => {
+    roomActivityEnabled = enabled;
+    return { activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, startActivity(kind) { requestedActivity = kind; } };
+  } },
   react: React,
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   'react-native': {
@@ -34,6 +37,7 @@ const mocks = {
   'react-native-reanimated': {
     default: { View: 'AnimatedView' }, useReducedMotion: () => false,
     useAnimatedStyle: fn => ({ read: fn }),
+    useDerivedValue: fn => ({ get: fn }),
     useSharedValue: initial => { let value = initial; return { get: () => value, set: next => { value = next; } }; },
   },
   '@/utils/scale': { moderateScale: value => value },
@@ -101,21 +105,11 @@ const first = render();
 const decorationNode = (nodes, id) => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.decorationId === id));
 const ac = decorationNode(first, 'officeAc');
 assert.ok(ac);
-ac.node.props.onMenuAnchorLayout({ pageX: 270, pageY: 10, width: 48, height: 48 });
-ac.node.props.onPetTap();
-states[3] = { pageX: 0, pageY: 0, width: 320, height: 320 };
-const opened = render();
-const menu = opened.find(({ node }) => node.type === 'RoomItemActionMenu');
-const speech = opened.find(({ node }) => node.type === 'PetSpeechBubble');
-const menuLayer = menu.ancestors.at(-1);
-const speechLayer = speech.ancestors.at(-1);
-assert.equal(menuLayer.props.style.zIndex > speechLayer.props.style[0].zIndex, true, 'Menu must cover speech');
-assert.equal(menu.ancestors.at(-2), speech.ancestors.at(-2), 'Both overlays must share a parent for reliable native stacking');
-assert.ok(!menu.ancestors.some(node => node.props.onPanResponderMove), 'Menu must be outside the scaled scene');
-assert.equal(menu.node.props.actions[0].label, 'home.turnOffAirConditioner');
-menu.node.props.actions[0].onPress();
+const menu = ac.node.props.menuActions;
+assert.equal(menu[0].label, 'home.turnOffAirConditioner');
+menu[0].onPress();
 assert.equal(toggled, 'ac-one');
-assert.equal(render(items).find(({ node }) => node.type === 'RoomItemActionMenu').node.props.actions[0].label, 'home.turnOnAirConditioner');
+assert.equal(decorationNode(render(items), 'officeAc').node.props.menuActions[0].label, 'home.turnOnAirConditioner');
 
 const sofa = { decorationId: 'sofaA', instanceId: 'sofa', offset: { x: .3, y: .1 } };
 const normalRoom = render([sofa]);
@@ -141,7 +135,7 @@ picker.props.onSelect(picker.props.items[0].item);
 const selectedRoom = render([sofa], moveProps);
 assert.equal(selectedRoom.find(({ node }) => node.type === 'RoomEditorSheet').node.props.visible, false, 'Choosing an item returns to the visible room');
 assert.equal(sofaNode(selectedRoom).props.selected, true, 'Highlight the one item being moved');
-assert.equal(selectedRoom.some(({ node }) => node.type === 'RoomItemActionMenu'), false, 'Choosing an item must not open an unrelated action menu');
+assert.equal(selectedRoom.some(({ node }) => node.type === 'RoomActionMenu'), false, 'Choosing an item must not open an unrelated action menu');
 const moveControls = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node;
 moveControls.props.onMove('left');
 assert.equal(moved.id, sofa.instanceId);
@@ -159,14 +153,29 @@ states[1] = { width: 320, height: 320 };
 const ball = { toyId: 'blueBall', instanceId: 'ball', offset: { x: .3, y: .4 } };
 let petTaps = 0;
 const extra = { placedToys: [ball], ownedToyIds: ['mouse'], onPetPress: () => petTaps++ };
-const commandRoom = render([sofa], extra);
-commandRoom.find(({ node }) => node.props.accessibilityLabel === 'home.catActions').node.props.onPress();
-const commandMenu = render([sofa], extra).find(({ node }) => node.type === 'RoomItemActionMenu').node;
+const catMenu = nodes => nodes.find(({ node }) => node.type === 'RoomActionMenu' && node.props.label === 'home.catActions').node;
+const commandMenu = catMenu(render([sofa], extra));
 assert.deepEqual(Array.from(commandMenu.props.actions, action => action.label), [
   'home.pet', 'home.catCommands.sofaSit', 'home.catCommands.sofaSleep', 'home.catCommands.toyPlay', 'home.catCommands.mouseChase',
 ]);
 commandMenu.props.actions.find(action => action.label === 'home.catCommands.sofaSleep').onPress();
 assert.equal(requestedActivity, 'sofaSleep');
+for (const zoom of [2, 3]) {
+  render([sofa], extra).find(({ node }) => node.props.accessibilityValue).node.props.onPress();
+  const zoomedMenu = catMenu(render([sofa], extra));
+  assert.equal(zoomedMenu.props.blocked, false, `Cat actions must remain tappable at ${zoom}x zoom`);
+  assert.equal(roomActivityEnabled, true, 'Zoom must allow the selected room animation to run');
+  requestedActivity = null;
+  zoomedMenu.props.actions.find(action => action.label === 'home.catCommands.sofaSleep').onPress();
+  assert.equal(requestedActivity, 'sofaSleep');
+  assert.equal(render([sofa], extra).find(({ node }) => node.props.accessibilityValue).node.props.accessibilityLabel,
+    zoom === 3 ? 'home.resetZoom' : 'home.zoomCat', 'Choosing a command must preserve the zoom');
+}
+assert.equal(catMenu(render([sofa], { ...extra, roomActivityBlocked: true })).props.blocked, true,
+  'Care animations still block overlapping cat commands');
+assert.equal(roomActivityEnabled, false);
+render([sofa], extra).find(({ node }) => node.props.accessibilityLabel === 'home.resetZoom').node.props.onPress();
+console.log('Verified native Cat actions dispatch commands at 2x and 3x zoom while care remains protected.');
 const planner = load('@/utils/room-activities');
 const room = { width: 320, height: 320, petSize: 120, sizeScale: 1, homeOffset: { x: 0, y: .12 },
   decorations: [sofa], toys: [ball], ownedToyIds: ['mouse'], hungry: false, asleep: false };
@@ -188,19 +197,31 @@ assert.equal(style(playingYarn.props.children[0].props.style).transform[0].rotat
 roomActivityForTest = null;
 console.log('Verified command menu eligibility, sleep command dispatch, returning instead of petting, and movement/rotation of actual placed balls and yarn.');
 
-const actionMenu = load(path.join(root, 'components/pet/RoomItemActionMenu.tsx')).RoomItemActionMenu;
-states.length = 0; stateIndex = 0;
-const bounds = { pageX: 0, pageY: 0, width: 320, height: 260 };
-const nodes = flatten(actionMenu({
-  actions: Array.from({ length: 8 }, (_, i) => ({ label: String(i), icon: 'north', onPress() {} })),
-  anchorRect: { pageX: 300, pageY: 0, width: 48, height: 48 }, roomBounds: bounds,
-}));
-const anchor = style(nodes[0].node.props.style);
-assert.ok(anchor.left >= 8 && anchor.left + anchor.width <= 312, 'Menu must fit horizontally near a wall');
-assert.ok(anchor.top >= 8);
-const scroll = nodes.find(({ node }) => node.type === 'ScrollView');
-assert.ok(scroll.node.props.style.maxHeight + anchor.top + 6 <= 252, 'Long menus must fit vertically and scroll');
-console.log('Verified independent AC power, save reload, toggled labels, shared overlay stacking, and small-room menu bounds.');
+roomActivityForTest = { plan: planner.buildRoomActivity(room, 0, 'sofaSit'), stepIndex: 2 };
+const beforeDecorate = returnedHome;
+render([sofa]).find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
+assert.equal(returnedHome, beforeDecorate + 1, 'Decorating asks the seated cat to get down first');
+const waitingRoom = render([sofa]);
+assert.equal(sofaNode(waitingRoom).props.allowDrag, false, 'Keep the occupied sofa in place during the return');
+assert.equal(waitingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.disabled, true);
+roomActivityForTest = null; render([sofa]);
+assert.equal(sofaNode(render([sofa])).props.allowDrag, true, 'Decorating begins after the return finishes');
+const post = { toyId: 'scratchPostRed', instanceId: 'post', offset: { x: .2, y: .3 }, scale: 1.5 };
+const scaled = [];
+const toyProps = { placedToys: [post], onScalePlacedToy: (id, direction) => scaled.push([id, direction]), onPlacedToyRemove() {} };
+const postNode = render([sofa], toyProps).find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.toyId === post.toyId)).node;
+assert.equal(postNode.props.petSize, 72, 'Render and drag bounds both use the saved scratching-post size');
+const postMenu = postNode.props.menuActions;
+assert.deepEqual(Array.from(postMenu, action => action.label), ['home.makeBigger', 'home.makeSmaller', 'home.removeFromRoom']);
+postMenu[0].onPress(); postMenu[1].onPress();
+assert.deepEqual(scaled, [['post', 'up'], ['post', 'down']]);
+for (const [scale, disabledIndex] of [[2.2, 0], [.7, 1]]) {
+  const actions = render([sofa], { ...toyProps, placedToys: [{ ...post, scale }] }).find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.toyId === post.toyId)).node.props.menuActions;
+  assert.equal(actions[disabledIndex].disabled, true, 'Disable resizing beyond furniture limits');
+}
+console.log('Verified decorating waits for the cat, and scratching posts expose bounded resize controls.');
+
+console.log('Verified independent AC power, save reload, toggled native menu labels and bounded room-item actions.');
 
 let activity = { active: true, reduceMotion: false };
 let animationCount = 0;

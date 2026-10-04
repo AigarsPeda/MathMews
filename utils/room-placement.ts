@@ -70,10 +70,13 @@ export function normalizePlacedToys(value: unknown): PlacedToy[] {
           : undefined;
       const offset = normalizeRoomItemOffset(record.offset);
       if (!toyId || !offset) continue;
+      const scale = typeof record.scale === "number" && Number.isFinite(record.scale)
+        ? clampDecorationScale(record.scale) : 1;
       placed.push({
         toyId,
         instanceId: resolvePlacementInstanceId(record, toyId, index),
         offset,
+        scale: scale !== 1 ? scale : undefined,
       });
     }
     return placed;
@@ -269,6 +272,16 @@ export function updatePlacedDecorationOffsetByInstance(
   return (placedDecorations ?? []).map((item) =>
     item.instanceId === instanceId ? { ...item, offset } : item,
   );
+}
+
+export function updatePlacedToyScaleByInstance(
+  placedToys: PlacedToy[] | undefined,
+  instanceId: string,
+  scale: number,
+): PlacedToy[] {
+  const nextScale = clampDecorationScale(scale);
+  return (placedToys ?? []).map(item => item.instanceId === instanceId
+    ? { ...item, scale: nextScale !== 1 ? nextScale : undefined } : item);
 }
 
 export function togglePlacedAirConditionerByInstance(

@@ -5,5 +5,6 @@ function run(command,args){const result=spawnSync(command,args,{stdio:'inherit'}
 run(blender,['--background','--python-exit-code','1','--python','scripts/3d/render_assets.py','--',...process.argv.slice(2)]);
 run(blender,['--background','--python-exit-code','1','--python','scripts/3d/render_assets.py','--','--only','branding']);
 run(process.execPath,['scripts/3d/pack.mjs']);
+run(process.execPath,['scripts/3d/measure-room-depth.mjs']);
 run(process.execPath,['scripts/generate-branding.mjs']);
 run(process.execPath,['scripts/3d/verify.mjs']);

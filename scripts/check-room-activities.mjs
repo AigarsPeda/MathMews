@@ -318,3 +318,32 @@ assert.equal(render().activity.plan.steps[render().activity.stepIndex].hold, tru
 render().returnHome(); render(); advance(2400); render();
 assert.equal(render().activity, null);
 console.log('Verified deliberate sofa commands and return-home completion under Reduce Motion.');
+
+// Opening another screen must freeze a sofa pose, then visibly return on focus.
+for (const kind of ['sofaSit', 'sofaSleep']) {
+  enabled = false; render(); advance(0);
+  visibility = { active: true, reduceMotion: false }; enabled = true; render();
+  render().startActivity(kind); render(); advance(0);
+  const plan = render().activity.plan;
+  advance(plan.steps.slice(0, kind === 'sofaSleep' ? 3 : 2).reduce((sum, step) => sum + step.durationMs, 0));
+  const sofaX = petX.get(), sofaY = petY.get(), sofaScale = render().scale.get();
+  interaction++; render(); render();
+  visibility = { active: false, reduceMotion: false }; render(); advance(60_000);
+  assert.equal(petX.get(), sofaX, 'Covering the room must not teleport the cat horizontally');
+  assert.equal(petY.get(), sofaY, 'Covering the room must not teleport the cat to the floor');
+  assert.equal(render().scale.get(), sofaScale, 'The seated size stays unchanged while covered');
+  assert.equal(render().activity.plan.kind, kind, 'Keep the seated/sleeping pose while covered');
+  assert.equal(timers.size, 0, 'Covered room activities do no background work');
+  visibility = { active: true, reduceMotion: false }; render(); advance(0);
+  const exit = render().activity.plan;
+  assert.equal(exit.kind, 'returnHome');
+  assert.equal(exit.steps[kind === 'sofaSleep' ? 1 : 0].animation, 'jumpOff');
+  if (kind === 'sofaSleep') {
+    assert.equal(exit.steps[0].reverse, true, 'Wake up on the sofa before jumping down');
+    assert.equal(petY.get(), sofaY);
+  }
+  advance(exit.steps.reduce((sum, step) => sum + step.durationMs, 0)); render();
+  assert.equal(render().activity, null);
+  assert.equal(petX.get(), -30); assert.equal(petY.get(), 30);
+}
+console.log('Verified covered sitting/sleeping cats keep their pose and animate getting down on focus.');

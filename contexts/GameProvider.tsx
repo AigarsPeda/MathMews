@@ -12,7 +12,7 @@ import {
   getEquippedBedScale,
   scaleBedBy,
 } from "@/constants/cat-beds";
-import { resolveCatToyId, type CatToyId } from "@/constants/cat-toys";
+import { getPlacedToyScale, resolveCatToyId, type CatToyId } from "@/constants/cat-toys";
 import { resolveCatDecorationId,
   type CatDecorationId,
 } from "@/constants/cat-decorations";
@@ -68,6 +68,7 @@ import {
   countPlacedDecorations,
   countPlacedToys,
   findPlacedDecorationByInstance,
+  findPlacedToyByInstance,
   removeOnePlacedDecoration,
   removeOnePlacedToy,
   removePlacedDecorationByInstance,
@@ -75,6 +76,7 @@ import {
   togglePlacedAirConditionerByInstance,
   updatePlacedDecorationRotationByInstance,
   updatePlacedDecorationScaleByInstance,
+  updatePlacedToyScaleByInstance,
   updatePlacedDecorationWallFlipByInstance,
 } from "@/utils/room-placement";
 import {
@@ -150,6 +152,7 @@ type GameContextValue = {
   purchaseToy: (toyId: CatToyId) => ToyPurchaseResult;
   placeToyInRoom: (toyId: CatToyId) => boolean;
   removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
+  scalePlacedToy: (instanceId: string, direction: "up" | "down") => boolean;
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   removeDecorationFromRoom: (
@@ -909,6 +912,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
+  const scalePlacedToy = useCallback((instanceId: string, direction: "up" | "down") => {
+    const current = saveRef.current;
+    const placed = findPlacedToyByInstance(current.pet.placedToys, instanceId);
+    if (!placed) return false;
+    const scale = getPlacedToyScale(placed);
+    if ((direction === "up" && !canScaleDecorationUp(scale)) ||
+      (direction === "down" && !canScaleDecorationDown(scale))) return false;
+    setSave({ ...current, pet: { ...current.pet,
+      placedToys: updatePlacedToyScaleByInstance(current.pet.placedToys, instanceId, scaleDecorationBy(scale, direction)),
+    } });
+    return true;
+  }, [setSave]);
+
   const scalePlacedDecoration = useCallback(
     (instanceId: string, direction: "up" | "down") => {
       const current = saveRef.current;
@@ -1185,6 +1201,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseToy,
       placeToyInRoom,
       removeToyFromRoom,
+      scalePlacedToy,
       purchaseDecoration,
       placeDecorationInRoom,
       removeDecorationFromRoom,
@@ -1246,6 +1263,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseToy,
       placeToyInRoom,
       removeToyFromRoom,
+      scalePlacedToy,
       purchaseDecoration,
       placeDecorationInRoom,
       removeDecorationFromRoom,

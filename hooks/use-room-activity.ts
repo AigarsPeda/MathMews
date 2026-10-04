@@ -37,7 +37,8 @@ export function useRoomActivity(
   const handledRequest = useRef(0);
   const [request, setRequest] = useState<ActivityRequest | null>(null);
   const [state, setState] = useState<ActivityState | null>(null);
-  const activity = enabled && active ? state : null;
+  // Covered screens keep the visible pose; only their clock is paused.
+  const activity = enabled ? state : null;
   const requestActivity = useCallback((kind: ActivityRequest["kind"]) => {
     const current = running.current;
     if (current && isCatJump(current.plan.steps[current.stepIndex].animation)) {
@@ -143,7 +144,12 @@ export function useRoomActivity(
       else timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS + (turn.current % 5) * 700);
     };
     const current = running.current;
-    if (!enabled || !active) {
+    if (!active) {
+      // Cleanup stops travel and timers. Preserve the current pose so focus
+      // can resume with a visible journey home, including getting off a sofa.
+      return;
+    }
+    if (!enabled) {
       running.current = null;
       pendingCommand.current = null;
       petX.set(home.x); petY.set(home.y); scale.set(1); facing.set(1);

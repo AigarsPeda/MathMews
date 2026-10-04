@@ -34,6 +34,8 @@ export type PlacedToy = {
   /** Unique id per placed instance (supports multiple of the same toy). */
   instanceId: string;
   offset: RoomItemOffset;
+  /** Display scale multiplier (default 1). */
+  scale?: number;
 };
 
 export type PlacedDecoration = {

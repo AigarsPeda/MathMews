@@ -4,14 +4,15 @@ import { moderateScale } from "@/utils/scale";
 import {
   type ReactNode,
   useCallback,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { PanResponder, StyleSheet, View } from "react-native";
-import type { RoomMenuAnchorRect } from "@/components/pet/room-menu-types";
+import { RoomActionMenu, type RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
+import { getRoomDepthZIndex } from "@/utils/room-depth";
+import { ROOM_MENU_OPEN_Z_INDEX } from "@/utils/room-layer-order";
 
 export type RoomPetOffset = {
   x: number;
@@ -38,7 +39,11 @@ type DraggableRoomPetProps = {
   onPositionChange?: (position: { x: number; y: number }) => void;
   onPetTap?: () => void;
   layerZIndex?: number;
-  onMenuAnchorLayout?: (rect: RoomMenuAnchorRect) => void;
+  /** Ground contact below the sprite center, as a fraction of its size. */
+  depthAnchor?: number;
+  depthScale?: SharedValue<number>;
+  depthY?: SharedValue<number>;
+  menuActions?: RoomItemMenuAction[];
 };
 
 function maxAxisOffset(roomSize: number, petSize: number) {
@@ -104,7 +109,10 @@ export function DraggableRoomPet({
   onPositionChange,
   onPetTap,
   layerZIndex = 1,
-  onMenuAnchorLayout,
+  depthAnchor,
+  depthScale,
+  depthY,
+  menuActions,
 }: DraggableRoomPetProps) {
   const { t } = useTranslation();
   const [roomSize, setRoomSize] = useState({ width: 0, height: 0 });
@@ -116,7 +124,6 @@ export function DraggableRoomPet({
   useLayoutEffect(() => {
     if (!dragging.get()) onPositionChange?.(position);
   }, [dragging, onPositionChange, position]);
-  const petSlotRef = useRef<View>(null);
 
   const positionRef = useRef(position);
 
@@ -128,22 +135,12 @@ export function DraggableRoomPet({
 
   const onPetTapRef = useRef(onPetTap);
 
-  const onMenuAnchorLayoutRef = useRef(onMenuAnchorLayout);
   useLayoutEffect(() => {
     if (!dragging.get()) positionRef.current = position;
     onOffsetChangeRef.current = onOffsetChange;
     onPositionChangeRef.current = onPositionChange;
     onPetTapRef.current = onPetTap;
-    onMenuAnchorLayoutRef.current = onMenuAnchorLayout;
-  }, [dragging, position, onOffsetChange, onPositionChange, onPetTap, onMenuAnchorLayout]);
-
-  const reportMenuAnchor = useCallback(() => {
-    if (!onMenuAnchorLayoutRef.current) return;
-
-    petSlotRef.current?.measureInWindow((pageX, pageY, width, height) => {
-      onMenuAnchorLayoutRef.current?.({ pageX, pageY, width, height });
-    });
-  }, []);
+  }, [dragging, position, onOffsetChange, onPositionChange, onPetTap]);
 
   const resolvedOffset = initialOffset ?? DEFAULT_OFFSET;
   const resolvedHitSize = Math.min(hitSize ?? petSize, petSize);
@@ -171,12 +168,15 @@ export function DraggableRoomPet({
   }, [petSize, roomSize.height, roomSize.width, snapToGrid]);
 
   const hasTap = Boolean(onPetTap);
+  const hasMenu = Boolean(menuActions?.length);
   const panResponder = useMemo(
     () =>
       // PanResponder stores these event callbacks without invoking them during render.
       // eslint-disable-next-line react-hooks/refs
       PanResponder.create({
         onStartShouldSetPanResponder: () => interactive && (allowDrag || hasTap),
+        onMoveShouldSetPanResponderCapture: (_, gesture) =>
+          interactive && hasMenu && allowDrag && Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
         onMoveShouldSetPanResponder: (_, gesture) =>
           interactive && allowDrag && Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
         onPanResponderGrant: () => {
@@ -199,7 +199,6 @@ export function DraggableRoomPet({
         onPanResponderRelease: () => {
           dragging.set(false);
           if (!gestureMovedRef.current) {
-            reportMenuAnchor();
             onPetTapRef.current?.();
             return;
           }
@@ -214,7 +213,7 @@ export function DraggableRoomPet({
           }
         },
       }),
-    [allowDrag, hasTap, interactive, commitOffset, petSize, reportMenuAnchor, roomSize.height, roomSize.width, dragging, liveX, liveY],
+    [allowDrag, hasTap, interactive, hasMenu, commitOffset, petSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
   );
 
   const halfPet = petSize / 2;
@@ -223,21 +222,22 @@ export function DraggableRoomPet({
   const top =
     roomSize.height > 0 ? roomSize.height / 2 - halfPet : 0;
 
-  useEffect(() => {
-    reportMenuAnchor();
-  }, [left, top, petSize, reportMenuAnchor]);
-
   const livePositionStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: animatedPosition && !dragging.get() ? animatedPosition.x.get() : liveX.get() },
       { translateY: animatedPosition && !dragging.get() ? animatedPosition.y.get() : liveY.get() },
     ],
   }));
+  const depthStyle = useAnimatedStyle(() => ({
+    zIndex: (depthAnchor === undefined && depthY === undefined) || layerZIndex >= ROOM_MENU_OPEN_Z_INDEX ? layerZIndex
+      : getRoomDepthZIndex(depthY?.get() ?? ((animatedPosition && !dragging.get() ? animatedPosition.y.get() : liveY.get())
+          + petSize * (depthAnchor ?? 0) * (depthScale?.get() ?? 1)), layerZIndex),
+  }));
 
   return (
-    <View
+    <Animated.View
       pointerEvents="box-none"
-      style={[styles.layer, { zIndex: layerZIndex }]}
+      style={[styles.layer, depthStyle]}
       onLayout={(event) => {
         const { width, height } = event.nativeEvent.layout;
         setRoomSize({ width, height });
@@ -245,8 +245,6 @@ export function DraggableRoomPet({
       }}
     >
       <Animated.View
-        ref={petSlotRef}
-        onLayout={reportMenuAnchor}
         style={[
           styles.petSlot,
           {
@@ -274,7 +272,7 @@ export function DraggableRoomPet({
               top: hitInset,
             },
           ]}
-          accessible={interactive && Boolean(accessibilityLabel)}
+          accessible={interactive && !hasMenu && Boolean(accessibilityLabel)}
           accessibilityLabel={accessibilityLabel}
           accessibilityRole="button"
           accessibilityState={{ selected }}
@@ -282,10 +280,10 @@ export function DraggableRoomPet({
             { name: "activate" },
             ...(allowDrag ? ["moveLeft", "moveRight", "moveUp", "moveDown"].map(name => ({ name, label: t(`home.nudge${name.replace("move", "").toLowerCase()}`) })) : []),
           ]}
-          onAccessibilityTap={() => { reportMenuAnchor(); onPetTapRef.current?.(); }}
+          onAccessibilityTap={() => { onPetTapRef.current?.(); }}
           onAccessibilityAction={event => {
             const action = event.nativeEvent.actionName;
-            if (action === "activate") { reportMenuAnchor(); onPetTapRef.current?.(); return; }
+            if (action === "activate") { onPetTapRef.current?.(); return; }
             if (!allowDrag) return;
             const next = clampPosition(positionRef.current.x + (action === "moveLeft" ? -12 : action === "moveRight" ? 12 : 0),
               positionRef.current.y + (action === "moveUp" ? -12 : action === "moveDown" ? 12 : 0), roomSize.width, roomSize.height, petSize);
@@ -294,9 +292,17 @@ export function DraggableRoomPet({
           collapsable={false}
           pointerEvents={interactive ? "auto" : "none"}
           {...panResponder.panHandlers}
-        />
+        >
+          {hasMenu && menuActions ? (
+            <RoomActionMenu actions={menuActions} label={accessibilityLabel ?? ""}
+              size={{ width: resolvedHitSize, height: resolvedHitSize }}>
+              <View style={{ width: resolvedHitSize, height: resolvedHitSize }}
+                {...panResponder.panHandlers} />
+            </RoomActionMenu>
+          ) : null}
+        </View>
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 }
 

@@ -12,6 +12,8 @@ export type SpriteSheetConfig = {
   source: number;
   /** Optional bounded texture pages, with frame coordinates local to each page. */
   pages?: readonly number[];
+  /** Independently depth-sorted play prop, sharing this clip's frame clock. */
+  playProp?: { pages: readonly number[]; groundY: readonly number[] };
   framesPerPage?: number;
   frameWidth: number;
   frameHeight: number;

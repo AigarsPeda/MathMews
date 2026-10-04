@@ -8,6 +8,7 @@ import sharp from 'sharp';
 
 const require = createRequire(import.meta.url);
 const { withPlugins } = require('expo/config-plugins');
+const { generateImageAsync } = require('@expo/image-utils');
 const xcode = require('xcode');
 const { expo } = JSON.parse(await fs.readFile('app.json', 'utf8'));
 const nativePlugins = expo.plugins.filter(spec => {
@@ -117,4 +118,25 @@ try {
   console.log('Verified real Expo plugin ordering, native launch PNG generation, Xcode resource copying and repeated-prebuild stability.');
 } finally {
   await fs.rm(root, { recursive: true, force: true });
+}
+
+// A correct config does not update a previously generated native project.
+// Verify its actual resources when checking a local iOS build.
+if (process.argv[2]) {
+  const appRoot = path.resolve(process.argv[2]);
+  for (const [scale, suffix] of [[1, ''], [2, '@2x'], [3, '@3x']]) {
+    const { source } = await generateImageAsync(
+      { projectRoot: process.cwd() },
+      { src: './assets/images/splash-launch.png', width: 320 * scale, height: 320 * scale },
+    );
+    const expected = await sharp(source).ensureAlpha().raw().toBuffer();
+    for (const relative of [
+      `LaunchImages/MewsLaunch${suffix}.png`,
+      `Images.xcassets/SplashScreenLogo.imageset/image${suffix}.png`,
+    ]) {
+      const actual = await sharp(path.join(appRoot, relative)).ensureAlpha().raw().toBuffer();
+      assert.ok(actual.equals(expected), `${relative} contains stale launch artwork. Run npm run preios before rebuilding.`);
+    }
+  }
+  console.log('Verified generated native launch resources contain the current splash artwork at every scale.');
 }

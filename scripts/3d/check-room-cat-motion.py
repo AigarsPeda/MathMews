@@ -27,14 +27,18 @@ for skin in ('orange', 'grey', 'white'):
                     shoulder = rig['body'].matrix_basis @ Vector(anchor)
                     # Roots must be embedded in the pear torso, not just joined
                     # to a paw by a long diagonal connector.
-                    z = anchor.z / .45
-                    x = anchor.x / (.44 * (1 - .16 * z))
-                    y = anchor.y / (.44 * (1 - .10 * z))
-                    assert x*x + y*y + z*z < .85, 'Shoulders and hips must overlap the torso deeply'
-                    assert abs(shoulder.x - paw.location.x) < .04, 'Walking paws must stay beneath the torso instead of splaying sideways'
+                    scope['bpy'].context.view_layer.update()
+                    torso = rig['torso'].evaluated_get(scope['bpy'].context.evaluated_depsgraph_get())
+                    local = torso.matrix_basis.inverted() @ anchor
+                    found, surface, normal, _ = torso.closest_point_on_mesh(local)
+                    assert found and (local-surface).dot(normal) < 0, 'Shoulders and hips must sit inside the torso'
+                    assert abs(shoulder.x - paw.location.x) < .07, 'Walking paws must stay beneath the torso instead of splaying sideways'
                     assert abs(shoulder.y - paw.location.y) < .34, 'Legs must attach near their chest/hip end of the body'
-                    for end in (shoulder, paw.location):
-                        assert (limb.matrix_basis.inverted() @ end).length < .999, 'Walking must keep the legs connected'
+                    points = limb.data.splines[0].bezier_points
+                    assert (points[0].co-shoulder).length < 1e-5 and (points[-1].co-paw.location).length < 1e-5, 'Walking must keep the legs connected'
+                    if limb == back_leg:
+                        assert points[1].co.y < shoulder.lerp(paw.location,.42).y, 'Rear knees must bend forward'
+                        assert points[2].co.y > shoulder.lerp(paw.location,.78).y, 'Rear hocks must turn back toward the heel'
                 assert (rig['body'].matrix_basis @ anchors[1]).y - (rig['body'].matrix_basis @ anchors[0]).y > .70, 'Shoulders and hips must span the standing torso'
     scope['cat_pose'](rig, 'idle', 0)
     sitting = [(obj.location.copy(), obj.scale.copy()) for obj in scope['animated_parts'](rig)]

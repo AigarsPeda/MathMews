@@ -1,10 +1,11 @@
 """Original Math Mews 3D assets. Run with Blender --background --python this_file -- --only preview."""
 import bpy, math, json, os, sys, random
+from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
-from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, smoothstep, smooth_window, pulse, care_action_time
+from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, key_cat_geometry, smoothstep, smooth_window, pulse, care_action_time
 OUT=ROOT/'assets/3d'
 OUT.mkdir(parents=True,exist_ok=True)
 BLENDER_OUT=Path(os.environ.get('BRAINPET_BLENDER_ASSET_DIR',str(ROOT.parent/'BrainPet-blender-assest'))).expanduser().resolve()
@@ -750,12 +751,22 @@ def render_cats():
    scene=setup(CAT_FRAME_SIZE);rig=cat(skin,boxed=state.startswith('box'));configure_cat_camera(scene)
    slide,food=care_props(state) if state=='eating' or state.startswith('box') else (None,[])
    play_toy=play_props(state) if state in PLAY_CLIPS else None
+   prop_dest=OUT/'frames'/('cat-prop-'+skin+'-'+state)
+   if play_toy:prop_dest.mkdir(parents=True,exist_ok=True)
+   prop_ground=[]
+   holdout=material('Play prop occlusion holdout','000000') if play_toy else None
+   if holdout:
+    holdout.node_tree.nodes.clear()
+    shader=holdout.node_tree.nodes.new('ShaderNodeHoldout')
+    output=holdout.node_tree.nodes.new('ShaderNodeOutputMaterial')
+    holdout.node_tree.links.new(shader.outputs[0],output.inputs['Surface'])
    scene.render.fps=fps;scene.frame_start=1;scene.frame_end=count
    for i in range(count):
     scene.frame_set(i+1);t=i/(count-1) if state in ['jumpOn','jumpOff','curlUp','sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*PLAY_CLIPS] else i/count
     cat_pose(rig,state,t)
     if slide:pose_care_props(slide,food,state,t)
     if play_toy:pose_play_props(play_toy,state,t)
+    key_cat_geometry(rig,i+1)
     for obj in animated_parts(rig)+food+([slide] if slide else [])+([play_toy] if play_toy else []):
      for prop in ['location','rotation_euler','scale']:obj.keyframe_insert(data_path=prop,frame=i+1,group='Math Mews '+state)
     if rig['boxed'] or state in ('curlUp', 'curlSleep'):
@@ -764,7 +775,30 @@ def render_cats():
       for prop in ['co','handle_left','handle_right']:rig['tail_curve'].data.keyframe_insert(data_path=f'splines[0].bezier_points[{point}].{prop}',frame=i+1)
      if rig['boxed']:
       for prop in ['box_activity','transfer_hop']:rig['root'].keyframe_insert(data_path=f'["{prop}"]',frame=i+1)
-    render(dest/f'{i:03}.png')
+    if play_toy:
+     # Export props separately, with the cat cutting out the pixels covered by
+     # its paws. Runtime gives this layer its own floor-contact depth.
+     bpy.context.view_layer.update()
+     location=play_toy.location.copy();location.z=0
+     prop_ground.append(round(1-world_to_camera_view(scene,scene.camera,location).y,6))
+     for obj in play_toy.children:obj.hide_render=True
+     render(dest/f'{i:03}.png')
+     for obj in play_toy.children:obj.hide_render=False
+     cat_materials=[]
+     for obj in scene.objects:
+      if obj.type not in ('MESH','CURVE') or obj.parent==play_toy:continue
+      faces=list(obj.data.polygons) if obj.type=='MESH' else list(obj.data.splines)
+      cat_materials.append((obj,list(obj.data.materials),[face.material_index for face in faces]))
+      obj.data.materials.clear();obj.data.materials.append(holdout)
+     render(prop_dest/f'{i:03}.png')
+     for obj,mats,indices in cat_materials:
+      obj.data.materials.clear()
+      for mat in mats:obj.data.materials.append(mat)
+      faces=list(obj.data.polygons) if obj.type=='MESH' else list(obj.data.splines)
+      for face,index in zip(faces,indices):face.material_index=index
+    else:render(dest/f'{i:03}.png')
+   if play_toy and skin=='orange':
+    (prop_dest/'ground.json').write_text(json.dumps(prop_ground))
    if skin=='orange':
     library=BLENDER_OUT;bpy.ops.wm.save_as_mainfile(filepath=str(library/(state+'.blend')),compress=True)
    print('CAT_DONE',skin,state,flush=True)

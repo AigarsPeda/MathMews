@@ -54,3 +54,22 @@ unsubscribe();
 report({ completed: 3, total: 3, failed: 1 });
 assert.equal(events, priorEvents, 'Unmounted listeners must be released');
 console.log('Verified real loading counts, failed downloads, bounded waits, continued background work and subscription cleanup.');
+
+let heldVisuals = 0, releaseVisual;
+const visual = execute('contexts/StartupVisualContext.ts', id => {
+  assert.equal(id, 'react');
+  return {
+    createContext: value => ({ value }),
+    useContext: context => context.value,
+    useLayoutEffect: callback => { releaseVisual?.(); releaseVisual = callback(); },
+  };
+});
+visual.StartupVisualContext.value = () => { heldVisuals++; return () => { heldVisuals--; }; };
+visual.useStartupVisualReady(false);
+assert.equal(heldVisuals, 1, 'A mounted undecoded visual must hold the loading cover');
+visual.useStartupVisualReady(true);
+assert.equal(heldVisuals, 0, 'A decoded first frame must release the loading cover');
+visual.useStartupVisualReady(false);
+releaseVisual();
+assert.equal(heldVisuals, 0, 'Unmounting a pending visual must release its loading hold');
+console.log('Verified first-frame visual readiness and unmount cleanup.');

@@ -9,6 +9,8 @@ import type {
 } from "@/pet-display/types";
 import { moderateScale } from "@/utils/scale";
 import { useMemo } from "react";
+import type { SharedValue } from "react-native-reanimated";
+import type { RoomPlayPropFrame } from "@/pet-display/media/sprite/room-play-prop";
 
 type PetDisplayProps = {
   width?: number;
@@ -23,6 +25,7 @@ type PetDisplayProps = {
   onPress?: () => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (stepIndex: number) => void;
+  roomPlayProp?: SharedValue<RoomPlayPropFrame>;
 };
 
 export function PetDisplay({
@@ -37,6 +40,7 @@ export function PetDisplay({
   transparentBackground = false,
   width = moderateScale(200),
   resolutionScale = 1,
+  roomPlayProp,
 }: PetDisplayProps) {
   const registry = getPetMediaRegistry(petType, {
     catSkinId: resolveCatSkinId(catSkinId),
@@ -62,6 +66,7 @@ export function PetDisplay({
           resolutionScale={resolutionScale}
           transparentBackground={transparentBackground}
           scenarioSteps={resolvedPlayback.steps}
+          roomPlayProp={roomPlayProp}
           onAnimationComplete={onAnimationComplete}
           onStepComplete={onStepComplete}
           onPress={onPress}
@@ -76,6 +81,7 @@ export function PetDisplay({
         resolutionScale={resolutionScale}
         transparentBackground={transparentBackground}
         segment={resolvedPlayback.segment}
+        roomPlayProp={roomPlayProp}
         onAnimationComplete={onAnimationComplete}
         onStepComplete={onStepComplete}
         onPress={onPress}

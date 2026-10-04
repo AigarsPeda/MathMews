@@ -8,6 +8,7 @@ import ts from 'typescript';
 const root = process.cwd(), cache = new Map();
 let states = [], stateIndex = 0, game, display, clockOffset = 0, captureEffects = false, effects = [];
 const timers = new Map(); let timerId = 0;
+const routes = []; let focusCleanup;
 class TestDate extends Date { static now() { return Date.now() + clockOffset; } }
 const react = {
   useState: initial => {
@@ -26,7 +27,10 @@ const mocks = {
   'react/jsx-runtime': { jsx: (type, props) => ({ type, props }), jsxs: (type, props) => ({ type, props }) },
   'react-native': { View: 'View', Text: 'Text', Pressable: 'Pressable', Platform: { OS: 'web' }, StyleSheet: { create: s => s } },
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
-  'expo-haptics': {}, 'expo-router': { useRouter: () => ({ push: () => {} }) },
+  'expo-haptics': {}, 'expo-router': {
+    useRouter: () => ({ push: route => routes.push(route) }),
+    useFocusEffect: fn => { focusCleanup = fn(); },
+  },
   '@/contexts/GameProvider': { useGame: () => game },
   '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
   '@/hooks/use-screen-insets': { useScreenInsets: () => ({}) },
@@ -68,6 +72,7 @@ const { CAT_PLAY_ACTIVITIES: activities } = load('constants/cat-play.ts');
 const Home = load('app/index.tsx').default;
 function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {}) {
   states = []; stateIndex = 0;
+  routes.length = 0;
   const now = Date.now(), commands = [], debits = [];
   game = {
     isReady: true, hasCompletedOnboarding: true,
@@ -81,8 +86,27 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   display = { playback: { kind: 'segment', mood: 'idle' }, baseMood: 'idle', isCareBlocked: busy, isCareAnimationPlaying: busy, send: command => commands.push(command) };
   const tree = nodes(Home());
   return { menu: tree.find(node => node.type === 'PlayMenuButton').props, commands, debits,
+    stage: tree.find(node => node.type === 'PetStage').props,
+    store: tree.find(node => node.type === 'HeaderChip' && node.props.accessibilityLabel === 'home.a11yStore').props.onPress,
     feed: tree.find(node => node.type === 'Pressable' && node.props.accessibilityLabel === 'home.a11yFeed').props.onPress };
 }
+
+{
+  const test = home(); let returns = 0;
+  const report = test.stage.onRoomActivityChange;
+  const returnHome = () => returns++;
+  report(true, returnHome); test.store();
+  assert.equal(returns, 1, 'Opening the shop first asks the active cat to return');
+  assert.equal(routes.length, 0, 'The shop must wait while the cat gets down');
+  report(true, returnHome); assert.equal(routes.length, 0);
+  report(false, returnHome); assert.deepEqual(routes, ['/store']);
+  report(false, returnHome); assert.equal(routes.length, 1, 'Completion opens the shop once');
+  const immediate = home(); immediate.store(); assert.deepEqual(routes, ['/store']);
+  const cancelled = home(); cancelled.stage.onRoomActivityChange(true, returnHome); cancelled.store();
+  focusCleanup(); cancelled.stage.onRoomActivityChange(false, returnHome);
+  assert.equal(routes.length, 0, 'Leaving Home cancels a pending shop navigation');
+}
+console.log('Verified the shop waits for room animations and cancels pending navigation when Home loses focus.');
 for (const activity of activities) {
   for (const happiness of [40, 100]) for (const coins of [0, 100]) {
     const test = home({ happiness, coins });

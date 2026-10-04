@@ -11,6 +11,7 @@ if(selected&&[...selected].some(id=>!(id in clips)))throw new Error('Unknown cli
 const frameSize=768,pageColumns=2,framesPerPage=4;
 await fs.mkdir(path.join(out,'atlases'),{recursive:true});
 await fs.mkdir(path.join(out,'cat-pages'),{recursive:true});
+await fs.mkdir(path.join(out,'play-prop-pages'),{recursive:true});
 async function pack(id,count,cellSize=192,columns=8){
  const frames=Array.from({length:count},(_,i)=>path.join(out,'frames',id,`${String(i).padStart(3,'0')}.png`));
  const available=await Promise.all(frames.map(file=>fs.access(file).then(()=>true,()=>false)));
@@ -59,8 +60,9 @@ for(const skin of ['orange','grey','white']){
  for(const [id,[count]] of Object.entries(clips)){
   const name='cat-'+skin+'-'+id;
   // The splash has a small full idle sheet; other portraits need only four cells.
-  if(!selected||selected.has(id))await pack(name,id === "idle" ? count : 4,192,id === "idle" ? 8 : 2);
-  sources+=`    ${id}: require("@/assets/3d/atlases/${name}.png"),\n`;
+  if((!selected||selected.has(id))&&(id!=='idle'||skin==='orange'))await pack(name,id === "idle" ? count : 4,192,id === "idle" ? 8 : 2);
+  const sourceName=id==='idle'&&skin!=='orange'?`cat-${skin}-blinkIdle`:name;
+  sources+=`    ${id}: require("@/assets/3d/atlases/${sourceName}.png"),\n`;
   const pageCount=!selected||selected.has(id)?await packPages(name,count):Math.ceil(count/(id.startsWith('walk')||id.startsWith('jump')?12:framesPerPage));
   pages+=`    ${id}: [${Array.from({length:pageCount},(_,i)=>`require("@/assets/3d/cat-pages/${name}-${String(i).padStart(2,'0')}.webp")`).join(', ')}],\n`;
  }
@@ -72,5 +74,37 @@ if(!selected||selected.has('idle'))await sharp(path.join(out,'atlases/cat-orange
  .extract({left:0,top:0,width:192,height:192}).png().toFile(path.join(out,'cat-splash.png'));
 await fs.writeFile('constants/cat-3d-animation-sources.ts',sources);
 await fs.writeFile('constants/cat-3d-animation-pages.ts',pages);
+const playClips=['ballToss','yarnRoll','featherChase'];
+let props='/** Separate toy layers, synchronized with the cat playback clock. Generated. */\nexport const CAT_PLAY_PROP_PAGES = {\n';
+for(const skin of ['orange','grey','white']){
+ props+=`  ${skin}: {\n`;
+ for(const id of playClips){
+  const [count]=clips[id],pageCount=Math.ceil(count/12);
+  if(!selected||selected.has(id))for(let page=0;page<pageCount;page++){
+   const cells=[];
+   for(let cell=0;cell<12&&page*12+cell<count;cell++){
+    const file=path.join(out,'frames',`cat-prop-${skin}-${id}`,`${String(page*12+cell).padStart(3,'0')}.png`);
+    cells.push({input:await sharp(file).resize(192,192).png().toBuffer(),left:cell%4*192,top:Math.floor(cell/4)*192});
+   }
+   await sharp({create:{width:768,height:576,channels:4,background:'#00000000'}}).composite(cells).webp({quality:90,alphaQuality:100,effort:5})
+    .toFile(path.join(out,'play-prop-pages',`${skin}-${id}-${String(page).padStart(2,'0')}.webp`));
+  }
+  props+=`    ${id}: [${Array.from({length:pageCount},(_,i)=>`require("@/assets/3d/play-prop-pages/${skin}-${id}-${String(i).padStart(2,'0')}.webp")`).join(', ')}],\n`;
+ }
+ props+='  },\n';
+}
+props+='} as const;\n';
+const ground={};
+for(const id of playClips){
+ const file=path.join(out,'frames',`cat-prop-orange-${id}`,'ground.json');
+ if(await fs.access(file).then(()=>true,()=>false))ground[id]=JSON.parse(await fs.readFile(file,'utf8'));
+}
+// A partial non-play rebuild retains the existing ground metadata.
+if(Object.keys(ground).length===playClips.length)props+=`export const CAT_PLAY_PROP_GROUND = ${JSON.stringify(ground)} as const;\n`;
+else if(await fs.access('constants/cat-play-prop-pages.ts').then(()=>true,()=>false)){
+ const previous=await fs.readFile('constants/cat-play-prop-pages.ts','utf8');
+ props+=previous.slice(previous.indexOf('export const CAT_PLAY_PROP_GROUND'));
+}else throw new Error('Render the three play clips before packing separate props.');
+await fs.writeFile('constants/cat-play-prop-pages.ts',props);
 if(!selected)for(const e of entries)if(e.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id))await pack(e.id,8);
 console.log(selected?`Packed ${selected.size*3} selected HD cat clips and portraits.`:`Packed ${Object.keys(clips).length*3} HD cat clips with 9 MiB texture pages, small portraits and 28 animated objects.`);

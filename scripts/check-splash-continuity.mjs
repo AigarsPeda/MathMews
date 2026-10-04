@@ -98,7 +98,7 @@ const React = {
   useState: initial => {
     const index = cursor++;
     slots[index] ??= { value: initial };
-    return [slots[index].value, value => { slots[index].value = value; }];
+    return [slots[index].value, value => { slots[index].value = typeof value === 'function' ? value(slots[index].value) : value; }];
   },
   useEffect: (fn, deps) => {
     const index = cursor++;
@@ -118,7 +118,7 @@ const mocks = {
   '@/constants/cat-splash': { CAT_SPLASH_SOURCE: 1, CAT_SPLASH_SHEET: { frameSize: 192, width: 1536, height: 2304, cols: 8 } },
   '@/constants/cat-sprite-catalog': { CAT_SPRITE_CATALOG: { idle: { frameCount: 96, fps: 24 } } },
   '@/pet-display/media/sprite/use-sprite-clock': { useSpriteClock: options => { readyPages = options.readyPages; return { get: () => 0 }; } },
-  '@/constants/game': { GameColors: {} },
+  '@/constants/game': { GameColors: { background: '#FFF5EB' } },
   '@/hooks/use-is-mounted': { useIsMounted: () => isMounted },
   '@/utils/scale': { moderateScale: value => value },
 };
@@ -188,6 +188,7 @@ const gateMocks = {
   '@/components/ui/ProgressBar': { ProgressBar: 'ProgressBar' },
   '@/contexts/AuthProvider': { useAuth: () => ({ isAuthReady: authReady }) },
   '@/contexts/GameProvider': { useGame: () => ({ isReady: localReady, cloudRestoreCheckComplete: cloudReady }) },
+  '@/contexts/StartupVisualContext': { StartupVisualContext: { Provider: 'StartupVisualProvider' } },
   '@/lib/init-game-asset-prefetch': { subscribeGameAssetLoading: () => () => {}, getGameAssetLoadingSnapshot: () => assetSnapshot },
   'expo-constants': { default: { expoConfig: { name: 'Math Mews' } } },
   'expo-splash-screen': { hideAsync: async () => { hidden++; } },
@@ -202,6 +203,7 @@ const gateCode = ts.transpileModule(fs.readFileSync('components/branding/SplashG
 vm.runInNewContext(gateCode, { module: gateModule, exports: gateModule.exports, React,
   require: id => { assert.ok(id in gateMocks, id); return gateMocks[id]; },
   requestAnimationFrame: fn => { const id = nextId++; frames.set(id, fn); return id; },
+  cancelAnimationFrame: id => frames.delete(id),
   setTimeout: (fn, delay) => { const id = nextId++; timers.set(id, { fn, delay }); return id; },
   clearTimeout: id => timers.delete(id),
 });
@@ -233,6 +235,9 @@ assert.equal(imageSize(fallback).width, 192);
 assert.equal(imageSize(fallback).height, 192);
 const content = nodes.find(node => node.props.accessibilityRole === 'header');
 assert.equal(content.props.style.overflow, 'hidden', 'Branding must not spill outside its native-size box');
+assert.equal(gateTree.props.style.backgroundColor, '#FFF5EB', 'The persistent root must cover the previous native frame');
+assert.equal(nodes.find(node => node.props.accessibilityViewIsModal).props.style.backgroundColor, '#FFF5EB', 'The loading cover must be opaque');
+assert.ok(!nodes.some(node => node.props.children.includes('gameplay')), 'Gameplay must not mount during initial loading');
 const catWindow = nodes.find(node => node.props.style?.left === 24);
 assert.equal(catWindow.props.style.overflow, 'hidden');
 assert.equal(catWindow.props.style.width, imageSize(fallback).width);
@@ -245,16 +250,43 @@ nodes.find(node => node.type === 'AnimatedSplashCat').props.onReady();
 renderGate(); paint();
 assert.equal(hidden, 0, 'Native launch must wait for its replacement logo');
 nodes.find(node => node.props.source === 'logo').props.onLoad();
-nodes.find(node => node.props.accessibilityRole === 'header').props.onLayout();
+gateTree.props.onLayout();
 renderGate(); paint();
+assert.equal(hidden, 0, 'Native splash must cover the first React drawing turn');
+paint();
 assert.equal(hidden, 1, 'A ready Canvas can replace a portrait whose onLoad never fired');
 for (const [id, timer] of [...timers]) if (timer.delay === 1200) { timers.delete(id); timer.fn(); }
 renderGate();
 for (const [id, timer] of [...timers]) if (timer.delay === 250) { timers.delete(id); timer.fn(); }
-gateTree = renderGate();
-assert.equal(gateTree.props.children[0], 'gameplay', 'The decode race must not strand the gate');
+function finishGameHandoff() {
+  gateTree = renderGate();
+  nodes = flatten(gateTree);
+  const provider = nodes.find(node => node.type === 'StartupVisualProvider');
+  const game = nodes.find(node => node.props.children.includes(provider));
+  assert.ok(game, 'A ready game must mount beneath the loading cover');
+  assert.equal(game.props.accessibilityElementsHidden, true);
+  assert.equal(game.props.pointerEvents, 'none');
+  assert.ok(nodes.some(node => node.props.accessibilityViewIsModal), 'Mounting gameplay alone must not remove the loading screen');
+  paint();
+  assert.ok(flatten(renderGate()).some(node => node.props.accessibilityViewIsModal), 'A game without native layout must remain covered');
+  const release = provider.props.value();
+  game.props.onLayout();
+  renderGate(); paint(); paint();
+  assert.ok(flatten(renderGate()).some(node => node.props.accessibilityViewIsModal), 'Undecoded first cat texture must retain the loading cover');
+  release(); release();
+  renderGate(); paint();
+  assert.ok(flatten(renderGate()).some(node => node.props.accessibilityViewIsModal), 'The first gameplay drawing turn must remain covered');
+  paint();
+  gateTree = renderGate();
+  nodes = flatten(gateTree);
+  assert.ok(!nodes.some(node => node.props.accessibilityViewIsModal), 'Painted gameplay must replace loading exactly once');
+  const readyProvider = nodes.find(node => node.type === 'StartupVisualProvider');
+  assert.equal(nodes.find(node => node.props.children.includes(readyProvider)).props.pointerEvents, 'auto');
+  assert.equal(gateTree.props.style.backgroundColor, '#FFF5EB', 'The opaque parent must persist after loading');
+}
+finishGameHandoff();
 slots.forEach(slot => slot.cleanup?.());
-console.log('Verified explicit native-size image bounds, clipping, native-logo readiness and gameplay continuation when the Canvas decodes before the fallback image.');
+console.log('Verified opaque startup covers, native-size image bounds and drawing turns before both splash/gameplay handoffs.');
 
 // The portrait can win the race while the Canvas or network takes much longer.
 // Reveal usable branding early, but never open gameplay without the local save.
@@ -265,11 +297,11 @@ nodes = flatten(renderGate());
 assert.ok(nodes.some(node => node.props.source === 'portrait'), 'The very first React render must contain the static cat');
 assert.equal(nodes.find(node => node.type === 'ProgressBar').props.progress, 0);
 nodes.find(node => node.props.source === 'logo').props.onLoad();
-nodes.find(node => node.props.accessibilityRole === 'header').props.onLayout();
+renderGate().props.onLayout();
 renderGate(); paint();
 assert.equal(hidden, 0, 'Layout and title alone must not expose an empty cat window');
 nodes.find(node => node.props.source === 'portrait').props.onLoad();
-nodes = flatten(renderGate()); paint();
+nodes = flatten(renderGate()); paint(); paint();
 assert.equal(hidden, 1, 'The static cat must replace the native splash even before Canvas or data readiness');
 assert.equal(nodes.find(node => node.type === 'AnimatedSplashCat').props.playing, false);
 assert.ok(nodes.some(node => node.props.source === 'portrait'), 'A slow Canvas must retain the exact still cat');
@@ -287,7 +319,25 @@ assert.equal(hidden, 1, 'Canvas readiness must not hide the native splash twice'
 assert.equal(nodes.find(node => node.type === 'AnimatedSplashCat').props.playing, true);
 assert.ok(!nodes.some(node => node.props.source === 'portrait'), 'Only a ready Canvas can remove the portrait');
 for (const [id, timer] of [...timers]) if (timer.delay === 250) { timers.delete(id); timer.fn(); }
-assert.equal(renderGate().props.children[0], 'gameplay', 'Slow remote checks and a failed asset must not strand a loaded local game');
+finishGameHandoff();
 slots.forEach(slot => slot.cleanup?.());
 assert.equal(timers.size, 0, 'Unmount must release loading timers');
+assert.equal(frames.size, 0, 'Unmount must release pending drawing callbacks');
 console.log('Verified immediate static branding, delayed animation, local-save gating and honest progress after failure or timeout.');
+
+// A reload can unmount startup between its drawing turns. It must not execute
+// a stale hide callback over the next startup screen.
+slots = []; frames.clear(); timers.clear(); hidden = 0;
+nodes = flatten(renderGate());
+nodes.find(node => node.props.source === 'logo').props.onLoad();
+nodes.find(node => node.props.source === 'portrait').props.onLoad();
+renderGate().props.onLayout();
+renderGate(); paint();
+assert.equal(hidden, 0);
+assert.equal(frames.size, 1, 'The native cover handoff must still be pending');
+slots.forEach(slot => slot.cleanup?.());
+paint();
+assert.equal(hidden, 0, 'Reloading must cancel the outgoing screen’s native-hide callback');
+assert.equal(frames.size, 0);
+assert.equal(timers.size, 0);
+console.log('Verified interrupted startup cancels its native-hide callback.');

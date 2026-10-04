@@ -72,6 +72,17 @@ for(const skin of ['orange','grey','white']){
  assert.equal(boxStory.steps.length,3);
  for(const step of boxStory.steps)assert.equal(step.loop,false,'Box story must advance through one-shot clips');
  for(const [id,clip] of Object.entries(clips)){
+  if(clip.playProp){
+   assert.equal(clip.playProp.groundY.length,clip.frames.length,`${skin}/${id} toy ground contacts`);
+   assert.equal(clip.playProp.pages.length,Math.ceil(clip.frames.length/12),`${skin}/${id} toy pages`);
+   assert.ok(clip.playProp.groundY.every(value=>Number.isFinite(value)),`${skin}/${id} invalid toy depth`);
+   for(const source of clip.playProp.pages){
+    const metadata=await sharp(source).metadata();
+    assert.equal(metadata.width,768);assert.equal(metadata.height,576);assert.ok(metadata.hasAlpha);
+   }
+   const first=await sharp(clip.playProp.pages[0]).extract({left:0,top:0,width:192,height:192}).ensureAlpha().raw().toBuffer();
+   assert.ok(first.every((value,index)=>index%4!==3||value===0),`${skin}/${id} toy must enter from outside the frame`);
+  }
   const sources=clip.pages??[clip.source];
   if(id.startsWith('walk')||id.startsWith('jump'))assert.equal(sources.length,2,`${skin}/${id} must keep its entire movement in the resident page pair`);
   assert.equal(sources.length,Math.ceil(clip.frames.length/(clip.framesPerPage??clip.frames.length)),`${skin}/${id} page count`);

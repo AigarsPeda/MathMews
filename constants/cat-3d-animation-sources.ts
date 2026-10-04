@@ -38,7 +38,7 @@ export const CAT_3D_ANIMATION_SOURCES = {
     batToy: require("@/assets/3d/atlases/cat-orange-batToy.png"),
   },
   grey: {
-    idle: require("@/assets/3d/atlases/cat-grey-idle.png"),
+    idle: require("@/assets/3d/atlases/cat-grey-blinkIdle.png"),
     idle2: require("@/assets/3d/atlases/cat-grey-idle2.png"),
     sleep: require("@/assets/3d/atlases/cat-grey-sleep.png"),
     dance: require("@/assets/3d/atlases/cat-grey-dance.png"),
@@ -75,7 +75,7 @@ export const CAT_3D_ANIMATION_SOURCES = {
     batToy: require("@/assets/3d/atlases/cat-grey-batToy.png"),
   },
   white: {
-    idle: require("@/assets/3d/atlases/cat-white-idle.png"),
+    idle: require("@/assets/3d/atlases/cat-white-blinkIdle.png"),
     idle2: require("@/assets/3d/atlases/cat-white-idle2.png"),
     sleep: require("@/assets/3d/atlases/cat-white-sleep.png"),
     dance: require("@/assets/3d/atlases/cat-white-dance.png"),

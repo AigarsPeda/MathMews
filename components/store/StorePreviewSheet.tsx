@@ -4,7 +4,7 @@ import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId, getPlacedDecorationWallFlipped } from "@/constants/decoration-variants";
-import { getToyDisplaySize } from "@/constants/cat-toys";
+import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
 import { normalizeRoomLayerOrder, roomLayerItemKey } from "@/utils/room-layer-order";
 import { moderateScale } from "@/utils/scale";
 import { getCatBedSource, getBedDisplaySize } from "@/constants/cat-beds";
@@ -40,7 +40,7 @@ export function StorePreviewSheet({ item, pet, coins, onClose, onSaveGoal }: Pro
         <PetRoomBackground roomId={item.kind === "room" ? item.id : pet.roomId} />
         {bedId ? <DraggableRoomPet petSize={bedSize} layerZIndex={layerIndex("bed")} selected={item.kind === "bed"} initialOffset={pet.roomBedOffset ?? { x: -.45, y: .3 }} interactive={false}><Image source={getCatBedSource(bedId)} style={{ width: bedSize, height: bedSize, transform: [{ scaleX: item.kind !== "bed" && pet.bedFlipped ? -1 : 1 }] }} resizeMode="contain" /></DraggableRoomPet> : null}
         {decorations.map(object => <DraggableRoomPet key={object.instanceId} petSize={moderateScale(getPlacedDecorationDragSize(object))} layerZIndex={layerIndex(`decoration:${object.instanceId}`)} selected={object.instanceId === "preview-decoration"} initialOffset={object.offset} interactive={false}><DecorationSpriteImage decorationId={getPlacedDecorationSpriteId(object)} size={moderateScale(getPlacedDecorationDragSize(object))} flipHorizontal={getPlacedDecorationWallFlipped(object)} /></DraggableRoomPet>)}
-        {toys.map(object => <DraggableRoomPet key={object.instanceId} petSize={moderateScale(getToyDisplaySize(object.toyId))} layerZIndex={layerIndex(`toy:${object.instanceId}`)} selected={object.instanceId === "preview-toy"} initialOffset={object.offset} interactive={false}><ToySpriteImage toyId={object.toyId as CatToyId} size={moderateScale(getToyDisplaySize(object.toyId))} /></DraggableRoomPet>)}
+        {toys.map(object => <DraggableRoomPet key={object.instanceId} petSize={moderateScale(getPlacedToyDisplaySize(object))} layerZIndex={layerIndex(`toy:${object.instanceId}`)} selected={object.instanceId === "preview-toy"} initialOffset={object.offset} interactive={false}><ToySpriteImage toyId={object.toyId as CatToyId} size={moderateScale(getPlacedToyDisplaySize(object))} /></DraggableRoomPet>)}
         <DraggableRoomPet petSize={100} initialOffset={pet.roomPetOffset} interactive={false} layerZIndex={layerOrder.length + 1}><PetDisplay petType={pet.type} catSkinId={item.kind === "skin" ? item.id : pet.catSkinId} mood="idle" width={100} transparentBackground /></DraggableRoomPet>
       </View>
       <Text style={styles.price}>{cost ? t("store.buyFor", { cost }) : t("store.free")}</Text>

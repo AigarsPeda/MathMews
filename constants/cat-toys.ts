@@ -1,5 +1,6 @@
 /** Cat toy items — animated balls and mouse, with larger scratching posts. */
-
+import { clampDecorationScale } from "@/constants/decoration-variants";
+import type { PlacedToy } from "@/types/game";
 
 const CAT_SMALL_TOY_SOURCES = {
   orangeBall: require("@/assets/3d/atlases/toy-orangeBall.png"),
@@ -79,6 +80,15 @@ export function getCatToySource(toyId: string | undefined): number | undefined {
 export function getToyDisplaySize(toyId: string | undefined): number {
   const resolved = resolveCatToyId(toyId);
   return resolved ? CAT_TOY_DISPLAY_SIZES[resolved] : 22;
+}
+
+export function getPlacedToyScale(placed: PlacedToy): number {
+  return typeof placed.scale === "number" && Number.isFinite(placed.scale)
+    ? clampDecorationScale(placed.scale) : 1;
+}
+
+export function getPlacedToyDisplaySize(placed: PlacedToy): number {
+  return getToyDisplaySize(placed.toyId) * getPlacedToyScale(placed);
 }
 
 /** Slightly larger than room size so store cards stay readable without filling the tile. */

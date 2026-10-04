@@ -33,6 +33,7 @@ const mocks = {
     default: { View: 'AnimatedView' },
     useReducedMotion: () => false,
     useAnimatedStyle: read => ({ read }),
+    useDerivedValue: read => ({ get: read }),
     useSharedValue: initial => {
       const index = sharedIndex++;
       if (!sharedValues[index]) {
@@ -46,9 +47,11 @@ const mocks = {
   '@/utils/border-radius': { nestedBorderRadius: (outer, inset) => outer - inset },
   '@/utils/pet-care': { clampStat: value => value },
   '@/utils/room-layer-order': { normalizeRoomLayerOrder: () => [], ROOM_PET_LAYER_Z_INDEX: 1 },
+  '@/utils/room-depth': { getRoomDepthZIndex: y => y, getRoomObjectDepthAnchor: () => .38, isRoomBackgroundDecoration: () => false },
   '@/constants/game': { GameColors: {} },
   '@/constants/pet-display': { USE_CAT_SPRITE_PETS: true },
   '@/constants/cat-sprites': { resolveSpriteDisplaySize: value => value },
+  '@/constants/cat-toys': { getToyDisplaySize: () => 30 },
   '@/constants/cat-beds': { getEquippedBedScale: () => 1, getBedDisplaySize: () => 120, getCatBedSource: () => undefined },
 };
 const module = { exports: {} };
@@ -115,6 +118,7 @@ for (const zoom of [1, 2, 3]) {
 assert.equal(render(3, null).filter(({ node }) => node.type === 'PetSpeechBubble').length, 0);
 // Exercise the draggable's live-position callback on layout and movement.
 const draggableModule = { exports: {} };
+mocks['@/components/pet/RoomActionMenu'] = { RoomActionMenu: 'RoomActionMenu' };
 const draggableSource = ts.transpileModule(fs.readFileSync('components/pet/DraggableRoomPet.tsx', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.React },
 }).outputText;
@@ -142,3 +146,16 @@ renderDraggable();
 assert.equal(reportedPosition.x, -15, 'Live cat coordinates must be reported before drag release');
 assert.equal(reportedPosition.y, 50);
 console.log('Verified cat-attached speech at 1×/2×/3×, live cat movement, panning and native text size during zoom.');
+
+stateIndex = 0; sharedIndex = 0;
+const menuItem = flatten(draggableModule.exports.DraggableRoomPet({
+  children: null, petSize: 120, allowDrag: true,
+  menuActions: [{ label: 'Remove', icon: 'delete-outline', onPress() {} }],
+}));
+const menuDragTarget = menuItem.find(({ node }) => node.props.onPanResponderMove).node;
+assert.equal(menuDragTarget.props.onStartShouldSetPanResponder(), false, 'Native menus own taps on room items');
+assert.equal(menuDragTarget.props.onMoveShouldSetPanResponderCapture(null, { dx: 2, dy: 1 }), false);
+assert.equal(menuDragTarget.props.onMoveShouldSetPanResponderCapture(null, { dx: 25, dy: -10 }), true,
+  'Dragging must take over from the native menu after the movement threshold');
+assert.ok(menuItem.some(({ node }) => node.type === 'RoomActionMenu'), 'Room-item taps must use the native menu trigger');
+console.log('Verified native room menus retain furniture dragging without claiming taps.');

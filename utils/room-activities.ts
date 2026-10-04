@@ -1,5 +1,5 @@
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
-import { getToyDisplaySize } from "@/constants/cat-toys";
+import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
 import { getCatWalkMotion, SOFA_JUMP_DURATION_MS, type CatRoomAnimation } from "@/constants/cat-room-motion";
 import type { PetAnimationState, PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
 
@@ -164,7 +164,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     };
     for (const toy of room.toys) {
       if (toy.toyId === "mouse") continue;
-      const center = roomOffsetToPoint(toy.offset, room.width, room.height, getToyDisplaySize(toy.toyId) * room.sizeScale);
+      const center = roomOffsetToPoint(toy.offset, room.width, room.height, getPlacedToyDisplaySize(toy) * room.sizeScale);
       addPlay(toy.instanceId, "toy", center, false, toy.toyId.includes("Ball"));
     }
     for (const decoration of room.decorations) {
@@ -174,7 +174,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     }
     const mouse = room.toys.find(toy => toy.toyId === "mouse");
     if (mouse || room.ownedToyIds.includes("mouse")) {
-      const start = mouse ? roomOffsetToPoint(mouse.offset, room.width, room.height, getToyDisplaySize("mouse") * room.sizeScale) : { x: 0, y: room.height * 0.18 };
+      const start = mouse ? roomOffsetToPoint(mouse.offset, room.width, room.height, getPlacedToyDisplaySize(mouse) * room.sizeScale) : { x: 0, y: room.height * 0.18 };
       const steps: RoomActivityStep[] = [];
       for (const direction of [-1, 1, -1, 1]) {
         const x = Math.max(-room.width * 0.24, Math.min(room.width * 0.24, start.x + direction * room.width * 0.16));

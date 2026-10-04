@@ -248,17 +248,27 @@ def create_cat(skin='orange', boxed=False):
     root['coat'] = skin
     root['model_source'] = 'scripts/3d/cat_model.py'
     body = group('Short pear body', BODY_HOME, root)
-    torso = ball('Cream pear body', (0, 0, 0), (.44, .44, .45), fur_material(skin, 'body'), body)
+    torso = ball('Cream pear body', (0, 0, 0), (.38, .44, .40), fur_material(skin, 'body'), body)
     # One continuous torso avoids the stacked, striped spheres seen from behind.
     for vertex in torso.data.vertices:
-        vertex.co.x *= 1 - .16 * vertex.co.z
+        vertex.co.x *= 1 - .30 * vertex.co.z
         vertex.co.y *= 1 - .10 * vertex.co.z
+    torso.shape_key_add(name='Seated chest and haunches')
+    standing_shape = torso.shape_key_add(name='Standing feline waist')
+    for vertex in standing_shape.data:
+        waist = math.exp(-(vertex.co.y / .42) ** 2)
+        vertex.co.x *= 1 - .22 * waist
+        if vertex.co.z < 0:
+            vertex.co.z *= 1 - .26 * waist
     feet, back_feet, legs, back_legs = [], [], [], []
     for side in (-1, 1):
         feet.append(ball('Front paw ' + str(side), (side * .23, -.31, .18), (.16, .21, .20), fur_material(skin, 'paw'), root))
         back_feet.append(ball('Back paw ' + str(side), (side * .36, .16, .14), (.18, .20, .15), cream, root))
-        legs.append(ball('Short front leg ' + str(side), (0, 0, 0), (.14, .14, .25), cream, root))
-        back_legs.append(ball('Short back leg ' + str(side), (0, 0, 0), (.15, .15, .20), cream, root))
+        legs.append(line('Short front leg ' + str(side), [(0, 0, .5), (0, 0, .35), (0, 0, .2), (0, 0, .1)], 1, cream, root))
+        back_legs.append(line('Short back leg ' + str(side), [(0, 0, .5), (0, 0, .35), (0, 0, .2), (0, 0, .1)], 1, cream, root))
+        for limb in (legs[-1], back_legs[-1]):
+            limb.data.use_fill_caps = True
+            limb.data.resolution_u = 16
     head = group('Oversized round head', HEAD_HOME, root)
     ball('Ivory face and orange crown', (0, 0, 0), HEAD_RADII, fur_material(skin, 'head'), head)
     ears = []
@@ -294,7 +304,7 @@ def create_cat(skin='orange', boxed=False):
     tail_coat = fur_material(skin, 'tail')
     tail_curve = line('Plump orange tail', TAIL_REST_POINTS, .08, tail_coat, tail)
     tail_tip = ball('Rounded tail tip', TAIL_REST_POINTS[-1], (.076, .077, .075), tail_coat, tail)
-    return dict(root=root, body=body, head=head, ears=ears, eyes=eyes, glints=glints,
+    return dict(root=root, body=body, torso=torso, head=head, ears=ears, eyes=eyes, glints=glints,
                 brows=brows, mouth=mouth, frown=frown, tears=tears, feet=feet,
                 back_feet=back_feet, legs=legs, back_legs=back_legs, tail=tail,
                 tail_curve=tail_curve, tail_tip=tail_tip, boxed=boxed)
@@ -365,7 +375,7 @@ def pose_cat(rig, state, t):
         yaw = {'walk': 107.5, 'walkAwayDiagonal': 152.5, 'walkAway': 197.5,
                'walkTowardDiagonal': 62.5, 'walkToward': 17.5}[state]
         root.rotation_euler.z = math.radians(yaw)
-        body.location = (.012 * math.sin(phase), .08, .51 + .008 * math.cos(phase * 2))
+        body.location = (.012 * math.sin(phase), .08, .59 + .008 * math.cos(phase * 2))
         body.scale = (.98, 1.40, .80)
         head.scale = (.94, .94, .94)
         head.location = (0, -.32, 1.02 + .006 * math.cos(phase * 2))
@@ -405,7 +415,7 @@ def pose_cat(rig, state, t):
         squash = .09 * crouch + .075 * landing
         tuck = smooth_window(t, .20, .70, .10)
         root.rotation_euler.z = math.radians(197.5 + 162.5 * settle if onto else 17.5 * launch)
-        body.location = (0, .08, .51 - .07 * seated - squash)
+        body.location = (0, .08, .59 - .15 * seated - squash)
         body.scale = (.98 + .02 * seated + squash, 1.4 - .4 * seated, .8 + .2 * seated - squash)
         head.scale = (.94 + .06 * seated,) * 3
         head.location = (0, -.32 + .285 * seated, 1.02 + .08 * seated - squash)
@@ -644,25 +654,54 @@ def pose_cat(rig, state, t):
     # Standing shoulders/hips sit over their paws, inside the chest and rump.
     # Blend back to the seated attachments during sofa takeoff and landing.
     rig['leg_anchors'] = [
-        (Vector((side * .23, -.18, 0)).lerp(Vector((side * .22, -.29, -.05)), standing),
-         Vector((side * .32, .12, -.16)).lerp(Vector((side * .25, .29, -.075)), standing))
+        (Vector((side * .18, -.23, .10)).lerp(Vector((side * .20, -.29, .02)), standing),
+         Vector((side * .25, .18, -.11)).lerp(Vector((side * .22, .29, -.02)), standing))
         for side in (-1, 1)
     ]
+    rig['torso'].data.shape_keys.key_blocks['Standing feline waist'].value = standing
     body_transform = body.matrix_basis
     for anchors, paw, leg, back_paw, back_leg in zip(
             rig['leg_anchors'], rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
-        for limb, foot, anchor, radius in (
-                (leg, paw, anchors[0], .14),
-                (back_leg, back_paw, anchors[1], .15)):
+        for rear, limb, foot, anchor in (
+                (False, leg, paw, anchors[0]),
+                (True, back_leg, back_paw, anchors[1])):
+            seated = (1 - standing) * (1 - activity if state in ('box1', 'box2', 'box3') else 1)
+            foot.scale.x *= 1 - .24 * seated
+            foot.scale.y *= 1 - .18 * seated
+            foot.scale.z *= 1 - .45 * seated
+            foot.location.x *= 1 - (.16 if rear else .10) * seated
+            foot.location.y -= (.015 if rear else .035) * seated
+            foot.location.z = max(foot.scale.z, foot.location.z - (.058 if rear else .07) * seated)
             shoulder = body_transform @ Vector(anchor)
             tip = foot.location.copy()
-            direction = tip - shoulder
-            limb.location = (shoulder + tip) / 2
-            limb.rotation_euler = direction.to_track_quat('Z', 'Y').to_euler()
+            radius = .14 if rear else .095
+            # A rear knee bends forward, then the hock turns back; a front
+            # elbow bends back. The wrist stays above the grounded toe pad.
+            elbow = shoulder.lerp(tip, .42)
+            elbow.y += (-.13 if rear else .065) * (1 if rear else standing)
+            wrist = shoulder.lerp(tip, .78)
+            wrist.y += .10 if rear else .018
             if state in ('box1', 'box2', 'box3'):
                 radius += (.14 - .115 * hide - radius) * activity
                 radius *= 1 - .36 * transfer_hop
-            limb.scale = (radius, radius, direction.length / 2 + radius)
+                elbow = shoulder.lerp(elbow, 1 - activity * hide)
+                wrist = tip.lerp(wrist, 1 - activity * hide)
+            limb.location, limb.rotation_euler, limb.scale = (0, 0, 0), (0, 0, 0), (1, 1, 1)
+            for point, position, taper in zip(limb.data.splines[0].bezier_points,
+                                              (shoulder, elbow, wrist, tip),
+                                              (1, .86 if rear else .78, .55, .48)):
+                point.co = position
+                point.radius = radius * taper
+
+
+def key_cat_geometry(rig, frame):
+    """Bake the continuous joint curves and torso morph with the pose controls."""
+    bpy.context.view_layer.update()
+    rig['torso'].data.shape_keys.key_blocks['Standing feline waist'].keyframe_insert(data_path='value', frame=frame)
+    for limb in rig['legs'] + rig['back_legs']:
+        for index, point in enumerate(limb.data.splines[0].bezier_points):
+            for prop in ('co', 'handle_left', 'handle_right', 'radius'):
+                limb.data.keyframe_insert(data_path=f'splines[0].bezier_points[{index}].{prop}', frame=frame)
 
 
 def configure_cat_camera(scene):

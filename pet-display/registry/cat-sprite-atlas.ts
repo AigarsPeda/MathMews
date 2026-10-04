@@ -2,6 +2,7 @@ import { CAT_SPRITE_CATALOG, type CatSpriteAnimationId } from "@/constants/cat-s
 import { CAT_3D_ANIMATION_PAGES, CAT_SPRITE_PAGE_LAYOUT, CAT_ROOM_MOTION_PAGE_LAYOUT } from "@/constants/cat-3d-animation-pages";
 import { resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import type { SpriteSheetConfig } from "@/pet-display/types";
+import { CAT_PLAY_PROP_PAGES, CAT_PLAY_PROP_GROUND } from "@/constants/cat-play-prop-pages";
 
 const cache = new Map<CatSkinId, Record<CatSpriteAnimationId, SpriteSheetConfig>>();
 export function getCatSpriteAnimations(skinId: CatSkinId | string | undefined) {
@@ -20,6 +21,8 @@ export function getCatSpriteAnimations(skinId: CatSkinId | string | undefined) {
       sheetWidth: layout.frameSize * layout.columns, sheetHeight: layout.frameSize * Math.ceil(layout.framesPerPage / layout.columns),
       frames: Array.from({ length: frameCount }, (_, i) => ({ col: i % layout.columns, row: Math.floor((i % layout.framesPerPage) / layout.columns) })),
       fps, anchor: "bottom-center",
+      ...((id === "ballToss" || id === "yarnRoll" || id === "featherChase")
+        ? { playProp: { pages: CAT_PLAY_PROP_PAGES[skin][id], groundY: CAT_PLAY_PROP_GROUND[id] } } : {}),
     };
   }
   cache.set(skin, animations);

@@ -26,6 +26,7 @@ export function useAtlasPages(sources: readonly number[], page: number, reverse:
   const failure = useRef(onFailure);
   useEffect(() => { failure.current = onFailure; }, [onFailure]);
   useEffect(() => {
+    if (sources.length === 0) return;
     let cancelled = false;
     const next = page + (reverse ? -1 : 1);
     const nextPage = loop ? (next + sources.length) % sources.length : next;

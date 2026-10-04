@@ -1,7 +1,7 @@
 import type { MenuAction } from "@expo/ui/community/menu";
 import type { ReactElement } from "react";
 
-export type NativePlayMenuProps = {
+export type NativeActionMenuProps = {
   width: number;
   height: number;
   actions: (MenuAction & { id: string })[];
