@@ -18,10 +18,12 @@ const React = {
     return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }];
   },
 };
-const shared = () => ({ get: () => 0, set() {} });
+const shared = (initial = 0) => { let value = initial; return { get: () => value, set: next => { value = next; } }; };
+let roomActivityForTest = null, requestedActivity, returnedHome = 0;
+const objectX = shared(), objectY = shared(), objectRotation = shared();
 const mocks = {
   '@/pet-display/registry/dog-video-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
-  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, scale: shared(), bounce: shared(), facing: shared(), mouseX: shared(), mouseY: shared() }) },
+  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, startActivity(kind) { requestedActivity = kind; } }) },
   react: React,
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   'react-native': {
@@ -85,17 +87,19 @@ const flatten = (node, ancestors = []) => !node?.props ? [] : [
 const style = input => Object.assign({}, ...[input].flat(Infinity).filter(Boolean).map(value => value.read ? value.read() : value));
 const stage = load(path.join(root, 'components/pet/PetStage.tsx')).PetStage;
 let toggled;
-function render(placedDecorations = powered) {
+function render(placedDecorations = powered, extra = {}) {
   stateIndex = 0;
   return flatten(stage({
     name: 'Cat', petType: 'cat', compact: true, stats: { level: 1, hunger: 90, happiness: 90, cleanliness: 90 },
     wisdom: 90, playback: {}, speechMessage: 'Hello!', placedDecorations,
     onTogglePlacedAirConditioner: id => { toggled = id; },
     onMoveRoomLayerItem() {},
+    ...extra,
   }));
 }
 const first = render();
-const ac = first.find(({ node }) => node.props.children?.[0]?.props?.decorationId === 'officeAc');
+const decorationNode = (nodes, id) => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.decorationId === id));
+const ac = decorationNode(first, 'officeAc');
 assert.ok(ac);
 ac.node.props.onMenuAnchorLayout({ pageX: 270, pageY: 10, width: 48, height: 48 });
 ac.node.props.onPetTap();
@@ -115,7 +119,7 @@ assert.equal(render(items).find(({ node }) => node.type === 'RoomItemActionMenu'
 
 const sofa = { decorationId: 'sofaA', instanceId: 'sofa', offset: { x: .3, y: .1 } };
 const normalRoom = render([sofa]);
-const sofaNode = nodes => nodes.find(({ node }) => node.props.children?.[0]?.props?.decorationId === 'sofaA').node;
+const sofaNode = nodes => decorationNode(nodes, 'sofaA').node;
 const catNode = nodes => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.children?.[0]?.type === 'View').node;
 assert.equal(sofaNode(normalRoom).props.allowDrag, false);
 assert.equal(sofaNode(normalRoom).props.interactive, false, 'Furniture must not intercept petting');
@@ -130,6 +134,39 @@ assert.equal(editingRoom.filter(({ node }) => node.type === 'PetSpeechBubble').l
 editingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
 assert.equal(sofaNode(render([sofa])).props.allowDrag, false);
 console.log('Verified explicit decorating, protected furniture taps, cat repositioning, and Done restoring normal interaction.');
+
+states[1] = { width: 320, height: 320 };
+const ball = { toyId: 'blueBall', instanceId: 'ball', offset: { x: .3, y: .4 } };
+let petTaps = 0;
+const extra = { placedToys: [ball], ownedToyIds: ['mouse'], onPetPress: () => petTaps++ };
+const commandRoom = render([sofa], extra);
+commandRoom.find(({ node }) => node.props.accessibilityLabel === 'home.catActions').node.props.onPress();
+const commandMenu = render([sofa], extra).find(({ node }) => node.type === 'RoomItemActionMenu').node;
+assert.deepEqual(Array.from(commandMenu.props.actions, action => action.label), [
+  'home.pet', 'home.catCommands.sofaSit', 'home.catCommands.sofaSleep', 'home.catCommands.toyPlay', 'home.catCommands.mouseChase',
+]);
+commandMenu.props.actions.find(action => action.label === 'home.catCommands.sofaSleep').onPress();
+assert.equal(requestedActivity, 'sofaSleep');
+const planner = load('@/utils/room-activities');
+const room = { width: 320, height: 320, petSize: 120, sizeScale: 1, homeOffset: { x: 0, y: .12 },
+  decorations: [sofa], toys: [ball], ownedToyIds: ['mouse'], hungry: false, asleep: false };
+roomActivityForTest = { plan: planner.buildRoomActivity(room, 0, 'toyPlay'), stepIndex: 1 };
+objectX.set(45); objectY.set(60); objectRotation.set(150);
+const playingRoom = render([sofa], extra);
+const movingBall = playingRoom.find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.toyId === 'blueBall')).node;
+assert.equal(movingBall.props.initialOffset, ball.offset, 'Object motion must retain the saved placement');
+assert.equal(movingBall.props.animatedPosition.x.get(), 45);
+assert.equal(style(movingBall.props.children[0].props.style).transform[0].rotate, '150deg');
+catNode(playingRoom).props.onPetTap();
+assert.equal(returnedHome, 1, 'Touching an active cat requests a return');
+assert.equal(petTaps, 0, 'Returning must not start a care animation that would interrupt walking');
+const yarn = { decorationId: 'yarnRed', instanceId: 'yarn', offset: { x: .1, y: .4 } };
+roomActivityForTest = { plan: planner.buildRoomActivity({ ...room, decorations: [yarn], toys: [] }, 0, 'toyPlay'), stepIndex: 1 };
+const playingYarn = decorationNode(render([yarn], extra), 'yarnRed').node;
+assert.equal(playingYarn.props.animatedPosition.y.get(), 60);
+assert.equal(style(playingYarn.props.children[0].props.style).transform[0].rotate, '150deg');
+roomActivityForTest = null;
+console.log('Verified command menu eligibility, sleep command dispatch, returning instead of petting, and movement/rotation of actual placed balls and yarn.');
 
 const actionMenu = load(path.join(root, 'components/pet/RoomItemActionMenu.tsx')).RoomItemActionMenu;
 states.length = 0; stateIndex = 0;

@@ -319,6 +319,8 @@ def care_action_time(state, t):
 
 
 def pose_cat(rig, state, t):
+    if state == 'batToy':
+        state = 'ballToss'
     clip_t = t
     t = care_action_time(state, t)
     root, body, head, tail = (rig[key] for key in ('root', 'body', 'head', 'tail'))
@@ -348,6 +350,40 @@ def pose_cat(rig, state, t):
         for side, ear in zip((-1,1), rig['ears']):
             ear.rotation_euler.x += .18 * pulse(t,.22 + side*.018,.055)
         rig['feet'][1].location.z += .045 * pulse(t,.58,.12)
+    if state == 'walk':
+        # Alternating diagonal paw pairs stay grounded throughout the stride.
+        root.rotation_euler.z = -.035 * math.sin(phase)
+        body.location.z += .012 * math.cos(phase * 2)
+        head.location.z += .010 * math.cos(phase * 2)
+        head.rotation_euler = (0, .035 * math.sin(phase), 0)
+        for side, front, back in zip((-1, 1), rig['feet'], rig['back_feet']):
+            stride = math.sin(phase + (0 if side == -1 else math.pi))
+            front.location.y -= .13 * stride
+            front.location.z += .055 * max(0, stride)
+            back.location.y += .13 * stride
+            back.location.z += .045 * max(0, -stride)
+        tail.rotation_euler.z = .12 * math.sin(phase)
+    if state in ('curlUp', 'curlSleep'):
+        curl = smoothstep(t) if state == 'curlUp' else 1
+        breath = .010 * math.sin(phase) * curl if state == 'curlSleep' else 0
+        body.location = (.06 * curl, .08, .44 - .20 * curl)
+        body.scale = (1 + .15 * curl, 1 + .25 * curl, 1 - .45 * curl + breath)
+        head.location = (-.12 * curl, -.035 - .14 * curl, 1.10 - .43 * curl)
+        head.rotation_euler = (.05 * curl, .14 * curl, -.12 * curl)
+        head.scale = (1, 1, 1 - .10 * curl)
+        for side, front, back in zip((-1, 1), rig['feet'], rig['back_feet']):
+            front.location = (side * (.23 - .08 * curl), -.31 - .04 * curl, .18 - .07 * curl)
+            front.scale = (.16, .21 - .05 * curl, .20 - .09 * curl)
+            back.location.x = side * (.36 - .14 * curl)
+            back.scale.z = .15 - .055 * curl
+        tail.location = (.34, .14 - .06 * curl, .24 - .10 * curl)
+        tail.rotation_euler = (0, 0, -.35 * curl)
+        curled_points = [(0, 0, 0), (.26, -.14, -.02), (.12, -.48, -.015), (-.20, -.57, .02)]
+        for point, rest, curled in zip(rig['tail_curve'].data.splines[0].bezier_points, TAIL_REST_POINTS, curled_points):
+            point.co = Vector(rest).lerp(Vector(curled), curl)
+        rig['tail_tip'].location = Vector(TAIL_REST_POINTS[-1]).lerp(Vector(curled_points[-1]), curl)
+        eye_height = .105 * (1 - .93 * curl)
+        rig['mouth'].scale.z = .48 * (1 - curl) + .035 * curl
     if state == 'excited':
         # Lean into the touch, wriggle from side to side, then relax.
         pet = smooth_window(t, .04, .96, .16)

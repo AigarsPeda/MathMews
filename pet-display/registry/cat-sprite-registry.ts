@@ -105,6 +105,16 @@ function createCatSpriteScenarios(
   };
 }
 
+export function createRoomActivitySegment(
+  skinId: CatSkinId | string | undefined,
+  animationId: "walk" | "curlUp" | "curlSleep" | "batToy",
+  reverse = false,
+): PetMediaSegment {
+  return spriteSegment(resolveCatSkinId(skinId), animationId, {
+    loop: animationId !== "curlUp", reverse,
+  });
+}
+
 export function createBoxPlaySegment(
   skinId: CatSkinId | string | undefined,
   animationId: BoxPlayAnimationId,

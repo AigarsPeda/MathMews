@@ -20,7 +20,8 @@ const React = {
 };
 const shared = () => ({ get: () => 0, set() {} });
 const mocks = {
-  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, scale: shared(), bounce: shared(), facing: shared(), mouseX: shared(), mouseY: shared() }) },
+  '@/utils/room-activities': { buildRoomActivity: () => null },
+  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, scale: shared(), facing: shared(), objectX: shared(), objectY: shared(), objectRotation: shared(), returnHome() {}, startActivity() {} }) },
   react: React,
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   'react-native': {

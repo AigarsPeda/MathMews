@@ -61,6 +61,10 @@ function triggerHaptic() {
 }
 
 export default function HomeScreen() {
+  const roomActivityRef = useRef<{ active: boolean; returnHome: () => void } | null>(null);
+  const handleRoomActivityChange = useCallback((active: boolean, returnHome: () => void) => {
+    roomActivityRef.current = { active, returnHome };
+  }, []);
   const router = useRouter();
   const { t } = useTranslation();
   const screenInsets = useScreenInsets();
@@ -173,6 +177,10 @@ export default function HomeScreen() {
   );
 
   const handlePetTap = useCallback(() => {
+    if (roomActivityRef.current?.active) {
+      roomActivityRef.current.returnHome();
+      return;
+    }
     if (isCareAnimationPlaying || careActionPendingRef.current) return;
 
     const wasAsleep = pet.isAsleep === true;
@@ -512,6 +520,7 @@ export default function HomeScreen() {
               lastInteractionAt={pet.lastInteractionAt}
               roomActivityBlocked={isCareAnimationPlaying || isCareBlocked}
               onRoomInteraction={recordInteraction}
+              onRoomActivityChange={handleRoomActivityChange}
               speechMessage={speechMessage}
               playback={playback}
               onPetPress={petAnimating ? undefined : handlePetTap}

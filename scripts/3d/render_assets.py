@@ -752,17 +752,18 @@ def render_cats():
    play_toy=play_props(state) if state in PLAY_CLIPS else None
    scene.render.fps=fps;scene.frame_start=1;scene.frame_end=count
    for i in range(count):
-    scene.frame_set(i+1);t=i/(count-1) if state in ['sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*PLAY_CLIPS] else i/count
+    scene.frame_set(i+1);t=i/(count-1) if state in ['curlUp','sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*PLAY_CLIPS] else i/count
     cat_pose(rig,state,t)
     if slide:pose_care_props(slide,food,state,t)
     if play_toy:pose_play_props(play_toy,state,t)
     for obj in animated_parts(rig)+food+([slide] if slide else [])+([play_toy] if play_toy else []):
      for prop in ['location','rotation_euler','scale']:obj.keyframe_insert(data_path=prop,frame=i+1,group='Math Mews '+state)
-    if rig['boxed']:
+    if rig['boxed'] or state in ('curlUp', 'curlSleep'):
      # Animated point coordinates do not refresh AUTO handles on saved playback.
      for point in range(4):
       for prop in ['co','handle_left','handle_right']:rig['tail_curve'].data.keyframe_insert(data_path=f'splines[0].bezier_points[{point}].{prop}',frame=i+1)
-     for prop in ['box_activity','transfer_hop']:rig['root'].keyframe_insert(data_path=f'["{prop}"]',frame=i+1)
+     if rig['boxed']:
+      for prop in ['box_activity','transfer_hop']:rig['root'].keyframe_insert(data_path=f'["{prop}"]',frame=i+1)
     render(dest/f'{i:03}.png')
    if skin=='orange':
     library=BLENDER_OUT;bpy.ops.wm.save_as_mainfile(filepath=str(library/(state+'.blend')),compress=True)

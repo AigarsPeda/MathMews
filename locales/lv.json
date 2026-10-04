@@ -125,6 +125,14 @@
     "turnOffAirConditioner": "Izslēgt",
     "makeBigger": "Lielāks",
     "makeSmaller": "Mazāks",
+    "catActions": "Kaķa darbības",
+    "catCommands": {
+      "sofaSit": "Sēdēt uz dīvāna",
+      "sofaSleep": "Gulēt uz dīvāna",
+      "toyPlay": "Spēlēties ar rotaļlietu",
+      "mouseChase": "Ķert peli",
+      "returnHome": "Doties uz savu vietu"
+    },
     "decorateRoom": "Iekārtot",
     "finishDecorating": "Gatavs",
     "dismissRoomItemMenu": "Aizvērt priekšmeta izvēlni",

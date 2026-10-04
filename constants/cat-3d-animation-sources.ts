@@ -26,6 +26,10 @@ export const CAT_3D_ANIMATION_SOURCES = {
     ballToss: require("@/assets/3d/atlases/cat-orange-ballToss.png"),
     yarnRoll: require("@/assets/3d/atlases/cat-orange-yarnRoll.png"),
     featherChase: require("@/assets/3d/atlases/cat-orange-featherChase.png"),
+    walk: require("@/assets/3d/atlases/cat-orange-walk.png"),
+    curlUp: require("@/assets/3d/atlases/cat-orange-curlUp.png"),
+    curlSleep: require("@/assets/3d/atlases/cat-orange-curlSleep.png"),
+    batToy: require("@/assets/3d/atlases/cat-orange-batToy.png"),
   },
   grey: {
     idle: require("@/assets/3d/atlases/cat-grey-idle.png"),
@@ -53,6 +57,10 @@ export const CAT_3D_ANIMATION_SOURCES = {
     ballToss: require("@/assets/3d/atlases/cat-grey-ballToss.png"),
     yarnRoll: require("@/assets/3d/atlases/cat-grey-yarnRoll.png"),
     featherChase: require("@/assets/3d/atlases/cat-grey-featherChase.png"),
+    walk: require("@/assets/3d/atlases/cat-grey-walk.png"),
+    curlUp: require("@/assets/3d/atlases/cat-grey-curlUp.png"),
+    curlSleep: require("@/assets/3d/atlases/cat-grey-curlSleep.png"),
+    batToy: require("@/assets/3d/atlases/cat-grey-batToy.png"),
   },
   white: {
     idle: require("@/assets/3d/atlases/cat-white-idle.png"),
@@ -80,5 +88,9 @@ export const CAT_3D_ANIMATION_SOURCES = {
     ballToss: require("@/assets/3d/atlases/cat-white-ballToss.png"),
     yarnRoll: require("@/assets/3d/atlases/cat-white-yarnRoll.png"),
     featherChase: require("@/assets/3d/atlases/cat-white-featherChase.png"),
+    walk: require("@/assets/3d/atlases/cat-white-walk.png"),
+    curlUp: require("@/assets/3d/atlases/cat-white-curlUp.png"),
+    curlSleep: require("@/assets/3d/atlases/cat-white-curlSleep.png"),
+    batToy: require("@/assets/3d/atlases/cat-white-batToy.png"),
   },
 } as const;

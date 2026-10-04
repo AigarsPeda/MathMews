@@ -109,6 +109,14 @@
     "turnOffAirConditioner": "Turn off",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
+    "catActions": "Cat actions",
+    "catCommands": {
+      "sofaSit": "Sit on the sofa",
+      "sofaSleep": "Sleep on the sofa",
+      "toyPlay": "Play with a toy",
+      "mouseChase": "Chase the mouse",
+      "returnHome": "Go to your spot"
+    },
     "decorateRoom": "Decorate",
     "finishDecorating": "Done",
     "dismissRoomItemMenu": "Dismiss item menu",
