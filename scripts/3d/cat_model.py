@@ -11,6 +11,7 @@ from mathutils import Vector
 HEAD_RADII = (.70, .55, .63)
 HEAD_HOME = (0, -.035, 1.10)
 BODY_HOME = (0, .08, .44)
+TAIL_HOME = (0, .44, .35)
 TAIL_REST_POINTS = [(0, 0, 0), (.24, .14, .045), (.43, .12, .27), (.42, .04, .48)]
 TAIL_BOX_POINTS = [(0, 0, 0), (.12, .10, .27), (.42, .12, .50), (.45, .04, .72)]
 COATS = {'orange': 'EFA45E', 'grey': '929DA8', 'white': 'E9E4DA'}
@@ -46,7 +47,7 @@ def fur_material(skin, pattern='plain'):
     bsdf = nodes.get('Principled BSDF')
     bsdf.inputs['Roughness'].default_value = .78
     bsdf.inputs['Sheen Weight'].default_value = .20
-    base = CREAM if pattern in ('head', 'body', 'paw') else COATS[skin]
+    base = CREAM if pattern in ('head', 'body', 'paw') else STRIPES[skin] if pattern == 'tail' else COATS[skin]
     bsdf.inputs['Base Color'].default_value = rgba(base)
     material.diffuse_color = rgba(base)
     coordinates = nodes.new('ShaderNodeTexCoord')
@@ -59,7 +60,7 @@ def fur_material(skin, pattern='plain'):
     bump.inputs['Distance'].default_value = .004
     links.new(noise.outputs['Fac'], bump.inputs['Height'])
     links.new(bump.outputs['Normal'], bsdf.inputs['Normal'])
-    if pattern == 'plain':
+    if pattern in ('plain', 'body', 'tail'):
         return material
     separate = nodes.new('ShaderNodeSeparateXYZ')
     links.new(coordinates.outputs['Generated'], separate.inputs[0])
@@ -72,9 +73,10 @@ def fur_material(skin, pattern='plain'):
         organic = calculate('MULTIPLY', calculate('SUBTRACT', noise.outputs['Fac'], .5), .004)
         crown = calculate('GREATER_THAN', z, calculate('ADD', edge, organic))
         blaze = calculate('ADD', .028, calculate('MULTIPLY', calculate('SUBTRACT', 1, z), .17))
-        mask = calculate('MULTIPLY', crown, calculate('GREATER_THAN', abs_x, blaze))
-    elif pattern == 'body':
-        mask = calculate('MULTIPLY', calculate('GREATER_THAN', y, .63), calculate('GREATER_THAN', z, .48))
+        front_fade = calculate('MINIMUM', 1, calculate('MAXIMUM', 0, calculate('DIVIDE', calculate('SUBTRACT', .60, y), .30)))
+        forehead = calculate('MULTIPLY', calculate('MULTIPLY', front_fade, front_fade), calculate('SUBTRACT', 3, calculate('MULTIPLY', 2, front_fade)))
+        front_blaze = calculate('MULTIPLY', forehead, calculate('LESS_THAN', abs_x, blaze))
+        mask = calculate('MULTIPLY', crown, calculate('SUBTRACT', 1, front_blaze))
     else:
         dx = calculate('DIVIDE', calculate('SUBTRACT', x, .55), .22)
         dz = calculate('DIVIDE', calculate('SUBTRACT', z, .25), .17)
@@ -92,7 +94,7 @@ def fur_material(skin, pattern='plain'):
             dz = calculate('DIVIDE', calculate('SUBTRACT', z, .90), .085)
             ellipse = calculate('ADD', calculate('MULTIPLY', dx, dx), calculate('MULTIPLY', dz, dz))
             stripe_masks.append(calculate('LESS_THAN', ellipse, 1))
-        stripes = calculate('MAXIMUM', stripe_masks[0], calculate('MAXIMUM', stripe_masks[1], stripe_masks[2]))
+        stripes = calculate('MULTIPLY', forehead, calculate('MAXIMUM', stripe_masks[0], calculate('MAXIMUM', stripe_masks[1], stripe_masks[2])))
         stripe_mix = nodes.new('ShaderNodeMixRGB')
         links.new(stripes, stripe_mix.inputs[0])
         links.new(color, stripe_mix.inputs[1])
@@ -246,8 +248,11 @@ def create_cat(skin='orange', boxed=False):
     root['coat'] = skin
     root['model_source'] = 'scripts/3d/cat_model.py'
     body = group('Short pear body', BODY_HOME, root)
-    ball('Cream pear body', (0, 0, 0), (.46, .39, .45), fur_material(skin, 'body'), body)
-    ball('Round haunches', (0, .09, -.11), (.48, .36, .31), fur_material(skin, 'body'), body)
+    torso = ball('Cream pear body', (0, 0, 0), (.44, .44, .45), fur_material(skin, 'body'), body)
+    # One continuous torso avoids the stacked, striped spheres seen from behind.
+    for vertex in torso.data.vertices:
+        vertex.co.x *= 1 - .16 * vertex.co.z
+        vertex.co.y *= 1 - .10 * vertex.co.z
     feet, back_feet, legs, back_legs = [], [], [], []
     for side in (-1, 1):
         feet.append(ball('Front paw ' + str(side), (side * .23, -.31, .18), (.16, .21, .20), fur_material(skin, 'paw'), root))
@@ -284,10 +289,11 @@ def create_cat(skin='orange', boxed=False):
     frown = group('Sad mouth', (0, face_y(0, -.22) - .027, -.22), head)
     line('Gentle frown', [(-.062, 0, -.020), (0, -.006, .015), (.062, 0, -.020)], .013, caramel, frown)
     frown.scale = (0, 0, 0)
-    tail = group('Short curved tail pivot', (.34, .14, .24), root)
+    tail = group('Short curved tail pivot', TAIL_HOME, root)
     # In the box, rise inside the opening before curling out above the rim.
-    tail_curve = line('Plump orange tail', TAIL_REST_POINTS, .102, coat, tail)
-    tail_tip = ball('Cream tail tip', TAIL_REST_POINTS[-1], (.097, .098, .095), cream, tail)
+    tail_coat = fur_material(skin, 'tail')
+    tail_curve = line('Plump orange tail', TAIL_REST_POINTS, .08, tail_coat, tail)
+    tail_tip = ball('Rounded tail tip', TAIL_REST_POINTS[-1], (.076, .077, .075), tail_coat, tail)
     return dict(root=root, body=body, head=head, ears=ears, eyes=eyes, glints=glints,
                 brows=brows, mouth=mouth, frown=frown, tears=tears, feet=feet,
                 back_feet=back_feet, legs=legs, back_legs=back_legs, tail=tail,
@@ -330,7 +336,7 @@ def pose_cat(rig, state, t):
     body.location, body.scale = BODY_HOME, (1, 1, 1 + .025 * math.sin(phase * 2))
     head.location, head.scale = HEAD_HOME, (1, 1, 1)
     head.rotation_euler = (.025 * math.sin(phase), .095 * math.sin(phase), -.025 * math.sin(phase))
-    tail.location = (.34, .14, .24)
+    tail.location = TAIL_HOME
     tail.scale = (1, 1, 1)
     tail.rotation_euler = (.035 * math.sin(phase * 5), 0, .25 * math.sin(phase * 2))
     rig['mouth'].scale = (1, 1, .48)
@@ -343,26 +349,66 @@ def pose_cat(rig, state, t):
         paw.location, paw.rotation_euler, paw.scale = (side * .23, -.31, .18), (0, 0, 0), (.16, .21, .20)
         tear.scale = (0, 0, 0)
     for side, paw in zip((-1, 1), rig['back_feet']):
-        paw.location, paw.scale = (side * .36, .16, .14), (.18, .20, .15)
+        paw.location, paw.rotation_euler, paw.scale = (side * .36, .16, .14), (0, 0, 0), (.18, .20, .15)
     if state in ('idle', 'idle2', 'blinkIdle', 'blinkSit', 'waiting'):
         # Two breaths, a look to either side, a double ear flick and a paw shift.
         head.location.z += .014 * math.sin(phase * 2)
         for side, ear in zip((-1,1), rig['ears']):
             ear.rotation_euler.x += .18 * pulse(t,.22 + side*.018,.055)
         rig['feet'][1].location.z += .045 * pulse(t,.58,.12)
-    if state == 'walk':
-        # Alternating diagonal paw pairs stay grounded throughout the stride.
-        root.rotation_euler.z = -.035 * math.sin(phase)
-        body.location.z += .012 * math.cos(phase * 2)
-        head.location.z += .010 * math.cos(phase * 2)
-        head.rotation_euler = (0, .035 * math.sin(phase), 0)
+    if state.startswith('walk'):
+        # A four-beat walk: each planted paw travels backward at constant speed
+        # relative to the torso, then lifts and swings forward. Stance occupies
+        # 64% of the cycle, so at least two paws always support the body.
+        yaw = {'walk': 107.5, 'walkAwayDiagonal': 152.5, 'walkAway': 197.5,
+               'walkTowardDiagonal': 62.5, 'walkToward': 17.5}[state]
+        root.rotation_euler.z = math.radians(yaw)
+        body.location = (.012 * math.sin(phase), .08, .51 + .008 * math.cos(phase * 2))
+        body.scale = (.98, 1.40, .80)
+        head.scale = (.94, .94, .94)
+        head.location = (0, -.32, 1.02 + .006 * math.cos(phase * 2))
+        head.rotation_euler = (.04, .025 * math.sin(phase), 0)
+        for paw, offset, y, height in (
+                (rig['back_feet'][0], 0, .43, .105), (rig['feet'][0], .25, -.49, .12),
+                (rig['back_feet'][1], .50, .43, .105), (rig['feet'][1], .75, -.49, .12)):
+            gait = (t + offset) % 1
+            if gait < .64:
+                travel = -.16 + .32 * gait / .64
+                lift = 0
+            else:
+                swing = (gait - .64) / .36
+                travel = .16 - .32 * smoothstep(swing)
+                lift = .10 * math.sin(math.pi * swing)
+            paw.location.y = y + travel
+            paw.location.z = height + lift
+            paw.scale.z = height
+            paw.rotation_euler = (-.18 * lift / .10, 0, 0)
+        tail.location = (0, .65, .44)
+        tail.rotation_euler = (0, .08 * math.sin(phase), .10 * math.sin(phase))
+    if state in ('jumpOn', 'jumpOff'):
+        # The room supplies the flight arc. Bake a planted crouch, tucked paws,
+        # and landing compression rather than a second vertical translation.
+        onto = state == 'jumpOn'
+        settle = smoothstep((t - .70) / .30)
+        launch = smoothstep(t / .20)
+        seated = settle if onto else 1 - launch
+        crouch = pulse(t, .14, .14)
+        landing = pulse(t, .77, .07)
+        squash = .09 * crouch + .075 * landing
+        tuck = smooth_window(t, .20, .70, .10)
+        root.rotation_euler.z = math.radians(197.5 + 162.5 * settle if onto else 17.5 * launch)
+        body.location = (0, .08, .51 - .07 * seated - squash)
+        body.scale = (.98 + .02 * seated + squash, 1.4 - .4 * seated, .8 + .2 * seated - squash)
+        head.scale = (.94 + .06 * seated,) * 3
+        head.location = (0, -.32 + .285 * seated, 1.02 + .08 * seated - squash)
+        head.rotation_euler = (-.10 * tuck, 0, 0)
         for side, front, back in zip((-1, 1), rig['feet'], rig['back_feet']):
-            stride = math.sin(phase + (0 if side == -1 else math.pi))
-            front.location.y -= .13 * stride
-            front.location.z += .055 * max(0, stride)
-            back.location.y += .13 * stride
-            back.location.z += .045 * max(0, -stride)
-        tail.rotation_euler.z = .12 * math.sin(phase)
+            front.location = (side * .23, -.49 + .18 * seated + .14 * tuck, .12 + .06 * seated + .20 * tuck)
+            front.scale.z = .12 + .08 * seated
+            back.location = (side * .36, .43 - .27 * seated - .14 * tuck, .105 + .035 * seated + .22 * tuck)
+            back.scale.z = .105 + .045 * seated
+        tail.location = (0, .65 - .21 * seated, .44 - .09 * seated)
+        tail.rotation_euler = (0, 0, -.12 * tuck)
     if state in ('curlUp', 'curlSleep'):
         curl = smoothstep(t) if state == 'curlUp' else 1
         breath = .010 * math.sin(phase) * curl if state == 'curlSleep' else 0

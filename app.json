@@ -40,6 +40,7 @@
       "expo-apple-authentication",
       "expo-secure-store",
       "expo-router",
+      "./plugins/with-ios-launch-image",
       [
         "expo-splash-screen",
         {
@@ -49,7 +50,11 @@
           "dark": {
             "backgroundColor": "#FFF5EB"
           },
-          "imageWidth": 240
+          "imageWidth": 240,
+          "ios": {
+            "image": "./assets/images/splash-launch.png",
+            "imageWidth": 320
+          }
         }
       ],
       "expo-font",

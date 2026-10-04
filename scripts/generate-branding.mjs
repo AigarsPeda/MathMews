@@ -29,4 +29,11 @@ const splashCat=await sharp(path.join(root,'assets/3d/cat-splash.png')).resize(5
 const title=Buffer.from('<svg width="640" height="112"><text x="320" y="86" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="800" font-size="85.333" fill="#293334">Math Mews</text></svg>');
 await sharp({create:{width:640,height:640,channels:4,background:'#00000000'}})
  .composite([{input:splashCat,left:64,top:0},{input:title,left:0,top:528}]).png().toFile(path.join(out,'splash-brand.png'));
+// The system launch screen is a centered 320 pt square. Keep the 240 pt
+// branding centered inside it and place the empty loading track at center+152.
+// iOS shows this asset before any JavaScript or image decoding in React.
+const launchBrand=await sharp(path.join(out,'splash-brand.png')).resize(720,720).png().toBuffer();
+const launchTrack=Buffer.from('<svg width="720" height="24"><rect width="720" height="24" rx="12" fill="#FFE0CC"/></svg>');
+await sharp({create:{width:960,height:960,channels:4,background:'#00000000'}})
+ .composite([{input:launchBrand,left:120,top:120},{input:launchTrack,left:120,top:936}]).png().toFile(path.join(out,'splash-launch.png'));
 console.log('Generated modern 3D branding.');

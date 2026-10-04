@@ -77,7 +77,7 @@ export function SplashGate({ children }: { children: ReactNode }) {
           </View>
         </View>
         <View style={styles.loading}>
-          <ProgressBar progress={progress} fillColor={GameColors.primary} trackColor={GameColors.cardBorder} accessibilityLabel={t("loading.label")} />
+          <ProgressBar progress={progress} style={styles.progressBar} fillColor={GameColors.primary} trackColor={GameColors.cardBorder} accessibilityLabel={t("loading.label")} />
         </View>
       </SplashBackdrop>
     </View>
@@ -92,5 +92,6 @@ const styles = StyleSheet.create({
   brandingImage: { ...StyleSheet.absoluteFill, width: 240, height: 240 },
   portrait: { ...StyleSheet.absoluteFill, width: 192, height: 192 },
   cat: { position: "absolute", left: 24, top: 0, width: 192, height: 192, overflow: "hidden", backgroundColor: GameColors.background },
-  loading: { position: "absolute", top: "50%", marginTop: 152, width: "72%", maxWidth: 280 },
+  loading: { position: "absolute", top: "50%", marginTop: 152, width: 240 },
+  progressBar: { height: 8, borderRadius: 4 },
 });

@@ -1,5 +1,5 @@
 import { CAT_SPRITE_CATALOG, type CatSpriteAnimationId } from "@/constants/cat-sprite-catalog";
-import { CAT_3D_ANIMATION_PAGES, CAT_SPRITE_PAGE_LAYOUT } from "@/constants/cat-3d-animation-pages";
+import { CAT_3D_ANIMATION_PAGES, CAT_SPRITE_PAGE_LAYOUT, CAT_ROOM_MOTION_PAGE_LAYOUT } from "@/constants/cat-3d-animation-pages";
 import { resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import type { SpriteSheetConfig } from "@/pet-display/types";
 
@@ -11,13 +11,14 @@ export function getCatSpriteAnimations(skinId: CatSkinId | string | undefined) {
   const animations = {} as Record<CatSpriteAnimationId, SpriteSheetConfig>;
   for (const id of Object.keys(CAT_SPRITE_CATALOG) as CatSpriteAnimationId[]) {
     const { frameCount, fps } = CAT_SPRITE_CATALOG[id];
+    const layout = id.startsWith("walk") || id.startsWith("jump") ? CAT_ROOM_MOTION_PAGE_LAYOUT : CAT_SPRITE_PAGE_LAYOUT;
     animations[id] = {
       source: CAT_3D_ANIMATION_PAGES[skin][id][0],
       pages: CAT_3D_ANIMATION_PAGES[skin][id],
-      framesPerPage: CAT_SPRITE_PAGE_LAYOUT.framesPerPage,
-      frameWidth: 768, frameHeight: 768,
-      sheetWidth: 1536, sheetHeight: 1536,
-      frames: Array.from({ length: frameCount }, (_, i) => ({ col: i % 2, row: Math.floor((i % 4) / 2) })),
+      framesPerPage: layout.framesPerPage,
+      frameWidth: layout.frameSize, frameHeight: layout.frameSize,
+      sheetWidth: layout.frameSize * layout.columns, sheetHeight: layout.frameSize * Math.ceil(layout.framesPerPage / layout.columns),
+      frames: Array.from({ length: frameCount }, (_, i) => ({ col: i % layout.columns, row: Math.floor((i % layout.framesPerPage) / layout.columns) })),
       fps, anchor: "bottom-center",
     };
   }

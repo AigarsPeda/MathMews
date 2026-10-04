@@ -38,6 +38,22 @@ Press **`i`** to open on the simulator. If Expo reports a simulator-launch timeo
 
 For in-app purchases, use an [EAS development build](https://docs.expo.dev/develop/development-builds/introduction/) — IAP does not work in Expo Go.
 
+## Startup regression tests
+
+```bash
+npm run test:startup
+```
+
+This checks the real Expo launch-plugin order, generation of all three native PNG sizes, Xcode's resource-copy references and repeatable prebuilds. It also checks exact still/animation pixels, the loading-bar placement, both image-decoding orders, and recovery from slow or failed asset loads. The suite runs on pull requests and pushes to `main` through GitHub Actions. It uses temporary files and requires no simulator or generated `ios/` folder.
+
+After building an iOS release, check the packaged app as well:
+
+```bash
+node scripts/check-splash-continuity.mjs /absolute/path/MathMews.app
+```
+
+That verifies the final Info.plist and the PNGs inside the app bundle. After Expo or iOS upgrades, also cold-launch the release and visually check that the cat appears during the opening transition, then animates with live progress. The Node tests do not exercise iOS's system renderer.
+
 ## In-app purchases (RevenueCat)
 
 Math Mews sells **coin packs only**. Real money credits `wallet.coins`; everything else (store, feed, lives, visual help) spends coins as usual. Full plan: [doc/IAP_PLAN.md](doc/IAP_PLAN.md).

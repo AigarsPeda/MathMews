@@ -329,7 +329,7 @@ export function PetStage({
     const step = roomActivity?.plan.steps[roomActivity.stepIndex];
     if (!step) return null;
     const registry = getPetMediaRegistry("cat", { catSkinId });
-    return { kind: "segment", mood: step.mood, segment: step.animation ? createRoomActivitySegment(catSkinId, step.animation, step.reverse) : registry.getSegment(step.mood) };
+    return { kind: "segment", mood: step.mood, segment: step.animation ? createRoomActivitySegment(catSkinId, step.animation, step.reverse, step.animationFps) : registry.getSegment(step.mood) };
   }, [catSkinId, roomActivity]);
   const catActivityStyle = useAnimatedStyle(() => ({
     transform: [{ scale: activityScale.get() }, { scaleX: activityFacing.get() }],
@@ -714,7 +714,7 @@ export function PetStage({
           petType={petType}
           catSkinId={catSkinId}
           playback={activityPlayback ?? playback}
-          loop={Boolean(roomActivity && roomActivity.plan.steps[roomActivity.stepIndex].animation !== "curlUp")}
+          loop={Boolean(roomActivity && !["curlUp", "jumpOn", "jumpOff"].includes(roomActivity.plan.steps[roomActivity.stepIndex].animation ?? ""))}
           width={displayWidth}
           resolutionScale={3}
           transparentBackground={usesSprite}

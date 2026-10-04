@@ -7,16 +7,44 @@ exec(compile(renderer.read_text(), str(renderer), 'exec'), scope)
 for skin in ('orange', 'grey', 'white'):
     scope['setup'](64)
     rig = scope['cat'](skin)
-    for frame in range(24):
-        scope['cat_pose'](rig, 'walk', frame / 24)
-        feet = rig['feet'] + rig['back_feet']
-        assert min(paw.location.z for paw in feet) <= .141, 'A stride must retain contact with the floor'
-        assert abs(rig['root'].location.z) < .001, 'Walking must never become a hop'
-        for side, front, front_leg, back, back_leg in zip((-1, 1), rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
-            for limb, paw, anchor in ((front_leg, front, (side*.23, -.18, 0)), (back_leg, back, (side*.32, .12, -.16))):
-                shoulder = rig['body'].matrix_basis @ Vector(anchor)
-                for end in (shoulder, paw.location):
-                    assert (limb.matrix_basis.inverted() @ end).length < .999, 'Walking must keep the legs connected'
+    for state in ('walk', 'walkAway', 'walkToward', 'walkAwayDiagonal', 'walkTowardDiagonal'):
+        for frame in range(24):
+            t = frame / 24
+            scope['cat_pose'](rig, state, t)
+            feet = rig['back_feet'][:1] + rig['feet'][:1] + rig['back_feet'][1:] + rig['feet'][1:]
+            assert sum(abs(paw.location.z - paw.scale.z) < .001 for paw in feet) >= 2, 'At least two paws must support the standing cat'
+            assert abs(rig['root'].location.z) < .001, 'Walking must never become a hop'
+            for paw, offset in zip(feet, (0, .25, .50, .75)):
+                gait = (t + offset) % 1
+                if gait < .64 - .001:
+                    y = paw.location.y
+                    scope['cat_pose'](rig, state, t + .0001)
+                    # Forward torso travel is half a Blender unit per cycle.
+                    assert abs((paw.location.y - y) / .0001 - .5) < .001, 'A planted paw must remain fixed against forward floor travel'
+                    scope['cat_pose'](rig, state, t)
+            for side, front, front_leg, back, back_leg in zip((-1, 1), rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
+                for limb, paw, anchor in ((front_leg, front, (side*.23, -.18, 0)), (back_leg, back, (side*.32, .12, -.16))):
+                    shoulder = rig['body'].matrix_basis @ Vector(anchor)
+                    for end in (shoulder, paw.location):
+                        assert (limb.matrix_basis.inverted() @ end).length < .999, 'Walking must keep the legs connected'
+    scope['cat_pose'](rig, 'idle', 0)
+    sitting = [(obj.location.copy(), obj.scale.copy()) for obj in scope['animated_parts'](rig)]
+    scope['cat_pose'](rig, 'jumpOn', 1)
+    for obj, (location, scale) in zip(scope['animated_parts'](rig), sitting):
+        assert (obj.location-location).length < .001 and (obj.scale-scale).length < .001, 'Jumping onto the sofa must end in the seated pose'
+    scope['cat_pose'](rig, 'jumpOff', 0)
+    for obj, (location, scale) in zip(scope['animated_parts'](rig), sitting):
+        assert (obj.location-location).length < .001 and (obj.scale-scale).length < .001, 'Jumping off must start from the seated pose'
+    for state in ('jumpOn', 'jumpOff'):
+        scope['cat_pose'](rig, state, .14)
+        crouched_height = rig['body'].scale.z
+        scope['cat_pose'](rig, state, .45)
+        assert rig['body'].scale.z > crouched_height, 'Takeoff must extend out of the crouch'
+        assert all(paw.location.z > paw.scale.z + .12 for paw in rig['feet'] + rig['back_feet']), 'Airborne paws must tuck clear of the ground'
+        scope['cat_pose'](rig, state, .77)
+        assert rig['body'].scale.z < .90, 'Landing must absorb the impact'
+    scope['cat_pose'](rig, 'jumpOff', 1)
+    assert all(abs(paw.location.z-paw.scale.z) < .001 for paw in rig['feet'] + rig['back_feet']), 'Jump-down must land on four paws before walking'
     scope['cat_pose'](rig, 'curlUp', 1)
     curled = [(obj.location.copy(), obj.scale.copy()) for obj in scope['animated_parts'](rig)]
     tail = [point.co.copy() for point in rig['tail_curve'].data.splines[0].bezier_points]
@@ -25,4 +53,4 @@ for skin in ('orange', 'grey', 'white'):
         assert (obj.location-location).length < .001 and (obj.scale-scale).length < .001, 'Curling must join the sleeping pose without a jump'
     for point, before in zip(rig['tail_curve'].data.splines[0].bezier_points, tail):
         assert (point.co-before).length < .001
-print('Verified grounded four-paw strides, connected walking legs, and matching curl/sleep poses for all three coats.')
+print('Verified five directional walks, planted paws without sliding, two supporting feet, connected walking legs, distinct sofa takeoffs and landings, tucked airborne paws, and matching curl/sleep poses for all three coats.')

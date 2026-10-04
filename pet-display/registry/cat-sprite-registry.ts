@@ -1,4 +1,5 @@
 import { ONE_SHOT_ANIMATIONS } from "@/constants/game";
+import type { CatRoomAnimation } from "@/constants/cat-room-motion";
 import type { BoxPlayAnimationId } from "@/constants/cat-box-play";
 import { DEFAULT_CAT_SKIN_ID, resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import {
@@ -107,11 +108,12 @@ function createCatSpriteScenarios(
 
 export function createRoomActivitySegment(
   skinId: CatSkinId | string | undefined,
-  animationId: "walk" | "curlUp" | "curlSleep" | "batToy",
+  animationId: CatRoomAnimation,
   reverse = false,
+  fps?: number,
 ): PetMediaSegment {
   return spriteSegment(resolveCatSkinId(skinId), animationId, {
-    loop: animationId !== "curlUp", reverse,
+    loop: animationId !== "curlUp" && animationId !== "jumpOn" && animationId !== "jumpOff", reverse, fps,
   });
 }
 

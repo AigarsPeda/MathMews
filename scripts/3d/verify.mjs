@@ -71,6 +71,7 @@ for(const skin of ['orange','grey','white']){
  for(const step of boxStory.steps)assert.equal(step.loop,false,'Box story must advance through one-shot clips');
  for(const [id,clip] of Object.entries(clips)){
   const sources=clip.pages??[clip.source];
+  if(id.startsWith('walk')||id.startsWith('jump'))assert.equal(sources.length,2,`${skin}/${id} must keep its entire movement in the resident page pair`);
   assert.equal(sources.length,Math.ceil(clip.frames.length/(clip.framesPerPage??clip.frames.length)),`${skin}/${id} page count`);
   for(const source of sources){const metadata=await sharp(source).metadata();assert.equal(metadata.width,clip.sheetWidth,id);assert.equal(metadata.height,clip.sheetHeight,id);}
   assert.ok(clip.sheetWidth*clip.sheetHeight*4<=9*1024*1024,`${skin}/${id} exceeds texture page budget`);

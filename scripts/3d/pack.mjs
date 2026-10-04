@@ -22,7 +22,11 @@ async function pack(id,count,cellSize=192,columns=8){
  await sharp({create:{width:columns*cellSize,height:Math.ceil(count/columns)*cellSize,channels:4,background:'#00000000'}}).composite(cells).png({compressionLevel:9}).toFile(path.join(out,'atlases',id+'.png'));
 }
 async function packPages(id,count){
- const pageCount=Math.ceil(count/framesPerPage);
+ // Walking keeps its complete cycle in the current/next pair. Fetching a new
+ // four-frame texture every 111 ms can freeze the feet while the cat moves.
+ const walking=id.includes('-walk')||id.includes('-jump');
+ const cellSize=walking?384:frameSize, columns=walking?4:pageColumns, cellsPerPage=walking?12:framesPerPage;
+ const pageCount=Math.ceil(count/cellsPerPage);
  const frames=Array.from({length:count},(_,i)=>path.join(out,'frames',id,`${String(i).padStart(3,'0')}.png`));
  const available=await Promise.all(frames.map(file=>fs.access(file).then(()=>true,()=>false)));
  if(!available.every(Boolean)){
@@ -34,13 +38,13 @@ async function packPages(id,count){
  for(let page=0;page<pageCount;page++){
   const name=`${id}-${String(page).padStart(2,'0')}.webp`;
   const cells=[];
-  for(let cell=0;cell<framesPerPage&&page*framesPerPage+cell<count;cell++){
-   const frame=path.join(out,'frames',id,`${String(page*framesPerPage+cell).padStart(3,'0')}.png`);
+  for(let cell=0;cell<cellsPerPage&&page*cellsPerPage+cell<count;cell++){
+   const frame=path.join(out,'frames',id,`${String(page*cellsPerPage+cell).padStart(3,'0')}.png`);
    const metadata=await sharp(frame).metadata();
    if(metadata.width!==frameSize||metadata.height!==frameSize)throw new Error(`Rerender HD frame ${frame}`);
-   cells.push({input:frame,left:cell%pageColumns*frameSize,top:Math.floor(cell/pageColumns)*frameSize});
+   cells.push({input:walking?await sharp(frame).resize(cellSize,cellSize).png().toBuffer():frame,left:cell%columns*cellSize,top:Math.floor(cell/columns)*cellSize});
   }
-  await sharp({create:{width:frameSize*2,height:frameSize*2,channels:4,background:'#00000000'}}).composite(cells).webp({quality:90,alphaQuality:100,effort:5}).toFile(path.join(out,'cat-pages',name));
+  await sharp({create:{width:cellSize*columns,height:cellSize*Math.ceil(cellsPerPage/columns),channels:4,background:'#00000000'}}).composite(cells).webp({quality:90,alphaQuality:100,effort:5}).toFile(path.join(out,'cat-pages',name));
  }
  return pageCount;
 }
@@ -49,7 +53,7 @@ for(const [id,[count,fps]] of Object.entries(clips))catalog+=`  ${id}: { frameCo
 catalog+='} as const;\nexport type CatSpriteAnimationId = keyof typeof CAT_SPRITE_CATALOG;\nexport type CatSpriteCatalogEntry = (typeof CAT_SPRITE_CATALOG)[CatSpriteAnimationId];\n';
 await fs.writeFile('constants/cat-sprite-catalog.ts',catalog);
 let sources='/** Small store-preview textures. Gameplay uses CAT_3D_ANIMATION_PAGES. */\nexport const CAT_3D_ANIMATION_SOURCES = {\n';
-let pages='/** 768 px cells, four frames per page. Only current/next pages are decoded. */\nexport const CAT_SPRITE_PAGE_LAYOUT = { frameSize: 768, columns: 2, framesPerPage: 4 } as const;\nexport const CAT_3D_ANIMATION_PAGES = {\n';
+let pages='/** Only current/next pages are decoded. Room movement fits in that pair. */\nexport const CAT_SPRITE_PAGE_LAYOUT = { frameSize: 768, columns: 2, framesPerPage: 4 } as const;\nexport const CAT_ROOM_MOTION_PAGE_LAYOUT = { frameSize: 384, columns: 4, framesPerPage: 12 } as const;\nexport const CAT_3D_ANIMATION_PAGES = {\n';
 for(const skin of ['orange','grey','white']){
  sources+=`  ${skin}: {\n`;pages+=`  ${skin}: {\n`;
  for(const [id,[count]] of Object.entries(clips)){
@@ -57,7 +61,7 @@ for(const skin of ['orange','grey','white']){
   // The splash has a small full idle sheet; other portraits need only four cells.
   if(!selected||selected.has(id))await pack(name,id === "idle" ? count : 4,192,id === "idle" ? 8 : 2);
   sources+=`    ${id}: require("@/assets/3d/atlases/${name}.png"),\n`;
-  const pageCount=!selected||selected.has(id)?await packPages(name,count):Math.ceil(count/framesPerPage);
+  const pageCount=!selected||selected.has(id)?await packPages(name,count):Math.ceil(count/(id.startsWith('walk')||id.startsWith('jump')?12:framesPerPage));
   pages+=`    ${id}: [${Array.from({length:pageCount},(_,i)=>`require("@/assets/3d/cat-pages/${name}-${String(i).padStart(2,'0')}.webp")`).join(', ')}],\n`;
  }
  sources+='  },\n';pages+='  },\n';

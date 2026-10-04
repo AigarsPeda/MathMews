@@ -752,7 +752,7 @@ def render_cats():
    play_toy=play_props(state) if state in PLAY_CLIPS else None
    scene.render.fps=fps;scene.frame_start=1;scene.frame_end=count
    for i in range(count):
-    scene.frame_set(i+1);t=i/(count-1) if state in ['curlUp','sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*PLAY_CLIPS] else i/count
+    scene.frame_set(i+1);t=i/(count-1) if state in ['jumpOn','jumpOff','curlUp','sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*PLAY_CLIPS] else i/count
     cat_pose(rig,state,t)
     if slide:pose_care_props(slide,food,state,t)
     if play_toy:pose_play_props(play_toy,state,t)

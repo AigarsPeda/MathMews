@@ -103,6 +103,12 @@
     24,
     24
   ],
+  "walkAway": [24, 24],
+  "walkToward": [24, 24],
+  "walkAwayDiagonal": [24, 24],
+  "walkTowardDiagonal": [24, 24],
+  "jumpOn": [24, 24],
+  "jumpOff": [24, 24],
   "curlUp": [
     24,
     24

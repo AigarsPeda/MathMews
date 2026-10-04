@@ -31,7 +31,7 @@ def check_scene(label):
     for obj in bpy.context.scene.objects:
         paw = obj.name.startswith(('Front paw ', 'Back paw '))
         leg = obj.name.startswith(('Short front leg ', 'Short back leg '))
-        tail = obj.name in ('Plump orange tail', 'Cream tail tip')
+        tail = obj.name in ('Plump orange tail', 'Rounded tail tip')
         if not (paw or leg or tail):
             continue
         points = world_vertices(obj)
