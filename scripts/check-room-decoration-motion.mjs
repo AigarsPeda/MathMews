@@ -18,7 +18,10 @@ const React = {
     return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }];
   },
 };
+const shared = () => ({ get: () => 0, set() {} });
 const mocks = {
+  '@/pet-display/registry/dog-video-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
+  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, scale: shared(), bounce: shared(), facing: shared(), mouseX: shared(), mouseY: shared() }) },
   react: React,
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   'react-native': {
@@ -88,6 +91,7 @@ function render(placedDecorations = powered) {
     name: 'Cat', petType: 'cat', compact: true, stats: { level: 1, hunger: 90, happiness: 90, cleanliness: 90 },
     wisdom: 90, playback: {}, speechMessage: 'Hello!', placedDecorations,
     onTogglePlacedAirConditioner: id => { toggled = id; },
+    onMoveRoomLayerItem() {},
   }));
 }
 const first = render();
@@ -108,6 +112,24 @@ assert.equal(menu.node.props.actions[0].label, 'home.turnOffAirConditioner');
 menu.node.props.actions[0].onPress();
 assert.equal(toggled, 'ac-one');
 assert.equal(render(items).find(({ node }) => node.type === 'RoomItemActionMenu').node.props.actions[0].label, 'home.turnOnAirConditioner');
+
+const sofa = { decorationId: 'sofaA', instanceId: 'sofa', offset: { x: .3, y: .1 } };
+const normalRoom = render([sofa]);
+const sofaNode = nodes => nodes.find(({ node }) => node.props.children?.[0]?.props?.decorationId === 'sofaA').node;
+const catNode = nodes => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.children?.[0]?.type === 'View').node;
+assert.equal(sofaNode(normalRoom).props.allowDrag, false);
+assert.equal(sofaNode(normalRoom).props.interactive, false, 'Furniture must not intercept petting');
+assert.equal(catNode(normalRoom).props.allowDrag, false);
+normalRoom.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
+const editingRoom = render([sofa]);
+assert.equal(sofaNode(editingRoom).props.allowDrag, true);
+assert.equal(sofaNode(editingRoom).props.interactive, true);
+assert.equal(catNode(editingRoom).props.allowDrag, true);
+assert.equal(catNode(editingRoom).props.onPetTap, undefined, 'Arranging the cat must not trigger care');
+assert.equal(editingRoom.filter(({ node }) => node.type === 'PetSpeechBubble').length, 0);
+editingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
+assert.equal(sofaNode(render([sofa])).props.allowDrag, false);
+console.log('Verified explicit decorating, protected furniture taps, cat repositioning, and Done restoring normal interaction.');
 
 const actionMenu = load(path.join(root, 'components/pet/RoomItemActionMenu.tsx')).RoomItemActionMenu;
 states.length = 0; stateIndex = 0;

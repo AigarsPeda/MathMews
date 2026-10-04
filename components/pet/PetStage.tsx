@@ -1,3 +1,6 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useRoomActivity } from "@/hooks/use-room-activity";
+import { getPetMediaRegistry } from "@/pet-display/registry/dog-video-registry";
 import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
@@ -112,6 +115,10 @@ type PetStageProps = {
   placedToys?: PlacedToy[];
   placedDecorations?: PlacedDecoration[];
   roomLayerOrder?: RoomLayerItem[];
+  ownedToyIds?: string[];
+  lastInteractionAt?: number;
+  roomActivityBlocked?: boolean;
+  onRoomInteraction?: () => void;
   speechMessage?: string | null;
   playback: PetPlaybackState;
   compact?: boolean;
@@ -189,6 +196,10 @@ export function PetStage({
   placedToys,
   placedDecorations,
   roomLayerOrder,
+  ownedToyIds,
+  lastInteractionAt,
+  roomActivityBlocked = false,
+  onRoomInteraction,
   speechMessage,
   playback,
   compact = false,
@@ -271,6 +282,7 @@ export function PetStage({
   const [avatarWidth, setAvatarWidth] = useState(
     compactPetWidth(petType, compact),
   );
+  const [decorating, setDecorating] = useState(false);
   const displayWidth = usesSprite
     ? resolveSpriteDisplaySize(avatarWidth)
     : avatarWidth;
@@ -282,6 +294,33 @@ export function PetStage({
   const speechHeight = useSharedValue(0);
   const panStartX = useSharedValue(0);
   const panStartY = useSharedValue(0);
+  const hungry = stats.hunger < 30;
+  const asleep = playback.kind === "segment" && playback.mood === "sleeping";
+  const activityOptions = useMemo(() => ({
+    width: viewport.width, height: viewport.height, petSize: displayWidth,
+    sizeScale: moderateScale(100) / 100,
+    homeOffset: roomPetOffset ?? { x: 0, y: 0.12 },
+    decorations: roomPlacedDecorations,
+    toys: placedToys ?? [], ownedToyIds: ownedToyIds ?? [],
+    hungry, asleep,
+  }), [displayWidth, ownedToyIds, placedToys, asleep, hungry, roomPetOffset, roomPlacedDecorations, viewport.height, viewport.width]);
+  const { activity: roomActivity, scale: activityScale, bounce: activityBounce,
+    facing: activityFacing, mouseX, mouseY } = useRoomActivity(activityOptions,
+    compact && usesSprite && !decorating && zoom === 1 && !roomActivityBlocked,
+    lastInteractionAt, petSceneX, petSceneY);
+  const activityPlayback = useMemo<PetPlaybackState | null>(() => {
+    const step = roomActivity?.plan.steps[roomActivity.stepIndex];
+    if (!step) return null;
+    const registry = getPetMediaRegistry("cat", { catSkinId });
+    return { kind: "segment", mood: step.mood, segment: registry.getSegment(step.mood) };
+  }, [catSkinId, roomActivity]);
+  const catActivityStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: activityBounce.get() }, { scale: activityScale.get() }, { scaleX: activityFacing.get() }],
+  }));
+  const transientMouseStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: mouseX.get() }, { translateY: mouseY.get() }],
+  }));
+  const visibleSpeech = roomActivity || decorating ? null : speechMessage;
   const maxPanX = Math.max(0, (zoom - 1) * viewport.width / 2);
   const maxPanY = Math.max(0, (zoom - 1) * viewport.height / 2);
   useEffect(() => {
@@ -315,9 +354,10 @@ export function PetStage({
     ] };
   });
   const handlePetPositionChange = useCallback((position: { x: number; y: number }) => {
+    if (roomActivity) return;
     petSceneX.set(position.x);
     petSceneY.set(position.y);
-  }, [petSceneX, petSceneY]);
+  }, [petSceneX, petSceneY, roomActivity]);
   const handleSpeechLayout = useCallback((event: LayoutChangeEvent) => {
     speechHeight.set(event.nativeEvent.layout.height);
   }, [speechHeight]);
@@ -355,6 +395,7 @@ export function PetStage({
   const canManageRoomItem = useCallback(
     (item: RoomLayerItem) => {
       if (zoom !== 1) return false;
+      if (!decorating) return item.kind === "decoration" && isAirConditionerDecorationId(item.decorationId) && Boolean(onTogglePlacedAirConditioner);
       if (item.kind === "bed") {
         return Boolean(
           onBedRemove || onMoveRoomLayerItem || onFlipBed || onScaleBed,
@@ -374,6 +415,7 @@ export function PetStage({
     },
     [
       zoom,
+      decorating,
       onBedRemove,
       onFlipBed,
       onScaleBed,
@@ -390,6 +432,16 @@ export function PetStage({
   const buildRoomItemMenuActions = useCallback(
     (item: RoomLayerItem) => {
       const actions: RoomItemMenuAction[] = [];
+      if (!decorating) {
+        if (item.kind !== "decoration" || !isAirConditionerDecorationId(item.decorationId) || !onTogglePlacedAirConditioner) return actions;
+        const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
+        if (placed) actions.push({
+          label: t(placed.poweredOn ? "home.turnOffAirConditioner" : "home.turnOnAirConditioner"),
+          icon: "power-settings-new",
+          onPress: () => onTogglePlacedAirConditioner(item.instanceId),
+        });
+        return actions;
+      }
 
       if (onMoveRoomLayerItem) {
         actions.push({
@@ -548,6 +600,7 @@ export function PetStage({
     [
       bedId,
       bedScale,
+      decorating,
       changeLookLabel,
       flipBedLabel,
       flipWallLabel,
@@ -614,13 +667,15 @@ export function PetStage({
       const manageable = canManageRoomItem(item);
       return {
         layerZIndex,
+        allowDrag: decorating && zoom === 1,
+        interactive: decorating || manageable,
         onPetTap: manageable ? () => handleRoomItemTap(item) : undefined,
         onMenuAnchorLayout: manageable
           ? (rect: RoomMenuAnchorRect) => handleItemAnchorLayout(item, rect)
           : undefined,
       };
     },
-    [canManageRoomItem, handleItemAnchorLayout, handleRoomItemTap],
+    [canManageRoomItem, decorating, handleItemAnchorLayout, handleRoomItemTap, zoom],
   );
 
   const petCluster = (
@@ -630,34 +685,39 @@ export function PetStage({
         !compact && { width: petDisplayWidth },
       ]}
     >
-      {speechMessage && !(compact && usesSprite) ? (
+      {visibleSpeech && !(compact && usesSprite) ? (
         <View pointerEvents="none" style={compact ? styles.speechAbovePet : styles.speechAnchor}>
-          <PetSpeechBubble message={speechMessage} />
+          <PetSpeechBubble message={visibleSpeech} />
         </View>
       ) : null}
-      <PetDisplay
-        petType={petType}
-        catSkinId={catSkinId}
-        playback={playback}
-        width={displayWidth}
-        resolutionScale={3}
-        transparentBackground={usesSprite}
-        onPress={compact && usesSprite ? undefined : onPetPress}
-        onAnimationComplete={onAnimationComplete}
-        onStepComplete={onStepComplete}
-      />
+      <Animated.View style={catActivityStyle}>
+        <PetDisplay
+          petType={petType}
+          catSkinId={catSkinId}
+          playback={activityPlayback ?? playback}
+          loop={Boolean(roomActivity && roomActivity.plan.steps[roomActivity.stepIndex].mood !== "lyingDown")}
+          width={displayWidth}
+          resolutionScale={3}
+          transparentBackground={usesSprite}
+          onPress={compact && usesSprite ? undefined : onPetPress}
+          onAnimationComplete={roomActivity ? undefined : onAnimationComplete}
+          onStepComplete={roomActivity ? undefined : onStepComplete}
+        />
+      </Animated.View>
     </View>
   );
 
   const roomPetLayer =
     compact && usesSprite ? (
       <DraggableRoomPet
-        allowDrag={zoom === 1}
+        allowDrag={decorating && zoom === 1}
+        animatedPosition={{ x: petSceneX, y: petSceneY }}
         petSize={displayWidth}
+        hitSize={displayWidth * 0.65}
         initialOffset={roomPetOffset}
         onOffsetChange={zoom === 1 ? onRoomPetOffsetChange : undefined}
         onPositionChange={handlePetPositionChange}
-        onPetTap={onPetPress}
+        onPetTap={decorating ? undefined : onPetPress}
         layerZIndex={ROOM_PET_LAYER_Z_INDEX}
       >
         {petCluster}
@@ -677,7 +737,6 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
-        allowDrag={zoom === 1}
           key="bed"
           petSize={bedSize}
           initialOffset={roomBedOffset ?? { x: -0.15, y: 0.3 }}
@@ -710,7 +769,6 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
-        allowDrag={zoom === 1}
           key={`decoration:${item.instanceId}`}
           petSize={decorationSize}
           hitSize={hitSize}
@@ -737,13 +795,14 @@ export function PetStage({
     );
     if (!placed) return null;
 
+    const chasedMouse = roomActivity?.plan.kind === "mouseChase" && roomActivity.plan.mouseInstanceId === item.instanceId;
     const toyId = item.toyId as CatToyId;
     const toySize = moderateScale(getToyDisplaySize(toyId));
 
     return (
       <DraggableRoomPet
-        allowDrag={zoom === 1}
         key={`toy:${item.instanceId}`}
+        animatedPosition={chasedMouse ? { x: mouseX, y: mouseY } : undefined}
         petSize={toySize}
         initialOffset={placed.offset}
         onOffsetChange={(offset) =>
@@ -783,6 +842,7 @@ export function PetStage({
         <View style={[styles.petColumn, compact && styles.petColumnCompact]}>
           <View
             ref={avatarWrapRef}
+            onTouchStart={onRoomInteraction}
             onLayout={event => {
               const { width, height } = event.nativeEvent.layout;
               setViewport({ width, height });
@@ -810,11 +870,19 @@ export function PetStage({
                 accessibilityLabel={t("home.dismissRoomItemMenu")}
               />
             ) : null}
+            {roomActivity?.plan.kind === "mouseChase" && !roomActivity.plan.mouseInstanceId ? (
+              <Animated.View pointerEvents="none" style={[styles.transientMouse, {
+                left: viewport.width / 2 - moderateScale(getToyDisplaySize("mouse")) / 2,
+                top: viewport.height / 2 - moderateScale(getToyDisplaySize("mouse")) / 2,
+              }, transientMouseStyle]}>
+                <ToySpriteImage toyId="mouse" size={moderateScale(getToyDisplaySize("mouse"))} />
+              </Animated.View>
+            ) : null}
             {compact ? roomPetLayer : petCluster}
             </Animated.View>
-            {compact && usesSprite && speechMessage ? (
+            {compact && usesSprite && visibleSpeech ? (
               <Animated.View pointerEvents="none" onLayout={handleSpeechLayout} style={[styles.speechOverlay, speechPositionStyle]}>
-                <PetSpeechBubble message={speechMessage} />
+                <PetSpeechBubble message={visibleSpeech} />
               </Animated.View>
             ) : null}
             {readyMenuAnchor && readyRoomBounds ? (
@@ -825,6 +893,15 @@ export function PetStage({
                   roomBounds={readyRoomBounds}
                 />
               </View>
+            ) : null}
+            {compact && usesSprite ? (
+              <Pressable style={[styles.decorateButton, decorating && styles.decorateButtonActive]}
+                onPress={() => { closeMenu(); setZoom(1); setDecorating(current => !current); }}
+                accessibilityRole="button" accessibilityLabel={t(decorating ? "home.finishDecorating" : "home.decorateRoom")}
+                accessibilityState={{ selected: decorating }}>
+                <MaterialIcons name={decorating ? "check" : "weekend"} size={moderateScale(18)} color={GameColors.text} />
+                <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
+              </Pressable>
             ) : null}
             {compact && usesSprite ? (
               <Pressable style={styles.zoomButton}
@@ -867,6 +944,17 @@ export function PetStage({
 }
 
 const styles = StyleSheet.create({
+  decorateButton: {
+    position: "absolute", top: moderateScale(10), left: moderateScale(10),
+    zIndex: ROOM_MENU_OPEN_Z_INDEX + 4,
+    flexDirection: "row", alignItems: "center", gap: moderateScale(6),
+    paddingHorizontal: moderateScale(12), paddingVertical: moderateScale(10),
+    borderRadius: moderateScale(20), backgroundColor: GameColors.card,
+    borderWidth: 1, borderColor: GameColors.cardBorder,
+  },
+  decorateButtonActive: { backgroundColor: GameColors.cardBorder },
+  decorateLabel: { fontSize: moderateScale(13), fontWeight: "700", color: GameColors.text },
+  transientMouse: { position: "absolute", zIndex: ROOM_PET_LAYER_Z_INDEX - 1 },
   stage: {
     backgroundColor: GameColors.card,
     borderRadius: moderateScale(20),

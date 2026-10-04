@@ -18,7 +18,9 @@ const React = {
     return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }];
   },
 };
+const shared = () => ({ get: () => 0, set() {} });
 const mocks = {
+  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, scale: shared(), bounce: shared(), facing: shared(), mouseX: shared(), mouseY: shared() }) },
   react: React,
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   'react-native': {

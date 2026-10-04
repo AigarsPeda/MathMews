@@ -508,6 +508,10 @@ export default function HomeScreen() {
               placedToys={pet.placedToys}
               placedDecorations={pet.placedDecorations}
               roomLayerOrder={pet.roomLayerOrder}
+              ownedToyIds={progress.toysUnlocked}
+              lastInteractionAt={pet.lastInteractionAt}
+              roomActivityBlocked={isCareAnimationPlaying || isCareBlocked}
+              onRoomInteraction={recordInteraction}
               speechMessage={speechMessage}
               playback={playback}
               onPetPress={petAnimating ? undefined : handlePetTap}

@@ -109,6 +109,8 @@
     "turnOffAirConditioner": "Turn off",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
+    "decorateRoom": "Decorate",
+    "finishDecorating": "Done",
     "dismissRoomItemMenu": "Dismiss item menu",
     "zoomCat": "Zoom in on cat",
     "resetZoom": "Reset room view",

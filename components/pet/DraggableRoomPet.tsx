@@ -1,3 +1,4 @@
+import Animated, { useAnimatedStyle, type SharedValue } from "react-native-reanimated";
 import { moderateScale } from "@/utils/scale";
 import {
   type ReactNode,
@@ -23,6 +24,8 @@ type DraggableRoomPetProps = {
   children: ReactNode;
   petSize: number;
   allowDrag?: boolean;
+  interactive?: boolean;
+  animatedPosition?: { x: SharedValue<number>; y: SharedValue<number> };
   /** Tap/drag target — defaults to petSize. Use a smaller value for narrow sprites. */
   hitSize?: number;
   initialOffset?: RoomPetOffset;
@@ -86,6 +89,8 @@ export function DraggableRoomPet({
   children,
   petSize,
   allowDrag = true,
+  interactive = true,
+  animatedPosition,
   hitSize,
   initialOffset = DEFAULT_OFFSET,
   onOffsetChange,
@@ -102,19 +107,21 @@ export function DraggableRoomPet({
   const petSlotRef = useRef<View>(null);
 
   const positionRef = useRef(position);
-  positionRef.current = position;
 
   const dragStartRef = useRef({ x: 0, y: 0 });
   const gestureMovedRef = useRef(false);
 
   const onOffsetChangeRef = useRef(onOffsetChange);
-  onOffsetChangeRef.current = onOffsetChange;
 
   const onPetTapRef = useRef(onPetTap);
-  onPetTapRef.current = onPetTap;
 
   const onMenuAnchorLayoutRef = useRef(onMenuAnchorLayout);
-  onMenuAnchorLayoutRef.current = onMenuAnchorLayout;
+  useLayoutEffect(() => {
+    positionRef.current = position;
+    onOffsetChangeRef.current = onOffsetChange;
+    onPetTapRef.current = onPetTap;
+    onMenuAnchorLayoutRef.current = onMenuAnchorLayout;
+  }, [position, onOffsetChange, onPetTap, onMenuAnchorLayout]);
 
   const reportMenuAnchor = useCallback(() => {
     if (!onMenuAnchorLayoutRef.current) return;
@@ -136,10 +143,12 @@ export function DraggableRoomPet({
     [],
   );
 
-  useEffect(() => {
-    if (roomSize.width <= 0 || roomSize.height <= 0) return;
-    syncPosition(roomSize.width, roomSize.height, petSize, resolvedOffset);
-  }, [petSize, resolvedOffset, roomSize, syncPosition]);
+  const placementKey = `${roomSize.width}:${roomSize.height}:${petSize}:${resolvedOffset.x}:${resolvedOffset.y}`;
+  const [previousPlacement, setPreviousPlacement] = useState(placementKey);
+  if (previousPlacement !== placementKey) {
+    setPreviousPlacement(placementKey);
+    setPosition(offsetToPixels(resolvedOffset, roomSize.width, roomSize.height, petSize));
+  }
 
   const commitOffset = useCallback(() => {
     if (!onOffsetChangeRef.current || roomSize.width <= 0) return;
@@ -154,12 +163,15 @@ export function DraggableRoomPet({
     );
   }, [petSize, roomSize.height, roomSize.width]);
 
+  const hasTap = Boolean(onPetTap);
   const panResponder = useMemo(
     () =>
+      // PanResponder stores these event callbacks without invoking them during render.
+      // eslint-disable-next-line react-hooks/refs
       PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponder: () => interactive && (allowDrag || hasTap),
         onMoveShouldSetPanResponder: (_, gesture) =>
-          allowDrag && Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
+          interactive && allowDrag && Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
         onPanResponderGrant: () => {
           gestureMovedRef.current = false;
           dragStartRef.current = { ...positionRef.current };
@@ -194,7 +206,7 @@ export function DraggableRoomPet({
           }
         },
       }),
-    [allowDrag, commitOffset, petSize, reportMenuAnchor, roomSize.height, roomSize.width],
+    [allowDrag, hasTap, interactive, commitOffset, petSize, reportMenuAnchor, roomSize.height, roomSize.width],
   );
 
   const halfPet = petSize / 2;
@@ -207,6 +219,13 @@ export function DraggableRoomPet({
     reportMenuAnchor();
   }, [left, top, petSize, reportMenuAnchor]);
 
+  const livePositionStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: animatedPosition ? animatedPosition.x.get() - position.x : 0 },
+      { translateY: animatedPosition ? animatedPosition.y.get() - position.y : 0 },
+    ],
+  }));
+
   return (
     <View
       pointerEvents="box-none"
@@ -217,7 +236,7 @@ export function DraggableRoomPet({
         syncPosition(width, height, petSize, resolvedOffset);
       }}
     >
-      <View
+      <Animated.View
         ref={petSlotRef}
         onLayout={reportMenuAnchor}
         style={[
@@ -228,6 +247,7 @@ export function DraggableRoomPet({
             width: petSize,
             height: petSize,
           },
+          livePositionStyle,
         ]}
         collapsable={false}
         pointerEvents="box-none"
@@ -246,9 +266,10 @@ export function DraggableRoomPet({
             },
           ]}
           collapsable={false}
+          pointerEvents={interactive ? "auto" : "none"}
           {...panResponder.panHandlers}
         />
-      </View>
+      </Animated.View>
     </View>
   );
 }
