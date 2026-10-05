@@ -43,7 +43,7 @@ const mocks = {
 for (const [file, name] of [
   ['components/ui/AppIcon', 'AppIcon'], ['components/ui/IconText', 'IconText'],
   ['components/economy/GameHeaderStats', 'GameHeaderStats'], ['components/home/HeaderChip', 'HeaderChip'],
-  ['components/home/PlayMenuButton', 'PlayMenuButton'], ['components/pet/PetStage', 'PetStage'],
+  ['components/home/ActivitiesMenuButton', 'ActivitiesMenuButton'], ['components/pet/PetStage', 'PetStage'],
 ]) mocks[`@/${file}`] = { [name]: name };
 
 function load(file) {
@@ -61,7 +61,7 @@ function load(file) {
       const resolved = id.startsWith('@/') ? path.join(root, id.slice(2)) : path.resolve(path.dirname(absolute), id);
       if (/\.(png|webp|mp4)$/.test(resolved)) { assert.ok(fs.existsSync(resolved), resolved); return resolved; }
       assert.ok(id.startsWith('@/') || id.startsWith('.'), `Unexpected dependency ${id}`);
-      return load(fs.existsSync(resolved) ? resolved : resolved + '.ts');
+      return load(fs.existsSync(resolved) ? resolved : fs.existsSync(resolved + '.ts') ? resolved + '.ts' : resolved + '.tsx');
     },
   }, { filename: absolute });
   return module.exports;
@@ -88,7 +88,7 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   };
   display = { playback: { kind: 'segment', mood: 'idle' }, baseMood: 'idle', isCareBlocked: busy, isCareAnimationPlaying: busy, send: command => commands.push(command) };
   const tree = nodes(Home());
-  return { menu: tree.find(node => node.type === 'PlayMenuButton').props, commands, debits,
+  return { menu: tree.find(node => node.type === 'ActivitiesMenuButton').props, commands, debits,
     stage: tree.find(node => node.type === 'PetStage').props,
     store: tree.find(node => node.type === 'HeaderChip' && node.props.accessibilityLabel === 'home.a11yStore').props.onPress,
     feed: tree.find(node => node.type === 'Pressable' && node.props.accessibilityLabel === 'home.a11yFeed').props.onPress };
@@ -110,6 +110,15 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   assert.equal(routes.length, 0, 'Leaving Home cancels a pending shop navigation');
 }
 console.log('Verified the shop waits for room animations and cancels pending navigation when Home loses focus.');
+{
+  const test = home();
+  const actions = [{ label: 'Sleep on the sofa', icon: 'sleep', onPress() {} }];
+  test.stage.onRoomActionsChange(actions);
+  stateIndex = 0;
+  const menus = nodes(Home()).filter(node => node.type === 'ActivitiesMenuButton');
+  assert.equal(menus.length, 1, 'Home has one combined activity menu');
+  assert.equal(menus[0].props.roomActions, actions, 'Home forwards the current room commands to Activities');
+}
 for (const activity of activities) {
   for (const happiness of [40, 100]) for (const coins of [0, 100]) {
     const test = home({ happiness, coins });

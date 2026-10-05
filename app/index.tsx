@@ -1,14 +1,17 @@
-import { IconText as Text } from "@/components/ui/IconText";
-import { AppIcon } from "@/components/ui/AppIcon";
-import { getStoreGoalDetails } from "@/utils/store-goal";
-import { useRoomEditor } from "@/hooks/use-room-editor";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
-import { PlayMenuButton } from "@/components/home/PlayMenuButton";
-import type { CatPlayActivity } from "@/constants/cat-play";
+import { ActivitiesMenuButton } from "@/components/home/ActivitiesMenuButton";
 import { HeaderChip } from "@/components/home/HeaderChip";
+import {
+  HomeActionContent,
+  homeActionStyles,
+} from "@/components/home/HomeActionContent";
 import { PetStage } from "@/components/pet/PetStage";
+import type { RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
+import { AppIcon } from "@/components/ui/AppIcon";
+import { IconText as Text } from "@/components/ui/IconText";
 import type { CatBedId } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
+import type { CatPlayActivity } from "@/constants/cat-play";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
   FEED_COST,
@@ -20,6 +23,9 @@ import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
 import { computePetWisdom } from "@/constants/puzzles";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
+import { usePetSpeech } from "@/hooks/use-pet-speech";
+import { useRoomEditor } from "@/hooks/use-room-editor";
+import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { shouldPetSleep } from "@/pet-display/engine/derive-mood";
 import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
 import type { PetAnimationState, PetStats, RoomLayerItem } from "@/types/game";
@@ -33,17 +39,16 @@ import {
   pickPetTapSpeechKey,
 } from "@/utils/pet-speech";
 import {
-  updatePlacedDecorationOffsetByInstance,
-  updatePlacedToyOffsetByInstance,
   findPlacedDecorationByInstance,
   findPlacedToyByInstance,
+  updatePlacedDecorationOffsetByInstance,
+  updatePlacedToyOffsetByInstance,
 } from "@/utils/room-placement";
-import { useScreenInsets } from "@/hooks/use-screen-insets";
-import { usePetSpeech } from "@/hooks/use-pet-speech";
 import { moderateScale } from "@/utils/scale";
+import { getStoreGoalDetails } from "@/utils/store-goal";
 import * as Haptics from "expo-haptics";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -60,17 +65,31 @@ function triggerHaptic() {
 }
 
 export default function HomeScreen() {
+  const [roomActions, setRoomActions] = useState<RoomItemMenuAction[]>([]);
   const router = useRouter();
   const waitingToOpenStore = useRef(false);
-  useFocusEffect(useCallback(() => () => { waitingToOpenStore.current = false; }, []));
-  const roomActivityRef = useRef<{ active: boolean; returnHome: () => void } | null>(null);
-  const handleRoomActivityChange = useCallback((active: boolean, returnHome: () => void) => {
-    roomActivityRef.current = { active, returnHome };
-    if (!active && waitingToOpenStore.current) {
-      waitingToOpenStore.current = false;
-      router.push("/store");
-    }
-  }, [router]);
+  useFocusEffect(
+    useCallback(
+      () => () => {
+        waitingToOpenStore.current = false;
+      },
+      [],
+    ),
+  );
+  const roomActivityRef = useRef<{
+    active: boolean;
+    returnHome: () => void;
+  } | null>(null);
+  const handleRoomActivityChange = useCallback(
+    (active: boolean, returnHome: () => void) => {
+      roomActivityRef.current = { active, returnHome };
+      if (!active && waitingToOpenStore.current) {
+        waitingToOpenStore.current = false;
+        router.push("/store");
+      }
+    },
+    [router],
+  );
   const { t } = useTranslation();
   const screenInsets = useScreenInsets();
   const { locale } = useLocale();
@@ -107,7 +126,8 @@ export default function HomeScreen() {
   } = usePetDisplay(pet);
 
   useEffect(() => {
-    if (!isCareBlocked && !isCareAnimationPlaying) careActionPendingRef.current = false;
+    if (!isCareBlocked && !isCareAnimationPlaying)
+      careActionPendingRef.current = false;
   }, [isCareBlocked, isCareAnimationPlaying]);
 
   const contextualSpeech = useMemo(
@@ -178,12 +198,25 @@ export default function HomeScreen() {
       ...stats,
       happiness: boostStat(stats.happiness, PET_HAPPINESS_BOOST),
     }));
-  }, [isCareAnimationPlaying, pet.isAsleep, pet.name, playActionMood, recordInteraction, showSpeech, t, wakePet]);
+  }, [
+    isCareAnimationPlaying,
+    pet.isAsleep,
+    pet.name,
+    playActionMood,
+    recordInteraction,
+    showSpeech,
+    t,
+    wakePet,
+  ]);
 
   const handleFeed = useCallback(() => {
     const wasAsleep = pet.isAsleep === true;
 
-    if (isCareAnimationPlaying || isCareBlocked || careActionPendingRef.current) {
+    if (
+      isCareAnimationPlaying ||
+      isCareBlocked ||
+      careActionPendingRef.current
+    ) {
       rejectCareAction(t("home.giveMoment", { name: pet.name }));
       return;
     }
@@ -206,29 +239,58 @@ export default function HomeScreen() {
     feedPet();
     playActionMood(wasAsleep, "eating");
     showSpeech(t("home.enjoyedSnack", { name: pet.name }));
-  }, [isCareAnimationPlaying, isCareBlocked, pet.isAsleep, pet.name, pet.stats, playActionMood, recordInteraction, rejectCareAction, sendPetCommand, feedPet, showSpeech, t, wallet.coins]);
-
-  const handlePlay = useCallback((activity: CatPlayActivity) => {
-    const wasAsleep = pet.isAsleep === true;
-
-    if (isCareAnimationPlaying || isCareBlocked || careActionPendingRef.current) {
-      rejectCareAction(t("home.giveMoment", { name: pet.name }));
-      return;
-    }
-    careActionPendingRef.current = true;
-    recordInteraction();
-    sendPetCommand({ type: "beginCareAction" });
-    wakePet((stats) => ({
-      ...stats,
-      happiness: boostStat(stats.happiness, activity.happinessBoost),
-    }));
-    playActionMood(wasAsleep, activity.mood);
-    showSpeech(t(`home.playSpeech.${activity.id}`, { name: pet.name }));
   }, [
-    isCareAnimationPlaying, isCareBlocked, pet.isAsleep, pet.name,
-    playActionMood, recordInteraction, rejectCareAction, sendPetCommand,
-    showSpeech, t, wakePet,
+    isCareAnimationPlaying,
+    isCareBlocked,
+    pet.isAsleep,
+    pet.name,
+    pet.stats,
+    playActionMood,
+    recordInteraction,
+    rejectCareAction,
+    sendPetCommand,
+    feedPet,
+    showSpeech,
+    t,
+    wallet.coins,
   ]);
+
+  const handlePlay = useCallback(
+    (activity: CatPlayActivity) => {
+      const wasAsleep = pet.isAsleep === true;
+
+      if (
+        isCareAnimationPlaying ||
+        isCareBlocked ||
+        careActionPendingRef.current
+      ) {
+        rejectCareAction(t("home.giveMoment", { name: pet.name }));
+        return;
+      }
+      careActionPendingRef.current = true;
+      recordInteraction();
+      sendPetCommand({ type: "beginCareAction" });
+      wakePet((stats) => ({
+        ...stats,
+        happiness: boostStat(stats.happiness, activity.happinessBoost),
+      }));
+      playActionMood(wasAsleep, activity.mood);
+      showSpeech(t(`home.playSpeech.${activity.id}`, { name: pet.name }));
+    },
+    [
+      isCareAnimationPlaying,
+      isCareBlocked,
+      pet.isAsleep,
+      pet.name,
+      playActionMood,
+      recordInteraction,
+      rejectCareAction,
+      sendPetCommand,
+      showSpeech,
+      t,
+      wakePet,
+    ],
+  );
 
   const handleOpenSettings = useCallback(() => {
     recordInteraction();
@@ -286,17 +348,23 @@ export default function HomeScreen() {
     [flipPlacedDecorationWall, recordInteraction],
   );
 
-  const handleTogglePlacedAirConditioner = useCallback((instanceId: string) => {
-    if (!togglePlacedAirConditioner(instanceId)) return;
-    recordInteraction();
-    triggerHaptic();
-  }, [recordInteraction, togglePlacedAirConditioner]);
+  const handleTogglePlacedAirConditioner = useCallback(
+    (instanceId: string) => {
+      if (!togglePlacedAirConditioner(instanceId)) return;
+      recordInteraction();
+      triggerHaptic();
+    },
+    [recordInteraction, togglePlacedAirConditioner],
+  );
 
-  const handleScalePlacedToy = useCallback((instanceId: string, direction: "up" | "down") => {
-    if (!scalePlacedToy(instanceId, direction)) return;
-    recordInteraction();
-    triggerHaptic();
-  }, [recordInteraction, scalePlacedToy]);
+  const handleScalePlacedToy = useCallback(
+    (instanceId: string, direction: "up" | "down") => {
+      if (!scalePlacedToy(instanceId, direction)) return;
+      recordInteraction();
+      triggerHaptic();
+    },
+    [recordInteraction, scalePlacedToy],
+  );
 
   const handleScalePlacedDecoration = useCallback(
     (instanceId: string, direction: "up" | "down") => {
@@ -467,7 +535,7 @@ export default function HomeScreen() {
         <View style={styles.middle}>
           <View style={styles.stageWrap}>
             <PetStage
-          roomEditor={roomEditor}
+              roomEditor={roomEditor}
               compact
               name={pet.name}
               petType={pet.type}
@@ -488,6 +556,7 @@ export default function HomeScreen() {
               roomActivityBlocked={isCareAnimationPlaying || isCareBlocked}
               onRoomInteraction={recordInteraction}
               onRoomActivityChange={handleRoomActivityChange}
+              onRoomActionsChange={setRoomActions}
               speechMessage={speechMessage}
               playback={playback}
               onPetPress={petAnimating ? undefined : handlePetTap}
@@ -537,9 +606,10 @@ export default function HomeScreen() {
         <View style={styles.footer}>
           <View style={styles.actions}>
             <Pressable
-              style={[
+              style={({ pressed }) => [
                 styles.actionBtn,
-                styles.actionSecondary,
+                homeActionStyles.button,
+                pressed && homeActionStyles.pressed,
                 petAnimating && styles.actionDisabled,
               ]}
               onPress={handlePetTap}
@@ -548,33 +618,43 @@ export default function HomeScreen() {
               accessibilityLabel={t("home.a11yPet")}
               accessibilityState={{ disabled: petAnimating }}
             >
-              <AppIcon name="paw" size={moderateScale(24) * 1.2} />
-              <Text style={styles.actionLabel}>{t("home.pet")}</Text>
+              <HomeActionContent icon="paw" label={t("home.pet")} />
             </Pressable>
 
             <Pressable
-              style={[
+              style={({ pressed }) => [
                 styles.actionBtn,
-                styles.actionSecondary,
+                homeActionStyles.button,
+                pressed && homeActionStyles.pressed,
                 feedDimmed && styles.actionDisabled,
               ]}
               onPress={handleFeed}
               disabled={isCareAnimationPlaying}
               accessibilityRole="button"
               accessibilityLabel={t("home.a11yFeed", { cost: FEED_COST })}
+              accessibilityHint={
+                !canFeedForHunger
+                  ? t("home.alreadyFull")
+                  : !canAffordFeed
+                    ? t("store.needCoins", { cost: FEED_COST })
+                    : isCareBlocked || isCareAnimationPlaying
+                      ? t("home.careBusy")
+                      : undefined
+              }
               accessibilityState={{ disabled: isCareAnimationPlaying }}
             >
-              <AppIcon name="feed" size={moderateScale(24) * 1.2} />
-              <Text style={styles.actionLabel}>{t("home.feed")}</Text>
-              <Text style={styles.actionHint}>
-                {!canFeedForHunger ? t("home.alreadyFull") : !canAffordFeed ? t("store.needCoins", { cost: FEED_COST }) : isCareBlocked || isCareAnimationPlaying ? t("home.careBusy") : t("home.feedCost", { cost: FEED_COST })}
-              </Text>
+              <HomeActionContent
+                icon="feed"
+                label={t("home.feed")}
+                cost={FEED_COST}
+              />
             </Pressable>
 
             {isCatSpritePet ? (
-              <PlayMenuButton
+              <ActivitiesMenuButton
                 disabled={isCareBlocked || isCareAnimationPlaying}
                 onSelect={handlePlay}
+                roomActions={roomActions}
               />
             ) : null}
           </View>
@@ -585,9 +665,17 @@ export default function HomeScreen() {
             accessibilityRole="button"
             accessibilityLabel={t("home.a11ySolve")}
           >
-            <View style={styles.primaryTitle}><AppIcon name="puzzles" size={moderateScale(28)} /><Text style={styles.primaryBtnText}>{t("home.solvePuzzle")}</Text></View>
+            <View style={styles.primaryTitle}>
+              <AppIcon name="puzzles" size={moderateScale(28)} />
+              <Text style={styles.primaryBtnText}>{t("home.solvePuzzle")}</Text>
+            </View>
             <Text style={styles.primaryBtnHint}>
-              {savingGoal ? t("store.goalProgress", { name: savingGoal.name, remaining: savingGoal.remaining }) : t("home.solvePuzzleHint", { name: pet.name })}
+              {savingGoal
+                ? t("store.goalProgress", {
+                    name: savingGoal.name,
+                    remaining: savingGoal.remaining,
+                  })
+                : t("home.solvePuzzleHint", { name: pet.name })}
             </Text>
           </Pressable>
         </View>
@@ -648,32 +736,16 @@ const styles = StyleSheet.create({
   },
   actionBtn: {
     flex: 1,
-    minHeight: moderateScale(56),
-    borderRadius: moderateScale(16),
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: moderateScale(8),
-    gap: 2,
-  },
-  actionSecondary: {
-    backgroundColor: GameColors.card,
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
   },
   actionDisabled: {
     opacity: 0.55,
   },
-  actionLabel: {
-    fontSize: moderateScale(15),
-    fontWeight: "700",
-    color: GameColors.text,
+  primaryTitle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: moderateScale(6),
   },
-  actionHint: {
-    fontSize: moderateScale(12),
-    fontWeight: "600",
-    color: GameColors.textMuted,
-  },
-  primaryTitle: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: moderateScale(6) },
   primaryBtn: {
     backgroundColor: GameColors.primary,
     borderRadius: moderateScale(20),

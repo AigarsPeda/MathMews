@@ -99,10 +99,10 @@
     "enjoyedSnack": "{{name}} baudīja uzkodu!",
     "playBox": "Spēlēt ar kasti",
     "enjoyedPlayBox": "{{name}} mīl kasti!",
-    "play": "Spēlēties",
-    "choosePlay": "Izvēlies spēli",
-    "a11yPlayMenu": "Izvēlies, kā spēlēties ar savu kaķi",
-    "dismissPlayMenu": "Aizvērt spēļu izvēlni",
+    "activities": "Nodarbības",
+    "a11yActivitiesMenu": "Izvēlies nodarbību savam kaķim",
+    "showPetStats": "Rādīt izvērstu kaķa statistiku",
+    "hidePetStats": "Paslēpt izvērstu kaķa statistiku",
     "playStyle": {
       "ball": "Bumbas mešana",
       "box": "Paslēpes kastē",
@@ -127,7 +127,6 @@
     "turnOffAirConditioner": "Izslēgt",
     "makeBigger": "Lielāks",
     "makeSmaller": "Mazāks",
-    "catActions": "Kaķa darbības",
     "catCommands": {
       "sofaSit": "Sēdēt uz dīvāna",
       "sofaSleep": "Gulēt uz dīvāna",

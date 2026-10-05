@@ -111,7 +111,6 @@
     "turnOffAirConditioner": "Turn off",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
-    "catActions": "Cat actions",
     "catCommands": {
       "sofaSit": "Sit on the sofa",
       "sofaSleep": "Sleep on the sofa",
@@ -130,10 +129,10 @@
     "a11ySolve": "Solve a math puzzle",
     "a11yStore": "Open pet store",
     "a11ySettings": "Open settings",
-    "play": "Play",
-    "choosePlay": "Choose a game",
-    "a11yPlayMenu": "Choose how to play with your cat",
-    "dismissPlayMenu": "Close play menu",
+    "activities": "Activities",
+    "a11yActivitiesMenu": "Choose an activity for your cat",
+    "showPetStats": "Show detailed pet stats",
+    "hidePetStats": "Hide detailed pet stats",
     "playStyle": {
       "ball": "Ball toss",
       "box": "Box peekaboo",

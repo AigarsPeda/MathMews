@@ -1,7 +1,6 @@
 import { RoomEditorSheet, type RoomEditorControls } from "@/components/pet/RoomEditorSheet";
 import { RoomItemMoveControls } from "@/components/pet/RoomItemMoveControls";
 import { AppIcon } from "@/components/ui/AppIcon";
-import type { AppIconName } from "@/constants/app-icons";
 import { buildRoomActivity, roomOffsetToPoint, type RoomActivityKind } from "@/utils/room-activities";
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-sprite-registry";
 import { useRoomActivity } from "@/hooks/use-room-activity";
@@ -11,10 +10,9 @@ import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetRoomBackground } from "@/components/pet/PetRoomBackground";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
-import { RoomActionMenu, type RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
+import type { RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
-import { MathStatsChip } from "@/components/puzzle/MathStatsChip";
-import { ProgressBar } from "@/components/ui/ProgressBar";
+import { PetStatsPanel } from "@/components/pet/PetStatsPanel";
 import { getBedDisplaySize, getCatBedSource, canFlipBed, canScaleBedDown, canScaleBedUp, getEquippedBedScale } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { isPosterDecorationId } from "@/constants/cat-decorations";
@@ -46,7 +44,6 @@ import type {
   RoomLayerItem,
 } from "@/types/game";
 import { nestedBorderRadius } from "@/utils/border-radius";
-import { clampStat } from "@/utils/pet-care";
 import {
   canMoveRoomLayerItem,
   isSameRoomLayerItem,
@@ -121,6 +118,7 @@ type PetStageProps = {
   roomActivityBlocked?: boolean;
   onRoomInteraction?: () => void;
   onRoomActivityChange?: (active: boolean, returnHome: () => void) => void;
+  onRoomActionsChange?: (actions: RoomItemMenuAction[]) => void;
   speechMessage?: string | null;
   playback: PetPlaybackState;
   compact?: boolean;
@@ -151,37 +149,6 @@ type PetStageProps = {
   onStepComplete?: (stepIndex: number) => void;
 };
 
-function StatBar({
-  icon,
-  label,
-  value,
-  color,
-}: {
-  icon: AppIconName;
-  label: string;
-  value: number;
-  color: string;
-}) {
-  const clamped = clampStat(value);
-
-  return (
-    <View style={styles.statRow}>
-      <AppIcon name={icon} size={moderateScale(28)} />
-      <View style={styles.statContent}>
-        <View style={styles.statHeader}>
-          <Text style={styles.statLabel}>{label}</Text>
-          <Text style={styles.statValue}>{clamped}%</Text>
-        </View>
-        <ProgressBar
-          progress={clamped / 100}
-          fillColor={color}
-          trackColor={GameColors.background}
-        />
-      </View>
-    </View>
-  );
-}
-
 export function PetStage({
   roomEditor,
   name,
@@ -203,6 +170,7 @@ export function PetStage({
   roomActivityBlocked = false,
   onRoomInteraction,
   onRoomActivityChange,
+  onRoomActionsChange,
   speechMessage,
   playback,
   compact = false,
@@ -845,23 +813,26 @@ export function PetStage({
     );
   });
 
-  const catCommandActions: RoomItemMenuAction[] = [];
-  for (const kind of ["sofaSit", "sofaSleep", "toyPlay", "mouseChase"] as RoomActivityKind[]) {
-    if (!buildRoomActivity(activityOptions, 0, kind)) continue;
-    catCommandActions.push({
-      label: t(`home.catCommands.${kind}`),
-      icon: kind === "sofaSit" ? "sofa" : kind === "sofaSleep" ? "sleep" : kind === "mouseChase" ? "mouse" : "play",
-      onPress: () => { onRoomInteraction?.(); startActivity(kind); },
+  const catCommandActions = useMemo<RoomItemMenuAction[]>(() => {
+    if (!compact || !usesSprite || decorating) return [];
+    const actions: RoomItemMenuAction[] = [];
+    for (const kind of ["sofaSit", "sofaSleep", "toyPlay", "mouseChase"] as RoomActivityKind[]) {
+      if (!buildRoomActivity(activityOptions, 0, kind)) continue;
+      actions.push({
+        label: t(`home.catCommands.${kind}`),
+        icon: kind === "sofaSit" ? "sofa" : kind === "sofaSleep" ? "sleep" : kind === "mouseChase" ? "mouse" : "play",
+        onPress: () => { onRoomInteraction?.(); startActivity(kind); },
+      });
+    }
+    if (roomActivity) actions.push({
+      label: t("home.catCommands.returnHome"), icon: "home",
+      onPress: handleRoomTouch,
     });
-  }
-  if (roomActivity) catCommandActions.push({
-    label: t("home.catCommands.returnHome"), icon: "home",
-    onPress: () => { handleRoomTouch(); },
-  });
-  else if (onPetPress) catCommandActions.unshift({
-    label: t("home.pet"), icon: "paw",
-    onPress: () => { onPetPress(); },
-  });
+    return actions;
+  }, [activityOptions, compact, decorating, handleRoomTouch, onRoomInteraction, roomActivity, startActivity, t, usesSprite]);
+  useEffect(() => {
+    onRoomActionsChange?.(catCommandActions);
+  }, [catCommandActions, onRoomActionsChange]);
   return (
     <View style={[styles.stage, compact && styles.stageCompact]}>
       {!compact ? (
@@ -876,7 +847,6 @@ export function PetStage({
       <View style={styles.petColumnMeasure} onLayout={handleAvatarLayout}>
         <View style={[styles.petColumn, compact && styles.petColumnCompact]}>
           <View
-            onTouchStart={handleRoomTouch}
             onLayout={event => {
               const { width, height } = event.nativeEvent.layout;
               setViewport({ width, height });
@@ -886,7 +856,7 @@ export function PetStage({
               compact && styles.avatarWrapCompact,
             ]}
           >
-            <Animated.View {...panRoom.panHandlers} style={[compact ? StyleSheet.absoluteFill : { width: "100%", minHeight: displayWidth, alignItems: "center" }, compact && usesSprite ? sceneZoomStyle : undefined]}>
+            <Animated.View onTouchStart={handleRoomTouch} {...panRoom.panHandlers} style={[compact ? StyleSheet.absoluteFill : { width: "100%", minHeight: displayWidth, alignItems: "center" }, compact && usesSprite ? sceneZoomStyle : undefined]}>
             {usesSprite ? (
               <PetRoomBackground
                 roomId={roomId}
@@ -910,15 +880,6 @@ export function PetStage({
               <Animated.View collapsable={false} pointerEvents="none" onLayout={handleSpeechLayout} style={[styles.speechOverlay, speechPositionStyle]}>
                 <PetSpeechBubble message={visibleSpeech} />
               </Animated.View>
-            ) : null}
-            {compact && usesSprite && !decorating ? (
-              <RoomActionMenu style={styles.catCommandMenu} actions={catCommandActions}
-                label={t("home.catActions")} blocked={roomActivityBlocked}>
-                <View style={styles.catCommandButton}>
-                  <AppIcon name="paw" size={moderateScale(22)} />
-                  <Text style={styles.decorateLabel}>{t("home.catActions")}</Text>
-                </View>
-              </RoomActionMenu>
             ) : null}
             {compact && usesSprite ? (
               <Pressable style={[styles.decorateButton, decorating && styles.decorateButtonActive]}
@@ -957,27 +918,7 @@ export function PetStage({
             onSelect={item => { setSelectedMoveItem(item); setShowEditor(false); }}
             snap={snap} onSnap={() => setSnap(current => !current)} />
           {!decorating && <View style={[styles.stats, compact && styles.statsCompact]}>
-            {compact && onOpenMathStats ? (
-              <MathStatsChip compact onPress={onOpenMathStats} />
-            ) : null}
-            <StatBar
-              icon="feed"
-              label={t("pet.fed")}
-              value={clampStat(stats.hunger)}
-              color={GameColors.hunger}
-            />
-            <StatBar
-              icon="heart"
-              label={t("pet.happiness")}
-              value={stats.happiness}
-              color={GameColors.happiness}
-            />
-            <StatBar
-              icon="brain"
-              label={t("pet.wisdom")}
-              value={wisdom}
-              color={GameColors.wisdom}
-            />
+            <PetStatsPanel stats={stats} wisdom={wisdom} compact={compact} onOpenMathStats={onOpenMathStats} />
           </View>}
         </View>
       </View>
@@ -986,16 +927,6 @@ export function PetStage({
 }
 
 const styles = StyleSheet.create({
-  catCommandMenu: {
-    position: "absolute", top: moderateScale(10), right: moderateScale(10),
-    zIndex: ROOM_MENU_OPEN_Z_INDEX + 4,
-  },
-  catCommandButton: {
-    flexDirection: "row", alignItems: "center", gap: moderateScale(6),
-    paddingHorizontal: moderateScale(12), paddingVertical: moderateScale(10),
-    borderRadius: moderateScale(20), backgroundColor: GameColors.card,
-    borderWidth: 1, borderColor: GameColors.cardBorder,
-  },
   decorateButton: {
     position: "absolute", top: moderateScale(10), left: moderateScale(10),
     zIndex: ROOM_MENU_OPEN_Z_INDEX + 4,
@@ -1116,29 +1047,5 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     gap: moderateScale(5),
     paddingTop: moderateScale(6),
-  },
-  statRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: moderateScale(10),
-  },
-  statContent: {
-    flex: 1,
-    gap: moderateScale(4),
-  },
-  statHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  statLabel: {
-    fontSize: moderateScale(14),
-    fontWeight: "600",
-    color: GameColors.text,
-  },
-  statValue: {
-    fontSize: moderateScale(14),
-    fontWeight: "700",
-    color: GameColors.textMuted,
   },
 });

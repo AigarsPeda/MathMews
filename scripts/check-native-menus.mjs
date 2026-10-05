@@ -99,3 +99,50 @@ for (const platform of ['ios', 'android']) {
   }
 }
 console.log('Verified native iOS/Android menu adapters, original-color raster artwork, measured triggers, destructive styling and disabled-action guards.');
+
+mocks['react-native'].StyleSheet = { create: styles => styles };
+mocks['react-native'].Text = 'Text';
+mocks['react-i18next'] = { useTranslation: () => ({ t: key => key }) };
+mocks['@/utils/scale'] = { moderateScale: value => value };
+mocks['@/components/ui/AppIcon'] = { AppIcon: 'AppIcon' };
+mocks['@/components/home/HomeActionContent'] = load('components/home/HomeActionContent.tsx');
+mocks['@/constants/cat-play'] = load('constants/cat-play.ts');
+const { ActivitiesMenuButton } = load('components/home/ActivitiesMenuButton.tsx');
+states.length = 0; stateIndex = 0;
+const played = [], commanded = [];
+const activityProps = {
+  disabled: false, onSelect: activity => played.push(activity.id),
+  roomActions: [
+    { label: 'Sit on the sofa', icon: 'sofa', onPress: () => commanded.push('sit') },
+    { label: 'Go to your spot', icon: 'home', onPress: () => commanded.push('home') },
+    { label: 'Unavailable', icon: 'sleep', disabled: true, onPress: () => commanded.push('unavailable') },
+  ],
+};
+const activityTrigger = ActivitiesMenuButton(activityProps);
+activityTrigger.props.onLayout({ nativeEvent: { layout: { width: 120, height: 72 } } });
+activityTrigger.props.children.props.onLayout({ nativeEvent: { layout: { width: 120, height: 72 } } });
+function activityMenu(extra = {}) {
+  stateIndex = 0;
+  return nodes(ActivitiesMenuButton({ ...activityProps, ...extra })).find(node => node.type === 'NativeActionMenu');
+}
+const combined = activityMenu();
+assert.equal(combined.props.children.props.style[1].width, 120, 'The native menu label uses the full allocated button width, not its intrinsic text width');
+activityTrigger.props.onLayout({ nativeEvent: { layout: { width: 100, height: 72 } } });
+const resized = activityMenu();
+assert.equal(resized.props.width, 100);
+assert.equal(resized.props.children.props.style[1].width, 100, 'The visible button follows its container when the row resizes');
+assert.equal(resized.props.height, 72, 'Width changes preserve the measured content height');
+assert.equal(combined.props.label, 'home.a11yActivitiesMenu');
+assert.equal(combined.props.title, 'home.activities');
+assert.equal(combined.props.actions.length, 7, 'One dropdown contains all four games and the supplied room commands');
+assert.equal(new Set(combined.props.actions.map(action => action.id)).size, 7, 'Game and room commands have distinct IDs');
+for (const id of ['ball', 'box', 'yarn', 'feather']) combined.props.onSelect(`play:${id}`);
+assert.deepEqual(played, ['ball', 'box', 'yarn', 'feather']);
+combined.props.onSelect('room:0'); combined.props.onSelect('room:1');
+combined.props.onSelect('room:2'); combined.props.onSelect('room:99'); combined.props.onSelect('play:unknown');
+assert.deepEqual(commanded, ['sit', 'home'], 'The merged menu dispatches only valid, enabled room commands');
+activityMenu({ disabled: true }).props.onSelect('play:ball');
+activityMenu({ disabled: true }).props.onSelect('room:0');
+assert.equal(played.length, 4); assert.equal(commanded.length, 2, 'Care blocks both groups');
+assert.equal(activityMenu({ roomActions: [] }).props.actions.length, 4, 'Games remain available without room objects');
+console.log('Verified the unified Activities dropdown, all game/room dispatch paths, eligibility, and care protection.');
