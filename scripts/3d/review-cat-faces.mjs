@@ -1,5 +1,5 @@
 /** Review facial expressions at room size and check transparent margins. */
-import fs from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
 import sharp from 'sharp';
 const output='docs/art/cat-faces';
 const names=['content','happy','petted','curious','surprised','disappointed','sleepy','eating'];

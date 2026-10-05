@@ -1,4 +1,5 @@
 /** Ship compact PNG assets while keeping editable Blender scenes out of the bundle. */
+import { Buffer } from 'node:buffer';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
