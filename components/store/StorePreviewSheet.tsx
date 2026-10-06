@@ -1,22 +1,13 @@
+import { NativeRoomPreview } from "@/components/pet/native/NativeRoomPreview";
 import { IconText as Text } from "@/components/ui/IconText";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
-import { PetRoomBackground } from "@/components/pet/PetRoomBackground";
-import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
-import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
-import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
-import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId, getPlacedDecorationWallFlipped } from "@/constants/decoration-variants";
-import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
-import { normalizeRoomLayerOrder, roomLayerItemKey } from "@/utils/room-layer-order";
-import { moderateScale } from "@/utils/scale";
-import { getCatBedSource, getBedDisplaySize } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatToyId } from "@/constants/cat-toys";
-import { PetDisplay } from "@/pet-display/components/PetDisplay";
 import { GameColors } from "@/constants/game";
 import type { PetProfile, Progress } from "@/types/game";
 import type { StorePrice } from "@/types/store";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 export type StorePreviewItem = { kind: NonNullable<Progress["storeGoal"]>["kind"]; id: string; name: string; price: StorePrice; owned: boolean; onBuy: () => void };
 
@@ -25,24 +16,18 @@ export function StorePreviewSheet({ item, pet, coins, onClose, onSaveGoal }: Pro
   const { t } = useTranslation();
   if (!item) return null;
   const bedId = item.kind === "bed" ? item.id : pet.bedId;
-  const bedSize = moderateScale(getBedDisplaySize(bedId) * (item.kind === "bed" ? 1 : pet.bedScale ?? 1));
   const toys = [...(pet.placedToys ?? []), ...(item.kind === "toy" ? [{ toyId: item.id as CatToyId, instanceId: "preview-toy", offset: { x: .4, y: .5 } }] : [])];
   const decorations = [...(pet.placedDecorations ?? []), ...(item.kind === "decoration" ? [{ decorationId: item.id as CatDecorationId, instanceId: "preview-decoration", offset: { x: .35, y: -.2 } }] : [])];
   const repeatable = item.kind === "toy" || item.kind === "decoration";
   const canBuy = !item.owned || repeatable;
-  const layerOrder = normalizeRoomLayerOrder({ bedId, placedToys: toys, placedDecorations: decorations, roomLayerOrder: pet.roomLayerOrder });
-  const layerIndex = (key: string) => layerOrder.findIndex(layer => roomLayerItemKey(layer) === key);
   const cost = item.price.kind === "coins" ? item.price.amount : 0;
   return <AppBottomSheet visible onClose={onClose} expanded>
     <ScrollView contentContainerStyle={styles.content}>
       <Text style={styles.title}>{item.name.replace(/\n/g, " ")}</Text>
       <Text style={styles.note}>{t("store.previewNote")}</Text>
       <View style={styles.room} accessibilityLabel={t("store.preview")}>
-        <PetRoomBackground roomId={item.kind === "room" ? item.id : pet.roomId} />
-        {bedId ? <DraggableRoomPet petSize={bedSize} layerZIndex={layerIndex("bed")} selected={item.kind === "bed"} initialOffset={pet.roomBedOffset ?? { x: -.45, y: .3 }} interactive={false}><Image source={getCatBedSource(bedId)} style={{ width: bedSize, height: bedSize, transform: [{ scaleX: item.kind !== "bed" && pet.bedFlipped ? -1 : 1 }] }} resizeMode="contain" /></DraggableRoomPet> : null}
-        {decorations.map(object => <DraggableRoomPet key={object.instanceId} petSize={moderateScale(getPlacedDecorationDragSize(object))} layerZIndex={layerIndex(`decoration:${object.instanceId}`)} selected={object.instanceId === "preview-decoration"} initialOffset={object.offset} interactive={false}><DecorationSpriteImage decorationId={getPlacedDecorationSpriteId(object)} size={moderateScale(getPlacedDecorationDragSize(object))} flipHorizontal={getPlacedDecorationWallFlipped(object)} /></DraggableRoomPet>)}
-        {toys.map(object => <DraggableRoomPet key={object.instanceId} petSize={moderateScale(getPlacedToyDisplaySize(object))} layerZIndex={layerIndex(`toy:${object.instanceId}`)} selected={object.instanceId === "preview-toy"} initialOffset={object.offset} interactive={false}><ToySpriteImage toyId={object.toyId as CatToyId} size={moderateScale(getPlacedToyDisplaySize(object))} /></DraggableRoomPet>)}
-        <DraggableRoomPet petSize={100} initialOffset={pet.roomPetOffset} interactive={false} layerZIndex={layerOrder.length + 1}><PetDisplay petType={pet.type} catSkinId={item.kind === "skin" ? item.id : pet.catSkinId} mood="idle" width={100} transparentBackground /></DraggableRoomPet>
+        <NativeRoomPreview pet={item.kind === "bed" ? { ...pet, bedScale: 1, bedFlipped: false } : pet} roomId={item.kind === "room" ? item.id : pet.roomId}
+          bedId={bedId} skinId={item.kind === "skin" ? item.id : pet.catSkinId} decorations={decorations} toys={toys} />
       </View>
       <Text style={styles.price}>{cost ? t("store.buyFor", { cost }) : t("store.free")}</Text>
       {canBuy && item.price.kind !== "iap" ? <Pressable style={[styles.button, coins < cost && styles.disabled]} disabled={coins < cost} accessibilityRole="button" accessibilityLabel={t(item.owned ? "store.a11yBuyAnotherDecoration" : "store.a11yBuyDecoration", { name: item.name.replace(/\n/g, " "), cost })} onPress={() => { item.onBuy(); onClose(); }}><Text style={styles.buttonText}>{cost ? t("store.buyFor", { cost }) : t("store.free")}</Text></Pressable> : null}

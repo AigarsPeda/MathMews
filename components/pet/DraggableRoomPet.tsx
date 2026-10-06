@@ -24,12 +24,14 @@ const DRAG_THRESHOLD = moderateScale(6);
 
 type DraggableRoomPetProps = {
   children: ReactNode;
+  testID?: string;
   accessibilityLabel?: string;
   selected?: boolean;
   snapToGrid?: boolean;
   petSize: number;
   allowDrag?: boolean;
   interactive?: boolean;
+  externalPosition?: { x: number; y: number };
   animatedPosition?: { x: SharedValue<number>; y: SharedValue<number> };
   /** Tap/drag target — defaults to petSize. Use a smaller value for narrow sprites. */
   hitSize?: number;
@@ -37,6 +39,7 @@ type DraggableRoomPetProps = {
   onOffsetChange?: (offset: RoomPetOffset) => void;
   /** Live position in room pixels relative to the room's center. */
   onPositionChange?: (position: { x: number; y: number }) => void;
+  onDragPositionChange?: (position: { x: number; y: number }) => void;
   onPetTap?: () => void;
   layerZIndex?: number;
   /** Ground contact below the sprite center, as a fraction of its size. */
@@ -96,6 +99,7 @@ function clampPosition(
 
 export function DraggableRoomPet({
   children,
+  testID,
   accessibilityLabel,
   selected = false,
   snapToGrid = false,
@@ -103,10 +107,12 @@ export function DraggableRoomPet({
   allowDrag = true,
   interactive = true,
   animatedPosition,
+  externalPosition,
   hitSize,
   initialOffset = DEFAULT_OFFSET,
   onOffsetChange,
   onPositionChange,
+  onDragPositionChange,
   onPetTap,
   layerZIndex = 1,
   depthAnchor,
@@ -132,6 +138,7 @@ export function DraggableRoomPet({
 
   const onOffsetChangeRef = useRef(onOffsetChange);
   const onPositionChangeRef = useRef(onPositionChange);
+  const onDragPositionChangeRef = useRef(onDragPositionChange);
 
   const onPetTapRef = useRef(onPetTap);
 
@@ -139,8 +146,9 @@ export function DraggableRoomPet({
     if (!dragging.get()) positionRef.current = position;
     onOffsetChangeRef.current = onOffsetChange;
     onPositionChangeRef.current = onPositionChange;
+    onDragPositionChangeRef.current = onDragPositionChange;
     onPetTapRef.current = onPetTap;
-  }, [dragging, position, onOffsetChange, onPositionChange, onPetTap]);
+  }, [dragging, position, onOffsetChange, onPositionChange, onDragPositionChange, onPetTap]);
 
   const resolvedOffset = initialOffset ?? DEFAULT_OFFSET;
   const resolvedHitSize = Math.min(hitSize ?? petSize, petSize);
@@ -195,6 +203,7 @@ export function DraggableRoomPet({
           positionRef.current = next;
           liveX.set(next.x); liveY.set(next.y);
           onPositionChangeRef.current?.(next);
+          onDragPositionChangeRef.current?.(next);
         },
         onPanResponderRelease: () => {
           dragging.set(false);
@@ -224,13 +233,13 @@ export function DraggableRoomPet({
 
   const livePositionStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: animatedPosition && !dragging.get() ? animatedPosition.x.get() : liveX.get() },
-      { translateY: animatedPosition && !dragging.get() ? animatedPosition.y.get() : liveY.get() },
+      { translateX: animatedPosition && !dragging.get() ? animatedPosition.x.get() : externalPosition && !dragging.get() ? externalPosition.x : liveX.get() },
+      { translateY: animatedPosition && !dragging.get() ? animatedPosition.y.get() : externalPosition && !dragging.get() ? externalPosition.y : liveY.get() },
     ],
   }));
   const depthStyle = useAnimatedStyle(() => ({
     zIndex: (depthAnchor === undefined && depthY === undefined) || layerZIndex >= ROOM_MENU_OPEN_Z_INDEX ? layerZIndex
-      : getRoomDepthZIndex(depthY?.get() ?? ((animatedPosition && !dragging.get() ? animatedPosition.y.get() : liveY.get())
+      : getRoomDepthZIndex(depthY?.get() ?? ((animatedPosition && !dragging.get() ? animatedPosition.y.get() : externalPosition && !dragging.get() ? externalPosition.y : liveY.get())
           + petSize * (depthAnchor ?? 0) * (depthScale?.get() ?? 1)), layerZIndex),
   }));
 
@@ -272,6 +281,7 @@ export function DraggableRoomPet({
               top: hitInset,
             },
           ]}
+          testID={testID}
           accessible={interactive && !hasMenu && Boolean(accessibilityLabel)}
           accessibilityLabel={accessibilityLabel}
           accessibilityRole="button"

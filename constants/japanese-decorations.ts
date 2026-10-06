@@ -34,8 +34,8 @@ export const JAPANESE_DECORATION_CATALOG = {
   japaneseClosetDoor1Open: { source: require("@/assets/3d/decoration/japaneseClosetDoor1Open.png"), displaySize: 64 },
   japaneseClosetDoor2Closed: { source: require("@/assets/3d/decoration/japaneseClosetDoor2Closed.png"), displaySize: 64 },
   japaneseClosetDoor2Open: { source: require("@/assets/3d/decoration/japaneseClosetDoor2Open.png"), displaySize: 64 },
-  japaneseDoorAni: { source: require("@/assets/3d/atlases/japaneseDoorAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 64 },
-  japaneseSlidingDoorAni: { source: require("@/assets/3d/atlases/japaneseSlidingDoorAni.png"), sheetWidth: 1536, sheetHeight: 192, frameWidth: 192, frameHeight: 192, frameCount: 8, fps: 12, displaySize: 56 },
+  japaneseDoorAni: { source: require("@/assets/3d/decoration/japaneseDoorClosed.png"), displaySize: 64 },
+  japaneseSlidingDoorAni: { source: require("@/assets/3d/decoration/japaneseSlidingDoorClosed.png"), displaySize: 56 },
 } as const satisfies Record<string, ImageEntry | AnimatedEntry>;
 
 export type JapaneseDecorationId = keyof typeof JAPANESE_DECORATION_CATALOG;

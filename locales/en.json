@@ -95,7 +95,6 @@
     "giveMoment": "Give {{name}} a moment!",
     "notHungry": "{{name}} isn't hungry right now.",
     "alreadyHappy": "{{name}} is already super happy!",
-    "needCoinsFeed": "Need {{cost}} coins to feed {{name}}!",
     "enjoyedSnack": "{{name}} enjoyed the snack!",
     "playBox": "Play box",
     "enjoyedPlayBox": "{{name}} loves the box!",
@@ -112,6 +111,7 @@
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
     "catCommands": {
+      "bowlEat": "Eat",
       "sofaSit": "Sit on the sofa",
       "sofaSleep": "Sleep on the sofa",
       "toyPlay": "Play with a toy",
@@ -125,7 +125,7 @@
     "resetZoom": "Reset room view",
     "zoomLevel": "{{zoom}} times zoom",
     "a11yPet": "Pet your companion",
-    "a11yFeed": "Feed for {{cost}} coins",
+    "a11yCatOptions": "Open cat options",
     "a11ySolve": "Solve a math puzzle",
     "a11yStore": "Open pet store",
     "a11ySettings": "Open settings",
@@ -168,7 +168,21 @@
     "moveItemleft": "Move {{name}} left",
     "moveItemright": "Move {{name}} right",
     "moveItemup": "Move {{name}} up",
-    "moveItemdown": "Move {{name}} down"
+    "moveItemdown": "Move {{name}} down",
+    "rooms": {
+      "livingRoom": "Living room",
+      "bedroom": "Bedroom",
+      "bathroom": "Bathroom",
+      "kitchen": "Kitchen"
+    },
+    "chooseRoom": "Choose a room",
+    "addDoor": "Add a door",
+    "doorsHint": "Choose where the door leads. Drag it onto a wall, then finish decorating and tap it to visit.",
+    "doorToRoom": "Door to {{room}}",
+    "goToRoom": "Go to {{room}}",
+    "doorLeadsTo": "Leads to {{room}}",
+    "chooseDoorDestination": "Choose where this door leads",
+    "furnishRoom": "Find furniture and toys"
   },
   "store": {
     "title": "Pet Store",
@@ -323,8 +337,8 @@
       "japaneseClosetDoor1Open": "Door 1\nOpen",
       "japaneseClosetDoor2Closed": "Door 2\nClosed",
       "japaneseClosetDoor2Open": "Door 2\nOpen",
-      "japaneseDoorAni": "Shoji Door\n(Animated)",
-      "japaneseSlidingDoorAni": "Sliding Door\n(Animated)",
+      "japaneseDoorAni": "Shoji Door",
+      "japaneseSlidingDoorAni": "Sliding Door",
       "lavaLampOff": "Lava Lamp\n(Off)",
       "lavaLampAni": "Lava Lamp\n(Animated)",
       "livingAirCon": "Air\nConditioner",

@@ -1,8 +1,5 @@
-import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
-import { resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import { MOOD_ANIMATION, ONE_SHOT_ANIMATIONS } from "@/constants/game";
-import { createCatSpriteRegistry } from "@/pet-display/registry/cat-sprite-registry";
-import type { PetAnimationState, PetType } from "@/types/game";
+import type { PetAnimationState } from "@/types/game";
 import type {
   PetMediaRegistry,
   PetMediaScenario,
@@ -155,27 +152,3 @@ export const DOG_VIDEO_PRIME_SEC: Record<DogVideoAssetKey, number> = {
   correct: 5,
   catches_a_coin: 5,
 };
-
-const REGISTRIES: Record<PetType, PetMediaRegistry> = {
-  dog: dogVideoRegistry,
-  cat: USE_CAT_SPRITE_PETS
-    ? createCatSpriteRegistry("orange")
-    : dogVideoRegistry,
-};
-
-const catRegistryCache = new Map<CatSkinId, PetMediaRegistry>();
-
-export function getPetMediaRegistry(
-  petType: PetType,
-  options?: { catSkinId?: CatSkinId | string },
-): PetMediaRegistry {
-  if (petType === "cat" && USE_CAT_SPRITE_PETS) {
-    const skinId = resolveCatSkinId(options?.catSkinId);
-    const cached = catRegistryCache.get(skinId);
-    if (cached) return cached;
-    const registry = createCatSpriteRegistry(skinId);
-    catRegistryCache.set(skinId, registry);
-    return registry;
-  }
-  return REGISTRIES[petType] ?? dogVideoRegistry;
-}

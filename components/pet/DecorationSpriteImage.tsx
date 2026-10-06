@@ -1,5 +1,3 @@
-import { RoomDecorationMotion } from "@/components/pet/RoomDecorationMotion";
-import { isAirConditionerDecorationId, PLANT_FOLIAGE_SPLIT } from "@/constants/decoration-motion";
 import { AnimatedStripSprite } from "@/components/pet/AnimatedStripSprite";
 import {
   getDecorationCatalogEntry,
@@ -13,18 +11,12 @@ type DecorationSpriteImageProps = {
   decorationId: CatDecorationId;
   size: number;
   flipHorizontal?: boolean;
-  roomMotion?: boolean;
-  poweredOn?: boolean;
-  breezy?: boolean;
 };
 
 export function DecorationSpriteImage({
   decorationId,
   size,
   flipHorizontal = false,
-  roomMotion = false,
-  poweredOn = false,
-  breezy = false,
 }: DecorationSpriteImageProps) {
   const entry = getDecorationCatalogEntry(decorationId);
   if (!entry) {
@@ -48,10 +40,6 @@ export function DecorationSpriteImage({
   }
 
   if (isImageDecorationEntry(entry)) {
-    if (roomMotion && (isAirConditionerDecorationId(decorationId) || PLANT_FOLIAGE_SPLIT[decorationId] !== undefined)) {
-      return <RoomDecorationMotion decorationId={decorationId} source={entry.source}
-        size={size} flipHorizontal={flipHorizontal} poweredOn={poweredOn} breezy={breezy} />;
-    }
     const imageStyle = flipHorizontal
       ? { width: size, height: size, transform: [{ scaleX: -1 as const }] }
       : { width: size, height: size };

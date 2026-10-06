@@ -6,7 +6,7 @@ const anchors={};
 for(const entry of entries){
  if(entry.kind==='room')continue;
  const animated=entry.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(entry.id);
- const file=animated?`assets/3d/atlases/${entry.id}.png`:`assets/3d/${entry.kind}/${entry.id}.png`;
+ const file=animated?`assets/3d/atlases/${entry.id}.png`:`assets/3d/${entry.kind}/${entry.thumbnailId??entry.id}.png`;
  let image=sharp(file);
  if(animated)image=image.extract({left:0,top:0,width:192,height:192});
  const {data,info}=await image.ensureAlpha().raw().toBuffer({resolveWithObject:true});

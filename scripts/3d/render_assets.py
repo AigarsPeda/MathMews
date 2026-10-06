@@ -1,6 +1,5 @@
 """Original Math Mews 3D assets. Run with Blender --background --python this_file -- --only preview."""
 import bpy, math, json, os, sys, random
-from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
@@ -14,7 +13,6 @@ ARGS=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ONLY=ARGS[ARGS.index('--only')+1] if '--only' in ARGS else None
 SIZE=256
 ROOM_VIEW_DIRECTION=(8,-8,6.1)
-CAT_FRAME_SIZE=768
 ROTATION_GROUPS=[['chairOfficeA','chairOfficeB'],['chairClassicA','chairClassicB','chairClassicC','chairClassicD'],['chairGamingA','chairGamingB','chairGamingC','chairGamingD'],['deskWoodA','deskWoodB'],['sofaA','sofaB'],['computerNewImacA','computerNewImacB'],['computerOldImacA','computerOldImacB'],['computerOldPcA','computerOldPcB'],['computerRotationScreenA','computerRotationScreenB','computerRotationScreenC']]
 ROTATION_BASE={id:group[0] for group in ROTATION_GROUPS for id in group}
 
@@ -200,8 +198,7 @@ def pose_play_props(toy,state,t):
                      (0,.24*math.sin(t*math.tau*4),.15*math.sin(t*math.tau*3)))
 
 def sample():
- scene=setup(640);rig=cat();configure_cat_camera(scene)
- cat_pose(rig,'preview',.35);render(OUT/'cat-preview.png');bpy.ops.wm.save_as_mainfile(filepath=str(BLENDER_OUT/'cat.blend'),compress=True)
+ branding()
 
 
 
@@ -710,11 +707,12 @@ def animate_furniture(objects,t):
 def render_furniture(entries):
  for entry in entries:
   if entry['kind']=='room':continue
-  id=entry['id'];animated=(entry.get('animated',False) or id in ['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse']);count=8 if animated else 1
-  dest=OUT/'frames'/id if animated else OUT/entry['kind'];dest.mkdir(parents=True,exist_ok=True)
-  if '--refresh' not in ARGS and animated and all((dest/f'{i:03}.png').exists() for i in range(count)):continue
-  if '--refresh' not in ARGS and not animated and (dest/f'{id}.png').exists():continue
-  scene=setup(192 if animated else 256);objects,root=build_item(entry);frame_camera(objects,1.22)
+  id=entry['id'];thumbnail=entry.get('thumbnailId',id);animated=(entry.get('animated',False) or id in ['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse']);count=8 if animated else 1
+  dest=OUT/'frames'/id if animated else OUT/entry['kind']
+  if '--refresh' not in ARGS and animated and ((OUT/'atlases'/(id+'.png')).exists() or all((dest/f'{i:03}.png').exists() for i in range(count))):continue
+  if '--refresh' not in ARGS and not animated and (dest/f'{thumbnail}.png').exists():continue
+  dest.mkdir(parents=True,exist_ok=True)
+  scene=setup(192 if animated or 'thumbnailId' in entry else 256);objects,root=build_item(entry);frame_camera(objects,1.22)
   scene.render.fps=12;scene.frame_start=1;scene.frame_end=count
   for i in range(count):
    scene.frame_set(i+1)
@@ -724,7 +722,7 @@ def render_furniture(entries):
    if animated:
     for o in [root,*objects]:
      for prop in ['location','rotation_euler','scale']:o.keyframe_insert(data_path=prop,frame=i+1)
-   render(dest/(f'{i:03}.png' if animated else f'{id}.png'))
+   render(dest/(f'{i:03}.png' if animated else f'{thumbnail}.png'))
   library=BLENDER_OUT/'items';library.mkdir(parents=True,exist_ok=True)
   bpy.ops.wm.save_as_mainfile(filepath=str(library/f'{id}.blend'),compress=True)
   print('ASSET_DONE',id,flush=True)
@@ -738,91 +736,11 @@ def cat_play_box():
  box('Box front',(0,-.43,.25),(1.31,.08,.36),'wood',.025)
  box('Box back',(0,.43,.30),(1.31,.08,.47),'wood',.025)
 
-def render_cats():
- skins=[ARGS[ARGS.index('--skin')+1]] if '--skin' in ARGS else ['orange','grey','white']
- states=ARGS[ARGS.index('--clips')+1].split(',') if '--clips' in ARGS else list(CAT_CLIPS)
- if any(skin not in ['orange','grey','white'] for skin in skins):raise ValueError('Unknown cat coat')
- if any(state not in CAT_CLIPS for state in states):raise ValueError('Unknown cat clip')
- for skin in skins:
-  for state,(count,fps) in CAT_CLIPS.items():
-   if state not in states:continue
-   dest=OUT/'frames'/('cat-'+skin+'-'+state);dest.mkdir(parents=True,exist_ok=True)
-   if '--refresh' not in ARGS and all((dest/f'{i:03}.png').exists() for i in range(count)):continue
-   scene=setup(CAT_FRAME_SIZE);rig=cat(skin,boxed=state.startswith('box'));configure_cat_camera(scene)
-   slide,food=care_props(state) if state=='eating' or state.startswith('box') else (None,[])
-   play_toy=play_props(state) if state in PLAY_CLIPS else None
-   prop_dest=OUT/'frames'/('cat-prop-'+skin+'-'+state)
-   if play_toy:prop_dest.mkdir(parents=True,exist_ok=True)
-   prop_ground=[]
-   holdout=material('Play prop occlusion holdout','000000') if play_toy else None
-   if holdout:
-    holdout.node_tree.nodes.clear()
-    shader=holdout.node_tree.nodes.new('ShaderNodeHoldout')
-    output=holdout.node_tree.nodes.new('ShaderNodeOutputMaterial')
-    holdout.node_tree.links.new(shader.outputs[0],output.inputs['Surface'])
-   scene.render.fps=fps;scene.frame_start=1;scene.frame_end=count
-   for i in range(count):
-    scene.frame_set(i+1);t=i/(count-1) if state in ['jumpOn','jumpOff','curlUp','sleepy','lieDown','eating','correct','incorrect','excited','dance','surprised','restSleep','box1','box2','box3',*PLAY_CLIPS] else i/count
-    cat_pose(rig,state,t)
-    if slide:pose_care_props(slide,food,state,t)
-    if play_toy:pose_play_props(play_toy,state,t)
-    key_cat_geometry(rig,i+1)
-    for obj in animated_parts(rig)+food+([slide] if slide else [])+([play_toy] if play_toy else []):
-     for prop in ['location','rotation_euler','scale']:obj.keyframe_insert(data_path=prop,frame=i+1,group='Math Mews '+state)
-    if rig['boxed'] or state in ('curlUp', 'curlSleep'):
-     # Animated point coordinates do not refresh AUTO handles on saved playback.
-     for point in range(4):
-      for prop in ['co','handle_left','handle_right']:rig['tail_curve'].data.keyframe_insert(data_path=f'splines[0].bezier_points[{point}].{prop}',frame=i+1)
-     if rig['boxed']:
-      for prop in ['box_activity','transfer_hop']:rig['root'].keyframe_insert(data_path=f'["{prop}"]',frame=i+1)
-    if play_toy:
-     # Export props separately, with the cat cutting out the pixels covered by
-     # its paws. Runtime gives this layer its own floor-contact depth.
-     bpy.context.view_layer.update()
-     location=play_toy.location.copy();location.z=0
-     prop_ground.append(round(1-world_to_camera_view(scene,scene.camera,location).y,6))
-     for obj in play_toy.children:obj.hide_render=True
-     render(dest/f'{i:03}.png')
-     for obj in play_toy.children:obj.hide_render=False
-     cat_materials=[]
-     for obj in scene.objects:
-      if obj.type not in ('MESH','CURVE') or obj.parent==play_toy:continue
-      faces=list(obj.data.polygons) if obj.type=='MESH' else list(obj.data.splines)
-      cat_materials.append((obj,list(obj.data.materials),[face.material_index for face in faces]))
-      obj.data.materials.clear();obj.data.materials.append(holdout)
-     render(prop_dest/f'{i:03}.png')
-     for obj,mats,indices in cat_materials:
-      obj.data.materials.clear()
-      for mat in mats:obj.data.materials.append(mat)
-      faces=list(obj.data.polygons) if obj.type=='MESH' else list(obj.data.splines)
-      for face,index in zip(faces,indices):face.material_index=index
-    else:render(dest/f'{i:03}.png')
-   if play_toy and skin=='orange':
-    (prop_dest/'ground.json').write_text(json.dumps(prop_ground))
-   if skin=='orange':
-    library=BLENDER_OUT;bpy.ops.wm.save_as_mainfile(filepath=str(library/(state+'.blend')),compress=True)
-   print('CAT_DONE',skin,state,flush=True)
-
 
 def branding():
- sample()
- for id in ['store','stats']:
-  scene=setup(640)
-  if id=='store':
-   box('Shop',(0,0,.68),(1.7,.95,1.35),'cream',.13);box('Door',(.40,-.49,.45),(.40,.035,.80),'teal',.045);box('Shop window',(-.42,-.49,.70),(.64,.025,.60),'blue',.04)
-   box('Roof',(0,0,1.40),(1.9,1.1,.15),'wood',.06)
-   for n in range(8):
-    stripe=box('Striped awning',(-.81+n*.23,-.64,1.18),(.23,.52,.13),'coral' if n%2==0 else 'cream',.03);stripe.rotation_euler.x=.20
-   box('Sign',(0,-.50,1.66),(1.1,.12,.34),'teal',.08)
-   for x in [-.12,.12]:sphere('Paw toe',(x,-.58,1.72),(.055,.03,.055),'cream')
-   sphere('Paw pad',(0,-.58,1.61),(.09,.03,.07),'cream')
-  else:
-   box('Chart base',(0,0,.08),(1.7,1.1,.15),'cream',.08)
-   for x,h,c in [(-.50,.55,'blue'),(0,.92,'teal'),(.50,1.30,'coral')]:box('Progress column',(x,0,h/2+.16),(.35,.55,h),c,.08)
-   curve('Growth line',[(-.62,-.39,.8),(0,-.39,1.19),(.6,-.39,1.58)],.04,'gold')
-   sphere('Reward coin',(.60,-.39,1.62),(.15,.06,.15),'gold')
-  frame_camera([o for o in scene.objects if o.type in ['MESH','CURVE']],1.15)
-  render(OUT/(id+'-icon.png'));bpy.ops.wm.save_as_mainfile(filepath=str(BLENDER_OUT/(id+'.blend')),compress=True)
+ # Render startup from the shipped skin, not the construction rig.
+ import runpy
+ runpy.run_path(str(Path(__file__).with_name('render-native-branding.py')))
 
 def main():
  entries=json.loads((ROOT/'scripts/3d/inventory.json').read_text())['entries']
@@ -831,7 +749,7 @@ def main():
  if ONLY=='samples':
   (OUT/'rooms').mkdir(exist_ok=True)
   room(next(e for e in entries if e['id']=='room1'));render_furniture([e for e in entries if e['id'] in ['sofaA','livingTable','plantSmall','chairClassicA','bed-brown']]);return
- if ONLY=='cat':render_cats();return
+ if ONLY=='cat':raise ValueError('Use scripts/3d/export-native.py -- --cats to rebuild the native cat models')
  if ONLY=='rotations':render_furniture([e for e in entries if e['id'] in ROTATION_BASE]);return
  if ONLY and ONLY.startswith('room') and ONLY!='rooms':room(next(e for e in entries if e['id']==ONLY));return
  if ONLY and ONLY not in ['furniture','rooms']:
@@ -841,6 +759,5 @@ def main():
   for entry in entries:
    if entry['kind']=='room' and ('--refresh' in ARGS or not (OUT/'rooms'/f"{entry['id']}.png").exists()):room(entry);print('ROOM_DONE',entry['id'],flush=True)
  if ONLY in [None,'furniture']:render_furniture(entries)
- if ONLY is None:render_cats()
 
 if __name__=='__main__':main()

@@ -33,3 +33,7 @@ export function isCatSuppliesDecorationId(
 ): decorationId is CatSuppliesDecorationId {
   return CAT_SUPPLIES_DECORATION_ID_SET.has(decorationId);
 }
+
+export function isFoodBowlDecorationId(decorationId: string): boolean {
+  return ["bowlTan", "bowlBlue", "bowlPurple", "bowlPink"].includes(decorationId);
+}

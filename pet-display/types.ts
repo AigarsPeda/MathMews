@@ -5,39 +5,14 @@ import type {
   PetType,
 } from "@/types/game";
 
-/** One playable slice of pet media (video segment, sprite frame range, etc.). */
-export type SpriteFrameCoord = { col: number; row: number };
-
-export type SpriteSheetConfig = {
-  source: number;
-  /** Optional bounded texture pages, with frame coordinates local to each page. */
-  pages?: readonly number[];
-  /** Independently depth-sorted play prop, sharing this clip's frame clock. */
-  playProp?: { pages: readonly number[]; groundY: readonly number[] };
-  framesPerPage?: number;
-  frameWidth: number;
-  frameHeight: number;
-  sheetWidth: number;
-  sheetHeight: number;
-  frames: SpriteFrameCoord[];
-  fps: number;
-  anchor?: "bottom-center" | "center";
-  reverse?: boolean;
-  /** Match on-screen size to 32px sprites when source cells are larger. */
-  scaleReferenceHeight?: number;
-  /** Extra integer scale steps for large-frame animations. */
-  pixelScaleBoost?: number;
-  maxPixelScale?: number;
-};
-
 export type PetMediaSegment = {
   assetKey: string;
   loop?: boolean;
   startMs?: number;
   endMs?: number;
-  /** Play the segment backwards (endMs → startMs). Video only. */
+  /** Play the segment backwards (endMs → startMs). Native models and videos. */
   reverse?: boolean;
-  sprite?: SpriteSheetConfig;
+  model?: { duration: number; rate: number };
 };
 
 export type PetScenarioId = "fallAsleep" | "wakeUp" | "standUp" | "playBox";
@@ -67,7 +42,7 @@ export type PetDisplayCommand =
   | { type: "playReaction"; mood: PetAnimationState }
   | { type: "animationComplete"; completedMood: PetAnimationState };
 
-export type PetMediaKind = "video" | "sprite";
+export type PetMediaKind = "video" | "model";
 
 export type PetMediaRegistry = {
   petType: PetType;

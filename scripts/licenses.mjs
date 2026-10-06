@@ -139,7 +139,7 @@ async function resolveLicense(dependency, dependencyPath) {
 
 const packageJson = await readJson(path.join(root, "package.json"));
 const dependencies = Object.keys(packageJson.dependencies).sort();
-const licenses = [];
+const licenses = await readJson(path.join(root, "data", "asset-licenses.json"));
 const missing = [];
 
 for (const dependency of dependencies) {

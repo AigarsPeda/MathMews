@@ -1,0 +1,71 @@
+# Native room engine
+
+The live game uses `react-native-filament` 1.11.0 on iOS and Android. React Native retains navigation, care controls, math puzzles, wallets, localization, accessible menus, and the room editor. Filament renders every room object and cat; Bullet simulates movable toys. Store room previews and cat portraits use the same native models. Static store thumbnails, control icons, and OS launch artwork remain raster UI assets.
+
+## Assets and saved rooms
+
+`assets/3d/native/` contains the original 288 inventory models, three cat coats, and an airflow model. `catalog.json` records original camera scale, mesh bounds, and animation flags. `constants/native-model-sources.ts` provides Metro's static asset references. The models occupy 40.1 MiB, with a 60 MiB checked budget.
+
+`scripts/3d/export-native.py` reuses the catalog generators and builds an original cat through `original_cat.py` and `game_cat.py`. The body, head, legs, ears and tail form one sealed main surface, with separate sealed ear inserts. Mesh proportions and anatomical pivots share a rest pose; smooth regional weights keep belly vertices separate from leg bending. Every coat has 36 clips: the existing 35 actions plus a separate sofa `sit` pose. Expressions and care/play props remain independently animated. Walking uses two-segment authoring IK and a distance-matched stance. Doors export closed and stationary. Foliage and appliance power/wind rules remain intact.
+
+Regenerate with locally installed Blender:
+
+```sh
+npm run assets:native
+```
+
+The script writes editable intermediate blends under `/tmp/brainpet-native-blends`. `native_gltf.py` normalizes clip time origins and repairs unused skin slots so they reference a valid influencing bone. Filament otherwise derives invalid normal transforms from hidden zero-scale prop bones, producing black head/leg patches. GLB replacement is atomic to avoid partial asset loads. The raster pipeline now only builds catalog thumbnails. The old cat atlas renderer, play-prop pages, and isolated animation lab have been removed. `catModelRegistry` describes native clip playback, and `useAnimationActivity` shares focus, background and Reduce Motion policy across native models, videos, and UI thumbnails. Authored clip timings come directly from `scripts/3d/clips.json`.
+
+`buildNativeRoomWorld` maps each saved normalized offset to its original screen anchor, then unprojects it into the orthographic room. It preserves item scale and wall orientation. Rugs and wall artwork retain saved front/back ordering with small depth offsets along the camera ray. No save schema or furniture placement is rewritten. An old cat spawn inside a solid object moves to the nearest available floor position.
+
+## Movement and interactions
+
+Furniture bounds remain conservative navigation obstacles. Physical colliders also include mounted fixtures. Each sofa now exports 13 collision boxes from its individual source meshes, so its seat, back, arms, pillow and legs participate in Bullet without filling the open space above the cushions. A command computes a path around them, then smooths only collision-free segments. The cat uses a controlled kinematic body. Its walk phase advances by actual distance divided by the authored 0.8-unit stride; the default speed is 2.25 strides per second. Uniform model scale stays constant. Unreachable approaches cancel the remaining action instead of crossing a barrier. Rest and play clips hold the actual arrival position.
+
+Sofas have seat and approach anchors derived from their exported geometry. Jumping lands on the cushion, and checks other furniture along the flight. The scheduler retains existing sit/sleep, scratching, box, ball, yarn, feather, mouse chase, care, wake-up, and door arrival behavior. Changing an action in flight waits for landing. Native playback pauses when covered or backgrounded; Reduce Motion retains completion callbacks without continuous travel.
+
+Balls, yarn, and mice use Bullet bodies; paw proximity applies impulses, and mouse chase follows its own collision-aware route. Their transient positions drive touch targets without replacing saved resting positions. Static walls, furniture, floor, and edge rails participate in simulation. This is a rigged animation controller with rigid-body object physics and tail contact constraints. Live paw IK and active ragdoll joints are not implemented.
+
+`native-cat-contact.ts` samples a capsule chain along the four exported tail joints and its end marker against the same furniture collision boxes, room walls and floor. After animation/cross-fading, `NativeCatActor` finds a clearing rotation about the anchored tail root, expresses it in the spine parent’s coordinate system, and updates skinning matrices. This uses Filament’s [world/local transform API](https://margelo.github.io/react-native-filament/docs/api/interfaces/TransformManager). Bone lengths and the authored curl remain intact, and the tail returns toward its authored pose when that return clears contact. Contact handling still runs with Reduce Motion. Seating faces along the centered cushions to keep the tail base clear of the backrest. This is a constrained tail pose, not a simulated chain of Bullet ragdoll joints. Other limbs retain their authored animation; the fix does not claim per-vertex collision for the whole cat.
+
+Tail regression checks sample the actual shipped sit, curl-up and sleep skeletons across both sofa variants, mirrored layouts and supported furniture scales. They verify capsule clearance, unchanged lengths, wall-fixture contact and the actual renderer’s correction-before-skinning order. Native iOS sitting and curled sleep were visually checked; the capture is `docs/art/native-cat-rebuild/ios-tail-contact-sleep.png`.
+
+## Native integration
+
+`npm install` runs the pinned Filament patch in `scripts/native/patch-filament.mjs`. It adds body position, impulse, and kinematic controls to the installed C++ host bindings and TypeScript declarations. The patch is idempotent and rejects a different Filament version. Rebuild both native clients after installation or a native dependency change:
+
+```sh
+npx expo prebuild --no-clean
+npx expo run:ios
+npx expo run:android
+```
+
+Expo Go cannot load these modules. Babel uses the Reanimated 4 worklets plugin with nested worklet processing; the separate Worklets Core plugin must not also transform the same callbacks. Filament assets retain source data for native animator lifetime.
+
+## Verification
+
+Room zoom uses continuous pinch gestures on the unscaled viewport, from 1× to 3×. The point under the fingers remains anchored while zooming. The artwork and native object hit targets share the same transform; zoom no longer disables their menus. There is no zoom/reset button; pinch inward to return to 1×. Entering decoration mode automatically resets the view. `check-room-camera.mjs` covers fractional zoom, focal anchoring, pan bounds and tap/scroll thresholds. Native iOS tapping opened the sofa's Sit/Sleep menu at 2.36×, and the user confirmed one-finger panning; see `docs/art/native-cat-rebuild/ios-pinch-object-menu.png`.
+
+Startup stills render from the shipped GLB with the portrait camera. `render-native-branding.py` writes model/portrait hashes checked by startup tests. Cat exports run this renderer and rebuild the native launch/title composites so a rebuilt cat cannot leave stale startup artwork. Native launch art requires rebuilding the iOS/Android clients.
+
+Tail contact now refines a clearing angle instead of showing discrete 10-degree poses. An overconstrained attachment uses small local corrections instead of searching all axes on every frame. Narrow sofas seat the fixed-size cat along the cushion so the idle tail attachment clears the backrest. The 1,200-frame idle check covers five sofa sizes, requires no blocked contacts and rejects tail-tip steps above .02 units. Other poses remain authored; this is not full-body physics. Joint lookup uses the stable asset handle, UI rerenders retain the render worklet and animation clock, and unrelated hit-target updates do not rerender the room scene.
+
+`npm run test:game` checks the entire catalog, all clips/coats, saved-placement projection, obstacle detours, unreachable targets, actual-arrival poses, cushion support, and the real cat render worklet at 30/60/120 FPS. It also covers the existing game economy, care, room editor, doors, menu dispatch, speech anchors, pause, and Reduce Motion scenarios. `npm run test:startup`, `npm run typecheck`, `npm run lint`, and `npm run assets:verify` cover launch behavior, code, bundled asset coverage, and budgets. The complete game media totals 73.9 MiB against a 100 MiB limit; the native model limit remains 60 MiB.
+
+The patched iOS and Android debug clients built successfully on 2026-10-05. iOS simulator checks exercised the furnished native room, sofa landing, feeding completion, and travel to the bedroom and back. Android launched the native engine on its emulator without a startup failure; full Android interaction and real-device performance checks remain necessary.
+
+## Cat model and attribution
+
+The editable source is `prototypes/cat-model/cat-orange.blend`, generated from original geometry. No paid model is bundled or needed. The superseded J-Toastie source and its smoothing study are removed; the user's Downloads file remains untouched.
+
+`original_cat.py` builds the rounded head, short neck, thick legs, paws and hooked tail, then fuses a sealed body and binds its anatomical skeleton. `game_cat.py` bakes the game actions. It paints smooth rest-space coat shapes into a dedicated 1024-pixel texture, and adds small eyes, whiskers, brows, a thin red collar and bell. The orange editable result is `prototypes/cat-model/cat-orange.blend`. Grey/white intermediates remain in `/tmp`; the shipped GLBs are in `assets/3d/native/`.
+
+`check-native-cat-skin.mjs` checks all three GLBs for a connected torso, sealed ear inserts, normalized four-influence weights, safe unused joint slots and anatomical parenting. `review-native-cat.py` reimports the shipped orange GLB, samples every clip at five times for finite/bounded geometry and overstretched edges, then renders front, side, sitting, walking, sleeping and jumping views under `docs/art/native-cat-rebuild/`. Regenerate the cats with `export-native.py -- --cats`.
+
+The previous tiger `.rag` investigation supplied rig/physics reference data, not a portable visible skin. No Maya Ragdoll runtime or purchased Unity cat is bundled. The existing kinematic navigation, rigid-body toy physics and tail constraints remain the runtime approach; full-body ragdoll and per-vertex furniture collision are not implemented.
+
+The compact cat update passed the game, startup, TypeScript, lint and asset checks on 2026-10-06. Both native clients rebuilt successfully. iOS showed the current cat on cold launch and exercised sofa sitting and feather-play completion; captures are `ios-reference-launch.png` and `ios-reference-sofa.png` under the review folder. Android interaction and physical-device performance remain unverified. The TurboSquid renders are a proportion reference only. The user does not want to buy assets; the original Blender cat requires no purchase.
+
+Original cat validation on 2026-10-06: all three coats passed the connected-skin checks; every clip passed exported geometry samples; walking and sitting retain stable anatomical bend poles. The planted stance cancels runtime travel and 1,200 sofa frames have no blocked tail contacts. Native iOS exercised walking to the sofa and holding `sit`. Review `original-walk.gif`, `front.png`, `side.png`, `sit.png` and `ios-original-sofa.png` in `docs/art/native-cat-rebuild/`. Game/startup, TypeScript, lint and asset checks pass.
+
+The original-cat iOS and Android debug clients rebuilt successfully on 2026-10-06. iOS installation preserves the existing app data; Android interaction and physical-device performance remain unverified.

@@ -6,6 +6,13 @@ import { execFileSync } from 'node:child_process';
 import vm from 'node:vm';
 import ts from 'typescript';
 import sharp from 'sharp';
+import { createHash } from 'node:crypto';
+
+const brandingSource = JSON.parse(fs.readFileSync('scripts/3d/branding-source.json'));
+for (const [file, expected] of Object.entries(brandingSource)) {
+  assert.equal(createHash('sha256').update(fs.readFileSync(file)).digest('hex'), expected,
+    'Startup stills must be regenerated from the current shipped cat GLB');
+}
 
 // Hold the system splash before loading the rest of the React tree. Removing
 // this early side effect can expose a blank root before branding can paint.
@@ -31,9 +38,7 @@ assert.equal(splashOptions.fade, false);
 assert.equal(splashOptions.duration, 0);
 
 const portrait = await sharp('assets/3d/cat-splash.png').ensureAlpha().raw().toBuffer();
-const firstCell = await sharp('assets/3d/atlases/cat-orange-idle.png')
-  .extract({ left: 0, top: 0, width: 192, height: 192 }).ensureAlpha().raw().toBuffer();
-assert.deepEqual(portrait, firstCell, 'The startup portrait must be the exact first animation cell');
+assert.equal(portrait.length, 192 * 192 * 4, 'Startup retains its bundled fallback portrait');
 
 // The OS launch image must preserve the same centered branding and the empty
 // track's position, even before React can mount or decode its animation sheet.
@@ -110,14 +115,15 @@ const React = {
     }
   },
 };
+React.useMemo = memo;
+React.useRef = initial => memo(() => ({ current: initial }), []);
 const mocks = {
   react: React,
+  "@/components/pet/native/NativeCatDisplay": { NativeCatDisplay: "NativeCatDisplay" },
+  "@/pet-display/registry/cat-model-registry": { catModelRegistry: ({ getSegment: () => ({ assetKey: "idle", loop: true, model: { duration: 4, rate: 1 } }) }) },
   'react-native': { View: 'View', StyleSheet: { create: value => value, absoluteFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 } } },
   'react-native-reanimated': { useDerivedValue: fn => ({ get: fn }) },
   '@shopify/react-native-skia': { Canvas: 'Canvas', Group: 'Group', Image: 'SkiaImage', FilterMode: { Linear: 1 }, MipmapMode: { None: 0 }, useImage: () => texture },
-  '@/constants/cat-splash': { CAT_SPLASH_SOURCE: 1, CAT_SPLASH_SHEET: { frameSize: 192, width: 1536, height: 2304, cols: 8 } },
-  '@/constants/cat-sprite-catalog': { CAT_SPRITE_CATALOG: { idle: { frameCount: 96, fps: 24 } } },
-  '@/pet-display/media/sprite/use-sprite-clock': { useSpriteClock: options => { readyPages = options.readyPages; return { get: () => 0 }; } },
   '@/constants/game': { GameColors: { background: '#FFF5EB' } },
   '@/hooks/use-is-mounted': { useIsMounted: () => isMounted },
   '@/utils/scale': { moderateScale: value => value },
@@ -140,37 +146,23 @@ function render() {
 }
 function paint() { const callbacks = [...frames.values()]; frames.clear(); callbacks.forEach(fn => fn()); }
 const pending = render();
-pending.props.onLayout();
-render();
-assert.equal(readyCalls, 0, 'A missing sheet must retain the portrait');
-texture = { id: 'idle' };
-const tree = render();
-assert.equal(readyCalls, 0, 'A decoded sheet alone must not remove the portrait');
-const canvas = tree.props.children[0];
-assert.equal(canvas.type, 'Canvas');
-assert.equal(canvas.props.onLayout, undefined, 'Fabric Canvas layout must come from its native wrapper');
-assert.equal(canvas.props.colorSpace, 'srgb', 'Canvas and startup PNG must use the same color space');
-render();
-assert.equal(readyPages.length, 0, 'Playback holds frame zero beneath the portrait');
+assert.equal(pending.type, 'NativeCatDisplay');
+assert.equal(pending.props.playing, false, 'The rig holds its first pose beneath the portrait');
+assert.equal(readyCalls, 0, 'A missing native drawing must retain the portrait');
+pending.props.onReady();
 paint();
-assert.equal(readyCalls, 0, 'Layout must get a drawing turn before handoff');
+assert.equal(readyCalls, 0, 'The native surface gets a drawing turn before handoff');
 paint();
 assert.equal(readyCalls, 1);
-render();
-assert.equal(readyPages[0], 0, 'Playback starts only after the static portrait handoff');
+assert.equal(render().props.playing, true, 'Playback starts after the portrait handoff');
 slots.forEach(slot => slot.cleanup?.());
-assert.equal(frames.size, 0, 'Unmount cancels pending handoff callbacks');
-console.log('Verified identical startup/animation pixels, decoded-and-laid-out readiness, and frame-zero playback handoff.');
-
-// Unmount during the drawing handoff, while its second callback is pending.
-slots = []; frames.clear(); readyCalls = 0; playing = false;
-render().props.onLayout();
-render(); paint();
-assert.equal(frames.size, 1, 'The test must unmount with a pending drawing callback');
-slots.forEach(slot => slot.cleanup?.());
-assert.equal(frames.size, 0, 'Unmount must cancel the pending portrait handoff');
-paint();
-assert.equal(readyCalls, 0, 'A cancelled drawing callback must not report animation readiness');
+assert.equal(frames.size, 0);
+slots = [];frames.clear();readyCalls = 0;playing = false;
+render().props.onReady();paint();
+assert.equal(frames.size, 1, 'A drawing callback is pending');
+slots.forEach(slot => slot.cleanup?.());paint();
+assert.equal(readyCalls, 0, 'Unmount cancels an outgoing native portrait handoff');
+console.log('Verified native rig first-frame readiness, delayed playback and interrupted startup cleanup.');
 
 // If the Canvas wins the decode race, the removed fallback must not leave the
 // gate waiting forever for that Image's onLoad callback.

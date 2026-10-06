@@ -1,3 +1,6 @@
+import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { DEFAULT_HOME_ROOM_ID, isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
+import { captureHomeRoom, type HomeRoomState } from "@/utils/home-rooms";
 import { captureRoomLayout } from "@/utils/room-layout";
 import { getCompletedPuzzleIds, getSolvedCounts } from "@/utils/game-operations";
 import { DEFAULT_CAT_ROOM_ID, resolveCatRoomId } from "@/constants/cat-rooms";
@@ -41,12 +44,16 @@ import { normalizeTopicStats } from "@/utils/topic-stats";
 import { normalizeCoinTransactions } from "@/utils/coin-ledger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+function createStarterFoodBowl() {
+  return { decorationId: "bowlBlue", instanceId: "starter-bowl", offset: { x: 0.25, y: 0.15 } };
+}
+
 export function createDefaultGameSave(): GameSave {
   return {
     version: GAME_SAVE_VERSION,
-    pet: { ...DEFAULT_PET, lastCareAt: Date.now(), lastInteractionAt: Date.now(), bedId: "brown", placedToys: [{ toyId: "orangeBall", instanceId: "starter-ball", offset: { x: 0.5, y: 0.4 } }] },
+    pet: { ...DEFAULT_PET, lastCareAt: Date.now(), lastInteractionAt: Date.now(), bedId: "brown", placedDecorations: [createStarterFoodBowl()], placedToys: [{ toyId: "orangeBall", instanceId: "starter-ball", offset: { x: 0.5, y: 0.4 } }] },
     wallet: DEFAULT_WALLET,
-    progress: { ...DEFAULT_PROGRESS, bedsUnlocked: ["brown"], toysUnlocked: ["orangeBall"], toyQuantities: { orangeBall: 1 }, completedPuzzleIds: [], processedAttemptIds: [] },
+    progress: { ...DEFAULT_PROGRESS, bedsUnlocked: ["brown"], toysUnlocked: ["orangeBall"], toyQuantities: { orangeBall: 1 }, decorationsUnlocked: ["bowlBlue"], decorationQuantities: { bowlBlue: 1 }, completedPuzzleIds: [], processedAttemptIds: [] },
     hasCompletedOnboarding: false,
   };
 }
@@ -102,7 +109,7 @@ function filterPlacedDecorationsForUnlocked(
   decorationsUnlocked: string[],
 ): PetProfile["placedDecorations"] {
   return (placedDecorations ?? []).filter((item) =>
-    decorationsUnlocked.includes(item.decorationId),
+    decorationsUnlocked.includes(item.decorationId) || (isRoomDoor(item.decorationId) && isHomeRoomId(item.doorDestination)),
   );
 }
 
@@ -114,11 +121,21 @@ function normalizeRoomLayouts(value: unknown): PetProfile["roomLayouts"] {
   }));
 }
 
+function normalizeHomeRooms(value: unknown): PetProfile["homeRooms"] {
+  if (!isRecord(value)) return undefined;
+  return Object.fromEntries(Object.entries(value).filter(([id, room]) => isHomeRoomId(id) && isRecord(room)).map(([id, room]) => {
+    const normalized = normalizePetProfile({ ...room as Record<string, unknown>, type: "cat", homeRooms: undefined });
+    return [id, captureHomeRoom(normalized)];
+  }));
+}
+
 function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
   const stats = isRecord(pet.stats) ? pet.stats : {};
   const type = pet.type === "cat" ? "cat" : "dog";
   return {
     type,
+    homeRoomId: isHomeRoomId(pet.homeRoomId) ? pet.homeRoomId : DEFAULT_HOME_ROOM_ID,
+    homeRooms: normalizeHomeRooms(pet.homeRooms),
     name: typeof pet.name === "string" ? pet.name : DEFAULT_PET.name,
     stats: {
       hunger:
@@ -263,6 +280,11 @@ function parseGameSave(
       parsed.progress.decorationsUnlocked,
       placedDecorationIds,
     );
+    // Existing players receive the same free bowl once if they do not own one.
+    if (normalizedPet.type === "cat" && !decorationsUnlocked.some(isFoodBowlDecorationId)) {
+      decorationsUnlocked.push("bowlBlue");
+      normalizedPet.placedDecorations = [...normalizedPet.placedDecorations ?? [], createStarterFoodBowl()];
+    }
     const toyQuantities = normalizeToyQuantities(
       parsed.progress.toyQuantities,
       toysUnlocked,
@@ -284,6 +306,12 @@ function parseGameSave(
       applyPetTimeDecay(
         {
           ...normalizedPet,
+          homeRooms: normalizedPet.homeRooms && Object.fromEntries(Object.entries(normalizedPet.homeRooms).map(([id, room]) => [id, {
+            ...room, roomId: roomsUnlocked.includes(resolveCatRoomId(room.roomId)) ? resolveCatRoomId(room.roomId) : DEFAULT_CAT_ROOM_ID,
+            bedId: room.bedId && bedsUnlocked.includes(resolveCatBedId(room.bedId)!) ? resolveCatBedId(room.bedId) : undefined,
+            placedToys: filterPlacedToysForUnlocked(room.placedToys, toysUnlocked),
+            placedDecorations: filterPlacedDecorationsForUnlocked(room.placedDecorations, decorationsUnlocked),
+          } satisfies HomeRoomState])),
           roomId: roomsUnlocked.includes(equippedRoomId)
             ? equippedRoomId
             : DEFAULT_CAT_ROOM_ID,

@@ -14,13 +14,13 @@ for skin in ('orange', 'grey', 'white'):
             feet = rig['back_feet'][:1] + rig['feet'][:1] + rig['back_feet'][1:] + rig['feet'][1:]
             assert sum(abs(paw.location.z - paw.scale.z) < .001 for paw in feet) >= 2, 'At least two paws must support the standing cat'
             assert abs(rig['root'].location.z) < .001, 'Walking must never become a hop'
-            for paw, offset in zip(feet, (0, .25, .50, .75)):
-                gait = (t + offset) % 1
-                if gait < .64 - .001:
+            for paw, offset in zip(feet, (0, .18, .50, .68)):
+                gait = (t - offset) % 1
+                if gait < .60 - .001:
                     y = paw.location.y
                     scope['cat_pose'](rig, state, t + .0001)
-                    # Forward torso travel is half a Blender unit per cycle.
-                    assert abs((paw.location.y - y) / .0001 - .5) < .001, 'A planted paw must remain fixed against forward floor travel'
+                    # Forward torso travel is 0.8 Blender units per cycle.
+                    assert abs((paw.location.y - y) / .0001 - .8) < .001, 'A planted paw must remain fixed against forward floor travel'
                     scope['cat_pose'](rig, state, t)
             for anchors, front, front_leg, back, back_leg in zip(rig['leg_anchors'], rig['feet'], rig['legs'], rig['back_feet'], rig['back_legs']):
                 for limb, paw, anchor in ((front_leg, front, anchors[0]), (back_leg, back, anchors[1])):
@@ -40,6 +40,24 @@ for skin in ('orange', 'grey', 'white'):
                         assert points[1].co.y < shoulder.lerp(paw.location,.42).y, 'Rear knees must bend forward'
                         assert points[2].co.y > shoulder.lerp(paw.location,.78).y, 'Rear hocks must turn back toward the heel'
                 assert (rig['body'].matrix_basis @ anchors[1]).y - (rig['body'].matrix_basis @ anchors[0]).y > .70, 'Shoulders and hips must span the standing torso'
+        contacts = []
+        for sample in range(100):
+            t = sample / 100
+            scope['cat_pose'](rig, state, t - .01)
+            feet = rig['back_feet'][:1] + rig['feet'][:1] + rig['back_feet'][1:] + rig['feet'][1:]
+            before = [paw.location.z - paw.scale.z for paw in feet]
+            scope['cat_pose'](rig, state, t)
+            for index, paw in enumerate(feet):
+                if before[index] > .0001 and abs(paw.location.z - paw.scale.z) < .00001:
+                    contacts.append(index)
+        assert contacts == [0, 1, 2, 3], 'Each hind paw must contact before the front paw on the same side'
+        for offset, index in zip((0, .18, .50, .68), range(4)):
+            for contact in (offset, offset + .60):
+                scope['cat_pose'](rig, state, contact - .00001)
+                feet = rig['back_feet'][:1] + rig['feet'][:1] + rig['back_feet'][1:] + rig['feet'][1:]
+                before = feet[index].location.copy()
+                scope['cat_pose'](rig, state, contact + .00001)
+                assert (feet[index].location-before).length < .0001, 'Contact and lift-off must be continuous'
     scope['cat_pose'](rig, 'idle', 0)
     sitting = [(obj.location.copy(), obj.scale.copy()) for obj in scope['animated_parts'](rig)]
     scope['cat_pose'](rig, 'jumpOn', 1)

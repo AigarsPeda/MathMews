@@ -16,14 +16,13 @@ export {
 
 export {
   dogVideoRegistry,
-  getPetMediaRegistry,
   DOG_VIDEO_ASSET_KEYS,
   DOG_VIDEO_SOURCES,
   DOG_MOOD_VIDEO_ASSET_KEYS,
 } from "./registry/dog-video-registry";
 
-export { catSpriteRegistry } from "./registry/cat-sprite-registry";
-export { CAT_SPRITE_ANIMATIONS } from "./registry/cat-sprite-atlas";
+export { getPetMediaRegistry } from "./registry/media-registry";
+export { catModelRegistry } from "./registry/cat-model-registry";
 
 export type {
   PetDisplayCommand,

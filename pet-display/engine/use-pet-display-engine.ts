@@ -1,8 +1,8 @@
 import { PET_CARE_COOLDOWN_MS } from "@/constants/game";
 import { buildBoxPlaySequence } from "@/constants/cat-box-play";
 import { usePetBaseMood } from "@/pet-display/engine/derive-mood";
-import { createBoxPlayScenario } from "@/pet-display/registry/cat-sprite-registry";
-import { getPetMediaRegistry } from "@/pet-display/registry/dog-video-registry";
+import { createBoxPlayScenario } from "@/pet-display/registry/cat-model-registry";
+import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
 import type {
   PetDisplayCommand,
   PetDisplayEngine,
@@ -20,9 +20,7 @@ type ActiveScenario = {
 
 export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
   const { t } = useTranslation();
-  const registry = getPetMediaRegistry(pet.type, {
-    catSkinId: pet.catSkinId,
-  });
+  const registry = getPetMediaRegistry(pet.type);
   const { mood: baseMood, onFallAsleepComplete, onLieDownComplete } = usePetBaseMood(pet);
   const [actionMood, setActionMood] = useState<PetAnimationState | null>(null);
   const [boxPlayScenario, setBoxPlayScenario] =
@@ -108,7 +106,7 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
     (wasAsleep: boolean, mood: PetAnimationState) => {
       if (mood === "playBox") {
         setBoxPlayScenario(
-          createBoxPlayScenario(pet.catSkinId, buildBoxPlaySequence()),
+          createBoxPlayScenario(buildBoxPlaySequence()),
         );
       }
       if (wasAsleep || baseMood === "resting" || baseMood === "lyingDown" || baseMood === "fallingAsleep" || baseMood === "sleeping") {

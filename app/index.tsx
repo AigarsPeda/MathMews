@@ -1,12 +1,6 @@
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
-import { ActivitiesMenuButton } from "@/components/home/ActivitiesMenuButton";
 import { HeaderChip } from "@/components/home/HeaderChip";
-import {
-  HomeActionContent,
-  homeActionStyles,
-} from "@/components/home/HomeActionContent";
 import { PetStage } from "@/components/pet/PetStage";
-import type { RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { IconText as Text } from "@/components/ui/IconText";
 import type { CatBedId } from "@/constants/cat-beds";
@@ -14,12 +8,10 @@ import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatPlayActivity } from "@/constants/cat-play";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
-  FEED_COST,
   GameColors,
   HEADER_CHIP_SIZE,
   PET_HAPPINESS_BOOST,
 } from "@/constants/game";
-import { USE_CAT_SPRITE_PETS } from "@/constants/pet-display";
 import { computePetWisdom } from "@/constants/puzzles";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
@@ -31,7 +23,6 @@ import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
 import type { PetAnimationState, PetStats, RoomLayerItem } from "@/types/game";
 import {
   boostStat,
-  canFeedForEffect,
   withPetCareUpdate,
 } from "@/utils/pet-care";
 import {
@@ -48,7 +39,7 @@ import { moderateScale } from "@/utils/scale";
 import { getStoreGoalDetails } from "@/utils/store-goal";
 import * as Haptics from "expo-haptics";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -65,7 +56,6 @@ function triggerHaptic() {
 }
 
 export default function HomeScreen() {
-  const [roomActions, setRoomActions] = useState<RoomItemMenuAction[]>([]);
   const router = useRouter();
   const waitingToOpenStore = useRef(false);
   useFocusEffect(
@@ -113,6 +103,9 @@ export default function HomeScreen() {
     flipPlacedDecorationWall,
     togglePlacedAirConditioner,
     scalePlacedDecoration,
+    visitHomeRoom,
+    placeRoomDoor,
+    assignRoomDoor,
   } = useGame();
   const roomEditor = useRoomEditor(pet, setPet);
   const careActionPendingRef = useRef(false);
@@ -210,50 +203,8 @@ export default function HomeScreen() {
   ]);
 
   const handleFeed = useCallback(() => {
-    const wasAsleep = pet.isAsleep === true;
-
-    if (
-      isCareAnimationPlaying ||
-      isCareBlocked ||
-      careActionPendingRef.current
-    ) {
-      rejectCareAction(t("home.giveMoment", { name: pet.name }));
-      return;
-    }
-
-    if (!canFeedForEffect(pet.stats, wasAsleep)) {
-      rejectCareAction(t("home.notHungry", { name: pet.name }));
-      return;
-    }
-
-    if (wallet.coins < FEED_COST) {
-      rejectCareAction(
-        t("home.needCoinsFeed", { cost: FEED_COST, name: pet.name }),
-      );
-      return;
-    }
-
-    careActionPendingRef.current = true;
-    recordInteraction();
-    sendPetCommand({ type: "beginCareAction" });
-    feedPet();
-    playActionMood(wasAsleep, "eating");
-    showSpeech(t("home.enjoyedSnack", { name: pet.name }));
-  }, [
-    isCareAnimationPlaying,
-    isCareBlocked,
-    pet.isAsleep,
-    pet.name,
-    pet.stats,
-    playActionMood,
-    recordInteraction,
-    rejectCareAction,
-    sendPetCommand,
-    feedPet,
-    showSpeech,
-    t,
-    wallet.coins,
-  ]);
+    if (feedPet()) showSpeech(t("home.enjoyedSnack", { name: pet.name }));
+  }, [feedPet, pet.name, showSpeech, t]);
 
   const handlePlay = useCallback(
     (activity: CatPlayActivity) => {
@@ -489,24 +440,15 @@ export default function HomeScreen() {
     return <Redirect href="/onboarding/name-pet" />;
   }
 
-  const wasAsleep = pet.isAsleep === true;
-  const canFeedForHunger = canFeedForEffect(pet.stats, wasAsleep);
-  const canAffordFeed = wallet.coins >= FEED_COST;
-
   const savingGoal = getStoreGoalDetails(progress.storeGoal, wallet.coins, t);
-  const feedDimmed =
-    !canFeedForHunger ||
-    !canAffordFeed ||
-    isCareBlocked ||
-    isCareAnimationPlaying;
-  const isCatSpritePet = USE_CAT_SPRITE_PETS && pet.type === "cat";
+  const isNativeCatPet = pet.type === "cat";
   const petAnimating = isCareAnimationPlaying;
 
   return (
     <View style={[styles.safe, screenInsets]}>
       <View style={styles.screen}>
         <View style={styles.header}>
-          {isCatSpritePet ? (
+          {isNativeCatPet ? (
             <HeaderChip
               onPress={handleOpenStore}
               accessibilityLabel={t("home.a11yStore")}
@@ -535,6 +477,12 @@ export default function HomeScreen() {
         <View style={styles.middle}>
           <View style={styles.stageWrap}>
             <PetStage
+              key={`${pet.homeRoomId ?? "livingRoom"}:${pet.roomId ?? "room1"}`}
+              homeRoomId={pet.homeRoomId}
+              onVisitHomeRoom={visitHomeRoom}
+              onPlaceRoomDoor={placeRoomDoor}
+              onAssignRoomDoor={assignRoomDoor}
+              onOpenStore={handleOpenStore}
               roomEditor={roomEditor}
               compact
               name={pet.name}
@@ -556,7 +504,8 @@ export default function HomeScreen() {
               roomActivityBlocked={isCareAnimationPlaying || isCareBlocked}
               onRoomInteraction={recordInteraction}
               onRoomActivityChange={handleRoomActivityChange}
-              onRoomActionsChange={setRoomActions}
+              onFeed={handleFeed}
+              onPlay={handlePlay}
               speechMessage={speechMessage}
               playback={playback}
               onPetPress={petAnimating ? undefined : handlePetTap}
@@ -604,61 +553,6 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.footer}>
-          <View style={styles.actions}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.actionBtn,
-                homeActionStyles.button,
-                pressed && homeActionStyles.pressed,
-                petAnimating && styles.actionDisabled,
-              ]}
-              onPress={handlePetTap}
-              disabled={petAnimating}
-              accessibilityRole="button"
-              accessibilityLabel={t("home.a11yPet")}
-              accessibilityState={{ disabled: petAnimating }}
-            >
-              <HomeActionContent icon="paw" label={t("home.pet")} />
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.actionBtn,
-                homeActionStyles.button,
-                pressed && homeActionStyles.pressed,
-                feedDimmed && styles.actionDisabled,
-              ]}
-              onPress={handleFeed}
-              disabled={isCareAnimationPlaying}
-              accessibilityRole="button"
-              accessibilityLabel={t("home.a11yFeed", { cost: FEED_COST })}
-              accessibilityHint={
-                !canFeedForHunger
-                  ? t("home.alreadyFull")
-                  : !canAffordFeed
-                    ? t("store.needCoins", { cost: FEED_COST })
-                    : isCareBlocked || isCareAnimationPlaying
-                      ? t("home.careBusy")
-                      : undefined
-              }
-              accessibilityState={{ disabled: isCareAnimationPlaying }}
-            >
-              <HomeActionContent
-                icon="feed"
-                label={t("home.feed")}
-                cost={FEED_COST}
-              />
-            </Pressable>
-
-            {isCatSpritePet ? (
-              <ActivitiesMenuButton
-                disabled={isCareBlocked || isCareAnimationPlaying}
-                onSelect={handlePlay}
-                roomActions={roomActions}
-              />
-            ) : null}
-          </View>
-
           <Pressable
             style={styles.primaryBtn}
             onPress={handlePlayPuzzle}
@@ -729,16 +623,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     gap: moderateScale(10),
-  },
-  actions: {
-    flexDirection: "row",
-    gap: moderateScale(10),
-  },
-  actionBtn: {
-    flex: 1,
-  },
-  actionDisabled: {
-    opacity: 0.55,
   },
   primaryTitle: {
     flexDirection: "row",

@@ -38,6 +38,18 @@ Press **`i`** to open on the simulator. If Expo reports a simulator-launch timeo
 
 For in-app purchases, use an [EAS development build](https://docs.expo.dev/develop/development-builds/introduction/) — IAP does not work in Expo Go.
 
+## Connected cat rooms
+
+The cat, rooms, furniture, toys, and store room previews now render with native **Filament** on iOS and Android. All 288 catalog models and all 35 cat actions in three coats retain their original IDs. Saved offsets, sizes, orientations, and room assignments are projected into the 3D scene without rewriting the save. Walking follows obstacle-aware routes; its paw cadence follows distance traveled. An orthographic camera keeps the cat the same size throughout the room.
+
+Bullet handles movable toys, gravity, and contact with the cat, furniture, floor, and room edges. Sofas provide a real seat and an approach point for climbing and resting. See [native room engine notes](docs/native-room-engine.md) for collision behavior, asset regeneration, tests, and native rebuild requirements.
+
+The cat has a living room, bedroom, bathroom, and kitchen. Each space keeps its own furniture, toys, background, and saved layout. Existing saves start in the living room with their furnishings intact.
+
+Tap **Decorate**, then **Choose an item**. Under **Add a door**, choose its destination and move the door into place. Tap **Done**, then tap the door and choose **Go to** its destination. New spaces include a return door. In decoration mode, a door’s menu can change its destination, size, or wall orientation.
+
+Use **Find furniture and toys** in the room tools to furnish the current space. Tap placed toys or sofas to start their available play or resting actions. Idle play uses the objects placed in that space. The room name above the scene also opens a room picker.
+
 ## Startup regression tests
 
 ```bash
@@ -56,7 +68,7 @@ That verifies the final Info.plist and the PNGs inside the app bundle. After Exp
 
 ## In-app purchases (RevenueCat)
 
-Math Mews sells **coin packs only**. Real money credits `wallet.coins`; everything else (store, feed, lives, visual help) spends coins as usual. Full plan: [doc/IAP_PLAN.md](doc/IAP_PLAN.md).
+Math Mews sells **coin packs only**. Real money credits `wallet.coins`; store purchases and extra lives spend coins. Feeding and visual help are free. Click the cat or room objects for their actions; new games start with a food bowl. Full plan: [doc/IAP_PLAN.md](doc/IAP_PLAN.md).
 
 ### Development — Test Store (no Apple / Google accounts yet)
 
@@ -138,8 +150,11 @@ This is intentional — misconfigured store builds must not ship. Logic lives in
 
 ## Assets
 
-The cat, rooms, furniture, beds, toys and app graphics use original Blender models. Editable scenes live in the sibling folder `../BrainPet-blender-assest`, currently `/Users/aigarspeda/Desktop/BrainPet-blender-assest`. The game uses transparent images and animation atlases in `assets/3d/` while retaining its existing room controls and saved inventory IDs.
+The rooms, furniture, beds, toys and app graphics use the existing Blender models. The cat is original geometry built by `scripts/3d/original_cat.py`, with a connected body and anatomical skeleton. `scripts/3d/game_cat.py` adds coat textures, expressions and all 36 game clips. Its editable rig is [cat-orange.blend](prototypes/cat-model/cat-orange.blend). No paid or downloaded cat assets are required. The native world uses GLBs in `assets/3d/native/`; transparent catalog images and small animation strips supply store/editor thumbnails. The original catalog library remains in `../BrainPet-blender-assest`.
 
-See [3D asset instructions](assets/3d/README.md) for editable models and regeneration. Run `npm run assets:verify` to check asset coverage and animation states, or `npm run assets:3d` to render and pack the collection.
+See [3D asset instructions](assets/3d/README.md) for editable models and regeneration. Run `npm run assets:verify` to check asset coverage and animation states, `npm run assets:native` to rebuild the native models, or `npm run assets:3d` to rebuild catalog thumbnails.
 
 The migration notes and verification results are in [HANDOFF.md](HANDOFF.md).
+
+Just to read at some point
+https://learn.ragdolldynamics.com/documentation/import_physics/

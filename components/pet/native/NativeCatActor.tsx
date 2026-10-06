@@ -1,0 +1,226 @@
+/* eslint-disable react-hooks/immutability */
+/* Native asset requires are statically resolved by Metro. */
+/* eslint-disable @typescript-eslint/no-require-imports */
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { RenderCallbackContext, useAnimator, useFilamentContext, useModel } from 'react-native-filament';
+import { useSharedValue, Worklets, type ISharedValue } from 'react-native-worklets-core';
+import { resolveCatSkinId } from '@/constants/cat-skins';
+import { catScreenPoint, type NativeRoomWorld, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
+import type { PetPlaybackState } from '@/pet-display/types';
+import { CAT_ANIMATION_CLIPS } from '@/constants/cat-animation-clips';
+import { resolveTailContact, tailParentAxis, type TailContact } from '@/utils/native-cat-contact';
+const SOURCES = {
+  orange: require('@/assets/3d/native/cat-orange.glb'),
+  grey: require('@/assets/3d/native/cat-grey.glb'),
+  white: require('@/assets/3d/native/cat-white.glb'),
+};
+const CLIPS: Record<string, number[]> = CAT_ANIMATION_CLIPS;
+type Props = {
+  skinId?: string;
+  playback: PetPlaybackState;
+  world?: NativeRoomWorld;
+  travel?: NativeTravel;
+  activityKey?: string;
+  loop?: boolean;
+  active: boolean;
+  reduceMotion?: boolean;
+  onReady?: () => void;
+  onPosition?: (position: {
+    x: number;
+    y: number;
+  }) => void;
+  onAnimationComplete?: () => void;
+  onStepComplete?: (index: number) => void;
+  positionValue?: ISharedValue<Vec3>;
+  onContactPosition?: (position: Vec3) => void;
+};
+export function NativeCatActor({ skinId, playback, world, travel, activityKey, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onReady, positionValue, reduceMotion = false }: Props) {
+  'use no memo';
+  const { transformManager } = useFilamentContext();
+  const model = useModel(SOURCES[resolveCatSkinId(skinId)], { shouldReleaseSourceData: false });
+  const asset = model.state === 'loaded' ? model.asset : undefined;
+  const entity = model.state === 'loaded' ? model.rootEntity : undefined;
+  const animator = useAnimator(asset);
+  const tail = useMemo(() => {
+    if (!asset) return undefined;
+    const joints = ['tailjoint0', 'tailjoint1', 'tailjoint2', 'tailjoint3', 'tailTip'].map(name => asset.getFirstEntityByName(name));
+    const parent = asset.getFirstEntityByName('spine');
+    return joints.every(joint => joint !== undefined) && parent ? { joints: joints.map(joint => joint!), parent } : undefined;
+  }, [asset]);
+  const eatingProps = useMemo(() => {
+    if (!asset) return [];
+    const names = ['Bowl base', 'Bowl rim', 'Food', ...Array.from({ length: 14 }, (_, i) =>
+      `Bowl kibble${i ? `.${String(i).padStart(3, '0')}` : ''}`),
+      ...Array.from({ length: 8 }, (_, i) => `Spilled kibble ${i + 1}`)];
+    return names.flatMap(name => {
+      const prop = asset.getFirstEntityByName(`${name} Game prop`);
+      return prop ? [{ entity: prop, transform: transformManager.getTransform(prop) }] : [];
+    });
+  }, [asset, transformManager]);
+  const callbacks = useRef({ onPosition, onAnimationComplete, onStepComplete, onContactPosition, onReady });
+  useEffect(() => { callbacks.current = { onPosition, onAnimationComplete, onStepComplete, onContactPosition, onReady }; }, [onPosition, onAnimationComplete, onStepComplete, onContactPosition, onReady]);
+  const receive = useCallback((kind: 'position' | 'complete' | 'step' | 'ready', data: number[] | number) => {
+    if (kind === 'position' && Array.isArray(data)) {
+      callbacks.current.onPosition?.({ x: data[0], y: data[1] });
+      callbacks.current.onContactPosition?.([data[2], data[3], data[4]]);
+    }
+    else if (kind === 'step')
+      callbacks.current.onStepComplete?.(data as number);
+    else if (kind === 'complete')
+      callbacks.current.onAnimationComplete?.();
+    else if (kind === 'ready')
+      callbacks.current.onReady?.();
+  }, []);
+  // This registers a deferred RN callback; createRunOnJS never executes it during render.
+  // eslint-disable-next-line react-hooks/refs
+  const notify = useMemo(() => Worklets.createRunOnJS(receive), [receive]);
+  const segments = useMemo(() => (playback.kind === 'scenario' ? playback.steps : [playback.segment]).map(segment => {
+    const meta = CLIPS[segment.assetKey] ?? CLIPS.idle;
+    return { name: segment.assetKey.startsWith('walk') ? 'walk' : segment.assetKey,
+      duration: segment.model ? segment.model.duration / segment.model.rate : meta[0] / meta[1], reverse: segment.reverse ?? false,
+      loop: segment.loop ?? loop ?? false };
+  }), [loop, playback]);
+  const command = useSharedValue({ id: 0, segments, travel, world, active, reduceMotion });
+  const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
+    position: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1,
+    tailContact: { angle: 0, axis: [0, 1, 0], blocked: false } as TailContact });
+  const requestId = useRef(0);
+  useEffect(() => {
+    command.value = { id: ++requestId.current, segments, travel, world, active: command.value.active, reduceMotion: command.value.reduceMotion };
+  }, [activityKey, command, segments, travel, world]);
+  useEffect(() => { command.value = { ...command.value, active, reduceMotion }; }, [active, reduceMotion, command]);
+  const clips = useMemo(() => {
+    if (!animator)
+      return {};
+    const result: Record<string, {
+      index: number;
+      duration: number;
+    }> = {};
+    for (let i = 0; i < animator.getAnimationCount(); i++)
+      result[animator.getAnimationName(i)] = { index: i, duration: animator.getAnimationDuration(i) };
+    return result;
+  }, [animator]);
+  const render = useCallback(({ timeSinceLastFrame }: {
+    timeSinceLastFrame: number;
+  }) => {
+    'worklet';
+    if (!entity || !animator)
+      return;
+    const request = command.value;
+    if (!request.active && state.value.ready)
+      return;
+    const frameState = { ...state.value };
+    if (frameState.id !== request.id) {
+      frameState.id = request.id;
+      frameState.elapsed = 0;
+      frameState.index = 0;
+      frameState.complete = false;
+      if (request.travel?.path.length)
+        frameState.position = request.travel.path[0];
+      else if (request.world)
+        frameState.position = request.world.home;
+    }
+    const deltaSeconds = request.active ? Math.min(1 / 15, Math.max(0, timeSinceLastFrame)) : 0;
+    frameState.elapsed += deltaSeconds;
+    let segment = request.segments[frameState.index];
+    if (!segment)
+      return;
+    if (!segment.loop && !frameState.complete && frameState.elapsed >= (request.reduceMotion ? .6 : segment.duration)) {
+      notify('step', frameState.index);
+      if (frameState.index < request.segments.length - 1) {
+        frameState.elapsed -= request.reduceMotion ? .6 : segment.duration;
+        frameState.index++;
+        segment = request.segments[frameState.index];
+      }
+      else {
+        frameState.complete = true;
+        notify('complete', 0);
+      }
+    }
+    const scale = request.world?.catScale ?? 1;
+    const previousPosition = frameState.position;
+    const journey = request.travel;
+    let walking = false;
+    if (journey?.path.length) {
+      const path = journey.path;
+      if (journey.jump) {
+        const t = Math.max(0, Math.min(1, (frameState.elapsed / journey.duration - .20) / .50));
+        const first = path[0], last = path[path.length - 1];
+        frameState.position = [first[0] + (last[0] - first[0]) * t, first[1] + (last[1] - first[1]) * t + Math.sin(Math.PI * t) * .35 * scale, first[2] + (last[2] - first[2]) * t];
+      }
+      else if (path.length > 1) {
+        walking = frameState.elapsed < journey.duration;
+        let remaining = Math.min(journey.distance, frameState.elapsed / journey.duration * journey.distance);
+        frameState.position = path[path.length - 1];
+        for (let i = 1; i < path.length; i++) {
+          const a = path[i - 1], b = path[i], length = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+          if (remaining <= length && length > 0) {
+            const t = remaining / length;
+            frameState.position = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+            break;
+          }
+          remaining -= length;
+        }
+      }
+      else
+        frameState.position = path[0];
+    }
+    const moved = Math.hypot(frameState.position[0] - previousPosition[0], frameState.position[2] - previousPosition[2]);
+    frameState.distance += moved;
+    const desiredHeading = moved > .0001 ? Math.atan2(frameState.position[0] - previousPosition[0], frameState.position[2] - previousPosition[2]) : journey?.heading ?? frameState.heading;
+    const turn = Math.atan2(Math.sin(desiredHeading - frameState.heading), Math.cos(desiredHeading - frameState.heading));
+    frameState.heading += turn * Math.min(1, deltaSeconds * 12);
+    const clip = clips[walking ? 'walk' : segment.name] ?? clips.idle;
+    if (!clip)
+      return;
+    let time = walking ? (frameState.distance / (.8 * scale) % 1) * clip.duration
+      : Math.min(segment.duration, segment.loop ? frameState.elapsed % segment.duration : frameState.elapsed) / segment.duration * clip.duration;
+    if (segment.reverse)
+      time = clip.duration - time;
+    if (request.reduceMotion)
+      time = clip.duration * .25;
+    if (clip.index !== frameState.clip) {
+      frameState.previous = frameState.clip;
+      frameState.previousTime = frameState.clipTime;
+      frameState.clip = clip.index;
+      frameState.blend = 0;
+    }
+    frameState.clipTime = time;
+    frameState.blend = Math.min(1, frameState.blend + deltaSeconds / .12);
+    animator.applyAnimation(clip.index, time);
+    if (frameState.previous >= 0 && frameState.blend < 1)
+      animator.applyCrossFade(frameState.previous, frameState.previousTime, frameState.blend);
+    const transform = transformManager.createIdentityMatrix().scaling([scale, scale, scale]).rotate(frameState.heading, [0, 1, 0]).translate(frameState.position);
+    transformManager.setTransform(entity, transform);
+    if (tail && request.world) {
+      const points = tail.joints.map(joint => transformManager.getWorldTransform(joint).translation);
+      frameState.tailContact = resolveTailContact(points, request.world, frameState.tailContact, deltaSeconds);
+      if (frameState.tailContact.angle > .001) {
+        const joint = tail.joints[0];
+        const local = transformManager.getTransform(joint);
+        const origin = local.translation;
+        const axis = tailParentAxis(frameState.tailContact.axis, transformManager.getWorldTransform(tail.parent).data);
+        transformManager.setTransform(joint, local.translate(origin.map(v => -v) as Vec3)
+          .rotate(frameState.tailContact.angle, axis).translate(origin));
+      }
+    }
+    for (const prop of eatingProps) transformManager.setTransform(prop.entity,
+      request.travel?.hideEatingProps ? transformManager.createIdentityMatrix().scaling([0, 0, 0]) : prop.transform);
+    animator.updateBoneMatrices();
+    frameState.report += deltaSeconds;
+    if (request.world && frameState.report >= .05) {
+      frameState.report = 0;
+      const point = catScreenPoint(frameState.position, request.world);
+      notify('position', [point.x, point.y, ...frameState.position]);
+    }
+    if (positionValue)
+      positionValue.value = frameState.position;
+    if (!frameState.ready) {
+      frameState.ready = true;
+      notify('ready', 0);
+    }
+    state.value = frameState;
+  }, [animator, clips, command, eatingProps, entity, notify, positionValue, state, tail, transformManager]);
+  RenderCallbackContext.useRenderCallback(render, [render]);
+  return null;
+}

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/immutability -- expo-video players expose mutable native playback properties; changes below run in effects and events. */
-import { useSpriteActivity } from "@/pet-display/media/sprite/use-sprite-clock";
+import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { DOG_VIDEO_SOURCES } from "@/pet-display/registry/dog-video-registry";
 import { GameColors } from "@/constants/game";
 import {
@@ -59,7 +59,7 @@ export function PetVideoRenderer({
   onPress,
 }: PetVideoRendererProps) {
   const players = usePetVideoPlayers();
-  const { active, reduceMotion } = useSpriteActivity();
+  const { active, reduceMotion } = useAnimationActivity();
   const loaded = useRef(new Set<PetVideoAssetKey>());
   const activityRef = useRef({ active, reduceMotion });
   useEffect(() => { activityRef.current = { active, reduceMotion }; }, [active, reduceMotion]);

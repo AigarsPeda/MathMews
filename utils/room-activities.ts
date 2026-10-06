@@ -1,3 +1,7 @@
+import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { CAT_ANIMATION_CLIPS } from "@/constants/cat-animation-clips";
+import type { NativeRoomWorld, NativeTravel } from "@/utils/native-room-world";
+import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
 import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
 import { getCatWalkMotion, SOFA_JUMP_DURATION_MS, type CatRoomAnimation } from "@/constants/cat-room-motion";
@@ -5,8 +9,9 @@ import type { PetAnimationState, PlacedDecoration, PlacedToy, RoomItemOffset } f
 
 export const ROOM_IDLE_DELAY_MS = 30_000;
 export type RoomPoint = { x: number; y: number };
-export type RoomActivityKind = "sofaSit" | "sofaSleep" | "toyPlay" | "mouseChase";
+export type RoomActivityKind = "sofaSit" | "sofaSleep" | "toyPlay" | "mouseChase" | "doorTravel" | "bowlEat";
 export type RoomActivityStep = {
+  native?: NativeTravel;
   position: RoomPoint;
   mood: PetAnimationState;
   animation?: CatRoomAnimation;
@@ -14,9 +19,9 @@ export type RoomActivityStep = {
   reverse?: boolean;
   durationMs: number;
   moveMs?: number;
-  scale?: number;
   hold?: boolean;
   sofaApproach?: RoomPoint;
+  bowlApproach?: boolean;
   objectPosition?: RoomPoint;
   objectRotation?: number;
   objectMoveMs?: number;
@@ -31,6 +36,7 @@ export type RoomActivityPlan = {
   steps: RoomActivityStep[];
 };
 export type RoomActivityOptions = {
+  nativeWorld?: NativeRoomWorld;
   width: number;
   height: number;
   petSize: number;
@@ -65,9 +71,9 @@ export function buildRoomReturn(room: RoomActivityOptions, plan: RoomActivityPla
   const steps: RoomActivityStep[] = [];
   let floorStart = position;
   const approach = step.sofaApproach ?? plan.sofaApproach;
-  if (approach && ((step.scale ?? 1) < 1 || step.sofaApproach)) {
+  if (step.sofaApproach && approach) {
     if (step.animation === "curlUp" || step.animation === "curlSleep") {
-      steps.push({ position, mood: "lyingDown", animation: "curlUp", reverse: true, scale: step.scale, sofaApproach: approach, durationMs: 1000 });
+      steps.push({ position, mood: "lyingDown", animation: "curlUp", reverse: true, sofaApproach: approach, durationMs: 1000 });
     }
     floorStart = approach;
     steps.push({ position: floorStart, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, sofaApproach: approach, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
@@ -87,7 +93,7 @@ export function routeToSofa(
   const approach = next.sofaApproach!;
   const step = current?.plan.steps[current.stepIndex];
   const sameSofa = current?.plan.targetInstanceId === next.targetInstanceId;
-  const onSofa = Boolean(step?.sofaApproach && (step.scale ?? 1) < 1);
+  const onSofa = Boolean(step?.sofaApproach && step.animation !== "jumpOff");
   const curled = step?.animation === "curlUp" || step?.animation === "curlSleep";
   if (sameSofa && onSofa) {
     const distance = Math.hypot(position.x - seatStep.position.x, position.y - seatStep.position.y);
@@ -114,31 +120,52 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
   if (room.width <= room.petSize || room.height <= room.petSize) return null;
   const home = roomOffsetToPoint(room.homeOffset, room.width, room.height, room.petSize);
   const candidates: RoomActivityPlan[] = [];
+  if (command === "doorTravel") {
+    const door = room.decorations.find(item => item.instanceId === preferredInstanceId && isRoomDoor(item.decorationId) && isHomeRoomId(item.doorDestination));
+    if (!door) return null;
+    const size = getPlacedDecorationDragSize(door) * room.sizeScale;
+    const center = roomOffsetToPoint(door.offset, room.width, room.height, size);
+    const threshold = clampCatPoint({ x: center.x, y: center.y + size * 0.42 - room.petSize * 0.3 }, room);
+    return { kind: "doorTravel", targetInstanceId: door.instanceId, steps: [walkTo(home, threshold, room.petSize)] };
+  }
+  if (command === "bowlEat") {
+    const bowl = room.decorations.find(item => isFoodBowlDecorationId(item.decorationId)
+      && (preferredInstanceId === undefined || item.instanceId === preferredInstanceId));
+    if (!bowl) return null;
+    const size = getPlacedDecorationDragSize(bowl) * room.sizeScale;
+    const center = roomOffsetToPoint(bowl.offset, room.width, room.height, size);
+    const position = clampCatPoint({ x: center.x, y: center.y - room.petSize * 0.3 }, room);
+    const [frames, fps] = CAT_ANIMATION_CLIPS.eating;
+    return { kind: "bowlEat", targetInstanceId: bowl.instanceId, steps: [
+      { ...walkTo(home, position, room.petSize), bowlApproach: true },
+      { position, mood: "eating", animation: "eating", durationMs: frames / fps * 1000 },
+      walkTo(position, home, room.petSize),
+    ] };
+  }
   for (const sofa of room.decorations) {
     const sprite = getPlacedDecorationSpriteId(sofa);
     if (sprite !== "sofaA" && sprite !== "sofaB") continue;
     const size = getPlacedDecorationDragSize(sofa) * room.sizeScale;
     const center = roomOffsetToPoint(sofa.offset, room.width, room.height, size);
-    const scale = Math.min(0.95, Math.max(0.55, size * 0.75 / room.petSize));
     const seatSide = (sprite === "sofaA" ? -1 : 1) * (sofa.wallFlipped ? -1 : 1);
-    const seat = clampCatPoint({ x: center.x + seatSide * size * 0.13, y: center.y - size * 0.02 - room.petSize * 0.31 * scale }, room);
+    const seat = clampCatPoint({ x: center.x + seatSide * size * 0.13, y: center.y - size * 0.02 - room.petSize * 0.31 }, room);
     const approach = clampCatPoint({ x: seat.x, y: center.y + size * 0.4 - room.petSize * 0.31 }, room);
     const arrive: RoomActivityStep[] = [
       walkTo(home, approach, room.petSize),
-      { position: seat, mood: "idle", animation: "jumpOn", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS, scale, sofaApproach: approach },
+      { position: seat, mood: "idle", animation: "jumpOn", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS, sofaApproach: approach },
     ];
     const leave: RoomActivityStep[] = [
       { position: approach, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS, sofaApproach: approach },
       walkTo(approach, home, room.petSize),
     ];
     if (!room.asleep || command === "sofaSit") candidates.push({ kind: "sofaSit", targetInstanceId: sofa.instanceId, sofaApproach: approach, steps: [
-      ...arrive, { position: seat, mood: "idle", durationMs: 12_000, scale, sofaApproach: approach, hold: Boolean(command) }, ...leave,
+      ...arrive, { position: seat, mood: "idle", animation: "sit", durationMs: 12_000, sofaApproach: approach, hold: Boolean(command) }, ...leave,
     ] });
     candidates.push({ kind: "sofaSleep", targetInstanceId: sofa.instanceId, sofaApproach: approach, steps: [
       ...arrive,
-      { position: seat, mood: "lyingDown", animation: "curlUp", durationMs: 1000, scale, sofaApproach: approach },
-      { position: seat, mood: "sleeping", animation: "curlSleep", durationMs: 25_000, scale, sofaApproach: approach, hold: Boolean(command) },
-      { position: seat, mood: "lyingDown", animation: "curlUp", reverse: true, durationMs: 1000, scale, sofaApproach: approach },
+      { position: seat, mood: "lyingDown", animation: "curlUp", durationMs: 1000, sofaApproach: approach },
+      { position: seat, mood: "sleeping", animation: "curlSleep", durationMs: 25_000, sofaApproach: approach, hold: Boolean(command) },
+      { position: seat, mood: "lyingDown", animation: "curlUp", reverse: true, durationMs: 1000, sofaApproach: approach },
       ...leave,
     ] });
   }
@@ -172,8 +199,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
       const center = roomOffsetToPoint(decoration.offset, room.width, room.height, getPlacedDecorationDragSize(decoration) * room.sizeScale);
       addPlay(decoration.instanceId, "decoration", center, true, true);
     }
-    const mouse = room.toys.find(toy => toy.toyId === "mouse");
-    if (mouse || room.ownedToyIds.includes("mouse")) {
+    for (const mouse of room.toys.filter(toy => toy.toyId === "mouse")) {
       const start = mouse ? roomOffsetToPoint(mouse.offset, room.width, room.height, getPlacedToyDisplaySize(mouse) * room.sizeScale) : { x: 0, y: room.height * 0.18 };
       const steps: RoomActivityStep[] = [];
       for (const direction of [-1, 1, -1, 1]) {

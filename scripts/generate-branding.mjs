@@ -1,4 +1,4 @@
-/** Generate app branding from the original Blender cat and miniature models. */
+/** Generate app branding from the current native GLB portraits. */
 import fs from 'node:fs/promises';
 import { Buffer } from 'node:buffer';
 import path from 'node:path';
@@ -16,15 +16,13 @@ async function catIcon(file,size,transparent=false,monochrome=false){
  await sharp({create:{width:size,height:size,channels:4,background}}).composite([{input:png,left:Math.round((size-inner)/2),top:Math.round((size-inner)/2)}]).png().toFile(path.join(out,file));
 }
 await catIcon('icon.png',1024);
-await catIcon('favicon.png',48);
 await catIcon('android-icon-foreground.png',1024,true);
 await catIcon('android-icon-monochrome.png',1024,true,true);
-for(const id of ['store','stats'])await sharp(path.join(root,`assets/3d/${id}-icon.png`)).trim().resize(256,256,{fit:'contain',background:'#00000000'}).png().toFile(path.join(out,`${id}-icon.png`));
 await sharp({create:{width:1,height:1,channels:4,background:'#FFF5EB'}}).png().toFile(path.join(out,'splash-background.png'));
 // Native launch branding is available before JavaScript starts. Its transparent
 // margins match the cream background rather than introducing letterbox bars.
 // A 240 pt square in both the native launch screen and React Native. Its cat
-// occupies the same 192 pt window and starts on the idle sheet's first cell.
+// occupies the same 192 pt window as the bundled startup portrait.
 const splashCat=await sharp(path.join(root,'assets/3d/cat-splash.png')).resize(512,512).png().toBuffer();
 const title=Buffer.from('<svg width="640" height="112"><text x="320" y="86" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="800" font-size="85.333" fill="#293334">Math Mews</text></svg>');
 await sharp({create:{width:640,height:640,channels:4,background:'#00000000'}})

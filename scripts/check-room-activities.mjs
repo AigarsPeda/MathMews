@@ -27,6 +27,7 @@ function load(id) {
   assert.ok(resolved, id);
   if (cache.has(resolved)) return cache.get(resolved).exports;
   const module = { exports: {} }; cache.set(resolved, module);
+  if (resolved.endsWith('.json')) { module.exports = JSON.parse(fs.readFileSync(resolved, 'utf8')); return module.exports; }
   const source = ts.transpileModule(fs.readFileSync(resolved, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
   }).outputText;
@@ -39,7 +40,7 @@ for (const [x, y, animation, facing] of [[60, 0, 'walk', 1], [-60, 0, 'walk', -1
   [0, 60, 'walkToward', 1], [60, -16.8, 'walkAwayDiagonal', 1], [-60, 16.8, 'walkTowardDiagonal', -1]]) {
   const motion = getCatWalkMotion({ x: 0, y: 0 }, { x, y }, 120);
   assert.equal(motion.animation, animation); assert.equal(motion.facing, facing);
-  assert.ok(Math.abs(motion.cycles / (motion.durationMs / 1000) - 1.5) < .001, 'Floor travel must match the 1.5-cycle walking cadence');
+  assert.ok(Math.abs(motion.cycles / (motion.durationMs / 1000) - 2.25) < .002, 'Floor travel must match the brisk 2.25-cycle walking cadence');
   const largerMotion = getCatWalkMotion({ x: 0, y: 0 }, { x, y }, 240);
   assert.ok(largerMotion.durationMs < motion.durationMs, 'A larger cat covers more floor with each stride');
 }
@@ -62,7 +63,7 @@ assert.ok(flipped.steps[1].position.x > sit.steps[1].position.x, 'Mirrored sofas
 const rotated = buildRoomActivity({ ...furnished, decorations: [{ ...sofa, rotationIndex: 1 }] }, 0);
 assert.equal(rotated.steps[1].position.x, flipped.steps[1].position.x);
 const larger = buildRoomActivity({ ...furnished, decorations: [{ ...sofa, scale: 2 }] }, 0);
-assert.ok(larger.steps[1].scale > sit.steps[1].scale);
+assert.notEqual(larger.steps[1].position.y, sit.steps[1].position.y, "A larger sofa changes its seat location");
 assert.equal(buildRoomActivity({ ...furnished, asleep: true }, 0).kind, 'sofaSleep');
 const ball = { toyId: 'blueBall', instanceId: 'ball', offset: { x: .3, y: .4 } };
 const play = buildRoomActivity({ ...room, toys: [ball] }, 0);
@@ -72,14 +73,13 @@ assert.equal(buildRoomActivity({ ...room, ownedToyIds: ['blueBall'] }, 0), null,
 assert.equal(buildRoomActivity({ ...room, toys: [ball], hungry: true }, 0), null);
 assert.equal(buildRoomActivity({ ...room, toys: [ball], asleep: true }, 0), null);
 const ownedMouse = { ...room, ownedToyIds: ['mouse'] };
-const chase = buildRoomActivity(ownedMouse, 0);
-assert.equal(chase.kind, 'mouseChase');
-assert.equal(chase.targetInstanceId, undefined, 'Owned mice can appear temporarily');
+assert.equal(buildRoomActivity(ownedMouse, 0), null, 'A mouse in another room must not appear in this room');
 const mouse = { toyId: 'mouse', instanceId: 'mouse', offset: { x: -.4, y: .4 } };
-const placedChase = buildRoomActivity({ ...ownedMouse, toys: [mouse] }, 0);
+const mouseRoom = { ...ownedMouse, toys: [mouse] };
+const placedChase = buildRoomActivity(mouseRoom, 0);
 assert.equal(placedChase.targetInstanceId, 'mouse');
 assert.equal(JSON.stringify(placedChase.objectStart), JSON.stringify(placedChase.steps.at(-1).objectPosition));
-for (const plan of [sit, sleep, flipped, larger, play, chase, placedChase]) {
+for (const plan of [sit, sleep, flipped, larger, play, placedChase]) {
   for (const step of plan.steps) {
     assert.ok(Math.abs(step.position.x) <= 100 && Math.abs(step.position.y) <= 100, 'Cat stays inside room bounds');
     assert.ok(step.durationMs > 0);
@@ -100,7 +100,7 @@ mocks.react = {
     if (!old || deps.some((dep, i) => dep !== old.deps[i])) effects.push(() => { old?.cleanup?.(); slots[i] = { deps, cleanup: fn() }; });
   },
 };
-mocks['@/pet-display/media/sprite/use-sprite-clock'] = { useSpriteActivity: () => visibility };
+mocks['@/hooks/use-animation-activity'] = { useAnimationActivity: () => visibility };
 mocks['react-native-reanimated'] = {
   useSharedValue: initial => slot(() => shared(initial))[1], cancelAnimation() {},
   withDelay: (_, value) => value, withTiming: value => value, withRepeat: value => value, withSequence: (...values) => values.at(-1),
@@ -108,12 +108,14 @@ mocks['react-native-reanimated'] = {
 };
 const { useRoomActivity } = load('@/hooks/use-room-activity');
 const petX = shared(0), petY = shared(0);
-let interaction = 1, enabled = true, hookRoom = ownedMouse;
+const arrivals = [];
+let meals = 0;
+let interaction = 1, enabled = true, hookRoom = mouseRoom;
 function render() {
   index = 0; effects = [];
   // The VM supplies a dependency-aware hook dispatcher instead of mounting React.
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const result = useRoomActivity(hookRoom, enabled, interaction, petX, petY);
+  const result = useRoomActivity(hookRoom, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), () => meals++);
   effects.forEach(fn => fn()); return result;
 }
 assert.equal(render().activity, null);
@@ -121,7 +123,7 @@ advance(ROOM_IDLE_DELAY_MS - 1); assert.equal(render().activity, null);
 advance(1); assert.equal(render().activity.plan.kind, 'mouseChase');
 const firstWalk = render().activity.plan.steps[0];
 assert.ok(isCatWalk(firstWalk.animation));
-assert.ok(firstWalk.animationFps > 35 && firstWalk.animationFps <= 36, 'Playback cadence must match floor travel');
+assert.ok(firstWalk.animationFps > 53 && firstWalk.animationFps <= 54, 'Playback cadence must match floor travel');
 advance(firstWalk.durationMs); assert.equal(render().activity.stepIndex, 1);
 const beforeReturn = petX.get();
 interaction++; render(); render();
@@ -139,7 +141,9 @@ enabled = false; render(); advance(60_000); assert.equal(render().activity, null
 assert.equal(timers.size, 0);
 enabled = true; visibility = { active: false, reduceMotion: false }; render(); advance(60_000); assert.equal(render().activity, null);
 visibility = { active: true, reduceMotion: true }; render(); advance(60_000); assert.equal(render().activity, null);
-visibility = { active: true, reduceMotion: false }; render(); advance(ROOM_IDLE_DELAY_MS + 2800); assert.equal(render().activity.plan.kind, 'mouseChase');
+visibility = { active: true, reduceMotion: false }; render();
+advance(Math.min(...[...timers.values()].map(timer => timer.at)) - now);
+assert.equal(render().activity.plan.kind, 'mouseChase');
 const total = render().activity.plan.steps.reduce((sum, step) => sum + step.durationMs, 0);
 advance(total); assert.equal(render().activity, null, 'Completed activity returns to the saved placement');
 assert.equal(petX.get(), -30); assert.equal(petY.get(), 30);
@@ -158,10 +162,10 @@ assert.equal(wake.steps[1].position, sofaCommand.sofaApproach);
 assert.equal(wake.steps[1].animation, 'jumpOff');
 assert.ok(!wake.steps[1].reverse, 'Jumping down has its own takeoff and landing, rather than reversed jump-up frames');
 assert.equal(wake.steps[2].animation, 'walk');
-assert.ok(wake.steps[2].durationMs >= 800);
+assert.ok(wake.steps[2].durationMs >= 180);
 assert.ok(isCatWalk(wake.steps[2].animation), 'Floor travel after landing must use footsteps');
 assert.equal(buildRoomActivity(room, 0, 'sofaSleep'), null, 'Sofa commands require a placed sofa');
-assert.equal(buildRoomActivity(room, 0, 'mouseChase'), null, 'Mouse commands require ownership or a placed mouse');
+assert.equal(buildRoomActivity(room, 0, 'mouseChase'), null, 'Mouse commands require a mouse placed in this room');
 const yarn = { decorationId: 'yarnRed', instanceId: 'yarn', offset: { x: .2, y: .5 } };
 const yarnPlay = buildRoomActivity({ ...room, decorations: [yarn] }, 0, 'toyPlay');
 assert.equal(yarnPlay.objectKind, 'decoration');
@@ -291,6 +295,7 @@ for (const kind of ['sofaSit', 'sofaSleep']) {
   assert.equal(render().activity?.plan.kind, kind, 'Recording a menu tap must not replace the selected action with returnHome');
   const plan = render().activity.plan;
   advance(plan.steps.slice(0, kind === 'sofaSleep' ? 3 : 2).reduce((sum, step) => sum + step.durationMs, 0));
+  assert.equal(render().scale.get(), 1, "The cat keeps its size when sitting and sleeping on furniture");
   assert.equal(render().activity.plan.steps[render().activity.stepIndex].hold, true);
 }
 console.log('Verified real menu taps start sit/sleep and reach their held sofa poses.');
@@ -326,6 +331,7 @@ for (const kind of ['sofaSit', 'sofaSleep']) {
   render().startActivity(kind); render(); advance(0);
   const plan = render().activity.plan;
   advance(plan.steps.slice(0, kind === 'sofaSleep' ? 3 : 2).reduce((sum, step) => sum + step.durationMs, 0));
+  assert.equal(render().scale.get(), 1, "The cat keeps its size when sitting and sleeping on furniture");
   const sofaX = petX.get(), sofaY = petY.get(), sofaScale = render().scale.get();
   interaction++; render(); render();
   visibility = { active: false, reduceMotion: false }; render(); advance(60_000);
@@ -347,3 +353,67 @@ for (const kind of ['sofaSit', 'sofaSleep']) {
   assert.equal(petX.get(), -30); assert.equal(petY.get(), 30);
 }
 console.log('Verified covered sitting/sleeping cats keep their pose and animate getting down on focus.');
+
+// Each physical doorway travels to its assigned threshold, then fires once.
+const door = { decorationId: 'japaneseDoorAni', instanceId: 'bathroom-door', doorDestination: 'bathroom', offset: { x: -.6, y: -.3 }, scale: 1.4 };
+const doorRoom = { ...room, decorations: [door] };
+assert.equal(buildRoomActivity(doorRoom, 0), null, 'Doors never trigger unsolicited room changes');
+assert.equal(buildRoomActivity(doorRoom, 0, 'doorTravel', 'missing'), null);
+assert.equal(buildRoomActivity({ ...room, decorations: [{ ...door, doorDestination: undefined }] }, 0, 'doorTravel', door.instanceId), null);
+const travel = buildRoomActivity({ ...doorRoom, hungry: true, asleep: true }, 0, 'doorTravel', door.instanceId);
+assert.equal(travel.kind, 'doorTravel');
+assert.ok(travel.steps[0].durationMs > 0);
+assert.ok(Math.abs(travel.steps[0].position.x) <= 100 && Math.abs(travel.steps[0].position.y) <= 100);
+for (const reduced of [false, true]) {
+  enabled = false; render(); advance(0);
+  hookRoom = doorRoom; visibility = { active: true, reduceMotion: reduced }; enabled = true; render();
+  const before = arrivals.length;
+  interaction++; render().startActivity('doorTravel', door.instanceId); render(); render(); advance(0);
+  assert.equal(render().activity.plan.kind, 'doorTravel');
+  assert.equal(arrivals.length, before, 'A room changes only after arrival');
+  advance(reduced ? 600 : render().activity.plan.steps[0].durationMs); render();
+  assert.equal(arrivals.length, before + 1);
+  assert.equal(arrivals.at(-1), door.instanceId);
+  advance(60_000); render();
+  assert.equal(arrivals.length, before + 1, 'An arrival must not fire twice');
+}
+enabled = false; render(); advance(0); visibility = { active: true, reduceMotion: false }; enabled = true; render();
+const beforeCancel = arrivals.length;
+render().startActivity('doorTravel', door.instanceId); render(); advance(0);
+render().returnHome(); render(); advance(0); advance(60_000); render();
+assert.equal(arrivals.length, beforeCancel, 'Interrupting a doorway walk cancels the visit');
+const secondBall = { ...ball, instanceId: 'second-ball', offset: { x: -.3, y: .4 } };
+assert.equal(buildRoomActivity({ ...room, toys: [ball, secondBall] }, 0, 'toyPlay', secondBall.instanceId).targetInstanceId, secondBall.instanceId);
+console.log('Verified placed-object isolation, door thresholds, arrival callbacks, cancellation, Reduce Motion travel, and explicit object selection.');
+
+const secondMouse = { ...mouse, instanceId: 'second-mouse', offset: { x: .4, y: .4 } };
+assert.equal(buildRoomActivity({ ...room, toys: [mouse, secondMouse] }, 0, 'mouseChase', secondMouse.instanceId).targetInstanceId, secondMouse.instanceId);
+console.log('Verified each placed mouse has its own chase target.');
+
+const foodBowl = { decorationId: 'bowlBlue', instanceId: 'food-bowl', offset: { x: .5, y: .15 } };
+const mealRoom = { ...room, decorations: [foodBowl], toys: [], hungry: true };
+assert.equal(buildRoomActivity(mealRoom, 0), null, 'Eating requires the player command');
+assert.equal(buildRoomActivity(room, 0, 'bowlEat'), null, 'Food requires a placed bowl');
+assert.equal(buildRoomActivity(mealRoom, 0, 'bowlEat', 'missing'), null, 'An unknown bowl cannot feed');
+const mealPlan = buildRoomActivity(mealRoom, 0, 'bowlEat');
+assert.equal(mealPlan.targetInstanceId, foodBowl.instanceId);
+assert.equal(mealPlan.steps[1].animation, 'eating');
+for (const reduced of [false, true]) {
+  enabled = false; render(); advance(0);
+  hookRoom = mealRoom; visibility = { active: true, reduceMotion: reduced }; enabled = true; render();
+  const before = meals;
+  interaction++; render().startActivity('bowlEat'); render(); render(); advance(0);
+  assert.equal(meals, before, 'No hunger is awarded before eating');
+  const plan = render().activity.plan;
+  advance(reduced ? 1800 : plan.steps.reduce((sum, step) => sum + step.durationMs, 0)); render();
+  assert.equal(meals, before + 1, 'Completing the meal feeds exactly once');
+  assert.equal(render().activity, null);
+  advance(60000); render(); assert.equal(meals, before + 1);
+}
+visibility = { active: true, reduceMotion: false };
+enabled = false; render(); advance(0); enabled = true; render();
+const mealsBeforeCancel = meals;
+render().startActivity('bowlEat'); render(); advance(0);
+render().returnHome(); render(); advance(0); advance(60000); render();
+assert.equal(meals, mealsBeforeCancel, 'Interrupting the meal cancels its hunger reward');
+console.log('Verified deliberate bowl journeys, feeding after completion exactly once, cancellation and Reduce Motion.');

@@ -1,4 +1,4 @@
-import { FEED_COST, FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
+import { FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
 import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES } from "@/constants/puzzles";
 import type { Progress, PuzzleProgress } from "@/types/game";
 import type { Puzzle } from "@/types/puzzle";
@@ -51,9 +51,7 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
 
 export function applyFeed(save: GameSave, now = Date.now()): GameSave | null {
   if (!canFeedForEffect(save.pet.stats, save.pet.isAsleep === true)) return null;
-  const funded = withCoinDelta(save, -FEED_COST, { kind: "pet_feed" }, now);
-  if (!funded) return null;
-  return { ...funded, pet: { ...withPetCareUpdate(save.pet, stats => ({ ...stats,
+  return { ...save, pet: { ...withPetCareUpdate(save.pet, stats => ({ ...stats,
     hunger: boostStat(stats.hunger, FEED_HUNGER_RESTORE), happiness: boostStat(stats.happiness, FEED_HAPPINESS_BOOST) }), now),
     isAsleep: false, lastInteractionAt: now } };
 }

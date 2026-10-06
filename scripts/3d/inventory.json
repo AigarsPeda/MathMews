@@ -550,14 +550,16 @@
     {
       "id": "japaneseDoorAni",
       "kind": "decoration",
+      "thumbnailId": "japaneseDoorClosed",
       "displaySize": 64,
-      "animated": true
+      "animated": false
     },
     {
       "id": "japaneseSlidingDoorAni",
       "kind": "decoration",
+      "thumbnailId": "japaneseSlidingDoorClosed",
       "displaySize": 56,
-      "animated": true
+      "animated": false
     },
     {
       "id": "livingAirCon",

@@ -1,3 +1,5 @@
+import type { HomeRoomId } from "@/constants/home-rooms";
+import { addRoomDoor, setDoorDestination, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
 import { applyPuzzleAnswer, applyFeed } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
@@ -24,6 +26,7 @@ import {
   getDecorationRotationCount,
   getNextRotationIndex,
   getPlacedDecorationScale,
+  getPlacedDecorationWallFlipped,
   resolveDecorationPlacement,
   scaleDecorationBy,
 } from "@/constants/decoration-variants";
@@ -144,6 +147,9 @@ type GameContextValue = {
   purchaseVisualHelp: (puzzleId: string, cost: number) => boolean;
   purchaseRoom: (roomId: CatRoomId) => RoomPurchaseResult;
   equipRoom: (roomId: CatRoomId) => boolean;
+  visitHomeRoom: (roomId: HomeRoomId) => void;
+  placeRoomDoor: (roomId: HomeRoomId) => void;
+  assignRoomDoor: (instanceId: string, roomId: HomeRoomId) => void;
   purchaseBed: (bedId: CatBedId) => BedPurchaseResult;
   equipBed: (bedId: CatBedId) => boolean;
   removeBedFromRoom: () => boolean;
@@ -444,6 +450,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
     return true;
   }, [setSave]);
+
+  const visitHomeRoom = useCallback((roomId: HomeRoomId) => {
+    setPet(current => switchHomeRoom(current, roomId));
+  }, [setPet]);
+  const placeRoomDoor = useCallback((roomId: HomeRoomId) => {
+    setPet(current => addRoomDoor(current, roomId));
+  }, [setPet]);
+  const assignRoomDoor = useCallback((instanceId: string, roomId: HomeRoomId) => {
+    setPet(current => setDoorDestination(current, instanceId, roomId));
+  }, [setPet]);
 
   const purchaseRoom = useCallback((roomId: CatRoomId): RoomPurchaseResult => {
     const resolvedId = resolveCatRoomId(roomId);
@@ -889,7 +905,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         placedDecorations: updatePlacedDecorationWallFlipByInstance(
           current.pet.placedDecorations,
           instanceId,
-          !placed.wallFlipped,
+          !getPlacedDecorationWallFlipped(placed),
         ),
       },
     });
@@ -1193,6 +1209,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseVisualHelp,
       purchaseRoom,
       equipRoom,
+      visitHomeRoom,
+      placeRoomDoor,
+      assignRoomDoor,
       purchaseBed,
       equipBed,
       removeBedFromRoom,
@@ -1255,6 +1274,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseVisualHelp,
       purchaseRoom,
       equipRoom,
+      visitHomeRoom,
+      placeRoomDoor,
+      assignRoomDoor,
       purchaseBed,
       equipBed,
       removeBedFromRoom,

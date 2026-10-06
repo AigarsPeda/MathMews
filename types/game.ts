@@ -39,6 +39,8 @@ export type PlacedToy = {
 };
 
 export type PlacedDecoration = {
+  /** A doorway connects named spaces, independently of their background. */
+  doorDestination?: import("@/constants/home-rooms").HomeRoomId;
   decorationId: string;
   /** Unique id per placed instance (supports multiple of the same decoration). */
   instanceId: string;
@@ -60,6 +62,8 @@ export type RoomLayerItem =
   | { kind: "toy"; toyId: string; instanceId: string };
 
 export type PetProfile = {
+  homeRoomId?: import("@/constants/home-rooms").HomeRoomId;
+  homeRooms?: Partial<Record<import("@/constants/home-rooms").HomeRoomId, import("@/utils/home-rooms").HomeRoomState>>;
   roomLayouts?: Record<string, import("@/utils/room-layout").RoomLayout>;
   savedRoomLayouts?: Record<string, import("@/utils/room-layout").RoomLayout>;
   type: PetType;

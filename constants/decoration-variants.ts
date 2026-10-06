@@ -1,3 +1,4 @@
+import { isRoomDoor } from "@/constants/home-rooms";
 import {
   resolveCatDecorationId,
   getDecorationDisplaySize,
@@ -240,6 +241,7 @@ export function getPlacedDecorationWallFlipped(
     return (placed.rotationIndex ?? 0) % 2 === 1;
   }
 
+  if (isRoomDoor(decorationId)) return placed.wallFlipped ?? placed.offset.x < 0;
   return placed.wallFlipped === true;
 }
 

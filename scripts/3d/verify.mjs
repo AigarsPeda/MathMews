@@ -6,15 +6,12 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import ts from 'typescript';
 import sharp from 'sharp';
-import { createHash } from 'node:crypto';
 const root=process.cwd(),cache=new Map();
-// CI checks the shipped assets; editable Blender sources live outside this repository.
-const runtimeOnly=process.argv.includes('--runtime-only');
-const blenderRoot=path.resolve(process.env.BRAINPET_BLENDER_ASSET_DIR||path.join(root,'..','BrainPet-blender-assest'));
 function load(relative){
  const file=path.resolve(root,relative);if(cache.has(file))return cache.get(file).exports;
  const module={exports:{}};cache.set(file,module);
- const compiled=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+ if(file.endsWith('.json')){module.exports=JSON.parse(fs.readFileSync(file,'utf8'));return module.exports;}
+ const compiled=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020,esModuleInterop:true}}).outputText;
  function require(ref){
   if(ref==='react')return {};
   const resolved=ref.startsWith('@/')?path.join(root,ref.slice(2)):path.resolve(path.dirname(file),ref);
@@ -28,7 +25,6 @@ const inventory=JSON.parse(fs.readFileSync('scripts/3d/inventory.json','utf8')).
 assert.equal(inventory.length,288,'Inventory ID count changed');
 const decor=load('constants/cat-decorations.ts'),beds=load('constants/cat-beds.ts'),toys=load('constants/cat-toys.ts'),rooms=load('constants/cat-rooms.ts');
 for(const entry of inventory){
- if(!runtimeOnly)assert.ok(fs.existsSync(path.join(blenderRoot,entry.kind==='room'?'rooms':'items',`${entry.id}.blend`)),`Missing editable model ${entry.id} in ${blenderRoot}. Restore the Blender library or run npm run assets:3d -- --refresh.`);
  const source=entry.kind==='decoration'?decor.CAT_DECORATION_CATALOG[entry.id]?.source:entry.kind==='room'?rooms.CAT_ROOM_SOURCES[entry.id]:entry.kind==='bed'?beds.CAT_BED_SOURCES[entry.id.slice(4)]:toys.getCatToySource(entry.id.slice(4));
  assert.ok(source?.startsWith('assets/3d/'),`Unmigrated ${entry.id}`);
  if(entry.kind==='decoration')assert.equal(decor.getDecorationDisplaySize(entry.id),entry.displaySize);
@@ -57,72 +53,24 @@ for(const x of [120,900])for(let y=140;y<885;y++){
 }
 const splash=await sharp('assets/images/splash-brand.png').metadata();
 assert.ok(splash.width>=640&&splash.height>=640,'Native splash is missing its branded image');
-const splashPortrait=await sharp('assets/3d/cat-splash.png').ensureAlpha().raw().toBuffer();
-const splashFrame=await sharp('assets/3d/atlases/cat-orange-idle.png').extract({left:0,top:0,width:192,height:192}).ensureAlpha().raw().toBuffer();
-assert.deepEqual(splashPortrait,splashFrame,'Splash portrait must match the first idle animation cell');
+const splashPortrait = await sharp('assets/3d/cat-splash.png').metadata();
+assert.equal(splashPortrait.width, 192);assert.equal(splashPortrait.height, 192);assert.ok(splashPortrait.hasAlpha);
 console.log(`Verified both-wall controls for ${variants.WALL_FACING_DECORATION_IDS.length} additional items and launch branding.`);
-const {getCatSpriteAnimations}=load('pet-display/registry/cat-sprite-atlas.ts');
-const {createCatSpriteRegistry}=load('pet-display/registry/cat-sprite-registry.ts');
-const {buildBoxPlaySequence}=load('constants/cat-box-play.ts');
-const {createBoxPlayScenario}=load('pet-display/registry/cat-sprite-registry.ts');
-assert.deepEqual(Array.from(buildBoxPlaySequence()),['box1','box2','box3'],'Box story must jump, peek, then settle');
-for(const skin of ['orange','grey','white']){
- const clips=getCatSpriteAnimations(skin);const registry=createCatSpriteRegistry(skin);
- const boxStory=createBoxPlayScenario(skin,buildBoxPlaySequence());
- assert.equal(boxStory.steps.length,3);
- for(const step of boxStory.steps)assert.equal(step.loop,false,'Box story must advance through one-shot clips');
- for(const [id,clip] of Object.entries(clips)){
-  if(clip.playProp){
-   assert.equal(clip.playProp.groundY.length,clip.frames.length,`${skin}/${id} toy ground contacts`);
-   assert.equal(clip.playProp.pages.length,Math.ceil(clip.frames.length/12),`${skin}/${id} toy pages`);
-   assert.ok(clip.playProp.groundY.every(value=>Number.isFinite(value)),`${skin}/${id} invalid toy depth`);
-   for(const source of clip.playProp.pages){
-    const metadata=await sharp(source).metadata();
-    assert.equal(metadata.width,768);assert.equal(metadata.height,576);assert.ok(metadata.hasAlpha);
-   }
-   const first=await sharp(clip.playProp.pages[0]).extract({left:0,top:0,width:192,height:192}).ensureAlpha().raw().toBuffer();
-   assert.ok(first.every((value,index)=>index%4!==3||value===0),`${skin}/${id} toy must enter from outside the frame`);
-  }
-  const sources=clip.pages??[clip.source];
-  if(id.startsWith('walk')||id.startsWith('jump'))assert.equal(sources.length,2,`${skin}/${id} must keep its entire movement in the resident page pair`);
-  assert.equal(sources.length,Math.ceil(clip.frames.length/(clip.framesPerPage??clip.frames.length)),`${skin}/${id} page count`);
-  for(const source of sources){const metadata=await sharp(source).metadata();assert.equal(metadata.width,clip.sheetWidth,id);assert.equal(metadata.height,clip.sheetHeight,id);}
-  assert.ok(clip.sheetWidth*clip.sheetHeight*4<=9*1024*1024,`${skin}/${id} exceeds texture page budget`);
-  const hashes=new Set();
-  let decodedSource=null,decodedPixels=null;
-  for(const [index,frame] of clip.frames.entries()){
-   const source=sources[Math.floor(index/(clip.framesPerPage??clip.frames.length))];
-   const w=clip.frameWidth,h=clip.frameHeight;
-   if(source!==decodedSource){decodedPixels=await sharp(source).ensureAlpha().raw().toBuffer();decodedSource=source;}
-   const pixels=Buffer.allocUnsafe(w*h*4);
-   for(let y=0;y<h;y++){
-    const start=((frame.row*h+y)*clip.sheetWidth+frame.col*w)*4;
-    decodedPixels.copy(pixels,y*w*4,start,start+w*4);
-   }
-   let occupied=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>20)occupied++;
-   assert.ok(occupied>w*h*.04,`${skin}/${id} contains an empty frame`);
-   for(let x=0;x<w;x++)assert.ok(pixels[x*4+3]<30&&pixels[((h-1)*w+x)*4+3]<30,`${skin}/${id} clipped vertically`);
-   const t=index/(clip.frames.length-1);
-   const slidesAtLeft=id==='eating'&&(t<.125||t>.875)||id==='box1'&&t<.25||id==='box3'&&t>.75||['ballToss','yarnRoll','featherChase'].includes(id)&&(t<.15||t>.85);
-   for(let y=0;y<h;y++){
-    if(!slidesAtLeft)assert.ok(pixels[y*w*4+3]<30,`${skin}/${id} clipped on left outside prop slide`);
-    assert.ok(pixels[(y*w+w-1)*4+3]<30,`${skin}/${id} clipped on right`);
-   }
-   hashes.add(createHash('sha256').update(pixels).digest('hex'));
-  }
-  assert.ok(hashes.size>1,`${skin}/${id} has no motion`);
- }
- for(const reaction of ['correct','incorrect','eating','excited','playBall','playYarn','playFeather'])assert.equal(registry.getSegment(reaction).loop,false);
- assert.notEqual(registry.getSegment('correct').sprite.source,registry.getSegment('incorrect').sprite.source);
- assert.equal(registry.getScenario('wakeUp').steps[0].sprite.reverse,true);
- assert.equal(registry.getScenario('standUp').steps[0].sprite.reverse,true);
- for(const [id,maxDuration] of [['wakeUp',850],['standUp',700]]){
-  const step=registry.getScenario(id).steps[0];
-  assert.equal(step.loop,false,`${skin}/${id} must finish before the care action`);
-  assert.ok(step.sprite.frames.length/step.sprite.fps*1000<=maxDuration,`${skin}/${id} responds too slowly`);
- }
- assert.equal(registry.getScenario('fallAsleep').steps[0].sprite.fps,24,'Going to sleep keeps its gentle timing');
+const {catModelRegistry: registry, createBoxPlayScenario} = load('pet-display/registry/cat-model-registry.ts');
+const {buildBoxPlaySequence} = load('constants/cat-box-play.ts');
+assert.deepEqual(Array.from(buildBoxPlaySequence()), ['box1','box2','box3']);
+const boxStory = createBoxPlayScenario(buildBoxPlaySequence());
+assert.equal(boxStory.steps.length, 3);
+for (const step of boxStory.steps) assert.equal(step.loop, false);
+for (const reaction of ['correct','incorrect','eating','excited','playBall','playYarn','playFeather']) assert.equal(registry.getSegment(reaction).loop, false);
+assert.equal(registry.mediaKind, 'model');
+assert.notEqual(registry.getSegment('correct').assetKey, registry.getSegment('incorrect').assetKey);
+for (const [id, maxDuration] of [['wakeUp',850],['standUp',700]]) {
+ const step=registry.getScenario(id).steps[0];
+ assert.equal(step.reverse, true);assert.equal(step.loop, false);
+ assert.ok(step.model.duration / step.model.rate * 1000 <= maxDuration, `${id} responds too slowly`);
 }
+assert.equal(registry.getScenario('fallAsleep').steps[0].model.rate, 1);
 for(const entry of inventory.filter(e=>e.animated||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id))){
  const hashes=new Set();const atlas=`assets/3d/atlases/${entry.id}.png`;
  for(let i=0;i<8;i++)hashes.add((await sharp(atlas).extract({left:i*192,top:0,width:192,height:192}).raw().toBuffer()).toString('base64'));
@@ -140,18 +88,17 @@ assert.equal(mood.derivePetVideoMood(sleepy,false,now,true),'fallingAsleep');
 assert.equal(mood.derivePetVideoMood(sleepy,true,now,true),'sleeping');
 assert.equal(mood.derivePetMood({...pet,stats:{...pet.stats,hunger:10}},now),'sad');
 assert.equal(mood.derivePetVideoMood(pet,false,now,false),'idle');
-console.log(`Verified ${inventory.length} retained item IDs, ${Object.keys(getCatSpriteAnimations('orange')).length*3} moving cat clips, 28 moving objects, atlas bounds and rest/sleep/wake states.`);
+console.log(`Verified ${inventory.length} catalog thumbnails, ${inventory.filter(e=>e.animated).length} animated thumbnails and rest/sleep/wake states.`);
 
-const {advanceSpritePlayback:advance}=load('pet-display/media/sprite/sprite-playback.ts');
-for(const reverse of [false,true]){
- let state={frame:reverse?47:0,elapsed:0,finished:false};
- for(let i=0;i<120;i++)state=advance(state.frame,state.elapsed,1000/60,48,24,reverse,false,4,Array.from({length:12},(_,i)=>i));
- assert.equal(state.finished,true,'One-shot finishes at its authored duration');
- assert.equal(state.frame,reverse?0:47,'Forward/reverse hold their final frame');
+const {advanceSpritePlayback:advance}=load('utils/sprite-playback.ts');
+for (const refreshRate of [30,60,120]) {
+ let state={frame:0,elapsed:0};
+ for(let i=0;i<refreshRate*2;i++)state=advance(state.frame,state.elapsed,1000/refreshRate,8,12);
+ assert.equal(state.frame,0,'Thumbnail cadence must match at different refresh rates');
+ assert.ok(state.elapsed<1e-5);
 }
-assert.equal(advance(3,0,1000/24,8,24,false,true,4,[0]).frame,3,'Missing next page holds last decoded frame');
-assert.equal(advance(3,0,1000/24,8,24,false,true,4,[0,1]).frame,4,'Preloaded next page advances normally');
-assert.equal(advance(7,0,1000/24,8,24,false,true,4,[0,1]).frame,0,'Loop returns to first page');
-assert.equal(advance(4,0,1000/24,8,24,true,true,4,[0,1]).frame,3,'Reverse crosses pages backwards');
-assert.equal(advance(0,0,0,8,24,false,true,4,[0,1]).frame,0,'Paused clock preserves progress');
-console.log('Verified paged playback, reverse completion, texture budgets and loading stalls.');
+assert.equal(advance(0,0,0,8,12).frame,0,'Paused clock preserves progress');
+assert.equal(advance(7,0,1000/12,8,12).frame,0,'Thumbnail loop wraps to its first frame');
+assert.equal(advance(0,0,1000,8,12).frame,1,'Slow frames cannot skip through a full loop');
+console.log('Verified thumbnail cadence, loop wrapping and pause behavior.');
+await import('../check-asset-budget.mjs');

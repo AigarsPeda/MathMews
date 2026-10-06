@@ -8,7 +8,7 @@ import ts from 'typescript';
 const root = process.cwd();
 const states = [];
 let stateIndex = 0;
-let effects = [], roomCommands = [];
+let effects = [], roomCommands = [], cameraZoom = 1;
 const React = {
   createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
   useMemo: fn => fn(), useCallback: fn => fn, useEffect: fn => effects.push(fn),
@@ -20,13 +20,16 @@ const React = {
   },
 };
 const shared = (initial = 0) => { let value = initial; return { get: () => value, set: next => { value = next; } }; };
-let roomActivityForTest = null, requestedActivity, returnedHome = 0, roomActivityEnabled;
+let roomActivityForTest = null, requestedActivity, requestedInstanceId, doorArrival, returnedHome = 0, roomActivityEnabled;
 const objectX = shared(), objectY = shared(), objectRotation = shared();
 const mocks = {
-  '@/pet-display/registry/dog-video-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
-  '@/hooks/use-room-activity': { useRoomActivity: (_, enabled) => {
+  '@/hooks/use-room-camera': { useRoomCamera: () => ({ x: shared(), y: shared(), scale: shared(cameraZoom), zoom: cameraZoom, gesture: 'room-gesture', reset: () => { cameraZoom = 1; } }) },
+  'react-native-gesture-handler': { GestureDetector: 'GestureDetector' },
+  '@/pet-display/registry/media-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
+  '@/hooks/use-room-activity': { useRoomActivity: (_, enabled, _interaction, _x, _y, onArrival) => {
+    doorArrival = onArrival;
     roomActivityEnabled = enabled;
-    return { activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, startActivity(kind) { requestedActivity = kind; } };
+    return { activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, startActivity(kind, instanceId) { requestedActivity = kind; requestedInstanceId = instanceId; } };
   } },
   react: React,
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
@@ -60,7 +63,7 @@ function load(id) {
   const module = { exports: {} };
   cache.set(resolved, module);
   const source = ts.transpileModule(fs.readFileSync(resolved, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.React },
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.React, esModuleInterop: true },
   }).outputText;
   vm.runInNewContext(source, { module, exports: module.exports, React, require: load });
   return module.exports;
@@ -100,14 +103,14 @@ function render(placedDecorations = powered, extra = {}) {
     wisdom: 90, playback: {}, speechMessage: 'Hello!', placedDecorations,
     onTogglePlacedAirConditioner: id => { toggled = id; },
     onMoveRoomLayerItem() {},
-    onRoomActionsChange: actions => { roomCommands = actions; },
     ...extra,
   }));
   effects.forEach(fn => fn());
+  roomCommands = nodes.find(({ node }) => node.props.testID === "room-cat")?.node.props.menuActions ?? [];
   return nodes;
 }
 const first = render();
-const decorationNode = (nodes, id) => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.decorationId === id));
+const decorationNode = (nodes, id) => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:' + (id === 'officeAc' ? 'ac-one' : id === 'sofaA' ? 'sofa' : id === 'yarnRed' ? 'yarn' : id === 'japaneseDoorAni' ? 'door-bath' : id));
 const ac = decorationNode(first, 'officeAc');
 assert.ok(ac);
 const menu = ac.node.props.menuActions;
@@ -119,7 +122,7 @@ assert.equal(decorationNode(render(items), 'officeAc').node.props.menuActions[0]
 const sofa = { decorationId: 'sofaA', instanceId: 'sofa', offset: { x: .3, y: .1 } };
 const normalRoom = render([sofa]);
 const sofaNode = nodes => decorationNode(nodes, 'sofaA').node;
-const catNode = nodes => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.children?.[0]?.type === 'View').node;
+const catNode = nodes => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-cat').node;
 assert.equal(sofaNode(normalRoom).props.allowDrag, false);
 assert.equal(sofaNode(normalRoom).props.interactive, false, 'Furniture must not intercept petting');
 assert.equal(catNode(normalRoom).props.allowDrag, false);
@@ -154,74 +157,73 @@ assert.equal(sofaNode(render([sofa])).props.allowDrag, false);
 console.log('Verified explicit decorating, protected furniture taps, cat repositioning, and Done restoring normal interaction.');
 console.log('Verified picture selection closes the picker, highlights one item, and moves it with the room visible.');
 
-states[1] = { width: 320, height: 320 };
+states[2] = { width: 320, height: 320 };
 const ball = { toyId: 'blueBall', instanceId: 'ball', offset: { x: .3, y: .4 } };
 let petTaps = 0;
-const extra = { placedToys: [ball], ownedToyIds: ['mouse'], onPetPress: () => petTaps++ };
+const mouse = { toyId: 'mouse', instanceId: 'mouse', offset: { x: -.4, y: .4 } };
+const extra = { placedToys: [ball, mouse], ownedToyIds: ['mouse'], onPetPress: () => petTaps++ };
 const commandRoom = render([sofa], extra);
-assert.equal(commandRoom.some(({ node }) => node.type === 'RoomActionMenu'), false, 'Room commands must use the combined footer menu');
+assert.equal(commandRoom.some(({ node }) => node.type === 'RoomActionMenu'), false, 'Cat commands use its direct native menu');
 assert.deepEqual(Array.from(roomCommands, action => action.label), [
-  'home.catCommands.sofaSit', 'home.catCommands.sofaSleep', 'home.catCommands.toyPlay', 'home.catCommands.mouseChase',
+  'home.pet', 'home.catCommands.sofaSit', 'home.catCommands.sofaSleep', 'home.catCommands.toyPlay', 'home.catCommands.mouseChase',
 ]);
 roomCommands.find(action => action.label === 'home.catCommands.sofaSleep').onPress();
 assert.equal(requestedActivity, 'sofaSleep');
-for (const zoom of [2, 3]) {
-  render([sofa], extra).find(({ node }) => node.props.accessibilityValue).node.props.onPress();
-  render([sofa], extra);
+for (const zoom of [1.73, 2.6, 3]) {
+  cameraZoom = zoom;
+  assert.equal(sofaNode(render([sofa], extra)).props.interactive, true, 'Zoomed sofa hit targets stay enabled');
   assert.equal(roomActivityEnabled, true, 'Zoom must allow the selected room animation to run');
   requestedActivity = null;
   roomCommands.find(action => action.label === 'home.catCommands.sofaSleep').onPress();
   assert.equal(requestedActivity, 'sofaSleep');
-  assert.equal(render([sofa], extra).find(({ node }) => node.props.accessibilityValue).node.props.accessibilityLabel,
-    zoom === 3 ? 'home.resetZoom' : 'home.zoomCat', 'Choosing a command must preserve the zoom');
+  const nodes = render([sofa], extra);
+  assert.equal(cameraZoom, zoom, 'Choosing a command must preserve the zoom');
+  assert.equal(nodes.some(({ node }) => node.props.accessibilityLabel === 'home.resetZoom'), false,
+    'The room must not show a zoom/reset button');
 }
 render([sofa], { ...extra, roomActivityBlocked: true });
 assert.equal(roomActivityEnabled, false);
-render([sofa], extra).find(({ node }) => node.props.accessibilityLabel === 'home.resetZoom').node.props.onPress();
-console.log('Verified room commands reach the combined menu at 2x and 3x zoom while care remains protected.');
+cameraZoom = 1;
+console.log('Verified fractional zoom keeps sofa/object menus and cat commands enabled while care remains protected.');
 const planner = load('@/utils/room-activities');
 const room = { width: 320, height: 320, petSize: 120, sizeScale: 1, homeOffset: { x: 0, y: .12 },
   decorations: [sofa], toys: [ball], ownedToyIds: ['mouse'], hungry: false, asleep: false };
 roomActivityForTest = { plan: planner.buildRoomActivity(room, 0, 'toyPlay'), stepIndex: 1 };
 objectX.set(45); objectY.set(60); objectRotation.set(150);
 const playingRoom = render([sofa], extra);
-// Native touches bubble before Pressable fires onPress. Exercise that path
-// while the cat is playing, rather than calling only the zoom button's onPress.
+// Changing the camera while playing must preserve the active room animation.
 let roomTouches = 0;
 const zoomProps = { ...extra, onRoomInteraction: () => roomTouches++ };
-const touchStart = ({ node, ancestors }) => {
-  for (const target of [node, ...ancestors.toReversed()]) target.props.onTouchStart?.();
-};
 const returnsBeforeZoom = returnedHome;
-for (const zoom of [2, 3, 1, 2, 3, 1]) {
-  const nodes = render([sofa], zoomProps);
-  const button = nodes.find(({ node }) => node.props.accessibilityValue);
-  touchStart(button);
-  button.node.props.onPress();
+for (const zoom of [1.5, 2.73, 3]) {
+  cameraZoom = zoom;
   const zoomed = render([sofa], zoomProps);
-  assert.equal(states[0], zoom, 'Zoom must still cycle through 1x, 2x and 3x');
+  assert.equal(cameraZoom, zoom, 'Rendering preserves the freely pinched view');
   assert.equal(returnedHome, returnsBeforeZoom, 'Zoom touches must not send the playing cat home');
   assert.equal(roomTouches, 0, 'Zoom must not record an interaction that cancels the action');
   assert.equal(roomActivityEnabled, true, 'Zoom must keep room activity enabled');
-  assert.equal(zoomed.find(({ node }) => node.type === 'PetDisplay').node.props.playback.mood,
+  assert.equal(zoomed.find(({ node }) => node.type === 'NativeRoomScene').node.props.playback.mood,
     roomActivityForTest.plan.steps[1].mood, 'Zoom must preserve the playing animation');
 }
-touchStart(render([sofa], zoomProps).find(({ node }) => node.type === 'PetRoomBackground'));
+render([sofa], zoomProps).find(({ node }) => node.type === 'NativeRoomScene').ancestors.at(-1).props.onPress();
 assert.equal(returnedHome, returnsBeforeZoom + 1, 'Touching the room scene still requests a return');
 assert.equal(roomTouches, 1, 'Scene touches still record room interaction');
-console.log('Verified bubbling zoom touches preserve play through 1x/2x/3x while scene touches still request a return.');
-const movingBall = playingRoom.find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.toyId === 'blueBall')).node;
+console.log('Verified fractional camera zoom preserves playing animations while scene taps still request a return.');
+playingRoom.find(({ node }) => node.type === 'NativeRoomScene').node.props.onObjectPosition('ball', { x: 45, y: 60 });
+const movingBall = render([sofa], extra).find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:ball').node;
 assert.equal(movingBall.props.initialOffset, ball.offset, 'Object motion must retain the saved placement');
-assert.equal(movingBall.props.animatedPosition.x.get(), 45);
-assert.equal(style(movingBall.props.children[0].props.style).transform[0].rotate, '150deg');
-catNode(playingRoom).props.onPetTap();
+assert.equal(movingBall.props.externalPosition.x, 45);
+assert.equal(playingRoom.find(({ node }) => node.type === 'NativeRoomScene').node.props.playingId, 'ball');
+catNode(playingRoom).props.menuActions.find(action => action.label === "home.catCommands.returnHome").onPress();
 assert.equal(returnedHome, returnsBeforeZoom + 2, 'Touching an active cat requests a return');
 assert.equal(petTaps, 0, 'Returning must not start a care animation that would interrupt walking');
 const yarn = { decorationId: 'yarnRed', instanceId: 'yarn', offset: { x: .1, y: .4 } };
 roomActivityForTest = { plan: planner.buildRoomActivity({ ...room, decorations: [yarn], toys: [] }, 0, 'toyPlay'), stepIndex: 1 };
+const yarnRoom = render([yarn], extra);
+yarnRoom.find(({ node }) => node.type === 'NativeRoomScene').node.props.onObjectPosition('yarn', { x: 45, y: 60 });
 const playingYarn = decorationNode(render([yarn], extra), 'yarnRed').node;
-assert.equal(playingYarn.props.animatedPosition.y.get(), 60);
-assert.equal(style(playingYarn.props.children[0].props.style).transform[0].rotate, '150deg');
+assert.equal(playingYarn.props.externalPosition.y, 60);
+assert.equal(yarnRoom.find(({ node }) => node.type === 'NativeRoomScene').node.props.playingId, 'yarn');
 roomActivityForTest = null;
 console.log('Verified command menu eligibility, sleep command dispatch, returning instead of petting, and movement/rotation of actual placed balls and yarn.');
 
@@ -237,58 +239,80 @@ assert.equal(sofaNode(render([sofa])).props.allowDrag, true, 'Decorating begins 
 const post = { toyId: 'scratchPostRed', instanceId: 'post', offset: { x: .2, y: .3 }, scale: 1.5 };
 const scaled = [];
 const toyProps = { placedToys: [post], onScalePlacedToy: (id, direction) => scaled.push([id, direction]), onPlacedToyRemove() {} };
-const postNode = render([sofa], toyProps).find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.toyId === post.toyId)).node;
+const postNode = render([sofa], toyProps).find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:post').node;
 assert.equal(postNode.props.petSize, 72, 'Render and drag bounds both use the saved scratching-post size');
 const postMenu = postNode.props.menuActions;
 assert.deepEqual(Array.from(postMenu, action => action.label), ['home.makeBigger', 'home.makeSmaller', 'home.removeFromRoom']);
 postMenu[0].onPress(); postMenu[1].onPress();
 assert.deepEqual(scaled, [['post', 'up'], ['post', 'down']]);
 for (const [scale, disabledIndex] of [[2.2, 0], [.7, 1]]) {
-  const actions = render([sofa], { ...toyProps, placedToys: [{ ...post, scale }] }).find(({ node }) => node.type === 'DraggableRoomPet' && flatten(node).some(({ node: child }) => child.props.toyId === post.toyId)).node.props.menuActions;
+  const actions = render([sofa], { ...toyProps, placedToys: [{ ...post, scale }] }).find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:post').node.props.menuActions;
   assert.equal(actions[disabledIndex].disabled, true, 'Disable resizing beyond furniture limits');
 }
 console.log('Verified decorating waits for the cat, and scratching posts expose bounded resize controls.');
 
 console.log('Verified independent AC power, save reload, toggled native menu labels and bounded room-item actions.');
 
-let activity = { active: true, reduceMotion: false };
-let animationCount = 0;
-const phases = [];
-mocks['@/pet-display/media/sprite/use-sprite-clock'] = { useSpriteActivity: () => activity };
-mocks.react.useEffect = fn => fn();
-Object.assign(mocks['react-native-reanimated'], {
-  Easing: { linear: value => value },
-  cancelAnimation() {},
-  withTiming: value => { animationCount++; return value; },
-  withRepeat: value => value,
-  useSharedValue: initial => {
-    let value = initial;
-    const shared = { get: () => value, set: next => { value = next; } };
-    phases.push(shared);
-    return shared;
-  },
-});
-const motion = load(path.join(root, 'components/pet/RoomDecorationMotion.tsx')).RoomDecorationMotion;
-const motionProps = { decorationId: 'officeAc', source: 1, size: 48, flipHorizontal: true, poweredOn: true };
-const airflow = motion(motionProps);
-assert.equal(animationCount, 1, 'Powered AC runs while the room is active');
-assert.equal(airflow.props.style.transform[0].scaleX, -1, 'Airflow must mirror with the unit');
-assert.equal(flatten(airflow).filter(({ node }) => typeof node.type === 'function').length, 3);
-assert.equal(flatten(motion({ ...motionProps, poweredOn: false })).filter(({ node }) => typeof node.type === 'function').length, 0);
-assert.equal(animationCount, 1, 'Powered-off AC must not run an animation');
-activity = { active: false, reduceMotion: false };
-motion(motionProps);
-assert.equal(animationCount, 1, 'Hidden rooms must stop their loops');
-activity = { active: true, reduceMotion: true };
-const reduced = flatten(motion(motionProps));
-assert.equal(animationCount, 1, 'Reduce Motion must stop the airflow loop');
-const stream = reduced.find(({ node }) => typeof node.type === 'function').node;
-assert.equal(style(stream.type(stream.props).props.style).opacity, .45, 'Reduced motion still shows a readable powered-on state');
-activity = { active: true, reduceMotion: false };
-const plant = flatten(motion({ ...motionProps, decorationId: 'plantPotted', size: 85, breezy: true }));
-const foliage = plant.find(({ node }) => Array.isArray(node.props.style) && node.props.style.some(entry => entry?.read));
-phases.at(-1).set(.25);
-assert.equal(style(foliage.node.props.style).transform[0].skewX, '2deg');
-const pot = plant.filter(({ node }) => node.type === 'Image').at(-1);
-assert.ok(!pot.ancestors.includes(foliage.node), 'The pot must stay outside the animated foliage');
-console.log('Verified active/off/hidden/reduced-motion states, mirrored airflow, and stationary pots.');
+// Door menus dispatch a journey before changing rooms; objects select their own instance.
+roomActivityForTest = null;
+const finishPreviousEdit = render().find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating');
+finishPreviousEdit?.node.props.onPress();
+const homeDoor = { decorationId: 'japaneseDoorAni', instanceId: 'door-bath', doorDestination: 'bathroom', offset: { x: -.5, y: -.3 } };
+let visited, assigned;
+const houseProps = { homeRoomId: 'livingRoom', onVisitHomeRoom: id => { visited = id; },
+  onAssignRoomDoor: (id, destination) => { assigned = { id, destination }; } };
+const house = render([homeDoor], houseProps);
+const doorway = decorationNode(house, homeDoor.decorationId).node;
+assert.equal(doorway.props.interactive, true);
+assert.equal(doorway.props.menuActions[0].label, 'home.goToRoom');
+doorway.props.menuActions[0].onPress();
+assert.equal(requestedActivity, 'doorTravel');
+assert.equal(requestedInstanceId, homeDoor.instanceId);
+assert.equal(visited, undefined, 'A menu selection walks first');
+doorArrival(homeDoor.instanceId);
+assert.equal(visited, 'bathroom', 'Arrival opens the assigned room');
+const blockedDoor = decorationNode(render([homeDoor], { ...houseProps, roomActivityBlocked: true }), homeDoor.decorationId).node;
+assert.equal(blockedDoor.props.interactive, false, 'Care blocks room travel');
+const directToy = render([], { placedToys: [ball] }).find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:ball').node;
+directToy.props.menuActions[0].onPress();
+assert.equal(requestedActivity, 'toyPlay');
+assert.equal(requestedInstanceId, ball.instanceId);
+const houseEditor = render([homeDoor], houseProps);
+houseEditor.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
+const editableDoor = decorationNode(render([homeDoor], houseProps), homeDoor.decorationId).node;
+const destinations = editableDoor.props.menuActions.filter(action => action.label === 'home.doorLeadsTo');
+assert.equal(destinations.length, 3);
+assert.equal(destinations[1].disabled, true, 'The current destination is already selected');
+destinations[0].onPress();
+assert.equal(assigned.id, homeDoor.instanceId);
+assert.equal(assigned.destination, 'bedroom');
+render([homeDoor], houseProps).find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
+console.log('Verified native doorway journey dispatch, arrival routing, care protection, destination reassignment, and direct toy selection.');
+
+let meals = 0, played;
+const bowl = { decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: .5, y: .15 } };
+const mealProps = { onFeed: () => meals++, onPetPress: () => petTaps++, onPlay: activity => { played = activity.id; } };
+roomActivityForTest = null;
+let mealMenu = catNode(render([bowl], mealProps)).props.menuActions;
+assert.equal(catNode(render([bowl], mealProps)).props.onPetTap, undefined, 'Cat taps open the native menu directly');
+mealMenu.find(action => action.label === 'home.catCommands.bowlEat').onPress();
+assert.equal(requestedActivity, 'bowlEat');
+assert.equal(meals, 0, 'Selecting Eat does not grant hunger before the journey');
+mealMenu.find(action => action.label === 'home.pet').onPress();
+assert.equal(petTaps, 1, 'Petting stays available in the cat menu');
+mealMenu.find(action => action.label === 'home.playStyle.feather').onPress();
+assert.equal(played, 'feather', 'Former footer games remain in the cat menu');
+const bowlNode = decorationNode(render([bowl], mealProps), 'bowl').node;
+bowlNode.props.menuActions[0].onPress();
+assert.equal(requestedInstanceId, 'bowl', 'The bowl menu selects that exact bowl');
+assert.equal(catNode(render([], mealProps)).props.menuActions.some(action => action.label === 'home.catCommands.bowlEat'), false);
+const fullProps = { ...mealProps, stats: { level: 1, hunger: 100, happiness: 90 } };
+assert.equal(catNode(render([bowl], fullProps)).props.menuActions.find(action => action.label === 'home.catCommands.bowlEat').disabled, true);
+assert.equal(catNode(render([bowl], { ...mealProps, roomActivityBlocked: true })).props.menuActions.find(action => action.label === 'home.catCommands.bowlEat').disabled, true);
+roomActivityForTest = { plan: planner.buildRoomActivity({ ...room, decorations: [bowl] }, 0, 'bowlEat'), stepIndex: 1 };
+assert.equal(catNode(render([bowl], mealProps)).props.menuActions.find(action => action.label === 'home.catCommands.bowlEat').disabled, true);
+assert.equal(catNode(render([bowl], mealProps)).props.menuActions.find(action => action.label === 'home.playStyle.feather').disabled, true);
+render([bowl], mealProps).find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
+roomActivityForTest = null; render([bowl], mealProps); render([bowl], mealProps);
+assert.equal(catNode(render([bowl], mealProps)).props.menuActions, undefined, 'Decorating keeps the cat draggable without care menus');
+console.log('Verified direct cat and bowl menus, deferred feeding, retained pet/play actions, missing bowl, full hunger, busy meals, and decorating.');

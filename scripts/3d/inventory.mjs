@@ -22,7 +22,8 @@ for(const[id,entry]of Object.entries(decor.CAT_DECORATION_CATALOG))entries.push(
 for(const[id,source]of Object.entries(beds.CAT_BED_SOURCES))entries.push({id:'bed-'+id,kind:'bed',source,displaySize:beds.getBedDisplaySize(id)});
 for(const id of toys.CAT_TOY_IDS)entries.push({id:'toy-'+id,kind:'toy',source:toys.CAT_TOY_SOURCES[id],displaySize:toys.getToyDisplaySize(id)});
 for(const[id,source]of Object.entries(rooms.CAT_ROOM_SOURCES))entries.push({id,kind:'room',source});
-const plan={version:2,entries:entries.map(e=>({id:e.id,kind:e.kind,...(e.displaySize?{displaySize:e.displaySize}:{}),animated:'frameWidth' in e||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id)}))};
+const thumbnailIds={japaneseDoorAni:'japaneseDoorClosed',japaneseSlidingDoorAni:'japaneseSlidingDoorClosed'};
+const plan={version:2,entries:entries.map(e=>({id:e.id,kind:e.kind,...(thumbnailIds[e.id]?{thumbnailId:thumbnailIds[e.id]}:{}),...(e.displaySize?{displaySize:e.displaySize}:{}),animated:'frameWidth' in e||['toy-orangeBall','toy-blueBall','toy-pinkBall','toy-mouse'].includes(e.id)}))};
 fs.writeFileSync('scripts/3d/inventory.json',JSON.stringify(plan,null,2)+'\n');
 console.log('Inventory:',entries.length,'assets');
 console.log(entries.map(e=>e.id).join(' '));

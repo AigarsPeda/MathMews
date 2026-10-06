@@ -1,110 +1,27 @@
-import { CAT_SPLASH_SHEET, CAT_SPLASH_SOURCE } from "@/constants/cat-splash";
-import { CAT_SPRITE_CATALOG } from "@/constants/cat-sprite-catalog";
-import { useSpriteClock } from "@/pet-display/media/sprite/use-sprite-clock";
-import { useDerivedValue } from "react-native-reanimated";
+import { NativeCatDisplay } from "@/components/pet/native/NativeCatDisplay";
+import { catModelRegistry } from "@/pet-display/registry/cat-model-registry";
 import { GameColors } from "@/constants/game";
-import { useIsMounted } from "@/hooks/use-is-mounted";
 import { moderateScale } from "@/utils/scale";
-import {
-  Canvas,
-  FilterMode,
-  Group,
-  MipmapMode,
-  Image as SkiaImage,
-  useImage,
-} from "@shopify/react-native-skia";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
-const IDLE = CAT_SPRITE_CATALOG.idle;
-const SHEET_SOURCE = CAT_SPLASH_SOURCE;
-const FRAME_SIZE = CAT_SPLASH_SHEET.frameSize;
-const FPS = IDLE.fps;
-
-const SMOOTH_SAMPLING = {
-  filter: FilterMode.Linear,
-  mipmap: MipmapMode.None,
-};
-
-type AnimatedSplashCatProps = {
-  size?: number;
-  playing?: boolean;
-  onReady?: () => void;
-};
-
-function useSplashLayout(size: number) {
-  const pixelScale = size / FRAME_SIZE;
-  const displaySize = FRAME_SIZE * pixelScale;
-  const scaledSheetWidth = CAT_SPLASH_SHEET.width * pixelScale;
-  const scaledSheetHeight = CAT_SPLASH_SHEET.height * pixelScale;
-
-  return { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight };
-}
-
-/** Smooth breathing and blinking from the Blender cat. */
-export function AnimatedSplashCat({
-  size = moderateScale(192),
-  playing = true,
-  onReady,
-}: AnimatedSplashCatProps) {
-  const skiaImage = useImage(SHEET_SOURCE);
-  const frameIndex = useSpriteClock({ frameCount: IDLE.frameCount, fps: FPS, loop: true, readyPages: skiaImage && playing ? [0] : [] });
-  const isMounted = useIsMounted();
-  const [windowLaidOut, setWindowLaidOut] = useState(false);
-  const handleWindowLayout = useCallback(() => setWindowLaidOut(true), []);
-  const { pixelScale, displaySize, scaledSheetWidth, scaledSheetHeight } =
-    useSplashLayout(size);
-
-  const imageX = useDerivedValue(() => -(frameIndex.get() % CAT_SPLASH_SHEET.cols) * FRAME_SIZE * pixelScale);
-  const imageY = useDerivedValue(() => -Math.floor(frameIndex.get() / CAT_SPLASH_SHEET.cols) * FRAME_SIZE * pixelScale);
-
-  useEffect(() => {
-    if (!skiaImage || !windowLaidOut) return;
-    // Decoding alone does not mean the Canvas has painted. Hold frame zero
-    // beneath the portrait until the laid-out surface gets a drawing turn.
-    let secondFrame = 0;
-    const firstFrame = requestAnimationFrame(() => {
-      secondFrame = requestAnimationFrame(() => {
-        if (isMounted.current) onReady?.();
-      });
-    });
-    return () => { cancelAnimationFrame(firstFrame); cancelAnimationFrame(secondFrame); };
-  }, [isMounted, onReady, skiaImage, windowLaidOut]);
-
-  const windowStyle = {
-    width: displaySize,
-    height: displaySize,
-    overflow: "hidden" as const,
-  };
-
-  if (!skiaImage) {
-    return <View onLayout={handleWindowLayout} style={[styles.wrap, windowStyle]} />;
-  }
-
-  return (
-    <View onLayout={handleWindowLayout} style={[styles.wrap, windowStyle]}>
-      <Canvas colorSpace="srgb" style={{ width: displaySize, height: displaySize }}>
-        <Group clip={{ x: 0, y: 0, width: displaySize, height: displaySize }}>
-          <SkiaImage
-            x={imageX}
-            y={imageY}
-            fit="fill"
-            image={skiaImage}
-            width={scaledSheetWidth}
-            height={scaledSheetHeight}
-            sampling={SMOOTH_SAMPLING}
-          />
-        </Group>
-      </Canvas>
-    </View>
-  );
+/** The startup cat uses the same native rig as the room and care screens. */
+export function AnimatedSplashCat({ size = moderateScale(192), playing = true, onReady }: {
+  size?: number; playing?: boolean; onReady?: () => void;
+}) {
+  const frames = useRef<number[]>([]);
+  useEffect(() => () => { frames.current.forEach(cancelAnimationFrame); }, []);
+  const ready = useCallback(() => {
+    frames.current.push(requestAnimationFrame(() => {
+      frames.current.push(requestAnimationFrame(() => onReady?.()));
+    }));
+  }, [onReady]);
+  const playback = useMemo(() => ({ kind: "segment" as const, mood: "idle" as const,
+    segment: catModelRegistry.getSegment("idle") }), []);
+  return <NativeCatDisplay width={size} playback={playback} loop playing={playing} onReady={ready} />;
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    alignItems: "flex-start",
-    justifyContent: "center",
-  },
   backdrop: {
     flex: 1,
     alignItems: "center",

@@ -1,4 +1,5 @@
-import { useSpriteActivity } from "@/pet-display/media/sprite/use-sprite-clock";
+import { FLOOR_Y, prepareNativeStep } from "@/utils/native-room-world";
+import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { getCatJumpMotion, getCatWalkMotion, isCatJump, isCatWalk } from "@/constants/cat-room-motion";
 import {
   buildRoomActivity,
@@ -14,7 +15,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cancelAnimation, Easing, useSharedValue, withDelay, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
 
 type ActivityState = { plan: RoomActivityPlan; stepIndex: number };
-type ActivityRequest = { id: number; kind: RoomActivityKind | "returnHome" };
+type ActivityRequest = { id: number; kind: RoomActivityKind | "returnHome"; instanceId?: string };
 
 /** One scheduler owns idle choices, commands, and the visible journey home. */
 export function useRoomActivity(
@@ -23,31 +24,39 @@ export function useRoomActivity(
   lastInteractionAt: number | undefined,
   petX: SharedValue<number>,
   petY: SharedValue<number>,
+  onDoorArrival?: (instanceId: string) => void,
+  onFeed?: () => void,
 ) {
-  const { active, reduceMotion } = useSpriteActivity();
+  const { active, reduceMotion } = useAnimationActivity();
   const scale = useSharedValue(1);
   const facing = useSharedValue(1);
   const objectX = useSharedValue(0);
   const objectY = useSharedValue(0);
   const objectRotation = useSharedValue(0);
   const turn = useRef(0);
+  const nativeHeight = useRef(FLOOR_Y);
+  const updateNativeHeight = useCallback((position: readonly number[]) => { nativeHeight.current = position[1]; }, []);
   const running = useRef<ActivityState | null>(null);
-  const pendingCommand = useRef<ActivityRequest["kind"] | null>(null);
+  const pendingCommand = useRef<Omit<ActivityRequest, "id"> | null>(null);
+  const doorArrival = useRef(onDoorArrival);
+  doorArrival.current = onDoorArrival;
+  const feedComplete = useRef(onFeed);
+  feedComplete.current = onFeed;
   const previousInteraction = useRef(lastInteractionAt);
   const handledRequest = useRef(0);
   const [request, setRequest] = useState<ActivityRequest | null>(null);
   const [state, setState] = useState<ActivityState | null>(null);
   // Covered screens keep the visible pose; only their clock is paused.
   const activity = enabled ? state : null;
-  const requestActivity = useCallback((kind: ActivityRequest["kind"]) => {
+  const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string) => {
     const current = running.current;
     if (current && isCatJump(current.plan.steps[current.stepIndex].animation)) {
-      pendingCommand.current = kind;
+      pendingCommand.current = { kind, instanceId };
       return;
     }
-    setRequest(current => ({ id: (current?.id ?? 0) + 1, kind }));
+    setRequest(current => ({ id: (current?.id ?? 0) + 1, kind, instanceId }));
   }, []);
-  const startActivity = useCallback((kind: RoomActivityKind) => requestActivity(kind), [requestActivity]);
+  const startActivity = useCallback((kind: RoomActivityKind, instanceId?: string) => requestActivity(kind, instanceId), [requestActivity]);
   const returnHome = useCallback(() => {
     if (!activity || activity.plan.kind === "returnHome") return;
     requestActivity("returnHome");
@@ -68,23 +77,36 @@ export function useRoomActivity(
     const home = roomOffsetToPoint(options.homeOffset, options.width, options.height, options.petSize);
     const runStep = (plan: RoomActivityPlan, stepIndex: number) => {
       if (stopped) return;
-      const step = plan.steps[stepIndex];
+      let step = plan.steps[stepIndex];
       if (!step) {
+        const completed = running.current;
         running.current = null;
         facing.set(1);
         setState(null);
+        if (plan.kind === "doorTravel" && plan.targetInstanceId && !completed?.plan.steps.at(-1)?.native?.blocked) {
+          doorArrival.current?.(plan.targetInstanceId);
+          return;
+        }
+        if (plan.kind === "bowlEat" && !completed?.plan.steps.some(step => step.native?.blocked)) feedComplete.current?.();
         timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS + (turn.current % 5) * 700);
         return;
+      }
+      if (options.nativeWorld) {
+        step = prepareNativeStep(plan, step, { x: petX.get(), y: petY.get() }, options.nativeWorld, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
+        if (step.native?.blocked) plan = { ...plan, steps: plan.steps.slice(0, stepIndex + 1) };
+        if (reduceMotion) step.native = { ...step.native!, path: [step.native!.path.at(-1)!], distance: 0, jump: false };
       }
       const duration = reduceMotion ? 0 : step.moveMs ?? 0;
       let visibleStep = step;
       if (!reduceMotion && isCatWalk(step.animation)) {
-        const motion = getCatWalkMotion({ x: petX.get(), y: petY.get() }, step.position, options.petSize * (step.scale ?? 1));
+        const motion = getCatWalkMotion({ x: petX.get(), y: petY.get() }, step.position, options.petSize);
         facing.set(motion.facing);
         visibleStep = { ...step, animation: motion.animation, animationFps: Math.max(12, Math.min(60, 24 * motion.cycles / Math.max(.1, duration / 1000))) };
       }
       const timing = { duration, easing: isCatWalk(step.animation) ? Easing.linear : Easing.inOut(Easing.quad) };
-      if (!reduceMotion && isCatJump(step.animation)) {
+      if (options.nativeWorld) {
+        // Filament owns the visible motion; these values are only native UI anchors.
+      } else if (!reduceMotion && isCatJump(step.animation)) {
         facing.set(1);
         const jump = getCatJumpMotion(petY.get(), step.position.y, options.petSize, duration);
         // Keep the paws planted during the crouch, then rise and fall onto
@@ -94,13 +116,11 @@ export function useRoomActivity(
           withTiming(jump.apexY, { duration: jump.riseMs, easing: Easing.out(Easing.quad) }),
           withTiming(step.position.y, { duration: jump.fallMs, easing: Easing.in(Easing.quad) }),
         )));
-        scale.set(withDelay(jump.prepareMs, withTiming(step.scale ?? 1, { duration: jump.flightMs, easing: Easing.linear })));
       } else {
         petX.set(withTiming(step.position.x, timing));
         petY.set(withTiming(step.position.y, timing));
-        scale.set(withTiming(step.scale ?? 1, { duration: duration || 180 }));
       }
-      if (step.objectPosition) {
+      if (step.objectPosition && !options.nativeWorld) {
         // The mouse gets a head start; balls/yarn roll just after a paw contact.
         const objectDuration = step.objectMoveMs ?? (plan.kind === "mouseChase" ? duration * 0.6 : Math.min(duration, 700));
         const delay = step.objectDelayMs ?? 0;
@@ -109,7 +129,7 @@ export function useRoomActivity(
         objectRotation.set(withDelay(delay, withTiming(step.objectRotation ?? 0, { duration: objectDuration })));
       }
       if (reduceMotion) {
-        petX.set(step.position.x); petY.set(step.position.y); scale.set(step.scale ?? 1);
+        petX.set(step.position.x); petY.set(step.position.y); scale.set(1);
         if (step.objectPosition) { objectX.set(step.objectPosition.x); objectY.set(step.objectPosition.y); }
         visibleStep = { ...step, animation: undefined };
       }
@@ -125,7 +145,7 @@ export function useRoomActivity(
           const landedStep = { ...step, animation: undefined,
             sofaApproach: step.animation === "jumpOff" ? undefined : step.sofaApproach };
           running.current = { plan: { ...plan, steps: plan.steps.map((item, index) => index === stepIndex ? landedStep : item) }, stepIndex };
-          setRequest(current => ({ id: (current?.id ?? 0) + 1, kind }));
+          setRequest(current => ({ id: (current?.id ?? 0) + 1, ...kind }));
         } else runStep(plan, stepIndex + 1);
       }, reduceMotion ? 600 : step.durationMs);
     };
@@ -162,7 +182,7 @@ export function useRoomActivity(
       const returning = current ? buildRoomReturn(options, current.plan, current.stepIndex, position) : null;
       const sofaCommand = newRequest?.kind === "sofaSit" || newRequest?.kind === "sofaSleep";
       const next = newRequest && newRequest.kind !== "returnHome"
-        ? buildRoomActivity(options, turn.current++, newRequest.kind, sofaCommand ? current?.plan.targetInstanceId : undefined) : null;
+        ? buildRoomActivity(options, turn.current++, newRequest.kind, newRequest.instanceId ?? (sofaCommand ? current?.plan.targetInstanceId : undefined)) : null;
       if (next) {
         const plan = next.kind === "sofaSit" || next.kind === "sofaSleep"
           ? routeToSofa(options, next, position, current)
@@ -181,5 +201,5 @@ export function useRoomActivity(
       for (const value of [petX, petY, scale, objectX, objectY, objectRotation]) cancelAnimation(value);
     };
   }, [active, enabled, facing, objectRotation, objectX, objectY, options, petX, petY, reduceMotion, request, scale]);
-  return { activity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome };
+  return { activity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, updateNativeHeight };
 }

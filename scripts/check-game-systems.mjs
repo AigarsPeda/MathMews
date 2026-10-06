@@ -124,8 +124,22 @@ let credited = withCoinDelta(start, 100, { kind: 'iap_purchase', transactionId: 
 for (let i = 0; i < 160; i++) credited = withCoinDelta(credited, 2, { kind: 'puzzle_reward' });
 assert.equal(withCoinDelta(credited, 100, { kind: 'iap_purchase', transactionId: 'receipt-1' }), credited, 'Receipt deduplication survives history pruning');
 const fed = applyFeed({ ...start, pet: { ...start.pet, lastCareAt: now } }, now);
-assert.equal(fed.wallet.coins, start.wallet.coins - 4); assert.equal(fed.pet.stats.hunger, 97); assert.equal(fed.coinTransactions.at(-1).kind, 'pet_feed');
-assert.equal(applyFeed({ ...start, wallet: { coins: 0 } }, now), null);
+assert.equal(fed.wallet.coins, start.wallet.coins); assert.equal(fed.pet.stats.hunger, 97);
+assert.equal(fed.coinTransactions, start.coinTransactions, 'Feeding never creates a coin transaction');
+const emptyWalletFeed = applyFeed({ ...start, wallet: { coins: 0 }, pet: { ...start.pet, lastCareAt: now } }, now);
+assert.equal(emptyWalletFeed.wallet.coins, 0); assert.equal(emptyWalletFeed.pet.stats.hunger, 97);
+assert.equal(applyFeed({ ...start, pet: { ...start.pet, stats: { ...start.pet.stats, hunger: 100 } } }, now), null);
+assert.equal(start.pet.placedDecorations[0].decorationId, 'bowlBlue');
+assert.equal(start.progress.decorationQuantities.bowlBlue, 1);
+const reopenedBowl = parseGameSaveFromValue(start).save;
+assert.equal(reopenedBowl.pet.placedDecorations.filter(item => item.decorationId === 'bowlBlue').length, 1);
+const withoutBowl = { ...start, pet: { ...start.pet, placedDecorations: [] }, progress: { ...start.progress, decorationsUnlocked: [], decorationQuantities: {} } };
+const migratedBowl = parseGameSaveFromValue(withoutBowl).save;
+assert.equal(migratedBowl.pet.placedDecorations[0].decorationId, 'bowlBlue');
+assert.equal(migratedBowl.wallet.coins, start.wallet.coins);
+assert.equal(parseGameSaveFromValue(migratedBowl).save.pet.placedDecorations.length, 1, 'Old saves receive one starter bowl');
+const storedBowl = parseGameSaveFromValue({ ...start, pet: { ...start.pet, placedDecorations: [] } }).save;
+assert.equal(storedBowl.pet.placedDecorations.length, 0, 'A player can keep the bowl in inventory');
 const old = { ...start, progress: { ...start.progress, completedPuzzleIds: undefined, puzzlesSolved: { easy: 6, medium: 0, hard: 0 } } };
 assert.equal(parseGameSaveFromValue(old).save.progress.completedPuzzleIds.length, 6, 'Existing sequential progress migrates');
 const changed = { ...switchRoomLayout(start.pet, 'room2'), roomPetOffset: { x: .7, y: .2 }, bedId: undefined };
@@ -156,6 +170,58 @@ assert.equal(toySave.pet.placedToys[0].scale, 1.1, 'Toy size survives closing an
 assert.equal(toySave.pet.roomLayouts.room2.placedToys[0].scale, 1.1, 'Per-room layouts retain toy size');
 assert.equal(toySave.pet.savedRoomLayouts.room1.placedToys[0].scale, 1.1, 'Saved room layouts retain toy size');
 console.log('Verified scratching-post resizing, instance isolation, bounds, legacy defaults, and saved sizes.');
+
+const { addRoomDoor, setDoorDestination, switchHomeRoom } = load('@/utils/home-rooms');
+const { normalizePlacedDecorations } = load('@/utils/room-placement');
+const withDoor = addRoomDoor(start.pet, 'bathroom');
+const bathDoor = withDoor.placedDecorations.at(-1);
+assert.equal(bathDoor.doorDestination, 'bathroom');
+assert.equal(addRoomDoor(start.pet, 'livingRoom'), start.pet, 'A door cannot lead to its own room');
+assert.equal(setDoorDestination(withDoor, bathDoor.instanceId, 'bedroom').placedDecorations.at(-1).doorDestination, 'bedroom');
+assert.equal(setDoorDestination(withDoor, 'missing', 'bedroom'), withDoor);
+assert.equal(setDoorDestination(withDoor, bathDoor.instanceId, 'livingRoom'), withDoor);
+const bathroom = switchHomeRoom(withDoor, 'bathroom');
+assert.equal(bathroom.homeRoomId, 'bathroom');
+assert.equal(bathroom.bedId, undefined, 'New spaces do not copy another room’s furniture');
+assert.equal(bathroom.placedToys.length, 0);
+assert.equal(bathroom.placedDecorations[0].doorDestination, 'livingRoom', 'Every new room has a return door');
+assert.equal(switchHomeRoom(bathroom, 'bathroom'), bathroom);
+const furnishedBath = { ...bathroom, roomId: 'room2', placedDecorations: [...bathroom.placedDecorations,
+  { decorationId: 'bathroomMirror', instanceId: 'bath-mirror', offset: { x: .4, y: -.3 } }],
+  savedRoomLayouts: { room2: captureRoomLayout(bathroom) } };
+const livingAgain = switchHomeRoom(furnishedBath, 'livingRoom');
+assert.deepEqual(captureRoomLayout(livingAgain), captureRoomLayout(withDoor), 'Returning restores the original living room');
+const reopenedHouse = parseGameSaveFromValue(JSON.stringify({ ...start, pet: livingAgain, progress: {
+  ...start.progress, roomsUnlocked: ['room1', 'room2'], decorationsUnlocked: ['bathroomMirror'], decorationQuantities: { bathroomMirror: 1 },
+} })).save.pet;
+assert.equal(reopenedHouse.homeRoomId, 'livingRoom');
+assert.equal(reopenedHouse.placedDecorations.at(-1).doorDestination, 'bathroom', 'Free connecting doors survive reopening');
+const bathAgain = switchHomeRoom(reopenedHouse, 'bathroom');
+assert.equal(bathAgain.roomId, 'room2', 'Backgrounds belong to each named space');
+assert.equal(bathAgain.placedDecorations.at(-1).decorationId, 'bathroomMirror');
+assert.ok(bathAgain.savedRoomLayouts.room2, 'Saved layouts are isolated by named space');
+assert.equal(switchHomeRoom(bathAgain, 'bedroom').placedToys.length, 0);
+assert.equal(normalizePlacedDecorations([{ ...bathDoor, doorDestination: 'outside' }])[0].doorDestination, undefined);
+assert.equal(normalizePlacedDecorations([{ ...bathDoor, decorationId: 'plantPotted' }])[0].doorDestination, undefined, 'Only door sprites can connect rooms');
+assert.equal(parseGameSaveFromValue(start).save.pet.homeRoomId, 'livingRoom', 'Old saves retain their room as the living room');
+const { getPlacedDecorationWallFlipped } = load('@/constants/decoration-variants');
+const { updatePlacedDecorationOffsetByInstance, updatePlacedDecorationWallFlipByInstance } = load('@/utils/room-placement');
+const { CAT_DECORATION_CATALOG, isImageDecorationEntry } = load('@/constants/cat-decorations');
+for (const decorationId of ['japaneseDoorAni', 'japaneseSlidingDoorAni']) {
+  assert.ok(isImageDecorationEntry(CAT_DECORATION_CATALOG[decorationId]), 'Door panels stay still instead of looping open');
+  const left = { ...bathDoor, decorationId, offset: { x: -.6, y: -.3 } };
+  assert.equal(getPlacedDecorationWallFlipped(left), true, 'Legacy doors face the left wall automatically');
+  const right = updatePlacedDecorationOffsetByInstance([left], left.instanceId, { x: .6, y: -.3 })[0];
+  assert.equal(getPlacedDecorationWallFlipped(right), false, 'Dragging across the room faces the right wall');
+  const turned = updatePlacedDecorationWallFlipByInstance([left], left.instanceId, false)[0];
+  assert.equal(normalizePlacedDecorations([turned])[0].wallFlipped, false, 'Manual facing survives reload');
+  assert.equal(getPlacedDecorationWallFlipped(turned), false);
+  const moved = updatePlacedDecorationOffsetByInstance([turned], left.instanceId, { x: -.4, y: -.3 })[0];
+  assert.equal(getPlacedDecorationWallFlipped(moved), false, 'Small adjustments preserve manual facing');
+}
+console.log('Verified stationary doors, wall-facing defaults, cross-wall dragging, and saved manual facing.');
+console.log('Verified named rooms, independent furniture/backgrounds, door reassignment, return doors, legacy saves, and persistence.');
+
 assert.deepEqual(JSON.parse(JSON.stringify(getSolvedCounts([puzzle.id]))), { easy: 1, medium: 0, hard: 0 });
 await Promise.all([saveGameSave(start), saveGameSave(first.save), clearGameSave()]);
 assert.equal(await loadGameSave(), null, 'Clearing cannot race an older queued save');

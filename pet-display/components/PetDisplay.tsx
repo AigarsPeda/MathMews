@@ -1,7 +1,7 @@
-import { PetSpriteRenderer } from "@/pet-display/media/sprite/PetSpriteRenderer";
+import { NativeCatDisplay } from "@/components/pet/native/NativeCatDisplay";
 import { PetVideoRenderer } from "@/pet-display/media/video/PetVideoRenderer";
-import { resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
-import { getPetMediaRegistry } from "@/pet-display/registry/dog-video-registry";
+import { type CatSkinId } from "@/constants/cat-skins";
+import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
 import type {
   PetAnimationState,
   PetPlaybackState,
@@ -9,12 +9,9 @@ import type {
 } from "@/pet-display/types";
 import { moderateScale } from "@/utils/scale";
 import { useMemo } from "react";
-import type { SharedValue } from "react-native-reanimated";
-import type { RoomPlayPropFrame } from "@/pet-display/media/sprite/room-play-prop";
 
 type PetDisplayProps = {
   width?: number;
-  resolutionScale?: number;
   loop?: boolean;
   transparentBackground?: boolean;
   petType: PetType;
@@ -25,7 +22,6 @@ type PetDisplayProps = {
   onPress?: () => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (stepIndex: number) => void;
-  roomPlayProp?: SharedValue<RoomPlayPropFrame>;
 };
 
 export function PetDisplay({
@@ -39,12 +35,8 @@ export function PetDisplay({
   loop = false,
   transparentBackground = false,
   width = moderateScale(200),
-  resolutionScale = 1,
-  roomPlayProp,
 }: PetDisplayProps) {
-  const registry = getPetMediaRegistry(petType, {
-    catSkinId: resolveCatSkinId(catSkinId),
-  });
+  const registry = getPetMediaRegistry(petType);
 
   const resolvedPlayback = useMemo((): PetPlaybackState => {
     if (playback) return playback;
@@ -57,34 +49,16 @@ export function PetDisplay({
     };
   }, [mood, playback, registry]);
 
-  if (registry.mediaKind === "sprite") {
-    if (resolvedPlayback.kind === "scenario") {
-      return (
-        <PetSpriteRenderer
-          loop={loop}
-          size={width}
-          resolutionScale={resolutionScale}
-          transparentBackground={transparentBackground}
-          scenarioSteps={resolvedPlayback.steps}
-          roomPlayProp={roomPlayProp}
-          onAnimationComplete={onAnimationComplete}
-          onStepComplete={onStepComplete}
-          onPress={onPress}
-        />
-      );
-    }
-
+  if (registry.mediaKind === "model") {
     return (
-      <PetSpriteRenderer
+      <NativeCatDisplay
+        width={width}
+        skinId={catSkinId}
+        playback={resolvedPlayback}
         loop={loop}
-        size={width}
-        resolutionScale={resolutionScale}
-        transparentBackground={transparentBackground}
-        segment={resolvedPlayback.segment}
-        roomPlayProp={roomPlayProp}
+        onPress={onPress}
         onAnimationComplete={onAnimationComplete}
         onStepComplete={onStepComplete}
-        onPress={onPress}
       />
     );
   }

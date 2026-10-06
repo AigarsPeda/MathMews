@@ -95,7 +95,6 @@
     "giveMoment": "Dod {{name}} brīdi!",
     "notHungry": "{{name}} tagad nav izsalcis.",
     "alreadyHappy": "{{name}} jau ir ļoti laimīgs!",
-    "needCoinsFeed": "Vajag {{cost}} monētas, lai barotu {{name}}!",
     "enjoyedSnack": "{{name}} baudīja uzkodu!",
     "playBox": "Spēlēt ar kasti",
     "enjoyedPlayBox": "{{name}} mīl kasti!",
@@ -128,6 +127,7 @@
     "makeBigger": "Lielāks",
     "makeSmaller": "Mazāks",
     "catCommands": {
+      "bowlEat": "Ēst",
       "sofaSit": "Sēdēt uz dīvāna",
       "sofaSleep": "Gulēt uz dīvāna",
       "toyPlay": "Spēlēties ar rotaļlietu",
@@ -141,7 +141,7 @@
     "resetZoom": "Atjaunot istabas skatu",
     "zoomLevel": "{{zoom}} reizes pietuvināts",
     "a11yPet": "Apmīļot savu draugu",
-    "a11yFeed": "Barot par {{cost}} monētām",
+    "a11yCatOptions": "Atvērt kaķa iespējas",
     "a11ySolve": "Atrisināt matemātikas uzdevumu",
     "a11yStore": "Atvērt mājdzīvnieku veikalu",
     "a11ySettings": "Atvērt iestatījumus",
@@ -168,7 +168,21 @@
     "moveItemleft": "Pārvietot {{name}} pa kreisi",
     "moveItemright": "Pārvietot {{name}} pa labi",
     "moveItemup": "Pārvietot {{name}} uz augšu",
-    "moveItemdown": "Pārvietot {{name}} uz leju"
+    "moveItemdown": "Pārvietot {{name}} uz leju",
+    "rooms": {
+      "livingRoom": "Viesistaba",
+      "bedroom": "Guļamistaba",
+      "bathroom": "Vannasistaba",
+      "kitchen": "Virtuve"
+    },
+    "chooseRoom": "Izvēlies istabu",
+    "addDoor": "Pievienot durvis",
+    "doorsHint": "Izvēlies, uz kuru istabu ved durvis. Novieto tās pie sienas, pabeidz iekārtošanu un pieskaries durvīm, lai dotos uz istabu.",
+    "doorToRoom": "Durvis uz istabu: {{room}}",
+    "goToRoom": "Doties uz istabu: {{room}}",
+    "doorLeadsTo": "Ved uz istabu: {{room}}",
+    "chooseDoorDestination": "Izvēlies, kurp ved šīs durvis",
+    "furnishRoom": "Atrast mēbeles un rotaļlietas"
   },
   "store": {
     "title": "Mājdzīvnieku veikals",
@@ -323,8 +337,8 @@
       "japaneseClosetDoor1Open": "1. durvis\natvērtas",
       "japaneseClosetDoor2Closed": "2. durvis\naizvērtas",
       "japaneseClosetDoor2Open": "2. durvis\natvērtas",
-      "japaneseDoorAni": "Shoji durvis\n(animētas)",
-      "japaneseSlidingDoorAni": "Bīdāmās durvis\n(animētas)",
+      "japaneseDoorAni": "Shoji durvis",
+      "japaneseSlidingDoorAni": "Bīdāmās durvis",
       "lavaLampOff": "Lavas lampa\n(izslēgta)",
       "lavaLampAni": "Lavas lampa\n(animēta)",
       "livingAirCon": "Gaisa\nkondicionieris",

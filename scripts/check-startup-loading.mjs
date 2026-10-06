@@ -13,7 +13,7 @@ const assetMocks = {
   '@/constants/cat-decorations': { CAT_DECORATION_CATALOG: { a: { source: 1 }, b: { source: 2 }, c: { source: 3 } } },
   '@/constants/cat-beds': { CAT_BED_SOURCES: { duplicate: 1 } },
   '@/constants/cat-rooms': { CAT_ROOM_SOURCES: {} },
-  '@/constants/cat-splash': { CAT_SPLASH_SOURCE: 1 },
+  '@/assets/3d/native/cat-orange.glb': 1,
   '@/constants/cat-toys': { CAT_TOY_SOURCES: {} },
   'react-native': { Platform: { OS: 'ios' } },
   'expo-asset': { Asset: { fromModule: id => ({ downloaded: false, uri: String(id), downloadAsync: async () => { if (id === 2) throw Error('offline'); } }) } },

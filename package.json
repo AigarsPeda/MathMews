@@ -8,7 +8,6 @@
     "android": "expo run:android",
     "preios": "expo prebuild --platform ios --no-install --no-clean",
     "ios": "expo run:ios",
-    "web": "expo start --web",
     "lint": "expo lint",
     "test:startup": "node scripts/check-native-launch.mjs && node scripts/check-splash-continuity.mjs && node scripts/check-startup-loading.mjs && node scripts/check-status-bar.mjs",
     "build:dev:ios": "npx eas-cli@24.10.0 build --profile development --platform ios",
@@ -21,7 +20,9 @@
     "assets:verify": "node scripts/3d/verify.mjs",
     "typecheck": "tsc --noEmit",
     "test:game": "node scripts/check-game.mjs",
-    "assets:icons": "node scripts/3d/build-app-icons.mjs"
+    "assets:icons": "node scripts/3d/build-app-icons.mjs",
+    "postinstall": "node scripts/native/patch-filament.mjs",
+    "assets:native": "BRAINPET_BLENDER_ASSET_DIR=/tmp/brainpet-native-blends /Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/export-native.py"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",
@@ -55,6 +56,7 @@
     "react-dom": "19.2.3",
     "react-i18next": "^17.0.15",
     "react-native": "0.86.3",
+    "react-native-filament": "1.11.0",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-purchases": "^10.11.0",
     "react-native-purchases-ui": "^10.11.0",
@@ -62,7 +64,8 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.10.1"
+    "react-native-worklets": "0.10.1",
+    "react-native-worklets-core": "^1.6.3"
   },
   "devDependencies": {
     "@types/react": "~19.2.14",

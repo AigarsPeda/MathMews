@@ -66,7 +66,6 @@ export const MAX_LIVES = 5;
 export const LIFE_REGEN_MINUTES = 30;
 export const LIFE_BUY_COST = 15;
 
-export const FEED_COST = 4;
 export const FEED_HUNGER_RESTORE = 25;
 export const FEED_HAPPINESS_BOOST = 5;
 export const PET_HAPPINESS_BOOST = 10;

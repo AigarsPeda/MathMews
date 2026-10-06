@@ -6,7 +6,7 @@ import ts from 'typescript';
 
 const states = [];
 const sharedValues = [];
-let stateIndex = 0, sharedIndex = 0;
+let stateIndex = 0, sharedIndex = 0, stageZoom = 1;
 const React = {
   createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
   useMemo: fn => fn(), useCallback: fn => fn, useEffect: () => {},
@@ -20,6 +20,7 @@ const React = {
 };
 const shared = () => ({ get: () => 0, set() {} });
 const mocks = {
+  '@/utils/native-room-world': { buildNativeRoomWorld: () => ({ width: 320, height: 320, objects: [], home: [0,0,0] }) },
   '@/utils/room-activities': { buildRoomActivity: () => null },
   '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, scale: shared(), facing: shared(), objectX: shared(), objectY: shared(), objectRotation: shared(), returnHome() {}, startActivity() {} }) },
   react: React,
@@ -49,11 +50,16 @@ const mocks = {
   '@/utils/room-layer-order': { normalizeRoomLayerOrder: () => [], ROOM_PET_LAYER_Z_INDEX: 1 },
   '@/utils/room-depth': { getRoomDepthZIndex: y => y, getRoomObjectDepthAnchor: () => .38, isRoomBackgroundDecoration: () => false },
   '@/constants/game': { GameColors: {} },
-  '@/constants/pet-display': { USE_CAT_SPRITE_PETS: true },
-  '@/constants/cat-sprites': { resolveSpriteDisplaySize: value => value },
   '@/constants/cat-toys': { getToyDisplaySize: () => 30 },
   '@/constants/cat-beds': { getEquippedBedScale: () => 1, getBedDisplaySize: () => 120, getCatBedSource: () => undefined },
 };
+mocks['@/hooks/use-room-camera'] = { useRoomCamera: () => ({
+  x: mocks['react-native-reanimated'].useSharedValue(0),
+  y: mocks['react-native-reanimated'].useSharedValue(0),
+  scale: mocks['react-native-reanimated'].useSharedValue(stageZoom),
+  zoom: stageZoom, reset() {}, gesture: 'room-gesture',
+}) };
+mocks['react-native-gesture-handler'] = { GestureDetector: 'GestureDetector' };
 const module = { exports: {} };
 const source = ts.transpileModule(fs.readFileSync('components/pet/PetStage.tsx', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.React },
@@ -69,15 +75,15 @@ const flatten = (node, ancestors = []) => !node?.props ? [] : [
 const style = input => Object.assign({}, ...[input].flat(Infinity).filter(Boolean).map(value => value.read ? value.read() : value));
 const offset = { x: -.4, y: .6 };
 function render(zoom, speechMessage = 'Hello!') {
-  stateIndex = 0; sharedIndex = 0; states[0] = zoom;
+  stateIndex = 0; sharedIndex = 0; stageZoom = zoom;
   return flatten(module.exports.PetStage({
     name: 'Cat', petType: 'cat', compact: true, roomPetOffset: offset,
     stats: { level: 1, hunger: 90, happiness: 90 }, wisdom: 90, playback: {}, speechMessage,
   }));
 }
 
-states[1] = { width: 320, height: 320 };
-for (const zoom of [1, 2, 3]) {
+states[2] = { width: 320, height: 320 };
+for (const zoom of [1, 1.73, 2.36, 3]) {
   const nodes = render(zoom);
   const bubbles = nodes.filter(({ node }) => node.type === 'PetSpeechBubble');
   assert.equal(bubbles.length, 1, 'Every zoom must use one speech bubble');
@@ -90,7 +96,8 @@ for (const zoom of [1, 2, 3]) {
   assert.equal(bubble.props.pointerEvents, 'none', 'Speech must not intercept scene pans');
   assert.ok(!ancestors.some(node => node.props.onPanResponderMove),
     'Speech text must render outside the scaled scene to stay sharp');
-  const scene = nodes.find(({ node }) => node.props.onPanResponderMove).node;
+  const viewport = nodes.find(({ node }) => node.type === 'GestureDetector').node;
+  assert.ok(!ancestors.includes(viewport.props.children[0].props.children[0]), 'Speech is outside the scaled artwork');
   pet.props.onPositionChange({ x: -40, y: 60 });
   for (const scale of [1, 1.25, 1.75, 2, 2.5, 3]) {
     sharedValues[0].set(0); sharedValues[1].set(0); sharedValues[2].set(scale);
@@ -107,8 +114,8 @@ for (const zoom of [1, 2, 3]) {
   }
   if (zoom > 1) {
     const beforePan = style(bubble.props.style).transform;
-    scene.props.onPanResponderGrant();
-    scene.props.onPanResponderMove(null, { dx: 45, dy: -60 });
+    sharedValues[0].set(sharedValues[0].get() + 45);
+    sharedValues[1].set(sharedValues[1].get() - 60);
     const afterPan = style(bubble.props.style).transform;
     assert.equal(afterPan[0].translateX - beforePan[0].translateX, 45,
       'Speech and cat must move by the same screen distance during panning');
@@ -145,7 +152,7 @@ dragTarget.props.onPanResponderMove(null, { dx: 25, dy: -10 });
 renderDraggable();
 assert.equal(reportedPosition.x, -15, 'Live cat coordinates must be reported before drag release');
 assert.equal(reportedPosition.y, 50);
-console.log('Verified cat-attached speech at 1×/2×/3×, live cat movement, panning and native text size during zoom.');
+console.log('Verified cat-attached speech at fractional zoom, live cat movement, panning and native text size during zoom.');
 
 for (const [allowDrag, interactive] of [[true, true], [false, true], [true, false]]) {
   stateIndex = 0; sharedIndex = 0;

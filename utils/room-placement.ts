@@ -1,3 +1,4 @@
+import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
@@ -108,6 +109,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
 
       placed.push({
         decorationId: placement.decorationId,
+        doorDestination: isRoomDoor(placement.decorationId) && isHomeRoomId(record.doorDestination) ? record.doorDestination : undefined,
         instanceId: resolvePlacementInstanceId(
           record,
           placement.decorationId,
@@ -116,7 +118,8 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         offset,
         rotationIndex:
           placement.rotationIndex > 0 ? placement.rotationIndex : undefined,
-        wallFlipped: record.wallFlipped === true ? true : undefined,
+        wallFlipped: isRoomDoor(placement.decorationId) && typeof record.wallFlipped === "boolean"
+          ? record.wallFlipped : record.wallFlipped === true ? true : undefined,
         poweredOn: isAirConditionerDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
         scale: scale !== undefined && scale !== 1 ? scale : undefined,
       });
@@ -269,9 +272,12 @@ export function updatePlacedDecorationOffsetByInstance(
   instanceId: string,
   offset: RoomItemOffset,
 ): PlacedDecoration[] {
-  return (placedDecorations ?? []).map((item) =>
-    item.instanceId === instanceId ? { ...item, offset } : item,
-  );
+  return (placedDecorations ?? []).map((item) => {
+    if (item.instanceId !== instanceId) return item;
+    const crossedWall = (item.offset.x < 0) !== (offset.x < 0);
+    return { ...item, offset,
+      wallFlipped: isRoomDoor(item.decorationId) && crossedWall ? offset.x < 0 : item.wallFlipped };
+  });
 }
 
 export function updatePlacedToyScaleByInstance(
@@ -337,7 +343,7 @@ export function updatePlacedDecorationWallFlipByInstance(
 
     return {
       ...item,
-      wallFlipped: wallFlipped ? true : undefined,
+      wallFlipped: isRoomDoor(item.decorationId) ? wallFlipped : wallFlipped ? true : undefined,
     };
   });
 }

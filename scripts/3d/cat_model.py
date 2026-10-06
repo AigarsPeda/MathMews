@@ -474,16 +474,16 @@ def pose_cat(rig, state, t):
         rig['feet'][1].location.z += .045 * pulse(t,.58,.12)
     if state.startswith('walk'):
         standing = 1
-        # A four-beat walk: each planted paw travels backward at constant speed
-        # relative to the torso, then lifts and swings forward. Stance occupies
-        # 64% of the cycle, so at least two paws always support the body.
+        # Lateral-sequence feline walk: hind, same-side front, opposite hind,
+        # opposite front. Planted paws move backward at the runtime's stride
+        # speed; low, smooth swings avoid a high-stepping marching gait.
         yaw = {'walk': 107.5, 'walkAwayDiagonal': 152.5, 'walkAway': 197.5,
                'walkTowardDiagonal': 62.5, 'walkToward': 17.5}[state]
         root.rotation_euler.z = math.radians(yaw)
-        body.location = (.012 * math.sin(phase), .08, .59 + .008 * math.cos(phase * 2))
+        body.location = (.006 * math.sin(phase), .08, .59 + .004 * math.cos(phase * 2))
         body.scale = (.98, 1.40, .80)
         head.scale = (.94, .94, .94)
-        head.location = (0, -.32, 1.02 + .006 * math.cos(phase * 2))
+        head.location = (0, -.32, 1.02 + .003 * math.cos(phase * 2))
         head.rotation_euler = (.04, .025 * math.sin(phase), 0)
         for side, front, back in zip((-1, 1), rig['feet'], rig['back_feet']):
             front.location.x = side * .23
@@ -491,20 +491,21 @@ def pose_cat(rig, state, t):
             back.location.x = side * .27
             back.scale = (.16, .18, .105)
         for paw, offset, y, height in (
-                (rig['back_feet'][0], 0, .43, .105), (rig['feet'][0], .25, -.49, .12),
-                (rig['back_feet'][1], .50, .43, .105), (rig['feet'][1], .75, -.49, .12)):
-            gait = (t + offset) % 1
-            if gait < .64:
-                travel = -.16 + .32 * gait / .64
+                (rig['back_feet'][0], 0, .44, .105), (rig['feet'][0], .18, -.38, .12),
+                (rig['back_feet'][1], .50, .44, .105), (rig['feet'][1], .68, -.38, .12)):
+            gait = (t - offset) % 1
+            if gait < .60:
+                travel = -.24 + .80 * gait
                 lift = 0
             else:
-                swing = (gait - .64) / .36
-                travel = .16 - .32 * smoothstep(swing)
-                lift = .10 * math.sin(math.pi * swing)
+                swing = (gait - .60) / .40
+                # Hermite swing matches the stance velocity at both contacts.
+                travel = .24 + .32 * swing - 2.40 * swing**2 + 1.60 * swing**3
+                lift = .065 * math.sin(math.pi * swing)**2
             paw.location.y = y + travel
             paw.location.z = height + lift
             paw.scale.z = height
-            paw.rotation_euler = (-.18 * lift / .10, 0, 0)
+            paw.rotation_euler = (-.10 * lift / .065, 0, 0)
         tail.location = (0, .65, .44)
         tail.rotation_euler = (0, .08 * math.sin(phase), .10 * math.sin(phase))
     if state in ('jumpOn', 'jumpOff'):

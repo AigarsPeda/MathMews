@@ -43,15 +43,16 @@ const mocks = {
 for (const [file, name] of [
   ['components/ui/AppIcon', 'AppIcon'], ['components/ui/IconText', 'IconText'],
   ['components/economy/GameHeaderStats', 'GameHeaderStats'], ['components/home/HeaderChip', 'HeaderChip'],
-  ['components/home/ActivitiesMenuButton', 'ActivitiesMenuButton'], ['components/pet/PetStage', 'PetStage'],
+  ['components/pet/PetStage', 'PetStage'],
 ]) mocks[`@/${file}`] = { [name]: name };
 
 function load(file) {
   const absolute = path.resolve(root, file);
   if (cache.has(absolute)) return cache.get(absolute).exports;
   const module = { exports: {} }; cache.set(absolute, module);
+  if (absolute.endsWith('.json')) { module.exports = JSON.parse(fs.readFileSync(absolute, 'utf8')); return module.exports; }
   const code = ts.transpileModule(fs.readFileSync(absolute, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
   }).outputText;
   vm.runInNewContext(code, {
     module, exports: module.exports, Date: TestDate, Math, Map, Set,
@@ -88,10 +89,12 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   };
   display = { playback: { kind: 'segment', mood: 'idle' }, baseMood: 'idle', isCareBlocked: busy, isCareAnimationPlaying: busy, send: command => commands.push(command) };
   const tree = nodes(Home());
-  return { menu: tree.find(node => node.type === 'ActivitiesMenuButton').props, commands, debits,
+  assert.equal(tree.some(node => node.type === 'ActivitiesMenuButton'), false, 'The footer activity control is removed');
+  assert.equal(tree.some(node => node.props.accessibilityLabel === 'home.a11yFeed'), false, 'The footer feed control is removed');
+  return { menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage').props.onPlay }, commands, debits,
     stage: tree.find(node => node.type === 'PetStage').props,
     store: tree.find(node => node.type === 'HeaderChip' && node.props.accessibilityLabel === 'home.a11yStore').props.onPress,
-    feed: tree.find(node => node.type === 'Pressable' && node.props.accessibilityLabel === 'home.a11yFeed').props.onPress };
+    feed: tree.find(node => node.type === 'PetStage').props.onFeed };
 }
 
 {
@@ -110,15 +113,6 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   assert.equal(routes.length, 0, 'Leaving Home cancels a pending shop navigation');
 }
 console.log('Verified the shop waits for room animations and cancels pending navigation when Home loses focus.');
-{
-  const test = home();
-  const actions = [{ label: 'Sleep on the sofa', icon: 'sleep', onPress() {} }];
-  test.stage.onRoomActionsChange(actions);
-  stateIndex = 0;
-  const menus = nodes(Home()).filter(node => node.type === 'ActivitiesMenuButton');
-  assert.equal(menus.length, 1, 'Home has one combined activity menu');
-  assert.equal(menus[0].props.roomActions, actions, 'Home forwards the current room commands to Activities');
-}
 for (const activity of activities) {
   for (const happiness of [40, 100]) for (const coins of [0, 100]) {
     const test = home({ happiness, coins });
@@ -128,7 +122,7 @@ for (const activity of activities) {
     assert.ok(Math.abs(game.pet.stats.happiness - Math.min(100, happiness + activity.happinessBoost)) < .001, "Tiny elapsed care decay preserves the play boost");
     assert.equal(test.commands.at(-1).mood, activity.mood);
     const commandCount = test.commands.length;
-    test.menu.onSelect(activity); test.feed();
+    test.menu.onSelect(activity);
     assert.equal(test.commands.length, commandCount, 'Reject duplicate actions before render');
     assert.equal(test.debits.length, 0, 'Playing and duplicate actions must never charge coins');
   }
@@ -143,11 +137,11 @@ for (const activity of activities) {
 }
 
 const { usePetDisplayEngine: renderDisplayEngine } = load('pet-display/engine/use-pet-display-engine.ts');
-const { getPetMediaRegistry } = load('pet-display/registry/dog-video-registry.ts');
+const { getPetMediaRegistry } = load('pet-display/registry/media-registry.ts');
 function engine(pet) { stateIndex = 0; effects = []; captureEffects = true; const result = renderDisplayEngine(pet); captureEffects = false; effects.forEach(fn => fn()); return result; }
 for (const skin of ['orange', 'grey', 'white']) for (const activity of activities) for (const baseMood of ['idle', 'resting', 'sleeping']) {
   states = []; timers.clear(); display.baseMood = baseMood;
-  const pet = { ...game.pet, catSkinId: skin }, registry = getPetMediaRegistry('cat', { catSkinId: skin });
+  const pet = { ...game.pet, catSkinId: skin }, registry = getPetMediaRegistry('cat');
   let current = engine(pet);
   current.send({ type: 'beginCareAction' });
   current.send({ type: 'playAction', wasAsleep: baseMood === 'sleeping', mood: activity.mood });
@@ -161,7 +155,9 @@ for (const skin of ['orange', 'grey', 'white']) for (const activity of activitie
   else {
     assert.equal(current.playback.mood, activity.mood);
     assert.equal(current.playback.segment.loop, false);
-    assert.ok(current.playback.segment.sprite.pages.length > 0);
+    assert.equal(registry.mediaKind, "model");
+    assert.ok(current.playback.segment.model.duration > 0);
+    assert.equal(current.playback.segment.model.rate, 1);
     assert.ok(registry.oneShotStates.includes(activity.mood));
   }
   current.send({ type: 'animationComplete', completedMood: activity.mood }); current = engine(pet);

@@ -1,21 +1,33 @@
 # Math Mews handoff
 
-Updated: 2026-10-04. Project: `/Users/aigarspeda/Desktop/BrainPet`.
+Updated: 2026-10-06. Project: `/Users/aigarspeda/Desktop/BrainPet`.
 
 ## Goal and user decisions
 
-Build a native iOS/Android math game with an expressive Blender-rendered companion, room decorating, puzzles, rewards, pet care, sleep, inventory, and saved progress.
+Build a native iOS/Android math game with an expressive rigged 3D companion, room decorating, puzzles, rewards, pet care, sleep, inventory, and saved progress.
+
+Latest fixes: startup portraits and native launch images now render from the shipped orange GLB using `render-native-branding.py`. Cat exports also regenerate branding; `branding-source.json` and startup checks reject stale portraits. `use-room-camera.ts` provides continuous focal-point pinch zoom from 1× to 3× and bounded panning. The zoom/reset button has been removed; pinch inward to return to 1×. Menus remain enabled when zoomed. Native iOS taps opened the sofa options at 1.4× and 2.36×. The user confirmed one-finger panning works after pinching. The screenshot is `docs/art/native-cat-rebuild/ios-pinch-object-menu.png`.
+
+The sofa tail solver now refines clearing angles continuously and follows a local solution when the anchored root cannot clear a collider. It avoids exhaustive per-frame searches and switching axes. Narrow sofas seat the fixed-size cat along the cushion to clear the idle tail attachment. A 1,200-frame shipped-skeleton check covers five sofa sizes, requires no blocked idle contacts and limits consecutive tip movement below .02 units. Other full-body poses remain authored; tail rotation alone cannot always free a root enclosed by furniture. The actor memoizes joints by the native asset handle and retains its worklet across UI renders. Room callbacks and collider centers are stable, and the room scene is memoized.
+
+Validation on 2026-10-06: game/startup checks, TypeScript, lint, asset coverage, both Hermes exports and both native debug builds pass. iOS cold launch displayed the current GLB portrait, and the final sofa sitting pose is captured in `docs/art/native-cat-rebuild/ios-sofa-continuity.png`. Native Android interactions and physical-device performance remain unverified.
+
+The user does not want to pay for a cat model. The cat is now original Blender geometry from `original_cat.py`, with a fused sealed body, rounded head/paws, short neck, triangular ears and an upright hooked tail. Its anatomical rest skeleton and normalized skin weights are generated in the same rest pose. `game_cat.py` adds expressions, coat textures and all 36 game actions. Belly weights are restricted away from the leg regions; elbows use stable backward poles and rear knees use forward poles. The collar is painted on the deforming skin so it cannot float away in seated poses. The editable result is `prototypes/cat-model/cat-orange.blend`. The downloaded J-Toastie source and its study script are superseded.
 
 - The app will not be used on the web. Use native menus wherever practical.
-- Keep the approved cream dumpling cat, pastel room style, upright cupped ears, and 1×/2×/3× zoom with panning.
+- Follow the latest compact cartoon cat proportions, game coat colors, pastel room style, upright cupped ears, and continuous 1×–3× pinch zoom with panning. Real-cat reference photos guide torso anatomy.
 - Use the app's original colorful Blender icons across the interface and native menus.
 - All four Play activities are free, including at zero coins and 100% happiness.
 - Facial expressions, whiskers, and plush surfaces must match across all coats and animations.
 - Keep the room visible. Casual speech is brief; loading shows the cat, title, and one honest progress bar.
 
+Current original cat update on 2026-10-06: all three coats now use an original 32,182-vertex connected surface and 36 clips. Final game/startup checks, TypeScript, lint and asset verification pass. The actual orange GLB passed five deformation samples for every clip, and a full walk was rendered to `docs/art/native-cat-rebuild/original-walk.gif`. New regressions verify stable anatomical elbow/knee poles through walking and sitting, in addition to distance-matched planted paws and 1,200 consecutive sofa-tail frames. Native iOS walked the original cat to the sofa and held its seated pose; see `ios-original-sofa.png`. The furniture avoidance radius now covers the wider head. Current media is 74.2 MiB; native GLBs are 40.1 MiB. Android interaction and real-device performance remain unverified.
+
+The cartoon references came from [Anko3d's cat/dog pack](https://www.turbosquid.com/3d-models/3d-model-cute-cartoon-dog-cat-1351428). Use the renders only as visual proportion references. The user explicitly rejected buying models, and the current mesh was built independently in Blender. No paid asset or downloaded mesh is needed. Keep the native engine and existing room interactions; further art refinement should use the editable original rig.
+
 ## Start here
 
-The code and generated artwork are committed in `de929a8` (`feat: add custom icons and expressive plush cat visuals`). Git was clean when checked on 2026-10-04, before this documentation update. Native build/install verification remains listed under Next steps.
+The native Filament migration, connected cat rebuild and cleanup are present in the working tree and have not been committed. Do not discard uncommitted changes. The last pre-migration art commit was `de929a8`; its sprite pipeline is superseded. Read [native engine notes](docs/native-room-engine.md) and [asset instructions](assets/3d/README.md) for the current architecture.
 
 Protect the existing game: profile `Ios28`, save `fc4fbe64-9d64-4dc6-a144-ec42cd02afdf`, user `f1c08daf-2037-4a26-a738-36a4b2b72247`. A one-time 100,000-coin test grant was already applied. Preserve the live balance, progress, placement, and inventory; do not repeat the grant or restore a historical balance. The last observation in this chat was 99,592 coins, not a target balance.
 
@@ -33,30 +45,15 @@ See [icon documentation and rebuild instructions](docs/art/app-icons/README.md) 
 
 ### Cat art and animation
 
-All three coats share the same geometry and facial rig. Six tapered whiskers follow the head; expressions include a content smile, happy crescent eyes, sleepy lids, curiosity, surprise, and gentle disappointment with encouraging recovery. Existing mouth, tongue, brows, tears, and eye highlights remain.
+All three coats use the same original connected surface and 36 clips. The cat has a large rounded head, short neck, compact torso and thicker legs. Normal idle preserves its standing shape; sofa resting uses the separate `sit` clip. Preserve action meanings and facial expressions. Native GLB skin padding must point zero-weight slots at a valid influencing joint: pointing them at a hidden zero-scale prop caused black shading in Filament. Current review renders are in `docs/art/native-cat-rebuild/`.
 
-The shared plush material covers coat, ivory limbs/muzzle, cheeks, and inner ears. It uses local Generated coordinates, directional noise, roughness `0.90`, sheen `0.40`, noise scale `130`, bump strength `0.38`, and distance `0.012`. Furred spheres use denser geometry to remove visible faceting. Eyes remain glossy. Preserve proportions, animation controls, camera framing, and timing.
+Filament renders the full cat world. Bullet handles movable toys; the cat navigates around furniture, approaches seats and waits for landing before queued actions. Its size stays constant with an orthographic camera, and walk cadence follows distance. Doors remain closed, stationary and aligned to their wall. React Native retains accessible menus, controls, store/editor UI and the save format. Sofa physics now uses 13 source-mesh boxes, and `native-cat-contact.ts` adjusts the four-joint tail plus its end marker against those shapes before skinning. It preserves bone lengths and works with Reduce Motion. The centered seat anchor and sideways orientation keep the tail base in the open cushion space. This does not add whole-body ragdoll or per-vertex collision for other limbs.
 
-Current source/asset counts checked during this organization:
+The native catalog contains 292 GLBs (288 inventory items, three cats, airflow), totaling 40.1 MiB under a 60 MiB limit. All game media totals 74.2 MiB under a 100 MiB limit. Static catalog images and 26 small animated strips remain for UI thumbnails; supported dog videos and branding inputs remain. Cleanup removed obsolete cat sprite pages, separate raster play props, the early native animation lab and prototype assets, unused graphics/videos, and superseded sprite review files, freeing about 2.7 GB.
 
-| Item | Current count |
-| --- | ---: |
-| Cat animation families per coat | 35 |
-| Clips across orange, grey, and white | 105 |
-| Cat frames across all coats | 6,336 |
-| Cat WebP pages | 1,500 |
-| Separate play-prop WebP pages | 84 |
-| Combined compressed cat/prop pages | 112.35 MiB |
-| Largest decoded RGBA page | 9 MiB |
-| Catalog assets | 288: 15 rooms and 273 placeables |
+`catModelRegistry` is skin-independent; native displays choose the coat model separately. `clips.json` supplies authored timing to the registry and renderer. `useAnimationActivity` shares focus, background and Reduce Motion policy; `useSpriteClock` now only advances animated UI thumbnails. Thumbnail packing deletes intermediate frames after successful output.
 
-Cat pages use WebP quality `83`, alpha quality `100`. The combined compressed limit is 120 MiB. Standard cells are 768 px, four per 1536×1536 page. Room movement uses 384 px cells, twelve per 1536×1152 page. Each active layer retains current/next pages; this is not a measured total app-memory budget.
-
-The bowl and box slide through the left sprite edge. Feeding is four seconds; `box1 → box2 → box3` lasts 7.5 seconds with matching hidden joins. Ball toss and Feather chase last five seconds; Yarn roll lasts four. Actions recover to the normal sitting pose. Reverse wake/stand clips run at 72 fps, about 0.83/0.67 seconds; forward sleep/rest retains 24 fps.
-
-The room supports standing walk views, sofa jumping/sitting/sleeping, toy interactions, interruption/return-home handling, and queued commands during jumps. Room props have separate synchronized layers. Camera movement preserves saved placement; editing stays at 1×. The shop waits for the active cat to return before navigating.
-
-See [facial rig](docs/art/cat-faces/README.md), [plush coat](docs/art/cat-coat/README.md), [expression review](docs/art/cat-faces/review.png), and [coat comparison](docs/art/cat-coat/comparison.png). Care/play GIFs for all coats and walk/sofa GIFs are in `docs/art/`.
+Feeding lasts four seconds; `box1 → box2 → box3` lasts 7.5 seconds. Ball toss and Feather chase last five seconds, Yarn roll four. Wake/stand reuses authored clips in reverse at 3× speed. Preserve existing care, free-play, interruption, return-home and wallet behavior. The shop waits for the cat to return before navigating.
 
 ### Speech and rendering
 
@@ -64,15 +61,15 @@ See [facial rig](docs/art/cat-faces/README.md), [plush coat](docs/art/cat-coat/R
 
 The bubble has a 170 pt scaled maximum width, reduced padding, and a brief opacity fade that respects Reduce Motion. Text stays at native screen size in a viewport overlay. The projected tail follows the cat during zoom, panning, and dragging; measured height accommodates wrapped text. Speech does not intercept room touches and is hidden during room activities/decorating.
 
-Sprite rendering keeps one Canvas through clip changes and retains the last visible texture/coordinates until the next page is ready. Playback pauses while backgrounded/covered; Reduce Motion holds loops while still completing semantic actions. User confirmation of intermittent whole-cat flashing remains pending; intentional eye blinks are separate.
+Native models keep their scene and animator through clip changes. Playback pauses while backgrounded/covered; Reduce Motion holds loops while still completing semantic actions. The old sprite page-loading implementation is removed.
 
 ### Startup, branding, and purchases
 
 `with-ios-launch-image` must stay before `expo-splash-screen` in the plugin list because Info.plist mods execute in reverse order. iOS system launch uses ordinary bundled `MewsLaunch{,@2x,@3x}.png` files with `UILaunchScreen`; Expo's storyboard supplies the React-root cover. Both use the same 320 pt launch artwork containing the 240 pt brand and loading track.
 
-React startup uses a 240×240 pt branding image and a 192×192 pt portrait, with explicit dimensions and clipping. The portrait matches the first orange idle cell and stays until the Canvas is ready. Initial safe-area metrics permit immediate rendering. Loading reflects actual asset/local-save/auth/cloud readiness; after a timeout, local gameplay can continue without pretending pending work completed.
+React startup uses a 240×240 pt branding image and a 192×192 pt portrait, with explicit dimensions and clipping. The retained still portrait stays until the native cat reports readiness. Initial safe-area metrics permit immediate rendering. Loading reflects actual asset/local-save/auth/cloud readiness; after a timeout, local gameplay can continue without pretending pending work completed.
 
-Plush artwork, portraits, splash sheets, and branding have been regenerated. Both native projects were prebuilt with the new artwork. Native app icons and system launch images require the next native build/install to take effect; gameplay artwork was checked through the development app.
+The patched iOS and Android clients built on 2026-10-05. Rebuild/reinstall when native dependencies, system app icons or launch artwork change; JavaScript cleanup uses the existing development client.
 
 Missing/invalid RevenueCat configuration disables purchases without crashing gameplay. Development uses Test Store; production needs real iOS/Android API keys and must reject Test Store keys in Release.
 
@@ -87,28 +84,28 @@ Cloud sync is local-first whole-save snapshots, with timestamp comparison on ini
 | Shared icon system | `components/ui/AppIcon.tsx`, `IconText.tsx`, `constants/app-icons.ts`, `inline-icons.ts`, `assets/icons/` |
 | Room controls/motion | `components/pet/PetStage.tsx`, `hooks/use-room-activity.ts`, `use-room-editor.ts`, `utils/room-activities.ts`, `constants/cat-room-motion.ts` |
 | Speech | `hooks/use-pet-speech.ts`, `utils/pet-speech.ts`, `components/pet/PetSpeechBubble.tsx` |
-| Display engine/sprites | `pet-display/engine/`, `pet-display/media/sprite/` |
-| Blender generation | `scripts/3d/cat_model.py`, `render_assets.py`, `clips.json`, `inventory.json` |
+| Display engine and native playback | `pet-display/engine/`, `pet-display/registry/cat-model-registry.ts`, `components/pet/native/` |
+| Native world and shared playback policy | `utils/native-room-world.ts`, `hooks/use-animation-activity.ts` |
+| Blender generation | `scripts/3d/export-native.py`, `game_cat.py`, `original_cat.py`, `render_assets.py`, `clips.json` |
 | Packing/branding | `scripts/3d/pack.mjs`, `scripts/generate-branding.mjs` |
 | Startup | `plugins/with-ios-launch-image.js`, `components/branding/SplashGate.tsx`, `lib/init-game-asset-prefetch.ts`, `utils/prefetch-game-assets.ts` |
 | Save synchronization | `hooks/use-cloud-save-sync.ts`, `services/cloud-save/` |
 | Operation-path puzzle | `components/puzzle/OperationPathTask.tsx`, `scripts/check-operation-path.mjs` |
 
-Production editable Blender scenes live in `/Users/aigarspeda/Desktop/BrainPet-blender-assest`, outside the runtime bundle. `BRAINPET_BLENDER_ASSET_DIR` overrides that location. Back up the library separately from Git. Editable icon/face review scenes also live under `docs/art/*/source/`; they are not runtime assets.
+Production editable Blender scenes live in `/Users/aigarspeda/Desktop/BrainPet-blender-assest`, outside the runtime bundle. `BRAINPET_BLENDER_ASSET_DIR` overrides that location. Back up the library separately from Git. Editable icon review scenes remain under `docs/art/*/source/`; they are not runtime assets.
 
-The Python generator recreates scenes and overwrites manual changes. Update the builder first, or render hand-edited `.blend` scenes directly. Runtime PNG/WebP assets stay in this repository; Metro excludes source scenes and intermediate render frames.
+The Python generator recreates scenes and overwrites manual changes. Update the builder first, or render hand-edited `.blend` scenes directly. Runtime GLB and UI PNG assets stay in this repository; Metro excludes source scenes and intermediate render frames.
 
 ## What worked and verification
 
-Latest completed checks in this chat on 2026-10-04:
+Latest completed checks on 2026-10-05:
 
-- `npm run test:game`, `npm run typecheck`, and repository-wide `npm run lint` passed after the speech change. Older lint-failure statements in the archive are superseded by this result.
-- Game checks cover puzzles/rewards, save/care behavior, page loading and continuity, room activities/depth/decorating, native menus, icons, free play, speech anchoring/timers, and texture budgets. Operation-path checks cover visible/editable choices, dependent results, and explicit submission.
-- The preceding art rebuild passed full asset verification, startup checks, and Blender face/care/play/room-motion checks, including saved facial/care scenes. These were not rerun solely for this documentation edit.
-- Native iPhone simulator checks covered happy petting, neutral/sleeping expressions, plush idle/petting at 3×, and compact petting speech disappearing without the reminder returning.
-- An earlier packaged Release cold-launch recording showed continuous native/loading branding after the launch-image fix. The newly regenerated native artwork still needs build/install verification; physical-iPhone cold launch remains outstanding.
+- Game, startup, TypeScript, lint and bundled asset verification passed during the native migration and cat torso correction. Cleanup game, TypeScript, lint and asset checks also pass; iOS and Android Hermes exports also pass. The cleaned iOS client cold-launched, completed feather play, restored its controls and kept the wallet unchanged.
+- All three coats passed connected-skin, normalized weight and bone-parent checks. The actual orange GLB passed 35 clips at five deformation samples each. Game checks execute the real render worklet at 30/60/120 FPS and cover obstacle navigation, furniture/seat contact, doors, pause, Reduce Motion and existing care/economy/menu behavior.
+- Native iOS checks exercised feeding, room travel, sofa landing and feather play. Android built and launched; full Android interactions and device performance remain outstanding.
+- Thumbnail generation skips retained outputs and no longer recreates cat pages. Asset verification does not require the external Blender library.
 
-Successful practices: use the shared Blender model for every coat/clip; inspect actual packed pages in preview GIFs; test action/navigation behavior with deterministic clocks; measure native trigger wrappers; retain the last sprite frame during decoding; use packaged cold launches to assess system splash behavior.
+Successful practices: share model/clip sources across coats; inspect the actual exported GLB; test action/navigation behavior with deterministic clocks; measure native trigger wrappers; use packaged cold launches for system splash claims. Keep Babel's nested worklet processing and the pinned Filament physics patch.
 
 ## What did not work
 
@@ -123,11 +120,10 @@ Successful practices: use the shared Blender model for every coat/clip; inspect 
 
 ## Next steps
 
-1. Build/install current native artwork and check cold launch on a physical iPhone. Recheck after platform upgrades. Test Android native menus and artwork on a device; do not infer device results from source-level checks.
-2. Get user confirmation that whole-cat flashing is gone during zoom and clip transitions.
-3. Profile the oldest supported iPhone and Android hardware before claiming FPS, memory, or battery performance. Configure real store purchases before release.
-4. Keep this handoff aligned with future commits and verification results. The code/art commit is complete; the archive's older commit suggestions are historical.
-5. Synchronize external Blender reference notes and older general asset documentation when extending that work. `assets/3d/README.md` still contains historical clip/page/material descriptions; use `clips.json`, the current model/packer, and the focused art READMEs for current values.
+1. Test full Android interactions and native menus on a device; profile older supported iPhone/Android hardware before making FPS, memory or battery claims.
+2. Check packaged cold launch on a physical iPhone after native/system artwork changes.
+3. Configure real store purchases before release. Preserve live saves and wallet values during UI testing.
+4. Keep the working tree and this handoff aligned with future changes. Historical sprite reports in the archive describe removed outputs and are not current regeneration instructions.
 
 ## Commands and environment
 
@@ -141,13 +137,16 @@ npm run lint
 npm run assets:verify
 ```
 
-Regeneration is only needed after art changes. The cat rebuild packs assets, generates branding, and verifies the collection:
+Regenerate only the assets affected by art changes:
 
 ```sh
-npm run assets:3d -- --only cat --refresh
+npm run assets:native
+npm run assets:3d -- --only sofaA --refresh
 npm run assets:icons
 ```
 
-For expressions/icons and their selective rebuilds, use the focused documentation linked above. A shared coat/face change must regenerate every coat/clip plus portraits, splash, the cat icon, and branding. Rebuild native projects afterward for system artwork. Geometry checks are in `scripts/3d/check-cat-{faces,care-actions,play,box-containment,leg-connections}.py` and `check-room-cat-motion.py`; saved-scene checks use `-- --baked` where supported.
+See `assets/3d/README.md` for cat-only GLB export and editable-rig output. `cat_model.py` and procedural pose checks remain useful authoring dependencies; do not remove them because the old sprite renderer is gone. The obsolete `--only cat` raster build now rejects use. New model review uses `scripts/3d/review-native-cat.py`.
 
 Environment: Expo 57.0.26, React Native 0.86.3, React 19.2.3, Skia 2.6.2, Reanimated 4.5.1; iOS minimum 16.4 with scene support. App ID: `com.mathmews.app`. Blender executable: `/Applications/Blender.app/Contents/MacOS/Blender`. Native UI checks used Device Hub with iPhone 18 Pro / iOS 27 Simulator. `npm run ios` runs prebuild before launching the iOS app.
+
+The original-cat iOS and Android debug clients rebuilt successfully on 2026-10-06. iOS installation preserves the existing app data; Android interaction and physical-device performance remain unverified.

@@ -4,7 +4,7 @@ import {
 } from "@/constants/cat-decorations";
 import { CAT_BED_SOURCES } from "@/constants/cat-beds";
 import { CAT_ROOM_SOURCES } from "@/constants/cat-rooms";
-import { CAT_SPLASH_SOURCE } from "@/constants/cat-splash";
+import nativeCatSource from "@/assets/3d/native/cat-orange.glb";
 import {
   CAT_TOY_SOURCES,
 } from "@/constants/cat-toys";
@@ -29,7 +29,7 @@ function collectFromDecorationEntry(
   }
 }
 
-/** All bundled room / store sprites used by the cat home screen. */
+/** Static catalog thumbnails and the native startup rig. Scene models load on demand. */
 export function collectGameAssetModules(): number[] {
   const modules = new Set<number>();
 
@@ -49,7 +49,7 @@ export function collectGameAssetModules(): number[] {
     addAssetModule(modules, source);
   }
 
-  addAssetModule(modules, CAT_SPLASH_SOURCE);
+  addAssetModule(modules, nativeCatSource);
 
   return [...modules];
 }
@@ -61,6 +61,7 @@ async function prefetchAssetModule(moduleId: number): Promise<boolean> {
       await asset.downloadAsync();
     }
 
+    if (asset.type === "glb") return true;
     const uri = asset.localUri ?? asset.uri;
     if (uri) {
       return await ExpoImage.prefetch(uri, "disk");
