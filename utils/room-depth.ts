@@ -10,7 +10,7 @@ export function getRoomDepthZIndex(groundY: number, tieBreaker = 0): number {
 /** Wall-mounted pictures and rugs belong behind things standing on the floor. */
 export function isRoomBackgroundDecoration(id: string): boolean {
   return /carpet|rug|poster|window|canvas|diploma|photos|pictureframe|portrait|mirror|corkboard|aircon|^officeAc$|ClockAni|ProjectorScreen|hanging|hanger|tapwall|showertap|tapshower/i.test(id)
-    || id === "officeBoardEmpty" || id === "officeBoardFull";
+    || /^kitchenWallCabinet/i.test(id) || /^(door|curtain)/i.test(id) || id === "halloweenBatGarland" || id === "officeBoardEmpty" || id === "officeBoardFull";
 }
 export function getRoomObjectDepthAnchor(id: string): number {
   return ROOM_DEPTH_ANCHORS[id] ?? .38;

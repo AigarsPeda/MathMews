@@ -34,8 +34,10 @@ export type PlacedToy = {
   /** Unique id per placed instance (supports multiple of the same toy). */
   instanceId: string;
   offset: RoomItemOffset;
-  /** Display scale multiplier (default 1). */
+  /** Display scale multiplier; defaults to 2 for scratching posts and 1 for small toys. */
   scale?: number;
+  /** Quarter-turn orientation in the room (0..3, default 0). */
+  rotationIndex?: number;
 };
 
 export type PlacedDecoration = {
@@ -88,7 +90,7 @@ export type PetProfile = {
   roomBedOffset?: { x: number; y: number };
   /** Mirror human beds horizontally in the room. */
   bedFlipped?: boolean;
-  /** Display scale multiplier for the equipped bed (default 1). */
+  /** Display scale multiplier for the equipped bed (default 1.3). */
   bedScale?: number;
   /** Toys currently placed in the cat room. */
   placedToys?: PlacedToy[];

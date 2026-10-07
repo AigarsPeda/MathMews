@@ -35,6 +35,7 @@ export const APP_ICON_SOURCES = {
   "fractions": require("@/assets/icons/fractions.png"),
   "heart": require("@/assets/icons/heart.png"),
   "home": require("@/assets/icons/home.png"),
+  "lightbulb": require("@/assets/icons/lightbulb.png"),
   "lock": require("@/assets/icons/lock.png"),
   "mouse": require("@/assets/icons/mouse.png"),
   "multiplication": require("@/assets/icons/multiplication.png"),

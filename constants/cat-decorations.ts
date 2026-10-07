@@ -1,3 +1,6 @@
+import { KITCHEN_SEATING_DECORATION_CATALOG } from "@/constants/kitchen-additions";
+import { DOOR_DECORATION_CATALOG, LAMP_DECORATION_CATALOG, CURTAIN_DECORATION_CATALOG } from "@/constants/home-details-decorations";
+import { KITCHEN_DECORATION_CATALOG, BEDROOM_DECORATION_CATALOG, HALLOWEEN_DECORATION_CATALOG } from "@/constants/room-furnishings";
 /** Original Blender furniture, with stable inventory IDs. */
 
 import { JAPANESE_DECORATION_CATALOG } from "@/constants/japanese-decorations";
@@ -54,6 +57,10 @@ export const SHEET_DECORATION_IDS = Object.keys(
 
 /** Floor carpets. */
 const CARPET_DECORATION_CATALOG = {
+  rugBraidedRound: { source: require("@/assets/3d/decoration/rugBraidedRound.png"), displaySize: 72 },
+  rugGeometricTeal: { source: require("@/assets/3d/decoration/rugGeometricTeal.png"), displaySize: 80 },
+  rugStripedRunner: { source: require("@/assets/3d/decoration/rugStripedRunner.png"), displaySize: 72 },
+  rugFlowerPink: { source: require("@/assets/3d/decoration/rugFlowerPink.png"), displaySize: 68 },
   carpetTile: { source: require("@/assets/3d/decoration/carpetTile.png"), displaySize: 72 },
   carpetSmall: { source: require("@/assets/3d/decoration/carpetSmall.png"), displaySize: 28 },
   carpetClassic: { source: require("@/assets/3d/decoration/carpetClassic.png"), displaySize: 64 },
@@ -63,6 +70,8 @@ const CARPET_DECORATION_CATALOG = {
 
 /** Chairs. */
 const CHAIR_DECORATION_CATALOG = {
+  ...KITCHEN_SEATING_DECORATION_CATALOG,
+  chairRockingOak: { source: require("@/assets/3d/decoration/chairRockingOak.png"), displaySize: 60 },
   chairOfficeA: { source: require("@/assets/3d/decoration/chairOfficeA.png"), displaySize: 48 },
   chairOfficeB: { source: require("@/assets/3d/decoration/chairOfficeB.png"), displaySize: 48 },
   chairOfficeMain: { source: require("@/assets/3d/decoration/chairOfficeMain.png"), displaySize: 48 },
@@ -146,6 +155,9 @@ const ANIMATED_DECORATION_CATALOG = {
 
 export const CAT_DECORATION_CATALOG = {
   ...BASIC_FURNITURE_CATALOG,
+  ...DOOR_DECORATION_CATALOG,
+  ...LAMP_DECORATION_CATALOG,
+  ...CURTAIN_DECORATION_CATALOG,
   ...CARPET_DECORATION_CATALOG,
   ...CHAIR_DECORATION_CATALOG,
   ...DESK_DECORATION_CATALOG,
@@ -156,6 +168,9 @@ export const CAT_DECORATION_CATALOG = {
   ...LIVING_ROOM_DECORATION_CATALOG,
   ...OFFICE_DECORATION_CATALOG,
   ...BATHROOM_DECORATION_CATALOG,
+  ...KITCHEN_DECORATION_CATALOG,
+  ...BEDROOM_DECORATION_CATALOG,
+  ...HALLOWEEN_DECORATION_CATALOG,
   ...BOOKS_DECORATION_CATALOG,
   ...CAT_SUPPLIES_DECORATION_CATALOG,
   ...PLANT_DECORATION_CATALOG,

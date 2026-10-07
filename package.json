@@ -20,6 +20,7 @@
     "assets:verify": "node scripts/3d/verify.mjs",
     "typecheck": "tsc --noEmit",
     "test:game": "node scripts/check-game.mjs",
+    "test:ball-physics": "python3 scripts/native/check-ball-physics.py",
     "assets:icons": "node scripts/3d/build-app-icons.mjs",
     "postinstall": "node scripts/native/patch-filament.mjs",
     "assets:native": "BRAINPET_BLENDER_ASSET_DIR=/tmp/brainpet-native-blends /Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/export-native.py"

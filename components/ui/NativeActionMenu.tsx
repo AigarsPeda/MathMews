@@ -1,9 +1,10 @@
 import { APP_ICON_SOURCES } from "@/constants/app-icons";
-import { DropdownMenu, DropdownMenuItem, Host, Icon, RNHostView, Text } from "@expo/ui/jetpack-compose";
+import { DropdownMenu, DropdownMenuItem, HorizontalDivider, Host, Icon, RNHostView, Text } from "@expo/ui/jetpack-compose";
 import { GameColors } from "@/constants/game";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Pressable, View } from "react-native";
 import type { NativeActionMenuProps } from "./NativeActionMenu.types";
+import { groupMenuSections } from "./native-menu-sections";
 
 /** Native Material menu, with untinted artwork rather than template icons. */
 export function NativeActionMenu({ width, height, actions, label, blocked, children, onSelect }: NativeActionMenuProps) {
@@ -18,16 +19,19 @@ export function NativeActionMenu({ width, height, actions, label, blocked, child
             {children}
           </Pressable>
         </RNHostView></DropdownMenu.Trigger>
-        <DropdownMenu.Items>{actions.map(action => <DropdownMenuItem key={action.id}
-          enabled={!blocked && !action.attributes?.disabled}
-          elementColors={action.attributes?.destructive ? { textColor: GameColors.primary } : undefined}
-          onClick={() => {
-            setExpanded(false);
-            if (!blocked && !action.attributes?.disabled) onSelect(action.id);
-          }}>
-          <DropdownMenuItem.Text><Text>{action.title}</Text></DropdownMenuItem.Text>
-          <DropdownMenuItem.LeadingIcon><Icon source={APP_ICON_SOURCES[action.icon]} size={28} tint={null} /></DropdownMenuItem.LeadingIcon>
-        </DropdownMenuItem>)}</DropdownMenu.Items>
+        <DropdownMenu.Items>{groupMenuSections(actions).map((section, index) => <Fragment key={index}>
+          {index > 0 ? <HorizontalDivider /> : null}
+          {section.actions.map(action => <DropdownMenuItem key={action.id}
+            enabled={!blocked && !action.attributes?.disabled}
+            elementColors={action.attributes?.destructive ? { textColor: GameColors.primary } : undefined}
+            onClick={() => {
+              setExpanded(false);
+              if (!blocked && !action.attributes?.disabled) onSelect(action.id);
+            }}>
+            <DropdownMenuItem.Text><Text>{action.title}</Text></DropdownMenuItem.Text>
+            <DropdownMenuItem.LeadingIcon><Icon source={APP_ICON_SOURCES[action.icon]} size={28} tint={null} /></DropdownMenuItem.LeadingIcon>
+          </DropdownMenuItem>)}
+        </Fragment>)}</DropdownMenu.Items>
       </DropdownMenu>
     </Host>
   </View>;

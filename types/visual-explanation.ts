@@ -1,4 +1,5 @@
 export type VisualScene =
+  | { kind: "practice"; prompt: string; tokens: PracticeToken[]; result?: string }
   | { kind: "fraction"; numerator: number; denominator: number }
   | {
       kind: "items";
@@ -61,5 +62,21 @@ export type VisualKeyframe = {
 
 export type VisualExplanation = {
   puzzleId: string;
+  titleKey: string;
   keyframes: VisualKeyframe[];
+};
+
+/** Positions on the practice board, in a 300 × 140 coordinate space. */
+export type PracticeToken = {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  shape?: "tile" | "part" | "plain";
+  tone?: "primary" | "secondary" | "muted";
+  visible?: boolean;
+  scale?: number;
+  width?: number;
+  /** Separate lanes keep swapping number tiles readable while they cross. */
+  arc?: number;
 };

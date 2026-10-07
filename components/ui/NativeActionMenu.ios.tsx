@@ -3,10 +3,11 @@ import { Button, Host, Image, Label, Menu, RNHostView, Section } from "@expo/ui/
 import { accessibilityLabel, aspectRatio, buttonStyle, disabled, frame, resizable } from "@expo/ui/swift-ui/modifiers";
 import { useAssets } from "expo-asset";
 import type { NativeActionMenuProps } from "./NativeActionMenu.types";
+import { groupMenuSections } from "./native-menu-sections";
 
 const menuIcons = Object.values(APP_ICON_SOURCES);
 
-export function NativeActionMenu({ width, height, actions, title, label, blocked, children, onSelect }: NativeActionMenuProps) {
+export function NativeActionMenu({ width, height, actions, label, blocked, children, onSelect }: NativeActionMenuProps) {
   // SwiftUI requires local files. Loading the family once also handles changing
   // room actions, and expo-asset caches the bundled files across menu instances.
   const [assets] = useAssets(menuIcons);
@@ -14,8 +15,8 @@ export function NativeActionMenu({ width, height, actions, title, label, blocked
     <Host style={{ width, height }} ignoreSafeArea="all">
       <Menu label={<RNHostView matchContents>{children}</RNHostView>}
         modifiers={[frame({ width, height }), buttonStyle("plain"), accessibilityLabel(label), disabled(blocked)]}>
-        <Section title={title}>
-          {actions.map(action => {
+        {groupMenuSections(actions).map((section, index) => <Section key={index}>
+          {section.actions.map(action => {
             const uri = assets?.[menuIcons.indexOf(APP_ICON_SOURCES[action.icon])]?.localUri;
             return <Button key={action.id} role={action.attributes?.destructive ? "destructive" : undefined}
               modifiers={[disabled(action.attributes?.disabled ?? false)]}
@@ -24,7 +25,7 @@ export function NativeActionMenu({ width, height, actions, title, label, blocked
                 modifiers={[resizable(), aspectRatio({ contentMode: "fit" }), frame({ width: 28, height: 28 })]} /> : undefined} />
             </Button>;
           })}
-        </Section>
+        </Section>)}
       </Menu>
     </Host>
   );

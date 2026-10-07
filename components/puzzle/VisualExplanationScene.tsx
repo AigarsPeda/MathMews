@@ -1,10 +1,13 @@
+import { VisualPracticeBoard } from "@/components/puzzle/VisualPracticeBoard";
 import { IconText as Text } from "@/components/ui/IconText";
 import { FractionPieChart } from "@/components/puzzle/FractionPieChart";
+import { NumberLineTrack } from "@/components/puzzle/NumberLineTrack";
 import { GameColors } from "@/constants/game";
 import type { VisualScene } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 type VisualExplanationSceneProps = {
   scene: VisualScene;
@@ -127,8 +130,13 @@ function NumberLineJumpScene({ start, jump, moves }: {
   moves: number;
 }) {
   const { t } = useTranslation();
+  const [picked, setPicked] = useState<number | null>(null);
+  const exampleKey = `${start}-${jump}-${moves}`;
+  const [previousExample, setPreviousExample] = useState(exampleKey);
+  if (exampleKey !== previousExample) { setPreviousExample(exampleKey); setPicked(null); }
   const direction = Math.sign(jump);
   const current = start + direction * moves;
+  const finished = moves === Math.abs(jump);
   const jumpLabel = t(jump >= 0 ? "puzzleTypes.jumpForward" : "puzzleTypes.jumpBack", {
     count: Math.abs(jump),
   });
@@ -136,32 +144,16 @@ function NumberLineJumpScene({ start, jump, moves }: {
   return (
     <View style={styles.jumpExample}>
       <Text style={styles.jumpPrompt}>
-        {t("puzzleTypes.numberLinePrompt", { start, jump: jumpLabel })}
+        {picked === null
+          ? t("puzzleTypes.numberLinePrompt", { start, jump: jumpLabel })
+          : t(picked === current ? "visualHelp.numberLine.success" : "visualHelp.numberLine.tryTap")}
       </Text>
-      {[0, 5].map((rowStart) => (
-        <View key={rowStart} style={styles.jumpGridRow}>
-          {Array.from({ length: 5 }, (_, index) => {
-            const value = rowStart + index;
-            const hop = (value - start) * direction;
-            const visited = hop > 0 && hop <= moves;
-            return (
-              <View key={value} style={[
-                styles.jumpCell,
-                value === start && styles.jumpStart,
-                visited && styles.jumpVisited,
-                value === current && styles.jumpCurrent,
-              ]}>
-                <Text style={styles.jumpBadge}>
-                  {value === start
-                    ? t("puzzleTypes.startAt").toUpperCase()
-                    : visited ? t("visualHelp.numberLine.hop", { count: hop }) : " "}
-                </Text>
-                <Text style={styles.jumpValue}>{value}</Text>
-              </View>
-            );
-          })}
-        </View>
-      ))}
+      <NumberLineTrack
+        min={1} max={7} start={start} value={current} hops={moves} direction={direction} fit
+        onSelect={finished ? setPicked : undefined}
+        correctValue={picked === current ? current : undefined}
+        wrongValue={picked !== null && picked !== current ? picked : undefined}
+      />
     </View>
   );
 }
@@ -336,8 +328,9 @@ function CompareScene({
 }
 
 export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
+  if (scene.kind === "practice") return <VisualPracticeBoard {...scene} />;
   return (
-    <View style={styles.stage}>
+    <View style={[styles.stage, scene.kind === "numberline_jump" && styles.jumpStage]}>
       {scene.kind === "fraction" ? <FractionPieChart shaded={scene.numerator} denominator={scene.denominator} /> : null}
       {scene.kind === "items" ? (
         <ItemGrid
@@ -473,44 +466,9 @@ const styles = StyleSheet.create({
     color: GameColors.text,
     marginBottom: moderateScale(6),
   },
-  jumpGridRow: {
-    flexDirection: "row",
-    gap: moderateScale(6),
-  },
-  jumpCell: {
-    flex: 1,
-    height: moderateScale(56),
-    borderRadius: moderateScale(10),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    backgroundColor: GameColors.card,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  jumpStart: {
-    borderColor: "#23766F",
-    backgroundColor: "#DFF8F5",
-  },
-  jumpVisited: {
-    backgroundColor: "#DFF8F5",
-    borderColor: "#23766F",
-  },
-  jumpCurrent: {
-    borderColor: GameColors.primary,
-    backgroundColor: "#FCEDEF",
-  },
-  jumpBadge: {
-    fontSize: moderateScale(8),
-    lineHeight: moderateScale(12),
-    fontWeight: "800",
-    color: GameColors.text,
-  },
-  jumpValue: {
-    fontSize: moderateScale(20),
-    lineHeight: moderateScale(24),
-    fontWeight: "800",
-    color: GameColors.text,
-    fontVariant: ["tabular-nums"],
+  jumpStage: {
+    maxHeight: undefined,
+    padding: moderateScale(12),
   },
   numberLine: {
     width: "100%",

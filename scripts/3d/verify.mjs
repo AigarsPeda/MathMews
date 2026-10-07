@@ -22,7 +22,7 @@ function load(relative){
  vm.runInNewContext(compiled,{exports:module.exports,module,require,Date,Math,Map,Set,console,queueMicrotask},{filename:file});return module.exports;
 }
 const inventory=JSON.parse(fs.readFileSync('scripts/3d/inventory.json','utf8')).entries;
-assert.equal(inventory.length,288,'Inventory ID count changed');
+assert.equal(new Set(inventory.map(entry => entry.id)).size, inventory.length, 'Inventory IDs must be unique');
 const decor=load('constants/cat-decorations.ts'),beds=load('constants/cat-beds.ts'),toys=load('constants/cat-toys.ts'),rooms=load('constants/cat-rooms.ts');
 for(const entry of inventory){
  const source=entry.kind==='decoration'?decor.CAT_DECORATION_CATALOG[entry.id]?.source:entry.kind==='room'?rooms.CAT_ROOM_SOURCES[entry.id]:entry.kind==='bed'?beds.CAT_BED_SOURCES[entry.id.slice(4)]:toys.getCatToySource(entry.id.slice(4));

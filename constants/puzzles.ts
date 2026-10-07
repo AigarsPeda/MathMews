@@ -14,7 +14,7 @@ export const PUZZLE_DIFFICULTIES: PuzzleDifficulty[] = [
   "hard",
 ];
 
-const PUZZLES_BY_LOCALE: Record<
+const AUTHORED_PUZZLES: Record<
   AppLocale,
   Record<PuzzleDifficulty, Puzzle[]>
 > = {
@@ -29,6 +29,27 @@ const PUZZLES_BY_LOCALE: Record<
     hard: hardLv as Puzzle[],
   },
 };
+
+// Keep the authored order for migrating saves that stored counts without IDs.
+// Stable IDs also let previously solved number-line puzzles remain replayable.
+export function getLegacyCompletedPuzzleIds(counts: PuzzleProgress): string[] {
+  return PUZZLE_DIFFICULTIES.flatMap(tier =>
+    AUTHORED_PUZZLES.en[tier].slice(0, Math.max(0, counts[tier])).map(puzzle => puzzle.id));
+}
+
+const PUZZLES_BY_LOCALE = Object.fromEntries(
+  (Object.keys(AUTHORED_PUZZLES) as AppLocale[]).map(locale => {
+    const authored = AUTHORED_PUZZLES[locale];
+    const moved = [...authored.easy, ...authored.medium]
+      .filter(puzzle => puzzle.type === "number_line")
+      .map(puzzle => ({ ...puzzle, difficulty: "hard" as const }));
+    return [locale, {
+      easy: authored.easy.filter(puzzle => puzzle.type !== "number_line"),
+      medium: authored.medium.filter(puzzle => puzzle.type !== "number_line"),
+      hard: [...authored.hard, ...moved],
+    }];
+  }),
+) as Record<AppLocale, Record<PuzzleDifficulty, Puzzle[]>>;
 
 export function getPuzzlesByDifficulty(
   locale: AppLocale,
@@ -138,14 +159,17 @@ export function getTotalPuzzleCountByDifficulty(): Record<
  * Puzzle mastery (0–100). Only rises when new nuts are cracked; drops when
  * new puzzles are added and the player has not solved them yet.
  */
-export function computePetWisdom(puzzlesSolved: PuzzleProgress): number {
+export function computePetWisdom(puzzlesSolved: PuzzleProgress, completedPuzzleIds?: readonly string[]): number {
   const totals = getTotalPuzzleCountByDifficulty();
   let solved = 0;
   let available = 0;
+  const completed = completedPuzzleIds ? new Set(completedPuzzleIds) : null;
 
   for (const difficulty of PUZZLE_DIFFICULTIES) {
     available += totals[difficulty];
-    solved += Math.min(puzzlesSolved[difficulty], totals[difficulty]);
+    solved += completed
+      ? getPuzzlesByDifficulty("en", difficulty).filter(puzzle => completed.has(puzzle.id)).length
+      : Math.min(puzzlesSolved[difficulty], totals[difficulty]);
   }
 
   if (available === 0) return 0;

@@ -34,7 +34,7 @@ import {
   isDecorationUnlocked,
 } from "@/utils/decoration-store";
 import {
-  DECORATION_STORE_TABS,
+  DECORATION_STORE_CATEGORY_GROUPS,
   DECORATION_IDS_BY_STORE_TAB,
   DECORATION_STORE_SUBTITLE_KEY,
   isDecorationStoreTab,
@@ -71,9 +71,10 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 function triggerHaptic() {
   if (Platform.OS !== "web") {
@@ -91,6 +92,8 @@ type StoreFeedback = {
 export default function StoreScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const {
     isReady,
     hasCompletedOnboarding,
@@ -749,9 +752,31 @@ export default function StoreScreen() {
         </View>
       </View>
       <AppBottomSheet visible={showCategories} onClose={() => setShowCategories(false)} expanded>
-        <ScrollView contentContainerStyle={styles.categories}>
+        <ScrollView
+          style={{ maxHeight: Math.max(0, height * 0.88 - insets.top - insets.bottom - moderateScale(48)) }}
+          contentContainerStyle={styles.categories}
+          nestedScrollEnabled={Platform.OS === "android"}
+        >
           <Text style={styles.title}>{t("store.chooseCategory")}</Text>
-          {DECORATION_STORE_TABS.map(tab => <Pressable key={tab} style={styles.category} accessibilityRole="button" onPress={() => { handleTabChange(tab); setShowCategories(false); }}><Text style={styles.filterText}>{t(`store.tab${tab[0].toUpperCase()}${tab.slice(1)}`)}</Text></Pressable>)}
+          {DECORATION_STORE_CATEGORY_GROUPS.map(group => (
+            <View key={group.titleKey} style={styles.categoryGroup}>
+              <Text style={styles.categoryHeading} accessibilityRole="header">{t(group.titleKey)}</Text>
+              <View style={styles.categoryRow}>
+                {group.tabs.map(tab => (
+                  <Pressable
+                    key={tab}
+                    style={[styles.category, activeTab === tab && styles.categorySelected]}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: activeTab === tab }}
+                    onPress={() => { handleTabChange(tab); setShowCategories(false); }}
+                  >
+                    <Text style={styles.categoryLabel}>{t(`store.tab${tab[0].toUpperCase()}${tab.slice(1)}`)}</Text>
+                    {activeTab === tab ? <AppIcon name="check" size={moderateScale(18)} /> : null}
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          ))}
         </ScrollView>
       </AppBottomSheet>
       <StorePreviewSheet item={preview} pet={pet} coins={wallet.coins} onClose={() => setPreview(null)} onSaveGoal={() => {
@@ -769,8 +794,13 @@ const styles = StyleSheet.create({
   filter: { flexDirection: "row", alignItems: "center", gap: moderateScale(6), minHeight: 44, paddingHorizontal: 12, justifyContent: "center", borderRadius: 12, backgroundColor: GameColors.card },
   filterText: { color: GameColors.text, fontSize: 14, fontWeight: "700" },
   goal: { color: GameColors.text, fontSize: 14 },
-  categories: { padding: 20, gap: 8 },
-  category: { minHeight: 48, padding: 14, borderRadius: 12, backgroundColor: GameColors.background },
+  categories: { padding: moderateScale(20), gap: moderateScale(20) },
+  categoryGroup: { gap: moderateScale(8) },
+  categoryHeading: { color: GameColors.textMuted, fontSize: moderateScale(15), fontWeight: "700" },
+  categoryRow: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", gap: moderateScale(8) },
+  category: { width: "48%", minHeight: 48, flexDirection: "row", alignItems: "center", gap: moderateScale(6), padding: moderateScale(12), justifyContent: "center", borderRadius: 12, borderWidth: 2, borderColor: "transparent", backgroundColor: GameColors.background },
+  categorySelected: { borderColor: GameColors.secondary, backgroundColor: "#E8FAF8" },
+  categoryLabel: { flex: 1, color: GameColors.text, fontSize: moderateScale(14), fontWeight: "700" },
   loading: {
     flex: 1,
     alignItems: "center",

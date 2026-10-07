@@ -41,6 +41,9 @@ const ROTATION_VARIANT_ONLY_IDS = new Set<CatDecorationId>();
  * Mirroring also applies to every frame of an animated item.
  */
 export const WALL_FACING_DECORATION_IDS: readonly CatDecorationId[] = [
+  "kitchenWallCabinetSage", "kitchenWallCabinetOak", "kitchenWallCabinetGlass", "kitchenIsland", "kitchenBarStoolOak", "kitchenBarStoolMetal", "kitchenBarStoolVelvet", "kitchenMixerStand", "kitchenMixerHand", "kitchenChairWindsor", "kitchenChairMint", "kitchenChairUpholstered", "kitchenChairBistro", "chairRockingOak", "livingFireplaceCream",
+  "doorOakPanel", "doorMintGlass", "doorBarnSliding", "curtainRoseTieback", "curtainBlueDrape", "curtainCreamLinen", "lampFloorArc", "lampFloorTripod", "lampFloorPaper", "lampTableMushroom", "lampTableCeramic", "lampTableBanker", "sofaCornerSage",
+  "sofaBlueClassic", "sofaRoseTufted", "sofaTanLeather", "sofaCreamCloud", "kitchenFridge", "kitchenRange", "kitchenSinkCabinet", "kitchenMicrowave", "bedroomDoubleBed", "bedroomDresser", "bedroomNightstand", "bedroomWardrobe", "bathroomDoubleVanity", "bathroomShowerCabin", "halloweenBatGarland",
   "portraitCat", "japaneseCanvas", "japaneseCanvasLetters",
   "livingAirCon", "officeAc", "officeClockAni", "officeDiploma",
   "officePhotosA", "officePhotosB", "officePictureFrame",
@@ -255,4 +258,11 @@ export function getPlacedDecorationHitSize(placed: PlacedDecoration): number {
   const spriteId = getPlacedDecorationSpriteId(placed);
   const base = getDecorationHitSize(spriteId);
   return base * getPlacedDecorationScale(placed);
+}
+
+/** New placements and store previews match the furniture sized in the reference rooms. */
+export function getDecorationDefaultPlacementScale(id: CatDecorationId): number | undefined {
+  if (id === "kitchenFridge") return 1.5;
+  if (id === "windowOakWide") return 1.6;
+  return undefined;
 }

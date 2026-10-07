@@ -5,6 +5,8 @@ type ImageEntry = {
 
 /** Living room pack — shown in the dedicated store tab. */
 export const LIVING_ROOM_DECORATION_CATALOG = {
+  chairRockingOak: { source: require("@/assets/3d/decoration/chairRockingOak.png"), displaySize: 60 },
+  livingFireplaceCream: { source: require("@/assets/3d/decoration/livingFireplaceCream.png"), displaySize: 80 },
   livingAirCon: { source: require("@/assets/3d/decoration/livingAirCon.png"), displaySize: 44 },
   livingBook: { source: require("@/assets/3d/decoration/livingBook.png"), displaySize: 24 },
   livingSmallTable: { source: require("@/assets/3d/decoration/livingSmallTable.png"), displaySize: 52 },

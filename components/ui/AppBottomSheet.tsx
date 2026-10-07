@@ -34,7 +34,8 @@ export function AppBottomSheet({
       onDismiss={onClose}
       snapPoints={snapPoints}
     >
-      <RNHostView style={styles.host} hidden={!visible}>
+      {/* Native presentation owns visibility, including the closing animation. */}
+      <RNHostView style={styles.host}>
         <View
           style={[
             styles.content,

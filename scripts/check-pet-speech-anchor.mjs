@@ -202,3 +202,24 @@ assert.equal(taps, 1, 'A drag must never trigger the tap action');
 assert.equal(dragStarts, 1, 'Select the dragged object once when the movement threshold is crossed');
 assert.equal(saves, 1, 'Save the final drag position once');
 console.log('Verified editable objects bypass native menu gestures, small touches select, and real drags save without tapping.');
+
+for (const zoom of [1, 1.73, 2.6, 3]) {
+  states.length = 0; sharedValues.length = 0;
+  let live, saved;
+  const zoomedDraggable = () => {
+    stateIndex = 0; sharedIndex = 0;
+    return flatten(draggableModule.exports.DraggableRoomPet({ children: null, petSize: 48,
+      dragScale: zoom, initialOffset: { x: .2, y: .3 },
+      onDragPositionChange: point => { live = point; }, onOffsetChange: offset => { saved = offset; } }));
+  };
+  zoomedDraggable()[0].node.props.onLayout({ nativeEvent: { layout: { width: 320, height: 400 } } });
+  const target = zoomedDraggable().find(({ node }) => node.props.onPanResponderMove).node;
+  target.props.onPanResponderGrant();
+  target.props.onPanResponderMove(null, { dx: 36 * zoom, dy: -24 * zoom });
+  assert.ok(Math.abs(live.x - (.2 * 136 + 36)) < 1e-8, 'The ball follows the finger by the same screen distance at fractional zoom');
+  assert.ok(Math.abs(live.y - (.3 * 176 - 24)) < 1e-8);
+  target.props.onPanResponderRelease();
+  assert.ok(Math.abs(saved.x - live.x / 136) < 1e-8);
+  assert.ok(Math.abs(saved.y - live.y / 176) < 1e-8, 'A zoomed drag saves unscaled room coordinates');
+}
+console.log('Verified actual drag callbacks at 1×, fractional zoom and 3× save the correct room placement.');

@@ -6,6 +6,7 @@ import type { Puzzle } from "@/types/puzzle";
 import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
 import { LIFE_BUY_COST } from "@/constants/game";
 import {
+  DEFAULT_BED_SCALE,
   resolveCatBedId,
   type CatBedId,
   canFlipBed,
@@ -14,7 +15,7 @@ import {
   getEquippedBedScale,
   scaleBedBy,
 } from "@/constants/cat-beds";
-import { getPlacedToyScale, resolveCatToyId, type CatToyId } from "@/constants/cat-toys";
+import { getPlacedToyScale, getPlacedToyRotationIndex, TOY_ROTATION_COUNT, resolveCatToyId, type CatToyId } from "@/constants/cat-toys";
 import { resolveCatDecorationId,
   type CatDecorationId,
 } from "@/constants/cat-decorations";
@@ -80,6 +81,7 @@ import {
   updatePlacedDecorationRotationByInstance,
   updatePlacedDecorationScaleByInstance,
   updatePlacedToyScaleByInstance,
+  updatePlacedToyRotationByInstance,
   updatePlacedDecorationWallFlipByInstance,
 } from "@/utils/room-placement";
 import {
@@ -158,6 +160,7 @@ type GameContextValue = {
   placeToyInRoom: (toyId: CatToyId) => boolean;
   removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
   scalePlacedToy: (instanceId: string, direction: "up" | "down") => boolean;
+  rotatePlacedToy: (instanceId: string) => boolean;
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   removeDecorationFromRoom: (
@@ -626,7 +629,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...current,
       pet: {
         ...current.pet,
-        bedScale: nextScale !== 1 ? nextScale : undefined,
+        bedScale: nextScale !== DEFAULT_BED_SCALE ? nextScale : undefined,
       },
     });
 
@@ -927,6 +930,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
+  const rotatePlacedToy = useCallback((instanceId: string) => {
+    const current = saveRef.current;
+    const placed = findPlacedToyByInstance(current.pet.placedToys, instanceId);
+    if (!placed) return false;
+    const nextIndex = getNextRotationIndex(getPlacedToyRotationIndex(placed), TOY_ROTATION_COUNT);
+    setSave({ ...current, pet: { ...current.pet,
+      placedToys: updatePlacedToyRotationByInstance(current.pet.placedToys, instanceId, nextIndex),
+    } });
+    return true;
+  }, [setSave]);
+
   const scalePlacedToy = useCallback((instanceId: string, direction: "up" | "down") => {
     const current = saveRef.current;
     const placed = findPlacedToyByInstance(current.pet.placedToys, instanceId);
@@ -1219,6 +1233,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       placeToyInRoom,
       removeToyFromRoom,
       scalePlacedToy,
+      rotatePlacedToy,
       purchaseDecoration,
       placeDecorationInRoom,
       removeDecorationFromRoom,
@@ -1283,6 +1298,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       placeToyInRoom,
       removeToyFromRoom,
       scalePlacedToy,
+      rotatePlacedToy,
       purchaseDecoration,
       placeDecorationInRoom,
       removeDecorationFromRoom,

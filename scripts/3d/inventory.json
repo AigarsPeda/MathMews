@@ -44,6 +44,102 @@
       "animated": false
     },
     {
+      "id": "doorOakPanel",
+      "kind": "decoration",
+      "displaySize": 80,
+      "animated": false
+    },
+    {
+      "id": "doorMintGlass",
+      "kind": "decoration",
+      "displaySize": 80,
+      "animated": false
+    },
+    {
+      "id": "doorBarnSliding",
+      "kind": "decoration",
+      "displaySize": 80,
+      "animated": false
+    },
+    {
+      "id": "lampFloorArc",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "lampFloorTripod",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "lampFloorPaper",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "lampTableMushroom",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
+      "id": "lampTableCeramic",
+      "kind": "decoration",
+      "displaySize": 36,
+      "animated": false
+    },
+    {
+      "id": "lampTableBanker",
+      "kind": "decoration",
+      "displaySize": 36,
+      "animated": false
+    },
+    {
+      "id": "curtainRoseTieback",
+      "kind": "decoration",
+      "displaySize": 76,
+      "animated": false
+    },
+    {
+      "id": "curtainBlueDrape",
+      "kind": "decoration",
+      "displaySize": 76,
+      "animated": false
+    },
+    {
+      "id": "curtainCreamLinen",
+      "kind": "decoration",
+      "displaySize": 76,
+      "animated": false
+    },
+    {
+      "id": "rugBraidedRound",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "rugGeometricTeal",
+      "kind": "decoration",
+      "displaySize": 80,
+      "animated": false
+    },
+    {
+      "id": "rugStripedRunner",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "rugFlowerPink",
+      "kind": "decoration",
+      "displaySize": 68,
+      "animated": false
+    },
+    {
       "id": "carpetTile",
       "kind": "decoration",
       "displaySize": 72,
@@ -71,6 +167,54 @@
       "id": "carpetRed",
       "kind": "decoration",
       "displaySize": 80,
+      "animated": false
+    },
+    {
+      "id": "kitchenChairWindsor",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "kitchenChairMint",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "kitchenChairUpholstered",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "kitchenChairBistro",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "kitchenBarStoolOak",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "kitchenBarStoolMetal",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "kitchenBarStoolVelvet",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "chairRockingOak",
+      "kind": "decoration",
+      "displaySize": 60,
       "animated": false
     },
     {
@@ -562,6 +706,12 @@
       "animated": false
     },
     {
+      "id": "livingFireplaceCream",
+      "kind": "decoration",
+      "displaySize": 80,
+      "animated": false
+    },
+    {
       "id": "livingAirCon",
       "kind": "decoration",
       "displaySize": 44,
@@ -958,6 +1108,30 @@
       "animated": true
     },
     {
+      "id": "bathroomDoubleVanity",
+      "kind": "decoration",
+      "displaySize": 80,
+      "animated": false
+    },
+    {
+      "id": "bathroomShowerCabin",
+      "kind": "decoration",
+      "displaySize": 80,
+      "animated": false
+    },
+    {
+      "id": "bathroomLaundryHamper",
+      "kind": "decoration",
+      "displaySize": 40,
+      "animated": false
+    },
+    {
+      "id": "bathroomTowelStand",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
       "id": "bathroomBathCarpet",
       "kind": "decoration",
       "displaySize": 48,
@@ -1112,6 +1286,138 @@
       "kind": "decoration",
       "displaySize": 64,
       "animated": true
+    },
+    {
+      "id": "kitchenWallCabinetSage",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenWallCabinetOak",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenWallCabinetGlass",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenIsland",
+      "kind": "decoration",
+      "displaySize": 88,
+      "animated": false
+    },
+    {
+      "id": "kitchenMixerStand",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
+      "id": "kitchenMixerHand",
+      "kind": "decoration",
+      "displaySize": 28,
+      "animated": false
+    },
+    {
+      "id": "kitchenFridge",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenRange",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "kitchenSinkCabinet",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenDiningTable",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenMicrowave",
+      "kind": "decoration",
+      "displaySize": 36,
+      "animated": false
+    },
+    {
+      "id": "kitchenBreadBasket",
+      "kind": "decoration",
+      "displaySize": 28,
+      "animated": false
+    },
+    {
+      "id": "bedroomDoubleBed",
+      "kind": "decoration",
+      "displaySize": 88,
+      "animated": false
+    },
+    {
+      "id": "bedroomDresser",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "bedroomNightstand",
+      "kind": "decoration",
+      "displaySize": 40,
+      "animated": false
+    },
+    {
+      "id": "bedroomWardrobe",
+      "kind": "decoration",
+      "displaySize": 80,
+      "animated": false
+    },
+    {
+      "id": "bedroomFloorLamp",
+      "kind": "decoration",
+      "displaySize": 56,
+      "animated": false
+    },
+    {
+      "id": "halloweenPumpkin",
+      "kind": "decoration",
+      "displaySize": 36,
+      "animated": false
+    },
+    {
+      "id": "halloweenGhostLantern",
+      "kind": "decoration",
+      "displaySize": 40,
+      "animated": false
+    },
+    {
+      "id": "halloweenBatGarland",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "halloweenWitchHat",
+      "kind": "decoration",
+      "displaySize": 36,
+      "animated": false
+    },
+    {
+      "id": "halloweenCauldron",
+      "kind": "decoration",
+      "displaySize": 44,
+      "animated": false
     },
     {
       "id": "booksBookGreen",
@@ -1366,6 +1672,36 @@
       "animated": false
     },
     {
+      "id": "sofaCornerSage",
+      "kind": "decoration",
+      "displaySize": 100,
+      "animated": false
+    },
+    {
+      "id": "sofaBlueClassic",
+      "kind": "decoration",
+      "displaySize": 88,
+      "animated": false
+    },
+    {
+      "id": "sofaRoseTufted",
+      "kind": "decoration",
+      "displaySize": 88,
+      "animated": false
+    },
+    {
+      "id": "sofaTanLeather",
+      "kind": "decoration",
+      "displaySize": 88,
+      "animated": false
+    },
+    {
+      "id": "sofaCreamCloud",
+      "kind": "decoration",
+      "displaySize": 88,
+      "animated": false
+    },
+    {
       "id": "sofaA",
       "kind": "decoration",
       "displaySize": 88,
@@ -1406,6 +1742,30 @@
       "kind": "decoration",
       "displaySize": 56,
       "animated": true
+    },
+    {
+      "id": "windowWhiteClassic",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "windowOakWide",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "windowArched",
+      "kind": "decoration",
+      "displaySize": 68,
+      "animated": false
+    },
+    {
+      "id": "windowRoundPorthole",
+      "kind": "decoration",
+      "displaySize": 52,
+      "animated": false
     },
     {
       "id": "windowPlain",

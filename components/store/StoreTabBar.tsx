@@ -3,7 +3,7 @@ import type { AppIconName } from "@/constants/app-icons";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 export type StoreTab =
   | "rooms"
@@ -11,6 +11,9 @@ export type StoreTab =
   | "colors"
   | "toys"
   | "catItems"
+  | "tables"
+  | "appliances"
+  | "accessories"
   | "furniture"
   | "carpets"
   | "chairs"
@@ -18,12 +21,18 @@ export type StoreTab =
   | "computers"
   | "consoles"
   | "windows"
+  | "doors"
+  | "lamps"
+  | "curtains"
   | "tvs"
   | "sofas"
   | "posters"
   | "plants"
   | "living"
   | "office"
+  | "kitchen"
+  | "bedroom"
+  | "halloween"
   | "bathroom"
   | "books"
   | "japanese";
@@ -76,10 +85,17 @@ export function StoreTabBar({ active, onChange }: StoreTabBarProps) {
     ["colors", "cat", "store.tabColors"],
   ] as const;
   const primary = ["rooms", "beds", "toys", "colors"].includes(active) ? active : "living";
-  return <View style={styles.row} accessibilityRole="tablist">
+  return <ScrollView
+    horizontal
+    style={styles.scroll}
+    contentContainerStyle={styles.row}
+    showsHorizontalScrollIndicator={false}
+    directionalLockEnabled
+    accessibilityRole="tablist"
+  >
     {tabs.map(([tab, icon, key]) => <StoreTabButton key={tab} tab={tab} icon={icon}
       label={t(key)} isActive={primary === tab} onPress={onChange} />)}
-  </View>;
+  </ScrollView>;
 }
 
 const styles = StyleSheet.create({
@@ -94,8 +110,8 @@ const styles = StyleSheet.create({
     paddingRight: moderateScale(4),
   },
   tab: {
-    flex: 1,
-    minWidth: 0,
+    flexShrink: 0,
+    minWidth: moderateScale(76),
     minHeight: moderateScale(48),
     flexDirection: "column",
     alignItems: "center",

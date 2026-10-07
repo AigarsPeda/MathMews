@@ -1,9 +1,10 @@
 """Original Math Mews 3D assets. Run with Blender --background --python this_file -- --only preview."""
-import bpy, math, json, os, sys, random
+import bpy, bmesh, math, json, os, sys, random
 from mathutils import Vector
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
+from store_furniture import STORE_FURNITURE_IDS, build_store_furniture
 from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, key_cat_geometry, smoothstep, smooth_window, pulse, care_action_time
 OUT=ROOT/'assets/3d'
 OUT.mkdir(parents=True,exist_ok=True)
@@ -92,13 +93,23 @@ def render(path):
  bpy.context.scene.render.filepath=str(path);bpy.ops.render.render(write_still=True)
 def frame_camera(objects,margin=1.17):
  camera=bpy.context.scene.camera;deps=bpy.context.evaluated_depsgraph_get();coords=[]
+ has_leaves=any(o.name.startswith('Leaf attachment ') for o in objects)
  for o in objects:
   if o.type not in ('MESH','CURVE'):continue
+  # Thin cords and plant detail curves have inflated evaluated bounds.
+  if o.name=='Hanging toy string' or o.name.startswith(('Leaf midrib','Leaf vein','Soil grain')):continue
+  if has_leaves and o.type=='CURVE':continue
   e=o.evaluated_get(deps);coords.extend(e.matrix_world@Vector(v) for v in e.bound_box)
  if not coords:return
  center=sum(coords,Vector())/len(coords);camera.location=center+Vector(ROOM_VIEW_DIRECTION);aim(camera,center)
  bpy.context.view_layer.update();inv=camera.matrix_world.inverted();points=[inv@v for v in coords];w=max(v.x for v in points)-min(v.x for v in points);h=max(v.y for v in points)-min(v.y for v in points)
  camera.data.ortho_scale=max(w,h)*margin
+ if any(o.get('store_furniture') for o in objects):
+  # Detail-heavy lamps need the visual bounds centered, rather than the
+  # average of each individual part, which overweights their lampshades.
+  offset=camera.matrix_world.to_quaternion()@Vector(((min(v.x for v in points)+max(v.x for v in points))/2,(min(v.y for v in points)+max(v.y for v in points))/2,0))
+  camera.location+=offset;center+=offset
+ return center
 
 def cat(skin='orange',boxed=False):
  return create_cat(skin,boxed=boxed)
@@ -269,9 +280,48 @@ def closet(id):
    box('Cabinet door',(x,-.395,h/2),(.70,.05,h-.17),'cream' if color=='wood' else color,.03)
    box('Door handle',(x+(.21 if x<0 else -.21),-.45,h/2),(.045,.08,.23),'gold' if color=='wood' else 'dark',.015)
 
+def plant_leaf(index,loc,angle):
+ # A folded, tapered blade with a darker underside and a fine central vein.
+ parent=empty(f'Leaf attachment {index}',loc);parent.rotation_euler.z=angle
+ length=.49;width=.145;rows=12;cols=4;vertices=[];faces=[]
+ def surface(u,v):
+  return (length*u,width*math.sin(math.pi*u)**.72*v,.027*math.sin(math.pi*u)-.055*u*u+.018*abs(v)*math.sin(math.pi*u))
+ for side in [1,-1]:
+  for row in range(rows+1):
+   for col in range(cols+1):
+    u=row/rows;v=col/cols*2-1;x,y,z=surface(u,v);vertices.append((x,y,z+side*.004))
+ layer=(rows+1)*(cols+1)
+ for row in range(rows):
+  for col in range(cols):
+   a=row*(cols+1)+col;b=a+1;c=b+cols+1;d=a+cols+1
+   faces.append((a,b,c,d));faces.append((d+layer,c+layer,b+layer,a+layer))
+ border=[*range(cols+1),*[r*(cols+1)+cols for r in range(1,rows+1)],*[rows*(cols+1)+c for c in range(cols-1,-1,-1)],*[r*(cols+1) for r in range(rows-1,0,-1)]]
+ for a,b in zip(border,border[1:]+border[:1]):faces.append((a,a+layer,b+layer,b))
+ mesh=bpy.data.meshes.new(f'Leaf blade {index}');mesh.from_pydata(vertices,[],faces);mesh.update()
+ leaf=bpy.data.objects.new(f'Leaf blade {index}',mesh);bpy.context.collection.objects.link(leaf);leaf.parent=parent
+ mesh.materials.append(material('Deep leaf green',['315D3B','396847','2D5737'][index%3],roughness=.48));mesh.materials.append(material('Leaf underside','426C47',roughness=.65))
+ for polygon in mesh.polygons:polygon.use_smooth=True;polygon.material_index=1 if polygon.index<rows*cols*2 and polygon.index%2 else 0
+ vein=material('Leaf veins','51784C',roughness=.65)
+ curve(f'Leaf midrib {index}',[tuple(v+.006 if k==2 else v for k,v in enumerate(surface(u,0))) for u in [0,.25,.5,.75,.95]],.0028,vein,parent)
+ for row in [1,2,3]:
+  u=row*.2
+  for side in [-1,1]:curve(f'Leaf vein {index}-{row}-{side}',[surface(u,0),surface(u+.12,side*.70)],.0013,vein,parent)
+ empty(f'Leaf contact {index}',surface(.48,0),parent)
+ return parent
+
 def plant(id):
  low=id.lower();color=color_for(id);cactus='cactus' in low;bonsai='bonsai' in low;sunflower='sunflower' in low
- cylinder('Ceramic planter',(0,0,.24),.33,.44,color);torus('Pot rim',(0,0,.43),.31,.03,color);cylinder('Soil',(0,0,.445),.285,.02,'brown')
+ pot=material('Terracotta planter','B86C4B',roughness=.78) if id in ('plantSmall','plantA','plantB','plantE','plantPotted') else color
+ planter=cylinder('Ceramic planter',(0,0,.24),.33,.44,pot)
+ # Open the pot's top so the soil is visible below its rounded rim.
+ mesh=bmesh.new();mesh.from_mesh(planter.data)
+ bmesh.ops.delete(mesh,geom=[face for face in mesh.faces if face.normal.z>.5],context='FACES_ONLY')
+ mesh.to_mesh(planter.data);mesh.free()
+ wall=planter.modifiers.new('Planter wall','SOLIDIFY');wall.thickness=.025
+ torus('Pot rim',(0,0,.43),.31,.03,pot);cylinder('Soil',(0,0,.445),.285,.02,material('Dark potting soil','45362A',roughness=1))
+ for n in range(18):
+  angle=n*2.4;r=.25*math.sqrt((n+.5)/18)
+  sphere('Soil grain',(r*math.cos(angle),r*math.sin(angle),.457),(.012,.009,.006),material('Soil grains','685342',roughness=1))
  if cactus:
   cylinder('Cactus',(0,0,.87),.15,.85,'green');sphere('Cactus top',(0,0,1.29),(.15,.15,.16),'green')
   for side in [-1,1]:curve('Cactus arm',[(0,0,.83),(side*.32,0,.86),(side*.32,0,1.12)],.085,'green')
@@ -286,8 +336,9 @@ def plant(id):
  else:
   for n in range(5+(sum(map(ord,id))%5)):
    angle=n*2.4;z=.72+n*(.15 if 'tall' in low else .10);x=.20*math.cos(angle);y=.20*math.sin(angle)
-   curve('Stem',[(0,0,.44),(x*.5,y*.5,z-.12),(x,y,z)],.024,'green')
-   leaf=sphere('Leaf',(x*1.4,y*1.4,z),(.13,.30,.065),'green');leaf.rotation_euler=(.25,0,angle)
+   x*=.65;y*=.65
+   curve('Stem',[(0,0,.44),(x*.5,y*.5,z-.12),(x,y,z)],.018,material('Plant stems','456B42'))
+   plant_leaf(n+1,(x,y,z),angle)
 
 def vase(loc=(0,0,.35),color='cream',scale=1):
  x,y,z=loc;sphere('Vase belly',(x,y,z+.22*scale),(.25*scale,.25*scale,.31*scale),color);cylinder('Vase neck',(x,y,z+.50*scale),.10*scale,.23*scale,color);torus('Vase lip',(x,y,z+.61*scale),.10*scale,.02*scale,color)
@@ -397,7 +448,9 @@ def toy(id,t=0):
   for z in range(18):torus('Rope ring',(-.15,.06,.16+z*.063),.121,.010,'wood')
   box('Upper perch',(-.15,.06,1.43),(1.0,.8,.16),color,.09)
   sphere('Cushion',(-.15,.06,1.55),(.44,.34,.10),'cream')
-  sphere('Dangling toy',(.35,-.12,1.15+.03*math.sin(t*math.tau)),(.10,.10,.10),'pink')
+  pivot=empty('Hanging toy pivot');pivot.location=(.30,-.12,1.43)
+  curve('Hanging toy string',[(0,0,0),(0,0,-.72)],.009,'cream',parent=pivot)
+  sphere('Dangling toy',(0,0,-.80),(.10,.10,.10),'pink',parent=pivot)
  elif 'mouse' in low:
   sphere('Toy mouse',(0,0,.23),(.36,.22,.22),'grey')
   for x in [-.21,.21]:sphere('Mouse ear',(x,-.08,.40),(.11,.045,.11),'pink')
@@ -605,6 +658,7 @@ def tori():
  box('Gate crossbeam',(0,0,1.60),(2.1,.23,.13),'red',.045);box('Gate lintel',(0,0,2.04),(2.3,.35,.21),'wood',.07)
 
 def family(id):
+ if id in STORE_FURNITURE_IDS:return "store_furniture"
  low=id.lower()
  if id.startswith('bed-'):return 'bed'
  if id.startswith('toy-') or low.startswith('cattree'):return 'toy'
@@ -632,7 +686,8 @@ def family(id):
 
 def build_item(entry,t=0):
  id=entry['id'];f=family(id);before=set(bpy.context.scene.objects)
- if f=='bed':bed(id)
+ if f=='store_furniture':build_store_furniture(id,globals())
+ elif f=='bed':bed(id)
  elif f=='toy':toy(id,t)
  elif f=='sofa':sofa(id)
  elif f=='chair':chair(id)
@@ -746,6 +801,8 @@ def main():
  entries=json.loads((ROOT/'scripts/3d/inventory.json').read_text())['entries']
  if ONLY=='preview':sample();return
  if ONLY=='branding':branding();return
+ if ONLY=='store-furniture':
+  render_furniture([e for e in entries if e['id'] in STORE_FURNITURE_IDS]);return
  if ONLY=='samples':
   (OUT/'rooms').mkdir(exist_ok=True)
   room(next(e for e in entries if e['id']=='room1'));render_furniture([e for e in entries if e['id'] in ['sofaA','livingTable','plantSmall','chairClassicA','bed-brown']]);return

@@ -25,7 +25,7 @@ function load(id) {
   vm.runInNewContext(source, { module, exports: module.exports, require: load, Date, Math, Set, Map });
   return module.exports;
 }
-const { getPuzzlesByDifficulty } = load('@/constants/puzzles');
+const { getPuzzlesByDifficulty, computePetWisdom } = load('@/constants/puzzles');
 const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
 const { shufflePuzzleChoices } = load("@/utils/puzzle-practice");
 const { getVisualExplanation } = load('@/constants/visual-explanations');
@@ -33,6 +33,37 @@ const helpLocales = {
   en: load('@/locales/visual-help/en').visualHelpEn,
   lv: load('@/locales/visual-help/lv').visualHelpLv,
 };
+// Check the visual quantities and arrangements, not just their captions.
+const { VISUAL_PRACTICE } = load('@/constants/visual-practice');
+const visibleTokens = frame => frame.scene.tokens.filter(token => token.visible !== false);
+const objects = (frame, label) => visibleTokens(frame).filter(token => token.label === label);
+assert.deepEqual(Array.from(VISUAL_PRACTICE.multiplication, frame => objects(frame, '🧸').length), [3, 6, 9]);
+assert.equal(objects(VISUAL_PRACTICE.subtraction.at(-1), '🍎').length, 5);
+assert.equal(objects(VISUAL_PRACTICE.all_but.at(-1), '🐑').length, 2);
+assert.ok(VISUAL_PRACTICE.addition.every(frame => objects(frame, '🎈').length === 6), 'Joining conserves all six objects');
+for (const [key, total, leftover] of [['division', 8, 0], ['fair_share', 9, 1]]) {
+  const lesson = VISUAL_PRACTICE[key];
+  assert.ok(lesson.every(frame => objects(frame, '🍪').length === total), 'Sharing conserves the objects');
+  const final = objects(lesson.at(-1), '🍪');
+  assert.equal(final.filter(token => token.x < 150).length, 4);
+  assert.equal(final.filter(token => token.x > 150).length, 4);
+  assert.equal(final.filter(token => token.x === 150).length, leftover);
+}
+assert.deepEqual(Array.from(VISUAL_PRACTICE.fraction_build, frame => visibleTokens(frame).filter(token => token.shape === 'part' && token.tone !== 'muted').length), [0, 1, 2]);
+const sorted = visibleTokens(VISUAL_PRACTICE.order_numbers.at(-1)).sort((a, b) => a.x - b.x).map(token => token.label);
+assert.deepEqual(Array.from(sorted), ['2', '6', '8'], 'Tile positions actually show ascending order');
+for (const [key, lesson] of Object.entries(VISUAL_PRACTICE)) {
+  for (const frame of lesson) for (const token of visibleTokens(frame)) {
+    const width = token.width ?? (token.shape === 'plain' ? Math.max(40, token.label.length * 14) : 40);
+    assert.ok(token.x - width / 2 >= 0 && token.x + width / 2 <= 300 && token.y >= 18 && token.y <= 122, `${key}: visible diagram content fits its board`);
+  }
+  const hasMovement = lesson.some((frame, index) => index > 0 && frame.scene.tokens.some(token => {
+    const previous = lesson[index - 1].scene.tokens.find(other => other.id === token.id);
+    return previous && (previous.x !== token.x || previous.y !== token.y || previous.visible !== token.visible || previous.tone !== token.tone || previous.scale !== token.scale);
+  }));
+  assert.ok(hasMovement, `${key}: steps demonstrate a changing quantity or spatial relationship`);
+}
+const totalPuzzles = ['easy', 'medium', 'hard'].reduce((sum, tier) => sum + getPuzzlesByDifficulty('en', tier).length, 0);
 let count = 0;
 for (const tier of ['easy', 'medium', 'hard']) {
   const en = getPuzzlesByDifficulty('en', tier), lv = getPuzzlesByDifficulty('lv', tier);
@@ -42,7 +73,8 @@ for (const tier of ['easy', 'medium', 'hard']) {
   }
   for (const locale of ['en', 'lv']) for (const p of getPuzzlesByDifficulty(locale, tier)) {
     count++;
-    assert.equal(p.difficulty, tier); assert.ok(p.question && p.hint && p.explanation);
+    assert.equal(p.difficulty, tier);
+    if (p.type === 'number_line') assert.equal(tier, 'hard', 'Number-line puzzles belong only in Hard'); assert.ok(p.question && p.hint && p.explanation);
     let answer;
     switch (p.type) {
       case 'target_build': answer = { kind: 'operators', operators: p.payload.solution }; break;
@@ -63,6 +95,13 @@ for (const tier of ['easy', 'medium', 'hard']) {
     const help = getVisualExplanation(p);
     assert.equal(help.puzzleId, p.id);
     assert.ok(help.keyframes.length >= 3);
+    const title = help.titleKey.split('.').slice(1).reduce((value, key) => value?.[key], helpLocales[locale]);
+    assert.ok(typeof title === 'string' && title.length > 0, `${locale}/${p.id}: help title must be localized`);
+    const sceneKinds = new Set(help.keyframes.map(frame => frame.scene.kind));
+    assert.equal(sceneKinds.size, 1, 'Keep the same scene mounted throughout the example');
+    for (const frame of help.keyframes) if (frame.scene.kind === 'practice') {
+      assert.equal(new Set(frame.scene.tokens.map(token => token.id)).size, frame.scene.tokens.length, `${p.id}: each moving token needs a unique identity`);
+    }
     for (const frame of help.keyframes) {
       assert.notEqual(frame.captionKey, p.question);
       assert.notEqual(frame.captionKey, p.hint);
@@ -79,9 +118,9 @@ for (const tier of ['easy', 'medium', 'hard']) {
     });
     assert.deepEqual(getVisualExplanation(independentPuzzle), help);
     if (p.id === 'easy-mc-06') {
-      assert.equal(help.keyframes[0].scene.lines[0], '4 < ? < 7');
-      assert.equal(help.keyframes.at(-1).scene.highlight, 5);
-      assert.ok(!JSON.stringify(help.keyframes).includes('11'), "Odd-number example must not reveal this puzzle's answer");
+      assert.equal(help.keyframes[0].scene.prompt, '4 < ? < 7');
+      assert.equal(help.keyframes.at(-1).scene.result, '4 < 5 < 7');
+      assert.ok(!help.keyframes.some(frame => [frame.scene.prompt, frame.scene.result, ...frame.scene.tokens.map(token => token.label)].some(label => /\b11\b/.test(label ?? ""))), "Odd-number example must not reveal this puzzle's answer");
     }
     const checkNumbers = value => { if (typeof value === 'number') assert.ok(Number.isFinite(value), `${p.id}: visual values must be finite`); else if (value && typeof value === 'object') Object.values(value).forEach(checkNumbers); };
     checkNumbers(help);
@@ -142,23 +181,63 @@ const storedBowl = parseGameSaveFromValue({ ...start, pet: { ...start.pet, place
 assert.equal(storedBowl.pet.placedDecorations.length, 0, 'A player can keep the bowl in inventory');
 const old = { ...start, progress: { ...start.progress, completedPuzzleIds: undefined, puzzlesSolved: { easy: 6, medium: 0, hard: 0 } } };
 assert.equal(parseGameSaveFromValue(old).save.progress.completedPuzzleIds.length, 6, 'Existing sequential progress migrates');
+for (const tier of ['easy', 'medium', 'hard']) {
+  const authored = JSON.parse(fs.readFileSync(path.join(root, `assets/puzzles/${tier}.json`), 'utf8'));
+  for (let solved = 0; solved <= authored.length; solved++) {
+    const legacy = { ...start, progress: { ...start.progress, completedPuzzleIds: undefined, puzzlesSolved: { easy: 0, medium: 0, hard: 0, [tier]: solved } } };
+    const migrated = parseGameSaveFromValue(legacy).save;
+    assert.deepEqual(Array.from(migrated.progress.completedPuzzleIds), authored.slice(0, solved).map(p => p.id), 'Legacy counts preserve the original completion order');
+    assert.deepEqual(parseGameSaveFromValue(migrated).save.progress.completedPuzzleIds, migrated.progress.completedPuzzleIds, 'Reopening preserves migrated completion IDs');
+    assert.equal(computePetWisdom(migrated.progress.puzzlesSolved, migrated.progress.completedPuzzleIds), Math.round(solved / totalPuzzles * 100), 'Migrated completions keep their wisdom credit');
+    assert.deepEqual(migrated.progress.puzzlesSolved, getSolvedCounts(migrated.progress.completedPuzzleIds));
+  }
+}
+const movedIds = ['easy-nl-1', 'easy-nl-2', 'medium-nl-1', 'medium-nl-2'];
+assert.ok(movedIds.every(id => getPuzzlesByDifficulty('en', 'hard').some(p => p.id === id)), 'Every moved puzzle remains available');
+const movedSave = parseGameSaveFromValue({ ...start, progress: { ...start.progress, completedPuzzleIds: movedIds } }).save;
+assert.deepEqual(Array.from(movedSave.progress.completedPuzzleIds), movedIds, 'Solved number-line puzzles remain completed and replayable');
+assert.equal(computePetWisdom(movedSave.progress.puzzlesSolved, movedSave.progress.completedPuzzleIds), Math.round(4 / totalPuzzles * 100), 'Moved completions keep their wisdom credit');
+const replayMoved = applyPuzzleAnswer(movedSave, getPuzzlesByDifficulty('en', 'hard').find(p => p.id === movedIds[0]), true, 'moved-replay', now);
+assert.equal(replayMoved.save.progress.completedPuzzleIds.length, 4, 'Moving categories does not reward a new completion twice');
+
 const changed = { ...switchRoomLayout(start.pet, 'room2'), roomPetOffset: { x: .7, y: .2 }, bedId: undefined };
 const back = switchRoomLayout(changed, 'room1'); assert.deepEqual(captureRoomLayout(back), captureRoomLayout(start.pet));
 assert.deepEqual(captureRoomLayout(switchRoomLayout(back, 'room2')), captureRoomLayout(changed));
 const layoutSave = { ...start, pet: { ...back, savedRoomLayouts: { room1: captureRoomLayout(back) } } };
 assert.equal(parseGameSaveFromValue(layoutSave).save.pet.savedRoomLayouts.room1.bedId, 'brown');
-const { normalizePlacedToys, updatePlacedToyScaleByInstance } = load('@/utils/room-placement');
-const { getPlacedToyScale, getPlacedToyDisplaySize } = load('@/constants/cat-toys');
+const { getEquippedBedScale, scaleBedBy } = load('@/constants/cat-beds');
+assert.equal(getEquippedBedScale(undefined), 1.3, 'Unresized beds match the bedroom reference size');
+assert.equal(scaleBedBy(getEquippedBedScale(undefined), 'up'), 1.4);
+assert.equal(scaleBedBy(getEquippedBedScale(undefined), 'down'), 1.2);
+for (const [input, expected] of [[undefined, 1.3], [1.3, 1.3], [1, 1], [1.4, 1.4], [NaN, 1.3], [Infinity, 1.3]]) {
+  const bedLayout = captureRoomLayout({ ...start.pet, bedScale: input });
+  const reopenedBed = parseGameSaveFromValue({ ...start, pet: { ...start.pet, bedScale: input,
+    roomLayouts: { room2: bedLayout }, savedRoomLayouts: { room1: bedLayout } } }).save.pet;
+  for (const layout of [reopenedBed, reopenedBed.roomLayouts.room2, reopenedBed.savedRoomLayouts.room1]) {
+    assert.equal(getEquippedBedScale(layout.bedScale), expected, 'Default and custom bed sizes survive normalization in every layout');
+  }
+  const savedBed = parseGameSaveFromValue(JSON.stringify({ ...start, pet: reopenedBed })).save.pet;
+  assert.equal(getEquippedBedScale(savedBed.bedScale), expected, 'Bed sizes survive closing and reopening the app');
+}
+const { appendPlacedToy, normalizePlacedToys, updatePlacedToyScaleByInstance, updatePlacedToyRotationByInstance } = load('@/utils/room-placement');
+const { getPlacedToyScale, getPlacedToyDisplaySize, getPlacedToyRotationIndex } = load('@/constants/cat-toys');
 const { scaleDecorationBy, canScaleDecorationUp, canScaleDecorationDown } = load('@/constants/decoration-variants');
 const post = { toyId: 'scratchPostRed', instanceId: 'post', offset: { x: .2, y: .3 } };
 const otherPost = { ...post, instanceId: 'other-post' };
-const scaledPosts = updatePlacedToyScaleByInstance([post, otherPost], 'post', scaleDecorationBy(1, 'up'));
-assert.equal(scaledPosts[0].scale, 1.1);
+assert.equal(getPlacedToyScale(post), 2, 'Unresized posts use the red reference size');
+for (const toyId of ['scratchPostGreen','scratchPostBlue','scratchPostPurple','scratchPostRed']) {
+  const bought = appendPlacedToy([], toyId)[0];
+  assert.equal(getPlacedToyDisplaySize(bought), 96, 'Every newly placed post starts at the larger default');
+}
+assert.equal(getPlacedToyScale({...post,toyId:'orangeBall'}),1,'Small toys retain their existing default');
+assert.equal(getPlacedToyDisplaySize(normalizePlacedToys([{...post,scale:1}])[0]),48,'A deliberately reduced post keeps its smaller custom size');
+const scaledPosts = updatePlacedToyScaleByInstance([post, otherPost], 'post', scaleDecorationBy(getPlacedToyScale(post), 'up'));
+assert.equal(scaledPosts[0].scale, 2.1);
 assert.equal(scaledPosts[1], otherPost, 'Resizing one scratching post preserves other instances');
 assert.equal(post.scale, undefined, 'Resizing preserves undo history');
 assert.ok(getPlacedToyDisplaySize(scaledPosts[0]) > getPlacedToyDisplaySize(post));
-assert.equal(updatePlacedToyScaleByInstance(scaledPosts, 'post', scaleDecorationBy(1.1, 'down'))[0].scale, undefined);
-for (const [input, expected] of [[99, 2.2], [-99, .7], [NaN, 1], [Infinity, 1], [undefined, 1]]) {
+assert.equal(updatePlacedToyScaleByInstance(scaledPosts, 'post', scaleDecorationBy(2.1, 'down'))[0].scale, undefined);
+for (const [input, expected] of [[99, 2.2], [-99, .7], [1, 1], [NaN, 2], [Infinity, 2], [undefined, 2]]) {
   const normalized = normalizePlacedToys([{ ...post, scale: input }])[0];
   assert.equal(getPlacedToyScale(normalized), expected);
 }
@@ -166,10 +245,28 @@ assert.equal(canScaleDecorationUp(2.2), false); assert.equal(canScaleDecorationD
 const toyLayout = captureRoomLayout({ ...start.pet, placedToys: scaledPosts });
 const toySave = parseGameSaveFromValue(JSON.stringify({ ...start, pet: { ...start.pet, placedToys: scaledPosts,
   roomLayouts: { room2: toyLayout }, savedRoomLayouts: { room1: toyLayout } } })).save;
-assert.equal(toySave.pet.placedToys[0].scale, 1.1, 'Toy size survives closing and reopening the app');
-assert.equal(toySave.pet.roomLayouts.room2.placedToys[0].scale, 1.1, 'Per-room layouts retain toy size');
-assert.equal(toySave.pet.savedRoomLayouts.room1.placedToys[0].scale, 1.1, 'Saved room layouts retain toy size');
+assert.equal(toySave.pet.placedToys[0].scale, 2.1, 'Toy size survives closing and reopening the app');
+assert.equal(toySave.pet.roomLayouts.room2.placedToys[0].scale, 2.1, 'Per-room layouts retain toy size');
+assert.equal(toySave.pet.savedRoomLayouts.room1.placedToys[0].scale, 2.1, 'Saved room layouts retain toy size');
 console.log('Verified scratching-post resizing, instance isolation, bounds, legacy defaults, and saved sizes.');
+let rotatedPosts = [post, otherPost];
+for (const expected of [1, 2, 3, 0]) {
+  rotatedPosts = updatePlacedToyRotationByInstance(rotatedPosts, 'post', getPlacedToyRotationIndex(rotatedPosts[0]) + 1);
+  assert.equal(getPlacedToyRotationIndex(rotatedPosts[0]), expected, 'Four turns restore the original orientation');
+  assert.equal(rotatedPosts[1], otherPost, 'Rotating one toy preserves other instances');
+}
+assert.equal(post.rotationIndex, undefined, 'Rotation preserves undo history');
+for (const [input, expected] of [[undefined, 0], [1, 1], [3, 3], [4, 0], [-1, 3], [NaN, 0], [Infinity, 0]]) {
+  const toys = normalizePlacedToys([{...post, rotationIndex: input}]);
+  assert.equal(getPlacedToyRotationIndex(toys[0]), expected);
+  const rotatedLayout = captureRoomLayout({...start.pet, placedToys: toys});
+  const reopened = parseGameSaveFromValue(JSON.stringify({...start, pet: {...start.pet, placedToys: toys,
+    roomLayouts: {room2: rotatedLayout}, savedRoomLayouts: {room1: rotatedLayout},
+    homeRooms: {bedroom: {...rotatedLayout, roomId: 'room1'}} }})).save.pet;
+  for (const layout of [reopened, reopened.roomLayouts.room2, reopened.savedRoomLayouts.room1, reopened.homeRooms.bedroom])
+    assert.equal(getPlacedToyRotationIndex(layout.placedToys[0]), expected, 'Toy rotation survives reopening and all saved layouts');
+}
+console.log('Verified toy quarter turns, instance isolation, undo history and saved orientations.');
 
 const { addRoomDoor, setDoorDestination, switchHomeRoom, removeRoomNavigationDoors, sendCatToRoom, getCatHomeRoomId, previewHomeRoom } = load('@/utils/home-rooms');
 const { normalizePlacedDecorations } = load('@/utils/room-placement');

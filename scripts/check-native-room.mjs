@@ -58,6 +58,19 @@ for (const scale of [.2, 1, 3]) for (const angle of [0, .001, Math.PI / 2, Math.
   assert.ok(Math.abs(actualSine - Math.sin(angle)) < 1e-6 && Math.abs(Math.cos(rotation.angle) - Math.cos(angle)) < 1e-6, 'Identity and half-turn toy rotations retain the real orientation');
 }
 const base = { width: 390, height: 420, petSize: 120, sizeScale: 1, decorations: [], toys: [] };
+const { WINDOW_DECORATION_IDS } = load('@/constants/window-decorations');
+for (const decorationId of WINDOW_DECORATION_IDS) for (const wallFlipped of [false,true]) {
+  const layout = {...base, decorations:[{decorationId, instanceId:'window', wallFlipped, offset:{x:-.15,y:.18}}]};
+  const window = w.buildNativeRoomWorld(layout).objects[0];
+  assert.ok(window.min[1] >= .18 - 1e-6 && window.max[1] <= 2.65 + 1e-6,
+    'Windows placed with a floor offset remain visible above the floor and below the wall top');
+  assert.ok(window.min[wallFlipped ? 0 : 2] >= -2.35 - 1e-6,
+    'The glass and frame sit in front of the opaque room wall');
+  assert.ok(window.placementOffset, 'Invisible saved placements receive a matching editor anchor');
+  const repaired = w.buildNativeRoomWorld({...layout, decorations:[{...layout.decorations[0], offset:window.placementOffset}]}).objects[0];
+  assert.equal(repaired.placementOffset, undefined, 'Correcting the saved anchor converges after one update');
+  assert.ok(w.pathLength([window.position,repaired.position]) < 1e-6, 'Saving the repaired anchor preserves the visible window');
+}
 const sofa = { decorationId: 'sofaA', instanceId: 'sofa', offset: { x: .3, y: -.15 }, scale: 1.2 };
 const layouts = { ...base, bedId: 'brown', bedOffset: { x: -.45, y: .35 }, decorations: [sofa, { decorationId: 'japaneseDoorAni', instanceId: 'door', offset: { x: -.5, y: -.3 }, wallFlipped: true }], toys: [{ instanceId: 'ball', toyId: 'blueBall', offset: { x: .45, y: .4 }, scale: 1.1 }] };
 const before = JSON.stringify(layouts), world = w.buildNativeRoomWorld(layouts);
@@ -73,7 +86,7 @@ for (const o of world.objects) {
   const actual = w.projectWorld(center, world.width);
   const original = o.instanceId === 'bed' ? layouts.bedOffset : [...layouts.decorations, ...layouts.toys].find(i => i.instanceId === o.instanceId).offset;
   const entry = inventory.find(i => i.id === o.modelId);
-  const multiplier = o.instanceId === 'sofa' ? 1.2 : o.instanceId === 'ball' ? 1.1 : 1;
+  const multiplier = o.instanceId === 'sofa' ? 1.2 : o.instanceId === 'ball' ? 1.1 : o.instanceId === 'bed' ? 1.3 : 1;
   const size = entry.displaySize * multiplier;
   assert.ok(Math.abs(actual.x - original.x * (base.width - size) / 2) < .001, `${o.instanceId} retains horizontal placement`);
   assert.ok(Math.abs(actual.y - original.y * (base.height - size) / 2) < .001, `${o.instanceId} retains vertical placement`);
@@ -249,7 +262,7 @@ function matrix(t=[0,0,0],q=[0,0,0,1],s=[1,1,1]) {
     (2*x*z+2*y*r)*s[2],(2*y*z-2*x*r)*s[2],(1-2*x*x-2*y*y)*s[2],0,...t,1];
 }
 const parents=new Map();skeleton.nodes.forEach((n,i)=>n.children?.forEach(child=>parents.set(child,i)));
-function posedTail(clip,time,position,heading,scale,names=['tailjoint0','tailjoint1','tailjoint2','tailjoint3','tailTip']) {
+function posedTail(clip,time,position,heading,scale,names=['tailjoint0','tailjoint1','tailjoint2','tailjoint3','tailTip'], localsOnly=false) {
   const nodes=skeleton.nodes.map(n=>({ ...n }));
   const animation=skeleton.animations.find(a=>a.name===clip);
   for(const channel of animation.channels) {
@@ -265,8 +278,103 @@ function posedTail(clip,time,position,heading,scale,names=['tailjoint0','tailjoi
   const cache=new Map(),root=matrix(position,[0,Math.sin(heading/2),0,Math.cos(heading/2)],[scale,scale,scale]);
   function worldMatrix(i) { if(cache.has(i))return cache.get(i);const n=nodes[i],parent=parents.get(i);
     const m=multiply(parent===undefined?root:worldMatrix(parent),n.matrix??matrix(n.translation,n.rotation,n.scale));cache.set(i,m);return m; }
+  if (localsOnly) return new Map(nodes.map(n => [n.name, n.matrix ?? matrix(n.translation,n.rotation,n.scale)]));
   return names.map(name=>worldMatrix(nodes.findIndex(n=>n.name===name)).slice(12,15));
 }
+// Hanging toys use the shipped paw joints and perch geometry.
+const hanging = load('@/utils/native-hanging-toy');
+const treeLayout = { ...base, petSize: 80, sizeScale: 1.15,
+  decorations: [{ decorationId: 'catTreePink', instanceId: 'tree', offset: { x: 0, y: .1 } }] };
+const treeWorld = w.buildNativeRoomWorld(treeLayout);
+const tree = treeWorld.objects[0];
+const treeRoom = { ...treeLayout, nativeWorld: treeWorld, homeOffset: { x: 0, y: .12 }, ownedToyIds: [], hungry: false, asleep: false };
+const treePlan = load('@/utils/room-activities').buildRoomActivity(treeRoom, 0, 'toyPlay', 'tree');
+assert.ok(treePlan && treePlan.steps.some(s => s.animation === 'jumpOn'));
+let treePosition = treeWorld.home;
+for (const step of treePlan.steps) {
+  const prepared = w.prepareNativeStep(treePlan, step, w.catScreenPoint(treePosition, treeWorld), treeWorld, treePosition[1]);
+  assert.ok(!prepared.native.blocked, 'The tree play route stays reachable');
+  treePosition = prepared.native.path.at(-1);
+  if (step.animation === 'jumpOn') assert.ok(w.pathLength([treePosition, tree.seat]) < 1e-6);
+}
+// Returning from a sofa or another toy prepends steps before the new toy walk.
+const prefixedTreePlan = {...treePlan,steps:[{...treePlan.steps.at(-1),returnHome:true},...treePlan.steps]};
+const prefixedTreeWalk = w.prepareNativeStep(prefixedTreePlan,prefixedTreePlan.steps[1],w.catScreenPoint(treeWorld.home,treeWorld),treeWorld,w.FLOOR_Y);
+const expectedTreeApproach = w.findHangingToyApproach(treeWorld.home,tree,treeWorld);
+assert.ok(w.pathLength([prefixedTreeWalk.native.path.at(-1),expectedTreeApproach])<.01,
+  'Toy walks after a preceding return still reach the hanging ball instead of the old sprite anchor');
+const prefixedReturn = w.prepareNativeStep(prefixedTreePlan,prefixedTreePlan.steps[0],w.catScreenPoint([1.5,w.FLOOR_Y,1.5],treeWorld),treeWorld,w.FLOOR_Y);
+assert.ok(w.pathLength([prefixedReturn.native.path.at(-1),w.nearestFree(treeWorld.home,treeWorld)])<.01,
+  'The prepended return remains a journey home instead of walking to the new toy');
+
+const treeContactRooms = [treeWorld];
+for (const x of [-1, 1]) for (const z of [-1, 1]) {
+  const shift = [x * (2.25 - .65 * tree.scale) - tree.position[0], 0,
+    z * (2.25 - .46 * tree.scale) - tree.position[2]];
+  const move = p => p.map((v,i)=>v+shift[i]);
+  const cornerTree = { ...tree, position: move(tree.position), min: move(tree.min), max: move(tree.max),
+    seat: move(tree.seat), approach: move(tree.approach),
+    collisionBoxes: tree.collisionBoxes.map(b=>({min:move(b.min),max:move(b.max)})) };
+  const cornerRoom = { ...treeWorld, home:[0,w.FLOOR_Y,0], objects:[cornerTree] };
+  treeContactRooms.push(cornerRoom);
+  const approach = w.findHangingToyApproach(cornerRoom.home,cornerTree,cornerRoom);
+  assert.ok(approach, `The hanging ball remains playable in corner ${x}/${z}`);
+  const prepared = w.prepareNativeStep(treePlan,treePlan.steps[0],w.catScreenPoint(cornerRoom.home,cornerRoom),cornerRoom,w.FLOOR_Y);
+  assert.ok(!prepared.native.blocked && w.pathLength([prepared.native.path.at(-1),approach])<.01);
+  const cornerPlan = {...treePlan,steps:[prepared,...treePlan.steps.slice(1)]};
+  const off = w.prepareNativeStep(cornerPlan,cornerPlan.steps[6],w.catScreenPoint(cornerTree.seat,cornerRoom),cornerRoom,cornerTree.seat[1]);
+  assert.ok(w.pathLength([off.native.path.at(-1),approach])<.01, 'Jump-down uses the selected accessible side');
+  const sealed = {...cornerRoom,objects:[cornerTree,{...cornerTree,instanceId:'barrier',modelId:'sofaA',min:[-2.3,0,-2.3],max:[2.3,3,2.3]}]};
+  assert.equal(w.findHangingToyApproach(sealed.home,cornerTree,sealed),undefined,'A sealed-off toy never starts a pretend play sequence');
+}
+const approachBarrier = { ...tree, instanceId:'approach-barrier', modelId:'sofaA',
+  min:[tree.max[0]+.01,w.FLOOR_Y,tree.min[2]-.3], max:[2.2,2,tree.max[2]+.3] };
+const crowdedTreeRoom = {...treeWorld,objects:[tree,approachBarrier]};
+assert.ok(!w.isFree(tree.approach,crowdedTreeRoom));
+assert.ok(w.findHangingToyApproach(crowdedTreeRoom.home,tree,crowdedTreeRoom),
+  'Furniture blocking the default side still permits an accessible side swat');
+treeContactRooms.push(crowdedTreeRoom);
+const tinyTreeWorld = w.buildNativeRoomWorld({ ...treeLayout, decorations: [{ ...treeLayout.decorations[0], scale: .5 }] });
+const tinyPlan = load('@/utils/room-activities').buildRoomActivity({ ...treeRoom, nativeWorld: tinyTreeWorld,
+  decorations: [{ ...treeLayout.decorations[0], scale: .5 }] }, 0, 'toyPlay', 'tree');
+assert.ok(!tinyPlan.steps.some(s => s.animation === 'jumpOn'), 'A platform too small for the cat keeps play on the floor');
+const perchedPaws = posedTail('sit', .34, tree.seat, tree.seatHeading, treeWorld.catScale,
+  ['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw']);
+for (const paw of perchedPaws) {
+  const x=(paw[0]-tree.position[0])/tree.scale, z=(paw[2]-tree.position[2])/tree.scale;
+  const radius=.12*treeWorld.catScale/tree.scale;
+  assert.ok(x-radius>=-.65 && x+radius<=.35 && z-radius>=-.46 && z+radius<=.34,
+    'The seated catching pose keeps supporting paws on the perch');
+}
+const interrupt = load('@/utils/room-activities').buildRoomReturn(treeRoom, treePlan, 4, w.catScreenPoint(tree.seat, treeWorld));
+assert.equal(interrupt.steps[0].animation, 'jumpOff', 'Cancelling a platform catch jumps down before returning home');
+for (const id of ['catTreePink','catTreeBlue','catTreeTan', ...inventory.filter(e => e.id.startsWith('toy-scratchPost')).map(e => e.id)]) {
+  const model = glb(id), pivot = model.nodes.find(n => n.name === 'Hanging toy pivot');
+  assert.ok(pivot && pivot.children.some(i => model.nodes[i].name === 'Hanging toy string'));
+  const ball = model.nodes[pivot.children.find(i => model.nodes[i].name === 'Dangling toy')];
+  assert.ok(Math.abs(Math.hypot(...ball.translation) - hanging.HANGING_TOY_LENGTH) < 1e-6);
+  assert.ok(!catalog[id].animated, 'The hanging toy moves on contact, without an autoplay clip');
+}
+const restSwing = { x: 0, z: 0, vx: 0, vz: 0, touching: false };
+for (const fps of [30, 60, 120]) {
+  let swing = hanging.advanceHangingToy(restSwing, 1 / fps, tree.scale);
+  assert.equal(swing.x, 0); assert.equal(swing.z, 0);
+  swing = hanging.advanceHangingToy(swing, 1 / fps, tree.scale, [-.7, 0, .9]);
+  let peak = 0;
+  for (let i = 0; i < fps * 8; i++) {
+    swing = hanging.advanceHangingToy(swing, 1 / fps, tree.scale);
+    assert.ok(Math.abs(Math.hypot(...hanging.hangingToyOffset(swing.x, swing.z)) - hanging.HANGING_TOY_LENGTH) < 1e-8);
+    peak = Math.max(peak, Math.hypot(swing.x, swing.z));
+  }
+  assert.ok(peak > .2 && Math.hypot(swing.x, swing.z) < .02, 'Paw impulses swing in two axes and settle');
+}
+const ballPoint = [tree.position[0] + .30 * tree.scale, tree.position[1] + (1.43 - hanging.HANGING_TOY_LENGTH) * tree.scale, tree.position[2] + .12 * tree.scale];
+const joints = posedTail('batToy', authored.batToy[0] / authored.batToy[1] * .34, tree.approach,
+  Math.atan2(ballPoint[0]-tree.approach[0],ballPoint[2]-tree.approach[2]),treeWorld.catScale,['L.forelegjoint0','L.forelegjoint1','L.front.paw']);
+
+assert.ok(Math.hypot(...ballPoint.map((v,i)=>v-joints[0][i])) <
+  Math.hypot(...joints[1].map((v,i)=>v-joints[0][i])) + Math.hypot(...joints[2].map((v,i)=>v-joints[1][i])) + .1*tree.scale + treeWorld.radius*.12,
+  'A floor swat can reach the suspended ball with the actual leg lengths');
 // Check the shipped eating clip: the muzzle reaches the bowl, the paws stay
 // planted, and the cat returns to its standing pose at both ends.
 const eatingDuration = authored.eating[0] / authored.eating[1];
@@ -311,9 +419,12 @@ for(const clip of ['walk','sit'])for(let sample=0;sample<24;sample++) {
   }
 }
 let corrected=0;
-for(const decorationId of ['sofaA','sofaB'])for(const wallFlipped of [false,true])for(const itemScale of [1.8,2,2.2]) {
+const seatingSofas = load('@/constants/sofa-decorations');
+for(const decorationId of seatingSofas.SOFA_DECORATION_IDS.filter(seatingSofas.isSeatingSofaDecorationId))for(const wallFlipped of [false,true])for(const itemScale of [1.8,2,2.2]) {
   const room=w.buildNativeRoomWorld({...base,petSize:96,decorations:[{...sofa,decorationId,wallFlipped,scale:itemScale,offset:{x:0,y:0}}]});
-  const object=room.objects[0];assert.equal(object.collisionBoxes.length,13,'Seats, back, arms and pillow use separate authored collision shapes');
+  const object=room.objects[0];
+  if (['sofaA','sofaB'].includes(decorationId)) assert.equal(object.collisionBoxes.length,13,'Seats, back, arms and pillow use separate authored collision shapes');
+  else assert.ok(object.collisionBoxes.length > 5, 'New sofas retain separate seat, back and arm collision shapes');
   const heading=object.seatHeading;
   assert.ok((Math.sin(heading) + Math.cos(heading)) / Math.SQRT2 > .5,
     `${decorationId}/${wallFlipped}: sitting and sleeping face the player`);
@@ -397,6 +508,25 @@ for (const fps of [30, 60, 120]) {
   assert.deepEqual(Array.from(scale), [empty.catScale, empty.catScale, empty.catScale]);
   const last = applies.at(-1);assert.equal(last.name, 'walk');assert.ok(Math.abs(last.time - (1 / (.8 * empty.catScale) % 1)) < .001, 'Paw phase follows actual traveled distance');
 }
+
+// A retained native renderer must not reuse command IDs after a React refresh.
+slots = []; applies = [];
+const refreshedJourney = { path:[[-1,w.FLOOR_Y,0],[1,w.FLOOR_Y,0]], distance:2, duration:2, jump:false, awaitCompletion:true };
+const refreshedArrivals = [];
+const refreshedProps = { playback:{kind:'segment',segment:registry.getSegment('idle')},active:true,world:empty,travel:refreshedJourney,
+  onRoomStepComplete: (key, point) => refreshedArrivals.push(point) };
+render(refreshedProps);
+const retainedCommand = slots.find(slot=>slot?.value?.value?.segments)?.value;
+assert.ok(retainedCommand);
+retainedCommand.value = {...retainedCommand.value,id:40};
+render({...refreshedProps,activityKey:'after-refresh'});
+assert.ok(retainedCommand.value.id>40,'New commands advance the retained native ID, so a new walk cannot complete from an old clock');
+for(let frame=0;frame<121;frame++)renderFrame({timeSinceLastFrame:1/60});
+assert.ok(Math.abs(position[0]-1)<1e-6,'The refreshed command reaches its intended endpoint');
+assert.equal(refreshedArrivals.length,1);
+refreshedJourney.path[1][0]=9;
+assert.equal(refreshedArrivals[0][0],1,'Deferred completion retains the rendered arrival when a shared navigation path is replaced');
+refreshedJourney.path[1][0]=1;
 
 // Room arrivals use the rendered clock even when wall time/frame delivery differs.
 for (const reduced of [false, true]) {
@@ -498,7 +628,11 @@ render({ ...movingProps, world: changedWorld }); renderFrame({ timeSinceLastFram
 assert.ok(w.pathLength([beforeWorldUpdate, livePosition.value]) < .03, 'An object update cannot restart the rendered cat journey');
 const beforeReroute = Array.from(livePosition.value), destination = [.4, w.FLOOR_Y, 1];
 const staleReportedStart = [beforeReroute[0] - 1, w.FLOOR_Y, beforeReroute[2]];
-const reroutedProps = { ...movingProps, world: changedWorld, travel: { path: [staleReportedStart, destination], distance: w.pathLength([staleReportedStart, destination]), duration: 2, jump: false, replanned: true } };
+// Worklets Core's JsiArrayWrapper exposes indices and iteration, but no slice method.
+const sharedReroutePath = new Proxy([staleReportedStart, destination], {
+  get: (target, key, receiver) => key === 'slice' ? undefined : Reflect.get(target, key, receiver),
+});
+const reroutedProps = { ...movingProps, world: changedWorld, travel: { path: sharedReroutePath, distance: w.pathLength([staleReportedStart, destination]), duration: 2, jump: false, replanned: true } };
 render(reroutedProps); renderFrame({ timeSinceLastFrame: 1 / 60 });
 assert.ok(w.pathLength([beforeReroute, livePosition.value]) < .03, 'Replanning starts at the exact rendered cat position, even with delayed RN reports');
 for (let i = 0; i < 130; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
@@ -700,6 +834,16 @@ assert.equal(sceneReady, 2);
 assert.equal(sceneClock.at(-1), 'stop');
 console.log('Verified native first-frame handoff, retained hidden surfaces, paused GPU clocks and new-cat readiness in cached rooms.');
 
+sceneReduced = false;
+let editorPhysicsSteps = 0;
+mocks['react-native-filament'].useWorld = () => ({ stepSimulation() { editorPhysicsSteps++; } });
+cached = renderCachedScene({ ...cachedProps, paused: false, editing: true });
+paintFrame();
+assert.equal(editorPhysicsSteps, 0, 'Physics cannot push a manually dragged ball away while decorating');
+assert.equal(cached.find(child => child.type.name === 'RoomObject').props.active, false, 'Physics reports cannot overwrite editor placement');
+renderCachedScene({ ...cachedProps, paused: false, editing: false }); paintFrame();
+assert.equal(editorPhysicsSteps, 1, 'Normal ball physics resumes after decorating');
+
 const departurePlan = buildRoomActivity({ ...base, homeOffset: { x: 0, y: .12 }, ownedToyIds: [], decorations: [] }, 0, 'roomTravel', 'bedroom');
 const departure = w.prepareNativeStep(departurePlan, departurePlan.steps[0], w.catScreenPoint(routed.home, routed), routed, w.FLOOR_Y);
 assert.equal(departure.native.blocked, false);
@@ -725,3 +869,237 @@ for (const [destination, direction] of [['bedroom', -1], ['kitchen', 1], ['bathr
     assert.ok(w.isFree(entry.native.path[i - 1].map((v, axis) => v + (entry.native.path[i][axis] - v) * t), routed), 'Entry routes avoid furniture');
 }
 console.log('Verified left/right departures, opposite-side entries, furniture detours and the living room between bedroom and kitchen.');
+
+// Execute the cat render worklet against real exported animation matrices.
+function nativeMatrix(data=matrix()) {
+  return { data, translation: data.slice(12,15),
+    scaling: s => nativeMatrix(multiply(matrix([0,0,0],[0,0,0,1],s),data)),
+    translate: t => nativeMatrix(multiply(matrix(t),data)),
+    rotate(angle,axis) { const sine=Math.sin(angle/2);return nativeMatrix(multiply(matrix([0,0,0],[...axis.map(v=>v*sine),Math.cos(angle/2)]),data)); } };
+}
+let liveLocals, catRoot;
+const parentNames = new Map([...parents].map(([child,parent]) => [skeleton.nodes[child].name,skeleton.nodes[parent].name]));
+function jointWorld(name) {
+  const parent=parentNames.get(name);
+  return multiply(parent ? jointWorld(parent) : catRoot,liveLocals.get(name));
+}
+Object.assign(transformManager, {
+  createIdentityMatrix: () => nativeMatrix(),
+  getTransform: e => nativeMatrix(liveLocals.get(e.name)),
+  getWorldTransform: e => nativeMatrix(jointWorld(e.name)),
+  setTransform(e,m) { if(e.name)liveLocals.set(e.name,m.data);else catRoot=m.data; },
+});
+asset.getFirstEntityByName = name => liveLocals.has(name) ? {name} : undefined;
+animator.applyAnimation = (index,time) => { liveLocals=posedTail(animations[index].name,time,[0,0,0],0,1,[],true); };
+animator.applyCrossFade = () => {};
+// Run the actual object and cat callbacks in their scene order with shipped GLBs.
+sceneReduced = false;
+let toyRoot, toyLocals, toyNodes, toyParents;
+const toyEntity = { toy: true, name: '__root' };
+const toyAsset = { getFirstEntityByName: name => toyNodes.has(name) ? { toy: true, name } : undefined };
+function toyWorldMatrix(name) {
+  const parent = toyParents.get(name);
+  return multiply(parent ? toyWorldMatrix(parent) : toyRoot, toyLocals.get(name));
+}
+const catGetLocal = transformManager.getTransform, catGetWorld = transformManager.getWorldTransform, catSet = transformManager.setTransform;
+Object.assign(transformManager, {
+  getTransform: e => e.toy ? nativeMatrix(e.name === '__root' ? toyRoot : toyLocals.get(e.name)) : catGetLocal(e),
+  getWorldTransform: e => e.toy ? nativeMatrix(e.name === '__root' ? toyRoot : toyWorldMatrix(e.name)) : catGetWorld(e),
+  setTransform(e, m) { if (!e.toy) catSet(e, m); else if (e.name === '__root') toyRoot = m.data; else toyLocals.set(e.name, m.data); },
+});
+Object.assign(mocks['react-native-filament'], {
+  useModel: () => ({ state: 'loaded', asset: toyAsset, rootEntity: toyEntity }),
+  useAnimator: () => ({ getAnimationCount: () => 0 }),
+  useFilamentContext: () => context,
+  useSphereShape() {}, useWorkletEffect: fn => fn(),
+});
+assert.equal(hanging.hangingToyContact([0,0,0], [[.2,0,0]], .1, {ball:[0,0,0], paws:[[-.2,0,0]]}), 0, 'A fast paw crossing the ball between frames makes contact');
+assert.equal(hanging.hangingToyContact([0,0,0], [[2,0,0]], .1, {ball:[0,0,0], paws:[[-2,0,0]]}), -1, 'Repositioning does not create a distant hit');
+const largeTreeWorld = w.buildNativeRoomWorld({...treeLayout, decorations:[{...treeLayout.decorations[0], scale:1.6}]});
+const scratchPostContactRooms = [];
+for (const rotationIndex of [1,2,3]) {
+  const rotatedRoom = w.buildNativeRoomWorld({...treeLayout, decorations:[], toys:[{
+    toyId:'scratchPostGreen', instanceId:'post', offset:{x:0,y:.1}, rotationIndex,
+  }]});
+  const post = rotatedRoom.objects[0];
+  assert.equal(post.heading, rotationIndex * Math.PI / 2, 'Saved quarter turns rotate the native model');
+  const [cx,cy,cz] = catalog[post.modelId].center;
+  const c = Math.cos(post.heading), s = Math.sin(post.heading);
+  const center = [cx*c+cz*s,cy,cz*c-cx*s].map((v,i) => post.position[i] + v*post.scale);
+  const anchor = w.projectWorld(center, rotatedRoom.width);
+  const size = 96 * treeLayout.sizeScale;
+  assert.ok(Math.abs(anchor.x) < 1e-6 && Math.abs(anchor.y - .1*(rotatedRoom.height-size)/2) < 1e-6,
+    'Rotation preserves the saved screen placement');
+  scratchPostContactRooms.push(rotatedRoom);
+}
+for (const toyId of ['scratchPostGreen','scratchPostBlue','scratchPostPurple','scratchPostRed']) {
+  const room = w.buildNativeRoomWorld({...treeLayout,decorations:[],toys:[{toyId,instanceId:'post',offset:{x:0,y:.1}}]});
+  for(const home of [[-1.5,w.FLOOR_Y,-1.5],[-1.5,w.FLOOR_Y,1.5],[1.5,w.FLOOR_Y,-1.5],[1.5,w.FLOOR_Y,1.5]])
+    scratchPostContactRooms.push({...room,home});
+}
+for (const contactRoom of [...treeContactRooms, largeTreeWorld,...scratchPostContactRooms]) for (const fps of [30,60,120]) {
+  slots=[];catRoot=matrix();liveLocals=posedTail('idle',0,[0,0,0],0,1,[],true);
+  const currentTree=contactRoom.objects[0], model=glb(currentTree.modelId);
+  toyRoot=matrix();toyNodes=new Map(model.nodes.map(n=>[n.name,n]));
+  toyLocals=new Map(model.nodes.map(n=>[n.name,n.matrix??matrix(n.translation,n.rotation,n.scale)]));
+  toyParents=new Map(model.nodes.flatMap(n=>(n.children??[]).map(i=>[model.nodes[i].name,n.name])));
+  const approach=w.findHangingToyApproach(contactRoom.home,currentTree,contactRoom);
+  assert.ok(approach, 'A reachable floor play point exists');
+  const ball={value:hanging.hangingToyPosition(currentTree)}, paws={value:[]};
+  const currentPlan={...prefixedTreePlan,targetInstanceId:currentTree.instanceId};
+  const walk=w.prepareNativeStep(currentPlan,currentPlan.steps[1],w.catScreenPoint(contactRoom.home,contactRoom),contactRoom,w.FLOOR_Y);
+  assert.ok(!walk.native.blocked && w.pathLength([walk.native.path.at(-1),approach])<.01,
+    'A toy command after another activity walks to the reachable ball side from every starting corner');
+  const treeBat=w.prepareNativeStep(currentPlan,currentPlan.steps[2],w.catScreenPoint(walk.native.path.at(-1),contactRoom),contactRoom,w.FLOOR_Y);
+  render({ playback:{kind:'segment',segment:{assetKey:'batToy',loop:true}}, loop:true, active:true,
+    world:contactRoom,travel:treeBat.native,hangingBall:ball,pawPositions:paws,initialPosition:approach });
+  const catFrame=renderFrame;
+  const child = sceneChildren({ world:contactRoom, catPresent:true, playingId:currentTree.instanceId }).find(c=>c.type.name==='RoomObject');
+  slots=[];cursor=0;effects=[];
+  // Physical touch must work even without the activity's playContact flag.
+  child.type({...child.props, hangingBall:ball, pawPositions:paws, playContact:false});effects.forEach(fn=>fn());
+  const objectFrame=renderFrame;
+  let minDistance=Infinity, peak=0;
+  for(let frame=0;frame<fps*4;frame++) {
+    objectFrame({timeSinceLastFrame:1/fps});catFrame({timeSinceLastFrame:1/fps});
+    const actual=toyWorldMatrix('Dangling toy').slice(12,15);
+    assert.ok(Math.hypot(...actual.map((v,k)=>v-ball.value[k]))<.08, 'The rendered ball follows its published contact position');
+    for(const paw of paws.value) minDistance=Math.min(minDistance,Math.hypot(...paw.map((v,k)=>v-actual[k])));
+    const rest=hanging.hangingToyPosition(currentTree);
+    peak=Math.max(peak,Math.hypot(...actual.map((v,k)=>v-rest[k]))/currentTree.scale);
+    assert.ok(Math.abs(actual[0])+.1*currentTree.scale<=2.35+1e-6 && Math.abs(actual[2])+.1*currentTree.scale<=2.35+1e-6,'Corner swings rebound inside the room walls');
+    const anchor=toyWorldMatrix('Hanging toy pivot').slice(12,15);
+    assert.ok(Math.abs(Math.hypot(...actual.map((v,k)=>v-anchor[k]))-hanging.HANGING_TOY_LENGTH*currentTree.scale)<1e-6, 'The rendered string stays attached at its fixed length');
+  }
+  assert.ok(peak>.1, `The actual object callback must react to paw touch at ${fps} FPS; nearest paw ${minDistance}, scale ${currentTree.scale}`);
+}
+console.log('Verified actual cat and toy render callbacks, fast swats, longer cords and contact without an activity flag in open space, larger toys and all corners at 30/60/120 FPS.');
+
+// Plant contact uses the same exported rig and the actual per-instance leaf callbacks.
+const nativeEmptyPaws = new Proxy([], { get(array, key) {
+  if (/^\d+$/.test(String(key)) && Number(key) >= array.length) throw new Error('Native shared array read beyond length');
+  return Reflect.get(array, key);
+} });
+assert.equal(hanging.hangingToyContact([0,0,0], [[0,0,0]], .2, {ball:[0,0,0], paws:nativeEmptyPaws}), 0,
+  'First paw contact safely handles an empty previous native shared array');
+const plantPhysics = load('@/utils/native-plant-play');
+for (const fps of [30,60,120]) {
+  let leaf=plantPhysics.detachPlantLeaf([2.27,1,0],[2,1,0],0);
+  const original=JSON.stringify(leaf);
+  leaf=plantPhysics.advancePlantLeaf(leaf,1/fps,w.FLOOR_Y+.05);
+  assert.notEqual(JSON.stringify(leaf),original);
+  let halfway;
+  for(let frame=1;frame<fps*27;frame++) {
+    leaf=plantPhysics.advancePlantLeaf(leaf,1/fps,w.FLOOR_Y+.05);
+    if (leaf.age >= 0) assert.ok(leaf.position[1]>=w.FLOOR_Y+.05 && Math.abs(leaf.position[0])<=2.28, 'Falling leaves stay above the floor and inside room walls');
+    if(frame===fps*16)halfway=leaf;
+  }
+  assert.ok(halfway.scale>.4 && halfway.scale<.6,'Leaves grow slowly over twenty seconds');
+  assert.equal(leaf.age,-1,'Leaves return to a complete attached state');
+}
+const plantLayout={...treeLayout,decorations:[{decorationId:'plantPotted',instanceId:'plant',offset:{x:-.2,y:.1},scale:1.4}]};
+const plantWorld=w.buildNativeRoomWorld(plantLayout), plantObject=plantWorld.objects[0];
+for(const start of [[0,w.FLOOR_Y,0],[-1.5,w.FLOOR_Y,-1.5],[1.5,w.FLOOR_Y,1.5]]) {
+  const plantApproach=w.findPlantApproach(start,plantObject,plantWorld);
+  assert.ok(plantApproach);
+  assert.ok(Math.min(...plantObject.leaves.map(point=>Math.hypot(point[0]-plantApproach[0],point[2]-plantApproach[2]))) <= .9*plantWorld.catScale+.20*plantObject.scale+1e-6,
+    'Different starting positions select a close plant approach instead of the distant edge of paw reach');
+  const toyApproach=w.findHangingToyApproach(start,tree,treeWorld), point=hanging.hangingToyPosition(tree);
+  assert.ok(toyApproach && Math.hypot(point[0]-toyApproach[0],point[2]-toyApproach[2]) <= .9*treeWorld.catScale+.1*tree.scale+1e-6,
+    'Different starting positions select a close hanging-toy approach');
+}
+
+const plantRooms=[plantWorld];
+for(const x of [-1,1]) for(const z of [-1,1]) {
+  const shift=[x*(2.25-.64*plantObject.scale)-plantObject.position[0],0,z*(2.25-.64*plantObject.scale)-plantObject.position[2]];
+  const move=p=>p.map((v,i)=>v+shift[i]);
+  const object={...plantObject,position:move(plantObject.position),min:move(plantObject.min),max:move(plantObject.max),
+    leaves:plantObject.leaves.map(move),collisionBoxes:plantObject.collisionBoxes.map(b=>({min:move(b.min),max:move(b.max)}))};
+  plantRooms.push({...plantWorld,home:[0,w.FLOOR_Y,0],objects:[object]});
+}
+for(const contactRoom of plantRooms) for(const fps of [30,60,120]) {
+  const plant=contactRoom.objects[0], model=glb(plant.modelId), meta=catalog[plant.modelId];
+  assert.ok(meta.leaves.length>=5 && model.nodes.some(n=>n.name==='Leaf blade 1'));
+  for(const material of model.materials.filter(m=>m.name.startsWith('Deep leaf green'))) {
+    const rgb=material.pbrMetallicRoughness.baseColorFactor;
+    assert.ok(rgb[1]>rgb[0] && rgb[1]<.2,'The shipped leaf material is a dark green');
+  }
+  const approach=w.findPlantApproach(contactRoom.home,plant,contactRoom);
+  assert.ok(approach,`A leaf is reachable even when the plant is in a corner; plant ${plant.position}, scale ${plant.scale}, cat ${contactRoom.catScale}, leaves ${JSON.stringify(plant.leaves)}`);
+  const options={...plantLayout,nativeWorld:contactRoom,homeOffset:{x:0,y:.12},ownedToyIds:[],hungry:true,asleep:false};
+  const plan=buildRoomActivity(options,0,'plantPlay','plant');
+  assert.ok(plan && plan.steps.filter(s=>s.animation==='batToy').length===3,'A direct plant menu command creates pawing steps, including low hunger');
+  const walk=w.prepareNativeStep(plan,plan.steps[0],w.catScreenPoint(contactRoom.home,contactRoom),contactRoom,w.FLOOR_Y);
+  assert.ok(!walk.native.blocked && w.pathLength([walk.native.path.at(-1),approach])<.01);
+  const blockedRoom={...contactRoom,objects:[plant,{...obstacle,instanceId:'closed',modelId:'sofaA',min:[-2.3,0,-2.3],max:[2.3,3,2.3]}]};
+  assert.equal(w.findPlantApproach(contactRoom.home,plant,blockedRoom),undefined,'A blocked plant cannot be played with through furniture');
+  slots=[];catRoot=matrix();liveLocals=posedTail('idle',0,[0,0,0],0,1,[],true);
+  toyRoot=matrix();toyNodes=new Map(model.nodes.map(n=>[n.name,n]));
+  toyLocals=new Map(model.nodes.map(n=>[n.name,n.matrix??matrix(n.translation,n.rotation,n.scale)]));
+  toyParents=new Map(model.nodes.flatMap(n=>(n.children??[]).map(i=>[model.nodes[i].name,n.name])));
+  const target={value:undefined},paws={value:[]},catPosition={value:approach};
+  const bat=w.prepareNativeStep(plan,plan.steps[1],w.catScreenPoint(approach,contactRoom),contactRoom,w.FLOOR_Y);
+  render({playback:{kind:'segment',segment:{assetKey:'batToy',loop:true}},active:true,world:contactRoom,travel:bat.native,
+    plantLeaf:target,pawPositions:paws,positionValue:catPosition,initialPosition:approach});
+  const catFrame=renderFrame;
+  const child=sceneChildren({world:contactRoom,catPresent:true,playingId:'plant'}).find(c=>c.type.name==='RoomObject');
+  const props={...child.props,plantLeaf:target,pawPositions:paws,catPosition,playContact:true,breezy:false};
+  slots=[];cursor=0;effects=[];child.type({...props,onReady:undefined});effects.forEach(fn=>fn());
+  let objectFrame=renderFrame;
+  objectFrame({timeSinceLastFrame:0});
+  const originalLeaves=meta.leaves.map(l=>toyWorldMatrix(l.node));
+  let fallen=0;
+  for(let frame=0;frame<fps*6;frame++) {
+    objectFrame({timeSinceLastFrame:1/fps});catFrame({timeSinceLastFrame:1/fps});
+    fallen=Math.max(fallen,meta.leaves.filter((l,i)=>toyWorldMatrix(l.node)[13]<originalLeaves[i][13]-.04).length);
+  }
+  assert.ok(fallen>0,`Actual paw touch must knock a leaf off at ${fps} FPS`);
+  const beforePause=meta.leaves.map(l=>toyWorldMatrix(l.node));
+  cursor=0;effects=[];child.type({...props,onReady:undefined,active:false});effects.forEach(fn=>fn());
+  for(let frame=0;frame<fps;frame++)renderFrame({timeSinceLastFrame:1/fps});
+  assert.deepEqual(meta.leaves.map(l=>toyWorldMatrix(l.node)),beforePause,'Paused room clocks freeze falling leaves and regrowth');
+  cursor=0;effects=[];child.type({...props,onReady:undefined});effects.forEach(fn=>fn());objectFrame=renderFrame;
+  paws.value=[];
+  for(let frame=0;frame<fps*28;frame++)objectFrame({timeSinceLastFrame:1/fps});
+  for(let i=0;i<meta.leaves.length;i++) assert.ok(toyWorldMatrix(meta.leaves[i].node).every((v,k)=>Math.abs(v-originalLeaves[i][k])<1e-6),'Each detached leaf regrows at its exact original attachment');
+}
+console.log('Verified real plant menu plans, paw contact, falling leaves, pause/resume, independent slow regrowth, dark materials, and open/corner navigation at 30/60/120 FPS.');
+
+// Execute the ball's render callback at the floor edge and after play finishes.
+sceneReduced = false;
+for (const fps of [30, 60, 120]) {
+  const ballLayout = { ...base, toys: [{ toyId: 'blueBall', instanceId: 'loose-ball', offset: { x: 0, y: .3 }, scale: 1.2 }] };
+  const ballWorld = w.buildNativeRoomWorld(ballLayout), ballObject = ballWorld.objects[0];
+  const radius = Math.max((ballObject.max[0] - ballObject.min[0]) / 2, (ballObject.max[2] - ballObject.min[2]) / 2);
+  const positions = [], reports = [];
+  const body = { position: [0, w.FLOOR_Y + radius, 0],
+    setPosition(...p) { this.position = p; positions.push(p); },
+    setKinematic() {}, applyCentralImpulse() {} };
+  mocks['react-native-filament'].useRigidBody = () => body;
+  toyRoot = matrix(); toyNodes = new Map();
+  transformManager.updateTransformByRigidBody = () => { toyRoot = matrix(body.position); };
+  const child = sceneChildren({ world: ballWorld, catPresent: false }).find(c => c.type.name === 'RoomObject');
+  const props = { ...child.props, onReady: undefined, onPosition: (...args) => reports.push(args) };
+  slots = []; cursor = 0; effects = []; child.type(props); effects.forEach(fn => fn());
+  renderFrame({ timeSinceLastFrame: 1 / fps });
+  const landed = [2.4 - radius - .02, w.FLOOR_Y + radius, .6];
+  body.position = landed;
+  for (let frame = 0; frame < fps; frame++) renderFrame({ timeSinceLastFrame: 1 / fps });
+  assert.deepEqual(body.position, landed, 'A ball reaching the room edge must never return to its initial placement');
+  const settled = reports.filter(report => report[3]);
+  assert.equal(settled.length, 1, 'A landing is reported once, even if the screen position has stopped changing');
+  assert.deepEqual(Array.from(settled[0][2]), landed);
+  cursor = 0; effects = []; child.type({ ...props, playingId: undefined, playContact: false }); effects.forEach(fn => fn());
+  for (let frame = 0; frame < fps; frame++) renderFrame({ timeSinceLastFrame: 1 / fps });
+  assert.deepEqual(body.position, landed, 'Finishing play leaves the physical ball at its landing');
+  const offset = w.nativeObjectPlacementOffset(ballWorld, ballObject, landed);
+  const reloaded = w.buildNativeRoomWorld({ ...ballLayout, toys: [{ ...ballLayout.toys[0], offset: JSON.parse(JSON.stringify(offset)) }] }).objects[0];
+  assert.ok(Math.abs((reloaded.min[0] + reloaded.max[0]) / 2 - landed[0]) < 1e-6);
+  assert.ok(Math.abs((reloaded.min[2] + reloaded.max[2]) / 2 - landed[2]) < 1e-6, 'Saved layout restores the landed floor location');
+  body.position = [2.8, w.FLOOR_Y - .1, .6];
+  renderFrame({ timeSinceLastFrame: 1 / fps });
+  assert.ok(Math.abs(body.position[0] - (2.4 - radius)) < 1e-6);
+  assert.equal(body.position[2], .6, 'Boundary recovery stays beside the impact, not at the starting point');
+  assert.equal(body.position[1], w.FLOOR_Y + radius);
+}
+console.log('Verified landed balls stay put after play, save/reload at the same floor position, and recover locally at boundaries at 30/60/120 FPS.');

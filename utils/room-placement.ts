@@ -4,10 +4,11 @@ import type { CatDecorationId } from "@/constants/cat-decorations";
 import { isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
   clampDecorationScale,
+  getDecorationDefaultPlacementScale,
   resolveDecorationPlacement,
 } from "@/constants/decoration-variants";
 import type { CatToyId } from "@/constants/cat-toys";
-import { isCatToyId, resolveCatToyId } from "@/constants/cat-toys";
+import { getDefaultToyScale, getPlacedToyRotationIndex, isCatToyId, resolveCatToyId } from "@/constants/cat-toys";
 import type { PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
 
 function clampOffsetAxis(value: number) {
@@ -72,12 +73,14 @@ export function normalizePlacedToys(value: unknown): PlacedToy[] {
       const offset = normalizeRoomItemOffset(record.offset);
       if (!toyId || !offset) continue;
       const scale = typeof record.scale === "number" && Number.isFinite(record.scale)
-        ? clampDecorationScale(record.scale) : 1;
+        ? clampDecorationScale(record.scale) : getDefaultToyScale(toyId);
+      const rotationIndex = getPlacedToyRotationIndex({ rotationIndex: typeof record.rotationIndex === "number" ? record.rotationIndex : undefined });
       placed.push({
         toyId,
         instanceId: resolvePlacementInstanceId(record, toyId, index),
         offset,
-        scale: scale !== 1 ? scale : undefined,
+        scale: scale !== getDefaultToyScale(toyId) ? scale : undefined,
+        rotationIndex: rotationIndex > 0 ? rotationIndex : undefined,
       });
     }
     return placed;
@@ -232,6 +235,7 @@ export function appendPlacedDecoration(
     ...(placedDecorations ?? []),
     {
       decorationId,
+      scale: getDecorationDefaultPlacementScale(decorationId),
       instanceId: createPlacementInstanceId(),
       offset: defaultPlacementOffset(
         (placedDecorations ?? []).length,
@@ -287,7 +291,17 @@ export function updatePlacedToyScaleByInstance(
 ): PlacedToy[] {
   const nextScale = clampDecorationScale(scale);
   return (placedToys ?? []).map(item => item.instanceId === instanceId
-    ? { ...item, scale: nextScale !== 1 ? nextScale : undefined } : item);
+    ? { ...item, scale: nextScale !== getDefaultToyScale(item.toyId) ? nextScale : undefined } : item);
+}
+
+export function updatePlacedToyRotationByInstance(
+  placedToys: PlacedToy[] | undefined,
+  instanceId: string,
+  rotationIndex: number,
+): PlacedToy[] {
+  const nextIndex = getPlacedToyRotationIndex({ rotationIndex });
+  return (placedToys ?? []).map(item => item.instanceId === instanceId
+    ? { ...item, rotationIndex: nextIndex > 0 ? nextIndex : undefined } : item);
 }
 
 export function togglePlacedAirConditionerByInstance(

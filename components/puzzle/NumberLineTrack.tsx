@@ -24,6 +24,7 @@ type NumberLineTrackProps = {
 const LINE_Y = moderateScale(74);
 const HEIGHT = moderateScale(152);
 const DOT_SIZE = moderateScale(26);
+const BOUNCE_HEIGHT = moderateScale(22);
 
 export function NumberLineTrack({
   min, max, start, value, onSelect, disabled = false,
@@ -35,7 +36,9 @@ export function NumberLineTrack({
   const [contentWidth, setContentWidth] = useState(0);
   const centered = useRef(false);
   const count = max - min + 1;
-  const spacing = fit && viewport > 0 ? viewport / count : moderateScale(56);
+  const available = Math.max(1, Math.floor(viewport / moderateScale(44)));
+  const visibleCount = Math.min(count, available % 2 === 0 ? available - 1 : available);
+  const spacing = viewport > 0 ? viewport / (fit ? count : visibleCount) : moderateScale(56);
   const width = spacing * count;
   const targetX = (value - min + 0.5) * spacing - DOT_SIZE / 2;
   const position = useSharedValue(targetX);
@@ -59,7 +62,7 @@ export function NumberLineTrack({
   const markerStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: position.value },
-      { translateY: -Math.sin(bounce.value * Math.PI) * moderateScale(22) },
+      { translateY: -Math.sin(bounce.value * Math.PI) * BOUNCE_HEIGHT },
     ],
   }));
 
@@ -109,7 +112,7 @@ export function NumberLineTrack({
       <View style={{ width, height: HEIGHT }}>
         <Canvas pointerEvents="none" style={StyleSheet.absoluteFill}>
           <Path path={paths.line} color={GameColors.textMuted} style="stroke" strokeWidth={2} />
-          {paths.jumps.map(({ arc, head }, index) => (
+          {paths.jumps.map(({ arc }, index) => (
             <Path key={`arc-${index}`} path={arc} color={GameColors.primary} style="stroke" strokeWidth={3} />
           ))}
           {paths.jumps.map(({ head }, index) => (
@@ -171,8 +174,8 @@ const styles = StyleSheet.create({
   numbers: { position: "absolute", top: LINE_Y + moderateScale(12), flexDirection: "row" },
   numberTarget: { minHeight: moderateScale(54), alignItems: "center", justifyContent: "flex-start" },
   number: { fontSize: moderateScale(19), lineHeight: moderateScale(28), fontWeight: "700", color: GameColors.text },
-  currentNumber: { color: GameColors.primary, backgroundColor: "#FCEDEF", borderRadius: moderateScale(8), paddingHorizontal: moderateScale(6) },
+  currentNumber: { color: GameColors.primary, backgroundColor: GameColors.background, borderRadius: moderateScale(8), paddingHorizontal: moderateScale(6) },
   correctNumber: { color: GameColors.success },
-  wrongNumber: { color: "#99501A" },
-  start: { fontSize: moderateScale(9), lineHeight: moderateScale(14), fontWeight: "800", color: "#23766F", textTransform: "uppercase" },
+  wrongNumber: { color: GameColors.primaryDark },
+  start: { fontSize: moderateScale(9), lineHeight: moderateScale(14), fontWeight: "800", color: GameColors.textMuted, textTransform: "uppercase" },
 });

@@ -71,6 +71,12 @@ assert.equal(play.kind, 'toyPlay');
 assert.equal(play.steps[1].mood, 'playBall');
 assert.equal(buildRoomActivity({ ...room, ownedToyIds: ['blueBall'] }, 0), null, 'Balls must be placed');
 assert.equal(buildRoomActivity({ ...room, toys: [ball], hungry: true }, 0), null);
+for (const toy of [ball, { ...ball, toyId: 'scratchPostRed', instanceId: 'scratch-post' }]) {
+  const hungryRoom = { ...room, toys: [toy], hungry: true };
+  assert.equal(buildRoomActivity(hungryRoom, 0), null, 'Hungry cats do not start automatic play');
+  assert.equal(buildRoomActivity(hungryRoom, 0, 'toyPlay', toy.instanceId)?.targetInstanceId, toy.instanceId,
+    'Low hunger keeps the placed toy menu and deliberate play available');
+}
 assert.equal(buildRoomActivity({ ...room, toys: [ball], asleep: true }, 0), null);
 const ownedMouse = { ...room, ownedToyIds: ['mouse'] };
 assert.equal(buildRoomActivity(ownedMouse, 0), null, 'A mouse in another room must not appear in this room');
@@ -539,6 +545,49 @@ assert.equal(render().activity.plan.steps[0].native.targetPosition, liveTarget, 
 for (const kind of ['sofaSit', 'sofaSleep', 'toyPlay', 'mouseChase'])
   assert.equal(buildRoomActivity({ ...furnished, toys: [ball, mouse] }, 0, kind, 'removed-object'), null, 'Target lookup cannot silently substitute another object');
 console.log('Verified live target lookup, mid-route replanning, moving food, clock continuity, missing-target cancellation and physics-position tracking.');
+
+// Execute all four bat/follow cycles using the ball's reported landings.
+enabled = false; render(); advance(0);
+const rollingOptions = { ...room, width: 390, height: 420, petSize: 80, sizeScale: 1.15,
+  nativeStepCompletion: true, toys: [{ ...ball, offset: { x: 0, y: .1 } }], decorations: [], homeOffset: { x: -.3, y: .25 } };
+hookRoom = { ...rollingOptions, nativeWorld: nativeRoom.buildNativeRoomWorld(rollingOptions) };
+visibility = { active: true, reduceMotion: false }; enabled = true;
+reportCat(hookRoom.nativeWorld.home); render();
+render().startActivity('toyPlay', ball.instanceId); render(); advance(0);
+const finishBallStep = () => {
+  const state = render().activity, step = state.plan.steps[state.stepIndex];
+  assert.equal(step.native.blocked, false, 'The next ball approach remains reachable');
+  reportCat(step.native.path.at(-1));
+  render().completeNativeStep(roomActivityStepKey(state), step.native.path.at(-1)); render();
+};
+finishBallStep();
+let landedCenter = hookRoom.nativeWorld.objects[0].min.map((v, i) => (v + hookRoom.nativeWorld.objects[0].max[i]) / 2);
+for (let tap = 0; tap < 4; tap++) {
+  const before = render().activity, bat = before.plan.steps[before.stepIndex];
+  assert.equal(bat.animation, 'batToy', 'The cat bats again after following the previous roll');
+  landedCenter = landedCenter.map((v, i) => v + (i === 0 ? .2 : i === 2 ? -.25 : 0));
+  render().updateObjectPosition(ball.instanceId, landedCenter); render();
+  const offset = nativeRoom.nativeObjectPlacementOffset(hookRoom.nativeWorld, hookRoom.nativeWorld.objects[0], landedCenter);
+  hookRoom = { ...hookRoom, toys: [{ ...ball, offset }] };
+  hookRoom.nativeWorld = nativeRoom.buildNativeRoomWorld(hookRoom); render();
+  assert.equal(render().activity.stepIndex, before.stepIndex, 'Saving a landing preserves the current bat');
+  finishBallStep();
+  const follow = render().activity.plan.steps[render().activity.stepIndex];
+  assert.ok(isCatWalk(follow.animation));
+  assert.ok(nativeRoom.pathLength([bat.native.path[0], follow.native.path.at(-1)]) > .15, 'A rolled ball makes the cat move to its new location');
+  const destination = follow.native.path.at(-1), object = hookRoom.nativeWorld.objects[0];
+  const radius = (object.max[0] - object.min[0]) / 2;
+  assert.ok(Math.hypot(destination[0] - landedCenter[0], destination[2] - landedCenter[2])
+    < radius + hookRoom.nativeWorld.radius + .08, 'The next approach reaches the ball for another tap');
+  finishBallStep();
+}
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].returnHome, true);
+finishBallStep();
+assert.equal(render().activity, null);
+const savedBall = hookRoom.nativeWorld.objects[0];
+assert.ok(Math.abs((savedBall.min[0] + savedBall.max[0]) / 2 - landedCenter[0]) < 1e-6);
+assert.ok(Math.abs((savedBall.min[2] + savedBall.max[2]) / 2 - landedCenter[2]) < 1e-6, 'Going home preserves the ball at its last landing');
+console.log('Verified four rendered bat/follow cycles, live landing saves, reachable next taps and no ball reset when the cat returns home.');
 
 // Explicit room travel works without placing a door and preserves a resting pose.
 enabled = false; render(); advance(0);

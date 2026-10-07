@@ -61,11 +61,13 @@ def flame():
 
 
 def brain():
-    furrow = art.material('Brain fold purple', '8D79AF')
+    furrow = art.material('Brain fold purple', '80699E')
     folds = [
-        [(.03,.40),(-.10,.36),(-.08,.25),(-.23,.20),(-.27,.06)],
-        [(.19,.30),(.09,.23),(.16,.12),(.07,.02),(-.10,.04),(-.17,-.04)],
-        [(-.26,-.15),(-.10,-.18),(-.04,-.30),(.12,-.30),(.15,-.42)],
+        [(.03,.40),(-.10,.36),(-.09,.26),(-.24,.22),(-.29,.10)],
+        [(.22,.31),(.13,.25),(.17,.15),(.08,.09),(.10,-.02)],
+        [(-.32,.02),(-.20,.08),(-.10,.02),(-.15,-.08),(-.04,-.13)],
+        [(.24,-.07),(.15,-.12),(.19,-.23),(.08,-.29),(.10,-.39)],
+        [(-.28,-.22),(-.16,-.19),(-.08,-.28),(-.13,-.37)],
     ]
     def on_surface(mesh, x, z):
         inverse = mesh.matrix_world.inverted()
@@ -74,19 +76,19 @@ def brain():
             (inverse.to_3x3() @ study.Vector((0,1,0))).normalized(),
         )
         if not hit:
-            raise ValueError('Brain fold extends beyond the cortex')
+            raise ValueError(f'Brain fold extends beyond the cortex at {x:.3f}, {z:.3f}')
         point = mesh.matrix_world @ point
-        return (x, point.y-.008, z)
+        return (x, point.y, z)
 
-    hemispheres = []
-    art.sphere('Brain stem', (0,.05,.35), (.12,.14,.21), 'lilac')
+    divide_surfaces = []
+    art.sphere('Short brain stem', (0,.06,.40), (.10,.13,.12), 'lilac')
     for side in [-1, 1]:
         center_x = side * .30
-        hemisphere = art.sphere('Brain hemisphere', (center_x,0,.90), (.40,.26,.49), 'lilac')
+        hemisphere = art.sphere('Brain hemisphere', (center_x,0,.90), (.40,.29,.46), 'lilac')
         parts = [hemisphere]
-        for x,z in [(.14,.34),(.32,.16),(.32,-.10),(.16,-.32),(-.10,.34)]:
+        for x,z in [(.12,.32),(.30,.15),(.30,-.08),(.15,-.29),(-.10,.32)]:
             parts.append(art.sphere('Cortex rounded lobe', (center_x+side*x,0,.90+z),
-                                    (.19,.23,.21), 'lilac'))
+                                    (.17,.25,.18), 'lilac'))
         bpy.ops.object.select_all(action='DESELECT')
         for part in parts:
             part.select_set(True)
@@ -103,16 +105,46 @@ def brain():
         for polygon in hemisphere.data.polygons:
             polygon.use_smooth = True
         bpy.context.view_layer.update()
-        hemispheres.append(hemisphere)
-        for fold in folds:
-            points = [on_surface(hemisphere, center_x-side*x, .90+z) for x,z in fold]
-            art.curve('Brain winding fold', points, .027, furrow)
-    points = []
-    for i in range(17):
-        z = -.30 + .60*i/16
-        x = .012 * math.sin(i*math.pi/4)
-        points.append(min((on_surface(mesh,x,.90+z) for mesh in hemispheres), key=lambda point: point[1]))
+        divide_surfaces.append([on_surface(hemisphere, 0, .70+.40*i/16) for i in range(17)])
+        fold_points = [[on_surface(hemisphere, center_x-side*x, .90+z) for x,z in fold] for fold in folds]
+        for points in fold_points:
+            # Embed the darker folds in the surface to keep their relief subtle.
+            art.curve('Shaded cortex furrow', [(x,y+.012,z) for x,y,z in points], .030, furrow)
+    points = [min(samples, key=lambda point: point[1]) for samples in zip(*divide_surfaces)]
     art.curve('Brain hemisphere divide', points, .022, furrow)
+
+
+def lightbulb():
+    globe = art.sphere('Warm golden bulb', (0,0,1.20), (.53,.37,.53), 'gold')
+    subdivision = globe.modifiers.new('Smooth rounded glass', 'SUBSURF')
+    subdivision.levels = 2
+    bpy.ops.object.modifier_apply(modifier=subdivision.name)
+    bpy.ops.mesh.primitive_cone_add(vertices=48, radius1=.22, radius2=.40,
+                                    depth=.35, location=(0,0,.77))
+    neck = art.finish(bpy.context.object, 'Tapered bulb neck', 'gold')
+    bpy.ops.object.select_all(action='DESELECT')
+    globe.select_set(True)
+    neck.select_set(True)
+    bpy.context.view_layer.objects.active = globe
+    bpy.ops.object.join()
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    remesh = globe.modifiers.new('Continuous bulb silhouette', 'REMESH')
+    remesh.mode, remesh.voxel_size = 'VOXEL', .02
+    bpy.ops.object.modifier_apply(modifier=remesh.name)
+    smooth = globe.modifiers.new('Soft glass contours', 'SMOOTH')
+    smooth.factor, smooth.iterations = 1, 8
+    bpy.ops.object.modifier_apply(modifier=smooth.name)
+    for polygon in globe.data.polygons:
+        polygon.use_smooth = True
+
+    art.cylinder('Lavender bulb socket', (0,0,.46), .23, .28, 'lilac')
+    for z in [.36,.44,.52]:
+        art.torus('Rounded screw thread', (0,0,z), .225, .025, 'purple')
+    art.sphere('Socket contact', (0,0,.28), (.13,.15,.06), 'purple')
+    filament = [(-.13,1.01),(-.19,1.16),(-.08,1.13),(0,1.20),(.08,1.13),(.19,1.16),(.13,1.01)]
+    points = [(x, -.37*math.sqrt(1-(x/.53)**2-((z-1.20)/.53)**2)-.01, z) for x,z in filament]
+    art.curve('Warm filament', points, .026, 'orange')
+    art.sphere('Soft glass highlight', (-.21,-.32,1.42), (.065,.025,.105), 'cream')
 
 
 def ball():
@@ -352,7 +384,7 @@ def cooking_pot():
 
 
 extra=[('heart',heart),('broken-heart',lambda:heart(True)),('coin',coin),('sparkle',sparkle),
-       ('flame',flame),('brain',brain),('ball',ball),('feather',feather),('box',box),('mouse',mouse),
+       ('flame',flame),('brain',brain),('lightbulb',lightbulb),('ball',ball),('feather',feather),('box',box),('mouse',mouse),
        ('cat',cat),('nut',peanut),('film',film),('parent',parent),('lock',lock),('trash',trash),
        ('search',magnify),('zoom-in',lambda:magnify('+')),('zoom-out',lambda:magnify('-')),
        ('palette',palette),('check',check),('warning',warning),('rotate',circular_arrow),

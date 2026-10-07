@@ -5,7 +5,7 @@ import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanim
 import { clampRoomCamera, pinchRoomCamera } from '@/utils/room-camera';
 
 /** Gestures live on the unscaled viewport so the artwork and its hit targets move together. */
-export function useRoomCamera(width: number, height: number, enabled: boolean, reduceMotion: boolean) {
+export function useRoomCamera(width: number, height: number, enabled: boolean, reduceMotion: boolean, panEnabled = true) {
   const [zoom, setZoom] = useState(1);
   const x = useSharedValue(0), y = useSharedValue(0), scale = useSharedValue(1);
   const start = useSharedValue({ x: 0, y: 0, scale: 1, focalX: 0, focalY: 0 });
@@ -25,7 +25,7 @@ export function useRoomCamera(width: number, height: number, enabled: boolean, r
       const camera = pinchRoomCamera(start.get(), event.scale, event.focalX - width / 2, event.focalY - height / 2, width, height);
       x.set(camera.x); y.set(camera.y); scale.set(camera.scale);
     }).onFinalize(() => { scheduleOnRN(setZoom, scale.get()); });
-    const pan = Gesture.Pan().enabled(enabled).minDistance(8).maxPointers(1)
+    const pan = Gesture.Pan().enabled(enabled && panEnabled).minDistance(8).maxPointers(1)
       .manualActivation(true).onTouchesDown(event => {
         const touch = event.allTouches[0];
         if (touch) touchStart.set({ x: touch.x, y: touch.y });
@@ -44,6 +44,6 @@ export function useRoomCamera(width: number, height: number, enabled: boolean, r
         x.set(camera.x); y.set(camera.y);
       });
     return Gesture.Simultaneous(pinch, pan);
-  }, [enabled, height, panStart, scale, start, touchStart, width, x, y]);
+  }, [enabled, height, panEnabled, panStart, scale, start, touchStart, width, x, y]);
   return { x, y, scale, zoom, reset, gesture };
 }

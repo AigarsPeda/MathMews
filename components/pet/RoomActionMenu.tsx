@@ -7,6 +7,7 @@ import { View, type StyleProp, type ViewStyle } from "react-native";
 export type RoomItemMenuAction = {
   label: string;
   icon: AppIconName;
+  section?: string;
   onPress: () => void;
   disabled?: boolean;
   destructive?: boolean;
@@ -25,7 +26,7 @@ export function RoomActionMenu({ actions, label, blocked = false, style, size, c
   const [measuredSize, setMeasuredSize] = useState({ width: 0, height: 0 });
   const dimensions = size ?? measuredSize;
   const nativeActions: NativeActionMenuProps["actions"] = actions.map((action, index) => ({
-    id: String(index), title: action.label, icon: action.icon,
+    id: String(index), title: action.label, icon: action.icon, section: action.section,
     attributes: { disabled: action.disabled, destructive: action.destructive },
   }));
 
@@ -38,7 +39,7 @@ export function RoomActionMenu({ actions, label, blocked = false, style, size, c
           ? current : { width: layout.width, height: layout.height });
       }}>
       {dimensions.width > 0 && dimensions.height > 0 ? (
-        <NativeActionMenu {...dimensions} actions={nativeActions} label={label} title={label}
+        <NativeActionMenu {...dimensions} actions={nativeActions} label={label}
           blocked={blocked} onSelect={id => {
             const action = actions[Number(id)];
             if (!blocked && action && !action.disabled) action.onPress();

@@ -10,6 +10,10 @@ type SheetEntry = {
 
 /** Windows pack — shown in the dedicated store tab. */
 export const WINDOW_DECORATION_CATALOG = {
+  windowWhiteClassic: { source: require("@/assets/3d/decoration/windowWhiteClassic.png"), displaySize: 64 },
+  windowOakWide: { source: require("@/assets/3d/decoration/windowOakWide.png"), displaySize: 72 },
+  windowArched: { source: require("@/assets/3d/decoration/windowArched.png"), displaySize: 68 },
+  windowRoundPorthole: { source: require("@/assets/3d/decoration/windowRoundPorthole.png"), displaySize: 52 },
   windowPlain: { source: require("@/assets/3d/decoration/windowPlain.png"), displaySize: 58 },
   windowBlinds: { source: require("@/assets/3d/decoration/windowBlinds.png"), displaySize: 58 },
   window7A: { source: require("@/assets/3d/decoration/window7A.png"), displaySize: 56 },

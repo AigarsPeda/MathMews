@@ -71,6 +71,9 @@ export default function PuzzlesScreen() {
 
   const puzzles = getPuzzlesByDifficulty(locale, difficulty);
   const solvedCount = progress.puzzlesSolved[difficulty];
+  const completedCount = progress.completedPuzzleIds
+    ? puzzles.filter(puzzle => progress.completedPuzzleIds?.includes(puzzle.id)).length
+    : solvedCount;
   const scrollRef = useRef<ScrollView>(null);
   const currentIndex = Math.min(solvedCount, Math.max(0, puzzles.length - 1));
 
@@ -167,7 +170,7 @@ export default function PuzzlesScreen() {
           <>
             <PuzzlePathProgressChip
               difficulty={difficulty}
-              solvedCount={solvedCount}
+              solvedCount={completedCount}
               totalCount={puzzles.length}
               onPress={() => {
                 recordInteraction();
@@ -187,7 +190,7 @@ export default function PuzzlesScreen() {
             <PuzzlePathProgressSheet
               visible={showProgress}
               difficulty={difficulty}
-              solvedCount={solvedCount}
+              solvedCount={completedCount}
               totalCount={puzzles.length}
               onClose={() => setShowProgress(false)}
             />

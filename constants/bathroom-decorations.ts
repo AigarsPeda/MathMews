@@ -6,6 +6,10 @@ type AnimatedEntry = { source: number; sheetWidth: number; sheetHeight: number; 
 
 /** Bathroom pack — shown in the dedicated store tab. */
 export const BATHROOM_DECORATION_CATALOG = {
+  bathroomDoubleVanity: { source: require("@/assets/3d/decoration/bathroomDoubleVanity.png"), displaySize: 80 },
+  bathroomShowerCabin: { source: require("@/assets/3d/decoration/bathroomShowerCabin.png"), displaySize: 80 },
+  bathroomLaundryHamper: { source: require("@/assets/3d/decoration/bathroomLaundryHamper.png"), displaySize: 40 },
+  bathroomTowelStand: { source: require("@/assets/3d/decoration/bathroomTowelStand.png"), displaySize: 48 },
   bathroomBathCarpet: { source: require("@/assets/3d/decoration/bathroomBathCarpet.png"), displaySize: 48 },
   bathroomBathWindow: { source: require("@/assets/3d/decoration/bathroomBathWindow.png"), displaySize: 48 },
   bathroomDuck: { source: require("@/assets/3d/decoration/bathroomDuck.png"), displaySize: 16 },

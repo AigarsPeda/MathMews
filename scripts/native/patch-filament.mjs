@@ -32,4 +32,27 @@ patch('cpp/bullet/RNFRigidBodyWrapper.cpp', 'registerHybridMethod("setPosition"'
 for (const path of ['src/bullet/types/RigidBody.ts', 'lib/typescript/bullet/types/RigidBody.d.ts']) {
   patch(path, 'setPosition(', 'setDamping(', 'setPosition(x: number, y: number, z: number): void;\n    applyCentralImpulse(x: number, y: number, z: number): void;\n    setKinematic(enabled: boolean): void;\n    setDamping(');
 }
+// Bullet combines both materials' restitution. Static room colliders must also
+// have a nonzero coefficient for kicked toys to rebound from furniture/walls.
+patch('cpp/bullet/RNFRigidBodyWrapper.cpp', 'setCcdSweptSphereRadius',
+  '  _rigidBody = std::make_shared<btRigidBody>(rigidBodyCI);', `  _rigidBody = std::make_shared<btRigidBody>(rigidBodyCI);
+  _rigidBody->setRestitution(mass > 0.0 ? 0.75 : 0.8);
+  if (mass > 0.0 && _shape->getShapeType() == SPHERE_SHAPE_PROXYTYPE) {
+    const btScalar radius = static_cast<btSphereShape*>(_shape.get())->getRadius();
+    _rigidBody->setCcdMotionThreshold(radius * 0.5);
+    _rigidBody->setCcdSweptSphereRadius(radius * 0.9);
+    _rigidBody->setContactProcessingThreshold(0.0);
+    _rigidBody->setRollingFriction(0.002);
+    _rigidBody->setSpinningFriction(0.002);
+  }`);
+// Upgrade already-patched installations too. Small toys need low rolling
+// resistance so a paw tap carries them far enough for the next chase step.
+patch('cpp/bullet/RNFRigidBodyWrapper.cpp', 'setRollingFriction(0.002)',
+  'setRollingFriction(0.08);\n    _rigidBody->setSpinningFriction(0.04);',
+  'setRollingFriction(0.002);\n    _rigidBody->setSpinningFriction(0.002);');
+// Resolve small-toy contacts at impact. Processing separated contacts early
+// brakes a gentle roll before restitution can produce a rebound.
+patch('cpp/bullet/RNFRigidBodyWrapper.cpp', 'setContactProcessingThreshold(0.0)',
+  '_rigidBody->setCcdSweptSphereRadius(radius * 0.9);',
+  '_rigidBody->setCcdSweptSphereRadius(radius * 0.9);\n    _rigidBody->setContactProcessingThreshold(0.0);');
 console.log('Filament Bullet actor/impulse bindings ready.');

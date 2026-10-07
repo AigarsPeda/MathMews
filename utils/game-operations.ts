@@ -1,5 +1,5 @@
 import { FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
-import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES } from "@/constants/puzzles";
+import { getLegacyCompletedPuzzleIds, getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES } from "@/constants/puzzles";
 import type { Progress, PuzzleProgress } from "@/types/game";
 import type { Puzzle } from "@/types/puzzle";
 import type { GameSave } from "@/types/save";
@@ -8,8 +8,7 @@ import { boostStat, canFeedForEffect, withPetCareUpdate } from "@/utils/pet-care
 import { recordTopicAttempt } from "@/utils/topic-stats";
 
 export function getCompletedPuzzleIds(progress: Pick<Progress, "puzzlesSolved" | "completedPuzzleIds">): string[] {
-  return [...new Set(progress.completedPuzzleIds ?? PUZZLE_DIFFICULTIES.flatMap(tier =>
-    getPuzzlesByDifficulty("en", tier).slice(0, Math.max(0, progress.puzzlesSolved[tier])).map(puzzle => puzzle.id)))];
+  return [...new Set(progress.completedPuzzleIds ?? getLegacyCompletedPuzzleIds(progress.puzzlesSolved))];
 }
 
 export function getSolvedCounts(ids: readonly string[]): PuzzleProgress {

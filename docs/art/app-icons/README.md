@@ -1,6 +1,6 @@
 # Math Mews icons
 
-The app uses 68 original Blender renders with the room's materials, soft edges, and warm lighting. UI symbols use a front-facing orthographic camera so arrows stay horizontal or vertical and status icons remain upright. Furniture and other volumetric objects keep the room's isometric camera. The family covers care, native menus, currency, store categories, editing controls, math topics, and counted puzzle objects. Store and stats art are repackaged from the app's existing Blender renders.
+The app uses 72 original Blender renders with the room's materials, soft edges, and warm lighting. UI symbols use a front-facing orthographic camera so arrows stay horizontal or vertical and status icons remain upright. Furniture and other volumetric objects keep the room's isometric camera. The family covers care, native menus, currency, store categories, editing controls, math topics, and counted puzzle objects. Store and stats art are repackaged from the app's existing Blender renders.
 
 The runtime assets are transparent 256 × 256 PNGs in `assets/icons`. `constants/app-icons.ts` statically registers every file for Metro. Use `AppIcon` for standalone art and `IconText` for translated inline markers. Mathematical text and diagrams remain native text and drawings. Counts, rewards, saved progress, and room behavior remain governed by the existing game logic.
 

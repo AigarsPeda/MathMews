@@ -111,6 +111,18 @@ function render(placedDecorations = powered, extra = {}) {
   return nodes;
 }
 const first = render();
+const misplacedWindow = { decorationId:'windowOakWide', instanceId:'window', offset:{x:-.15,y:.18} };
+let repairedWindow;
+const windowProps = { onPlacedDecorationOffsetChange:(id,offset) => { repairedWindow={id,offset}; } };
+const unmeasuredWindowRoom = render([misplacedWindow], windowProps);
+const measureWindowRoom = unmeasuredWindowRoom.find(({node}) => node.type === 'NativeRoomScene').ancestors
+  .slice().reverse().find(node => node.props.onLayout).props.onLayout;
+measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
+const windowRoom = render([misplacedWindow], windowProps);
+const windowNode = windowRoom.find(({node}) => node.props.testID === 'room-object:window').node;
+assert.equal(repairedWindow.id, 'window', 'An invisible window receives a visible saved placement');
+assert.deepEqual(windowNode.props.initialOffset, repairedWindow.offset, 'The editor selection box uses the repaired visible anchor');
+measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
 const decorationNode = (nodes, id) => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:' + (id === 'officeAc' ? 'ac-one' : id === 'sofaA' ? 'sofa' : id === 'yarnRed' ? 'yarn' : id === 'japaneseDoorAni' ? 'door-bath' : id));
 const ac = decorationNode(first, 'officeAc');
 assert.ok(ac);
@@ -194,6 +206,9 @@ assert.equal(commandRoom.some(({ node }) => node.type === 'RoomActionMenu'), fal
 assert.deepEqual(Array.from(roomCommands, action => action.label), [
   'home.pet', 'home.catCommands.sofaSit', 'home.catCommands.sofaSleep', 'home.catCommands.toyPlay', 'home.catCommands.mouseChase',
 ]);
+assert.deepEqual(Array.from(roomCommands, action => action.section), [
+  ...Array(3).fill('essentials'), ...Array(2).fill('play'),
+]);
 roomCommands.find(action => action.label === 'home.catCommands.sofaSleep').onPress();
 assert.equal(requestedActivity, 'sofaSleep');
 for (const zoom of [1.73, 2.6, 3]) {
@@ -272,6 +287,14 @@ assert.equal(render([sofa], toyProps).find(({ node }) => node.type === 'RoomItem
 assert.equal(postNode.props.petSize, 72 * load('@/constants/room-scale').ROOM_OBJECT_SCALE, 'Render and drag bounds both use the saved scratching-post size and room proportions');
 const postMenu = postNode.props.menuActions;
 assert.deepEqual(Array.from(postMenu, action => action.label), ['home.makeBigger', 'home.makeSmaller', 'home.removeFromRoom']);
+let rotatedToy;
+const rotatedPostNode = render([sofa], { ...toyProps, onRotatePlacedToy: id => { rotatedToy = id; } })
+  .find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:post').node;
+const rotateAction = rotatedPostNode.props.menuActions.find(action => action.label === 'home.rotateItem');
+assert.ok(rotateAction, 'The selected toy exposes the same rotate action as other furniture');
+assert.equal(rotateAction.icon, 'rotate');
+rotateAction.onPress();
+assert.equal(rotatedToy, 'post', 'Rotate dispatches to the selected toy instance');
 postMenu[0].onPress(); postMenu[1].onPress();
 assert.deepEqual(scaled, [['post', 'up'], ['post', 'down']]);
 for (const [scale, disabledIndex] of [[2.2, 0], [.7, 1]]) {
@@ -366,6 +389,12 @@ render().find(({ node }) => node.props.accessibilityLabel === 'home.finishDecora
 let transferred;
 const travelProps = { ...houseProps, catHomeRoomId: 'livingRoom', onSendCatToRoom: id => { transferred = id; } };
 const catRoom = render([bowl, sofa], travelProps);
+const groupedCommands = catNode(render([bowl, sofa], { ...travelProps, ...mealProps, ...extra })).props.menuActions;
+assert.deepEqual(Array.from(groupedCommands, action => action.section), [
+  ...Array(4).fill('essentials'),
+  ...Array(3).fill('travel'),
+  ...Array(6).fill('play'),
+], 'Cat options keep essentials, destinations, and all toy games in contiguous sections');
 const destinations = catNode(catRoom).props.menuActions.filter(action => action.label.startsWith('home.goToRoom:'));
 assert.deepEqual(Array.from(destinations, action => action.label), ['bedroom', 'kitchen', 'bathroom'].map(id => 'home.goToRoom:home.rooms.' + id));
 requestedActivity = undefined;
@@ -386,3 +415,43 @@ emptyView.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoo
 assert.equal(decorationNode(render([bowl, sofa], { ...travelProps, homeRoomId: 'bedroom' }), 'bowl').node.props.allowDrag, true, 'Unoccupied rooms can still be decorated');
 render([], { ...travelProps, homeRoomId: 'bedroom' }).find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
 console.log('Verified arrows only browse, the cat menu offers other rooms, travel waits for arrival, empty rooms hide the cat and its commands, and decoration still works.');
+
+// Only a resting toy commits its physical location to the saved room layout.
+const landedBall = { toyId: 'blueBall', instanceId: 'landed-ball', offset: { x: .2, y: .3 } };
+const savedLandings = [];
+const landingProps = { placedToys: [landedBall], roomVisible: true,
+  onPlacedToyOffsetChange: (id, offset) => savedLandings.push({ id, offset }) };
+let landingView = render([], landingProps);
+landingView.find(({ node }) => node.type === 'NativeRoomScene').ancestors.slice().reverse().find(node => node.props.onLayout)
+  .props.onLayout({ nativeEvent: { layout: { width: 320, height: 320 } } });
+landingView = render([], landingProps);
+const landingScene = landingView.find(({ node }) => node.type === 'NativeRoomScene').node;
+const landedCenter = [1.1, .2, .8];
+landingScene.props.onObjectPosition(landedBall.instanceId, { x: 20, y: 30 }, landedCenter, false);
+assert.equal(savedLandings.length, 0, 'Moving balls update hit targets without writing each physics frame');
+landingScene.props.onObjectPosition(landedBall.instanceId, { x: 20, y: 30 }, landedCenter, true);
+assert.equal(savedLandings.length, 1, 'A ball landing updates its saved placement');
+assert.equal(savedLandings[0].id, landedBall.instanceId);
+const nativeWorldUtils = load('@/utils/native-room-world');
+const restoredBall = nativeWorldUtils.buildNativeRoomWorld({ width: 320, height: 320, petSize: 120, sizeScale: 1.15,
+  toys: [{ ...landedBall, offset: savedLandings[0].offset }], decorations: [] }).objects[0];
+assert.ok(Math.abs((restoredBall.min[0] + restoredBall.max[0]) / 2 - landedCenter[0]) < 1e-6);
+assert.ok(Math.abs((restoredBall.min[2] + restoredBall.max[2]) / 2 - landedCenter[2]) < 1e-6);
+render([], { ...landingProps, roomVisible: false }).find(({ node }) => node.type === 'NativeRoomScene').node.props
+  .onObjectPosition(landedBall.instanceId, { x: 20, y: 30 }, [1.5, .2, .8], true);
+assert.equal(savedLandings.length, 1, 'Late physics reports from a hidden room cannot move an item in the viewed room');
+console.log('Verified actual room-stage landing persistence, live movement without repeated saves, reload projection and hidden-room guards.');
+
+for (const zoom of [1.73, 2.6, 3]) {
+  cameraZoom = zoom;
+  render([], landingProps).find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
+  const editing = render([], landingProps);
+  const toy = editing.find(({ node }) => node.props.testID === 'room-object:landed-ball').node;
+  assert.equal(cameraZoom, zoom, 'Entering decoration mode preserves the chosen zoom');
+  assert.equal(toy.props.allowDrag, true, 'Zoomed balls remain draggable while decorating');
+  assert.equal(toy.props.dragScale, zoom);
+  assert.equal(editing.find(({ node }) => node.type === 'NativeRoomScene').node.props.editing, true, 'The editor takes control of the ball from physics');
+  editing.find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
+  assert.equal(cameraZoom, zoom, 'Finishing decoration mode keeps the same camera view');
+}
+console.log('Verified decoration mode preserves fractional zoom and enables ball dragging with the correct scale.');

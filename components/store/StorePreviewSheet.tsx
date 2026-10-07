@@ -1,3 +1,4 @@
+import { getDecorationDefaultPlacementScale } from "@/constants/decoration-variants";
 import { NativeRoomPreview } from "@/components/pet/native/NativeRoomPreview";
 import { IconText as Text } from "@/components/ui/IconText";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
@@ -17,7 +18,7 @@ export function StorePreviewSheet({ item, pet, coins, onClose, onSaveGoal }: Pro
   if (!item) return null;
   const bedId = item.kind === "bed" ? item.id : pet.bedId;
   const toys = [...(pet.placedToys ?? []), ...(item.kind === "toy" ? [{ toyId: item.id as CatToyId, instanceId: "preview-toy", offset: { x: .4, y: .5 } }] : [])];
-  const decorations = [...(pet.placedDecorations ?? []), ...(item.kind === "decoration" ? [{ decorationId: item.id as CatDecorationId, instanceId: "preview-decoration", offset: { x: .35, y: -.2 } }] : [])];
+  const decorations = [...(pet.placedDecorations ?? []), ...(item.kind === "decoration" ? [{ decorationId: item.id as CatDecorationId, scale: getDecorationDefaultPlacementScale(item.id as CatDecorationId), instanceId: "preview-decoration", offset: { x: .35, y: -.2 } }] : [])];
   const repeatable = item.kind === "toy" || item.kind === "decoration";
   const canBuy = !item.owned || repeatable;
   const cost = item.price.kind === "coins" ? item.price.amount : 0;
@@ -26,7 +27,7 @@ export function StorePreviewSheet({ item, pet, coins, onClose, onSaveGoal }: Pro
       <Text style={styles.title}>{item.name.replace(/\n/g, " ")}</Text>
       <Text style={styles.note}>{t("store.previewNote")}</Text>
       <View style={styles.room} accessibilityLabel={t("store.preview")}>
-        <NativeRoomPreview pet={item.kind === "bed" ? { ...pet, bedScale: 1, bedFlipped: false } : pet} roomId={item.kind === "room" ? item.id : pet.roomId}
+        <NativeRoomPreview pet={item.kind === "bed" ? { ...pet, bedScale: undefined, bedFlipped: false } : pet} roomId={item.kind === "room" ? item.id : pet.roomId}
           bedId={bedId} skinId={item.kind === "skin" ? item.id : pet.catSkinId} decorations={decorations} toys={toys} />
       </View>
       <Text style={styles.price}>{cost ? t("store.buyFor", { cost }) : t("store.free")}</Text>

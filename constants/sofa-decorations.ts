@@ -5,6 +5,11 @@ type ImageEntry = {
 
 /** Sofa pack — shown in the dedicated store tab. */
 export const SOFA_DECORATION_CATALOG = {
+  sofaCornerSage: { source: require("@/assets/3d/decoration/sofaCornerSage.png"), displaySize: 100 },
+  sofaBlueClassic: { source: require("@/assets/3d/decoration/sofaBlueClassic.png"), displaySize: 88 },
+  sofaRoseTufted: { source: require("@/assets/3d/decoration/sofaRoseTufted.png"), displaySize: 88 },
+  sofaTanLeather: { source: require("@/assets/3d/decoration/sofaTanLeather.png"), displaySize: 88 },
+  sofaCreamCloud: { source: require("@/assets/3d/decoration/sofaCreamCloud.png"), displaySize: 88 },
   sofaA: { source: require("@/assets/3d/decoration/sofaA.png"), displaySize: 88 },
   sofaB: { source: require("@/assets/3d/decoration/sofaB.png"), displaySize: 88 },
   sofaPillow: { source: require("@/assets/3d/decoration/sofaPillow.png"), displaySize: 28 },
@@ -22,4 +27,9 @@ export function isSofaDecorationId(
   decorationId: string,
 ): decorationId is SofaDecorationId {
   return SOFA_DECORATION_ID_SET.has(decorationId);
+}
+
+/** Throw pillows are accessories, rather than seats for the cat. */
+export function isSeatingSofaDecorationId(id: string): boolean {
+  return isSofaDecorationId(id) && id !== "sofaPillow";
 }

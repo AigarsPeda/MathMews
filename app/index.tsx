@@ -101,6 +101,7 @@ export default function HomeScreen() {
     scaleEquippedBed,
     removeToyFromRoom,
     scalePlacedToy,
+    rotatePlacedToy,
     moveRoomLayerItem,
     rotatePlacedDecoration,
     flipPlacedDecorationWall,
@@ -324,6 +325,15 @@ export default function HomeScreen() {
     [recordInteraction, togglePlacedAirConditioner],
   );
 
+  const handleRotatePlacedToy = useCallback(
+    (instanceId: string) => {
+      if (!rotatePlacedToy(instanceId)) return;
+      recordInteraction();
+      triggerHaptic();
+    },
+    [recordInteraction, rotatePlacedToy],
+  );
+
   const handleScalePlacedToy = useCallback(
     (instanceId: string, direction: "up" | "down") => {
       if (!scalePlacedToy(instanceId, direction)) return;
@@ -479,7 +489,7 @@ export default function HomeScreen() {
       petType={pet.type}
       catSkinId={pet.catSkinId}
       stats={pet.stats}
-      wisdom={computePetWisdom(progress.puzzlesSolved)}
+      wisdom={computePetWisdom(progress.puzzlesSolved, progress.completedPuzzleIds)}
       roomId={roomPet.roomId}
       roomPetOffset={roomPet.roomPetOffset}
       bedId={roomPet.bedId}
@@ -536,6 +546,7 @@ export default function HomeScreen() {
       onScaleBed={handleScaleBed}
       onPlacedToyRemove={handleRemoveToy}
       onScalePlacedToy={handleScalePlacedToy}
+      onRotatePlacedToy={handleRotatePlacedToy}
       onOpenMathStats={handleOpenMathStats}
       onAnimationComplete={handleAnimationComplete}
     />

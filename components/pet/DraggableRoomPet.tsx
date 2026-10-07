@@ -30,6 +30,7 @@ type DraggableRoomPetProps = {
   snapToGrid?: boolean;
   petSize: number;
   allowDrag?: boolean;
+  dragScale?: number;
   interactive?: boolean;
   externalPosition?: { x: number; y: number };
   animatedPosition?: { x: SharedValue<number>; y: SharedValue<number> };
@@ -106,6 +107,7 @@ export function DraggableRoomPet({
   snapToGrid = false,
   petSize,
   allowDrag = true,
+  dragScale = 1,
   interactive = true,
   animatedPosition,
   externalPosition,
@@ -206,7 +208,8 @@ export function DraggableRoomPet({
             onDragStartRef.current?.();
           }
           if (roomSize.width <= 0 || roomSize.height <= 0) return;
-          const next = clampPosition(dragStartRef.current.x + gesture.dx, dragStartRef.current.y + gesture.dy,
+          const scale = Math.max(1, dragScale);
+          const next = clampPosition(dragStartRef.current.x + gesture.dx / scale, dragStartRef.current.y + gesture.dy / scale,
             roomSize.width, roomSize.height, petSize);
           positionRef.current = next;
           liveX.set(next.x); liveY.set(next.y);
@@ -230,7 +233,7 @@ export function DraggableRoomPet({
           }
         },
       }),
-    [allowDrag, hasTap, interactive, commitOffset, petSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
+    [allowDrag, dragScale, hasTap, interactive, commitOffset, petSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
   );
 
   const halfPet = petSize / 2;

@@ -24,7 +24,7 @@ function load(id) {
     { module, exports: module.exports, require: load, Math }); return module.exports;
 }
 const { useRoomCamera } = load('@/hooks/use-room-camera');
-function render() { index = 0; return useRoomCamera(320,400,true,false); }
+function render(panEnabled = true) { index = 0; return useRoomCamera(320,400,true,false,panEnabled); }
 let camera = render();
 const [pinch, pan] = camera.gesture;
 const manager = { activate() { this.active = true; }, fail() { this.failed = true; } };
@@ -57,4 +57,7 @@ pinch.handlers.onStart({ focalX: 160, focalY: 200 });
 pinch.handlers.onUpdate({ scale: 2.36 / 3, focalX: 160, focalY: 200 });
 assert.ok(Math.abs(camera.scale.get()-2.36)<1e-8,'Pinching inward from the cap preserves fractional zoom');
 camera.reset(); assert.equal(camera.scale.get(),1); assert.equal(render().zoom,1);
+const editingCamera = render(false);
+assert.equal(editingCamera.gesture[0].handlers.enabled, true, 'Pinching remains available while decorating');
+assert.equal(editingCamera.gesture[1].handlers.enabled, false, 'A one-finger item drag cannot move the camera while decorating');
 console.log('Verified fractional focal-point pinch zoom, bounded panning, tap threshold, scroll at 1× and reset.');

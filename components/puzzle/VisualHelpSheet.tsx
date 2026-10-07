@@ -1,4 +1,3 @@
-import { AppIcon } from "@/components/ui/AppIcon";
 import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPlayer";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors } from "@/constants/game";
@@ -55,12 +54,11 @@ export function VisualHelpSheet({
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.card}>
-          {!isNumberLine ? <AppIcon name="film" size={moderateScale(36) * 1.2} /> : null}
           <Text style={styles.title}>
-            {t(isNumberLine ? "visualHelp.numberLine.title" : "visualHelp.title")}
+            {t(explanation.titleKey)}
           </Text>
           <Text style={styles.subtitle}>
-            {t(isNumberLine ? "visualHelp.numberLine.subtitle" : "visualHelp.subtitle")}
+            {t("visualHelp.numberLine.subtitle")}
           </Text>
 
           {isNumberLine ? (
@@ -87,7 +85,7 @@ export function VisualHelpSheet({
             style={[styles.closeBtn, styles.closeBtnPrimary]}
             onPress={onClose}
             accessibilityRole="button"
-            accessibilityLabel={t("common.close")}
+            accessibilityLabel={t("visualHelp.numberLine.tryPuzzle")}
           >
             <Text
               style={[
@@ -95,7 +93,7 @@ export function VisualHelpSheet({
                 styles.closeBtnTextPrimary,
               ]}
             >
-              {t("common.gotIt")}
+              {t("visualHelp.numberLine.tryPuzzle")}
             </Text>
           </Pressable>
         </View>

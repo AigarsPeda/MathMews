@@ -73,9 +73,11 @@ export {
   scaleDecorationBy as scaleBedBy,
 } from "@/constants/decoration-variants";
 
+export const DEFAULT_BED_SCALE = 1.3;
+
 export function getEquippedBedScale(scale: number | undefined): number {
   if (typeof scale !== "number" || !Number.isFinite(scale)) {
-    return 1;
+    return DEFAULT_BED_SCALE;
   }
 
   return clampDecorationScale(scale);

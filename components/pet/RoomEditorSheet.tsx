@@ -6,7 +6,8 @@ import { moderateScale } from "@/utils/scale";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, useWindowDimensions, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type RoomEditorControls = {
   undo: () => void;
@@ -41,7 +42,11 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, onOpe
   t: ReturnType<typeof useTranslation>["t"];
 }) {
   const [moreOptions, setMoreOptions] = useState(false);
-  return <ScrollView contentContainerStyle={styles.content}>
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const maxHeight = height * (Platform.OS === "android" ? 1 : 0.88) - insets.top - insets.bottom - moderateScale(48);
+  return <ScrollView style={[styles.scroll, { maxHeight }]} contentContainerStyle={styles.content}
+    nestedScrollEnabled={Platform.OS === "android"} keyboardShouldPersistTaps="handled">
     <Text style={styles.title}>{t("home.roomTools")}</Text>
     <Text style={styles.hint}>{t("home.chooseItemHint")}</Text>
     {controls && <Pressable style={styles.undo} accessibilityRole="button" accessibilityLabel={t("home.undo")}
@@ -98,6 +103,7 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, onOpe
 }
 
 const styles = StyleSheet.create({
+  scroll: { flex: 1 },
   content: { padding: moderateScale(20), gap: moderateScale(12) },
   title: { fontSize: moderateScale(24), fontWeight: "800", color: GameColors.text },
   label: { fontSize: moderateScale(16), fontWeight: "600", color: GameColors.text, flexShrink: 1 },

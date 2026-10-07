@@ -82,13 +82,27 @@ export function getToyDisplaySize(toyId: string | undefined): number {
   return resolved ? CAT_TOY_DISPLAY_SIZES[resolved] : 22;
 }
 
+/** Scratching posts start at the cat-sized scale used by the room reference. */
+export function getDefaultToyScale(toyId: string | undefined): number {
+  const resolved = resolveCatToyId(toyId);
+  return resolved && isLargeToyId(resolved) ? 2 : 1;
+}
+
 export function getPlacedToyScale(placed: PlacedToy): number {
   return typeof placed.scale === "number" && Number.isFinite(placed.scale)
-    ? clampDecorationScale(placed.scale) : 1;
+    ? clampDecorationScale(placed.scale) : getDefaultToyScale(placed.toyId);
 }
 
 export function getPlacedToyDisplaySize(placed: PlacedToy): number {
   return getToyDisplaySize(placed.toyId) * getPlacedToyScale(placed);
+}
+
+export const TOY_ROTATION_COUNT = 4;
+
+export function getPlacedToyRotationIndex(placed: Pick<PlacedToy, "rotationIndex">): number {
+  const index = placed.rotationIndex;
+  return typeof index === "number" && Number.isFinite(index)
+    ? ((Math.trunc(index) % TOY_ROTATION_COUNT) + TOY_ROTATION_COUNT) % TOY_ROTATION_COUNT : 0;
 }
 
 /** Slightly larger than room size so store cards stay readable without filling the tile. */

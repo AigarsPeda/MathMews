@@ -19,7 +19,7 @@ import render_assets as art
 
 # UI symbols need level axes and a readable face at small sizes.
 FRONT_ICONS = {
-    'paw', 'settings', 'sleep', 'puzzles', 'heart', 'broken-heart', 'brain',
+    'paw', 'settings', 'sleep', 'puzzles', 'heart', 'broken-heart', 'brain', 'lightbulb',
     'coin', 'flame', 'sparkle', 'film', 'lock', 'search', 'zoom-in', 'zoom-out',
     'check', 'warning', 'rotate', 'undo', 'restore', 'save', 'pause', 'video-play',
     'power', 'addition', 'subtraction', 'multiplication', 'division', 'equality',

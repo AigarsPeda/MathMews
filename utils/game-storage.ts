@@ -5,7 +5,7 @@ import { captureRoomLayout } from "@/utils/room-layout";
 import { getCompletedPuzzleIds, getSolvedCounts } from "@/utils/game-operations";
 import { DEFAULT_CAT_ROOM_ID, resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveCatSkinId } from "@/constants/cat-skins";
-import { resolveCatBedId, canFlipBed, clampBedScale } from "@/constants/cat-beds";
+import { DEFAULT_BED_SCALE, resolveCatBedId, canFlipBed, clampBedScale } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
@@ -181,10 +181,10 @@ function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
         ? true
         : undefined,
     bedScale:
-      typeof pet.bedScale === "number"
+      typeof pet.bedScale === "number" && Number.isFinite(pet.bedScale)
         ? (() => {
             const scaled = clampBedScale(pet.bedScale);
-            return scaled !== 1 ? scaled : undefined;
+            return scaled !== DEFAULT_BED_SCALE ? scaled : undefined;
           })()
         : undefined,
     placedToys: migrateLegacyPlacedToys(pet),
