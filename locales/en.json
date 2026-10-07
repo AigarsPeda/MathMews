@@ -146,6 +146,8 @@
       "feather": "Get those feathers, {{name}}!"
     },
     "roomTools": "Choose an item",
+    "itemOptions": "Options for {{name}}",
+    "options": "Options",
     "decorateHint": "Drag things to move them. Your changes are saved.",
     "undo": "Undo last change",
     "saveLayout": "Remember this room",
@@ -176,6 +178,10 @@
       "kitchen": "Kitchen"
     },
     "chooseRoom": "Choose a room",
+    "viewRoom": "View {{room}}",
+    "previousRoom": "Previous room",
+    "nextRoom": "Next room",
+    "roomPosition": "Room {{current}} of {{total}}",
     "addDoor": "Add a door",
     "doorsHint": "Choose where the door leads. Drag it onto a wall, then finish decorating and tap it to visit.",
     "doorToRoom": "Door to {{room}}",
@@ -707,7 +713,7 @@
     "jumpBack": "Jump −{{count}}",
     "tapLandingSpot": "Tap where you land!",
     "numberLinePrompt": "Start at {{start}}. {{jump}}.",
-    "numberLineHint": "Tap the number where you land — not where you start!",
+    "numberLineHint": "Count up for + or down for −, one number at a time. Tap where you land.",
     "numberLineTickA11y": "Number {{value}}",
     "pairTarget": "Make",
     "pickTwoNumbers": "Tap two numbers that add up.",

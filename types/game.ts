@@ -62,7 +62,10 @@ export type RoomLayerItem =
   | { kind: "toy"; toyId: string; instanceId: string };
 
 export type PetProfile = {
+  /** Room currently being viewed. */
   homeRoomId?: import("@/constants/home-rooms").HomeRoomId;
+  /** The cat stays here when the player browses other rooms. */
+  catHomeRoomId?: import("@/constants/home-rooms").HomeRoomId;
   homeRooms?: Partial<Record<import("@/constants/home-rooms").HomeRoomId, import("@/utils/home-rooms").HomeRoomState>>;
   roomLayouts?: Record<string, import("@/utils/room-layout").RoomLayout>;
   savedRoomLayouts?: Record<string, import("@/utils/room-layout").RoomLayout>;

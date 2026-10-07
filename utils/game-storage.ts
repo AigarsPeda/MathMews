@@ -1,6 +1,6 @@
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
 import { DEFAULT_HOME_ROOM_ID, isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
-import { captureHomeRoom, type HomeRoomState } from "@/utils/home-rooms";
+import { captureHomeRoom, removeRoomNavigationDoors, type HomeRoomState } from "@/utils/home-rooms";
 import { captureRoomLayout } from "@/utils/room-layout";
 import { getCompletedPuzzleIds, getSolvedCounts } from "@/utils/game-operations";
 import { DEFAULT_CAT_ROOM_ID, resolveCatRoomId } from "@/constants/cat-rooms";
@@ -135,6 +135,8 @@ function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
   return {
     type,
     homeRoomId: isHomeRoomId(pet.homeRoomId) ? pet.homeRoomId : DEFAULT_HOME_ROOM_ID,
+    catHomeRoomId: isHomeRoomId(pet.catHomeRoomId) ? pet.catHomeRoomId
+      : isHomeRoomId(pet.homeRoomId) ? pet.homeRoomId : DEFAULT_HOME_ROOM_ID,
     homeRooms: normalizeHomeRooms(pet.homeRooms),
     name: typeof pet.name === "string" ? pet.name : DEFAULT_PET.name,
     stats: {
@@ -339,7 +341,7 @@ function parseGameSave(
     return {
       save: {
         ...(parsed as GameSave),
-        pet,
+        pet: removeRoomNavigationDoors(pet),
         wallet: { coins: Math.max(0, Math.floor(parsed.wallet.coins)) },
         coinTransactions: normalizeCoinTransactions(parsed.coinTransactions),
         creditedPurchaseIds: [...new Set([...(Array.isArray(parsed.creditedPurchaseIds) ? parsed.creditedPurchaseIds.filter((id): id is string => typeof id === "string") : []), ...normalizeCoinTransactions(parsed.coinTransactions).filter(tx => tx.kind === "iap_purchase" && tx.transactionId).map(tx => tx.transactionId!)])],

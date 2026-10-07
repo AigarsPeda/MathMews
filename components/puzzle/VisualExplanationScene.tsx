@@ -4,6 +4,7 @@ import { GameColors } from "@/constants/game";
 import type { VisualScene } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type VisualExplanationSceneProps = {
   scene: VisualScene;
@@ -116,6 +117,51 @@ function NumberLineScene({
       <Text style={styles.numberRange}>
         {min} … {max}
       </Text>
+    </View>
+  );
+}
+
+function NumberLineJumpScene({ start, jump, moves }: {
+  start: number;
+  jump: number;
+  moves: number;
+}) {
+  const { t } = useTranslation();
+  const direction = Math.sign(jump);
+  const current = start + direction * moves;
+  const jumpLabel = t(jump >= 0 ? "puzzleTypes.jumpForward" : "puzzleTypes.jumpBack", {
+    count: Math.abs(jump),
+  });
+
+  return (
+    <View style={styles.jumpExample}>
+      <Text style={styles.jumpPrompt}>
+        {t("puzzleTypes.numberLinePrompt", { start, jump: jumpLabel })}
+      </Text>
+      {[0, 5].map((rowStart) => (
+        <View key={rowStart} style={styles.jumpGridRow}>
+          {Array.from({ length: 5 }, (_, index) => {
+            const value = rowStart + index;
+            const hop = (value - start) * direction;
+            const visited = hop > 0 && hop <= moves;
+            return (
+              <View key={value} style={[
+                styles.jumpCell,
+                value === start && styles.jumpStart,
+                visited && styles.jumpVisited,
+                value === current && styles.jumpCurrent,
+              ]}>
+                <Text style={styles.jumpBadge}>
+                  {value === start
+                    ? t("puzzleTypes.startAt").toUpperCase()
+                    : visited ? t("visualHelp.numberLine.hop", { count: hop }) : " "}
+                </Text>
+                <Text style={styles.jumpValue}>{value}</Text>
+              </View>
+            );
+          })}
+        </View>
+      ))}
     </View>
   );
 }
@@ -312,6 +358,9 @@ export function VisualExplanationScene({ scene }: VisualExplanationSceneProps) {
           highlight={scene.highlight}
         />
       ) : null}
+      {scene.kind === "numberline_jump" ? (
+        <NumberLineJumpScene start={scene.start} jump={scene.jump} moves={scene.moves} />
+      ) : null}
       {scene.kind === "sequence" ? (
         <SequenceScene
           values={scene.values}
@@ -411,6 +460,57 @@ const styles = StyleSheet.create({
   groupNumber: {
     fontSize: moderateScale(24),
     fontWeight: "800",
+  },
+  jumpExample: {
+    width: "100%",
+    gap: moderateScale(6),
+  },
+  jumpPrompt: {
+    textAlign: "center",
+    fontSize: moderateScale(16),
+    lineHeight: moderateScale(22),
+    fontWeight: "700",
+    color: GameColors.text,
+    marginBottom: moderateScale(6),
+  },
+  jumpGridRow: {
+    flexDirection: "row",
+    gap: moderateScale(6),
+  },
+  jumpCell: {
+    flex: 1,
+    height: moderateScale(56),
+    borderRadius: moderateScale(10),
+    borderWidth: 2,
+    borderColor: GameColors.cardBorder,
+    backgroundColor: GameColors.card,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  jumpStart: {
+    borderColor: "#23766F",
+    backgroundColor: "#DFF8F5",
+  },
+  jumpVisited: {
+    backgroundColor: "#DFF8F5",
+    borderColor: "#23766F",
+  },
+  jumpCurrent: {
+    borderColor: GameColors.primary,
+    backgroundColor: "#FCEDEF",
+  },
+  jumpBadge: {
+    fontSize: moderateScale(8),
+    lineHeight: moderateScale(12),
+    fontWeight: "800",
+    color: GameColors.text,
+  },
+  jumpValue: {
+    fontSize: moderateScale(20),
+    lineHeight: moderateScale(24),
+    fontWeight: "800",
+    color: GameColors.text,
+    fontVariant: ["tabular-nums"],
   },
   numberLine: {
     width: "100%",

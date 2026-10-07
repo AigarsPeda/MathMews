@@ -1,3 +1,6 @@
+import { getCatHomeRoomId, previewHomeRoom } from "@/utils/home-rooms";
+import { HOME_ROOM_IDS, roomTravelDirection, type HomeRoomId, type RoomEntry } from "@/constants/home-rooms";
+import { useRoomTransition } from "@/hooks/use-room-transition";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { PetStage } from "@/components/pet/PetStage";
@@ -20,7 +23,7 @@ import { useRoomEditor } from "@/hooks/use-room-editor";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { shouldPetSleep } from "@/pet-display/engine/derive-mood";
 import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
-import type { PetAnimationState, PetStats, RoomLayerItem } from "@/types/game";
+import type { PetAnimationState, PetProfile, PetStats, RoomLayerItem } from "@/types/game";
 import {
   boostStat,
   withPetCareUpdate,
@@ -39,7 +42,7 @@ import { moderateScale } from "@/utils/scale";
 import { getStoreGoalDetails } from "@/utils/store-goal";
 import * as Haptics from "expo-haptics";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -104,10 +107,23 @@ export default function HomeScreen() {
     togglePlacedAirConditioner,
     scalePlacedDecoration,
     visitHomeRoom,
-    placeRoomDoor,
-    assignRoomDoor,
+    sendCatToRoom,
   } = useGame();
   const roomEditor = useRoomEditor(pet, setPet);
+  const preloadedRooms = useMemo(() => HOME_ROOM_IDS.map(id => previewHomeRoom(pet, id)), [pet]);
+  const { transition, progress: roomSlideProgress, visit: slideToRoom, ready: roomSceneReady } = useRoomTransition(pet, visitHomeRoom);
+  const handleVisitRoom = useCallback((destination: HomeRoomId) => {
+    const origin = pet.homeRoomId ?? 'livingRoom';
+    if (origin === destination || transition) return;
+    slideToRoom(destination);
+  }, [pet, slideToRoom, transition]);
+  const [catEntry, setCatEntry] = useState<{ roomId: HomeRoomId; entry: RoomEntry } | null>(null);
+  const entrySequence = useRef(0);
+  const handleCatRoomArrival = useCallback((destination: HomeRoomId) => {
+    setCatEntry({ roomId: destination, entry: { id: ++entrySequence.current, direction: roomTravelDirection(getCatHomeRoomId(pet), destination) } });
+    handleVisitRoom(destination);
+    sendCatToRoom(destination);
+  }, [handleVisitRoom, pet, sendCatToRoom]);
   const careActionPendingRef = useRef(false);
 
   const {
@@ -444,6 +460,92 @@ export default function HomeScreen() {
   const isNativeCatPet = pet.type === "cat";
   const petAnimating = isCareAnimationPlaying;
 
+  const renderStage = (roomPet: PetProfile, visible: boolean) => (
+    <PetStage
+      key={`${roomPet.homeRoomId ?? "livingRoom"}:${roomPet.roomId ?? "room1"}`}
+      roomVisible={visible && !transition}
+      sceneSlide={transition && (visible || roomPet.homeRoomId === transition.outgoing.homeRoomId)
+        ? { progress: roomSlideProgress, direction: transition.direction, outgoing: !visible } : undefined}
+      onSceneReady={roomSceneReady}
+      roomEntry={catEntry && catEntry.roomId === roomPet.homeRoomId ? catEntry.entry : undefined}
+      homeRoomId={roomPet.homeRoomId}
+      onVisitHomeRoom={handleVisitRoom}
+      catHomeRoomId={getCatHomeRoomId(pet)}
+      onSendCatToRoom={handleCatRoomArrival}
+      onOpenStore={handleOpenStore}
+      roomEditor={roomEditor}
+      compact
+      name={pet.name}
+      petType={pet.type}
+      catSkinId={pet.catSkinId}
+      stats={pet.stats}
+      wisdom={computePetWisdom(progress.puzzlesSolved)}
+      roomId={roomPet.roomId}
+      roomPetOffset={roomPet.roomPetOffset}
+      bedId={roomPet.bedId}
+      roomBedOffset={roomPet.roomBedOffset}
+      bedFlipped={roomPet.bedFlipped}
+      bedScale={roomPet.bedScale}
+      placedToys={roomPet.placedToys}
+      placedDecorations={roomPet.placedDecorations}
+      roomLayerOrder={roomPet.roomLayerOrder}
+      ownedToyIds={progress.toysUnlocked}
+      lastInteractionAt={pet.lastInteractionAt}
+      roomActivityBlocked={isCareAnimationPlaying || isCareBlocked}
+      onRoomInteraction={recordInteraction}
+      onRoomActivityChange={visible ? handleRoomActivityChange : undefined}
+      onFeed={handleFeed}
+      onPlay={handlePlay}
+      speechMessage={speechMessage}
+      playback={playback}
+      onPetPress={petAnimating ? undefined : handlePetTap}
+      onRoomPetOffsetChange={(offset) =>
+        setPet((current) => ({ ...current, roomPetOffset: offset }))
+      }
+      onRoomBedOffsetChange={(offset) =>
+        setPet((current) => ({ ...current, roomBedOffset: offset }))
+      }
+      onPlacedToyOffsetChange={(instanceId, offset) =>
+        setPet((current) => ({
+          ...current,
+          placedToys: updatePlacedToyOffsetByInstance(
+            current.placedToys,
+            instanceId,
+            offset,
+          ),
+        }))
+      }
+      onPlacedDecorationOffsetChange={(instanceId, offset) =>
+        setPet((current) => ({
+          ...current,
+          placedDecorations: updatePlacedDecorationOffsetByInstance(
+            current.placedDecorations,
+            instanceId,
+            offset,
+          ),
+        }))
+      }
+      onPlacedDecorationRemove={handleRemoveDecoration}
+      onRotatePlacedDecoration={handleRotatePlacedDecoration}
+      onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
+      onTogglePlacedAirConditioner={handleTogglePlacedAirConditioner}
+      onScalePlacedDecoration={handleScalePlacedDecoration}
+      onMoveRoomLayerItem={handleMoveRoomLayerItem}
+      onBedRemove={handleRemoveBed}
+      onFlipBed={handleFlipBed}
+      onScaleBed={handleScaleBed}
+      onPlacedToyRemove={handleRemoveToy}
+      onScalePlacedToy={handleScalePlacedToy}
+      onOpenMathStats={handleOpenMathStats}
+      onAnimationComplete={handleAnimationComplete}
+    />
+  );
+
+  const viewRoom = pet.homeRoomId ?? "livingRoom";
+  const stageRooms = Array.from(new Map([
+    ...(isNativeCatPet ? preloadedRooms : [pet]), ...(transition ? [transition.outgoing] : []),
+  ].map(room => [room.homeRoomId ?? "livingRoom", room])).values());
+
   return (
     <View style={[styles.safe, screenInsets]}>
       <View style={styles.screen}>
@@ -476,79 +578,16 @@ export default function HomeScreen() {
 
         <View style={styles.middle}>
           <View style={styles.stageWrap}>
-            <PetStage
-              key={`${pet.homeRoomId ?? "livingRoom"}:${pet.roomId ?? "room1"}`}
-              homeRoomId={pet.homeRoomId}
-              onVisitHomeRoom={visitHomeRoom}
-              onPlaceRoomDoor={placeRoomDoor}
-              onAssignRoomDoor={assignRoomDoor}
-              onOpenStore={handleOpenStore}
-              roomEditor={roomEditor}
-              compact
-              name={pet.name}
-              petType={pet.type}
-              catSkinId={pet.catSkinId}
-              stats={pet.stats}
-              wisdom={computePetWisdom(progress.puzzlesSolved)}
-              roomId={pet.roomId}
-              roomPetOffset={pet.roomPetOffset}
-              bedId={pet.bedId}
-              roomBedOffset={pet.roomBedOffset}
-              bedFlipped={pet.bedFlipped}
-              bedScale={pet.bedScale}
-              placedToys={pet.placedToys}
-              placedDecorations={pet.placedDecorations}
-              roomLayerOrder={pet.roomLayerOrder}
-              ownedToyIds={progress.toysUnlocked}
-              lastInteractionAt={pet.lastInteractionAt}
-              roomActivityBlocked={isCareAnimationPlaying || isCareBlocked}
-              onRoomInteraction={recordInteraction}
-              onRoomActivityChange={handleRoomActivityChange}
-              onFeed={handleFeed}
-              onPlay={handlePlay}
-              speechMessage={speechMessage}
-              playback={playback}
-              onPetPress={petAnimating ? undefined : handlePetTap}
-              onRoomPetOffsetChange={(offset) =>
-                setPet((current) => ({ ...current, roomPetOffset: offset }))
-              }
-              onRoomBedOffsetChange={(offset) =>
-                setPet((current) => ({ ...current, roomBedOffset: offset }))
-              }
-              onPlacedToyOffsetChange={(instanceId, offset) =>
-                setPet((current) => ({
-                  ...current,
-                  placedToys: updatePlacedToyOffsetByInstance(
-                    current.placedToys,
-                    instanceId,
-                    offset,
-                  ),
-                }))
-              }
-              onPlacedDecorationOffsetChange={(instanceId, offset) =>
-                setPet((current) => ({
-                  ...current,
-                  placedDecorations: updatePlacedDecorationOffsetByInstance(
-                    current.placedDecorations,
-                    instanceId,
-                    offset,
-                  ),
-                }))
-              }
-              onPlacedDecorationRemove={handleRemoveDecoration}
-              onRotatePlacedDecoration={handleRotatePlacedDecoration}
-              onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
-              onTogglePlacedAirConditioner={handleTogglePlacedAirConditioner}
-              onScalePlacedDecoration={handleScalePlacedDecoration}
-              onMoveRoomLayerItem={handleMoveRoomLayerItem}
-              onBedRemove={handleRemoveBed}
-              onFlipBed={handleFlipBed}
-              onScaleBed={handleScaleBed}
-              onPlacedToyRemove={handleRemoveToy}
-              onScalePlacedToy={handleScalePlacedToy}
-              onOpenMathStats={handleOpenMathStats}
-              onAnimationComplete={handleAnimationComplete}
-            />
+            {stageRooms.map(room => {
+              const id = room.homeRoomId ?? "livingRoom";
+              const visible = id === viewRoom;
+              const shown = visible || id === transition?.outgoing.homeRoomId;
+              return <View key={id} style={[StyleSheet.absoluteFill, { opacity: shown ? 1 : 0 }]}
+                pointerEvents={visible && !transition ? "auto" : "none"}
+                accessibilityElementsHidden={!visible} importantForAccessibility={visible ? "auto" : "no-hide-descendants"}>
+                {renderStage(room, visible)}
+              </View>;
+            })}
           </View>
         </View>
 
@@ -620,6 +659,8 @@ const styles = StyleSheet.create({
   stageWrap: {
     flex: 1,
     minHeight: 0,
+    backgroundColor: GameColors.card,
+    borderRadius: moderateScale(16),
   },
   footer: {
     gap: moderateScale(10),

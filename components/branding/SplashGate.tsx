@@ -24,6 +24,7 @@ export function SplashGate({ children }: { children: ReactNode }) {
   const [mountGame, setMountGame] = useState(false);
   const [gameLaidOut, setGameLaidOut] = useState(false);
   const [pendingVisuals, setPendingVisuals] = useState(0);
+  const [totalVisuals, setTotalVisuals] = useState(0);
   const [visualWaitElapsed, setVisualWaitElapsed] = useState(false);
   const [brandingReady, setBrandingReady] = useState(false);
   const [logoReady, setLogoReady] = useState(false);
@@ -54,6 +55,7 @@ export function SplashGate({ children }: { children: ReactNode }) {
 
   const handleGameLayout = useCallback(() => setGameLaidOut(true), []);
   const holdVisual = useCallback(() => {
+    setTotalVisuals(count => count + 1);
     setPendingVisuals(count => count + 1);
     let released = false;
     return () => {
@@ -96,9 +98,12 @@ export function SplashGate({ children }: { children: ReactNode }) {
 
   const readyAssets = assets.completed - assets.failed;
   const assetFraction = assets.total > 0 ? readyAssets / assets.total : 0;
-  // Counts measure asset work; account, local save and cloud checks each occupy
-  // a separate stage. A timeout never pretends the remote check succeeded.
-  const progress = .7 * assetFraction + .1 * Number(isReady) + .1 * Number(isAuthReady) + .1 * Number(cloudRestoreCheckComplete);
+  // Downloading is only part of startup. Native scenes must also upload their
+  // models and paint before the cover can reveal the game. Timeouts earn no credit.
+  const visualFraction = mountGame && gameLaidOut && totalVisuals > 0
+    ? (totalVisuals - pendingVisuals) / totalVisuals : 0;
+  const progress = .5 * assetFraction + .1 * Number(isReady) + .075 * Number(isAuthReady)
+    + .075 * Number(cloudRestoreCheckComplete) + .2 * visualFraction + .05 * Number(!showOverlay);
 
   return (
     <View style={styles.gate} onLayout={() => setLayoutReady(true)}>

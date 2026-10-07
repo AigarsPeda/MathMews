@@ -10,7 +10,15 @@ for (const name of starter) await sharp(`docs/art/icon-study/${name}.png`).resiz
 for (const file of await fs.readdir('docs/art/app-icons')) {
   if (file.endsWith('.png') && file !== 'review.png') await sharp(`docs/art/app-icons/${file}`).resize(256,256).png().toFile(`${output}/${file}`);
 }
-for (const name of ['store','stats']) await sharp(`assets/images/${name}-icon.png`).trim().resize(224,224,{fit:"contain",background:{r:0,g:0,b:0,alpha:0}}).extend({top:16,bottom:16,left:16,right:16,background:{r:0,g:0,b:0,alpha:0}}).png().toFile(`${output}/${name}.png`);
+const legacyImages = await fs.readdir('assets/images');
+for (const name of ['store','stats']) {
+  if (!legacyImages.includes(`${name}-icon.png`)) {
+    // These icons now ship directly in assets/icons; keep the bundled artwork.
+    await fs.access(`${output}/${name}.png`);
+    continue;
+  }
+  await sharp(`assets/images/${name}-icon.png`).trim().resize(224,224,{fit:"contain",background:{r:0,g:0,b:0,alpha:0}}).extend({top:16,bottom:16,left:16,right:16,background:{r:0,g:0,b:0,alpha:0}}).png().toFile(`${output}/${name}.png`);
+}
 const names = (await fs.readdir(output)).filter(file=>file.endsWith('.png')).map(file=>path.basename(file,'.png')).sort();
 await fs.writeFile('constants/app-icons.ts', `/** Original Blender renders. Keep static requires so Metro bundles every icon. */\nexport const APP_ICON_SOURCES = {\n${names.map(name=>`  "${name}": require("@/assets/icons/${name}.png"),`).join('\n')}\n} as const satisfies Record<string, number>;\n\nexport type AppIconName = keyof typeof APP_ICON_SOURCES;\n`);
 console.log(`Prepared ${names.length} app icons at 256px.`);

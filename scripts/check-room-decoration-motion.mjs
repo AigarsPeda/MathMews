@@ -23,6 +23,7 @@ const shared = (initial = 0) => { let value = initial; return { get: () => value
 let roomActivityForTest = null, requestedActivity, requestedInstanceId, doorArrival, returnedHome = 0, roomActivityEnabled;
 const objectX = shared(), objectY = shared(), objectRotation = shared();
 const mocks = {
+  '@/components/pet/RoomNavigation': { RoomNavigation: 'RoomNavigation', ROOM_NAVIGATION_HEIGHT: 52 },
   '@/hooks/use-room-camera': { useRoomCamera: () => ({ x: shared(), y: shared(), scale: shared(cameraZoom), zoom: cameraZoom, gesture: 'room-gesture', reset: () => { cameraZoom = 1; } }) },
   'react-native-gesture-handler': { GestureDetector: 'GestureDetector' },
   '@/pet-display/registry/media-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
@@ -32,7 +33,7 @@ const mocks = {
     return { activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, startActivity(kind, instanceId) { requestedActivity = kind; requestedInstanceId = instanceId; } };
   } },
   react: React,
-  'react-i18next': { useTranslation: () => ({ t: key => key }) },
+  'react-i18next': { useTranslation: () => ({ t: (key, options) => options?.room ? key + ':' + options.room : key }) },
   'react-native': {
     View: 'View', Image: 'Image', Text: 'Text', Pressable: 'Pressable', ScrollView: 'ScrollView',
     StyleSheet: { create: styles => styles, absoluteFill: {} },
@@ -135,7 +136,7 @@ assert.equal(catNode(editingRoom).props.onPetTap, undefined, 'Arranging the cat 
 assert.equal(editingRoom.filter(({ node }) => node.type === 'PetSpeechBubble').length, 0);
 editingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.roomTools').node.props.onPress();
 let moved;
-const moveProps = { onPlacedDecorationOffsetChange: (id, offset) => { moved = { id, offset }; } };
+const moveProps = { onPlacedDecorationOffsetChange: (id, offset) => { moved = { id, offset }; }, onPlacedDecorationRemove() {} };
 const picker = render([sofa], moveProps).find(({ node }) => node.type === 'RoomEditorSheet').node;
 assert.equal(picker.props.visible, true);
 assert.ok(picker.props.items.every(item => item.picture), 'Every item must have a recognizable picture');
@@ -145,6 +146,28 @@ assert.equal(selectedRoom.find(({ node }) => node.type === 'RoomEditorSheet').no
 assert.equal(sofaNode(selectedRoom).props.selected, true, 'Highlight the one item being moved');
 assert.equal(selectedRoom.some(({ node }) => node.type === 'RoomActionMenu'), false, 'Choosing an item must not open an unrelated action menu');
 const moveControls = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node;
+assert.ok(moveControls.props.actions.some(action => action.label === 'home.removeFromRoom'), 'Object options remain available beside the movement controls');
+const hintSlot = editingRoom.find(({ node }) => node.props.children?.includes('home.decorateHint')).ancestors.at(-1);
+const controlsSlot = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').ancestors.at(-1);
+assert.equal(style(hintSlot.props.style).minHeight, style(controlsSlot.props.style).minHeight, 'Reserve the same space before and after selecting an item so dragging does not shift the room');
+const statsPanel = nodes => nodes.find(({ node }) => node.type === 'PetStatsPanel');
+const normalStats = statsPanel(normalRoom), editingStats = statsPanel(editingRoom), selectedStats = statsPanel(selectedRoom);
+const footer = entry => entry.ancestors.at(-2);
+assert.deepEqual(style(footer(normalStats).props.style), style(footer(editingStats).props.style), 'Entering decoration mode retains the same footer dimensions and room viewport');
+assert.deepEqual(style(footer(normalStats).props.style), style(footer(selectedStats).props.style), 'Selecting an object does not resize the room');
+const statsFootprint = style(footer(normalStats).props.style).minHeight;
+const editingFootprint = style(controlsSlot.props.style).minHeight;
+assert.equal(statsFootprint, 74, 'The play footer gives its unused space back to the scene');
+assert.ok(editingFootprint <= statsFootprint + 52, 'The editing dock fits the footer plus the hidden room-navigation strip');
+assert.equal(style(controlsSlot.props.style).bottom, 0, 'The taller editing dock grows upward without resizing the room');
+const roomFrame = normalRoom.find(({ node }) => style(node.props.style).marginHorizontal < 0);
+assert.equal(style(roomFrame.node.props.style).alignSelf, 'stretch');
+assert.equal(style(roomFrame.node.props.style).width, undefined, 'The scene can expand through the card’s side insets');
+assert.equal(style(editingStats.ancestors.at(-1).props.style).opacity, 0, 'Stats retain their measured height while hidden in decoration mode');
+assert.notEqual(style(editingStats.ancestors.at(-1).props.style).display, 'none', 'Expanded stats must keep their layout space across modes');
+assert.equal(editingStats.ancestors.at(-1).props.pointerEvents, 'none');
+assert.equal(editingStats.ancestors.at(-1).props.accessibilityElementsHidden, true, 'Hidden stats cannot be tapped or announced');
+assert.equal(style(controlsSlot.props.style).position, 'absolute', 'Movement controls share the stats footprint instead of taking additional room space');
 moveControls.props.onMove('left');
 assert.equal(moved.id, sofa.instanceId);
 assert.ok(Math.abs(moved.offset.x - .2) < 1e-9);
@@ -153,8 +176,12 @@ moveControls.props.onDone();
 assert.equal(render([sofa]).some(({ node }) => node.type === 'RoomItemMoveControls'), false);
 assert.equal(sofaNode(render([sofa])).props.allowDrag, true, 'Done moving retains decoration mode');
 editingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
-assert.equal(sofaNode(render([sofa])).props.allowDrag, false);
+const finishedRoom = render([sofa]);
+assert.equal(sofaNode(finishedRoom).props.allowDrag, false);
+assert.deepEqual(style(footer(statsPanel(finishedRoom)).props.style), style(footer(normalStats).props.style), 'Finishing decoration mode preserves the viewport used to save object positions');
+assert.equal(statsPanel(finishedRoom).ancestors.at(-1).props.accessibilityElementsHidden, false);
 console.log('Verified explicit decorating, protected furniture taps, cat repositioning, and Done restoring normal interaction.');
+console.log('Verified a compact footer, wider scene, stable play/edit viewport, and an editing dock that borrows the hidden navigation strip.');
 console.log('Verified picture selection closes the picker, highlights one item, and moves it with the room visible.');
 
 states[2] = { width: 320, height: 320 };
@@ -240,7 +267,9 @@ const post = { toyId: 'scratchPostRed', instanceId: 'post', offset: { x: .2, y: 
 const scaled = [];
 const toyProps = { placedToys: [post], onScalePlacedToy: (id, direction) => scaled.push([id, direction]), onPlacedToyRemove() {} };
 const postNode = render([sofa], toyProps).find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:post').node;
-assert.equal(postNode.props.petSize, 72, 'Render and drag bounds both use the saved scratching-post size');
+postNode.props.onDragStart();
+assert.equal(render([sofa], toyProps).find(({ node }) => node.type === 'RoomItemMoveControls').node.props.name, 'store.toyName.scratchPostRed', 'Dragging selects the exact object for its separate controls');
+assert.equal(postNode.props.petSize, 72 * load('@/constants/room-scale').ROOM_OBJECT_SCALE, 'Render and drag bounds both use the saved scratching-post size and room proportions');
 const postMenu = postNode.props.menuActions;
 assert.deepEqual(Array.from(postMenu, action => action.label), ['home.makeBigger', 'home.makeSmaller', 'home.removeFromRoom']);
 postMenu[0].onPress(); postMenu[1].onPress();
@@ -253,24 +282,23 @@ console.log('Verified decorating waits for the cat, and scratching posts expose 
 
 console.log('Verified independent AC power, save reload, toggled native menu labels and bounded room-item actions.');
 
-// Door menus dispatch a journey before changing rooms; objects select their own instance.
+// Navigation sits inside the scene, while doors remain optional decor.
 roomActivityForTest = null;
 const finishPreviousEdit = render().find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating');
 finishPreviousEdit?.node.props.onPress();
 const homeDoor = { decorationId: 'japaneseDoorAni', instanceId: 'door-bath', doorDestination: 'bathroom', offset: { x: -.5, y: -.3 } };
-let visited, assigned;
-const houseProps = { homeRoomId: 'livingRoom', onVisitHomeRoom: id => { visited = id; },
-  onAssignRoomDoor: (id, destination) => { assigned = { id, destination }; } };
+let visited;
+const houseProps = { homeRoomId: 'livingRoom', onVisitHomeRoom: id => { visited = id; } };
 const house = render([homeDoor], houseProps);
 const doorway = decorationNode(house, homeDoor.decorationId).node;
-assert.equal(doorway.props.interactive, true);
-assert.equal(doorway.props.menuActions[0].label, 'home.goToRoom');
-doorway.props.menuActions[0].onPress();
-assert.equal(requestedActivity, 'doorTravel');
-assert.equal(requestedInstanceId, homeDoor.instanceId);
-assert.equal(visited, undefined, 'A menu selection walks first');
-doorArrival(homeDoor.instanceId);
-assert.equal(visited, 'bathroom', 'Arrival opens the assigned room');
+assert.equal(doorway.props.interactive, false);
+assert.equal(doorway.props.menuActions?.length ?? 0, 0, 'A door no longer consumes room space as a travel control');
+assert.equal(house.some(({ node }) => node.props.label === 'home.chooseRoom'), false, 'The large room-selector header is removed');
+const navigation = nodes => nodes.find(({ node }) => node.type === 'RoomNavigation').node;
+assert.equal(navigation(house).props.roomId, 'livingRoom');
+navigation(house).props.onVisit('bedroom');
+assert.equal(visited, 'bedroom');
+assert.equal(navigation(render([], { ...houseProps, roomActivityBlocked: true })).props.disabled, true, 'Care blocks room navigation');
 const blockedDoor = decorationNode(render([homeDoor], { ...houseProps, roomActivityBlocked: true }), homeDoor.decorationId).node;
 assert.equal(blockedDoor.props.interactive, false, 'Care blocks room travel');
 const directToy = render([], { placedToys: [ball] }).find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:ball').node;
@@ -280,14 +308,31 @@ assert.equal(requestedInstanceId, ball.instanceId);
 const houseEditor = render([homeDoor], houseProps);
 houseEditor.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
 const editableDoor = decorationNode(render([homeDoor], houseProps), homeDoor.decorationId).node;
-const destinations = editableDoor.props.menuActions.filter(action => action.label === 'home.doorLeadsTo');
-assert.equal(destinations.length, 3);
-assert.equal(destinations[1].disabled, true, 'The current destination is already selected');
-destinations[0].onPress();
-assert.equal(assigned.id, homeDoor.instanceId);
-assert.equal(assigned.destination, 'bedroom');
+assert.equal(editableDoor.props.allowDrag, true, 'Optional door decor still moves normally');
+assert.equal(editableDoor.props.menuActions.some(action => action.label === 'home.doorLeadsTo'), false);
+assert.equal(render([homeDoor], houseProps).some(({ node }) => node.type === 'RoomNavigation'), false, 'Room arrows cannot switch away from an active edit');
 render([homeDoor], houseProps).find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
-console.log('Verified native doorway journey dispatch, arrival routing, care protection, destination reassignment, and direct toy selection.');
+const { RoomNavigation, ROOM_NAVIGATION_HEIGHT } = load(path.join(root, 'components/pet/RoomNavigation.tsx'));
+const ids = ['bedroom', 'livingRoom', 'kitchen', 'bathroom'];
+for (const [index, roomId] of ids.entries()) {
+  const nav = flatten(RoomNavigation({ roomId, disabled: false, onVisit: id => { visited = id; } }));
+  const arrows = nav.filter(({ node }) => node.type === 'Pressable').map(({ node }) => node);
+  assert.equal(arrows[0].props.disabled, index === 0);
+  assert.equal(arrows[1].props.disabled, index === ids.length - 1);
+  for (const [direction, arrow] of arrows.entries()) {
+    visited = undefined; arrow.props.onPress();
+    assert.equal(visited, ids[index + (direction ? 1 : -1)], 'Arrows switch to the adjacent named room');
+    assert.ok(style(arrow.props.style).minHeight >= 44, 'Compact arrows retain usable touch targets');
+  }
+  const current = nav.find(({ node }) => node.props.accessibilityRole === 'adjustable').node;
+  visited = undefined; current.props.onAccessibilityAction({ nativeEvent: { actionName: 'increment' } });
+  assert.equal(visited, ids[index + 1], 'Screen readers can change rooms without a swipe');
+  const blocked = flatten(RoomNavigation({ roomId, disabled: true, onVisit: id => { visited = id; } }));
+  visited = undefined; blocked.filter(({ node }) => node.type === 'Pressable').forEach(({ node }) => node.props.onPress());
+  assert.equal(visited, undefined, 'Disabled arrows never dispatch room changes');
+}
+assert.equal(ROOM_NAVIGATION_HEIGHT, 52, 'The scene reserves precisely the old header and gap, preserving saved positions');
+console.log('Verified compact room arrows, all four destinations, boundary and care/edit guards, screen-reader navigation, optional door decor, and direct toy selection.');
 
 let meals = 0, played;
 const bowl = { decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: .5, y: .15 } };
@@ -316,3 +361,28 @@ render([bowl], mealProps).find(({ node }) => node.props.accessibilityLabel === '
 roomActivityForTest = null; render([bowl], mealProps); render([bowl], mealProps);
 assert.equal(catNode(render([bowl], mealProps)).props.menuActions, undefined, 'Decorating keeps the cat draggable without care menus');
 console.log('Verified direct cat and bowl menus, deferred feeding, retained pet/play actions, missing bowl, full hunger, busy meals, and decorating.');
+
+render().find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
+let transferred;
+const travelProps = { ...houseProps, catHomeRoomId: 'livingRoom', onSendCatToRoom: id => { transferred = id; } };
+const catRoom = render([bowl, sofa], travelProps);
+const destinations = catNode(catRoom).props.menuActions.filter(action => action.label.startsWith('home.goToRoom:'));
+assert.deepEqual(Array.from(destinations, action => action.label), ['bedroom', 'kitchen', 'bathroom'].map(id => 'home.goToRoom:home.rooms.' + id));
+requestedActivity = undefined;
+navigation(catRoom).props.onVisit('bedroom');
+assert.equal(visited, 'bedroom');
+assert.equal(requestedActivity, undefined, 'Room arrows never command the cat to move');
+destinations[1].onPress();
+assert.equal(requestedActivity, 'roomTravel');
+assert.equal(requestedInstanceId, 'kitchen');
+assert.equal(transferred, undefined, 'Cat commands wait for the animated departure');
+const emptyView = render([bowl, sofa], { ...travelProps, homeRoomId: 'bedroom' });
+assert.equal(emptyView.some(({ node }) => node.props.testID === 'room-cat'), false, 'The cat has no hit target in another room');
+assert.equal(roomActivityEnabled, false, 'An empty room cannot run cat idle activities');
+assert.equal(emptyView.find(({ node }) => node.type === 'NativeRoomScene').node.props.catPresent, false, 'Native cat and physics are hidden in unoccupied rooms');
+for (const id of ['bowl', 'sofa']) assert.equal(decorationNode(emptyView, id).node.props.interactive, false, 'Unoccupied furniture cannot command a cat in another room');
+assert.equal(emptyView.some(({ node }) => node.type === 'PetSpeechBubble'), false);
+emptyView.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
+assert.equal(decorationNode(render([bowl, sofa], { ...travelProps, homeRoomId: 'bedroom' }), 'bowl').node.props.allowDrag, true, 'Unoccupied rooms can still be decorated');
+render([], { ...travelProps, homeRoomId: 'bedroom' }).find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
+console.log('Verified arrows only browse, the cat menu offers other rooms, travel waits for arrival, empty rooms hide the cat and its commands, and decoration still works.');

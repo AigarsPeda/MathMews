@@ -551,9 +551,7 @@ function PlaySession() {
               accessibilityLabel={t("visualHelp.a11yOpen")}
             >
               <Text style={styles.visualHelpBtnText}>
-                {visualHelpUnlocked
-                  ? t("visualHelp.watchFree")
-                  : t("visualHelp.watchButton")}
+                {t("visualHelp.watchButton")}
               </Text>
               {!visualHelpUnlocked ? (
                 <Text style={styles.visualHelpBtnHint}>

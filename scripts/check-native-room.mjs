@@ -6,6 +6,8 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import './check-native-cat-skin.mjs';
 const root = process.cwd(), cache = new Map(), mocks = {};
+let frameRequest = 0;
+const frameRequests = new Map();
 function load(id) {
   if (id in mocks) return mocks[id];
   const file = id.startsWith('@/') ? path.join(root, id.slice(2)) : id;
@@ -16,7 +18,9 @@ function load(id) {
   const module = { exports: {} };cache.set(resolved, module);
   if (resolved.endsWith('.json')) { module.exports = JSON.parse(fs.readFileSync(resolved, 'utf8')); return module.exports; }
   const code = ts.transpileModule(fs.readFileSync(resolved, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } }).outputText;
-  vm.runInNewContext(code, { module, exports: module.exports, require: load, Math, Map, Set });return module.exports;
+  vm.runInNewContext(code, { module, exports: module.exports, require: load, Math, Map, Set,
+    requestAnimationFrame: fn => { const id = ++frameRequest; frameRequests.set(id, fn); return id; },
+    cancelAnimationFrame: id => frameRequests.delete(id) });return module.exports;
 }
 function glb(id) { const b = fs.readFileSync(`assets/3d/native/${id}.glb`);assert.equal(b.readUInt32LE(0), 0x46546c67);return JSON.parse(b.subarray(20, 20 + b.readUInt32LE(12)).toString()); }
 const inventory = JSON.parse(fs.readFileSync('scripts/3d/inventory.json')).entries;
@@ -45,6 +49,7 @@ for (const skin of ['orange', 'grey', 'white']) {
   }
 }
 const w = load('@/utils/native-room-world');
+const roomScale = load('@/constants/room-scale');
 for (const scale of [.2, 1, 3]) for (const angle of [0, .001, Math.PI / 2, Math.PI, Math.PI + .001]) {
   const c = Math.cos(angle) * scale, s = Math.sin(angle) * scale;
   const rotation = w.nativeBodyRotation([c, 0, -s, 0, 0, scale, 0, 0, s, 0, c, 0, 0, 0, 0, 1]);
@@ -88,10 +93,25 @@ for (let i = 1; i < route.length; i++) for (let t = 0; t <= 1; t += .01) {
 }
 const divided = { ...routed, objects: [{ ...obstacle, min: [-.25, 0, -2.5], max: [.25, 2, 2.5] }] };
 assert.equal(w.findRoomPath([-1.5, w.FLOOR_Y, 0], [1.5, w.FLOOR_Y, 0], divided).length, 1, 'Unreachable commands cannot walk through furniture');
+const edgePassage = { ...empty, radius: .25, catScale: .5, objects: [{ ...obstacle, min: [-2.5, 0, -.4], max: [1.78, 1, .4] }] };
+const edgeStart = [1.6, w.FLOOR_Y, -1], edgeEnd = [2.055, w.FLOOR_Y, .8];
+const edgeRoute = w.findRoomPath(edgeStart, edgeEnd, edgePassage);
+assert.ok(edgeRoute.length > 2, 'A passage narrower than a grid cell remains navigable beside the floor edge');
+assert.ok(w.pathLength([edgeRoute[0], edgeStart]) < 1e-8 && w.pathLength([edgeRoute.at(-1), edgeEnd]) < 1e-8, 'Off-grid endpoints retain their exact positions');
+for (let i = 1; i < edgeRoute.length; i++) for (let t = 0; t <= 1; t += .01)
+  assert.ok(w.isFree(edgeRoute[i - 1].map((v, axis) => v + (edgeRoute[i][axis] - v) * t), edgePassage), 'The narrow passage route never clips furniture');
+const movedBarrierWorld = { ...routed, objects: [{ ...obstacle, position: [0, 0, 1.5], min: [-.25, 0, 1.2], max: [.25, 1, 1.8] }] };
+assert.equal(w.findRoomPath([-1.5, w.FLOOR_Y, 0], [1.5, w.FLOOR_Y, 0], movedBarrierWorld).length, 2);
+const liveBarrierWorld = w.updateNativeObjectPosition(movedBarrierWorld, 'barrier', [0, .5, 0]);
+const updatedDetour = w.findRoomPath([-1.5, w.FLOOR_Y, 0], [1.5, w.FLOOR_Y, 0], liveBarrierWorld);
+assert.ok(updatedDetour.length > 2, 'A relocated obstacle changes the live route');
+assert.equal(movedBarrierWorld.objects[0].min[2], 1.2, 'Live tracking leaves the rendered layout intact');
+for (let i = 1; i < updatedDetour.length; i++) for (let t = 0; t <= 1; t += .02)
+  assert.ok(w.isFree(updatedDetour[i].map((v, axis) => updatedDetour[i - 1][axis] + (v - updatedDetour[i - 1][axis]) * t), liveBarrierWorld), 'The updated route clears the obstacle at its new location');
 const actualStop = [-1, w.FLOOR_Y, 1];
 const dwell = w.prepareNativeStep({ kind: 'toyPlay', steps: [] }, { animation: 'batToy', position: { x: 0, y: 0 }, durationMs: 1000 }, w.catScreenPoint(actualStop, empty), empty, w.FLOOR_Y);
 assert.ok(w.pathLength([actualStop, dwell.native.path[0]]) < 1e-8, 'A play/rest clip cannot snap back through furniture after a detour');
-const { buildRoomActivity } = load('@/utils/room-activities');
+const { buildRoomActivity, buildRoomReturn } = load('@/utils/room-activities');
 const plan = buildRoomActivity({ ...layouts, nativeWorld: world, homeOffset: { x: 0, y: .12 }, ownedToyIds: [], hungry: false, asleep: false }, 0, 'sofaSit', 'sofa');
 const seatStep = w.prepareNativeStep(plan, plan.steps[1], w.catScreenPoint(world.home, world), world, w.FLOOR_Y);
 assert.deepEqual(Array.from(seatStep.native.path.at(-1)), Array.from(world.objects.find(o => o.instanceId === 'sofa').seat));
@@ -112,13 +132,13 @@ for (const decorationId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink']) fo
   assert.equal(meal.native.hideEatingProps, true);
   assert.ok(Number.isFinite(meal.native.heading), 'The cat faces the food bowl');
   const actualBowl = mealWorld.objects[0];
-  assert.ok(Math.abs(Math.hypot(actualBowl.position[0] - arrival[0], actualBowl.position[2] - arrival[2]) - .85 * mealWorld.catScale) < .001);
+  assert.ok(Math.abs(Math.hypot(actualBowl.position[0] - arrival[0], actualBowl.position[2] - arrival[2]) - w.CAT_EATING_REACH * mealWorld.catScale) < .001);
   const homeStep = w.prepareNativeStep(mealPlan, mealPlan.steps.at(-1), meal.position, mealWorld, w.FLOOR_Y);
   assert.ok(w.pathLength([homeStep.native.path.at(-1), mealWorld.home]) < .001, 'The cat walks back from the bowl');
 }
 
 for (const [width, height] of [[320, 320], [390, 520], [430, 700]]) {
-  const starter = { width, height, petSize: 120, sizeScale: 1, bedId: 'brown',
+  const starter = { width, height, petSize: roomScale.ROOM_CAT_SIZE, sizeScale: roomScale.ROOM_OBJECT_SCALE, bedId: 'brown',
     decorations: [{ decorationId: 'bowlBlue', instanceId: 'starter-bowl', offset: { x: .25, y: .15 } }],
     toys: [{ toyId: 'orangeBall', instanceId: 'starter-ball', offset: { x: .5, y: .4 } }] };
   const starterWorld = w.buildNativeRoomWorld(starter);
@@ -138,6 +158,74 @@ assert.ok(w.pathLength([homeBeforeMeal.native.path.at(-1), afterPlayWorld.home])
 const toBowlAfterReturn = w.prepareNativeStep(combinedMeal, combinedMeal.steps[1], homeScreen, afterPlayWorld, w.FLOOR_Y);
 assert.equal(toBowlAfterReturn.native.blocked, false);
 assert.ok(w.pathLength([toBowlAfterReturn.native.path.at(-1), afterPlayWorld.home]) > .1);
+
+// Eat must finish leaving the source sofa before navigating to its new target.
+for (const decorationId of ['sofaA', 'sofaB']) for (const wallFlipped of [false, true]) {
+  const furnishings = [{ ...sofa, decorationId, wallFlipped, offset: { x: 0, y: -.25 }, scale: 1 },
+    { ...bowlAfterPlay, offset: { x: .25, y: .15 } }];
+  const options = { ...base, petSize: roomScale.ROOM_CAT_SIZE, sizeScale: roomScale.ROOM_OBJECT_SCALE,
+    decorations: furnishings, homeOffset: { x: -.3, y: .25 }, ownedToyIds: [], hungry: true, asleep: false };
+  const transitionWorld = w.buildNativeRoomWorld(options);
+  const sourceSofa = transitionWorld.objects.find(o => o.instanceId === 'sofa');
+  const nap = buildRoomActivity(options, 0, 'sofaSleep', 'sofa');
+  const meal = buildRoomActivity(options, 0, 'bowlEat');
+  const wake = buildRoomReturn(options, nap, 3, w.catScreenPoint(sourceSofa.seat, transitionWorld));
+  const commandedMeal = { ...meal, steps: [...wake.steps, ...meal.steps] };
+  let position = sourceSofa.seat;
+  for (const step of commandedMeal.steps) {
+    const prepared = w.prepareNativeStep(commandedMeal, step, w.catScreenPoint(position, transitionWorld), transitionWorld, position[1]);
+    assert.equal(prepared.native.blocked, false, `${decorationId}/${wallFlipped}/${step.animation}: the source sofa must not block getting down to eat`);
+    assert.ok(w.pathLength([prepared.native.path[0], position]) < 1e-6, `Every transition starts at the previous visible position ${JSON.stringify({ decorationId, wallFlipped, animation: step.animation, position, start: prepared.native.path[0] })}`);
+    if (step.reverse) assert.equal(prepared.native.heading, sourceSofa.seatHeading, 'Getting up retains the seated facing');
+    if (step.animation === 'jumpOff') {
+      assert.equal(prepared.native.jump, true);
+      assert.ok(w.pathLength([prepared.native.path.at(-1), sourceSofa.approach]) < 1e-6, 'Jump-down lands at the source sofa');
+    }
+    position = prepared.native.path.at(-1);
+  }
+}
+console.log('Verified lying-to-eating native transitions on both sofa variants and mirrored orientations.');
+
+// Regression: a large plant in the center and a bowl at the front floor corner.
+// Keep the saved placements, including a bowl whose rim extends over the edge.
+const cornerOptions = { width: 345.33331298828125, height: 465.6666259765625, petSize: 81, sizeScale: 1.1691666666666667,
+  homeOffset: { x: -.2238806, y: .1212716 }, ownedToyIds: [], hungry: true, asleep: false,
+  decorations: [
+    { decorationId: 'plantB', instanceId: 'corner-plant', offset: { x: -.1018651, y: .1399326 }, scale: 2.2 },
+    { decorationId: 'sofaA', instanceId: 'corner-sofa', offset: { x: .2240545, y: -.2197700 }, scale: 1.5 },
+    { decorationId: 'bowlBlue', instanceId: 'corner-bowl', offset: { x: -.0050873, y: .5235030 }, scale: 1.6 },
+  ], toys: [{ toyId: 'scratchPostRed', instanceId: 'corner-post', offset: { x: 1, y: .0408916 }, scale: 1.9 }] };
+const cornerWorld = w.buildNativeRoomWorld(cornerOptions);
+const cornerSnapshot = JSON.stringify(cornerWorld.objects);
+const cornerBowl = cornerWorld.objects.find(o => o.instanceId === 'corner-bowl');
+const cornerMeal = buildRoomActivity(cornerOptions, 0, 'bowlEat', 'corner-bowl');
+let cornerArrival;
+for (const source of ['floor', 'sofaSit', 'sofaSleep']) {
+  let start = cornerWorld.home, steps = cornerMeal.steps;
+  if (source !== 'floor') {
+    const rest = buildRoomActivity(cornerOptions, 0, source, 'corner-sofa');
+    start = cornerWorld.objects.find(o => o.instanceId === 'corner-sofa').seat;
+    const returning = buildRoomReturn(cornerOptions, rest, source === 'sofaSleep' ? 3 : 2, w.catScreenPoint(start, cornerWorld));
+    steps = [...returning.steps, ...steps];
+  }
+  const command = { ...cornerMeal, steps };
+  for (const step of steps) {
+    const prepared = w.prepareNativeStep(command, step, w.catScreenPoint(start, cornerWorld), cornerWorld, start[1]);
+    assert.equal(prepared.native.blocked, false, `${source}/${step.animation}: the corner bowl remains reachable`);
+    assert.ok(w.pathLength([start, prepared.native.path[0]]) < 1e-6, 'The corner route never relocates its start');
+    if (step.animation?.startsWith('walk'))
+      for (let i = 1; i < prepared.native.path.length; i++) for (let t = 0; t <= 1; t += .01) {
+        const a = prepared.native.path[i - 1], b = prepared.native.path[i];
+        assert.ok(w.isFree(a.map((v, axis) => v + (b[axis] - v) * t), cornerWorld), 'The corner route clears furniture and floor edges');
+      }
+    start = prepared.native.path.at(-1);
+    if (step.animation === 'eating') {
+      cornerArrival = start;
+      assert.ok(Math.abs(w.pathLength([start, [cornerBowl.position[0], w.FLOOR_Y, cornerBowl.position[2]]]) - w.CAT_EATING_REACH * cornerWorld.catScale) < 1e-6, 'The cat reaches the food instead of stopping at a nearby free cell');
+    }
+  }
+}
+assert.equal(JSON.stringify(cornerWorld.objects), cornerSnapshot, 'Routing leaves the saved room objects in place');
 
 // Sample the shipped skeleton, not a hand-drawn approximation of its tail.
 const contact = load('@/utils/native-cat-contact');
@@ -179,6 +267,27 @@ function posedTail(clip,time,position,heading,scale,names=['tailjoint0','tailjoi
     const m=multiply(parent===undefined?root:worldMatrix(parent),n.matrix??matrix(n.translation,n.rotation,n.scale));cache.set(i,m);return m; }
   return names.map(name=>worldMatrix(nodes.findIndex(n=>n.name===name)).slice(12,15));
 }
+// Check the shipped eating clip: the muzzle reaches the bowl, the paws stay
+// planted, and the cat returns to its standing pose at both ends.
+const eatingDuration = authored.eating[0] / authored.eating[1];
+const eatingJoints = ['nose', 'L.front.paw', 'R.front.paw', 'L.rear.paw', 'R.rear.paw'];
+const standingJoints = posedTail('idle', 0, [0, 0, 0], 0, 1, eatingJoints);
+const cornerHeading = Math.atan2(cornerBowl.position[0] - cornerArrival[0], cornerBowl.position[2] - cornerArrival[2]);
+const cornerPaws = posedTail('eating', eatingDuration * .5, cornerArrival, cornerHeading, cornerWorld.catScale, eatingJoints.slice(1));
+for (const paw of cornerPaws)
+  assert.ok(Math.abs(paw[0]) < 2.32 && Math.abs(paw[2]) < 2.32, 'The shipped eating pose keeps every paw on the floor at the corner bowl');
+for (const fraction of [0, .35, .5, .65, 1]) {
+  const joints = posedTail('eating', eatingDuration * fraction, [0, 0, 0], 0, 1, eatingJoints);
+  for (let i = 1; i < joints.length; i++)
+    assert.ok(Math.hypot(...joints[i].map((value, axis) => value - standingJoints[i][axis])) < .003, 'Eating keeps each paw planted');
+  const nose = joints[0];
+  if (fraction === 0 || fraction === 1)
+    assert.ok(Math.hypot(...nose.map((value, axis) => value - standingJoints[0][axis])) < .003, 'Eating starts and ends standing');
+  else {
+    assert.ok(nose[1] > .2 && nose[1] < .4 && standingJoints[0][1] - nose[1] > .75, 'Eating lowers the muzzle to bowl height');
+    assert.ok(Math.abs(nose[2] - w.CAT_EATING_REACH) < .04, 'The meal approach matches the lowered muzzle');
+  }
+}
 // Sample the exported paw pivots during stance. Their backward motion must
 // cancel the distance-driven runtime stride instead of sliding on the floor.
 const walkDuration=authored.walk[0]/authored.walk[1];
@@ -206,6 +315,16 @@ for(const decorationId of ['sofaA','sofaB'])for(const wallFlipped of [false,true
   const room=w.buildNativeRoomWorld({...base,petSize:96,decorations:[{...sofa,decorationId,wallFlipped,scale:itemScale,offset:{x:0,y:0}}]});
   const object=room.objects[0];assert.equal(object.collisionBoxes.length,13,'Seats, back, arms and pillow use separate authored collision shapes');
   const heading=object.seatHeading;
+  assert.ok((Math.sin(heading) + Math.cos(heading)) / Math.SQRT2 > .5,
+    `${decorationId}/${wallFlipped}: sitting and sleeping face the player`);
+  for (const kind of ['sofaSit', 'sofaSleep']) {
+    const plan = buildRoomActivity({ ...base, decorations: [{ ...sofa, decorationId, wallFlipped, scale: itemScale }],
+      homeOffset: { x: 0, y: .12 }, ownedToyIds: [], hungry: false, asleep: false }, 0, kind, 'sofa');
+    for (const step of plan.steps.filter(step => ['sit', 'curlUp', 'curlSleep'].includes(step.animation))) {
+      const prepared = w.prepareNativeStep(plan, step, w.catScreenPoint(object.seat, room), room, object.seat[1]);
+      assert.equal(prepared.native.heading, heading, `${kind}/${step.animation}: preserve the viewer-facing direction throughout rest`);
+    }
+  }
   for(const clip of ['sit','curlUp','curlSleep'])for(let sample=0;sample<12;sample++) {
     const duration=Math.max(...skeleton.animations.find(a=>a.name===clip).samplers.map(s=>skeleton.accessors[s.input].max[0]));
     const points=posedTail(clip,duration*sample/12,object.seat,heading,room.catScale);
@@ -278,6 +397,59 @@ for (const fps of [30, 60, 120]) {
   assert.deepEqual(Array.from(scale), [empty.catScale, empty.catScale, empty.catScale]);
   const last = applies.at(-1);assert.equal(last.name, 'walk');assert.ok(Math.abs(last.time - (1 / (.8 * empty.catScale) % 1)) < .001, 'Paw phase follows actual traveled distance');
 }
+
+// Room arrivals use the rendered clock even when wall time/frame delivery differs.
+for (const reduced of [false, true]) {
+  slots = []; applies = []; const completions = [];
+  const roomTravel = { path: reduced ? [[1, w.FLOOR_Y, 0]] : [[-1, w.FLOOR_Y, 0], [1, w.FLOOR_Y, 0]], distance: reduced ? 0 : 2, duration: 2,
+    jump: false, awaitCompletion: true };
+  const roomProps = { playback: { kind: 'segment', segment: registry.getSegment('idle') }, active: true,
+    world: empty, travel: roomTravel, activityKey: 'meal:walk:1', reduceMotion: reduced,
+    onRoomStepComplete: (key, arrival) => completions.push({ key, arrival }) };
+  render(roomProps);
+  for (let frame = 0; frame < (reduced ? 8 : 20); frame++) renderFrame({ timeSinceLastFrame: .15 });
+  assert.equal(completions.length, 0, 'A slow renderer never claims arrival from wall time alone');
+  render({ ...roomProps, active: false });
+  for (let frame = 0; frame < 100; frame++) renderFrame({ timeSinceLastFrame: .15 });
+  assert.equal(completions.length, 0, 'Paused scenes cannot complete a meal step');
+  render(roomProps);
+  for (let frame = 0; frame < 100; frame++) renderFrame({ timeSinceLastFrame: .15 });
+  assert.equal(completions.length, 1);
+  assert.equal(completions[0].key, 'meal:walk:1');
+  assert.deepEqual(Array.from(completions[0].arrival), [1, w.FLOOR_Y, 0], 'Arrival includes the exact rendered endpoint');
+  const duration = authored.eating[0] / authored.eating[1];
+  render({ ...roomProps, playback: { kind: 'segment', segment: registry.getSegment('eating') },
+    activityKey: 'meal:eating:2', travel: { ...roomTravel, path: [[1, w.FLOOR_Y, 0]], distance: 0, duration } });
+  for (let frame = 0; frame < 120; frame++) renderFrame({ timeSinceLastFrame: .15 });
+  assert.equal(completions.length, 2);
+  assert.equal(completions[1].key, 'meal:eating:2', 'Eating completes after its rendered clip');
+}
+console.log('Verified actual renderer arrival and eating completion, slow frames, pause, exact endpoints and Reduce Motion.');
+
+// A longer placed-bowl meal must extend native playback and its shared spill clock.
+{
+  const { createRoomActivitySegment } = load('@/pet-display/registry/cat-model-registry');
+  const plan = buildRoomActivity({ ...base, homeOffset: { x: 0, y: .12 }, ownedToyIds: [],
+    decorations: [{ decorationId: 'bowlBlue', instanceId: 'long-meal', offset: { x: .2, y: .3 } }] }, 0, 'bowlEat');
+  const step = plan.steps[1];
+  const segment = createRoomActivitySegment(step.animation, step.reverse, step.animationFps);
+  slots = []; applies = [];
+  let completions = 0;
+  const sharedMealClock = { value: { name: 'idle', time: 0 } };
+  render({ playback: { kind: 'segment', segment }, active: true, world: empty,
+    animationTimeValue: sharedMealClock, activityKey: 'long-meal:eating',
+    travel: { path: [empty.home], distance: 0, duration: step.durationMs / 1000, jump: false, awaitCompletion: true },
+    onRoomStepComplete: () => completions++ });
+  for (let frame = 0; frame < 240; frame++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.equal(completions, 0, 'The cat continues eating after the old four-second deadline');
+  assert.ok(Math.abs(sharedMealClock.value.time - 2) < 1e-5, 'Crumbs are halfway through their animation after four seconds');
+  assert.equal(sharedMealClock.value.time, applies.at(-1).time, 'The slower spill clock matches the actual muzzle pose');
+  for (let frame = 0; frame < 241; frame++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.equal(completions, 1, 'The extended rendered meal completes once after eight seconds');
+}
+console.log('Verified eight-second native eating, extended synchronized crumb playback and no early completion.');
+
+
 slots = [];let complete = 0;
 const oneShot = { playback: { kind: 'segment', segment: registry.getSegment('eating') }, active: false, onAnimationComplete: () => complete++ };
 render(oneShot);for (let i = 0; i < 300; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });assert.equal(complete, 0, 'Background playback pauses');
@@ -310,6 +482,40 @@ const wallFixture={...empty,objects:[{instanceId:'fixture',solid:false,collidabl
 const tailPoints=[[0,.4,0],[0,.5,-.3],[0,.7,-.4],[0,.9,-.4]];
 const mounted=contact.resolveTailContact(tailPoints,wallFixture,{angle:0,axis:[0,1,0],blocked:false},1/60);
 assert.ok(mounted.angle>0&&!mounted.blocked,'Wall-mounted decorations also constrain the tail');
+
+// Render updates and reroutes preserve the actual pose rather than an old UI sample.
+slots = []; applies = [];
+const livePosition = { value: empty.home }, renderedTime = { value: { name: 'idle', time: 0 } };
+const movingPlayback = { kind: 'segment', segment: registry.getSegment('idle') };
+const initialPath = [empty.home, [1, w.FLOOR_Y, 0]];
+const movingProps = { playback: movingPlayback, world: empty, active: true, positionValue: livePosition,
+  travel: { path: initialPath, distance: w.pathLength(initialPath), duration: 2, jump: false } };
+render(movingProps);
+for (let i = 0; i < 45; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+const beforeWorldUpdate = Array.from(livePosition.value);
+const changedWorld = { ...empty, objects: [obstacle] };
+render({ ...movingProps, world: changedWorld }); renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.ok(w.pathLength([beforeWorldUpdate, livePosition.value]) < .03, 'An object update cannot restart the rendered cat journey');
+const beforeReroute = Array.from(livePosition.value), destination = [.4, w.FLOOR_Y, 1];
+const staleReportedStart = [beforeReroute[0] - 1, w.FLOOR_Y, beforeReroute[2]];
+const reroutedProps = { ...movingProps, world: changedWorld, travel: { path: [staleReportedStart, destination], distance: w.pathLength([staleReportedStart, destination]), duration: 2, jump: false, replanned: true } };
+render(reroutedProps); renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.ok(w.pathLength([beforeReroute, livePosition.value]) < .03, 'Replanning starts at the exact rendered cat position, even with delayed RN reports');
+for (let i = 0; i < 130; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.ok(w.pathLength([destination, livePosition.value]) < 1e-6, 'A reroute reaches the new destination');
+render({ ...reroutedProps, travel: undefined }); renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.ok(w.pathLength([destination, livePosition.value]) < 1e-6, 'Ending a blocked/cancelled route never snaps the cat home');
+render({ ...reroutedProps, travel: undefined, world: { ...changedWorld, home: [.7, w.FLOOR_Y, .7] } });
+renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.ok(w.pathLength([[.7, w.FLOOR_Y, .7], livePosition.value]) < 1e-6, 'Explicit cat repositioning still updates the saved home');
+const clockProps = { playback: { kind: 'segment', segment: registry.getSegment('eating') }, world: empty, active: true,
+  animationTimeValue: renderedTime, travel: { path: [empty.home], distance: 0, duration: 4, jump: false } };
+render(clockProps);
+for (let i = 0; i < 60; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+const beforeClockUpdate = renderedTime.value.time;
+render({ ...clockProps, world: changedWorld }); renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.ok(Math.abs(renderedTime.value.time - beforeClockUpdate - 1 / 60) < 1e-6, 'World snapshots preserve the eating clock');
+console.log('Verified render-position continuity during world updates, rerouting, cancelled travel and explicit cat repositioning.');
 console.log(`Verified ${inventory.length} native assets, all ${Object.keys(authored).length} actions in three coats, saved placement projection, collision detours, sofa support, native gait at 30/60/120 FPS, scenario callbacks, pause and Reduce Motion.`);
 
 exposeFoodProps = true; slots = []; propTransforms.length = 0;
@@ -320,3 +526,202 @@ assert.equal(propTransforms.at(-1), 'hidden', 'Placed-bowl meals hide the embedd
 render({ ...mealProps, travel: undefined }); renderFrame({ timeSinceLastFrame: 1 / 60 });
 assert.equal(propTransforms.at(-1), 'visible', 'Normal care restores embedded props after a bowl meal');
 console.log('Verified placed-bowl animation hides and restores its embedded bowl independently of the room object.');
+
+// The spill follows the rendered cat clock, including pauses and the first muzzle contact.
+const mealTime = { value: { name: 'idle', time: 0 } };
+slots = []; applies = [];
+render({ ...mealProps, animationTimeValue: mealTime });
+for (let i = 0; i < 70; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.equal(mealTime.value.name, 'eating');
+assert.equal(mealTime.value.time, applies.at(-1).time);
+const pausedMealTime = mealTime.value.time;
+render({ ...mealProps, animationTimeValue: mealTime, active: false });
+renderFrame({ timeSinceLastFrame: 1 });
+assert.equal(mealTime.value.time, pausedMealTime, 'Spills pause with the muzzle');
+
+const spillBytes = fs.readFileSync('assets/3d/native/bowl-food-spill.glb');
+const spillModel = glb('bowl-food-spill');
+const spillBinary = spillBytes.subarray(28 + spillBytes.readUInt32LE(12));
+function spillValues(index) {
+  const accessor = spillModel.accessors[index], view = spillModel.bufferViews[accessor.bufferView];
+  const width = accessor.type === 'VEC3' ? 3 : accessor.type === 'VEC4' ? 4 : 1;
+  return Array.from({ length: accessor.count }, (_, i) => Array.from({ length: width }, (_, axis) =>
+    spillBinary.readFloatLE((view.byteOffset ?? 0) + (accessor.byteOffset ?? 0) + i * (view.byteStride ?? width * 4) + axis * 4)));
+}
+assert.equal(spillModel.meshes.length, 8, 'A placed-bowl spill adds only crumbs, without another bowl');
+assert.equal(spillModel.animations.length, 1);
+const spillClip = spillModel.animations[0];
+const spillDuration = Math.max(...spillClip.samplers.map(s => spillModel.accessors[s.input].max[0]));
+assert.equal(spillDuration, authored.eating[0] / authored.eating[1]);
+for (const node of spillModel.nodes.filter(n => n.mesh !== undefined)) {
+  const nodeIndex = spillModel.nodes.indexOf(node);
+  const channels = spillClip.channels.filter(c => c.target.node === nodeIndex);
+  const translations = spillValues(spillClip.samplers[channels.find(c => c.target.path === 'translation').sampler].output);
+  const sizesSampler = spillClip.samplers[channels.find(c => c.target.path === 'scale').sampler];
+  const sizes = spillValues(sizesSampler.output), times = spillValues(sizesSampler.input);
+  assert.ok(sizes[0].every(v => v === 0) && sizes.at(-1).every(v => v === 0), 'Crumbs are hidden before and after the meal');
+  assert.ok(Math.max(...translations.map(v => v[1])) > .35, 'Crumbs arc above the rim');
+  const settled = translations.at(-1);
+  assert.ok(Math.hypot(settled[0], settled[2]) > .365 && Math.abs(settled[1] - .035) < 1e-6, 'Crumbs land outside the bowl on the floor');
+  if (Number(node.name.match(/\d+/)[0]) <= 3) {
+    const firstVisible = times[sizes.findIndex(v => v[0] > 0)][0];
+    assert.ok(firstVisible >= 1 && firstVisible < 1.1, 'The first crumbs move as the muzzle reaches the food');
+  }
+}
+
+let spillTransform, spillTimes = [];
+mocks['react-native-filament'] = {
+  useModel: () => ({ state: 'loaded', asset: {}, rootEntity: {} }),
+  useAnimator: () => ({ getAnimationDuration: () => spillDuration, applyAnimation: (i, t) => { assert.equal(i, 0); spillTimes.push(t); }, updateBoneMatrices() {} }),
+  useFilamentContext: () => ({ transformManager: {
+    createIdentityMatrix: () => ({ scaling(v) { this.scale = v; return this; }, rotate(v) { this.heading = v; return this; }, translate(v) { this.position = v; return this; } }),
+    setTransform: (_, matrix) => { spillTransform = matrix; },
+  } }),
+  RenderCallbackContext: { useRenderCallback: fn => { renderFrame = fn; } },
+};
+const { NativeFoodSpill } = load('@/components/pet/native/NativeFoodSpill');
+for (const bowlId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink']) {
+  for (const itemScale of [.7, 1, 2.2]) {
+    const object = w.buildNativeRoomWorld({ ...base, decorations: [{ decorationId: bowlId, instanceId: 'meal', offset: { x: .3, y: -.2 }, scale: itemScale }] }).objects[0];
+    assert.ok(object, bowlId);
+    slots = []; cursor = 0; mealTime.value = { name: 'eating', time: 1.2 };
+    NativeFoodSpill({ object, active: true, animationTime: mealTime }); renderFrame();
+    assert.deepEqual(Array.from(spillTransform.scale), [object.scale, object.scale, object.scale]);
+    assert.equal(spillTransform.heading, object.heading); assert.equal(spillTransform.position, object.position);
+    assert.equal(spillTimes.at(-1), 1.2, 'A late-loaded effect uses the current eating phase');
+    cursor = 0; NativeFoodSpill({ object, active: false, animationTime: mealTime });
+    const count = spillTimes.length; renderFrame(); assert.equal(spillTimes.length, count);
+    cursor = 0; NativeFoodSpill({ object, active: true, animationTime: mealTime });
+    mealTime.value = { name: 'eating', time: 5 }; renderFrame(); assert.equal(spillTimes.at(-1), 4);
+    mealTime.value = { name: 'walk', time: 1 }; renderFrame(); assert.equal(spillTimes.at(-1), 0);
+    mealTime.value = { name: 'eating', time: 0 }; renderFrame(); assert.equal(spillTimes.at(-1), 0, 'A new meal starts without leftover crumbs');
+  }
+}
+console.log('Verified muzzle-contact spills, floor landing, cleanup, selected-bowl transforms, synchronized playback and pauses.');
+
+// Exercise the scene's actual mounting and cleanup conditions.
+React.memo = fn => fn;
+React.useState = value => [memo(() => value, []), () => {}];
+mocks['react/jsx-runtime'] = { jsx: (type, props, key) => ({ type, props, key }), jsxs: (type, props, key) => ({ type, props, key }) };
+mocks['react-native'] = { View: 'View', ActivityIndicator: 'ActivityIndicator', StyleSheet: { absoluteFill: {}, flatten: v => v, create: v => v } };
+mocks['./NativeFoodSpill'] = { NativeFoodSpill: 'FoodSpill' };
+mocks['./NativeAirflow'] = { NativeAirflow: 'Airflow' };
+mocks['./NativeCatActor'] = { NativeCatActor: 'Cat' };
+const startupVisualReadiness = [];
+mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { startupVisualReadiness.push(ready); } };
+let sceneReduced = false;
+mocks['@/hooks/use-animation-activity'] = { useAnimationActivity: () => ({ active: true, reduceMotion: sceneReduced }) };
+Object.assign(mocks['react-native-filament'], { FilamentScene: 'FilamentScene', FilamentView: 'FilamentView', DefaultLight: 'Light', useWorld: () => ({}), useStaticPlaneShape() {}, useBoxShape() {}, useRigidBody() {} });
+const { NativeRoomScene } = load('@/components/pet/native/NativeRoomScene');
+const bowlRoom = w.buildNativeRoomWorld({ ...base, decorations: [{ decorationId: 'bowlBlue', instanceId: 'meal', offset: { x: .2, y: .3 } }] });
+slots = []; cursor = 0;
+NativeRoomScene({ world: { ...bowlRoom, width: 0 } });
+assert.equal(startupVisualReadiness.at(-1), false, 'An unmeasured room must reserve its startup hold before mounting Filament');
+function sceneChildren(props) {
+  slots = []; cursor = 0;
+  const scene = NativeRoomScene(props).props.children.props.children;
+  return scene.type(scene.props).props.children.flat(Infinity).filter(Boolean);
+}
+const sceneMeal = { ...mealProps, world: bowlRoom, playingId: 'meal', activityKey: 'meal-one' };
+let children = sceneChildren(sceneMeal), spill = children.find(c => c.type === 'FoodSpill'), cat = children.find(c => c.type === 'Cat');
+assert.equal(spill.props.object, bowlRoom.objects[0]); assert.equal(spill.key, 'meal-one');
+assert.equal(spill.props.animationTime, cat.props.animationTimeValue, 'Scene shares the actual cat clock with the spill');
+assert.equal(sceneChildren({ ...sceneMeal, paused: true }).find(c => c.type === 'FoodSpill').props.active, false);
+for (const patch of [{ playingId: 'missing' }, { travel: undefined }, { playback: { kind: 'segment', segment: registry.getSegment('idle') } }])
+  assert.ok(!sceneChildren({ ...sceneMeal, ...patch }).some(c => c.type === 'FoodSpill'), 'Spill is removed when the selected-bowl meal ends');
+sceneReduced = true;
+assert.ok(!sceneChildren(sceneMeal).some(c => c.type === 'FoodSpill'), 'Reduce Motion omits the flying crumbs');
+console.log('Verified spill lifecycle in the rendered room scene, including cancellation and Reduce Motion.');
+
+// A cached native surface draws before a slide and stops its GPU clock while hidden.
+React.useState = initial => {
+  const i = cursor++, value = memoState(i, initial);
+  return [value, next => { slots[i].value = typeof next === 'function' ? next(slots[i].value) : next; }];
+};
+function memoState(i, initial) { if (!slots[i]) slots[i] = { value: initial }; return slots[i].value; }
+React.useEffect = (fn, deps) => {
+  const i = cursor++, old = slots[i];
+  if (!old || deps.some((v, j) => !Object.is(v, old.deps[j]))) effects.push(() => {
+    old?.cleanup?.(); slots[i] = { deps, cleanup: fn() };
+  });
+};
+// Native shared objects are snapshots; persist updates through the value setter.
+const sharedSnapshot = value => Array.isArray(value) ? [...value] : value && typeof value === 'object' ? { ...value } : value;
+mocks['react-native-worklets-core'].useSharedValue = initial => memo(() => {
+  let value = sharedSnapshot(initial);
+  return { get value() { return sharedSnapshot(value); }, set value(next) { value = sharedSnapshot(next); } };
+}, []);
+const sceneClock = [];
+context.choreographer = { start: () => sceneClock.push('start'), stop: () => sceneClock.push('stop') };
+mocks['react-native-filament'].useFilamentContext = () => context;
+let sceneReady = 0, sceneRender;
+context.camera = { setOrthographicProjection() {}, lookAt() {} };
+context.view = { getAspectRatio: () => 1 };
+const onSceneReady = () => sceneReady++;
+slots = []; frameRequests.clear();
+function renderCachedScene(props) {
+  cursor = 0; effects = [];
+  const root = NativeRoomScene(props).props.children.props.children;
+  const surface = root.type(root.props);
+  sceneRender = surface.props.renderCallback;
+  const children = surface.props.children.flat(Infinity).filter(Boolean);
+  effects.forEach(fn => fn()); return children;
+}
+function paintFrame() { sceneRender({ timeSinceLastFrame: 1 / 60 }); }
+const cachedProps = { ...sceneMeal, paused: true, catPresent: false, onSceneReady };
+let cached = renderCachedScene(cachedProps);
+cached.find(child => child.type.name === 'RoomModel').props.onReady();
+renderCachedScene(cachedProps);
+paintFrame(); paintFrame(); renderCachedScene(cachedProps);
+assert.equal(sceneReady, 0, 'Room geometry alone does not preload its furniture');
+for (const child of cached.filter(child => child.type.name === 'RoomObject'))
+  child.props.onReady(`${child.props.object.instanceId}:${child.props.object.modelId}`);
+renderCachedScene(cachedProps);
+assert.equal(sceneReady, 0, 'Loading the room asset is not a drawn frame');
+paintFrame(); renderCachedScene(cachedProps);
+assert.equal(sceneReady, 0, 'One drawing turn still retains the outgoing scene');
+paintFrame(); renderCachedScene(cachedProps);
+assert.equal(sceneReady, 0, 'Startup remains covered until the native scene has drawn twice');
+paintFrame(); renderCachedScene(cachedProps);
+assert.equal(sceneReady, 1);
+assert.equal(sceneClock.at(-1), 'stop', 'A drawn hidden room stops its native renderer');
+renderCachedScene({ ...cachedProps, paused: false });
+assert.equal(sceneClock.at(-1), 'start');
+const arrivalProps = { ...cachedProps, catPresent: true, initialCatPosition: w.nativeRoomEdge(bowlRoom, -1) };
+cached = renderCachedScene(arrivalProps);
+assert.equal(sceneReady, 1, 'A previously empty room waits for the incoming cat');
+assert.equal(sceneClock.at(-1), 'start', 'The cached renderer wakes to draw a newly arriving cat');
+const incomingCat = cached.find(child => child.type === 'Cat');
+assert.equal(incomingCat.props.initialPosition, arrivalProps.initialCatPosition);
+incomingCat.props.onReady(); renderCachedScene(arrivalProps);
+paintFrame(); renderCachedScene(arrivalProps); paintFrame(); renderCachedScene(arrivalProps);
+paintFrame(); renderCachedScene(arrivalProps);
+assert.equal(sceneReady, 2);
+assert.equal(sceneClock.at(-1), 'stop');
+console.log('Verified native first-frame handoff, retained hidden surfaces, paused GPU clocks and new-cat readiness in cached rooms.');
+
+const departurePlan = buildRoomActivity({ ...base, homeOffset: { x: 0, y: .12 }, ownedToyIds: [], decorations: [] }, 0, 'roomTravel', 'bedroom');
+const departure = w.prepareNativeStep(departurePlan, departurePlan.steps[0], w.catScreenPoint(routed.home, routed), routed, w.FLOOR_Y);
+assert.equal(departure.native.blocked, false);
+assert.ok(departure.native.path.at(-1)[2] > 1.5, 'Travel to the bedroom reaches the left front edge');
+for (let i = 1; i < departure.native.path.length; i++) for (let t = 0; t <= 1; t += .02)
+  assert.ok(w.isFree(departure.native.path[i - 1].map((v, axis) => v + (departure.native.path[i][axis] - v) * t), routed), 'Departure routes clear the current furniture');
+const rightDeparturePlan = buildRoomActivity({ ...base, homeOffset: { x: 0, y: .12 }, ownedToyIds: [], decorations: [] }, 0, 'roomTravel', 'kitchen');
+const blockedDeparture = w.prepareNativeStep(rightDeparturePlan, rightDeparturePlan.steps[0], w.catScreenPoint([-1.5, w.FLOOR_Y, 0], divided), divided, w.FLOOR_Y);
+assert.equal(blockedDeparture.native.blocked, true, 'An unreachable departure cannot change the cat room');
+const { buildRoomEntry } = load('@/utils/room-activities');
+for (const [destination, direction] of [['bedroom', -1], ['kitchen', 1], ['bathroom', 1]]) {
+  const options = { ...base, homeRoomId: 'livingRoom', entry: { id: 1, direction }, homeOffset: { x: 0, y: .12 }, ownedToyIds: [], decorations: [] };
+  const exitPlan = buildRoomActivity(options, 0, 'roomTravel', destination);
+  const exit = w.prepareNativeStep(exitPlan, exitPlan.steps[0], w.catScreenPoint(routed.home, routed), routed, w.FLOOR_Y);
+  assert.equal(exitPlan.steps[0].travelDirection, direction);
+  assert.equal(Math.sign(w.catScreenPoint(exit.native.path.at(-1), routed).x), direction, 'The exit is on the side of the destination');
+  const entryPlan = buildRoomEntry(options);
+  const entry = w.prepareNativeStep(entryPlan, entryPlan.steps[0], { x: 0, y: 0 }, routed, w.FLOOR_Y);
+  assert.equal(Math.sign(w.catScreenPoint(entry.native.path[0], routed).x), -direction, 'The next room starts on the opposite edge');
+  assert.ok(w.pathLength([entry.native.path.at(-1), w.nearestFree(routed.home, routed)]) < 1e-6, 'Entry walks to the saved home position with furniture clearance');
+  assert.equal(entry.native.blocked, false);
+  for (let i = 1; i < entry.native.path.length; i++) for (let t = 0; t <= 1; t += .02)
+    assert.ok(w.isFree(entry.native.path[i - 1].map((v, axis) => v + (entry.native.path[i][axis] - v) * t), routed), 'Entry routes avoid furniture');
+}
+console.log('Verified left/right departures, opposite-side entries, furniture detours and the living room between bedroom and kitchen.');

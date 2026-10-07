@@ -31,10 +31,10 @@ function load(id) {
   const source = ts.transpileModule(fs.readFileSync(resolved, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
   }).outputText;
-  vm.runInNewContext(source, { module, exports: module.exports, require: load, setTimeout: setTimeoutMock, clearTimeout: id => timers.delete(id) });
+  vm.runInNewContext(source, { module, exports: module.exports, require: load, Date: { now: () => now }, setTimeout: setTimeoutMock, clearTimeout: id => timers.delete(id) });
   return module.exports;
 }
-const { buildRoomActivity, buildRoomReturn, routeToSofa, roomOffsetToPoint, ROOM_IDLE_DELAY_MS } = load('@/utils/room-activities');
+const { buildRoomActivity, buildRoomReturn, routeToSofa, roomOffsetToPoint, roomActivityStepKey, ROOM_IDLE_DELAY_MS } = load('@/utils/room-activities');
 const { getCatWalkMotion, getCatJumpMotion, isCatWalk } = load('@/constants/cat-room-motion');
 for (const [x, y, animation, facing] of [[60, 0, 'walk', 1], [-60, 0, 'walk', -1], [0, -60, 'walkAway', 1],
   [0, 60, 'walkToward', 1], [60, -16.8, 'walkAwayDiagonal', 1], [-60, 16.8, 'walkTowardDiagonal', -1]]) {
@@ -108,14 +108,14 @@ mocks['react-native-reanimated'] = {
 };
 const { useRoomActivity } = load('@/hooks/use-room-activity');
 const petX = shared(0), petY = shared(0);
-const arrivals = [];
+const arrivals = [], roomArrivals = [];
 let meals = 0;
-let interaction = 1, enabled = true, hookRoom = mouseRoom;
+let interaction = 1, enabled = true, roomVisible = true, hookRoom = mouseRoom;
 function render() {
   index = 0; effects = [];
   // The VM supplies a dependency-aware hook dispatcher instead of mounting React.
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const result = useRoomActivity(hookRoom, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), () => meals++);
+  const result = useRoomActivity(hookRoom, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), () => meals++, id => roomArrivals.push(id), roomVisible);
   effects.forEach(fn => fn()); return result;
 }
 assert.equal(render().activity, null);
@@ -398,6 +398,8 @@ assert.equal(buildRoomActivity(mealRoom, 0, 'bowlEat', 'missing'), null, 'An unk
 const mealPlan = buildRoomActivity(mealRoom, 0, 'bowlEat');
 assert.equal(mealPlan.targetInstanceId, foodBowl.instanceId);
 assert.equal(mealPlan.steps[1].animation, 'eating');
+assert.equal(mealPlan.steps[1].durationMs, 8000, 'The cat stays at the bowl for an eight-second meal');
+assert.equal(mealPlan.steps[1].animationFps, 12, 'The rendered cat and crumbs share the longer playback rate');
 for (const reduced of [false, true]) {
   enabled = false; render(); advance(0);
   hookRoom = mealRoom; visibility = { active: true, reduceMotion: reduced }; enabled = true; render();
@@ -417,3 +419,232 @@ render().startActivity('bowlEat'); render(); advance(0);
 render().returnHome(); render(); advance(0); advance(60000); render();
 assert.equal(meals, mealsBeforeCancel, 'Interrupting the meal cancels its hunger reward');
 console.log('Verified deliberate bowl journeys, feeding after completion exactly once, cancellation and Reduce Motion.');
+
+// Use real native navigation when a meal interrupts rest on a different object.
+const nativeRoom = load('@/utils/native-room-world');
+for (const pose of ['sofaSleep', 'sofaSit']) for (const reduced of [false, true]) {
+  enabled = false; render(); advance(0);
+  const options = { ...mealRoom, width: 390, height: 420, petSize: 80, sizeScale: 1.15,
+    homeOffset: { x: -.3, y: .25 }, decorations: [{ ...sofa, offset: { x: 0, y: -.25 } }, { ...foodBowl, offset: { x: .25, y: .15 } }] };
+  hookRoom = { ...options, nativeWorld: nativeRoom.buildNativeRoomWorld(options) };
+  visibility = { active: true, reduceMotion: reduced }; enabled = true;
+  const home = hookRoom.nativeWorld.home;
+  const homePoint = nativeRoom.catScreenPoint(home, hookRoom.nativeWorld);
+  petX.set(homePoint.x); petY.set(homePoint.y); render().updateNativeHeight(home); render();
+  function finishNativeStep() {
+    const state = render().activity, step = state.plan.steps[state.stepIndex];
+    assert.equal(step.native.blocked, false, `${pose}/${reduced}/${step.animation}: commands remain reachable`);
+    const arrival = step.native.path.at(-1), screen = nativeRoom.catScreenPoint(arrival, hookRoom.nativeWorld);
+    // Filament reports the visible arrival before the scheduler advances.
+    petX.set(screen.x); petY.set(screen.y); render().updateNativeHeight(arrival);
+    advance(reduced ? 600 : step.durationMs);
+  }
+  render().startActivity(pose); render(); advance(0);
+  for (let i = 0; !render().activity.plan.steps[render().activity.stepIndex].hold && i < 6; i++) finishNativeStep();
+  const seated = { x: petX.get(), y: petY.get() }, before = meals;
+  interaction++; render().startActivity('bowlEat'); render(); render(); advance(0);
+  const first = render().activity.plan.steps[0];
+  assert.equal(first.targetInstanceId, sofa.instanceId, 'Exit steps keep the sofa while the command targets the bowl');
+  if (pose === 'sofaSleep' && !reduced) {
+    assert.equal(first.animation, 'curlUp'); assert.equal(first.reverse, true);
+    assert.ok(Math.hypot(first.position.x - seated.x, first.position.y - seated.y) < 1e-6, 'Getting up starts at the visible sleeping position');
+  }
+  const stages = [];
+  for (let i = 0; render().activity && i < 10; i++) {
+    const state = render().activity, step = state.plan.steps[state.stepIndex];
+    assert.equal(state.plan.kind, 'bowlEat', 'The Eat request survives getting up and leaving the sofa');
+    assert.equal(state.plan.targetInstanceId, foodBowl.instanceId);
+    stages.push(reduced ? step.mood : step.animation); finishNativeStep();
+  }
+  assert.ok(stages.includes('eating') && (reduced || stages.indexOf('jumpOff') < stages.indexOf('eating')), 'The cat gets down, walks to the bowl, and eats');
+  assert.equal(render().activity, null); assert.equal(meals, before + 1, 'Rest-to-Eat completes and feeds exactly once');
+}
+console.log('Verified native sleeping/seated-to-eating command execution, visible departures and completed meals with and without Reduce Motion.');
+
+// Change target locations while the actual scheduler is executing a command.
+const dynamicOptions = { ...mealRoom, width: 390, height: 420, petSize: 80, sizeScale: 1.15,
+  homeOffset: { x: -.3, y: .25 }, decorations: [{ ...foodBowl, offset: { x: .25, y: .15 } }] };
+function beginDynamicMeal() {
+  enabled = false; render(); advance(0);
+  hookRoom = { ...dynamicOptions, nativeWorld: nativeRoom.buildNativeRoomWorld(dynamicOptions) };
+  visibility = { active: true, reduceMotion: false }; enabled = true;
+  const home = hookRoom.nativeWorld.home, screen = nativeRoom.catScreenPoint(home, hookRoom.nativeWorld);
+  petX.set(screen.x); petY.set(screen.y); render().updateNativeHeight(home); render();
+  render().startActivity('bowlEat', foodBowl.instanceId); render(); advance(0);
+}
+function reportCat(point) {
+  const screen = nativeRoom.catScreenPoint(point, hookRoom.nativeWorld);
+  petX.set(screen.x); petY.set(screen.y); render().updateNativeHeight(point);
+}
+function completeDynamicStep() {
+  const state = render().activity, step = state.plan.steps[state.stepIndex];
+  reportCat(step.native.path.at(-1)); advance(step.durationMs);
+}
+beginDynamicMeal();
+let firstRoute = render().activity.plan.steps[0].native;
+let midpoint = firstRoute.path[0].map((v, i) => (v + firstRoute.path.at(-1)[i]) / 2);
+reportCat(midpoint); advance(firstRoute.duration * 500);
+hookRoom = { ...hookRoom, decorations: [{ ...foodBowl, offset: { x: -.3, y: .35 } }] };
+hookRoom.nativeWorld = nativeRoom.buildNativeRoomWorld(hookRoom);
+render();
+let rerouted = render().activity;
+assert.equal(rerouted.plan.kind, 'bowlEat'); assert.equal(rerouted.stepIndex, 0);
+let route = rerouted.plan.steps[0].native;
+assert.equal(route.replanned, true);
+assert.ok(nativeRoom.pathLength([route.path[0], midpoint]) < 1e-6, 'A moving target replans from the visible cat position');
+assert.ok(nativeRoom.pathLength([route.path.at(-1), firstRoute.path.at(-1)]) > .1, 'Eat follows the new bowl location');
+assert.equal(rerouted.plan.targetInstanceId, foodBowl.instanceId, 'Moving the bowl preserves its identity');
+completeDynamicStep();
+const beforeRelocatingFood = meals;
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'eating');
+advance(500);
+hookRoom = { ...hookRoom, decorations: [{ ...foodBowl, offset: { x: .35, y: .25 } }] };
+hookRoom.nativeWorld = nativeRoom.buildNativeRoomWorld(hookRoom);
+const eatingPosition = { x: petX.get(), y: petY.get() }; render(); advance(0);
+assert.equal(render().activity.stepIndex, 0, 'Moving the bowl during eating starts a new approach');
+assert.equal(render().activity.plan.steps[0].bowlApproach, true);
+assert.ok(Math.hypot(petX.get() - eatingPosition.x, petY.get() - eatingPosition.y) < 1e-6, 'Relocating food cannot teleport the cat');
+for (let i = 0; render().activity && i < 5; i++) completeDynamicStep();
+assert.equal(meals, beforeRelocatingFood + 1, 'Only the meal at the new bowl position feeds');
+
+beginDynamicMeal(); completeDynamicStep();
+const activeMeal = render().activity, eating = activeMeal.plan.steps[activeMeal.stepIndex];
+advance(1200);
+hookRoom = { ...hookRoom, hungry: false }; render();
+assert.equal(render().activity.plan.kind, 'bowlEat', 'Stat updates keep the active command');
+assert.ok(Math.abs(render().activity.plan.steps[activeMeal.stepIndex].native.elapsed - 1.2) < 1e-6, 'An unrelated update preserves the animation clock');
+reportCat(eating.native.path.at(-1)); advance(eating.durationMs - 1200);
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].returnHome, true, 'The meal finishes at its original deadline');
+
+beginDynamicMeal();
+const beforeRemovingFood = meals;
+hookRoom = { ...hookRoom, decorations: [], nativeWorld: nativeRoom.buildNativeRoomWorld({ ...dynamicOptions, decorations: [] }) };
+render(); advance(0);
+assert.equal(render().activity.plan.kind, 'returnHome', 'A removed target cancels its command');
+for (let i = 0; render().activity && i < 5; i++) completeDynamicStep();
+assert.equal(meals, beforeRemovingFood, 'A missing bowl cannot award food');
+
+// Physics notifications update navigation without rewriting the saved layout.
+beginDynamicMeal();
+const originalWorld = hookRoom.nativeWorld, target = originalWorld.objects[0];
+const center = target.min.map((v, i) => (v + target.max[i]) / 2), shifted = center.map((v, i) => v + (i === 0 ? .4 : 0));
+const originalPlacement = JSON.stringify(originalWorld);
+render().updateObjectPosition(foodBowl.instanceId, shifted); render();
+assert.equal(render().activity.plan.kind, 'bowlEat');
+assert.ok(nativeRoom.pathLength([render().activity.plan.steps[0].native.targetPosition, target.position]) > .3, 'Live target positions reach the planner');
+assert.equal(JSON.stringify(originalWorld), originalPlacement, 'Physics tracking never changes saved/rendered placement');
+const liveTarget = render().activity.plan.steps[0].native.targetPosition;
+hookRoom = { ...hookRoom, nativeWorld: { ...originalWorld, objects: [...originalWorld.objects] } }; render();
+assert.equal(render().activity.plan.steps[0].native.targetPosition, liveTarget, 'An unrelated layout refresh cannot forget the live target location');
+for (const kind of ['sofaSit', 'sofaSleep', 'toyPlay', 'mouseChase'])
+  assert.equal(buildRoomActivity({ ...furnished, toys: [ball, mouse] }, 0, kind, 'removed-object'), null, 'Target lookup cannot silently substitute another object');
+console.log('Verified live target lookup, mid-route replanning, moving food, clock continuity, missing-target cancellation and physics-position tracking.');
+
+// Explicit room travel works without placing a door and preserves a resting pose.
+enabled = false; render(); advance(0);
+visibility = { active: true, reduceMotion: false }; enabled = true; hookRoom = furnished; render();
+assert.equal(buildRoomActivity(room, 0, 'roomTravel', 'outside'), null);
+render().startActivity('sofaSleep'); render(); advance(0);
+let nap = render().activity.plan;
+advance(nap.steps.slice(0, 3).reduce((sum, step) => sum + step.durationMs, 0));
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'curlSleep');
+render().startActivity('roomTravel', 'bedroom'); render(); advance(0);
+const departure = render().activity.plan;
+assert.equal(departure.destination, 'bedroom');
+assert.equal(departure.steps[0].animation, 'curlUp');
+assert.equal(departure.steps[0].reverse, true, 'Wake up before leaving the sofa');
+assert.equal(departure.steps[1].animation, 'jumpOff');
+assert.equal(departure.steps.at(-1).leavingRoom, true);
+assert.equal(roomArrivals.length, 0);
+advance(departure.steps.reduce((sum, step) => sum + step.durationMs, 0) - 1);
+assert.equal(roomArrivals.length, 0, 'Saved cat location cannot change mid-journey');
+advance(1); render();
+assert.deepEqual(roomArrivals, ['bedroom']);
+assert.equal(render().activity, null);
+advance(60_000); render();
+assert.deepEqual(roomArrivals, ['bedroom'], 'A departure completes exactly once');
+console.log('Verified door-free room travel, getting up and jumping down before departure, and location updates only after walking finishes.');
+
+// Browsing pauses the retained cat scene rather than resetting its held pose.
+enabled = false; render(); advance(0);
+hookRoom = { ...furnished, nativeWorld: nativeRoom.buildNativeRoomWorld(furnished) };
+reportCat(hookRoom.nativeWorld.home);
+enabled = true; render(); render().startActivity('sofaSleep'); render(); advance(0);
+for (let i = 0; i < 3; i++) completeDynamicStep();
+const napIndex = render().activity.stepIndex;
+assert.equal(render().activity.plan.steps[napIndex].animation, 'curlSleep');
+const restingPosition = [petX.get(), petY.get()];
+roomVisible = false; render(); advance(60_000); render();
+assert.deepEqual([petX.get(), petY.get()], restingPosition);
+assert.equal(render().activity.stepIndex, napIndex);
+assert.equal(timers.size, 0, 'The hidden cat scene runs no activity timers');
+roomVisible = true; render();
+assert.equal(render().activity.plan.kind, 'sofaSleep', 'Returning to the room preserves the cat’s commanded nap');
+assert.equal(render().activity.stepIndex, napIndex);
+console.log('Verified room browsing preserves the cat scene, pauses its clock and timers, and resumes the same sofa pose.');
+
+// Reported left-wall bowl: RN timers can run ahead of the visible cat.
+for (const reduced of [false, true]) {
+  enabled = false; render(); advance(0);
+  const arrivalRoom = { ...room, width: 370, height: 465.666687, petSize: 81, sizeScale: 1.1691666667,
+    nativeStepCompletion: true, homeOffset: { x: -.2238806, y: .1212716 },
+    decorations: [
+      { decorationId: 'plantB', instanceId: 'left-plant', offset: { x: -.761836421, y: -.146691585 }, scale: 2.2 },
+      { decorationId: 'sofaA', instanceId: 'left-sofa', offset: { x: .2240544744, y: -.2197699658 }, scale: 1.5 },
+      { decorationId: 'bowlBlue', instanceId: 'left-bowl', offset: { x: -.8836587705, y: .1640559605 }, scale: 1.4 },
+    ], toys: [] };
+  hookRoom = { ...arrivalRoom, nativeWorld: nativeRoom.buildNativeRoomWorld(arrivalRoom) };
+  visibility = { active: true, reduceMotion: reduced }; enabled = true; reportCat(hookRoom.nativeWorld.home); render();
+  const finishRenderedStep = () => {
+    const state = render().activity, step = state.plan.steps[state.stepIndex], key = roomActivityStepKey(state);
+    assert.equal(step.native.blocked, false);
+    assert.equal(step.native.awaitCompletion, true);
+    advance(10_000); render();
+    assert.equal(render().activity.stepIndex, state.stepIndex, 'Wall-clock time cannot outrun the renderer');
+    render().completeNativeStep(key + ':stale', step.native.path.at(-1)); render();
+    assert.equal(render().activity.stepIndex, state.stepIndex, 'Delayed completion from another step is ignored');
+    render().completeNativeStep(key, step.native.path.at(-1)); render();
+  };
+  render().startActivity('sofaSit', 'left-sofa'); render(); advance(0);
+  finishRenderedStep(); finishRenderedStep();
+  assert.equal(render().activity.plan.steps[render().activity.stepIndex].hold, true);
+  const before = meals;
+  interaction++; render().startActivity('bowlEat', 'left-bowl'); render(); advance(0);
+  const animations = [];
+  for (let i = 0; render().activity && i < 10; i++) {
+    const state = render().activity, step = state.plan.steps[state.stepIndex];
+    animations.push(reduced ? step.mood : step.animation);
+    assert.equal(meals, before, 'Feeding waits until the complete rendered meal and return');
+    if (step.animation === 'eating') {
+      const bowl = hookRoom.nativeWorld.objects.find(o => o.instanceId === 'left-bowl');
+      const arrived = step.native.path[0];
+      assert.ok(Math.abs(nativeRoom.pathLength([arrived, bowl.position]) - nativeRoom.CAT_EATING_REACH * hookRoom.nativeWorld.catScale) < 1e-5,
+        'The meal starts at the exact reachable muzzle position, not a stale reported anchor');
+    }
+    finishRenderedStep();
+  }
+  assert.ok(animations.includes('eating'));
+  assert.equal(meals, before + 1);
+}
+console.log('Verified seated-to-eating at the reported left-wall bowl, delayed render frames, exact muzzle arrival, stale-event guards and feeding exactly once with Reduce Motion.');
+
+for (const reduced of [false, true]) {
+  enabled = false; render(); advance(0);
+  visibility = { active: true, reduceMotion: reduced };
+  const entryOptions = { ...room, homeRoomId: 'livingRoom', entry: { id: reduced ? 202 : 201, direction: 1 }, nativeStepCompletion: true };
+  hookRoom = { ...entryOptions, nativeWorld: nativeRoom.buildNativeRoomWorld(entryOptions) };
+  enabled = true; roomVisible = false; render(); advance(1000); render();
+  assert.equal(render().activity, null, 'Entry waits for the room slide to finish');
+  roomVisible = true; render();
+  const entered = render().activity;
+  assert.equal(entered.plan.steps[0].enteringRoom, true);
+  assert.equal(entered.plan.steps[0].travelDirection, 1);
+  assert.equal(entered.plan.steps[0].native.awaitCompletion, true);
+  render().completeNativeStep(roomActivityStepKey(entered), entered.plan.steps[0].native.path.at(-1)); render();
+  assert.equal(render().activity, null);
+  roomVisible = false; render(); roomVisible = true; render();
+  assert.equal(render().activity, null, 'Browsing back does not replay the entry');
+  hookRoom = { ...hookRoom }; render();
+  assert.equal(render().activity, null, 'A layout refresh does not replay the entry');
+}
+console.log('Verified entry after sliding, exact rendered completion and no repeated entry on browsing, layout refresh or Reduce Motion.');

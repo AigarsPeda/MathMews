@@ -1,4 +1,3 @@
-import { HOME_ROOM_IDS, type HomeRoomId } from "@/constants/home-rooms";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors } from "@/constants/game";
 import type { RoomLayerItem } from "@/types/game";
@@ -19,8 +18,6 @@ export type RoomEditorControls = {
 
 type Props = {
   visible: boolean;
-  homeRoomId?: HomeRoomId;
-  onPlaceDoor?: (roomId: HomeRoomId) => void;
   onOpenStore?: () => void;
   onClose: () => void;
   controls?: RoomEditorControls;
@@ -30,17 +27,17 @@ type Props = {
   onSnap: () => void;
 };
 
-export function RoomEditorSheet({ visible, onClose, controls, items, onSelect, snap, onSnap, homeRoomId, onPlaceDoor, onOpenStore }: Props) {
+export function RoomEditorSheet({ visible, onClose, controls, items, onSelect, snap, onSnap, onOpenStore }: Props) {
   const { t } = useTranslation();
   // Opening the picker always starts with its simple view.
   return <AppBottomSheet visible={visible} onClose={onClose} expanded>
     {visible && <RoomPicker controls={controls} items={items} onSelect={onSelect}
       onClose={onClose} snap={snap} onSnap={onSnap} t={t}
-      homeRoomId={homeRoomId} onPlaceDoor={onPlaceDoor} onOpenStore={onOpenStore} />}
+      onOpenStore={onOpenStore} />}
   </AppBottomSheet>;
 }
 
-function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, homeRoomId, onPlaceDoor, onOpenStore }: Omit<Props, "visible"> & {
+function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, onOpenStore }: Omit<Props, "visible"> & {
   t: ReturnType<typeof useTranslation>["t"];
 }) {
   const [moreOptions, setMoreOptions] = useState(false);
@@ -53,15 +50,6 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, homeR
       <AppIcon name="undo" size={22} style={{ opacity: controls.canUndo ? 1 : 0.4 }} />
       <Text style={[styles.label, !controls.canUndo && styles.muted]}>{t("home.undo")}</Text>
     </Pressable>}
-    {onPlaceDoor && <View style={styles.options}>
-      <Text style={styles.label}>{t("home.addDoor")}</Text>
-      <Text style={styles.hint}>{t("home.doorsHint")}</Text>
-      {HOME_ROOM_IDS.filter(id => id !== homeRoomId).map(id => <Pressable key={id} style={styles.optionButton}
-        accessibilityRole="button" onPress={() => { onPlaceDoor(id); onClose(); }}>
-        <Text style={styles.label}>{t("home.doorToRoom", { room: t(`home.rooms.${id}`) })}</Text>
-        <AppIcon name="home" size={22} />
-      </Pressable>)}
-    </View>}
     {onOpenStore && <Pressable style={styles.optionButton} accessibilityRole="button" onPress={onOpenStore}>
       <Text style={styles.label}>{t("home.furnishRoom")}</Text><AppIcon name="store" size={22} />
     </Pressable>}

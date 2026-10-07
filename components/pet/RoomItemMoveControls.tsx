@@ -1,6 +1,7 @@
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { AppIcon } from "@/components/ui/AppIcon";
+import { RoomActionMenu, type RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -12,8 +13,9 @@ const DIRECTIONS = [
 export type RoomMoveDirection = typeof DIRECTIONS[number][0];
 
 /** The room stays visible while a child moves the one highlighted item. */
-export function RoomItemMoveControls({ name, onMove, onDone }: {
+export function RoomItemMoveControls({ name, actions = [], onMove, onDone }: {
   name: string;
+  actions?: RoomItemMenuAction[];
   onMove: (direction: RoomMoveDirection) => void;
   onDone: () => void;
 }) {
@@ -21,6 +23,12 @@ export function RoomItemMoveControls({ name, onMove, onDone }: {
   return <View style={styles.content}>
     <View style={styles.heading}>
       <Text style={styles.title}>{t("home.moveSelectedItem", { name })}</Text>
+      {actions.length > 0 && <RoomActionMenu actions={actions} label={t("home.itemOptions", { name })}>
+        <View style={styles.done}>
+          <AppIcon name="settings" size={20} />
+          <Text style={styles.doneText}>{t("home.options")}</Text>
+        </View>
+      </RoomActionMenu>}
       <Pressable accessibilityRole="button" accessibilityLabel={t("home.finishMoving", { name })}
         onPress={onDone} style={styles.done}>
         <AppIcon name="check" size={20} />

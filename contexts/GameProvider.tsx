@@ -1,5 +1,5 @@
 import type { HomeRoomId } from "@/constants/home-rooms";
-import { addRoomDoor, setDoorDestination, switchHomeRoom } from "@/utils/home-rooms";
+import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
 import { applyPuzzleAnswer, applyFeed } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
@@ -148,8 +148,7 @@ type GameContextValue = {
   purchaseRoom: (roomId: CatRoomId) => RoomPurchaseResult;
   equipRoom: (roomId: CatRoomId) => boolean;
   visitHomeRoom: (roomId: HomeRoomId) => void;
-  placeRoomDoor: (roomId: HomeRoomId) => void;
-  assignRoomDoor: (instanceId: string, roomId: HomeRoomId) => void;
+  sendCatToRoom: (roomId: HomeRoomId) => void;
   purchaseBed: (bedId: CatBedId) => BedPurchaseResult;
   equipBed: (bedId: CatBedId) => boolean;
   removeBedFromRoom: () => boolean;
@@ -212,7 +211,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const saveRef = useRef(save);
   // Commands read and commit the latest snapshot before React renders it.
   const setSave = useCallback((update: GameSave | ((current: GameSave) => GameSave)) => {
-    const next = typeof update === "function" ? update(saveRef.current) : update;
+    const candidate = typeof update === "function" ? update(saveRef.current) : update;
+    const pet = removeRoomNavigationDoors(candidate.pet);
+    const next = pet === candidate.pet ? candidate : { ...candidate, pet };
     saveRef.current = next;
     setSaveState(next);
   }, []);
@@ -454,11 +455,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const visitHomeRoom = useCallback((roomId: HomeRoomId) => {
     setPet(current => switchHomeRoom(current, roomId));
   }, [setPet]);
-  const placeRoomDoor = useCallback((roomId: HomeRoomId) => {
-    setPet(current => addRoomDoor(current, roomId));
-  }, [setPet]);
-  const assignRoomDoor = useCallback((instanceId: string, roomId: HomeRoomId) => {
-    setPet(current => setDoorDestination(current, instanceId, roomId));
+
+  const sendCatToRoom = useCallback((roomId: HomeRoomId) => {
+    setPet(current => moveCatToRoom(current, roomId));
   }, [setPet]);
 
   const purchaseRoom = useCallback((roomId: CatRoomId): RoomPurchaseResult => {
@@ -1210,8 +1209,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseRoom,
       equipRoom,
       visitHomeRoom,
-      placeRoomDoor,
-      assignRoomDoor,
+      sendCatToRoom,
       purchaseBed,
       equipBed,
       removeBedFromRoom,
@@ -1275,8 +1273,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       purchaseRoom,
       equipRoom,
       visitHomeRoom,
-      placeRoomDoor,
-      assignRoomDoor,
+      sendCatToRoom,
       purchaseBed,
       equipBed,
       removeBedFromRoom,

@@ -2,8 +2,9 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPlayer";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors } from "@/constants/game";
-import { getVisualExplanation } from "@/constants/visual-explanations";
+import { getVisualExplanation, NUMBER_LINE_EXAMPLES } from "@/constants/visual-explanations";
 import type { Puzzle } from "@/types/puzzle";
+import { getPuzzleType } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,8 +14,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type VisualHelpSheetProps = {
   cost: number;
@@ -32,26 +35,53 @@ export function VisualHelpSheet({
   onClose,
 }: VisualHelpSheetProps) {
   const { t } = useTranslation();
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const [progress, setProgress] = useState(0);
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
+  const isNumberLine = getPuzzleType(puzzle) === "number_line";
   const explanation = getVisualExplanation(puzzle);
+  if (isNumberLine) explanation.keyframes = NUMBER_LINE_EXAMPLES[direction];
   const key = `${visible}-${puzzle.id}`;
   const [previousKey, setPreviousKey] = useState(key);
-  if (key !== previousKey) { setPreviousKey(key); setProgress(0); }
+  if (key !== previousKey) { setPreviousKey(key); setProgress(0); setDirection("forward"); }
   return (
     <AppBottomSheet visible={visible} onClose={onClose} expanded>
       <ScrollView
-        style={styles.scroll}
+        style={[styles.scroll, { maxHeight: height * 0.88 - insets.top - insets.bottom - moderateScale(48) }]}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled={Platform.OS === "android"}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.card}>
-          <AppIcon name="film" size={moderateScale(36) * 1.2} />
-          <Text style={styles.title}>{t("visualHelp.title")}</Text>
-          <Text style={styles.subtitle}>{t("visualHelp.subtitle")}</Text>
+          {!isNumberLine ? <AppIcon name="film" size={moderateScale(36) * 1.2} /> : null}
+          <Text style={styles.title}>
+            {t(isNumberLine ? "visualHelp.numberLine.title" : "visualHelp.title")}
+          </Text>
+          <Text style={styles.subtitle}>
+            {t(isNumberLine ? "visualHelp.numberLine.subtitle" : "visualHelp.subtitle")}
+          </Text>
 
-          <VisualExplanationPlayer explanation={explanation} progress={progress} onProgressChange={setProgress} />
+          {isNumberLine ? (
+            <View style={styles.directions}>
+              {(["forward", "back"] as const).map((value) => (
+                <Pressable
+                  key={value}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: direction === value }}
+                  onPress={() => { setDirection(value); setProgress(0); }}
+                  style={[styles.directionButton, direction === value && styles.directionSelected]}
+                >
+                  <Text style={[styles.directionText, direction === value && styles.directionTextSelected]}>
+                    {t(`visualHelp.numberLine.${value}.label`)}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+
+          <VisualExplanationPlayer explanation={explanation} progress={progress} onProgressChange={setProgress} stepByStep={isNumberLine} />
 
           <Pressable
             style={[styles.closeBtn, styles.closeBtnPrimary]}
@@ -76,7 +106,6 @@ export function VisualHelpSheet({
 
 const styles = StyleSheet.create({
   scroll: {
-    flex: 1,
     width: "100%",
   },
   scrollContent: {
@@ -101,6 +130,33 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14),
     color: GameColors.textMuted,
     lineHeight: moderateScale(20),
+  },
+  directions: {
+    width: "100%",
+    flexDirection: "row",
+    gap: moderateScale(8),
+  },
+  directionButton: {
+    flex: 1,
+    minHeight: moderateScale(44),
+    padding: moderateScale(10),
+    borderRadius: moderateScale(12),
+    borderWidth: 2,
+    borderColor: GameColors.cardBorder,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  directionSelected: {
+    borderColor: GameColors.primary,
+    backgroundColor: GameColors.primary,
+  },
+  directionText: {
+    fontSize: moderateScale(15),
+    fontWeight: "700",
+    color: GameColors.text,
+  },
+  directionTextSelected: {
+    color: "#FFFFFF",
   },
   lockCard: {
     width: "100%",

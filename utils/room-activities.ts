@@ -1,17 +1,20 @@
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
 import { CAT_ANIMATION_CLIPS } from "@/constants/cat-animation-clips";
 import type { NativeRoomWorld, NativeTravel } from "@/utils/native-room-world";
-import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
+import { isHomeRoomId, isRoomDoor, roomTravelDirection, type HomeRoomId, type RoomEntry, type RoomTravelDirection } from "@/constants/home-rooms";
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
 import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
 import { getCatWalkMotion, SOFA_JUMP_DURATION_MS, type CatRoomAnimation } from "@/constants/cat-room-motion";
 import type { PetAnimationState, PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
 
 export const ROOM_IDLE_DELAY_MS = 30_000;
+export const ROOM_MEAL_DURATION_MS = 8_000;
 export type RoomPoint = { x: number; y: number };
-export type RoomActivityKind = "sofaSit" | "sofaSleep" | "toyPlay" | "mouseChase" | "doorTravel" | "bowlEat";
+export type RoomActivityKind = "sofaSit" | "sofaSleep" | "toyPlay" | "mouseChase" | "doorTravel" | "roomTravel" | "bowlEat";
 export type RoomActivityStep = {
   native?: NativeTravel;
+  /** The source furnishing stays attached to exit steps after a new command. */
+  targetInstanceId?: string;
   position: RoomPoint;
   mood: PetAnimationState;
   animation?: CatRoomAnimation;
@@ -22,6 +25,10 @@ export type RoomActivityStep = {
   hold?: boolean;
   sofaApproach?: RoomPoint;
   bowlApproach?: boolean;
+  returnHome?: boolean;
+  leavingRoom?: boolean;
+  enteringRoom?: boolean;
+  travelDirection?: RoomTravelDirection;
   objectPosition?: RoomPoint;
   objectRotation?: number;
   objectMoveMs?: number;
@@ -29,6 +36,7 @@ export type RoomActivityStep = {
 };
 export type RoomActivityPlan = {
   kind: RoomActivityKind | "returnHome";
+  destination?: HomeRoomId;
   targetInstanceId?: string;
   objectKind?: "toy" | "decoration";
   objectStart?: RoomPoint;
@@ -37,6 +45,10 @@ export type RoomActivityPlan = {
 };
 export type RoomActivityOptions = {
   nativeWorld?: NativeRoomWorld;
+  /** Filament advances steps from rendered arrivals and completed clips. */
+  nativeStepCompletion?: boolean;
+  homeRoomId?: HomeRoomId;
+  entry?: RoomEntry;
   width: number;
   height: number;
   petSize: number;
@@ -48,6 +60,10 @@ export type RoomActivityOptions = {
   hungry: boolean;
   asleep: boolean;
 };
+
+export function roomActivityStepKey(state: { plan: RoomActivityPlan; stepIndex: number; startedAt: number }): string {
+  return `${state.plan.kind}:${state.plan.targetInstanceId}:${state.stepIndex}:${state.startedAt}`;
+}
 
 export function roomOffsetToPoint(offset: RoomItemOffset, width: number, height: number, size: number): RoomPoint {
   return { x: offset.x * Math.max(0, (width - size) / 2), y: offset.y * Math.max(0, (height - size) / 2) };
@@ -64,6 +80,14 @@ function walkTo(from: RoomPoint, position: RoomPoint, petSize: number): RoomActi
   return { position, mood: "idle", animation: "walk", durationMs, moveMs: durationMs };
 }
 
+export function buildRoomEntry(room: RoomActivityOptions): RoomActivityPlan | null {
+  if (!room.entry || room.width <= room.petSize || room.height <= room.petSize) return null;
+  const home = roomOffsetToPoint(room.homeOffset, room.width, room.height, room.petSize);
+  const edge = clampCatPoint({ x: -room.entry.direction * room.width * .3, y: room.height * .25 }, room);
+  return { kind: "returnHome", steps: [{ ...walkTo(edge, home, room.petSize), enteringRoom: true,
+    returnHome: true, travelDirection: room.entry.direction }] };
+}
+
 /** Getting up and jumping down precede the floor walk, including interruptions. */
 export function buildRoomReturn(room: RoomActivityOptions, plan: RoomActivityPlan, stepIndex: number, position: RoomPoint): RoomActivityPlan {
   const home = roomOffsetToPoint(room.homeOffset, room.width, room.height, room.petSize);
@@ -71,14 +95,15 @@ export function buildRoomReturn(room: RoomActivityOptions, plan: RoomActivityPla
   const steps: RoomActivityStep[] = [];
   let floorStart = position;
   const approach = step.sofaApproach ?? plan.sofaApproach;
+  const sourceInstanceId = step.targetInstanceId ?? plan.targetInstanceId;
   if (step.sofaApproach && approach) {
     if (step.animation === "curlUp" || step.animation === "curlSleep") {
-      steps.push({ position, mood: "lyingDown", animation: "curlUp", reverse: true, sofaApproach: approach, durationMs: 1000 });
+      steps.push({ position, mood: "lyingDown", animation: "curlUp", reverse: true, sofaApproach: approach, targetInstanceId: sourceInstanceId, durationMs: 1000 });
     }
     floorStart = approach;
-    steps.push({ position: floorStart, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, sofaApproach: approach, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
+    steps.push({ position: floorStart, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, sofaApproach: approach, targetInstanceId: sourceInstanceId, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
   }
-  steps.push({ ...walkTo(floorStart, home, room.petSize), objectPosition: plan.objectStart, objectRotation: 0 });
+  steps.push({ ...walkTo(floorStart, home, room.petSize), returnHome: true, objectPosition: plan.objectStart, objectRotation: 0 });
   return { kind: "returnHome", targetInstanceId: plan.targetInstanceId, objectKind: plan.objectKind, objectStart: plan.objectStart, steps };
 }
 
@@ -120,6 +145,13 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
   if (room.width <= room.petSize || room.height <= room.petSize) return null;
   const home = roomOffsetToPoint(room.homeOffset, room.width, room.height, room.petSize);
   const candidates: RoomActivityPlan[] = [];
+  if (command === "roomTravel") {
+    if (!isHomeRoomId(preferredInstanceId)) return null;
+    const direction = roomTravelDirection(room.homeRoomId ?? "livingRoom", preferredInstanceId);
+    return { kind: "roomTravel", destination: preferredInstanceId, steps: [
+      { ...walkTo(home, clampCatPoint({ x: direction * room.width * .3, y: room.height * .25 }, room), room.petSize), leavingRoom: true, travelDirection: direction },
+    ] };
+  }
   if (command === "doorTravel") {
     const door = room.decorations.find(item => item.instanceId === preferredInstanceId && isRoomDoor(item.decorationId) && isHomeRoomId(item.doorDestination));
     if (!door) return null;
@@ -135,11 +167,11 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     const size = getPlacedDecorationDragSize(bowl) * room.sizeScale;
     const center = roomOffsetToPoint(bowl.offset, room.width, room.height, size);
     const position = clampCatPoint({ x: center.x, y: center.y - room.petSize * 0.3 }, room);
-    const [frames, fps] = CAT_ANIMATION_CLIPS.eating;
+    const [frames] = CAT_ANIMATION_CLIPS.eating;
     return { kind: "bowlEat", targetInstanceId: bowl.instanceId, steps: [
       { ...walkTo(home, position, room.petSize), bowlApproach: true },
-      { position, mood: "eating", animation: "eating", durationMs: frames / fps * 1000 },
-      walkTo(position, home, room.petSize),
+      { position, mood: "eating", animation: "eating", animationFps: frames / (ROOM_MEAL_DURATION_MS / 1000), durationMs: ROOM_MEAL_DURATION_MS },
+      { ...walkTo(position, home, room.petSize), returnHome: true },
     ] };
   }
   for (const sofa of room.decorations) {
@@ -156,7 +188,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     ];
     const leave: RoomActivityStep[] = [
       { position: approach, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS, sofaApproach: approach },
-      walkTo(approach, home, room.petSize),
+      { ...walkTo(approach, home, room.petSize), returnHome: true },
     ];
     if (!room.asleep || command === "sofaSit") candidates.push({ kind: "sofaSit", targetInstanceId: sofa.instanceId, sofaApproach: approach, steps: [
       ...arrive, { position: seat, mood: "idle", animation: "sit", durationMs: 12_000, sofaApproach: approach, hold: Boolean(command) }, ...leave,
@@ -186,7 +218,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
         if (rolls) steps.push(walkTo(catPosition, next, room.petSize));
         catPosition = next;
       }
-      steps.push({ ...walkTo(steps.at(-1)!.position, home, room.petSize), objectPosition: center, objectRotation: 0 });
+      steps.push({ ...walkTo(steps.at(-1)!.position, home, room.petSize), returnHome: true, objectPosition: center, objectRotation: 0 });
       candidates.push({ kind: "toyPlay", targetInstanceId: instanceId, objectKind: kind, objectStart: center, steps });
     };
     for (const toy of room.toys) {
@@ -210,11 +242,11 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
         const walk = walkTo(steps.at(-1)?.position ?? home, position, room.petSize);
         steps.push({ ...walk, objectPosition });
       }
-      steps.push({ ...walkTo(steps.at(-1)!.position, home, room.petSize), objectPosition: start });
+      steps.push({ ...walkTo(steps.at(-1)!.position, home, room.petSize), returnHome: true, objectPosition: start });
       candidates.push({ kind: "mouseChase", targetInstanceId: mouse?.instanceId, objectKind: "toy", objectStart: start, steps });
     }
   }
   const eligible = command ? candidates.filter(plan => plan.kind === command) : candidates;
-  return eligible.find(plan => preferredInstanceId !== undefined && plan.targetInstanceId === preferredInstanceId)
-    ?? eligible[turn % eligible.length] ?? null;
+  return preferredInstanceId !== undefined ? eligible.find(plan => plan.targetInstanceId === preferredInstanceId) ?? null
+    : eligible[turn % eligible.length] ?? null;
 }

@@ -20,6 +20,20 @@ function equation(...lines: string[]): VisualScene {
   return { kind: "equation", lines };
 }
 
+// Both directions use a small practice grid, independent of the current puzzle.
+export const NUMBER_LINE_EXAMPLES = {
+  forward: [0, 1, 2, 3].map((moves): VisualKeyframe => ({
+    at: moves / 3,
+    captionKey: `visualHelp.numberLine.forward.s${moves}`,
+    scene: { kind: "numberline_jump", start: 3, jump: 3, moves },
+  })),
+  back: [0, 1, 2, 3].map((moves): VisualKeyframe => ({
+    at: moves / 3,
+    captionKey: `visualHelp.numberLine.back.s${moves}`,
+    scene: { kind: "numberline_jump", start: 6, jump: -3, moves },
+  })),
+};
+
 const VISUAL_EXAMPLES = {
   subtraction: example("easy01", [
     { kind: "items", emoji: "🍎", count: 7 },
@@ -111,11 +125,7 @@ const VISUAL_EXAMPLES = {
     equation("10 − 4 = 6"),
     equation("4 + 6 = 10"),
   ]),
-  number_line: example("numberLine", [
-    { kind: "numberline", min: 0, max: 10, markers: [4], highlight: 4 },
-    { kind: "numberline", min: 0, max: 10, markers: [4, 5, 6, 7], highlight: 7 },
-    equation("4 + 3 = 7"),
-  ]),
+  number_line: NUMBER_LINE_EXAMPLES.forward,
   pair_sum: example("pairSum", [
     equation("2 + ? = 8"),
     { kind: "sequence", values: [2, 6, 3, 1], addendIndices: [0, 1] },

@@ -19,6 +19,7 @@ type VisualExplanationPlayerProps = {
   explanation: VisualExplanation;
   progress: number;
   onProgressChange: (value: number) => void;
+  stepByStep?: boolean;
 };
 
 type CrossfadeLayerProps = {
@@ -54,6 +55,7 @@ export function VisualExplanationPlayer({
   explanation,
   progress,
   onProgressChange,
+  stepByStep = false,
 }: VisualExplanationPlayerProps) {
   const { t } = useTranslation();
   const stepCount = explanation.keyframes.length;
@@ -142,14 +144,18 @@ export function VisualExplanationPlayer({
         <Pressable
           onPress={() => goToStep(activeStep - 1)}
           disabled={!canGoBack}
-          style={[styles.stepBtn, !canGoBack && styles.stepBtnDisabled]}
+          style={[styles.stepBtn, stepByStep && styles.hopButton, !canGoBack && styles.stepBtnDisabled]}
           accessibilityRole="button"
           accessibilityLabel={t("visualHelp.a11yPrevStep")}
         >
-          <AppIcon name="arrow-left" size={moderateScale(24)} />
+          {stepByStep ? (
+            <Text style={styles.hopButtonText}>{t("common.back")}</Text>
+          ) : <AppIcon name="arrow-left" size={moderateScale(24)} />}
         </Pressable>
         <View style={styles.sliderWrap}>
-          <Slider
+          {stepByStep ? (
+            <Text style={styles.hopCounter}>{activeStep + 1} / {stepCount}</Text>
+          ) : <Slider
             style={styles.slider}
             minimumValue={0}
             maximumValue={1}
@@ -160,16 +166,18 @@ export function VisualExplanationPlayer({
             maximumTrackTintColor={GameColors.cardBorder}
             thumbTintColor={GameColors.primaryDark}
             accessibilityLabel={t("visualHelp.a11ySlider")}
-          />
+          />}
         </View>
         <Pressable
           onPress={() => goToStep(activeStep + 1)}
           disabled={!canGoForward}
-          style={[styles.stepBtn, !canGoForward && styles.stepBtnDisabled]}
+          style={[styles.stepBtn, stepByStep && styles.hopButton, !canGoForward && styles.stepBtnDisabled]}
           accessibilityRole="button"
           accessibilityLabel={t("visualHelp.a11yNextStep")}
         >
-          <AppIcon name="arrow-right" size={moderateScale(24)} />
+          {stepByStep ? (
+            <Text style={styles.hopButtonText}>{t("visualHelp.numberLine.next")}</Text>
+          ) : <AppIcon name="arrow-right" size={moderateScale(24)} />}
         </Pressable>
       </View>
 
@@ -252,6 +260,26 @@ const styles = StyleSheet.create({
   },
   stepBtnDisabled: {
     opacity: 0.35,
+  },
+  hopButton: {
+    width: undefined,
+    flex: 1,
+    minHeight: moderateScale(48),
+    paddingHorizontal: moderateScale(8),
+    borderRadius: moderateScale(12),
+    backgroundColor: GameColors.card,
+  },
+  hopButtonText: {
+    fontSize: moderateScale(15),
+    fontWeight: "700",
+    color: GameColors.primary,
+    textAlign: "center",
+  },
+  hopCounter: {
+    fontSize: moderateScale(14),
+    fontWeight: "600",
+    color: GameColors.textMuted,
+    textAlign: "center",
   },
   sliderWrap: {
     flex: 1,

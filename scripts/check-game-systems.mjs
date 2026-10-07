@@ -171,7 +171,7 @@ assert.equal(toySave.pet.roomLayouts.room2.placedToys[0].scale, 1.1, 'Per-room l
 assert.equal(toySave.pet.savedRoomLayouts.room1.placedToys[0].scale, 1.1, 'Saved room layouts retain toy size');
 console.log('Verified scratching-post resizing, instance isolation, bounds, legacy defaults, and saved sizes.');
 
-const { addRoomDoor, setDoorDestination, switchHomeRoom } = load('@/utils/home-rooms');
+const { addRoomDoor, setDoorDestination, switchHomeRoom, removeRoomNavigationDoors, sendCatToRoom, getCatHomeRoomId, previewHomeRoom } = load('@/utils/home-rooms');
 const { normalizePlacedDecorations } = load('@/utils/room-placement');
 const withDoor = addRoomDoor(start.pet, 'bathroom');
 const bathDoor = withDoor.placedDecorations.at(-1);
@@ -180,11 +180,19 @@ assert.equal(addRoomDoor(start.pet, 'livingRoom'), start.pet, 'A door cannot lea
 assert.equal(setDoorDestination(withDoor, bathDoor.instanceId, 'bedroom').placedDecorations.at(-1).doorDestination, 'bedroom');
 assert.equal(setDoorDestination(withDoor, 'missing', 'bedroom'), withDoor);
 assert.equal(setDoorDestination(withDoor, bathDoor.instanceId, 'livingRoom'), withDoor);
+const beforePreview = JSON.stringify(withDoor);
+const preview = previewHomeRoom(withDoor, 'bathroom');
+assert.equal(JSON.stringify(withDoor), beforePreview, 'Preloading does not change the save or viewed room');
+assert.equal(previewHomeRoom(withDoor, 'livingRoom'), withDoor);
+assert.equal(preview.placedDecorations.length, 0, 'A new room preview starts empty');
+assert.equal(preview.placedDecorations, previewHomeRoom({ ...withDoor, hunger: 20 }, 'bathroom').placedDecorations,
+  'Care ticks preserve the preview furniture reference and native world');
 const bathroom = switchHomeRoom(withDoor, 'bathroom');
 assert.equal(bathroom.homeRoomId, 'bathroom');
+assert.equal(bathroom.placedDecorations, preview.placedDecorations, 'First visits use the already preloaded empty layout');
 assert.equal(bathroom.bedId, undefined, 'New spaces do not copy another room’s furniture');
 assert.equal(bathroom.placedToys.length, 0);
-assert.equal(bathroom.placedDecorations[0].doorDestination, 'livingRoom', 'Every new room has a return door');
+assert.equal(bathroom.placedDecorations.length, 0, 'New rooms do not need connecting doors');
 assert.equal(switchHomeRoom(bathroom, 'bathroom'), bathroom);
 const furnishedBath = { ...bathroom, roomId: 'room2', placedDecorations: [...bathroom.placedDecorations,
   { decorationId: 'bathroomMirror', instanceId: 'bath-mirror', offset: { x: .4, y: -.3 } }],
@@ -195,7 +203,8 @@ const reopenedHouse = parseGameSaveFromValue(JSON.stringify({ ...start, pet: liv
   ...start.progress, roomsUnlocked: ['room1', 'room2'], decorationsUnlocked: ['bathroomMirror'], decorationQuantities: { bathroomMirror: 1 },
 } })).save.pet;
 assert.equal(reopenedHouse.homeRoomId, 'livingRoom');
-assert.equal(reopenedHouse.placedDecorations.at(-1).doorDestination, 'bathroom', 'Free connecting doors survive reopening');
+assert.equal(reopenedHouse.placedDecorations.some(item => item.doorDestination), false, 'Legacy navigation doors leave the room on reopening');
+assert.ok(parseGameSaveFromValue(JSON.stringify({ ...start, pet: withDoor })).save.progress.decorationsUnlocked.includes(bathDoor.decorationId), 'Removing travel doors retains the owned decoration');
 const bathAgain = switchHomeRoom(reopenedHouse, 'bathroom');
 assert.equal(bathAgain.roomId, 'room2', 'Backgrounds belong to each named space');
 assert.equal(bathAgain.placedDecorations.at(-1).decorationId, 'bathroomMirror');
@@ -220,9 +229,52 @@ for (const decorationId of ['japaneseDoorAni', 'japaneseSlidingDoorAni']) {
   assert.equal(getPlacedDecorationWallFlipped(moved), false, 'Small adjustments preserve manual facing');
 }
 console.log('Verified stationary doors, wall-facing defaults, cross-wall dragging, and saved manual facing.');
-console.log('Verified named rooms, independent furniture/backgrounds, door reassignment, return doors, legacy saves, and persistence.');
+const optionalDoor = { ...bathDoor, instanceId: 'decorative-door', doorDestination: undefined };
+const legacyLayout = { placedDecorations: [bathDoor, optionalDoor], roomLayerOrder: [
+  { kind: 'decoration', decorationId: bathDoor.decorationId, instanceId: bathDoor.instanceId },
+  { kind: 'decoration', decorationId: optionalDoor.decorationId, instanceId: optionalDoor.instanceId }] };
+const legacyHouse = { ...start.pet, ...legacyLayout, roomLayouts: { room1: legacyLayout }, savedRoomLayouts: { room1: legacyLayout },
+  homeRooms: { bedroom: { ...legacyLayout, roomId: 'room1', roomLayouts: { room2: legacyLayout }, savedRoomLayouts: { room1: legacyLayout } } } };
+const legacySnapshot = JSON.stringify(legacyHouse), cleanedHouse = removeRoomNavigationDoors(legacyHouse);
+for (const layout of [cleanedHouse, cleanedHouse.roomLayouts.room1, cleanedHouse.savedRoomLayouts.room1, cleanedHouse.homeRooms.bedroom,
+  cleanedHouse.homeRooms.bedroom.roomLayouts.room2, cleanedHouse.homeRooms.bedroom.savedRoomLayouts.room1]) {
+  assert.equal(layout.placedDecorations.length, 1);
+  assert.equal(layout.placedDecorations[0], optionalDoor, 'Ordinary door decorations retain their exact saved placement');
+  assert.equal(layout.roomLayerOrder.length, 1, 'Navigation doors also leave the draw order');
+}
+assert.equal(JSON.stringify(legacyHouse), legacySnapshot, 'Migration leaves the original save intact');
+assert.equal(removeRoomNavigationDoors(cleanedHouse), cleanedHouse, 'Door migration is idempotent and keeps reference identity');
+console.log('Verified named rooms, independent furniture/backgrounds, door-free new rooms, legacy door cleanup across saved layouts, owned decor, and persistence.');
 
 assert.deepEqual(JSON.parse(JSON.stringify(getSolvedCounts([puzzle.id]))), { easy: 1, medium: 0, hard: 0 });
 await Promise.all([saveGameSave(start), saveGameSave(first.save), clearGameSave()]);
 assert.equal(await loadGameSave(), null, 'Clearing cannot race an older queued save');
 console.log(`Verified ${count} localized puzzles, matching help, atomic/idempotent rewards, replay after interruption, zero-life practice, streaks, decay, feed, legacy saves, and per-room layouts.`);
+
+// Browsing leaves the cat in place; an explicit journey also follows the cat.
+const restingCat = { ...withDoor, homeRoomId: 'livingRoom', isAsleep: true, lastInteractionAt: 123 };
+const browsing = switchHomeRoom(restingCat, 'bedroom');
+assert.equal(browsing.catHomeRoomId, 'livingRoom');
+assert.equal(browsing.isAsleep, true, 'Looking at another room must not wake the cat');
+assert.equal(browsing.lastInteractionAt, 123, 'Browsing cannot record a cat interaction');
+const sentCat = sendCatToRoom(browsing, 'kitchen');
+assert.equal(sentCat.catHomeRoomId, 'kitchen');
+assert.equal(sentCat.homeRoomId, 'kitchen', 'The travel command follows the cat in the same saved update');
+assert.equal(sentCat.homeRooms.livingRoom, browsing.homeRooms.livingRoom, 'Travel preserves saved furniture in other rooms');
+assert.deepEqual(captureRoomLayout(sentCat.homeRooms.bedroom), captureRoomLayout(browsing), 'Travel saves the room being viewed before following the cat');
+assert.equal(sentCat.isAsleep, false);
+assert.equal(sendCatToRoom(sentCat, 'kitchen'), sentCat);
+assert.equal(sendCatToRoom(sentCat, 'outside'), sentCat);
+const catSave = parseGameSaveFromValue(JSON.stringify({ ...start, pet: sentCat })).save.pet;
+assert.equal(catSave.homeRoomId, 'kitchen', 'Reopening retains the followed room');
+assert.equal(getCatHomeRoomId(catSave), 'kitchen', 'Cat arrival survives reopening');
+assert.equal(switchHomeRoom(catSave, 'bathroom').catHomeRoomId, 'kitchen');
+const lookingElsewhere = switchHomeRoom({ ...catSave, isAsleep: true }, 'bathroom');
+const followingAgain = sendCatToRoom(lookingElsewhere, 'kitchen');
+assert.equal(followingAgain.homeRoomId, 'kitchen', 'Following also works if the cat is already in the destination');
+assert.equal(followingAgain.isAsleep, true, 'Returning to the cat’s room does not interrupt its sleep');
+for (const id of ['livingRoom', 'bedroom', 'bathroom', 'kitchen']) {
+  const legacy = parseGameSaveFromValue(JSON.stringify({ ...start, pet: { ...start.pet, homeRoomId: id, catHomeRoomId: undefined } })).save.pet;
+  assert.equal(getCatHomeRoomId(legacy), id, 'Old saves keep the cat in the room where it was last seen');
+}
+console.log('Verified view-only browsing, atomic following on cat arrival, sleeping state, layout preservation, legacy migration and saved destination.');

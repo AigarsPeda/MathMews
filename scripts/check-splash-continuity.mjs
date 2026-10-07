@@ -39,6 +39,8 @@ assert.equal(splashOptions.duration, 0);
 
 const portrait = await sharp('assets/3d/cat-splash.png').ensureAlpha().raw().toBuffer();
 assert.equal(portrait.length, 192 * 192 * 4, 'Startup retains its bundled fallback portrait');
+const nativeStill = await sharp('docs/art/startup-cat-native.png').resize(192, 192).ensureAlpha().raw().toBuffer();
+assert.ok(portrait.equals(nativeStill), 'The launch fallback must preserve the actual native renderer colors');
 
 // The OS launch image must preserve the same centered branding and the empty
 // track's position, even before React can mount or decode its animation sheet.
@@ -235,6 +237,7 @@ assert.equal(catWindow.props.style.overflow, 'hidden');
 assert.equal(catWindow.props.style.width, imageSize(fallback).width);
 assert.equal(catWindow.props.style.height, imageSize(fallback).height);
 const progressBar = nodes.find(node => node.type === 'ProgressBar');
+assert.ok(Math.abs(progressBar.props.progress - .75) < 1e-9, 'Downloaded assets and restored data leave room-rendering progress unfinished');
 const loading = nodes.find(node => node.props.style?.marginTop === 152);
 assert.equal(loading.props.style.width, 240);
 assert.equal(progressBar.props.style.height, 8, 'The native and live loading tracks must have identical bounds');
@@ -262,12 +265,21 @@ function finishGameHandoff() {
   paint();
   assert.ok(flatten(renderGate()).some(node => node.props.accessibilityViewIsModal), 'A game without native layout must remain covered');
   const release = provider.props.value();
+  const releaseRoom = provider.props.value();
   game.props.onLayout();
   renderGate(); paint(); paint();
   assert.ok(flatten(renderGate()).some(node => node.props.accessibilityViewIsModal), 'Undecoded first cat texture must retain the loading cover');
+  const waitingProgress = flatten(renderGate()).find(node => node.type === 'ProgressBar').props.progress;
+  assert.ok(waitingProgress < .95, 'Pending room frames must not fill the progress bar');
   release(); release();
+  const partialProgress = flatten(renderGate()).find(node => node.type === 'ProgressBar').props.progress;
+  assert.ok(partialProgress > waitingProgress && partialProgress < .95, 'Each painted scene advances actual startup progress');
+  paint(); paint();
+  assert.ok(flatten(renderGate()).some(node => node.props.accessibilityViewIsModal), 'Another unfinished room must keep gameplay covered');
+  releaseRoom();
   renderGate(); paint();
   assert.ok(flatten(renderGate()).some(node => node.props.accessibilityViewIsModal), 'The first gameplay drawing turn must remain covered');
+  assert.ok(flatten(renderGate()).find(node => node.type === 'ProgressBar').props.progress <= .95, 'Even the final drawing handoff keeps progress below 100%');
   paint();
   gateTree = renderGate();
   nodes = flatten(gateTree);
@@ -304,7 +316,7 @@ nodes = flatten(renderGate());
 assert.ok(![...timers.values()].some(timer => timer.delay === 250), 'Even after the deadline, gameplay must wait for the local save');
 localReady = true;
 nodes = flatten(renderGate());
-assert.ok(Math.abs(nodes.find(node => node.type === 'ProgressBar').props.progress - .625) < 1e-9, 'Failed assets and timed-out remote checks must not claim full progress');
+assert.ok(Math.abs(nodes.find(node => node.type === 'ProgressBar').props.progress - .475) < 1e-9, 'Failed assets and timed-out remote checks must not claim full progress');
 nodes.find(node => node.type === 'AnimatedSplashCat').props.onReady();
 nodes = flatten(renderGate()); paint();
 assert.equal(hidden, 1, 'Canvas readiness must not hide the native splash twice');

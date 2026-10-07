@@ -20,6 +20,12 @@ export type VisualScene =
       highlight?: number;
     }
   | {
+      kind: "numberline_jump";
+      start: number;
+      jump: number;
+      moves: number;
+    }
+  | {
       kind: "sequence";
       values: (number | "?" | null)[];
       /** The two numbers being added together. */

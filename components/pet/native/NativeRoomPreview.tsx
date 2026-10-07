@@ -4,6 +4,7 @@ import { NativeRoomScene } from './NativeRoomScene';
 import { buildNativeRoomWorld, placeNativePreview } from '@/utils/native-room-world';
 import { getPetMediaRegistry } from '@/pet-display/registry/media-registry';
 import { moderateScale } from '@/utils/scale';
+import { ROOM_CAT_SIZE, ROOM_OBJECT_SCALE } from '@/constants/room-scale';
 import type { PetProfile, PlacedDecoration, PlacedToy } from '@/types/game';
 import type { PetPlaybackState } from '@/pet-display/types';
 type Props = {
@@ -17,7 +18,7 @@ type Props = {
 export function NativeRoomPreview({ pet, roomId, bedId, skinId, decorations, toys }: Props) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const world = useMemo(() => {
-    const result = buildNativeRoomWorld({ ...size, petSize: 100, sizeScale: moderateScale(100) / 100,
+    const result = buildNativeRoomWorld({ ...size, petSize: moderateScale(ROOM_CAT_SIZE), sizeScale: moderateScale(100) / 100 * ROOM_OBJECT_SCALE,
       homeOffset: pet.roomPetOffset, bedId, bedOffset: pet.roomBedOffset, bedScale: pet.bedScale, bedFlipped: pet.bedFlipped, decorations, toys, layerOrder: pet.roomLayerOrder,
     });
     placeNativePreview(result, 'preview-decoration');

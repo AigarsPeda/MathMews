@@ -32,9 +32,12 @@ type Props = {
   onAnimationComplete?: () => void;
   onStepComplete?: (index: number) => void;
   positionValue?: ISharedValue<Vec3>;
-  onContactPosition?: (position: Vec3) => void;
+  animationTimeValue?: ISharedValue<{ name: string; time: number }>;
+  onContactPosition?: (position: Vec3, elapsed?: number) => void;
+  onRoomStepComplete?: (key: string, position: Vec3) => void;
+  initialPosition?: Vec3;
 };
-export function NativeCatActor({ skinId, playback, world, travel, activityKey, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onReady, positionValue, reduceMotion = false }: Props) {
+export function NativeCatActor({ skinId, playback, world, travel, activityKey, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, animationTimeValue, initialPosition, reduceMotion = false }: Props) {
   'use no memo';
   const { transformManager } = useFilamentContext();
   const model = useModel(SOURCES[resolveCatSkinId(skinId)], { shouldReleaseSourceData: false });
@@ -57,13 +60,15 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       return prop ? [{ entity: prop, transform: transformManager.getTransform(prop) }] : [];
     });
   }, [asset, transformManager]);
-  const callbacks = useRef({ onPosition, onAnimationComplete, onStepComplete, onContactPosition, onReady });
-  useEffect(() => { callbacks.current = { onPosition, onAnimationComplete, onStepComplete, onContactPosition, onReady }; }, [onPosition, onAnimationComplete, onStepComplete, onContactPosition, onReady]);
-  const receive = useCallback((kind: 'position' | 'complete' | 'step' | 'ready', data: number[] | number) => {
+  const callbacks = useRef({ onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady });
+  useEffect(() => { callbacks.current = { onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady }; }, [onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady]);
+  const receive = useCallback((kind: 'position' | 'complete' | 'step' | 'ready' | 'roomComplete', data: number[] | number | { key: string; position: Vec3 }) => {
     if (kind === 'position' && Array.isArray(data)) {
       callbacks.current.onPosition?.({ x: data[0], y: data[1] });
-      callbacks.current.onContactPosition?.([data[2], data[3], data[4]]);
+      callbacks.current.onContactPosition?.([data[2], data[3], data[4]], data[5]);
     }
+    else if (kind === 'roomComplete' && typeof data === 'object' && 'key' in data)
+      callbacks.current.onRoomStepComplete?.(data.key, data.position);
     else if (kind === 'step')
       callbacks.current.onStepComplete?.(data as number);
     else if (kind === 'complete')
@@ -80,14 +85,19 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       duration: segment.model ? segment.model.duration / segment.model.rate : meta[0] / meta[1], reverse: segment.reverse ?? false,
       loop: segment.loop ?? loop ?? false };
   }), [loop, playback]);
-  const command = useSharedValue({ id: 0, segments, travel, world, active, reduceMotion });
-  const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
-    position: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1,
+  const command = useSharedValue({ id: 0, activityKey, segments, travel, world, active, reduceMotion });
+  const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, roomComplete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
+    position: (initialPosition ?? world?.home ?? [0, 0, 0]) as Vec3, home: (world?.home ?? [0, 0, 0]) as Vec3, routeStart: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1,
     tailContact: { angle: 0, axis: [0, 1, 0], blocked: false } as TailContact });
   const requestId = useRef(0);
   useEffect(() => {
-    command.value = { id: ++requestId.current, segments, travel, world, active: command.value.active, reduceMotion: command.value.reduceMotion };
-  }, [activityKey, command, segments, travel, world]);
+    const previous = command.value.world;
+    const movedHome = !command.value.travel && previous && world && previous.home.some((v, i) => v !== world.home[i]);
+    command.value = { ...command.value, world, id: movedHome ? ++requestId.current : command.value.id };
+  }, [command, world]);
+  useEffect(() => {
+    command.value = { ...command.value, id: ++requestId.current, activityKey, segments, travel };
+  }, [activityKey, command, segments, travel]);
   useEffect(() => { command.value = { ...command.value, active, reduceMotion }; }, [active, reduceMotion, command]);
   const clips = useMemo(() => {
     if (!animator)
@@ -112,13 +122,17 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     const frameState = { ...state.value };
     if (frameState.id !== request.id) {
       frameState.id = request.id;
-      frameState.elapsed = 0;
+      frameState.elapsed = request.travel?.elapsed ?? 0;
       frameState.index = 0;
       frameState.complete = false;
-      if (request.travel?.path.length)
-        frameState.position = request.travel.path[0];
-      else if (request.world)
-        frameState.position = request.world.home;
+      frameState.roomComplete = false;
+      if (request.travel?.path.length) {
+        if (!request.travel.replanned || !frameState.ready) frameState.position = request.travel.path[0];
+        frameState.routeStart = frameState.position;
+      }
+      else if (request.world && (!frameState.ready || frameState.home.some((v, i) => v !== request.world!.home[i])))
+        frameState.position = !frameState.ready && initialPosition ? initialPosition : request.world.home;
+      if (request.world) frameState.home = request.world.home;
     }
     const deltaSeconds = request.active ? Math.min(1 / 15, Math.max(0, timeSinceLastFrame)) : 0;
     frameState.elapsed += deltaSeconds;
@@ -142,7 +156,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     const journey = request.travel;
     let walking = false;
     if (journey?.path.length) {
-      const path = journey.path;
+      const path = journey.replanned ? [frameState.routeStart, ...journey.path.slice(1)] : journey.path;
       if (journey.jump) {
         const t = Math.max(0, Math.min(1, (frameState.elapsed / journey.duration - .20) / .50));
         const first = path[0], last = path[path.length - 1];
@@ -150,7 +164,12 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       }
       else if (path.length > 1) {
         walking = frameState.elapsed < journey.duration;
-        let remaining = Math.min(journey.distance, frameState.elapsed / journey.duration * journey.distance);
+        let routeDistance = journey.distance;
+        if (journey.replanned) {
+          routeDistance = 0;
+          for (let i = 1; i < path.length; i++) routeDistance += Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1], path[i][2] - path[i - 1][2]);
+        }
+        let remaining = Math.min(routeDistance, frameState.elapsed / journey.duration * routeDistance);
         frameState.position = path[path.length - 1];
         for (let i = 1; i < path.length; i++) {
           const a = path[i - 1], b = path[i], length = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
@@ -186,6 +205,8 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       frameState.blend = 0;
     }
     frameState.clipTime = time;
+    if (animationTimeValue)
+      animationTimeValue.value = { name: walking ? 'walk' : segment.name, time };
     frameState.blend = Math.min(1, frameState.blend + deltaSeconds / .12);
     animator.applyAnimation(clip.index, time);
     if (frameState.previous >= 0 && frameState.blend < 1)
@@ -211,7 +232,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     if (request.world && frameState.report >= .05) {
       frameState.report = 0;
       const point = catScreenPoint(frameState.position, request.world);
-      notify('position', [point.x, point.y, ...frameState.position]);
+      notify('position', [point.x, point.y, ...frameState.position, frameState.elapsed]);
     }
     if (positionValue)
       positionValue.value = frameState.position;
@@ -219,8 +240,13 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       frameState.ready = true;
       notify('ready', 0);
     }
+    if (request.activityKey && request.travel?.awaitCompletion && !frameState.roomComplete
+      && frameState.elapsed >= (request.reduceMotion ? .6 : request.travel.duration)) {
+      frameState.roomComplete = true;
+      notify('roomComplete', { key: request.activityKey, position: frameState.position });
+    }
     state.value = frameState;
-  }, [animator, clips, command, eatingProps, entity, notify, positionValue, state, tail, transformManager]);
+  }, [animationTimeValue, animator, clips, command, eatingProps, entity, initialPosition, notify, positionValue, state, tail, transformManager]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   return null;
 }

@@ -8,7 +8,7 @@ import math
 import bpy
 import numpy as np
 from mathutils import Matrix, Vector
-from cat_model import COATS, STRIPES, rgba, create_cat as create_controls, pose_cat as pose_controls, ball, line, solid_material
+from cat_model import COATS, STRIPES, rgba, create_cat as create_controls, pose_cat as pose_controls, ball, line, solid_material, care_action_time, smooth_window
 
 ROOT = Path(__file__).resolve().parents[2]
 from original_cat import create_cat as create_original_cat
@@ -228,8 +228,10 @@ def pose(arm, driver, state, t, idle_controls):
     seated = (1-standing)*(1-settle)
     bones = arm.data.bones
     # Sitting lowers the pelvis around the shoulders; normal idle is standing.
-    origin = (bones['L.forelegjoint0'].head_local+bones['R.forelegjoint0'].head_local)/2
-    rotation = Matrix.Rotation(-.52*seated, 3, 'X')
+    eating_time = care_action_time(state, t)
+    eating_lean = smooth_window(eating_time, .03, .90, .15) if state == 'eating' else 0
+    origin = bones['pelvis'].head_local if state == 'eating' else (bones['L.forelegjoint0'].head_local+bones['R.forelegjoint0'].head_local)/2
+    rotation = Matrix.Rotation(-.52*seated+.24*eating_lean, 3, 'X')
     baseline_body = idle_controls['standing_height'] if driver_standing else idle_controls['body_height']
     shift = Vector((driver['body'].location.x, 0, driver['body'].location.z-baseline_body))*.6
     shift.z -= .24*settle
@@ -242,6 +244,11 @@ def pose(arm, driver, state, t, idle_controls):
     if standing:
         head_shift = Vector((0, 0, .002*math.cos(t*math.tau*2)))
     head_rotation = driver['head'].rotation_euler.to_matrix()
+    if state == 'eating':
+        # Bend the chest and neck toward the food while IK keeps all paws planted.
+        munch = math.sin(eating_time*math.tau*5)*eating_lean
+        head_shift = Vector((0, -.08*eating_lean, -.40*eating_lean+.012*munch))
+        head_rotation = Matrix.Rotation(.72*eating_lean+.025*munch, 3, 'X')
     for name in ('neck', 'head'):
         position = bones[name].head_local+chest_shift+head_shift
         desired[name] = joint_matrix(bones[name], position, head_rotation)

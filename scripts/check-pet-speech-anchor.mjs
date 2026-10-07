@@ -60,6 +60,11 @@ mocks['@/hooks/use-room-camera'] = { useRoomCamera: () => ({
   zoom: stageZoom, reset() {}, gesture: 'room-gesture',
 }) };
 mocks['react-native-gesture-handler'] = { GestureDetector: 'GestureDetector' };
+const roomScale = { exports: {} };
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('constants/room-scale.ts', 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS },
+}).outputText, { module: roomScale, exports: roomScale.exports });
+mocks['@/constants/room-scale'] = roomScale.exports;
 const module = { exports: {} };
 const source = ts.transpileModule(fs.readFileSync('components/pet/PetStage.tsx', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.React },
@@ -88,7 +93,8 @@ for (const zoom of [1, 1.73, 2.36, 3]) {
   const bubbles = nodes.filter(({ node }) => node.type === 'PetSpeechBubble');
   assert.equal(bubbles.length, 1, 'Every zoom must use one speech bubble');
   const { ancestors } = bubbles[0];
-  const pet = nodes.find(({ node }) => node.type === 'DraggableRoomPet').node;
+  const petEntry = nodes.find(({ node }) => node.type === 'DraggableRoomPet');
+  const pet = petEntry.node;
   assert.equal(pet.props.initialOffset, offset, 'Cat must retain its saved placement');
   const bubble = ancestors.at(-1);
   bubble.props.onLayout({ nativeEvent: { layout: { height: 40 } } });
@@ -96,8 +102,8 @@ for (const zoom of [1, 1.73, 2.36, 3]) {
   assert.equal(bubble.props.pointerEvents, 'none', 'Speech must not intercept scene pans');
   assert.ok(!ancestors.some(node => node.props.onPanResponderMove),
     'Speech text must render outside the scaled scene to stay sharp');
-  const viewport = nodes.find(({ node }) => node.type === 'GestureDetector').node;
-  assert.ok(!ancestors.includes(viewport.props.children[0].props.children[0]), 'Speech is outside the scaled artwork');
+  const artwork = petEntry.ancestors.find(node => style(node.props.style).transform?.some(transform => 'scale' in transform));
+  assert.ok(artwork && !ancestors.includes(artwork), 'Speech is outside the scaled artwork');
   pet.props.onPositionChange({ x: -40, y: 60 });
   for (const scale of [1, 1.25, 1.75, 2, 2.5, 3]) {
     sharedValues[0].set(0); sharedValues[1].set(0); sharedValues[2].set(scale);
@@ -161,12 +167,12 @@ for (const [allowDrag, interactive] of [[true, true], [false, true], [true, fals
     menuActions: [{ label: 'Remove', icon: 'delete-outline', onPress() {} }],
   }));
   const menu = menuItem.find(({ node }) => node.type === 'RoomActionMenu')?.node;
-  assert.ok(menu, 'Room-item taps must use the native menu trigger');
+  assert.equal(Boolean(menu), !allowDrag, 'Editable objects must be plain drag targets without a native menu competing for touches');
   const menuDragTarget = menuItem.find(({ node }) => node.props.onPanResponderMove).node;
-  const menuLabel = menu.props.children[0];
-  assert.equal(menuLabel.props.onPanResponderMove, menuDragTarget.props.onPanResponderMove,
+  const menuLabel = menu?.props.children[0];
+  if (menuLabel) assert.equal(menuLabel.props.onPanResponderMove, menuDragTarget.props.onPanResponderMove,
     'The nested native menu label must retain the furniture drag handler');
-  for (const target of [menuDragTarget, menuLabel]) {
+  for (const target of [menuDragTarget, menuLabel].filter(Boolean)) {
     assert.equal(target.props.onStartShouldSetPanResponder(), allowDrag && interactive,
       'Editable menu labels must receive drag events from touch start; locked items must not');
     assert.equal(target.props.onMoveShouldSetPanResponderCapture(null, { dx: 2, dy: 1 }), false);
@@ -175,4 +181,24 @@ for (const [allowDrag, interactive] of [[true, true], [false, true], [true, fals
     assert.equal(target.props.onMoveShouldSetPanResponder(null, { dx: 25, dy: -10 }), allowDrag && interactive);
   }
 }
-console.log('Verified native room menus retain furniture drag responders.');
+// A small touch selects an item; a real drag saves its position without a tap.
+stateIndex = 0; sharedIndex = 0;
+let taps = 0, dragStarts = 0, saves = 0;
+const dragItem = flatten(draggableModule.exports.DraggableRoomPet({
+  children: null, petSize: 120, allowDrag: true,
+  onPetTap: () => taps++, onDragStart: () => dragStarts++, onOffsetChange: () => saves++,
+  menuActions: [{ label: 'Remove', icon: 'delete-outline', onPress() {} }],
+}));
+const plainTarget = dragItem.find(({ node }) => node.props.onPanResponderMove).node;
+plainTarget.props.onPanResponderGrant();
+plainTarget.props.onPanResponderMove(null, { dx: 2, dy: 1 });
+plainTarget.props.onPanResponderRelease();
+assert.equal(taps, 1); assert.equal(dragStarts, 0); assert.equal(saves, 0);
+plainTarget.props.onPanResponderGrant();
+plainTarget.props.onPanResponderMove(null, { dx: 25, dy: -10 });
+plainTarget.props.onPanResponderMove(null, { dx: 35, dy: -20 });
+plainTarget.props.onPanResponderRelease();
+assert.equal(taps, 1, 'A drag must never trigger the tap action');
+assert.equal(dragStarts, 1, 'Select the dragged object once when the movement threshold is crossed');
+assert.equal(saves, 1, 'Save the final drag position once');
+console.log('Verified editable objects bypass native menu gestures, small touches select, and real drags save without tapping.');

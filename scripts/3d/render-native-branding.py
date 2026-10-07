@@ -1,4 +1,4 @@
-"""Render startup stills from the same shipped GLB and camera as NativeCatDisplay."""
+"""Render the icon portrait from the shipped GLB. Startup uses a native capture."""
 from pathlib import Path
 import hashlib
 import json
@@ -38,10 +38,14 @@ camera.data.type, camera.data.ortho_scale = 'ORTHO', 2.7
 scene.camera = camera
 scene.render.image_settings.file_format = 'PNG'
 scene.render.image_settings.color_mode = 'RGBA'
-for filename, size in [('cat-splash.png', 192), ('cat-preview.png', 512)]:
+for filename, size in [('cat-preview.png', 512)]:
     scene.render.resolution_x = scene.render.resolution_y = size
     scene.render.resolution_percentage = 100
     scene.render.filepath = str(ROOT/'assets/3d'/filename)
     bpy.ops.render.render(write_still=True)
-files = ['assets/3d/native/cat-orange.glb', 'assets/3d/cat-splash.png', 'assets/3d/cat-preview.png']
-(ROOT/'scripts/3d/branding-source.json').write_text(json.dumps({file: hashlib.sha256((ROOT/file).read_bytes()).hexdigest() for file in files}, indent=2)+'\n')
+# Retain the native portrait's provenance. A changed cat GLB needs a fresh
+# NativeCatDisplay capture before generating launch/loading artwork.
+source_file = ROOT/'scripts/3d/branding-source.json'
+sources = json.loads(source_file.read_text())
+sources['assets/3d/cat-preview.png'] = hashlib.sha256((ROOT/'assets/3d/cat-preview.png').read_bytes()).hexdigest()
+source_file.write_text(json.dumps(sources, indent=2)+'\n')

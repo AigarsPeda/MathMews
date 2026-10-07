@@ -4,6 +4,7 @@ import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { createHash } from 'node:crypto';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const out=path.join(root,'assets/images');
 await fs.mkdir(out,{recursive:true});
@@ -15,9 +16,20 @@ async function catIcon(file,size,transparent=false,monochrome=false){
  const background=transparent?'#00000000':'#FFF5EB';
  await sharp({create:{width:size,height:size,channels:4,background}}).composite([{input:png,left:Math.round((size-inner)/2),top:Math.round((size-inner)/2)}]).png().toFile(path.join(out,file));
 }
-await catIcon('icon.png',1024);
-await catIcon('android-icon-foreground.png',1024,true);
-await catIcon('android-icon-monochrome.png',1024,true,true);
+if (!process.argv.includes('--splash-only')) {
+ await catIcon('icon.png',1024);
+ await catIcon('android-icon-foreground.png',1024,true);
+ await catIcon('android-icon-monochrome.png',1024,true,true);
+}
+// Captured at the idle clip's first frame in NativeCatDisplay. Blender's
+// lighting/tone mapping cannot reproduce Filament's DefaultLight exactly.
+const nativePortrait='docs/art/startup-cat-native.png';
+await sharp(path.join(root,nativePortrait)).resize(192,192).png().toFile(path.join(root,'assets/3d/cat-splash.png'));
+const sourceFile=path.join(root,'scripts/3d/branding-source.json');
+const sources=JSON.parse(await fs.readFile(sourceFile,'utf8'));
+for (const file of [nativePortrait,'assets/3d/cat-splash.png'])
+ sources[file]=createHash('sha256').update(await fs.readFile(path.join(root,file))).digest('hex');
+await fs.writeFile(sourceFile,JSON.stringify(sources,null,2)+'\n');
 await sharp({create:{width:1,height:1,channels:4,background:'#FFF5EB'}}).png().toFile(path.join(out,'splash-background.png'));
 // Native launch branding is available before JavaScript starts. Its transparent
 // margins match the cream background rather than introducing letterbox bars.

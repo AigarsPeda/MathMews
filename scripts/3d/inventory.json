@@ -1194,25 +1194,25 @@
     {
       "id": "bowlTan",
       "kind": "decoration",
-      "displaySize": 24,
+      "displaySize": 40,
       "animated": false
     },
     {
       "id": "bowlBlue",
       "kind": "decoration",
-      "displaySize": 24,
+      "displaySize": 40,
       "animated": false
     },
     {
       "id": "bowlPurple",
       "kind": "decoration",
-      "displaySize": 24,
+      "displaySize": 40,
       "animated": false
     },
     {
       "id": "bowlPink",
       "kind": "decoration",
-      "displaySize": 24,
+      "displaySize": 40,
       "animated": false
     },
     {

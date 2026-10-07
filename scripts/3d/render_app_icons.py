@@ -329,6 +329,28 @@ def person():
     art.sphere('Person shoulders',(0,0,.60),(.46,.24,.38),'teal')
 
 
+def bedroom_bed():
+    art.box('Wood bed frame', (0, 0, .26), (1.35, 1.95, .25), 'wood', .09)
+    for x in [-.50, .50]:
+        for y in [-.73, .73]:
+            art.cylinder('Bed leg', (x, y, .11), .065, .20, 'wood')
+    art.box('Sage headboard', (0, .89, .65), (1.42, .16, .85), 'sage', .10)
+    art.box('Soft cream mattress', (0, -.03, .47), (1.28, 1.80, .27), 'cream', .11)
+    art.box('Lilac blanket', (0, -.35, .61), (1.29, 1.10, .09), 'lilac', .05)
+    art.box('Blanket folded edge', (0, .16, .66), (1.30, .15, .10), 'purple', .04)
+    art.box('Cream pillow', (0, .56, .67), (.92, .43, .19), 'white', .09)
+
+
+def cooking_pot():
+    art.cylinder('Teal cooking pot', (0, 0, .49), .60, .68, 'teal')
+    art.torus('Pot rim', (0, 0, .84), .57, .055, 'teal')
+    art.cylinder('Cream pot lid', (0, 0, .86), .61, .09, 'cream')
+    art.sphere('Lid knob', (0, 0, .99), (.12, .12, .10), 'wood')
+    for side in [-1, 1]:
+        art.curve('Wood pot handle', [(side*.55, -.18, .67), (side*.83, -.18, .67),
+                                     (side*.83, .18, .67), (side*.55, .18, .67)], .065, 'wood')
+
+
 extra=[('heart',heart),('broken-heart',lambda:heart(True)),('coin',coin),('sparkle',sparkle),
        ('flame',flame),('brain',brain),('ball',ball),('feather',feather),('box',box),('mouse',mouse),
        ('cat',cat),('nut',peanut),('film',film),('parent',parent),('lock',lock),('trash',trash),
@@ -336,7 +358,8 @@ extra=[('heart',heart),('broken-heart',lambda:heart(True)),('coin',coin),('spark
        ('palette',palette),('check',check),('warning',warning),('rotate',circular_arrow),
        ('undo',lambda:circular_arrow(True)),('restore',circular_arrow),('save',save),
        ('pause',pause),('video-play',play_video),('scale',scale),
-       ('bed',lambda:art.bed('bedA')),('plant',lambda:art.plant('plantA')),
+       ('bed',lambda:art.bed('bedA')),('bedroom-bed',bedroom_bed),('bathtub',lambda:art.bathroom('bathroomBathAni')),
+       ('cooking-pot',cooking_pot),('plant',lambda:art.plant('plantA')),
        ('power',power),('teddy',teddy),('blue-dot',blue_dot),('apple',apple),('cookie',cookie),('cupcake',cupcake),('balloon',balloon),('shell',shell),
        ('sheep',sheep),('person',person),('chair',lambda:art.chair('chairA')),('book',lambda:art.book('bookA'))]
 extra += [('arrow-'+d,lambda d=d:arrow(d)) for d in ['up','down','left','right']]

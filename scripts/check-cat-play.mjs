@@ -35,6 +35,7 @@ const mocks = {
   '@/contexts/GameProvider': { useGame: () => game },
   '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
   '@/hooks/use-screen-insets': { useScreenInsets: () => ({}) },
+  '@/hooks/use-room-transition': { useRoomTransition: (_, visit) => ({ transition: null, visit, ready() {} }) },
   '@/utils/scale': { moderateScale: n => n },
   '@/pet-display/hooks/use-pet-display': { usePetDisplay: () => display },
   '@/pet-display/engine/derive-mood': { usePetBaseMood: () => ({ mood: display.baseMood, onFallAsleepComplete: () => {}, onLieDownComplete: () => {} }) },
@@ -91,10 +92,10 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   const tree = nodes(Home());
   assert.equal(tree.some(node => node.type === 'ActivitiesMenuButton'), false, 'The footer activity control is removed');
   assert.equal(tree.some(node => node.props.accessibilityLabel === 'home.a11yFeed'), false, 'The footer feed control is removed');
-  return { menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage').props.onPlay }, commands, debits,
-    stage: tree.find(node => node.type === 'PetStage').props,
+  return { menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onPlay }, commands, debits,
+    stage: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props,
     store: tree.find(node => node.type === 'HeaderChip' && node.props.accessibilityLabel === 'home.a11yStore').props.onPress,
-    feed: tree.find(node => node.type === 'PetStage').props.onFeed };
+    feed: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onFeed };
 }
 
 {
@@ -169,3 +170,33 @@ for (const skin of ['orange', 'grey', 'white']) for (const activity of activitie
   clockOffset = 0;
 }
 console.log('Verified free play with zero coins and full happiness, unchanged wallets, capped boosts, duplicate protection, wake/stand/play/recovery and all three coats.');
+
+// Preload every native scene and retain its icon controls while browsing.
+home();
+const { switchHomeRoom, getCatHomeRoomId, sendCatToRoom } = load('utils/home-rooms.ts');
+game.visitHomeRoom = destination => { game.pet = switchHomeRoom(game.pet, destination); };
+game.sendCatToRoom = destination => { game.pet = sendCatToRoom(game.pet, destination); };
+function renderHome() { stateIndex = 0; return nodes(Home()); }
+const visibleStage = tree => tree.find(node => node.type === 'PetStage' && node.props.roomVisible);
+let house = renderHome();
+assert.equal(house.filter(node => node.type === 'PetStage').length, 4, 'All rooms mount before the first navigation');
+assert.deepEqual(house.filter(node => node.type === 'PetStage').map(node => node.props.homeRoomId ?? 'livingRoom'),
+  ['bedroom', 'livingRoom', 'kitchen', 'bathroom']);
+for (const destination of ['kitchen', 'bathroom', 'kitchen', 'livingRoom', 'bedroom', 'livingRoom']) {
+  visibleStage(house).props.onVisitHomeRoom(destination);
+  house = renderHome();
+  const stages = house.filter(node => node.type === 'PetStage');
+  assert.equal(visibleStage(house).props.homeRoomId, destination);
+  assert.equal(getCatHomeRoomId(game.pet), 'livingRoom', 'Arrow navigation does not carry the cat');
+  assert.equal(new Set(stages.map(node => node.props.homeRoomId)).size, stages.length, 'Each room has only one native scene host');
+  assert.equal(stages.length, 4, 'First visits reuse the four preloaded scene hosts');
+}
+assert.equal(house.filter(node => node.type === 'PetStage').length, 4, 'Returning to a room keeps the other visited scenes mounted');
+assert.equal(house.filter(node => node.type === 'HeaderChip').length, 2, 'Room browsing retains one set of header controls');
+visibleStage(house).props.onSendCatToRoom('bedroom'); house = renderHome();
+assert.equal(visibleStage(house).props.homeRoomId, 'bedroom');
+assert.equal(getCatHomeRoomId(game.pet), 'bedroom');
+assert.equal(visibleStage(house).props.roomEntry.direction, -1);
+visibleStage(house).props.onSendCatToRoom('livingRoom'); house = renderHome();
+assert.equal(visibleStage(house).props.roomEntry.direction, 1);
+console.log('Verified retained scene hosts, preloading of all four rooms, stable header controls, independent browsing and explicit travel with opposite-side entries.');

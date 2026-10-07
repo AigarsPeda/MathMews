@@ -40,6 +40,7 @@ type DraggableRoomPetProps = {
   /** Live position in room pixels relative to the room's center. */
   onPositionChange?: (position: { x: number; y: number }) => void;
   onDragPositionChange?: (position: { x: number; y: number }) => void;
+  onDragStart?: () => void;
   onPetTap?: () => void;
   layerZIndex?: number;
   /** Ground contact below the sprite center, as a fraction of its size. */
@@ -113,6 +114,7 @@ export function DraggableRoomPet({
   onOffsetChange,
   onPositionChange,
   onDragPositionChange,
+  onDragStart,
   onPetTap,
   layerZIndex = 1,
   depthAnchor,
@@ -139,6 +141,7 @@ export function DraggableRoomPet({
   const onOffsetChangeRef = useRef(onOffsetChange);
   const onPositionChangeRef = useRef(onPositionChange);
   const onDragPositionChangeRef = useRef(onDragPositionChange);
+  const onDragStartRef = useRef(onDragStart);
 
   const onPetTapRef = useRef(onPetTap);
 
@@ -147,8 +150,9 @@ export function DraggableRoomPet({
     onOffsetChangeRef.current = onOffsetChange;
     onPositionChangeRef.current = onPositionChange;
     onDragPositionChangeRef.current = onDragPositionChange;
+    onDragStartRef.current = onDragStart;
     onPetTapRef.current = onPetTap;
-  }, [dragging, position, onOffsetChange, onPositionChange, onDragPositionChange, onPetTap]);
+  }, [dragging, position, onOffsetChange, onPositionChange, onDragPositionChange, onDragStart, onPetTap]);
 
   const resolvedOffset = initialOffset ?? DEFAULT_OFFSET;
   const resolvedHitSize = Math.min(hitSize ?? petSize, petSize);
@@ -176,7 +180,9 @@ export function DraggableRoomPet({
   }, [petSize, roomSize.height, roomSize.width, snapToGrid]);
 
   const hasTap = Boolean(onPetTap);
-  const hasMenu = Boolean(menuActions?.length);
+  // Native menu triggers own the touch. Keep editable objects as plain drag
+  // targets; their options live in the selected-item controls instead.
+  const hasMenu = !allowDrag && Boolean(menuActions?.length);
   const panResponder = useMemo(
     () =>
       // PanResponder stores these event callbacks without invoking them during render.
@@ -184,7 +190,7 @@ export function DraggableRoomPet({
       PanResponder.create({
         onStartShouldSetPanResponder: () => interactive && (allowDrag || hasTap),
         onMoveShouldSetPanResponderCapture: (_, gesture) =>
-          interactive && hasMenu && allowDrag && Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
+          interactive && allowDrag && Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
         onMoveShouldSetPanResponder: (_, gesture) =>
           interactive && allowDrag && Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD,
         onPanResponderGrant: () => {
@@ -194,8 +200,10 @@ export function DraggableRoomPet({
         },
         onPanResponderMove: (_, gesture) => {
           if (!allowDrag) return;
-          if (Math.hypot(gesture.dx, gesture.dy) > DRAG_THRESHOLD) {
+          if (!gestureMovedRef.current) {
+            if (Math.hypot(gesture.dx, gesture.dy) <= DRAG_THRESHOLD) return;
             gestureMovedRef.current = true;
+            onDragStartRef.current?.();
           }
           if (roomSize.width <= 0 || roomSize.height <= 0) return;
           const next = clampPosition(dragStartRef.current.x + gesture.dx, dragStartRef.current.y + gesture.dy,
@@ -218,11 +226,11 @@ export function DraggableRoomPet({
           dragging.set(false);
           if (gestureMovedRef.current) {
             setPosition(positionRef.current);
-          commitOffset();
+            commitOffset();
           }
         },
       }),
-    [allowDrag, hasTap, interactive, hasMenu, commitOffset, petSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
+    [allowDrag, hasTap, interactive, commitOffset, petSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
   );
 
   const halfPet = petSize / 2;
