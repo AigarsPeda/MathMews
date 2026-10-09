@@ -2,6 +2,7 @@ import {
   CAT_DECORATION_CATALOG,
   type DecorationCatalogEntry,
 } from "@/constants/cat-decorations";
+import { CAT_SKIN_PREVIEWS } from "@/constants/cat-skins";
 import { CAT_BED_SOURCES } from "@/constants/cat-beds";
 import { CAT_ROOM_SOURCES } from "@/constants/cat-rooms";
 import nativeCatSource from "@/assets/3d/native/cat-orange.glb";
@@ -10,9 +11,12 @@ import {
 } from "@/constants/cat-toys";
 import { Asset } from "expo-asset";
 import { Image as ExpoImage } from "expo-image";
-import { Platform } from "react-native";
+import { Image as NativeImage, Platform } from "react-native";
 
-const PREFETCH_BATCH_SIZE = Platform.OS === "android" ? 16 : 24;
+const PREFETCH_BATCH_SIZE = Platform.OS === "android" ? 8 : 12;
+// Budget decoded thumbnails, rather than retaining every room/model in memory.
+const MEMORY_PIXEL_BUDGET = 12_000_000;
+const MAX_MEMORY_IMAGE_PIXELS = 512 * 512;
 
 function addAssetModule(modules: Set<number>, moduleId: unknown) {
   if (typeof moduleId === "number") {
@@ -49,12 +53,14 @@ export function collectGameAssetModules(): number[] {
     addAssetModule(modules, source);
   }
 
+  for (const source of Object.values(CAT_SKIN_PREVIEWS)) addAssetModule(modules, source);
+
   addAssetModule(modules, nativeCatSource);
 
   return [...modules];
 }
 
-async function prefetchAssetModule(moduleId: number): Promise<boolean> {
+async function prefetchAssetModule(moduleId: number, memory: boolean): Promise<boolean> {
   try {
     const asset = Asset.fromModule(moduleId);
     if (!asset.downloaded) {
@@ -62,9 +68,11 @@ async function prefetchAssetModule(moduleId: number): Promise<boolean> {
     }
 
     if (asset.type === "glb") return true;
-    const uri = asset.localUri ?? asset.uri;
+    // Resolve the same URI that Expo Image receives for a numeric source.
+    // The downloaded file and the display source can otherwise use different keys.
+    const uri = NativeImage.resolveAssetSource(moduleId)?.uri ?? asset.localUri ?? asset.uri;
     if (uri) {
-      return await ExpoImage.prefetch(uri, "disk");
+      return await ExpoImage.prefetch(uri, memory ? "memory-disk" : "disk");
     }
 
   } catch {
@@ -78,6 +86,16 @@ export type AssetPrefetchProgress = { completed: number; total: number; failed: 
 /** Warm the image cache while the splash screen is visible. */
 export async function prefetchGameAssets(onProgress?: (progress: AssetPrefetchProgress) => void): Promise<void> {
   const moduleIds = collectGameAssetModules();
+  let remainingPixels = MEMORY_PIXEL_BUDGET;
+  const memoryModules = new Set(moduleIds.filter(id => {
+    try {
+      const asset = Asset.fromModule(id);
+      const pixels = (asset.width ?? 0) * (asset.height ?? 0);
+      if (!pixels || pixels > MAX_MEMORY_IMAGE_PIXELS || pixels > remainingPixels) return false;
+      remainingPixels -= pixels;
+      return true;
+    } catch { return false; }
+  }));
   let completed = 0;
   let failed = 0;
   onProgress?.({ completed, failed, total: moduleIds.length });
@@ -85,7 +103,7 @@ export async function prefetchGameAssets(onProgress?: (progress: AssetPrefetchPr
   for (let index = 0; index < moduleIds.length; index += PREFETCH_BATCH_SIZE) {
     const batch = moduleIds.slice(index, index + PREFETCH_BATCH_SIZE);
     await Promise.all(batch.map(async moduleId => {
-      if (!await prefetchAssetModule(moduleId)) failed++;
+      if (!await prefetchAssetModule(moduleId, memoryModules.has(moduleId))) failed++;
       completed++;
       onProgress?.({ completed, failed, total: moduleIds.length });
     }));

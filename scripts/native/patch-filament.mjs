@@ -56,3 +56,5 @@ patch('cpp/bullet/RNFRigidBodyWrapper.cpp', 'setContactProcessingThreshold(0.0)'
   '_rigidBody->setCcdSweptSphereRadius(radius * 0.9);',
   '_rigidBody->setCcdSweptSphereRadius(radius * 0.9);\n    _rigidBody->setContactProcessingThreshold(0.0);');
 console.log('Filament Bullet actor/impulse bindings ready.');
+await import('./patch-runtime-safety.mjs');
+await import('./patch-filament-recovery.mjs');

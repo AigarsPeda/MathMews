@@ -1108,6 +1108,54 @@
       "animated": true
     },
     {
+      "id": "bathroomBathOvalWhite",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "bathroomBathOvalSage",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "bathroomBathOvalRose",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "bathroomBathOvalCharcoal",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "bathroomBathClawfootCream",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "bathroomBathClawfootNavy",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "bathroomJacuzziWhite",
+      "kind": "decoration",
+      "displaySize": 76,
+      "animated": false
+    },
+    {
+      "id": "bathroomJacuzziSage",
+      "kind": "decoration",
+      "displaySize": 76,
+      "animated": false
+    },
+    {
       "id": "bathroomDoubleVanity",
       "kind": "decoration",
       "displaySize": 80,

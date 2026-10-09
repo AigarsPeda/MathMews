@@ -58,9 +58,40 @@ for (const scale of [.2, 1, 3]) for (const angle of [0, .001, Math.PI / 2, Math.
   assert.ok(Math.abs(actualSine - Math.sin(angle)) < 1e-6 && Math.abs(Math.cos(rotation.angle) - Math.cos(angle)) < 1e-6, 'Identity and half-turn toy rotations retain the real orientation');
 }
 const base = { width: 390, height: 420, petSize: 120, sizeScale: 1, decorations: [], toys: [] };
+const { CAT_DECORATION_IDS } = load('@/constants/cat-decorations');
+const { CAT_TOY_IDS } = load('@/constants/cat-toys');
+const { CAT_BED_IDS } = load('@/constants/cat-beds');
+const rotatingLayouts = [
+  ...CAT_DECORATION_IDS.map(decorationId => degrees => ({ ...base, decorations: [{ decorationId, instanceId: decorationId, offset: { x: 0, y: -.2 }, rotationDegrees: degrees }] })),
+  ...CAT_TOY_IDS.map(toyId => degrees => ({ ...base, toys: [{ toyId, instanceId: toyId, offset: { x: 0, y: 0 }, rotationIndex: 2, rotationDegrees: degrees }] })),
+  ...CAT_BED_IDS.map(bedId => degrees => ({ ...base, bedId, bedFlipped: true, bedRotationDegrees: degrees })),
+];
+for (const layout of rotatingLayouts) {
+  const original = w.buildNativeRoomWorld(layout(0)).objects[0];
+  assert.ok(original, 'Every placeable item has a native model');
+  for (const degrees of [37.5, 137.2, 315, 360]) {
+    const object = w.buildNativeRoomWorld(layout(degrees)).objects[0];
+    assert.ok(Math.abs(object.heading - original.heading - (degrees % 360) * Math.PI / 180) < 1e-8, `${object.modelId}: uses the exact saved yaw`);
+    const meta = catalog[object.modelId], cos = Math.cos(object.heading), sin = Math.sin(object.heading);
+    const turn = (degrees % 360) * Math.PI / 180;
+    // Approach points may be shifted to clear the rotated collision bounds;
+    // the contact/landing points themselves must stay attached to the model.
+    for (const [before, after] of [[original.seat, object.seat], [original.bathroom?.contact, object.bathroom?.contact], ...(original.leaves ?? []).map((point, index) => [point, object.leaves[index]])]) {
+      if (!before) continue;
+      const x = before[0] - original.position[0], z = before[2] - original.position[2];
+      assert.ok(Math.abs(after[0] - object.position[0] - (Math.cos(turn) * x + Math.sin(turn) * z)) < 1e-7
+        && Math.abs(after[2] - object.position[2] - (-Math.sin(turn) * x + Math.cos(turn) * z)) < 1e-7, `${object.modelId}: cat interaction anchors follow the rotated model`);
+    }
+    for (const x of [meta.min[0], meta.max[0]]) for (const y of [meta.min[1], meta.max[1]]) for (const z of [meta.min[2], meta.max[2]]) {
+      const corner = [object.position[0] + (cos * x + sin * z) * object.scale, object.position[1] + y * object.scale, object.position[2] + (-sin * x + cos * z) * object.scale];
+      corner.forEach((value, axis) => assert.ok(value >= object.min[axis] - 1e-7 && value <= object.max[axis] + 1e-7, `${object.modelId}: collider encloses the rotated model`));
+    }
+  }
+}
+console.log(`Verified arbitrary native rotation and collider bounds for all ${rotatingLayouts.length} placeable items.`);
 const { WINDOW_DECORATION_IDS } = load('@/constants/window-decorations');
-for (const decorationId of WINDOW_DECORATION_IDS) for (const wallFlipped of [false,true]) {
-  const layout = {...base, decorations:[{decorationId, instanceId:'window', wallFlipped, offset:{x:-.15,y:.18}}]};
+for (const decorationId of WINDOW_DECORATION_IDS) for (const wallFlipped of [false,true]) for (const rotationDegrees of [0, 45, 137.5, 315]) {
+  const layout = {...base, decorations:[{decorationId, instanceId:'window', wallFlipped, rotationDegrees, offset:{x:-.15,y:.18}}]};
   const window = w.buildNativeRoomWorld(layout).objects[0];
   assert.ok(window.min[1] >= .18 - 1e-6 && window.max[1] <= 2.65 + 1e-6,
     'Windows placed with a floor offset remain visible above the floor and below the wall top');
@@ -124,7 +155,7 @@ for (let i = 1; i < updatedDetour.length; i++) for (let t = 0; t <= 1; t += .02)
 const actualStop = [-1, w.FLOOR_Y, 1];
 const dwell = w.prepareNativeStep({ kind: 'toyPlay', steps: [] }, { animation: 'batToy', position: { x: 0, y: 0 }, durationMs: 1000 }, w.catScreenPoint(actualStop, empty), empty, w.FLOOR_Y);
 assert.ok(w.pathLength([actualStop, dwell.native.path[0]]) < 1e-8, 'A play/rest clip cannot snap back through furniture after a detour');
-const { buildRoomActivity, buildRoomReturn } = load('@/utils/room-activities');
+const { buildRoomActivity, buildRoomReturn, buildRoomExit, routeToSofa } = load('@/utils/room-activities');
 const plan = buildRoomActivity({ ...layouts, nativeWorld: world, homeOffset: { x: 0, y: .12 }, ownedToyIds: [], hungry: false, asleep: false }, 0, 'sofaSit', 'sofa');
 const seatStep = w.prepareNativeStep(plan, plan.steps[1], w.catScreenPoint(world.home, world), world, w.FLOOR_Y);
 assert.deepEqual(Array.from(seatStep.native.path.at(-1)), Array.from(world.objects.find(o => o.instanceId === 'sofa').seat));
@@ -159,6 +190,91 @@ for (const [width, height] of [[320, 320], [390, 520], [430, 700]]) {
   const approach = w.prepareNativeStep(starterMeal, starterMeal.steps[0], w.catScreenPoint(starterWorld.home, starterWorld), starterWorld, w.FLOOR_Y);
   assert.equal(approach.native.blocked, false, `${width}/${height}: the starter bed leaves the food bowl reachable`);
 }
+
+// Reproduce the furnished saved room instead of testing only isolated bowls.
+const savedLiving = JSON.parse(fs.readFileSync('scripts/fixtures/living-room-navigation.json'));
+for (const [width, height] of [[320,320],[351,520],[390,650]]) {
+  const options = { width, height, petSize:80, sizeScale:1.15, homeOffset:savedLiving.roomPetOffset,
+    decorations:savedLiving.placedDecorations, toys:savedLiving.placedToys, ownedToyIds:[], hungry:true };
+  const world = w.buildNativeRoomWorld(options);
+  const plan = buildRoomActivity({...options,nativeWorld:world},0,'bowlEat');
+  assert.ok(plan, `${width}/${height}: the saved living room has a reachable bowl`);
+  const approach = w.prepareNativeStep(plan,plan.steps[0],w.catScreenPoint(world.home,world),world,w.FLOOR_Y);
+  assert.equal(approach.native.blocked,false);
+  const arrival = approach.native.path.at(-1);
+  assert.ok(w.isFree(arrival,world));
+  const meal = w.prepareNativeStep(plan,plan.steps[1],w.catScreenPoint(arrival,world),world,w.FLOOR_Y);
+  assert.equal(meal.native.blocked,false,'Eating starts only after the cat arrives within muzzle reach');
+  const tooFar = w.prepareNativeStep(plan,plan.steps[1],w.catScreenPoint([1.8,w.FLOOR_Y,1.8],world),world,w.FLOOR_Y);
+  assert.equal(tooFar.native.blocked,true,'The eating clip cannot award food from across the room');
+  const chairPlan=buildRoomActivity({...options,nativeWorld:world},0,'sofaSit',savedLiving.placedDecorations.find(item=>item.decorationId==='chairRockingOak').instanceId);
+  const chair=world.objects.find(object=>object.modelId==='chairRockingOak');
+  const exit=buildRoomExit({...options,nativeWorld:world},chairPlan,2,w.catScreenPoint(chair.seat,world));
+  const off=w.prepareNativeStep(exit,exit.steps[0],w.catScreenPoint(chair.seat,world),world,chair.seat[1]);
+  assert.equal(off.native.blocked,false,'The reported rocking chair has a safe jump down before editing');
+  assert.equal(off.native.path.at(-1)[1],w.FLOOR_Y);
+}
+const twoBowls = { ...base, petSize:80, decorations:[
+  {decorationId:'bowlBlue',instanceId:'enclosed-bowl',offset:{x:-.5,y:.05}},
+  {decorationId:'bowlPink',instanceId:'reachable-bowl',offset:{x:.5,y:.05}},
+], homeOffset:{x:0,y:.4}, ownedToyIds:[], hungry:true };
+const twoBowlWorld = w.buildNativeRoomWorld(twoBowls);
+const enclosed = twoBowlWorld.objects[0];
+twoBowlWorld.objects.push({instanceId:'blocker',modelId:'test-blocker',position:enclosed.position,heading:0,scale:1,solid:true,
+  min:[enclosed.position[0]-.9,0,enclosed.position[2]-.9],max:[enclosed.position[0]+.9,1,enclosed.position[2]+.9]});
+const mealChoice = buildRoomActivity({...twoBowls,nativeWorld:twoBowlWorld},0,'bowlEat');
+assert.equal(mealChoice?.targetInstanceId,'reachable-bowl','Eat chooses another bowl when the first is enclosed');
+assert.equal(buildRoomActivity({...twoBowls,nativeWorld:twoBowlWorld},0,'bowlEat','enclosed-bowl'),null,
+  'Selecting an enclosed bowl cannot silently eat from another bowl');
+console.log('Verified saved living-room food routes, muzzle arrival checks and alternate reachable bowl selection.');
+
+// The reported sofa is behind a chair and beneath a rotated arc lamp.
+const savedSofa = JSON.parse(fs.readFileSync('scripts/fixtures/sofa-navigation.json'));
+for (const [width, height] of [[320,460],[351,520],[390,650]]) {
+  const options = { width, height, petSize:80, sizeScale:1.15, homeOffset:savedSofa.roomPetOffset,
+    decorations:savedSofa.placedDecorations, toys:savedSofa.placedToys, ownedToyIds:[], asleep:false };
+  const world = w.buildNativeRoomWorld(options);
+  const sofa = world.objects.find(o=>o.modelId==='sofaB');
+  const chair = world.objects.find(o=>o.modelId==='chairRockingOak');
+  const lamp = world.objects.find(o=>o.modelId==='lampFloorArc');
+  assert.ok(lamp.collisionBoxes.length>5, 'Arc lamp collision follows its stem instead of filling the air beneath the shade');
+  const sleep = buildRoomActivity({...options,nativeWorld:world},0,'sofaSleep',sofa.instanceId);
+  const tooFar = w.prepareNativeStep(sleep,sleep.steps[3],w.catScreenPoint(world.home,world),world,w.FLOOR_Y);
+  assert.equal(tooFar.native.blocked,true,'A held sleep clip cannot start on the floor before reaching its cushion');
+  const belowSeat = [sofa.seat[0],w.FLOOR_Y,sofa.seat[2]];
+  assert.equal(w.prepareNativeStep(sleep,sleep.steps[3],w.catScreenPoint(belowSeat,world),world,w.FLOOR_Y).native.blocked,true,
+    'Being underneath the sofa is not arrival on the cushion');
+  let point = world.home;
+  let preparedPlan = sleep;
+  for (let index=0;index<4;index++) {
+    const step=w.prepareNativeStep(preparedPlan,preparedPlan.steps[index],w.catScreenPoint(point,world),world,point[1]);
+    assert.equal(step.native.blocked,false,`${width}/${index}: the reported sofa has a clear approach and supported sleep pose`);
+    preparedPlan={...preparedPlan,steps:preparedPlan.steps.map((s,i)=>i===index?step:s)};
+    point=step.native.path.at(-1);
+  }
+  assert.ok(w.hasNativeArrived(point,sofa.seat));
+  const source = buildRoomActivity({...options,nativeWorld:world},0,'sofaSit',chair.instanceId);
+  const switching = routeToSofa({...options,nativeWorld:world},sleep,w.catScreenPoint(chair.seat,world),{plan:source,stepIndex:2});
+  point=chair.seat; preparedPlan=switching;
+  for(let index=0;index<switching.steps.length;index++) {
+    const step=w.prepareNativeStep(preparedPlan,preparedPlan.steps[index],w.catScreenPoint(point,world),world,point[1]);
+    assert.equal(step.native.blocked,false,`${width}/${index}: chair-to-sofa exits keep their source while the approach targets the sofa`);
+    preparedPlan={...preparedPlan,steps:preparedPlan.steps.map((s,i)=>i===index?step:s)};
+    point=step.native.path.at(-1);
+    if(step.hold)break;
+  }
+  assert.ok(w.hasNativeArrived(point,sofa.seat));
+  const enclosed={...world,objects:[...world.objects,{...obstacle,instanceId:'enclosure',min:[-2.5,0,-2.5],max:[2.5,3,2.5]}]};
+  assert.equal(w.findSeatApproach(world.home,sofa,enclosed),undefined,'A fully blocked sofa has no invented interaction point');
+}
+console.log('Verified reported sofa routes, rotated lamp clearance, chair-to-sofa commands, supported sleep and unreachable seating.');
+
+const alternateSeatOptions={...base,petSize:80,decorations:[{decorationId:'sofaA',instanceId:'alternate-seat',offset:{x:0,y:-.2},scale:1.5}],ownedToyIds:[]};
+const alternateSeatWorld=w.buildNativeRoomWorld(alternateSeatOptions),alternateSeat=alternateSeatWorld.objects[0];
+const originalApproach=alternateSeat.approach;
+alternateSeatWorld.objects.push({...obstacle,instanceId:'takeoff-blocker',min:[originalApproach[0]-.08,0,originalApproach[2]-.08],max:[originalApproach[0]+.08,.3,originalApproach[2]+.08]});
+const alternateApproach=w.findSeatApproach(alternateSeatWorld.home,alternateSeat,alternateSeatWorld);
+assert.ok(alternateApproach&&w.pathLength([alternateApproach,originalApproach])>.1,'A blocked default takeoff chooses another reachable front-side point');
 
 // A meal can follow a return from another activity without rerouting that return to food.
 const bowlAfterPlay = { decorationId: 'bowlBlue', instanceId: 'after-play-bowl', offset: { x: .25, y: .15 } };
@@ -262,6 +378,22 @@ function matrix(t=[0,0,0],q=[0,0,0,1],s=[1,1,1]) {
     (2*x*z+2*y*r)*s[2],(2*y*z-2*x*r)*s[2],(1-2*x*x-2*y*y)*s[2],0,...t,1];
 }
 const parents=new Map();skeleton.nodes.forEach((n,i)=>n.children?.forEach(child=>parents.set(child,i)));
+// The landing point must follow the exported sofa orientation, including mirrors.
+for (const decorationId of ['sofaA','sofaB']) for (const wallFlipped of [false,true]) for (const scale of [1,1.5,2.2]) {
+  const room=w.buildNativeRoomWorld({...base,decorations:[{...sofa,decorationId:'sofaA',rotationIndex:decorationId==='sofaB'?1:0,wallFlipped,scale}]});
+  const object=room.objects[0], model=glb(decorationId);
+  assert.equal(object.modelId,decorationId);
+  const orientation=model.nodes.find(node=>node.name===`${decorationId} orientation`);
+  const exported=matrix(orientation.translation,orientation.rotation,orientation.scale);
+  const root=matrix(object.position,[0,Math.sin(object.heading/2),0,Math.cos(object.heading/2)],[object.scale,object.scale,object.scale]);
+  const transform=multiply(root,exported);
+  for (const [name,local] of [['seat',[0,.70,.27]],['approach',[0,0,.85+room.radius/object.scale]]]) {
+    const expected=[0,1,2].map(axis=>transform[axis]*local[0]+transform[4+axis]*local[1]+transform[8+axis]*local[2]+transform[12+axis]);
+    if(name==='approach') expected[1]=w.FLOOR_Y;
+    if(name==='approach') expected.splice(0,3,...w.nearestFree(expected,room));
+    assert.ok(w.pathLength([object[name],expected])<1e-6, `${decorationId}/${wallFlipped}/${scale}: ${name} follows the real sofa GLB orientation`);
+  }
+}
 function posedTail(clip,time,position,heading,scale,names=['tailjoint0','tailjoint1','tailjoint2','tailjoint3','tailTip'], localsOnly=false) {
   const nodes=skeleton.nodes.map(n=>({ ...n }));
   const animation=skeleton.animations.find(a=>a.name===clip);
@@ -489,7 +621,8 @@ const transformManager = { createIdentityMatrix: () => ({ scaling: v => { scale 
   getTransform() { return { original: true, translation:[0,0,0], translate() {return this;}, rotate(angle,axis) {assert.ok(angle>0&&Math.abs(Math.hypot(...axis)-1)<1e-6);contactCalls.push('rotate');return this;} }; }
 };
 const asset = { getFirstEntityByName: name => rigMatrices?.has(name) || exposeFoodProps && name==='Bowl base Game prop' ? {name} : undefined }, entity = {}, context = { transformManager };
-mocks['react-native-filament'] = { useModel: () => ({ state: 'loaded', asset, rootEntity: entity }), useAnimator: () => animator, useFilamentContext: () => context, RenderCallbackContext: { useRenderCallback: fn => { renderFrame = fn; } } };
+let actorAsset = asset;
+mocks['react-native-filament'] = { useModel: () => ({ state: 'loaded', asset: actorAsset, rootEntity: entity }), useAnimator: () => animator, useFilamentContext: () => context, RenderCallbackContext: { useRenderCallback: fn => { renderFrame = fn; } } };
 const { NativeCatActor } = load('@/components/pet/native/NativeCatActor');
 const registry = load('@/pet-display/registry/cat-model-registry').catModelRegistry;
 assert.equal(registry.mediaKind, 'model');
@@ -509,6 +642,18 @@ for (const fps of [30, 60, 120]) {
   const last = applies.at(-1);assert.equal(last.name, 'walk');assert.ok(Math.abs(last.time - (1 / (.8 * empty.catScale) % 1)) < .001, 'Paw phase follows actual traveled distance');
 }
 
+// A paused portrait still applies its first pose when its model is replaced.
+slots = []; applies = []; let pausedReady = 0;
+const pausedPortrait = { playback: { kind: 'segment', segment: registry.getSegment('idle') }, active: false, onReady: () => pausedReady++ };
+render(pausedPortrait); renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.equal(applies.at(-1).time, 0); assert.equal(pausedReady, 1);
+const posedFrames = applies.length;
+renderFrame({ timeSinceLastFrame: 1 }); assert.equal(applies.length, posedFrames);
+actorAsset = { ...asset }; render(pausedPortrait); renderFrame({ timeSinceLastFrame: 1 });
+assert.equal(applies.length, posedFrames + 1); assert.equal(applies.at(-1).time, 0); assert.equal(pausedReady, 2);
+renderFrame({ timeSinceLastFrame: 1 }); assert.equal(applies.length, posedFrames + 1);
+actorAsset = asset;
+
 // A retained native renderer must not reuse command IDs after a React refresh.
 slots = []; applies = [];
 const refreshedJourney = { path:[[-1,w.FLOOR_Y,0],[1,w.FLOOR_Y,0]], distance:2, duration:2, jump:false, awaitCompletion:true };
@@ -527,6 +672,30 @@ assert.equal(refreshedArrivals.length,1);
 refreshedJourney.path[1][0]=9;
 assert.equal(refreshedArrivals[0][0],1,'Deferred completion retains the rendered arrival when a shared navigation path is replaced');
 refreshedJourney.path[1][0]=1;
+
+// Drawing-thread reads can lag behind consecutive React effects. A complete
+// command publication must not read/merge an older shared command snapshot.
+slots=[]; applies=[];
+const atomicArrivals=[];
+const idleProps={playback:{kind:'segment',segment:registry.getSegment('idle')},active:true,world:empty};
+render(idleProps);
+for(let frame=0;frame<180;frame++)renderFrame({timeSinceLastFrame:1/60});
+const atomicCommand=slots.find(slot=>slot?.value?.value?.segments)?.value;
+const staleCommand=atomicCommand.value;
+let pendingCommand=staleCommand, writes=0;
+Object.defineProperty(atomicCommand,'value',{configurable:true,get:()=>staleCommand,set:value=>{pendingCommand=value;writes++;}});
+render({...idleProps,world:{...empty},active:false,activityKey:'atomic-meal',travel:refreshedJourney,
+  onRoomStepComplete:(key,point)=>atomicArrivals.push(point)});
+assert.equal(writes,1,'A native command publishes one complete snapshot rather than competing partial writes');
+assert.equal(pendingCommand.activityKey,'atomic-meal');assert.equal(pendingCommand.travel,refreshedJourney);
+assert.equal(pendingCommand.active,false);assert.ok(pendingCommand.id>staleCommand.id);
+Object.defineProperty(atomicCommand,'value',{configurable:true,writable:true,value:pendingCommand});
+render({...idleProps,activityKey:'atomic-meal',travel:refreshedJourney,onRoomStepComplete:(key,point)=>atomicArrivals.push(point)});
+for(let frame=0;frame<60;frame++)renderFrame({timeSinceLastFrame:1/60});
+assert.equal(atomicArrivals.length,0,'The new walk cannot finish using the old idle clock');
+for(let frame=0;frame<61;frame++)renderFrame({timeSinceLastFrame:1/60});
+assert.equal(atomicArrivals.length,1);assert.ok(Math.abs(atomicArrivals[0][0]-1)<1e-6);
+console.log('Verified atomic native commands with delayed shared reads and a fresh movement clock.');
 
 // Room arrivals use the rendered clock even when wall time/frame delivery differs.
 for (const reduced of [false, true]) {
@@ -746,7 +915,10 @@ mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { star
 let sceneReduced = false;
 mocks['@/hooks/use-animation-activity'] = { useAnimationActivity: () => ({ active: true, reduceMotion: sceneReduced }) };
 Object.assign(mocks['react-native-filament'], { FilamentScene: 'FilamentScene', FilamentView: 'FilamentView', DefaultLight: 'Light', useWorld: () => ({}), useStaticPlaneShape() {}, useBoxShape() {}, useRigidBody() {} });
-const { NativeRoomScene } = load('@/components/pet/native/NativeRoomScene');
+mocks['@/components/recovery/RecoveryBoundary'] = { RecoveryBoundary: 'RecoveryBoundary' };
+mocks['@/components/recovery/SceneLoadGuard'] = { SceneLoadGuard: 'SceneLoadGuard' };
+mocks['@/lib/graphics-mode'] = { enableSimpleGraphicsForSession() {} };
+const { NativeRoomSurface: NativeRoomScene } = load('@/components/pet/native/NativeRoomScene');
 const bowlRoom = w.buildNativeRoomWorld({ ...base, decorations: [{ decorationId: 'bowlBlue', instanceId: 'meal', offset: { x: .2, y: .3 } }] });
 slots = []; cursor = 0;
 NativeRoomScene({ world: { ...bowlRoom, width: 0 } });
@@ -1043,7 +1215,7 @@ for(const contactRoom of plantRooms) for(const fps of [30,60,120]) {
     plantLeaf:target,pawPositions:paws,positionValue:catPosition,initialPosition:approach});
   const catFrame=renderFrame;
   const child=sceneChildren({world:contactRoom,catPresent:true,playingId:'plant'}).find(c=>c.type.name==='RoomObject');
-  const props={...child.props,plantLeaf:target,pawPositions:paws,catPosition,playContact:true,breezy:false};
+  const props={...child.props,plantLeaf:target,pawPositions:paws,catPosition,playContact:true,airflow:[]};
   slots=[];cursor=0;effects=[];child.type({...props,onReady:undefined});effects.forEach(fn=>fn());
   let objectFrame=renderFrame;
   objectFrame({timeSinceLastFrame:0});
@@ -1064,6 +1236,86 @@ for(const contactRoom of plantRooms) for(const fps of [30,60,120]) {
   for(let i=0;i<meta.leaves.length;i++) assert.ok(toyWorldMatrix(meta.leaves[i].node).every((v,k)=>Math.abs(v-originalLeaves[i][k])<1e-6),'Each detached leaf regrows at its exact original attachment');
 }
 console.log('Verified real plant menu plans, paw contact, falling leaves, pause/resume, independent slow regrowth, dark materials, and open/corner navigation at 30/60/120 FPS.');
+
+// Airflow follows the actual AC outlet, including the other wall and resizing.
+const air = load('@/utils/native-airflow');
+for (const decorationId of ['livingAirCon','officeAc']) for (const wallFlipped of [false,true]) for (const scale of [.7,1,1.6]) {
+  const room=w.buildNativeRoomWorld({...base,decorations:[{decorationId,instanceId:'ac',wallFlipped,scale,poweredOn:true,offset:{x:.15,y:-.6}}]});
+  const ac=room.objects[0], sources=air.roomAirflowSources(room.objects), source=sources[0];
+  const point=(across,forward,drop)=>[source.position[0]+across*Math.cos(ac.heading)+forward*Math.sin(ac.heading),
+    source.position[1]-drop,source.position[2]-across*Math.sin(ac.heading)+forward*Math.cos(ac.heading)];
+  assert.ok(air.airflowStrength(point(0,.35,1),sources)>.5,'A leaf in front and below either AC outlet receives a visible draft');
+  for(const p of [point(3,.35,1),point(0,-1,1),point(0,.35,-.1),point(0,.35,4)])
+    assert.equal(air.airflowStrength(p,sources),0,'Leaves outside the stream, behind or above the AC remain still');
+  assert.equal(air.roomAirflowSources([{...ac,poweredOn:false}]).length,0,'Switching off an AC removes its airflow');
+  assert.equal(air.roomAirflowSources([{...ac,poweredOn:undefined}]).length,0,'An AC that has never been switched on produces no airflow');
+  assert.equal(air.roomAirflowSources([ac,{...ac,instanceId:'off',poweredOn:false}]).length,1,'Each AC has independent power');
+}
+// Reproduce the plant and AC placement in the reported room. Check actual leaf
+// tip movement through the render worklet, rather than just an animation flag.
+const draftRoom=w.buildNativeRoomWorld({...base,width:351,height:456,petSize:80,sizeScale:1.15,decorations:[
+  {decorationId:'livingAirCon',instanceId:'ac',offset:{x:.1215852969,y:-.6446808017},poweredOn:true},
+  {decorationId:'plantB',instanceId:'plant',offset:{x:.0163736957,y:-.3914404433},scale:2.2},
+]});
+const draftPlant=draftRoom.objects[1], draftModel=glb(draftPlant.modelId), draftMeta=catalog[draftPlant.modelId];
+assert.ok(draftPlant.leaves.every(point=>air.airflowStrength(point,air.roomAirflowSources(draftRoom.objects))>.1),
+  'The leaves shown beneath the AC in the reported placement receive airflow');
+for(const fps of [30,60,120]) {
+  toyRoot=matrix();toyNodes=new Map(draftModel.nodes.map(n=>[n.name,n]));
+  toyLocals=new Map(draftModel.nodes.map(n=>[n.name,n.matrix??matrix(n.translation,n.rotation,n.scale)]));
+  toyParents=new Map(draftModel.nodes.flatMap(n=>(n.children??[]).map(i=>[draftModel.nodes[i].name,n.name])));
+  const child=sceneChildren({world:draftRoom,catPresent:false}).find(c=>c.type.name==='RoomObject'&&c.props.object.instanceId==='plant');
+  slots=[];
+  const paint=patch=>{cursor=0;effects=[];child.type({...child.props,...patch,onReady:undefined});effects.forEach(fn=>fn());return renderFrame;};
+  let frame=paint({airflow:[]});frame({timeSinceLastFrame:0});
+  const rest=draftMeta.leaves.map(leaf=>toyWorldMatrix(leaf.node));
+  const tips=draftMeta.leaves.map(leaf=>toyWorldMatrix(leaf.contact).slice(12,15));
+  const root=toyRoot.slice();
+  frame=paint({});
+  let peak=0;
+  let previousTips=tips;
+  const low=tips.map(()=>Infinity), high=tips.map(()=>-Infinity);
+  for(let i=0;i<fps*8;i++) {
+    frame({timeSinceLastFrame:1/fps});
+    const currentTips=[];
+    for(let k=0;k<draftMeta.leaves.length;k++) {
+      const tip=toyWorldMatrix(draftMeta.leaves[k].contact).slice(12,15);
+      currentTips.push(tip);
+      if(i>=fps) {low[k]=Math.min(low[k],tip[1]);high[k]=Math.max(high[k],tip[1]);}
+      peak=Math.max(peak,Math.hypot(...tip.map((v,j)=>v-tips[k][j])));
+      assert.ok(tip[1]<=tips[k][1]+.005,'The downward draft presses leaves down instead of flapping them up and down');
+      assert.ok(Math.hypot(...tip.map((v,j)=>v-previousTips[k][j]))<.30/fps,
+        `Damped leaf motion stays smooth between frames: ${fps} FPS, frame ${i}, leaf ${k}`);
+      assert.ok(toyWorldMatrix(draftMeta.leaves[k].node).slice(12,15).every((v,j)=>Math.abs(v-rest[k][12+j])<1e-6),
+        'Fluttering leaves stay attached to their stems');
+    }
+    previousTips=currentTips;
+  }
+  assert.ok(peak>.025,`The actual rendered leaf tips visibly bend with the draft at ${fps} FPS`);
+  assert.ok(Math.max(...high.map((value,k)=>value-low[k]))>.035,
+    `The slow gust produces visible ongoing motion after the initial bend: ${fps} FPS, ${Math.max(...high.map((value,k)=>value-low[k]))}`);
+  assert.deepEqual(toyRoot,root,'Airflow leaves the pot and plant root fixed');
+  const beforePause=draftMeta.leaves.map(leaf=>toyWorldMatrix(leaf.node));
+  frame=paint({active:false});for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+  assert.deepEqual(draftMeta.leaves.map(leaf=>toyWorldMatrix(leaf.node)),beforePause,'Hidden or paused rooms freeze the leaf motion');
+  const off=air.roomAirflowSources(draftRoom.objects.map(o=>({...o,poweredOn:false})));
+  frame=paint({airflow:off});
+  frame({timeSinceLastFrame:1/fps});
+  assert.ok(draftMeta.leaves.some((leaf,k)=>toyWorldMatrix(leaf.node).some((v,j)=>Math.abs(v-rest[k][j])>1e-4)),
+    'Leaves ease back instead of snapping immediately when the AC turns off');
+  for(let i=0;i<fps*3;i++)frame({timeSinceLastFrame:1/fps});
+  for(let k=0;k<rest.length;k++) assert.ok(toyWorldMatrix(draftMeta.leaves[k].node).every((v,j)=>Math.abs(v-rest[k][j])<1e-6),
+    'Switching the AC off returns the leaves to their resting pose');
+  frame=paint({airflow:child.props.airflow.map(source=>({...source,position:[source.position[0]+3,...source.position.slice(1)]}))});
+  for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+  for(let k=0;k<rest.length;k++) assert.ok(toyWorldMatrix(draftMeta.leaves[k].node).every((v,j)=>Math.abs(v-rest[k][j])<1e-6),
+    'Moving the AC away stops the plant reacting');
+}
+sceneReduced=true;
+assert.equal(sceneChildren({world:draftRoom,catPresent:false}).find(c=>c.type.name==='RoomObject').props.active,false,
+  'Reduce Motion disables airflow response in the actual scene');
+sceneReduced=false;
+console.log('Verified visible leaf-tip sway, fixed stem attachments, scaled/rotated AC airflow, power-off, distance, pause and Reduce Motion at 30/60/120 FPS.');
 
 // Execute the ball's render callback at the floor edge and after play finishes.
 sceneReduced = false;
@@ -1103,3 +1355,212 @@ for (const fps of [30, 60, 120]) {
   assert.equal(body.position[1], w.FLOOR_Y + radius);
 }
 console.log('Verified landed balls stay put after play, save/reload at the same floor position, and recover locally at boundaries at 30/60/120 FPS.');
+
+// Match the real chair cushion and runner geometry, then run both native roots
+// against the scene's single rocking clock.
+const rocking = load('@/utils/native-rocking-chair');
+const chairModel = glb('chairRockingOak');
+const cushion = chairModel.nodes.find(n => n.name === 'Soft sage seat pad');
+const cushionPrimitive = chairModel.meshes[cushion.mesh].primitives[0];
+const cushionTop = cushion.translation[1] + chairModel.accessors[cushionPrimitive.attributes.POSITION].max[1];
+assert.ok(Math.abs(cushionTop - .69) < .0001);
+for (const wallFlipped of [false,true]) for (const size of [undefined,1,1.4,2.2]) for (const kind of ['sofaSit','sofaSleep']) {
+  const layout = { ...base, petSize: roomScale.ROOM_CAT_SIZE, sizeScale: roomScale.ROOM_OBJECT_SCALE,
+    decorations: [{ decorationId:'chairRockingOak',instanceId:'rocker',offset:{x:0,y:.15},wallFlipped,scale:size}] };
+  const world = w.buildNativeRoomWorld(layout), chair = world.objects[0];
+  const options = { ...layout, nativeWorld:world, homeOffset:{x:0,y:.12}, ownedToyIds:[], hungry:false, asleep:false };
+  const plan = buildRoomActivity(options,0,kind,'rocker');
+  assert.ok(plan);
+  const root = matrix(chair.position,[0,Math.sin(chair.heading/2),0,Math.cos(chair.heading/2)],[chair.scale,chair.scale,chair.scale]);
+  const expected = [0,1,2].map(i => root[4+i]*cushionTop + root[8+i]*cushion.translation[2] + root[12+i]);
+  assert.ok(w.pathLength([chair.seat,expected]) < .0001, 'Cat landing matches the shipped cushion top on both orientations');
+  const walk = w.prepareNativeStep(plan,plan.steps[0],w.catScreenPoint(world.home,world),world,w.FLOOR_Y);
+  assert.equal(walk.native.blocked,false);
+  assert.ok(w.pathLength([walk.native.path.at(-1),chair.approach]) < .001);
+  const jump = w.prepareNativeStep(plan,plan.steps[1],walk.position,world,w.FLOOR_Y);
+  assert.equal(jump.native.blocked,false);
+  assert.ok(w.pathLength([jump.native.path.at(-1),chair.seat]) < .001);
+  const restStep = plan.steps.find(s => s.hold);
+  const rest = w.prepareNativeStep(plan,restStep,jump.position,world,chair.seat[1]);
+  assert.equal(rest.native.rockingChair.instanceId,'rocker');
+  const leaveStep = plan.steps.find(s => s.animation === 'jumpOff');
+  const leave = w.prepareNativeStep(plan,leaveStep,rest.position,world,chair.seat[1]);
+  assert.equal(leave.native.rockingChair.leaving,true);
+  assert.equal(rocking.rockingChairContact(jump.native,0),0);
+  assert.equal(rocking.rockingChairContact(jump.native,jump.native.duration),1);
+  assert.equal(rocking.rockingChairContact(leave.native,0),1);
+  assert.equal(rocking.rockingChairContact(leave.native,leave.native.duration),0);
+  if (size !== undefined && size !== 1.4) continue;
+  for (const fps of [30,60,120]) {
+    toyRoot = matrix(); toyNodes = new Map(chairModel.nodes.map(n => [n.name,n]));
+    toyLocals = new Map(chairModel.nodes.map(n => [n.name,n.matrix ?? matrix(n.translation,n.rotation,n.scale)]));
+    toyParents = new Map(chairModel.nodes.flatMap(n => (n.children ?? []).map(i => [chairModel.nodes[i].name,n.name])));
+    slots=[]; catRoot=matrix();liveLocals=posedTail('sit',0,[0,0,0],0,1,[],true);
+    const motion = {value:rocking.STILL_ROCKING_MOTION};
+    const catPosition = {value:chair.seat};
+    render({playback:{kind:'segment',segment:{assetKey:restStep.animation,loop:true}},active:true,
+      world,travel:rest.native,rockingMotion:motion,positionValue:catPosition,initialPosition:chair.seat});
+    const catFrame=renderFrame;
+    const child=sceneChildren({world,catPresent:true,travel:rest.native,playback:{kind:'segment',segment:{assetKey:'sit'}}}).find(c=>c.type.name==='RoomObject');
+    const props={...child.props,rockingMotion:motion,catPosition,onReady:undefined};
+    slots=[];cursor=0;effects=[];child.type(props);effects.forEach(fn=>fn());
+    const chairFrame=renderFrame;
+    let min=Infinity,max=-Infinity;
+    for(let frame=0;frame<fps*8;frame++) {
+      motion.value=rocking.advanceRockingChair(motion.value,rest.native.rockingChair,catPosition.value,1/fps);
+      chairFrame({timeSinceLastFrame:1/fps});catFrame({timeSinceLastFrame:1/fps});
+      const actualSeat=[0,1,2].map(i=>toyRoot[4+i]*cushionTop+toyRoot[8+i]*cushion.translation[2]+toyRoot[12+i]);
+      assert.ok(w.pathLength([catRoot.slice(12,15),actualSeat])<.0001, 'Cat and chair remain attached to the same cushion through every rock');
+      min=Math.min(min,motion.value.angle);max=Math.max(max,motion.value.angle);
+    }
+    assert.ok(max-min>.14,'Occupied chair visibly rocks in both directions');
+    for(let frame=0;frame<fps*5;frame++) motion.value=rocking.advanceRockingChair(motion.value,undefined,undefined,1/fps);
+    assert.equal(motion.value.angle,0,'Empty chair settles after the cat leaves');
+  }
+}
+// The actual scene clock freezes when paused and resets with Reduce Motion.
+const rockerWorld=w.buildNativeRoomWorld({...base,decorations:[{decorationId:'chairRockingOak',instanceId:'rocker',offset:{x:0,y:.15}}]});
+const rocker=rockerWorld.objects[0];
+const chairTravel={path:[rocker.seat],distance:0,duration:12,jump:false,rockingChair:{instanceId:'rocker',seat:rocker.seat,
+  pivot:rocker.position,axis:[1,0,0],scale:rocker.scale}};
+const chairScene={world:rockerWorld,catPresent:true,initialCatPosition:rocker.seat,travel:chairTravel,playback:{kind:'segment',segment:{assetKey:'sit'}},paused:false};
+slots=[];let rockerChildren=renderCachedScene(chairScene);
+const sceneMotion=rockerChildren.find(c=>c.type.name==='RoomObject').props.rockingMotion;
+assert.equal(sceneMotion,rockerChildren.find(c=>c.type==='Cat').props.rockingMotion);
+for(let frame=0;frame<60;frame++)paintFrame();
+assert.ok(Math.abs(sceneMotion.value.angle)>.05);
+renderCachedScene({...chairScene,paused:true});const frozen=JSON.stringify(sceneMotion.value);
+for(let frame=0;frame<60;frame++)paintFrame();assert.equal(JSON.stringify(sceneMotion.value),frozen);
+sceneReduced=true;renderCachedScene(chairScene);paintFrame();assert.equal(sceneMotion.value.angle,0);
+sceneReduced=false;renderCachedScene({...chairScene,editing:true});paintFrame();assert.equal(sceneMotion.value.angle,0);
+console.log('Verified real rocking-chair cushion alignment, approach/jumps, shared chair/cat rocking, settling, pauses and Reduce Motion at 30/60/120 FPS.');
+
+// Execute PetStage's wall-anchor save effect: a cached living room must never
+// call the bathroom's editing callback, even through many parent refreshes.
+const stageSource=fs.readFileSync('components/pet/PetStage.tsx','utf8');
+const stageAst=ts.createSourceFile('PetStage.tsx',stageSource,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+let repairEffect;
+function findRepairEffect(node) {
+  if(ts.isCallExpression(node) && node.expression.getText(stageAst)==='useEffect'
+    && node.arguments[0]?.getText(stageAst).includes('object.placementOffset')) repairEffect=node.arguments[0].getText(stageAst);
+  ts.forEachChild(node,findRepairEffect);
+}
+findRepairEffect(stageAst);assert.ok(repairEffect);
+const repairCode=ts.transpileModule(`(${repairEffect})();`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
+const repairLayout={...base,decorations:[{decorationId:'windowOakWide',instanceId:'cached-window',scale:1.6,offset:{x:.3,y:.2}}]};
+let repairWorld=w.buildNativeRoomWorld(repairLayout),saves=0;
+const repairContext={roomVisible:false,rotationPreview:null,viewport:{width:base.width,height:base.height},nativeWorld:repairWorld,livePositions:{},
+  onPlacedDecorationOffsetChange(id,offset){saves++;repairLayout.decorations[0].offset=offset;}};
+for(let render=0;render<100;render++) vm.runInNewContext(repairCode,repairContext);
+assert.equal(saves,0,'Hidden cached rooms never save into the active room or trigger an update loop');
+repairContext.roomVisible=true;vm.runInNewContext(repairCode,repairContext);
+assert.equal(saves,1,'The window is repaired when its own room becomes visible');
+repairContext.nativeWorld=w.buildNativeRoomWorld(repairLayout);
+for(let render=0;render<100;render++)vm.runInNewContext(repairCode,repairContext);
+assert.equal(saves,1,'The corrected room converges and stops saving through further parent renders');
+console.log('Verified the real PetStage repair effect across 100 hidden and visible refreshes without a repeated save or update loop.');
+
+// Bathroom journeys use authored basin/tray/seat anchors, retain their entry
+// side through washing, and leave safely when another command interrupts.
+const bathroomIds = ['bathroomBathAni', 'bathroomShowerCabin', 'bathroomWcAni',
+  'bathroomBathOvalWhite', 'bathroomBathOvalSage', 'bathroomBathOvalRose', 'bathroomBathOvalCharcoal',
+  'bathroomBathClawfootCream', 'bathroomBathClawfootNavy', 'bathroomJacuzziWhite', 'bathroomJacuzziSage'];
+for (const id of bathroomIds) for (const wallFlipped of [false, true]) for (const size of [id === 'bathroomWcAni' ? 1.3 : id === 'bathroomShowerCabin' ? 1 : 1.8, 2.2]) {
+  const fixtureKind = catalog[id].bathroom.kind;
+  const kind = fixtureKind === 'toilet' ? 'toiletUse' : fixtureKind === 'shower' ? 'showerWash' : 'bathWash';
+  const layout = { ...base, petSize: roomScale.ROOM_CAT_SIZE, sizeScale: roomScale.ROOM_OBJECT_SCALE,
+    decorations: [{ decorationId: id, instanceId: 'fixture', scale: size, wallFlipped, offset: { x: 0, y: -.25 } }] };
+  const room = w.buildNativeRoomWorld(layout), fixture = room.objects[0];
+  const options = { ...layout, nativeWorld: room, homeOffset: { x: .1, y: .2 }, ownedToyIds: [], hungry: false, asleep: false };
+  const plan = buildRoomActivity(options, 0, kind, 'fixture');
+  assert.ok(plan && plan.targetInstanceId === 'fixture');
+  assert.equal(buildRoomActivity(options, 0, kind, 'missing'), null);
+  assert.ok(!buildRoomActivity(options, 0), 'Bathroom care starts only from an explicit command');
+  let position = room.home, entry;
+  for (let i = 0; i < plan.steps.length; i++) {
+    const prepared = w.prepareNativeStep(plan, plan.steps[i], w.catScreenPoint(position, room), room, position[1]);
+    assert.equal(prepared.native.blocked, false, `${id}/${wallFlipped}/${size}/${prepared.bathroomPhase ?? 'return'} is reachable`);
+    plan.steps[i] = prepared;
+    position = prepared.native.path.at(-1);
+    if (prepared.bathroomPhase === 'enter') {
+      entry = prepared.bathroomApproach;
+      assert.ok(w.pathLength([position, fixture.bathroom.contact]) < 1e-6, 'Landing matches the actual exported contact point');
+    }
+    if (['wash', 'use'].includes(prepared.bathroomPhase)) {
+      const returning = buildRoomReturn(options, plan, i, prepared.position);
+      assert.equal(returning.steps[0].bathroomPhase, 'exit');
+      assert.equal(returning.steps[0].targetInstanceId, 'fixture');
+      assert.ok(w.pathLength([returning.steps[0].bathroomApproach, entry]) < 1e-6);
+      if (kind === 'toiletUse') assert.equal(returning.steps[1].bathroomPhase, 'close');
+      const exit = w.prepareNativeStep(returning, returning.steps[0], prepared.position, room, position[1]);
+      assert.equal(exit.native.blocked, false);
+      assert.ok(w.pathLength([exit.native.path.at(-1), entry]) < 1e-6, 'An interrupted wash leaves through its reachable entry side');
+    }
+  }
+  assert.ok(w.pathLength([position, room.home]) < 1e-6);
+  const model = glb(id), anchor = model.nodes.find(n => n.name === 'Bathroom contact');
+  assert.ok(anchor);
+  assert.ok(w.pathLength([anchor.translation, catalog[id].bathroom.contact]) < 1e-6);
+  if (fixtureKind !== 'toilet') assert.equal(model.nodes.filter(n => n.name?.startsWith('Bathroom water drop ')).length, 8);
+}
+const washPaws = Array.from({ length: 49 }, (_, i) => posedTail('wash', i / 24, [0,0,0], 0, 1, ['R.front.paw', 'L.front.paw', 'head']));
+assert.ok(Math.max(...washPaws.map(p => p[0][1])) - Math.min(...washPaws.map(p => p[0][1])) > .3,
+  'The actual washing clip visibly lifts the forepaw to wash the face');
+assert.ok(Math.max(...washPaws.map(p => p[1][1])) - Math.min(...washPaws.map(p => p[1][1])) < .025,
+  'The supporting forepaw stays planted while washing');
+for (const id of ['bathroomBathAni', 'bathroomShowerCabin', 'bathroomWcAni', 'bathroomJacuzziWhite']) for (const fps of [30,60,120]) {
+  const room = w.buildNativeRoomWorld({ ...base, petSize:80, decorations:[{decorationId:id,instanceId:'fixture',scale:1.8,offset:{x:0,y:0}}] });
+  const model=glb(id), fixture=room.objects[0], fixtureKind=fixture.bathroom.kind;
+  toyRoot=matrix();toyNodes=new Map(model.nodes.map(n=>[n.name,n]));
+  toyLocals=new Map(model.nodes.map(n=>[n.name,n.matrix??matrix(n.translation,n.rotation,n.scale)]));
+  toyParents=new Map(model.nodes.flatMap(n=>(n.children??[]).map(i=>[model.nodes[i].name,n.name])));
+  const child=sceneChildren({world:room,catPresent:true}).find(c=>c.type.name==='RoomObject');
+  slots=[];
+  const paint=(phase,extra={})=>{cursor=0;effects=[];child.type({...child.props,onReady:undefined,
+    travel:phase?{bathroom:{instanceId:'fixture',kind:fixtureKind,phase}}:undefined,...extra});effects.forEach(fn=>fn());return renderFrame;};
+  let frame=paint();frame({timeSinceLastFrame:0});
+  const drops=model.nodes.filter(n=>n.name?.startsWith('Bathroom water drop ')).map(n=>n.name);
+  for(const name of drops) assert.equal(Math.hypot(...toyLocals.get(name).slice(0,3)),0,'Water is hidden before the cat washes');
+  const hinge=fixtureKind==='toilet' ? toyLocals.get('Toilet lid hinge').slice() : undefined;
+  frame=paint(fixtureKind==='toilet'?'open':'wash');
+  for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+  if(hinge) assert.ok(Math.abs(toyLocals.get('Toilet lid hinge')[6])>.98,'The toilet lid lifts clear before the cat jumps');
+  else {
+    assert.ok(drops.every(name=>Math.hypot(...toyLocals.get(name).slice(0,3))>0),'Washing starts the water');
+    const prior=toyLocals.get(drops[0]).slice();frame({timeSinceLastFrame:1/fps});
+    assert.notEqual(toyLocals.get(drops[0])[13],prior[13],'The running water falls visibly');
+  }
+  const beforeLayoutRefresh=JSON.stringify([...toyLocals]);
+  frame=paint(fixtureKind==='toilet'?'use':'wash',{object:{...fixture,bathroom:{...fixture.bathroom,contact:[...fixture.bathroom.contact]}}});
+  frame({timeSinceLastFrame:0});
+  assert.equal(JSON.stringify([...toyLocals]),beforeLayoutRefresh,'Refreshing a layout cannot recapture the animated lid or water as its base pose');
+  frame=paint(fixtureKind==='toilet'?'use':'wash',{active:false});
+  const paused=JSON.stringify([...toyLocals]);for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+  assert.equal(JSON.stringify([...toyLocals]),paused,'Covered bathroom scenes pause their water and lid clock');
+  frame=paint(undefined);for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+  if(hinge) assert.ok(toyLocals.get('Toilet lid hinge').every((v,i)=>Math.abs(v-hinge[i])<.0001),'The lid closes after use or cancellation');
+  else for(const name of drops)assert.equal(Math.hypot(...toyLocals.get(name).slice(0,3)),0,'Finishing or cancelling a wash stops its water');
+  frame=paint(fixtureKind==='toilet'?'open':'wash',{active:false,reduceMotion:true});frame({timeSinceLastFrame:1/fps});
+  if(hinge) assert.ok(Math.abs(toyLocals.get('Toilet lid hinge')[6])>.98,'Reduce Motion opens the lid immediately');
+}
+console.log('Verified all bathroom anchors and rotated/resized journeys, safe wash interruptions, real paw washing, running water, toilet lid opening/closing, pause and Reduce Motion at 30/60/120 FPS.');
+
+const referenceBathroom = [
+  {decorationId:'bathroomBathAni',instanceId:'bath',offset:{x:-.55,y:.08},scale:1.8},
+  {decorationId:'bathroomWcAni',instanceId:'toilet',offset:{x:.6046991500,y:-.0640368225},scale:1.3},
+  {decorationId:'bathroomShowerCabin',instanceId:'shower',offset:{x:-.0135219181,y:-.2660848204},scale:1.5,wallFlipped:true},
+];
+for(const [width,height] of [[320,320],[390,420],[351,456]]) {
+  const layout={...base,width,height,petSize:80,sizeScale:1.15,decorations:referenceBathroom};
+  const room=w.buildNativeRoomWorld(layout);
+  for(const [kind,id] of [['bathWash','bath'],['showerWash','shower'],['toiletUse','toilet']]) {
+    const plan=buildRoomActivity({...layout,nativeWorld:room,homeOffset:{x:0,y:.12},ownedToyIds:[],hungry:false,asleep:false},0,kind,id);
+    let position=room.home;
+    for(let i=0;i<plan.steps.length;i++) {
+      const step=w.prepareNativeStep(plan,plan.steps[i],w.catScreenPoint(position,room),room,position[1]);
+      assert.equal(step.native.blocked,false,`${kind}/${width}/${step.bathroomPhase??'home'} reaches the bathroom shown in the screenshot`);
+      plan.steps[i]=step;position=step.native.path.at(-1);
+    }
+  }
+}
+console.log('Verified bath, shower and toilet journeys in the reported bathroom layout at three viewport sizes.');

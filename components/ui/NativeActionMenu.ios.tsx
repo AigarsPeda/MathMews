@@ -1,6 +1,6 @@
 import { APP_ICON_SOURCES } from "@/constants/app-icons";
-import { Button, Host, Image, Label, Menu, RNHostView, Section } from "@expo/ui/swift-ui";
-import { accessibilityLabel, aspectRatio, buttonStyle, disabled, frame, resizable } from "@expo/ui/swift-ui/modifiers";
+import { Button, Host, HStack, Image, Label, Menu, RNHostView, Section } from "@expo/ui/swift-ui";
+import { accessibilityLabel, aspectRatio, buttonStyle, contentShape, disabled, frame, resizable, shapes } from "@expo/ui/swift-ui/modifiers";
 import { useAssets } from "expo-asset";
 import type { NativeActionMenuProps } from "./NativeActionMenu.types";
 import { groupMenuSections } from "./native-menu-sections";
@@ -13,7 +13,9 @@ export function NativeActionMenu({ width, height, actions, label, blocked, child
   const [assets] = useAssets(menuIcons);
   return (
     <Host style={{ width, height }} ignoreSafeArea="all">
-      <Menu label={<RNHostView matchContents>{children}</RNHostView>}
+      <Menu label={<HStack spacing={0} modifiers={[frame({ width, height }), contentShape(shapes.rectangle())]}>
+        <RNHostView matchContents>{children}</RNHostView>
+      </HStack>}
         modifiers={[frame({ width, height }), buttonStyle("plain"), accessibilityLabel(label), disabled(blocked)]}>
         {groupMenuSections(actions).map((section, index) => <Section key={index}>
           {section.actions.map(action => {

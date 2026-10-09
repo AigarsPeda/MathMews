@@ -1,5 +1,6 @@
 import { ONE_SHOT_ANIMATIONS } from "@/constants/game";
 import type { CatRoomAnimation } from "@/constants/cat-room-motion";
+import { ROOM_ONE_SHOT_CLIPS } from "@/constants/cat-room-motion";
 import type { BoxPlayAnimationId } from "@/constants/cat-box-play";
 import { CAT_ANIMATION_CLIPS, type CatAnimationId } from "@/constants/cat-animation-clips";
 import type { PetAnimationState } from "@/types/game";
@@ -84,7 +85,7 @@ function createCatScenarios(): Record<BuiltInPetScenarioId, PetMediaScenario> {
 }
 export function createRoomActivitySegment(animationId: CatRoomAnimation, reverse = false, fps?: number): PetMediaSegment {
   return modelSegment(animationId, {
-    loop: animationId !== "curlUp" && animationId !== "jumpOn" && animationId !== "jumpOff" && animationId !== "eating", reverse, fps,
+    loop: !ROOM_ONE_SHOT_CLIPS.includes(animationId), reverse, fps,
   });
 }
 export function createBoxPlaySegment(animationId: BoxPlayAnimationId): PetMediaSegment {

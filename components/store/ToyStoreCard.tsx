@@ -44,7 +44,7 @@ export function ToyStoreCard({
   return (
     <View style={[styles.card, placedCount > 0 && styles.cardEquipped]}>
       <Pressable style={styles.previewWrap} onPress={onPreview} accessibilityRole="button" accessibilityLabel={t("store.previewItem", { name: t(`store.toyName.${toyId}`) })}>
-        <ToySpriteImage toyId={toyId} size={previewSize} />
+        <ToySpriteImage still toyId={toyId} size={previewSize} />
         {placedCount > 0 ? (
           <View style={styles.equippedBadge}>
             <Text style={styles.equippedBadgeText}>

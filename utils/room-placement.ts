@@ -1,10 +1,12 @@
 import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
+import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
   clampDecorationScale,
   getDecorationDefaultPlacementScale,
+  getDecorationDefaultScale,
   resolveDecorationPlacement,
 } from "@/constants/decoration-variants";
 import type { CatToyId } from "@/constants/cat-toys";
@@ -81,6 +83,7 @@ export function normalizePlacedToys(value: unknown): PlacedToy[] {
         offset,
         scale: scale !== getDefaultToyScale(toyId) ? scale : undefined,
         rotationIndex: rotationIndex > 0 ? rotationIndex : undefined,
+        rotationDegrees: normalizeRotationDegrees(record.rotationDegrees),
       });
     }
     return placed;
@@ -124,7 +127,8 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         wallFlipped: isRoomDoor(placement.decorationId) && typeof record.wallFlipped === "boolean"
           ? record.wallFlipped : record.wallFlipped === true ? true : undefined,
         poweredOn: isAirConditionerDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
-        scale: scale !== undefined && scale !== 1 ? scale : undefined,
+        rotationDegrees: normalizeRotationDegrees(record.rotationDegrees),
+        scale: scale !== undefined && scale !== getDecorationDefaultScale(placement.decorationId) ? scale : undefined,
       });
     }
     return placed;
@@ -327,7 +331,7 @@ export function updatePlacedDecorationScaleByInstance(
 
     return {
       ...item,
-      scale: nextScale !== 1 ? nextScale : undefined,
+      scale: nextScale !== getDecorationDefaultScale(item.decorationId as CatDecorationId) ? nextScale : undefined,
     };
   });
 }

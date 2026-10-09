@@ -312,13 +312,12 @@ export function DraggableRoomPet({
           }}
           collapsable={false}
           pointerEvents={interactive ? "auto" : "none"}
-          {...panResponder.panHandlers}
+          {...(hasMenu ? {} : panResponder.panHandlers)}
         >
           {hasMenu && menuActions ? (
             <RoomActionMenu actions={menuActions} label={accessibilityLabel ?? ""}
               size={{ width: resolvedHitSize, height: resolvedHitSize }}>
-              <View style={{ width: resolvedHitSize, height: resolvedHitSize }}
-                {...panResponder.panHandlers} />
+              <View pointerEvents="none" style={{ width: resolvedHitSize, height: resolvedHitSize }} />
             </RoomActionMenu>
           ) : null}
         </View>

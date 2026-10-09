@@ -1,6 +1,12 @@
 import "@/lib/init-splash-screen";
+import "@/lib/init-error-reporting";
 import "@/lib/init-game-asset-prefetch";
 import "@/components/branding/AnimatedSplashCat";
+import { useEffect } from "react";
+import { RecoveryBoundary } from "@/components/recovery/RecoveryBoundary";
+import { AppRecoveryScreen } from "@/components/recovery/AppRecoveryScreen";
+import { reportAppError } from "@/lib/app-diagnostics";
+import type { ErrorBoundaryProps } from "expo-router";
 import { SplashGate } from "@/components/branding/SplashGate";
 import { ExpoUIHost } from "@/components/ui/ExpoUIHost";
 import { AuthProvider } from "@/contexts/AuthProvider";
@@ -36,7 +42,7 @@ export default function RootLayout() {
       <LocaleProvider>
         <AuthProvider>
         <GameProvider>
-          <SplashGate>
+          <RecoveryBoundary scope="app-screen" fallback={(_, retry) => <AppRecoveryScreen retry={retry}/>}><SplashGate>
             <IAPProvider>
             <PetDisplayProvider>
               <ExpoUIHost>
@@ -77,11 +83,16 @@ export default function RootLayout() {
               </ExpoUIHost>
             </PetDisplayProvider>
             </IAPProvider>
-          </SplashGate>
+          </SplashGate></RecoveryBoundary>
         </GameProvider>
         </AuthProvider>
     </LocaleProvider>
       </SafeAreaProvider>
     </View>
   );
+}
+
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  useEffect(() => { reportAppError('app-root', error); }, [error]);
+  return <AppRecoveryScreen retry={retry}/>;
 }

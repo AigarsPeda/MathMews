@@ -1,5 +1,9 @@
-export type CatWalkAnimation = "walk" | "walkAway" | "walkToward" | "walkAwayDiagonal" | "walkTowardDiagonal";
-export type CatRoomAnimation = CatWalkAnimation | "sit" | "jumpOn" | "jumpOff" | "curlUp" | "curlSleep" | "batToy" | "eating";
+import type { CatAnimationId } from "@/constants/cat-animation-clips";
+
+// New authored clips are immediately available to room activity steps.
+export type CatRoomAnimation = CatAnimationId;
+export type CatWalkAnimation = Extract<CatAnimationId, `walk${string}`>;
+export const ROOM_ONE_SHOT_CLIPS: readonly CatAnimationId[] = ["curlUp", "jumpOn", "jumpOff", "eating"];
 
 export const SOFA_JUMP_DURATION_MS = 900;
 export const CAT_WALK_CYCLES_PER_SECOND = 2.25;

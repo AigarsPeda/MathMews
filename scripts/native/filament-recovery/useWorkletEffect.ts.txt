@@ -1,0 +1,23 @@
+import { useEffect, useState } from 'react'
+import { useFilamentContext } from './useFilamentContext'
+import { getWorkletDependencies, isWorklet } from 'react-native-worklets-core'
+import { reportWorkletError } from '../ErrorUtils'
+type CleanupFn = () => void
+export function useWorkletEffect(workletFunction: () => CleanupFn | void) {
+  const { workletContext } = useFilamentContext()
+  const [error, setError] = useState<unknown>()
+  useEffect(() => {
+    let valid = true
+    const cleanupPromise = Promise.resolve().then(() => valid ? workletContext.runAsync(workletFunction) : undefined)
+    cleanupPromise.catch(error => { if (valid) setError(() => error) })
+    return () => {
+      valid = false
+      cleanupPromise.then(cleanup => {
+        if (typeof cleanup !== 'function') return
+        return isWorklet(cleanup) ? workletContext.runAsync(cleanup) : cleanup()
+      }).catch(error => reportWorkletError(error, false))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, getWorkletDependencies(workletFunction))
+  if (error != null) throw error
+}

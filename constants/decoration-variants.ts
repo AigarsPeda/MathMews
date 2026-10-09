@@ -61,6 +61,8 @@ export const WALL_FACING_DECORATION_IDS: readonly CatDecorationId[] = [
   "japaneseClosetDoor2Closed", "japaneseClosetDoor2Open",
   "officeMetallicClosetAni", "officeWoodClosetAni", "bathroomWcFurniture",
   "bathroomBathAni", "bathroomWcAni", "bathroomWcTapAni",
+  "bathroomBathOvalWhite", "bathroomBathOvalSage", "bathroomBathOvalRose", "bathroomBathOvalCharcoal",
+  "bathroomBathClawfootCream", "bathroomBathClawfootNavy", "bathroomJacuzziWhite", "bathroomJacuzziSage",
   "chairOfficeMain", "deskOffice", "japaneseSeat", "officeDrawingTable",
   "officeKitchenTable", "officeProjectorStand", "japaneseToriGate",
   "livingSpeaker", "officeCopyMachineDarkAni", "officeCopyMachineWhiteAni",
@@ -205,7 +207,7 @@ export function clampDecorationScale(scale: number): number {
 
 export function getPlacedDecorationScale(placed: PlacedDecoration): number {
   if (typeof placed.scale !== "number" || !Number.isFinite(placed.scale)) {
-    return 1;
+    return getDecorationDefaultScale(placed.decorationId as CatDecorationId);
   }
 
   return clampDecorationScale(placed.scale);
@@ -260,9 +262,18 @@ export function getPlacedDecorationHitSize(placed: PlacedDecoration): number {
   return base * getPlacedDecorationScale(placed);
 }
 
+export function getDecorationDefaultScale(id: CatDecorationId): number {
+  return id === "chairRockingOak" ? 1.4 : 1;
+}
+
 /** New placements and store previews match the furniture sized in the reference rooms. */
 export function getDecorationDefaultPlacementScale(id: CatDecorationId): number | undefined {
+  if (id === "bathroomBathAni" || id.startsWith("bathroomBathOval") ||
+      id.startsWith("bathroomBathClawfoot") || id.startsWith("bathroomJacuzzi")) return 1.8;
+  if (id === "bathroomWcAni") return 1.3;
+  if (id === "chairRockingOak") return 1.4;
   if (id === "kitchenFridge") return 1.5;
   if (id === "windowOakWide") return 1.6;
+  if (id === "lampFloorArc") return 1.8;
   return undefined;
 }

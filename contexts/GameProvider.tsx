@@ -1,6 +1,7 @@
 import type { HomeRoomId } from "@/constants/home-rooms";
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
+import { setRoomItemRotation } from "@/utils/room-rotation";
 import { applyPuzzleAnswer, applyFeed } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
 import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
@@ -161,6 +162,7 @@ type GameContextValue = {
   removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
   scalePlacedToy: (instanceId: string, direction: "up" | "down") => boolean;
   rotatePlacedToy: (instanceId: string) => boolean;
+  setRoomItemRotation: (item: RoomLayerItem, degrees: number) => boolean;
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   removeDecorationFromRoom: (
@@ -181,7 +183,7 @@ type GameContextValue = {
     name: string;
     catSkinId: CatSkinId;
   }) => Promise<boolean>;
-  recordInteraction: () => void;
+  recordInteraction: () => number;
   cloudRestoreCandidates: CloudSaveSummary[];
   cloudRestoreCheckComplete: boolean;
   cloudRestorePromptDismissed: boolean;
@@ -436,6 +438,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...current,
       pet: { ...current.pet, lastInteractionAt: now },
     }));
+    return now;
   }, [setSave]);
 
   const buyLife = useCallback(() => {
@@ -533,6 +536,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           roomBedOffset: current.pet.roomBedOffset ?? { x: -0.15, y: 0.3 },
           bedFlipped:
             current.pet.bedId === resolvedId ? current.pet.bedFlipped : undefined,
+          bedRotationDegrees: current.pet.bedId === resolvedId ? current.pet.bedRotationDegrees : undefined,
           bedScale:
             current.pet.bedId === resolvedId ? current.pet.bedScale : undefined,
         }),
@@ -563,6 +567,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         roomBedOffset: current.pet.roomBedOffset ?? { x: -0.15, y: 0.3 },
         bedFlipped:
           current.pet.bedId === resolvedId ? current.pet.bedFlipped : undefined,
+        bedRotationDegrees: current.pet.bedId === resolvedId ? current.pet.bedRotationDegrees : undefined,
         bedScale:
           current.pet.bedId === resolvedId ? current.pet.bedScale : undefined,
       }),
@@ -583,6 +588,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         ...current.pet,
         bedId: undefined,
         bedFlipped: undefined,
+        bedRotationDegrees: undefined,
         bedScale: undefined,
       }),
     });
@@ -941,6 +947,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
+  const changeRoomItemRotation = useCallback((item: RoomLayerItem, degrees: number) => {
+    const current = saveRef.current;
+    const pet = setRoomItemRotation(current.pet, item, degrees);
+    if (pet === current.pet) return false;
+    setSave({ ...current, pet });
+    return true;
+  }, [setSave]);
+
   const scalePlacedToy = useCallback((instanceId: string, direction: "up" | "down") => {
     const current = saveRef.current;
     const placed = findPlacedToyByInstance(current.pet.placedToys, instanceId);
@@ -1234,6 +1248,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeToyFromRoom,
       scalePlacedToy,
       rotatePlacedToy,
+      setRoomItemRotation: changeRoomItemRotation,
       purchaseDecoration,
       placeDecorationInRoom,
       removeDecorationFromRoom,
@@ -1299,6 +1314,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeToyFromRoom,
       scalePlacedToy,
       rotatePlacedToy,
+      changeRoomItemRotation,
       purchaseDecoration,
       placeDecorationInRoom,
       removeDecorationFromRoom,

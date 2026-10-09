@@ -13,11 +13,13 @@ const DIRECTIONS = [
 export type RoomMoveDirection = typeof DIRECTIONS[number][0];
 
 /** The room stays visible while a child moves the one highlighted item. */
-export function RoomItemMoveControls({ name, actions = [], onMove, onDone }: {
+export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotationDegrees, onRotate }: {
   name: string;
   actions?: RoomItemMenuAction[];
   onMove: (direction: RoomMoveDirection) => void;
   onDone: () => void;
+  rotationDegrees?: number;
+  onRotate?: () => void;
 }) {
   const { t } = useTranslation();
   return <View style={styles.content}>
@@ -42,6 +44,10 @@ export function RoomItemMoveControls({ name, actions = [], onMove, onDone }: {
         <AppIcon name={icon} size={24} />
         <Text style={styles.arrowText}>{t("home.nudge" + direction)}</Text>
       </Pressable>)}
+      {onRotate && <Pressable style={({ pressed }) => [styles.arrow, pressed && styles.pressed]}
+        accessibilityRole="button" accessibilityLabel={t("home.rotateSelectedItem", { name })} onPress={onRotate}>
+        <AppIcon name="rotate" size={24} /><Text style={styles.arrowText}>{rotationDegrees ?? 0}°</Text>
+      </Pressable>}
     </View>
   </View>;
 }

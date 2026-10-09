@@ -119,6 +119,11 @@
     "moveLayerUp": "Priekšplānā",
     "moveLayerDown": "Aizmugurē",
     "rotateItem": "Pagriezt",
+    "rotateSelectedItem": "Pagriezt: {{name}}",
+    "rotationAngle": "Leņķis",
+    "rotationRange": "Ievadi leņķi no 0 līdz 360 grādiem.",
+    "applyRotation": "Lietot",
+    "rotationSimpleHint": "Izslēdz vienkāršo grafiku iestatījumos, lai redzētu pilnu 3D pagriezienu.",
     "flipWall": "Pagriezt pret otru sienu",
     "flipBed": "Apgriezt gultu",
     "changeLook": "Mainīt izskatu",
@@ -128,12 +133,17 @@
     "makeSmaller": "Mazāks",
     "catCommands": {
       "bowlEat": "Ēst",
+      "chairSit": "Sēdēt šūpuļkrēslā",
+      "chairSleep": "Gulēt šūpuļkrēslā",
       "sofaSit": "Sēdēt uz dīvāna",
       "sofaSleep": "Gulēt uz dīvāna",
       "plantPlay": "Spēlēties ar lapām",
       "toyPlay": "Spēlēties ar rotaļlietu",
       "mouseChase": "Ķert peli",
-      "returnHome": "Doties uz savu vietu"
+      "returnHome": "Doties uz savu vietu",
+      "bathWash": "Mazgāties vannā",
+      "showerWash": "Mazgāties dušā",
+      "toiletUse": "Lietot tualeti"
     },
     "decorateRoom": "Iekārtot",
     "finishDecorating": "Gatavs",
@@ -536,7 +546,15 @@
       "kitchenChairUpholstered": "Polsterēts virtuves krēsls",
       "kitchenChairBistro": "Liektā koka bistro krēsls",
       "chairRockingOak": "Ozolkoka šūpuļkrēsls",
-      "livingFireplaceCream": "Krēmkrāsas kamīns"
+      "livingFireplaceCream": "Krēmkrāsas kamīns",
+      "bathroomBathOvalWhite": "Balta ovāla vanna",
+      "bathroomBathOvalSage": "Salvijas zaļa ovāla vanna",
+      "bathroomBathOvalRose": "Rozā ovāla vanna",
+      "bathroomBathOvalCharcoal": "Tumši pelēka ovāla vanna",
+      "bathroomBathClawfootCream": "Krēmkrāsas vanna ar kājiņām",
+      "bathroomBathClawfootNavy": "Tumši zila vanna ar kājiņām",
+      "bathroomJacuzziWhite": "Balta džakuzi vanna",
+      "bathroomJacuzziSage": "Salvijas zaļa džakuzi vanna"
     },
     "free": "Bezmaksas",
     "buyFor": "{{cost}} 🪙",
@@ -945,5 +963,20 @@
   "difficultyPicker": {
     "a11y": "{{difficulty}} grūtība, {{coins}} monētas par riekstu",
     "ages": "{{min}}–{{max}} gadi"
+  },
+  "recovery": {
+    "appTitle": "Šo ekrānu neizdevās atvērt",
+    "appHint": "Mēģini atvērt šo ekrānu vēlreiz. Saglabātais progress nav atiestatīts.",
+    "retry": "Mēģināt vēlreiz",
+    "graphicsHint": "Vienkārša grafika · Mainīt iestatījumos",
+    "graphicsTitle": "Vienkārša grafika",
+    "graphicsDescription": "Izmanto attēlus, ja animētās istabas bieži avarē. Mīluļa aprūpe un uzdevumi paliek pieejami.",
+    "diagnostics": "Lietotnes diagnostika",
+    "diagnosticsHint": "Apskati saglabātās kļūdas un kopīgo pārskatu.",
+    "diagnosticsInfo": "Šie pārskati tiek saglabāti šajā ierīcē. Sistēmas kļūmes var notikt, pirms šeit izdodas saglabāt kļūdu.",
+    "empty": "Pagaidām nav saglabātu kļūdu.",
+    "share": "Kopīgot kļūdu pārskatu",
+    "recovered": "Pārtverta kļūda",
+    "fatal": "Fatāla kļūda"
   }
 }

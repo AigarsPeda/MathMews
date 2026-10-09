@@ -353,7 +353,15 @@
     "kitchenChairUpholstered": 28,
     "kitchenChairBistro": 32,
     "chairRockingOak": 44,
-    "livingFireplaceCream": 76
+    "livingFireplaceCream": 76,
+    "bathroomBathOvalWhite": 72,
+    "bathroomBathOvalSage": 72,
+    "bathroomBathOvalRose": 72,
+    "bathroomBathOvalCharcoal": 72,
+    "bathroomBathClawfootCream": 80,
+    "bathroomBathClawfootNavy": 80,
+    "bathroomJacuzziWhite": 96,
+    "bathroomJacuzziSage": 96
   },
   "skin": {
     "orange": 12,

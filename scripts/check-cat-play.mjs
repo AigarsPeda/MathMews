@@ -103,17 +103,13 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   const report = test.stage.onRoomActivityChange;
   const returnHome = () => returns++;
   report(true, returnHome); test.store();
-  assert.equal(returns, 1, 'Opening the shop first asks the active cat to return');
-  assert.equal(routes.length, 0, 'The shop must wait while the cat gets down');
-  report(true, returnHome); assert.equal(routes.length, 0);
-  report(false, returnHome); assert.deepEqual(routes, ['/store']);
-  report(false, returnHome); assert.equal(routes.length, 1, 'Completion opens the shop once');
+  assert.equal(returns, 0, 'The shop does not wait for an active cat to walk home');
+  assert.deepEqual(routes, ['/store'], 'An active cat does not delay navigation');
+  report(true, returnHome); report(false, returnHome);
+  assert.equal(routes.length, 1, 'Later activity completion cannot open the shop again');
   const immediate = home(); immediate.store(); assert.deepEqual(routes, ['/store']);
-  const cancelled = home(); cancelled.stage.onRoomActivityChange(true, returnHome); cancelled.store();
-  focusCleanup(); cancelled.stage.onRoomActivityChange(false, returnHome);
-  assert.equal(routes.length, 0, 'Leaving Home cancels a pending shop navigation');
 }
-console.log('Verified the shop waits for room animations and cancels pending navigation when Home loses focus.');
+console.log('Verified immediate shop navigation while the cat is active and no delayed duplicate navigation.');
 for (const activity of activities) {
   for (const happiness of [40, 100]) for (const coins of [0, 100]) {
     const test = home({ happiness, coins });

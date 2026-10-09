@@ -1,3 +1,4 @@
+import { reportAppError } from "@/lib/app-diagnostics";
 import { NavigationContext } from "expo-router/react-navigation";
 import { useCallback, useContext, useEffect, useState, useSyncExternalStore } from "react";
 import { AccessibilityInfo, AppState } from "react-native";
@@ -21,7 +22,7 @@ export function useAnimationActivity() {
     let mounted = true;
     AccessibilityInfo.isReduceMotionEnabled().then(value => {
       if (mounted) setReduceMotion(value);
-    });
+    }).catch(error => reportAppError("motion-preference", error));
     const motion = AccessibilityInfo.addEventListener("reduceMotionChanged", setReduceMotion);
     const app = AppState.addEventListener("change", state => setForeground(state === "active"));
     return () => {

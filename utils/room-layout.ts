@@ -1,6 +1,6 @@
 import type { PetProfile } from "@/types/game";
 
-export const ROOM_LAYOUT_KEYS = ["roomPetOffset", "bedId", "roomBedOffset", "bedFlipped", "bedScale", "placedToys", "placedDecorations", "roomLayerOrder"] as const;
+export const ROOM_LAYOUT_KEYS = ["roomPetOffset", "bedId", "roomBedOffset", "bedFlipped", "bedRotationDegrees", "bedScale", "placedToys", "placedDecorations", "roomLayerOrder"] as const;
 export type RoomLayout = Pick<PetProfile, typeof ROOM_LAYOUT_KEYS[number]>;
 
 export function captureRoomLayout(pet: PetProfile): RoomLayout {

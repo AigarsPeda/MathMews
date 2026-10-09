@@ -1,3 +1,4 @@
+import { shouldMountNativeRoom } from "@/utils/native-scene-cache";
 import { getCatHomeRoomId, previewHomeRoom } from "@/utils/home-rooms";
 import { HOME_ROOM_IDS, roomTravelDirection, type HomeRoomId, type RoomEntry } from "@/constants/home-rooms";
 import { useRoomTransition } from "@/hooks/use-room-transition";
@@ -41,7 +42,7 @@ import {
 import { moderateScale } from "@/utils/scale";
 import { getStoreGoalDetails } from "@/utils/store-goal";
 import * as Haptics from "expo-haptics";
-import { Redirect, useFocusEffect, useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -60,29 +61,13 @@ function triggerHaptic() {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const waitingToOpenStore = useRef(false);
-  useFocusEffect(
-    useCallback(
-      () => () => {
-        waitingToOpenStore.current = false;
-      },
-      [],
-    ),
-  );
   const roomActivityRef = useRef<{
     active: boolean;
     returnHome: () => void;
   } | null>(null);
-  const handleRoomActivityChange = useCallback(
-    (active: boolean, returnHome: () => void) => {
-      roomActivityRef.current = { active, returnHome };
-      if (!active && waitingToOpenStore.current) {
-        waitingToOpenStore.current = false;
-        router.push("/store");
-      }
-    },
-    [router],
-  );
+  const handleRoomActivityChange = useCallback((active: boolean, returnHome: () => void) => {
+    roomActivityRef.current = { active, returnHome };
+  }, []);
   const { t } = useTranslation();
   const screenInsets = useScreenInsets();
   const { locale } = useLocale();
@@ -102,6 +87,7 @@ export default function HomeScreen() {
     removeToyFromRoom,
     scalePlacedToy,
     rotatePlacedToy,
+    setRoomItemRotation,
     moveRoomLayerItem,
     rotatePlacedDecoration,
     flipPlacedDecorationWall,
@@ -269,11 +255,6 @@ export default function HomeScreen() {
   const handleOpenStore = useCallback(() => {
     recordInteraction();
     triggerHaptic();
-    if (roomActivityRef.current?.active) {
-      waitingToOpenStore.current = true;
-      roomActivityRef.current.returnHome();
-      return;
-    }
     router.push("/store");
   }, [recordInteraction, router]);
 
@@ -417,6 +398,11 @@ export default function HomeScreen() {
     [recordInteraction, scaleEquippedBed],
   );
 
+  const handleSetRoomItemRotation = useCallback((item: RoomLayerItem, degrees: number) => {
+    if (!setRoomItemRotation(item, degrees)) return;
+    recordInteraction(); triggerHaptic();
+  }, [recordInteraction, setRoomItemRotation]);
+
   const handleRemoveToy = useCallback(
     (instanceId: string) => {
       const placed = findPlacedToyByInstance(pet.placedToys, instanceId);
@@ -473,6 +459,7 @@ export default function HomeScreen() {
   const renderStage = (roomPet: PetProfile, visible: boolean) => (
     <PetStage
       key={`${roomPet.homeRoomId ?? "livingRoom"}:${roomPet.roomId ?? "room1"}`}
+      nativeSceneMounted={shouldMountNativeRoom(roomPet.homeRoomId ?? "livingRoom", pet.homeRoomId ?? "livingRoom", getCatHomeRoomId(pet), transition?.outgoing.homeRoomId)}
       roomVisible={visible && !transition}
       sceneSlide={transition && (visible || roomPet.homeRoomId === transition.outgoing.homeRoomId)
         ? { progress: roomSlideProgress, direction: transition.direction, outgoing: !visible } : undefined}
@@ -495,6 +482,7 @@ export default function HomeScreen() {
       bedId={roomPet.bedId}
       roomBedOffset={roomPet.roomBedOffset}
       bedFlipped={roomPet.bedFlipped}
+      bedRotationDegrees={roomPet.bedRotationDegrees}
       bedScale={roomPet.bedScale}
       placedToys={roomPet.placedToys}
       placedDecorations={roomPet.placedDecorations}
@@ -547,6 +535,7 @@ export default function HomeScreen() {
       onPlacedToyRemove={handleRemoveToy}
       onScalePlacedToy={handleScalePlacedToy}
       onRotatePlacedToy={handleRotatePlacedToy}
+      onSetRoomItemRotation={handleSetRoomItemRotation}
       onOpenMathStats={handleOpenMathStats}
       onAnimationComplete={handleAnimationComplete}
     />

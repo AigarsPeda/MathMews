@@ -33,3 +33,8 @@ export function isSofaDecorationId(
 export function isSeatingSofaDecorationId(id: string): boolean {
   return isSofaDecorationId(id) && id !== "sofaPillow";
 }
+
+/** Furniture with a cushion that supports the cat's sit and sleep activities. */
+export function isCatSeatDecorationId(id: string): boolean {
+  return isSeatingSofaDecorationId(id) || id === "chairRockingOak";
+}

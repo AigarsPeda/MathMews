@@ -29,7 +29,10 @@ function load(id) {
 const catalog = load('@/constants/cat-decorations').CAT_DECORATION_CATALOG;
 const sections = load('@/utils/decoration-store-sections');
 const sofaIds = Array.from(load('@/constants/sofa-decorations').SOFA_DECORATION_IDS).filter(id => !['sofaA', 'sofaB', 'sofaPillow'].includes(id));
-const newBathroomIds = ['bathroomDoubleVanity', 'bathroomShowerCabin', 'bathroomLaundryHamper', 'bathroomTowelStand'];
+const bathtubIds = ['bathroomBathOvalWhite', 'bathroomBathOvalSage', 'bathroomBathOvalRose',
+  'bathroomBathOvalCharcoal', 'bathroomBathClawfootCream', 'bathroomBathClawfootNavy',
+  'bathroomJacuzziWhite', 'bathroomJacuzziSage'];
+const newBathroomIds = ['bathroomDoubleVanity', 'bathroomShowerCabin', 'bathroomLaundryHamper', 'bathroomTowelStand', ...bathtubIds];
 const collections = {
   chairs: ['kitchenBarStoolOak', 'kitchenBarStoolMetal', 'kitchenBarStoolVelvet', 'kitchenChairWindsor', 'kitchenChairMint', 'kitchenChairUpholstered', 'kitchenChairBistro', 'chairRockingOak'],
   living: ['chairRockingOak', 'livingFireplaceCream'],
@@ -43,7 +46,7 @@ const collections = {
   bedroom: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.bedroom).filter(id => id.startsWith('bedroom')),
   halloween: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.halloween) };
 const ids = Array.from(new Set(Object.values(collections).flat()));
-assert.equal(ids.length, 60);
+assert.equal(ids.length, 68);
 const { tryPurchaseDecoration, getDecorationStorePrice } = load('@/utils/decoration-store');
 const { appendPlacedDecoration } = load('@/utils/room-placement');
 const { createDefaultGameSave, parseGameSaveFromValue } = load('@/utils/game-storage');
@@ -149,3 +152,69 @@ for (const scale of [undefined, 1, 1.5, 2.2]) {
   assert.deepEqual(Array.from(after.max), Array.from(before.max));
 }
 console.log('Verified fridge placement matches the 1.5-scale kitchen reference and existing fridge sizes survive reload.');
+
+// The brass arc lamp in the reference room is 1.8 times its original size.
+const lamp = appendPlacedDecoration([], 'lampFloorArc')[0];
+assert.equal(lamp.scale, 1.8);
+for (const scale of [undefined, .7, 1, 1.8, 2.2]) {
+  const save = createDefaultGameSave();
+  save.progress.decorationsUnlocked = ['lampFloorArc'];
+  save.progress.decorationQuantities = { lampFloorArc: 1 };
+  save.pet.placedDecorations = [{ ...lamp, scale }];
+  const reopened = parseGameSaveFromValue(JSON.stringify(save)).save;
+  const before = native.buildNativeRoomWorld({ ...base, decorations: save.pet.placedDecorations }).objects[0];
+  const after = native.buildNativeRoomWorld({ ...base, decorations: reopened.pet.placedDecorations }).objects[0];
+  assert.equal(after.scale, before.scale, 'Saved lamp sizes retain their dimensions, including old defaults');
+}
+const lampBytes = fs.readFileSync('assets/3d/native/lampFloorArc.glb');
+const lampJsonLength = lampBytes.readUInt32LE(12);
+const lampGltf = JSON.parse(lampBytes.subarray(20, 20 + lampJsonLength).toString());
+const stemNode = lampGltf.nodes.find(node => node.name === 'Brass arch stem');
+const stemAccessor = lampGltf.accessors[lampGltf.meshes[stemNode.mesh].primitives[0].attributes.POSITION];
+const stemView = lampGltf.bufferViews[stemAccessor.bufferView];
+assert.equal(stemAccessor.componentType, 5126);
+let uprightVertices = 0;
+for (let i = 0; i < stemAccessor.count; i++) {
+  const offset = 28 + lampJsonLength + (stemView.byteOffset ?? 0) + (stemAccessor.byteOffset ?? 0) + i * (stemView.byteStride ?? 12);
+  const x = lampBytes.readFloatLE(offset), y = lampBytes.readFloatLE(offset + 4);
+  if (y > .25 && y < 1.2) {
+    uprightVertices++;
+    assert.ok(Math.abs(x + .30) <= .02601, 'The exported upright stays inside a straight vertical tube, without a bowed middle');
+  }
+}
+assert.ok(uprightVertices > 100, 'Check the shipped stem geometry throughout the upright');
+console.log('Verified the 1.8-scale lamp placement, saved resizing, and a straight upright in the exported model.');
+
+// Fresh purchases match the actual bathroom reference. Resizing and legacy
+// placements retain their saved dimensions, including an omitted old scale.
+for (const [id, expectedScale] of [['bathroomBathAni', 1.8], ['bathroomWcAni', 1.3], ...bathtubIds.map(id => [id, 1.8])]) {
+  const placed = appendPlacedDecoration([], id)[0];
+  assert.equal(placed.scale, expectedScale, `${id}: bathroom default size`);
+  assert.equal(canFlipWallDecoration(id), true, `${id}: can face either wall`);
+  for (const scale of [undefined, .7, 1, expectedScale, 2.2]) {
+    const save = createDefaultGameSave();
+    save.progress.decorationsUnlocked = [id];
+    save.progress.decorationQuantities = { [id]: 1 };
+    save.pet.placedDecorations = [{ ...placed, scale }];
+    const reopened = parseGameSaveFromValue(JSON.stringify(save)).save;
+    const before = native.buildNativeRoomWorld({ ...base, decorations: save.pet.placedDecorations }).objects[0];
+    const after = native.buildNativeRoomWorld({ ...base, decorations: reopened.pet.placedDecorations }).objects[0];
+    assert.equal(after.scale, before.scale, `${id}: saved size survives reload`);
+    assert.deepEqual(Array.from(after.min), Array.from(before.min));
+    assert.deepEqual(Array.from(after.max), Array.from(before.max));
+  }
+}
+for (const id of bathtubIds) {
+  const bytes = fs.readFileSync(`assets/3d/native/${id}.glb`);
+  const gltf = JSON.parse(bytes.subarray(20, 20 + bytes.readUInt32LE(12)).toString());
+  const names = gltf.nodes.map(node => node.name ?? '');
+  assert.ok(names.includes('Recessed bath water'), `${id}: water is inside the basin`);
+  const style = id.includes('Clawfoot') ? 'Clawfoot bath shell' : id.includes('Jacuzzi') ? 'Jetted tub shell' : 'Oval bath shell';
+  assert.ok(names.includes(style), `${id}: distinct authored tub style`);
+  if (id.includes('Jacuzzi')) {
+    assert.equal(names.filter(name => name.startsWith('Jacuzzi jet nozzle')).length, 4);
+    assert.equal(names.filter(name => name.startsWith('Jacuzzi headrest')).length, 2);
+    assert.ok(names.includes('Jacuzzi control panel'));
+  }
+}
+console.log('Verified bathroom default sizes, saved resizing, rotation, and all eight bathtub models.');

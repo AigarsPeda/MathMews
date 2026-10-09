@@ -67,6 +67,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  FlatList,
   Platform,
   Pressable,
   ScrollView,
@@ -557,35 +558,6 @@ export default function StoreScreen() {
     [equipSkin, recordInteraction, showFeedback, t],
   );
 
-  const renderDecorationCards = useCallback(
-    (decorationIds: readonly CatDecorationId[]) =>
-      decorationIds.filter(id => !ownedOnly || unlockedDecorations.includes(id)).map((decorationId) => {
-        const price = getDecorationStorePrice(decorationId);
-        const owned = isDecorationUnlocked(decorationId, unlockedDecorations);
-        const canAfford =
-          price.kind !== "coins" || wallet.coins >= price.amount;
-
-        return (
-          <DecorationStoreCard
-            key={decorationId}
-            decorationId={decorationId}
-            isOwned={owned}
-            placedCount={countPlacedDecorations(
-              decorationId,
-              placedDecorations,
-            )}
-            ownedCount={getDecorationOwnedCount(decorationId, progress)}
-            canAfford={canAfford}
-            onPreview={() => setPreview({ kind: "decoration", id: decorationId, name: t(`store.decorationName.${decorationId}`), price: getDecorationStorePrice(decorationId), owned, onBuy: () => handleBuyDecoration(decorationId) })}
-                        onBuy={() => handleBuyDecoration(decorationId)}
-            onPlace={() => handlePlaceDecoration(decorationId)}
-            onRemove={() => handleRemoveDecoration(decorationId)}
-          />
-        );
-      }),
-    [ownedOnly, handleBuyDecoration, handlePlaceDecoration, handleRemoveDecoration, placedDecorations, progress, unlockedDecorations, wallet.coins, t],
-  );
-
   const storeSubtitle = isDecorationStoreTab(activeTab)
     ? t(DECORATION_STORE_SUBTITLE_KEY[activeTab])
     : activeTab === "rooms"
@@ -597,6 +569,124 @@ export default function StoreScreen() {
           : activeTab === "toys"
             ? t("store.subtitleToys")
             : "";
+
+  const storeItems = useMemo(() => {
+    if (activeTab === "rooms") return CAT_ROOM_IDS.filter(id => !ownedOnly || unlockedRooms.includes(id));
+    if (activeTab === "colors") return CAT_SKIN_IDS.filter(id => !ownedOnly || unlockedSkins.includes(id));
+    if (activeTab === "beds") return CAT_BED_IDS.filter(id => !ownedOnly || unlockedBeds.includes(id));
+    if (activeTab === "toys") return CAT_TOY_IDS.filter(id => !ownedOnly || unlockedToys.includes(id));
+    return isDecorationStoreTab(activeTab)
+      ? DECORATION_IDS_BY_STORE_TAB[activeTab].filter(id => !ownedOnly || unlockedDecorations.includes(id)) : [];
+  }, [activeTab, ownedOnly, unlockedRooms, unlockedSkins, unlockedBeds, unlockedToys, unlockedDecorations]);
+
+  const renderStoreCard = ({ item: id }: { item: string }) => {
+    if (activeTab === "rooms") {
+      const roomId = id as CatRoomId;
+      const price = getRoomStorePrice(roomId);
+      const owned = isRoomUnlocked(roomId, unlockedRooms);
+      const canAfford =
+        price.kind !== "coins" || wallet.coins >= price.amount;
+
+      return (
+        <RoomStoreCard
+          key={roomId}
+          roomId={roomId}
+          isOwned={owned}
+          isEquipped={equippedRoomId === roomId}
+          canAfford={canAfford}
+          onPreview={() => setPreview({ kind: "room", id: roomId, name: t("store.roomName", { number: Number(roomId.replace("room", "")) }), price: getRoomStorePrice(roomId), owned, onBuy: () => handleBuy(roomId) })}
+          onBuy={() => handleBuy(roomId)}
+          onEquip={() => handleEquip(roomId)}
+        />
+      );
+    }
+    if (activeTab === "colors") {
+      const skinId = id as CatSkinId;
+      const price = getSkinStorePrice(skinId);
+      const owned = isSkinUnlocked(skinId, unlockedSkins);
+      const canAfford =
+        price.kind !== "coins" || wallet.coins >= price.amount;
+
+      return (
+        <CatSkinStoreCard
+          key={skinId}
+          skinId={skinId}
+          isOwned={owned}
+          isEquipped={equippedSkinId === skinId}
+          canAfford={canAfford}
+          onPreview={() => setPreview({ kind: "skin", id: skinId, name: t(`store.skinName.${skinId}`), price: getSkinStorePrice(skinId), owned, onBuy: () => handleBuySkin(skinId) })}
+          onBuy={() => handleBuySkin(skinId)}
+          onEquip={() => handleEquipSkin(skinId)}
+        />
+      );
+    }
+    if (activeTab === "beds") {
+      const bedId = id as CatBedId;
+      const price = getBedStorePrice(bedId);
+      const owned = isBedUnlocked(bedId, unlockedBeds);
+      const canAfford =
+        price.kind !== "coins" || wallet.coins >= price.amount;
+
+      return (
+        <BedStoreCard
+          key={bedId}
+          bedId={bedId}
+          isOwned={owned}
+          isEquipped={equippedBedId === bedId}
+          canAfford={canAfford}
+          onPreview={() => setPreview({ kind: "bed", id: bedId, name: t(`store.bedName.${bedId}`), price: getBedStorePrice(bedId), owned, onBuy: () => handleBuyBed(bedId) })}
+          onBuy={() => handleBuyBed(bedId)}
+          onEquip={() => handleEquipBed(bedId)}
+          onRemove={() => handleRemoveBed(bedId)}
+        />
+      );
+    }
+    if (activeTab === "toys") {
+      const toyId = id as CatToyId;
+      const price = getToyStorePrice(toyId);
+      const owned = isToyUnlocked(toyId, unlockedToys);
+      const canAfford =
+        price.kind !== "coins" || wallet.coins >= price.amount;
+
+      return (
+        <ToyStoreCard
+          key={toyId}
+          toyId={toyId}
+          isOwned={owned}
+          placedCount={countPlacedToys(toyId, placedToys)}
+          ownedCount={getToyOwnedCount(toyId, progress)}
+          canAfford={canAfford}
+          onPreview={() => setPreview({ kind: "toy", id: toyId, name: t(`store.toyName.${toyId}`), price: getToyStorePrice(toyId), owned, onBuy: () => handleBuyToy(toyId) })}
+          onBuy={() => handleBuyToy(toyId)}
+          onPlace={() => handlePlaceToy(toyId)}
+          onRemove={() => handleRemoveToy(toyId)}
+        />
+      );
+    }
+    const decorationId = id as CatDecorationId;
+    const price = getDecorationStorePrice(decorationId);
+    const owned = isDecorationUnlocked(decorationId, unlockedDecorations);
+    const canAfford =
+      price.kind !== "coins" || wallet.coins >= price.amount;
+
+    return (
+      <DecorationStoreCard
+        key={decorationId}
+        decorationId={decorationId}
+        isOwned={owned}
+        placedCount={countPlacedDecorations(
+          decorationId,
+          placedDecorations,
+        )}
+        ownedCount={getDecorationOwnedCount(decorationId, progress)}
+        canAfford={canAfford}
+        onPreview={() => setPreview({ kind: "decoration", id: decorationId, name: t(`store.decorationName.${decorationId}`), price: getDecorationStorePrice(decorationId), owned, onBuy: () => handleBuyDecoration(decorationId) })}
+        onBuy={() => handleBuyDecoration(decorationId)}
+        onPlace={() => handlePlaceDecoration(decorationId)}
+        onRemove={() => handleRemoveDecoration(decorationId)}
+      />
+    );
+  };
 
   if (!isReady) {
     return (
@@ -654,101 +744,20 @@ export default function StoreScreen() {
             ) : null}
           </SlideInNotificationSlot>
 
-          <ScrollView
+          <FlatList<string>
             key={activeTab}
+            data={storeItems}
+            keyExtractor={id => id}
+            renderItem={renderStoreCard}
+            numColumns={2}
+            initialNumToRender={6}
+            maxToRenderPerBatch={4}
+            windowSize={3}
             style={styles.scroll}
             contentContainerStyle={styles.grid}
+            columnWrapperStyle={styles.gridRow}
             showsVerticalScrollIndicator={false}
-          >
-            {activeTab === "rooms"
-              ? CAT_ROOM_IDS.filter(id => !ownedOnly || unlockedRooms.includes(id)).map((roomId) => {
-                  const price = getRoomStorePrice(roomId);
-                  const owned = isRoomUnlocked(roomId, unlockedRooms);
-                  const canAfford =
-                    price.kind !== "coins" || wallet.coins >= price.amount;
-
-                  return (
-                    <RoomStoreCard
-                      key={roomId}
-                      roomId={roomId}
-                      isOwned={owned}
-                      isEquipped={equippedRoomId === roomId}
-                      canAfford={canAfford}
-                      onPreview={() => setPreview({ kind: "room", id: roomId, name: t("store.roomName", { number: Number(roomId.replace("room", "")) }), price: getRoomStorePrice(roomId), owned, onBuy: () => handleBuy(roomId) })}
-                        onBuy={() => handleBuy(roomId)}
-                      onEquip={() => handleEquip(roomId)}
-                    />
-                  );
-                })
-              : activeTab === "colors"
-                ? CAT_SKIN_IDS.filter(id => !ownedOnly || unlockedSkins.includes(id)).map((skinId) => {
-                    const price = getSkinStorePrice(skinId);
-                    const owned = isSkinUnlocked(skinId, unlockedSkins);
-                    const canAfford =
-                      price.kind !== "coins" || wallet.coins >= price.amount;
-
-                    return (
-                      <CatSkinStoreCard
-                        key={skinId}
-                        skinId={skinId}
-                        isOwned={owned}
-                        isEquipped={equippedSkinId === skinId}
-                        canAfford={canAfford}
-                        onPreview={() => setPreview({ kind: "skin", id: skinId, name: t(`store.skinName.${skinId}`), price: getSkinStorePrice(skinId), owned, onBuy: () => handleBuySkin(skinId) })}
-                        onBuy={() => handleBuySkin(skinId)}
-                        onEquip={() => handleEquipSkin(skinId)}
-                      />
-                    );
-                  })
-                : activeTab === "beds"
-                ? CAT_BED_IDS.filter(id => !ownedOnly || unlockedBeds.includes(id)).map((bedId) => {
-                    const price = getBedStorePrice(bedId);
-                    const owned = isBedUnlocked(bedId, unlockedBeds);
-                    const canAfford =
-                      price.kind !== "coins" || wallet.coins >= price.amount;
-
-                    return (
-                      <BedStoreCard
-                        key={bedId}
-                        bedId={bedId}
-                        isOwned={owned}
-                        isEquipped={equippedBedId === bedId}
-                        canAfford={canAfford}
-                        onPreview={() => setPreview({ kind: "bed", id: bedId, name: t(`store.bedName.${bedId}`), price: getBedStorePrice(bedId), owned, onBuy: () => handleBuyBed(bedId) })}
-                        onBuy={() => handleBuyBed(bedId)}
-                        onEquip={() => handleEquipBed(bedId)}
-                        onRemove={() => handleRemoveBed(bedId)}
-                      />
-                    );
-                  })
-                : activeTab === "toys"
-                  ? CAT_TOY_IDS.filter(id => !ownedOnly || unlockedToys.includes(id)).map((toyId) => {
-                      const price = getToyStorePrice(toyId);
-                      const owned = isToyUnlocked(toyId, unlockedToys);
-                      const canAfford =
-                        price.kind !== "coins" || wallet.coins >= price.amount;
-
-                      return (
-                        <ToyStoreCard
-                          key={toyId}
-                          toyId={toyId}
-                          isOwned={owned}
-                          placedCount={countPlacedToys(toyId, placedToys)}
-                          ownedCount={getToyOwnedCount(toyId, progress)}
-                          canAfford={canAfford}
-                          onPreview={() => setPreview({ kind: "toy", id: toyId, name: t(`store.toyName.${toyId}`), price: getToyStorePrice(toyId), owned, onBuy: () => handleBuyToy(toyId) })}
-                        onBuy={() => handleBuyToy(toyId)}
-                          onPlace={() => handlePlaceToy(toyId)}
-                          onRemove={() => handleRemoveToy(toyId)}
-                        />
-                      );
-                    })
-                : isDecorationStoreTab(activeTab)
-                  ? renderDecorationCards(
-                      DECORATION_IDS_BY_STORE_TAB[activeTab],
-                    )
-                  : null}
-          </ScrollView>
+          />
         </View>
       </View>
       <AppBottomSheet visible={showCategories} onClose={() => setShowCategories(false)} expanded>
@@ -855,11 +864,9 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 0,
   },
+  gridRow: { justifyContent: "space-between" },
   grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    rowGap: moderateScale(12),
+    gap: moderateScale(12),
     paddingBottom: moderateScale(16),
   },
 });

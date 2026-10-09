@@ -1,4 +1,5 @@
 import { prefetchGameAssets, type AssetPrefetchProgress } from "@/utils/prefetch-game-assets";
+import { reportAppError } from "@/lib/app-diagnostics";
 
 const PREFETCH_MAX_WAIT_MS = 12_000;
 
@@ -19,6 +20,10 @@ export function subscribeGameAssetLoading(listener: () => void) {
 /** Actual counts continue advancing after the bounded startup wait expires. */
 const deadline = setTimeout(() => publish({ mayContinue: true }), PREFETCH_MAX_WAIT_MS);
 export const gameAssetsPrefetchPromise = prefetchGameAssets(progress => publish(progress))
+  .catch(error => {
+    reportAppError("startup-asset-prefetch", error);
+    publish({ failed: snapshot.failed + 1 });
+  })
   .finally(() => {
     clearTimeout(deadline);
     publish({ finished: true, mayContinue: true });

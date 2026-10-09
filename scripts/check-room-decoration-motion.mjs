@@ -20,17 +20,20 @@ const React = {
   },
 };
 const shared = (initial = 0) => { let value = initial; return { get: () => value, set: next => { value = next; } }; };
+let editingReady, stoppedForEditing = 0;
 let roomActivityForTest = null, requestedActivity, requestedInstanceId, doorArrival, returnedHome = 0, roomActivityEnabled;
 const objectX = shared(), objectY = shared(), objectRotation = shared();
 const mocks = {
+  "@/lib/graphics-mode": { useGraphicsMode: () => "3d" },
   '@/components/pet/RoomNavigation': { RoomNavigation: 'RoomNavigation', ROOM_NAVIGATION_HEIGHT: 52 },
   '@/hooks/use-room-camera': { useRoomCamera: () => ({ x: shared(), y: shared(), scale: shared(cameraZoom), zoom: cameraZoom, gesture: 'room-gesture', reset: () => { cameraZoom = 1; } }) },
   'react-native-gesture-handler': { GestureDetector: 'GestureDetector' },
   '@/pet-display/registry/media-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
-  '@/hooks/use-room-activity': { useRoomActivity: (_, enabled, _interaction, _x, _y, onArrival) => {
+  '@/hooks/use-room-activity': { useRoomActivity: (_, enabled, _interaction, _x, _y, onArrival, _feed, _roomArrival, _visible, _preserve, onStopped) => {
+    editingReady = onStopped;
     doorArrival = onArrival;
     roomActivityEnabled = enabled;
-    return { activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, startActivity(kind, instanceId) { requestedActivity = kind; requestedInstanceId = instanceId; } };
+    return { activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, stopActivity() { stoppedForEditing++; }, startActivity(kind, instanceId) { requestedActivity = kind; requestedInstanceId = instanceId; } };
   } },
   react: React,
   'react-i18next': { useTranslation: () => ({ t: (key, options) => options?.room ? key + ':' + options.room : key }) },
@@ -159,6 +162,41 @@ assert.equal(sofaNode(selectedRoom).props.selected, true, 'Highlight the one ite
 assert.equal(selectedRoom.some(({ node }) => node.type === 'RoomActionMenu'), false, 'Choosing an item must not open an unrelated action menu');
 const moveControls = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node;
 assert.ok(moveControls.props.actions.some(action => action.label === 'home.removeFromRoom'), 'Object options remain available beside the movement controls');
+let appliedRotation;
+const rotationProps = { ...moveProps, onSetRoomItemRotation: (item, degrees) => { appliedRotation = { item, degrees }; } };
+const rotationSheet = nodes => nodes.find(({ node }) => node.type === 'RoomRotationSheet').node;
+const roomWorld = nodes => nodes.find(({ node }) => node.type === 'NativeRoomScene').node.props.world;
+const rotatableRoom = render([sofa], rotationProps);
+rotatableRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onRotate();
+assert.equal(rotationSheet(render([sofa], rotationProps)).props.visible, true);
+rotationSheet(render([sofa], rotationProps)).props.onPreview(37.5);
+const previewRoom = render([sofa], rotationProps);
+assert.ok(Math.abs(roomWorld(previewRoom).objects[0].heading - 37.5 * Math.PI / 180) < 1e-8, 'Slider preview uses an arbitrary angle in the native scene');
+assert.equal(appliedRotation, undefined, 'Preview never writes to the saved layout');
+rotationSheet(previewRoom).props.onClose();
+assert.equal(roomWorld(render([sofa], rotationProps)).objects[0].heading, 0, 'Cancel restores the saved orientation');
+rotatableRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onRotate();
+rotationSheet(render([sofa], rotationProps)).props.onApply(137.5);
+assert.equal(appliedRotation.item.instanceId, 'sofa');
+assert.equal(appliedRotation.degrees, 137.5);
+assert.equal(rotationSheet(render([sofa], rotationProps)).props.visible, false, 'Apply closes the rotation sheet');
+const everyKindRoom = render([sofa], { ...rotationProps, bedId: 'brown', placedToys: [{ toyId: 'scratchPostGreen', instanceId: 'rotating-toy', offset: { x: 0, y: 0 } }] });
+for (const id of ['room-object:bed', 'room-object:sofa', 'room-object:rotating-toy']) {
+  const node = everyKindRoom.find(({ node }) => node.props.testID === id)?.node;
+  assert.ok(node?.props.menuActions.some(action => action.label === 'home.rotateItem'), `${id}: all item kinds offer free rotation`);
+}
+measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
+const rotatedWindowProps = { ...windowProps, onSetRoomItemRotation() {} };
+const windowEditor = render([misplacedWindow], rotatedWindowProps);
+windowEditor.find(({node}) => node.props.testID === 'room-object:window').node.props.menuActions.find(action => action.label === 'home.rotateItem').onPress();
+repairedWindow = undefined;
+rotationSheet(render([misplacedWindow], rotatedWindowProps)).props.onPreview(137.5);
+rotationSheet(render([misplacedWindow], rotatedWindowProps)).props.onClose();
+assert.equal(repairedWindow, undefined, 'Window placement repairs cannot persist an unsaved rotation preview');
+measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
+// Restore the selected sofa for the existing movement assertions below.
+picker.props.onSelect(picker.props.items[0].item);
+console.log('Verified Rotate for beds, toys and furniture; local preview; Apply; Cancel; and preview-safe wall placement.');
 const hintSlot = editingRoom.find(({ node }) => node.props.children?.includes('home.decorateHint')).ancestors.at(-1);
 const controlsSlot = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').ancestors.at(-1);
 assert.equal(style(hintSlot.props.style).minHeight, style(controlsSlot.props.style).minHeight, 'Reserve the same space before and after selecting an item so dragging does not shift the room');
@@ -270,13 +308,13 @@ roomActivityForTest = null;
 console.log('Verified command menu eligibility, sleep command dispatch, returning instead of petting, and movement/rotation of actual placed balls and yarn.');
 
 roomActivityForTest = { plan: planner.buildRoomActivity(room, 0, 'sofaSit'), stepIndex: 2 };
-const beforeDecorate = returnedHome;
+const beforeDecorate = stoppedForEditing;
 render([sofa]).find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
-assert.equal(returnedHome, beforeDecorate + 1, 'Decorating asks the seated cat to get down first');
+assert.equal(stoppedForEditing, beforeDecorate + 1, 'Decorating asks the seated cat to get down first');
 const waitingRoom = render([sofa]);
 assert.equal(sofaNode(waitingRoom).props.allowDrag, false, 'Keep the occupied sofa in place during the return');
 assert.equal(waitingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.disabled, true);
-roomActivityForTest = null; render([sofa]);
+roomActivityForTest = null; editingReady(); render([sofa]);
 assert.equal(sofaNode(render([sofa])).props.allowDrag, true, 'Decorating begins after the return finishes');
 const post = { toyId: 'scratchPostRed', instanceId: 'post', offset: { x: .2, y: .3 }, scale: 1.5 };
 const scaled = [];
@@ -381,7 +419,7 @@ roomActivityForTest = { plan: planner.buildRoomActivity({ ...room, decorations: 
 assert.equal(catNode(render([bowl], mealProps)).props.menuActions.find(action => action.label === 'home.catCommands.bowlEat').disabled, true);
 assert.equal(catNode(render([bowl], mealProps)).props.menuActions.find(action => action.label === 'home.playStyle.feather').disabled, true);
 render([bowl], mealProps).find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
-roomActivityForTest = null; render([bowl], mealProps); render([bowl], mealProps);
+roomActivityForTest = null; editingReady(); render([bowl], mealProps); render([bowl], mealProps);
 assert.equal(catNode(render([bowl], mealProps)).props.menuActions, undefined, 'Decorating keeps the cat draggable without care menus');
 console.log('Verified direct cat and bowl menus, deferred feeding, retained pet/play actions, missing bowl, full hunger, busy meals, and decorating.');
 
@@ -455,3 +493,47 @@ for (const zoom of [1.73, 2.6, 3]) {
   assert.equal(cameraZoom, zoom, 'Finishing decoration mode keeps the same camera view');
 }
 console.log('Verified decoration mode preserves fractional zoom and enables ball dragging with the correct scale.');
+
+for (const [decorationId, kind] of [['bathroomBathAni','bathWash'],['bathroomShowerCabin','showerWash'],['bathroomWcAni','toiletUse'],['bathroomJacuzziSage','bathWash']]) {
+  const fixture={decorationId,instanceId:'fixture',offset:{x:0,y:0}};
+  cameraZoom=1;
+  const nodes=render([fixture]);
+  const fixtureNode=nodes.find(({node})=>node.props.testID==='room-object:fixture').node;
+  assert.equal(fixtureNode.props.interactive,true,'Bathroom fixtures expose their cat action menus');
+  const action=fixtureNode.props.menuActions.find(a=>a.label==='home.catCommands.'+kind);
+  assert.ok(action);action.onPress();
+  assert.equal(requestedActivity,kind);assert.equal(requestedInstanceId,'fixture');
+  assert.ok(roomCommands.some(a=>a.label==='home.catCommands.'+kind),'The cat menu offers bathroom actions too');
+  const blocked=render([fixture],{roomActivityBlocked:true}).find(({node})=>node.props.testID==='room-object:fixture').node;
+  assert.equal(blocked.props.interactive,false,'Care and room travel protect bathroom commands');
+}
+console.log('Verified real bathtub, shower, toilet and Jacuzzi menu taps target the selected fixture.');
+
+// Exercise the actual rotation form rather than only PetStage's sheet callbacks.
+const { RoomRotationSheet } = load(path.join(root, 'components/pet/RoomRotationSheet.tsx'));
+states.length = 0;
+let formPreview, formApplied, formCancelled = false;
+function rotationForm() {
+  stateIndex = 0;
+  const sheet = RoomRotationSheet({ visible: true, name: 'Chair', degrees: 0, simpleGraphics: false,
+    onPreview: value => { formPreview = value; }, onApply: value => { formApplied = value; }, onClose: () => { formCancelled = true; } });
+  const controls = sheet.props.children[0];
+  return flatten(controls.type(controls.props)).map(entry => entry.node);
+}
+const angleInput = nodes => nodes.find(node => node.props.accessibilityLabel === 'home.rotationAngle');
+const applyButton = nodes => nodes.find(node => node.props.accessibilityState?.disabled !== undefined);
+angleInput(rotationForm()).props.onChangeText('37,5');
+assert.equal(formPreview, 37.5, 'Decimal input accepts both locale separators');
+assert.equal(rotationForm().find(node => node.props.minimumValue === 0).props.value, 37.5);
+for (const invalid of ['', '-1', '361', 'invalid']) {
+  angleInput(rotationForm()).props.onChangeText(invalid);
+  assert.equal(applyButton(rotationForm()).props.disabled, true, 'Empty and out-of-range angles cannot be applied');
+}
+rotationForm().find(node => node.props.minimumValue === 0).props.onValueChange(137.54);
+assert.equal(formPreview, 137.5, 'Slider supports precise arbitrary angles');
+assert.equal(angleInput(rotationForm()).props.value, '137.5');
+applyButton(rotationForm()).props.onPress();
+assert.equal(formApplied, 137.5);
+rotationForm().find(node => node.props.onPress && !node.props.accessibilityState).props.onPress();
+assert.equal(formCancelled, true);
+console.log('Verified the actual rotation form, slider precision, numeric input, locale decimals, invalid input, Apply and Cancel.');

@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/immutability */
 /* Native asset requires are statically resolved by Metro. */
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { rockingChairContact, type RockingMotion } from '@/utils/native-rocking-chair';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { RenderCallbackContext, useAnimator, useFilamentContext, useModel } from 'react-native-filament';
 import { useSharedValue, Worklets, type ISharedValue } from 'react-native-worklets-core';
 import { resolveCatSkinId } from '@/constants/cat-skins';
-import { FLOOR_Y, catScreenPoint, type NativeRoomWorld, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
+import { FLOOR_Y, catScreenPoint, hasNativeArrived, type NativeRoomWorld, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
 import type { PetPlaybackState } from '@/pet-display/types';
 import { CAT_ANIMATION_CLIPS } from '@/constants/cat-animation-clips';
 import { resolveTailContact, tailParentAxis, type TailContact } from '@/utils/native-cat-contact';
@@ -16,6 +17,9 @@ const SOURCES = {
   white: require('@/assets/3d/native/cat-white.glb'),
 };
 const CLIPS: Record<string, number[]> = CAT_ANIMATION_CLIPS;
+// Fast Refresh can retain drawing-thread state while recreating React refs.
+// Wall-clock initialization keeps new revisions above those retained commands.
+let nextCommandRevision = Date.now();
 type Props = {
   skinId?: string;
   playback: PetPlaybackState;
@@ -33,6 +37,7 @@ type Props = {
   onAnimationComplete?: () => void;
   onStepComplete?: (index: number) => void;
   positionValue?: ISharedValue<Vec3>;
+  rockingMotion?: ISharedValue<RockingMotion>;
   animationTimeValue?: ISharedValue<{ name: string; time: number }>;
   hangingBall?: ISharedValue<Vec3>;
   plantLeaf?: ISharedValue<Vec3 | undefined>;
@@ -41,7 +46,7 @@ type Props = {
   onRoomStepComplete?: (key: string, position: Vec3) => void;
   initialPosition?: Vec3;
 };
-export function NativeCatActor({ skinId, playback, world, travel, activityKey, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, animationTimeValue, hangingBall, plantLeaf, pawPositions, initialPosition, reduceMotion = false }: Props) {
+export function NativeCatActor({ skinId, playback, world, travel, activityKey, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, rockingMotion, animationTimeValue, hangingBall, plantLeaf, pawPositions, initialPosition, reduceMotion = false }: Props) {
   'use no memo';
   const { transformManager } = useFilamentContext();
   const model = useModel(SOURCES[resolveCatSkinId(skinId)], { shouldReleaseSourceData: false });
@@ -81,8 +86,9 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       callbacks.current.onPosition?.({ x: data[0], y: data[1] });
       callbacks.current.onContactPosition?.([data[2], data[3], data[4]], data[5]);
     }
-    else if (kind === 'roomComplete' && typeof data === 'object' && 'key' in data)
+    else if (kind === 'roomComplete' && typeof data === 'object' && 'key' in data) {
       callbacks.current.onRoomStepComplete?.(data.key, data.position);
+    }
     else if (kind === 'step')
       callbacks.current.onStepComplete?.(data as number);
     else if (kind === 'complete')
@@ -100,18 +106,24 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       loop: segment.loop ?? loop ?? false };
   }), [loop, playback]);
   const command = useSharedValue({ id: 0, activityKey, segments, travel, world, active, reduceMotion });
+  const commandRevision = useRef<{ id: number; activityKey?: string; segments?: typeof segments; travel?: NativeTravel; home?: Vec3 }>({ id: 0 });
   const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, roomComplete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
     position: (initialPosition ?? world?.home ?? [0, 0, 0]) as Vec3, home: (world?.home ?? [0, 0, 0]) as Vec3, routeStart: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1,
     tailContact: { angle: 0, axis: [0, 1, 0], blocked: false } as TailContact });
   useEffect(() => {
-    const previous = command.value.world;
-    const movedHome = !command.value.travel && previous && world && previous.home.some((v, i) => v !== world.home[i]);
-    command.value = { ...command.value, world, id: movedHome ? command.value.id + 1 : command.value.id };
-  }, [command, world]);
+    // A replaced model needs its pose applied even when playback is paused.
+    state.value = { ...state.value, ready: false, clip: -1, previous: -1, blend: 1 };
+  }, [asset, state]);
   useEffect(() => {
-    command.value = { ...command.value, id: command.value.id + 1, activityKey, segments, travel };
-  }, [activityKey, command, segments, travel]);
-  useEffect(() => { command.value = { ...command.value, active, reduceMotion }; }, [active, reduceMotion, command]);
+    const previous = commandRevision.current;
+    const movedHome = !travel && previous.home && world && previous.home.some((v, i) => v !== world.home[i]);
+    const changed = previous.activityKey !== activityKey || previous.segments !== segments || previous.travel !== travel || movedHome;
+    const id = changed ? ++nextCommandRevision : previous.id;
+    commandRevision.current = { id, activityKey, segments, travel, home: world?.home };
+    // Publish one complete snapshot. Separate read/modify/write effects can
+    // overwrite a new movement revision with an older drawing-thread snapshot.
+    command.value = { id, activityKey, segments, travel, world, active, reduceMotion };
+  }, [activityKey, active, command, reduceMotion, segments, travel, world]);
   const clips = useMemo(() => {
     if (!animator)
       return {};
@@ -230,7 +242,14 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     animator.applyAnimation(clip.index, time);
     if (frameState.previous >= 0 && frameState.blend < 1)
       animator.applyCrossFade(frameState.previous, frameState.previousTime, frameState.blend);
-    const transform = transformManager.createIdentityMatrix().scaling([scale, scale, scale]).rotate(frameState.heading, [0, 1, 0]).translate(frameState.position);
+    let transform = transformManager.createIdentityMatrix().scaling([scale, scale, scale]).rotate(frameState.heading, [0, 1, 0]).translate(frameState.position);
+    const motion = rockingMotion?.value;
+    const contact = request.reduceMotion ? 0 : rockingChairContact(request.travel, frameState.elapsed);
+    if (contact > 0 && motion?.chair && motion.chair.instanceId === request.travel?.rockingChair?.instanceId) {
+      const chair = motion.chair;
+      transform = transform.translate(chair.pivot.map(v => -v) as Vec3).rotate(motion.angle * contact, chair.axis)
+        .translate([chair.pivot[0], chair.pivot[1] + motion.lift * contact, chair.pivot[2]]);
+    }
     transformManager.setTransform(entity, transform);
     const pawTarget = request.travel?.plantPlay ? plantLeaf?.value : request.travel?.treePlay ? hangingBall?.value : undefined;
     if (segment.name === 'batToy' && pawTarget && !request.reduceMotion) {
@@ -261,7 +280,10 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       ? frontLegs.map(leg => transformManager.getWorldTransform(leg.paw).translation) : [];
     if (tail && request.world) {
       const points = tail.joints.map(joint => transformManager.getWorldTransform(joint).translation);
-      frameState.tailContact = resolveTailContact(points, request.world, frameState.tailContact, deltaSeconds);
+      const bathroom = journey?.bathroom;
+      const contactWorld = bathroom && ['enter', 'wash', 'use', 'exit'].includes(bathroom.phase)
+        ? { ...request.world, objects: request.world.objects.filter(object => object.instanceId !== bathroom.instanceId) } : request.world;
+      frameState.tailContact = resolveTailContact(points, contactWorld, frameState.tailContact, deltaSeconds);
       if (frameState.tailContact.angle > .001) {
         const joint = tail.joints[0];
         const local = transformManager.getTransform(joint);
@@ -287,12 +309,13 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       notify('ready', 0);
     }
     if (request.activityKey && request.travel?.awaitCompletion && !frameState.roomComplete
-      && frameState.elapsed >= (request.reduceMotion ? .6 : request.travel.duration)) {
+      && frameState.elapsed >= (request.reduceMotion ? .6 : request.travel.duration)
+      && hasNativeArrived(frameState.position, request.travel.path[request.travel.path.length - 1])) {
       frameState.roomComplete = true;
       notify('roomComplete', { key: request.activityKey, position: [frameState.position[0], frameState.position[1], frameState.position[2]] });
     }
     state.value = frameState;
-  }, [animationTimeValue, animator, clips, command, eatingProps, entity, frontLegs, hangingBall, initialPosition, notify, pawPositions, plantLeaf, positionValue, state, tail, transformManager]);
+  }, [animationTimeValue, animator, clips, command, eatingProps, entity, frontLegs, hangingBall, initialPosition, notify, pawPositions, plantLeaf, positionValue, rockingMotion, state, tail, transformManager]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   return null;
 }

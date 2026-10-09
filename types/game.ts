@@ -38,6 +38,8 @@ export type PlacedToy = {
   scale?: number;
   /** Quarter-turn orientation in the room (0..3, default 0). */
   rotationIndex?: number;
+  /** Additional yaw in degrees, independent of legacy quarter turns. */
+  rotationDegrees?: number;
 };
 
 export type PlacedDecoration = {
@@ -49,6 +51,8 @@ export type PlacedDecoration = {
   offset: RoomItemOffset;
   /** Sprite variant when the decoration has rotation options. */
   rotationIndex?: number;
+  /** Additional yaw in degrees, independent of the chosen sprite/style. */
+  rotationDegrees?: number;
   /** Mirror horizontally for the opposite isometric wall (windows). */
   wallFlipped?: boolean;
   /** Air-conditioner power, saved separately for each placed unit. */
@@ -90,6 +94,7 @@ export type PetProfile = {
   roomBedOffset?: { x: number; y: number };
   /** Mirror human beds horizontally in the room. */
   bedFlipped?: boolean;
+  bedRotationDegrees?: number;
   /** Display scale multiplier for the equipped bed (default 1.3). */
   bedScale?: number;
   /** Toys currently placed in the cat room. */

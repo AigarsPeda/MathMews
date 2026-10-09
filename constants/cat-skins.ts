@@ -15,3 +15,10 @@ export function resolveCatSkinId(value: string | undefined): CatSkinId {
   }
   return DEFAULT_CAT_SKIN_ID;
 }
+
+/** Catalog cards use stills; the detail preview owns the animated native rig. */
+export const CAT_SKIN_PREVIEWS = {
+  orange: require("@/assets/3d/cat-shop-orange.png"),
+  grey: require("@/assets/3d/cat-shop-grey.png"),
+  white: require("@/assets/3d/cat-shop-white.png"),
+} as const;

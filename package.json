@@ -21,9 +21,14 @@
     "typecheck": "tsc --noEmit",
     "test:game": "node scripts/check-game.mjs",
     "test:ball-physics": "python3 scripts/native/check-ball-physics.py",
+    "test:runtime-safety": "python3 scripts/native/check-runtime-safety.py",
+    "crashes": "node scripts/diagnose-crashes.mjs",
     "assets:icons": "node scripts/3d/build-app-icons.mjs",
     "postinstall": "node scripts/native/patch-filament.mjs",
-    "assets:native": "BRAINPET_BLENDER_ASSET_DIR=/tmp/brainpet-native-blends /Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/export-native.py"
+    "assets:native": "BRAINPET_BLENDER_ASSET_DIR=/tmp/brainpet-native-blends /Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/export-native.py",
+    "test:recovery": "node scripts/check-crash-recovery.mjs",
+    "animations:check": "node scripts/check-room-activities.mjs && node scripts/check-native-room.mjs",
+    "assets:cat-thumbnails": "/Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/render-cat-thumbnails.py"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",
@@ -66,7 +71,7 @@
     "react-native-screens": "~4.26.0",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.1",
-    "react-native-worklets-core": "^1.6.3"
+    "react-native-worklets-core": "1.6.3"
   },
   "devDependencies": {
     "@types/react": "~19.2.14",

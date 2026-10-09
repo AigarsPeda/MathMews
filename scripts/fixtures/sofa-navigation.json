@@ -1,0 +1,103 @@
+{
+  "roomPetOffset": {
+    "x": 0.4861812475026682,
+    "y": 0.2170357655651625
+  },
+  "placedDecorations": [
+    {
+      "decorationId": "livingAirCon",
+      "instanceId": "placedDecorations-0",
+      "offset": {
+        "x": 0.1215852969099869,
+        "y": -0.6446808016580005
+      },
+      "poweredOn": true
+    },
+    {
+      "decorationId": "plantB",
+      "instanceId": "placedDecorations-1",
+      "offset": {
+        "x": 0.016373695693284417,
+        "y": -0.3914404432799364
+      },
+      "scale": 2.2
+    },
+    {
+      "decorationId": "sofaA",
+      "instanceId": "placedDecorations-2",
+      "offset": {
+        "x": -0.5444640441286785,
+        "y": -0.063391364944004
+      },
+      "rotationIndex": 1,
+      "scale": 1.5
+    },
+    {
+      "decorationId": "portraitCat",
+      "instanceId": "placedDecorations-3",
+      "offset": {
+        "x": -0.5227069535623534,
+        "y": -0.48959835896030585
+      },
+      "wallFlipped": true,
+      "scale": 2.2
+    },
+    {
+      "decorationId": "bowlBlue",
+      "instanceId": "placedDecorations-4",
+      "offset": {
+        "x": 0.43431534934244376,
+        "y": 0.006092264552488731
+      },
+      "scale": 1.4
+    },
+    {
+      "decorationId": "windowOakWide",
+      "instanceId": "placedDecorations-5",
+      "offset": {
+        "x": 0.6863000072190298,
+        "y": -0.44644258752326377
+      },
+      "scale": 1.6
+    },
+    {
+      "decorationId": "chairRockingOak",
+      "instanceId": "placedDecorations-6",
+      "offset": {
+        "x": -0.04509803921568622,
+        "y": 0.17824561403508754
+      },
+      "wallFlipped": true
+    },
+    {
+      "decorationId": "lampFloorArc",
+      "instanceId": "placedDecorations-7",
+      "offset": {
+        "x": -0.7777348005904874,
+        "y": -0.15740501308201946
+      },
+      "rotationDegrees": 53,
+      "scale": 1.8
+    }
+  ],
+  "placedToys": [
+    {
+      "toyId": "scratchPostGreen",
+      "instanceId": "placedToys-0",
+      "offset": {
+        "x": 1,
+        "y": 0.07245901639344292
+      },
+      "rotationIndex": 3
+    },
+    {
+      "toyId": "blueBall",
+      "instanceId": "placedToys-1",
+      "offset": {
+        "x": 0.00042287332521186724,
+        "y": 0.46720616462110365
+      },
+      "rotationIndex": 1
+    }
+  ]
+}

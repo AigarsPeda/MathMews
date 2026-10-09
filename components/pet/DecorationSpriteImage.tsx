@@ -5,17 +5,19 @@ import {
   isImageDecorationEntry,
   type CatDecorationId,
 } from "@/constants/cat-decorations";
-import { Image } from "react-native";
+import { Image } from "expo-image";
 
 type DecorationSpriteImageProps = {
   decorationId: CatDecorationId;
   size: number;
+  still?: boolean;
   flipHorizontal?: boolean;
 };
 
 export function DecorationSpriteImage({
   decorationId,
   size,
+  still = false,
   flipHorizontal = false,
 }: DecorationSpriteImageProps) {
   const entry = getDecorationCatalogEntry(decorationId);
@@ -26,6 +28,7 @@ export function DecorationSpriteImage({
   if (isAnimatedDecorationEntry(entry)) {
     return (
       <AnimatedStripSprite
+        still={still}
         source={entry.source}
         sheetWidth={entry.sheetWidth}
         sheetHeight={entry.sheetHeight}
@@ -48,7 +51,7 @@ export function DecorationSpriteImage({
       <Image
         source={entry.source}
         style={imageStyle}
-        resizeMode="contain"
+        contentFit="contain" cachePolicy="memory-disk"
         accessibilityIgnoresInvertColors
       />
     );

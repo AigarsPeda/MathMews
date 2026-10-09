@@ -5,7 +5,8 @@ import { GameColors } from "@/constants/game";
 import { getBedStorePrice } from "@/utils/bed-store";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
 
 type BedStoreCardProps = {
   bedId: CatBedId;
@@ -39,7 +40,7 @@ export function BedStoreCard({
           <Image
             source={source}
             style={styles.preview}
-            resizeMode="contain"
+            contentFit="contain" cachePolicy="memory-disk"
             accessibilityIgnoresInvertColors
           />
         ) : null}

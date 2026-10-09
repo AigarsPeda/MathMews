@@ -7,7 +7,7 @@ import { syncPetLayerOrder } from "@/utils/room-layer-order";
 export type HomeRoomState = RoomLayout & Pick<PetProfile, "roomId" | "roomLayouts" | "savedRoomLayouts">;
 const EMPTY_HOME_ROOM: HomeRoomState = {
   roomPetOffset: { x: 0, y: .12 }, bedId: undefined, roomBedOffset: undefined,
-  bedFlipped: undefined, bedScale: undefined, placedToys: [], placedDecorations: [], roomLayerOrder: [],
+  bedFlipped: undefined, bedRotationDegrees: undefined, bedScale: undefined, placedToys: [], placedDecorations: [], roomLayerOrder: [],
   roomId: 'room1', roomLayouts: undefined, savedRoomLayouts: undefined,
 };
 

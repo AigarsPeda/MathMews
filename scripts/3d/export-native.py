@@ -46,7 +46,7 @@ def items():
    objects=[o for o in bpy.context.scene.objects if o.type=='MESH'];render_scale=7.85;center=[0,0,.9]
   else:
    objects,root=scope['build_item'](entry)
-   framing=[o for o in objects if o.name!='Hanging toy string' and not o.name.startswith(('Leaf midrib','Leaf vein','Soil grain')) and not (id in PLAYABLE_PLANTS and o.type=='CURVE')]
+   framing=[o for o in objects if not o.hide_render and o.name!='Hanging toy string' and not o.name.startswith(('Leaf midrib','Leaf vein','Soil grain')) and not (id in PLAYABLE_PLANTS and o.type=='CURVE')]
    framed_center=scope['frame_camera'](framing,1.22)
    render_scale=bpy.context.scene.camera.data.ortho_scale
    lo,hi=bounds(objects);center=[(a+b)/2 for a,b in zip(lo,hi)]
@@ -75,15 +75,35 @@ def items():
   export(OUT/(id+'.glb'),objects,animated)
   def yup(v):return [v[0],v[2],-v[1]]
   metadata[id]={'kind':kind,'renderScale':render_scale,'center':yup(center),'min':[lo[0],lo[2],-hi[1]],'max':[hi[0],hi[2],-lo[1]],'animated':animated,'wind':wind}
+  contact=next((o for o in objects if o.name=='Bathroom contact'),None)
+  if contact:
+   metadata[id]['bathroom']={'kind':contact['bathroom_kind'],'contact':yup(list(contact.location))}
+   outlet=next((o for o in objects if o.name=='Bathroom water outlet'),None)
+   if outlet:metadata[id]['bathroom']['sprayHeight']=max(.01,outlet.location.z-contact.location.z)
   if id in PLAYABLE_PLANTS:
    metadata[id]['leaves']=[{'node':o.parent.name,'contact':o.name,'point':yup(list(o.matrix_world.translation))} for o in sorted(objects,key=lambda o:o.name) if o.name.startswith('Leaf contact ')]
-  if (id.startswith('sofa') and id!='sofaPillow') or 'catTree' in id or 'scratchPost' in id or id in PLAYABLE_PLANTS:
+  if (id.startswith('sofa') and id!='sofaPillow') or 'catTree' in id or 'scratchPost' in id or id in PLAYABLE_PLANTS or id=='lampFloorArc':
    # Keep the open space above the seat. One enclosing box fills that space.
    metadata[id]['collisionBoxes']=[]
    for obj in objects:
     if obj.type not in ('MESH','CURVE'):continue
     if id in PLAYABLE_PLANTS and obj.name not in ('Ceramic planter','Pot rim','Soil'):continue
     if obj.name in ('Dangling toy','Hanging toy string') or obj.name.startswith('Rope ring'):continue
+    if id=='lampFloorArc' and obj.name=='Brass arch stem':
+     # One box around the curved stem fills the air below its arch. Short
+     # height bands preserve the upright and leave the sofa cushion accessible.
+     evaluated=obj.evaluated_get(bpy.context.evaluated_depsgraph_get());mesh=evaluated.to_mesh()
+     vertices=[obj.matrix_world@v.co for v in mesh.vertices]
+     low,high=bounds([obj])
+     for band in range(math.ceil((high[2]-low[2])/.2)):
+      bottom=low[2]+band*.2;top=bottom+.2;points=[]
+      for face in mesh.polygons:
+       face_points=[vertices[i] for i in face.vertices]
+       if min(v.z for v in face_points)<=top and max(v.z for v in face_points)>=bottom:points.extend(face_points)
+      if points:
+       lo=[min(v[i] for v in points) for i in range(3)];hi=[max(v[i] for v in points) for i in range(3)]
+       metadata[id]['collisionBoxes'].append({'min':[lo[0],lo[2],-hi[1]],'max':[hi[0],hi[2],-lo[1]]})
+     evaluated.to_mesh_clear();continue
     low,high=bounds([obj])
     metadata[id]['collisionBoxes'].append({'min':[low[0],low[2],-high[1]],'max':[high[0],high[2],-low[1]]})
   print('NATIVE_ITEM',id,flush=True)

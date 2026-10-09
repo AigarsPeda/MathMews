@@ -1,5 +1,7 @@
 /* Native worklet shared values synchronize the drawing thread with React. */
 /* eslint-disable react-hooks/immutability */
+import { advanceRockingChair, STILL_ROCKING_MOTION, type RockingMotion } from '@/utils/native-rocking-chair';
+import { advanceBathroomMotion, STILL_BATHROOM_MOTION } from '@/utils/native-bathroom';
 import { NativeAirflow } from "./NativeAirflow";
 import { NativeFoodSpill } from "./NativeFoodSpill";
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
@@ -12,10 +14,14 @@ import { DefaultLight, FilamentScene, FilamentView, RenderCallbackContext, useAn
 import { useSharedValue, Worklets, type ISharedValue } from 'react-native-worklets-core';
 import { NativeCatActor } from './NativeCatActor';
 import { advancePlantLeaf, attachedPlantLeaf, detachPlantLeaf, LEAF_REGROW_DELAY, type PlantLeafState } from '@/utils/native-plant-play';
+import { airflowStrength, roomAirflowSources, type AirflowSource } from '@/utils/native-airflow';
 import { advanceHangingToy, containHangingToySwing, hangingToyContact } from '@/utils/native-hanging-toy';
 import { NATIVE_MODEL_SOURCES } from '@/constants/native-model-sources';
 import { FLOOR_Y, ROOM_SPAN, projectWorld, nativeBodyRotation, NATIVE_MODEL_CATALOG, type NativeRoomWorld, type NativeRoomObject, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
 import { GameColors } from '@/constants/game';
+import { RecoveryBoundary } from '@/components/recovery/RecoveryBoundary';
+import { SceneLoadGuard } from '@/components/recovery/SceneLoadGuard';
+import { enableSimpleGraphicsForSession } from '@/lib/graphics-mode';
 import type { PetPlaybackState } from '@/pet-display/types';
 type Props = {
   world: NativeRoomWorld;
@@ -59,19 +65,21 @@ function BoxCollider({ world, id, size, position }: {
   useRigidBody({ id, mass: 0, shape, origin: position, world, friction: .7 });
   return null;
 }
-function RoomObject({ object, world, catPosition, hangingBall, plantLeaf, pawPositions, playingId, playContact, catPresent, active, roomWidth, catRadius, onPosition, travel, activityKey, breezy, onReady }: {
+function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, plantLeaf, pawPositions, playingId, playContact, catPresent, active, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady }: {
   object: NativeRoomObject;
   onReady?: (key: string) => void;
   world: DiscreteDynamicWorld;
   catPosition: ISharedValue<Vec3>;
+  rockingMotion: ISharedValue<RockingMotion>;
   hangingBall: ISharedValue<Vec3>;
   plantLeaf: ISharedValue<Vec3 | undefined>;
   pawPositions: ISharedValue<Vec3[]>;
   playingId?: string;
   playContact?: boolean;
   active: boolean;
+  reduceMotion: boolean;
   catPresent: boolean;
-  breezy: boolean;
+  airflow: AirflowSource[];
   travel?: NativeTravel;
   activityKey?: string;
   roomWidth: number;
@@ -95,6 +103,17 @@ function RoomObject({ object, world, catPosition, hangingBall, plantLeaf, pawPos
     const ball = asset.getFirstEntityByName('Dangling toy');
     return pivot && ball ? { entity: pivot, ball, transform: transformManager.getTransform(pivot) } : undefined;
   }, [asset, transformManager]);
+  const bathroomKind = object.bathroom?.kind;
+  const bathroomParts = useMemo(() => {
+    if (!asset || !bathroomKind) return [];
+    const names = ['Toilet lid hinge', ...Array.from({ length: 8 }, (_, i) => `Bathroom water drop ${i + 1}`),
+      ...Array.from({ length: 3 }, (_, i) => `Bathroom wash ripple ${i + 1}`)];
+    return names.flatMap(name => {
+      const entity = asset.getFirstEntityByName(name);
+      return entity ? [{ entity, name, transform: transformManager.getTransform(entity) }] : [];
+    });
+  }, [asset, bathroomKind, transformManager]);
+  const bathroomMotion = useSharedValue(STILL_BATHROOM_MOTION);
   const leaves = useMemo(() => {
     if (!asset) return [];
     return (NATIVE_MODEL_CATALOG[object.modelId].leaves ?? []).flatMap(meta => {
@@ -103,13 +122,15 @@ function RoomObject({ object, world, catPosition, hangingBall, plantLeaf, pawPos
     });
   }, [asset, object.modelId, transformManager]);
   const leafStates = useSharedValue<PlantLeafState[]>([]);
+  const leafBends = useSharedValue<number[]>([]);
   const leafCooldown = useSharedValue(0);
   const previousLeaves = useSharedValue<{ points: Vec3[]; paws: Vec3[] } | undefined>(undefined);
   useEffect(() => {
     leafStates.value = leaves.map(() => attachedPlantLeaf());
+    leafBends.value = leaves.map(() => 0);
     leafCooldown.value = 0;
     previousLeaves.value = undefined;
-  }, [leaves, leafStates, leafCooldown, previousLeaves]);
+  }, [leaves, leafStates, leafBends, leafCooldown, previousLeaves]);
   const previousContact = useSharedValue<{ ball: Vec3; paws: Vec3[] } | undefined>(undefined);
   const swing = useSharedValue({ x: 0, z: 0, vx: 0, vz: 0, touching: false });
   const animator = useAnimator(model.state === 'loaded' ? model.asset : undefined);
@@ -133,6 +154,9 @@ function RoomObject({ object, world, catPosition, hangingBall, plantLeaf, pawPos
     'worklet';
     if (entity)
       transformManager.setTransform(entity, initialTransform);
+    if (!bathroomMotion.value.runningWater) for (const part of bathroomParts) {
+      if (part.name !== 'Toilet lid hinge') transformManager.setTransform(part.entity, part.transform.scaling([0, 0, 0]));
+    }
   });
   const chase = playingId === object.instanceId ? travel?.objectPath : undefined;
   const chaseTime = useSharedValue(0);
@@ -144,8 +168,40 @@ function RoomObject({ object, world, catPosition, hangingBall, plantLeaf, pawPos
     timeSinceLastFrame: number;
   }) => {
     'worklet';
-    if (!entity || !active)
+    if (!entity) return;
+    if (bathroomParts.length) {
+      const motion = advanceBathroomMotion(bathroomMotion.value, object.instanceId, travel?.bathroom,
+        timeSinceLastFrame, active, reduceMotion);
+      bathroomMotion.value = motion;
+      const height = NATIVE_MODEL_CATALOG[object.modelId].bathroom?.sprayHeight ?? 0;
+      for (let i = 0; i < bathroomParts.length; i++) {
+        const part = bathroomParts[i];
+        const anchor = part.transform.translation;
+        let local = part.transform;
+        if (part.name === 'Toilet lid hinge') local = local.translate(anchor.map(v => -v) as Vec3)
+          .rotate(-motion.lid, [1, 0, 0]).translate(anchor);
+        else if (!motion.runningWater) local = local.scaling([0, 0, 0]);
+        else if (part.name.startsWith('Bathroom water drop')) local = local.translate(anchor.map(v => -v) as Vec3)
+          .scaling([1.6, 1, 1.6]).translate(anchor).translate([0,
+            -((motion.time * 1.8 + i * .19) % Math.max(.01, height)), 0]);
+        else {
+          const factor = .65 + .40 * ((motion.time * .8 + i * .33) % 1);
+          local = local.translate(anchor.map(v => -v) as Vec3).scaling([factor, 1, factor]).translate(anchor);
+        }
+        transformManager.setTransform(part.entity, local);
+      }
+    }
+    if (object.modelId === 'chairRockingOak') {
+      const motion = rockingMotion.value;
+      const chair = motion.chair;
+      const transform = chair?.instanceId === object.instanceId
+        ? initialTransform.translate(chair.pivot.map(v => -v) as Vec3).rotate(motion.angle, chair.axis)
+          .translate([chair.pivot[0], chair.pivot[1] + motion.lift, chair.pivot[2]])
+        : initialTransform;
+      transformManager.setTransform(entity, transform);
       return;
+    }
+    if (!active) return;
     const s = { ...clock.value };
     s.time += Math.min(1 / 15, timeSinceLastFrame);
     let transform = initialTransform;
@@ -232,13 +288,14 @@ function RoomObject({ object, world, catPosition, hangingBall, plantLeaf, pawPos
       transformManager.setTransform(hanging.entity, hanging.transform.translate(anchor.map(v => -v) as Vec3).rotate(angle, axis).translate(anchor));
       if (catPresent && playingId === object.instanceId) hangingBall.value = transformManager.getWorldTransform(hanging.ball).translation;
     }
-    if (animator && animator.getAnimationCount() > 0 && object.poweredOn !== false && (!NATIVE_MODEL_CATALOG[object.modelId].wind || breezy)) {
+    if (animator && animator.getAnimationCount() > 0 && !object.bathroom && object.poweredOn !== false && (!NATIVE_MODEL_CATALOG[object.modelId].wind || airflowStrength(center, airflow) > 0)) {
       animator.applyAnimation(0, s.time);
       animator.updateBoneMatrices();
     }
     if (leaves.length) {
       const dt = Math.max(0, Math.min(1 / 15, timeSinceLastFrame));
       const states = [...leafStates.value];
+      const bends = [...leafBends.value];
       leafCooldown.value = Math.max(0, leafCooldown.value - dt);
       const paws = catPresent ? pawPositions.value : [];
       const points = leaves.map(leaf => transformManager.getWorldTransform(leaf.contact).translation);
@@ -266,16 +323,28 @@ function RoomObject({ object, world, catPosition, hangingBall, plantLeaf, pawPos
         const dx = state.position[0] - object.position[0], dz = state.position[2] - object.position[2];
         const location: Vec3 = falling ? [(dx * c - dz * sn) / object.scale,
           (state.position[1] - object.position[1]) / object.scale, (dx * sn + dz * c) / object.scale] : anchor;
-        const angle = falling ? state.angle : breezy ? .04 * Math.sin(s.time * 2 + i) : 0;
+        const wind = falling ? 0 : airflowStrength(point, airflow);
+        // Bend across each leaf's radial direction while its petiole stays
+        // attached to the stem, including leaves on the back of the plant.
+        const radial = Math.hypot(anchor[0], anchor[2]);
+        const bendAxis: Vec3 = radial > .001 ? [anchor[2] / radial, 0, -anchor[0] / radial] : [0, 0, 1];
+        // A shared slow gust presses the leaves downward. Damping avoids rigid
+        // flapping and lets them ease back when the draft stops or moves away.
+        const gust = .22 + .14 * Math.sin(s.time * .9) + .06 * Math.sin(s.time * 1.4 + .4);
+        const priorBend = i < bends.length ? bends[i] : 0;
+        const bend = falling ? 0 : priorBend + (wind * gust - priorBend) * (1 - Math.exp(-dt * 6));
+        bends[i] = bend;
+        const angle = falling ? state.angle : bend * .07 * Math.sin(s.time * 3 + i * .6);
         transformManager.setTransform(leaf.entity, leaf.transform.translate(anchor.map(v => -v) as Vec3)
-          .scaling([state.scale, state.scale, state.scale]).rotate(angle, [1, 0, 0]).translate(location));
+          .scaling([state.scale, state.scale, state.scale]).rotate(angle, [1, 0, 0]).rotate(bend, bendAxis).translate(location));
       }
       leafStates.value = states;
+      leafBends.value = bends;
       previousLeaves.value = { points, paws };
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [active, animator, body, breezy, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, entity, hanging, hangingBall, initialTransform, leafStates, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [active, reduceMotion, airflow, animator, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   return null;
 }
@@ -308,17 +377,18 @@ function Scene(props: Props) {
   useRigidBody({ id: 'floor', mass: 0, shape: floorShape, origin: [0, FLOOR_Y, 0], world, friction: .7 });
   const catPosition = useSharedValue<Vec3>(props.initialCatPosition ?? props.world.home);
   const catAnimationTime = useSharedValue({ name: 'idle', time: 0 });
+  const rockingMotion = useSharedValue<RockingMotion>(STILL_ROCKING_MOTION);
   const hangingBall = useSharedValue<Vec3>([0, 0, 0]);
   const plantLeaf = useSharedValue<Vec3 | undefined>(undefined);
   const pawPositions = useSharedValue<Vec3[]>([]);
   const catShape = useBoxShape(props.world.radius, .40 * props.world.catScale, props.world.radius);
   const catBody = useRigidBody({ id: 'cat', mass: 0, shape: catShape, origin: props.world.home, world: catPresent ? world : undefined });
   useEffect(() => { catBody?.setKinematic(true); }, [catBody]);
-  const breezy = props.world.objects.some(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn);
+  const airflow = useMemo(() => roomAirflowSources(props.world.objects), [props.world.objects]);
   const visible = active && !props.paused;
   const editing = props.editing === true;
-  const drawing = useSharedValue({ ready, visualKey, visible, reduceMotion, editing });
-  useEffect(() => { drawing.value = { ready, visualKey, visible, reduceMotion, editing }; }, [drawing, ready, visualKey, visible, reduceMotion, editing]);
+  const drawing = useSharedValue({ ready, visualKey, visible, reduceMotion, editing, chair: props.travel?.rockingChair });
+  useEffect(() => { drawing.value = { ready, visualKey, visible, reduceMotion, editing, chair: props.travel?.rockingChair }; }, [drawing, ready, visualKey, visible, reduceMotion, editing, props.travel?.rockingChair]);
   useEffect(() => {
     if (!painted || visible) choreographer.start();
     else choreographer.stop();
@@ -343,13 +413,15 @@ function Scene(props: Props) {
       const aspect = Math.max(.1, view.getAspectRatio());
       camera.setOrthographicProjection(-ROOM_SPAN / 2, ROOM_SPAN / 2, -ROOM_SPAN / 2 / aspect, ROOM_SPAN / 2 / aspect, .1, 50);
       camera.lookAt([8, 7, 8], [0, .9, 0], [0, 1, 0]);
+      if (current.reduceMotion || current.editing) rockingMotion.value = STILL_ROCKING_MOTION;
+      else if (current.visible) rockingMotion.value = advanceRockingChair(rockingMotion.value, current.chair, catPresent ? catPosition.value : undefined, timeSinceLastFrame);
       if (current.visible && !current.reduceMotion && !current.editing) {
         const position = catPosition.value;
         if (catPresent) catBody?.setPosition(position[0], position[1] + .40 * catScale, position[2]);
         world.stepSimulation(Math.min(1 / 15, Math.max(0, timeSinceLastFrame)), 4, 1 / 60);
       }
 
-  }, [camera, catBody, catPosition, catPresent, catScale, drawing, reportPainted, view, warmup, world]);
+  }, [camera, catBody, catPosition, catPresent, catScale, drawing, reportPainted, rockingMotion, view, warmup, world]);
   return <FilamentView style={StyleSheet.flatten(StyleSheet.absoluteFill)} enableTransparentRendering renderCallback={render}>
   <DefaultLight />
   <RoomModel id={props.roomId ?? 'room1'} onReady={handleRoomReady}/>
@@ -361,18 +433,30 @@ function Scene(props: Props) {
     <BoxCollider key={object.instanceId + ':part:' + index} id={object.instanceId + ':part:' + index} world={world}
       size={box.max.map((v, i) => Math.max(.01, (v - box.min[i]) / 2)) as Float3}
       position={box.max.map((v, i) => (v + box.min[i]) / 2) as Float3}/>))}
-  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} object={object} onReady={handleObjectReady} world={world} catPresent={catPresent} catPosition={catPosition} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} breezy={breezy} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
+  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} object={object} onReady={handleObjectReady} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
   {props.world.objects.filter(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn).map(o => <NativeAirflow key={o.instanceId} object={o} active={visible && !reduceMotion}/>)}
   {eatingBowl && !reduceMotion && <NativeFoodSpill key={props.activityKey} object={eatingBowl} active={visible} animationTime={catAnimationTime}/>}
-  {catPresent && <NativeCatActor key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} animationTimeValue={catAnimationTime} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}
+  {catPresent && <NativeCatActor key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}
  </FilamentView>;
 }
-export const NativeRoomScene = memo(function NativeRoomScene(props: Props) {
+export const NativeRoomSurface = memo(function NativeRoomSurface(props: Props) {
   // Reserve the startup hold before native layout can mount the renderer.
   // Scene's own hold takes over in the same commit once dimensions are known.
   useStartupVisualReady(props.world.width > 0);
   if (props.world.width <= 0)
     return <View style={styles.loading}><ActivityIndicator color={GameColors.primary}/></View>;
   return <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: GameColors.background }]}><FilamentScene ambientOcclusionOptions={{ enabled: true, radius: .3, intensity: 1 }}><Scene {...props}/></FilamentScene></View>;
+});
+function GuardedRoomSurface(props: Props) {
+  const [ready, setReady] = useState(false);
+  const notifyReady = props.onSceneReady;
+  const onReady = useCallback(() => { setReady(true); notifyReady?.(); }, [notifyReady]);
+  return <SceneLoadGuard ready={ready}><NativeRoomSurface {...props} onSceneReady={onReady}/></SceneLoadGuard>;
+}
+export const NativeRoomScene = memo(function NativeRoomScene(props: Props) {
+  return <RecoveryBoundary scope={`room:${props.roomId ?? 'room1'}`} onError={enableSimpleGraphicsForSession}
+    fallback={() => <View style={StyleSheet.absoluteFill}/> }>
+    <GuardedRoomSurface {...props}/>
+  </RecoveryBoundary>;
 });
 const styles = StyleSheet.create({ loading: { ...StyleSheet.flatten(StyleSheet.absoluteFill), alignItems: 'center', justifyContent: 'center' } });

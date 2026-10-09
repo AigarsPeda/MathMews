@@ -17,12 +17,12 @@ const mocks = {
   react,
   'react/jsx-runtime': { jsx: (type, props) => ({ type, props }), jsxs: (type, props) => ({ type, props }) },
   'react-native': { View: 'View', Pressable: 'Pressable' },
-  '@expo/ui/swift-ui': { Button: 'Button', Host: 'Host', Image: 'Image', Label: 'Label', Menu: 'Menu', RNHostView: 'RNHostView', Section: 'Section' },
+  '@expo/ui/swift-ui': { Button: 'Button', Host: 'Host', HStack: 'HStack', Image: 'Image', Label: 'Label', Menu: 'Menu', RNHostView: 'RNHostView', Section: 'Section' },
   'expo-asset': { useAssets: sources => [sources.map(source => ({ localUri: `file:///icons/${source}.png` }))] },
   '@/constants/app-icons': { APP_ICON_SOURCES: { sleep: 1, 'zoom-in': 2, trash: 3 } },
   '@/constants/game': { GameColors: { primary: '#D52248', textMuted: '#636E72' } },
   '@expo/ui/jetpack-compose': { HorizontalDivider: 'HorizontalDivider', Host: 'Host', Icon: 'Icon', RNHostView: 'RNHostView', Text: 'ComposeText', DropdownMenu: Object.assign('DropdownMenu', { Trigger: 'Trigger', Items: 'Items' }), DropdownMenuItem: Object.assign('DropdownMenuItem', { Text: 'ItemText', LeadingIcon: 'LeadingIcon' }) },
-  '@expo/ui/swift-ui/modifiers': Object.fromEntries(['accessibilityLabel', 'buttonStyle', 'disabled', 'frame', 'resizable', 'aspectRatio'].map(name => [name, value => ({ name, value })])),
+  '@expo/ui/swift-ui/modifiers': { ...Object.fromEntries(['accessibilityLabel', 'buttonStyle', 'contentShape', 'disabled', 'frame', 'resizable', 'aspectRatio'].map(name => [name, value => ({ name, value })])), shapes: { rectangle:()=>({shape:'rectangle'}) } },
   '@expo/ui/community/menu': { MenuView: 'MenuView' },
   '@/components/ui/NativeActionMenu': { NativeActionMenu: 'NativeActionMenu' },
 };
@@ -85,6 +85,11 @@ for (const platform of ['ios', 'android']) {
     const tree = nodes(NativeActionMenu({ ...props, blocked }));
     const before = selections;
     if (platform === 'ios') {
+      const nativeMenu=tree.find(node=>node.type==='Menu');
+      const trigger=nativeMenu.props.label;
+      assert.equal(trigger.type,'HStack');
+      assert.equal(trigger.props.modifiers.find(m=>m.name==='contentShape').value.shape,'rectangle',
+        'Transparent item labels have a full native tap area');
       const sections = tree.filter(node => node.type === 'Section');
       assert.equal(sections.length, 3, 'iOS uses separate native groups');
       assert.ok(sections.every(node => node.props.title === undefined), 'Native menu groups have no visible headings');

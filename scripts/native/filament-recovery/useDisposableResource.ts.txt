@@ -1,0 +1,41 @@
+import { DependencyList, useEffect, useState } from 'react'
+import { withCleanupScope } from '../utilities/withCleanupScope'
+import { PointerHolder } from '../types/PointerHolder'
+
+type ReleasingResource = Pick<PointerHolder, 'release'>
+
+const emptyStaticArray: DependencyList = []
+
+/**
+ * Any resource that is a {@link PointerHolder} and can be released, should be loaded
+ * using this hook. It takes care of properly releasing the resource when the component
+ * unmounts or dependencies change.
+ * There are certain cases like "fast refresh" or StrictMode that make useEffects execute
+ * multiple times. Also loading the resource can be async and this hooks handles all these
+ * cases properly.
+ */
+export const useDisposableResource = <T extends ReleasingResource>(
+  initialize: () => Promise<T | undefined> | undefined,
+  deps?: DependencyList
+): T | undefined => {
+  const [resource, setResource] = useState<T>()
+  const [error, setError] = useState<unknown>()
+  useEffect(() => {
+    let valid = true
+    let current: T | undefined
+    // Promise.resolve also catches synchronous initialization failures.
+    Promise.resolve().then(() => valid ? initialize() : undefined).then(asset => {
+      if (!asset) return
+      if (valid) { current = asset; setResource(asset) }
+      else withCleanupScope(() => asset.release())()
+    }).catch(error => { if (valid) setError(() => error) })
+    return () => {
+      valid = false
+      setResource(undefined)
+      withCleanupScope(() => { current?.release(); current = undefined })()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps ?? emptyStaticArray)
+  if (error != null) throw error
+  return resource
+}

@@ -4,7 +4,8 @@ import { GameColors } from "@/constants/game";
 import { getRoomStorePrice } from "@/utils/room-store";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
 
 type RoomStoreCardProps = {
   roomId: CatRoomId;
@@ -40,7 +41,7 @@ export function RoomStoreCard({
         <Image
           source={getCatRoomSource(roomId)}
           style={styles.preview}
-          resizeMode="cover"
+          contentFit="cover" cachePolicy="memory-disk"
           accessibilityIgnoresInvertColors
         />
         {isEquipped ? (

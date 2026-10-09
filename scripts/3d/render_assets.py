@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
 from store_furniture import STORE_FURNITURE_IDS, build_store_furniture
+from bathroom_additions import build_bathroom_addition, add_bathroom_controls
 from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, key_cat_geometry, smoothstep, smooth_window, pulse, care_action_time
 OUT=ROOT/'assets/3d'
 OUT.mkdir(parents=True,exist_ok=True)
@@ -95,7 +96,7 @@ def frame_camera(objects,margin=1.17):
  camera=bpy.context.scene.camera;deps=bpy.context.evaluated_depsgraph_get();coords=[]
  has_leaves=any(o.name.startswith('Leaf attachment ') for o in objects)
  for o in objects:
-  if o.type not in ('MESH','CURVE'):continue
+  if o.type not in ('MESH','CURVE') or o.hide_render:continue
   # Thin cords and plant detail curves have inflated evaluated bounds.
   if o.name=='Hanging toy string' or o.name.startswith(('Leaf midrib','Leaf vein','Soil grain')):continue
   if has_leaves and o.type=='CURVE':continue
@@ -586,11 +587,7 @@ def console(id):
 def bathroom(id,t=0):
  low=id.lower();color=color_for(id)
  if 'bathani' in low:
-  box('Bathtub base',(0,0,.28),(2.0,1.0,.55),'cream',.22);box('Bath water',(0,0,.57),(1.60,.67,.03),'blue',.12)
-  for x in [-.89,.89]:box('Tub rim',(x,0,.64),(.22,1.06,.19),'white',.10)
-  for y in [-.47,.47]:box('Tub rim',(0,y,.64),(1.93,.20,.19),'white',.10)
-  tap((.75,.32,.66))
-  for n in range(3):torus('Water ripple',(-.30+n*.3,0,.6),.10+n*.03,.012,'cream')
+  build_bathroom_addition(id,globals())
  elif 'wcfurniture' in low:
   box('Vanity cabinet',(0,0,.45),(1.3,.70,.88),'wood',.07);box('Vanity top',(0,0,.92),(1.4,.78,.10),'cream',.04);torus('Sink rim',(0,-.04,.985),.25,.035,'white');tap((.35,.15,1.0))
   for x in [-.3,.3]:box('Cabinet door',(x,-.368,.45),(.55,.03,.68),'sage',.025)
@@ -599,6 +596,9 @@ def bathroom(id,t=0):
  elif 'wc' in low:
   cylinder('Toilet pedestal',(0,-.17,.24),.29,.46,'cream');sphere('Toilet bowl',(0,-.22,.55),(.45,.59,.20),'cream');seat=torus('Toilet seat',(0,-.24,.72),.36,.061,'white');seat.scale.y=1.32
   box('Toilet tank',(0,.38,.83),(.76,.37,.82),'cream',.13);box('Tank lid',(0,.38,1.26),(.80,.41,.07),'white',.04);box('Flush button',(.21,.36,1.31),(.10,.08,.025),'silver',.015)
+  hinge=empty('Toilet lid hinge',(0,.16,.785))
+  sphere('Toilet lid',(0,-.40,.0),(.40,.44,.035),'white',hinge)
+  add_bathroom_controls('toilet',globals(),(0,-.24,.783))
  elif 'mirror' in low:
   cylinder('Mirror frame',(0,0,.78),.66,.085,'wood',rotation=(math.pi/2,0,0));cylinder('Mirror',(0,-.052,.78),.59,.025,'silver',rotation=(math.pi/2,0,0))
   curve('Reflection',[(-.32,-.075,.45),(.22,-.075,1.04)],.02,'cream')
@@ -753,7 +753,7 @@ def animate_furniture(objects,t):
   elif name.startswith('Projector lens'):o.scale=(1+.08*math.sin(t*math.tau),)*3
   elif name.startswith('Medical cross'):o.scale=(1+.06*math.sin(t*math.tau),)*3
   elif name.startswith('Projection screen'):o.scale.z=1-.12*(1-math.cos(t*math.tau))
-  elif name.startswith('Toilet seat'):o.rotation_euler.x=.22*math.sin(t*math.tau)
+  elif name=='Toilet lid hinge':o.rotation_euler.x=-.40*math.sin(t*math.pi)**2
   elif name.startswith('Flowing water'):o.scale.z=1+.2*math.sin(t*math.tau)
   elif name.startswith('Minute hand'):o.rotation_euler.y=.10*math.sin(t*math.tau)
   elif name.startswith('Water ripple'):o.scale=(1+.25*math.sin(t*math.tau),)*3

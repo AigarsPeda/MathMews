@@ -20,6 +20,8 @@ const React = {
 };
 const shared = () => ({ get: () => 0, set() {} });
 const mocks = {
+  "@/constants/room-commands": { ROOM_COMMANDS: [], getRoomCommands: () => [] },
+  "@/lib/graphics-mode": { useGraphicsMode: () => "3d" },
   '@/utils/native-room-world': { buildNativeRoomWorld: () => ({ width: 320, height: 320, objects: [], home: [0,0,0] }) },
   '@/utils/room-activities': { buildRoomActivity: () => null },
   '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, scale: shared(), facing: shared(), objectX: shared(), objectY: shared(), objectRotation: shared(), returnHome() {}, startActivity() {} }) },
@@ -168,11 +170,14 @@ for (const [allowDrag, interactive] of [[true, true], [false, true], [true, fals
   }));
   const menu = menuItem.find(({ node }) => node.type === 'RoomActionMenu')?.node;
   assert.equal(Boolean(menu), !allowDrag, 'Editable objects must be plain drag targets without a native menu competing for touches');
-  const menuDragTarget = menuItem.find(({ node }) => node.props.onPanResponderMove).node;
+  const menuDragTarget = menuItem.find(({ node }) => node.props.onPanResponderMove)?.node;
   const menuLabel = menu?.props.children[0];
-  if (menuLabel) assert.equal(menuLabel.props.onPanResponderMove, menuDragTarget.props.onPanResponderMove,
-    'The nested native menu label must retain the furniture drag handler');
-  for (const target of [menuDragTarget, menuLabel].filter(Boolean)) {
+  if (menuLabel) {
+    assert.equal(menuDragTarget,undefined,'Native menu buttons have no JS drag responder delaying their taps');
+    assert.equal(menuLabel.props.pointerEvents,'none','The label passes touches to its native menu button');
+    assert.equal(menuLabel.props.onPanResponderMove,undefined);
+  }
+  for (const target of [menuDragTarget].filter(Boolean)) {
     assert.equal(target.props.onStartShouldSetPanResponder(), allowDrag && interactive,
       'Editable menu labels must receive drag events from touch start; locked items must not');
     assert.equal(target.props.onMoveShouldSetPanResponderCapture(null, { dx: 2, dy: 1 }), false);

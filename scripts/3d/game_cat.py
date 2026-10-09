@@ -224,7 +224,7 @@ def pose(arm, driver, state, t, idle_controls):
     sleeping = state in ('curlUp', 'curlSleep', 'layDown', 'sleep', 'sleepy', 'restSleep', 'lieDown')
     settle = min(1, t/.78) if state in ('sleepy', 'lieDown') else t if state == 'curlUp' else 1
     settle = settle*settle*(3-2*settle) if sleeping else 0
-    standing = driver_standing if state in ('jumpOn', 'jumpOff') else 0 if state == 'sit' or sleeping else 1
+    standing = driver_standing if state in ('jumpOn', 'jumpOff') else 0 if state in ('sit', 'wash') or sleeping else 1
     seated = (1-standing)*(1-settle)
     bones = arm.data.bones
     # Sitting lowers the pelvis around the shoulders; normal idle is standing.
@@ -249,6 +249,11 @@ def pose(arm, driver, state, t, idle_controls):
         munch = math.sin(eating_time*math.tau*5)*eating_lean
         head_shift = Vector((0, -.08*eating_lean, -.40*eating_lean+.012*munch))
         head_rotation = Matrix.Rotation(.72*eating_lean+.025*munch, 3, 'X')
+    if state == 'wash':
+        # A seated cat lifts one forepaw to its muzzle, then wipes across its
+        # cheek. The other paw and both hind paws stay planted throughout.
+        head_shift = Vector((.035*math.sin(t*math.tau), -.02, -.065))
+        head_rotation = Matrix.Rotation(.12+.08*math.sin(t*math.tau), 3, 'X')
     for name in ('neck', 'head'):
         position = bones[name].head_local+chest_shift+head_shift
         desired[name] = joint_matrix(bones[name], position, head_rotation)
@@ -267,6 +272,12 @@ def pose(arm, driver, state, t, idle_controls):
             else:
                 delta = driver[key][i].location-idle_controls[key][i]
             toe += delta
+            if state == 'wash' and not rear and side == 'R':
+                lift = smooth_window(t, .08, .88, .12)
+                wipe = math.sin(t*math.tau*2)
+                muzzle = bones['head'].head_local+chest_shift+head_shift
+                target = muzzle+Vector((.17+.05*wipe, -.25, -.19+.09*wipe))
+                toe = toe.lerp(target, lift)
             desired.update(limb_pose(bones, names, shoulder, toe))
     # The upright hooked tail follows the pelvis.
     tail_rotation = driver['tail'].rotation_euler.to_matrix()

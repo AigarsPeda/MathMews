@@ -3,6 +3,7 @@ import math
 import bpy
 from home_details import HOME_DETAIL_IDS, build_home_detail
 from kitchen_additions import KITCHEN_ADDITION_IDS, build_kitchen_addition
+from bathroom_additions import BATHROOM_ADDITION_IDS, build_bathroom_addition, add_bathroom_controls
 
 STORE_FURNITURE_IDS = {
     'sofaBlueClassic', 'sofaRoseTufted', 'sofaTanLeather', 'sofaCreamCloud',
@@ -16,6 +17,7 @@ STORE_FURNITURE_IDS = {
 }
 STORE_FURNITURE_IDS.update(HOME_DETAIL_IDS)
 STORE_FURNITURE_IDS.update(KITCHEN_ADDITION_IDS)
+STORE_FURNITURE_IDS.update(BATHROOM_ADDITION_IDS)
 
 
 def build_store_furniture(id, h):
@@ -69,7 +71,9 @@ def build_store_furniture(id, h):
         curve('Gooseneck faucet', [(x, y + .26, z), (x, y + .26, z + .32), (x, y + .08, z + .32), (x, y + .07, z + .23)], .022, 'silver')
         sphere('Tap handle', (x + .09, y + .25, z + .06), (.055, .035, .025), 'gold')
 
-    if id in KITCHEN_ADDITION_IDS:
+    if id in BATHROOM_ADDITION_IDS:
+        build_bathroom_addition(id, h)
+    elif id in KITCHEN_ADDITION_IDS:
         build_kitchen_addition(id, h)
     elif id in HOME_DETAIL_IDS:
         build_home_detail(id, h)
@@ -216,6 +220,7 @@ def build_store_furniture(id, h):
         cylinder('Shower mixer', (0, .475, .95), .07, .07, 'silver', rotation=(math.pi / 2, 0, 0))
         box('Soap ledge', (-.38, .39, .94), (.25, .24, .05), 'white', .02)
         box('Shampoo bottle', (-.38, .40, 1.07), (.09, .09, .20), 'pink', .025)
+        add_bathroom_controls('shower', h, (0, -.08, .22), outlet=(0, .19, 1.94))
 
     elif id == 'bathroomLaundryHamper':
         cylinder('Woven hamper', (0, 0, .39), .34, .76, 'wood')

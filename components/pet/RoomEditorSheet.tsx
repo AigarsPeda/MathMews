@@ -6,7 +6,7 @@ import { moderateScale } from "@/utils/scale";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, useWindowDimensions, View } from "react-native";
+import { FlatList, Platform, Pressable, StyleSheet, Switch, Text, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type RoomEditorControls = {
@@ -45,8 +45,13 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, onOpe
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const maxHeight = height * (Platform.OS === "android" ? 1 : 0.88) - insets.top - insets.bottom - moderateScale(48);
-  return <ScrollView style={[styles.scroll, { maxHeight }]} contentContainerStyle={styles.content}
-    nestedScrollEnabled={Platform.OS === "android"} keyboardShouldPersistTaps="handled">
+  return <FlatList
+    data={items} numColumns={2} keyExtractor={({ item }) => roomLayerItemKey(item)}
+    initialNumToRender={6} maxToRenderPerBatch={4} windowSize={3}
+    style={[styles.scroll, { maxHeight }]} contentContainerStyle={styles.content}
+    columnWrapperStyle={styles.items}
+    nestedScrollEnabled={Platform.OS === "android"} keyboardShouldPersistTaps="handled"
+    ListHeaderComponent={<View style={styles.header}>
     <Text style={styles.title}>{t("home.roomTools")}</Text>
     <Text style={styles.hint}>{t("home.chooseItemHint")}</Text>
     {controls && <Pressable style={styles.undo} accessibilityRole="button" accessibilityLabel={t("home.undo")}
@@ -59,16 +64,15 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, onOpe
       <Text style={styles.label}>{t("home.furnishRoom")}</Text><AppIcon name="store" size={22} />
     </Pressable>}
     {items.length === 0 && <Text style={styles.hint}>{t("home.noRoomObjects")}</Text>}
-    <View style={styles.items}>
-      {items.map(({ item, label, picture }) => <Pressable key={roomLayerItemKey(item)}
-        accessibilityRole="button" accessibilityLabel={t("home.chooseItem", { name: label })}
+    </View>}
+    renderItem={({ item: { item, label, picture } }) => <Pressable accessibilityRole="button" accessibilityLabel={t("home.chooseItem", { name: label })}
         onPress={() => onSelect(item)} style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
         <View style={styles.picture} pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants">
           {picture}
         </View>
         <Text style={styles.itemName}>{label}</Text>
-      </Pressable>)}
-    </View>
+      </Pressable>}
+    ListFooterComponent={<View style={styles.header}>
     <Pressable style={styles.more} accessibilityRole="button" accessibilityLabel={t("home.moreRoomOptions")} accessibilityState={{ expanded: moreOptions }}
       onPress={() => setMoreOptions(current => !current)}>
       <Text style={styles.label}>{t("home.moreRoomOptions")}</Text>
@@ -99,18 +103,20 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, onOpe
     <Pressable style={styles.close} accessibilityRole="button" onPress={onClose}>
       <Text style={styles.label}>{t("common.close")}</Text>
     </Pressable>
-  </ScrollView>;
+    </View>}
+  />;
 }
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: moderateScale(20), gap: moderateScale(12) },
+  header: { gap: moderateScale(12) },
   title: { fontSize: moderateScale(24), fontWeight: "800", color: GameColors.text },
   label: { fontSize: moderateScale(16), fontWeight: "600", color: GameColors.text, flexShrink: 1 },
   hint: { fontSize: moderateScale(15), lineHeight: moderateScale(21), color: GameColors.textMuted },
   muted: { color: GameColors.textMuted },
   undo: { flexDirection: "row", alignItems: "center", gap: 8, minHeight: 48, alignSelf: "flex-start" },
-  items: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(12) },
+  items: { gap: moderateScale(12) },
   item: { flexGrow: 1, flexBasis: "45%", maxWidth: "49%", alignItems: "center", justifyContent: "center", padding: moderateScale(12), gap: 8, backgroundColor: GameColors.background, borderRadius: moderateScale(14) },
   picture: { width: moderateScale(72), height: moderateScale(72), alignItems: "center", justifyContent: "center" },
   itemName: { fontSize: moderateScale(15), fontWeight: "600", color: GameColors.text, textAlign: "center" },

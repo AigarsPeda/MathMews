@@ -426,6 +426,18 @@ render().returnHome(); render(); advance(0); advance(60000); render();
 assert.equal(meals, mealsBeforeCancel, 'Interrupting the meal cancels its hunger reward');
 console.log('Verified deliberate bowl journeys, feeding after completion exactly once, cancellation and Reduce Motion.');
 
+// Context and local command updates need not arrive in the same render.
+enabled = false; render(); advance(0); hookRoom = mealRoom; enabled = true; render();
+const delayedInteraction = interaction + 1;
+render().startActivity('bowlEat', foodBowl.instanceId, delayedInteraction);
+render(); advance(0);
+interaction = delayedInteraction; render(); render(); advance(0);
+assert.equal(render().activity.plan.kind, 'bowlEat', 'A late context update from the Eat tap must not replace the command with returnHome');
+interaction++; render(); render(); advance(0);
+assert.equal(render().activity.plan.kind, 'returnHome', 'A later unrelated touch still cancels the meal');
+advance(60000); render();
+console.log('Verified feeding survives a delayed interaction update while later cancellation still works.');
+
 // Use real native navigation when a meal interrupts rest on a different object.
 const nativeRoom = load('@/utils/native-room-world');
 for (const pose of ['sofaSleep', 'sofaSit']) for (const reduced of [false, true]) {
@@ -462,10 +474,34 @@ for (const pose of ['sofaSleep', 'sofaSit']) for (const reduced of [false, true]
     assert.equal(state.plan.targetInstanceId, foodBowl.instanceId);
     stages.push(reduced ? step.mood : step.animation); finishNativeStep();
   }
+  assert.equal(stages.filter(stage => stage?.startsWith('walk')).length, reduced ? 0 : 2, 'Rest-to-Eat walks directly to food, then home after eating');
   assert.ok(stages.includes('eating') && (reduced || stages.indexOf('jumpOff') < stages.indexOf('eating')), 'The cat gets down, walks to the bowl, and eats');
   assert.equal(render().activity, null); assert.equal(meals, before + 1, 'Rest-to-Eat completes and feeds exactly once');
 }
 console.log('Verified native sleeping/seated-to-eating command execution, visible departures and completed meals with and without Reduce Motion.');
+
+// Losing a valid contact must release a held pose instead of sleeping on the floor.
+enabled=false;render();advance(0);
+const heldOptions={...mealRoom,width:390,height:420,petSize:80,sizeScale:1.15,
+  homeOffset:{x:.4,y:.3},decorations:[{...sofa,offset:{x:0,y:-.25}}],nativeStepCompletion:true};
+hookRoom={...heldOptions,nativeWorld:nativeRoom.buildNativeRoomWorld(heldOptions)};
+visibility={active:true,reduceMotion:false};enabled=true;
+const heldHome=hookRoom.nativeWorld.home,heldHomeScreen=nativeRoom.catScreenPoint(heldHome,hookRoom.nativeWorld);
+petX.set(heldHomeScreen.x);petY.set(heldHomeScreen.y);render().updateNativeHeight(heldHome);render();
+render().startActivity('sofaSleep',sofa.instanceId);render();advance(0);
+for(let i=0;i<4;i++){
+  const state=render().activity,step=state.plan.steps[state.stepIndex];
+  if(step.hold)break;
+  render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));render();
+}
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].hold,true);
+render().updateNativeHeight(heldHome);petX.set(heldHomeScreen.x);petY.set(heldHomeScreen.y);
+hookRoom={...hookRoom};render();
+const rejectedRest=render().activity,rejectedStep=rejectedRest.plan.steps[rejectedRest.stepIndex];
+assert.equal(rejectedStep.native.blocked,true);assert.equal(rejectedStep.animation,'idle');assert.equal(rejectedStep.hold,false);
+render().completeNativeStep(roomActivityStepKey(rejectedRest),rejectedStep.native.path.at(-1));render();
+assert.equal(render().activity,null,'A failed held interaction releases the scheduler and leaves the cat standing');
+console.log('Verified lost cushion contact stops held sleep without a floor nap or a stuck scheduler.');
 
 // Change target locations while the actual scheduler is executing a command.
 const dynamicOptions = { ...mealRoom, width: 390, height: 420, petSize: 80, sizeScale: 1.15,
@@ -486,6 +522,25 @@ function completeDynamicStep() {
   const state = render().activity, step = state.plan.steps[state.stepIndex];
   reportCat(step.native.path.at(-1)); advance(step.durationMs);
 }
+// Reanimated JS writes can lag behind the native completion callback.
+beginDynamicMeal();
+hookRoom={...hookRoom,nativeStepCompletion:true};render();
+let delayedState=render().activity;
+const renderedArrival=delayedState.plan.steps[delayedState.stepIndex].native.path.at(-1);
+render().completeNativeStep(roomActivityStepKey(delayedState),delayedState.plan.steps[delayedState.stepIndex].native.path[0]);render();
+assert.equal(render().activity.stepIndex,delayedState.stepIndex,'A matching completion key with the wrong rendered position cannot start eating');
+const originalSetX=petX.set,originalSetY=petY.set;
+petX.set=()=>{};petY.set=()=>{};
+render().completeNativeStep(roomActivityStepKey(delayedState),renderedArrival);render();
+const startedEating=render().activity;
+assert.equal(startedEating.plan.steps[startedEating.stepIndex].animation,'eating');
+assert.equal(startedEating.plan.steps[startedEating.stepIndex].native.blocked,false,
+  'Delayed UI anchor writes cannot make the eating step use the old home position');
+assert.ok(nativeRoom.pathLength([startedEating.plan.steps[startedEating.stepIndex].native.path[0],renderedArrival])<1e-6,
+  'The next native step starts from the exact rendered arrival even before shared values update');
+petX.set=originalSetX;petY.set=originalSetY;reportCat(renderedArrival);
+console.log('Verified asynchronous UI-position writes preserve the exact native arrival for eating.');
+
 beginDynamicMeal();
 let firstRoute = render().activity.plan.steps[0].native;
 let midpoint = firstRoute.path[0].map((v, i) => (v + firstRoute.path.at(-1)[i]) / 2);
@@ -697,3 +752,99 @@ for (const reduced of [false, true]) {
   assert.equal(render().activity, null, 'A layout refresh does not replay the entry');
 }
 console.log('Verified entry after sliding, exact rendered completion and no repeated entry on browsing, layout refresh or Reduce Motion.');
+
+const chair = { decorationId: 'chairRockingOak', instanceId: 'rocker', offset: { x: .1, y: .15 } };
+const chairOptions = { ...room, decorations: [chair] };
+const chairSizes = load('@/constants/decoration-variants');
+const chairPlacement = load('@/utils/room-placement');
+assert.equal(chairSizes.getPlacedDecorationScale(chair), 1.4, 'An unscaled chair matches the screenshot');
+assert.equal(chairSizes.getDecorationDefaultPlacementScale('chairRockingOak'), 1.4, 'Purchases and store previews use the same default');
+for (const scale of [undefined, .7, 1, 1.4, 2.2]) {
+  const normalized = chairPlacement.normalizePlacedDecorations([{ ...chair, scale }])[0];
+  assert.equal(chairSizes.getPlacedDecorationScale(normalized), scale ?? 1.4, 'Save/load preserves explicitly adjusted chair sizes');
+  assert.equal(chairSizes.getPlacedDecorationScale(chairPlacement.updatePlacedDecorationScaleByInstance([chair], 'rocker', scale ?? 1.4)[0]), scale ?? 1.4);
+}
+for (const kind of ['sofaSit', 'sofaSleep']) {
+  const plan = buildRoomActivity(chairOptions, 0, kind, 'rocker');
+  assert.equal(plan.targetInstanceId, 'rocker');
+  assert.equal(plan.steps[1].animation, 'jumpOn');
+  assert.ok(plan.steps.some(s => s.hold && s.animation === (kind === 'sofaSit' ? 'sit' : 'curlSleep')));
+  const index = plan.steps.findIndex(s => s.hold);
+  const exit = buildRoomReturn(chairOptions, plan, index, plan.steps[index].position);
+  assert.ok(exit.steps.some(s => s.animation === 'jumpOff'), 'A chair command can be cancelled with a safe jump down');
+}
+console.log('Verified rocking-chair defaults, explicit size persistence, sit/sleep commands and jump-off cancellation.');
+for (const [decorationId, customScale] of [['windowOakWide',1.6],['kitchenFridge',1.5]]) {
+  for (const scale of [1,customScale]) {
+    const placement = { decorationId, instanceId:'existing-custom', offset:{x:.1,y:-.2}, scale };
+    assert.equal(chairSizes.getPlacedDecorationScale(chairPlacement.normalizePlacedDecorations([placement])[0]),scale,
+      'Chair defaults cannot change an existing window or fridge scale');
+  }
+}
+
+for (const [decorationId, kind, action] of [['bathroomBathAni','bathWash','wash'],['bathroomShowerCabin','showerWash','wash'],['bathroomWcAni','toiletUse','use']]) for (const reduced of [false,true]) {
+  const mealsBeforeBathroom=meals;
+  enabled=false;render();advance(0);
+  visibility={active:true,reduceMotion:reduced};roomVisible=true;
+  const layout={...room,petSize:80,decorations:[{decorationId,instanceId:'fixture',scale:decorationId==='bathroomWcAni'?1.3:1.8,offset:{x:0,y:-.2}}]};
+  hookRoom={...layout,nativeWorld:nativeRoom.buildNativeRoomWorld(layout),nativeStepCompletion:true};
+  enabled=true;reportCat(hookRoom.nativeWorld.home);render();
+  render().startActivity(kind,'fixture');render();advance(0);
+  const finish=()=>{const state=render().activity,step=state.plan.steps[state.stepIndex];
+    assert.equal(step.native.blocked,false);render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));render();};
+  for(let i=0;render().activity.plan.steps[render().activity.stepIndex].bathroomPhase!==action&&i<4;i++)finish();
+  let state=render().activity;
+  assert.equal(state.plan.steps[state.stepIndex].bathroomPhase,action);
+  visibility={...visibility,active:false};render();advance(20_000);
+  assert.equal(render().activity.stepIndex,state.stepIndex,'A paused wash stays in the fixture');
+  visibility={...visibility,active:true};render();
+  render().returnHome();render();advance(0);
+  state=render().activity;
+  assert.equal(state.plan.kind,'returnHome');
+  assert.equal(state.plan.steps[state.stepIndex].bathroomPhase,'exit','An interrupted wash gets out before walking home');
+  finish();
+  if(kind==='toiletUse') {
+    const close=render().activity;
+    assert.equal(close.plan.steps[close.stepIndex].bathroomPhase,'close','An interrupted toilet visit closes the lid after getting off');
+    finish();
+  }
+  finish();assert.equal(render().activity,null);
+  assert.equal(meals,mealsBeforeBathroom,'Bathroom actions never dispatch feeding');
+}
+console.log('Verified bath, shower and toilet commands, rendered completion, pause/resume and safe cancellation with Reduce Motion.');
+
+for (const [decorationId, kind, action] of [['bathroomBathAni','bathWash','wash'],['bathroomShowerCabin','showerWash','wash'],['bathroomWcAni','toiletUse','use']]) {
+  enabled=false;render();advance(0);visibility={active:true,reduceMotion:false};roomVisible=true;
+  const layout={...room,petSize:80,decorations:[{decorationId,instanceId:'fixture',offset:{x:0,y:-.2}}]};
+  hookRoom={...layout,nativeWorld:nativeRoom.buildNativeRoomWorld(layout),nativeStepCompletion:false};
+  enabled=true;reportCat(hookRoom.nativeWorld.home);render();render().startActivity(kind,'fixture');render();advance(0);
+  let reachedFixture=false;
+  for(let i=0;render().activity&&i<10;i++) {
+    const state=render().activity,step=state.plan.steps[state.stepIndex];
+    assert.equal(step.native.blocked,false);
+    assert.equal(step.native.awaitCompletion,false,'Simple graphics use the fallback clock');
+    assert.ok(Math.hypot(petX.get()-step.position.x,petY.get()-step.position.y)<1e-6,'Fallback graphics move the cat to the prepared fixture position');
+    if(step.bathroomPhase===action) {
+      reachedFixture=true;
+      assert.ok(nativeRoom.pathLength([step.native.path[0],hookRoom.nativeWorld.objects[0].bathroom.contact])<1e-6,'Fallback washing keeps the raised basin or seat height');
+    }
+    advance(step.durationMs);render();
+  }
+  assert.equal(reachedFixture,true);assert.equal(render().activity,null);
+}
+console.log('Verified bathroom entry, washing, use and exit also progress and preserve height in Simple graphics.');
+
+// Decoration stops on the floor and only performs the necessary perch exit.
+enabled=false;render();advance(0);hookRoom=furnished;enabled=true;render();
+render().startActivity('sofaSleep');render();advance(0);
+let editingPlan=render().activity.plan;
+advance(editingPlan.steps.slice(0,3).reduce((sum,step)=>sum+step.durationMs,0));render();
+render().stopActivity();render();advance(0);
+editingPlan=render().activity.plan;
+assert.equal(editingPlan.stopForEditing,true);
+assert.ok(editingPlan.steps.some(step=>step.animation==='jumpOff'));
+assert.ok(editingPlan.steps.every(step=>!step.returnHome),'Editing only gets off the furniture, with no floor journey home');
+advance(editingPlan.steps.reduce((sum,step)=>sum+step.durationMs,0));render();
+assert.equal(render().activity,null);
+assert.equal(timers.size,0,'Editing does not schedule another idle animation');
+console.log('Verified decoration exits furniture safely and stops without a walk home or another idle activity.');

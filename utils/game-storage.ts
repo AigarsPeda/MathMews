@@ -1,4 +1,5 @@
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import { DEFAULT_HOME_ROOM_ID, isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { captureHomeRoom, removeRoomNavigationDoors, type HomeRoomState } from "@/utils/home-rooms";
 import { captureRoomLayout } from "@/utils/room-layout";
@@ -180,6 +181,7 @@ function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
       pet.bedFlipped === true
         ? true
         : undefined,
+    bedRotationDegrees: normalizeRotationDegrees(pet.bedRotationDegrees),
     bedScale:
       typeof pet.bedScale === "number" && Number.isFinite(pet.bedScale)
         ? (() => {

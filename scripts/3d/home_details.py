@@ -205,7 +205,19 @@ def build_home_detail(id, h):
 
     elif id == 'lampFloorArc':
         cylinder('Heavy arc lamp base', (-.30, 0, .06), .30, .12, 'white')
-        curve('Brass arch stem', [(-.30, 0, .12), (-.30, 0, 1.27), (-.13, 0, 1.91), (.30, 0, 2.04), (.72, 0, 1.78)], .026, 'gold')
+        stem = curve('Brass arch stem', [(-.30, 0, .12), (-.30, 0, 1.27), (-.13, 0, 1.91), (.30, 0, 2.04), (.72, 0, 1.78)], .026, 'gold')
+        # Automatic handles bow the upright sideways before the arch begins.
+        # Keep its centerline vertical, with a vertical tangent into the arch.
+        points = stem.data.splines[0].bezier_points
+        for point, left, right in [
+            (points[0], (-.30, 0, -.26), (-.30, 0, .50)),
+            (points[1], (-.30, 0, .89), (-.30, 0, 1.54)),
+        ]:
+            point.handle_left_type = 'FREE'
+            point.handle_right_type = 'FREE'
+            point.handle_left = left
+            point.handle_right = right
+        stem.data.resolution_u = 24
         cone('Arc lamp shade', (.72, 0, 1.61), .28, .14, .35, 'cream')
         cylinder('Warm shade interior', (.72, 0, 1.441), .24, .018, 'gold')
         sphere('Warm bulb', (.72, 0, 1.42), (.06, .06, .075), 'cream')

@@ -1,6 +1,6 @@
 import { IconText as Text } from "@/components/ui/IconText";
-import { PetDisplay } from "@/pet-display/components/PetDisplay";
-import type { CatSkinId } from "@/constants/cat-skins";
+import { Image } from "expo-image";
+import { CAT_SKIN_PREVIEWS, type CatSkinId } from "@/constants/cat-skins";
 import { GameColors } from "@/constants/game";
 import { getSkinStorePrice } from "@/utils/skin-store";
 import { moderateScale } from "@/utils/scale";
@@ -33,14 +33,8 @@ export function CatSkinStoreCard({
   return (
     <View style={[styles.card, isEquipped && styles.cardEquipped]}>
       <Pressable style={styles.previewWrap} onPress={onPreview} accessibilityRole="button" accessibilityLabel={t("store.previewItem", { name: skinName })}>
-        <PetDisplay
-          petType="cat"
-          catSkinId={skinId}
-          mood="idle"
-          width={moderateScale(72)}
-          loop
-          transparentBackground
-        />
+        <Image source={CAT_SKIN_PREVIEWS[skinId]} contentFit="contain" cachePolicy="memory-disk"
+          style={{ width: moderateScale(72), height: moderateScale(72) }} />
         {isEquipped ? (
           <View style={styles.equippedBadge}>
             <Text style={styles.equippedBadgeText}>{t("store.equipped")}</Text>

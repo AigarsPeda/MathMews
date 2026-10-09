@@ -6,6 +6,14 @@ type AnimatedEntry = { source: number; sheetWidth: number; sheetHeight: number; 
 
 /** Bathroom pack — shown in the dedicated store tab. */
 export const BATHROOM_DECORATION_CATALOG = {
+  bathroomBathOvalWhite: { source: require("@/assets/3d/decoration/bathroomBathOvalWhite.png"), displaySize: 64 },
+  bathroomBathOvalSage: { source: require("@/assets/3d/decoration/bathroomBathOvalSage.png"), displaySize: 64 },
+  bathroomBathOvalRose: { source: require("@/assets/3d/decoration/bathroomBathOvalRose.png"), displaySize: 64 },
+  bathroomBathOvalCharcoal: { source: require("@/assets/3d/decoration/bathroomBathOvalCharcoal.png"), displaySize: 64 },
+  bathroomBathClawfootCream: { source: require("@/assets/3d/decoration/bathroomBathClawfootCream.png"), displaySize: 64 },
+  bathroomBathClawfootNavy: { source: require("@/assets/3d/decoration/bathroomBathClawfootNavy.png"), displaySize: 64 },
+  bathroomJacuzziWhite: { source: require("@/assets/3d/decoration/bathroomJacuzziWhite.png"), displaySize: 76 },
+  bathroomJacuzziSage: { source: require("@/assets/3d/decoration/bathroomJacuzziSage.png"), displaySize: 76 },
   bathroomDoubleVanity: { source: require("@/assets/3d/decoration/bathroomDoubleVanity.png"), displaySize: 80 },
   bathroomShowerCabin: { source: require("@/assets/3d/decoration/bathroomShowerCabin.png"), displaySize: 80 },
   bathroomLaundryHamper: { source: require("@/assets/3d/decoration/bathroomLaundryHamper.png"), displaySize: 40 },

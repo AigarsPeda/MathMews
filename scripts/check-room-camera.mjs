@@ -8,7 +8,7 @@ const memo = (fn, deps) => { const i = index++, old = slots[i]; if (!old || deps
 class Gesture {
   constructor(kind) { this.kind = kind; this.handlers = {}; }
 }
-for (const name of ['enabled','minDistance','maxPointers','manualActivation','onStart','onUpdate','onFinalize','onTouchesDown','onTouchesMove'])
+for (const name of ['enabled','minDistance','maxPointers','manualActivation','onStart','onUpdate','onFinalize','onTouchesDown','onTouchesMove','onTouchesUp'])
   Gesture.prototype[name] = function(value) { this.handlers[name] = value; return this; };
 const mocks = {
   react: { useMemo: memo, useCallback: (fn,deps) => memo(() => fn,deps), useEffect: () => {}, useState: value => { const slot = memo(() => ({ value }), []); return [slot.value, next => { slot.value = next; }]; } },
@@ -28,7 +28,8 @@ function render(panEnabled = true) { index = 0; return useRoomCamera(320,400,tru
 let camera = render();
 const [pinch, pan] = camera.gesture;
 const manager = { activate() { this.active = true; }, fail() { this.failed = true; } };
-pan.handlers.onTouchesDown({ allTouches: [{ x: 60, y: 100 }] });
+pan.handlers.onTouchesDown({ allTouches: [{ x: 60, y: 100 }] },manager);
+assert.equal(manager.failed,true,'A normal-zoom touch releases the manual pan before any movement or timeout');
 pan.handlers.onTouchesMove({ numberOfTouches: 1, allTouches: [{ x: 61, y: 101 }] }, manager);
 assert.equal(manager.failed,true,'At 1× a scroll remains with the surrounding page');
 pinch.handlers.onStart({ focalX: 200, focalY: 160 });
@@ -37,13 +38,19 @@ assert.equal(camera.scale.get(),1.73,'Pinch does not snap to an integer');
 assert.ok(Math.abs(camera.x.get() + 40*1.73 - 40) < 1e-8,'The point under the fingers stays under them');
 assert.ok(Math.abs(camera.y.get() - 40*1.73 + 40) < 1e-8);
 pinch.handlers.onFinalize(); camera = render(); assert.equal(camera.zoom,1.73);
-manager.active = false;
-pan.handlers.onTouchesDown({ allTouches: [{ x: 60, y: 100 }] });
+manager.active = false;manager.failed=false;
+pan.handlers.onTouchesDown({ allTouches: [{ x: 60, y: 100 }] },manager);
 pan.handlers.onTouchesMove({ numberOfTouches: 1, allTouches: [{ x: 62, y: 101 }] }, manager);
 assert.equal(manager.active,false,'A tap on a zoomed object never activates pan');
+pan.handlers.onTouchesUp({},manager);
+assert.equal(manager.failed,true,'A zoomed tap releases the manual pan on finger-up so its native menu can open');
+manager.failed=false;
+pan.handlers.onTouchesDown({ allTouches: [{ x: 60, y: 100 }] },manager);
 pan.handlers.onTouchesMove({ numberOfTouches: 1, allTouches: [{ x: 85, y: 110 }] }, manager);
 assert.equal(manager.active,true);
 pan.handlers.onStart(); pan.handlers.onUpdate({ translationX: 999, translationY: -999 });
+pan.handlers.onTouchesUp({},manager);assert.equal(manager.failed,false,'An actual pan finishes normally without becoming a menu tap');
+pan.handlers.onFinalize();
 assert.ok(Math.abs(camera.x.get()-.73*160)<1e-8); assert.ok(Math.abs(camera.y.get()+.73*200)<1e-8);
 pinch.handlers.onStart({ focalX: 160, focalY: 200 });
 pinch.handlers.onUpdate({ scale: .1, focalX: 160, focalY: 200 });

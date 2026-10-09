@@ -268,6 +268,39 @@ for (const [input, expected] of [[undefined, 0], [1, 1], [3, 3], [4, 0], [-1, 3]
 }
 console.log('Verified toy quarter turns, instance isolation, undo history and saved orientations.');
 
+const { normalizeRotationDegrees, getRoomItemRotation, setRoomItemRotation } = load('@/utils/room-rotation');
+for (const [value, expected] of [[0, undefined], [360, undefined], [720, undefined], [-45, 315], [397.54, 37.5], [NaN, undefined], [Infinity, undefined], ['45', undefined]])
+  assert.equal(normalizeRotationDegrees(value), expected);
+assert.ok(Number.isFinite(normalizeRotationDegrees(Number.MAX_VALUE) ?? 0), 'Large finite saved angles cannot overflow');
+const freeRotationOriginal = { ...start.pet, bedId: 'brown', bedFlipped: true,
+  placedToys: [{ ...post, rotationIndex: 2 }, otherPost],
+  placedDecorations: [{ decorationId: 'sofaA', instanceId: 'rotating-sofa', offset: { x: .3, y: -.2 }, rotationIndex: 1, wallFlipped: true, scale: 1.5 }] };
+let freeRotation = freeRotationOriginal;
+for (const [item, degrees] of [[{ kind: 'bed' }, 137.5], [{ kind: 'toy', instanceId: 'post' }, 37.5], [{ kind: 'decoration', instanceId: 'rotating-sofa' }, 315.2]]) {
+  freeRotation = setRoomItemRotation(freeRotation, item, degrees);
+  assert.equal(getRoomItemRotation(freeRotation, item), degrees);
+  assert.equal(setRoomItemRotation(freeRotation, item, degrees), freeRotation, 'An unchanged angle does not trigger a new save');
+}
+assert.equal(freeRotationOriginal.bedRotationDegrees, undefined, 'Rotation preserves the layout used by Undo');
+assert.equal(freeRotationOriginal.placedToys[0].rotationDegrees, undefined);
+assert.equal(freeRotation.placedToys[1], otherPost, 'Only the selected toy instance rotates');
+assert.equal(freeRotation.placedToys[0].rotationIndex, 2, 'Free rotation retains the legacy toy orientation');
+assert.equal(freeRotation.placedDecorations[0].rotationIndex, 1, 'The selected furniture style is independent of its angle');
+assert.equal(freeRotation.placedDecorations[0].wallFlipped, true);
+assert.equal(setRoomItemRotation(freeRotation, { kind: 'toy', instanceId: 'missing' }, 20), freeRotation);
+assert.equal(setRoomItemRotation(freeRotation, { kind: 'bed' }, NaN), freeRotation);
+assert.equal(getRoomItemRotation(setRoomItemRotation(freeRotation, { kind: 'bed' }, 360), { kind: 'bed' }), 0);
+const freeLayout = captureRoomLayout(freeRotation);
+const freeReopened = parseGameSaveFromValue(JSON.stringify({ ...start, pet: { ...freeRotation,
+  roomLayouts: { room2: freeLayout }, savedRoomLayouts: { room1: freeLayout },
+  homeRooms: { bedroom: { ...freeLayout, roomId: 'room1' } } } })).save.pet;
+for (const layout of [freeReopened, freeReopened.roomLayouts.room2, freeReopened.savedRoomLayouts.room1, freeReopened.homeRooms.bedroom]) {
+  assert.equal(layout.bedRotationDegrees, 137.5);
+  assert.equal(layout.placedToys[0].rotationDegrees, 37.5);
+  assert.equal(layout.placedDecorations[0].rotationDegrees, 315.2);
+}
+console.log('Verified arbitrary angles, instance isolation, legacy orientations, Undo snapshots, and every saved room layout.');
+
 const { addRoomDoor, setDoorDestination, switchHomeRoom, removeRoomNavigationDoors, sendCatToRoom, getCatHomeRoomId, previewHomeRoom } = load('@/utils/home-rooms');
 const { normalizePlacedDecorations } = load('@/utils/room-placement');
 const withDoor = addRoomDoor(start.pet, 'bathroom');

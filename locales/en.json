@@ -103,6 +103,11 @@
     "moveLayerUp": "Bring forward",
     "moveLayerDown": "Send backward",
     "rotateItem": "Rotate",
+    "rotateSelectedItem": "Rotate {{name}}",
+    "rotationAngle": "Angle",
+    "rotationRange": "Enter an angle from 0 to 360 degrees.",
+    "applyRotation": "Apply",
+    "rotationSimpleHint": "Turn off Simple graphics in Settings to see the full 3D rotation.",
     "flipWall": "Face other wall",
     "flipBed": "Flip bed",
     "changeLook": "Change look",
@@ -112,12 +117,17 @@
     "makeSmaller": "Smaller",
     "catCommands": {
       "bowlEat": "Eat",
+      "chairSit": "Sit on the rocking chair",
+      "chairSleep": "Sleep on the rocking chair",
       "sofaSit": "Sit on the sofa",
       "sofaSleep": "Sleep on the sofa",
       "plantPlay": "Play with the leaves",
       "toyPlay": "Play with a toy",
       "mouseChase": "Chase the mouse",
-      "returnHome": "Go to your spot"
+      "returnHome": "Go to your spot",
+      "bathWash": "Wash in the bathtub",
+      "showerWash": "Take a shower",
+      "toiletUse": "Use the toilet"
     },
     "decorateRoom": "Decorate",
     "finishDecorating": "Done",
@@ -536,7 +546,15 @@
       "kitchenChairUpholstered": "Padded kitchen chair",
       "kitchenChairBistro": "Bentwood bistro chair",
       "chairRockingOak": "Oak rocking chair",
-      "livingFireplaceCream": "Cream fireplace"
+      "livingFireplaceCream": "Cream fireplace",
+      "bathroomBathOvalWhite": "White oval bathtub",
+      "bathroomBathOvalSage": "Sage oval bathtub",
+      "bathroomBathOvalRose": "Rose oval bathtub",
+      "bathroomBathOvalCharcoal": "Charcoal oval bathtub",
+      "bathroomBathClawfootCream": "Cream clawfoot bathtub",
+      "bathroomBathClawfootNavy": "Navy clawfoot bathtub",
+      "bathroomJacuzziWhite": "White Jacuzzi tub",
+      "bathroomJacuzziSage": "Sage Jacuzzi tub"
     },
     "free": "Free",
     "buyFor": "{{cost}} 🪙",
@@ -944,5 +962,20 @@
   "difficultyPicker": {
     "a11y": "{{difficulty}} difficulty, {{coins}} coins per nut",
     "ages": "Ages {{min}}–{{max}}"
+  },
+  "recovery": {
+    "appTitle": "This screen could not open",
+    "appHint": "Try opening this screen again. Your saved progress has not been reset.",
+    "retry": "Try again",
+    "graphicsHint": "Simple graphics · Change in Settings",
+    "graphicsTitle": "Simple graphics",
+    "graphicsDescription": "Use still pictures if animated rooms keep crashing. Pet care and puzzles remain available.",
+    "diagnostics": "App diagnostics",
+    "diagnosticsHint": "View saved errors and share a report.",
+    "diagnosticsInfo": "These reports are saved on this device. Native crashes may happen before an error can be saved here.",
+    "empty": "No saved errors yet.",
+    "share": "Share error report",
+    "recovered": "Caught error",
+    "fatal": "Fatal error"
   }
 }

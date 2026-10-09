@@ -44,7 +44,7 @@ export function DecorationStoreCard({
   return (
     <View style={[styles.card, placedCount > 0 && styles.cardEquipped]}>
       <Pressable style={styles.previewWrap} onPress={onPreview} accessibilityRole="button" accessibilityLabel={t("store.previewItem", { name: decorationLabelInline })}>
-        <DecorationSpriteImage
+        <DecorationSpriteImage still
           decorationId={decorationId}
           size={previewSize}
           flipHorizontal={getDecorationStorePreviewWallFlipped(decorationId)}

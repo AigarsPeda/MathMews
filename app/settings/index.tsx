@@ -1,3 +1,4 @@
+import { GraphicsSettings } from "@/components/settings/GraphicsSettings";
 import { IconText as Text } from "@/components/ui/IconText";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { AppIcon } from "@/components/ui/AppIcon";
@@ -92,6 +93,8 @@ export default function SettingsScreen() {
             })}
           </View>
         </View>
+
+        <GraphicsSettings />
 
         <PrivacyLink />
 

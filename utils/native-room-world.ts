@@ -1,7 +1,10 @@
 import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
+import { normalizeRotationDegrees } from "@/utils/room-rotation";
+import type { BathroomFixtureKind, BathroomPhase } from '@/constants/bathroom-activities';
 import { isPlayablePlant } from "@/constants/plant-play";
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
 import { isWindowDecorationId } from "@/constants/window-decorations";
+import type { RockingChair } from '@/utils/native-rocking-chair';
 import catalog from '@/assets/3d/native/catalog.json';
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId, getPlacedDecorationWallFlipped } from '@/constants/decoration-variants';
 import { getBedDisplaySize, getEquippedBedScale } from '@/constants/cat-beds';
@@ -26,9 +29,10 @@ export type ModelMetadata = {
   wind?: boolean;
   collisionBoxes?: { min: number[]; max: number[] }[];
   leaves?: { node: string; contact: string; point: number[] }[];
+  bathroom?: { kind: BathroomFixtureKind; contact: number[]; sprayHeight?: number };
 };
 export type CollisionBox = { min: Vec3; max: Vec3 };
-export const NATIVE_MODEL_CATALOG: Record<string, ModelMetadata> = catalog;
+export const NATIVE_MODEL_CATALOG = catalog as Record<string, ModelMetadata>;
 export const FLOOR_Y = .068;
 export const ROOM_SPAN = 7.45;
 export const CAT_EATING_REACH = 1;
@@ -99,6 +103,7 @@ export type NativeRoomObject = {
   approach?: Vec3;
   collisionBoxes?: CollisionBox[];
   leaves?: Vec3[];
+  bathroom?: { kind: BathroomFixtureKind; contact: Vec3 };
 };
 export type NativeRoomWorld = {
   width: number;
@@ -124,6 +129,8 @@ export type NativeTravel = {
   targetPosition?: Vec3;
   treePlay?: boolean;
   plantPlay?: boolean;
+  rockingChair?: RockingChair;
+  bathroom?: { instanceId: string; kind: BathroomFixtureKind; phase: BathroomPhase };
 };
 
 /** Physics reports body centers. Keep navigation bounds current without resetting rendered bodies. */
@@ -136,6 +143,7 @@ export function updateNativeObjectPosition(world: NativeRoomWorld, id: string, c
   const moved = { ...object, position: move(object.position), min: move(object.min), max: move(object.max),
     seat: object.seat && move(object.seat), approach: object.approach && move(object.approach),
     leaves: object.leaves?.map(move),
+    bathroom: object.bathroom && { ...object.bathroom, contact: move(object.bathroom.contact) },
     collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
   return { ...world, objects: world.objects.map(o => o === object ? moved : o) };
 }
@@ -194,6 +202,7 @@ export function buildNativeRoomWorld(options: {
   bedId?: string;
   bedOffset?: RoomItemOffset;
   bedFlipped?: boolean;
+  bedRotationDegrees?: number;
   bedScale?: number;
   decorations: PlacedDecoration[];
   toys: PlacedToy[];
@@ -203,7 +212,7 @@ export function buildNativeRoomWorld(options: {
   const { width, height, sizeScale } = options;
   const catScale = options.petSize * .9 / Math.max(1, width) * ROOM_SPAN / 2.7;
   const world: NativeRoomWorld = { width, height, catScale, radius: 1.04 * catScale, home: [0, FLOOR_Y, 0], objects: [] };
-  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0) => {
+  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number) => {
     const meta = NATIVE_MODEL_CATALOG[modelId];
     if (!meta)
       return;
@@ -211,16 +220,18 @@ export function buildNativeRoomWorld(options: {
     const scale = size / Math.max(1, width) * ROOM_SPAN / meta.renderScale;
     const screen = options.livePositions?.[instanceId] ?? roomOffsetToPoint(offset, width, height, size);
     const modelHeading = wall && meta.max[0] - meta.min[0] < meta.max[2] - meta.min[2] ? Math.PI / 2 : 0;
-    const heading = (flip ? Math.PI / 2 : 0) - modelHeading + rotationIndex * Math.PI / 2;
+    const heading = (flip ? Math.PI / 2 : 0) - modelHeading + rotationIndex * Math.PI / 2 + (normalizeRotationDegrees(rotationDegrees) ?? 0) * Math.PI / 180;
     const center = rotate(meta.center, heading);
+    const horizontalCorners = [meta.min[0], meta.max[0]].flatMap(x =>
+      [meta.min[2], meta.max[2]].map(z => rotate([x, meta.min[1], z], heading)));
     let desired = unprojectFloor(screen, FLOOR_Y + center[1] * scale, width);
     if (wall) {
       // Solve on the wall plane, so moving a fixture preserves its screen anchor.
       const difference = screen.x / (Math.max(1, width) / ROOM_SPAN) / diagonal;
       let plane = -2.35;
-      if (isWindowDecorationId(modelId)) {
+      if (isWindowDecorationId(modelId) || normalizeRotationDegrees(rotationDegrees)) {
         const normal = flip ? 0 : 2;
-        const back = Math.min(rotate(meta.min, heading)[normal], rotate(meta.max, heading)[normal]);
+        const back = Math.min(...horizontalCorners.map(corner => corner[normal]));
         // Keep the glass and frame in front of the opaque room wall.
         plane -= (back - center[normal]) * scale;
       }
@@ -233,10 +244,9 @@ export function buildNativeRoomWorld(options: {
     if (isWindowDecorationId(modelId)) {
       const before = [...desired];
       const along = flip ? 2 : 0;
-      const corner = (p: number[]) => rotate(p, heading).map((v, i) => (v - center[i]) * scale);
-      const limits = [corner(meta.min), corner(meta.max)];
-      const low = Math.min(limits[0][along], limits[1][along]);
-      const high = Math.max(limits[0][along], limits[1][along]);
+      const limits = horizontalCorners.map(point => point.map((v, i) => (v - center[i]) * scale));
+      const low = Math.min(...limits.map(point => point[along]));
+      const high = Math.max(...limits.map(point => point[along]));
       const clamp = (value: number, min: number, max: number) => min <= max ? Math.max(min, Math.min(max, value)) : (min + max) / 2;
       desired[along] = clamp(desired[along], -2.30 - low, 2.30 - high);
       const bottom = (meta.min[1] - meta.center[1]) * scale;
@@ -269,6 +279,8 @@ export function buildNativeRoomWorld(options: {
     const solid = !isFoodBowlDecorationId(modelId) && !wall && !/carpet|rug/i.test(modelId) && !movable && max[1] > FLOOR_Y + .10;
     const collidable = !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
     const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, placementOffset };
+    if (meta.bathroom) object.bathroom = { kind: meta.bathroom.kind,
+      contact: rotate(meta.bathroom.contact, heading).map((v, i) => position[i] + v * scale) as Vec3 };
     if (meta.collisionBoxes) {
       object.collisionBoxes = meta.collisionBoxes.map(box => {
         const corners: Vec3[] = [];
@@ -284,7 +296,7 @@ export function buildNativeRoomWorld(options: {
     }
     if (isSeatingSofaDecorationId(modelId)) {
       // Sofa variants already contain their quarter turn in the exported model.
-      const variant = modelId === 'sofaB' ? -Math.PI / 2 : 0;
+      const variant = modelId === 'sofaB' ? Math.PI / 2 : 0;
       const at = (p: Vec3) => rotate(rotate(p, variant), heading).map((v, i) => position[i] + v * scale) as Vec3;
       object.seat = at([0, .70, .27]);
       // Rest along the cushions, choosing the end that faces the camera at
@@ -293,6 +305,14 @@ export function buildNativeRoomWorld(options: {
       object.seatHeading = Math.sin(alongSeat) + Math.cos(alongSeat) > 0
         ? alongSeat : alongSeat + Math.PI;
       object.approach = at([0, 0, .85 + world.radius / scale]);
+      object.approach[1] = FLOOR_Y;
+    }
+    if (modelId === 'chairRockingOak') {
+      const at = (p: Vec3) => rotate(p, heading).map((v, i) => position[i] + v * scale) as Vec3;
+      // GLB cushion top: Blender Z=.69, with its front along native +Z.
+      object.seat = at([0, .69, .035]);
+      object.seatHeading = heading;
+      object.approach = at([0, 0, .78 + world.radius / scale]);
       object.approach[1] = FLOOR_Y;
     }
     if (/^catTree|^toy-scratchPost/.test(modelId)) {
@@ -306,11 +326,11 @@ export function buildNativeRoomWorld(options: {
     world.objects.push(object);
   };
   if (options.bedId)
-    add('bed', 'bed-' + options.bedId, getBedDisplaySize(options.bedId) * getEquippedBedScale(options.bedScale) * sizeScale, options.bedOffset ?? { x: -.15, y: .3 }, options.bedFlipped);
+    add('bed', 'bed-' + options.bedId, getBedDisplaySize(options.bedId) * getEquippedBedScale(options.bedScale) * sizeScale, options.bedOffset ?? { x: -.15, y: .3 }, options.bedFlipped, undefined, 0, options.bedRotationDegrees);
   for (const item of options.decorations)
-    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn);
+    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees);
   for (const item of options.toys)
-    add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item));
+    add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
   // Land in navigable floor space so the following walk never relocates its start.
   for (const object of world.objects)
     if (object.approach) object.approach = nearestFree(object.approach, world);
@@ -328,8 +348,9 @@ export function isFree(point: Vec3, world: NativeRoomWorld, ignoreId?: string): 
     return false;
   for (const o of world.objects)
     if (o.solid && o.instanceId !== ignoreId) {
-      const boxes = isPlayablePlant(o.modelId) && o.collisionBoxes?.length ? o.collisionBoxes : [o];
+      const boxes = (isPlayablePlant(o.modelId) || o.modelId === 'lampFloorArc') && o.collisionBoxes?.length ? o.collisionBoxes : [o];
       for (const box of boxes) {
+        if (box.min[1] > FLOOR_Y + .8 * world.catScale) continue;
         const x = Math.max(box.min[0], Math.min(box.max[0], point[0]));
         const z = Math.max(box.min[2], Math.min(box.max[2], point[2]));
         // The low base can sit beneath the reaching paws; keep the torso outside it.
@@ -445,6 +466,20 @@ export function findRoomPath(start: Vec3, target: Vec3, world: NativeRoomWorld):
 export function pathLength(path: Vec3[]): number {
   return path.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - path[i][0], p[1] - path[i][1], p[2] - path[i][2]), 0);
 }
+/** Face the food from a reachable point, retaining the route already solved. */
+export function findFoodBowlApproach(start: Vec3, bowl: NativeRoomObject, world: NativeRoomWorld): Vec3[] | undefined {
+  const heading = Math.atan2(bowl.position[0] - start[0], bowl.position[2] - start[2]);
+  for (let i = 0; i < 64; i++) {
+    const turn = i % 2 ? (i + 1) / 2 : -i / 2;
+    const angle = heading + turn * Math.PI / 32;
+    const point: Vec3 = [bowl.position[0] - Math.sin(angle) * CAT_EATING_REACH * world.catScale, FLOOR_Y,
+      bowl.position[2] - Math.cos(angle) * CAT_EATING_REACH * world.catScale];
+    if (!isFree(point, world)) continue;
+    const path = findRoomPath(start, point, world);
+    if (pathLength([path.at(-1)!, point]) < .02) return path;
+  }
+  return undefined;
+}
 /** Try reachable leaves from free floor positions, including corner approaches. */
 export function findPlantApproach(start: Vec3, object: NativeRoomObject, world: NativeRoomWorld): Vec3 | undefined {
   return findPawApproach(start, object.leaves ?? [], .20 * object.scale, world);
@@ -524,6 +559,73 @@ export function placeNativePreview(world: NativeRoomWorld, id: string): void {
     object.approach = object.approach.map((v, i) => v + shift[i]) as Vec3;
   world.home = nearestFree(world.home, world);
 }
+/** Baths can be entered from any accessible side; shower and toilet entries
+ * stay in front of their back panels and tanks. */
+function isNativeJumpClear(start: Vec3, target: Vec3, world: NativeRoomWorld, ignoreId?: string): boolean {
+  for (let i = 0; i <= 40; i++) {
+    const t = i / 40;
+    const p: Vec3 = [start[0] + (target[0] - start[0]) * t, start[1] + (target[1] - start[1]) * t + Math.sin(Math.PI * t) * .35 * world.catScale, start[2] + (target[2] - start[2]) * t];
+    if (world.objects.some(o => o.solid && o.instanceId !== ignoreId
+      && (o.collisionBoxes?.length ? o.collisionBoxes : [o]).some(box =>
+        p[1] < box.max[1] && p[1] + .8 * world.catScale > box.min[1]
+        && Math.hypot(p[0] - Math.max(box.min[0], Math.min(box.max[0], p[0])), p[2] - Math.max(box.min[2], Math.min(box.max[2], p[2]))) < world.radius))) return false;
+  }
+  return true;
+}
+/** A seat needs both a reachable floor point and a clear flight to its cushion.
+ * Search the front half of the furnishing instead of moving a blocked anchor
+ * to an arbitrary nearby floor point. Keep the chosen point for the exit. */
+export function findSeatApproach(start: Vec3, object: NativeRoomObject, world: NativeRoomWorld): Vec3 | undefined {
+  if (!object.seat || !object.approach) return undefined;
+  const seat = object.seat;
+  const front = object.heading + (object.modelId === 'sofaB' ? Math.PI / 2 : 0);
+  const candidates = [object.approach];
+  for (let i = 0; i < 25; i++) {
+    const turn = i % 2 ? (i + 1) / 2 : -i / 2;
+    const angle = front + turn * Math.PI / 36;
+    const x = Math.sin(angle), z = Math.cos(angle), clearance = world.radius + .04;
+    const edge = Math.min(Math.abs(x) < 1e-6 ? Infinity : ((x > 0 ? object.max[0] + clearance : object.min[0] - clearance) - seat[0]) / x,
+      Math.abs(z) < 1e-6 ? Infinity : ((z > 0 ? object.max[2] + clearance : object.min[2] - clearance) - seat[2]) / z);
+    candidates.push([seat[0] + x * edge, FLOOR_Y, seat[2] + z * edge]);
+  }
+  for (const point of candidates) {
+    if (!isFree(point, world) || !isNativeJumpClear(point, seat, world, object.instanceId)
+      || !isNativeJumpClear(seat, point, world, object.instanceId)) continue;
+    const path = findRoomPath(start, point, world);
+    if (pathLength([path.at(-1)!, point]) < .05) return point;
+  }
+  return undefined;
+}
+
+/** Animation completion is not proof that navigation reached its endpoint. */
+export function hasNativeArrived(position: Vec3, target: Vec3): boolean {
+  'worklet';
+  return Math.hypot(position[0] - target[0], position[1] - target[1], position[2] - target[2]) <= .06;
+}
+export function findBathroomApproach(start: Vec3, object: NativeRoomObject, world: NativeRoomWorld): Vec3 | undefined {
+  if (!object.bathroom) return undefined;
+  const contact = object.bathroom.contact;
+  if (!isFree(contact, world, object.instanceId)) return undefined;
+  const span = object.bathroom.kind === 'bath' ? Math.PI : object.bathroom.kind === 'shower' ? Math.PI / 2 : Math.PI / 4;
+  for (let i = 0; i < 33; i++) {
+    const turn = i % 2 ? (i + 1) / 2 : -i / 2;
+    const angle = object.heading + turn / 16 * span;
+    const x = Math.sin(angle), z = Math.cos(angle);
+    // Clear the fixture's face even when approaching it at an angle.
+    // Adding clearance along the ray leaves diagonal entries too close.
+    const clearance = world.radius + .04;
+    const edge = Math.min(Math.abs(x) < 1e-6 ? Infinity : ((x > 0 ? object.max[0] + clearance : object.min[0] - clearance) - contact[0]) / x,
+      Math.abs(z) < 1e-6 ? Infinity : ((z > 0 ? object.max[2] + clearance : object.min[2] - clearance) - contact[2]) / z);
+    const point: Vec3 = [contact[0] + x * edge, FLOOR_Y, contact[2] + z * edge];
+    if (!isFree(point, world)) continue;
+    if (!isNativeJumpClear(point, contact, world, object.instanceId)
+      || !isNativeJumpClear(contact, point, world, object.instanceId)) continue;
+    const path = findRoomPath(start, point, world);
+    if (pathLength([path.at(-1)!, point]) < .05) return point;
+  }
+  return undefined;
+}
+
 export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep, fromScreen: RoomPoint, world: NativeRoomWorld, fromY: number, objectScreen?: RoomPoint): RoomActivityStep & {
   native: NativeTravel;
 } {
@@ -534,6 +636,14 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const plant = object && plan.kind === 'plantPlay' && isPlayablePlant(object.modelId);
   const start = step.enteringRoom ? nativeRoomEdge(world, step.travelDirection === -1 ? 1 : -1) : catFloorPoint(fromScreen, world, fromY);
   const walking = step.animation?.startsWith('walk');
+  const previousSeatApproach = plan.steps.find(s => s.seatApproach && (s.targetInstanceId ?? plan.targetInstanceId) === object?.instanceId)?.seatApproach;
+  const seating = object?.seat && !tree && (step.approachingSeat || step.sofaApproach);
+  const seatApproach = seating ? walking ? findSeatApproach(start, object, world)
+    : step.seatApproach ?? previousSeatApproach ?? findSeatApproach(start, object, world) : undefined;
+  let bowlPath: Vec3[] | undefined;
+  const previousBathroomApproach = plan.steps.find(s => s.bathroomApproach && (s.targetInstanceId ?? plan.targetInstanceId) === object?.instanceId)?.bathroomApproach;
+  const bathroomApproach = object?.bathroom && step.bathroomPhase ? step.bathroomPhase === 'approach'
+    ? findBathroomApproach(start, object, world) : step.bathroomApproach ?? previousBathroomApproach : undefined;
   const previousApproach = plan.steps.find(s => s.treeApproach && (s.targetInstanceId ?? plan.targetInstanceId) === object?.instanceId)?.treeApproach;
   const treeApproach = tree ? walking && !step.returnHome ? findHangingToyApproach(start, object, world)
     : step.treeApproach ?? previousApproach ?? object.approach : undefined;
@@ -541,30 +651,22 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   let target = plantApproach ?? catFloorPoint(step.position, world);
   if (step.returnHome) target = nearestFree(world.home, world);
   if (step.leavingRoom) target = nativeRoomEdge(world, step.travelDirection ?? 1);
-  if (object?.seat && object.approach) {
+  if (object?.bathroom && step.bathroomPhase) {
+    target = ['enter', 'wash', 'use'].includes(step.bathroomPhase) ? object.bathroom.contact : bathroomApproach ?? start;
+  }
+  else if (object?.seat && object.approach) {
     if (onSeat)
       target = object.seat;
-    else if (jump || walking && !step.returnHome && (tree && plan.kind === 'toyPlay' || plan.kind !== 'returnHome' && step === plan.steps[0]))
-      target = treeApproach ?? object.approach;
+    else if (jump || walking && !step.returnHome && (step.approachingSeat || tree && plan.kind === 'toyPlay'))
+      target = treeApproach ?? seatApproach ?? object.approach;
   }
   else if (plan.kind === 'doorTravel' && object) {
     target = [object.position[0], FLOOR_Y, object.position[2]];
     target[object.heading > 0 ? 0 : 2] += world.radius + .2;
   }
   else if (plan.kind === 'bowlEat' && object && step.bowlApproach) {
-    // Align the lowered muzzle in the eating clip with the placed bowl.
-    const start = catFloorPoint(fromScreen, world, fromY);
-    const heading = Math.atan2(object.position[0] - start[0], object.position[2] - start[2]);
-    // A corner or nearby furnishing can leave a narrow reachable arc. Eight
-    // compass directions miss it even when the muzzle can reach the food.
-    const approaches = Array.from({ length: 64 }, (_, i) => {
-      const turn = i % 2 ? (i + 1) / 2 : -i / 2;
-      const angle = heading + turn * Math.PI / 32;
-      return [object.position[0] - Math.sin(angle) * CAT_EATING_REACH * world.catScale, FLOOR_Y,
-        object.position[2] - Math.cos(angle) * CAT_EATING_REACH * world.catScale] as Vec3;
-    });
-    target = approaches.find(point => isFree(point, world)
-      && pathLength([findRoomPath(start, point, world).at(-1)!, point]) < .12) ?? approaches[0];
+    bowlPath = findFoodBowlApproach(start, object, world);
+    target = bowlPath?.at(-1) ?? start;
   }
   else if ((plan.kind === 'toyPlay' || plan.kind === 'mouseChase') && object && step.animation?.startsWith('walk')) {
     const meta = NATIVE_MODEL_CATALOG[object.modelId];
@@ -575,28 +677,24 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   }
   // A resting/play clip stays where navigation actually arrived. Reusing the
   // old sprite target here would undo the detour and snap into the furniture.
-  let path = jump ? [start, target] : walking ? findRoomPath(start, target, world) : [start];
+  let path = jump ? [start, target] : walking ? bowlPath ?? findRoomPath(start, target, world) : [start];
   let blocked = !!walking && path.length === 1 && Math.hypot(start[0] - target[0], start[2] - target[2]) > .05;
+  if (plan.kind === 'bowlEat' && step.bowlApproach && !bowlPath) { blocked = true; path = [start]; }
+  if (plan.kind === 'bowlEat' && step.animation === 'eating' && object
+    && Math.abs(Math.hypot(start[0] - object.position[0], start[2] - object.position[2]) - CAT_EATING_REACH * world.catScale) > .08) blocked = true;
+  if (step.bathroomPhase && (!object?.bathroom || !bathroomApproach)) { blocked = true; path = [start]; }
+  if (seating && !seatApproach) { blocked = true; path = [start]; }
+  if (onSeat && !jump && object?.seat && !hasNativeArrived(start, object.seat)) blocked = true;
+  if (object?.bathroom && ['wash', 'use'].includes(step.bathroomPhase ?? '')
+    && !hasNativeArrived(start, object.bathroom.contact)) blocked = true;
   if ((tree && !treeApproach || plant && !plantApproach) && walking && !step.returnHome) { blocked = true; path = [start]; }
-  if (!object && !step.returnHome && (step.sofaApproach || step.bowlApproach || plan.kind === 'doorTravel' || plan.kind === 'toyPlay' || plan.kind === 'mouseChase' || plan.kind === 'bowlEat' || plan.kind === 'plantPlay')) {
+  if (!object && !step.returnHome && (step.approachingSeat || step.sofaApproach || step.bowlApproach || plan.kind === 'doorTravel' || plan.kind === 'toyPlay' || plan.kind === 'mouseChase' || plan.kind === 'bowlEat' || plan.kind === 'plantPlay')) {
     blocked = true;
     path = [start];
   }
-  if (walking && (object?.seat || plan.kind === 'bowlEat' || step.leavingRoom) && Math.hypot(path.at(-1)![0] - target[0], path.at(-1)![2] - target[2]) > .12)
+  if (walking && (object?.seat || step.bathroomPhase || plan.kind === 'bowlEat' || step.leavingRoom) && Math.hypot(path.at(-1)![0] - target[0], path.at(-1)![2] - target[2]) > .12)
     blocked = true;
-  if (jump)
-    for (let i = 0; i <= 40; i++) {
-      const t = i / 40;
-      const p: Vec3 = [start[0] + (target[0] - start[0]) * t, start[1] + (target[1] - start[1]) * t + Math.sin(Math.PI * t) * .35 * world.catScale, start[2] + (target[2] - start[2]) * t];
-      if (world.objects.some(o => o.solid && o.instanceId !== object?.instanceId
-        && (isPlayablePlant(o.modelId) && o.collisionBoxes?.length ? o.collisionBoxes : [o]).some(box =>
-          p[1] < box.max[1] && p[1] + .8 * world.catScale > box.min[1]
-          && Math.hypot(p[0] - Math.max(box.min[0], Math.min(box.max[0], p[0])), p[2] - Math.max(box.min[2], Math.min(box.max[2], p[2]))) < world.radius))) {
-        blocked = true;
-        path = [start];
-        break;
-      }
-    }
+  if (jump && !isNativeJumpClear(start, target, world, object?.instanceId)) { blocked = true; path = [start]; }
   const distance = pathLength(path), duration = walking ? Math.max(.18, distance / (.8 * world.catScale * 2.25)) : (step.moveMs ?? step.durationMs) / 1000;
   const position = catScreenPoint(path.at(-1)!, world);
   let objectPath: Vec3[] | undefined;
@@ -610,6 +708,13 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const aim = plant ? [...(object.leaves ?? [])].sort((a,b) => Math.hypot(...a.map((v,i)=>v-start[i])) - Math.hypot(...b.map((v,i)=>v-start[i])))[0]
     : tree && plan.kind === 'toyPlay' ? hangingToyPosition(object) : object?.position;
   const targetHeading = aim && !onSeat && !walking && (plan.kind === 'toyPlay' || plan.kind === 'plantPlay' || plan.kind === 'bowlEat') ? Math.atan2(aim[0] - start[0], aim[2] - start[2]) : undefined;
-  return { ...step, treeApproach, plantApproach, position, durationMs: walking ? duration * 1000 : step.durationMs, moveMs: walking ? duration * 1000 : step.moveMs,
-    native: { path, distance, duration, jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, targetPosition: object?.position, objectPath, objectDuration: duration * .6, heading: object?.seat && onSeat ? object.seatHeading : targetHeading } };
+  const rockingChair: RockingChair | undefined = object?.modelId === 'chairRockingOak' && step.sofaApproach && !blocked
+    ? { instanceId: object.instanceId, pivot: [object.position[0], FLOOR_Y, object.position[2]],
+      axis: [Math.cos(object.heading), 0, -Math.sin(object.heading)], seat: object.seat!, scale: object.scale, leaving: step.animation === 'jumpOff' }
+    : undefined;
+  return { ...step, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking ? duration * 1000 : step.durationMs, moveMs: walking ? duration * 1000 : step.moveMs,
+    native: { path, distance, duration, rockingChair, bathroom: object?.bathroom && step.bathroomPhase && !blocked
+      ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
+      jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, targetPosition: object?.position, objectPath, objectDuration: duration * .6,
+      heading: object?.bathroom && step.bathroomPhase ? object.heading : object?.seat && onSeat ? object.seatHeading : targetHeading } };
 }

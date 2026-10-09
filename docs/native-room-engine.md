@@ -2,6 +2,10 @@
 
 The live game uses `react-native-filament` 1.11.0 on iOS and Android. React Native retains navigation, care controls, math puzzles, wallets, localization, accessible menus, and the room editor. Filament renders every room object and cat; Bullet simulates movable toys. Store room previews and cat portraits use the same native models. Static store thumbnails, control icons, and OS launch artwork remain raster UI assets.
 
+3D graphics is the launch default. Only an explicit Settings choice saves Simple graphics under `@mathmews/graphics-mode`. Automatic scene recovery enables it for the current session without writing a preference. The previous `@mathmews/simple-graphics` flag is ignored because it also stored automatic crash fallback and could leave the cat permanently using a still image.
+
+See [Adding cat animations and room interactions](cat-animations.md) for clip registration, shared command menus, rebuilding and validation.
+
 ## Assets and saved rooms
 
 `assets/3d/native/` contains the original 288 inventory models, three cat coats, and an airflow model. `catalog.json` records original camera scale, mesh bounds, and animation flags. `constants/native-model-sources.ts` provides Metro's static asset references. The models occupy 40.1 MiB, with a 60 MiB checked budget.
@@ -17,6 +21,8 @@ npm run assets:native
 The script writes editable intermediate blends under `/tmp/brainpet-native-blends`. `native_gltf.py` normalizes clip time origins and repairs unused skin slots so they reference a valid influencing bone. Filament otherwise derives invalid normal transforms from hidden zero-scale prop bones, producing black head/leg patches. GLB replacement is atomic to avoid partial asset loads. The raster pipeline now only builds catalog thumbnails. The old cat atlas renderer, play-prop pages, and isolated animation lab have been removed. `catModelRegistry` describes native clip playback, and `useAnimationActivity` shares focus, background and Reduce Motion policy across native models, videos, and UI thumbnails. Authored clip timings come directly from `scripts/3d/clips.json`.
 
 `buildNativeRoomWorld` maps each saved normalized offset to its original screen anchor, then unprojects it into the orthographic room. It preserves item scale and wall orientation. Rugs and wall artwork retain saved front/back ordering with small depth offsets along the camera ray. No save schema or furniture placement is rewritten. An old cat spawn inside a solid object moves to the nearest available floor position.
+
+Every placeable item supports an additional yaw of 0–360 degrees in the room editor. Toys and decorations store `rotationDegrees`; beds store `bedRotationDegrees`. These optional fields preserve existing wall flips, style variants and toy quarter turns. `utils/room-rotation.ts` normalizes angles to tenths of a degree, with a full turn equal to zero. The native model, collision bounds, seating, bathroom contact points and leaf anchors use the same heading. The rotation sheet previews locally and writes once on Apply; wall-placement repairs wait until the preview ends so Cancel cannot change saved offsets. Captured layouts, Undo, named rooms and save normalization retain the angle. Simple graphics retains fixed images and shows a hint to use 3D graphics for angle previews.
 
 ## Movement and interactions
 
@@ -43,6 +49,24 @@ npx expo run:android
 Expo Go cannot load these modules. Babel uses the Reanimated 4 worklets plugin with nested worklet processing; the separate Worklets Core plugin must not also transform the same callbacks. Filament assets retain source data for native animator lifetime.
 
 ## Verification
+
+Room interactions use separate floor approaches and contact points. Sofa and
+chair commands search front-side takeoff candidates, require a reachable floor
+route and clear flights both up and down, and retain the chosen exit point.
+Sitting and sleeping require arrival at the cushion in all three dimensions;
+washing and toilet use require arrival at their fixture contact. Both the native
+renderer and scheduler check the rendered endpoint before advancing. A blocked
+step releases any held pose and ends standing instead of sleeping on the floor.
+Arc-lamp collision uses separate base, shade and short stem sections so its
+bounding box cannot fill the open air beneath its arch.
+
+This follows the distinction between path following and target arrival in
+[Godot's navigation guide](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html)
+and the use of furnishing interaction locations described by
+[Unreal's Smart Objects](https://dev.epicgames.com/documentation/unreal-engine/smart-objects-in-unreal-engine---overview).
+The existing room A* planner remains in use; no engine or navigation dependency
+is required. `scripts/fixtures/sofa-navigation.json` retains an anonymized copy
+of the reported layout for sofa, lamp-clearance and chair-to-sofa regressions.
 
 Room zoom uses continuous pinch gestures on the unscaled viewport, from 1× to 3×. The point under the fingers remains anchored while zooming. The artwork and native object hit targets share the same transform; zoom no longer disables their menus. There is no zoom/reset button; pinch inward to return to 1×. Entering decoration mode automatically resets the view. `check-room-camera.mjs` covers fractional zoom, focal anchoring, pan bounds and tap/scroll thresholds. Native iOS tapping opened the sofa's Sit/Sleep menu at 2.36×, and the user confirmed one-finger panning; see `docs/art/native-cat-rebuild/ios-pinch-object-menu.png`.
 

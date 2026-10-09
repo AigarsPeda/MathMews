@@ -1,8 +1,11 @@
-import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
+import type { RoomCommandKind } from "@/constants/room-commands";
+import { isCatSeatDecorationId } from "@/constants/sofa-decorations";
+import { bathroomFixtureKind, type BathroomPhase } from "@/constants/bathroom-activities";
 import { isPlayablePlant } from "@/constants/plant-play";
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
 import { CAT_ANIMATION_CLIPS } from "@/constants/cat-animation-clips";
 import type { NativeRoomWorld, NativeTravel, Vec3 } from "@/utils/native-room-world";
+import { findFoodBowlApproach } from "@/utils/native-room-world";
 import { isHomeRoomId, isRoomDoor, roomTravelDirection, type HomeRoomId, type RoomEntry, type RoomTravelDirection } from "@/constants/home-rooms";
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
 import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
@@ -12,7 +15,7 @@ import type { PetAnimationState, PlacedDecoration, PlacedToy, RoomItemOffset } f
 export const ROOM_IDLE_DELAY_MS = 30_000;
 export const ROOM_MEAL_DURATION_MS = 8_000;
 export type RoomPoint = { x: number; y: number };
-export type RoomActivityKind = "sofaSit" | "sofaSleep" | "toyPlay" | "mouseChase" | "doorTravel" | "roomTravel" | "bowlEat" | "plantPlay";
+export type RoomActivityKind = RoomCommandKind | "doorTravel" | "roomTravel";
 export type RoomActivityStep = {
   native?: NativeTravel;
   /** The source furnishing stays attached to exit steps after a new command. */
@@ -26,8 +29,13 @@ export type RoomActivityStep = {
   moveMs?: number;
   hold?: boolean;
   sofaApproach?: RoomPoint;
+  /** Floor approach intent is distinct from being supported by the seat. */
+  approachingSeat?: boolean;
+  seatApproach?: Vec3;
   treeApproach?: Vec3;
   plantApproach?: Vec3;
+  bathroomPhase?: BathroomPhase;
+  bathroomApproach?: Vec3;
   bowlApproach?: boolean;
   returnHome?: boolean;
   leavingRoom?: boolean;
@@ -40,6 +48,7 @@ export type RoomActivityStep = {
 };
 export type RoomActivityPlan = {
   kind: RoomActivityKind | "returnHome";
+  stopForEditing?: boolean;
   destination?: HomeRoomId;
   targetInstanceId?: string;
   objectKind?: "toy" | "decoration";
@@ -100,18 +109,33 @@ export function buildRoomReturn(room: RoomActivityOptions, plan: RoomActivityPla
   let floorStart = position;
   const approach = step.sofaApproach ?? plan.sofaApproach;
   const sourceInstanceId = step.targetInstanceId ?? plan.targetInstanceId;
+  if (step.bathroomPhase && sourceInstanceId) {
+    const inside = ["enter", "wash", "use"].includes(step.bathroomPhase);
+    if (inside) steps.push({ position, mood: "idle", animation: "jumpOff",
+      bathroomPhase: "exit", bathroomApproach: step.bathroomApproach,
+      targetInstanceId: sourceInstanceId, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
+    if (plan.kind === "toiletUse" || room.decorations.some(item => item.instanceId === sourceInstanceId && bathroomFixtureKind(item.decorationId) === "toilet"))
+      steps.push({ position, mood: "idle", animation: "sit", bathroomPhase: "close",
+        bathroomApproach: step.bathroomApproach, targetInstanceId: sourceInstanceId, durationMs: 700 });
+  }
   if (step.sofaApproach && approach) {
     if (step.animation === "curlUp" || step.animation === "curlSleep") {
-      steps.push({ position, mood: "lyingDown", animation: "curlUp", reverse: true, sofaApproach: approach, targetInstanceId: sourceInstanceId, durationMs: 1000 });
+      steps.push({ position, mood: "lyingDown", animation: "curlUp", reverse: true, sofaApproach: approach, seatApproach: step.seatApproach, targetInstanceId: sourceInstanceId, durationMs: 1000 });
     }
     floorStart = approach;
-    steps.push({ position: floorStart, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, sofaApproach: approach, treeApproach: step.treeApproach, targetInstanceId: sourceInstanceId, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
+    steps.push({ position: floorStart, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, sofaApproach: approach, seatApproach: step.seatApproach, treeApproach: step.treeApproach, targetInstanceId: sourceInstanceId, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
   }
   steps.push({ ...walkTo(floorStart, home, room.petSize), returnHome: true, objectPosition: plan.objectStart, objectRotation: 0 });
   return { kind: "returnHome", targetInstanceId: plan.targetInstanceId, objectKind: plan.objectKind, objectStart: plan.objectStart, steps };
 }
 
 /** Sofa commands continue from the cat's current location and pose. */
+/** Leave a perch/fixture before editing or another command, without a detour home. */
+export function buildRoomExit(room: RoomActivityOptions, plan: RoomActivityPlan, stepIndex: number, position: RoomPoint): RoomActivityPlan {
+  const returning = buildRoomReturn(room, plan, stepIndex, position);
+  return { ...returning, steps: returning.steps.filter(step => !step.returnHome) };
+}
+
 export function routeToSofa(
   room: RoomActivityOptions,
   next: RoomActivityPlan,
@@ -141,7 +165,7 @@ export function routeToSofa(
   }
   const exit = current ? buildRoomReturn(room, current.plan, current.stepIndex, position).steps.slice(0, -1) : [];
   const floorStart = exit.at(-1)?.position ?? position;
-  return { ...next, steps: [...exit, walkTo(floorStart, approach, room.petSize), ...next.steps.slice(1)] };
+  return { ...next, steps: [...exit, { ...walkTo(floorStart, approach, room.petSize), approachingSeat: true }, ...next.steps.slice(1)] };
 }
 
 /** Commands and idle choices share object eligibility and rendered coordinates. */
@@ -165,8 +189,15 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     return { kind: "doorTravel", targetInstanceId: door.instanceId, steps: [walkTo(home, threshold, room.petSize)] };
   }
   if (command === "bowlEat") {
-    const bowl = room.decorations.find(item => isFoodBowlDecorationId(item.decorationId)
+    const bowls = room.decorations.filter(item => isFoodBowlDecorationId(item.decorationId)
       && (preferredInstanceId === undefined || item.instanceId === preferredInstanceId));
+    // The general Eat command can use another bowl when the first is enclosed.
+    // A furnishing-specific command always keeps the selected bowl's identity.
+    const world = room.nativeWorld;
+    const bowl = world ? bowls.find(item => {
+      const object = world.objects.find(object => object.instanceId === item.instanceId);
+      return object && findFoodBowlApproach(world.home, object, world);
+    }) : bowls[0];
     if (!bowl) return null;
     const size = getPlacedDecorationDragSize(bowl) * room.sizeScale;
     const center = roomOffsetToPoint(bowl.offset, room.width, room.height, size);
@@ -178,16 +209,35 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
       { ...walkTo(position, home, room.petSize), returnHome: true },
     ] };
   }
+  if (command === "bathWash" || command === "showerWash" || command === "toiletUse") {
+    const kind = command === "bathWash" ? "bath" : command === "showerWash" ? "shower" : "toilet";
+    const fixture = room.decorations.find(item => bathroomFixtureKind(item.decorationId) === kind
+      && (preferredInstanceId === undefined || item.instanceId === preferredInstanceId));
+    if (!fixture) return null;
+    const size = getPlacedDecorationDragSize(fixture) * room.sizeScale;
+    const center = roomOffsetToPoint(fixture.offset, room.width, room.height, size);
+    const approach = clampCatPoint({ x: center.x, y: center.y + size * .45 }, room);
+    const position = clampCatPoint({ x: center.x, y: center.y - room.petSize * .25 }, room);
+    return { kind: command, targetInstanceId: fixture.instanceId, objectKind: "decoration", steps: [
+      { ...walkTo(home, approach, room.petSize), bathroomPhase: "approach" },
+      ...(kind === "toilet" ? [{ position: approach, mood: "idle" as const, animation: "sit" as const, bathroomPhase: "open" as const, durationMs: 700 }] : []),
+      { position, mood: "idle", animation: "jumpOn", bathroomPhase: "enter", durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS },
+      { position, mood: "idle", animation: kind === "toilet" ? "sit" : "wash", bathroomPhase: kind === "toilet" ? "use" : "wash", durationMs: kind === "toilet" ? 6000 : 8000 },
+      { position: approach, mood: "idle", animation: "jumpOff", bathroomPhase: "exit", durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS },
+      ...(kind === "toilet" ? [{ position: approach, mood: "idle" as const, animation: "sit" as const, bathroomPhase: "close" as const, durationMs: 700 }] : []),
+      { ...walkTo(approach, home, room.petSize), returnHome: true },
+    ] };
+  }
   for (const sofa of room.decorations) {
     const sprite = getPlacedDecorationSpriteId(sofa);
-    if (!isSeatingSofaDecorationId(sprite)) continue;
+    if (!isCatSeatDecorationId(sprite)) continue;
     const size = getPlacedDecorationDragSize(sofa) * room.sizeScale;
     const center = roomOffsetToPoint(sofa.offset, room.width, room.height, size);
     const seatSide = (sprite === "sofaB" ? 1 : -1) * (sofa.wallFlipped ? -1 : 1);
     const seat = clampCatPoint({ x: center.x + seatSide * size * 0.13, y: center.y - size * 0.02 - room.petSize * 0.31 }, room);
     const approach = clampCatPoint({ x: seat.x, y: center.y + size * 0.4 - room.petSize * 0.31 }, room);
     const arrive: RoomActivityStep[] = [
-      walkTo(home, approach, room.petSize),
+      { ...walkTo(home, approach, room.petSize), approachingSeat: true },
       { position: seat, mood: "idle", animation: "jumpOn", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS, sofaApproach: approach },
     ];
     const leave: RoomActivityStep[] = [

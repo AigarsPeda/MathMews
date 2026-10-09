@@ -9,15 +9,17 @@ function execute(file, require, extra = {}) {
   vm.runInNewContext(code, { module, exports: module.exports, require, Set, ...extra }, { filename: file });
   return module.exports;
 }
+const cachePolicies = [];
 const assetMocks = {
   '@/constants/cat-decorations': { CAT_DECORATION_CATALOG: { a: { source: 1 }, b: { source: 2 }, c: { source: 3 } } },
+  '@/constants/cat-skins': { CAT_SKIN_PREVIEWS: {} },
   '@/constants/cat-beds': { CAT_BED_SOURCES: { duplicate: 1 } },
   '@/constants/cat-rooms': { CAT_ROOM_SOURCES: {} },
   '@/assets/3d/native/cat-orange.glb': 1,
   '@/constants/cat-toys': { CAT_TOY_SOURCES: {} },
-  'react-native': { Platform: { OS: 'ios' } },
-  'expo-asset': { Asset: { fromModule: id => ({ downloaded: false, uri: String(id), downloadAsync: async () => { if (id === 2) throw Error('offline'); } }) } },
-  'expo-image': { Image: { prefetch: async uri => uri !== '3' } },
+  'react-native': { Platform: { OS: 'ios' }, Image: {resolveAssetSource:id=>({uri:String(id)})} },
+  'expo-asset': { Asset: { fromModule: id => ({ downloaded: false, uri: String(id), width: id === 1 ? 256 : 2048, height: id === 1 ? 256 : 2048, downloadAsync: async () => { if (id === 2) throw Error('offline'); } }) } },
+  'expo-image': { Image: { prefetch: async (uri, policy) => { cachePolicies.push([uri, policy]); return uri !== '3'; } } },
 };
 const assets = execute('utils/prefetch-game-assets.ts', id => { assert.ok(id in assetMocks, id); return assetMocks[id]; });
 const reports = [];
@@ -27,6 +29,23 @@ assert.equal(final.total, 3, 'Duplicate asset modules must not inflate progress'
 assert.equal(final.completed, 3, 'Failed downloads must settle rather than hang startup');
 assert.equal(final.failed, 2, 'Only successful assets count as ready');
 assert.equal(final.completed - final.failed, 1);
+assert.deepEqual(cachePolicies, [["1", "memory-disk"], ["3", "disk"]], "Small thumbnails warm memory while large images stay on disk");
+
+// A growing catalog must not turn startup into an unbounded decoded-image cache.
+assetMocks['@/constants/cat-decorations'].CAT_DECORATION_CATALOG = Object.fromEntries(
+  Array.from({length:250},(_,i)=>['item'+i,{source:i+10}]));
+assetMocks['expo-asset'].Asset.fromModule = id => ({downloaded:true,uri:String(id),width:256,height:256});
+let inFlight=0,maxInFlight=0;
+cachePolicies.length=0;
+assetMocks['expo-image'].Image.prefetch = async (uri,policy) => {
+  inFlight++;maxInFlight=Math.max(maxInFlight,inFlight);
+  await Promise.resolve();cachePolicies.push([uri,policy]);inFlight--;return true;
+};
+await assets.prefetchGameAssets();
+const memoryCount=cachePolicies.filter(([,policy])=>policy==='memory-disk').length;
+assert.ok(memoryCount*256*256<=12_000_000,'Catalog growth cannot exceed the decoded startup pixel budget');
+assert.ok(cachePolicies.some(([,policy])=>policy==='disk'),'Remaining assets still prefetch on disk');
+assert.ok(maxInFlight<=12,'Startup image work stays in bounded batches');
 
 let report, finish, timeout, cleared = false;
 const gate = execute('lib/init-game-asset-prefetch.ts', () => ({ prefetchGameAssets: callback => {
@@ -54,6 +73,15 @@ unsubscribe();
 report({ completed: 3, total: 3, failed: 1 });
 assert.equal(events, priorEvents, 'Unmounted listeners must be released');
 console.log('Verified real loading counts, failed downloads, bounded waits, continued background work and subscription cleanup.');
+
+let unexpectedReported=0;
+const failedGate = execute('lib/init-game-asset-prefetch.ts', id => id === '@/lib/app-diagnostics'
+  ? {reportAppError:()=>unexpectedReported++}
+  : {prefetchGameAssets:()=>Promise.reject(Error('catalog unavailable'))},
+  {setTimeout:()=>1,clearTimeout:()=>{}});
+await failedGate.gameAssetsPrefetchPromise;
+assert.equal(unexpectedReported,1,'Unexpected prefetch failures are saved to diagnostics');
+assert.equal(failedGate.getGameAssetLoadingSnapshot().mayContinue,true,'An unexpected preload failure must release startup');
 
 let heldVisuals = 0, releaseVisual;
 const visual = execute('contexts/StartupVisualContext.ts', id => {
