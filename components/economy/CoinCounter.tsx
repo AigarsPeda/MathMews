@@ -1,6 +1,6 @@
 import { AppIcon } from "@/components/ui/AppIcon";
 import { HeaderChip } from "@/components/home/HeaderChip";
-import { GameColors } from "@/constants/game";
+import { GameColors, HEADER_CHIP_SIZE } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
@@ -32,6 +32,7 @@ export function CoinCounter({
   const coinChip = compact ? (
     <HeaderChip
       shape="pill"
+      style={styles.headerChip}
       borderColor={GameColors.coin}
       onPress={onPress}
       accessibilityLabel={t("economy.a11yCoins", { coins })}
@@ -41,6 +42,7 @@ export function CoinCounter({
   ) : onPress ? (
     <HeaderChip
       shape="pill"
+      style={styles.headerChip}
       borderColor={GameColors.coin}
       onPress={onPress}
       accessibilityLabel={t("economy.a11yCoins", { coins })}
@@ -67,18 +69,20 @@ export function CoinCounter({
 }
 
 const styles = StyleSheet.create({
+  headerChip: { borderRadius: moderateScale(12) },
   row: {
     flexDirection: "row",
     alignItems: "center",
     gap: moderateScale(10),
   },
   pill: {
+    height: moderateScale(HEADER_CHIP_SIZE),
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: moderateScale(6),
     backgroundColor: GameColors.card,
-    borderRadius: moderateScale(20),
-    paddingVertical: moderateScale(8),
+    borderRadius: moderateScale(12),
     paddingHorizontal: moderateScale(14),
     borderWidth: 2,
     borderColor: GameColors.coin,

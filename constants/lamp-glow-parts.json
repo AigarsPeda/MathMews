@@ -1,0 +1,40 @@
+{
+  "lampFloorArc": [
+    { "node": "Arc lamp shade", "emission": [0.55, 0.36, 0.19, 1] },
+    { "node": "Warm bulb", "emission": [1.0, 0.62, 0.28, 1] },
+    { "node": "Warm shade interior", "emission": [0.7, 0.42, 0.17, 1] }
+  ],
+  "lampFloorTripod": [
+    { "node": "Sage lampshade", "emission": [0.2, 0.26, 0.1, 1] },
+    { "node": "Shade cream piping", "emission": [0.5, 0.34, 0.18, 1] }
+  ],
+  "lampFloorPaper": [
+    { "node": "Rice paper lantern", "emission": [0.6, 0.4, 0.2, 1] }
+  ],
+  "lampTableMushroom": [
+    { "node": "Mushroom shade", "emission": [0.48, 0.15, 0.06, 1] },
+    { "node": "Shade warm underside", "emission": [0.7, 0.44, 0.2, 1] }
+  ],
+  "lampTableCeramic": [
+    { "node": "Linen table lampshade", "emission": [0.55, 0.36, 0.19, 1] }
+  ],
+  "lampTableBanker": [
+    { "node": "Green glass shade", "emission": [0.12, 0.27, 0.07, 1] },
+    { "node": "Glass shade lit underside", "emission": [0.8, 0.5, 0.25, 1] }
+  ],
+  "bedroomFloorLamp": [
+    { "node": "Pleated lampshade", "emission": [0.55, 0.36, 0.19, 1] },
+    { "node": "Shade seam", "emission": [0.4, 0.27, 0.15, 1] }
+  ],
+  "japaneseLamp": [
+    { "node": "Paper lantern", "emission": [0.6, 0.4, 0.2, 1] }
+  ],
+  "lavaLampOff": [
+    { "node": "Glass", "emission": [0.12, 0.25, 0.38, 1] },
+    { "node": "Lava blob", "emission": [0.65, 0.2, 0.1, 1] }
+  ],
+  "lavaLampAni": [
+    { "node": "Glass", "emission": [0.12, 0.25, 0.38, 1] },
+    { "node": "Lava blob", "emission": [0.65, 0.2, 0.1, 1] }
+  ]
+}

@@ -13,7 +13,6 @@ import type { CatPlayActivity } from "@/constants/cat-play";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
   GameColors,
-  HEADER_CHIP_SIZE,
   PET_HAPPINESS_BOOST,
 } from "@/constants/game";
 import { computePetWisdom } from "@/constants/puzzles";
@@ -40,6 +39,7 @@ import {
   updatePlacedToyOffsetByInstance,
 } from "@/utils/room-placement";
 import { moderateScale } from "@/utils/scale";
+import { WorldClockControl } from '@/components/pet/WorldClockControl';
 import { getStoreGoalDetails } from "@/utils/store-goal";
 import * as Haptics from "expo-haptics";
 import { Redirect, useRouter } from "expo-router";
@@ -75,6 +75,7 @@ export default function HomeScreen() {
     isReady,
     hasCompletedOnboarding,
     pet,
+    worldClock,
     wallet,
     progress,
     setPet,
@@ -119,7 +120,7 @@ export default function HomeScreen() {
     send: sendPetCommand,
     isCareBlocked,
     isCareAnimationPlaying,
-  } = usePetDisplay(pet);
+  } = usePetDisplay(pet, worldClock);
 
   useEffect(() => {
     if (!isCareBlocked && !isCareAnimationPlaying)
@@ -459,6 +460,7 @@ export default function HomeScreen() {
   const renderStage = (roomPet: PetProfile, visible: boolean) => (
     <PetStage
       key={`${roomPet.homeRoomId ?? "livingRoom"}:${roomPet.roomId ?? "room1"}`}
+      worldClock={worldClock}
       nativeSceneMounted={shouldMountNativeRoom(roomPet.homeRoomId ?? "livingRoom", pet.homeRoomId ?? "livingRoom", getCatHomeRoomId(pet), transition?.outgoing.homeRoomId)}
       roomVisible={visible && !transition}
       sceneSlide={transition && (visible || roomPet.homeRoomId === transition.outgoing.homeRoomId)
@@ -550,16 +552,6 @@ export default function HomeScreen() {
     <View style={[styles.safe, screenInsets]}>
       <View style={styles.screen}>
         <View style={styles.header}>
-          {isNativeCatPet ? (
-            <HeaderChip
-              onPress={handleOpenStore}
-              accessibilityLabel={t("home.a11yStore")}
-            >
-              <AppIcon name="store" size={moderateScale(40)} />
-            </HeaderChip>
-          ) : (
-            <View style={styles.headerSideSlot} />
-          )}
           <View style={styles.headerSpacer} />
           <View style={styles.headerRight}>
             <GameHeaderStats
@@ -578,6 +570,7 @@ export default function HomeScreen() {
 
         <View style={styles.middle}>
           <View style={styles.stageWrap}>
+            <WorldClockControl/>
             {stageRooms.map(room => {
               const id = room.homeRoomId ?? "livingRoom";
               const visible = id === viewRoom;
@@ -642,9 +635,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: moderateScale(6),
     marginBottom: moderateScale(10),
-  },
-  headerSideSlot: {
-    width: moderateScale(HEADER_CHIP_SIZE),
   },
   headerSpacer: {
     flex: 1,

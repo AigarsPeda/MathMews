@@ -910,6 +910,9 @@ mocks['react-native'] = { View: 'View', ActivityIndicator: 'ActivityIndicator', 
 mocks['./NativeFoodSpill'] = { NativeFoodSpill: 'FoodSpill' };
 mocks['./NativeAirflow'] = { NativeAirflow: 'Airflow' };
 mocks['./NativeLampLight'] = { NativeLampLight: 'LampLight' };
+mocks['./NativeLampGlow'] = { NativeLampGlow: 'LampGlow' };
+mocks['./NativeWorldLighting'] = { NativeWorldLighting: 'WorldLighting' };
+mocks['./NativeWindowPane'] = { NativeWindowPane: 'WindowPane' };
 mocks['./NativeCatActor'] = { NativeCatActor: 'Cat' };
 const startupVisualReadiness = [];
 mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { startupVisualReadiness.push(ready); } };
@@ -1086,6 +1089,33 @@ Object.assign(mocks['react-native-filament'], {
   useFilamentContext: () => context,
   useSphereShape() {}, useWorkletEffect: fn => fn(),
 });
+// The shipped clock's hands rotate around the dial, rather than the mesh origin.
+{
+  const clockWorld = w.buildNativeRoomWorld({ ...base, decorations: [{ decorationId: 'officeClockAni', instanceId: 'clock', offset: { x: 0, y: 0 } }] });
+  const model = glb('officeClockAni');
+  toyRoot = matrix(); toyNodes = new Map(model.nodes.map(n => [n.name, n]));
+  toyLocals = new Map(model.nodes.map(n => [n.name, n.matrix ?? matrix(n.translation, n.rotation, n.scale)]));
+  toyParents = new Map(model.nodes.flatMap(n => (n.children ?? []).map(i => [model.nodes[i].name, n.name])));
+  const worldClock = { worldMs: 3 * 3_600_000, realMs: Date.now() + 1_000_000, speed: 60 };
+  const clockScene = sceneChildren({ world: clockWorld, catPresent: false, worldClock });
+  assert.equal(clockScene.find(c => c.type === 'WorldLighting').props.clock, worldClock);
+  assert.equal(clockScene.find(c => c.type === 'WorldLighting').props.objects, clockWorld.objects, 'Room lighting receives the actual placed windows');
+  const child = clockScene.find(c => c.type.name === 'RoomObject');
+  assert.equal(child.props.worldClock, worldClock);
+  slots = []; cursor = 0; effects = [];
+  child.type(child.props); effects.forEach(fn => fn());
+  renderFrame({ timeSinceLastFrame: 1 / 60 });
+  for (const [name, tip, axis] of [['Hour hand', [.12, .83, .08], 0], ['Minute hand', [-.32, .65, .085], 1]]) {
+    assert.ok(toyNodes.has(name));
+    const m = toyLocals.get(name);
+    const transform = p => [0, 1, 2].map(i => m[i] * p[0] + m[4 + i] * p[1] + m[8 + i] * p[2] + m[12 + i]);
+    const center = transform([0, .6, tip[2]]), endpoint = transform(tip);
+    assert.ok(Math.hypot(center[0], center[1] - .6, center[2] - tip[2]) < 1e-6, 'Each hand stays attached to the dial center');
+    const delta = endpoint.map((v, i) => v - center[i]);
+    assert.ok(delta[axis] > .2 && Math.abs(delta[1 - axis]) < 1e-6, 'At 03:00 the hour hand points right and the minute hand points up');
+  }
+  console.log('Verified native scene clock wiring and actual shipped wall-clock hand transforms at 03:00.');
+}
 assert.equal(hanging.hangingToyContact([0,0,0], [[.2,0,0]], .1, {ball:[0,0,0], paws:[[-.2,0,0]]}), 0, 'A fast paw crossing the ball between frames makes contact');
 assert.equal(hanging.hangingToyContact([0,0,0], [[2,0,0]], .1, {ball:[0,0,0], paws:[[-2,0,0]]}), -1, 'Repositioning does not create a distant hit');
 const largeTreeWorld = w.buildNativeRoomWorld({...treeLayout, decorations:[{...treeLayout.decorations[0], scale:1.6}]});
@@ -1580,3 +1610,43 @@ assert.equal(NativeLampLight(lampsInScene[1].props), null, 'An off lamp emits no
 assert.equal(NativeLampLight({ ...lampsInScene[0].props, active: false }), null, 'Hidden rooms emit no lamp light');
 assert.equal(NativeLampLight({ ...lampsInScene[0].props, object: { ...lampRoom.objects[0], poweredOn: false } }), null);
 console.log('Verified native lamp mounting, independent power, numeric light properties and hidden-room cleanup.');
+
+const glowParts = load('@/constants/lamp-glow-parts.json');
+const { LAMP_LIGHT_ORIGINS } = load('@/constants/decoration-motion');
+assert.deepEqual(Object.keys(glowParts).sort(), Object.keys(LAMP_LIGHT_ORIGINS).sort(), 'Every switchable lamp has a visible light source');
+const { NativeLampGlow } = load('@/components/pet/native/NativeLampGlow');
+mocks['react-native-filament'].useFilamentContext = () => ({
+  renderableManager: {
+    getPrimitiveCount: entity => entity.materials.length,
+    getMaterialInstanceAt: (entity, index) => entity.materials[index],
+  }, nameComponentManager: { getEntityName: entity => entity.name },
+});
+function lampGlowAsset(id) {
+  const model = glb(id);
+  const materials = model.materials.map(meta => ({ meta, emission: undefined,
+    setFloat4Parameter(name, value) { assert.equal(name, 'emissiveFactor'); this.emission = [...value]; } }));
+  const entities = model.nodes.filter(node => node.mesh !== undefined).map(node => ({ name: node.name,
+    materials: model.meshes[node.mesh].primitives.map(primitive => materials[primitive.material]) }));
+  return { materials, getRenderableEntities: () => entities };
+}
+function glow(asset, modelId, poweredOn) {
+  slots = []; cursor = 0;
+  NativeLampGlow({ asset, modelId, poweredOn });
+}
+for (const id of Object.keys(glowParts)) {
+  const asset = lampGlowAsset(id);
+  glow(asset, id, true);
+  const glowing = asset.materials.filter(material => material.meta.name.startsWith('Lamp glow '));
+  assert.ok(glowing.length && glowing.every(material => material.emission?.slice(0, 3).some(value => value > 0)),
+    `${id}: the shade, bulb or lantern glows when powered on`);
+  assert.ok(asset.materials.filter(material => !glowing.includes(material)).every(material => material.emission === undefined),
+    `${id}: shared authored colors cannot make its base or stand glow`);
+  const second = lampGlowAsset(id);
+  glow(second, id, false);
+  assert.ok(glowing.every(material => material.emission.slice(0, 3).some(value => value > 0)), 'Another lamp has independent power');
+  glow(asset, id, false);
+  assert.ok(glowing.every(material => material.emission.slice(0, 3).every(value => value === 0)), 'Switching off removes the source glow');
+  glow(asset, id, true);
+  assert.ok(glowing.every(material => material.emission.slice(0, 3).some(value => value > 0)), 'Switching back on restores the glow');
+}
+console.log('Verified shade emission, isolated Blender materials, independent lamps and repeated on/off switching for all 10 lamp types.');

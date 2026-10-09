@@ -6,6 +6,7 @@ export const GAME_SAVE_STORAGE_KEY = "@mathmews/game-save";
 export const PET_NAME_MAX_LENGTH = 20;
 
 export type GameSave = {
+  worldClock?: import('@/utils/world-clock').WorldClock;
   version: typeof GAME_SAVE_VERSION;
   pet: PetProfile;
   wallet: Wallet;

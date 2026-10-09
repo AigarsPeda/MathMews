@@ -8,6 +8,7 @@ import bpy, sys, math, json
 PLAYABLE_PLANTS=('plantSmall','plantA','plantB','plantE','plantPotted','plantTallGreen','plantTallPink','plantTallBlue','plantTallPurple')
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[2]
+LAMP_GLOW_PARTS=json.loads((ROOT/'constants/lamp-glow-parts.json').read_text())
 sys.path.insert(0,str(ROOT/'scripts/3d'))
 from native_gltf import normalize_animation_times
 OUT=ROOT/'assets/3d/native';OUT.mkdir(parents=True,exist_ok=True)
@@ -29,6 +30,82 @@ def bounds(objects):
  bpy.context.view_layer.update()
  points=[o.matrix_world@Vector(c) for o in objects if o.type in ('MESH','CURVE') for c in o.bound_box]
  return [min(v[i] for v in points) for i in range(3)],[max(v[i] for v in points) for i in range(3)]
+def window_sky_materials(objects):
+ # The opaque pane depicts the sky outside, not a blue surface reflecting
+ # interior lamps. Background shaders export as KHR_materials_unlit. Keep the
+ # frame lit normally so pane lights illuminate its inward-facing surfaces.
+ names=('Window glass','Sky blue glass','Arched glass lower pane','Arched sky glass','Round sky glass',
+        'Window light reflection','Porthole reflection')
+ for obj in objects:
+  if obj.type!='MESH' or not any(obj.name==name or obj.name.startswith(name+'.') for name in names):continue
+  for slot in obj.material_slots:
+   if not slot.material:continue
+   material=slot.material.copy();material.name='Outside sky '+obj.name
+   color=material.diffuse_color[:]
+   material.node_tree.nodes.clear()
+   background=material.node_tree.nodes.new('ShaderNodeBackground');background.inputs['Color'].default_value=color
+   output=material.node_tree.nodes.new('ShaderNodeOutputMaterial')
+   material.node_tree.links.new(background.outputs['Background'],output.inputs['Surface'])
+   slot.material=material
+def lamp_glow_materials(id,objects):
+ # Separate the shade from bases/stems that share the same authored color.
+ # Runtime emission can then turn each lamp on/off without lighting its base.
+ names=[part['node'] for part in LAMP_GLOW_PARTS[id]]
+ for obj in objects:
+  if obj.type!='MESH' or not any(obj.name==name or obj.name.startswith(name+'.') for name in names):continue
+  for slot in obj.material_slots:
+   if not slot.material:continue
+   material=slot.material.copy();material.name='Lamp glow '+obj.name
+   material.node_tree.nodes.get('Principled BSDF').inputs['Emission Strength'].default_value=1
+   slot.material=material
+def window_area_lightmap(objects):
+ # Bake one broad outside source onto the frame. This preserves a continuous
+ # area-light response on mobile, where Filament exposes only punctual lights.
+ skies=[o for o in objects if o.type=='MESH' and any(s.material and s.material.name.startswith('Outside sky ') for s in o.material_slots)]
+ frames=[o for o in objects if o.type=='MESH' and o not in skies]
+ if not skies or not frames:return
+ glass=[o for o in skies if 'reflection' not in o.name.lower()]
+ lo,hi=bounds(glass)
+ scene=bpy.context.scene
+ for obj in scene.objects:
+  if obj.type=='LIGHT':obj.hide_render=True
+ for obj in skies:obj.visible_shadow=False
+ data=bpy.data.lights.new('Outside window area','AREA');data.shape='RECTANGLE'
+ data.size=hi[0]-lo[0];data.size_y=hi[2]-lo[2];data.energy=100
+ light=bpy.data.objects.new('Outside window area',data);scene.collection.objects.link(light)
+ light.location=((lo[0]+hi[0])/2,hi[1]+.15,(lo[2]+hi[2])/2)
+ light.rotation_euler=(-math.pi/2,0,0)
+ image=bpy.data.images.new('Window area lightmap',width=256,height=256,float_buffer=True)
+ copied={}
+ for obj in frames:
+  for slot in obj.material_slots:
+   original=slot.material
+   if original not in copied:
+    material=original.copy();material.name='Window area '+original.name
+    texture=material.node_tree.nodes.new('ShaderNodeTexImage');texture.image=image
+    material.node_tree.nodes.active=texture
+    copied[original]=(material,texture)
+   slot.material=copied[original][0]
+ bpy.ops.object.select_all(action='DESELECT')
+ for obj in frames:obj.select_set(True)
+ bpy.context.view_layer.objects.active=frames[0]
+ bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT')
+ bpy.ops.uv.smart_project(island_margin=.025)
+ bpy.ops.object.mode_set(mode='OBJECT')
+ scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.samples=32
+ bpy.ops.object.bake(type='DIFFUSE',pass_filter={'DIRECT'},margin=3,use_clear=True)
+ pixels=list(image.pixels[:]);peak=max(pixels[i] for i in range(0,len(pixels),4))
+ if peak>0:
+  for i in range(0,len(pixels),4):
+   value=max(0,min(1,pixels[i]/peak))
+   pixels[i:i+4]=[value,value,value,1]
+  image.pixels[:]=pixels
+ image.pack()
+ for material,texture in copied.values():
+  shader=material.node_tree.nodes.get('Principled BSDF')
+  material.node_tree.links.new(texture.outputs['Color'],shader.inputs['Emission Color'])
+  shader.inputs['Emission Strength'].default_value=1
+ bpy.data.objects.remove(light,do_unlink=True)
 def items():
  selected=[a.split('=',1)[1] for a in ARGS if a.startswith('--id=')]
  metadata=json.loads((OUT/'catalog.json').read_text()) if selected else {}
@@ -55,6 +132,10 @@ def items():
    center=list(sum(points,Vector())/len(points))
    if id in scope['STORE_FURNITURE_IDS']:center=list(framed_center)
    objects=[root,*objects]
+  if id.startswith('window') or id=='bathroomBathWindow':
+   window_sky_materials(objects)
+   window_area_lightmap(objects)
+  elif id in LAMP_GLOW_PARTS:lamp_glow_materials(id,objects)
   lo,hi=bounds(objects)
   # Item animations are local. Doors remain closed and fixed until explicitly used.
   wind=id in ('plantSmall','plantA','plantB','plantE','plantPotted','plantSunflower','plantTallGreen','plantTallPink','plantTallBlue','plantTallPurple')

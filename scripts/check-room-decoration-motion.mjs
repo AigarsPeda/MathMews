@@ -172,6 +172,20 @@ shadeSwitches[1].node.props.actions[0].onPress();
 assert.equal(toggled, 'lamp-two');
 
 const sofa = { decorationId: 'sofaA', instanceId: 'sofa', offset: { x: .3, y: .1 } };
+let shopOpens = 0;
+const combinedProps = { onOpenStore: () => { shopOpens++; } };
+const furnitureMenu = nodes => nodes.find(({ node }) => node.type === 'RoomActionMenu' && node.props.label === 'home.shopAndDecorate').node;
+const combinedMenu = furnitureMenu(render([sofa], combinedProps));
+assert.deepEqual(Array.from(combinedMenu.props.actions, action => action.label), ['store.title', 'home.decorateRoom']);
+combinedMenu.props.actions[0].onPress();
+assert.equal(shopOpens, 1, 'The combined control opens the shop');
+assert.ok(furnitureMenu(render([sofa], combinedProps)), 'Shopping does not start decorating');
+combinedMenu.props.actions[1].onPress();
+const combinedEditing = render([sofa], combinedProps);
+assert.ok(!combinedEditing.some(({ node }) => node.props.label === 'home.shopAndDecorate'), 'Done replaces the combined menu while decorating');
+combinedEditing.find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
+assert.ok(furnitureMenu(render([sofa], combinedProps)), 'Done restores both furniture choices');
+console.log('Verified combined shop/decorate menu, independent shopping, decoration entry and Done restoring the menu.');
 const normalRoom = render([sofa]);
 const sofaNode = nodes => decorationNode(nodes, 'sofaA').node;
 const catNode = nodes => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-cat').node;
@@ -345,11 +359,12 @@ console.log('Verified command menu eligibility, sleep command dispatch, returnin
 
 roomActivityForTest = { plan: planner.buildRoomActivity(room, 0, 'sofaSit'), stepIndex: 2 };
 const beforeDecorate = stoppedForEditing;
-render([sofa]).find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
+furnitureMenu(render([sofa], combinedProps)).props.actions[1].onPress();
 assert.equal(stoppedForEditing, beforeDecorate + 1, 'Decorating asks the seated cat to get down first');
-const waitingRoom = render([sofa]);
+const waitingRoom = render([sofa], combinedProps);
 assert.equal(sofaNode(waitingRoom).props.allowDrag, false, 'Keep the occupied sofa in place during the return');
-assert.equal(waitingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.disabled, true);
+assert.equal(furnitureMenu(waitingRoom).props.actions[1].disabled, true);
+assert.equal(furnitureMenu(waitingRoom).props.actions[0].disabled, undefined, 'Shopping remains available while the cat returns');
 roomActivityForTest = null; editingReady(); render([sofa]);
 assert.equal(sofaNode(render([sofa])).props.allowDrag, true, 'Decorating begins after the return finishes');
 const post = { toyId: 'scratchPostRed', instanceId: 'post', offset: { x: .2, y: .3 }, scale: 1.5 };

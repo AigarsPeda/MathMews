@@ -147,6 +147,7 @@
       "toiletUse": "Lietot tualeti"
     },
     "decorateRoom": "Iekārtot",
+    "shopAndDecorate": "Veikals un istabas iekārtošana",
     "finishDecorating": "Gatavs",
     "dismissRoomItemMenu": "Aizvērt priekšmeta izvēlni",
     "zoomCat": "Pietuvināt kaķi",
@@ -979,5 +980,23 @@
     "share": "Kopīgot kļūdu pārskatu",
     "recovered": "Pārtverta kļūda",
     "fatal": "Fatāla kļūda"
+  },
+  "worldClock": {
+    "title": "Pasaules pulkstenis",
+    "open": "Pasaules pulkstenis, {{day}}. diena, {{time}}",
+    "dayNumber": "{{day}}. diena",
+    "description": "Dienasgaisma mainās līdz ar pulksteni. Naktī kaķis ātrāk atpūšas, ja neko nedara. Barošana un aprūpe turpinās ierastajā ritmā.",
+    "speed": "Pulksteņa ātrums",
+    "speed1": "Reālais laiks · 1×",
+    "duration1": "Viena pasaules diena ilgst 24 stundas.",
+    "speed60": "Ātri · 60×",
+    "duration60": "Viena pasaules diena ilgst 24 minūtes.",
+    "speed300": "Ļoti ātri · 300×",
+    "duration300": "Viena pasaules diena ilgst 4 minūtes un 48 sekundes.",
+    "setTime": "Iestatīt diennakts laiku",
+    "morning": "Rīts",
+    "day": "Diena",
+    "evening": "Vakars",
+    "night": "Nakts"
   }
 }

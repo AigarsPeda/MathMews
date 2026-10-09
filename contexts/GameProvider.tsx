@@ -1,4 +1,5 @@
 import type { HomeRoomId } from "@/constants/home-rooms";
+import { changeWorldClock, createWorldClock, normalizeWorldClock, type WorldClock } from '@/utils/world-clock';
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
 import { setRoomItemRotation } from "@/utils/room-rotation";
@@ -131,6 +132,8 @@ import { AppState, type AppStateStatus } from "react-native";
 const CARE_TICK_MS = 60_000;
 
 type GameContextValue = {
+  worldClock: WorldClock;
+  setWorldClock: (speed: number, minuteOfDay?: number) => void;
   answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string) => number;
   feedPet: () => boolean;
   isReady: boolean;
@@ -204,6 +207,7 @@ function normalizePetName(name: string): string {
 export function GameProvider({ children }: { children: ReactNode }) {
   const { isAuthReady, userId } = useAuth();
   const [save, setSaveState] = useState<GameSave>(createDefaultGameSave);
+  const [initialWorldClock] = useState(createWorldClock);
   const [isReady, setIsReady] = useState(false);
   const [cloudRestoreCandidates, setCloudRestoreCandidates] = useState<
     CloudSaveSummary[]
@@ -218,10 +222,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const setSave = useCallback((update: GameSave | ((current: GameSave) => GameSave)) => {
     const candidate = typeof update === "function" ? update(saveRef.current) : update;
     const pet = removeRoomNavigationDoors(candidate.pet);
-    const next = pet === candidate.pet ? candidate : { ...candidate, pet };
+    const next = { ...candidate, pet, worldClock: normalizeWorldClock(candidate.worldClock ?? initialWorldClock) };
     saveRef.current = next;
     setSaveState(next);
-  }, []);
+  }, [initialWorldClock]);
+  const setWorldClock = useCallback((speed: number, minuteOfDay?: number) => {
+    setSave(current => ({ ...current, worldClock: changeWorldClock(normalizeWorldClock(current.worldClock ?? initialWorldClock), speed, minuteOfDay) }));
+  }, [initialWorldClock, setSave]);
   const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string) => {
     const result = applyPuzzleAnswer(saveRef.current, puzzle, correct, attemptId);
     setSave(result.save);
@@ -1217,6 +1224,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<GameContextValue>(
     () => ({
+      worldClock: save.worldClock ?? initialWorldClock,
+      setWorldClock,
       answerPuzzle,
       feedPet,
       isReady,
@@ -1292,6 +1301,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       save.creditedPurchaseIds,
       save.progress,
       save.wallet,
+      save.worldClock,
+      initialWorldClock,
+      setWorldClock,
       adjustCoins,
       reloadProgressFromCloud,
       setPet,

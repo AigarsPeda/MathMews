@@ -1,4 +1,5 @@
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { createWorldClock, normalizeWorldClock } from '@/utils/world-clock';
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import { DEFAULT_HOME_ROOM_ID, isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { captureHomeRoom, removeRoomNavigationDoors, type HomeRoomState } from "@/utils/home-rooms";
@@ -52,6 +53,7 @@ function createStarterFoodBowl() {
 export function createDefaultGameSave(): GameSave {
   return {
     version: GAME_SAVE_VERSION,
+    worldClock: createWorldClock(),
     pet: { ...DEFAULT_PET, lastCareAt: Date.now(), lastInteractionAt: Date.now(), bedId: "brown", placedDecorations: [createStarterFoodBowl()], placedToys: [{ toyId: "orangeBall", instanceId: "starter-ball", offset: { x: 0.5, y: 0.4 } }] },
     wallet: DEFAULT_WALLET,
     progress: { ...DEFAULT_PROGRESS, bedsUnlocked: ["brown"], toysUnlocked: ["orangeBall"], toyQuantities: { orangeBall: 1 }, decorationsUnlocked: ["bowlBlue"], decorationQuantities: { bowlBlue: 1 }, completedPuzzleIds: [], processedAttemptIds: [] },
@@ -343,6 +345,7 @@ function parseGameSave(
     return {
       save: {
         ...(parsed as GameSave),
+        worldClock: normalizeWorldClock(parsed.worldClock),
         pet: removeRoomNavigationDoors(pet),
         wallet: { coins: Math.max(0, Math.floor(parsed.wallet.coins)) },
         coinTransactions: normalizeCoinTransactions(parsed.coinTransactions),

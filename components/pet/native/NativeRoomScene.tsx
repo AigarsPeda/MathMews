@@ -7,6 +7,11 @@ import { NativeFoodSpill } from "./NativeFoodSpill";
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
 import { isAirConditionerDecorationId, isLampDecorationId } from "@/constants/decoration-motion";
 import { NativeLampLight } from './NativeLampLight';
+import { NativeLampGlow } from './NativeLampGlow';
+import { NativeWorldLighting } from './NativeWorldLighting';
+import { NativeWindowPane } from './NativeWindowPane';
+import { isWindowLightSource } from '@/utils/native-window-light';
+import { worldClockHandAngles, type WorldClock } from '@/utils/world-clock';
 import { useStartupVisualReady } from "@/contexts/StartupVisualContext";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -25,6 +30,7 @@ import { SceneLoadGuard } from '@/components/recovery/SceneLoadGuard';
 import { enableSimpleGraphicsForSession } from '@/lib/graphics-mode';
 import type { PetPlaybackState } from '@/pet-display/types';
 type Props = {
+  worldClock?: WorldClock;
   world: NativeRoomWorld;
   catPresent?: boolean;
   roomId?: string;
@@ -66,7 +72,8 @@ function BoxCollider({ world, id, size, position }: {
   useRigidBody({ id, mass: 0, shape, origin: position, world, friction: .7 });
   return null;
 }
-function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, plantLeaf, pawPositions, playingId, playContact, catPresent, active, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady }: {
+function RoomObject({ object, world, worldClock, catPosition, rockingMotion, hangingBall, plantLeaf, pawPositions, playingId, playContact, catPresent, active, lightingActive, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady }: {
+  worldClock?: WorldClock;
   object: NativeRoomObject;
   onReady?: (key: string) => void;
   world: DiscreteDynamicWorld;
@@ -78,6 +85,7 @@ function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, pl
   playingId?: string;
   playContact?: boolean;
   active: boolean;
+  lightingActive?: boolean;
   reduceMotion: boolean;
   catPresent: boolean;
   airflow: AirflowSource[];
@@ -98,6 +106,13 @@ function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, pl
   }, [model.state, object.instanceId, object.modelId, onReady]);
   const entity = model.state === 'loaded' ? model.rootEntity : undefined;
   const asset = model.state === 'loaded' ? model.asset : undefined;
+  const clockHands = useMemo(() => {
+    if (!asset || object.modelId !== 'officeClockAni') return [];
+    return ['Hour hand', 'Minute hand'].flatMap(name => {
+      const entity = asset.getFirstEntityByName(name);
+      return entity ? [{ entity, name, transform: transformManager.getTransform(entity) }] : [];
+    });
+  }, [asset, object.modelId, transformManager]);
   const hanging = useMemo(() => {
     if (!asset) return undefined;
     const pivot = asset.getFirstEntityByName('Hanging toy pivot');
@@ -290,7 +305,15 @@ function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, pl
       transformManager.setTransform(hanging.entity, hanging.transform.translate(anchor.map(v => -v) as Vec3).rotate(angle, axis).translate(anchor));
       if (catPresent && playingId === object.instanceId) hangingBall.value = transformManager.getWorldTransform(hanging.ball).translation;
     }
-    if (animator && animator.getAnimationCount() > 0 && !object.bathroom && object.poweredOn !== false && lampAnimationOn && (!NATIVE_MODEL_CATALOG[object.modelId].wind || airflowStrength(center, airflow) > 0)) {
+    if (worldClock && clockHands.length) {
+      const angles = worldClockHandAngles(worldClock, Date.now());
+      for (const hand of clockHands) {
+        const z = hand.name === 'Hour hand' ? .08 : .085;
+        transformManager.setTransform(hand.entity, hand.transform.translate([0, -.6, -z])
+          .rotate(hand.name === 'Hour hand' ? angles.hour : angles.minute, [0, 0, 1]).translate([0, .6, z]));
+      }
+    }
+    if (animator && animator.getAnimationCount() > 0 && !(worldClock && clockHands.length) && !object.bathroom && object.poweredOn !== false && lampAnimationOn && (!NATIVE_MODEL_CATALOG[object.modelId].wind || airflowStrength(center, airflow) > 0)) {
       animator.applyAnimation(0, s.time);
       animator.updateBoneMatrices();
     }
@@ -346,9 +369,12 @@ function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, pl
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [active, reduceMotion, airflow, animator, lampAnimationOn, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [active, reduceMotion, airflow, animator, lampAnimationOn, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
-  return null;
+  if (asset && isLampDecorationId(object.modelId))
+    return <NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/>;
+  return asset && worldClock && isWindowLightSource(object.modelId)
+    ? <NativeWindowPane asset={asset} clock={worldClock} active={lightingActive ?? active}/> : null;
 }
 function Scene(props: Props) {
   'use no memo';
@@ -425,7 +451,7 @@ function Scene(props: Props) {
 
   }, [camera, catBody, catPosition, catPresent, catScale, drawing, reportPainted, rockingMotion, view, warmup, world]);
   return <FilamentView style={StyleSheet.flatten(StyleSheet.absoluteFill)} enableTransparentRendering renderCallback={render}>
-  <DefaultLight />
+  {props.worldClock ? <NativeWorldLighting clock={props.worldClock} objects={props.world.objects} active={visible}/> : <DefaultLight/>}
   {props.world.objects.filter(object => isLampDecorationId(object.modelId)).map(object =>
     <NativeLampLight key={`lamp:${object.instanceId}`} object={object} active={visible}/>)}
   <RoomModel id={props.roomId ?? 'room1'} onReady={handleRoomReady}/>
@@ -437,7 +463,7 @@ function Scene(props: Props) {
     <BoxCollider key={object.instanceId + ':part:' + index} id={object.instanceId + ':part:' + index} world={world}
       size={box.max.map((v, i) => Math.max(.01, (v - box.min[i]) / 2)) as Float3}
       position={box.max.map((v, i) => (v + box.min[i]) / 2) as Float3}/>))}
-  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} object={object} onReady={handleObjectReady} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
+  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} worldClock={props.worldClock} object={object} onReady={handleObjectReady} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} lightingActive={visible} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
   {props.world.objects.filter(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn).map(o => <NativeAirflow key={o.instanceId} object={o} active={visible && !reduceMotion}/>)}
   {eatingBowl && !reduceMotion && <NativeFoodSpill key={props.activityKey} object={eatingBowl} active={visible} animationTime={catAnimationTime}/>}
   {catPresent && <NativeCatActor key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}

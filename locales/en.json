@@ -131,6 +131,7 @@
       "toiletUse": "Use the toilet"
     },
     "decorateRoom": "Decorate",
+    "shopAndDecorate": "Shop and decorate",
     "finishDecorating": "Done",
     "dismissRoomItemMenu": "Dismiss item menu",
     "zoomCat": "Zoom in on cat",
@@ -978,5 +979,23 @@
     "share": "Share error report",
     "recovered": "Caught error",
     "fatal": "Fatal error"
+  },
+  "worldClock": {
+    "title": "World clock",
+    "open": "World clock, day {{day}}, {{time}}",
+    "dayNumber": "Day {{day}}",
+    "description": "Daylight changes with the clock. At night, your cat settles sooner when idle. Feeding and care keep their normal pace.",
+    "speed": "Clock speed",
+    "speed1": "Real time · 1×",
+    "duration1": "One world day takes 24 hours.",
+    "speed60": "Fast · 60×",
+    "duration60": "One world day takes 24 minutes.",
+    "speed300": "Very fast · 300×",
+    "duration300": "One world day takes 4 minutes 48 seconds.",
+    "setTime": "Set the time of day",
+    "morning": "Morning",
+    "day": "Daytime",
+    "evening": "Evening",
+    "night": "Night"
   }
 }

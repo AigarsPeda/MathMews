@@ -44,6 +44,7 @@ for (const [file, name] of [
   ['components/ui/AppIcon', 'AppIcon'], ['components/ui/IconText', 'IconText'],
   ['components/economy/GameHeaderStats', 'GameHeaderStats'], ['components/home/HeaderChip', 'HeaderChip'],
   ['components/pet/PetStage', 'PetStage'],
+  ['components/pet/WorldClockControl', 'WorldClockControl'],
 ]) mocks[`@/${file}`] = { [name]: name };
 
 function load(file) {
@@ -93,7 +94,7 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   assert.equal(tree.some(node => node.props.accessibilityLabel === 'home.a11yFeed'), false, 'The footer feed control is removed');
   return { menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onPlay }, commands, debits,
     stage: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props,
-    store: tree.find(node => node.type === 'HeaderChip' && node.props.accessibilityLabel === 'home.a11yStore').props.onPress,
+    store: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onOpenStore,
     feed: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onFeed };
 }
 
@@ -187,7 +188,8 @@ for (const destination of ['kitchen', 'bathroom', 'kitchen', 'livingRoom', 'bedr
   assert.equal(stages.length, 4, 'First visits reuse the four preloaded scene hosts');
 }
 assert.equal(house.filter(node => node.type === 'PetStage').length, 4, 'Returning to a room keeps the other visited scenes mounted');
-assert.equal(house.filter(node => node.type === 'HeaderChip').length, 2, 'Room browsing retains one set of header controls');
+assert.equal(house.filter(node => node.type === 'HeaderChip').length, 1, 'Room browsing retains the settings control without a separate shop button');
+assert.ok(!house.some(node => node.props.accessibilityLabel === 'home.a11yStore'), 'Shopping uses the combined room control');
 visibleStage(house).props.onSendCatToRoom('bedroom'); house = renderHome();
 assert.equal(visibleStage(house).props.homeRoomId, 'bedroom');
 assert.equal(getCatHomeRoomId(game.pet), 'bedroom');

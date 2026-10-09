@@ -23,6 +23,8 @@ import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
 import { isPoweredDecorationId } from "@/constants/decoration-motion";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { SimpleLampLight } from '@/components/pet/SimpleLampLight';
+import { WorldRoomTint } from '@/components/pet/WorldRoomTint';
+import type { WorldClock } from '@/utils/world-clock';
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
 import type { RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
@@ -104,6 +106,7 @@ function avatarDisplayWidth(
 }
 
 type PetStageProps = {
+  worldClock?: WorldClock;
   roomEditor?: RoomEditorControls;
   homeRoomId?: HomeRoomId;
   onVisitHomeRoom?: (roomId: HomeRoomId) => void;
@@ -170,6 +173,7 @@ type PetStageProps = {
 };
 
 export function PetStage({
+  worldClock,
   roomEditor,
   homeRoomId = DEFAULT_HOME_ROOM_ID,
   onVisitHomeRoom,
@@ -973,10 +977,11 @@ export function PetStage({
             <Animated.View style={[compact ? StyleSheet.absoluteFill : { width: "100%", minHeight: displayWidth, alignItems: "center" }, compact && usesNativeCat ? sceneZoomStyle : undefined]}>
             {usesNativeCat && compact && simpleGraphics ? <>
               <Image source={getCatRoomSource(roomId)} resizeMode="contain" style={{ position: 'absolute', width: viewport.width, height: viewport.width, top: (viewport.height - viewport.width) / 2 }}/>
+              {worldClock && <WorldRoomTint clock={worldClock} roomId={roomId} size={viewport.width} top={(viewport.height - viewport.width) / 2}/>}
               <SimpleLampLight world={nativeWorld}/>
               <Text pointerEvents="none" style={styles.graphicsHint}>{t('recovery.graphicsHint')}</Text>
             </> : null}
-            {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} editing={decorating}
+            {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene worldClock={worldClock} initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} editing={decorating}
               playback={activityPlayback ?? playback} travel={roomActivity?.plan.steps[roomActivity.stepIndex].native}
               activityKey={roomActivity ? roomActivityStepKey(roomActivity) : undefined}
               onRoomStepComplete={completeNativeStep}
@@ -1011,6 +1016,24 @@ export function PetStage({
             {hasRoomNavigation && !decorating && !sceneSlide?.outgoing && <RoomNavigation roomId={homeRoomId} disabled={!!sceneSlide || !!roomActivityBlocked || roomActivity?.plan.kind === "roomTravel"}
               onVisit={onVisitHomeRoom!} />}
             {compact && usesNativeCat && !sceneSlide?.outgoing ? (
+              onOpenStore && !decorating ? <RoomActionMenu style={styles.decorateMenu}
+                size={{ width: moderateScale(112), height: moderateScale(44) }}
+                label={t("home.shopAndDecorate")} blocked={!!sceneSlide}
+                actions={[
+                  { label: t("store.title"), icon: "store", onPress: onOpenStore },
+                  { label: t("home.decorateRoom"), icon: "sofa",
+                    disabled: waitingToDecorate || roomActivity?.plan.kind === "roomTravel",
+                    onPress: () => {
+                      setSelectedMoveItem(null); setShowEditor(false);
+                      if (roomActivity) { setWaitingToDecorate(true); stopActivity(); }
+                      else setDecorating(true);
+                    } },
+                ]}>
+                <View style={[styles.decorateButton, styles.decorateMenuLabel]}>
+                  <AppIcon name="store" size={moderateScale(22)} />
+                  <Text style={styles.decorateLabel}>{t("home.decorateRoom")}</Text>
+                </View>
+              </RoomActionMenu> :
               <Pressable style={[styles.decorateButton, decorating && styles.decorateButtonActive]}
                 disabled={!!sceneSlide || waitingToDecorate || roomActivity?.plan.kind === "roomTravel"}
                 onPress={() => {
@@ -1092,12 +1115,14 @@ const styles = StyleSheet.create({
   decorateButton: {
     position: "absolute", top: moderateScale(10), left: moderateScale(10),
     zIndex: ROOM_MENU_OPEN_Z_INDEX + 4,
-    flexDirection: "row", alignItems: "center", gap: moderateScale(6),
-    paddingHorizontal: moderateScale(12), paddingVertical: moderateScale(10),
+    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: moderateScale(6),
+    width: moderateScale(112), height: moderateScale(44), paddingHorizontal: moderateScale(12),
     borderRadius: moderateScale(20), backgroundColor: GameColors.card,
     borderWidth: 1, borderColor: GameColors.cardBorder,
   },
   decorateButtonActive: { backgroundColor: GameColors.cardBorder },
+  decorateMenu: { position: "absolute", top: moderateScale(10), left: moderateScale(10), zIndex: ROOM_MENU_OPEN_Z_INDEX + 4 },
+  decorateMenuLabel: { position: "relative", top: 0, left: 0 },
   decorateLabel: { fontSize: moderateScale(13), fontWeight: "700", color: GameColors.text },
   transientMouse: { position: "absolute", zIndex: ROOM_PET_LAYER_Z_INDEX - 1 },
   stage: {

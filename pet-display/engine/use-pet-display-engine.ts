@@ -1,4 +1,5 @@
 import { PET_CARE_COOLDOWN_MS } from "@/constants/game";
+import type { WorldClock } from '@/utils/world-clock';
 import { buildBoxPlaySequence } from "@/constants/cat-box-play";
 import { usePetBaseMood } from "@/pet-display/engine/derive-mood";
 import { createBoxPlayScenario } from "@/pet-display/registry/cat-model-registry";
@@ -18,10 +19,10 @@ type ActiveScenario = {
   thenMood: PetAnimationState | null;
 };
 
-export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
+export function usePetDisplayEngine(pet: PetProfile, clock?: WorldClock): PetDisplayEngine {
   const { t } = useTranslation();
   const registry = getPetMediaRegistry(pet.type);
-  const { mood: baseMood, onFallAsleepComplete, onLieDownComplete } = usePetBaseMood(pet);
+  const { mood: baseMood, onFallAsleepComplete, onLieDownComplete } = usePetBaseMood(pet, clock);
   const [actionMood, setActionMood] = useState<PetAnimationState | null>(null);
   const [boxPlayScenario, setBoxPlayScenario] =
     useState<PetMediaScenario | null>(null);
