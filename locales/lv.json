@@ -127,8 +127,9 @@
     "flipWall": "Pagriezt pret otru sienu",
     "flipBed": "Apgriezt gultu",
     "changeLook": "Mainīt izskatu",
-    "turnOnAirConditioner": "Ieslēgt",
-    "turnOffAirConditioner": "Izslēgt",
+    "lampSwitch": "{{name}} slēdzis",
+    "turnOnDecoration": "Ieslēgt",
+    "turnOffDecoration": "Izslēgt",
     "makeBigger": "Lielāks",
     "makeSmaller": "Mazāks",
     "catCommands": {

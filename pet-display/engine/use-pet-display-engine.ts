@@ -118,7 +118,7 @@ export function usePetDisplayEngine(pet: PetProfile): PetDisplayEngine {
       }
       setActionMood(mood);
     },
-    [pet.catSkinId, registry, baseMood],
+    [registry, baseMood],
   );
 
   const handleAnimationComplete = useCallback(

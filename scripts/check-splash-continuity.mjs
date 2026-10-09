@@ -87,7 +87,7 @@ if (process.argv[2]) {
   console.log('Verified packaged native launch configuration and all three PNG resources.');
 }
 
-let texture = null, playing = false, slots = [], cursor = 0, effects = [], readyPages;
+let texture = null, playing = false, slots = [], cursor = 0, effects = [];
 let nextId = 1, readyCalls = 0;
 const frames = new Map();
 const isMounted = { current: true };

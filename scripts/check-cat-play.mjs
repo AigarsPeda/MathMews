@@ -9,7 +9,6 @@ const root = process.cwd(), cache = new Map();
 let states = [], stateIndex = 0, game, display, clockOffset = 0, captureEffects = false, effects = [];
 const timers = new Map(); let timerId = 0;
 const routes = []; let focusCleanups = [];
-const focusCleanup = () => { for (const cleanup of focusCleanups) cleanup?.(); };
 class TestDate extends Date { static now() { return Date.now() + clockOffset; } }
 const react = {
   useState: initial => {

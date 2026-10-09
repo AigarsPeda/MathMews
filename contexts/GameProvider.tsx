@@ -4,7 +4,7 @@ import { switchRoomLayout } from "@/utils/room-layout";
 import { setRoomItemRotation } from "@/utils/room-rotation";
 import { applyPuzzleAnswer, applyFeed } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
-import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
+import { isPoweredDecorationId } from "@/constants/decoration-motion";
 import { LIFE_BUY_COST } from "@/constants/game";
 import {
   DEFAULT_BED_SCALE,
@@ -78,7 +78,7 @@ import {
   removeOnePlacedToy,
   removePlacedDecorationByInstance,
   removePlacedToyByInstance,
-  togglePlacedAirConditionerByInstance,
+  togglePlacedDecorationPowerByInstance,
   updatePlacedDecorationRotationByInstance,
   updatePlacedDecorationScaleByInstance,
   updatePlacedToyScaleByInstance,
@@ -171,7 +171,7 @@ type GameContextValue = {
   ) => boolean;
   rotatePlacedDecoration: (instanceId: string) => boolean;
   flipPlacedDecorationWall: (instanceId: string) => boolean;
-  togglePlacedAirConditioner: (instanceId: string) => boolean;
+  togglePlacedDecorationPower: (instanceId: string) => boolean;
   scalePlacedDecoration: (
     instanceId: string,
     direction: "up" | "down",
@@ -921,16 +921,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const togglePlacedAirConditioner = useCallback((instanceId: string) => {
+  const togglePlacedDecorationPower = useCallback((instanceId: string) => {
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
-    if (!placed || !isAirConditionerDecorationId(placed.decorationId)) return false;
+    if (!placed || !isPoweredDecorationId(placed.decorationId)) return false;
 
     setSave({
       ...current,
       pet: {
         ...current.pet,
-        placedDecorations: togglePlacedAirConditionerByInstance(current.pet.placedDecorations, instanceId),
+        placedDecorations: togglePlacedDecorationPowerByInstance(current.pet.placedDecorations, instanceId),
       },
     });
     return true;
@@ -1254,7 +1254,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeDecorationFromRoom,
       rotatePlacedDecoration,
       flipPlacedDecorationWall,
-      togglePlacedAirConditioner,
+      togglePlacedDecorationPower,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,
@@ -1320,7 +1320,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeDecorationFromRoom,
       rotatePlacedDecoration,
       flipPlacedDecorationWall,
-      togglePlacedAirConditioner,
+      togglePlacedDecorationPower,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,

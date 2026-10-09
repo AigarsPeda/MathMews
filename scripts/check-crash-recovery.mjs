@@ -220,12 +220,12 @@ for (const staleBeforeLoad of [false,true]) {
   let valid=true,loaded=0,released=0,initializer;
   const buffer={get isValid(){return valid;},release(){assert.equal(valid,true);valid=false;released++;}};
   const asset={release(){},getBoundingBox:()=>({}),getRoot:()=>({})};
-  const {useModel}=execute('node_modules/react-native-filament/src/hooks/useModel.ts',{
+  const {useModel:renderModel}=execute('node_modules/react-native-filament/src/hooks/useModel.ts',{
     react:{useMemo:fn=>fn()},'./useBuffer':{useBuffer:()=>buffer},
     './useFilamentContext':{useFilamentContext:()=>({engine:{loadAsset(value){assert.equal(value.isValid,true);loaded++;return asset;}},scene:{},workletContext:{runAsync:async fn=>{if(staleBeforeLoad)valid=false;return fn();}}})},
     './useDisposableResource':{useDisposableResource:fn=>{initializer=fn;}},'./usePrevious':()=>false,'./useWorkletEffect':{useWorkletEffect(){}},
   });
-  useModel(1);await initializer();
+  renderModel(1);await initializer();
   assert.equal(loaded,staleBeforeLoad?0:1);assert.equal(released,staleBeforeLoad?0:1);
   const retry=initializer();assert.equal(retry,undefined,'A consumed buffer waits for a fresh allocation after Fast Refresh');
 }

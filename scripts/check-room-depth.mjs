@@ -24,7 +24,7 @@ mocks['@/utils/room-depth']=depth;
 mocks['@/utils/room-layer-order']={ROOM_MENU_OPEN_Z_INDEX:600100};
 const {DraggableRoomPet}=load('components/pet/DraggableRoomPet.tsx');
 const style=value=>Object.assign({},...[value].flat(Infinity).filter(Boolean).map(part=>part.read?part.read():part));
-const y=shared(-30),x=shared(0),scale=shared(1),facing=shared(1);
+const y=shared(-30),x=shared(0);
 const toy=DraggableRoomPet({petSize:48,depthAnchor:.3,layerZIndex:5,animatedPosition:{x,y}});
 const plant=depth.getRoomDepthZIndex(120*.38,1);
 assert.ok(style(toy.props.style).zIndex<plant,'A toy behind the plant must be obscured by its pot and leaves');

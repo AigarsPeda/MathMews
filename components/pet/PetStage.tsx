@@ -6,7 +6,9 @@ import { CAT_PLAY_ACTIVITIES, type CatPlayActivity } from "@/constants/cat-play"
 import { GestureDetector } from "react-native-gesture-handler";
 import { useRoomCamera } from "@/hooks/use-room-camera";
 import { NativeRoomScene } from "@/components/pet/native/NativeRoomScene";
-import { buildNativeRoomWorld, nativeObjectPlacementOffset, nativeRoomEdge, type Vec3 } from "@/utils/native-room-world";
+import { buildNativeRoomWorld, nativeObjectPlacementOffset, nativeRoomEdge, projectWorld, type Vec3 } from "@/utils/native-room-world";
+import { lampSwitchPosition } from '@/utils/native-lamp-light';
+import { RoomActionMenu } from '@/components/pet/RoomActionMenu';
 import type { RoomSceneSlide } from "@/hooks/use-room-transition";
 import { DEFAULT_HOME_ROOM_ID, HOME_ROOM_IDS, HOME_ROOM_ICONS, isRoomDoor, type HomeRoomId, type RoomEntry } from "@/constants/home-rooms";
 import { RoomEditorSheet, type RoomEditorControls } from "@/components/pet/RoomEditorSheet";
@@ -18,8 +20,9 @@ import { roomActivityStepKey, roomOffsetToPoint, type RoomActivityKind } from "@
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-model-registry";
 import { useRoomActivity } from "@/hooks/use-room-activity";
 import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
-import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
+import { isPoweredDecorationId } from "@/constants/decoration-motion";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
+import { SimpleLampLight } from '@/components/pet/SimpleLampLight';
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
 import type { RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
@@ -150,7 +153,7 @@ type PetStageProps = {
   onRotatePlacedToy?: (instanceId: string) => void;
   onSetRoomItemRotation?: (item: RoomLayerItem, degrees: number) => void;
   onFlipPlacedDecorationWall?: (instanceId: string) => void;
-  onTogglePlacedAirConditioner?: (instanceId: string) => void;
+  onTogglePlacedDecorationPower?: (instanceId: string) => void;
   onScalePlacedDecoration?: (
     instanceId: string,
     direction: "up" | "down",
@@ -213,7 +216,7 @@ export function PetStage({
   onRotatePlacedToy,
   onSetRoomItemRotation,
   onFlipPlacedDecorationWall,
-  onTogglePlacedAirConditioner,
+  onTogglePlacedDecorationPower,
   onScalePlacedDecoration,
   onMoveRoomLayerItem,
   onBedRemove,
@@ -436,7 +439,7 @@ export function PetStage({
       if (!decorating) {
         if (roomActivityBlocked) return false;
         if (item.kind === "decoration" && isRoomDoor(item.decorationId)) return false;
-        if (item.kind === "decoration" && isAirConditionerDecorationId(item.decorationId)) return Boolean(onTogglePlacedAirConditioner);
+        if (item.kind === "decoration" && isPoweredDecorationId(item.decorationId)) return Boolean(onTogglePlacedDecorationPower);
         if (!catPresent || viewport.width <= displayWidth || viewport.height <= displayWidth) return false;
         return getRoomCommands(item).length > 0;
       }
@@ -453,7 +456,7 @@ export function PetStage({
           onSetRoomItemRotation ||
           onFlipPlacedDecorationWall ||
           onScalePlacedDecoration ||
-          (onTogglePlacedAirConditioner && isAirConditionerDecorationId(item.decorationId)),
+          (onTogglePlacedDecorationPower && isPoweredDecorationId(item.decorationId)),
         );
       }
       return Boolean(onSetRoomItemRotation || onPlacedToyRemove || onMoveRoomLayerItem || onScalePlacedToy || onRotatePlacedToy);
@@ -475,7 +478,7 @@ export function PetStage({
       onSetRoomItemRotation,
       onFlipPlacedDecorationWall,
       onScalePlacedDecoration,
-      onTogglePlacedAirConditioner,
+      onTogglePlacedDecorationPower,
     ],
   );
 
@@ -493,12 +496,12 @@ export function PetStage({
         }
       }
       if (!decorating) {
-        if (item.kind !== "decoration" || !isAirConditionerDecorationId(item.decorationId) || !onTogglePlacedAirConditioner) return actions;
+        if (item.kind !== "decoration" || !isPoweredDecorationId(item.decorationId) || !onTogglePlacedDecorationPower) return actions;
         const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
         if (placed) actions.push({
-          label: t(placed.poweredOn ? "home.turnOffAirConditioner" : "home.turnOnAirConditioner"),
+          label: t(placed.poweredOn ? "home.turnOffDecoration" : "home.turnOnDecoration"),
           icon: "power",
-          onPress: () => onTogglePlacedAirConditioner(item.instanceId),
+          onPress: () => onTogglePlacedDecorationPower(item.instanceId),
         });
         return actions;
       }
@@ -531,11 +534,11 @@ export function PetStage({
         );
         if (!placed) return actions;
 
-        if (onTogglePlacedAirConditioner && isAirConditionerDecorationId(decorationId)) {
+        if (onTogglePlacedDecorationPower && isPoweredDecorationId(decorationId)) {
           actions.unshift({
-            label: t(placed.poweredOn ? "home.turnOffAirConditioner" : "home.turnOnAirConditioner"),
+            label: t(placed.poweredOn ? "home.turnOffDecoration" : "home.turnOnDecoration"),
             icon: "power",
-            onPress: () => onTogglePlacedAirConditioner(item.instanceId),
+            onPress: () => onTogglePlacedDecorationPower(item.instanceId),
           });
         }
 
@@ -707,7 +710,7 @@ export function PetStage({
       onSetRoomItemRotation,
       openRotation,
       onScalePlacedDecoration,
-      onTogglePlacedAirConditioner,
+      onTogglePlacedDecorationPower,
       removeMenuLabel,
       roomPlacedDecorations,
       roomPlacedToys,
@@ -970,6 +973,7 @@ export function PetStage({
             <Animated.View style={[compact ? StyleSheet.absoluteFill : { width: "100%", minHeight: displayWidth, alignItems: "center" }, compact && usesNativeCat ? sceneZoomStyle : undefined]}>
             {usesNativeCat && compact && simpleGraphics ? <>
               <Image source={getCatRoomSource(roomId)} resizeMode="contain" style={{ position: 'absolute', width: viewport.width, height: viewport.width, top: (viewport.height - viewport.width) / 2 }}/>
+              <SimpleLampLight world={nativeWorld}/>
               <Text pointerEvents="none" style={styles.graphicsHint}>{t('recovery.graphicsHint')}</Text>
             </> : null}
             {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} editing={decorating}
@@ -983,6 +987,20 @@ export function PetStage({
               onAnimationComplete={roomActivity ? undefined : onAnimationComplete} onStepComplete={roomActivity ? undefined : onStepComplete} /></Pressable> : null}
             {roomItemLayers}
             {compact ? roomPetLayer : petCluster}
+            {compact && nativeRendering && !decorating && onTogglePlacedDecorationPower && <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: ROOM_MENU_OPEN_Z_INDEX }]}>
+              {nativeWorld.objects.map(object => {
+                const position = lampSwitchPosition(object);
+                const item = layerOrder.find(entry => entry.kind === "decoration" && entry.instanceId === object.instanceId);
+                if (!position || !item || !canManageRoomItem(item)) return null;
+                const point = projectWorld(position, viewport.width);
+                const size = Math.max(32, Math.min(56, viewport.width * .07 * object.scale));
+                return <RoomActionMenu key={`lamp-switch:${object.instanceId}`} label={t('home.lampSwitch', { name: itemLabel(item) })}
+                  actions={buildRoomItemMenuActions(item)} size={{ width: size, height: size }}
+                  style={{ position: 'absolute', left: viewport.width / 2 + point.x - size / 2, top: viewport.height / 2 + point.y - size / 2 }}>
+                  <View pointerEvents="none" style={{ width: size, height: size }}/>
+                </RoomActionMenu>;
+              })}
+            </View>}
             </Animated.View>
             {compact && usesNativeCat && visibleSpeech ? (
               <Animated.View collapsable={false} pointerEvents="none" onLayout={handleSpeechLayout} style={[styles.speechOverlay, speechPositionStyle]}>

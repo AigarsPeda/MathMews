@@ -23,8 +23,8 @@ function load(id) {
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText,
     { module, exports: module.exports, require: load, Math }); return module.exports;
 }
-const { useRoomCamera } = load('@/hooks/use-room-camera');
-function render(panEnabled = true) { index = 0; return useRoomCamera(320,400,true,false,panEnabled); }
+const { useRoomCamera: renderRoomCamera } = load('@/hooks/use-room-camera');
+function render(panEnabled = true) { index = 0; return renderRoomCamera(320,400,true,false,panEnabled); }
 let camera = render();
 const [pinch, pan] = camera.gesture;
 const manager = { activate() { this.active = true; }, fail() { this.failed = true; } };

@@ -5,7 +5,8 @@ import { advanceBathroomMotion, STILL_BATHROOM_MOTION } from '@/utils/native-bat
 import { NativeAirflow } from "./NativeAirflow";
 import { NativeFoodSpill } from "./NativeFoodSpill";
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
-import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
+import { isAirConditionerDecorationId, isLampDecorationId } from "@/constants/decoration-motion";
+import { NativeLampLight } from './NativeLampLight';
 import { useStartupVisualReady } from "@/contexts/StartupVisualContext";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -164,6 +165,7 @@ function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, pl
   useEffect(() => { chaseTime.value = 0; body?.setKinematic(!!chase); }, [activityKey, body, chase, chaseTime]);
   useEffect(() => { clock.value = { time: 0, contact: false, nextTap: .65, reset: true, report: 0, screenX: Infinity, screenY: Infinity,
     lastPosition: [centerX, centerY, centerZ], still: 0, settled: false }; }, [body, clock, centerX, centerY, centerZ, object.heading, object.scale]);
+  const lampAnimationOn = !isLampDecorationId(object.modelId) || object.poweredOn === true;
   const render = useCallback(({ timeSinceLastFrame }: {
     timeSinceLastFrame: number;
   }) => {
@@ -288,7 +290,7 @@ function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, pl
       transformManager.setTransform(hanging.entity, hanging.transform.translate(anchor.map(v => -v) as Vec3).rotate(angle, axis).translate(anchor));
       if (catPresent && playingId === object.instanceId) hangingBall.value = transformManager.getWorldTransform(hanging.ball).translation;
     }
-    if (animator && animator.getAnimationCount() > 0 && !object.bathroom && object.poweredOn !== false && (!NATIVE_MODEL_CATALOG[object.modelId].wind || airflowStrength(center, airflow) > 0)) {
+    if (animator && animator.getAnimationCount() > 0 && !object.bathroom && object.poweredOn !== false && lampAnimationOn && (!NATIVE_MODEL_CATALOG[object.modelId].wind || airflowStrength(center, airflow) > 0)) {
       animator.applyAnimation(0, s.time);
       animator.updateBoneMatrices();
     }
@@ -344,7 +346,7 @@ function RoomObject({ object, world, catPosition, rockingMotion, hangingBall, pl
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [active, reduceMotion, airflow, animator, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [active, reduceMotion, airflow, animator, lampAnimationOn, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   return null;
 }
@@ -424,6 +426,8 @@ function Scene(props: Props) {
   }, [camera, catBody, catPosition, catPresent, catScale, drawing, reportPainted, rockingMotion, view, warmup, world]);
   return <FilamentView style={StyleSheet.flatten(StyleSheet.absoluteFill)} enableTransparentRendering renderCallback={render}>
   <DefaultLight />
+  {props.world.objects.filter(object => isLampDecorationId(object.modelId)).map(object =>
+    <NativeLampLight key={`lamp:${object.instanceId}`} object={object} active={visible}/>)}
   <RoomModel id={props.roomId ?? 'room1'} onReady={handleRoomReady}/>
   {([-1, 1] as const).flatMap(side => [
       <BoxCollider key={'x' + side} id={'wall-x' + side} world={world} size={[.05, 1.5, 2.5]} position={[side * 2.45, 1.5, 0]}/>,

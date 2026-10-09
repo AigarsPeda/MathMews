@@ -1,6 +1,6 @@
 import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
-import { isAirConditionerDecorationId } from "@/constants/decoration-motion";
+import { isPoweredDecorationId } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
@@ -126,7 +126,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
           placement.rotationIndex > 0 ? placement.rotationIndex : undefined,
         wallFlipped: isRoomDoor(placement.decorationId) && typeof record.wallFlipped === "boolean"
           ? record.wallFlipped : record.wallFlipped === true ? true : undefined,
-        poweredOn: isAirConditionerDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
+        poweredOn: isPoweredDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
         rotationDegrees: normalizeRotationDegrees(record.rotationDegrees),
         scale: scale !== undefined && scale !== getDecorationDefaultScale(placement.decorationId) ? scale : undefined,
       });
@@ -308,12 +308,12 @@ export function updatePlacedToyRotationByInstance(
     ? { ...item, rotationIndex: nextIndex > 0 ? nextIndex : undefined } : item);
 }
 
-export function togglePlacedAirConditionerByInstance(
+export function togglePlacedDecorationPowerByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
   instanceId: string,
 ): PlacedDecoration[] {
   return (placedDecorations ?? []).map((item) =>
-    item.instanceId === instanceId && isAirConditionerDecorationId(item.decorationId)
+    item.instanceId === instanceId && isPoweredDecorationId(item.decorationId)
       ? { ...item, poweredOn: !item.poweredOn }
       : item,
   );

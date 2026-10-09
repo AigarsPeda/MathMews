@@ -909,6 +909,7 @@ mocks['react/jsx-runtime'] = { jsx: (type, props, key) => ({ type, props, key })
 mocks['react-native'] = { View: 'View', ActivityIndicator: 'ActivityIndicator', StyleSheet: { absoluteFill: {}, flatten: v => v, create: v => v } };
 mocks['./NativeFoodSpill'] = { NativeFoodSpill: 'FoodSpill' };
 mocks['./NativeAirflow'] = { NativeAirflow: 'Airflow' };
+mocks['./NativeLampLight'] = { NativeLampLight: 'LampLight' };
 mocks['./NativeCatActor'] = { NativeCatActor: 'Cat' };
 const startupVisualReadiness = [];
 mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { startupVisualReadiness.push(ready); } };
@@ -1564,3 +1565,18 @@ for(const [width,height] of [[320,320],[390,420],[351,456]]) {
   }
 }
 console.log('Verified bath, shower and toilet journeys in the reported bathroom layout at three viewport sizes.');
+
+mocks['react-native-filament'].Light = 'LampLightEntity';
+const { NativeLampLight } = load('@/components/pet/native/NativeLampLight');
+const lampRoom = w.buildNativeRoomWorld({ ...base, decorations: [
+  { decorationId: 'lampFloorArc', instanceId: 'lamp-lit', offset: { x: -.4, y: .1 }, poweredOn: true, rotationDegrees: 53 },
+  { decorationId: 'lampTableCeramic', instanceId: 'lamp-off', offset: { x: .4, y: .1 } },
+] });
+const lampsInScene = sceneChildren({ ...sceneMeal, world: lampRoom }).filter(child => child.type === 'LampLight');
+assert.equal(lampsInScene.length, 2);
+assert.equal(NativeLampLight(lampsInScene[0].props).type, 'LampLightEntity');
+assert.equal(typeof NativeLampLight(lampsInScene[0].props).props.intensity, 'number', 'Light updates avoid native handle listeners');
+assert.equal(NativeLampLight(lampsInScene[1].props), null, 'An off lamp emits no light');
+assert.equal(NativeLampLight({ ...lampsInScene[0].props, active: false }), null, 'Hidden rooms emit no lamp light');
+assert.equal(NativeLampLight({ ...lampsInScene[0].props, object: { ...lampRoom.objects[0], poweredOn: false } }), null);
+console.log('Verified native lamp mounting, independent power, numeric light properties and hidden-room cleanup.');

@@ -21,7 +21,7 @@ const React = {
 };
 const shared = (initial = 0) => { let value = initial; return { get: () => value, set: next => { value = next; } }; };
 let editingReady, stoppedForEditing = 0;
-let roomActivityForTest = null, requestedActivity, requestedInstanceId, doorArrival, returnedHome = 0, roomActivityEnabled;
+let roomActivityForTest = null, requestedActivity, requestedInstanceId, returnedHome = 0, roomActivityEnabled;
 const objectX = shared(), objectY = shared(), objectRotation = shared();
 const mocks = {
   "@/lib/graphics-mode": { useGraphicsMode: () => "3d" },
@@ -29,9 +29,8 @@ const mocks = {
   '@/hooks/use-room-camera': { useRoomCamera: () => ({ x: shared(), y: shared(), scale: shared(cameraZoom), zoom: cameraZoom, gesture: 'room-gesture', reset: () => { cameraZoom = 1; } }) },
   'react-native-gesture-handler': { GestureDetector: 'GestureDetector' },
   '@/pet-display/registry/media-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
-  '@/hooks/use-room-activity': { useRoomActivity: (_, enabled, _interaction, _x, _y, onArrival, _feed, _roomArrival, _visible, _preserve, onStopped) => {
+  '@/hooks/use-room-activity': { useRoomActivity: (_, enabled, _interaction, _x, _y, _onArrival, _feed, _roomArrival, _visible, _preserve, onStopped) => {
     editingReady = onStopped;
-    doorArrival = onArrival;
     roomActivityEnabled = enabled;
     return { activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, stopActivity() { stoppedForEditing++; }, startActivity(kind, instanceId) { requestedActivity = kind; requestedInstanceId = instanceId; } };
   } },
@@ -79,7 +78,7 @@ const items = [
   { decorationId: 'livingAirCon', instanceId: 'ac-three', offset: { x: 0, y: -.5 } },
   { decorationId: 'plantPotted', instanceId: 'plant', offset: { x: -.5, y: .4 } },
 ];
-const powered = placement.togglePlacedAirConditionerByInstance(items, 'ac-one');
+const powered = placement.togglePlacedDecorationPowerByInstance(items, 'ac-one');
 assert.equal(items[0].poweredOn, undefined, 'Toggle must not mutate the previous save');
 assert.equal(powered[0].poweredOn, true);
 assert.equal(powered[1], items[1], 'A second copy must retain its own power state');
@@ -89,9 +88,36 @@ assert.equal(powered[0].offset, items[0].offset);
 const restored = placement.normalizePlacedDecorations(JSON.parse(JSON.stringify(powered)));
 assert.equal(restored[0].poweredOn, true, 'On state must survive save normalization');
 assert.equal(restored[1].poweredOn, undefined, 'Existing saves start with the AC off');
-assert.equal(placement.togglePlacedAirConditionerByInstance(restored, 'ac-one')[0].poweredOn, false);
-assert.equal(placement.togglePlacedAirConditionerByInstance(items, 'ac-three')[2].poweredOn, true);
-assert.equal(placement.togglePlacedAirConditionerByInstance(items, 'plant')[3], items[3], 'Only ACs support power');
+assert.equal(placement.togglePlacedDecorationPowerByInstance(restored, 'ac-one')[0].poweredOn, false);
+assert.equal(placement.togglePlacedDecorationPowerByInstance(items, 'ac-three')[2].poweredOn, true);
+assert.equal(placement.togglePlacedDecorationPowerByInstance(items, 'plant')[3], items[3], 'Non-powered furniture must remain unchanged');
+
+const lamps = [
+  { decorationId: 'lampFloorArc', instanceId: 'lamp-one', offset: { x: -.3, y: .1 }, rotationDegrees: 53, scale: 1.4 },
+  { decorationId: 'lampFloorArc', instanceId: 'lamp-two', offset: { x: .4, y: .2 } },
+];
+const litLamps = placement.togglePlacedDecorationPowerByInstance(lamps, 'lamp-one');
+assert.equal(lamps[0].poweredOn, undefined);
+assert.equal(litLamps[0].poweredOn, true);
+assert.equal(litLamps[1], lamps[1], 'Each lamp has an independent switch');
+const savedLamps = placement.normalizePlacedDecorations(JSON.parse(JSON.stringify(litLamps)));
+assert.equal(savedLamps[0].poweredOn, true, 'Lamp power survives save reload');
+assert.equal(savedLamps[0].rotationDegrees, 53);
+assert.equal(savedLamps[0].scale, 1.4);
+const { lampLightConfig } = load('@/utils/native-lamp-light');
+const { LAMP_LIGHT_ORIGINS } = load('@/constants/decoration-motion');
+for (const modelId of Object.keys(LAMP_LIGHT_ORIGINS)) {
+  const object = { modelId, poweredOn: true, position: [2, .1, 3], heading: Math.PI / 2, scale: 2 };
+  const light = lampLightConfig(object), origin = LAMP_LIGHT_ORIGINS[modelId];
+  assert.ok(light, `${modelId} supports light`);
+  assert.ok(Math.abs(light.position[0] - (2 + origin[2] * 2)) < 1e-8);
+  assert.ok(Math.abs(light.position[1] - (.1 + origin[1] * 2)) < 1e-8);
+  assert.ok(Math.abs(light.position[2] - (3 - origin[0] * 2)) < 1e-8);
+  assert.deepEqual(Array.from(light.direction), [0, -1, 0]);
+  assert.equal(lampLightConfig({ ...object, poweredOn: false }), undefined);
+  assert.equal(lampLightConfig({ ...object, poweredOn: undefined }), undefined);
+}
+assert.equal(lampLightConfig({ modelId: 'plantPotted', poweredOn: true }), undefined);
 
 const flatten = (node, ancestors = []) => !node?.props ? [] : [
   { node, ancestors },
@@ -105,7 +131,7 @@ function render(placedDecorations = powered, extra = {}) {
   const nodes = flatten(stage({
     name: 'Cat', petType: 'cat', compact: true, stats: { level: 1, hunger: 90, happiness: 90, cleanliness: 90 },
     wisdom: 90, playback: {}, speechMessage: 'Hello!', placedDecorations,
-    onTogglePlacedAirConditioner: id => { toggled = id; },
+    onTogglePlacedDecorationPower: id => { toggled = id; },
     onMoveRoomLayerItem() {},
     ...extra,
   }));
@@ -130,10 +156,20 @@ const decorationNode = (nodes, id) => nodes.find(({ node }) => node.type === 'Dr
 const ac = decorationNode(first, 'officeAc');
 assert.ok(ac);
 const menu = ac.node.props.menuActions;
-assert.equal(menu[0].label, 'home.turnOffAirConditioner');
+assert.equal(menu[0].label, 'home.turnOffDecoration');
 menu[0].onPress();
 assert.equal(toggled, 'ac-one');
-assert.equal(decorationNode(render(items), 'officeAc').node.props.menuActions[0].label, 'home.turnOnAirConditioner');
+assert.equal(decorationNode(render(items), 'officeAc').node.props.menuActions[0].label, 'home.turnOnDecoration');
+const lampMenu = decorationNode(render(litLamps), 'lamp-one').node.props.menuActions;
+assert.equal(lampMenu[0].label, 'home.turnOffDecoration');
+lampMenu[0].onPress();
+assert.equal(toggled, 'lamp-one');
+assert.equal(decorationNode(render(lamps), 'lamp-two').node.props.menuActions[0].label, 'home.turnOnDecoration');
+const shadeSwitches = render(litLamps).filter(({ node }) => node.type === 'RoomActionMenu' && node.props.label === 'home.lampSwitch');
+assert.equal(shadeSwitches.length, 2, 'Overlapping lamps have focused shade targets');
+assert.ok(shadeSwitches.every(({ node }) => node.props.size.width >= 32));
+shadeSwitches[1].node.props.actions[0].onPress();
+assert.equal(toggled, 'lamp-two');
 
 const sofa = { decorationId: 'sofaA', instanceId: 'sofa', offset: { x: .3, y: .1 } };
 const normalRoom = render([sofa]);
@@ -341,7 +377,7 @@ for (const [scale, disabledIndex] of [[2.2, 0], [.7, 1]]) {
 }
 console.log('Verified decorating waits for the cat, and scratching posts expose bounded resize controls.');
 
-console.log('Verified independent AC power, save reload, toggled native menu labels and bounded room-item actions.');
+console.log('Verified independent AC/lamp power, reload persistence, transformed light origins and native switch menus.');
 
 // Navigation sits inside the scene, while doors remain optional decor.
 roomActivityForTest = null;

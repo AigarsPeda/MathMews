@@ -91,7 +91,7 @@ export default function HomeScreen() {
     moveRoomLayerItem,
     rotatePlacedDecoration,
     flipPlacedDecorationWall,
-    togglePlacedAirConditioner,
+    togglePlacedDecorationPower,
     scalePlacedDecoration,
     visitHomeRoom,
     sendCatToRoom,
@@ -297,13 +297,13 @@ export default function HomeScreen() {
     [flipPlacedDecorationWall, recordInteraction],
   );
 
-  const handleTogglePlacedAirConditioner = useCallback(
+  const handleTogglePlacedDecorationPower = useCallback(
     (instanceId: string) => {
-      if (!togglePlacedAirConditioner(instanceId)) return;
+      if (!togglePlacedDecorationPower(instanceId)) return;
       recordInteraction();
       triggerHaptic();
     },
-    [recordInteraction, togglePlacedAirConditioner],
+    [recordInteraction, togglePlacedDecorationPower],
   );
 
   const handleRotatePlacedToy = useCallback(
@@ -526,7 +526,7 @@ export default function HomeScreen() {
       onPlacedDecorationRemove={handleRemoveDecoration}
       onRotatePlacedDecoration={handleRotatePlacedDecoration}
       onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
-      onTogglePlacedAirConditioner={handleTogglePlacedAirConditioner}
+      onTogglePlacedDecorationPower={handleTogglePlacedDecorationPower}
       onScalePlacedDecoration={handleScalePlacedDecoration}
       onMoveRoomLayerItem={handleMoveRoomLayerItem}
       onBedRemove={handleRemoveBed}

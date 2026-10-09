@@ -111,8 +111,9 @@
     "flipWall": "Face other wall",
     "flipBed": "Flip bed",
     "changeLook": "Change look",
-    "turnOnAirConditioner": "Turn on",
-    "turnOffAirConditioner": "Turn off",
+    "lampSwitch": "{{name}} switch",
+    "turnOnDecoration": "Turn on",
+    "turnOffDecoration": "Turn off",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
     "catCommands": {

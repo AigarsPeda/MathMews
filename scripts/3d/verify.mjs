@@ -1,6 +1,5 @@
 /** Check complete catalog coverage, valid atlas bounds, and pet-state transitions. */
 import fs from 'node:fs';
-import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';

@@ -1,5 +1,6 @@
 /** Pack the eight-frame furniture/toy thumbnails and discard intermediate PNGs. */
 import fs from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import sharp from 'sharp';
 
