@@ -70,6 +70,12 @@ export const APP_ICON_SOURCES = {
   "undo": require("@/assets/icons/undo.png"),
   "video-play": require("@/assets/icons/video-play.png"),
   "warning": require("@/assets/icons/warning.png"),
+  "weather-auto": require("@/assets/icons/weather-auto.png"),
+  "weather-leaves": require("@/assets/icons/weather-leaves.png"),
+  "weather-moon": require("@/assets/icons/weather-moon.png"),
+  "weather-rain": require("@/assets/icons/weather-rain.png"),
+  "weather-snow": require("@/assets/icons/weather-snow.png"),
+  "weather-sun": require("@/assets/icons/weather-sun.png"),
   "zoom-in": require("@/assets/icons/zoom-in.png"),
   "zoom-out": require("@/assets/icons/zoom-out.png"),
 } as const satisfies Record<string, number>;

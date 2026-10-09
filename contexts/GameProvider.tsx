@@ -1,11 +1,11 @@
 import type { HomeRoomId } from "@/constants/home-rooms";
-import { changeWorldClock, createWorldClock, normalizeWorldClock, type WorldClock } from '@/utils/world-clock';
+import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeather, type WorldClock, type WeatherMode } from '@/utils/world-clock';
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
 import { setRoomItemRotation } from "@/utils/room-rotation";
 import { applyPuzzleAnswer, applyFeed } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
-import { isPoweredDecorationId } from "@/constants/decoration-motion";
+import { isCurtainDecorationId, isPoweredDecorationId } from "@/constants/decoration-motion";
 import { LIFE_BUY_COST } from "@/constants/game";
 import {
   DEFAULT_BED_SCALE,
@@ -80,6 +80,7 @@ import {
   removePlacedDecorationByInstance,
   removePlacedToyByInstance,
   togglePlacedDecorationPowerByInstance,
+  togglePlacedCurtainByInstance,
   updatePlacedDecorationRotationByInstance,
   updatePlacedDecorationScaleByInstance,
   updatePlacedToyScaleByInstance,
@@ -134,6 +135,7 @@ const CARE_TICK_MS = 60_000;
 type GameContextValue = {
   worldClock: WorldClock;
   setWorldClock: (speed: number, minuteOfDay?: number) => void;
+  setWorldWeather: (weather: WeatherMode) => void;
   answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string) => number;
   feedPet: () => boolean;
   isReady: boolean;
@@ -175,6 +177,7 @@ type GameContextValue = {
   rotatePlacedDecoration: (instanceId: string) => boolean;
   flipPlacedDecorationWall: (instanceId: string) => boolean;
   togglePlacedDecorationPower: (instanceId: string) => boolean;
+  togglePlacedCurtain: (instanceId: string) => boolean;
   scalePlacedDecoration: (
     instanceId: string,
     direction: "up" | "down",
@@ -228,6 +231,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [initialWorldClock]);
   const setWorldClock = useCallback((speed: number, minuteOfDay?: number) => {
     setSave(current => ({ ...current, worldClock: changeWorldClock(normalizeWorldClock(current.worldClock ?? initialWorldClock), speed, minuteOfDay) }));
+  }, [initialWorldClock, setSave]);
+  const setWorldWeather = useCallback((weather: WeatherMode) => {
+    setSave(current => ({ ...current, worldClock: {
+      ...normalizeWorldClock(current.worldClock ?? initialWorldClock), weather: normalizeWeather(weather),
+    } }));
   }, [initialWorldClock, setSave]);
   const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string) => {
     const result = applyPuzzleAnswer(saveRef.current, puzzle, correct, attemptId);
@@ -928,6 +936,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
+  const togglePlacedCurtain = useCallback((instanceId: string) => {
+    const current = saveRef.current;
+    const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
+    if (!placed || !isCurtainDecorationId(placed.decorationId)) return false;
+    setSave({ ...current, pet: { ...current.pet,
+      placedDecorations: togglePlacedCurtainByInstance(current.pet.placedDecorations, instanceId),
+    } });
+    return true;
+  }, [setSave]);
+
   const togglePlacedDecorationPower = useCallback((instanceId: string) => {
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
@@ -1226,6 +1244,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     () => ({
       worldClock: save.worldClock ?? initialWorldClock,
       setWorldClock,
+      setWorldWeather,
       answerPuzzle,
       feedPet,
       isReady,
@@ -1264,6 +1283,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       rotatePlacedDecoration,
       flipPlacedDecorationWall,
       togglePlacedDecorationPower,
+      togglePlacedCurtain,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,
@@ -1304,6 +1324,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       save.worldClock,
       initialWorldClock,
       setWorldClock,
+      setWorldWeather,
       adjustCoins,
       reloadProgressFromCloud,
       setPet,
@@ -1333,6 +1354,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       rotatePlacedDecoration,
       flipPlacedDecorationWall,
       togglePlacedDecorationPower,
+      togglePlacedCurtain,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,

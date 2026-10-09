@@ -7,29 +7,33 @@ import ts from 'typescript';
 
 const root = process.cwd();
 const states = [];
-let stateIndex = 0;
+let stateIndex = 0, stateWrites = 0, drawingIndex = 0, refIndex = 0;
+const drawingValues = [], refs = [];
 let effects = [], roomCommands = [], cameraZoom = 1;
 const React = {
   createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
   useMemo: fn => fn(), useCallback: fn => fn, useEffect: fn => effects.push(fn),
-  useRef: current => ({ current }),
+  useRef: current => refs[refIndex++] ??= { current },
   useState: initial => {
     const index = stateIndex++;
     if (!(index in states)) states[index] = typeof initial === 'function' ? initial() : initial;
-    return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }];
+    return [states[index], next => { stateWrites++; states[index] = typeof next === 'function' ? next(states[index]) : next; }];
   },
 };
 const shared = (initial = 0) => { let value = initial; return { get: () => value, set: next => { value = next; } }; };
 let editingReady, stoppedForEditing = 0;
-let roomActivityForTest = null, requestedActivity, requestedInstanceId, returnedHome = 0, roomActivityEnabled;
+let roomActivityForTest = null, requestedActivity, requestedInstanceId, returnedHome = 0, roomActivityEnabled, activityOptionsForTest;
 const objectX = shared(), objectY = shared(), objectRotation = shared();
 const mocks = {
+  '@/hooks/use-world-clock-now': { useWorldClockNow: () => Date.now() },
+  'react-native-worklets-core': { useSharedValue: value => drawingValues[drawingIndex++] ??= { value } },
   "@/lib/graphics-mode": { useGraphicsMode: () => "3d" },
   '@/components/pet/RoomNavigation': { RoomNavigation: 'RoomNavigation', ROOM_NAVIGATION_HEIGHT: 52 },
   '@/hooks/use-room-camera': { useRoomCamera: () => ({ x: shared(), y: shared(), scale: shared(cameraZoom), zoom: cameraZoom, gesture: 'room-gesture', reset: () => { cameraZoom = 1; } }) },
   'react-native-gesture-handler': { GestureDetector: 'GestureDetector' },
   '@/pet-display/registry/media-registry': { getPetMediaRegistry: () => ({ getSegment: mood => ({ mood }) }) },
-  '@/hooks/use-room-activity': { useRoomActivity: (_, enabled, _interaction, _x, _y, _onArrival, _feed, _roomArrival, _visible, _preserve, onStopped) => {
+  '@/hooks/use-room-activity': { useRoomActivity: (options, enabled, _interaction, _x, _y, _onArrival, _feed, _roomArrival, _visible, _preserve, onStopped) => {
+    activityOptionsForTest = options;
     editingReady = onStopped;
     roomActivityEnabled = enabled;
     return { activity: roomActivityForTest, scale: shared(1), facing: shared(1), objectX, objectY, objectRotation, returnHome() { returnedHome++; }, stopActivity() { stoppedForEditing++; }, startActivity(kind, instanceId) { requestedActivity = kind; requestedInstanceId = instanceId; } };
@@ -114,6 +118,13 @@ for (const modelId of Object.keys(LAMP_LIGHT_ORIGINS)) {
   assert.ok(Math.abs(light.position[1] - (.1 + origin[1] * 2)) < 1e-8);
   assert.ok(Math.abs(light.position[2] - (3 - origin[0] * 2)) < 1e-8);
   assert.deepEqual(Array.from(light.direction), [0, -1, 0]);
+  if (modelId.startsWith('lavaLamp')) {
+    assert.equal(light.type,'point','The bottle lights surfaces around it, including above its base');
+    assert.ok(light.colorKelvin<2700,'Lava casts warm amber light');
+    const small=lampLightConfig({...object,scale:.2});
+    assert.ok(small.falloffRadius>=3,'A small lamp keeps its light outside the visible clipping tiles');
+    assert.ok(small.intensity>0 && small.intensity<light.intensity,'Resizing retains bounded light power');
+  } else assert.equal(light.type,'spot','Shaded lamps retain their downward light');
   assert.equal(lampLightConfig({ ...object, poweredOn: false }), undefined);
   assert.equal(lampLightConfig({ ...object, poweredOn: undefined }), undefined);
 }
@@ -127,7 +138,7 @@ const style = input => Object.assign({}, ...[input].flat(Infinity).filter(Boolea
 const stage = load(path.join(root, 'components/pet/PetStage.tsx')).PetStage;
 let toggled;
 function render(placedDecorations = powered, extra = {}) {
-  stateIndex = 0; effects = [];
+  stateIndex = 0; drawingIndex = 0; refIndex = 0; effects = [];
   const nodes = flatten(stage({
     name: 'Cat', petType: 'cat', compact: true, stats: { level: 1, hunger: 90, happiness: 90, cleanliness: 90 },
     wisdom: 90, playback: {}, speechMessage: 'Hello!', placedDecorations,
@@ -165,6 +176,16 @@ assert.equal(lampMenu[0].label, 'home.turnOffDecoration');
 lampMenu[0].onPress();
 assert.equal(toggled, 'lamp-one');
 assert.equal(decorationNode(render(lamps), 'lamp-two').node.props.menuActions[0].label, 'home.turnOnDecoration');
+let toggledCurtain;
+const curtain = { decorationId:'curtainRoseTieback', instanceId:'curtain', offset:{x:.3,y:-.3} };
+const curtainProps = { onTogglePlacedCurtain:id => { toggledCurtain=id; } };
+const closeCurtain = decorationNode(render([curtain],curtainProps),'curtain').node.props.menuActions;
+assert.equal(decorationNode(render([curtain],curtainProps),'curtain').node.props.constrainToRoom,false,'Curtains bypass the square sprite drag limits');
+assert.equal(decorationNode(first,'officeAc').node.props.constrainToRoom,true,'Other wall fixtures keep their drag bounds');
+assert.equal(closeCurtain[0].label,'home.closeCurtains');
+closeCurtain[0].onPress();
+assert.equal(toggledCurtain,'curtain');
+assert.equal(decorationNode(render([{...curtain,curtainOpen:false}],curtainProps),'curtain').node.props.menuActions[0].label,'home.openCurtains');
 const shadeSwitches = render(litLamps).filter(({ node }) => node.type === 'RoomActionMenu' && node.props.label === 'home.lampSwitch');
 assert.equal(shadeSwitches.length, 2, 'Overlapping lamps have focused shade targets');
 assert.ok(shadeSwitches.every(({ node }) => node.props.size.width >= 32));
@@ -252,6 +273,9 @@ const controlsSlot = selectedRoom.find(({ node }) => node.type === 'RoomItemMove
 assert.equal(style(hintSlot.props.style).minHeight, style(controlsSlot.props.style).minHeight, 'Reserve the same space before and after selecting an item so dragging does not shift the room');
 const statsPanel = nodes => nodes.find(({ node }) => node.type === 'PetStatsPanel');
 const normalStats = statsPanel(normalRoom), editingStats = statsPanel(editingRoom), selectedStats = statsPanel(selectedRoom);
+assert.equal(normalStats.node.props.visible, true, 'Visible play mode may reveal pending stat changes');
+assert.equal(editingStats.node.props.visible, false, 'Decoration mode must not consume hidden stat changes');
+assert.equal(statsPanel(render([sofa], { roomVisible: false })).node.props.visible, false, 'Cached inactive rooms must not animate their stats');
 const footer = entry => entry.ancestors.at(-2);
 assert.deepEqual(style(footer(normalStats).props.style), style(footer(editingStats).props.style), 'Entering decoration mode retains the same footer dimensions and room viewport');
 assert.deepEqual(style(footer(normalStats).props.style), style(footer(selectedStats).props.style), 'Selecting an object does not resize the room');
@@ -268,10 +292,12 @@ assert.notEqual(style(editingStats.ancestors.at(-1).props.style).display, 'none'
 assert.equal(editingStats.ancestors.at(-1).props.pointerEvents, 'none');
 assert.equal(editingStats.ancestors.at(-1).props.accessibilityElementsHidden, true, 'Hidden stats cannot be tapped or announced');
 assert.equal(style(controlsSlot.props.style).position, 'absolute', 'Movement controls share the stats footprint instead of taking additional room space');
-moveControls.props.onMove('left');
+measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
+render([{...sofa, scale:.8}], moveProps).find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onMove('left');
 assert.equal(moved.id, sofa.instanceId);
 assert.ok(Math.abs(moved.offset.x - .2) < 1e-9);
-assert.equal(moved.offset.y, .1, 'Move only the selected item on the requested axis');
+assert.ok(Math.abs(moved.offset.y - .1) < 1e-9, 'Move only the selected item on the requested axis');
+measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
 moveControls.props.onDone();
 assert.equal(render([sofa]).some(({ node }) => node.type === 'RoomItemMoveControls'), false);
 assert.equal(sofaNode(render([sofa])).props.allowDrag, true, 'Done moving retains decoration mode');
@@ -564,10 +590,10 @@ console.log('Verified real bathtub, shower, toilet and Jacuzzi menu taps target 
 const { RoomRotationSheet } = load(path.join(root, 'components/pet/RoomRotationSheet.tsx'));
 states.length = 0;
 let formPreview, formApplied, formCancelled = false;
-function rotationForm() {
+function rotationForm(extra = {}) {
   stateIndex = 0;
   const sheet = RoomRotationSheet({ visible: true, name: 'Chair', degrees: 0, simpleGraphics: false,
-    onPreview: value => { formPreview = value; }, onApply: value => { formApplied = value; }, onClose: () => { formCancelled = true; } });
+    onPreview: value => { formPreview = value; }, onApply: value => { formApplied = value; }, onClose: () => { formCancelled = true; }, ...extra });
   const controls = sheet.props.children[0];
   return flatten(controls.type(controls.props)).map(entry => entry.node);
 }
@@ -587,4 +613,75 @@ applyButton(rotationForm()).props.onPress();
 assert.equal(formApplied, 137.5);
 rotationForm().find(node => node.props.onPress && !node.props.accessibilityState).props.onPress();
 assert.equal(formCancelled, true);
+assert.equal(applyButton(rotationForm({placementAllowed:false})).props.disabled,true,'Colliding rotations cannot be applied');
 console.log('Verified the actual rotation form, slider precision, numeric input, locale decimals, invalid input, Apply and Cancel.');
+
+// A real stage drag publishes a shared native pose without scheduling React work.
+states.length=0; drawingValues.length=0; refs.length=0;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+const dragChair={decorationId:'chairRockingOak',instanceId:'drag-chair',offset:{x:0,y:.25},rotationDegrees:20,scale:.8};
+let dragRoom=render([dragChair],moveProps);
+const decorate=dragRoom.find(({node})=>node.props.accessibilityLabel==='home.decorateRoom');
+if(decorate)decorate.node.props.onPress();
+dragRoom=render([dragChair],moveProps);
+const dragNode=decorationNode(dragRoom,'drag-chair').node;
+const sharedPreview=dragRoom.find(({node})=>node.type==='NativeRoomScene').node.props.editingObject;
+// Worklets Core clears its backing properties before copying an assigned object.
+// Its getter is a live proxy: assigning that same proxy erases the source too.
+let previewProperties;
+const previewProxy=new Proxy({}, {
+  get:(_target,key)=>previewProperties?.[key],
+  ownKeys:()=>Reflect.ownKeys(previewProperties ?? {}),
+  getOwnPropertyDescriptor:()=>({enumerable:true,configurable:true}),
+});
+Object.defineProperty(sharedPreview,'value',{
+  get:()=>previewProperties ? previewProxy : undefined,
+  set:value=>{
+    if(!value){previewProperties=undefined;return;}
+    previewProperties={};
+    for(const key of Object.keys(value))previewProperties[key]=value[key];
+  },
+});
+const savedChair=roomWorld(dragRoom).objects[0];
+const placementApi=load('@/utils/room-item-placement');
+const anchor=placementApi.roomItemAnchor(savedChair,390);
+const writesBefore=stateWrites;
+for(let frame=0;frame<120;frame++)dragNode.props.onDragPositionChange({x:anchor.x+frame*.1,y:anchor.y});
+assert.equal(stateWrites,writesBefore,'Furniture drag frames do not update React state or rebuild the room');
+assert.equal(sharedPreview.value.heading,20*Math.PI/180,'The native preview retains the saved 20-degree angle');
+assert.equal(roomWorld(dragRoom).objects[0],savedChair,'The saved world stays unchanged during the drag');
+for(let frame=0;frame<60;frame++) {
+  dragNode.props.onDragPositionChange({x:anchor.x+1000,y:anchor.y});
+  assert.equal(sharedPreview.value.instanceId,'drag-chair','Blocked dragging cannot erase the live shared object');
+  assert.ok(Number.isFinite(sharedPreview.value.scale));
+  assert.ok(sharedPreview.value.position.every(Number.isFinite));
+  assert.equal(sharedPreview.value.heading,20*Math.PI/180);
+}
+dragNode.props.onOffsetChange({x:.1,y:.25});
+assert.equal(moved.id,'drag-chair');
+console.log('Verified live-proxy furniture dragging, repeated blocked moves, no React updates and an unchanged saved angle.');
+
+// Newly placed furniture receives a free spot rather than the old overlapping default.
+states.length=0; drawingValues.length=0; refs.length=0;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+const smallSofa={...sofa,scale:.8,offset:{x:0,y:0}};
+render([smallSofa],moveProps);
+moved=undefined;
+const newChair={...dragChair,offset:{x:0,y:0}};
+const added=render([smallSofa,newChair],moveProps);
+assert.equal(moved.id,newChair.instanceId,'The new overlapping chair receives a corrected offset');
+const fixedChair={...newChair,offset:moved.offset};
+const correctedWorld=roomWorld(render([smallSofa,fixedChair],moveProps));
+assert.ok(placementApi.createRoomPlacementResolver(correctedWorld).canPlace(correctedWorld.objects[1]));
+assert.equal(correctedWorld.objects[1].heading,20*Math.PI/180,'Automatic placement retains the selected angle');
+assert.equal(added.find(({node})=>node.type==='NativeRoomScene').node.props.world.objects.length,2);
+console.log('Verified new furniture is placed in the nearest available space while retaining its angle.');
+
+const routineClock = { worldMs: 23 * 3_600_000, realMs: Date.now(), speed: 1 };
+render([], { worldClock: routineClock });
+assert.equal(activityOptionsForTest.period, 'night', 'The rendered cat stage passes nighttime to its scheduler');
+render([], { worldClock: { ...routineClock, worldMs: 13 * 3_600_000 } });
+assert.equal(activityOptionsForTest.period, 'day');
+render([], {});
+assert.equal(activityOptionsForTest.period, undefined, 'Clock-free previews keep their existing behaviour');
+console.log('Verified actual room-stage clock wiring for day, night and clock-free previews.');

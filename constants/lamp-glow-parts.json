@@ -30,11 +30,13 @@
     { "node": "Paper lantern", "emission": [0.6, 0.4, 0.2, 1] }
   ],
   "lavaLampOff": [
-    { "node": "Glass", "emission": [0.12, 0.25, 0.38, 1] },
-    { "node": "Lava blob", "emission": [0.65, 0.2, 0.1, 1] }
+    { "node": "Glass", "emission": [0.025, 0.065, 0.08, 1] },
+    { "node": "Lava blob", "emission": [1.2, 0.3, 0.06, 1] },
+    { "node": "Lava pool", "emission": [0.9, 0.22, 0.04, 1] }
   ],
   "lavaLampAni": [
-    { "node": "Glass", "emission": [0.12, 0.25, 0.38, 1] },
-    { "node": "Lava blob", "emission": [0.65, 0.2, 0.1, 1] }
+    { "node": "Glass", "emission": [0.025, 0.065, 0.08, 1] },
+    { "node": "Lava blob", "emission": [1.2, 0.3, 0.06, 1] },
+    { "node": "Lava pool", "emission": [0.9, 0.22, 0.04, 1] }
   ]
 }

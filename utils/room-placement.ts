@@ -1,12 +1,17 @@
+import nativeCatalog from "@/assets/3d/native/catalog.json";
+import { isWindowDecorationId } from "@/constants/window-decorations";
 import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
-import { isPoweredDecorationId } from "@/constants/decoration-motion";
+import { isCurtainDecorationId, isPoweredDecorationId } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
-import { isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
+import { getDecorationDisplaySize, isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
   clampDecorationScale,
   getDecorationDefaultPlacementScale,
   getDecorationDefaultScale,
+  getPlacedDecorationDragSize,
+  getPlacedDecorationSpriteId,
+  getPlacedDecorationWallFlipped,
   resolveDecorationPlacement,
 } from "@/constants/decoration-variants";
 import type { CatToyId } from "@/constants/cat-toys";
@@ -23,15 +28,16 @@ export function createPlacementInstanceId(): string {
 
 export function normalizeRoomItemOffset(
   value: unknown,
+  constrainToRoom = true,
 ): RoomItemOffset | undefined {
   if (typeof value !== "object" || value === null) return undefined;
   const record = value as Record<string, unknown>;
-  if (typeof record.x !== "number" || typeof record.y !== "number") {
+  if (typeof record.x !== "number" || typeof record.y !== "number" || !Number.isFinite(record.x) || !Number.isFinite(record.y)) {
     return undefined;
   }
   return {
-    x: clampOffsetAxis(record.x),
-    y: clampOffsetAxis(record.y),
+    x: constrainToRoom ? clampOffsetAxis(record.x) : record.x,
+    y: constrainToRoom ? clampOffsetAxis(record.y) : record.y,
   };
 }
 
@@ -105,8 +111,9 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         record.decorationId,
         typeof record.rotationIndex === "number" ? record.rotationIndex : 0,
       );
-      const offset = normalizeRoomItemOffset(record.offset);
-      if (!placement || !offset) continue;
+      if (!placement) continue;
+      const offset = normalizeRoomItemOffset(record.offset, !isCurtainDecorationId(placement.decorationId));
+      if (!offset) continue;
 
       const scale =
         typeof record.scale === "number"
@@ -127,6 +134,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         wallFlipped: isRoomDoor(placement.decorationId) && typeof record.wallFlipped === "boolean"
           ? record.wallFlipped : record.wallFlipped === true ? true : undefined,
         poweredOn: isPoweredDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
+        curtainOpen: isCurtainDecorationId(placement.decorationId) && record.curtainOpen === false ? false : undefined,
         rotationDegrees: normalizeRotationDegrees(record.rotationDegrees),
         scale: scale !== undefined && scale !== getDecorationDefaultScale(placement.decorationId) ? scale : undefined,
       });
@@ -235,13 +243,25 @@ export function appendPlacedDecoration(
   placedDecorations: PlacedDecoration[] | undefined,
   decorationId: CatDecorationId,
 ): PlacedDecoration[] {
+  // Start a newly placed pair over an existing window, sized to its aperture.
+  const window = isCurtainDecorationId(decorationId)
+    ? placedDecorations?.find(item => isWindowDecorationId(item.decorationId)) : undefined;
+  const catalog = nativeCatalog as Record<string, { renderScale: number; min: number[]; max: number[] }>;
+  const windowModel = window ? catalog[getPlacedDecorationSpriteId(window)] : undefined;
+  const curtainModel = catalog[decorationId];
+  const curtainScale = window && windowModel && curtainModel
+    ? clampDecorationScale(getPlacedDecorationDragSize(window) / windowModel.renderScale *
+      (windowModel.max[0] - windowModel.min[0]) / 1.80 * curtainModel.renderScale / getDecorationDisplaySize(decorationId))
+    : getDecorationDefaultPlacementScale(decorationId);
   return [
     ...(placedDecorations ?? []),
     {
       decorationId,
-      scale: getDecorationDefaultPlacementScale(decorationId),
+      scale: curtainScale,
+      wallFlipped: window ? getPlacedDecorationWallFlipped(window) : undefined,
+      rotationDegrees: window?.rotationDegrees,
       instanceId: createPlacementInstanceId(),
-      offset: defaultPlacementOffset(
+      offset: window ? { ...window.offset } : defaultPlacementOffset(
         (placedDecorations ?? []).length,
         "decoration",
       ),
@@ -282,9 +302,9 @@ export function updatePlacedDecorationOffsetByInstance(
 ): PlacedDecoration[] {
   return (placedDecorations ?? []).map((item) => {
     if (item.instanceId !== instanceId) return item;
-    const crossedWall = (item.offset.x < 0) !== (offset.x < 0);
     return { ...item, offset,
-      wallFlipped: isRoomDoor(item.decorationId) && crossedWall ? offset.x < 0 : item.wallFlipped };
+      // Freeze legacy doors' inferred wall orientation before changing the anchor.
+      wallFlipped: isRoomDoor(item.decorationId) ? item.wallFlipped ?? item.offset.x < 0 : item.wallFlipped };
   });
 }
 
@@ -317,6 +337,16 @@ export function togglePlacedDecorationPowerByInstance(
       ? { ...item, poweredOn: !item.poweredOn }
       : item,
   );
+}
+
+export function togglePlacedCurtainByInstance(
+  placedDecorations: PlacedDecoration[] | undefined,
+  instanceId: string,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).map(item =>
+    item.instanceId === instanceId && isCurtainDecorationId(item.decorationId)
+      ? { ...item, curtainOpen: item.curtainOpen === false }
+      : item);
 }
 
 export function updatePlacedDecorationScaleByInstance(

@@ -1,7 +1,7 @@
 import { LAMP_LIGHT_ORIGINS } from '@/constants/decoration-motion';
 import type { NativeRoomObject, Vec3 } from '@/utils/native-room-world';
 
-/** Lamp origins are measured below the shade in the exported model's coordinates. */
+/** Light origins are measured inside the shade or bottle in model coordinates. */
 export function lampLightConfig(object: NativeRoomObject) {
   const local = LAMP_LIGHT_ORIGINS[object.modelId];
   if (!local || !object.poweredOn) return undefined;
@@ -11,14 +11,17 @@ export function lampLightConfig(object: NativeRoomObject) {
     object.position[1] + local[1] * object.scale,
     object.position[2] + (-s * local[0] + c * local[2]) * object.scale,
   ];
+  const lava = object.modelId === 'lavaLampOff' || object.modelId === 'lavaLampAni';
   return {
-    type: 'spot' as const,
+    type: lava ? 'point' as const : 'spot' as const,
     position,
     direction: [0, -1, 0] as Vec3,
-    colorKelvin: 2700,
+    colorKelvin: lava ? 2200 : 2700,
     // The room's daylight is bright; enough power makes the warm pool visible.
-    intensity: 150_000 * object.scale * object.scale,
-    falloffRadius: 3 * object.scale,
+    intensity: (lava ? 160_000 : 230_000) * object.scale * object.scale,
+    // Tiny point-light ranges showed square culling cutoffs in the orthographic
+    // simulator view. Keep the range beyond the visible pool's smooth falloff.
+    falloffRadius: lava ? Math.max(3, 5 * object.scale) : 3 * object.scale,
     spotLightCone: [.35, .85] as [number, number],
     // Keep local lights inexpensive when several lamps are placed in a room.
     castShadows: false,

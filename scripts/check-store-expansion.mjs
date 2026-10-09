@@ -12,6 +12,7 @@ const storage = {
   multiRemove: async keys => { keys.forEach(key => stored.delete(key)); },
 };
 function load(id) {
+  if (id === '@/hooks/use-world-clock-now') return { useWorldClockNow: () => Date.now() };
   if (id === 'react') return {};
   if (id === 'react-native') return { Dimensions: { get: () => ({ width: 390, height: 844 }) }, PixelRatio: { roundToNearestPixel: n => n } };
   if (id === '@react-native-async-storage/async-storage') return storage;

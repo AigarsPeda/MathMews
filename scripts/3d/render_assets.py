@@ -474,6 +474,41 @@ def robot(id,t=0):
   a=angle+t*math.tau;curve('Brush',[(.42*math.cos(a),.42*math.sin(a),.04),(.71*math.cos(a),.71*math.sin(a),.04)],.018,'dark')
 
 
+def lava_lamp(t=0):
+ # A transparent tapered bottle lets wax remain a volume inside the glass.
+ metal=material('Lava lamp brushed metal','9EAAB8',.28,.55)
+ glass=material('Lava lamp glass','8FC6D6',.18)
+ shader=glass.node_tree.nodes.get('Principled BSDF')
+ glass.diffuse_color=(*glass.diffuse_color[:3],.22)
+ shader.inputs['Alpha'].default_value=.22
+ glass.surface_render_method='DITHERED';glass.use_backface_culling=True
+ wax=material('Lava lamp amber wax','FF894B',.32)
+ def taper(name,z,bottom,top,height,color,open_ends=False):
+  bpy.ops.mesh.primitive_cone_add(vertices=48,radius1=bottom,radius2=top,depth=height,
+    end_fill_type='NOTHING' if open_ends else 'NGON',location=(0,0,z))
+  obj=bpy.context.object
+  for face in obj.data.polygons:face.use_smooth=True
+  return finish(obj,name,color)
+ cylinder('Lamp foot',(0,0,.035),.245,.06,metal)
+ taper('Lamp base',.17,.235,.175,.23,metal)
+ torus('Bottle bottom rim',(0,0,.285),.19,.014,metal)
+ taper('Glass',.765,.195,.12,.95,glass,True)
+ sphere('Lava pool',(0,0,.325),(.145,.145,.033),wax)
+ for i in range(3):
+  obj=sphere('Lava blob',(0,0,.7),(.07,.07,.10),wax)
+  obj['lava_index']=i
+  pose_lava_blob(obj,t)
+ taper('Cap',1.305,.13,.085,.16,metal)
+ torus('Cap rim',(0,0,1.23),.122,.012,metal)
+
+def pose_lava_blob(obj,t):
+ index=obj['lava_index'];phase=t*math.tau+index*math.tau/3
+ radius=[.073,.06,.052][index]
+ stretch=1+.22*math.sin(phase+.8)
+ obj.location=(.024*math.sin(phase+.4),.022*math.cos(t*math.tau+index*2),.72+.29*math.sin(phase))
+ # Keep volume stable as warm wax stretches, rises and settles.
+ obj.scale=(radius/math.sqrt(stretch),radius/math.sqrt(stretch),radius*1.45*stretch)
+
 def small_object(id,t=0):
  low=id.lower();color=color_for(id)
  if 'bowl' in low:bowl(color,(0,0,.07))
@@ -483,9 +518,7 @@ def small_object(id,t=0):
   curve('Loose yarn',[(.1,-.25,.04),(.4,-.4,.04),(.57,-.27,.04),(.7,-.32,.04)],.013,color)
  elif 'lamp' in low or 'candle' in low:
   if 'lava' in low:
-   cylinder('Lamp base',(0,0,.13),.24,.20,'silver');cylinder('Glass',(0,0,.72),.20,1.05,'blue')
-   for i in range(3):sphere('Lava blob',(.065*math.sin(t*math.tau+i),-.185,.40+i*.22+.055*math.sin(t*math.tau+i)),(.11,.03,.11),'pink')
-   cylinder('Cap',(0,0,1.27),.22,.12,'silver')
+   lava_lamp(t)
   elif 'japanese' in low:
    box('Lantern base',(0,0,.10),(.65,.65,.16),'wood',.04);box('Paper lantern',(0,0,.62),(.52,.52,.93),'paper',.05)
    for x in [-.27,.27]:
@@ -743,7 +776,7 @@ def animate_furniture(objects,t):
   name=o.name
   if name.startswith('Door hinge'):o.rotation_euler.z=.7*math.sin(t*math.pi)
   elif name.startswith('TV sun'):o.location.x=.35*math.sin(t*math.tau)
-  elif name.startswith('Lava blob'):o.location.z=.4+.13*math.sin(t*math.tau+o.location.x*10)
+  elif 'lava_index' in o:pose_lava_blob(o,t)
   elif name.startswith('Printed page'):o.location.y=-.51+.10*math.sin(t*math.tau)
   elif name.startswith('Brush'):o.rotation_euler.z=t*math.tau
   elif name.startswith('Cooling fan'):o.rotation_euler.y=t*math.tau

@@ -12,6 +12,7 @@ function load(relative){
  if(file.endsWith('.json')){module.exports=JSON.parse(fs.readFileSync(file,'utf8'));return module.exports;}
  const compiled=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020,esModuleInterop:true}}).outputText;
  function require(ref){
+  if(ref==='@/hooks/use-world-clock-now')return {useWorldClockNow:()=>Date.now()};
   if(ref==='react')return {};
   const resolved=ref.startsWith('@/')?path.join(root,ref.slice(2)):path.resolve(path.dirname(file),ref);
   if(/\.(png|gif|webp|mp4)$/.test(resolved)){assert.ok(fs.existsSync(resolved),'Missing asset '+ref);return path.relative(root,resolved);}
@@ -100,4 +101,4 @@ assert.equal(advance(0,0,0,8,12).frame,0,'Paused clock preserves progress');
 assert.equal(advance(7,0,1000/12,8,12).frame,0,'Thumbnail loop wraps to its first frame');
 assert.equal(advance(0,0,1000,8,12).frame,1,'Slow frames cannot skip through a full loop');
 console.log('Verified thumbnail cadence, loop wrapping and pause behavior.');
-await import('../check-asset-budget.mjs');
+await import('../check-asset-catalog.mjs');

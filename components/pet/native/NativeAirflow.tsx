@@ -1,9 +1,12 @@
 import { useMemo } from 'react';
+import { nativeRoomPreview } from '@/utils/native-room-preview';
+import type { ISharedValue } from 'react-native-worklets-core';
 import { RenderCallbackContext, useAnimator, useFilamentContext, useModel } from 'react-native-filament';
 import source from '@/assets/3d/native/airflow.glb';
 import { type NativeRoomObject } from '@/utils/native-room-world';
 import { airflowOrigin } from '@/utils/native-airflow';
-export function NativeAirflow({ object, active }: {
+export function NativeAirflow({ object, active, editingObject }: {
+  editingObject?: ISharedValue<NativeRoomObject | undefined>;
   object: NativeRoomObject;
   active: boolean;
 }) {
@@ -19,9 +22,11 @@ export function NativeAirflow({ object, active }: {
     'worklet';
     if (!entity || !animator)
       return;
-    transformManager.setTransform(entity, transform);
+    const preview = nativeRoomPreview(editingObject?.value, object.instanceId);
+    transformManager.setTransform(entity, preview
+      ? transform.translate(preview.position.map((v, i) => v - object.position[i]) as [number, number, number]) : transform);
     animator.applyAnimation(0, active ? passedSeconds : 0);
     animator.updateBoneMatrices();
-  }, [active, animator, entity, transform, transformManager]);
+  }, [active, animator, entity, editingObject, object.instanceId, object.position, transform, transformManager]);
   return null;
 }

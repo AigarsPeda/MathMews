@@ -20,6 +20,9 @@ const React = {
 };
 const shared = () => ({ get: () => 0, set() {} });
 const mocks = {
+  '@/hooks/use-world-clock-now': { useWorldClockNow: () => Date.now() },
+  'react-native-worklets-core': { useSharedValue: value => ({ value }) },
+  '@/utils/room-item-placement': { createRoomPlacementResolver: () => ({}) },
   "@/constants/room-commands": { ROOM_COMMANDS: [], getRoomCommands: () => [] },
   "@/lib/graphics-mode": { useGraphicsMode: () => "3d" },
   '@/utils/native-room-world': { buildNativeRoomWorld: () => ({ width: 320, height: 320, objects: [], home: [0,0,0] }) },
@@ -207,6 +210,42 @@ assert.equal(taps, 1, 'A drag must never trigger the tap action');
 assert.equal(dragStarts, 1, 'Select the dragged object once when the movement threshold is crossed');
 assert.equal(saves, 1, 'Save the final drag position once');
 console.log('Verified editable objects bypass native menu gestures, small touches select, and real drags save without tapping.');
+
+// A release or accessibility move must not snap an accepted drag inside an obstacle.
+states.length=0;sharedValues.length=0;
+let acceptedSave;
+function renderBlockedDrag() {
+  stateIndex=0;sharedIndex=0;
+  return flatten(draggableModule.exports.DraggableRoomPet({children:null,petSize:120,initialOffset:{x:0,y:0},snapToGrid:true,
+    onDragPositionChange:point=>({x:Math.min(16,point.x),y:point.y}),onOffsetChange:offset=>{acceptedSave=offset;}}));
+}
+renderBlockedDrag()[0].node.props.onLayout({nativeEvent:{layout:{width:320,height:320}}});
+const blockedDrag=renderBlockedDrag().find(({node})=>node.props.onPanResponderMove).node;
+blockedDrag.props.onPanResponderGrant();blockedDrag.props.onPanResponderMove(null,{dx:18,dy:0});blockedDrag.props.onPanResponderRelease();
+assert.equal(acceptedSave.x,.16,'Grid snapping cannot override the accepted collision boundary');
+blockedDrag.props.onAccessibilityAction({nativeEvent:{actionName:'moveRight'}});
+assert.equal(acceptedSave.x,.16,'Accessibility movement uses the same collision boundary');
+console.log('Verified final drag saves, grid snapping and accessibility movement respect accepted collision positions.');
+
+for (const constrainToRoom of [false,true]) {
+  states.length=0;sharedValues.length=0;
+  let saved;
+  function renderCurtainDrag() {
+    stateIndex=0;sharedIndex=0;
+    return flatten(draggableModule.exports.DraggableRoomPet({children:null,petSize:120,constrainToRoom,
+      initialOffset:{x:0,y:0},onOffsetChange:offset=>{saved=offset;}}));
+  }
+  renderCurtainDrag()[0].node.props.onLayout({nativeEvent:{layout:{width:320,height:320}}});
+  const target=renderCurtainDrag().find(({node})=>node.props.onPanResponderMove).node;
+  target.props.onPanResponderGrant();
+  target.props.onPanResponderMove(null,{dx:220,dy:-260});
+  target.props.onPanResponderRelease();
+  assert.equal(saved.x,constrainToRoom?1:2.2,'Free curtain drags can extend beyond the square sprite limit');
+  assert.equal(saved.y,constrainToRoom?-1:-2.6);
+  target.props.onAccessibilityAction({nativeEvent:{actionName:'moveUp'}});
+  assert.equal(saved.y,constrainToRoom?-1:-2.72,'Accessible curtain movement uses the same free placement');
+}
+console.log('Verified free curtain gestures and accessible movement while other item drag bounds remain intact.');
 
 for (const zoom of [1, 1.73, 2.6, 3]) {
   states.length = 0; sharedValues.length = 0;

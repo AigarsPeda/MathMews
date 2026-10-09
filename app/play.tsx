@@ -474,7 +474,7 @@ function PlaySession() {
       exitToPath({ tierJustCompleted: true });
       return;
     }
-    router.replace("/");
+    router.dismissTo("/");
   }, [exitToPath, isCorrect, isReplay, puzzles.length, router, sessionIndex]);
 
   if (!isReady) {

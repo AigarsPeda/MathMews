@@ -1,3 +1,4 @@
+import { CURTAIN_FABRIC_BOUNDS, isCurtainDecorationId } from "@/constants/decoration-motion";
 import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import type { BathroomFixtureKind, BathroomPhase } from '@/constants/bathroom-activities';
@@ -6,6 +7,7 @@ import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 import type { RockingChair } from '@/utils/native-rocking-chair';
 import catalog from '@/assets/3d/native/catalog.json';
+import windowMounts from '@/constants/window-mount-bounds.json';
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId, getPlacedDecorationWallFlipped } from '@/constants/decoration-variants';
 import { getBedDisplaySize, getEquippedBedScale } from '@/constants/cat-beds';
 import { getPlacedToyDisplaySize, getPlacedToyRotationIndex } from '@/constants/cat-toys';
@@ -96,6 +98,9 @@ export type NativeRoomObject = {
   collidable?: boolean;
   movable: boolean;
   poweredOn?: boolean;
+  curtainOpen?: boolean;
+  /** Fixed coordinate of a wall-mounted item's mounting plane. */
+  wallAxis?: 0 | 2;
   /** Corrected wall anchor when a saved window placement lies outside the walls. */
   placementOffset?: RoomItemOffset;
   seat?: Vec3;
@@ -212,7 +217,29 @@ export function buildNativeRoomWorld(options: {
   const { width, height, sizeScale } = options;
   const catScale = options.petSize * .9 / Math.max(1, width) * ROOM_SPAN / 2.7;
   const world: NativeRoomWorld = { width, height, catScale, radius: 1.04 * catScale, home: [0, FLOOR_Y, 0], objects: [] };
-  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number) => {
+  const curtainMountDepth = (flip: boolean, screen: RoomPoint, curtainSize: number, curtainHeading: number) => {
+    const nearby = options.decorations
+      .filter(item => isWindowDecorationId(item.decorationId) && getPlacedDecorationWallFlipped(item) === flip)
+      .map(item => {
+        const meta = NATIVE_MODEL_CATALOG[getPlacedDecorationSpriteId(item)];
+        const size = getPlacedDecorationDragSize(item) * sizeScale;
+        const point = options.livePositions?.[item.instanceId] ?? roomOffsetToPoint(item.offset, width, height, size);
+        const distance = Math.hypot(screen.x - point.x, screen.y - point.y);
+        const heading = (flip ? Math.PI / 2 : 0) + (normalizeRotationDegrees(item.rotationDegrees) ?? 0) * Math.PI / 180;
+        const normal = flip ? 0 : 2;
+        const mount = windowMounts[item.decorationId as keyof typeof windowMounts];
+        // Parallel curtains hang against the frame; their panels drape over the
+        // protruding sill. Angled fixtures retain clearance for their full bounds.
+        const front = mount && Math.cos(curtainHeading - heading) > .999 ? mount.frame : meta;
+        const depths = [front.min[0], front.max[0]].flatMap(x => [front.min[2], front.max[2]].map(z => rotate([x, 0, z], heading)[normal]));
+        const backs = [meta.min[0], meta.max[0]].flatMap(x => [meta.min[2], meta.max[2]].map(z => rotate([x, 0, z], heading)[normal]));
+        return { distance, size, depth: (Math.max(...depths) - Math.min(...backs)) * size / Math.max(1, width) * ROOM_SPAN / meta.renderScale };
+      }).filter(window => window.distance <= (curtainSize + window.size) / 2)
+      .sort((a, b) => a.distance - b.distance);
+    // Use the nearest window's frame, rather than its deep sill or a remote window.
+    return nearby.length ? nearby[0].depth + .015 : .025;
+  };
+  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean) => {
     const meta = NATIVE_MODEL_CATALOG[modelId];
     if (!meta)
       return;
@@ -229,11 +256,19 @@ export function buildNativeRoomWorld(options: {
       // Solve on the wall plane, so moving a fixture preserves its screen anchor.
       const difference = screen.x / (Math.max(1, width) / ROOM_SPAN) / diagonal;
       let plane = -2.35;
-      if (isWindowDecorationId(modelId) || normalizeRotationDegrees(rotationDegrees)) {
+      if (isWindowDecorationId(modelId) || isCurtainDecorationId(modelId) || normalizeRotationDegrees(rotationDegrees)) {
         const normal = flip ? 0 : 2;
         const back = Math.min(...horizontalCorners.map(corner => corner[normal]));
         // Keep the glass and frame in front of the opaque room wall.
         plane -= (back - center[normal]) * scale;
+      }
+      if (isCurtainDecorationId(modelId)) {
+        const normal = flip ? 0 : 2;
+        const fabricBack = Math.min(...[CURTAIN_FABRIC_BOUNDS.minX, CURTAIN_FABRIC_BOUNDS.maxX]
+          .flatMap(x => [CURTAIN_FABRIC_BOUNDS.minZ, CURTAIN_FABRIC_BOUNDS.maxZ].map(z => rotate([x, 0, z], heading)[normal])));
+        const hardwareBack = Math.min(...horizontalCorners.map(corner => corner[normal]));
+        const depth = Math.max(curtainMountDepth(flip, screen, size, heading), (fabricBack - hardwareBack) * scale + .015);
+        plane = -2.35 + depth - (fabricBack - center[normal]) * scale;
       }
       const x = flip ? plane : plane + difference;
       const z = flip ? plane - difference : plane;
@@ -277,8 +312,9 @@ export function buildNativeRoomWorld(options: {
     const max = [0, 1, 2].map(i => Math.max(...corners.map(c => c[i]))) as Vec3;
     const movable = /Ball$|toy-mouse|^yarn/i.test(modelId);
     const solid = !isFoodBowlDecorationId(modelId) && !wall && !/carpet|rug/i.test(modelId) && !movable && max[1] > FLOOR_Y + .10;
-    const collidable = !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
-    const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, placementOffset };
+    const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
+    const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, curtainOpen, placementOffset,
+      wallAxis: wall ? flip ? 0 : 2 : undefined };
     if (meta.bathroom) object.bathroom = { kind: meta.bathroom.kind,
       contact: rotate(meta.bathroom.contact, heading).map((v, i) => position[i] + v * scale) as Vec3 };
     if (meta.collisionBoxes) {
@@ -328,7 +364,7 @@ export function buildNativeRoomWorld(options: {
   if (options.bedId)
     add('bed', 'bed-' + options.bedId, getBedDisplaySize(options.bedId) * getEquippedBedScale(options.bedScale) * sizeScale, options.bedOffset ?? { x: -.15, y: .3 }, options.bedFlipped, undefined, 0, options.bedRotationDegrees);
   for (const item of options.decorations)
-    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees);
+    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen);
   for (const item of options.toys)
     add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
   // Land in navigable floor space so the following walk never relocates its start.

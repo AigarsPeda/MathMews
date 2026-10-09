@@ -23,24 +23,26 @@ export function windowLightConfig(object: NativeRoomObject) {
 }
 
 /** Dark night sky, independent of the moonlight falling into the room. */
-export function windowPaneColor(daylight: number): [number, number, number, number] {
+export function windowPaneColor(daylight: number, flash = 0): [number, number, number, number] {
   'worklet';
-  return [.025 + .345 * daylight, .045 + .525 * daylight, .09 + .67 * daylight, 1];
+  const base = [.025 + .345 * daylight, .045 + .525 * daylight, .09 + .67 * daylight];
+  return [base[0] + (.7 - base[0]) * flash, base[1] + (.84 - base[1]) * flash, base[2] + (1 - base[2]) * flash, 1];
 }
 
-export function windowLightIntensity(area: number, daylight: number) {
+export function windowLightIntensity(area: number, daylight: number, flash = 0) {
   'worklet';
-  return area * (600_000 + 600_000 * daylight);
+  return area * (600_000 + 600_000 * daylight + 6_000_000 * flash);
 }
 
-export function windowLightColor(daylight: number): Vec3 {
+export function windowLightColor(daylight: number, flash = 0): Vec3 {
   'worklet';
-  return [.52 + .48 * daylight, .70 + .27 * daylight, 1 - .13 * daylight];
+  const base = [.52 + .48 * daylight, .70 + .27 * daylight, 1 - .13 * daylight];
+  return [base[0] + (.72 - base[0]) * flash, base[1] + (.86 - base[1]) * flash, base[2] + (1 - base[2]) * flash];
 }
 
 /** Tint one rectangular area-light bake with the same moonlight as the room. */
-export function windowFrameEmission(daylight: number): [number, number, number, number] {
+export function windowFrameEmission(daylight: number, flash = 0): [number, number, number, number] {
   'worklet';
-  const color = windowLightColor(daylight), strength = .95 - .88 * daylight;
+  const color = windowLightColor(daylight, flash), strength = .95 - .88 * daylight + 1.4 * flash;
   return [color[0] * strength, color[1] * strength, color[2] * strength, 1];
 }

@@ -911,8 +911,11 @@ mocks['./NativeFoodSpill'] = { NativeFoodSpill: 'FoodSpill' };
 mocks['./NativeAirflow'] = { NativeAirflow: 'Airflow' };
 mocks['./NativeLampLight'] = { NativeLampLight: 'LampLight' };
 mocks['./NativeLampGlow'] = { NativeLampGlow: 'LampGlow' };
+mocks['./NativeCurtain'] = { NativeCurtain: 'Curtain' };
+mocks['./NativeLightning'] = { NativeLightning: 'Lightning' };
 mocks['./NativeWorldLighting'] = { NativeWorldLighting: 'WorldLighting' };
 mocks['./NativeWindowPane'] = { NativeWindowPane: 'WindowPane' };
+mocks['./NativeWindowWeather'] = { NativeWindowWeather: 'WindowWeather' };
 mocks['./NativeCatActor'] = { NativeCatActor: 'Cat' };
 const startupVisualReadiness = [];
 mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { startupVisualReadiness.push(ready); } };
@@ -1068,6 +1071,93 @@ Object.assign(transformManager, {
 asset.getFirstEntityByName = name => liveLocals.has(name) ? {name} : undefined;
 animator.applyAnimation = (index,time) => { liveLocals=posedTail(animations[index].name,time,[0,0,0],0,1,[],true); };
 animator.applyCrossFade = () => {};
+// A rug adds a support plane, not a navigation wall. Exercise the real actor
+// and the exported skin vertices while crossing its edge and standing on it.
+const groundSupport = load('@/utils/native-ground-support');
+function skinAccessor(index) {
+  const a = skeleton.accessors[index], view = skeleton.bufferViews[a.bufferView];
+  const width = { SCALAR: 1, VEC3: 3, VEC4: 4, MAT4: 16 }[a.type];
+  const [bytes, read] = { 5121: [1, 'readUInt8'], 5123: [2, 'readUInt16LE'], 5126: [4, 'readFloatLE'] }[a.componentType];
+  return Array.from({ length: a.count }, (_, i) => Array.from({ length: width }, (_, k) =>
+    catBinary[read]((view.byteOffset ?? 0) + (a.byteOffset ?? 0) + i * (view.byteStride ?? width * bytes) + k * bytes)));
+}
+const skinNode = skeleton.nodes.find(n => n.name === 'Game cat skin');
+const skinPrimitive = skeleton.meshes[skinNode.mesh].primitives[0], catSkin = skeleton.skins[skinNode.skin];
+const skinPositions = skinAccessor(skinPrimitive.attributes.POSITION);
+const skinJoints = skinAccessor(skinPrimitive.attributes.JOINTS_0);
+const skinWeights = skinAccessor(skinPrimitive.attributes.WEIGHTS_0);
+const inverseBinds = skinAccessor(catSkin.inverseBindMatrices);
+const pawJointIds = catSkin.joints.flatMap((node, index) => /\.(front|rear)\.paw$/.test(skeleton.nodes[node].name) ? [index] : []);
+const pawVertices = skinPositions.flatMap((point, i) => skinWeights[i].some((weight, k) => weight > .5 && pawJointIds.includes(skinJoints[i][k])) ? [i] : []);
+assert.ok(pawVertices.length > 40, 'Support checks cover the actual toe-pad mesh');
+function transformedPawVertices() {
+  const matrices = catSkin.joints.map((node, i) => multiply(jointWorld(skeleton.nodes[node].name), inverseBinds[i]));
+  return pawVertices.map(i => [0, 1, 2].map(axis => skinWeights[i].reduce((sum, weight, k) => {
+    const m = matrices[skinJoints[i][k]], p = skinPositions[i];
+    return sum + weight * (m[axis] * p[0] + m[4 + axis] * p[1] + m[8 + axis] * p[2] + m[12 + axis]);
+  }, 0)));
+}
+function onRug(point, surface) {
+  const dx = point[0] - surface.position[0], dz = point[2] - surface.position[2];
+  const x = dx * surface.cos - dz * surface.sin - surface.centerX;
+  const z = dx * surface.sin + dz * surface.cos - surface.centerZ;
+  return surface.round ? Math.hypot(x / surface.halfX, z / surface.halfZ) <= .99
+    : Math.abs(x) < surface.halfX - .002 && Math.abs(z) < surface.halfZ - .002;
+}
+for (const [modelId, itemScale, angle, fps] of [
+  ['carpetRound', 1, 0, 30], ['carpetRound', 1, 0, 60], ['carpetRound', 1, 0, 120],
+  ['rugGeometricTeal', 1.3, 37, 60], ['rugStripedRunner', .7, 90, 60],
+]) {
+  const room = w.buildNativeRoomWorld({ ...base, petSize: 80, decorations: [{ decorationId: modelId, instanceId: 'rug', offset: { x: 0, y: 0 }, scale: itemScale, rotationDegrees: angle }] });
+  const rug = room.objects[0], surface = groundSupport.buildRugSurfaces(room)[0];
+  assert.equal(rug.solid, false); assert.equal(rug.collidable, false);
+  const reach = Math.hypot(surface.halfX, surface.halfZ) + 1.5 * room.catScale;
+  const start = [rug.position[0] - reach, w.FLOOR_Y, rug.position[2]], end = [rug.position[0] + reach, w.FLOOR_Y, rug.position[2]];
+  const route = w.findRoomPath(start, end, room);
+  assert.equal(route.length, 2, 'A rug can be crossed directly');
+  slots = []; catRoot = matrix(); liveLocals = posedTail('idle', 0, [0, 0, 0], 0, 1, [], true);
+  const completions = [], reportedHeights = [], renderedPosition = { value: start };
+  render({ playback: { kind: 'segment', segment: registry.getSegment('idle') }, active: true, world: room, activityKey: 'rug:walk',
+    positionValue: renderedPosition, onRoomStepComplete: (key, point) => completions.push(point),
+    onContactPosition: point => reportedHeights.push(point[1]),
+    travel: { path: route, distance: w.pathLength(route), duration: 4, jump: false, awaitCompletion: true } });
+  let contacts = 0, highest = w.FLOOR_Y, lastHeight = w.FLOOR_Y;
+  for (let frame = 0; frame < fps * 4 + 1; frame++) {
+    renderFrame({ timeSinceLastFrame: 1 / fps });
+    highest = Math.max(highest, catRoot[13]);
+    if (frame > 0) assert.ok(Math.abs(catRoot[13] - lastHeight) < .04, `${modelId}/${fps}/${frame}: stepping over the edge cannot snap the whole cat vertically (${lastHeight} -> ${catRoot[13]})`);
+    lastHeight = catRoot[13];
+    if (frame % Math.max(1, fps / 30) !== 0) continue;
+    for (const point of transformedPawVertices()) if (onRug(point, surface)) {
+      contacts++;
+      assert.ok(point[1] >= surface.height - .003, `${modelId}/${fps}: a toe pad cannot sink into the rug (${point[1]} < ${surface.height})`);
+    }
+  }
+  assert.ok(contacts > 100 && highest >= surface.height, 'The walk really crosses the raised rug surface');
+  assert.equal(completions.length, 1, 'Rug support cannot prevent arrival completion');
+  assert.ok(w.pathLength([completions[0], route.at(-1)]) < 1e-6);
+  assert.ok(reportedHeights.every(y => y === w.FLOOR_Y), 'Rendering support never feeds back into route planning');
+  assert.ok(Math.abs(catRoot[13] - w.FLOOR_Y) < 1e-6, 'The paws return to floor height after leaving the rug');
+  for (const reduced of [false, true]) for (const clip of ['idle', 'sit', 'layDown', 'sleep']) {
+    slots = []; liveLocals = posedTail('idle', 0, [0, 0, 0], 0, 1, [], true);
+    const center = [rug.position[0], w.FLOOR_Y, rug.position[2]];
+    render({ playback: { kind: 'segment', segment: load('@/pet-display/registry/cat-model-registry').createRoomActivitySegment(clip) }, active: true, reduceMotion: reduced,
+      world: { ...room, home: center } });
+    const frames = Math.ceil(authored[clip][0] / authored[clip][1] * 60);
+    for (let frame = 0; frame < frames; frame++) {
+      renderFrame({ timeSinceLastFrame: 1 / 60 });
+      if (frame % 15 !== 0) continue;
+      const minimum = Math.min(...transformedPawVertices().filter(point => onRug(point, surface)).map(point => point[1]));
+      assert.ok(minimum >= surface.height - .003, `${modelId}/${clip}/${frame}: resting and Reduce Motion retain toe-pad clearance ${JSON.stringify({minimum,height:surface.height,root:catRoot[13],paws:pawJointIds.map(i=>jointWorld(skeleton.nodes[catSkin.joints[i]].name))})}`);
+    }
+  }
+  const airborne = [rug.position[0], surface.height + .3, rug.position[2]];
+  assert.equal(groundSupport.rugSupportLift(airborne, [airborne], [surface], room.catScale), 0, 'Airborne and perched cats keep their authored height');
+}
+const roundSurface = groundSupport.buildRugSurfaces(w.buildNativeRoomWorld({ ...base, decorations: [{ decorationId: 'carpetRound', instanceId: 'round', offset: { x: 0, y: 0 } }] }))[0];
+const cornerPoint = [roundSurface.position[0] + roundSurface.halfX, w.FLOOR_Y, roundSurface.position[2] + roundSurface.halfZ];
+assert.equal(groundSupport.rugSupportLift(cornerPoint, [cornerPoint], [roundSurface], .1), 0, 'Empty corners of a round rug bounding box cannot lift the cat');
+console.log('Verified real animated toe pads on round, rotated and resized rugs, edge transitions, floor return, arrival, standing and Reduce Motion.');
 // Run the actual object and cat callbacks in their scene order with shipped GLBs.
 sceneReduced = false;
 let toyRoot, toyLocals, toyNodes, toyParents;
@@ -1102,6 +1192,10 @@ Object.assign(mocks['react-native-filament'], {
   assert.equal(clockScene.find(c => c.type === 'WorldLighting').props.objects, clockWorld.objects, 'Room lighting receives the actual placed windows');
   const child = clockScene.find(c => c.type.name === 'RoomObject');
   assert.equal(child.props.worldClock, worldClock);
+  const lightning = clockScene.find(c => c.type === 'Lightning');
+  assert.equal(lightning.props.flash, clockScene.find(c => c.type === 'WorldLighting').props.lightning);
+  assert.equal(child.props.lightning, lightning.props.flash, 'Lighting and all room-object materials share one storm pulse');
+  assert.equal(lightning.props.active, false, 'Rooms without windows do not advance a storm clock');
   slots = []; cursor = 0; effects = [];
   child.type(child.props); effects.forEach(fn => fn());
   renderFrame({ timeSinceLastFrame: 1 / 60 });
@@ -1387,6 +1481,38 @@ for (const fps of [30, 60, 120]) {
 }
 console.log('Verified landed balls stay put after play, save/reload at the same floor position, and recover locally at boundaries at 30/60/120 FPS.');
 
+// Move the real chair root entirely through its drawing-thread shared preview.
+{
+  const room=w.buildNativeRoomWorld({...base,decorations:[{decorationId:'chairRockingOak',instanceId:'drag-chair',offset:{x:0,y:.2},rotationDegrees:20}]});
+  const object=room.objects[0], editingObject={value:undefined};
+  const child=sceneChildren({world:room,catPresent:false,editing:true,editingObject}).find(c=>c.type.name==='RoomObject');
+  toyRoot=matrix();toyNodes=new Map();slots=[];cursor=0;effects=[];
+  let bodies=0, models=0;
+  const oldBody=mocks['react-native-filament'].useRigidBody,oldModel=mocks['react-native-filament'].useModel;
+  mocks['react-native-filament'].useRigidBody=(...args)=>{bodies++;return oldBody(...args);};
+  mocks['react-native-filament'].useModel=(...args)=>{models++;return oldModel(...args);};
+  child.type(child.props);effects.forEach(fn=>fn());
+  for(let frame=0;frame<120;frame++) {
+    editingObject.value={...object,position:object.position.map((v,i)=>v+(i===0?frame*.001:0))};
+    renderFrame({timeSinceLastFrame:1/60});
+    assert.ok(Math.abs(Math.atan2(toyRoot[8],toyRoot[0])-20*Math.PI/180)<1e-8,'Live native rendering keeps the chair at 20 degrees');
+    assert.ok(Math.abs(toyRoot[12]-editingObject.value.position[0])<1e-8);
+  }
+  for(const invalid of [{}, {...object,scale:undefined}, {...object,scale:NaN}, {...object,scale:0},
+    {...object,heading:undefined}, {...object,position:undefined}, {...object,position:[0,NaN,0]}]) {
+    editingObject.value=invalid;
+    assert.doesNotThrow(()=>renderFrame({timeSinceLastFrame:1/60}),'Incomplete previews cannot reach native numeric transforms');
+    assert.ok(toyRoot.every(Number.isFinite),'The room retains a finite transform during an incomplete preview');
+  }
+  editingObject.value={...object,position:[.5,object.position[1],object.position[2]]};
+  renderFrame({timeSinceLastFrame:1/60});
+  assert.equal(toyRoot[12],.5,'A valid preview continues working after an incomplete update');
+  assert.equal(bodies,1,'Dragging does not rebuild physics bodies');
+  assert.equal(models,1,'Dragging does not reload model assets');
+  mocks['react-native-filament'].useRigidBody=oldBody;mocks['react-native-filament'].useModel=oldModel;
+}
+console.log('Verified native chair drag previews retain 20 degrees across 120 frames with no model reloads or physics body recreation.');
+
 // Match the real chair cushion and runner geometry, then run both native roots
 // against the scene's single rocking clock.
 const rocking = load('@/utils/native-rocking-chair');
@@ -1481,6 +1607,7 @@ const repairCode=ts.transpileModule(`(${repairEffect})();`,{compilerOptions:{tar
 const repairLayout={...base,decorations:[{decorationId:'windowOakWide',instanceId:'cached-window',scale:1.6,offset:{x:.3,y:.2}}]};
 let repairWorld=w.buildNativeRoomWorld(repairLayout),saves=0;
 const repairContext={roomVisible:false,rotationPreview:null,viewport:{width:base.width,height:base.height},nativeWorld:repairWorld,livePositions:{},
+  seenPlacementIds:{current:undefined},placement:load('@/utils/room-item-placement').createRoomPlacementResolver(repairWorld),
   onPlacedDecorationOffsetChange(id,offset){saves++;repairLayout.decorations[0].offset=offset;}};
 for(let render=0;render<100;render++) vm.runInNewContext(repairCode,repairContext);
 assert.equal(saves,0,'Hidden cached rooms never save into the active room or trigger an update loop');
@@ -1604,8 +1731,24 @@ const lampRoom = w.buildNativeRoomWorld({ ...base, decorations: [
 ] });
 const lampsInScene = sceneChildren({ ...sceneMeal, world: lampRoom }).filter(child => child.type === 'LampLight');
 assert.equal(lampsInScene.length, 2);
-assert.equal(NativeLampLight(lampsInScene[0].props).type, 'LampLightEntity');
-assert.equal(typeof NativeLampLight(lampsInScene[0].props).props.intensity, 'number', 'Light updates avoid native handle listeners');
+const lampPreview = { value: undefined };
+const lampNode = NativeLampLight({...lampsInScene[0].props, editingObject:lampPreview});
+assert.equal(typeof lampNode.props.config.intensity, 'number', 'Light updates avoid native handle listeners');
+let lampCreates = 0, lampPositions = [];
+mocks['react-native-filament'].useLightEntity = (_manager, config) => { lampCreates++; return {config}; };
+mocks['react-native-filament'].useEntityInScene = () => {};
+mocks['react-native-filament'].useFilamentContext = () => ({ lightManager:{ setPosition(_light,position) { lampPositions.push([...position]); } }, scene:{} });
+slots=[];cursor=0;effects=[];lampNode.type(lampNode.props);
+renderFrame({timeSinceLastFrame:1/60});
+for(let i=0;i<120;i++) {
+  lampPreview.value={...lampRoom.objects[0],position:lampRoom.objects[0].position.map((v,axis)=>v+(axis===0?i*.001:0))};
+  renderFrame({timeSinceLastFrame:1/60});
+}
+assert.equal(lampCreates,1,'Dragging never recreates the native lamp light');
+assert.ok(Math.abs(lampPositions.at(-1)[0]-lampNode.props.config.position[0]-.119)<1e-8,'The light pool follows the moving lamp');
+const settledLampUpdates=lampPositions.length;
+for(let i=0;i<60;i++)renderFrame({timeSinceLastFrame:1/60});
+assert.equal(lampPositions.length,settledLampUpdates,'An unmoving lamp does not repeat native writes');
 assert.equal(NativeLampLight(lampsInScene[1].props), null, 'An off lamp emits no light');
 assert.equal(NativeLampLight({ ...lampsInScene[0].props, active: false }), null, 'Hidden rooms emit no lamp light');
 assert.equal(NativeLampLight({ ...lampsInScene[0].props, object: { ...lampRoom.objects[0], poweredOn: false } }), null);
@@ -1650,3 +1793,48 @@ for (const id of Object.keys(glowParts)) {
   assert.ok(glowing.every(material => material.emission.slice(0, 3).some(value => value > 0)), 'Switching back on restores the glow');
 }
 console.log('Verified shade emission, isolated Blender materials, independent lamps and repeated on/off switching for all 10 lamp types.');
+
+for(const id of ['lavaLampOff','lavaLampAni']) {
+  const model=glb(id),buffer=fs.readFileSync(`assets/3d/native/${id}.glb`);
+  const binary=buffer.subarray(28+buffer.readUInt32LE(12));
+  function values(index) {
+    const accessor=model.accessors[index],view=model.bufferViews[accessor.bufferView];
+    assert.equal(accessor.componentType,5126);
+    const size=accessor.type==='SCALAR'?1:3;
+    return Array.from({length:accessor.count},(_,row)=>Array.from({length:size},(_,axis)=>
+      binary.readFloatLE((view.byteOffset??0)+(accessor.byteOffset??0)+row*(view.byteStride??size*4)+axis*4)));
+  }
+  const glass=model.materials.find(m=>m.name.startsWith('Lamp glow Glass'));
+  assert.equal(glass.alphaMode,'BLEND','Wax is visible through the actual exported glass');
+  assert.ok(glass.pbrMetallicRoughness.baseColorFactor[3]<.4);
+  const blobs=model.nodes.filter(n=>n.name.startsWith('Lava blob'));
+  assert.equal(blobs.length,3);
+  const animation=model.animations[0];
+  assert.ok(animation,'Both saved lava lamp variants move when powered on');
+  assert.equal(Math.max(...animation.samplers.map(s=>model.accessors[s.input].max[0])),20,
+    'Wax rises slowly instead of cycling every two seconds');
+  const trajectories=[];
+  for(const blob of blobs) {
+    const channels=animation.channels.filter(channel=>model.nodes[channel.target.node]===blob);
+    const positions=values(animation.samplers[channels.find(c=>c.target.path==='translation').sampler].output);
+    const scales=values(animation.samplers[channels.find(c=>c.target.path==='scale').sampler].output);
+    assert.equal(positions.length,scales.length);
+    const heights=positions.map(p=>p[1]);
+    assert.ok(Math.max(...heights)-Math.min(...heights)>.5,'Each wax volume rises and falls inside the bottle');
+    positions.forEach((point,i)=>{
+      const scale=scales[i];
+      assert.ok(point[1]-scale[1]>.29 && point[1]+scale[1]<1.24,'Wax cannot move through the cap or base');
+      const narrowestRadius=.12;
+      assert.ok(Math.hypot(point[0],point[2])+Math.max(scale[0],scale[2])<narrowestRadius,
+        'Wax remains behind the tapered glass at every sampled frame');
+      assert.ok(scale[2]>.04 && scale[0]>.04,'Wax is a rounded volume, not a flat dot on the glass');
+    });
+    for(const axis of [0,1,2]) {
+      assert.ok(Math.abs(positions[0][axis]-positions.at(-1)[axis])<1e-6,'The wax cycle has no position jump');
+      assert.ok(Math.abs(scales[0][axis]-scales.at(-1)[axis])<1e-6,'The wax cycle has no size jump');
+    }
+    trajectories.push(heights);
+  }
+  assert.notDeepEqual(trajectories[0],trajectories[1],'Wax blobs have independent motion');
+}
+console.log('Verified transparent lava bottles, round wax volumes, slow seamless motion and containment for both lamp variants.');

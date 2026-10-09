@@ -26,6 +26,7 @@ FRONT_ICONS = {
     'patterns', 'fractions', 'operations',
     'arrow-up', 'arrow-down', 'arrow-left', 'arrow-right',
     'chevron-up', 'chevron-down', 'chevron-right',
+    'weather-sun', 'weather-moon', 'weather-rain', 'weather-snow', 'weather-leaves', 'weather-auto',
 }
 
 

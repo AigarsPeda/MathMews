@@ -34,7 +34,7 @@ function load(id) {
   vm.runInNewContext(source, { module, exports: module.exports, require: load, Date: { now: () => now }, setTimeout: setTimeoutMock, clearTimeout: id => timers.delete(id) });
   return module.exports;
 }
-const { buildRoomActivity, buildRoomReturn, routeToSofa, roomOffsetToPoint, roomActivityStepKey, ROOM_IDLE_DELAY_MS } = load('@/utils/room-activities');
+const { buildRoomActivity, buildRoomReturn, routeToSofa, roomOffsetToPoint, roomActivityStepKey, roomIdleDelay, ROOM_IDLE_DELAY_MS } = load('@/utils/room-activities');
 const { getCatWalkMotion, getCatJumpMotion, isCatWalk } = load('@/constants/cat-room-motion');
 for (const [x, y, animation, facing] of [[60, 0, 'walk', 1], [-60, 0, 'walk', -1], [0, -60, 'walkAway', 1],
   [0, 60, 'walkToward', 1], [60, -16.8, 'walkAwayDiagonal', 1], [-60, 16.8, 'walkTowardDiagonal', -1]]) {
@@ -848,3 +848,88 @@ advance(editingPlan.steps.reduce((sum,step)=>sum+step.durationMs,0));render();
 assert.equal(render().activity,null);
 assert.equal(timers.size,0,'Editing does not schedule another idle animation');
 console.log('Verified decoration exits furniture safely and stops without a walk home or another idle activity.');
+
+// Time-of-day choices must depend on the clock, rather than furniture count.
+const livelyRoom = { ...furnished, toys: [ball, mouse] };
+const daytimePlans = Array.from({ length: 20 }, (_, turn) => buildRoomActivity({ ...livelyRoom, period: 'day' }, turn));
+const nighttimePlans = Array.from({ length: 20 }, (_, turn) => buildRoomActivity({ ...livelyRoom, period: 'night' }, turn));
+assert.equal(daytimePlans.filter(plan => ['toyPlay', 'mouseChase', 'wander'].includes(plan.kind)).length, 16);
+assert.equal(nighttimePlans.filter(plan => plan.kind === 'sofaSleep').length, 16);
+assert.ok(nighttimePlans[0].steps.find(step => step.animation === 'curlSleep').durationMs > sleep.steps.find(step => step.animation === 'curlSleep').durationMs);
+assert.equal(roomIdleDelay({ ...room, period: 'day' }), 12_000);
+assert.equal(roomIdleDelay({ ...room, period: 'night' }), 30_000);
+assert.equal(buildRoomActivity({ ...room, period: 'day' }, 0).kind, 'wander', 'An empty room still permits exploration');
+assert.equal(buildRoomActivity({ ...livelyRoom, period: 'night', hungry: true }, 0), null);
+assert.equal(buildRoomActivity({ ...livelyRoom, period: 'night', asleep: true }, 4).kind, 'sofaSleep');
+assert.equal(buildRoomActivity({ ...room, period: 'night', asleep: true }, 0), null, 'Floor sleep is undisturbed when no seat exists');
+for (const period of ['day', 'night']) {
+  const explicit = buildRoomActivity({ ...livelyRoom, period }, 0, 'sofaSleep', sofa.instanceId);
+  assert.equal(explicit.ambientPeriod, undefined, 'Explicit commands do not inherit automatic wake-up policy');
+  assert.equal(explicit.steps.find(step => step.animation === 'curlSleep').hold, true);
+  assert.equal(buildRoomActivity({ ...livelyRoom, period, asleep: true }, 0, 'toyPlay', ball.instanceId).kind, 'toyPlay');
+}
+// Exploration uses the same obstacle-aware native floor path as commands.
+const explorationLayout = { ...furnished, petSize: 80, period: 'day' };
+const explorationWorld = nativeRoom.buildNativeRoomWorld(explorationLayout);
+const exploration = buildRoomActivity({ ...explorationLayout, nativeWorld: explorationWorld }, 0);
+let exploringPosition = explorationWorld.home;
+for (const step of exploration.steps) {
+  const prepared = nativeRoom.prepareNativeStep(exploration, step, nativeRoom.catScreenPoint(exploringPosition, explorationWorld), explorationWorld, nativeRoom.FLOOR_Y);
+  assert.equal(prepared.native.blocked, false);
+  for (let i = 1; i < prepared.native.path.length; i++) {
+    const a = prepared.native.path[i - 1], b = prepared.native.path[i];
+    for (let sample = 0; sample <= 20; sample++) {
+      const t = sample / 20;
+      assert.equal(nativeRoom.isFree([a[0] + (b[0] - a[0]) * t, nativeRoom.FLOOR_Y, a[2] + (b[2] - a[2]) * t], explorationWorld), true, 'Daytime walking keeps cat clearance from the sofa');
+    }
+  }
+  exploringPosition = prepared.native.path.at(-1);
+}
+console.log('Verified daytime play/exploration, longer and more frequent night naps, empty rooms, hunger priority, explicit commands and native obstacle avoidance.');
+
+function resetClockRoom(period) {
+  slots.forEach(value => value?.cleanup?.()); slots.length = 0; timers.clear();
+  visibility = { active: true, reduceMotion: false }; roomVisible = true; enabled = true;
+  const layout = { ...furnished, petSize: 80, period };
+  hookRoom = { ...layout, nativeWorld: nativeRoom.buildNativeRoomWorld(layout), nativeStepCompletion: true };
+  render(); reportCat(hookRoom.nativeWorld.home); render();
+}
+function finishClockStep() {
+  const state = render().activity, step = state.plan.steps[state.stepIndex];
+  assert.equal(step.native.blocked, false);
+  render().completeNativeStep(roomActivityStepKey(state), step.native.path.at(-1)); render();
+}
+resetClockRoom('night');
+advance(30_000); render();
+assert.equal(render().activity.plan.kind, 'sofaSleep');
+for (let i = 0; i < 3; i++) finishClockStep();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'curlSleep');
+roomVisible = false; render(); advance(60_000);
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'curlSleep', 'A hidden room pauses a night nap');
+roomVisible = true; render();
+hookRoom = { ...hookRoom, period: 'morning' }; render(); render(); advance(0);
+assert.equal(render().activity.plan.kind, 'returnHome');
+assert.equal(render().activity.plan.steps[0].animation, 'curlUp', 'Dawn uncurls the cat before leaving the sofa');
+finishClockStep();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOff');
+finishClockStep(); finishClockStep();
+assert.equal(render().activity, null);
+advance(12_700); render();
+assert.equal(render().activity.plan.kind, 'wander', 'Morning resumes floor exploration');
+
+resetClockRoom('night'); render().startActivity('sofaSleep', sofa.instanceId); render(); advance(0);
+for (let i = 0; i < 3; i++) finishClockStep();
+hookRoom = { ...hookRoom, period: 'day' }; render(); render(); advance(0);
+assert.equal(render().activity.plan.kind, 'sofaSleep');
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].hold, true, 'Dawn preserves a deliberate sleep command');
+
+resetClockRoom('night'); advance(30_000); render(); finishClockStep();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOn');
+hookRoom = { ...hookRoom, period: 'day' }; render(); render(); advance(0);
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOn', 'Dawn cannot interrupt an airborne cat');
+finishClockStep(); render(); advance(0);
+assert.equal(render().activity.plan.kind, 'returnHome');
+assert.equal(render().activity.plan.steps[0].animation, 'jumpOff', 'The landed cat gets back down before exploring');
+resetClockRoom('day'); visibility = { active: true, reduceMotion: true }; render(); advance(60_000);
+assert.equal(render().activity, null, 'Clock-driven exploration respects Reduce Motion');
+console.log('Verified native night nap arrival, hidden-room pause, safe dawn departure, morning activity, preserved commands, airborne dawn transitions and Reduce Motion.');

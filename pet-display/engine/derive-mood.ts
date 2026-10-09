@@ -1,8 +1,9 @@
 import { MOOD_ANIMATION } from "@/constants/game";
 import { worldClockReading, type WorldClock } from '@/utils/world-clock';
+import { useWorldClockNow } from '@/hooks/use-world-clock-now';
 import type { PetAnimationState, PetMood, PetProfile } from "@/types/game";
 import { isPetHungry } from "@/utils/pet-care";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 const LOW_STAT_THRESHOLD = 30;
 export const IDLE_REST_MS = 3 * 60 * 1000;
@@ -31,9 +32,12 @@ export function isPetIdleSleepy(pet: PetProfile, now = Date.now()): boolean {
   return now - getLastInteractionAt(pet) >= IDLE_ASLEEP_MS;
 }
 
-export function shouldPetSleep(pet: PetProfile, now = Date.now()): boolean {
+export function shouldPetSleep(pet: PetProfile, now = Date.now(), night?: boolean): boolean {
   if (isPetHungry(pet.stats)) {
     return false;
+  }
+  if (pet.type === 'cat' && night !== undefined) {
+    return night && now - getLastInteractionAt(pet) >= 60_000;
   }
   return isPetSleepy(pet) || isPetIdleSleepy(pet, now);
 }
@@ -51,10 +55,10 @@ export function resolveAsleepOnLoad(
   return { ...pet, isAsleep: wasAsleep || longAbsence };
 }
 
-export function derivePetMood(pet: PetProfile, now = Date.now(), night = false): PetMood {
+export function derivePetMood(pet: PetProfile, now = Date.now(), night?: boolean): PetMood {
   const { stats } = pet;
 
-  if (shouldPetSleep(pet, now)) {
+  if (shouldPetSleep(pet, now, night)) {
     return "sleeping";
   }
 
@@ -62,7 +66,7 @@ export function derivePetMood(pet: PetProfile, now = Date.now(), night = false):
     return "sad";
   }
 
-  if (pet.type === "cat" && now - getLastInteractionAt(pet) >= (night ? 60_000 : IDLE_REST_MS)) return "resting";
+  if (pet.type === "cat" && night !== false && now - getLastInteractionAt(pet) >= (night ? 30_000 : IDLE_REST_MS)) return "resting";
   return "idle";
 }
 
@@ -71,9 +75,10 @@ export function derivePetVideoMood(
   fallAsleepDone: boolean,
   now = Date.now(),
   lieDownDone = false,
-  night = false,
+  night?: boolean,
 ): PetAnimationState {
-  if (pet.isAsleep) {
+  // Clock-driven sleep ends at dawn, including an old saved sleeping flag.
+  if (pet.isAsleep && (pet.type !== 'cat' || night === undefined || night && !isPetHungry(pet.stats))) {
     return "sleeping";
   }
 
@@ -82,7 +87,7 @@ export function derivePetVideoMood(
     if (!lieDownDone) return "lyingDown";
     if (base === "resting") return "resting";
   }
-  if (!shouldPetSleep(pet, now)) return base;
+  if (!shouldPetSleep(pet, now, night)) return base;
 
   if (fallAsleepDone) {
     return "sleeping";
@@ -92,28 +97,25 @@ export function derivePetVideoMood(
 }
 
 export function usePetBaseMood(pet: PetProfile, clock?: WorldClock) {
+  const now = useWorldClockNow(clock ? 5000 : 30_000);
+  const night = clock ? worldClockReading(clock, now).period === 'night' : undefined;
   const interactionAt = getLastInteractionAt(pet);
-  const asleep = pet.isAsleep === true;
+  const asleep = pet.isAsleep === true && (pet.type !== 'cat' || night !== false);
   const [phase, setPhase] = useState(() => ({
-    interactionAt, asleep, lieDownDone: asleep, fallAsleepDone: asleep,
+    interactionAt, asleep, night, lieDownDone: asleep, fallAsleepDone: asleep,
   }));
-  const [now, setNow] = useState(() => Date.now());
   // Reset transitions for a new interaction, rather than every stat-decay tick.
-  if (phase.interactionAt !== interactionAt || phase.asleep !== asleep) {
-    setPhase({ interactionAt, asleep, lieDownDone: asleep, fallAsleepDone: asleep });
+  if (phase.interactionAt !== interactionAt || phase.asleep !== asleep || phase.night !== night) {
+    setPhase({ interactionAt, asleep, night, lieDownDone: asleep, fallAsleepDone: asleep });
   }
-  useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 30_000);
-    return () => clearInterval(interval);
-  }, []);
   const mood = useMemo(
-    () => derivePetVideoMood(pet, phase.fallAsleepDone, now, phase.lieDownDone, clock ? worldClockReading(clock, now).period === 'night' : false),
-    [pet, phase.fallAsleepDone, phase.lieDownDone, now, clock],
+    () => derivePetVideoMood(pet, phase.fallAsleepDone, now, phase.lieDownDone, night),
+    [pet, phase.fallAsleepDone, phase.lieDownDone, now, night],
   );
   const onFallAsleepComplete = useCallback(() => {
-    if (shouldPetSleep(pet)) setPhase(current => current.interactionAt === interactionAt
+    if (shouldPetSleep(pet, Date.now(), night)) setPhase(current => current.interactionAt === interactionAt
       ? { ...current, fallAsleepDone: true } : current);
-  }, [pet, interactionAt]);
+  }, [pet, interactionAt, night]);
   const onLieDownComplete = useCallback(() => {
     setPhase(current => current.interactionAt === interactionAt
       ? { ...current, lieDownDone: true } : current);

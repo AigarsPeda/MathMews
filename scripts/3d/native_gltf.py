@@ -1,6 +1,28 @@
-"""Keep animation clocks relative to each clip's first sample in exported GLBs."""
+"""Normalize animation clocks and share duplicate binary data in exported GLBs."""
 import json, struct
 from pathlib import Path
+
+def compact_buffer_views(path):
+ """Share identical binary data without changing accessor or buffer-view indices."""
+ data=Path(path).read_bytes();json_size=struct.unpack_from('<I',data,12)[0]
+ document=json.loads(data[20:20+json_size]);binary_header=20+json_size
+ assert len(document['buffers'])==1 and 'uri' not in document['buffers'][0]
+ binary_size=struct.unpack_from('<I',data,binary_header)[0]
+ source=data[binary_header+8:binary_header+8+binary_size]
+ binary=bytearray();offsets={}
+ for view in document.get('bufferViews',[]):
+  assert view['buffer']==0
+  start=view.get('byteOffset',0);chunk=source[start:start+view['byteLength']]
+  assert len(chunk)==view['byteLength']
+  if chunk not in offsets:
+   offsets[chunk]=len(binary)
+   binary.extend(chunk);binary.extend(b'\0'*((-len(binary))%4))
+  # Keep each view's stride, target and references; only its storage moves.
+  view['byteOffset']=offsets[chunk]
+ document['buffers'][0]['byteLength']=len(binary)
+ encoded=json.dumps(document,separators=(',',':')).encode();encoded+=b' '*((-len(encoded))%4)
+ body=struct.pack('<II',len(encoded),0x4e4f534a)+encoded+struct.pack('<II',len(binary),0x004e4942)+binary
+ Path(path).write_bytes(struct.pack('<III',0x46546c67,2,12+len(body))+body)
 
 def normalize_animation_times(path):
  data=Path(path).read_bytes();json_size=struct.unpack_from('<I',data,12)[0]
@@ -45,4 +67,6 @@ def normalize_animation_times(path):
 
 if __name__=='__main__':
  import sys
- for path in Path(sys.argv[1]).glob('*.glb'):normalize_animation_times(path)
+ for path in Path(sys.argv[1]).glob('*.glb'):
+  normalize_animation_times(path)
+  compact_buffer_views(path)

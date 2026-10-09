@@ -11,6 +11,7 @@ const storage = {
   multiRemove: async keys => { keys.forEach(key => stored.delete(key)); },
 };
 function load(id) {
+  if (id === '@/hooks/use-world-clock-now') return { useWorldClockNow: () => Date.now() };
   if (id === 'react') return {};
   if (id === 'react-native') return { Dimensions: { get: () => ({ width: 390, height: 844 }) }, PixelRatio: { roundToNearestPixel: n => n } };
   if (id === '@react-native-async-storage/async-storage') return storage;
@@ -351,14 +352,14 @@ for (const decorationId of ['japaneseDoorAni', 'japaneseSlidingDoorAni']) {
   const left = { ...bathDoor, decorationId, offset: { x: -.6, y: -.3 } };
   assert.equal(getPlacedDecorationWallFlipped(left), true, 'Legacy doors face the left wall automatically');
   const right = updatePlacedDecorationOffsetByInstance([left], left.instanceId, { x: .6, y: -.3 })[0];
-  assert.equal(getPlacedDecorationWallFlipped(right), false, 'Dragging across the room faces the right wall');
+  assert.equal(getPlacedDecorationWallFlipped(right), true, 'Moving across the screen preserves the current wall orientation');
   const turned = updatePlacedDecorationWallFlipByInstance([left], left.instanceId, false)[0];
   assert.equal(normalizePlacedDecorations([turned])[0].wallFlipped, false, 'Manual facing survives reload');
   assert.equal(getPlacedDecorationWallFlipped(turned), false);
   const moved = updatePlacedDecorationOffsetByInstance([turned], left.instanceId, { x: -.4, y: -.3 })[0];
   assert.equal(getPlacedDecorationWallFlipped(moved), false, 'Small adjustments preserve manual facing');
 }
-console.log('Verified stationary doors, wall-facing defaults, cross-wall dragging, and saved manual facing.');
+console.log('Verified stationary doors, wall-facing defaults, movement without turning, and saved manual facing.');
 const optionalDoor = { ...bathDoor, instanceId: 'decorative-door', doorDestination: undefined };
 const legacyLayout = { placedDecorations: [bathDoor, optionalDoor], roomLayerOrder: [
   { kind: 'decoration', decorationId: bathDoor.decorationId, instanceId: bathDoor.instanceId },

@@ -383,6 +383,60 @@ def cooking_pot():
                                      (side*.83, .18, .67), (side*.55, .18, .67)], .065, 'wood')
 
 
+def weather_sun(center=(0, 0, .85), radius=.40):
+    x, y, z = center
+    art.sphere('Golden sun', center, (radius, .17, radius), 'gold')
+    for i in range(8):
+        angle = i * math.tau / 8
+        art.curve('Soft sun ray', [(x + math.cos(angle) * r, y, z + math.sin(angle) * r)
+                                  for r in (radius * 1.35, radius * 1.75)], .045, 'orange')
+
+
+def weather_cloud():
+    for x, z, radius in [(-.42, 1.02, .28), (0, 1.18, .39), (.43, 1.04, .29)]:
+        art.sphere('Soft weather cloud', (x, -.10, z), (radius, .22, radius), 'white')
+    art.box('Cloud rounded base', (0, -.10, .91), (1.12, .35, .32), 'white', .15)
+
+
+def weather_moon():
+    outer = [(.68*math.cos(math.radians(58+i*244/40)), .68*math.sin(math.radians(58+i*244/40))) for i in range(41)]
+    inner = [(.37+.51*math.cos(math.radians(-92-i*176/30)), .51*math.sin(math.radians(-92-i*176/30))) for i in range(31)]
+    study.extruded_shape('Cool crescent moon', outer+inner, 'cream', .22, (0, 0, .79))
+    for x,z,r in [(.51,1.10,.22),(.78,1.48,.11)]:
+        points = [(x+math.cos(math.pi/2+i*math.pi/4)*(r if i%2==0 else r*.3),
+                   z+math.sin(math.pi/2+i*math.pi/4)*(r if i%2==0 else r*.3)) for i in range(8)]
+        study.extruded_shape('Blue night star', points, 'blue', .15)
+
+
+def weather_rain():
+    weather_cloud()
+    for x,z in [(-.43,.43),(0,.30),(.43,.43)]:
+        study.extruded_shape('Blue raindrop', [(x,z+.22),(x-.10,z+.04),(x-.10,z-.05),
+                              (x,z-.12),(x+.10,z-.05),(x+.10,z+.04)], 'blue', .12)
+
+
+def weather_snow():
+    weather_cloud()
+    for x,z in [(-.43,.40),(0,.25),(.43,.40)]:
+        for i in range(3):
+            a = i * math.pi / 3
+            art.curve('Snowflake arm', [(x + side*.16*math.cos(a), -.12, z + side*.16*math.sin(a))
+                                       for side in (-1,1)], .032, 'blue')
+
+
+def weather_leaves():
+    for x,z,r,angle,color in [(-.30,1.18,.50,-.35,'orange'),(.33,.58,.46,.55,'gold')]:
+        points = [(0,-r),(-r*.48,-r*.25),(-r*.50,r*.30),(0,r),(r*.50,r*.30),(r*.48,-r*.25)]
+        turn = lambda p: (x+p[0]*math.cos(angle)-p[1]*math.sin(angle), z+p[0]*math.sin(angle)+p[1]*math.cos(angle))
+        study.extruded_shape('Drifting autumn leaf', [turn(p) for p in points], color, .13)
+        stroke('Leaf vein', [turn((0,-r*.85)),turn((0,r*.70))], 'wood', .023)
+
+
+def weather_auto():
+    weather_sun((-.32, .15, 1.36), .30)
+    weather_cloud()
+
+
 extra=[('heart',heart),('broken-heart',lambda:heart(True)),('coin',coin),('sparkle',sparkle),
        ('flame',flame),('brain',brain),('lightbulb',lightbulb),('ball',ball),('feather',feather),('box',box),('mouse',mouse),
        ('cat',cat),('nut',peanut),('film',film),('parent',parent),('lock',lock),('trash',trash),
@@ -400,6 +454,8 @@ extra += [(name,lambda label=label,color=color:tile(label,color)) for name,label
     ('addition','+','teal'),('subtraction','−','coral'),('multiplication','×','gold'),
     ('division','÷','lilac'),('equality','=','teal'),('patterns','123','lilac'),
     ('fractions','½','coral'),('operations','±','gold')]]
+extra += [('weather-sun',weather_sun),('weather-moon',weather_moon),('weather-rain',weather_rain),
+          ('weather-snow',weather_snow),('weather-leaves',weather_leaves),('weather-auto',weather_auto)]
 # The starter family has its own editable library and rebuild command.
 extra = study.select_builders(extra, study.OUT, 'icons.blend')
 study.render_set(extra, study.OUT, 256)

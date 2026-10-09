@@ -10,7 +10,7 @@ import {
   routeToSofa,
   roomOffsetToPoint,
   roomActivityStepKey,
-  ROOM_IDLE_DELAY_MS,
+  roomIdleDelay,
   type RoomActivityKind,
   type RoomActivityOptions,
   type RoomActivityPlan,
@@ -105,6 +105,12 @@ export function useRoomActivity(
   }, []);
   const startActivity = useCallback((kind: RoomActivityKind, instanceId?: string, interactionAt?: number) => requestActivity(kind, instanceId, interactionAt), [requestActivity]);
   const stopActivity = useCallback(() => requestActivity("stop"), [requestActivity]);
+  useEffect(() => {
+    if (options.period === undefined || options.period === 'night' || running.current?.plan.ambientPeriod !== 'night') return;
+    if (pendingCommand.current || request && request.id !== handledRequest.current) return;
+    // Normal command routing stands up and jumps down; an airborne cat lands first.
+    requestActivity('returnHome');
+  }, [options.period, request, requestActivity]);
   const returnHome = useCallback(() => {
     if (!activity || activity.plan.kind === "returnHome") return;
     requestActivity("returnHome");
@@ -153,7 +159,7 @@ export function useRoomActivity(
           return;
         }
         if (plan.kind === "bowlEat" && !completed?.plan.steps.some(step => step.native?.blocked)) feedComplete.current?.();
-        timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS + (turn.current % 5) * 700);
+        timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
         return;
       }
       const room = latestOptions.current;
@@ -257,7 +263,7 @@ export function useRoomActivity(
       if (reduceMotion) return;
       const plan = buildRoomActivity(latestOptions.current, turn.current++);
       if (plan) startPlan(plan);
-      else timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS + (turn.current % 5) * 700);
+      else timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
     };
     const current = running.current;
     if (!active) {
@@ -314,7 +320,7 @@ export function useRoomActivity(
         timer = setTimeout(() => runStep(returning, 0), 0);
       } else {
         petX.set(home.x); petY.set(home.y); scale.set(1); facing.set(1);
-        timer = setTimeout(startIdle, ROOM_IDLE_DELAY_MS + (turn.current % 5) * 700);
+        timer = setTimeout(startIdle, roomIdleDelay(options) + (turn.current % 5) * 700);
       }
     }
     return () => {

@@ -77,6 +77,12 @@
     "undo",
     "video-play",
     "warning",
+    "weather-auto",
+    "weather-leaves",
+    "weather-moon",
+    "weather-rain",
+    "weather-snow",
+    "weather-sun",
     "zoom-in",
     "zoom-out"
   ]

@@ -28,6 +28,7 @@ type DraggableRoomPetProps = {
   accessibilityLabel?: string;
   selected?: boolean;
   snapToGrid?: boolean;
+  constrainToRoom?: boolean;
   petSize: number;
   allowDrag?: boolean;
   dragScale?: number;
@@ -40,7 +41,7 @@ type DraggableRoomPetProps = {
   onOffsetChange?: (offset: RoomPetOffset) => void;
   /** Live position in room pixels relative to the room's center. */
   onPositionChange?: (position: { x: number; y: number }) => void;
-  onDragPositionChange?: (position: { x: number; y: number }) => void;
+  onDragPositionChange?: (position: { x: number; y: number }) => { x: number; y: number } | void;
   onDragStart?: () => void;
   onPetTap?: () => void;
   layerZIndex?: number;
@@ -105,6 +106,7 @@ export function DraggableRoomPet({
   accessibilityLabel,
   selected = false,
   snapToGrid = false,
+  constrainToRoom = true,
   petSize,
   allowDrag = true,
   dragScale = 1,
@@ -178,7 +180,12 @@ export function DraggableRoomPet({
   const commitOffset = useCallback(() => {
     if (!onOffsetChangeRef.current || roomSize.width <= 0) return;
     const offset = pixelsToOffset(positionRef.current.x, positionRef.current.y, roomSize.width, roomSize.height, petSize);
-    onOffsetChangeRef.current(snapToGrid ? { x: Math.round(offset.x * 10) / 10, y: Math.round(offset.y * 10) / 10 } : offset);
+    const snapped = snapToGrid ? { x: Math.round(offset.x * 10) / 10, y: Math.round(offset.y * 10) / 10 } : offset;
+    const point = offsetToPixels(snapped, roomSize.width, roomSize.height, petSize);
+    const accepted = onDragPositionChangeRef.current?.(point) ?? point;
+    positionRef.current = accepted;
+    setPosition(accepted);
+    onOffsetChangeRef.current(pixelsToOffset(accepted.x, accepted.y, roomSize.width, roomSize.height, petSize));
   }, [petSize, roomSize.height, roomSize.width, snapToGrid]);
 
   const hasTap = Boolean(onPetTap);
@@ -209,12 +216,12 @@ export function DraggableRoomPet({
           }
           if (roomSize.width <= 0 || roomSize.height <= 0) return;
           const scale = Math.max(1, dragScale);
-          const next = clampPosition(dragStartRef.current.x + gesture.dx / scale, dragStartRef.current.y + gesture.dy / scale,
-            roomSize.width, roomSize.height, petSize);
+          const raw = { x: dragStartRef.current.x + gesture.dx / scale, y: dragStartRef.current.y + gesture.dy / scale };
+          const proposed = constrainToRoom ? clampPosition(raw.x, raw.y, roomSize.width, roomSize.height, petSize) : raw;
+          const next = onDragPositionChangeRef.current?.(proposed) ?? proposed;
           positionRef.current = next;
           liveX.set(next.x); liveY.set(next.y);
           onPositionChangeRef.current?.(next);
-          onDragPositionChangeRef.current?.(next);
         },
         onPanResponderRelease: () => {
           dragging.set(false);
@@ -233,7 +240,7 @@ export function DraggableRoomPet({
           }
         },
       }),
-    [allowDrag, dragScale, hasTap, interactive, commitOffset, petSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
+    [allowDrag, constrainToRoom, dragScale, hasTap, interactive, commitOffset, petSize, roomSize.height, roomSize.width, dragging, liveX, liveY],
   );
 
   const halfPet = petSize / 2;
@@ -306,8 +313,9 @@ export function DraggableRoomPet({
             const action = event.nativeEvent.actionName;
             if (action === "activate") { onPetTapRef.current?.(); return; }
             if (!allowDrag) return;
-            const next = clampPosition(positionRef.current.x + (action === "moveLeft" ? -12 : action === "moveRight" ? 12 : 0),
-              positionRef.current.y + (action === "moveUp" ? -12 : action === "moveDown" ? 12 : 0), roomSize.width, roomSize.height, petSize);
+            const raw = { x: positionRef.current.x + (action === "moveLeft" ? -12 : action === "moveRight" ? 12 : 0),
+              y: positionRef.current.y + (action === "moveUp" ? -12 : action === "moveDown" ? 12 : 0) };
+            const next = constrainToRoom ? clampPosition(raw.x, raw.y, roomSize.width, roomSize.height, petSize) : raw;
             positionRef.current = next; setPosition(next); commitOffset();
           }}
           collapsable={false}

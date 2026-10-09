@@ -11,6 +11,7 @@ import type { PetPlaybackState } from '@/pet-display/types';
 import { CAT_ANIMATION_CLIPS } from '@/constants/cat-animation-clips';
 import { resolveTailContact, tailParentAxis, type TailContact } from '@/utils/native-cat-contact';
 import { limbAim, reachingElbow } from '@/utils/native-hanging-toy';
+import { buildRugSurfaces, rugSupportLift } from '@/utils/native-ground-support';
 const SOURCES = {
   orange: require('@/assets/3d/native/cat-orange.glb'),
   grey: require('@/assets/3d/native/cat-grey.glb'),
@@ -53,6 +54,9 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
   const asset = model.state === 'loaded' ? model.asset : undefined;
   const entity = model.state === 'loaded' ? model.rootEntity : undefined;
   const animator = useAnimator(asset);
+  const supportingPaws = useMemo(() => asset ? ['L.front.paw', 'R.front.paw', 'L.rear.paw', 'R.rear.paw']
+    .flatMap(name => { const paw = asset.getFirstEntityByName(name); return paw ? [paw] : []; }) : [], [asset]);
+  const rugSurfaces = useMemo(() => buildRugSurfaces(world), [world]);
   const frontLegs = useMemo(() => {
     if (!asset) return [];
     const parent = asset.getFirstEntityByName('chest');
@@ -105,7 +109,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       duration: segment.model ? segment.model.duration / segment.model.rate : meta[0] / meta[1], reverse: segment.reverse ?? false,
       loop: segment.loop ?? loop ?? false };
   }), [loop, playback]);
-  const command = useSharedValue({ id: 0, activityKey, segments, travel, world, active, reduceMotion });
+  const command = useSharedValue({ id: 0, activityKey, segments, travel, world, active, reduceMotion, rugSurfaces });
   const commandRevision = useRef<{ id: number; activityKey?: string; segments?: typeof segments; travel?: NativeTravel; home?: Vec3 }>({ id: 0 });
   const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, roomComplete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
     position: (initialPosition ?? world?.home ?? [0, 0, 0]) as Vec3, home: (world?.home ?? [0, 0, 0]) as Vec3, routeStart: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1,
@@ -122,8 +126,8 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     commandRevision.current = { id, activityKey, segments, travel, home: world?.home };
     // Publish one complete snapshot. Separate read/modify/write effects can
     // overwrite a new movement revision with an older drawing-thread snapshot.
-    command.value = { id, activityKey, segments, travel, world, active, reduceMotion };
-  }, [activityKey, active, command, reduceMotion, segments, travel, world]);
+    command.value = { id, activityKey, segments, travel, world, active, reduceMotion, rugSurfaces };
+  }, [activityKey, active, command, reduceMotion, rugSurfaces, segments, travel, world]);
   const clips = useMemo(() => {
     if (!animator)
       return {};
@@ -251,6 +255,15 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
         .translate([chair.pivot[0], chair.pivot[1] + motion.lift * contact, chair.pivot[2]]);
     }
     transformManager.setTransform(entity, transform);
+    let renderedPosition = frameState.position;
+    if (request.rugSurfaces?.length && supportingPaws.length) {
+      const paws = supportingPaws.map(paw => transformManager.getWorldTransform(paw).translation);
+      const lift = rugSupportLift(frameState.position, paws, request.rugSurfaces, scale);
+      if (lift > 0) {
+        transformManager.setTransform(entity, transform.translate([0, lift, 0]));
+        renderedPosition = [frameState.position[0], frameState.position[1] + lift, frameState.position[2]];
+      }
+    }
     const pawTarget = request.travel?.plantPlay ? plantLeaf?.value : request.travel?.treePlay ? hangingBall?.value : undefined;
     if (segment.name === 'batToy' && pawTarget && !request.reduceMotion) {
       const target = pawTarget;
@@ -299,11 +312,13 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     frameState.report += deltaSeconds;
     if (request.world && frameState.report >= .05) {
       frameState.report = 0;
-      const point = catScreenPoint(frameState.position, request.world);
+      const point = catScreenPoint(renderedPosition, request.world);
+      // Navigation and arrival use the logical route height, independently of
+      // the small rendering correction for a rug's thickness.
       notify('position', [point.x, point.y, ...frameState.position, frameState.elapsed]);
     }
     if (positionValue)
-      positionValue.value = frameState.position;
+      positionValue.value = renderedPosition;
     if (!frameState.ready) {
       frameState.ready = true;
       notify('ready', 0);
@@ -315,7 +330,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       notify('roomComplete', { key: request.activityKey, position: [frameState.position[0], frameState.position[1], frameState.position[2]] });
     }
     state.value = frameState;
-  }, [animationTimeValue, animator, clips, command, eatingProps, entity, frontLegs, hangingBall, initialPosition, notify, pawPositions, plantLeaf, positionValue, rockingMotion, state, tail, transformManager]);
+  }, [animationTimeValue, animator, clips, command, eatingProps, entity, frontLegs, hangingBall, initialPosition, notify, pawPositions, plantLeaf, positionValue, rockingMotion, state, supportingPaws, tail, transformManager]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   return null;
 }

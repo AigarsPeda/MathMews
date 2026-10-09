@@ -11,8 +11,8 @@ export const LAMP_LIGHT_ORIGINS: Record<string, [number, number, number]> = {
   lampTableBanker: [0, .54, .025],
   bedroomFloorLamp: [0, 1.36, 0],
   japaneseLamp: [0, .20, 0],
-  lavaLampOff: [0, .22, 0],
-  lavaLampAni: [0, .22, 0],
+  lavaLampOff: [0, .70, 0],
+  lavaLampAni: [0, .70, 0],
 };
 
 export function isLampDecorationId(id: string): boolean {
@@ -22,3 +22,10 @@ export function isLampDecorationId(id: string): boolean {
 export function isPoweredDecorationId(id: string): boolean {
   return isAirConditionerDecorationId(id) || isLampDecorationId(id);
 }
+
+export function isCurtainDecorationId(id: string): boolean {
+  return id === "curtainRoseTieback" || id === "curtainBlueDrape" || id === "curtainCreamLinen";
+}
+
+// Exported fabric depth and widest reach across the open/closed panel poses.
+export const CURTAIN_FABRIC_BOUNDS = { minX: -.926, maxX: .926, minZ: -.013, maxZ: .078 };

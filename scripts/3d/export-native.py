@@ -10,7 +10,7 @@ from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[2]
 LAMP_GLOW_PARTS=json.loads((ROOT/'constants/lamp-glow-parts.json').read_text())
 sys.path.insert(0,str(ROOT/'scripts/3d'))
-from native_gltf import normalize_animation_times
+from native_gltf import normalize_animation_times, compact_buffer_views
 OUT=ROOT/'assets/3d/native';OUT.mkdir(parents=True,exist_ok=True)
 scope={'__file__':str(ROOT/'scripts/3d/render_assets.py'),'__name__':'__native_assets__'}
 exec(compile((ROOT/'scripts/3d/render_assets.py').read_text(),scope['__file__'],'exec'),scope)
@@ -25,6 +25,7 @@ def export(path,objects,animated=False):
  temporary=path.with_name(path.stem+'-export.glb')
  bpy.ops.export_scene.gltf(filepath=str(temporary),export_format='GLB',use_selection=True,export_yup=True,export_extras=True,export_apply=not path.name.startswith('cat-'),export_animations=animated,export_animation_mode='NLA_TRACKS',export_force_sampling=True,export_frame_range=True,export_anim_slide_to_zero=True)
  normalize_animation_times(temporary)
+ compact_buffer_views(temporary)
  temporary.replace(path)
 def bounds(objects):
  bpy.context.view_layer.update()
@@ -139,17 +140,19 @@ def items():
   lo,hi=bounds(objects)
   # Item animations are local. Doors remain closed and fixed until explicitly used.
   wind=id in ('plantSmall','plantA','plantB','plantE','plantPotted','plantSunflower','plantTallGreen','plantTallPink','plantTallBlue','plantTallPurple')
-  animated=kind!='room' and id not in PLAYABLE_PLANTS and (entry.get('animated',False) or wind) and 'door' not in id.lower()
+  lava=id in ('lavaLampOff','lavaLampAni')
+  animated=kind!='room' and id not in PLAYABLE_PLANTS and (entry.get('animated',False) or wind or lava) and 'door' not in id.lower()
   rotations={o:o.rotation_euler.copy() for o in objects}
   if animated:
-   scene=bpy.context.scene;scene.render.fps=24;scene.frame_start=1;scene.frame_end=49
+   scene=bpy.context.scene;scene.render.fps=24;scene.frame_start=1;scene.frame_end=481 if lava else 49
    for frame in range(49):
     scope['animate_furniture'](objects,frame/48)
     if wind:
      for o in objects:
       if 'leaf' in o.name.lower() or 'flower' in o.name.lower():o.rotation_euler.y=rotations[o].y+.07*math.sin(frame/48*math.tau+o.location.x*2)
     for o in objects:
-     for prop in ('location','rotation_euler','scale'):o.keyframe_insert(data_path=prop,frame=frame+1)
+     if lava and 'lava_index' not in o:continue
+     for prop in ('location','rotation_euler','scale'):o.keyframe_insert(data_path=prop,frame=frame*(10 if lava else 1)+1)
    for o in objects:
     if o.animation_data and o.animation_data.action:
      action=o.animation_data.action;action.name=id+' motion';track=o.animation_data.nla_tracks.new();track.name='Motion';track.strips.new('Motion',1,action);o.animation_data.action=None

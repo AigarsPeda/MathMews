@@ -7,6 +7,7 @@ import { useGame } from '@/contexts/GameProvider';
 import { useWorldClockNow } from '@/hooks/use-world-clock-now';
 import { WORLD_CLOCK_SPEEDS, worldClockReading } from '@/utils/world-clock';
 import { moderateScale } from '@/utils/scale';
+import { WorldWeatherControl } from './WorldWeatherControl';
 
 export function WorldClockControl() {
   const { t } = useTranslation();
@@ -15,10 +16,13 @@ export function WorldClockControl() {
   const reading = worldClockReading(worldClock, Math.max(now, worldClock.realMs));
   const [open, setOpen] = useState(false);
   return <>
-    <Pressable style={styles.badge} onPress={() => setOpen(true)} accessibilityRole="button"
-      accessibilityLabel={t('worldClock.open', { time: reading.time, day: reading.day })}>
-      <Text style={styles.time}>{reading.time}</Text>
-    </Pressable>
+    <View style={styles.controls} pointerEvents="box-none">
+      <Pressable style={({ pressed }) => [styles.badge, pressed && styles.pressed]} onPress={() => setOpen(true)} accessibilityRole="button"
+        accessibilityLabel={t('worldClock.open', { time: reading.time, day: reading.day })}>
+        <Text style={styles.time}>{reading.time}</Text>
+      </Pressable>
+      <WorldWeatherControl/>
+    </View>
     <AppBottomSheet visible={open} onClose={() => setOpen(false)} expanded>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <Text style={styles.title}>{t('worldClock.title')}</Text>
@@ -42,10 +46,12 @@ export function WorldClockControl() {
 }
 
 const styles = StyleSheet.create({
-  badge: { position: 'absolute', top: moderateScale(10), alignSelf: 'center', zIndex: 20,
-    width: moderateScale(112), height: moderateScale(44), justifyContent: 'center',
+  controls: { position: 'absolute', top: moderateScale(10), left: moderateScale(130), right: moderateScale(10),
+    zIndex: 20, flexDirection: 'row', gap: moderateScale(6) },
+  badge: { flex: 1, minWidth: 0, height: moderateScale(44), justifyContent: 'center',
     backgroundColor: GameColors.card, borderColor: GameColors.cardBorder, borderWidth: 1, borderRadius: moderateScale(20), alignItems: 'center' },
   time: { fontSize: moderateScale(13), fontWeight: '700', color: GameColors.text, fontVariant: ['tabular-nums'] },
+  pressed: { backgroundColor: GameColors.background },
   content: { padding: 20, gap: 12 },
   title: { fontSize: 24, fontWeight: '800', color: GameColors.text },
   reading: { fontSize: 24, fontVariant: ['tabular-nums'], color: GameColors.text },

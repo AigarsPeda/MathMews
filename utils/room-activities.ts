@@ -11,11 +11,12 @@ import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId } from "@/cons
 import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
 import { getCatWalkMotion, SOFA_JUMP_DURATION_MS, type CatRoomAnimation } from "@/constants/cat-room-motion";
 import type { PetAnimationState, PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
+import type { WorldPeriod } from '@/utils/world-clock';
 
 export const ROOM_IDLE_DELAY_MS = 30_000;
 export const ROOM_MEAL_DURATION_MS = 8_000;
 export type RoomPoint = { x: number; y: number };
-export type RoomActivityKind = RoomCommandKind | "doorTravel" | "roomTravel";
+export type RoomActivityKind = RoomCommandKind | "doorTravel" | "roomTravel" | "wander";
 export type RoomActivityStep = {
   native?: NativeTravel;
   /** The source furnishing stays attached to exit steps after a new command. */
@@ -48,6 +49,7 @@ export type RoomActivityStep = {
 };
 export type RoomActivityPlan = {
   kind: RoomActivityKind | "returnHome";
+  ambientPeriod?: WorldPeriod;
   stopForEditing?: boolean;
   destination?: HomeRoomId;
   targetInstanceId?: string;
@@ -72,7 +74,12 @@ export type RoomActivityOptions = {
   ownedToyIds: string[];
   hungry: boolean;
   asleep: boolean;
+  period?: WorldPeriod;
 };
+
+export function roomIdleDelay(room: RoomActivityOptions): number {
+  return room.period === undefined ? ROOM_IDLE_DELAY_MS : room.period === 'night' ? 30_000 : 12_000;
+}
 
 export function roomActivityStepKey(state: { plan: RoomActivityPlan; stepIndex: number; startedAt: number }): string {
   return `${state.plan.kind}:${state.plan.targetInstanceId}:${state.stepIndex}:${state.startedAt}`;
@@ -171,6 +178,7 @@ export function routeToSofa(
 /** Commands and idle choices share object eligibility and rendered coordinates. */
 export function buildRoomActivity(room: RoomActivityOptions, turn: number, command?: RoomActivityKind, preferredInstanceId?: string): RoomActivityPlan | null {
   if (room.width <= room.petSize || room.height <= room.petSize) return null;
+  if (!command && room.period !== undefined && room.hungry) return null;
   const home = roomOffsetToPoint(room.homeOffset, room.width, room.height, room.petSize);
   const candidates: RoomActivityPlan[] = [];
   if (command === "roomTravel") {
@@ -334,6 +342,29 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
       steps.push({ ...walkTo(steps.at(-1)!.position, home, room.petSize), returnHome: true, objectPosition: start });
       candidates.push({ kind: "mouseChase", targetInstanceId: mouse?.instanceId, objectKind: "toy", objectStart: start, steps });
     }
+  }
+  if (!command && room.period !== undefined) {
+    if (!room.asleep) {
+      const direction = turn % 2 ? -1 : 1;
+      const first = clampCatPoint({ x: direction * room.width * .2, y: room.height * .12 }, room);
+      const second = clampCatPoint({ x: -direction * room.width * .16, y: room.height * .22 }, room);
+      candidates.push({ kind: 'wander', steps: [walkTo(home, first, room.petSize),
+        { position: first, mood: 'idle', animation: 'idle', durationMs: 2000 },
+        walkTo(first, second, room.petSize), { ...walkTo(second, home, room.petSize), returnHome: true }] });
+    }
+    const naps = candidates.filter(plan => plan.kind === 'sofaSleep');
+    const active = candidates.filter(plan => plan.kind !== 'sofaSleep' && plan.kind !== 'sofaSit');
+    const rests = candidates.filter(plan => plan.kind === 'sofaSit');
+    const night = room.period === 'night';
+    // Four of five choices favour sleep at night and activity during the day,
+    // independently of how many toys or seats happen to be in the room.
+    const primary = night ? naps : active;
+    const secondary = night ? active : [...rests, ...naps];
+    const choices = turn % 5 < 4 ? primary : secondary;
+    const eligible = choices.length ? choices : primary.length ? primary : secondary;
+    const plan = eligible[turn % eligible.length];
+    return plan ? { ...plan, ambientPeriod: room.period, steps: plan.steps.map(step =>
+      step.animation === 'curlSleep' ? { ...step, durationMs: night ? 120_000 : 20_000 } : step) } : null;
   }
   const eligible = command ? candidates.filter(plan => plan.kind === command) : candidates;
   return preferredInstanceId !== undefined ? eligible.find(plan => plan.targetInstanceId === preferredInstanceId) ?? null

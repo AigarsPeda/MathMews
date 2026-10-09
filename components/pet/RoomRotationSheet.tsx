@@ -8,6 +8,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 type Props = {
   visible: boolean;
   name: string; degrees: number; simpleGraphics: boolean;
+  placementAllowed?: boolean;
   onPreview: (angle: number) => void; onApply: (angle: number) => void; onClose: () => void;
 };
 
@@ -18,7 +19,7 @@ export function RoomRotationSheet({ visible, ...props }: Props) {
 }
 
 /** Preview locally; one saved update when the user applies the angle. */
-function RotationControls({ name, degrees, simpleGraphics, onPreview, onApply, onClose }: Omit<Props, "visible">) {
+function RotationControls({ name, degrees, simpleGraphics, placementAllowed = true, onPreview, onApply, onClose }: Omit<Props, "visible">) {
   const { t } = useTranslation();
   const [angle, setAngle] = useState(degrees);
   const [input, setInput] = useState(String(degrees));
@@ -27,7 +28,7 @@ function RotationControls({ name, degrees, simpleGraphics, onPreview, onApply, o
     setAngle(next); setInput(String(next)); onPreview(next);
   };
   const parsed = Number(input.replace(",", "."));
-  const valid = input.trim() !== "" && Number.isFinite(parsed) && parsed >= 0 && parsed <= 360;
+  const valid = input.trim() !== "" && Number.isFinite(parsed) && parsed >= 0 && parsed <= 360 && placementAllowed;
   return <View style={styles.content}>
       <Text style={styles.title}>{t("home.rotateSelectedItem", { name })}</Text>
       <View style={styles.row}>
@@ -47,6 +48,7 @@ function RotationControls({ name, degrees, simpleGraphics, onPreview, onApply, o
         accessibilityValue={{ min: 0, max: 360, now: angle, text: `${angle}°` }} />
       <View style={styles.range}><Text style={styles.label}>0°</Text><Text style={styles.label}>360°</Text></View>
       {simpleGraphics && <Text style={styles.hint}>{t("home.rotationSimpleHint")}</Text>}
+      {!placementAllowed && <Text style={styles.hint} accessibilityRole="alert">{t("home.itemNeedsSpace")}</Text>}
       <View style={styles.row}>
         <Pressable style={styles.button} onPress={onClose} accessibilityRole="button"><Text style={styles.label}>{t("common.cancel")}</Text></Pressable>
         <Pressable style={[styles.button, styles.apply, !valid && styles.disabled]} disabled={!valid}

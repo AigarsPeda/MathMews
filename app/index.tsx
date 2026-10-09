@@ -93,6 +93,7 @@ export default function HomeScreen() {
     rotatePlacedDecoration,
     flipPlacedDecorationWall,
     togglePlacedDecorationPower,
+    togglePlacedCurtain,
     scalePlacedDecoration,
     visitHomeRoom,
     sendCatToRoom,
@@ -298,6 +299,12 @@ export default function HomeScreen() {
     [flipPlacedDecorationWall, recordInteraction],
   );
 
+  const handleTogglePlacedCurtain = useCallback((instanceId: string) => {
+    if (!togglePlacedCurtain(instanceId)) return;
+    recordInteraction();
+    triggerHaptic();
+  }, [recordInteraction, togglePlacedCurtain]);
+
   const handleTogglePlacedDecorationPower = useCallback(
     (instanceId: string) => {
       if (!togglePlacedDecorationPower(instanceId)) return;
@@ -434,12 +441,13 @@ export default function HomeScreen() {
           ? "playBox"
           : baseVideoMood;
     sendPetCommand({ type: "animationComplete", completedMood });
-    if (completedMood === "fallingAsleep") {
+    // The cat's clock-driven sleep is temporary and must end at dawn.
+    if (completedMood === "fallingAsleep" && pet.type !== 'cat') {
       setPet((current) =>
         shouldPetSleep(current) ? { ...current, isAsleep: true } : current,
       );
     }
-  }, [baseVideoMood, playback, sendPetCommand, setPet]);
+  }, [baseVideoMood, playback, sendPetCommand, setPet, pet.type]);
 
   if (!isReady) {
     return (
@@ -529,6 +537,7 @@ export default function HomeScreen() {
       onRotatePlacedDecoration={handleRotatePlacedDecoration}
       onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
       onTogglePlacedDecorationPower={handleTogglePlacedDecorationPower}
+            onTogglePlacedCurtain={handleTogglePlacedCurtain}
       onScalePlacedDecoration={handleScalePlacedDecoration}
       onMoveRoomLayerItem={handleMoveRoomLayerItem}
       onBedRemove={handleRemoveBed}

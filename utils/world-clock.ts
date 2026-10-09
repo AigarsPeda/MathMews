@@ -1,4 +1,10 @@
-export type WorldClock = { worldMs: number; realMs: number; speed: number };
+export const WEATHER_MODES = ['auto', 'clear', 'rain', 'snow', 'leaves'] as const;
+export type WeatherMode = typeof WEATHER_MODES[number];
+export function normalizeWeather(value: unknown): WeatherMode {
+  return WEATHER_MODES.includes(value as WeatherMode) ? value as WeatherMode : 'auto';
+}
+
+export type WorldClock = { worldMs: number; realMs: number; speed: number; weather?: WeatherMode };
 export type WorldPeriod = 'morning' | 'day' | 'evening' | 'night';
 export const WORLD_CLOCK_SPEEDS = [1, 60, 300] as const;
 export const WORLD_DAY_MS = 24 * 60 * 60 * 1000;
@@ -11,7 +17,7 @@ export function normalizeWorldClock(value: unknown, now = Date.now()): WorldCloc
   const clock = value as Partial<WorldClock> | null;
   if (!clock || !Number.isFinite(clock.worldMs) || clock.worldMs! < 0 ||
     !Number.isFinite(clock.realMs) || clock.realMs! <= 0 || !WORLD_CLOCK_SPEEDS.includes(clock.speed as 1 | 60 | 300)) return createWorldClock(now);
-  return { worldMs: clock.worldMs!, realMs: clock.realMs!, speed: clock.speed! };
+  return { worldMs: clock.worldMs!, realMs: clock.realMs!, speed: clock.speed!, weather: normalizeWeather(clock.weather) };
 }
 
 export function worldTime(clock: WorldClock, now = Date.now()): number {
@@ -24,7 +30,7 @@ export function changeWorldClock(clock: WorldClock, speed: number, minuteOfDay?:
   const current = worldTime(clock, now);
   const worldMs = minuteOfDay === undefined || !Number.isFinite(minuteOfDay) ? current
     : Math.floor(current / WORLD_DAY_MS) * WORLD_DAY_MS + Math.max(0, Math.min(1439, minuteOfDay)) * 60_000;
-  return { worldMs, realMs: now, speed: WORLD_CLOCK_SPEEDS.includes(speed as 1 | 60 | 300) ? speed : clock.speed };
+  return { worldMs, realMs: now, speed: WORLD_CLOCK_SPEEDS.includes(speed as 1 | 60 | 300) ? speed : clock.speed, weather: clock.weather };
 }
 
 export function worldClockReading(clock: WorldClock, now = Date.now()) {

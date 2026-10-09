@@ -100,7 +100,7 @@ assert.deepEqual(JSON.parse(JSON.stringify(restored.pet.stats)), JSON.parse(JSON
 console.log('Verified legacy save migration, save/reload continuity and independent real-time care decay.');
 
 const mood = load('@/pet-display/engine/derive-mood');
-const pet = { ...save.pet, type: 'cat', stats: { hunger: 90, happiness: 90, cleanliness: 90, level: 1 }, lastInteractionAt: now - 90_000, isAsleep: false };
+const pet = { ...save.pet, type: 'cat', stats: { hunger: 90, happiness: 90, cleanliness: 90, level: 1 }, lastInteractionAt: now - 45_000, isAsleep: false };
 assert.equal(mood.derivePetMood(pet, now, false), 'idle');
 assert.equal(mood.derivePetMood(pet, now, true), 'resting');
 assert.equal(mood.derivePetVideoMood(pet, false, now, false, true), 'lyingDown');
@@ -110,8 +110,60 @@ assert.equal(mood.derivePetMood({ ...pet, stats: { ...pet.stats, hunger: 10 } },
 assert.equal(mood.derivePetVideoMood({ ...pet, isAsleep: true }, true, now, true, true), 'sleeping');
 console.log('Verified night rest, completed lying transitions, interaction priority, hunger priority and preserved sleep.');
 
+const undisturbed = { ...pet, lastInteractionAt: now - 35 * 60_000 };
+assert.equal(mood.derivePetMood(undisturbed, now, false), 'idle', 'Daytime does not fall back to permanent inactivity sleep');
+assert.equal(mood.derivePetVideoMood({ ...undisturbed, isAsleep: true }, true, now, true, false), 'idle', 'Dawn wakes a previously saved sleeping cat');
+assert.equal(mood.derivePetVideoMood(undisturbed, false, now, false, true), 'lyingDown');
+assert.equal(mood.derivePetVideoMood(undisturbed, false, now, true, true), 'fallingAsleep');
+assert.equal(mood.derivePetVideoMood(undisturbed, true, now, true, true), 'sleeping');
+assert.equal(mood.derivePetVideoMood({ ...undisturbed, lastInteractionAt: now }, true, now, true, true), 'idle', 'An interaction interrupts clock-driven sleep');
+assert.equal(mood.derivePetVideoMood({ ...undisturbed, isAsleep: true, stats: { ...pet.stats, hunger: 10 } }, true, now, true, true), 'sad', 'Hunger takes priority over night sleep');
+for (const speed of [1, 60, 300]) {
+  const eveningStart = clock.changeWorldClock(start, speed, 21 * 60, now);
+  const fresh = { ...pet, lastInteractionAt: now };
+  assert.equal(mood.derivePetMood(fresh, now + 60_000, clock.worldClockReading(eveningStart, now + 60_000).period === 'night'), 'sleeping', 'A cat without furniture can fall asleep within a night, even at 300×');
+  const beforeDawn = clock.changeWorldClock(start, speed, 5 * 60 + 59, now);
+  const later = now + 60_000 / speed;
+  assert.equal(mood.derivePetMood(undisturbed, now, clock.worldClockReading(beforeDawn, now).period === 'night'), 'sleeping');
+  assert.equal(mood.derivePetMood(undisturbed, later, clock.worldClockReading(beforeDawn, later).period === 'night'), 'idle');
+}
+console.log('Verified night sleep transitions, daytime wakefulness, saved sleep at dawn, interaction/hunger priority and dawn at every clock speed.');
+
+// Exercise the actual display hook's completion callbacks and phase resets.
+const originalUseState = react.useState, moodSlots = [];
+let moodCursor = 0;
+react.useState = initial => {
+  const index = moodCursor++;
+  if (!(index in moodSlots)) moodSlots[index] = typeof initial === 'function' ? initial() : initial;
+  return [moodSlots[index], value => { moodSlots[index] = typeof value === 'function' ? value(moodSlots[index]) : value; }];
+};
+function renderMood(pet, worldClock) {
+  moodCursor = 0;
+  // The VM executes the real hook with a state dispatcher and controlled clock.
+  return mood.usePetBaseMood(pet, worldClock);
+}
+const nightRoutine = at(23), dayRoutine = at(13);
+let routine = renderMood(undisturbed, nightRoutine);
+assert.equal(routine.mood, 'lyingDown');
+routine.onLieDownComplete(); routine = renderMood(undisturbed, nightRoutine);
+assert.equal(routine.mood, 'fallingAsleep');
+routine.onFallAsleepComplete(); routine = renderMood(undisturbed, nightRoutine);
+assert.equal(routine.mood, 'sleeping', 'Night-only sleep completes without a saved asleep flag');
+assert.equal(undisturbed.isAsleep, false);
+renderMood(undisturbed, dayRoutine);
+assert.equal(renderMood(undisturbed, dayRoutine).mood, 'idle');
+renderMood(undisturbed, nightRoutine);
+assert.equal(renderMood(undisturbed, nightRoutine).mood, 'lyingDown', 'The next night replays the lying/sleep transitions');
+const newlyTouched = { ...undisturbed, lastInteractionAt: now };
+renderMood(newlyTouched, nightRoutine);
+assert.equal(renderMood(newlyTouched, nightRoutine).mood, 'idle');
+routine.onFallAsleepComplete();
+assert.equal(renderMood(newlyTouched, nightRoutine).mood, 'idle', 'A stale completion cannot put a newly touched cat back to sleep');
+react.useState = originalUseState;
+console.log('Verified actual night lying/sleep completion, temporary sleep, dawn wake, next-night phase reset and stale completion guards.');
+
 const { NativeWorldLighting } = load('@/components/pet/native/NativeWorldLighting');
-const day = clock.changeWorldClock(start, 60, 13 * 60, now);
+const day = { ...clock.changeWorldClock(start, 60, 13 * 60, now), weather: 'clear' };
 const environment = NativeWorldLighting({ clock: day, active: true }).props.children[0];
 for (let i = 0; i < 120; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
 const sun = nativeLights.get('directional'), fill = nativeLights.get('point');
@@ -176,6 +228,12 @@ assert.equal(moon.castShadows, false, 'Window light does not allocate extra shad
 const constantUpdates = lightUpdates;
 for (let i = 0; i < 60; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
 assert.equal(lightUpdates, constantUpdates, 'Steady moonlight has no repeated native updates');
+const windowPreview={value:{...windowObject,position:[.5,.7,-2.3]}};
+renderWindow({editingObject:windowPreview});
+assert.ok(Math.abs(moon.position[0]-windowSource.position[0]-.5)<1e-8,'Moonlight follows live window movement');
+const afterMovingWindow=lightUpdates;
+for(let i=0;i<60;i++)renderFrame({timeSinceLastFrame:1/60});
+assert.equal(lightUpdates,afterMovingWindow,'A stopped window preview sends no repeated light updates');
 const moonPower = moon.intensity;
 daylight.value = { daylight: 1 }; renderFrame({ timeSinceLastFrame: 1 / 60 });
 assert.ok(moon.intensity > moonPower && moon.color[0] > moon.color[2]);
@@ -216,9 +274,9 @@ function windowAsset(modelId) {
   assert.equal(gltf.images.length, 1, 'Each window carries one rectangular area-light bake');
   return { materials, getRenderableEntities: () => nodes, getFirstEntityByName: name => nodes.find(node => node.name === name) };
 }
-function renderPane(asset, clock, active = true) {
+function renderPane(asset, clock, active = true, lightning) {
   effects.length = 0; collectEffects = true;
-  NativeWindowPane({ asset, clock, active }); effects.forEach(fn => fn());
+  NativeWindowPane({ asset, clock, active, lightning }); effects.forEach(fn => fn());
   renderFrame({ timeSinceLastFrame: 1 / 60 });
 }
 for (const id of [...WINDOW_DECORATION_IDS, 'bathroomBathWindow']) {
@@ -250,3 +308,66 @@ for (const id of [...WINDOW_DECORATION_IDS, 'bathroomBathWindow']) {
   assert.deepEqual(panes[0].parameters.baseColorFactor, dayColor, 'Hidden rooms pause their sky updates');
 }
 console.log('Verified Blender sky materials and actual day/night material callbacks for all 18 windows, one continuous area-light bake, matching cold frame/floor tint, steady-frame updates and hidden-room pause.');
+
+for (const weather of ['auto', 'clear', 'rain', 'snow', 'leaves']) {
+  const restoredWeather = storage.parseGameSaveFromValue(JSON.parse(JSON.stringify({ ...save, worldClock: { ...day, weather } }))).save;
+  assert.equal(restoredWeather.worldClock.weather, weather, 'Weather choices survive a full game save/reload');
+}
+shared = undefined;
+NativeWorldLighting({ clock: day, active: true }); effects.forEach(fn => fn());
+for (let i = 0; i < 600; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+const clearSun = nativeLights.get('directional').intensity;
+NativeWorldLighting({ clock: { ...day, weather: 'rain' }, active: true }); effects.forEach(fn => fn());
+for (let i = 0; i < 600; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.ok(Math.abs(nativeLights.get('directional').intensity / clearSun - .55) < .001, 'Rain clouds dim daylight without changing the clock');
+const rainyUpdates = lightUpdates;
+for (let i = 0; i < 60; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.equal(lightUpdates, rainyUpdates, 'Settled cloudy lighting does not keep updating native lights');
+shared = undefined;
+const rainyWindow = windowAsset('windowOakWide');
+renderPane(rainyWindow, { ...night, weather: 'rain' });
+const rainyFrame = rainyWindow.materials.find(material => material.meta.emissiveTexture).parameters.emissiveFactor;
+assert.ok(Math.abs(rainyFrame[2] / windows.windowFrameEmission(0)[2] - .55) < 1e-8, 'Clouds attenuate the sill and frame moonlight too');
+console.log('Verified persistent game weather choices, smooth cloud lighting, matching frame attenuation and no repeated native updates after weather settles.');
+
+for (const hour of [13, 23]) {
+  const storm = clock.changeWorldClock({ ...day, weather: 'rain' }, 60, hour * 60, now);
+  const flash = { value: 0 };
+  shared = undefined;
+  const sky = windowAsset('windowOakWide');
+  renderPane(sky, storm, true, flash);
+  const glass = sky.materials.find(material => material.meta.extensions?.KHR_materials_unlit);
+  const frame = sky.materials.find(material => material.meta.emissiveTexture);
+  const normalSky = glass.parameters.baseColorFactor, normalFrame = frame.parameters.emissiveFactor;
+  flash.value = 1; renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.ok(glass.parameters.baseColorFactor[2] > normalSky[2], 'Lightning lights the outside sky during both day and night');
+  assert.ok(frame.parameters.emissiveFactor[2] > normalFrame[2], 'The window-facing frame and sill pick up the same strike');
+  assert.ok(glass.parameters.baseColorFactor[2] > glass.parameters.baseColorFactor[0], 'The flash is cold');
+  flash.value = 0; renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.deepEqual(glass.parameters.baseColorFactor, normalSky);
+  assert.deepEqual(frame.parameters.emissiveFactor, normalFrame);
+  const stable = materialUpdates;
+  for (let i = 0; i < 60; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.equal(materialUpdates, stable, 'Pane and frame materials stop updating after lightning');
+
+  shared = undefined;
+  const props = { object: windowObject, active: true, lightning: flash,
+    daylight: { value: { daylight: hour === 13 ? 1 : 0, transmission: .55 } } };
+  effects.length = 0; NativeWindowLight(props); effects.forEach(fn => fn());
+  renderFrame({ timeSinceLastFrame: 1 / 60 });
+  const light = nativeLights.get('spot'), baseline = light.intensity, entities = created;
+  flash.value = 1; renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.ok(light.intensity > baseline * 5, 'The actual window light illuminates room objects and the cat during a strike');
+  assert.ok(light.color[2] > light.color[0]);
+  assert.equal(created, entities, 'Lightning reuses the existing light without allocation');
+  flash.value = 0; renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.equal(light.intensity, baseline);
+  const settled = lightUpdates;
+  for (let i = 0; i < 60; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.equal(lightUpdates, settled, 'Room lighting stops updating between strikes');
+  NativeWindowLight({ ...props, active: false }); effects.forEach(fn => fn());
+  flash.value = 1; const hidden = lightUpdates;
+  renderFrame({ timeSinceLastFrame: 1 / 60 });
+  assert.equal(lightUpdates, hidden, 'Hidden window lights ignore flashes');
+}
+console.log('Verified native lightning sky, frame/sill and room illumination in day/night rain, cool tint, light reuse, normal-light restoration and no idle/hidden native writes.');

@@ -34,17 +34,16 @@ def build_home_detail(id, h):
             box('Window crossbar', (0, -.045, z), (width + .085, .13, .085), color, .02)
         box('Deep window sill', (0, -.13, .055), (width + .24, .30, .10), color, .025)
 
-    def curtain_panel(x, color, tied):
-        columns, rows, width, height = 24, 12, .51, 1.65
+    def curtain_panel(side, color, tied):
+        columns, rows, width, height = 24, 12, .90, 1.65
         verts = []
-        for side in (0, 1):
+        for surface in (0, 1):
             for row in range(rows + 1):
                 v = row / rows
-                waist = 1 - (.35 * math.exp(-((v - .47) / .19) ** 2) if tied else 0)
                 for col in range(columns + 1):
                     u = col / columns
-                    xx = x + (u - .5) * width * waist
-                    yy = -.045 + math.cos(u * math.tau * 4) * .033 + side * .025
+                    xx = (u - .5) * width
+                    yy = -.045 + math.cos(u * math.tau * 4) * .033 + surface * .025
                     zz = .13 + v * height + (1 - v) ** 9 * .025 * math.cos(u * math.tau * 4)
                     verts.append((xx, yy, zz))
         stride = columns + 1
@@ -69,11 +68,21 @@ def build_home_detail(id, h):
         obj = bpy.data.objects.new('Folded curtain fabric', mesh)
         bpy.context.collection.objects.link(obj)
         h['finish'](obj, obj.name, color)
+        # Separate fabric from the valance and metal hardware for transmitted light.
+        obj.data.materials[0] = obj.data.materials[0].copy()
+        obj.data.materials[0].name = side + ' curtain fabric'
+        panel = h['empty'](side + ' curtain panel', (
+            -.80 if side == 'Left' else .80, 0, 0))
+        panel.scale.x = .28
+        obj.parent = panel
         for face in mesh.polygons:
             face.use_smooth = True
         if tied:
-            box('Curtain tieback', (x, -.085, .13 + height * .47), (.36, .11, .065), 'gold', .022)
-            curve('Tieback tassel', [(x + .12, -.12, .91), (x + .15, -.13, .78), (x + .13, -.13, .68)], .014, 'gold')
+            tie = h['empty'](side + ' curtain tieback', parent=panel)
+            box('Curtain tieback', (0, -.085, .13 + height * .47), (.90, .11, .065), 'gold', .022).parent = tie
+            curve('Tieback tassel', [(.12, -.12, .91), (.15, -.13, .78), (.13, -.13, .68)], .014, 'gold').parent = tie
+        for dx in (-.40, -.20, 0, .20, .40):
+            torus('Curtain hanging ring', (dx, 0, 1.87), .045, .009, 'gold', rotation=(0, math.pi / 2, 0)).parent = panel
 
     if id == 'rugBraidedRound':
         cylinder('Braided rug backing', (0, 0, .025), .95, .05, 'paper')
@@ -190,18 +199,24 @@ def build_home_detail(id, h):
         box('Door lever', (.33, -.14, 1.05), (.19, .055, .035), 'gold' if not barn else 'dark', .015)
 
     elif id.startswith('curtain'):
+        curtain_objects_before = set(bpy.context.scene.objects)
         color = {'curtainRoseTieback': 'pink', 'curtainBlueDrape': 'blue', 'curtainCreamLinen': 'cream'}[id]
         tied = id != 'curtainCreamLinen'
         rod = cylinder('Curtain rod', (0, .005, 1.91), .027, 1.94, 'gold')
         rod.rotation_euler.y = math.pi / 2
         for x in (-.99, .99):
             sphere('Rod finial', (x, .005, 1.91), (.06, .055, .055), 'gold')
-        for x in (-.60, .60):
-            curtain_panel(x, color, tied)
-            for dx in (-.20, -.10, 0, .10, .20):
-                torus('Curtain hanging ring', (x + dx, 0, 1.87), .045, .009, 'gold', rotation=(0, math.pi / 2, 0))
+        for side in ('Left', 'Right'):
+            curtain_panel(side, color, tied)
         if id == 'curtainBlueDrape':
             curve('Soft draped valance', [(-.85, -.07, 1.82), (-.42, -.08, 1.59), (0, -.07, 1.78), (.42, -.08, 1.59), (.85, -.07, 1.82)], .095, 'blue')
+        # Match wide room windows while leaving a soft hem beneath the sill.
+        parts = set(bpy.context.scene.objects) - curtain_objects_before
+        height = h['empty']('Curtain height')
+        height.scale.z = .76
+        for part in parts:
+            if part.parent is None:
+                part.parent = height
 
     elif id == 'lampFloorArc':
         cylinder('Heavy arc lamp base', (-.30, 0, .06), .30, .12, 'white')

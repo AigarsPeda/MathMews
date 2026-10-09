@@ -57,6 +57,8 @@ export type PlacedDecoration = {
   wallFlipped?: boolean;
   /** Air-conditioner power, saved separately for each placed unit. */
   poweredOn?: boolean;
+  /** Curtains start open; false closes this placed pair. */
+  curtainOpen?: boolean;
   /** Display scale multiplier (default 1). */
   scale?: number;
 };
