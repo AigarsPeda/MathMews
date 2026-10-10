@@ -1,3 +1,4 @@
+import { WALL_SPOTLIGHT_DECORATION_IDS } from "@/constants/home-details-decorations";
 import { isRoomDoor } from "@/constants/home-rooms";
 import {
   resolveCatDecorationId,
@@ -41,6 +42,7 @@ const ROTATION_VARIANT_ONLY_IDS = new Set<CatDecorationId>();
  * Mirroring also applies to every frame of an animated item.
  */
 export const WALL_FACING_DECORATION_IDS: readonly CatDecorationId[] = [
+  ...WALL_SPOTLIGHT_DECORATION_IDS,
   "kitchenWallCabinetSage", "kitchenWallCabinetOak", "kitchenWallCabinetGlass", "kitchenIsland", "kitchenBarStoolOak", "kitchenBarStoolMetal", "kitchenBarStoolVelvet", "kitchenMixerStand", "kitchenMixerHand", "kitchenChairWindsor", "kitchenChairMint", "kitchenChairUpholstered", "kitchenChairBistro", "chairRockingOak", "livingFireplaceCream",
   "doorOakPanel", "doorMintGlass", "doorBarnSliding", "curtainRoseTieback", "curtainBlueDrape", "curtainCreamLinen", "lampFloorArc", "lampFloorTripod", "lampFloorPaper", "lampTableMushroom", "lampTableCeramic", "lampTableBanker", "sofaCornerSage",
   "sofaBlueClassic", "sofaRoseTufted", "sofaTanLeather", "sofaCreamCloud", "kitchenFridge", "kitchenRange", "kitchenSinkCabinet", "kitchenMicrowave", "bedroomDoubleBed", "bedroomDresser", "bedroomNightstand", "bedroomWardrobe", "bathroomDoubleVanity", "bathroomShowerCabin", "halloweenBatGarland",

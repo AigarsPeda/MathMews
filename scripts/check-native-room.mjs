@@ -910,7 +910,9 @@ mocks['react-native'] = { View: 'View', ActivityIndicator: 'ActivityIndicator', 
 mocks['./NativeFoodSpill'] = { NativeFoodSpill: 'FoodSpill' };
 mocks['./NativeAirflow'] = { NativeAirflow: 'Airflow' };
 mocks['./NativeLampLight'] = { NativeLampLight: 'LampLight' };
+mocks['./NativeSpotlightHead'] = { NativeSpotlightHead: 'SpotlightHead' };
 mocks['./NativeLampGlow'] = { NativeLampGlow: 'LampGlow' };
+mocks['./NativeContactShadows'] = { NativeContactShadows: 'ContactShadows' };
 mocks['./NativeCurtain'] = { NativeCurtain: 'Curtain' };
 mocks['./NativeLightning'] = { NativeLightning: 'Lightning' };
 mocks['./NativeWorldLighting'] = { NativeWorldLighting: 'WorldLighting' };
@@ -1162,7 +1164,7 @@ console.log('Verified real animated toe pads on round, rotated and resized rugs,
 sceneReduced = false;
 let toyRoot, toyLocals, toyNodes, toyParents;
 const toyEntity = { toy: true, name: '__root' };
-const toyAsset = { getFirstEntityByName: name => toyNodes.has(name) ? { toy: true, name } : undefined };
+const toyAsset = { getRenderableEntities: () => [{ id: 5000 }], getFirstEntityByName: name => toyNodes.has(name) ? { toy: true, name } : undefined };
 function toyWorldMatrix(name) {
   const parent = toyParents.get(name);
   return multiply(parent ? toyWorldMatrix(parent) : toyRoot, toyLocals.get(name));
@@ -1498,6 +1500,12 @@ console.log('Verified landed balls stay put after play, save/reload at the same 
     assert.ok(Math.abs(Math.atan2(toyRoot[8],toyRoot[0])-20*Math.PI/180)<1e-8,'Live native rendering keeps the chair at 20 degrees');
     assert.ok(Math.abs(toyRoot[12]-editingObject.value.position[0])<1e-8);
   }
+  const savedSetTransform=transformManager.setTransform;
+  let repeatedWrites=0;
+  transformManager.setTransform=(...args)=>{repeatedWrites++;return savedSetTransform(...args);};
+  for(let frame=0;frame<120;frame++)renderFrame({timeSinceLastFrame:1/60});
+  assert.equal(repeatedWrites,0,'A stationary or blocked preview performs no repeated native transform writes');
+  transformManager.setTransform=savedSetTransform;
   for(const invalid of [{}, {...object,scale:undefined}, {...object,scale:NaN}, {...object,scale:0},
     {...object,heading:undefined}, {...object,position:undefined}, {...object,position:[0,NaN,0]}]) {
     editingObject.value=invalid;
@@ -1512,6 +1520,39 @@ console.log('Verified landed balls stay put after play, save/reload at the same 
   mocks['react-native-filament'].useRigidBody=oldBody;mocks['react-native-filament'].useModel=oldModel;
 }
 console.log('Verified native chair drag previews retain 20 degrees across 120 frames with no model reloads or physics body recreation.');
+
+// Pick actual rendered entity IDs, including cleanup and delayed queries after unmount.
+{
+  const room=w.buildNativeRoomWorld({...base,decorations:[{decorationId:'lampFloorArc',instanceId:'pick-lamp',offset:{x:0,y:.2}}]});
+  const pickerRef={current:undefined}, coordinates=[];
+  let picked={id:5000}, resolveDelayed;
+  const oldView=context.view;
+  context.view={pickEntity:(x,y)=>{coordinates.push([x,y]);return picked==='pending'
+    ? new Promise(resolve=>{resolveDelayed=resolve;}) : Promise.resolve(picked);}};
+  effects=[];
+  const children=sceneChildren({world:room,catPresent:true,pickerRef});
+  effects.forEach(fn=>fn());
+  const sceneCleanups=slots.flatMap(slot=>slot?.cleanup ? [slot.cleanup] : []);
+  const picker=pickerRef.current;
+  const child=children.find(c=>c.type.name==='RoomObject');
+  toyRoot=matrix();toyNodes=new Map();slots=[];cursor=0;effects=[];
+  child.type(child.props);effects.forEach(fn=>fn());
+  const objectCleanups=slots.flatMap(slot=>slot?.cleanup ? [slot.cleanup] : []);
+  assert.equal(await picker.pick(12,34),'pick-lamp','Renderable IDs identify the placed model');
+  assert.deepEqual(coordinates.at(-1),[12,34],'The engine receives local DP without a second density/Y conversion');
+  picked={id:999999}; assert.equal(await picker.pick(1,2),undefined,'Room surfaces and unregistered entities do not select furniture');
+  const unregisterCat=children.find(c=>c.type==='Cat').props.registerPickEntities('cat',[{id:6000}]);
+  picked={id:6000}; assert.equal(await picker.pick(1,2),'cat');
+  unregisterCat(); assert.equal(await picker.pick(1,2),undefined);
+  objectCleanups.forEach(fn=>fn());
+  picked={id:5000}; assert.equal(await picker.pick(1,2),undefined,'Removed model entities cannot stay selectable');
+  picked='pending'; const pending=picker.pick(1,2);
+  sceneCleanups.forEach(fn=>fn());
+  assert.equal(pickerRef.current,undefined,'Scene unmount disconnects the picker');
+  resolveDelayed({id:5000});assert.equal(await pending,undefined,'A delayed query cannot select an unmounted room');
+  context.view=oldView;
+}
+console.log('Verified actual native entity registration, geometry picker coordinates, removal, cat selection and unmount safety.');
 
 // Match the real chair cushion and runner geometry, then run both native roots
 // against the scene's single rocking clock.

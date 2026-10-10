@@ -361,7 +361,13 @@
     "bathroomBathClawfootCream": 80,
     "bathroomBathClawfootNavy": 80,
     "bathroomJacuzziWhite": 96,
-    "bathroomJacuzziSage": 96
+    "bathroomJacuzziSage": 96,
+    "wallSpotCylinderBlack": 28,
+    "wallSpotCylinderWhite": 28,
+    "wallSpotBellBrass": 32,
+    "wallSpotBellRose": 32,
+    "wallSpotBarOak": 36,
+    "wallSpotBarChrome": 36
   },
   "skin": {
     "orange": 12,

@@ -1,42 +1,268 @@
 {
   "lampFloorArc": [
-    { "node": "Arc lamp shade", "emission": [0.55, 0.36, 0.19, 1] },
-    { "node": "Warm bulb", "emission": [1.0, 0.62, 0.28, 1] },
-    { "node": "Warm shade interior", "emission": [0.7, 0.42, 0.17, 1] }
+    {
+      "node": "Arc lamp shade",
+      "emission": [
+        0.55,
+        0.36,
+        0.19,
+        1
+      ]
+    },
+    {
+      "node": "Warm bulb",
+      "emission": [
+        1.0,
+        0.62,
+        0.28,
+        1
+      ]
+    },
+    {
+      "node": "Warm shade interior",
+      "emission": [
+        0.7,
+        0.42,
+        0.17,
+        1
+      ]
+    }
   ],
   "lampFloorTripod": [
-    { "node": "Sage lampshade", "emission": [0.2, 0.26, 0.1, 1] },
-    { "node": "Shade cream piping", "emission": [0.5, 0.34, 0.18, 1] }
+    {
+      "node": "Sage lampshade",
+      "emission": [
+        0.2,
+        0.26,
+        0.1,
+        1
+      ]
+    },
+    {
+      "node": "Shade cream piping",
+      "emission": [
+        0.5,
+        0.34,
+        0.18,
+        1
+      ]
+    }
   ],
   "lampFloorPaper": [
-    { "node": "Rice paper lantern", "emission": [0.6, 0.4, 0.2, 1] }
+    {
+      "node": "Rice paper lantern",
+      "emission": [
+        0.6,
+        0.4,
+        0.2,
+        1
+      ]
+    }
   ],
   "lampTableMushroom": [
-    { "node": "Mushroom shade", "emission": [0.48, 0.15, 0.06, 1] },
-    { "node": "Shade warm underside", "emission": [0.7, 0.44, 0.2, 1] }
+    {
+      "node": "Mushroom shade",
+      "emission": [
+        0.48,
+        0.15,
+        0.06,
+        1
+      ]
+    },
+    {
+      "node": "Shade warm underside",
+      "emission": [
+        0.7,
+        0.44,
+        0.2,
+        1
+      ]
+    }
   ],
   "lampTableCeramic": [
-    { "node": "Linen table lampshade", "emission": [0.55, 0.36, 0.19, 1] }
+    {
+      "node": "Linen table lampshade",
+      "emission": [
+        0.55,
+        0.36,
+        0.19,
+        1
+      ]
+    }
   ],
   "lampTableBanker": [
-    { "node": "Green glass shade", "emission": [0.12, 0.27, 0.07, 1] },
-    { "node": "Glass shade lit underside", "emission": [0.8, 0.5, 0.25, 1] }
+    {
+      "node": "Green glass shade",
+      "emission": [
+        0.12,
+        0.27,
+        0.07,
+        1
+      ]
+    },
+    {
+      "node": "Glass shade lit underside",
+      "emission": [
+        0.8,
+        0.5,
+        0.25,
+        1
+      ]
+    }
   ],
   "bedroomFloorLamp": [
-    { "node": "Pleated lampshade", "emission": [0.55, 0.36, 0.19, 1] },
-    { "node": "Shade seam", "emission": [0.4, 0.27, 0.15, 1] }
+    {
+      "node": "Pleated lampshade",
+      "emission": [
+        0.55,
+        0.36,
+        0.19,
+        1
+      ]
+    },
+    {
+      "node": "Shade seam",
+      "emission": [
+        0.4,
+        0.27,
+        0.15,
+        1
+      ]
+    }
   ],
   "japaneseLamp": [
-    { "node": "Paper lantern", "emission": [0.6, 0.4, 0.2, 1] }
+    {
+      "node": "Paper lantern",
+      "emission": [
+        0.6,
+        0.4,
+        0.2,
+        1
+      ]
+    }
   ],
   "lavaLampOff": [
-    { "node": "Glass", "emission": [0.025, 0.065, 0.08, 1] },
-    { "node": "Lava blob", "emission": [1.2, 0.3, 0.06, 1] },
-    { "node": "Lava pool", "emission": [0.9, 0.22, 0.04, 1] }
+    {
+      "node": "Glass",
+      "emission": [
+        0.025,
+        0.065,
+        0.08,
+        1
+      ]
+    },
+    {
+      "node": "Lava blob",
+      "emission": [
+        1.2,
+        0.3,
+        0.06,
+        1
+      ]
+    },
+    {
+      "node": "Lava pool",
+      "emission": [
+        0.9,
+        0.22,
+        0.04,
+        1
+      ]
+    }
   ],
   "lavaLampAni": [
-    { "node": "Glass", "emission": [0.025, 0.065, 0.08, 1] },
-    { "node": "Lava blob", "emission": [1.2, 0.3, 0.06, 1] },
-    { "node": "Lava pool", "emission": [0.9, 0.22, 0.04, 1] }
+    {
+      "node": "Glass",
+      "emission": [
+        0.025,
+        0.065,
+        0.08,
+        1
+      ]
+    },
+    {
+      "node": "Lava blob",
+      "emission": [
+        1.2,
+        0.3,
+        0.06,
+        1
+      ]
+    },
+    {
+      "node": "Lava pool",
+      "emission": [
+        0.9,
+        0.22,
+        0.04,
+        1
+      ]
+    }
+  ],
+  "wallSpotCylinderBlack": [
+    {
+      "node": "Spotlight lens",
+      "emission": [
+        1,
+        0.78,
+        0.44,
+        1
+      ]
+    }
+  ],
+  "wallSpotCylinderWhite": [
+    {
+      "node": "Spotlight lens",
+      "emission": [
+        1,
+        0.78,
+        0.44,
+        1
+      ]
+    }
+  ],
+  "wallSpotBellBrass": [
+    {
+      "node": "Spotlight lens",
+      "emission": [
+        1,
+        0.78,
+        0.44,
+        1
+      ]
+    }
+  ],
+  "wallSpotBellRose": [
+    {
+      "node": "Spotlight lens",
+      "emission": [
+        1,
+        0.78,
+        0.44,
+        1
+      ]
+    }
+  ],
+  "wallSpotBarOak": [
+    {
+      "node": "Spotlight lens",
+      "emission": [
+        1,
+        0.78,
+        0.44,
+        1
+      ]
+    }
+  ],
+  "wallSpotBarChrome": [
+    {
+      "node": "Spotlight lens",
+      "emission": [
+        1,
+        0.78,
+        0.44,
+        1
+      ]
+    }
   ]
 }

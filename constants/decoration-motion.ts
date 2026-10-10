@@ -2,7 +2,25 @@ export function isAirConditionerDecorationId(id: string): boolean {
   return id === "livingAirCon" || id === "officeAc";
 }
 
+export function isWallSpotlightDecorationId(id: string): boolean {
+  return /^wallSpot(Cylinder|Bell|Bar)(Black|White|Brass|Rose|Oak|Chrome)$/.test(id);
+}
+
+export const DEFAULT_SPOTLIGHT_ANGLE = -25;
+export function normalizeSpotlightAngle(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.max(-60, Math.min(75, value)) : DEFAULT_SPOTLIGHT_ANGLE;
+}
+
+export const SPOTLIGHT_PIVOT: [number, number, number] = [0, .30, .40];
+
 export const LAMP_LIGHT_ORIGINS: Record<string, [number, number, number]> = {
+  wallSpotCylinderBlack: [0, .14, .40],
+  wallSpotCylinderWhite: [0, .14, .40],
+  wallSpotBellBrass: [0, .14, .40],
+  wallSpotBellRose: [0, .14, .40],
+  wallSpotBarOak: [0, .14, .40],
+  wallSpotBarChrome: [0, .14, .40],
   lampFloorArc: [.72, 1.33, 0],
   lampFloorTripod: [0, 1.30, 0],
   lampFloorPaper: [0, .80, 0],

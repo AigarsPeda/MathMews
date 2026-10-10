@@ -109,11 +109,18 @@ assert.equal(savedLamps[0].poweredOn, true, 'Lamp power survives save reload');
 assert.equal(savedLamps[0].rotationDegrees, 53);
 assert.equal(savedLamps[0].scale, 1.4);
 const { lampLightConfig } = load('@/utils/native-lamp-light');
-const { LAMP_LIGHT_ORIGINS } = load('@/constants/decoration-motion');
+const { LAMP_LIGHT_ORIGINS, isWallSpotlightDecorationId } = load('@/constants/decoration-motion');
 for (const modelId of Object.keys(LAMP_LIGHT_ORIGINS)) {
   const object = { modelId, poweredOn: true, position: [2, .1, 3], heading: Math.PI / 2, scale: 2 };
   const light = lampLightConfig(object), origin = LAMP_LIGHT_ORIGINS[modelId];
   assert.ok(light, `${modelId} supports light`);
+  if (isWallSpotlightDecorationId(modelId)) {
+    assert.equal(light.type, 'spot');
+    assert.ok(light.direction[0] > 0 && light.direction[1] < 0, 'Wall spotlights tilt into the room');
+    assert.ok(light.spotLightCone[0] < .5 && light.spotLightCone[1] > 1.4 && light.spotLightCone[1] < Math.PI / 2, 'Spotlights retain a focused core and a visible soft cone in the orthographic room');
+    assert.equal(lampLightConfig({ ...object, poweredOn: false }), undefined);
+    continue;
+  }
   assert.ok(Math.abs(light.position[0] - (2 + origin[2] * 2)) < 1e-8);
   assert.ok(Math.abs(light.position[1] - (.1 + origin[1] * 2)) < 1e-8);
   assert.ok(Math.abs(light.position[2] - (3 - origin[0] * 2)) < 1e-8);
@@ -121,10 +128,17 @@ for (const modelId of Object.keys(LAMP_LIGHT_ORIGINS)) {
   if (modelId.startsWith('lavaLamp')) {
     assert.equal(light.type,'point','The bottle lights surfaces around it, including above its base');
     assert.ok(light.colorKelvin<2700,'Lava casts warm amber light');
-    const small=lampLightConfig({...object,scale:.2});
-    assert.ok(small.falloffRadius>=3,'A small lamp keeps its light outside the visible clipping tiles');
+  } else {
+    assert.equal(light.type,'spot','Shaded lamps retain their downward light');
+    assert.ok(light.spotLightCone[1]>1.4 && light.spotLightCone[1]<Math.PI/2,
+      'The broad cone avoids the observed straight cutoff while staying below the shade');
+    assert.ok(light.spotLightCone[0]<light.spotLightCone[1]-.5,'Lamp edges have a soft angular fade');
+  }
+  for (const scale of [.2,.5,1]) {
+    const small=lampLightConfig({...object,scale});
+    assert.ok(small.falloffRadius>=3,'Small lamps keep their light outside the visible clipping tiles');
     assert.ok(small.intensity>0 && small.intensity<light.intensity,'Resizing retains bounded light power');
-  } else assert.equal(light.type,'spot','Shaded lamps retain their downward light');
+  }
   assert.equal(lampLightConfig({ ...object, poweredOn: false }), undefined);
   assert.equal(lampLightConfig({ ...object, poweredOn: undefined }), undefined);
 }
@@ -628,7 +642,7 @@ const dragNode=decorationNode(dragRoom,'drag-chair').node;
 const sharedPreview=dragRoom.find(({node})=>node.type==='NativeRoomScene').node.props.editingObject;
 // Worklets Core clears its backing properties before copying an assigned object.
 // Its getter is a live proxy: assigning that same proxy erases the source too.
-let previewProperties;
+let previewProperties, previewWrites=0;
 const previewProxy=new Proxy({}, {
   get:(_target,key)=>previewProperties?.[key],
   ownKeys:()=>Reflect.ownKeys(previewProperties ?? {}),
@@ -637,6 +651,7 @@ const previewProxy=new Proxy({}, {
 Object.defineProperty(sharedPreview,'value',{
   get:()=>previewProperties ? previewProxy : undefined,
   set:value=>{
+    previewWrites++;
     if(!value){previewProperties=undefined;return;}
     previewProperties={};
     for(const key of Object.keys(value))previewProperties[key]=value[key];
@@ -650,6 +665,7 @@ for(let frame=0;frame<120;frame++)dragNode.props.onDragPositionChange({x:anchor.
 assert.equal(stateWrites,writesBefore,'Furniture drag frames do not update React state or rebuild the room');
 assert.equal(sharedPreview.value.heading,20*Math.PI/180,'The native preview retains the saved 20-degree angle');
 assert.equal(roomWorld(dragRoom).objects[0],savedChair,'The saved world stays unchanged during the drag');
+const blockedWrites=previewWrites;
 for(let frame=0;frame<60;frame++) {
   dragNode.props.onDragPositionChange({x:anchor.x+1000,y:anchor.y});
   assert.equal(sharedPreview.value.instanceId,'drag-chair','Blocked dragging cannot erase the live shared object');
@@ -657,9 +673,87 @@ for(let frame=0;frame<60;frame++) {
   assert.ok(sharedPreview.value.position.every(Number.isFinite));
   assert.equal(sharedPreview.value.heading,20*Math.PI/180);
 }
+assert.ok(previewWrites-blockedWrites<=1,'Stationary drag movement does not republish an unchanged native shared pose');
 dragNode.props.onOffsetChange({x:.1,y:.25});
 assert.equal(moved.id,'drag-chair');
-console.log('Verified live-proxy furniture dragging, repeated blocked moves, no React updates and an unchanged saved angle.');
+console.log('Verified live-proxy furniture previews, unchanged-pose caching, no React updates and an unchanged saved angle.');
+
+// The actual stage wires geometry picking to selection, native previews and one save.
+const nativeEditor=dragRoom.find(({node})=>node.type==='NativeRoomEditor').node.props;
+const pickerRef=dragRoom.find(({node})=>node.type==='NativeRoomScene').node.props.pickerRef;
+let pickCoordinates;
+pickerRef.current={pick:async(x,y)=>{pickCoordinates=[x,y];return 'drag-chair';}};
+assert.equal(await nativeEditor.pick({x:42,y:84}),'drag-chair');
+assert.deepEqual(pickCoordinates,[42,84]);
+nativeEditor.select('drag-chair');
+assert.equal(decorationNode(render([dragChair],moveProps),'drag-chair').node.props.selected,true);
+nativeEditor.discard('drag-chair');
+assert.equal(sharedPreview.value,undefined,'Cancelled native editing discards the unsaved pose');
+const nativeWrites=stateWrites;
+const nativePoint=nativeEditor.move('drag-chair',{x:anchor.x+10,y:anchor.y});
+assert.equal(stateWrites,nativeWrites,'The geometry editor retains drawing-thread previews without React work');
+assert.equal(sharedPreview.value.heading,savedChair.heading);
+nativeEditor.commit('drag-chair',nativePoint);
+const chairSize=savedChair.scale*390*load('@/utils/native-room-world').NATIVE_MODEL_CATALOG[savedChair.modelId].renderScale/load('@/utils/native-room-world').ROOM_SPAN;
+assert.ok(Math.abs(moved.offset.x-nativePoint.x/((390-chairSize)/2))<1e-8,'Commit converts the accepted native anchor into the saved offset');
+nativeEditor.discard('drag-chair');
+const snapEditor=render([dragChair],moveProps).find(({node})=>node.type==='RoomEditorSheet').node.props;
+snapEditor.onSnap();
+const snapping=render([dragChair],moveProps).find(({node})=>node.type==='NativeRoomEditor').node.props;
+snapping.commit('drag-chair',snapping.move('drag-chair',{x:anchor.x+3,y:anchor.y+3}));
+assert.ok(Math.abs(moved.offset.x*10-Math.round(moved.offset.x*10))<1e-8,'Native geometry dragging retains the optional grid snap');
+snapping.discard('drag-chair');snapEditor.onSnap();
+assert.ok(!render([dragChair],{...moveProps,roomVisible:false}).some(({node})=>node.type==='NativeRoomEditor'),'Hidden rooms have no active picker overlay');
+assert.ok(!render([dragChair],{...moveProps,nativeSceneMounted:false}).some(({node})=>node.type==='NativeRoomEditor'),'Unmounted native rooms have no active picker overlay');
+console.log('Verified stage geometry picking, selected instance, shared preview, saved accepted anchor, grid snap and inactive-room cleanup.');
+
+// The reported chair can pass over the sofa as a preview, but cannot be saved inside it.
+states.length=0; drawingValues.length=0; refs.length=0;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+const closeChair={...dragChair,wallFlipped:true,offset:{x:-.51,y:.21},scale:1};
+const closeSofa={...sofa,offset:{x:-.37,y:.093},rotationDegrees:270,scale:1.5};
+let dropSaves=0;
+const dropProps={...moveProps,onPlacedDecorationOffsetChange:(id,offset)=>{dropSaves++;moved={id,offset};}};
+let closeRoom=render([closeChair,closeSofa],dropProps);
+closeRoom.find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
+closeRoom=render([closeChair,closeSofa],dropProps);
+const editor=closeRoom.find(({node})=>node.type==='NativeRoomEditor').node.props;
+const closeWorld=roomWorld(closeRoom),closePreview=closeRoom.find(({node})=>node.type==='NativeRoomScene').node.props.editingObject;
+const originalChair=closeWorld.objects.find(object=>object.instanceId==='drag-chair');
+const sofaObject=closeWorld.objects.find(object=>object.instanceId==='sofa');
+const sofaPoint=placementApi.roomItemAnchor(sofaObject,390);
+const previewPoint=editor.move('drag-chair',sofaPoint);
+assert.ok(Math.abs(previewPoint.x-sofaPoint.x)<1e-8 && Math.abs(previewPoint.y-sofaPoint.y)<1e-8,'The chair follows the pointer across the sofa');
+const closeResolver=placementApi.createRoomPlacementResolver(closeWorld);
+assert.equal(closeResolver.canPlace(closePreview.value),false,'The temporary chair preview overlaps furniture');
+const beforeReject=dropSaves;
+editor.select('drag-chair');
+editor.commit('drag-chair',previewPoint);
+let rejectedRoom=render([closeChair,closeSofa],dropProps);
+const failedOverlay=rejectedRoom.find(({node})=>node.type==='RoomPlacementOverlay').node;
+assert.ok(failedOverlay.props.feedback.blockers.some(hit=>hit.instanceId==='sofa'));
+const restoredSelection=decorationNode(rejectedRoom,'drag-chair').node.props.externalPosition;
+const savedSelection=placementApi.roomItemAnchor(originalChair,390);
+assert.ok(Math.abs(restoredSelection.x-savedSelection.x)<1e-8 && Math.abs(restoredSelection.y-savedSelection.y)<1e-8,'The native selection frame uses the restored model anchor, not stale sprite coordinates');
+assert.equal(rejectedRoom.find(({node})=>node.type==='RoomItemMoveControls').node.props.feedback,'home.placementReturned · home.placementBlocked');
+editor.select('drag-chair');
+assert.ok(!render([closeChair,closeSofa],dropProps).some(({node})=>node.type==='RoomPlacementOverlay'),'Beginning the next gesture clears stale rejection feedback');
+assert.equal(dropSaves,beforeReject,'An invalid native drop is never saved');
+assert.equal(closePreview.value,undefined,'Rejecting a drop restores the saved native pose');
+const freeChair=closeResolver.nearestFree(placementApi.roomItemAtPoint(originalChair,sofaPoint,390));
+assert.ok(freeChair,'The reported layout has a clear place for the chair');
+const freePoint=placementApi.roomItemAnchor(freeChair,390);
+editor.move('drag-chair',sofaPoint);
+editor.commit('drag-chair',editor.move('drag-chair',freePoint));
+assert.equal(dropSaves,beforeReject+1,'A clear drop after crossing the sofa saves exactly once');
+assert.ok(!render([closeChair,closeSofa],dropProps).some(({node})=>node.type==='RoomPlacementOverlay'),'An accepted drop has no rejection overlay');
+assert.equal(closePreview.value.heading,originalChair.heading,'The accepted drop retains the saved 20-degree rotation and wall orientation');
+const proxyChair=decorationNode(closeRoom,'drag-chair').node;
+const simpleReturn=proxyChair.props.onDragEnd(sofaPoint);
+const originalPoint=placementApi.roomItemAnchor(originalChair,390);
+assert.ok(Math.abs(simpleReturn.x-originalPoint.x)<1e-8 && Math.abs(simpleReturn.y-originalPoint.y)<1e-8,'The sprite/accessibility drag path rejects the same overlap');
+assert.equal(closePreview.value,undefined);
+console.log('Verified the reported rotated chair previews over the sofa, restores invalid drops, accepts a clear drop and preserves its angle on both edit paths.');
 
 // Newly placed furniture receives a free spot rather than the old overlapping default.
 states.length=0; drawingValues.length=0; refs.length=0;

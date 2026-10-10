@@ -2,7 +2,7 @@ import nativeCatalog from "@/assets/3d/native/catalog.json";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
-import { isCurtainDecorationId, isPoweredDecorationId } from "@/constants/decoration-motion";
+import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { getDecorationDisplaySize, isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
@@ -134,6 +134,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         wallFlipped: isRoomDoor(placement.decorationId) && typeof record.wallFlipped === "boolean"
           ? record.wallFlipped : record.wallFlipped === true ? true : undefined,
         poweredOn: isPoweredDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
+        spotlightAngle: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightAngle(record.spotlightAngle) : undefined,
         curtainOpen: isCurtainDecorationId(placement.decorationId) && record.curtainOpen === false ? false : undefined,
         rotationDegrees: normalizeRotationDegrees(record.rotationDegrees),
         scale: scale !== undefined && scale !== getDecorationDefaultScale(placement.decorationId) ? scale : undefined,
@@ -261,7 +262,7 @@ export function appendPlacedDecoration(
       wallFlipped: window ? getPlacedDecorationWallFlipped(window) : undefined,
       rotationDegrees: window?.rotationDegrees,
       instanceId: createPlacementInstanceId(),
-      offset: window ? { ...window.offset } : defaultPlacementOffset(
+      offset: window ? { ...window.offset } : isWallSpotlightDecorationId(decorationId) ? { x: .2, y: -.70 } : defaultPlacementOffset(
         (placedDecorations ?? []).length,
         "decoration",
       ),
@@ -339,6 +340,13 @@ export function togglePlacedDecorationPowerByInstance(
   );
 }
 
+export function aimPlacedSpotlightByInstance(
+  placedDecorations: PlacedDecoration[] | undefined, instanceId: string, angle: number,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).map(item => item.instanceId === instanceId && isWallSpotlightDecorationId(item.decorationId)
+    ? { ...item, spotlightAngle: normalizeSpotlightAngle(angle) } : item);
+}
+
 export function togglePlacedCurtainByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
   instanceId: string,
@@ -391,6 +399,11 @@ export function updatePlacedDecorationWallFlipByInstance(
 
     return {
       ...item,
+      // A wall spotlight must cross to the corresponding side of the room.
+      // Keeping a right-wall screen anchor on the left wall places it beyond
+      // the corner, behind the opaque back wall.
+      offset: isWallSpotlightDecorationId(item.decorationId) && getPlacedDecorationWallFlipped(item) !== wallFlipped
+        ? { ...item.offset, x: -item.offset.x } : item.offset,
       wallFlipped: isRoomDoor(item.decorationId) ? wallFlipped : wallFlipped ? true : undefined,
     };
   });

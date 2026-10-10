@@ -22,6 +22,7 @@ const CLIPS: Record<string, number[]> = CAT_ANIMATION_CLIPS;
 // Wall-clock initialization keeps new revisions above those retained commands.
 let nextCommandRevision = Date.now();
 type Props = {
+  registerPickEntities?: (id: string, entities: { id: number }[]) => () => void;
   skinId?: string;
   playback: PetPlaybackState;
   world?: NativeRoomWorld;
@@ -47,11 +48,12 @@ type Props = {
   onRoomStepComplete?: (key: string, position: Vec3) => void;
   initialPosition?: Vec3;
 };
-export function NativeCatActor({ skinId, playback, world, travel, activityKey, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, rockingMotion, animationTimeValue, hangingBall, plantLeaf, pawPositions, initialPosition, reduceMotion = false }: Props) {
+export function NativeCatActor({ skinId, playback, world, travel, activityKey, loop, active, onPosition, onAnimationComplete, onStepComplete, onContactPosition, onRoomStepComplete, onReady, positionValue, rockingMotion, animationTimeValue, hangingBall, plantLeaf, pawPositions, initialPosition, registerPickEntities, reduceMotion = false }: Props) {
   'use no memo';
   const { transformManager } = useFilamentContext();
   const model = useModel(SOURCES[resolveCatSkinId(skinId)], { shouldReleaseSourceData: false });
   const asset = model.state === 'loaded' ? model.asset : undefined;
+  useEffect(() => asset ? registerPickEntities?.('cat', asset.getRenderableEntities()) : undefined, [asset, registerPickEntities]);
   const entity = model.state === 'loaded' ? model.rootEntity : undefined;
   const animator = useAnimator(asset);
   const supportingPaws = useMemo(() => asset ? ['L.front.paw', 'R.front.paw', 'L.rear.paw', 'R.rear.paw']

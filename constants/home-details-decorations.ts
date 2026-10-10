@@ -8,7 +8,19 @@ export const DOOR_DECORATION_CATALOG = {
 
 export const DOOR_DECORATION_IDS = Object.keys(DOOR_DECORATION_CATALOG) as (keyof typeof DOOR_DECORATION_CATALOG)[];
 
+export const WALL_SPOTLIGHT_DECORATION_CATALOG = {
+  wallSpotCylinderBlack: { source: require("@/assets/3d/decoration/wallSpotCylinderBlack.png"), displaySize: 32 },
+  wallSpotCylinderWhite: { source: require("@/assets/3d/decoration/wallSpotCylinderWhite.png"), displaySize: 32 },
+  wallSpotBellBrass: { source: require("@/assets/3d/decoration/wallSpotBellBrass.png"), displaySize: 32 },
+  wallSpotBellRose: { source: require("@/assets/3d/decoration/wallSpotBellRose.png"), displaySize: 32 },
+  wallSpotBarOak: { source: require("@/assets/3d/decoration/wallSpotBarOak.png"), displaySize: 32 },
+  wallSpotBarChrome: { source: require("@/assets/3d/decoration/wallSpotBarChrome.png"), displaySize: 32 },
+} as const satisfies Record<string, ImageEntry>;
+
+export const WALL_SPOTLIGHT_DECORATION_IDS = Object.keys(WALL_SPOTLIGHT_DECORATION_CATALOG) as (keyof typeof WALL_SPOTLIGHT_DECORATION_CATALOG)[];
+
 export const LAMP_DECORATION_CATALOG = {
+  ...WALL_SPOTLIGHT_DECORATION_CATALOG,
   lampFloorArc: { source: require("@/assets/3d/decoration/lampFloorArc.png"), displaySize: 72 },
   lampFloorTripod: { source: require("@/assets/3d/decoration/lampFloorTripod.png"), displaySize: 64 },
   lampFloorPaper: { source: require("@/assets/3d/decoration/lampFloorPaper.png"), displaySize: 64 },

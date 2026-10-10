@@ -42,6 +42,8 @@ type DraggableRoomPetProps = {
   /** Live position in room pixels relative to the room's center. */
   onPositionChange?: (position: { x: number; y: number }) => void;
   onDragPositionChange?: (position: { x: number; y: number }) => { x: number; y: number } | void;
+  /** Validate the final position after grid snapping, returning the accepted anchor. */
+  onDragEnd?: (position: { x: number; y: number }) => { x: number; y: number };
   onDragStart?: () => void;
   onPetTap?: () => void;
   layerZIndex?: number;
@@ -118,6 +120,7 @@ export function DraggableRoomPet({
   onOffsetChange,
   onPositionChange,
   onDragPositionChange,
+  onDragEnd,
   onDragStart,
   onPetTap,
   layerZIndex = 1,
@@ -145,6 +148,7 @@ export function DraggableRoomPet({
   const onOffsetChangeRef = useRef(onOffsetChange);
   const onPositionChangeRef = useRef(onPositionChange);
   const onDragPositionChangeRef = useRef(onDragPositionChange);
+  const onDragEndRef = useRef(onDragEnd);
   const onDragStartRef = useRef(onDragStart);
 
   const onPetTapRef = useRef(onPetTap);
@@ -154,9 +158,10 @@ export function DraggableRoomPet({
     onOffsetChangeRef.current = onOffsetChange;
     onPositionChangeRef.current = onPositionChange;
     onDragPositionChangeRef.current = onDragPositionChange;
+    onDragEndRef.current = onDragEnd;
     onDragStartRef.current = onDragStart;
     onPetTapRef.current = onPetTap;
-  }, [dragging, position, onOffsetChange, onPositionChange, onDragPositionChange, onDragStart, onPetTap]);
+  }, [dragging, position, onOffsetChange, onPositionChange, onDragPositionChange, onDragEnd, onDragStart, onPetTap]);
 
   const resolvedOffset = initialOffset ?? DEFAULT_OFFSET;
   const resolvedHitSize = Math.min(hitSize ?? petSize, petSize);
@@ -182,11 +187,12 @@ export function DraggableRoomPet({
     const offset = pixelsToOffset(positionRef.current.x, positionRef.current.y, roomSize.width, roomSize.height, petSize);
     const snapped = snapToGrid ? { x: Math.round(offset.x * 10) / 10, y: Math.round(offset.y * 10) / 10 } : offset;
     const point = offsetToPixels(snapped, roomSize.width, roomSize.height, petSize);
-    const accepted = onDragPositionChangeRef.current?.(point) ?? point;
+    const accepted = onDragEndRef.current ? onDragEndRef.current(point) : onDragPositionChangeRef.current?.(point) ?? point;
     positionRef.current = accepted;
     setPosition(accepted);
+    liveX.set(accepted.x); liveY.set(accepted.y);
     onOffsetChangeRef.current(pixelsToOffset(accepted.x, accepted.y, roomSize.width, roomSize.height, petSize));
-  }, [petSize, roomSize.height, roomSize.width, snapToGrid]);
+  }, [petSize, roomSize.height, roomSize.width, snapToGrid, liveX, liveY]);
 
   const hasTap = Boolean(onPetTap);
   // Native menu triggers own the touch. Keep editable objects as plain drag

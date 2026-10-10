@@ -94,6 +94,7 @@ export default function HomeScreen() {
     flipPlacedDecorationWall,
     togglePlacedDecorationPower,
     togglePlacedCurtain,
+    aimPlacedSpotlight,
     scalePlacedDecoration,
     visitHomeRoom,
     sendCatToRoom,
@@ -537,7 +538,8 @@ export default function HomeScreen() {
       onRotatePlacedDecoration={handleRotatePlacedDecoration}
       onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
       onTogglePlacedDecorationPower={handleTogglePlacedDecorationPower}
-            onTogglePlacedCurtain={handleTogglePlacedCurtain}
+      onTogglePlacedCurtain={handleTogglePlacedCurtain}
+      onAimPlacedSpotlight={(id, angle) => { if (aimPlacedSpotlight(id, angle)) recordInteraction(); }}
       onScalePlacedDecoration={handleScalePlacedDecoration}
       onMoveRoomLayerItem={handleMoveRoomLayerItem}
       onBedRemove={handleRemoveBed}

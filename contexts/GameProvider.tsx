@@ -1,3 +1,4 @@
+import { isWallSpotlightDecorationId } from '@/constants/decoration-motion';
 import type { HomeRoomId } from "@/constants/home-rooms";
 import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeather, type WorldClock, type WeatherMode } from '@/utils/world-clock';
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
@@ -81,6 +82,7 @@ import {
   removePlacedToyByInstance,
   togglePlacedDecorationPowerByInstance,
   togglePlacedCurtainByInstance,
+  aimPlacedSpotlightByInstance,
   updatePlacedDecorationRotationByInstance,
   updatePlacedDecorationScaleByInstance,
   updatePlacedToyScaleByInstance,
@@ -177,6 +179,7 @@ type GameContextValue = {
   rotatePlacedDecoration: (instanceId: string) => boolean;
   flipPlacedDecorationWall: (instanceId: string) => boolean;
   togglePlacedDecorationPower: (instanceId: string) => boolean;
+  aimPlacedSpotlight: (instanceId: string, angle: number) => boolean;
   togglePlacedCurtain: (instanceId: string) => boolean;
   scalePlacedDecoration: (
     instanceId: string,
@@ -936,6 +939,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
+  const aimPlacedSpotlight = useCallback((instanceId: string, angle: number) => {
+    const current = saveRef.current;
+    const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
+    if (!placed || !isWallSpotlightDecorationId(placed.decorationId) || !Number.isFinite(angle)) return false;
+    setSave({ ...current, pet: { ...current.pet,
+      placedDecorations: aimPlacedSpotlightByInstance(current.pet.placedDecorations, instanceId, angle),
+    } });
+    return true;
+  }, [setSave]);
+
   const togglePlacedCurtain = useCallback((instanceId: string) => {
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
@@ -1284,6 +1297,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       flipPlacedDecorationWall,
       togglePlacedDecorationPower,
       togglePlacedCurtain,
+      aimPlacedSpotlight,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,
@@ -1355,6 +1369,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       flipPlacedDecorationWall,
       togglePlacedDecorationPower,
       togglePlacedCurtain,
+      aimPlacedSpotlight,
       scalePlacedDecoration,
       moveRoomLayerItem,
       purchaseSkin,

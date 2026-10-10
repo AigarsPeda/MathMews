@@ -8,6 +8,7 @@ const parts: Record<string, { node: string; emission: number[] }[]> = glowParts;
 export function NativeLampGlow({ asset, modelId, poweredOn }: {
   asset: FilamentAsset; modelId: string; poweredOn: boolean;
 }) {
+  'use no memo';
   const { renderableManager, nameComponentManager } = useFilamentContext();
   const materials = useMemo(() => asset.getRenderableEntities().flatMap(entity => {
     const name = nameComponentManager.getEntityName(entity) ?? '';
@@ -18,8 +19,10 @@ export function NativeLampGlow({ asset, modelId, poweredOn }: {
   }), [asset, modelId, renderableManager, nameComponentManager]);
   useWorkletEffect(() => {
     'worklet';
-    for (const { material, emission } of materials) {
-      material.setFloat4Parameter('emissiveFactor', poweredOn ? emission : [0, 0, 0, 1]);
+    for (let i = 0; i < materials.length; i++) {
+      const { material, emission } = materials[i];
+      material.setFloat4Parameter('emissiveFactor', poweredOn
+        ? [emission[0], emission[1], emission[2], emission[3]] : [0, 0, 0, 1]);
     }
   });
   return null;

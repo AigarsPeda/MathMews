@@ -62,6 +62,42 @@
       "animated": false
     },
     {
+      "id": "wallSpotCylinderBlack",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
+      "id": "wallSpotCylinderWhite",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
+      "id": "wallSpotBellBrass",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
+      "id": "wallSpotBellRose",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
+      "id": "wallSpotBarOak",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
+      "id": "wallSpotBarChrome",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
       "id": "lampFloorArc",
       "kind": "decoration",
       "displaySize": 72,

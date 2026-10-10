@@ -1,6 +1,7 @@
 import { Canvas, Circle, Group, RadialGradient, Skia } from '@shopify/react-native-skia';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
+import { isWallSpotlightDecorationId } from '@/constants/decoration-motion';
 import { lampLightConfig } from '@/utils/native-lamp-light';
 import { FLOOR_Y, projectWorld, ROOM_SPAN, type NativeRoomWorld } from '@/utils/native-room-world';
 
@@ -22,9 +23,14 @@ export function SimpleLampLight({ world }: { world: NativeRoomWorld }) {
       {world.objects.map(object => {
         const light = lampLightConfig(object);
         if (!light) return null;
-        const point = projectWorld([light.position[0], FLOOR_Y, light.position[2]], world.width);
+        const wall = isWallSpotlightDecorationId(object.modelId);
+        if (wall && (object.spotlightAngle ?? -25) > 0) return null;
+        const distance = (light.position[1] - FLOOR_Y) / Math.max(.1, -light.direction[1]);
+        const point = projectWorld([light.position[0] + light.direction[0] * distance, FLOOR_Y,
+          light.position[2] + light.direction[2] * distance], world.width);
         const center = { x: point.x + world.width / 2, y: point.y + world.height / 2 };
-        const radius = (light.position[1] - FLOOR_Y) * Math.tan(light.spotLightCone[1]) * world.width / ROOM_SPAN;
+        // Native cone width includes a culling workaround; retain the small sprite glow.
+        const radius = (light.position[1] - FLOOR_Y) * Math.tan(Math.min(.85, light.spotLightCone[1])) * world.width / ROOM_SPAN;
         return <Group key={object.instanceId} origin={center} transform={[{ scaleY: .45 }]}>
           <Circle c={center} r={radius}>
             <RadialGradient c={center} r={radius} colors={['rgba(255,221,133,.55)', 'rgba(255,231,163,.20)', 'rgba(255,231,163,0)']} positions={[0, .6, 1]}/>

@@ -2,6 +2,7 @@
 import math
 import bpy
 from home_details import HOME_DETAIL_IDS, build_home_detail
+from wall_spotlights import WALL_SPOTLIGHT_IDS, build_wall_spotlight
 from kitchen_additions import KITCHEN_ADDITION_IDS, build_kitchen_addition
 from bathroom_additions import BATHROOM_ADDITION_IDS, build_bathroom_addition, add_bathroom_controls
 
@@ -16,6 +17,7 @@ STORE_FURNITURE_IDS = {
     'halloweenCauldron',
 }
 STORE_FURNITURE_IDS.update(HOME_DETAIL_IDS)
+STORE_FURNITURE_IDS.update(WALL_SPOTLIGHT_IDS)
 STORE_FURNITURE_IDS.update(KITCHEN_ADDITION_IDS)
 STORE_FURNITURE_IDS.update(BATHROOM_ADDITION_IDS)
 
@@ -71,7 +73,9 @@ def build_store_furniture(id, h):
         curve('Gooseneck faucet', [(x, y + .26, z), (x, y + .26, z + .32), (x, y + .08, z + .32), (x, y + .07, z + .23)], .022, 'silver')
         sphere('Tap handle', (x + .09, y + .25, z + .06), (.055, .035, .025), 'gold')
 
-    if id in BATHROOM_ADDITION_IDS:
+    if id in WALL_SPOTLIGHT_IDS:
+        build_wall_spotlight(id, h)
+    elif id in BATHROOM_ADDITION_IDS:
         build_bathroom_addition(id, h)
     elif id in KITCHEN_ADDITION_IDS:
         build_kitchen_addition(id, h)

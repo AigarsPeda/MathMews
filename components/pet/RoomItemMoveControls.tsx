@@ -13,8 +13,9 @@ const DIRECTIONS = [
 export type RoomMoveDirection = typeof DIRECTIONS[number][0];
 
 /** The room stays visible while a child moves the one highlighted item. */
-export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotationDegrees, onRotate }: {
+export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotationDegrees, onRotate, feedback }: {
   name: string;
+  feedback?: string;
   actions?: RoomItemMenuAction[];
   onMove: (direction: RoomMoveDirection) => void;
   onDone: () => void;
@@ -23,6 +24,7 @@ export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotat
 }) {
   const { t } = useTranslation();
   return <View style={styles.content}>
+    {feedback && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.feedback}>{feedback}</Text>}
     <View style={styles.heading}>
       <Text style={styles.title}>{t("home.moveSelectedItem", { name })}</Text>
       {actions.length > 0 && <RoomActionMenu actions={actions} label={t("home.itemOptions", { name })}>
@@ -53,6 +55,7 @@ export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotat
 }
 
 const styles = StyleSheet.create({
+  feedback: { color: GameColors.primaryDark, fontSize: moderateScale(13), fontWeight: "600", paddingTop: 6 },
   content: { width: "100%", paddingHorizontal: moderateScale(12), gap: 4 },
   heading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
   title: { flex: 1, fontSize: moderateScale(16), fontWeight: "700", color: GameColors.text },

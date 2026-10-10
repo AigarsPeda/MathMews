@@ -57,6 +57,8 @@ export type PlacedDecoration = {
   wallFlipped?: boolean;
   /** Air-conditioner power, saved separately for each placed unit. */
   poweredOn?: boolean;
+  /** Beam tilt from downward, positive angles aim back toward the wall. */
+  spotlightAngle?: number;
   /** Curtains start open; false closes this placed pair. */
   curtainOpen?: boolean;
   /** Display scale multiplier (default 1). */
