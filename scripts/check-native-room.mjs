@@ -970,7 +970,7 @@ const sceneClock = [];
 context.choreographer = { start: () => sceneClock.push('start'), stop: () => sceneClock.push('stop') };
 mocks['react-native-filament'].useFilamentContext = () => context;
 let sceneReady = 0, sceneRender;
-context.camera = { setOrthographicProjection() {}, lookAt() {} };
+context.camera = { setProjection(...args) { assert.equal(args.length,5); assert.equal(args[4],'vertical'); }, lookAt() {} };
 context.view = { getAspectRatio: () => 1 };
 const onSceneReady = () => sceneReady++;
 slots = []; frameRequests.clear();

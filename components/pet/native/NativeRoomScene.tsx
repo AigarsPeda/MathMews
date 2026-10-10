@@ -1,3 +1,5 @@
+import { configureRoomCamera } from '@/utils/native-room-camera';
+import { advanceSpotlightAim, type SpotlightAim } from '@/utils/native-spotlight-aim';
 import { NativeCurtain } from './NativeCurtain';
 import { nativeRoomPreview } from '@/utils/native-room-preview';
 import { NativeLightning } from './NativeLightning';
@@ -30,7 +32,7 @@ import { advancePlantLeaf, attachedPlantLeaf, detachPlantLeaf, LEAF_REGROW_DELAY
 import { airflowStrength, roomAirflowSources, type AirflowSource } from '@/utils/native-airflow';
 import { advanceHangingToy, containHangingToySwing, hangingToyContact } from '@/utils/native-hanging-toy';
 import { NATIVE_MODEL_SOURCES } from '@/constants/native-model-sources';
-import { FLOOR_Y, ROOM_SPAN, projectWorld, nativeBodyRotation, NATIVE_MODEL_CATALOG, type NativeRoomWorld, type NativeRoomObject, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
+import { FLOOR_Y, projectWorld, nativeBodyRotation, NATIVE_MODEL_CATALOG, type NativeRoomWorld, type NativeRoomObject, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
 import { GameColors } from '@/constants/game';
 import { RecoveryBoundary } from '@/components/recovery/RecoveryBoundary';
 import { SceneLoadGuard } from '@/components/recovery/SceneLoadGuard';
@@ -39,6 +41,7 @@ import type { PetPlaybackState } from '@/pet-display/types';
 export type NativeRoomPicker = { pick: (x: number, y: number) => Promise<string | undefined> };
 type Props = {
   pickerRef?: RefObject<NativeRoomPicker | undefined>;
+  spotlightAim?: ISharedValue<SpotlightAim | undefined>;
   editingObject?: ISharedValue<NativeRoomObject | undefined>;
   worldClock?: WorldClock;
   world: NativeRoomWorld;
@@ -82,9 +85,10 @@ function BoxCollider({ world, id, size, position }: {
   useRigidBody({ id, mass: 0, shape, origin: position, world, friction: .7 });
   return null;
 }
-function RoomObject({ object, curtainProgress, lightning, windows, world, worldClock, editingObject, catPosition, rockingMotion, hangingBall, plantLeaf, pawPositions, playingId, playContact, catPresent, active, lightingActive, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady, registerPickEntities }: {
+function RoomObject({ object, curtainProgress, lightning, windows, world, worldClock, editingObject, spotlightPose, catPosition, rockingMotion, hangingBall, plantLeaf, pawPositions, playingId, playContact, catPresent, active, lightingActive, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady, registerPickEntities }: {
   registerPickEntities?: (id: string, entities: { id: number }[]) => () => void;
   lightning: ISharedValue<number>;
+  spotlightPose?: ISharedValue<SpotlightAim | undefined>;
   editingObject?: ISharedValue<NativeRoomObject | undefined>;
   worldClock?: WorldClock;
   curtainProgress: ISharedValue<CurtainProgress>;
@@ -409,7 +413,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
   if (asset && isCurtainDecorationId(object.modelId))
     return <NativeCurtain asset={asset} object={object} windows={windows} clock={worldClock} progress={curtainProgress} lightning={lightning} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
   if (asset && isWallSpotlightDecorationId(object.modelId))
-    return <><NativeSpotlightHead asset={asset} angle={object.spotlightAngle}/><NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/></>;
+    return <><NativeSpotlightHead asset={asset} instanceId={object.instanceId} angle={object.spotlightAngle} swivel={object.spotlightSwivel} pose={spotlightPose}/><NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/></>;
   if (asset && isLampDecorationId(object.modelId))
     return <NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/>;
   return asset && worldClock && isWindowLightSource(object.modelId)
@@ -438,6 +442,10 @@ function Scene(props: Props) {
   }, [pickerRef, view]);
   const [roomReady, setRoomReady] = useState(false);
   const curtainProgress = useSharedValue<CurtainProgress>({});
+  const spotlightPose = useSharedValue<SpotlightAim | undefined>(undefined);
+  const spotlightAim = props.spotlightAim;
+  const cameraAspect = useSharedValue(0);
+  useEffect(() => { cameraAspect.value = 0; }, [camera, cameraAspect]);
   const windows = useMemo(() => props.world.objects.filter(object => isWindowLightSource(object.modelId)), [props.world.objects]);
   const catPresent = props.catPresent !== false;
   const objectKeys = props.world.objects.map(object => `${object.instanceId}:${object.modelId}`);
@@ -489,6 +497,9 @@ function Scene(props: Props) {
   const render = useCallback(({ timeSinceLastFrame }: { timeSinceLastFrame: number }) => {
       'worklet';
       const current = drawing.value;
+      const prior = spotlightPose.value;
+      const next = advanceSpotlightAim(prior, spotlightAim?.value, timeSinceLastFrame, current.reduceMotion);
+      if (prior?.instanceId !== next?.instanceId || prior?.angle !== next?.angle || prior?.swivel !== next?.swivel) spotlightPose.value = next;
       if (current.ready) {
         const frame = warmup.value;
         if (frame.key !== current.visualKey || frame.frames < 3) {
@@ -499,8 +510,10 @@ function Scene(props: Props) {
         }
       }
       const aspect = Math.max(.1, view.getAspectRatio());
-      camera.setOrthographicProjection(-ROOM_SPAN / 2, ROOM_SPAN / 2, -ROOM_SPAN / 2 / aspect, ROOM_SPAN / 2 / aspect, .1, 50);
-      camera.lookAt([8, 7, 8], [0, .9, 0], [0, 1, 0]);
+      if (cameraAspect.value !== aspect) {
+        configureRoomCamera(camera, aspect);
+        cameraAspect.value = aspect;
+      }
       if (current.reduceMotion || current.editing) rockingMotion.value = STILL_ROCKING_MOTION;
       else if (current.visible) rockingMotion.value = advanceRockingChair(rockingMotion.value, current.chair, catPresent ? catPosition.value : undefined, timeSinceLastFrame);
       if (current.visible && !current.reduceMotion && !current.editing) {
@@ -509,12 +522,12 @@ function Scene(props: Props) {
         world.stepSimulation(Math.min(1 / 15, Math.max(0, timeSinceLastFrame)), 4, 1 / 60);
       }
 
-  }, [camera, catBody, catPosition, catPresent, catScale, drawing, reportPainted, rockingMotion, view, warmup, world]);
+  }, [camera, catBody, catPosition, catPresent, catScale, drawing, reportPainted, rockingMotion, view, warmup, world, spotlightAim, spotlightPose, cameraAspect]);
   return <FilamentView style={StyleSheet.flatten(StyleSheet.absoluteFill)} enableTransparentRendering renderCallback={render}>
   {props.worldClock && <NativeLightning clock={props.worldClock} flash={lightning} active={visible && windows.length > 0} reduceMotion={reduceMotion}/>}
   {props.worldClock ? <NativeWorldLighting lightning={lightning} curtainProgress={curtainProgress} clock={props.worldClock} objects={props.world.objects} editingObject={props.editingObject} active={visible}/> : <DefaultLight/>}
   {props.world.objects.filter(object => isLampDecorationId(object.modelId)).map(object =>
-    <NativeLampLight key={`lamp:${object.instanceId}`} object={object} editingObject={props.editingObject} active={visible}/>)}
+    <NativeLampLight key={`lamp:${object.instanceId}`} object={object} editingObject={props.editingObject} spotlightPose={spotlightPose} active={visible}/>)}
   <RoomModel id={props.roomId ?? 'room1'} onReady={handleRoomReady}/>
   <NativeContactShadows world={props.world} editingObject={props.editingObject} active={visible}/>
   {([-1, 1] as const).flatMap(side => [
@@ -525,7 +538,7 @@ function Scene(props: Props) {
     <BoxCollider key={object.instanceId + ':part:' + index} id={object.instanceId + ':part:' + index} world={world}
       size={box.max.map((v, i) => Math.max(.01, (v - box.min[i]) / 2)) as Float3}
       position={box.max.map((v, i) => (v + box.min[i]) / 2) as Float3}/>))}
-  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} lightingActive={visible} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
+  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} spotlightPose={spotlightPose} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} lightingActive={visible} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
   {props.world.objects.filter(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn).map(o => <NativeAirflow key={o.instanceId} object={o} editingObject={props.editingObject} active={visible && !reduceMotion}/>)}
   {eatingBowl && !reduceMotion && <NativeFoodSpill key={props.activityKey} object={eatingBowl} active={visible} animationTime={catAnimationTime}/>}
   {catPresent && <NativeCatActor registerPickEntities={registerPickEntities} key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}

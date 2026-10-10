@@ -1,4 +1,4 @@
-import { CURTAIN_FABRIC_BOUNDS, isCurtainDecorationId } from "@/constants/decoration-motion";
+import { CURTAIN_FABRIC_BOUNDS, isCurtainDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import type { BathroomFixtureKind, BathroomPhase } from '@/constants/bathroom-activities';
@@ -13,7 +13,7 @@ import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId, getPlacedDeco
 import { getBedDisplaySize, getEquippedBedScale } from '@/constants/cat-beds';
 import { getPlacedToyDisplaySize, getPlacedToyRotationIndex } from '@/constants/cat-toys';
 import { isRoomDoor } from '@/constants/home-rooms';
-import { isWallSpotlightDecorationId, normalizeSpotlightAngle } from '@/constants/decoration-motion';
+import { WALL_MOUNT_PLANE, WALL_PLACEMENT_MIN, WALL_PLACEMENT_MAX, WALL_PLACEMENT_BOTTOM, WALL_PLACEMENT_TOP } from '@/constants/room-geometry';
 import { isRoomBackgroundDecoration } from '@/utils/room-depth';
 import { hangingToyPosition } from '@/utils/native-hanging-toy';
 import { roomOffsetToPoint, type RoomPoint, type RoomActivityPlan, type RoomActivityStep } from '@/utils/room-activities';
@@ -32,13 +32,16 @@ export type ModelMetadata = {
   animated: boolean;
   wind?: boolean;
   collisionBoxes?: { min: number[]; max: number[] }[];
+  supportSurfaces?: { min: number[]; max: number[] }[];
+  baseHull?: number[][];
+  wallMountBounds?: { min: number[]; max: number[] };
   placementHull?: number[][];
   leaves?: { node: string; contact: string; point: number[] }[];
   bathroom?: { kind: BathroomFixtureKind; contact: number[]; sprayHeight?: number };
 };
 export type CollisionBox = { min: Vec3; max: Vec3 };
 export const NATIVE_MODEL_CATALOG: Record<string, ModelMetadata> = Object.fromEntries(
-  Object.entries(catalog as Record<string, ModelMetadata>).map(([id, metadata]) => [id, { ...metadata, ...(placementBounds as Record<string, Pick<ModelMetadata, "placementHull" | "collisionBoxes">>)[id] }]),
+  Object.entries(catalog as Record<string, ModelMetadata>).map(([id, metadata]) => [id, { ...metadata, ...(placementBounds as Record<string, Pick<ModelMetadata, "placementHull" | "collisionBoxes" | "supportSurfaces" | "baseHull" | "wallMountBounds">>)[id] }]),
 );
 export const FLOOR_Y = .068;
 export const ROOM_SPAN = 7.45;
@@ -105,8 +108,11 @@ export type NativeRoomObject = {
   poweredOn?: boolean;
   curtainOpen?: boolean;
   spotlightAngle?: number;
+  spotlightSwivel?: number;
   /** Fixed coordinate of a wall-mounted item's mounting plane. */
   wallAxis?: 0 | 2;
+  /** Surface holding this lamp, reconstructed from its saved screen anchor. */
+  supportId?: string;
   /** Corrected wall anchor when a saved window placement lies outside the walls. */
   placementOffset?: RoomItemOffset;
   seat?: Vec3;
@@ -205,12 +211,24 @@ function rotate(point: number[], heading: number): Vec3 {
   return [Math.cos(heading) * point[0] + Math.sin(heading) * point[2], point[1], -Math.sin(heading) * point[0] + Math.cos(heading) * point[2]];
 }
 
+/** A wall lamp's backplate must fit on the wall; its head may overhang the edge. */
+export function nativeWallPlacementBounds(object: NativeRoomObject): CollisionBox {
+  const mount = NATIVE_MODEL_CATALOG[object.modelId].wallMountBounds;
+  if (!mount) return { min: object.min, max: object.max };
+  const corners = [mount.min[0], mount.max[0]].flatMap(x =>
+    [mount.min[1], mount.max[1]].flatMap(y => [mount.min[2], mount.max[2]].map(z =>
+      rotate([x,y,z],object.heading).map((v,i) => v*object.scale+object.position[i]))));
+  return { min: [0,1,2].map(i => Math.min(...corners.map(p => p[i]))) as Vec3,
+    max: [0,1,2].map(i => Math.max(...corners.map(p => p[i]))) as Vec3 };
+}
+
 export function isTabletopLamp(modelId: string): boolean {
   return /^(lavaLamp|lampTable)/.test(modelId);
 }
 
-/** The saved screen anchor also identifies a lamp's elevated tabletop pose. */
-export function placeLampOnTable(object: NativeRoomObject, objects: NativeRoomObject[], width: number): NativeRoomObject {
+/** Lift a lamp onto an authored surface. Saved anchors use the exact elevated
+ * pose; dragging may also target the board itself and snap the base onto it. */
+export function placeLampOnSurface(object: NativeRoomObject, objects: NativeRoomObject[], width: number, snapToSurface = false): NativeRoomObject {
   if (!isTabletopLamp(object.modelId)) return object;
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const centerOffset = rotate(meta.center, object.heading);
@@ -218,26 +236,26 @@ export function placeLampOnTable(object: NativeRoomObject, objects: NativeRoomOb
   const point = projectWorld(center, width);
   const base = meta.collisionBoxes?.filter(box => box.min[1] <= meta.min[1] + .02)
     .sort((a, b) => a.max[1] - b.max[1])[0] ?? meta;
-  for (const table of objects) {
-    if (!/^(table(Tan|Pink|Blue|Purple)|japaneseTable|living(Small)?Table|office(Drawing|Kitchen)Table)$/.test(table.modelId)) continue;
-    const tableMeta = NATIVE_MODEL_CATALOG[table.modelId];
-    const top = tableMeta.collisionBoxes?.filter(box => box.max[1] - box.min[1] < .2
-      && box.max[0] - box.min[0] > .5 && box.max[2] - box.min[2] > .5)
-      .sort((a, b) => b.max[1] - a.max[1])[0];
-    if (!top) continue;
-    const height = table.position[1] + top.max[1] * table.scale + .002;
-    const desired = unprojectFloor(point, height + (meta.center[1] - meta.min[1]) * object.scale, width);
+  const baseHull = meta.baseHull ?? [base.min[0], base.max[0]].flatMap(x => [base.min[2], base.max[2]].map(z => [x,z]));
+  const surfaces = objects.flatMap(owner => owner.instanceId === object.instanceId ? []
+    : (NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces ?? []).map(top => ({ owner, top })))
+    .sort((a, b) => (b.owner.position[1] + b.top.max[1] * b.owner.scale) - (a.owner.position[1] + a.top.max[1] * a.owner.scale));
+  // Prefer an exact anchor before trying the board beneath the dragged lamp.
+  for (const targetBoard of snapToSurface ? [false, true] : [false]) for (const { owner, top } of surfaces) {
+    const height = owner.position[1] + top.max[1] * owner.scale + .002;
+    const desired = unprojectFloor(point, height + (targetBoard ? 0 : (meta.center[1] - meta.min[1]) * object.scale), width);
     const position = desired.map((v, i) => v - centerOffset[i] * object.scale) as Vec3;
-    const fits = [base.min[0], base.max[0]].every(x => [base.min[2], base.max[2]].every(z => {
-      const corner = rotate([x, 0, z], object.heading).map((v, i) => v * object.scale + position[i] - table.position[i]);
-      const local = rotate(corner, -table.heading);
-      return local[0] >= top.min[0] * table.scale && local[0] <= top.max[0] * table.scale
-        && local[2] >= top.min[2] * table.scale && local[2] <= top.max[2] * table.scale;
-    }));
+    position[1] = height - meta.min[1] * object.scale;
+    const fits = baseHull.every(([x,z]) => {
+      const corner = rotate([x, 0, z], object.heading).map((v, i) => v * object.scale + position[i] - owner.position[i]);
+      const local = rotate(corner, -owner.heading);
+      return local[0] >= top.min[0] * owner.scale && local[0] <= top.max[0] * owner.scale
+        && local[2] >= top.min[2] * owner.scale && local[2] <= top.max[2] * owner.scale;
+    });
     if (!fits) continue;
     const delta = position.map((v, i) => v - object.position[i]);
     const move = (value: Vec3) => value.map((v, i) => v + delta[i]) as Vec3;
-    return { ...object, position, min: move(object.min), max: move(object.max),
+    return { ...object, supportId: owner.instanceId, position, min: move(object.min), max: move(object.max),
       collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
   }
   return object;
@@ -283,7 +301,7 @@ export function buildNativeRoomWorld(options: {
     // Use the nearest window's frame, rather than its deep sill or a remote window.
     return nearby.length ? nearby[0].depth + .015 : .025;
   };
-  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean, spotlightAngle?: number) => {
+  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean, spotlightAngle?: number, spotlightSwivel?: number) => {
     const meta = NATIVE_MODEL_CATALOG[modelId];
     if (!meta)
       return;
@@ -299,8 +317,8 @@ export function buildNativeRoomWorld(options: {
     if (wall) {
       // Solve on the wall plane, so moving a fixture preserves its screen anchor.
       const difference = screen.x / (Math.max(1, width) / ROOM_SPAN) / diagonal;
-      let plane = -2.35;
-      if (isWindowDecorationId(modelId) || isCurtainDecorationId(modelId) || isWallSpotlightDecorationId(modelId) || normalizeRotationDegrees(rotationDegrees)) {
+      let plane = WALL_MOUNT_PLANE;
+      if (isWindowDecorationId(modelId) || isCurtainDecorationId(modelId) || isWallSpotlightDecorationId(modelId) || meta.supportSurfaces?.length || normalizeRotationDegrees(rotationDegrees)) {
         const normal = flip ? 0 : 2;
         const back = Math.min(...horizontalCorners.map(corner => corner[normal]));
         // Keep the glass and frame in front of the opaque room wall.
@@ -312,7 +330,7 @@ export function buildNativeRoomWorld(options: {
           .flatMap(x => [CURTAIN_FABRIC_BOUNDS.minZ, CURTAIN_FABRIC_BOUNDS.maxZ].map(z => rotate([x, 0, z], heading)[normal])));
         const hardwareBack = Math.min(...horizontalCorners.map(corner => corner[normal]));
         const depth = Math.max(curtainMountDepth(flip, screen, size, heading), (fabricBack - hardwareBack) * scale + .015);
-        plane = -2.35 + depth - (fabricBack - center[normal]) * scale;
+        plane = WALL_MOUNT_PLANE + depth - (fabricBack - center[normal]) * scale;
       }
       const x = flip ? plane : plane + difference;
       const z = flip ? plane - difference : plane;
@@ -323,14 +341,19 @@ export function buildNativeRoomWorld(options: {
     if (isWindowDecorationId(modelId) || isWallSpotlightDecorationId(modelId)) {
       const before = [...desired];
       const along = flip ? 2 : 0;
-      const limits = horizontalCorners.map(point => point.map((v, i) => (v - center[i]) * scale));
-      const low = Math.min(...limits.map(point => point[along]));
+      const mount = meta.wallMountBounds;
+      const mountedCorners = mount ? [mount.min[0],mount.max[0]].flatMap(x =>
+        [mount.min[2],mount.max[2]].map(z => rotate([x,0,z],heading))) : horizontalCorners;
+      const limits = mountedCorners.map(point => point.map((v, i) => (v - center[i]) * scale));
+      // The head can overhang the open end, but must clear the adjoining wall
+      // at the room's inner corner.
+      const low = Math.min(...horizontalCorners.map(point => (point[along]-center[along])*scale));
       const high = Math.max(...limits.map(point => point[along]));
       const clamp = (value: number, min: number, max: number) => min <= max ? Math.max(min, Math.min(max, value)) : (min + max) / 2;
-      desired[along] = clamp(desired[along], -2.30 - low, 2.30 - high);
+      desired[along] = clamp(desired[along], WALL_PLACEMENT_MIN - low, WALL_PLACEMENT_MAX - high);
       const bottom = (meta.min[1] - meta.center[1]) * scale;
       const top = (meta.max[1] - meta.center[1]) * scale;
-      desired[1] = clamp(desired[1], .18 - bottom, 2.65 - top);
+      desired[1] = clamp(desired[1], WALL_PLACEMENT_BOTTOM - bottom, WALL_PLACEMENT_TOP - top);
       if (Math.hypot(...desired.map((v,i) => v - before[i])) > 1e-6) {
         const point = projectWorld(desired, width);
         placementOffset = { x: point.x / Math.max(1, (width - size) / 2), y: point.y / Math.max(1, (height - size) / 2) };
@@ -357,7 +380,7 @@ export function buildNativeRoomWorld(options: {
     const movable = /Ball$|toy-mouse|^yarn/i.test(modelId);
     const solid = !isFoodBowlDecorationId(modelId) && !wall && !/carpet|rug/i.test(modelId) && !movable && max[1] > FLOOR_Y + .10;
     const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
-    const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, curtainOpen, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, placementOffset,
+    const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, curtainOpen, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
       wallAxis: wall ? flip ? 0 : 2 : undefined };
     if (meta.bathroom) object.bathroom = { kind: meta.bathroom.kind,
       contact: rotate(meta.bathroom.contact, heading).map((v, i) => position[i] + v * scale) as Vec3 };
@@ -408,10 +431,10 @@ export function buildNativeRoomWorld(options: {
   if (options.bedId)
     add('bed', 'bed-' + options.bedId, getBedDisplaySize(options.bedId) * getEquippedBedScale(options.bedScale) * sizeScale, options.bedOffset ?? { x: -.15, y: .3 }, options.bedFlipped, undefined, 0, options.bedRotationDegrees);
   for (const item of options.decorations)
-    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen, item.spotlightAngle);
+    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen, item.spotlightAngle, item.spotlightSwivel);
   for (const item of options.toys)
     add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
-  world.objects = world.objects.map(object => placeLampOnTable(object, world.objects, width));
+  world.objects = world.objects.map(object => placeLampOnSurface(object, world.objects, width));
   // Land in navigable floor space so the following walk never relocates its start.
   for (const object of world.objects)
     if (object.approach) object.approach = nearestFree(object.approach, world);

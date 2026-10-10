@@ -539,7 +539,7 @@ export default function HomeScreen() {
       onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
       onTogglePlacedDecorationPower={handleTogglePlacedDecorationPower}
       onTogglePlacedCurtain={handleTogglePlacedCurtain}
-      onAimPlacedSpotlight={(id, angle) => { if (aimPlacedSpotlight(id, angle)) recordInteraction(); }}
+      onAimPlacedSpotlight={(id, angle, swivel) => { if (aimPlacedSpotlight(id, angle, swivel)) recordInteraction(); }}
       onScalePlacedDecoration={handleScalePlacedDecoration}
       onMoveRoomLayerItem={handleMoveRoomLayerItem}
       onBedRemove={handleRemoveBed}

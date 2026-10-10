@@ -1,4 +1,3 @@
-import { isWallSpotlightDecorationId } from '@/constants/decoration-motion';
 import type { HomeRoomId } from "@/constants/home-rooms";
 import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeather, type WorldClock, type WeatherMode } from '@/utils/world-clock';
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
@@ -6,7 +5,7 @@ import { switchRoomLayout } from "@/utils/room-layout";
 import { setRoomItemRotation } from "@/utils/room-rotation";
 import { applyPuzzleAnswer, applyFeed } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
-import { isCurtainDecorationId, isPoweredDecorationId } from "@/constants/decoration-motion";
+import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
 import { LIFE_BUY_COST } from "@/constants/game";
 import {
   DEFAULT_BED_SCALE,
@@ -179,7 +178,7 @@ type GameContextValue = {
   rotatePlacedDecoration: (instanceId: string) => boolean;
   flipPlacedDecorationWall: (instanceId: string) => boolean;
   togglePlacedDecorationPower: (instanceId: string) => boolean;
-  aimPlacedSpotlight: (instanceId: string, angle: number) => boolean;
+  aimPlacedSpotlight: (instanceId: string, angle: number, swivel?: number) => boolean;
   togglePlacedCurtain: (instanceId: string) => boolean;
   scalePlacedDecoration: (
     instanceId: string,
@@ -939,12 +938,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const aimPlacedSpotlight = useCallback((instanceId: string, angle: number) => {
+  const aimPlacedSpotlight = useCallback((instanceId: string, angle: number, swivel?: number) => {
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
-    if (!placed || !isWallSpotlightDecorationId(placed.decorationId) || !Number.isFinite(angle)) return false;
+    if (!placed || !isWallSpotlightDecorationId(placed.decorationId) || !Number.isFinite(angle) || (swivel !== undefined && !Number.isFinite(swivel))) return false;
     setSave({ ...current, pet: { ...current.pet,
-      placedDecorations: aimPlacedSpotlightByInstance(current.pet.placedDecorations, instanceId, angle),
+      placedDecorations: aimPlacedSpotlightByInstance(current.pet.placedDecorations, instanceId, angle, swivel),
     } });
     return true;
   }, [setSave]);

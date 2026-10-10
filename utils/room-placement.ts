@@ -2,7 +2,7 @@ import nativeCatalog from "@/assets/3d/native/catalog.json";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
-import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle } from "@/constants/decoration-motion";
+import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { getDecorationDisplaySize, isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
@@ -135,6 +135,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
           ? record.wallFlipped : record.wallFlipped === true ? true : undefined,
         poweredOn: isPoweredDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
         spotlightAngle: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightAngle(record.spotlightAngle) : undefined,
+        spotlightSwivel: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightSwivel(record.spotlightSwivel) : undefined,
         curtainOpen: isCurtainDecorationId(placement.decorationId) && record.curtainOpen === false ? false : undefined,
         rotationDegrees: normalizeRotationDegrees(record.rotationDegrees),
         scale: scale !== undefined && scale !== getDecorationDefaultScale(placement.decorationId) ? scale : undefined,
@@ -341,10 +342,10 @@ export function togglePlacedDecorationPowerByInstance(
 }
 
 export function aimPlacedSpotlightByInstance(
-  placedDecorations: PlacedDecoration[] | undefined, instanceId: string, angle: number,
+  placedDecorations: PlacedDecoration[] | undefined, instanceId: string, angle: number, swivel?: number,
 ): PlacedDecoration[] {
   return (placedDecorations ?? []).map(item => item.instanceId === instanceId && isWallSpotlightDecorationId(item.decorationId)
-    ? { ...item, spotlightAngle: normalizeSpotlightAngle(angle) } : item);
+    ? { ...item, spotlightAngle: normalizeSpotlightAngle(angle), spotlightSwivel: normalizeSpotlightSwivel(swivel ?? item.spotlightSwivel) } : item);
 }
 
 export function togglePlacedCurtainByInstance(

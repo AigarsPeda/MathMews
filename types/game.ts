@@ -59,6 +59,8 @@ export type PlacedDecoration = {
   poweredOn?: boolean;
   /** Beam tilt from downward, positive angles aim back toward the wall. */
   spotlightAngle?: number;
+  /** Sideways head swivel, independent of the wall mount's orientation. */
+  spotlightSwivel?: number;
   /** Curtains start open; false closes this placed pair. */
   curtainOpen?: boolean;
   /** Display scale multiplier (default 1). */

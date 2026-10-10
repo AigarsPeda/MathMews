@@ -41,6 +41,7 @@ const mocks = {
   react: React,
   'react-i18next': { useTranslation: () => ({ t: (key, options) => options?.room ? key + ':' + options.room : key }) },
   'react-native': {
+    Keyboard: { dismiss() {} },
     View: 'View', Image: 'Image', Text: 'Text', Pressable: 'Pressable', ScrollView: 'ScrollView',
     StyleSheet: { create: styles => styles, absoluteFill: {} },
     PanResponder: { create: handlers => ({ panHandlers: handlers }) },
@@ -117,7 +118,7 @@ for (const modelId of Object.keys(LAMP_LIGHT_ORIGINS)) {
   if (isWallSpotlightDecorationId(modelId)) {
     assert.equal(light.type, 'spot');
     assert.ok(light.direction[0] > 0 && light.direction[1] < 0, 'Wall spotlights tilt into the room');
-    assert.ok(light.spotLightCone[0] < .5 && light.spotLightCone[1] > 1.4 && light.spotLightCone[1] < Math.PI / 2, 'Spotlights retain a focused core and a visible soft cone in the orthographic room');
+    assert.ok(light.spotLightCone[0] < .5 && light.spotLightCone[1] > .8 && light.spotLightCone[1] < Math.PI / 2, 'Spotlights retain a focused core and a visible soft cone with a feathered edge');
     assert.equal(lampLightConfig({ ...object, poweredOn: false }), undefined);
     continue;
   }
@@ -190,6 +191,14 @@ assert.equal(lampMenu[0].label, 'home.turnOffDecoration');
 lampMenu[0].onPress();
 assert.equal(toggled, 'lamp-one');
 assert.equal(decorationNode(render(lamps), 'lamp-two').node.props.menuActions[0].label, 'home.turnOnDecoration');
+for (const decorationId of Object.keys(LAMP_LIGHT_ORIGINS)) {
+  const lamp = { decorationId, instanceId: 'menu-lamp', poweredOn: true, offset:{x:0,y:0} };
+  const normal = render([lamp], { onAimPlacedSpotlight() {}, onSetRoomItemRotation() {} });
+  const actions = decorationNode(normal, 'menu-lamp').node.props.menuActions;
+  assert.deepEqual(Array.from(actions, action => action.label), ['home.turnOffDecoration'], `${decorationId}: normal play offers only power`);
+  assert.ok(!normal.some(({node}) => ['RoomRotationControls','RoomSpotlightControls'].includes(node.type)));
+}
+console.log('Verified every lamp offers only On/Off in normal play, including all wall spotlights.');
 let toggledCurtain;
 const curtain = { decorationId:'curtainRoseTieback', instanceId:'curtain', offset:{x:.3,y:-.3} };
 const curtainProps = { onTogglePlacedCurtain:id => { toggledCurtain=id; } };
@@ -249,22 +258,61 @@ const moveControls = selectedRoom.find(({ node }) => node.type === 'RoomItemMove
 assert.ok(moveControls.props.actions.some(action => action.label === 'home.removeFromRoom'), 'Object options remain available beside the movement controls');
 let appliedRotation;
 const rotationProps = { ...moveProps, onSetRoomItemRotation: (item, degrees) => { appliedRotation = { item, degrees }; } };
-const rotationSheet = nodes => nodes.find(({ node }) => node.type === 'RoomRotationSheet').node;
+const rotationControls = nodes => nodes.find(({ node }) => node.type === 'RoomRotationControls')?.node;
 const roomWorld = nodes => nodes.find(({ node }) => node.type === 'NativeRoomScene').node.props.world;
 const rotatableRoom = render([sofa], rotationProps);
 rotatableRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onRotate();
-assert.equal(rotationSheet(render([sofa], rotationProps)).props.visible, true);
-rotationSheet(render([sofa], rotationProps)).props.onPreview(37.5);
+assert.ok(rotationControls(render([sofa], rotationProps)), 'Rotation opens inline while decorating');
+assert.ok(!render([sofa], rotationProps).some(({node}) => node.type === 'RoomItemMoveControls'), 'The angle dock replaces movement controls');
+rotationControls(render([sofa], rotationProps)).props.onPreview(37.5);
 const previewRoom = render([sofa], rotationProps);
 assert.ok(Math.abs(roomWorld(previewRoom).objects[0].heading - 37.5 * Math.PI / 180) < 1e-8, 'Slider preview uses an arbitrary angle in the native scene');
 assert.equal(appliedRotation, undefined, 'Preview never writes to the saved layout');
-rotationSheet(previewRoom).props.onClose();
+rotationControls(previewRoom).props.onClose();
 assert.equal(roomWorld(render([sofa], rotationProps)).objects[0].heading, 0, 'Cancel restores the saved orientation');
 rotatableRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onRotate();
-rotationSheet(render([sofa], rotationProps)).props.onApply(137.5);
+rotationControls(render([sofa], rotationProps)).props.onApply(137.5);
 assert.equal(appliedRotation.item.instanceId, 'sofa');
 assert.equal(appliedRotation.degrees, 137.5);
-assert.equal(rotationSheet(render([sofa], rotationProps)).props.visible, false, 'Apply closes the rotation sheet');
+assert.equal(rotationControls(render([sofa], rotationProps)), undefined, 'Apply returns to movement controls');
+const spot = { decorationId:'spotlightChromePicture', instanceId:'aim-lamp', poweredOn:true, spotlightAngle:-25, offset:{x:.3,y:-.2} };
+// Use an actual catalog ID rather than depending on a particular style name.
+spot.decorationId = Object.keys(LAMP_LIGHT_ORIGINS).find(isWallSpotlightDecorationId);
+let appliedAim;
+const aimProps = { ...rotationProps, onAimPlacedSpotlight:(id,angle,swivel) => { appliedAim={id,angle,swivel}; } };
+const aimControls = nodes => nodes.find(({node}) => node.type === 'RoomSpotlightControls')?.node;
+const openAim = () => decorationNode(render([spot],aimProps),'aim-lamp').node.props.menuActions.find(action => action.label === 'home.aimSpotlight').onPress();
+openAim();
+let aiming = render([spot],aimProps);
+const aimDock = aiming.find(({node}) => node.type === 'RoomSpotlightControls');
+assert.ok(aimDock.ancestors.some(node => node.type === 'View' && style(node.props.style).bottom === 0), 'Aim lives in the inline dock below the viewport');
+assert.ok(!rotationControls(aiming));
+const aimValue = aiming.find(({node}) => node.type === 'NativeRoomScene').node.props.spotlightAim;
+const writesBeforeAim = stateWrites;
+aimControls(aiming).props.onPreview(55,-30);
+assert.equal(stateWrites,writesBeforeAim,'Aiming frames do not schedule React state or rebuild the room');
+assert.equal(aimValue.value.angle,55,'Aiming publishes the native drawing-thread target');
+assert.equal(aimValue.value.swivel,-30,'Sideways head preview shares the same target');
+assert.equal(roomWorld(render([spot],aimProps)).objects[0].spotlightAngle,-25,'The saved world stays stable throughout preview');
+assert.equal(appliedAim,undefined,'Preview does not save');
+aimControls(render([spot],aimProps)).props.onClose();
+assert.equal(roomWorld(render([spot],aimProps)).objects[0].spotlightAngle,-25,'Cancel restores the saved beam');
+assert.equal(roomWorld(render([spot],aimProps)).objects[0].spotlightSwivel,0,'Cancel restores the saved swivel');
+openAim();
+aimControls(render([spot],aimProps)).props.onApply(35,25);
+assert.equal(appliedAim.id,'aim-lamp'); assert.equal(appliedAim.angle,35); assert.equal(appliedAim.swivel,25);
+assert.ok(!aimControls(render([spot],aimProps)),'Apply returns to movement controls');
+openAim();
+render([spot],aimProps).find(({node})=>node.props.accessibilityLabel==='home.finishDecorating').node.props.onPress();
+assert.ok(!aimControls(render([spot],aimProps)),'Finishing decoration cancels pending aim');
+assert.equal(roomWorld(render([spot],aimProps)).objects[0].spotlightAngle,-25);
+render([sofa],rotationProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
+rotatableRoom.find(({node})=>node.type==='RoomItemMoveControls').node.props.onRotate();
+rotationControls(render([sofa],rotationProps)).props.onPreview(45);
+render([sofa],rotationProps).find(({node})=>node.props.accessibilityLabel==='home.finishDecorating').node.props.onPress();
+assert.equal(roomWorld(render([sofa],rotationProps)).objects[0].heading,0,'Done discards pending rotation');
+render([sofa],rotationProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
+console.log('Verified decoration-only inline aim, live preview, Cancel, Apply and Done discarding unsaved angles.');
 const everyKindRoom = render([sofa], { ...rotationProps, bedId: 'brown', placedToys: [{ toyId: 'scratchPostGreen', instanceId: 'rotating-toy', offset: { x: 0, y: 0 } }] });
 for (const id of ['room-object:bed', 'room-object:sofa', 'room-object:rotating-toy']) {
   const node = everyKindRoom.find(({ node }) => node.props.testID === id)?.node;
@@ -275,8 +323,8 @@ const rotatedWindowProps = { ...windowProps, onSetRoomItemRotation() {} };
 const windowEditor = render([misplacedWindow], rotatedWindowProps);
 windowEditor.find(({node}) => node.props.testID === 'room-object:window').node.props.menuActions.find(action => action.label === 'home.rotateItem').onPress();
 repairedWindow = undefined;
-rotationSheet(render([misplacedWindow], rotatedWindowProps)).props.onPreview(137.5);
-rotationSheet(render([misplacedWindow], rotatedWindowProps)).props.onClose();
+rotationControls(render([misplacedWindow], rotatedWindowProps)).props.onPreview(137.5);
+rotationControls(render([misplacedWindow], rotatedWindowProps)).props.onClose();
 assert.equal(repairedWindow, undefined, 'Window placement repairs cannot persist an unsaved rotation preview');
 measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
 // Restore the selected sofa for the existing movement assertions below.
@@ -601,15 +649,14 @@ for (const [decorationId, kind] of [['bathroomBathAni','bathWash'],['bathroomSho
 console.log('Verified real bathtub, shower, toilet and Jacuzzi menu taps target the selected fixture.');
 
 // Exercise the actual rotation form rather than only PetStage's sheet callbacks.
-const { RoomRotationSheet } = load(path.join(root, 'components/pet/RoomRotationSheet.tsx'));
+const { RoomRotationControls } = load(path.join(root, 'components/pet/RoomRotationControls.tsx'));
 states.length = 0;
 let formPreview, formApplied, formCancelled = false;
 function rotationForm(extra = {}) {
   stateIndex = 0;
-  const sheet = RoomRotationSheet({ visible: true, name: 'Chair', degrees: 0, simpleGraphics: false,
+  const controls = RoomRotationControls({ name: 'Chair', degrees: 0, simpleGraphics: false,
     onPreview: value => { formPreview = value; }, onApply: value => { formApplied = value; }, onClose: () => { formCancelled = true; }, ...extra });
-  const controls = sheet.props.children[0];
-  return flatten(controls.type(controls.props)).map(entry => entry.node);
+  return flatten(controls).map(entry => entry.node);
 }
 const angleInput = nodes => nodes.find(node => node.props.accessibilityLabel === 'home.rotationAngle');
 const applyButton = nodes => nodes.find(node => node.props.accessibilityState?.disabled !== undefined);
@@ -629,6 +676,56 @@ rotationForm().find(node => node.props.onPress && !node.props.accessibilityState
 assert.equal(formCancelled, true);
 assert.equal(applyButton(rotationForm({placementAllowed:false})).props.disabled,true,'Colliding rotations cannot be applied');
 console.log('Verified the actual rotation form, slider precision, numeric input, locale decimals, invalid input, Apply and Cancel.');
+
+// Exercise spotlight presets and the slider without opening a modal.
+const { RoomSpotlightControls } = load(path.join(root, 'components/pet/RoomSpotlightControls.tsx'));
+states.length = 0;
+let beamPreview, beamApplied, beamSwivel, savedSwivel, beamCancelled = false;
+function aimForm() {
+  stateIndex = 0;
+  return flatten(RoomSpotlightControls({ name:'Spotlight', angle:-25,
+    onPreview:(value,turn) => { beamPreview=value; beamSwivel=turn; }, onApply:(value,turn) => { beamApplied=value; savedSwivel=turn; },
+    onClose:() => { beamCancelled=true; } })).map(entry => entry.node);
+}
+assert.ok(!aimForm().some(node=>node.type==='AppBottomSheet'),'Aiming does not cover the scene with a modal');
+aimForm().find(node=>node.props.minimumValue===-75).props.onValueChange(21);
+assert.equal(beamPreview,-21); assert.equal(beamApplied,undefined);
+assert.equal(beamSwivel,0);
+const textOf = node => node.props.children.flat(Infinity).find(child=>child?.type==='Text')?.props.children[0];
+aimForm().find(node=>textOf(node)==='home.spotlightTurn').props.onPress();
+assert.equal(aimForm().find(node=>node.props.minimumValue===-85).props.value,0);
+aimForm().find(node=>node.props.minimumValue===-85).props.onValueChange(-30);
+assert.equal(beamSwivel,-30); assert.equal(beamPreview,-21,'Turning preserves the tilt');
+const headInput = () => aimForm().find(node=>node.props.accessibilityLabel==='home.spotlightSwivel' && node.props.onChangeText);
+headInput().props.onChangeText('-29,5');
+assert.equal(beamSwivel,-29.5,'Exact sideways input accepts locale decimals');
+for(const invalid of ['', '-86', '86', 'invalid']) {
+  headInput().props.onChangeText(invalid);
+  assert.equal(aimForm().find(node=>textOf(node)==='home.applyRotation').props.disabled,true);
+}
+headInput().props.onChangeText('-30');
+aimForm().find(node=>textOf(node)==='home.applyRotation').props.onPress();
+assert.equal(beamApplied,-21);assert.equal(savedSwivel,-30,'Apply saves both axes');
+aimForm().find(node=>textOf(node)==='home.spotlightPainting').props.onPress();
+assert.equal(beamSwivel,0,'Presets reset sideways aim');
+aimForm().find(node=>textOf(node)==='home.spotlightTilt').props.onPress();
+assert.equal(beamPreview,55);
+assert.equal(aimForm().find(node=>node.props.minimumValue===-75).props.value,-55);
+aimForm().find(node=>textOf(node)==='home.applyRotation').props.onPress();
+assert.equal(beamApplied,55);
+aimForm().find(node=>textOf(node)==='common.cancel').props.onPress();
+assert.equal(beamCancelled,true);
+aimForm().find(node=>textOf(node)==='home.spotlightBelow').props.onPress();
+assert.equal(beamPreview,15,'The below preset points back towards the wall beneath the fixture');
+aimForm().find(node=>textOf(node)==='home.spotlightUp').props.onPress();
+assert.equal(beamPreview,-180,'The head reaches straight up');
+const sweepSlider=aimForm().find(node=>node.props.minimumValue===-75);
+sweepSlider.props.onValueChange(90.36);
+assert.equal(beamPreview,-90.4,'Increasing the sweep turns from down through the room towards up');
+assert.equal(aimForm().find(node=>node.props.minimumValue===-75).props.value,180,'Live input never resets the native thumb during a drag');
+sweepSlider.props.onSlidingComplete(90.36);
+assert.equal(aimForm().find(node=>node.props.minimumValue===-75).props.value,90.36);
+console.log('Verified continuous native slider, full wall/down/room/up sweep, preset preview, Apply and Cancel.');
 
 // A real stage drag publishes a shared native pose without scheduling React work.
 states.length=0; drawingValues.length=0; refs.length=0;

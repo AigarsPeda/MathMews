@@ -139,7 +139,7 @@ const {DraggableRoomPet}=compile('components/pet/DraggableRoomPet.tsx',{
   react:React,'react/jsx-runtime':{jsx,jsxs:jsx},
   'react-i18next':{useTranslation:()=>({t:key=>key})},
   'react-native':{View:'View',PanResponder:{create:panHandlers=>({panHandlers})},StyleSheet:{create:value=>value,absoluteFill:{}}},
-  'react-native-reanimated':{default:{View:'AnimatedView'},useSharedValue:value=>React.useMemo(()=>shared(value),[]),useAnimatedStyle:read=>({read})},
+  'react-native-reanimated':{default:{View:'AnimatedView'},useSharedValue:value=>React.useState(()=>shared(value))[0],useAnimatedStyle:read=>({read})},
   '@/utils/scale':{moderateScale:value=>value},
   '@/utils/room-depth':{getRoomDepthZIndex:y=>y},
   '@/utils/room-layer-order':{ROOM_MENU_OPEN_Z_INDEX:600100},

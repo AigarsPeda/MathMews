@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { moderateScale } from '@/utils/scale';
 import { GameColors } from '@/constants/game';
 import { ROOM_MENU_OPEN_Z_INDEX } from '@/utils/room-layer-order';
+import { WALL_MOUNT_PLANE, WALL_PLACEMENT_MIN, WALL_PLACEMENT_MAX, WALL_PLACEMENT_BOTTOM, WALL_PLACEMENT_TOP } from '@/constants/room-geometry';
 import { FLOOR_Y, projectWorld, type NativeRoomWorld, type Vec3 } from '@/utils/native-room-world';
 import { ROOM_PLACEMENT_MAX, ROOM_PLACEMENT_MIN, roomItemFootprint, roomItemPlacementOutline, type RoomPlacementFeedback } from '@/utils/room-item-placement';
 
@@ -28,16 +29,22 @@ export function RoomPlacementOverlay({ world, feedback }: { world: NativeRoomWor
     for (const corners of roomItemPlacementOutline(feedback.candidate)) outline(attemptedParts,corners);
     for (const blocker of feedback.blockers) for (const corners of blocker.boxes) outline(blockers,corners);
     const floor = feedback.candidate.wallAxis === undefined;
-    const lo = floor ? ROOM_PLACEMENT_MIN : -2.32, hi = floor ? ROOM_PLACEMENT_MAX : 2.32;
+    const lo = floor ? ROOM_PLACEMENT_MIN : WALL_PLACEMENT_MIN, hi = floor ? ROOM_PLACEMENT_MAX : WALL_PLACEMENT_MAX;
     for (const edge of feedback.boundaries) {
       if (edge==='leftWall') line(edges,[[lo,FLOOR_Y,lo],[lo,FLOOR_Y,hi]]);
       else if (edge==='backWall') line(edges,[[lo,FLOOR_Y,lo],[hi,FLOOR_Y,lo]]);
       else if (edge==='rightEdge') line(edges,[[hi,FLOOR_Y,lo],[hi,FLOOR_Y,hi]]);
       else if (edge==='frontEdge') line(edges,[[lo,FLOOR_Y,hi],[hi,FLOOR_Y,hi]]);
       else {
-        const object = feedback.candidate, y = edge==='wallTop'?2.65:.18, axis = object.wallAxis;
-        if (axis===0) line(edges,[[object.position[0],y,-2.32],[object.position[0],y,2.32]]);
-        else line(edges,[[-2.32,y,object.position[2]],[2.32,y,object.position[2]]]);
+        const axis = feedback.candidate.wallAxis;
+        const onWall = (along: number, y: number): Vec3 => axis===0 ? [WALL_MOUNT_PLANE,y,along] : [along,y,WALL_MOUNT_PLANE];
+        if (edge==='wallStart' || edge==='wallEnd') {
+          const along = edge==='wallStart' ? lo : hi;
+          line(edges,[onWall(along,WALL_PLACEMENT_BOTTOM),onWall(along,WALL_PLACEMENT_TOP)]);
+        } else {
+          const y = edge==='wallTop' ? WALL_PLACEMENT_TOP : WALL_PLACEMENT_BOTTOM;
+          line(edges,[onWall(lo,y),onWall(hi,y)]);
+        }
       }
     }
     const object = feedback.candidate;

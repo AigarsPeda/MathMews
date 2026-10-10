@@ -9,7 +9,12 @@ export function isWallSpotlightDecorationId(id: string): boolean {
 export const DEFAULT_SPOTLIGHT_ANGLE = -25;
 export function normalizeSpotlightAngle(value: unknown): number {
   return typeof value === "number" && Number.isFinite(value)
-    ? Math.max(-60, Math.min(75, value)) : DEFAULT_SPOTLIGHT_ANGLE;
+    ? Math.max(-180, Math.min(75, value)) : DEFAULT_SPOTLIGHT_ANGLE;
+}
+
+export function normalizeSpotlightSwivel(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.max(-85, Math.min(85, value)) : 0;
 }
 
 export const SPOTLIGHT_PIVOT: [number, number, number] = [0, .30, .40];

@@ -207,3 +207,72 @@ for (const width of [320, 414, 768]) for (const rotationDegrees of [0, 20, 90]) 
   }
 }
 console.log('Verified tabletop lamp previews, rotated/scaled tables, release validation, blockers, light elevation, save/reload and return to the floor.');
+
+// Aim at the board itself as well as at the elevated lamp anchor. The returned
+// preview anchor is the one the drag controller submits at release.
+for (const width of [320,414,768]) for (const wallFlipped of [false,true]) {
+  for (const supportModel of ['tablePurple','bathroomLongShelf','bathroomSmallShelf','livingShelvingA','livingShelvingB','japaneseShelf','shelfWood','livingFireplaceCream']) {
+    const input={width,height:width*1.1,petSize:width/3,sizeScale:width/390,toys:[],
+      decorations:[{decorationId:supportModel,instanceId:'support',scale:/^bathroom.*Shelf/.test(supportModel)?1.5:1,
+        offset: /tablePurple|shelfWood|Fireplace/.test(supportModel) ? {x:0,y:0} : {x:wallFlipped ? -.45 : .45,y:-.25},wallFlipped}]};
+    const support=buildNativeRoomWorld(input).objects[0];
+    const surface=NATIVE_MODEL_CATALOG[supportModel].supportSurfaces.at(-1);
+    const local=[(surface.min[0]+surface.max[0])/2,surface.max[1],(surface.min[2]+surface.max[2])/2];
+    const cos=Math.cos(support.heading),sin=Math.sin(support.heading);
+    const board=[support.position[0]+(cos*local[0]+sin*local[2])*support.scale,
+      support.position[1]+local[1]*support.scale+.002,
+      support.position[2]+(-sin*local[0]+cos*local[2])*support.scale];
+    const lampInput={decorationId:'lavaLampAni',instanceId:'lamp',offset:{x:0,y:.6},rotationDegrees:20,poweredOn:true};
+    const lamp=buildNativeRoomWorld({...input,decorations:[lampInput]}).objects[0];
+    const resolver=createRoomPlacementResolver({...buildNativeRoomWorld(input),objects:[support,lamp]});
+    const aimed=projectWorld(board,width);
+    const preview=resolver.move('lamp',aimed);
+    assert.equal(preview.object.supportId,'support',`${supportModel}: aiming at the board snaps onto it`);
+    assert.ok(Math.abs(preview.object.min[1]-board[1])<1e-6);
+    const drop=resolver.drop('lamp',preview.point);
+    assert.equal(drop.accepted,true,`${supportModel}/${width}/${wallFlipped}: ${JSON.stringify({position:drop.feedback?.candidate.position,boundaries:drop.feedback?.boundaries,blockers:drop.feedback?.blockers.map(hit=>hit.instanceId)})}`);
+    assert.equal(drop.object.supportId,'support');
+    assert.equal(drop.object.heading,lamp.heading);
+    assert.ok(drop.object.position.every((v,i)=>Math.abs(v-preview.object.position[i])<1e-8));
+    assert.ok(lampLightConfig(drop.object).position[1]>lampLightConfig(lamp).position[1]);
+    const size=lamp.scale*width*NATIVE_MODEL_CATALOG[lamp.modelId].renderScale/ROOM_SPAN;
+    const offset={x:drop.point.x/((width-size)/2),y:drop.point.y/((input.height-size)/2)};
+    const reloaded=buildNativeRoomWorld({...input,decorations:[...input.decorations,{...lampInput,offset}]}).objects[1];
+    assert.equal(reloaded.supportId,'support');
+    assert.ok(reloaded.position.every((v,i)=>Math.abs(v-drop.object.position[i])<1e-8),`${supportModel}: save/reload preserves the exact elevated pose`);
+    const occupied=createRoomPlacementResolver({...buildNativeRoomWorld(input),objects:[support,lamp,{...drop.object,instanceId:'other'}]});
+    const rejected=occupied.drop('lamp',preview.point);
+    assert.equal(rejected.accepted,false);
+    assert.ok(rejected.feedback.blockers.some(hit=>hit.instanceId==='other'));
+  }
+}
+console.log('Verified board-target snapping, both wall orientations, shelf/mantel support, release agreement, blockers and elevated lamp/light persistence.');
+
+// A surface is a placement target, not an exemption from structural collisions.
+{
+  const input={width:414,height:455,petSize:138,sizeScale:414/390,toys:[],decorations:[
+    {decorationId:'shelfWood',instanceId:'shelf',offset:{x:0,y:0},scale:2.2},
+    {decorationId:'lampTableCeramic',instanceId:'lamp',offset:{x:.65,y:.6},scale:.7}]};
+  const world=buildNativeRoomWorld(input),[shelf,lamp]=world.objects;
+  const surfaces=NATIVE_MODEL_CATALOG.shelfWood.supportSurfaces;
+  const meta=NATIVE_MODEL_CATALOG[lamp.modelId];
+  const resolver=createRoomPlacementResolver(world);
+  // Move into an interior shelf. The board above still limits available height.
+  const height=shelf.position[1]+surfaces[0].max[1]*shelf.scale+.002;
+  const point=projectWorld([shelf.position[0],height+(meta.center[1]-meta.min[1])*lamp.scale,shelf.position[2]+.02],world.width);
+  const preview=resolver.move('lamp',point);
+  assert.equal(preview.object.supportId,'shelf');
+  const interiorDrop=resolver.drop('lamp',preview.point);
+  assert.equal(interiorDrop.accepted,true,'A small lamp fits between shelf boards');
+  assert.ok(interiorDrop.object.collisionBoxes.every(box=>box.min[0]>=interiorDrop.object.min[0]-1e-5 && box.max[0]<=interiorDrop.object.max[0]+1e-5),
+    'The preview collision boxes move with the elevated lamp');
+  const largeInput={...input,decorations:[input.decorations[0],{...input.decorations[1],scale:2.2}]};
+  const largeWorld=buildNativeRoomWorld(largeInput),largeLamp=largeWorld.objects[1];
+  const largePoint=projectWorld([shelf.position[0],height+(meta.center[1]-meta.min[1])*largeLamp.scale,shelf.position[2]+.02],world.width);
+  assert.equal(createRoomPlacementResolver(largeWorld).drop('lamp',largePoint).accepted,false,'A lamp that does not fit cannot occupy the shelving');
+  const floorPoint=roomItemAnchor(at(lamp,1.5,1.5,world.width),world.width);
+  const floor=resolver.drop('lamp',floorPoint);
+  assert.equal(floor.accepted,true);
+  assert.equal(floor.object.supportId,undefined);
+}
+console.log('Verified interior shelf clearance, oversized lamp rejection and return to the floor.');

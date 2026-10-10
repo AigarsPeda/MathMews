@@ -78,7 +78,7 @@ const mocks = {
   'react-native-reanimated': {
     default: { View: 'AnimatedView' },
     useReducedMotion: () => reducedMotion,
-    useSharedValue: initial => React.useMemo(() => shared(initial), []),
+    useSharedValue: initial => React.useState(() => shared(initial))[0],
     useDerivedValue: fn => ({ get: fn }), useAnimatedStyle: fn => ({ read: fn }),
     withTiming: (to, options) => ({ to, duration: options.duration }),
     withSequence: (...steps) => ({ to: steps.at(-1).to, duration: steps.reduce((sum, step) => sum + step.duration, 0) }),

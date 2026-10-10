@@ -26,6 +26,7 @@
     },
     "plugins": [
       "./plugins/with-ios-pod-deployment-target",
+      "./plugins/with-filament-logging",
       [
         "expo-build-properties",
         {

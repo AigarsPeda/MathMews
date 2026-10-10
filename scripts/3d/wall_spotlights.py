@@ -1,4 +1,4 @@
-"""Wall lights with a fixed backplate and an independently tilting head."""
+"""Wall lights with a fixed backplate and a ball joint for two-axis aiming."""
 import math
 import bpy
 
@@ -20,13 +20,13 @@ def build_wall_spotlight(id, h):
     bell = 'Bell' in id
     if bar:
         box('Wall backplate', (0, 0, .30), (.42, .055, .16), metal, .025)
-        for x in (-.25, .25):
-            box('Picture light arm', (x, -.18, .30), (.035, .36, .035), metal, .012)
     else:
         cylinder('Wall backplate', (0, 0, .30), .14, .055, metal, rotation=(math.pi / 2, 0, 0))
-        box('Spotlight support arm', (0, -.18, .30), (.045, .36, .045), metal, .015)
-    for x in ((-.34, .34) if bar else (-.115, .115)):
-        sphere('Swivel joint', (x, -.40, .30), (.04, .04, .04), 'gold' if bell else 'silver')
+    # The fixed stem reaches the exact aiming pivot. A spherical connection
+    # stays seated in the housing through both tilt and swivel; fixed side
+    # hinges would detach when the head turns away from their shared axis.
+    box('Spotlight support arm', (0, -.20, .30), (.055, .40, .055), metal, .015)
+    sphere('Spotlight ball joint', (0, -.40, .30), (.075, .075, .075), metal)
     pivot = h['empty']('Spotlight head', (0, -.40, .30))
     if bar:
         head = box('Picture light housing', (0, -.40, .30), (.80, .16, .20), metal, .045)

@@ -1,8 +1,9 @@
-import { FLOOR_Y, isTabletopLamp, placeLampOnTable, NATIVE_MODEL_CATALOG, ROOM_SPAN, projectWorld, unprojectFloor, type NativeRoomObject, type NativeRoomWorld, type Vec3 } from '@/utils/native-room-world';
+import { FLOOR_Y, isTabletopLamp, placeLampOnSurface, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN, projectWorld, unprojectFloor, type NativeRoomObject, type NativeRoomWorld, type Vec3 } from '@/utils/native-room-world';
 import type { RoomPoint } from '@/utils/room-activities';
 import { isCurtainDecorationId } from '@/constants/decoration-motion';
+import { WALL_MOUNT_PLANE, WALL_PLACEMENT_MIN, WALL_PLACEMENT_MAX, WALL_PLACEMENT_BOTTOM, WALL_PLACEMENT_TOP } from '@/constants/room-geometry';
 
-export type RoomPlacementEdge = 'leftWall' | 'backWall' | 'rightEdge' | 'frontEdge' | 'wallBottom' | 'wallTop';
+export type RoomPlacementEdge = 'leftWall' | 'backWall' | 'rightEdge' | 'frontEdge' | 'wallStart' | 'wallEnd' | 'wallBottom' | 'wallTop';
 export type RoomPlacementFeedback = {
   candidate: NativeRoomObject;
   blockers: { instanceId: string; boxes: Vec3[][] }[];
@@ -35,7 +36,8 @@ export function roomItemAtPoint(object: NativeRoomObject, point: RoomPoint, widt
   }
   const delta = desired.map((v, i) => v - center[i]);
   const move = (value: Vec3) => value.map((v, i) => v + delta[i]) as Vec3;
-  return { ...object, position: move(object.position), min: move(object.min), max: move(object.max) };
+  return { ...object, supportId: undefined, position: move(object.position), min: move(object.min), max: move(object.max),
+    collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
 }
 
 function boxes(object: NativeRoomObject): Box[] {
@@ -113,17 +115,20 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     // Curtains may extend beyond the wall edges or cover other wall fixtures.
     if (isCurtainDecorationId(object.modelId)) return [];
     const floor = object.wallAxis === undefined;
+    // Raised lamps clear the floor skirting and can sit at the back of a shelf.
+    const roomMin = object.supportId && object.min[1] > WALL_PLACEMENT_BOTTOM ? WALL_MOUNT_PLANE : ROOM_PLACEMENT_MIN;
     const footprint = roomItemFootprint(object);
+    const wallBounds = !floor ? nativeWallPlacementBounds(object) : undefined;
     const axes = floor ? [0, 2] : [object.wallAxis === 0 ? 2 : 0];
     const result: { edge: RoomPlacementEdge; depth: number }[] = [];
     for (const axis of axes) {
       const lo = floor ? Math.min(...footprint.map(p => p[axis])) : object.min[axis];
-      const hi = floor ? Math.max(...footprint.map(p => p[axis])) : object.max[axis];
-      result.push({ edge: axis === 0 ? 'leftWall' : 'backWall', depth: Math.max(0, (floor ? ROOM_PLACEMENT_MIN : -2.32) - lo) },
-        { edge: axis === 0 ? 'rightEdge' : 'frontEdge', depth: Math.max(0, hi - (floor ? ROOM_PLACEMENT_MAX : 2.32)) });
+      const hi = floor ? Math.max(...footprint.map(p => p[axis])) : wallBounds!.max[axis];
+      result.push({ edge: floor ? axis === 0 ? 'leftWall' : 'backWall' : 'wallStart', depth: Math.max(0, (floor ? roomMin : WALL_PLACEMENT_MIN) - lo) },
+        { edge: floor ? axis === 0 ? 'rightEdge' : 'frontEdge' : 'wallEnd', depth: Math.max(0, hi - (floor ? ROOM_PLACEMENT_MAX : WALL_PLACEMENT_MAX)) });
     }
-    if (!floor) result.push({ edge: 'wallBottom', depth: Math.max(0, .18-object.min[1]) },
-      { edge: 'wallTop', depth: Math.max(0, object.max[1]-2.65) });
+    if (!floor) result.push({ edge: 'wallBottom', depth: Math.max(0, WALL_PLACEMENT_BOTTOM-object.min[1]) },
+      { edge: 'wallTop', depth: Math.max(0, object.max[1]-WALL_PLACEMENT_TOP) });
     return result;
   };
   const outsideRoom = (object: NativeRoomObject) => boundaryExcess(object).reduce((sum, edge) => sum+edge.depth, 0);
@@ -172,14 +177,14 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     move(id: string, point: RoomPoint) {
       const original = world.objects.find(object => object.instanceId === id);
       if (!original) return undefined;
-      const object = placeLampOnTable(roomItemAtPoint(original, point, world.width), world.objects, world.width);
+      const object = placeLampOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
       return { object, point: roomItemAnchor(object, world.width) };
     },
     /** An invalid drop returns to the saved pose without changing the room. */
     drop(id: string, point: RoomPoint) {
       const original = world.objects.find(object => object.instanceId === id);
       if (!original) return undefined;
-      const candidate = placeLampOnTable(roomItemAtPoint(original, point, world.width), world.objects, world.width);
+      const candidate = placeLampOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
       const details = feedback(candidate);
       const accepted = details.boundaries.length === 0 && details.blockers.length === 0;
       const object = accepted ? candidate : original;

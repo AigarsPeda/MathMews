@@ -1,3 +1,4 @@
+import type { SpotlightAim } from '@/utils/native-spotlight-aim';
 import { curtainAtWindow } from '@/utils/native-curtains';
 import { isWindowLightSource } from '@/utils/native-window-light';
 import { ROOM_COMMANDS, getRoomCommands } from "@/constants/room-commands";
@@ -19,15 +20,15 @@ import type { RoomSceneSlide } from "@/hooks/use-room-transition";
 import { DEFAULT_HOME_ROOM_ID, HOME_ROOM_IDS, HOME_ROOM_ICONS, isRoomDoor, type HomeRoomId, type RoomEntry } from "@/constants/home-rooms";
 import { RoomEditorSheet, type RoomEditorControls } from "@/components/pet/RoomEditorSheet";
 import { RoomItemMoveControls } from "@/components/pet/RoomItemMoveControls";
-import { RoomSpotlightSheet } from "@/components/pet/RoomSpotlightSheet";
-import { RoomRotationSheet } from "@/components/pet/RoomRotationSheet";
+import { RoomSpotlightControls } from "@/components/pet/RoomSpotlightControls";
+import { RoomRotationControls } from "@/components/pet/RoomRotationControls";
 import { getRoomItemRotation } from "@/utils/room-rotation";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { roomActivityStepKey, roomOffsetToPoint, type RoomActivityKind } from "@/utils/room-activities";
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-model-registry";
 import { useRoomActivity } from "@/hooks/use-room-activity";
 import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
-import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle } from "@/constants/decoration-motion";
+import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { SimpleLampLight } from '@/components/pet/SimpleLampLight';
 import { WorldRoomTint } from '@/components/pet/WorldRoomTint';
@@ -166,7 +167,7 @@ type PetStageProps = {
   onRotatePlacedToy?: (instanceId: string) => void;
   onSetRoomItemRotation?: (item: RoomLayerItem, degrees: number) => void;
   onFlipPlacedDecorationWall?: (instanceId: string) => void;
-  onAimPlacedSpotlight?: (instanceId: string, angle: number) => void;
+  onAimPlacedSpotlight?: (instanceId: string, angle: number, swivel?: number) => void;
   onTogglePlacedCurtain?: (instanceId: string) => void;
   onTogglePlacedDecorationPower?: (instanceId: string) => void;
   onScalePlacedDecoration?: (
@@ -254,6 +255,7 @@ export function PetStage({
   const [nativeHitPositions, setNativeHitPositions] = useState<Record<string, { x: number; y: number }>>({});
   const [livePositions, setLivePositions] = useState<Record<string, { x: number; y: number }>>({});
   const editingObject = useDrawingSharedValue<NativeRoomObject | undefined>(undefined);
+  const spotlightAim = useDrawingSharedValue<SpotlightAim | undefined>(undefined);
   const nativePicker = useRef<NativeRoomPicker | undefined>(undefined);
   const pickNativeItem = useCallback((point: { x: number; y: number }) =>
     nativePicker.current?.pick(point.x, point.y) ?? Promise.resolve(undefined), []);
@@ -301,18 +303,24 @@ export function PetStage({
   const [snap, setSnap] = useState(false);
   const [selectedMoveItem, setSelectedMoveItem] = useState<RoomLayerItem | null>(null);
   const [placementFeedback, setPlacementFeedback] = useState<RoomPlacementFeedback>();
-  const [spotlightPreview, setSpotlightPreview] = useState<{ instanceId: string; angle: number } | null>(null);
+  const [spotlightPreview, setSpotlightPreview] = useState<{ instanceId: string; angle: number; swivel: number } | null>(null);
   const [rotationPreview, setRotationPreview] = useState<{ item: RoomLayerItem; degrees: number } | null>(null);
   const openRotation = useCallback((item: RoomLayerItem) => {
     // eslint-disable-next-line react-hooks/immutability
     editingObject.value = undefined;
     setPlacementFeedback(undefined);
     setSelectedMoveItem(item);
+    setSpotlightPreview(null);
     setRotationPreview({ item, degrees: getRoomItemRotation({ bedId, bedRotationDegrees, placedDecorations, placedToys }, item) });
-  }, [bedId, bedRotationDegrees, editingObject, placedDecorations, placedToys, setSelectedMoveItem, setRotationPreview, setPlacementFeedback]);
+  }, [bedId, bedRotationDegrees, editingObject, placedDecorations, placedToys, setSelectedMoveItem, setRotationPreview, setSpotlightPreview, setPlacementFeedback]);
   const movingItem = decorating && selectedMoveItem
     ? layerOrder.find(item => isSameRoomLayerItem(item, selectedMoveItem))
     : undefined;
+  // Discard a local angle if its room or selection disappears before Apply.
+  if ((rotationPreview || spotlightPreview) && (!decorating || !roomVisible || !movingItem)) {
+    setRotationPreview(null);
+    setSpotlightPreview(null);
+  }
   const displayWidth = avatarWidth;
   const catPresent = catHomeRoomId === homeRoomId;
   const hasRoomNavigation = compact && usesNativeCat && !!onVisitHomeRoom;
@@ -343,10 +351,11 @@ export function PetStage({
     const allowed = viewport.width <= 0 || !!before && !!after && createRoomPlacementResolver(saved).canChange(before, after);
     return { world: allowed ? preview : saved, allowed };
   }, [bedFlipped, bedRotationDegrees, bedId, bedScale, displayWidth, livePositions, roomBedOffset, roomPetOffset, roomPlacedDecorations, roomPlacedToys, roomLayerOrder, rotationPreview, rotationInstanceId, viewport.height, viewport.width]);
-  const nativeWorld = useMemo(() => spotlightPreview ? { ...rotationPlacement.world,
-    objects: rotationPlacement.world.objects.map(object => object.instanceId === spotlightPreview.instanceId
-      ? { ...object, spotlightAngle: spotlightPreview.angle } : object),
-  } : rotationPlacement.world, [rotationPlacement.world, spotlightPreview]);
+  const nativeWorld = rotationPlacement.world;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
+    if (!spotlightPreview) spotlightAim.value = undefined;
+  }, [spotlightPreview, spotlightAim]);
   const placement = useMemo(() => createRoomPlacementResolver(nativeWorld), [nativeWorld]);
   const seenPlacementIds = useRef<Set<string> | undefined>(undefined);
   useEffect(() => {
@@ -633,10 +642,18 @@ export function PetStage({
           onPress: () => onTogglePlacedCurtain(item.instanceId),
         });
       }
-      if (item.kind === "decoration" && isWallSpotlightDecorationId(item.decorationId) && onAimPlacedSpotlight) {
+      if (decorating && item.kind === "decoration" && isWallSpotlightDecorationId(item.decorationId) && onAimPlacedSpotlight) {
         const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
         if (placed) actions.push({ label: t("home.aimSpotlight", { name: t(`store.decorationName.${item.decorationId}`) }), icon: "rotate",
-          onPress: () => setSpotlightPreview({ instanceId: item.instanceId, angle: normalizeSpotlightAngle(placed.spotlightAngle) }),
+          onPress: () => {
+            editingObject.value = undefined;
+            setPlacementFeedback(undefined);
+            setSelectedMoveItem(item);
+            setRotationPreview(null);
+            const aim = { instanceId: item.instanceId, angle: normalizeSpotlightAngle(placed.spotlightAngle), swivel: normalizeSpotlightSwivel(placed.spotlightSwivel) };
+            spotlightAim.value = aim;
+            setSpotlightPreview(aim);
+          },
         });
       }
       if (!decorating) {
@@ -858,7 +875,12 @@ export function PetStage({
       onTogglePlacedDecorationPower,
       onTogglePlacedCurtain,
       onAimPlacedSpotlight,
+      spotlightAim,
       setSpotlightPreview,
+      setRotationPreview,
+      setPlacementFeedback,
+      setSelectedMoveItem,
+      editingObject,
       removeMenuLabel,
       roomPlacedDecorations,
       roomPlacedToys,
@@ -919,13 +941,13 @@ export function PetStage({
         allowDrag: decorating,
         dragScale: zoom,
         interactive: decorating || manageable,
-        onPetTap: decorating ? () => { setPlacementFeedback(undefined); setSelectedMoveItem(item); } : undefined,
-        onDragStart: decorating ? () => { setPlacementFeedback(undefined); setSelectedMoveItem(item); } : undefined,
+        onPetTap: decorating ? () => { setPlacementFeedback(undefined); setRotationPreview(null); setSpotlightPreview(null); setSelectedMoveItem(item); } : undefined,
+        onDragStart: decorating ? () => { setPlacementFeedback(undefined); setRotationPreview(null); setSpotlightPreview(null); setSelectedMoveItem(item); } : undefined,
         onDragEnd: (point: { x: number; y: number }) => finishPlacement(item.kind === 'bed' ? 'bed' : item.instanceId, point),
         menuActions: manageable ? buildRoomItemMenuActions(item) : undefined,
       };
     },
-    [canManageRoomItem, buildRoomItemMenuActions, decorating, zoom, snap, itemLabel, movingItem, setSelectedMoveItem, finishPlacement, setPlacementFeedback],
+    [canManageRoomItem, buildRoomItemMenuActions, decorating, zoom, snap, itemLabel, movingItem, setSelectedMoveItem, finishPlacement, setPlacementFeedback, setRotationPreview, setSpotlightPreview],
   );
 
   const nativeDragAnchor = (id: string) => {
@@ -935,6 +957,8 @@ export function PetStage({
   };
   const selectNativeItem = (id: string | undefined) => {
     setPlacementFeedback(undefined);
+    setRotationPreview(null);
+    setSpotlightPreview(null);
     setSelectedMoveItem(layerOrder.find(item => (item.kind === 'bed' ? 'bed' : item.instanceId) === id) ?? null);
   };
   const moveNativeItem = (id: string, point: { x: number; y: number }) => {
@@ -956,7 +980,9 @@ export function PetStage({
       ? object.scale * viewport.width * NATIVE_MODEL_CATALOG[object.modelId].renderScale / ROOM_SPAN : 0;
     if (!size) return;
     const maxX = Math.max(1, (viewport.width - size) / 2), maxY = Math.max(1, (viewport.height - size) / 2);
-    if (snap) point = moveNativeItem(id, { x: Math.round(point.x / maxX * 10) / 10 * maxX,
+    // Surface snapping already produced a fitting anchor. Rounding it to the
+    // floor grid can push the base off a narrow shelf at the final release.
+    if (snap && !placement.move(id, point)?.object.supportId) point = moveNativeItem(id, { x: Math.round(point.x / maxX * 10) / 10 * maxX,
       y: Math.round(point.y / maxY * 10) / 10 * maxY });
     if (id !== 'cat') {
       const drop = placement.drop(id, point);
@@ -1199,7 +1225,7 @@ export function PetStage({
               <SimpleLampLight world={nativeWorld}/>
               <Text pointerEvents="none" style={styles.graphicsHint}>{t('recovery.graphicsHint')}</Text>
             </> : null}
-            {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene pickerRef={nativePicker} worldClock={worldClock} editingObject={editingObject} initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} editing={decorating}
+            {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene pickerRef={nativePicker} worldClock={worldClock} editingObject={editingObject} spotlightAim={spotlightAim} initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} editing={decorating}
               playback={activityPlayback ?? playback} travel={roomActivity?.plan.steps[roomActivity.stepIndex].native}
               activityKey={roomActivity ? roomActivityStepKey(roomActivity) : undefined}
               onRoomStepComplete={completeNativeStep}
@@ -1246,7 +1272,7 @@ export function PetStage({
                   { label: t("home.decorateRoom"), icon: "sofa",
                     disabled: waitingToDecorate || roomActivity?.plan.kind === "roomTravel",
                     onPress: () => {
-                      setSelectedMoveItem(null); setShowEditor(false);
+                      setSelectedMoveItem(null); setShowEditor(false); setRotationPreview(null); setSpotlightPreview(null);
                       if (roomActivity) { setWaitingToDecorate(true); stopActivity(); }
                       else setDecorating(true);
                     } },
@@ -1259,7 +1285,7 @@ export function PetStage({
               <Pressable style={[styles.decorateButton, decorating && styles.decorateButtonActive]}
                 disabled={!!sceneSlide || waitingToDecorate || roomActivity?.plan.kind === "roomTravel"}
                 onPress={() => {
-                  setSelectedMoveItem(null); setShowEditor(false);
+                  setSelectedMoveItem(null); setShowEditor(false); setRotationPreview(null); setSpotlightPreview(null);
                   if (!decorating && roomActivity) { setWaitingToDecorate(true); stopActivity(); }
                   else setDecorating(current => !current);
                 }}
@@ -1286,8 +1312,26 @@ export function PetStage({
             importantForAccessibility={decorating ? "no-hide-descendants" : "auto"}>
             <PetStatsPanel stats={stats} wisdom={wisdom} compact={compact} visible={roomVisible && !decorating} onOpenMathStats={onOpenMathStats} />
           </View>
-          {decorating && <View style={styles.moveControlsSlot}>
-          {movingItem ? <RoomItemMoveControls name={itemLabel(movingItem)} feedback={placementMessage}
+          {decorating && <View style={[styles.moveControlsSlot, compact && styles.moveControlsSlotCompact]}>
+          {rotationPreview ? <RoomRotationControls key={rotationPreview.item.kind === "bed" ? "bed" : rotationPreview.item.instanceId}
+            placementAllowed={rotationPlacement.allowed} name={itemLabel(rotationPreview.item)}
+            degrees={rotationPreview.degrees} simpleGraphics={simpleGraphics}
+            onPreview={degrees => setRotationPreview(current => current ? { ...current, degrees } : null)}
+            onClose={() => setRotationPreview(null)} onApply={degrees => {
+              if (rotationPlacement.allowed) onSetRoomItemRotation?.(rotationPreview.item, degrees);
+              setRotationPreview(null);
+            }} /> : spotlightPreview ? <RoomSpotlightControls key={spotlightPreview.instanceId} simpleGraphics={simpleGraphics}
+            name={t(`store.decorationName.${roomPlacedDecorations.find(item => item.instanceId === spotlightPreview.instanceId)?.decorationId}`)}
+            angle={spotlightPreview.angle} swivel={spotlightPreview.swivel}
+            onPreview={(angle, swivel) => {
+              // Updating a native preview never rebuilds the room or its physics.
+              // eslint-disable-next-line react-hooks/immutability
+              spotlightAim.value = { instanceId: spotlightPreview.instanceId, angle, swivel };
+            }}
+            onClose={() => setSpotlightPreview(null)} onApply={(angle, swivel) => {
+              onAimPlacedSpotlight?.(spotlightPreview.instanceId, angle, swivel);
+              setSpotlightPreview(null);
+            }} /> : movingItem ? <RoomItemMoveControls name={itemLabel(movingItem)} feedback={placementMessage}
             rotationDegrees={getRoomItemRotation({ bedId, bedRotationDegrees, placedDecorations, placedToys }, movingItem)}
             onRotate={onSetRoomItemRotation ? () => openRotation(movingItem) : undefined}
             actions={buildRoomItemMenuActions(movingItem)}
@@ -1295,25 +1339,10 @@ export function PetStage({
             : <Text style={{ color: GameColors.textMuted, fontSize: 14, padding: 8 }}>{t("home.decorateHint")}</Text>}
           </View>}
           </View>
-          <RoomSpotlightSheet visible={!!spotlightPreview} simpleGraphics={simpleGraphics}
-            name={spotlightPreview ? t(`store.decorationName.${roomPlacedDecorations.find(item => item.instanceId === spotlightPreview.instanceId)?.decorationId}`) : ""}
-            angle={spotlightPreview?.angle ?? -25}
-            onPreview={angle => setSpotlightPreview(current => current ? { ...current, angle } : null)}
-            onClose={() => setSpotlightPreview(null)} onApply={angle => {
-              if (spotlightPreview) onAimPlacedSpotlight?.(spotlightPreview.instanceId, angle);
-              setSpotlightPreview(null);
-            }} />
-          <RoomRotationSheet visible={decorating && !!rotationPreview}
-            placementAllowed={rotationPlacement.allowed}
-            name={rotationPreview ? itemLabel(rotationPreview.item) : ""} degrees={rotationPreview?.degrees ?? 0} simpleGraphics={simpleGraphics}
-            onPreview={degrees => setRotationPreview(current => current ? { ...current, degrees } : null)}
-            onClose={() => setRotationPreview(null)} onApply={degrees => {
-              if (rotationPreview && rotationPlacement.allowed) onSetRoomItemRotation?.(rotationPreview.item, degrees); setRotationPreview(null);
-            }} />
           <RoomEditorSheet visible={showEditor} onClose={() => setShowEditor(false)} controls={roomEditor}
             onOpenStore={onOpenStore ? () => { setShowEditor(false); onOpenStore(); } : undefined}
             items={showEditor ? layerOrder.map(item => ({ item, label: itemLabel(item), picture: itemPicture(item) })) : []}
-            onSelect={item => { setPlacementFeedback(undefined); setSelectedMoveItem(item); setShowEditor(false); }}
+            onSelect={item => { setPlacementFeedback(undefined); setRotationPreview(null); setSpotlightPreview(null); setSelectedMoveItem(item); setShowEditor(false); }}
             snap={snap} onSnap={() => setSnap(current => !current)} />
         </View>
       </View>
@@ -1340,7 +1369,10 @@ const styles = StyleSheet.create({
     boxShadow: [{ offsetX: 0, offsetY: 2, blurRadius: 6, color: "rgba(45, 52, 54, 0.08)" }],
   },
   roomControlsSlot: { minHeight: moderateScale(74), flexShrink: 0 },
-  moveControlsSlot: { position: "absolute", bottom: 0, left: 0, right: 0, minHeight: moderateScale(104), backgroundColor: GameColors.card },
+  moveControlsSlot: { position: "absolute", bottom: 0, left: 0, right: 0, minHeight: moderateScale(104), backgroundColor: GameColors.card, borderRadius: COMPACT_STAGE_RADIUS, overflow: "hidden" },
+  // Align the dock's rounded edge with the stage instead of covering its
+  // inset room corners with an opaque square. Keep the scene viewport stable.
+  moveControlsSlotCompact: { left: -COMPACT_STAGE_INSET, right: -COMPACT_STAGE_INSET, paddingHorizontal: COMPACT_STAGE_INSET },
   hiddenStats: { opacity: 0 },
   roomSceneInset: { bottom: ROOM_NAVIGATION_HEIGHT },
   decorateButton: {

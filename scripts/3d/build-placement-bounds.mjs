@@ -56,6 +56,18 @@ export function derivePlacementBounds() {
     for(const axis of [0,1,2]) if(actual.min[axis]<meta.min[axis]-.025 || actual.max[axis]>meta.max[axis]+.025)
       throw new Error(`GLB exceeds catalog bounds: ${id}, axis ${axis}`);
     result[id] = {placementHull:hull(points)};
+    // Only authored horizontal boards can support objects. Brackets, backs,
+    // shades and decorative trim must not become accidental placement targets.
+    const surfaces = meshes.filter(mesh => /^(Rounded tabletop|Wall shelf|Shelf(?:\.\d+)?|Broad fireplace mantel)$/.test(mesh.name))
+      .map(mesh => bounds(mesh.points));
+    if (surfaces.length) result[id].supportSurfaces = surfaces;
+    const wallMount = meshes.find(mesh => mesh.name === 'Wall backplate');
+    if (wallMount) result[id].wallMountBounds = bounds(wallMount.points);
+    if (/^(lavaLamp|lampTable)/.test(id)) {
+      const base = meshes.filter(mesh => bounds(mesh.points).min[1] <= meta.min[1] + .02)
+        .sort((a,b) => bounds(a.points).max[1] - bounds(b.points).max[1])[0];
+      if (base) result[id].baseHull = hull(base.points);
+    }
     // Retain deliberately authored shapes and animation envelopes. Static
     // furniture gets one box per part instead of a box full of empty air.
     if (!meta.collisionBoxes && !meta.animated) result[id].collisionBoxes = meshes.map(mesh=>bounds(mesh.points));

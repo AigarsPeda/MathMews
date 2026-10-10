@@ -11,6 +11,21 @@ for(const [id,meta] of Object.entries(catalog)) {
   const meshes=readModel(id), derived=data[id];
   assert.ok(derived?.placementHull.length>=3,`${id} has a footprint`);
   assert.ok(derived.placementHull.every(p=>p.length===2&&p.every(Number.isFinite)));
+  const boards = meshes.filter(mesh=>/^(Rounded tabletop|Wall shelf|Shelf(?:\.\d+)?|Broad fireplace mantel)$/.test(mesh.name));
+  assert.equal(derived.supportSurfaces?.length ?? 0,boards.length,`${id}: support surfaces match authored boards`);
+  boards.forEach((board,i)=>{
+    const surface=derived.supportSurfaces[i];
+    for(const k of [0,1,2]) {
+      assert.ok(Math.abs(surface.min[k]-Math.min(...board.points.map(p=>p[k])))<1e-6);
+      assert.ok(Math.abs(surface.max[k]-Math.max(...board.points.map(p=>p[k])))<1e-6);
+    }
+  });
+  const backplate=meshes.find(mesh=>mesh.name==='Wall backplate');
+  if(backplate) for(const k of [0,1,2]) {
+    assert.ok(Math.abs(derived.wallMountBounds.min[k]-Math.min(...backplate.points.map(p=>p[k])))<1e-6);
+    assert.ok(Math.abs(derived.wallMountBounds.max[k]-Math.max(...backplate.points.map(p=>p[k])))<1e-6);
+  }
+  else assert.equal(derived.wallMountBounds,undefined);
   for(const mesh of meshes) for(const point of mesh.points) {
     for(let i=0;i<derived.placementHull.length;i++) {
       const a=derived.placementHull[i],b=derived.placementHull[(i+1)%derived.placementHull.length];
