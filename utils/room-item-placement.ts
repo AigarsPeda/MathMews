@@ -62,7 +62,7 @@ function wallSnapCandidates(object: NativeRoomObject, world: NativeRoomWorld, zo
 }
 
 /** Match actual cabinet edges, rather than the differently framed sprite anchors. */
-function kitchenJoinCandidates(object: NativeRoomObject, world: NativeRoomWorld, alignWall: boolean): NativeRoomObject[] {
+function kitchenJoinCandidates(object: NativeRoomObject, world: NativeRoomWorld, alignWall: boolean, establishedOnly = false): NativeRoomObject[] {
   if (!kitchenUnits.has(object.modelId)) return [];
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const origin = rotate(object.position, -object.heading);
@@ -83,16 +83,31 @@ function kitchenJoinCandidates(object: NativeRoomObject, world: NativeRoomWorld,
       (otherMeta.max[2] - otherMeta.min[2]) * other.scale));
     const wallRow = alignWall && facesWall && Math.abs(back - ROOM_PLACEMENT_MIN) <= rowReach
       && Math.abs(otherBack - ROOM_PLACEMENT_MIN) <= rowReach;
-    if (!wallRow && Math.abs(z) > KITCHEN_SNAP_DISTANCE) continue;
+    // A touching pair defines an existing run, including any clearance needed
+    // for windows. The original moving unit may be part of that pair.
+    const established = establishedOnly && world.objects.some(neighbor => {
+      if (neighbor.instanceId === other.instanceId || !kitchenUnits.has(neighbor.modelId)
+        || Math.abs(Math.sin((neighbor.heading - other.heading) / 2)) > .00001) return false;
+      const neighborMeta = NATIVE_MODEL_CATALOG[neighbor.modelId];
+      const neighborOrigin = rotate(neighbor.position, -object.heading);
+      if (Math.abs(neighborOrigin[2] + neighborMeta.min[2] * neighbor.scale - otherBack) > .00001) return false;
+      const gap = Math.min(
+        Math.abs(neighborOrigin[0] + neighborMeta.min[0] * neighbor.scale - otherOrigin[0] - otherMeta.max[0] * other.scale),
+        Math.abs(otherOrigin[0] + otherMeta.min[0] * other.scale - neighborOrigin[0] - neighborMeta.max[0] * neighbor.scale));
+      return gap <= KITCHEN_SNAP_DISTANCE;
+    });
+    if (establishedOnly && !established) continue;
+    const joinReach = established && wallRow ? rowReach : KITCHEN_SNAP_DISTANCE;
+    if (!wallRow && Math.abs(z) > joinReach) continue;
     for (const side of [-1, 1]) {
       const x = otherOrigin[0] + (side < 0 ? otherMeta.min[0] : otherMeta.max[0]) * other.scale
         - origin[0] - (side < 0 ? meta.max[0] : meta.min[0]) * object.scale;
       if (Math.abs(x) > KITCHEN_SNAP_DISTANCE) continue;
-      if (wallRow) {
+      if (wallRow && !establishedOnly) {
         const wallZ = ROOM_PLACEMENT_MIN - back;
         shifts.push({ x, z: wallZ, distance: Math.hypot(x, wallZ), wall: true });
       }
-      if (Math.abs(z) <= KITCHEN_SNAP_DISTANCE) shifts.push({ x, z, distance: Math.hypot(x, z), wall: false });
+      if (Math.abs(z) <= joinReach) shifts.push({ x, z, distance: Math.hypot(x, z), wall: false });
     }
   }
   shifts.sort((a, b) => Number(b.wall) - Number(a.wall) || a.distance - b.distance);
@@ -382,8 +397,27 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
         return hits.length ? [{instanceId:other.id,boxes:hits.map(boxCorners)}] : [];
       }) };
   };
+  const snapObject = (moved: NativeRoomObject, zoom = 1, snapInsideWalls = true): NativeRoomObject => {
+    const wallCandidates = wallSnapCandidates(moved, world, zoom, snapInsideWalls);
+    const joins = (object: NativeRoomObject) => snapInsideWalls || !canPlace(object) ? kitchenJoinCandidates(object, world, snapInsideWalls) : [];
+    // Keep an established row's clearance first. Otherwise use the wall as
+    // the common line and try side joins from the corrected wall pose.
+    const candidates = [
+      ...(snapInsideWalls ? kitchenJoinCandidates(moved, world, true, true) : []),
+      ...wallCandidates.flatMap(object => {
+        const footprint = roomItemFootprint(object);
+        const contacts = [0, 2].filter(axis => Math.abs(Math.min(...footprint.map(p => p[axis])) - ROOM_PLACEMENT_MIN) < .00001);
+        return [...joins(object).filter(joined => contacts.every(axis =>
+          Math.abs(joined.position[axis] - object.position[axis]) < .00001)), ...objectSnapCandidates(object, zoom, snapInsideWalls), object];
+      }),
+    ];
+    candidates.push(...joins(moved), ...objectSnapCandidates(moved, zoom, snapInsideWalls));
+    return candidates.find(object => preservesSupport(object) && outsideRoom(object) <= .00001
+      && collisions(object, .00001).every(hit => hit.depth === 0)) ?? moved;
+  };
   function* findFree(object: NativeRoomObject): Generator<void, NativeRoomObject | undefined> {
-    if (canPlace(object)) return object;
+    const initial = kitchenUnits.has(object.modelId) ? snapObject(object) : object;
+    if (canPlace(initial)) return initial;
     const candidates: { point: RoomPoint; distance: number }[] = [];
     const center = rotate(NATIVE_MODEL_CATALOG[object.modelId].center, object.heading)
       .map((v, i) => v * object.scale + object.position[i]) as Vec3;
@@ -402,7 +436,8 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     for (const { point } of candidates) {
       yield;
       if (Math.abs(point.x) > (world.width - size) / 2 || Math.abs(point.y) > (world.height - size) / 2) continue;
-      const candidate = roomItemAtPoint(object, point, world.width);
+      const moved = roomItemAtPoint(object, point, world.width);
+      const candidate = kitchenUnits.has(object.modelId) ? snapObject(moved) : moved;
       if (canPlace(candidate)) return candidate;
     }
     return undefined;
@@ -476,19 +511,7 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
       const original = world.objects.find(object => object.instanceId === id);
       if (!original) return undefined;
       const moved = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
-      const wallCandidates = wallSnapCandidates(moved, world, zoom, snapInsideWalls);
-      const joins = (object: NativeRoomObject) => snapInsideWalls || !canPlace(object) ? kitchenJoinCandidates(object, world, snapInsideWalls) : [];
-      // Neighbor alignment must not pull a unit away from a nearby wall. Also
-      // try joins from the corrected pose, for runs of touching kitchen modules.
-      const candidates = wallCandidates.flatMap(object => {
-        const footprint = roomItemFootprint(object);
-        const contacts = [0, 2].filter(axis => Math.abs(Math.min(...footprint.map(p => p[axis])) - ROOM_PLACEMENT_MIN) < .00001);
-        return [...joins(object).filter(joined => contacts.every(axis =>
-          Math.abs(joined.position[axis] - object.position[axis]) < .00001)), ...objectSnapCandidates(object, zoom, snapInsideWalls), object];
-      });
-      candidates.push(...joins(moved), ...objectSnapCandidates(moved, zoom, snapInsideWalls));
-      const candidate = candidates.find(object => preservesSupport(object) && outsideRoom(object) <= .00001
-        && collisions(object, .00001).every(hit => hit.depth === 0)) ?? moved;
+      const candidate = snapObject(moved, zoom, snapInsideWalls);
       const details = feedback(candidate);
       const accepted = details.boundaries.length === 0 && details.blockers.length === 0;
       const object = accepted ? candidate : original;

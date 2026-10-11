@@ -69,7 +69,7 @@ export default function RootLayout() {
                       name="settings"
                       options={{ headerShown: false }}
                     />
-                    <Stack.Screen name="store" options={{ headerShown: false }} />
+                    <Stack.Screen name="store" options={{ headerShown: false, animationDuration: 220 }} />
                     <Stack.Screen
                       name="onboarding/name-pet"
                       options={{ headerShown: false }}

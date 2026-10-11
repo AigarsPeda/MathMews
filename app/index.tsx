@@ -44,7 +44,7 @@ import { moderateScale } from "@/utils/scale";
 import { WorldClockControl } from '@/components/pet/WorldClockControl';
 import { getStoreGoalDetails } from "@/utils/store-goal";
 import * as Haptics from "expo-haptics";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -105,6 +105,12 @@ export default function HomeScreen() {
     decorationEntry,
     clearDecorationEntry,
   } = useGame();
+  useFocusEffect(useCallback(() => {
+    if (!isReady || !hasCompletedOnboarding) return;
+    // Prepare the next visit in idle time, including after popping the shop.
+    const task = requestIdleCallback(() => router.prefetch("/store"), { timeout: 1500 });
+    return () => cancelIdleCallback(task);
+  }, [isReady, hasCompletedOnboarding, router]));
   const roomEditor = useRoomEditor(pet, setPet);
   const [decoratingRoom, setDecoratingRoom] = useState<HomeRoomId | null>(null);
   const handleDecoratingChange = useCallback((roomId: HomeRoomId, active: boolean) => {
@@ -274,10 +280,9 @@ export default function HomeScreen() {
   }, [recordInteraction, router]);
 
   const handleOpenStore = useCallback(() => {
-    recordInteraction();
     triggerHaptic();
     router.push("/store");
-  }, [recordInteraction, router]);
+  }, [router]);
 
   const handleOpenMathStats = useCallback(() => {
     recordInteraction();

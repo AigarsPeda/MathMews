@@ -571,6 +571,55 @@ for (const width of [320,414,768]) for (const zoom of [1,2.5]) for (const wallFl
 }
 console.log('Verified stepped kitchen rows snap straight against both walls at phone/tablet sizes and zoom levels.');
 
+// An already straight run may stand forward of the wall to clear a window.
+// Moving its units or adding a purchase must follow that line, not create a step.
+for (const width of [320,414,768]) for (const zoom of [1,2.5])
+  for (const wallFlipped of [false,true]) for (const finish of ['White','Sage','Navy','Charcoal']) {
+    const entries = ['FloorShelf','Induction','Sink','FloorShelf'].map((piece,index) => ({
+      ...appendPlacedDecoration([], `kitchenModern${piece}${finish}`)[0],
+      instanceId:`straight-${index}`,wallFlipped,offset:{x:0,y:0},
+    }));
+    const input={width,height:width*1.1,petSize:width/3,sizeScale:ROOM_OBJECT_SCALE*width/390,toys:[],decorations:entries};
+    const world=buildNativeRoomWorld(input),back=ROOM_PLACEMENT_MIN+.21;
+    let left=-2.1;
+    world.objects=world.objects.map(object=>{
+      const meta=NATIVE_MODEL_CATALOG[object.modelId];
+      const placed=kitchenPose(object,left-meta.min[0]*object.scale,back-meta.min[2]*object.scale,width);
+      left+=(meta.max[0]-meta.min[0])*object.scale;
+      return placed;
+    });
+    const positions=world.objects.map(object=>[...object.position]);
+    for (const index of [0,1,2,3]) {
+      const original=world.objects[index],local=kitchenLocal(original),meta=NATIVE_MODEL_CATALOG[original.modelId];
+      const attempt=kitchenPose(original,local.left-meta.min[0]*original.scale+.04,
+        back-meta.min[2]*original.scale+.06,width);
+      const resolver=createRoomPlacementResolver(world);
+      const drop=resolver.drop(original.instanceId,roomItemAnchor(attempt,width),{zoom});
+      assert.equal(drop.accepted,true,'Moving any unit rejoins the established row');
+      assert.ok(Math.abs(kitchenLocal(drop.object).back-back)<1e-6,
+        `Existing row keeps its clearance: ${width}/${zoom}/${wallFlipped}/${finish}/${index}`);
+      assert.ok(drop.object.position.every((v,i)=>Math.abs(v-original.position[i])<1e-6),'Units meet tightly at their existing edges');
+      const size=original.scale*width*meta.renderScale/ROOM_SPAN;
+      const restored=buildNativeRoomWorld({...input,decorations:[{...entries[index],offset:{
+        x:drop.point.x/((width-size)/2),y:drop.point.y/((input.height-size)/2),
+      }}]}).objects[0];
+      assert.ok(restored.position.every((v,i)=>Math.abs(v-drop.object.position[i])<1e-6),'Existing row clearance survives save/reload');
+      assert.ok(world.objects.every((object,i)=>object.position.every((v,axis)=>v===positions[i][axis])),'Snapping does not reposition neighboring units');
+    }
+    const purchase=world.objects[3],local=kitchenLocal(purchase),meta=NATIVE_MODEL_CATALOG[purchase.modelId];
+    const attempt=kitchenPose(purchase,local.left-meta.min[0]*purchase.scale+.07,
+      back-meta.min[2]*purchase.scale+.09,width);
+    const purchasedWorld={...world,objects:[...world.objects.slice(0,3),attempt]};
+    const free=createRoomPlacementResolver(purchasedWorld).nearestFree(attempt);
+    assert.ok(free,'There is space for the newly bought unit');
+    assert.ok(free.position.every((v,i)=>Math.abs(v-purchase.position[i])<1e-6),'A new purchase snaps into the existing run');
+    const overlapping=kitchenPose(purchase,local.left-meta.min[0]*purchase.scale-.04,
+      back-meta.min[2]*purchase.scale+.06,width);
+    const recovered=createRoomPlacementResolver({...world,objects:[...world.objects.slice(0,3),overlapping]}).nearestFree(overlapping);
+    assert.ok(recovered.position.every((v,i)=>Math.abs(v-purchase.position[i])<1e-6),'A nearby purchase overlap resolves to exact row contact');
+  }
+console.log('Verified existing straight rows retain window clearance when moved or extended by purchases, across finishes, both walls, zoom and device widths.');
+
 // Sink holes are not support surfaces; the stone landing still holds appliances.
 for(const finish of ['White','Sage','Navy','Charcoal']) for(const width of [320,414,768]) for(const wallFlipped of [false,true]) {
   const input={width,height:width*1.1,petSize:width/3,sizeScale:width/390,toys:[]};

@@ -5,7 +5,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
 const root = process.cwd(), cache = new Map();
-let states = [], index = 0, game, events = [], purchaseResult = 'purchased';
+let states = [], index = 0, game, events = [], purchaseResult = 'purchased', focusEffect;
 const jsx = (type, props) => ({ type, props });
 const react = {
   useMemo: fn => fn(), useCallback: fn => fn, useEffect() {},
@@ -19,7 +19,7 @@ function load(id) {
   if (id === 'react-i18next') return { useTranslation: () => ({ t: key => key }) };
   if (id === 'react-native') return { Platform: { OS:'web' }, View:'View', Text:'Text', Pressable:'Pressable', FlatList:'FlatList', ScrollView:'ScrollView', StyleSheet:{ create:s=>s }, useWindowDimensions:()=>({height:800}) };
   if (id === 'react-native-safe-area-context') return { SafeAreaView:'SafeAreaView', useSafeAreaInsets:()=>({top:0,bottom:0}) };
-  if (id === 'expo-router') return { useRouter:()=>({ dismissTo:route=>events.push(['route', route]) }) };
+  if (id === 'expo-router') return { useFocusEffect: fn => { focusEffect=fn; }, useRouter:()=>({ dismissTo:route=>events.push(['route', route]) }) };
   if (id === 'expo-haptics') return {};
   if (id === '@/contexts/GameProvider') return { useGame:()=>game };
   if (id === '@/utils/scale') return { moderateScale:n=>n };
@@ -73,3 +73,14 @@ nodes.find(n=>n.type==='Pressable' && flatten(n).some(child=>child.props?.childr
 assert.equal(events[0][1].item,undefined,'The decoration shortcut opens the editor without buying or selecting an unrelated item');
 assert.deepEqual(events[1],['route','/']);
 console.log('Verified buy/place/preview handoffs, purchase failures, repeat-tap protection and current-room browsing.');
+
+setup();let shop=render();
+assert.equal(shop.some(n=>n.type==='AppBottomSheet'),false,'Closed categories do not mount a hidden native sheet');
+assert.equal(shop.find(n=>n.type==='FlatList').props.initialNumToRender,2,'First mount draws only two visible rows, four cards');
+shop.find(n=>n.type==='Pressable' && flatten(n).some(child=>child.props?.children==='store.tabKitchen')).props.onPress();
+shop=render();assert.equal(shop.find(n=>n.type==='AppBottomSheet').props.visible,true,'Categories remain accessible on demand');
+shop.find(n=>n.type==='AppBottomSheet').props.onClose();
+assert.equal(render().find(n=>n.type==='AppBottomSheet').props.visible,false,'Native sheet remains mounted for its dismissal animation');
+setup();render();game.pet={...game.pet,homeRoomId:'bedroom'};render();focusEffect();
+assert.equal(render().find(n=>n.type==='StoreTabBar').props.active,'bedroom','A prefetched shop opens in the current room category');
+console.log('Verified bounded first card mount, lazy categories with native dismissal, and fresh category selection after prefetch.');

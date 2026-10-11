@@ -63,7 +63,7 @@ import {
 } from "@/utils/skin-store";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -133,12 +133,19 @@ export default function StoreScreen() {
   const [activeTab, setActiveTab] = useState<StoreTab>(() => ({ livingRoom: "living", bedroom: "bedroom", bathroom: "bathroom", kitchen: "kitchen" } as const)[pet.homeRoomId ?? "livingRoom"]);
   const [ownedOnly, setOwnedOnly] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const [categoriesMounted, setCategoriesMounted] = useState(false);
   const [preview, setPreview] = useState<StorePreviewItem | null>(null);
   const goal = getStoreGoalDetails(progress.storeGoal, wallet.coins, t);
   const [feedback, setFeedback] = useState<StoreFeedback | null>(null);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const leavingForDecoration = useRef(false);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useFocusEffect(useCallback(() => {
+    leavingForDecoration.current = false;
+    // Prefetch may have happened before the player changed rooms.
+    setActiveTab(({ livingRoom: "living", bedroom: "bedroom", bathroom: "bathroom", kitchen: "kitchen" } as const)[pet.homeRoomId ?? "livingRoom"]);
+  }, [pet.homeRoomId]));
 
   useEffect(() => {
     return () => {
@@ -741,7 +748,7 @@ export default function StoreScreen() {
 
         <StoreTabBar active={activeTab} onChange={handleTabChange} />
         <View style={styles.filters}>
-          {isDecorationStoreTab(activeTab) ? <Pressable style={styles.filter} accessibilityRole="button" onPress={() => setShowCategories(true)}><Text style={styles.filterText}>{t(`store.tab${activeTab[0].toUpperCase()}${activeTab.slice(1)}`)}</Text><AppIcon name="chevron-down" size={moderateScale(14)} /></Pressable> : null}
+          {isDecorationStoreTab(activeTab) ? <Pressable style={styles.filter} accessibilityRole="button" onPress={() => { setCategoriesMounted(true); setShowCategories(true); }}><Text style={styles.filterText}>{t(`store.tab${activeTab[0].toUpperCase()}${activeTab.slice(1)}`)}</Text><AppIcon name="chevron-down" size={moderateScale(14)} /></Pressable> : null}
           <Pressable style={styles.filter} accessibilityRole="checkbox" accessibilityState={{ checked: ownedOnly }} onPress={() => setOwnedOnly(value => !value)}><View style={styles.checkbox}>{ownedOnly && <AppIcon name="check" size={moderateScale(16)} />}</View><Text style={styles.filterText}>{t("store.ownedOnly")}</Text></Pressable>
         </View>
         {goal ? <Text style={styles.goal}>{t("store.goalProgress", { name: goal.name, remaining: goal.remaining })}</Text> : null}
@@ -765,8 +772,8 @@ export default function StoreScreen() {
             keyExtractor={id => id}
             renderItem={renderStoreCard}
             numColumns={2}
-            initialNumToRender={6}
-            maxToRenderPerBatch={4}
+            initialNumToRender={2}
+            maxToRenderPerBatch={2}
             windowSize={3}
             style={styles.scroll}
             contentContainerStyle={styles.grid}
@@ -775,7 +782,7 @@ export default function StoreScreen() {
           />
         </View>
       </View>
-      <AppBottomSheet visible={showCategories} onClose={() => setShowCategories(false)} expanded>
+      {categoriesMounted ? <AppBottomSheet visible={showCategories} onClose={() => setShowCategories(false)} expanded>
         <ScrollView
           style={{ maxHeight: Math.max(0, height * 0.88 - insets.top - insets.bottom - moderateScale(48)) }}
           contentContainerStyle={styles.categories}
@@ -802,7 +809,7 @@ export default function StoreScreen() {
             </View>
           ))}
         </ScrollView>
-      </AppBottomSheet>
+      </AppBottomSheet> : null}
       <StorePreviewSheet item={preview} pet={pet} coins={wallet.coins} onClose={() => setPreview(null)} onSaveGoal={() => {
         if (!preview) return;
         setProgress(current => ({ ...current, storeGoal: { kind: preview.kind, id: preview.id } }));

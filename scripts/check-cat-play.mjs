@@ -9,6 +9,7 @@ const root = process.cwd(), cache = new Map();
 let states = [], stateIndex = 0, game, display, clockOffset = 0, captureEffects = false, effects = [];
 const timers = new Map(); let timerId = 0;
 const routes = []; let focusCleanups = [];
+const prefetched = [], idleTasks = new Map();
 class TestDate extends Date { static now() { return Date.now() + clockOffset; } }
 const react = {
   useState: initial => {
@@ -28,7 +29,7 @@ const mocks = {
   'react-native': { View: 'View', Text: 'Text', Pressable: 'Pressable', Platform: { OS: 'web' }, StyleSheet: { create: s => s } },
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   'expo-haptics': {}, 'expo-router': {
-    useRouter: () => ({ push: route => routes.push(route) }),
+    useRouter: () => ({ push: route => routes.push(route), prefetch: route => prefetched.push(route) }),
     useFocusEffect: fn => { focusCleanups.push(fn()); },
   },
   '@/contexts/GameProvider': { useGame: () => game },
@@ -57,6 +58,8 @@ function load(file) {
   }).outputText;
   vm.runInNewContext(code, {
     module, exports: module.exports, Date: TestDate, Math, Map, Set,
+    requestIdleCallback: fn => { idleTasks.set(1, fn); return 1; },
+    cancelIdleCallback: id => idleTasks.delete(id),
     setTimeout: (fn, ms) => { const id = ++timerId; timers.set(id, { fn, at: TestDate.now() + ms }); return id; }, clearTimeout: id => timers.delete(id),
     require: id => {
       if (id in mocks) return mocks[id];
@@ -79,6 +82,7 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   focusCleanups = [];
   routes.length = 0;
   const now = Date.now(), commands = [], debits = [];
+  let interactions=0;
   game = {
     isReady: true, hasCompletedOnboarding: true,
     pet: { name: 'Test cat', type: 'cat', catSkinId: 'orange', isAsleep: asleep, lastCareAt: now, lastInteractionAt: now,
@@ -86,13 +90,13 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
     wallet: { coins }, progress: { puzzlesSolved: {}, puzzleStreak: 0, streak: 0, lives: 5 },
     setPet: update => { game.pet = update(game.pet); },
     setWallet: update => { game.wallet = update(game.wallet); debits.push(game.wallet.coins); },
-    recordInteraction: () => {},
+    recordInteraction: () => { interactions++; },
   };
   display = { playback: { kind: 'segment', mood: 'idle' }, baseMood: 'idle', isCareBlocked: busy, isCareAnimationPlaying: busy, send: command => commands.push(command) };
   const tree = nodes(Home());
   assert.equal(tree.some(node => node.type === 'ActivitiesMenuButton'), false, 'The footer activity control is removed');
   assert.equal(tree.some(node => node.props.accessibilityLabel === 'home.a11yFeed'), false, 'The footer feed control is removed');
-  return { menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onPlay }, commands, debits,
+  return { interactions: () => interactions, menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onPlay }, commands, debits,
     stage: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props,
     store: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onOpenStore,
     feed: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onFeed };
@@ -105,11 +109,23 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   report(true, returnHome); test.store();
   assert.equal(returns, 0, 'The shop does not wait for an active cat to walk home');
   assert.deepEqual(routes, ['/store'], 'An active cat does not delay navigation');
+  assert.equal(test.interactions(),0,'Opening the shop does not dispatch a full game-state update ahead of navigation');
   report(true, returnHome); report(false, returnHome);
   assert.equal(routes.length, 1, 'Later activity completion cannot open the shop again');
   const immediate = home(); immediate.store(); assert.deepEqual(routes, ['/store']);
 }
 console.log('Verified immediate shop navigation while the cat is active and no delayed duplicate navigation.');
+{
+  home();
+  assert.equal(prefetched.length,0,'Shop preparation does not run during the initial home render');
+  assert.equal(idleTasks.size,1,'The shop is prepared in idle time');
+  idleTasks.get(1)();assert.deepEqual(prefetched,['/store'],'Idle preparation preloads the actual shop route');
+  focusCleanups[0]();assert.equal(idleTasks.size,0,'Leaving home cancels pending preparation');
+  home();idleTasks.get(1)();
+  assert.deepEqual(prefetched,['/store','/store'],'Returning home prepares the next shop visit too');
+}
+console.log('Verified idle shop preloading on each home focus, cancellation and navigation without a synchronous game-state update.');
+
 for (const activity of activities) {
   for (const happiness of [40, 100]) for (const coins of [0, 100]) {
     const test = home({ happiness, coins });

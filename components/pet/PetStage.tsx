@@ -421,14 +421,6 @@ export function PetStage({
             }
           }
         }
-        if (placement.canPlace(object)) {
-          pendingPlacementIds.current.delete(object.instanceId);
-          if (object.placementOffset && !livePositions[object.instanceId]) {
-            onPlacedDecorationOffsetChange?.(object.instanceId, object.placementOffset);
-            if (onPlacedDecorationOffsetChange) return;
-          }
-          continue;
-        }
         const free = await placement.nearestFreeAsync(object, controller.signal);
         if (controller.signal.aborted) return;
         pendingPlacementIds.current.delete(object.instanceId);
