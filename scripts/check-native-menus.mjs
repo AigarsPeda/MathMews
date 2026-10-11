@@ -58,6 +58,8 @@ trigger.props.onLayout({ nativeEvent: { layout: { width: 140, height: 44 } } });
 stateIndex = 0;
 const menu = nodes(RoomActionMenu(roomProps)).find(node => node.type === 'NativeActionMenu');
 assert.equal(menu.props.width, 140); assert.equal(menu.props.height, 44);
+assert.equal(menu.props.children.props.style.width, 140, 'The visible trigger fills its measured native tap area');
+assert.equal(menu.props.children.props.style.height, 44, 'Native hosting preserves the trigger height');
 assert.equal(menu.props.actions[0].title, 'Sleep on the sofa', 'Localized labels remain plain text');
 assert.equal(menu.props.actions[0].icon, 'sleep');
 assert.equal(menu.props.actions[0].section, 'Essentials');

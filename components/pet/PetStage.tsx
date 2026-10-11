@@ -1389,6 +1389,12 @@ export function PetStage({
                 <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
               </Pressable>
             ) : null}
+            {decorating && onOpenStore ? <Pressable style={[styles.decorateButton, { top: moderateScale(roomToolbar ? 10 : 60) }]}
+              disabled={!!sceneSlide} onPress={onOpenStore}
+              accessibilityRole="button" accessibilityLabel={t("home.a11yStore")}>
+              <AppIcon name="store" size={moderateScale(22)} />
+              <Text style={styles.decorateLabel}>{t("home.shop")}</Text>
+            </Pressable> : null}
             {decorating ? <Pressable style={[styles.decorateButton, { left: undefined, right: moderateScale(10), top: moderateScale(roomToolbar ? 10 : 60) }]}
               onPress={() => { setShowEditor(true); }} accessibilityRole="button" accessibilityLabel={t("home.roomTools")}>
               <Text style={styles.decorateLabel}>{t("home.roomTools")}</Text>

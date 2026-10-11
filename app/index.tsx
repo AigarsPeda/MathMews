@@ -5,6 +5,7 @@ import { useRoomTransition } from "@/hooks/use-room-transition";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { PetStage } from "@/components/pet/PetStage";
+import { RoomActionMenu } from "@/components/pet/RoomActionMenu";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { IconText as Text } from "@/components/ui/IconText";
 import type { CatBedId } from "@/constants/cat-beds";
@@ -103,6 +104,7 @@ export default function HomeScreen() {
     visitHomeRoom,
     sendCatToRoom,
     decorationEntry,
+    requestRoomDecoration,
     clearDecorationEntry,
   } = useGame();
   useFocusEffect(useCallback(() => {
@@ -622,17 +624,28 @@ export default function HomeScreen() {
             </HeaderChip>
           </View>
           {isNativeCatPet && <View style={styles.roomToolbar}>
-            <Pressable style={({ pressed }) => [styles.shopButton, decoratingRoom === viewRoom && styles.doneButton, pressed && { opacity: .8 }]}
+            {decoratingRoom === viewRoom ? <Pressable style={({ pressed }) => [styles.shopButton, styles.doneButton, pressed && { opacity: .8 }]}
               disabled={!!transition}
               accessibilityRole="button" accessibilityState={{ disabled: !!transition }}
-              accessibilityLabel={t(decoratingRoom === viewRoom ? 'home.finishDecorating' : 'home.a11yStore')}
+              accessibilityLabel={t('home.finishDecorating')}
               onPress={() => {
-                if (decoratingRoom === viewRoom) { recordInteraction(); triggerHaptic(); setDecoratingRoom(null); }
-                else handleOpenStore();
+                recordInteraction(); triggerHaptic(); setDecoratingRoom(null);
               }}>
-              <AppIcon name={decoratingRoom === viewRoom ? 'check' : 'store'} size={moderateScale(19)}/>
-              <Text style={styles.shopLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{t(decoratingRoom === viewRoom ? 'home.finishDecorating' : 'home.shop')}</Text>
-            </Pressable>
+              <AppIcon name="check" size={moderateScale(19)}/>
+              <Text style={styles.shopLabel}>{t('home.finishDecorating')}</Text>
+            </Pressable> : <RoomActionMenu style={styles.decorationMenu} blocked={!!transition}
+              label={t('home.decorateRoom')} actions={[
+                { label: t('home.decorateRoom'), icon: 'sofa', onPress: () => { triggerHaptic(); requestRoomDecoration(); } },
+                { label: t('home.buy'), icon: 'store', onPress: handleOpenStore },
+              ]}>
+              <View style={styles.shopButton}>
+                <AppIcon name="sofa" size={moderateScale(19)}/>
+                <View style={styles.menuLabel}>
+                  <Text style={styles.shopLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{t('home.decorateRoom')}</Text>
+                  <AppIcon name="chevron-down" size={moderateScale(10)}/>
+                </View>
+              </View>
+            </RoomActionMenu>}
             <WorldClockControl inline/>
           </View>}
         </View>
@@ -714,6 +727,8 @@ const styles = StyleSheet.create({
   },
   settingsButton: { borderWidth: 0, backgroundColor: 'transparent' },
   roomToolbar: { flexDirection: 'row', alignItems: 'stretch', gap: moderateScale(8) },
+  decorationMenu: { flex: 1, minWidth: 0, minHeight: 56 },
+  menuLabel: { flexDirection: 'row', alignItems: 'center', gap: moderateScale(4) },
   shopButton: { flex: 1, minWidth: 0, minHeight: 56, justifyContent: 'center', alignItems: 'center', gap: moderateScale(3), paddingHorizontal: moderateScale(8), paddingVertical: moderateScale(8), backgroundColor: '#E8FAF8', borderRadius: moderateScale(12), borderWidth: 1, borderColor: GameColors.secondary },
   doneButton: { backgroundColor: GameColors.cardBorder, borderColor: GameColors.cardBorder },
   shopLabel: { color: GameColors.text, fontSize: moderateScale(13), fontWeight: '700' },

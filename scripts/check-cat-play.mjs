@@ -45,6 +45,7 @@ for (const [file, name] of [
   ['components/ui/AppIcon', 'AppIcon'], ['components/ui/IconText', 'IconText'],
   ['components/economy/GameHeaderStats', 'GameHeaderStats'], ['components/home/HeaderChip', 'HeaderChip'],
   ['components/pet/PetStage', 'PetStage'],
+  ['components/pet/RoomActionMenu', 'RoomActionMenu'],
   ['components/pet/WorldClockControl', 'WorldClockControl'],
 ]) mocks[`@/${file}`] = { [name]: name };
 
@@ -83,6 +84,7 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   routes.length = 0;
   const now = Date.now(), commands = [], debits = [];
   let interactions=0;
+  const decorationRequests = [];
   game = {
     isReady: true, hasCompletedOnboarding: true,
     pet: { name: 'Test cat', type: 'cat', catSkinId: 'orange', isAsleep: asleep, lastCareAt: now, lastInteractionAt: now,
@@ -91,12 +93,15 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
     setPet: update => { game.pet = update(game.pet); },
     setWallet: update => { game.wallet = update(game.wallet); debits.push(game.wallet.coins); },
     recordInteraction: () => { interactions++; },
+    requestRoomDecoration: target => { decorationRequests.push(target); },
   };
   display = { playback: { kind: 'segment', mood: 'idle' }, baseMood: 'idle', isCareBlocked: busy, isCareAnimationPlaying: busy, send: command => commands.push(command) };
   const tree = nodes(Home());
   assert.equal(tree.some(node => node.type === 'ActivitiesMenuButton'), false, 'The footer activity control is removed');
   assert.equal(tree.some(node => node.props.accessibilityLabel === 'home.a11yFeed'), false, 'The footer feed control is removed');
-  return { interactions: () => interactions, menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onPlay }, commands, debits,
+  return { interactions: () => interactions, decorationRequests,
+    decorationMenu: tree.find(node => node.type === 'RoomActionMenu').props,
+    menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onPlay }, commands, debits,
     stage: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props,
     store: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onOpenStore,
     feed: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onFeed };
@@ -115,6 +120,18 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   const immediate = home(); immediate.store(); assert.deepEqual(routes, ['/store']);
 }
 console.log('Verified immediate shop navigation while the cat is active and no delayed duplicate navigation.');
+{
+  const test = home();
+  assert.equal(test.decorationMenu.label, 'home.decorateRoom');
+  assert.deepEqual(Array.from(test.decorationMenu.actions, action => action.label), ['home.decorateRoom', 'home.buy']);
+  test.decorationMenu.actions[0].onPress();
+  assert.equal(test.decorationRequests.length, 1, 'Decorate uses the existing safe room-editor handoff');
+  assert.equal(routes.length, 0, 'Decorate stays in the current room');
+  test.decorationMenu.actions[1].onPress();
+  assert.deepEqual(routes, ['/store'], 'Buy opens the shop directly');
+  assert.equal(test.interactions(), 0, 'The menu does not dispatch a game-state update before shop navigation');
+}
+console.log('Verified the Decorate dropdown, safe decoration entry and immediate Buy navigation.');
 {
   home();
   assert.equal(prefetched.length,0,'Shop preparation does not run during the initial home render');
@@ -205,13 +222,14 @@ for (const destination of ['kitchen', 'bathroom', 'kitchen', 'livingRoom', 'bedr
 }
 assert.equal(house.filter(node => node.type === 'PetStage').length, 4, 'Returning to a room keeps the other visited scenes mounted');
 assert.equal(house.filter(node => node.type === 'HeaderChip').length, 1, 'Room browsing retains one settings control');
-assert.equal(house.filter(node => node.props.accessibilityLabel === 'home.a11yStore').length, 1, 'One shared Shop button stays outside the retained room scenes');
+assert.equal(house.filter(node => node.type === 'RoomActionMenu').length, 1, 'One shared Decorate dropdown stays outside the retained room scenes');
 assert.equal(house.filter(node => node.type === 'WorldClockControl').length, 1, 'One shared clock/weather toolbar stays mounted while browsing');
 assert.ok(visibleStage(house).props.roomToolbar, 'The visible room uses the shared decoration-mode controls');
 visibleStage(house).props.roomToolbar.onDecoratingChange('livingRoom', true);
 house = renderHome();
 assert.equal(visibleStage(house).props.roomToolbar.decorating, true);
-assert.equal(house.filter(node => node.props.accessibilityLabel === 'home.finishDecorating').length, 1, 'The shared Shop button becomes Done');
+assert.equal(house.filter(node => node.props.accessibilityLabel === 'home.finishDecorating').length, 1, 'The shared Decorate dropdown becomes Done');
+assert.equal(house.filter(node => node.type === 'RoomActionMenu').length, 0, 'Editing replaces the dropdown with Done');
 house.find(node => node.props.accessibilityLabel === 'home.finishDecorating').props.onPress();
 house = renderHome();
 assert.equal(visibleStage(house).props.roomToolbar.decorating, false, 'Done ends editing in the controlled room');

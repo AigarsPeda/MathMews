@@ -44,7 +44,7 @@ export function RoomActionMenu({ actions, label, blocked = false, style, size, c
             const action = actions[Number(id)];
             if (!blocked && action && !action.disabled) action.onPress();
           }}>
-          {children}
+          <View style={dimensions}>{children}</View>
         </NativeActionMenu>
       ) : children}
     </View>
