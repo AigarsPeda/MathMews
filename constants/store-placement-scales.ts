@@ -36,6 +36,7 @@ export const STORE_PLACEMENT_SCALES = {
   lampFloorTripod: 1.8, lampFloorPaper: 1.8, bedroomFloorLamp: 2,
   lampTableMushroom: .8, lampTableCeramic: .8, lampTableBanker: .8,
   lavaLampOff: .8, lavaLampAni: .8,
+  halloweenGhostLantern: .7,
   plantTallGreen: 1.8, plantTallPink: 1.8,
   plantTallBlue: 1.8, plantTallPurple: 1.8,
   plantB: 1.5, plantPotted: 1.5, japanesePlant: 1.4, japaneseBonsai: .7,

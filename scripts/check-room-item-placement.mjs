@@ -241,9 +241,11 @@ console.log('Verified tabletop lamp previews, rotated/scaled tables, release val
 // Aim at the board itself as well as at the elevated lamp anchor. The returned
 // preview anchor is the one the drag controller submits at release.
 for (const width of [320,414,768]) for (const wallFlipped of [false,true]) {
-  for (const lampModel of ['lavaLampAni','halloweenGhostLantern']) for (const supportModel of ['tablePurple','bathroomLongShelf','bathroomSmallShelf','livingShelvingA','livingShelvingB','japaneseShelf','shelfWood','livingFireplaceCream']) {
+  for (const lampModel of ['lavaLampAni','halloweenGhostLantern']) for (const supportModel of lampModel==='halloweenGhostLantern'
+    ? ['tablePurple','bathroomLongShelf','shelfWood','livingFireplaceCream','kitchenModernShelfNavy','kitchenModernIslandNavy']
+    : ['tablePurple','bathroomLongShelf','bathroomSmallShelf','livingShelvingA','livingShelvingB','japaneseShelf','shelfWood','livingFireplaceCream']) {
     const input={width,height:width*1.1,petSize:width/3,sizeScale:width/390,toys:[],
-      decorations:[{decorationId:supportModel,instanceId:'support',scale:/^bathroom.*Shelf/.test(supportModel)?1.5:1,
+      decorations:[{decorationId:supportModel,instanceId:'support',scale:/^bathroom.*Shelf/.test(supportModel)?1.5:lampModel==='halloweenGhostLantern'&&supportModel==='shelfWood'?1.6:1,
         offset: /tablePurple|shelfWood|Fireplace/.test(supportModel) ? {x:0,y:0} : {x:wallFlipped ? -.45 : .45,y:-.25},wallFlipped}]};
     const support=buildNativeRoomWorld(input).objects[0];
     const surface=NATIVE_MODEL_CATALOG[supportModel].supportSurfaces.at(-1);

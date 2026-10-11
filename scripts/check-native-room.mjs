@@ -1876,7 +1876,7 @@ for (const id of Object.keys(glowParts)) {
   glow(asset, id, true);
   assert.ok(glowing.every(material => material.emission.slice(0, 3).some(value => value > 0)), 'Switching back on restores the glow');
 }
-console.log('Verified shade emission, isolated Blender materials, independent lamps and repeated on/off switching for all 10 lamp types.');
+console.log('Verified shade emission, isolated Blender materials, independent lamps and repeated on/off switching for every registered lamp, including the ghost lantern.');
 
 for(const id of ['lavaLampOff','lavaLampAni']) {
   const model=glb(id),buffer=fs.readFileSync(`assets/3d/native/${id}.glb`);
