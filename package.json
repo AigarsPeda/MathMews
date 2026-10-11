@@ -24,7 +24,7 @@
     "test:runtime-safety": "python3 scripts/native/check-runtime-safety.py",
     "crashes": "node scripts/diagnose-crashes.mjs",
     "assets:icons": "node scripts/3d/build-app-icons.mjs",
-    "postinstall": "node scripts/native/patch-filament.mjs",
+    "postinstall": "node scripts/native/patch-filament.mjs && node scripts/native/patch-expo-simulator-logs.mjs",
     "assets:native": "BRAINPET_BLENDER_ASSET_DIR=/tmp/brainpet-native-blends /Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/export-native.py",
     "test:recovery": "node scripts/check-crash-recovery.mjs",
     "animations:check": "node scripts/check-room-activities.mjs && node scripts/check-native-room.mjs",

@@ -1,3 +1,4 @@
+import { MODERN_KITCHEN_COUNTER_IDS, MODERN_KITCHEN_FLOOR_SHELF_IDS, MODERN_KITCHEN_SINK_IDS, MODERN_KITCHEN_ISLAND_IDS, MODERN_KITCHEN_FRIDGE_IDS, MODERN_KITCHEN_INDUCTION_IDS, MODERN_KITCHEN_STORAGE_IDS } from "@/constants/modern-kitchen";
 import { DOOR_DECORATION_IDS, LAMP_DECORATION_IDS, CURTAIN_DECORATION_IDS } from "@/constants/home-details-decorations";
 import { KITCHEN_DECORATION_IDS, BEDROOM_DECORATION_IDS, HALLOWEEN_DECORATION_IDS } from "@/constants/room-furnishings";
 import STORE_PRICES from "@/data/store-prices.json";
@@ -75,14 +76,14 @@ export const COMPUTER_DECORATION_STORE_IDS = storeIds(
 );
 export const CONSOLE_DECORATION_STORE_IDS = storeIds(CONSOLE_DECORATION_IDS);
 
-export const TABLE_DECORATION_STORE_IDS = storeIds([
+export const TABLE_DECORATION_STORE_IDS = storeIds(MODERN_KITCHEN_COUNTER_IDS, MODERN_KITCHEN_ISLAND_IDS, [
   "tableTan", "tablePink", "tableBlue", "tablePurple",
   "livingSmallTable", "livingTable", "japaneseTable", "officeKitchenTable",
   "kitchenDiningTable", "kitchenIsland", "bedroomNightstand", "officeProjectorStand",
 ]);
 
 // Keep the existing tab ID while giving shelves and cabinets their own category.
-export const FURNITURE_DECORATION_STORE_IDS = storeIds([
+export const FURNITURE_DECORATION_STORE_IDS = storeIds(MODERN_KITCHEN_STORAGE_IDS, MODERN_KITCHEN_FLOOR_SHELF_IDS, MODERN_KITCHEN_SINK_IDS, [
   "shelfWood", "shelfBlue", "shelfGreen", "livingShelvingA", "livingShelvingB",
   "japaneseShelf", "japaneseClothesCase", "japaneseCloset", "japaneseClosetBase",
   "japaneseClosetDrawerClosed", "japaneseClosetDrawerOpen",
@@ -94,7 +95,7 @@ export const FURNITURE_DECORATION_STORE_IDS = storeIds([
   "kitchenWallCabinetGlass", "kitchenSinkCabinet", "bedroomDresser", "bedroomWardrobe",
 ]);
 
-export const APPLIANCE_DECORATION_STORE_IDS = storeIds([
+export const APPLIANCE_DECORATION_STORE_IDS = storeIds(MODERN_KITCHEN_INDUCTION_IDS, MODERN_KITCHEN_FRIDGE_IDS, [
   "kitchenFridge", "kitchenRange", "kitchenMicrowave", "kitchenMixerStand", "kitchenMixerHand",
   "cleaningRobot", "officeRumbaRobot", "livingAirCon", "officeAc", "livingFireplaceCream",
   "officeWaterDispenserAni", "officeCopyMachineDarkAni", "officeCopyMachineWhiteAni",

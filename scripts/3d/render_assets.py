@@ -4,7 +4,7 @@ from mathutils import Vector
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
-from store_furniture import STORE_FURNITURE_IDS, build_store_furniture
+from store_furniture import STORE_FURNITURE_IDS, MODERN_KITCHEN_IDS, build_store_furniture
 from bathroom_additions import build_bathroom_addition, add_bathroom_controls
 from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, key_cat_geometry, smoothstep, smooth_window, pulse, care_action_time
 OUT=ROOT/'assets/3d'
@@ -381,11 +381,20 @@ def monitor(id,t=0):
 
 def window(id):
  low=id.lower();w=1.45;h=1.7
+ if id=='windowPlain':
+  # A flush wall window has a real opening and shallow trim. Its frame must
+  # not reserve a solid slab in front of countertop taps.
+  for x in [-w/2+.045,w/2-.045]:box('Window frame',(x,0,h/2),(.09,.02,h),'cream',.008)
+  for z in [.045,h-.045]:box('Window frame',(0,0,z),(w-.18,.02,.09),'cream',.008)
+  box('Window glass',(0,-.013,h/2),(w-.18,.006,h-.18),'blue',.002)
+  box('Window muntin',(0,-.018,h/2),(.055,.01,h-.15),'cream',.003)
+  box('Window crossbar',(0,-.018,h*.55),(w-.12,.01,.055),'cream',.003)
+  return
  box('Window frame',(0,0,h/2),(w,.15,h),'wood' if 'japanese' in low else 'cream',.04)
  box('Window glass',(0,-.09,h/2),(w-.18,.025,h-.18),'blue',.025)
  for x in ([-.35,.35] if '11' in low else [0]):box('Window muntin',(x,-.125,h/2),(.055,.055,h-.15),'cream',.01)
  box('Window crossbar',(0,-.13,h*.55),(w-.12,.055,.055),'cream',.01)
- box('Sill',(0,-.12,.03),(w+.16,.35,.10),'cream',.045)
+ if id!='windowPlain':box('Sill',(0,-.12,.03),(w+.16,.35,.10),'cream',.045)
  if 'blinds' in low:
   for z in range(9):box('Blind slat',(0,-.18,.35+z*.15),(w-.08,.08,.10),'paper',.025)
  elif any(v in low for v in ['7','8','11']):
@@ -836,6 +845,8 @@ def main():
  if ONLY=='branding':branding();return
  if ONLY=='store-furniture':
   render_furniture([e for e in entries if e['id'] in STORE_FURNITURE_IDS]);return
+ if ONLY=='modern-kitchen':
+  render_furniture([e for e in entries if e['id'] in MODERN_KITCHEN_IDS]);return
  if ONLY=='samples':
   (OUT/'rooms').mkdir(exist_ok=True)
   room(next(e for e in entries if e['id']=='room1'));render_furniture([e for e in entries if e['id'] in ['sofaA','livingTable','plantSmall','chairClassicA','bed-brown']]);return

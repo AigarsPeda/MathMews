@@ -470,7 +470,7 @@ export default function HomeScreen() {
     <PetStage
       key={`${roomPet.homeRoomId ?? "livingRoom"}:${roomPet.roomId ?? "room1"}`}
       worldClock={worldClock}
-      nativeSceneMounted={shouldMountNativeRoom(roomPet.homeRoomId ?? "livingRoom", pet.homeRoomId ?? "livingRoom", getCatHomeRoomId(pet), transition?.outgoing.homeRoomId)}
+      nativeSceneMounted={shouldMountNativeRoom(roomPet.homeRoomId ?? "livingRoom")}
       roomVisible={visible && !transition}
       sceneSlide={transition && (visible || roomPet.homeRoomId === transition.outgoing.homeRoomId)
         ? { progress: roomSlideProgress, direction: transition.direction, outgoing: !visible } : undefined}

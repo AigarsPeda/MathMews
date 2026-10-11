@@ -25,15 +25,15 @@ export function NativeWindowPane({ asset, clock, active, lightning }: {
   const target = worldDaylight(clock, Math.max(now, clock.realMs));
   const transmission = weatherTransmission(worldWeather(clock, Math.max(now, clock.realMs)));
   const level = useSharedValue({ daylight: target, transmission, applied: -1, appliedTransmission: -1, appliedFlash: -1 });
-  useEffect(() => { level.value = { ...level.value, applied: -1 }; }, [level, materials]);
+  useEffect(() => { level.value = { ...level.value, applied: -1 }; }, [level, materials, active]);
   RenderCallbackContext.useRenderCallback(({ timeSinceLastFrame }) => {
     'worklet';
     if (!active) return;
     const current = level.value;
     const flash = lightning?.value ?? 0;
     const delta = target - current.daylight;
-    const next = Math.abs(delta) < .0001 ? target : current.daylight + delta * (1 - Math.exp(-Math.min(.1, timeSinceLastFrame) * 3));
-    const clouds = Math.abs(transmission - current.transmission) < .0001 ? transmission
+    const next = current.applied < 0 || Math.abs(delta) < .0001 ? target : current.daylight + delta * (1 - Math.exp(-Math.min(.1, timeSinceLastFrame) * 3));
+    const clouds = current.applied < 0 || Math.abs(transmission - current.transmission) < .0001 ? transmission
       : current.transmission + (transmission - current.transmission) * (1 - Math.exp(-Math.min(.1, timeSinceLastFrame) * 1.5));
     const changed = Math.abs(next - current.applied) >= .001 || Math.abs(clouds - current.appliedTransmission) >= .001 || Math.abs(flash - current.appliedFlash) >= .001;
     level.value = { daylight: next, transmission: clouds, applied: changed ? next : current.applied,

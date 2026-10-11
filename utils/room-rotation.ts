@@ -1,4 +1,5 @@
 import type { PetProfile, RoomLayerItem } from "@/types/game";
+import { isWindowDecorationId } from "@/constants/window-decorations";
 
 /** Extra yaw relative to an item's existing model/style and wall orientation. */
 export function normalizeRotationDegrees(value: unknown): number | undefined {
@@ -8,6 +9,7 @@ export function normalizeRotationDegrees(value: unknown): number | undefined {
 
 type RotationLayout = Pick<PetProfile, "bedId" | "bedRotationDegrees" | "placedDecorations" | "placedToys">;
 export function getRoomItemRotation(layout: RotationLayout, item: RoomLayerItem): number {
+  if (item.kind === "decoration" && isWindowDecorationId(item.decorationId)) return 0;
   const angle = item.kind === "bed" ? layout.bedRotationDegrees
     : item.kind === "toy" ? layout.placedToys?.find(entry => entry.instanceId === item.instanceId)?.rotationDegrees
     : layout.placedDecorations?.find(entry => entry.instanceId === item.instanceId)?.rotationDegrees;
@@ -15,6 +17,7 @@ export function getRoomItemRotation(layout: RotationLayout, item: RoomLayerItem)
 }
 
 export function setRoomItemRotation(pet: PetProfile, item: RoomLayerItem, degrees: number): PetProfile {
+  if (item.kind === "decoration" && isWindowDecorationId(item.decorationId)) return pet;
   if (!Number.isFinite(degrees)) return pet;
   const rotationDegrees = normalizeRotationDegrees(degrees);
   if (getRoomItemRotation(pet, item) === (rotationDegrees ?? 0)) return pet;

@@ -196,11 +196,10 @@ for (const preference of [null, '3d', 'simple', 'true', 'invalid', new Error('St
  });await mode.graphicsModeReady;
  assert.equal(mode.getGraphicsMode(),preference==='simple'?'simple':'3d','3D is the default; only an explicit Simple preference disables it');
 }
-const cache=execute('utils/native-scene-cache.ts',{}), rooms=['livingRoom','bedroom','bathroom','kitchen'];
-for(const visible of rooms)for(const catRoom of rooms){
- const mounted=rooms.filter(room=>cache.shouldMountNativeRoom(room,visible,catRoom));assert.ok(mounted.length<=2);assert.ok(mounted.includes(catRoom));
- for(const outgoing of rooms)assert.ok(rooms.filter(room=>cache.shouldMountNativeRoom(room,visible,catRoom,outgoing)).length<=3);
-}
+const rooms=['livingRoom','bedroom','bathroom','kitchen'];
+const cache=execute('utils/native-scene-cache.ts',{'@/constants/home-rooms':{HOME_ROOM_IDS:rooms}});
+assert.deepEqual(rooms.filter(room=>cache.shouldMountNativeRoom(room)),rooms,'All four home scenes warm at startup and stay mounted');
+assert.equal(cache.shouldMountNativeRoom('unknown'),false);
 let timers=[],ready=0,completed=0,steps=[];
 const sh=hookHarness();sh.react.useRef=value=>({current:value});
 const clips=JSON.parse(fs.readFileSync('scripts/3d/clips.json','utf8'));

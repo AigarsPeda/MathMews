@@ -1,4 +1,5 @@
 import nativeCatalog from "@/assets/3d/native/catalog.json";
+import { isModernKitchenWallDecoration } from "@/constants/modern-kitchen";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
@@ -137,7 +138,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         spotlightAngle: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightAngle(record.spotlightAngle) : undefined,
         spotlightSwivel: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightSwivel(record.spotlightSwivel) : undefined,
         curtainOpen: isCurtainDecorationId(placement.decorationId) && record.curtainOpen === false ? false : undefined,
-        rotationDegrees: normalizeRotationDegrees(record.rotationDegrees),
+        rotationDegrees: isWindowDecorationId(placement.decorationId) ? undefined : normalizeRotationDegrees(record.rotationDegrees),
         scale: scale !== undefined && scale !== getDecorationDefaultScale(placement.decorationId) ? scale : undefined,
       });
     }
@@ -400,11 +401,12 @@ export function updatePlacedDecorationWallFlipByInstance(
 
     return {
       ...item,
-      // A wall spotlight must cross to the corresponding side of the room.
+      // Wall fixtures cross to the corresponding side of the room.
       // Keeping a right-wall screen anchor on the left wall places it beyond
       // the corner, behind the opaque back wall.
-      offset: isWallSpotlightDecorationId(item.decorationId) && getPlacedDecorationWallFlipped(item) !== wallFlipped
+      offset: (isWallSpotlightDecorationId(item.decorationId) || isWindowDecorationId(item.decorationId) || isModernKitchenWallDecoration(item.decorationId)) && getPlacedDecorationWallFlipped(item) !== wallFlipped
         ? { ...item.offset, x: -item.offset.x } : item.offset,
+      rotationDegrees: isWindowDecorationId(item.decorationId) ? undefined : item.rotationDegrees,
       wallFlipped: isRoomDoor(item.decorationId) ? wallFlipped : wallFlipped ? true : undefined,
     };
   });

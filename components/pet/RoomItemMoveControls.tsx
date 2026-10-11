@@ -13,7 +13,7 @@ const DIRECTIONS = [
 export type RoomMoveDirection = typeof DIRECTIONS[number][0];
 
 /** The room stays visible while a child moves the one highlighted item. */
-export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotationDegrees, onRotate, feedback }: {
+export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotationDegrees, onRotate, onFaceWall, feedback }: {
   name: string;
   feedback?: string;
   actions?: RoomItemMenuAction[];
@@ -21,6 +21,7 @@ export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotat
   onDone: () => void;
   rotationDegrees?: number;
   onRotate?: () => void;
+  onFaceWall?: () => void;
 }) {
   const { t } = useTranslation();
   return <View style={styles.content}>
@@ -46,7 +47,10 @@ export function RoomItemMoveControls({ name, actions = [], onMove, onDone, rotat
         <AppIcon name={icon} size={24} />
         <Text style={styles.arrowText}>{t("home.nudge" + direction)}</Text>
       </Pressable>)}
-      {onRotate && <Pressable style={({ pressed }) => [styles.arrow, pressed && styles.pressed]}
+      {onFaceWall ? <Pressable style={({ pressed }) => [styles.arrow, pressed && styles.pressed]}
+        accessibilityRole="button" accessibilityLabel={t("home.flipWall")} onPress={onFaceWall}>
+        <AppIcon name="rotate" size={24} /><Text style={styles.arrowText}>{t("home.flipWall")}</Text>
+      </Pressable> : onRotate && <Pressable style={({ pressed }) => [styles.arrow, pressed && styles.pressed]}
         accessibilityRole="button" accessibilityLabel={t("home.rotateSelectedItem", { name })} onPress={onRotate}>
         <AppIcon name="rotate" size={24} /><Text style={styles.arrowText}>{rotationDegrees ?? 0}°</Text>
       </Pressable>}

@@ -20,20 +20,21 @@ export function NativeWorldLighting({ clock, active, objects = [], editingObject
   const transmission = weatherTransmission(worldWeather(clock, Math.max(now, clock.realMs)));
   const level = useSharedValue({ daylight: target, transmission, applied: -1, appliedTransmission: -1 });
   const { lightManager, scene } = useFilamentContext();
-  const sun = useLightEntity(lightManager, { type: 'directional', intensity: 100_000, direction: [-1, -1, -1], castShadows: false });
-  const fill = useLightEntity(lightManager, { type: 'point', intensity: 5_000_000, position: [3.5, 4, 3.5], falloffRadius: 14, castShadows: false });
+  const sun = useLightEntity(lightManager, { type: 'directional', intensity: 1000, direction: [-1, -1, -1], castShadows: lightManager.shadowMapsSupported === true });
+  const fill = useLightEntity(lightManager, { type: 'point', intensity: 10_000, position: [3.5, 4, 3.5], falloffRadius: 14, castShadows: false });
   useEntityInScene(scene, sun);
   useEntityInScene(scene, fill);
-  useEffect(() => { level.value = { ...level.value, applied: -1 }; }, [level, sun, fill]);
+  useEffect(() => { level.value = { ...level.value, applied: -1 }; }, [level, sun, fill, active]);
   RenderCallbackContext.useRenderCallback(({ timeSinceLastFrame }) => {
     'worklet';
     if (!active) return;
     const current = level.value;
     if (current.daylight === target && current.transmission === transmission && Math.abs(current.applied - target) < .001) return;
     const delta = target - current.daylight;
-    const next = Math.abs(delta) < .0001 ? target
+    // Initialize/resume at the current time; only an already visible room fades.
+    const next = current.applied < 0 || Math.abs(delta) < .0001 ? target
       : current.daylight + delta * (1 - Math.exp(-Math.min(.1, timeSinceLastFrame) * 3));
-    const clouds = Math.abs(transmission - current.transmission) < .0001 ? transmission
+    const clouds = current.applied < 0 || Math.abs(transmission - current.transmission) < .0001 ? transmission
       : current.transmission + (transmission - current.transmission) * (1 - Math.exp(-Math.min(.1, timeSinceLastFrame) * 1.5));
     const changed = Math.abs(next - current.applied) >= .001 || Math.abs(clouds - current.appliedTransmission) >= .001;
     level.value = { daylight: next, transmission: clouds, applied: changed ? next : current.applied,

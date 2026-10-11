@@ -126,9 +126,9 @@ for (const modelId of Object.keys(LAMP_LIGHT_ORIGINS)) {
   assert.ok(Math.abs(light.position[1] - (.1 + origin[1] * 2)) < 1e-8);
   assert.ok(Math.abs(light.position[2] - (3 - origin[0] * 2)) < 1e-8);
   assert.deepEqual(Array.from(light.direction), [0, -1, 0]);
-  if (modelId.startsWith('lavaLamp')) {
-    assert.equal(light.type,'point','The bottle lights surfaces around it, including above its base');
-    assert.ok(light.colorKelvin<2700,'Lava casts warm amber light');
+  if (modelId.startsWith('lavaLamp') || modelId === 'halloweenGhostLantern') {
+    assert.equal(light.type,'point','Lanterns light surrounding surfaces in every direction');
+    if (modelId.startsWith('lavaLamp')) assert.ok(light.colorKelvin<2700,'Lava casts warm amber light');
   } else {
     assert.equal(light.type,'spot','Shaded lamps retain their downward light');
     assert.ok(light.spotLightCone[1]>1.4 && light.spotLightCone[1]<Math.PI/2,
@@ -175,8 +175,9 @@ const measureWindowRoom = unmeasuredWindowRoom.find(({node}) => node.type === 'N
 measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
 const windowRoom = render([misplacedWindow], windowProps);
 const windowNode = windowRoom.find(({node}) => node.props.testID === 'room-object:window').node;
-assert.equal(repairedWindow.id, 'window', 'An invisible window receives a visible saved placement');
-assert.deepEqual(windowNode.props.initialOffset, repairedWindow.offset, 'The editor selection box uses the repaired visible anchor');
+assert.equal(repairedWindow, undefined, 'An initial measurement cannot replace a saved window anchor');
+const visibleWindow = windowRoom.find(({node}) => node.type === 'NativeRoomScene').node.props.world.objects[0];
+assert.deepEqual(windowNode.props.initialOffset, visibleWindow.placementOffset, 'The editor selection box uses the corrected display anchor without saving it');
 measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
 const decorationNode = (nodes, id) => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:' + (id === 'officeAc' ? 'ac-one' : id === 'sofaA' ? 'sofa' : id === 'yarnRed' ? 'yarn' : id === 'japaneseDoorAni' ? 'door-bath' : id));
 const ac = decorationNode(first, 'officeAc');
@@ -319,17 +320,25 @@ for (const id of ['room-object:bed', 'room-object:sofa', 'room-object:rotating-t
   assert.ok(node?.props.menuActions.some(action => action.label === 'home.rotateItem'), `${id}: all item kinds offer free rotation`);
 }
 measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
-const rotatedWindowProps = { ...windowProps, onSetRoomItemRotation() {} };
+let flippedWindow;
+const rotatedWindowProps = { ...windowProps, onSetRoomItemRotation() { assert.fail('Windows cannot open free rotation'); },
+  onFlipPlacedDecorationWall(id) { flippedWindow=id; } };
 const windowEditor = render([misplacedWindow], rotatedWindowProps);
-windowEditor.find(({node}) => node.props.testID === 'room-object:window').node.props.menuActions.find(action => action.label === 'home.rotateItem').onPress();
-repairedWindow = undefined;
-rotationControls(render([misplacedWindow], rotatedWindowProps)).props.onPreview(137.5);
-rotationControls(render([misplacedWindow], rotatedWindowProps)).props.onClose();
-assert.equal(repairedWindow, undefined, 'Window placement repairs cannot persist an unsaved rotation preview');
+const editableWindow=windowEditor.find(({node}) => node.props.testID === 'room-object:window').node;
+assert.ok(!editableWindow.props.menuActions.some(action=>action.label==='home.rotateItem'),'Window options omit free rotation');
+editableWindow.props.menuActions.find(action=>action.label==='home.flipWall').onPress();
+assert.equal(flippedWindow,'window');
+editableWindow.props.onDragStart();
+const windowControls=render([misplacedWindow],rotatedWindowProps).find(({node})=>node.type==='RoomItemMoveControls').node;
+assert.equal(windowControls.props.onRotate,undefined,'The window movement dock has no angle control');
+flippedWindow=undefined;
+windowControls.props.onFaceWall();
+assert.equal(flippedWindow,'window','The movement dock switches wall orientation directly');
+assert.ok(!rotationControls(render([misplacedWindow],rotatedWindowProps)),'Switching walls does not open an angle form');
 measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
 // Restore the selected sofa for the existing movement assertions below.
 picker.props.onSelect(picker.props.items[0].item);
-console.log('Verified Rotate for beds, toys and furniture; local preview; Apply; Cancel; and preview-safe wall placement.');
+console.log('Verified Rotate for beds, toys and furniture; local preview; Apply; Cancel; and window wall switches without free rotation.');
 const hintSlot = editingRoom.find(({ node }) => node.props.children?.includes('home.decorateHint')).ancestors.at(-1);
 const controlsSlot = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').ancestors.at(-1);
 assert.equal(style(hintSlot.props.style).minHeight, style(controlsSlot.props.style).minHeight, 'Reserve the same space before and after selecting an item so dragging does not shift the room');
@@ -355,10 +364,17 @@ assert.equal(editingStats.ancestors.at(-1).props.pointerEvents, 'none');
 assert.equal(editingStats.ancestors.at(-1).props.accessibilityElementsHidden, true, 'Hidden stats cannot be tapped or announced');
 assert.equal(style(controlsSlot.props.style).position, 'absolute', 'Movement controls share the stats footprint instead of taking additional room space');
 measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
-render([{...sofa, scale:.8}], moveProps).find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onMove('left');
-assert.equal(moved.id, sofa.instanceId);
-assert.ok(Math.abs(moved.offset.x - .2) < 1e-9);
-assert.ok(Math.abs(moved.offset.y - .1) < 1e-9, 'Move only the selected item on the requested axis');
+for (const zoom of [1,2.5]) {
+  cameraZoom=zoom;
+  const nodes=render([{...sofa,scale:.8}],moveProps),world=roomWorld(nodes),object=world.objects.find(object=>object.instanceId===sofa.instanceId);
+  const {NATIVE_MODEL_CATALOG,ROOM_SPAN}=load('@/utils/native-room-world');
+  const size=object.scale*world.width*NATIVE_MODEL_CATALOG[object.modelId].renderScale/ROOM_SPAN;
+  nodes.find(({node})=>node.type==='RoomItemMoveControls').node.props.onMove('left');
+  assert.equal(moved.id,sofa.instanceId);
+  assert.ok(Math.abs((sofa.offset.x-moved.offset.x)*((world.width-size)/2)*zoom-8)<1e-8,'Arrow movement is eight visible points at each zoom');
+  assert.ok(Math.abs(moved.offset.y-sofa.offset.y)<1e-9,'Move only the selected item on the requested axis');
+}
+cameraZoom=1;
 measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
 moveControls.props.onDone();
 assert.equal(render([sofa]).some(({ node }) => node.type === 'RoomItemMoveControls'), false);

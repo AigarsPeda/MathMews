@@ -3,7 +3,7 @@ import { FLOOR_Y, NATIVE_MODEL_CATALOG, type NativeRoomObject, type Vec3 } from 
 import { buildRugSurfaces } from '@/utils/native-ground-support';
 
 export function hasContactShadow(object: NativeRoomObject) {
-  return object.wallAxis === undefined && (object.solid || object.movable) && !isLampDecorationId(object.modelId);
+  return object.wallAxis === undefined && (object.solid || object.movable || isLampDecorationId(object.modelId));
 }
 
 export function contactShadowShape(object: NativeRoomObject) {

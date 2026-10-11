@@ -1,4 +1,8 @@
 {
+  "halloweenGhostLantern": [
+    { "node": "Ghost body", "emission": [0.55, 0.34, 0.15, 1] },
+    { "node": "Scalloped ghost hem", "emission": [0.55, 0.34, 0.15, 1] }
+  ],
   "lampFloorArc": [
     {
       "node": "Arc lamp shade",

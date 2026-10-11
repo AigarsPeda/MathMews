@@ -59,6 +59,7 @@ for (const scale of [.2, 1, 3]) for (const angle of [0, .001, Math.PI / 2, Math.
 }
 const base = { width: 390, height: 420, petSize: 120, sizeScale: 1, decorations: [], toys: [] };
 const { CAT_DECORATION_IDS } = load('@/constants/cat-decorations');
+const { isWindowDecorationId } = load('@/constants/window-decorations');
 const { CAT_TOY_IDS } = load('@/constants/cat-toys');
 const { CAT_BED_IDS } = load('@/constants/cat-beds');
 const rotatingLayouts = [
@@ -71,9 +72,9 @@ for (const layout of rotatingLayouts) {
   assert.ok(original, 'Every placeable item has a native model');
   for (const degrees of [37.5, 137.2, 315, 360]) {
     const object = w.buildNativeRoomWorld(layout(degrees)).objects[0];
-    assert.ok(Math.abs(object.heading - original.heading - (degrees % 360) * Math.PI / 180) < 1e-8, `${object.modelId}: uses the exact saved yaw`);
+    const turn = isWindowDecorationId(object.modelId) ? 0 : (degrees % 360) * Math.PI / 180;
+    assert.ok(Math.abs(object.heading - original.heading - turn) < 1e-8, `${object.modelId}: windows stay flush to the wall; other items use the saved yaw`);
     const meta = catalog[object.modelId], cos = Math.cos(object.heading), sin = Math.sin(object.heading);
-    const turn = (degrees % 360) * Math.PI / 180;
     // Approach points may be shifted to clear the rotated collision bounds;
     // the contact/landing points themselves must stay attached to the model.
     for (const [before, after] of [[original.seat, object.seat], [original.bathroom?.contact, object.bathroom?.contact], ...(original.leaves ?? []).map((point, index) => [point, object.leaves[index]])]) {
@@ -604,6 +605,8 @@ assert.equal(blockedFrames,0,'Narrow-sofa seating must leave room for the tail a
 assert.ok(maxTailStep < .02, 'A seated tail must not snap between 10-degree contact solutions');
 console.log('Consecutive tail frames:', contactFrames, 'blocked:', blockedFrames, 'max tip step:', maxTailStep.toFixed(4), 'ms/frame:', ((performance.now()-contactStart)/contactFrames).toFixed(3));
 
+// Shadow bindings are exercised separately by check-native-shadows.
+mocks['./use-model-shadows'] = { useModelShadows() {} };
 // Execute NativeCatActor's actual render worklet, with only engine handles mocked.
 let slots = [], cursor = 0, effects = [], renderFrame, applies = [], scale, position, rigMatrices;
 let exposeFoodProps = false;
@@ -983,8 +986,11 @@ function renderCachedScene(props) {
   effects.forEach(fn => fn()); return children;
 }
 function paintFrame() { sceneRender({ timeSinceLastFrame: 1 / 60 }); }
-const cachedProps = { ...sceneMeal, paused: true, catPresent: false, onSceneReady };
+const cachedProps = { ...sceneMeal, paused: true, catPresent: false, onSceneReady,
+  worldClock: { worldMs: 23 * 3_600_000, realMs: Date.now(), speed: 60 } };
 let cached = renderCachedScene(cachedProps);
+assert.equal(cached.find(child => child.type === 'WorldLighting').props.active, true, 'Night lighting runs during hidden scene warmup');
+assert.ok(cached.filter(child => child.type.name === 'RoomObject').every(child => child.props.lightingActive), 'Window materials initialize before scene readiness');
 cached.find(child => child.type.name === 'RoomModel').props.onReady();
 renderCachedScene(cachedProps);
 paintFrame(); paintFrame(); renderCachedScene(cachedProps);
@@ -1000,6 +1006,14 @@ assert.equal(sceneReady, 0, 'Startup remains covered until the native scene has 
 paintFrame(); renderCachedScene(cachedProps);
 assert.equal(sceneReady, 1);
 assert.equal(sceneClock.at(-1), 'stop', 'A drawn hidden room stops its native renderer');
+cached = renderCachedScene({ ...cachedProps, transitioning: true });
+assert.equal(sceneClock.at(-1), 'start', 'A cached destination draws during the slide');
+assert.equal(cached.find(child => child.type === 'WorldLighting').props.active, true, 'Night lighting stays active throughout room travel');
+assert.equal(cached.find(child => child.type === 'Cat'), undefined);
+assert.ok(cached.filter(child => child.type.name === 'RoomObject').every(child => !child.props.active), 'Furniture motion remains paused during room travel');
+cached = renderCachedScene(cachedProps);
+assert.equal(cached.find(child => child.type === 'WorldLighting').props.active, false, 'Settled hidden rooms pause their lighting');
+assert.equal(sceneClock.at(-1), 'stop');
 renderCachedScene({ ...cachedProps, paused: false });
 assert.equal(sceneClock.at(-1), 'start');
 const arrivalProps = { ...cachedProps, catPresent: true, initialCatPosition: w.nativeRoomEdge(bowlRoom, -1) };
@@ -1648,16 +1662,39 @@ const repairCode=ts.transpileModule(`(${repairEffect})();`,{compilerOptions:{tar
 const repairLayout={...base,decorations:[{decorationId:'windowOakWide',instanceId:'cached-window',scale:1.6,offset:{x:.3,y:.2}}]};
 let repairWorld=w.buildNativeRoomWorld(repairLayout),saves=0;
 const repairContext={roomVisible:false,rotationPreview:null,viewport:{width:base.width,height:base.height},nativeWorld:repairWorld,livePositions:{},
+  isCurtainDecorationId:load('@/constants/decoration-motion').isCurtainDecorationId,
   seenPlacementIds:{current:undefined},placement:load('@/utils/room-item-placement').createRoomPlacementResolver(repairWorld),
   onPlacedDecorationOffsetChange(id,offset){saves++;repairLayout.decorations[0].offset=offset;}};
 for(let render=0;render<100;render++) vm.runInNewContext(repairCode,repairContext);
 assert.equal(saves,0,'Hidden cached rooms never save into the active room or trigger an update loop');
 repairContext.roomVisible=true;vm.runInNewContext(repairCode,repairContext);
-assert.equal(saves,1,'The window is repaired when its own room becomes visible');
+assert.equal(saves,0,'Displaying a clamped existing window never changes its saved anchor');
 repairContext.nativeWorld=w.buildNativeRoomWorld(repairLayout);
 for(let render=0;render<100;render++)vm.runInNewContext(repairCode,repairContext);
-assert.equal(saves,1,'The corrected room converges and stops saving through further parent renders');
-console.log('Verified the real PetStage repair effect across 100 hidden and visible refreshes without a repeated save or update loop.');
+assert.equal(saves,0,'Further parent renders retain the original saved window placement');
+// Refresh first measures a short scene before the complete layout settles.
+// Its bottom clamp used to persist a higher anchor into the full-height room.
+const lowWindowLayout={...base,height:480,decorations:[{decorationId:'windowPlain',instanceId:'low-window',scale:1.5,wallFlipped:true,offset:{x:-.4366,y:-.4652}}]};
+const lowWindowBefore=w.buildNativeRoomWorld(lowWindowLayout).objects[0];
+assert.equal(lowWindowBefore.placementOffset,undefined,'The saved low pose is valid in the settled viewport');
+repairContext.seenPlacementIds.current=undefined;
+repairContext.onPlacedDecorationOffsetChange=(id,offset)=>{saves++;lowWindowLayout.decorations[0].offset=offset;};
+for(const height of [260,480,320,480]) {
+  repairContext.viewport={width:base.width,height};
+  repairContext.nativeWorld=w.buildNativeRoomWorld({...lowWindowLayout,height});
+  repairContext.placement=load('@/utils/room-item-placement').createRoomPlacementResolver(repairContext.nativeWorld);
+  if(height===260)assert.ok(repairContext.nativeWorld.objects[0].placementOffset,'The startup viewport needs a temporary bottom correction');
+  vm.runInNewContext(repairCode,repairContext);
+}
+assert.equal(saves,0,'Transient viewport corrections never enter the save file');
+assert.ok(w.pathLength([lowWindowBefore.position,w.buildNativeRoomWorld(lowWindowLayout).objects[0].position])<1e-8,'The window returns to its exact low pose after refresh');
+repairContext.seenPlacementIds.current=new Set();
+repairContext.viewport={width:base.width,height:260};
+repairContext.nativeWorld=w.buildNativeRoomWorld({...lowWindowLayout,height:260});
+repairContext.placement=load('@/utils/room-item-placement').createRoomPlacementResolver(repairContext.nativeWorld);
+vm.runInNewContext(repairCode,repairContext);
+assert.equal(saves,1,'A newly placed wall item still saves its fitted visible anchor');
+console.log('Verified local wall display corrections, hidden/visible refreshes, transient viewport sizes, exact saved pose restoration and new-item fitting.');
 
 // Bathroom journeys use authored basin/tray/seat anchors, retain their entry
 // side through washing, and leave safely when another command interrupts.
@@ -1791,9 +1828,15 @@ const settledLampUpdates=lampPositions.length;
 for(let i=0;i<60;i++)renderFrame({timeSinceLastFrame:1/60});
 assert.equal(lampPositions.length,settledLampUpdates,'An unmoving lamp does not repeat native writes');
 assert.equal(NativeLampLight(lampsInScene[1].props), null, 'An off lamp emits no light');
-assert.equal(NativeLampLight({ ...lampsInScene[0].props, active: false }), null, 'Hidden rooms emit no lamp light');
+const hiddenLampNode = NativeLampLight({ ...lampsInScene[0].props, active: false });
+assert.equal(hiddenLampNode.type, lampNode.type, 'Pausing a room retains its powered lamp component');
+assert.equal(hiddenLampNode.props.config.intensity, lampNode.props.config.intensity, 'Room visibility cannot switch lamp power off');
+cursor=0;effects=[];hiddenLampNode.type(hiddenLampNode.props);effects.forEach(fn=>fn());
+const hiddenLampUpdates=lampPositions.length;
+renderFrame({timeSinceLastFrame:1/60});
+assert.equal(lampPositions.length,hiddenLampUpdates,'Hidden lamps retain their light without native pose updates');
 assert.equal(NativeLampLight({ ...lampsInScene[0].props, object: { ...lampRoom.objects[0], poweredOn: false } }), null);
-console.log('Verified native lamp mounting, independent power, numeric light properties and hidden-room cleanup.');
+console.log('Verified native lamp mounting, independent power, numeric light properties and retained hidden-room lights.');
 
 const glowParts = load('@/constants/lamp-glow-parts.json');
 const { LAMP_LIGHT_ORIGINS } = load('@/constants/decoration-motion');

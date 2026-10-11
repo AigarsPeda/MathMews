@@ -181,6 +181,22 @@ const paused = sun.intensity;
 NativeWorldLighting({ clock: day, active: false });
 renderFrame({ timeSinceLastFrame: 1 });
 assert.equal(sun.intensity, paused);
+// A cached room can have last drawn during daytime before it was hidden.
+collectEffects = true; effects.length = 0;
+NativeWorldLighting({ clock: day, active: false }); effects.forEach(fn => fn());
+effects.length = 0;
+NativeWorldLighting({ clock: { ...night, weather: 'rain' }, active: true }); effects.forEach(fn => fn());
+renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.equal(sun.intensity, 550, 'A returning room uses current night/cloud brightness on its first drawing turn');
+assert.equal(fill.intensity, 5500, 'Fill light does not fade from the cached daytime state');
+assert.equal(shared.value.daylight, 0);
+assert.equal(shared.value.transmission, .55);
+collectEffects = false;
+NativeWorldLighting({ clock: day, active: true });
+renderFrame({ timeSinceLastFrame: 1 / 60 });
+assert.ok(shared.value.daylight > 0 && shared.value.daylight < .1, 'Visible time changes still fade smoothly');
+NativeWorldLighting({ clock: night, active: true });
+for (let i = 0; i < 600; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
 console.log('Verified actual native lighting callbacks, smooth day/night changes, cool moonlight, stable light entities, retained environment texture and hidden-room pause.');
 
 const worldDaylightLevel = shared;
@@ -207,7 +223,11 @@ const windowSource = windows.windowLightConfig(windowObject);
 const resizedSource = windows.windowLightConfig({ ...windowObject, scale: .35 });
 assert.ok(Math.abs(resizedSource.area / windowSource.area - .25) < 1e-8, 'Light power scales with window area');
 const clear = windows.windowLightConfig({ ...windowObject, modelId: 'windowPlain' });
-const blinds = windows.windowLightConfig({ ...windowObject, modelId: 'windowBlinds' });
+// Compare equal physical areas. The Plain Window no longer includes a sill.
+const clearMeta = catalog.windowPlain, blindsMeta = catalog.windowBlinds;
+const boundsArea = model => (model.max[0]-model.min[0])*(model.max[1]-model.min[1]);
+const blinds = windows.windowLightConfig({ ...windowObject, modelId: 'windowBlinds',
+  scale: windowObject.scale * Math.sqrt(boundsArea(clearMeta)/boundsArea(blindsMeta)) });
 assert.ok(Math.abs(blinds.area / clear.area - .45) < 1e-8, 'Blinds filter incoming light');
 
 const { NativeWindowLight } = load('@/components/pet/native/NativeWindowLight');
@@ -294,8 +314,8 @@ for (const id of [...WINDOW_DECORATION_IDS, 'bathroomBathWindow']) {
   const frameColor = frames[0].parameters.emissiveFactor;
   const roomColor = windows.windowLightColor(0);
   assert.ok(frameColor[2] > frameColor[0]);
-  frameColor.slice(0, 3).forEach((value, channel) => assert.ok(Math.abs(value / roomColor[channel] - .95) < 1e-8),
-    'Window-facing frame surfaces use exactly the same cold tint as the floor');
+  frameColor.slice(0, 3).forEach((value, channel) => assert.ok(Math.abs(value / roomColor[channel] - .035) < 1e-8),
+    'The frame reflects a faint cold tint at night without glowing like a light source');
   const constant = materialUpdates;
   for (let i = 0; i < 60; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
   assert.equal(materialUpdates, constant, 'Steady sky color has no native updates each frame');
@@ -306,6 +326,8 @@ for (const id of [...WINDOW_DECORATION_IDS, 'bathroomBathWindow']) {
   assert.ok(dayColor[0] > nightColor[0] && dayColor[2] > nightColor[2], 'The sky brightens smoothly during daylight');
   renderPane(asset, night, false);
   assert.deepEqual(panes[0].parameters.baseColorFactor, dayColor, 'Hidden rooms pause their sky updates');
+  renderPane(asset, night);
+  assert.deepEqual(panes[0].parameters.baseColorFactor, nightColor, 'Returning windows show the night sky immediately');
 }
 console.log('Verified Blender sky materials and actual day/night material callbacks for all 18 windows, one continuous area-light bake, matching cold frame/floor tint, steady-frame updates and hidden-room pause.');
 
@@ -371,3 +393,27 @@ for (const hour of [13, 23]) {
   assert.equal(lightUpdates, hidden, 'Hidden window lights ignore flashes');
 }
 console.log('Verified native lightning sky, frame/sill and room illumination in day/night rain, cool tint, light reuse, normal-light restoration and no idle/hidden native writes.');
+
+// Read the real clock hook with a cached daytime polling state, before effects.
+const mockedClockHook = mocks['@/hooks/use-world-clock-now'];
+delete mocks['@/hooks/use-world-clock-now'];
+mocks['@/hooks/use-animation-activity'] = { useAnimationActivity: () => ({ active: true }) };
+const { useWorldClockNow } = load('@/hooks/use-world-clock-now');
+const storedNow = now;
+let clockReading = { running: false, now: storedNow };
+react.useState = () => [clockReading, next => { clockReading = typeof next === 'function' ? next(clockReading) : next; }];
+function renderClock(enabled) {
+  const previous = clockReading;
+  // Exercise the hook through the test's state dispatcher.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const value = useWorldClockNow(5000, enabled);
+  // React retries render-time state adjustments before committing children.
+  return previous === clockReading ? value : renderClock(enabled);
+}
+collectEffects = false;
+now += 10_000;
+assert.equal(renderClock(false), storedNow, 'Hidden clocks retain their polling state');
+assert.equal(renderClock(true), now, 'A newly visible room reads current time before any timer/effect runs');
+react.useState = originalUseState;
+mocks['@/hooks/use-world-clock-now'] = mockedClockHook;
+console.log('Verified fresh time on room activation without waiting for the clock poll.');

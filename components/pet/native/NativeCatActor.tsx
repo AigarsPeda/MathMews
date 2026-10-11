@@ -12,6 +12,7 @@ import { CAT_ANIMATION_CLIPS } from '@/constants/cat-animation-clips';
 import { resolveTailContact, tailParentAxis, type TailContact } from '@/utils/native-cat-contact';
 import { limbAim, reachingElbow } from '@/utils/native-hanging-toy';
 import { buildRugSurfaces, rugSupportLift } from '@/utils/native-ground-support';
+import { useModelShadows } from './use-model-shadows';
 const SOURCES = {
   orange: require('@/assets/3d/native/cat-orange.glb'),
   grey: require('@/assets/3d/native/cat-grey.glb'),
@@ -53,6 +54,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
   const { transformManager } = useFilamentContext();
   const model = useModel(SOURCES[resolveCatSkinId(skinId)], { shouldReleaseSourceData: false });
   const asset = model.state === 'loaded' ? model.asset : undefined;
+  useModelShadows(asset);
   useEffect(() => asset ? registerPickEntities?.('cat', asset.getRenderableEntities()) : undefined, [asset, registerPickEntities]);
   const entity = model.state === 'loaded' ? model.rootEntity : undefined;
   const animator = useAnimator(asset);

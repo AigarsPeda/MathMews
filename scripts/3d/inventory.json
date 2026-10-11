@@ -1396,6 +1396,198 @@
       "animated": false
     },
     {
+      "id": "kitchenModernFloorShelfWhite",
+      "kind": "decoration",
+      "displaySize": 60.100178,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernFloorShelfSage",
+      "kind": "decoration",
+      "displaySize": 60.100178,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernFloorShelfNavy",
+      "kind": "decoration",
+      "displaySize": 60.100178,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernFloorShelfCharcoal",
+      "kind": "decoration",
+      "displaySize": 60.100178,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernSinkWhite",
+      "kind": "decoration",
+      "displaySize": 74.466031,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernSinkSage",
+      "kind": "decoration",
+      "displaySize": 74.466031,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernSinkNavy",
+      "kind": "decoration",
+      "displaySize": 74.466031,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernSinkCharcoal",
+      "kind": "decoration",
+      "displaySize": 74.466031,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernCounterWhite",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernCounterSage",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernCounterNavy",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernCounterCharcoal",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernInductionWhite",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernInductionSage",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernInductionNavy",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernInductionCharcoal",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernWallCabinetWhite",
+      "kind": "decoration",
+      "displaySize": 54.4,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernWallCabinetSage",
+      "kind": "decoration",
+      "displaySize": 54.4,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernWallCabinetNavy",
+      "kind": "decoration",
+      "displaySize": 54.4,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernWallCabinetCharcoal",
+      "kind": "decoration",
+      "displaySize": 54.4,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernShelfWhite",
+      "kind": "decoration",
+      "displaySize": 56,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernShelfSage",
+      "kind": "decoration",
+      "displaySize": 56,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernShelfNavy",
+      "kind": "decoration",
+      "displaySize": 56,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernShelfCharcoal",
+      "kind": "decoration",
+      "displaySize": 56,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernFridgeWhite",
+      "kind": "decoration",
+      "displaySize": 105.448774,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernFridgeSage",
+      "kind": "decoration",
+      "displaySize": 105.448774,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernFridgeNavy",
+      "kind": "decoration",
+      "displaySize": 105.448774,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernFridgeCharcoal",
+      "kind": "decoration",
+      "displaySize": 105.448774,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernIslandWhite",
+      "kind": "decoration",
+      "displaySize": 98.027031,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernIslandSage",
+      "kind": "decoration",
+      "displaySize": 98.027031,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernIslandNavy",
+      "kind": "decoration",
+      "displaySize": 98.027031,
+      "animated": false
+    },
+    {
+      "id": "kitchenModernIslandCharcoal",
+      "kind": "decoration",
+      "displaySize": 98.027031,
+      "animated": false
+    },
+    {
       "id": "kitchenMixerStand",
       "kind": "decoration",
       "displaySize": 32,

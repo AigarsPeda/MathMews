@@ -11,7 +11,7 @@ for(const [id,meta] of Object.entries(catalog)) {
   const meshes=readModel(id), derived=data[id];
   assert.ok(derived?.placementHull.length>=3,`${id} has a footprint`);
   assert.ok(derived.placementHull.every(p=>p.length===2&&p.every(Number.isFinite)));
-  const boards = meshes.filter(mesh=>/^(Rounded tabletop|Wall shelf|Shelf(?:\.\d+)?|Broad fireplace mantel)$/.test(mesh.name));
+  const boards = meshes.filter(mesh=>/^(Rounded tabletop|Wall shelf(?:\.\d+)?|Shelf(?:\.\d+)?|Broad fireplace mantel|Thick stone worktop(?:\.\d+)?)$/.test(mesh.name));
   assert.equal(derived.supportSurfaces?.length ?? 0,boards.length,`${id}: support surfaces match authored boards`);
   boards.forEach((board,i)=>{
     const surface=derived.supportSurfaces[i];

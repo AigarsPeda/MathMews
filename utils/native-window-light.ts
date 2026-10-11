@@ -40,9 +40,9 @@ export function windowLightColor(daylight: number, flash = 0): Vec3 {
   return [base[0] + (.72 - base[0]) * flash, base[1] + (.86 - base[1]) * flash, base[2] + (1 - base[2]) * flash];
 }
 
-/** Tint one rectangular area-light bake with the same moonlight as the room. */
+/** A faint reflection on the frame; the glass remains the source of room light. */
 export function windowFrameEmission(daylight: number, flash = 0): [number, number, number, number] {
   'worklet';
-  const color = windowLightColor(daylight, flash), strength = .95 - .88 * daylight + 1.4 * flash;
+  const color = windowLightColor(daylight, flash), strength = .035 + .035 * daylight + 1.4 * flash;
   return [color[0] * strength, color[1] * strength, color[2] * strength, 1];
 }

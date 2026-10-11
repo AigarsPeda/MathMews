@@ -1,3 +1,5 @@
+import { MODERN_KITCHEN_DECORATION_IDS } from "@/constants/modern-kitchen";
+import { STORE_PLACEMENT_SCALES } from "@/constants/store-placement-scales";
 import { WALL_SPOTLIGHT_DECORATION_IDS } from "@/constants/home-details-decorations";
 import { isRoomDoor } from "@/constants/home-rooms";
 import {
@@ -43,6 +45,7 @@ const ROTATION_VARIANT_ONLY_IDS = new Set<CatDecorationId>();
  */
 export const WALL_FACING_DECORATION_IDS: readonly CatDecorationId[] = [
   ...WALL_SPOTLIGHT_DECORATION_IDS,
+  ...MODERN_KITCHEN_DECORATION_IDS,
   "kitchenWallCabinetSage", "kitchenWallCabinetOak", "kitchenWallCabinetGlass", "kitchenIsland", "kitchenBarStoolOak", "kitchenBarStoolMetal", "kitchenBarStoolVelvet", "kitchenMixerStand", "kitchenMixerHand", "kitchenChairWindsor", "kitchenChairMint", "kitchenChairUpholstered", "kitchenChairBistro", "chairRockingOak", "livingFireplaceCream",
   "doorOakPanel", "doorMintGlass", "doorBarnSliding", "curtainRoseTieback", "curtainBlueDrape", "curtainCreamLinen", "lampFloorArc", "lampFloorTripod", "lampFloorPaper", "lampTableMushroom", "lampTableCeramic", "lampTableBanker", "sofaCornerSage",
   "sofaBlueClassic", "sofaRoseTufted", "sofaTanLeather", "sofaCreamCloud", "kitchenFridge", "kitchenRange", "kitchenSinkCabinet", "kitchenMicrowave", "bedroomDoubleBed", "bedroomDresser", "bedroomNightstand", "bedroomWardrobe", "bathroomDoubleVanity", "bathroomShowerCabin", "halloweenBatGarland",
@@ -270,6 +273,13 @@ export function getDecorationDefaultScale(id: CatDecorationId): number {
 
 /** New placements and store previews match the furniture sized in the reference rooms. */
 export function getDecorationDefaultPlacementScale(id: CatDecorationId): number | undefined {
+  const measured = (STORE_PLACEMENT_SCALES as Partial<Record<CatDecorationId, number>>)[id];
+  if (measured !== undefined) return measured;
+  // Leave a wider cat aisle while keeping matching worktops at one height.
+  if (id.startsWith("kitchenModern") ||
+      id === "kitchenWallCabinetSage" || id === "kitchenWallCabinetOak" ||
+      id === "kitchenWallCabinetGlass" || id === "kitchenSinkCabinet" ||
+      id === "kitchenRange" || id === "kitchenIsland") return .9;
   if (id === "bathroomBathAni" || id.startsWith("bathroomBathOval") ||
       id.startsWith("bathroomBathClawfoot") || id.startsWith("bathroomJacuzzi")) return 1.8;
   if (id === "bathroomWcAni") return 1.3;

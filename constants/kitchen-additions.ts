@@ -1,3 +1,5 @@
+import { MODERN_KITCHEN_DECORATION_CATALOG } from "@/constants/modern-kitchen";
+
 type ImageEntry = { source: number; displaySize: number };
 
 export const KITCHEN_CHAIR_DECORATION_CATALOG = {
@@ -8,6 +10,7 @@ export const KITCHEN_CHAIR_DECORATION_CATALOG = {
 } as const satisfies Record<string, ImageEntry>;
 
 export const KITCHEN_ADDITION_DECORATION_CATALOG = {
+  ...MODERN_KITCHEN_DECORATION_CATALOG,
   kitchenWallCabinetSage: { source: require("@/assets/3d/decoration/kitchenWallCabinetSage.png"), displaySize: 72 },
   kitchenWallCabinetOak: { source: require("@/assets/3d/decoration/kitchenWallCabinetOak.png"), displaySize: 72 },
   kitchenWallCabinetGlass: { source: require("@/assets/3d/decoration/kitchenWallCabinetGlass.png"), displaySize: 72 },

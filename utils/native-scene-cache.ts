@@ -1,4 +1,6 @@
-/** Keep the cat's paused pose, the visible room, and the outgoing slide only. */
-export function shouldMountNativeRoom(room: string, visible: string, catRoom: string, outgoing?: string): boolean {
-  return room === visible || room === catRoom || room === outgoing;
+import { HOME_ROOM_IDS, type HomeRoomId } from '@/constants/home-rooms';
+
+/** Warm all furnished home scenes at startup and retain their native assets. */
+export function shouldMountNativeRoom(room: string): boolean {
+  return HOME_ROOM_IDS.includes(room as HomeRoomId);
 }

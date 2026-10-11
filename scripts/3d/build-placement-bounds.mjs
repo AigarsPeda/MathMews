@@ -58,15 +58,16 @@ export function derivePlacementBounds() {
     result[id] = {placementHull:hull(points)};
     // Only authored horizontal boards can support objects. Brackets, backs,
     // shades and decorative trim must not become accidental placement targets.
-    const surfaces = meshes.filter(mesh => /^(Rounded tabletop|Wall shelf|Shelf(?:\.\d+)?|Broad fireplace mantel)$/.test(mesh.name))
+    const surfaces = meshes.filter(mesh => /^(Rounded tabletop|Wall shelf(?:\.\d+)?|Shelf(?:\.\d+)?|Broad fireplace mantel|Thick stone worktop(?:\.\d+)?)$/.test(mesh.name))
       .map(mesh => bounds(mesh.points));
     if (surfaces.length) result[id].supportSurfaces = surfaces;
     const wallMount = meshes.find(mesh => mesh.name === 'Wall backplate');
     if (wallMount) result[id].wallMountBounds = bounds(wallMount.points);
-    if (/^(lavaLamp|lampTable)/.test(id)) {
-      const base = meshes.filter(mesh => bounds(mesh.points).min[1] <= meta.min[1] + .02)
-        .sort((a,b) => bounds(a.points).max[1] - bounds(b.points).max[1])[0];
-      if (base) result[id].baseHull = hull(base.points);
+    if (/^(lavaLamp|lampTable|kitchenMixer)/.test(id) || id === 'halloweenGhostLantern') {
+      const bases = meshes.filter(mesh => bounds(mesh.points).min[1] <= meta.min[1] + .02)
+        .sort((a,b) => bounds(a.points).max[1] - bounds(b.points).max[1]);
+      const feet = /^kitchenMixer/.test(id) ? bases : bases.slice(0,1);
+      if (feet.length) result[id].baseHull = hull(feet.flatMap(mesh=>mesh.points));
     }
     // Retain deliberately authored shapes and animation envelopes. Static
     // furniture gets one box per part instead of a box full of empty air.

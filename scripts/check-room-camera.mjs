@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 const modules = new Map();
-let slots = [], index = 0;
+let slots = [], index = 0, rnCalls = 0;
 const memo = (fn, deps) => { const i = index++, old = slots[i]; if (!old || deps.some((v,k) => v !== old.deps[k])) slots[i] = { deps, value: fn() }; return slots[i].value; };
 class Gesture {
   constructor(kind) { this.kind = kind; this.handlers = {}; }
@@ -13,7 +13,7 @@ for (const name of ['enabled','minDistance','maxPointers','manualActivation','on
 const mocks = {
   react: { useMemo: memo, useCallback: (fn,deps) => memo(() => fn,deps), useEffect: () => {}, useState: value => { const slot = memo(() => ({ value }), []); return [slot.value, next => { slot.value = next; }]; } },
   'react-native-reanimated': { useSharedValue: value => memo(() => ({ value, get() { return this.value; }, set(v) { this.value = v; } }), []), withTiming: value => value, cancelAnimation() {} },
-  'react-native-worklets': { scheduleOnRN: (fn,...args) => fn(...args) },
+  'react-native-worklets': { scheduleOnRN: (fn,...args) => { rnCalls++; return fn(...args); } },
   'react-native-gesture-handler': { Gesture: { Pinch: () => new Gesture('pinch'), Pan: () => new Gesture('pan'), Simultaneous: (...gestures) => gestures } },
 };
 function load(id) {
@@ -27,7 +27,7 @@ const { useRoomCamera: renderRoomCamera } = load('@/hooks/use-room-camera');
 function render(panEnabled = true) { index = 0; return renderRoomCamera(320,400,true,false,panEnabled); }
 let camera = render();
 const [pinch, pan] = camera.gesture;
-const manager = { activate() { this.active = true; }, fail() { this.failed = true; } };
+const manager = { activations:0, activate() { this.activations++; this.active = true; }, fail() { this.failed = true; } };
 pan.handlers.onTouchesDown({ allTouches: [{ x: 60, y: 100 }] },manager);
 assert.equal(manager.failed,true,'A normal-zoom touch releases the manual pan before any movement or timeout');
 pan.handlers.onTouchesMove({ numberOfTouches: 1, allTouches: [{ x: 61, y: 101 }] }, manager);
@@ -46,12 +46,30 @@ pan.handlers.onTouchesUp({},manager);
 assert.equal(manager.failed,true,'A zoomed tap releases the manual pan on finger-up so its native menu can open');
 manager.failed=false;
 pan.handlers.onTouchesDown({ allTouches: [{ x: 60, y: 100 }] },manager);
-pan.handlers.onTouchesMove({ numberOfTouches: 1, allTouches: [{ x: 85, y: 110 }] }, manager);
+pan.handlers.onTouchesMove({ numberOfTouches: 1, allTouches: [{ x: 63, y: 100 }] }, manager);
+assert.equal(manager.active,false,'Movement below four points remains a tap');
+pan.handlers.onTouchesMove({ numberOfTouches: 1, allTouches: [{ x: 64, y: 100 }] }, manager);
 assert.equal(manager.active,true);
-pan.handlers.onStart(); pan.handlers.onUpdate({ translationX: 999, translationY: -999 });
+assert.equal(pan.handlers.minDistance,4,'The native recognizer uses the same threshold as the worklet');
+const activations=manager.activations;
+const callsBeforePan=rnCalls;
+for(let frame=0;frame<120;frame++)pan.handlers.onTouchesMove({numberOfTouches:1,allTouches:[{x:85+frame,y:110}]},manager);
+assert.equal(manager.activations,activations,'A pan requests native activation once, including moves before the start callback');
+pan.handlers.onStart();
+for(let frame=0;frame<120;frame++) {
+  pan.handlers.onTouchesMove({numberOfTouches:1,allTouches:[{x:85+frame,y:110}]},manager);
+  pan.handlers.onUpdate({translationX:frame*.25,translationY:0});
+}
+assert.equal(manager.activations,activations,'Active pan frames never reset the native recognizer to Began');
+assert.equal(rnCalls,callsBeforePan,'Pan frames never schedule React state or JavaScript work');
+pan.handlers.onUpdate({ translationX: 999, translationY: -999 });
 pan.handlers.onTouchesUp({},manager);assert.equal(manager.failed,false,'An actual pan finishes normally without becoming a menu tap');
 pan.handlers.onFinalize();
 assert.ok(Math.abs(camera.x.get()-.73*160)<1e-8); assert.ok(Math.abs(camera.y.get()+.73*200)<1e-8);
+pan.handlers.onTouchesDown({allTouches:[{x:60,y:100}]},manager);
+pan.handlers.onTouchesMove({numberOfTouches:1,allTouches:[{x:64,y:100}]},manager);
+assert.equal(manager.activations,activations+1,'A finished pan releases its activation latch for the next gesture');
+pan.handlers.onStart();pan.handlers.onFinalize();
 pinch.handlers.onStart({ focalX: 160, focalY: 200 });
 pinch.handlers.onUpdate({ scale: .1, focalX: 160, focalY: 200 });
 assert.equal(camera.scale.get(),1); assert.ok(Math.abs(camera.x.get())<1e-8); assert.ok(Math.abs(camera.y.get())<1e-8);
@@ -67,4 +85,4 @@ camera.reset(); assert.equal(camera.scale.get(),1); assert.equal(render().zoom,1
 const editingCamera = render(false);
 assert.equal(editingCamera.gesture[0].handlers.enabled, true, 'Pinching remains available while decorating');
 assert.equal(editingCamera.gesture[1].handlers.enabled, false, 'A one-finger item drag cannot move the camera while decorating');
-console.log('Verified fractional focal-point pinch zoom, bounded panning, tap threshold, scroll at 1× and reset.');
+console.log('Verified fractional focal-point pinch zoom, bounded panning, four-point activation, one native activation per pan, no JS work during pans, tap menus, scroll at 1× and reset.');

@@ -222,14 +222,14 @@ export function nativeWallPlacementBounds(object: NativeRoomObject): CollisionBo
     max: [0,1,2].map(i => Math.max(...corners.map(p => p[i]))) as Vec3 };
 }
 
-export function isTabletopLamp(modelId: string): boolean {
-  return /^(lavaLamp|lampTable)/.test(modelId);
+export function isSurfacePlaceable(modelId: string): boolean {
+  return !!NATIVE_MODEL_CATALOG[modelId]?.baseHull;
 }
 
-/** Lift a lamp onto an authored surface. Saved anchors use the exact elevated
- * pose; dragging may also target the board itself and snap the base onto it. */
-export function placeLampOnSurface(object: NativeRoomObject, objects: NativeRoomObject[], width: number, snapToSurface = false): NativeRoomObject {
-  if (!isTabletopLamp(object.modelId)) return object;
+/** Rest a small object on an authored surface. Saved anchors use the exact
+ * elevated pose; dragging may also target the surface and snap the base onto it. */
+export function placeObjectOnSurface(object: NativeRoomObject, objects: NativeRoomObject[], width: number, snapToSurface = false): NativeRoomObject {
+  if (!isSurfacePlaceable(object.modelId)) return object;
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const centerOffset = rotate(meta.center, object.heading);
   const center = centerOffset.map((v, i) => v * object.scale + object.position[i]) as Vec3;
@@ -240,7 +240,7 @@ export function placeLampOnSurface(object: NativeRoomObject, objects: NativeRoom
   const surfaces = objects.flatMap(owner => owner.instanceId === object.instanceId ? []
     : (NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces ?? []).map(top => ({ owner, top })))
     .sort((a, b) => (b.owner.position[1] + b.top.max[1] * b.owner.scale) - (a.owner.position[1] + a.top.max[1] * a.owner.scale));
-  // Prefer an exact anchor before trying the board beneath the dragged lamp.
+  // Prefer an exact anchor before trying the surface beneath the dragged object.
   for (const targetBoard of snapToSurface ? [false, true] : [false]) for (const { owner, top } of surfaces) {
     const height = owner.position[1] + top.max[1] * owner.scale + .002;
     const desired = unprojectFloor(point, height + (targetBoard ? 0 : (meta.center[1] - meta.min[1]) * object.scale), width);
@@ -309,7 +309,7 @@ export function buildNativeRoomWorld(options: {
     const scale = size / Math.max(1, width) * ROOM_SPAN / meta.renderScale;
     const screen = options.livePositions?.[instanceId] ?? roomOffsetToPoint(offset, width, height, size);
     const modelHeading = wall && !isWallSpotlightDecorationId(modelId) && meta.max[0] - meta.min[0] < meta.max[2] - meta.min[2] ? Math.PI / 2 : 0;
-    const heading = (flip ? Math.PI / 2 : 0) - modelHeading + rotationIndex * Math.PI / 2 + (normalizeRotationDegrees(rotationDegrees) ?? 0) * Math.PI / 180;
+    const heading = (flip ? Math.PI / 2 : 0) - modelHeading + rotationIndex * Math.PI / 2 + (isWindowDecorationId(modelId) ? 0 : (normalizeRotationDegrees(rotationDegrees) ?? 0) * Math.PI / 180);
     const center = rotate(meta.center, heading);
     const horizontalCorners = [meta.min[0], meta.max[0]].flatMap(x =>
       [meta.min[2], meta.max[2]].map(z => rotate([x, meta.min[1], z], heading)));
@@ -318,7 +318,7 @@ export function buildNativeRoomWorld(options: {
       // Solve on the wall plane, so moving a fixture preserves its screen anchor.
       const difference = screen.x / (Math.max(1, width) / ROOM_SPAN) / diagonal;
       let plane = WALL_MOUNT_PLANE;
-      if (isWindowDecorationId(modelId) || isCurtainDecorationId(modelId) || isWallSpotlightDecorationId(modelId) || meta.supportSurfaces?.length || normalizeRotationDegrees(rotationDegrees)) {
+      if (isWindowDecorationId(modelId) || isCurtainDecorationId(modelId) || isWallSpotlightDecorationId(modelId) || meta.wallMountBounds || meta.supportSurfaces?.length || normalizeRotationDegrees(rotationDegrees)) {
         const normal = flip ? 0 : 2;
         const back = Math.min(...horizontalCorners.map(corner => corner[normal]));
         // Keep the glass and frame in front of the opaque room wall.
@@ -434,7 +434,7 @@ export function buildNativeRoomWorld(options: {
     add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen, item.spotlightAngle, item.spotlightSwivel);
   for (const item of options.toys)
     add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
-  world.objects = world.objects.map(object => placeLampOnSurface(object, world.objects, width));
+  world.objects = world.objects.map(object => placeObjectOnSurface(object, world.objects, width));
   // Land in navigable floor space so the following walk never relocates its start.
   for (const object of world.objects)
     if (object.approach) object.approach = nearestFree(object.approach, world);

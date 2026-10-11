@@ -4,6 +4,8 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { cancelAnimation, useSharedValue, withTiming } from 'react-native-reanimated';
 import { clampRoomCamera, pinchRoomCamera } from '@/utils/room-camera';
 
+const PAN_START_DISTANCE = 4;
+
 /** Gestures live on the unscaled viewport so the artwork and its hit targets move together. */
 export function useRoomCamera(width: number, height: number, enabled: boolean, reduceMotion: boolean, panEnabled = true) {
   const [zoom, setZoom] = useState(1);
@@ -26,7 +28,7 @@ export function useRoomCamera(width: number, height: number, enabled: boolean, r
       const camera = pinchRoomCamera(start.get(), event.scale, event.focalX - width / 2, event.focalY - height / 2, width, height);
       x.set(camera.x); y.set(camera.y); scale.set(camera.scale);
     }).onFinalize(() => { scheduleOnRN(setZoom, scale.get()); });
-    const pan = Gesture.Pan().enabled(enabled && panEnabled).minDistance(8).maxPointers(1)
+    const pan = Gesture.Pan().enabled(enabled && panEnabled).minDistance(PAN_START_DISTANCE).maxPointers(1)
       .manualActivation(true).onTouchesDown((event, manager) => {
         panning.set(false);
         // Release native item buttons immediately at normal zoom, rather than
@@ -35,11 +37,16 @@ export function useRoomCamera(width: number, height: number, enabled: boolean, r
         const touch = event.allTouches[0];
         if (touch) touchStart.set({ x: touch.x, y: touch.y });
       }).onTouchesMove((event, manager) => {
+        // Re-activating an active iOS pan resets its native recognizer to Began.
+        if (panning.get()) return;
         // At 1× the surrounding page owns scrolling. A tap never activates pan.
         if (scale.get() <= 1.001) manager.fail();
         else if (event.numberOfTouches === 1) {
           const touch = event.allTouches[0];
-          if (touch && Math.hypot(touch.x - touchStart.get().x, touch.y - touchStart.get().y) >= 8) manager.activate();
+          if (touch && Math.hypot(touch.x - touchStart.get().x, touch.y - touchStart.get().y) >= PAN_START_DISTANCE) {
+            panning.set(true);
+            manager.activate();
+          }
         }
       }).onTouchesUp((_, manager) => {
         // A zoomed tap never became a pan. Resolve it on release so UIKit can

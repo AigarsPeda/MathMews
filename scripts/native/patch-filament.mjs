@@ -58,3 +58,4 @@ patch('cpp/bullet/RNFRigidBodyWrapper.cpp', 'setContactProcessingThreshold(0.0)'
 console.log('Filament Bullet actor/impulse bindings ready.');
 await import('./patch-runtime-safety.mjs');
 await import('./patch-filament-recovery.mjs');
+await import('./patch-filament-shadows.mjs');

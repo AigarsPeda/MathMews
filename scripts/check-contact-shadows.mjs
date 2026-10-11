@@ -49,6 +49,10 @@ function load(id) {
   return module.exports;
 }
 const w = load('@/utils/native-room-world'), shadows = load('@/utils/native-contact-shadow');
+for (const modelId of ['lampFloorTripod', 'lampTableMushroom', 'lavaLampAni']) {
+  assert.equal(shadows.hasContactShadow({ modelId, wallAxis: undefined, solid: true }), true, 'Floor lamps also have soft grounding shadows');
+  assert.equal(shadows.hasContactShadow({ modelId, wallAxis: 'x', solid: true }), false, 'Wall fixtures do not get floor decals');
+}
 const { buildRugSurfaces } = load('@/utils/native-ground-support');
 const room = w.buildNativeRoomWorld({ width: 390, height: 420, petSize: 80, sizeScale: 1,
   decorations: [

@@ -47,7 +47,7 @@ const collections = {
   bedroom: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.bedroom).filter(id => id.startsWith('bedroom')),
   halloween: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.halloween) };
 const ids = Array.from(new Set(Object.values(collections).flat()));
-assert.equal(ids.length, 68);
+assert.equal(ids.length, 100);
 const { tryPurchaseDecoration, getDecorationStorePrice } = load('@/utils/decoration-store');
 const { appendPlacedDecoration } = load('@/utils/room-placement');
 const { createDefaultGameSave, parseGameSaveFromValue } = load('@/utils/game-storage');
@@ -101,7 +101,7 @@ for (const [section, items] of Object.entries(collections)) {
       assert.equal(model.solid, false, `${id}: the cat can walk across rugs`);
       assert.equal(model.collidable, false, `${id}: rugs never obstruct the tail`);
     }
-    if (['windows', 'doors', 'curtains'].includes(section) || id.startsWith('kitchenWallCabinet')) {
+    if (['windows', 'doors', 'curtains'].includes(section) || /^kitchen(?:WallCabinet|ModernWallCabinet|ModernShelf)/.test(id)) {
       assert.equal(model.solid, false, `${id}: wall fixtures stay off the floor route`);
       assert.equal(canFlipWallDecoration(id), true, `${id}: supports both room walls`);
       assert.equal(savedItem.wallFlipped, true, `${id}: wall orientation survives reload`);
@@ -131,6 +131,29 @@ for (const id of sofaIds) for (const wallFlipped of [false, true]) {
   }
 }
 console.log(`Verified all ${ids.length} added models, store sections, localized names, purchases, save reloads and sofa sit/sleep routes.`);
+
+// New kitchens use a smaller matching size; existing decoration choices survive.
+const compactKitchenIds = collections.kitchen.filter(id => id.startsWith('kitchenModern') ||
+  ['kitchenWallCabinetSage','kitchenWallCabinetOak','kitchenWallCabinetGlass',
+    'kitchenSinkCabinet','kitchenRange','kitchenIsland'].includes(id));
+for (const id of compactKitchenIds) {
+  const placed = appendPlacedDecoration([], id)[0];
+  assert.equal(placed.scale, .9, `${id}: compact purchase default`);
+  assert.equal(load('@/constants/decoration-variants').getDecorationDefaultPlacementScale(id), placed.scale, 'Store previews use the purchased size');
+  for (const scale of [undefined, .7, .9, 1, 1.5, 2.2]) {
+    const save = createDefaultGameSave();
+    save.progress.decorationsUnlocked = [id];
+    save.progress.decorationQuantities = { [id]: 1 };
+    save.pet.placedDecorations = [{ ...placed, scale }];
+    const reopened = parseGameSaveFromValue(JSON.stringify(save)).save;
+    const before = native.buildNativeRoomWorld({ ...base, decorations: save.pet.placedDecorations }).objects[0];
+    const after = native.buildNativeRoomWorld({ ...base, decorations: reopened.pet.placedDecorations }).objects[0];
+    assert.equal(after.scale, before.scale, `${id}: saved size survives the new default`);
+    assert.deepEqual(Array.from(after.min), Array.from(before.min));
+    assert.deepEqual(Array.from(after.max), Array.from(before.max));
+  }
+}
+console.log('Verified compact kitchen purchase/preview defaults and saved sizes for every finish and shelf type.');
 
 // New fridges match the kitchen reference without changing existing saved sizes.
 const fridge = appendPlacedDecoration([], 'kitchenFridge')[0];
@@ -219,3 +242,69 @@ for (const id of bathtubIds) {
   }
 }
 console.log('Verified bathroom default sizes, saved resizing, rotation, and all eight bathtub models.');
+
+// Audit every purchasable decoration, bed and toy using shipped geometry.
+const allStoreDecorations = [...new Set(Object.values(sections.DECORATION_IDS_BY_STORE_TAB).flat())];
+const beds = load('@/constants/cat-beds'), toys = load('@/constants/cat-toys');
+const roomSizes = load('@/constants/room-scale');
+const geometry = load('@/constants/room-geometry');
+const variants = load('@/constants/decoration-variants');
+const placements = load('@/utils/room-placement');
+const { createRoomPlacementResolver } = load('@/utils/room-item-placement');
+const roomSpan = 4.7675;
+let measuredItems = 0;
+for (const width of [320,390,414,768]) {
+  // Include the room's side margins in the same moderateScale calculation.
+  const deviceFactor = (1 + (width + 32) / 390) / 2;
+  const options = {width,height:width*1.1,petSize:roomSizes.ROOM_CAT_SIZE*deviceFactor,
+    sizeScale:roomSizes.ROOM_OBJECT_SCALE*deviceFactor,decorations:[],toys:[]};
+  const measure = (item, label) => {
+    const world = native.buildNativeRoomWorld({...options,...item});
+    const object = world.objects[0];
+    assert.ok(object, `${label}: has a shipped model`);
+    const dimensions = object.max.map((value,axis) => value-object.min[axis]);
+    assert.ok(dimensions.every(value => Number.isFinite(value) && value>0),`${label}: finite physical dimensions`);
+    assert.ok(dimensions[0]<roomSpan && dimensions[2]<roomSpan,`${label}: fits within the floor/wall width at ${width}`);
+    const wallHeight = geometry.WALL_PLACEMENT_TOP-geometry.WALL_PLACEMENT_BOTTOM;
+    assert.ok(dimensions[1] <= (object.wallAxis!==undefined ? wallHeight : geometry.WALL_PLACEMENT_TOP),`${label}: fits the room height at ${width}`);
+    if (object.solid) assert.ok(dimensions[0]*dimensions[2] < roomSpan*roomSpan*.35,`${label}: leaves floor space for the cat`);
+    const resolver = createRoomPlacementResolver(world), fitted = resolver.nearestFree(object);
+    assert.ok(fitted && resolver.canPlace(fitted),`${label}: default size has a valid placement at ${width}`);
+    measuredItems++;
+    return dimensions;
+  };
+  for (const id of allStoreDecorations) {
+    const purchased = appendPlacedDecoration([],id)[0];
+    for (const wallFlipped of [false,true]) measure({decorations:[{...purchased,wallFlipped}]},id);
+    const saved = placements.normalizePlacedDecorations(JSON.parse(JSON.stringify([purchased])))[0];
+    assert.equal(variants.getPlacedDecorationScale(saved),variants.getPlacedDecorationScale(purchased),`${id}: purchased dimensions survive reload`);
+    for (const scale of [undefined,.7,1,1.5,2.2]) {
+      const old = {...purchased,scale}, restored = placements.normalizePlacedDecorations(JSON.parse(JSON.stringify([old])))[0];
+      assert.equal(variants.getPlacedDecorationScale(restored),variants.getPlacedDecorationScale(old),`${id}: existing dimensions stay intact`);
+    }
+  }
+  for (const id of beds.CAT_BED_IDS) measure({bedId:id},`bed/${id}`);
+  for (const id of toys.CAT_TOY_IDS) measure({toys:placements.appendPlacedToy([],id)},`toy/${id}`);
+}
+// Compare related items at the baseline room size, rather than sprite framing.
+const dimensions = id => {
+  const object = native.buildNativeRoomWorld({...base,petSize:roomSizes.ROOM_CAT_SIZE,sizeScale:roomSizes.ROOM_OBJECT_SCALE,
+    decorations:appendPlacedDecoration([],id)}).objects[0];
+  return object.max.map((value,axis) => value-object.min[axis]);
+};
+for (const id of ['doorOakPanel','doorMintGlass','doorBarnSliding','japaneseDoorAni','japaneseSlidingDoorAni']) {
+  assert.ok(dimensions(id)[1]>=1.8 && dimensions(id)[1]<=2.3,`${id}: doors have standing height`);
+}
+for (const id of ['lampFloorTripod','lampFloorPaper','bedroomFloorLamp']) {
+  assert.ok(dimensions(id)[1]>dimensions('kitchenModernFridgeWhite')[1],`${id}: floor lamps rise above base furniture`);
+}
+for (const id of ['lampTableMushroom','lampTableCeramic','lampTableBanker','lavaLampAni']) {
+  assert.ok(dimensions(id)[0]<dimensions('tablePurple')[0] && dimensions(id)[2]<dimensions('tablePurple')[2],`${id}: table lamps fit a small table`);
+}
+for (const id of sections.DECORATION_IDS_BY_STORE_TAB.consoles) {
+  assert.ok(dimensions(id)[0]<dimensions('tablePurple')[0] && dimensions(id)[2]<dimensions('deskWoodA')[2],`${id}: consoles are smaller than furniture`);
+}
+assert.ok(Math.abs(dimensions('tvBigOff')[0]-dimensions('tvBigAniA')[0])<.1,'Off and animated large televisions have comparable widths');
+assert.ok(dimensions('bathroomSmallShelf')[0]<dimensions('bathroomLongShelf')[0],'Small shelves are physically shorter than long shelves');
+assert.ok(dimensions('plantTallGreen')[1]>dimensions('plantSmall')[1]*2,'Tall plants stand above small potted plants');
+console.log(`Verified all ${allStoreDecorations.length+beds.CAT_BED_IDS.length+toys.CAT_TOY_IDS.length} placeable store items, ${measuredItems} phone/tablet and wall-orientation measurements, fitting, category proportions and preserved saved dimensions.`);

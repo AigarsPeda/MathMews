@@ -36,6 +36,7 @@ export const LAMP_LIGHT_ORIGINS: Record<string, [number, number, number]> = {
   japaneseLamp: [0, .20, 0],
   lavaLampOff: [0, .70, 0],
   lavaLampAni: [0, .70, 0],
+  halloweenGhostLantern: [0, .43, 0],
 };
 
 export function isLampDecorationId(id: string): boolean {
