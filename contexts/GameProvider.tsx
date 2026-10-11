@@ -182,7 +182,7 @@ type GameContextValue = {
   togglePlacedDecorationPower: (instanceId: string) => boolean;
   aimPlacedSpotlight: (instanceId: string, angle: number, swivel?: number) => boolean;
   togglePlacedCurtain: (instanceId: string) => boolean;
-  togglePlacedFridge: (instanceId: string) => boolean;
+  togglePlacedFridge: (instanceId: string, opening?: "full" | "ajar") => boolean;
   flipPlacedFridgeHinge: (instanceId: string) => boolean;
   scalePlacedDecoration: (
     instanceId: string,
@@ -981,12 +981,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const togglePlacedFridge = useCallback((instanceId: string) => {
+  const togglePlacedFridge = useCallback((instanceId: string, opening?: "full" | "ajar") => {
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
     if (!placed || !isFridgeDecorationId(placed.decorationId)) return false;
     setSave({ ...current, pet: { ...current.pet,
-      placedDecorations: togglePlacedFridgeByInstance(current.pet.placedDecorations, instanceId),
+      placedDecorations: togglePlacedFridgeByInstance(current.pet.placedDecorations, instanceId, opening),
     } });
     return true;
   }, [setSave]);

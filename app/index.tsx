@@ -10,6 +10,8 @@ import { IconText as Text } from "@/components/ui/IconText";
 import type { CatBedId } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatPlayActivity } from "@/constants/cat-play";
+import { getRoomPlayHappinessBoost } from "@/constants/cat-play";
+import type { RoomActivityKind } from "@/utils/room-activities";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
   GameColors,
@@ -214,6 +216,14 @@ export default function HomeScreen() {
     if (feedPet()) showSpeech(t("home.enjoyedSnack", { name: pet.name }));
   }, [feedPet, pet.name, showSpeech, t]);
 
+  const handleRoomActivityCompleted = useCallback((kind: RoomActivityKind, modelId?: string) => {
+    const boost = getRoomPlayHappinessBoost(kind, modelId);
+    if (!boost) return;
+    setPet(current => withPetCareUpdate(current, stats => ({
+      ...stats, happiness: boostStat(stats.happiness, boost),
+    })));
+  }, [setPet]);
+
   const handlePlay = useCallback(
     (activity: CatPlayActivity) => {
       const wasAsleep = pet.isAsleep === true;
@@ -308,8 +318,8 @@ export default function HomeScreen() {
     triggerHaptic();
   }, [recordInteraction, flipPlacedFridgeHinge]);
 
-  const handleTogglePlacedFridge = useCallback((instanceId: string) => {
-    if (!togglePlacedFridge(instanceId)) return;
+  const handleTogglePlacedFridge = useCallback((instanceId: string, opening?: "full" | "ajar") => {
+    if (!togglePlacedFridge(instanceId, opening)) return;
     recordInteraction();
     triggerHaptic();
   }, [recordInteraction, togglePlacedFridge]);
@@ -518,6 +528,9 @@ export default function HomeScreen() {
       onRoomInteraction={recordInteraction}
       onRoomActivityChange={visible ? handleRoomActivityChange : undefined}
       onFeed={handleFeed}
+      onRoomActivityCompleted={(kind, id) => handleRoomActivityCompleted(kind,
+        roomPet.placedToys?.find(item => item.instanceId === id)?.toyId
+        ?? roomPet.placedDecorations?.find(item => item.instanceId === id)?.decorationId)}
       onPlay={handlePlay}
       speechMessage={speechMessage}
       playback={playback}

@@ -41,7 +41,7 @@ export function NativeFridge({ asset, object, active, reduceMotion, editingObjec
   useEntityInScene(scene, upperLight);
   useEntityInScene(scene, lowerLight);
   const lights = useMemo(() => [upperLight, lowerLight], [upperLight, lowerLight]);
-  const target = object.fridgeOpen === true ? 1 : 0;
+  const target = object.fridgeOpen === "ajar" ? 20 / 85 : object.fridgeOpen === true ? 1 : 0;
   const state = useSharedValue({ open: target, applied: -1, side: "" });
   const appliedPose = useSharedValue<number[]>([]);
   useEffect(() => { state.value = { ...state.value, applied: -1 }; appliedPose.value = []; }, [appliedPose, hinge, lights, materials, state]);

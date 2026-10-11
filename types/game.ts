@@ -63,8 +63,8 @@ export type PlacedDecoration = {
   spotlightSwivel?: number;
   /** Curtains start open; false closes this placed pair. */
   curtainOpen?: boolean;
-  /** Fridge doors start closed; true opens this placed appliance. */
-  fridgeOpen?: boolean;
+  /** Closed by default; true opens fully, "ajar" leaves the door at 20 degrees. */
+  fridgeOpen?: boolean | "ajar";
   /** Override the appliance's authored door hinge side. */
   fridgeHingeSide?: "left" | "right";
   /** Display scale multiplier (default 1). */

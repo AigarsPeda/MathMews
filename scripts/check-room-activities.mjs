@@ -116,12 +116,13 @@ const { useRoomActivity } = load('@/hooks/use-room-activity');
 const petX = shared(0), petY = shared(0);
 const arrivals = [], roomArrivals = [];
 let meals = 0;
+const activityCompletions = [];
 let interaction = 1, enabled = true, roomVisible = true, hookRoom = mouseRoom;
 function render() {
   index = 0; effects = [];
   // The VM supplies a dependency-aware hook dispatcher instead of mounting React.
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const result = useRoomActivity(hookRoom, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), () => meals++, id => roomArrivals.push(id), roomVisible);
+  const result = useRoomActivity(hookRoom, enabled, interaction, petX, petY, instanceId => arrivals.push(instanceId), () => meals++, id => roomArrivals.push(id), roomVisible, false, undefined, (kind,id) => activityCompletions.push({kind,id}));
   effects.forEach(fn => fn()); return result;
 }
 assert.equal(render().activity, null);
@@ -669,7 +670,7 @@ advance(60_000); render();
 assert.deepEqual(roomArrivals, ['bedroom'], 'A departure completes exactly once');
 console.log('Verified door-free room travel, getting up and jumping down before departure, and location updates only after walking finishes.');
 
-// Browsing pauses the retained cat scene rather than resetting its held pose.
+// A commanded nap remains held while its room is hidden.
 enabled = false; render(); advance(0);
 hookRoom = { ...furnished, nativeWorld: nativeRoom.buildNativeRoomWorld(furnished) };
 reportCat(hookRoom.nativeWorld.home);
@@ -685,7 +686,7 @@ assert.equal(timers.size, 0, 'The hidden cat scene runs no activity timers');
 roomVisible = true; render();
 assert.equal(render().activity.plan.kind, 'sofaSleep', 'Returning to the room preserves the cat’s commanded nap');
 assert.equal(render().activity.stepIndex, napIndex);
-console.log('Verified room browsing preserves the cat scene, pauses its clock and timers, and resumes the same sofa pose.');
+console.log('Verified room browsing preserves a commanded nap without running idle or animation timers.');
 
 // Reported left-wall bowl: RN timers can run ahead of the visible cat.
 for (const reduced of [false, true]) {
@@ -905,7 +906,7 @@ assert.equal(render().activity.plan.kind, 'sofaSleep');
 for (let i = 0; i < 3; i++) finishClockStep();
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'curlSleep');
 roomVisible = false; render(); advance(60_000);
-assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'curlSleep', 'A hidden room pauses a night nap');
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'curlSleep', 'A night nap continues for its normal duration while hidden');
 roomVisible = true; render();
 hookRoom = { ...hookRoom, period: 'morning' }; render(); render(); advance(0);
 assert.equal(render().activity.plan.kind, 'returnHome');
@@ -932,7 +933,7 @@ assert.equal(render().activity.plan.kind, 'returnHome');
 assert.equal(render().activity.plan.steps[0].animation, 'jumpOff', 'The landed cat gets back down before exploring');
 resetClockRoom('day'); visibility = { active: true, reduceMotion: true }; render(); advance(60_000);
 assert.equal(render().activity, null, 'Clock-driven exploration respects Reduce Motion');
-console.log('Verified native night nap arrival, hidden-room pause, safe dawn departure, morning activity, preserved commands, airborne dawn transitions and Reduce Motion.');
+console.log('Verified native night nap arrival, safe dawn departure, morning activity, preserved commands, airborne dawn transitions and Reduce Motion.');
 
 // Meals progress while browsing another room, without native drawing callbacks.
 for (const reduced of [false,true]) for (const hideAt of ['command','walking','eating']) {
@@ -980,3 +981,52 @@ for(let i=0;i<10&&render().activity;i++) {
 assert.equal(meals,beforeReturnMeal+1);
 advance(20000);render();assert.equal(meals,beforeReturnMeal+1);
 console.log('Verified returning mid-meal restores rendered step completion and awards feeding once.');
+
+// Play continues while hidden, including a command queued before walking begins.
+for(const reduced of [false,true])for(const hideAt of ['command','walking','playing']) {
+  roomVisible=true;enabled=false;render();advance(0);
+  visibility={active:true,reduceMotion:reduced};
+  const playOptions={...room,hungry:false,toys:[ball],nativeStepCompletion:true};
+  hookRoom={...playOptions,nativeWorld:nativeRoom.buildNativeRoomWorld(playOptions)};
+  enabled=true;reportCat(hookRoom.nativeWorld.home);render();
+  const before=activityCompletions.filter(c=>c.kind==='toyPlay').length;
+  interaction++;render().startActivity('toyPlay',ball.instanceId,interaction);render();
+  if(hideAt!=='command') {
+    advance(0);render();
+    if(hideAt==='playing') {
+      const state=render().activity,step=state.plan.steps[state.stepIndex];
+      render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));render();
+      assert.equal(render().activity.plan.steps[render().activity.stepIndex].mood,'playBall');
+    }
+  }
+  roomVisible=false;render();advance(0);render();
+  interaction++;render(); // A tap in the other room cannot stop play.
+  for(let i=0;i<60;i++){advance(1000);hookRoom={...hookRoom};render();}
+  const completed=activityCompletions.filter(c=>c.kind==='toyPlay');
+  assert.equal(completed.length,before+1,`Hidden ${hideAt} play completes once`);
+  assert.equal(completed.at(-1).id,ball.instanceId);
+  assert.equal(render().activity,null);assert.equal(timers.size,0);
+  roomVisible=true;render();advance(0);render();
+  assert.equal(activityCompletions.filter(c=>c.kind==='toyPlay').length,before+1,'Returning cannot repeat the reward');
+}
+
+// Starting sleep then immediately browsing still reaches the seat and stays asleep.
+for(const reduced of [false,true]) {
+  roomVisible=true;enabled=false;render();advance(0);
+  visibility={active:true,reduceMotion:reduced};
+  hookRoom={...furnished,nativeWorld:nativeRoom.buildNativeRoomWorld(furnished),nativeStepCompletion:true};
+  enabled=true;reportCat(hookRoom.nativeWorld.home);render();
+  interaction++;render().startActivity('sofaSleep',undefined,interaction);render();
+  roomVisible=false;render();advance(0);render();
+  for(let i=0;i<120;i++){advance(1000);hookRoom={...hookRoom};render();}
+  const state=render().activity;
+  assert.equal(state.plan.kind,'sofaSleep');
+  assert.equal(state.plan.steps[state.stepIndex].mood,'sleeping');
+  assert.equal(state.plan.steps[state.stepIndex].hold,true);
+  interaction++;render();advance(60000);render();
+  assert.equal(render().activity.plan.kind,'sofaSleep','Actions in other rooms do not wake the cat');
+  assert.equal(timers.size,0,'Held sleep requires no repeated offscreen animation work');
+  roomVisible=true;render();
+  assert.equal(render().activity.plan.steps[render().activity.stepIndex].mood,'sleeping');
+}
+console.log('Verified pending commands, walking and playing finish offscreen once, sleep reaches and holds its seat, and interactions in other rooms do not interrupt the cat.');

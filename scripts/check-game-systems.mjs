@@ -129,6 +129,12 @@ for (const tier of ['easy', 'medium', 'hard']) {
 }
 const { createDefaultGameSave, parseGameSaveFromValue, saveGameSave, loadGameSave, clearGameSave } = load('@/utils/game-storage');
 const { applyPuzzleAnswer, applyFeed, getSolvedCounts, currentPuzzleStreak } = load('@/utils/game-operations');
+const { getRoomPlayHappinessBoost } = load('@/constants/cat-play');
+assert.equal(getRoomPlayHappinessBoost('toyPlay','blueBall'),12);
+assert.equal(getRoomPlayHappinessBoost('toyPlay','yarnRed'),22);
+assert.equal(getRoomPlayHappinessBoost('mouseChase','mouse'),12);
+assert.equal(getRoomPlayHappinessBoost('plantPlay','plantB'),12);
+assert.equal(getRoomPlayHappinessBoost('sofaSleep','sofaA'),0,'Sleep does not receive a play reward');
 const { recordTopicAttempt, normalizeTopicStats, buildTopicStatsRows, findToughestTopicRows } = load('@/utils/topic-stats');
 let improving = { addition: { correct: 0, wrong: 100 } };
 for (let i = 0; i < 12; i++) improving = recordTopicAttempt(improving, 'addition', true);

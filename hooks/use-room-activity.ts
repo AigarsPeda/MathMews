@@ -34,11 +34,11 @@ export function useRoomActivity(
   roomVisible = true,
   preservePositionWhenDisabled = false,
   onStopped?: () => void,
+  onCompleted?: (kind: RoomActivityKind, instanceId?: string) => void,
 ) {
   const { active: screenActive, reduceMotion } = useAnimationActivity();
   const wasRoomVisible = useRef(roomVisible);
-  const roomHiddenAt = useRef<number | null>(null);
-  const hiddenMeal = useRef(false);
+  const hiddenActivity = useRef(false);
   const scale = useSharedValue(1);
   const facing = useSharedValue(1);
   const objectX = useSharedValue(0);
@@ -56,7 +56,7 @@ export function useRoomActivity(
   const nativeAdvance = useRef<((key: string, position: Vec3) => void) | null>(null);
   const completeNativeStep = useCallback((key: string, position: Vec3) => nativeAdvance.current?.(key, position), []);
   const running = useRef<ActivityState | null>(null);
-  const queuedMeal = useRef<RoomActivityPlan | null>(null);
+  const queuedPlan = useRef<RoomActivityPlan | null>(null);
   const latestOptions = useRef(options);
   const liveWorld = useRef(options.nativeWorld);
   const [navigationVersion, setNavigationVersion] = useState(0);
@@ -82,23 +82,25 @@ export function useRoomActivity(
   const doorArrival = useRef(onDoorArrival);
   const stopComplete = useRef(onStopped);
   const feedComplete = useRef(onFeed);
+  const activityComplete = useRef(onCompleted);
   const roomArrival = useRef(onRoomArrival);
   useEffect(() => {
     doorArrival.current = onDoorArrival;
     stopComplete.current = onStopped;
     feedComplete.current = onFeed;
+    activityComplete.current = onCompleted;
     roomArrival.current = onRoomArrival;
-  }, [onDoorArrival, onStopped, onFeed, onRoomArrival]);
+  }, [onDoorArrival, onStopped, onFeed, onRoomArrival, onCompleted]);
   const previousInteraction = useRef(lastInteractionAt);
   const handledRequest = useRef(0);
   const handledEntry = useRef<number | null>(null);
   const [request, setRequest] = useState<ActivityRequest | null>(null);
   const [state, setState] = useState<ActivityState | null>(null);
-  const continueMeal = enabled && (state?.plan.kind === "bowlEat"
-    || queuedMeal.current !== null || request?.kind === "bowlEat" && request.id !== handledRequest.current);
-  const backgroundMeal = !roomVisible && continueMeal;
-  const active = screenActive && (roomVisible || continueMeal);
-  // Covered screens keep their pose. Meals can finish while browsing rooms.
+  const continueActivity = enabled && (state !== null || queuedPlan.current !== null
+    || request !== null && request.id !== handledRequest.current);
+  const backgroundActivity = !roomVisible && continueActivity;
+  const active = screenActive && (roomVisible || continueActivity);
+  // Game activities continue while browsing. Only rendering is paused.
   const activity = enabled ? state : null;
   const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string, interactionAt?: number) => {
     const current = running.current;
@@ -124,6 +126,8 @@ export function useRoomActivity(
   useEffect(() => {
     if (previousInteraction.current === lastInteractionAt) return;
     previousInteraction.current = lastInteractionAt;
+    // Taps in another room do not interrupt the cat's activity here.
+    if (!roomVisible) return;
     // Context state can publish the command's interaction after its request has
     // already started. Match the timestamp so that delayed render cannot cancel it.
     if (lastInteractionAt === request?.interactionAt || lastInteractionAt === pendingCommand.current?.interactionAt) return;
@@ -131,21 +135,15 @@ export function useRoomActivity(
     // including one queued during a jump, instead of replacing it with home.
     if ((request && request.id !== handledRequest.current) || pendingCommand.current) return;
     requestActivity("returnHome");
-  }, [lastInteractionAt, request, requestActivity]);
+  }, [lastInteractionAt, request, requestActivity, roomVisible]);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     let stopped = false;
     const resumingRoom = !wasRoomVisible.current && roomVisible;
-    const wasHiddenMeal = hiddenMeal.current;
-    hiddenMeal.current = backgroundMeal;
+    const wasHiddenActivity = hiddenActivity.current;
+    hiddenActivity.current = backgroundActivity;
     wasRoomVisible.current = roomVisible;
-    if (!roomVisible && !backgroundMeal && roomHiddenAt.current === null) roomHiddenAt.current = Date.now();
-    if (backgroundMeal) roomHiddenAt.current = null;
-    if (resumingRoom && roomHiddenAt.current !== null) {
-      if (running.current) running.current.startedAt += Date.now() - roomHiddenAt.current;
-      roomHiddenAt.current = null;
-    }
     const continuing = wasActive.current && active;
     wasActive.current = active;
     const home = roomOffsetToPoint(options.homeOffset, options.width, options.height, options.petSize);
@@ -167,6 +165,7 @@ export function useRoomActivity(
           return;
         }
         if (plan.kind === "bowlEat" && !completed?.plan.steps.some(step => step.native?.blocked)) feedComplete.current?.();
+        if (completed && plan.kind !== "returnHome" && !completed.plan.steps.some(step => step.native?.blocked)) activityComplete.current?.(plan.kind, plan.targetInstanceId);
         if (roomVisible) timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
         return;
       }
@@ -196,7 +195,7 @@ export function useRoomActivity(
       }
       const timing = { duration, easing: isCatWalk(step.animation) ? Easing.linear : Easing.inOut(Easing.quad) };
       if (!roomVisible) {
-        // Hidden meals use step deadlines, with no drawing-thread movement.
+        // Hidden activities use step deadlines, with no drawing-thread movement.
       } else if (liveWorld.current && room.nativeStepCompletion !== false) {
         // Filament owns the visible motion; these values are only native UI anchors.
       } else if (!reduceMotion && isCatJump(step.animation)) {
@@ -263,7 +262,7 @@ export function useRoomActivity(
         timer = setTimeout(advanceStep, reduceMotion ? 600 : Math.max(0, step.durationMs - elapsed * 1000));
     };
     const startPlan = (plan: RoomActivityPlan) => {
-      queuedMeal.current = null;
+      queuedPlan.current = null;
       if (plan.objectStart) {
         objectX.set(plan.objectStart.x);
         objectY.set(plan.objectStart.y);
@@ -278,15 +277,15 @@ export function useRoomActivity(
       else timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
     };
     const current = running.current;
-    if (!active || !roomVisible && current?.plan.kind !== "bowlEat"
-      && !queuedMeal.current && !(request?.kind === "bowlEat" && request.id !== handledRequest.current)) {
+    if (!active || !roomVisible && !current && !queuedPlan.current
+      && !(request && request.id !== handledRequest.current)) {
       // Cleanup stops travel and timers. Preserve the current pose so focus
       // can resume with a visible journey home, including getting off a sofa.
       return;
     }
     if (!enabled) {
       running.current = null;
-      queuedMeal.current = null;
+      queuedPlan.current = null;
       pendingCommand.current = null;
       if (!preservePositionWhenDisabled) { petX.set(home.x); petY.set(home.y); }
       scale.set(1); facing.set(1);
@@ -301,7 +300,7 @@ export function useRoomActivity(
       }
       const newRequest = request && request.id !== handledRequest.current ? request : null;
       if (newRequest) handledRequest.current = newRequest.id;
-      if (newRequest) queuedMeal.current = null;
+      if (newRequest) queuedPlan.current = null;
       const position = options.nativeStepCompletion && nativePosition.current && liveWorld.current
         ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() };
       const returning = current ? buildRoomReturn(options, current.plan, current.stepIndex, position) : null;
@@ -320,13 +319,13 @@ export function useRoomActivity(
           const meal = buildRoomActivity(options, turn.current++, 'bowlEat', target.instanceId);
           if (meal) timer = setTimeout(() => startPlan(meal), 0);
         } else {
-          const elapsed = wasHiddenMeal ? Math.max(0, (Date.now() - current.startedAt) / 1000)
+          const elapsed = wasHiddenActivity ? Math.max(0, (Date.now() - current.startedAt) / 1000)
             : isCatWalk(step.animation) ? 0 : options.nativeStepCompletion ? nativeElapsed.current : Math.max(0, (Date.now() - current.startedAt) / 1000);
           runStep(current.plan, current.stepIndex, elapsed, Boolean(isCatWalk(step.animation)));
         }
-      } else if (!newRequest && queuedMeal.current) {
-        const meal = queuedMeal.current;
-        timer = setTimeout(() => startPlan(meal), 0);
+      } else if (!newRequest && queuedPlan.current) {
+        const queued = queuedPlan.current;
+        timer = setTimeout(() => startPlan(queued), 0);
       } else if (newRequest?.kind === "stop") {
         const exit = current ? buildRoomExit(options, current.plan, current.stepIndex, position) : { kind: "returnHome" as const, steps: [] };
         timer = setTimeout(() => startPlan({ ...exit, stopForEditing: true }), 0);
@@ -334,7 +333,7 @@ export function useRoomActivity(
         const plan = next.kind === "sofaSit" || next.kind === "sofaSleep"
           ? routeToSofa(options, next, position, current)
           : current ? { ...next, steps: [...buildRoomExit(options, current.plan, current.stepIndex, position).steps, ...next.steps] } : next;
-        if (plan.kind === "bowlEat") queuedMeal.current = plan;
+        queuedPlan.current = plan;
         timer = setTimeout(() => startPlan(plan), 0);
       } else if (returning) {
         timer = setTimeout(() => runStep(returning, 0), 0);
@@ -349,6 +348,6 @@ export function useRoomActivity(
       clearTimeout(timer);
       for (const value of [petX, petY, scale, objectX, objectY, objectRotation]) cancelAnimation(value);
     };
-  }, [active, backgroundMeal, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
+  }, [active, backgroundActivity, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
   return { activity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
 }

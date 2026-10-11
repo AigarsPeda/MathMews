@@ -108,7 +108,7 @@ export type NativeRoomObject = {
   movable: boolean;
   poweredOn?: boolean;
   curtainOpen?: boolean;
-  fridgeOpen?: boolean;
+  fridgeOpen?: boolean | "ajar";
   fridgeHingeSide?: "left" | "right";
   spotlightAngle?: number;
   spotlightSwivel?: number;
@@ -304,7 +304,7 @@ export function buildNativeRoomWorld(options: {
     // Use the nearest window's frame, rather than its deep sill or a remote window.
     return nearby.length ? nearby[0].depth + .015 : .025;
   };
-  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean, spotlightAngle?: number, spotlightSwivel?: number, fridgeOpen?: boolean, fridgeHingeSide?: "left" | "right") => {
+  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean, spotlightAngle?: number, spotlightSwivel?: number, fridgeOpen?: boolean | "ajar", fridgeHingeSide?: "left" | "right") => {
     const meta = NATIVE_MODEL_CATALOG[modelId];
     if (!meta)
       return;

@@ -38,6 +38,14 @@ for(const id of ids) {
   assert.equal(placement.togglePlacedFridgeByInstance(restored,'one')[0].fridgeOpen,undefined);
   const world=buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:restored});
   assert.equal(world.objects[0].fridgeOpen,true);assert.equal(world.objects[0].fridgeHingeSide,flipped[0].fridgeHingeSide);
+  const cracked=placement.togglePlacedFridgeByInstance(restored,'one','ajar');
+  assert.equal(cracked[0].fridgeOpen,'ajar');assert.equal(cracked[1],restored[1]);
+  const savedCrack=placement.normalizePlacedDecorations(JSON.parse(JSON.stringify(cracked)));
+  assert.equal(savedCrack[0].fridgeOpen,'ajar');assert.equal(savedCrack[0].fridgeHingeSide,flipped[0].fridgeHingeSide);
+  assert.equal(buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:savedCrack}).objects[0].fridgeOpen,'ajar');
+  assert.equal(placement.togglePlacedFridgeByInstance(savedCrack,'one','full')[0].fridgeOpen,true);
+  assert.equal(placement.togglePlacedFridgeByInstance(savedCrack,'one')[0].fridgeOpen,undefined);
+  assert.equal(placement.normalizePlacedDecorations([{...items[2],fridgeOpen:'ajar'}])[0].fridgeOpen,undefined);
   const bytes=fs.readFileSync(`assets/3d/native/${id}.glb`),gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)));
   const hinge=gltf.nodes.find(n=>n.name==='Fridge door hinge');
   assert.ok(hinge?.children.length>=3,id+' has a real hinged door');
@@ -68,11 +76,16 @@ for(const fps of [30,60,120]) {
   let open=0;
   for(let i=0;i<fps;i++) {const next=motion.advanceFridge(open,1,1/fps,false);assert.ok(next>=open&&next<=1);open=next;}
   assert.equal(open,1);
+  for(let i=0;i<fps;i++) {const next=motion.advanceFridge(open,20/85,1/fps,false);assert.ok(next<=open&&next>=20/85);open=next;}
+  assert.equal(open,20/85);
   for(let i=0;i<fps;i++)open=motion.advanceFridge(open,0,1/fps,false);
   assert.equal(open,0);
 }
 assert.equal(motion.advanceFridge(.5,0,0,false),.5);
 assert.equal(motion.advanceFridge(0,1,1/60,true),1);
+assert.equal(motion.advanceFridge(1,20/85,1/60,true),20/85);
+assert.ok(motion.fridgeLightIntensity(20/85,.4)>0);
+assert.ok(motion.fridgeLightIntensity(20/85,.4)<motion.fridgeLightIntensity(1,.4));
 console.log('Verified all five fridge saves, independent state, hinge choice, shipped food/shelves/handles, floor-reaching cool light and smooth motion at 30/60/120 FPS.');
 
 // Execute the compiled render worklet with persistent React/shared-value hooks.
@@ -149,10 +162,24 @@ for(const modelId of ids)for(const fridgeHingeSide of ['left','right']) {
   // Simulate remounting with the same, already-open asset.
   hooks.length=0;render();frame({timeSinceLastFrame:1/60});
   assert.equal(writes.filter(w=>w.entity===door.id).at(-1).rotation,openedDoor.rotation);
+  const fullIntensity=intensities.at(-1).value;
+  object={...object,fridgeOpen:'ajar'};render();
+  for(let i=0;i<120;i++)frame({timeSinceLastFrame:1/60});
+  const crackedDoor=writes.filter(w=>w.entity===door.id).at(-1);
+  assert.ok(Math.abs(crackedDoor.rotation-(fridgeHingeSide==='right'?1:-1)*20*Math.PI/180)<1e-12,'The crack is exactly 20 degrees on either hinge');
+  assert.ok(intensities.at(-1).value>0&&intensities.at(-1).value<fullIntensity,'The cracked door spills less cool light');
+  const crackWrites=writes.length,crackLights=intensities.length;
+  for(let i=0;i<120;i++)frame({timeSinceLastFrame:1/60});
+  assert.equal(writes.length,crackWrites);assert.equal(intensities.length,crackLights);
+  hooks.length=0;render();frame({timeSinceLastFrame:1/60});
+  assert.equal(writes.filter(w=>w.entity===door.id).at(-1).rotation,crackedDoor.rotation,'The crack survives a remount without accumulating rotation');
+  object={...object,fridgeOpen:true};render();
+  for(let i=0;i<120;i++)frame({timeSinceLastFrame:1/60});
+  assert.equal(writes.filter(w=>w.entity===door.id).at(-1).rotation,openedDoor.rotation,'The cracked door can open fully');
   object={...object,fridgeOpen:false};render();
   for(let i=0;i<120;i++)frame({timeSinceLastFrame:1/60});
   const closedDoor=writes.filter(w=>w.entity===door.id).at(-1);
   assert.equal(closedDoor.rotation,0);
   assert.deepEqual(closedDoor.translation,modelId==='kitchenFridge'?[.51,0,.46]:[-.585,0,.55]);
 }
-console.log('Verified compiled native fridge callbacks, flush closing after remount, bounded opening on both hinges, retained cool floor lights, pose tracking, paused rooms and zero idle writes.');
+console.log('Verified compiled native fridge callbacks, exact 20-degree cracks and full opening on both hinges, flush closing after remount, retained cool floor lights, pose tracking, paused rooms and zero idle writes.');

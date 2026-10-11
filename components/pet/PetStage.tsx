@@ -151,6 +151,7 @@ type PetStageProps = {
   onRoomInteraction?: () => number | void;
   onRoomActivityChange?: (active: boolean, returnHome: () => void) => void;
   onFeed?: () => void;
+  onRoomActivityCompleted?: (kind: RoomActivityKind, instanceId?: string) => void;
   onPlay?: (activity: CatPlayActivity) => void;
   speechMessage?: string | null;
   playback: PetPlaybackState;
@@ -170,7 +171,7 @@ type PetStageProps = {
   onFlipPlacedDecorationWall?: (instanceId: string) => void;
   onAimPlacedSpotlight?: (instanceId: string, angle: number, swivel?: number) => void;
   onTogglePlacedCurtain?: (instanceId: string) => void;
-  onTogglePlacedFridge?: (instanceId: string) => void;
+  onTogglePlacedFridge?: (instanceId: string, opening?: "full" | "ajar") => void;
   onFlipPlacedFridgeHinge?: (instanceId: string) => void;
   onTogglePlacedDecorationPower?: (instanceId: string) => void;
   onScalePlacedDecoration?: (
@@ -223,6 +224,7 @@ export function PetStage({
   onRoomInteraction,
   onRoomActivityChange,
   onFeed,
+  onRoomActivityCompleted,
   onPlay,
   speechMessage,
   playback,
@@ -510,7 +512,7 @@ export function PetStage({
     lastInteractionAt, petSceneX, petSceneY, instanceId => {
       const door = roomPlacedDecorations.find(item => item.instanceId === instanceId);
       if (door?.doorDestination) onVisitHomeRoom?.(door.doorDestination);
-    }, onFeed, onSendCatToRoom, roomVisible, decorating, handleReadyToDecorate);
+    }, onFeed, onSendCatToRoom, roomVisible, decorating, handleReadyToDecorate, onRoomActivityCompleted);
   const sofaApproach = roomActivity?.plan.steps[roomActivity.stepIndex]?.sofaApproach;
   const sofaGroundY = sofaApproach ? roomPlacedDecorations
     .filter(item => /^sofa[AB]$/.test(getPlacedDecorationSpriteId(item)))
@@ -683,6 +685,11 @@ export function PetStage({
           label: t(placed.fridgeOpen ? "home.closeFridge" : "home.openFridge"),
           icon: placed.fridgeOpen ? "arrow-right" : "arrow-left",
           onPress: () => onTogglePlacedFridge(item.instanceId),
+        });
+        if (placed) actions.push({
+          label: t(placed.fridgeOpen === "ajar" ? "home.openFridge" : "home.openFridgeAjar"),
+          icon: "arrow-left",
+          onPress: () => onTogglePlacedFridge(item.instanceId, placed.fridgeOpen === "ajar" ? "full" : "ajar"),
         });
         if (placed && decorating && onFlipPlacedFridgeHinge) {
           const side = placed.fridgeHingeSide ?? (placed.decorationId === 'kitchenFridge' ? 'right' : 'left');

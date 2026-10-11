@@ -138,7 +138,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         spotlightAngle: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightAngle(record.spotlightAngle) : undefined,
         spotlightSwivel: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightSwivel(record.spotlightSwivel) : undefined,
         fridgeHingeSide: isFridgeDecorationId(placement.decorationId) && (record.fridgeHingeSide === "left" || record.fridgeHingeSide === "right") ? record.fridgeHingeSide : undefined,
-        fridgeOpen: isFridgeDecorationId(placement.decorationId) && record.fridgeOpen === true ? true : undefined,
+        fridgeOpen: isFridgeDecorationId(placement.decorationId) && (record.fridgeOpen === true || record.fridgeOpen === "ajar") ? record.fridgeOpen : undefined,
         curtainOpen: isCurtainDecorationId(placement.decorationId) && record.curtainOpen === false ? false : undefined,
         rotationDegrees: isWindowDecorationId(placement.decorationId) ? undefined : normalizeRotationDegrees(record.rotationDegrees),
         scale: scale !== undefined && scale !== getDecorationDefaultScale(placement.decorationId) ? scale : undefined,
@@ -366,10 +366,11 @@ export function flipPlacedFridgeHingeByInstance(
 export function togglePlacedFridgeByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
   instanceId: string,
+  opening?: "full" | "ajar",
 ): PlacedDecoration[] {
   return (placedDecorations ?? []).map(item =>
     item.instanceId === instanceId && isFridgeDecorationId(item.decorationId)
-      ? { ...item, fridgeOpen: item.fridgeOpen === true ? undefined : true } : item);
+      ? { ...item, fridgeOpen: opening === "ajar" ? "ajar" : opening === "full" ? true : item.fridgeOpen ? undefined : true } : item);
 }
 
 export function togglePlacedCurtainByInstance(

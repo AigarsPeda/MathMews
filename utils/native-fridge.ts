@@ -24,7 +24,7 @@ export function fridgeLightPose(object: Pick<NativeRoomObject, 'modelId' | 'posi
 
 export function fridgeLightIntensity(open: number, scale: number): number {
   'worklet';
-  // Light escapes as the door separates from its seal, then fills the doorway.
-  const amount = Math.max(0, Math.min(1, open * 3));
+  // A small opening spills less light into the room than the full doorway.
+  const amount = Math.max(0, Math.min(1, open));
   return 650_000 * scale * scale * amount * amount * (3 - 2 * amount);
 }
