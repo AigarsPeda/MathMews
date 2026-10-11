@@ -55,7 +55,7 @@ assert.equal(renderCallbacks, 0, 'Shadow flags do not add per-frame JS/native wo
 const { shadowCastingLampIds } = load('@/utils/native-shadows');
 const lamp = (modelId, instanceId, poweredOn = true) => ({ modelId, instanceId, poweredOn,
   position: [0, .068, 0], heading: 0, scale: 1 });
-const objects = [lamp('sofaA', 'sofa'), lamp('lavaLampAni', 'lava'), lamp('bedroomFloorLamp', 'off', false),
+const objects = [lamp('sofaA', 'sofa'), lamp('lavaLampAni', 'lava'), lamp('halloweenGhostLantern', 'ghost'), lamp('bedroomFloorLamp', 'off', false),
   lamp('wallSpotBarChrome', 'spot'), lamp('lampFloorTripod', 'floor'), lamp('bedroomFloorLamp', 'third')];
 const chosen = shadowCastingLampIds(objects);
 assert.deepEqual([...chosen], ['spot', 'floor'], 'Off/point lights do not consume the two spotlight maps');

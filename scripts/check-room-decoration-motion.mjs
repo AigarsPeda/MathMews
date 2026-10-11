@@ -109,6 +109,12 @@ const savedLamps = placement.normalizePlacedDecorations(JSON.parse(JSON.stringif
 assert.equal(savedLamps[0].poweredOn, true, 'Lamp power survives save reload');
 assert.equal(savedLamps[0].rotationDegrees, 53);
 assert.equal(savedLamps[0].scale, 1.4);
+const ghost = { decorationId: 'halloweenGhostLantern', instanceId: 'ghost', offset: { x: .2, y: .3 }, scale: .7 };
+const litGhost = placement.togglePlacedDecorationPowerByInstance([ghost], 'ghost');
+assert.equal(litGhost[0].poweredOn, true);
+const savedGhost = placement.normalizePlacedDecorations(JSON.parse(JSON.stringify(litGhost)));
+assert.equal(savedGhost[0].poweredOn, true, 'Ghost lantern power survives reload');
+assert.equal(placement.togglePlacedDecorationPowerByInstance(savedGhost, 'ghost')[0].poweredOn, false);
 const { lampLightConfig } = load('@/utils/native-lamp-light');
 const { LAMP_LIGHT_ORIGINS, isWallSpotlightDecorationId } = load('@/constants/decoration-motion');
 for (const modelId of Object.keys(LAMP_LIGHT_ORIGINS)) {

@@ -34,7 +34,7 @@ export function lampLightConfig(object: NativeRoomObject) {
     direction,
     colorKelvin: lava ? 2200 : wall ? 3000 : 2700,
     // The room's daylight is bright; enough power makes the warm pool visible.
-    intensity: (lava ? 160_000 : lantern ? 95_000 : wall ? 95_000 : 230_000) * object.scale * object.scale,
+    intensity: (lava ? 160_000 : lantern || wall ? 95_000 : 230_000) * object.scale * object.scale,
     // Keep light volumes bounded; attenuation fades before their outer limit.
     falloffRadius: Math.max(3, (lava ? 5 : 3) * object.scale),
     // A focused core fades smoothly to the outer cone.

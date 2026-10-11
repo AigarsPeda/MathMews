@@ -241,7 +241,7 @@ console.log('Verified tabletop lamp previews, rotated/scaled tables, release val
 // Aim at the board itself as well as at the elevated lamp anchor. The returned
 // preview anchor is the one the drag controller submits at release.
 for (const width of [320,414,768]) for (const wallFlipped of [false,true]) {
-  for (const supportModel of ['tablePurple','bathroomLongShelf','bathroomSmallShelf','livingShelvingA','livingShelvingB','japaneseShelf','shelfWood','livingFireplaceCream']) {
+  for (const lampModel of ['lavaLampAni','halloweenGhostLantern']) for (const supportModel of ['tablePurple','bathroomLongShelf','bathroomSmallShelf','livingShelvingA','livingShelvingB','japaneseShelf','shelfWood','livingFireplaceCream']) {
     const input={width,height:width*1.1,petSize:width/3,sizeScale:width/390,toys:[],
       decorations:[{decorationId:supportModel,instanceId:'support',scale:/^bathroom.*Shelf/.test(supportModel)?1.5:1,
         offset: /tablePurple|shelfWood|Fireplace/.test(supportModel) ? {x:0,y:0} : {x:wallFlipped ? -.45 : .45,y:-.25},wallFlipped}]};
@@ -252,7 +252,8 @@ for (const width of [320,414,768]) for (const wallFlipped of [false,true]) {
     const board=[support.position[0]+(cos*local[0]+sin*local[2])*support.scale,
       support.position[1]+local[1]*support.scale+.002,
       support.position[2]+(-sin*local[0]+cos*local[2])*support.scale];
-    const lampInput={decorationId:'lavaLampAni',instanceId:'lamp',offset:{x:0,y:.6},rotationDegrees:20,poweredOn:true};
+    const lampInput={decorationId:lampModel,instanceId:'lamp',offset:{x:0,y:.6},rotationDegrees:20,poweredOn:true,
+      ...(lampModel==='halloweenGhostLantern'?{scale:.7}:{})};
     const lamp=buildNativeRoomWorld({...input,decorations:[lampInput]}).objects[0];
     const resolver=createRoomPlacementResolver({...buildNativeRoomWorld(input),objects:[support,lamp]});
     const aimed=projectWorld(board,width);
