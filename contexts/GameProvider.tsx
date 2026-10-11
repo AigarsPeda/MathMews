@@ -1,4 +1,5 @@
 import type { HomeRoomId } from "@/constants/home-rooms";
+import { roomDecorationEntry, type RoomDecorationEntry, type RoomDecorationTarget } from '@/utils/room-decoration-entry';
 import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeather, type WorldClock, type WeatherMode } from '@/utils/world-clock';
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
@@ -160,6 +161,9 @@ type GameContextValue = {
   equipRoom: (roomId: CatRoomId) => boolean;
   visitHomeRoom: (roomId: HomeRoomId) => void;
   sendCatToRoom: (roomId: HomeRoomId) => void;
+  decorationEntry: RoomDecorationEntry | null;
+  requestRoomDecoration: (target?: RoomDecorationTarget) => void;
+  clearDecorationEntry: () => void;
   purchaseBed: (bedId: CatBedId) => BedPurchaseResult;
   equipBed: (bedId: CatBedId) => boolean;
   removeBedFromRoom: () => boolean;
@@ -228,6 +232,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     useState(false);
   const skipNextPersist = useRef(true);
   const saveRef = useRef(save);
+  // Navigation intent is local UI state, never part of the cloud save.
+  const [decorationEntry, setDecorationEntry] = useState<RoomDecorationEntry | null>(null);
+  const requestRoomDecoration = useCallback((target?: RoomDecorationTarget) => {
+    setDecorationEntry(roomDecorationEntry(saveRef.current.pet, target));
+  }, []);
+  const clearDecorationEntry = useCallback(() => setDecorationEntry(null), []);
   // Commands read and commit the latest snapshot before React renders it.
   const setSave = useCallback((update: GameSave | ((current: GameSave) => GameSave)) => {
     const candidate = typeof update === "function" ? update(saveRef.current) : update;
@@ -1322,6 +1332,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       visitHomeRoom,
       sendCatToRoom,
+      decorationEntry,
+      requestRoomDecoration,
+      clearDecorationEntry,
       purchaseBed,
       equipBed,
       removeBedFromRoom,
@@ -1396,6 +1409,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       visitHomeRoom,
       sendCatToRoom,
+      decorationEntry,
+      requestRoomDecoration,
+      clearDecorationEntry,
       purchaseBed,
       equipBed,
       removeBedFromRoom,

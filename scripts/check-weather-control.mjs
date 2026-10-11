@@ -118,3 +118,18 @@ for(const width of [300,320,351,390,430]) {
   assert.ok(row.left>=122,'The report row clears the decoration control');
 }
 console.log('Verified the real weather report and chooser, all saved weather modes, Celsius temperatures, day/night icons, clock independence, speed continuity, translations, compact layout and no polling saves.');
+
+// The shared Home toolbar keeps the same settings behavior and exposes its day.
+for (const language of ['en','lv']) {
+  locale=language;states.length=0;cursor=0;
+  const inline=nodes(WorldClockControl({inline:true}));
+  assert.ok(inline.some(n=>n.type==='Text' && n.props.children.includes(t('worldClock.dayNumber',{day:clock.worldClockReading(game.worldClock,now).day}))), 'The current game day is visible alongside the time');
+  const control=inline.find(n=>n.props.accessibilityRole==='button');control.props.onPress();
+  cursor=0;assert.equal(sheet(nodes(WorldClockControl({inline:true}))).props.visible,true, 'Inline clock still opens settings');
+  states.length=0;cursor=0;
+  const report=nodes(WorldWeatherControl({toolbar:true}));
+  assert.ok(report.find(n=>n.props.accessibilityRole==='button').props.accessibilityLabel.includes(String(weather.worldWeatherReport(game.worldClock,now).temperature)), 'The full temperature remains accessible in the toolbar');
+  report.find(n=>n.props.accessibilityRole==='button').props.onPress();
+  cursor=0;assert.equal(sheet(nodes(WorldWeatherControl({toolbar:true}))).props.visible,true, 'Toolbar weather still opens its chooser');
+}
+console.log('Verified visible day/time, translated toolbar weather and both shared header settings sheets.');

@@ -471,6 +471,8 @@ export function isFree(point: Vec3, world: NativeRoomWorld, ignoreId?: string): 
   for (const o of world.objects)
     if (o.solid && o.instanceId !== ignoreId) {
       if (o.instanceId === world.fridgeDoorClearance && fridgeDoorSweepDistance(point, o) < r + .015) return false;
+      if (point[0] < o.min[0] - r - .015 || point[0] > o.max[0] + r + .015
+        || point[2] < o.min[2] - r - .015 || point[2] > o.max[2] + r + .015) continue;
       const dining = world.kitchenNavigation && (isKitchenChairDecorationId(o.modelId) || o.modelId === 'kitchenDiningTable');
       const boxes = (dining || isPlayablePlant(o.modelId) || o.modelId === 'lampFloorArc') && o.collisionBoxes?.length ? o.collisionBoxes : [o];
       for (const box of boxes) {
@@ -480,7 +482,11 @@ export function isFree(point: Vec3, world: NativeRoomWorld, ignoreId?: string): 
         // The low base can sit beneath the reaching paws; keep the torso outside it.
         const clearance = /^catTree|^toy-scratchPost/.test(o.modelId) ? Math.min(r, .4 * world.catScale)
           : isPlayablePlant(o.modelId) ? Math.min(r, .65 * world.catScale) : r;
-        if ((dining ? kitchenObstacleDistance(point, o, boxes.indexOf(box)) : Math.hypot(point[0] - x, point[2] - z)) < clearance + .015) return false;
+        const margin = clearance + .015, dx = point[0] - x, dz = point[2] - z;
+        // A silhouette is inside its bounding box. Most floor samples are far
+        // away, so only nearby ones need the detailed chair/table polygon test.
+        if (dx * dx + dz * dz >= margin * margin) continue;
+        if (!dining || kitchenObstacleDistance(point, o, boxes.indexOf(box)) < margin) return false;
       }
     }
   return true;
@@ -559,18 +565,54 @@ export function findRoomPath(start: Vec3, target: Vec3, world: NativeRoomWorld):
   const coordinates = [-limit, ...Array.from({ length: 45 }, (_, i) => -2.2 + i * .1)
     .filter(v => Math.abs(v) < limit), limit];
   const count = coordinates.length;
-  const point = (i: number): Vec3 => [coordinates[i % count], FLOOR_Y, coordinates[Math.floor(i / count)]];
-  const available = Array.from({ length: count * count }, (_, i) => i).filter(i => isFree(point(i), world));
+  const points: Vec3[] = Array.from({ length: count * count }, (_, i) =>
+    [coordinates[i % count], FLOOR_Y, coordinates[Math.floor(i / count)]]);
+  const point = (i: number) => points[i];
+  const free = points.map(p => isFree(p, world));
+  const available = points.map((_, i) => i).filter(i => free[i]);
   // Rounded endpoints can fall inside furniture even though the actual
   // endpoint is free. Connect each exact endpoint to a visible free grid node.
-  const connection = (p: Vec3) => available.slice().sort((a, b) => pathLength([p, point(a)]) - pathLength([p, point(b)]))
-    .find(i => clearLine(p, point(i), world));
+  const connection = (p: Vec3) => available.map(id => ({ id,
+    distance: (p[0] - points[id][0]) ** 2 + (p[2] - points[id][2]) ** 2 }))
+    .sort((a, b) => a.distance - b.distance).find(node => clearLine(p, points[node.id], world))?.id;
   const first = connection(start), last = connection(end);
   if (first === undefined || last === undefined) return [start];
-  const open = [first], parents = new Map<number, number>(), costs = new Map([[first, 0]]), closed = new Set<number>();
+  const heuristic = points.map(p => Math.hypot(p[0] - end[0], p[2] - end[2]));
+  // A min-heap avoids sorting the entire frontier at every visited floor tile.
+  type Node = { id: number; cost: number; estimate: number; order: number };
+  const open: Node[] = [];
+  let order = 0;
+  const before = (a: Node, b: Node) => a.estimate < b.estimate || a.estimate === b.estimate && a.order < b.order;
+  const push = (id: number, cost: number) => {
+    const node = { id, cost, estimate: cost + heuristic[id], order: order++ };
+    let i = open.length;
+    open.push(node);
+    while (i > 0) {
+      const parent = (i - 1) >> 1;
+      if (!before(node, open[parent])) break;
+      open[i] = open[parent]; i = parent;
+    }
+    open[i] = node;
+  };
+  const pop = () => {
+    const first = open[0], tail = open.pop()!;
+    if (open.length) {
+      let i = 0;
+      while (i * 2 + 1 < open.length) {
+        let child = i * 2 + 1;
+        if (child + 1 < open.length && before(open[child + 1], open[child])) child++;
+        if (!before(open[child], tail)) break;
+        open[i] = open[child]; i = child;
+      }
+      open[i] = tail;
+    }
+    return first;
+  };
+  const parents = new Map<number, number>(), costs = new Map([[first, 0]]), closed = new Set<number>();
+  push(first, 0);
   while (open.length) {
-    open.sort((a, b) => (costs.get(a)! + Math.hypot(point(a)[0] - end[0], point(a)[2] - end[2])) - (costs.get(b)! + Math.hypot(point(b)[0] - end[0], point(b)[2] - end[2])));
-    const current = open.shift()!;
+    const node = pop(), current = node.id;
+    if (closed.has(current) || node.cost !== costs.get(current)) continue;
     if (current === last) {
       const route: Vec3[] = [end];
       let i = current;
@@ -600,14 +642,13 @@ export function findRoomPath(start: Vec3, target: Vec3, world: NativeRoomWorld):
         if (x < 0 || x >= count || z < 0 || z >= count)
           continue;
         const next = x + z * count;
-        if (closed.has(next) || !isFree(point(next), world) || !clearLine(point(current), point(next), world))
+        if (closed.has(next) || !free[next] || !clearLine(point(current), point(next), world))
           continue;
-        const cost = costs.get(current)! + pathLength([point(current), point(next)]);
+        const cost = node.cost + Math.hypot(points[current][0] - points[next][0], points[current][2] - points[next][2]);
         if (cost < (costs.get(next) ?? Infinity)) {
           parents.set(next, current);
           costs.set(next, cost);
-          if (!open.includes(next))
-            open.push(next);
+          push(next, cost);
         }
       }
   }
@@ -724,9 +765,9 @@ function isNativeJumpClear(start: Vec3, target: Vec3, world: NativeRoomWorld, ig
     if (world.objects.some(o => o.solid && o.instanceId !== ignoreId
       && (o.collisionBoxes?.length ? o.collisionBoxes : [o]).some((box, index) =>
         p[1] < box.max[1] && p[1] + .8 * world.catScale > box.min[1]
-        && (world.kitchenNavigation && (isKitchenChairDecorationId(o.modelId) || o.modelId === 'kitchenDiningTable')
-          ? kitchenObstacleDistance(p, o, index)
-          : Math.hypot(p[0] - Math.max(box.min[0], Math.min(box.max[0], p[0])), p[2] - Math.max(box.min[2], Math.min(box.max[2], p[2])))) < radius))) return false;
+        && Math.hypot(p[0] - Math.max(box.min[0], Math.min(box.max[0], p[0])), p[2] - Math.max(box.min[2], Math.min(box.max[2], p[2]))) < radius
+        && (!(world.kitchenNavigation && (isKitchenChairDecorationId(o.modelId) || o.modelId === 'kitchenDiningTable'))
+          || kitchenObstacleDistance(p, o, index) < radius)))) return false;
   }
   return true;
 }
@@ -769,18 +810,21 @@ function kitchenNavigationWorld(world: NativeRoomWorld): NativeRoomWorld {
  * corners, and its legs leave usable floor beneath it. */
 function kitchenObstacleDistance(point: Vec3, object: NativeRoomObject, index: number): number {
   const meta = NATIVE_MODEL_CATALOG[object.modelId], box = meta.collisionBoxes?.[index] ?? meta;
-  const p = rotate(point.map((v, i) => (v - object.position[i]) / object.scale) as Vec3, -object.heading);
+  const dx = (point[0] - object.position[0]) / object.scale, dz = (point[2] - object.position[2]) / object.scale;
+  const c = Math.cos(object.heading), s = Math.sin(object.heading);
+  const x = c * dx - s * dz, z = s * dx + c * dz;
   if (!('footprint' in box) || !box.footprint?.length)
-    return Math.hypot(p[0] - Math.max(box.min[0], Math.min(box.max[0], p[0])), p[2] - Math.max(box.min[2], Math.min(box.max[2], p[2]))) * object.scale;
+    return Math.hypot(x - Math.max(box.min[0], Math.min(box.max[0], x)), z - Math.max(box.min[2], Math.min(box.max[2], z))) * object.scale;
   let distance = Infinity, positive = false, negative = false;
   for (let i = 0; i < box.footprint.length; i++) {
     const a = box.footprint[i], b = box.footprint[(i + 1) % box.footprint.length];
-    const dx = b[0] - a[0], dz = b[1] - a[1], cross = dx * (p[2] - a[1]) - dz * (p[0] - a[0]);
+    const dx = b[0] - a[0], dz = b[1] - a[1], cross = dx * (z - a[1]) - dz * (x - a[0]);
     positive ||= cross > 1e-8; negative ||= cross < -1e-8;
-    const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[2] - a[1]) * dz) / (dx * dx + dz * dz)));
-    distance = Math.min(distance, Math.hypot(p[0] - a[0] - t * dx, p[2] - a[1] - t * dz));
+    const t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / (dx * dx + dz * dz)));
+    const gapX = x - a[0] - t * dx, gapZ = z - a[1] - t * dz;
+    distance = Math.min(distance, gapX * gapX + gapZ * gapZ);
   }
-  return positive && negative ? distance * object.scale : 0;
+  return positive && negative ? Math.sqrt(distance) * object.scale : 0;
 }
 
 /** Keep the paws inside a dry worktop and clear of mixers, lamps and taps. */

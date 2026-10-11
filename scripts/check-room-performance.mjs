@@ -24,10 +24,56 @@ function load(id) {
   }
   return modules.get(resolved);
 }
-const { buildNativeRoomWorld, isFree, nearestFree, FLOOR_Y, NATIVE_MODEL_CATALOG } = load('@/utils/native-room-world');
+const { buildNativeRoomWorld, isFree, nearestFree, prepareNativeStep, catScreenPoint, FLOOR_Y, NATIVE_MODEL_CATALOG } = load('@/utils/native-room-world');
+const { buildRoomActivity } = load('@/utils/room-activities');
 const { createRoomPlacementResolver } = load('@/utils/room-item-placement');
 const { switchHomeRoom } = load('@/utils/home-rooms');
 const { syncPetLayerOrder } = load('@/utils/room-layer-order');
+
+// Reproduce the crowded kitchen where a routine cat route blocked menus for
+// 1–2 seconds. Include rotated, tucked chairs, worktop objects and an ajar door.
+const kitchenDecorations = [
+  ['kitchenMixerStand', -.127808, -.289269, undefined, true],
+  ['windowPlain', -.436638, -.445452, 1.5, true],
+  ['kitchenModernCounterNavy', .066554, -.227017, 1.1],
+  ['kitchenModernInductionNavy', -.541971, -.064618, 1.1, true],
+  ['kitchenModernWallCabinetNavy', -.680536, -.408272, undefined, true],
+  ['kitchenModernShelfNavy', -.687272, -.297922, undefined, true],
+  ['kitchenModernFridgeNavy', .420374, -.273608, 1.1],
+  ['kitchenModernIslandNavy', .016234, .164976, undefined, true],
+  ['kitchenModernSinkNavy', -.266843, -.177663, 1.1, true],
+  ['lampTableMushroom', .046002, .020355, .8],
+  ['halloweenGhostLantern', -.001554, -.373176, undefined, false, 46.2],
+  ['kitchenDiningTable', .638747, .130002, 1.1],
+  ['kitchenChairUpholstered', .403048, .094123, undefined, false, 118.1],
+  ['kitchenChairUpholstered', .743921, .094446, undefined, false, 312.7],
+  ['kitchenChairUpholstered', .569364, .050935, undefined, false, 58],
+  ['kitchenChairUpholstered', .490390, .167665, undefined, false, 202.3],
+  ['lampFloorArc', .889975, -.072156, 1.4, false, 231.6],
+].map(([decorationId, x, y, scale, wallFlipped, rotationDegrees], i) => ({
+  decorationId, instanceId: `kitchen-${i}`, offset: { x, y }, scale, wallFlipped, rotationDegrees,
+  ...(decorationId === 'kitchenModernFridgeNavy' ? { fridgeOpen: 'ajar', fridgeHingeSide: 'left' } : {}),
+}));
+const crowdedKitchen = { width: 390, height: 448, petSize: 80, sizeScale: 1.15,
+  homeOffset: { x: 0, y: .12 }, decorations: kitchenDecorations, toys: [], ownedToyIds: [], hungry: false, asleep: false };
+crowdedKitchen.nativeWorld = buildNativeRoomWorld(crowdedKitchen);
+const timings = [];
+for (const kind of ['chairNap', 'fridgeInvestigate', 'islandSit']) {
+  let elapsed = Infinity;
+  // Use the best of three fresh searches to exclude unrelated simulator/GC
+  // scheduling pauses while still catching the original multi-second search.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const started = performance.now();
+    const plan = buildRoomActivity(crowdedKitchen, 0, kind);
+    assert.ok(plan);
+    const step = prepareNativeStep(plan, plan.steps[0], catScreenPoint(crowdedKitchen.nativeWorld.home, crowdedKitchen.nativeWorld), crowdedKitchen.nativeWorld, FLOOR_Y);
+    elapsed = Math.min(elapsed, performance.now() - started);
+    assert.equal(step.native.blocked, kind === 'chairNap', 'Optimization retains reachable worktops and the blocked tucked chair');
+  }
+  assert.ok(elapsed < 250, `${kind} blocked input for ${elapsed.toFixed(0)} ms`);
+  timings.push(`${kind}: ${elapsed.toFixed(0)} ms`);
+}
+console.log(`Verified crowded-kitchen navigation stays below 250 ms without changing clearance (${timings.join(', ')}).`);
 
 // Compare with the exhaustive floor search's observable result, including
 // constrained furniture clearances and the overfilled-room fallback.

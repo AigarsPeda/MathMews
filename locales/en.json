@@ -156,6 +156,7 @@
       "toiletUse": "Use the toilet"
     },
     "decorateRoom": "Decorate",
+    "shop": "Shop",
     "shopAndDecorate": "Shop and decorate",
     "finishDecorating": "Done",
     "dismissRoomItemMenu": "Dismiss item menu",
@@ -243,6 +244,8 @@
     "furnishRoom": "Find furniture and toys"
   },
   "store": {
+    "decorateRoom": "Decorate room",
+    "buyPlaceHint": "Buy an item, then place it in your room.",
     "title": "Pet Store",
     "subtitleRooms": "Pick a new background for your cat's home.",
     "subtitleColors": "Buy new fur colors for your cat.",
@@ -999,6 +1002,8 @@
     "a11yProgress": "{{percent}} percent until next life"
   },
   "economy": {
+    "coinsLabel": "Coins",
+    "streakLabel": "Streak",
     "streakDay_one": "{{count}} day",
     "streakDay_other": "{{count}} days",
     "a11yCoins": "You have {{coins}} coins. Tap to get more coins."

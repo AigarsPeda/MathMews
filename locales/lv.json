@@ -172,6 +172,7 @@
       "toiletUse": "Lietot tualeti"
     },
     "decorateRoom": "Iekārtot",
+    "shop": "Veikals",
     "shopAndDecorate": "Veikals un istabas iekārtošana",
     "finishDecorating": "Gatavs",
     "dismissRoomItemMenu": "Aizvērt priekšmeta izvēlni",
@@ -243,6 +244,8 @@
     "furnishRoom": "Atrast mēbeles un rotaļlietas"
   },
   "store": {
+    "decorateRoom": "Iekārtot istabu",
+    "buyPlaceHint": "Iegādājies priekšmetu un novieto to savā istabā.",
     "title": "Mājdzīvnieku veikals",
     "subtitleRooms": "Izvēlies jaunu fonu sava kaķa mājai.",
     "subtitleColors": "Pērc jaunas kaķa kažokāda krāsas.",
@@ -999,6 +1002,8 @@
     "a11yProgress": "{{percent}} procenti līdz nākamajai dzīvībai"
   },
   "economy": {
+    "coinsLabel": "Monētas",
+    "streakLabel": "Dienu sērija",
     "streakDay_zero": "{{count}} dienu",
     "streakDay_one": "{{count}} diena",
     "streakDay_other": "{{count}} dienas",

@@ -533,6 +533,44 @@ for(const width of [320,414,768]) for(const heading of [0,Math.PI/2,20*Math.PI/1
   }
 console.log('Verified adjoining cabinet edges/back alignment, both walls, free angles, save/reload, free spacing and blocked-snap fallback.');
 
+// A side contact near the wall must not preserve a stepped run of cabinets.
+for (const width of [320,414,768]) for (const zoom of [1,2.5]) for (const wallFlipped of [false,true]) {
+  const entries = ['FloorShelf','Induction','Sink'].map((piece,index) => ({
+    ...appendPlacedDecoration([], `kitchenModern${piece}Navy`)[0], instanceId: `row-${index}`,
+    wallFlipped, offset:{x:0,y:0}, scale:1.1,
+  }));
+  const input = {width,height:width*1.1,petSize:ROOM_CAT_SIZE*width/390,
+    sizeScale:ROOM_OBJECT_SCALE*width/390,toys:[],decorations:entries};
+  const world = buildNativeRoomWorld(input);
+  let left = -1.6;
+  world.objects = world.objects.map((object,index) => {
+    const meta = NATIVE_MODEL_CATALOG[object.modelId];
+    const placed = kitchenPose(object,left-meta.min[0]*object.scale,
+      ROOM_PLACEMENT_MIN-meta.min[2]*object.scale+[.03,.095,.22][index],width);
+    left += (meta.max[0]-meta.min[0])*object.scale+.02;
+    return placed;
+  });
+  // Fix the middle unit first: both neighbors still have their old wall gaps.
+  for (const index of [1,2,0]) {
+    const original = world.objects[index], resolver = createRoomPlacementResolver(world);
+    assert.equal(original.movable,false,'Cat physics cannot push a kitchen unit');
+    const drop = resolver.drop(original.instanceId,roomItemAnchor(original,width),{zoom});
+    assert.equal(drop.accepted,true,'The adjoining wall row accepts the drop');
+    assert.ok(Math.abs(kitchenLocal(drop.object).back-ROOM_PLACEMENT_MIN)<1e-6,
+      `Side snapping aligns to the wall, not the staggered neighbor: ${width}/${zoom}/${wallFlipped}/${index}`);
+    world.objects[index] = drop.object;
+    const meta = NATIVE_MODEL_CATALOG[original.modelId],size=original.scale*width*meta.renderScale/ROOM_SPAN;
+    const restored=buildNativeRoomWorld({...input,decorations:[{...entries[index],offset:{
+      x:drop.point.x/((width-size)/2),y:drop.point.y/((input.height-size)/2),
+    }}]}).objects[0];
+    assert.ok(restored.position.every((v,i)=>Math.abs(v-drop.object.position[i])<1e-6),'Straight row placement survives reload');
+  }
+  const fronts = world.objects.map(object => object.position[wallFlipped?0:2]
+    + Math.max(...NATIVE_MODEL_CATALOG[object.modelId].supportSurfaces.map(board=>board.max[2]))*object.scale);
+  assert.ok(Math.max(...fronts)-Math.min(...fronts)<1e-6,'Stone fronts form one straight line');
+}
+console.log('Verified stepped kitchen rows snap straight against both walls at phone/tablet sizes and zoom levels.');
+
 // Sink holes are not support surfaces; the stone landing still holds appliances.
 for(const finish of ['White','Sage','Navy','Charcoal']) for(const width of [320,414,768]) for(const wallFlipped of [false,true]) {
   const input={width,height:width*1.1,petSize:width/3,sizeScale:width/390,toys:[]};

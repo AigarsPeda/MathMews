@@ -10,7 +10,7 @@ import { normalizeWeather, WEATHER_MODES } from '@/utils/world-clock';
 import { worldWeatherReport } from '@/utils/world-weather';
 import { moderateScale } from '@/utils/scale';
 
-export function WorldWeatherControl() {
+export function WorldWeatherControl({ toolbar = false }: { toolbar?: boolean } = {}) {
   const { t } = useTranslation();
   const { worldClock, setWorldWeather } = useGame();
   const now = useWorldClockNow(5000);
@@ -21,11 +21,14 @@ export function WorldWeatherControl() {
     : t(`worldClock.weather_${report.kind}`);
   const temperature = t('worldWeather.temperature', { temperature: report.temperature });
   return <>
-    <Pressable style={({ pressed }) => [styles.badge, pressed && styles.pressed]} onPress={() => setOpen(true)}
+    <Pressable style={({ pressed }) => [styles.badge, toolbar && styles.toolbarBadge, pressed && styles.pressed]} onPress={() => setOpen(true)}
       accessibilityRole="button" accessibilityLabel={t('worldWeather.open', { weather: condition, temperature: report.temperature })}
       accessibilityHint={t('worldWeather.change')}>
-      <AppIcon name={report.icon} size={moderateScale(28)}/>
-      <Text style={styles.badgeTemperature} numberOfLines={1}>{temperature}</Text>
+      {toolbar && <Text style={styles.caption}>{condition}</Text>}
+      <View style={styles.badgeReading}>
+        <AppIcon name={report.icon} size={moderateScale(toolbar ? 20 : 28)}/>
+        <Text style={[styles.badgeTemperature, toolbar && styles.toolbarTemperature]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{temperature}</Text>
+      </View>
     </Pressable>
     <AppBottomSheet visible={open} onClose={() => setOpen(false)} expanded>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
@@ -63,6 +66,10 @@ export function WorldWeatherControl() {
 }
 
 const styles = StyleSheet.create({
+  toolbarBadge: { minHeight: 56, height: undefined, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingVertical: moderateScale(8), gap: moderateScale(3), borderRadius: moderateScale(12) },
+  badgeReading: { maxWidth: '100%', flexDirection: 'row', alignItems: 'center', gap: moderateScale(4) },
+  caption: { alignSelf: 'stretch', textAlign: 'center', color: GameColors.textMuted, fontSize: moderateScale(11), fontWeight: '600' },
+  toolbarTemperature: { flexShrink: 1, fontSize: moderateScale(16) },
   badge: { flex: 1, minWidth: 0, height: moderateScale(44), flexDirection: 'row', gap: moderateScale(4),
     paddingHorizontal: moderateScale(8), alignItems: 'center', backgroundColor: GameColors.card,
     borderColor: GameColors.cardBorder, borderWidth: 1, borderRadius: moderateScale(20) },

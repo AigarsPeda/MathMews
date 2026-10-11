@@ -188,8 +188,17 @@ for (const destination of ['kitchen', 'bathroom', 'kitchen', 'livingRoom', 'bedr
   assert.equal(stages.length, 4, 'First visits reuse the four preloaded scene hosts');
 }
 assert.equal(house.filter(node => node.type === 'PetStage').length, 4, 'Returning to a room keeps the other visited scenes mounted');
-assert.equal(house.filter(node => node.type === 'HeaderChip').length, 1, 'Room browsing retains the settings control without a separate shop button');
-assert.ok(!house.some(node => node.props.accessibilityLabel === 'home.a11yStore'), 'Shopping uses the combined room control');
+assert.equal(house.filter(node => node.type === 'HeaderChip').length, 1, 'Room browsing retains one settings control');
+assert.equal(house.filter(node => node.props.accessibilityLabel === 'home.a11yStore').length, 1, 'One shared Shop button stays outside the retained room scenes');
+assert.equal(house.filter(node => node.type === 'WorldClockControl').length, 1, 'One shared clock/weather toolbar stays mounted while browsing');
+assert.ok(visibleStage(house).props.roomToolbar, 'The visible room uses the shared decoration-mode controls');
+visibleStage(house).props.roomToolbar.onDecoratingChange('livingRoom', true);
+house = renderHome();
+assert.equal(visibleStage(house).props.roomToolbar.decorating, true);
+assert.equal(house.filter(node => node.props.accessibilityLabel === 'home.finishDecorating').length, 1, 'The shared Shop button becomes Done');
+house.find(node => node.props.accessibilityLabel === 'home.finishDecorating').props.onPress();
+house = renderHome();
+assert.equal(visibleStage(house).props.roomToolbar.decorating, false, 'Done ends editing in the controlled room');
 visibleStage(house).props.onSendCatToRoom('bedroom'); house = renderHome();
 assert.equal(visibleStage(house).props.homeRoomId, 'bedroom');
 assert.equal(getCatHomeRoomId(game.pet), 'bedroom');

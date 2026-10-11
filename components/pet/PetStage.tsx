@@ -1,3 +1,4 @@
+import type { RoomDecorationEntry } from "@/utils/room-decoration-entry";
 import type { SpotlightAim } from '@/utils/native-spotlight-aim';
 import { curtainAtWindow } from '@/utils/native-curtains';
 import { isWindowLightSource } from '@/utils/native-window-light';
@@ -118,6 +119,9 @@ function avatarDisplayWidth(
 }
 
 type PetStageProps = {
+  roomToolbar?: { decorating: boolean; onDecoratingChange: (roomId: HomeRoomId, active: boolean) => void };
+  decorationEntry?: RoomDecorationEntry | null;
+  onDecorationEntryConsumed?: () => void;
   worldClock?: WorldClock;
   roomEditor?: RoomEditorControls;
   homeRoomId?: HomeRoomId;
@@ -191,6 +195,9 @@ type PetStageProps = {
 };
 
 export function PetStage({
+  roomToolbar,
+  decorationEntry,
+  onDecorationEntryConsumed,
   worldClock,
   roomEditor,
   homeRoomId = DEFAULT_HOME_ROOM_ID,
@@ -305,7 +312,13 @@ export function PetStage({
   const [avatarWidth, setAvatarWidth] = useState(
     compactPetWidth(petType, compact),
   );
-  const [decorating, setDecorating] = useState(false);
+  const [localDecorating, setLocalDecorating] = useState(false);
+  const decorating = roomToolbar?.decorating ?? localDecorating;
+  const onDecoratingChange = roomToolbar?.onDecoratingChange;
+  const setDecorating = useCallback((active: boolean) => {
+    if (onDecoratingChange) onDecoratingChange(homeRoomId, active);
+    else setLocalDecorating(active);
+  }, [homeRoomId, onDecoratingChange]);
   const [waitingToDecorate, setWaitingToDecorate] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [snap, setSnap] = useState(false);
@@ -514,6 +527,23 @@ export function PetStage({
       if (door?.doorDestination) onVisitHomeRoom?.(door.doorDestination);
     }, onFeed, onSendCatToRoom, roomVisible, decorating, handleReadyToDecorate, onRoomActivityCompleted);
   const sofaApproach = roomActivity?.plan.steps[roomActivity.stepIndex]?.sofaApproach;
+  useEffect(() => {
+    if (!decorationEntry || decorationEntry.roomId !== homeRoomId || !roomVisible) return;
+    // Consume a one-shot navigation command and synchronize the native activity exit.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedMoveItem(decorationEntry.item ?? null);
+    setShowEditor(false);
+    setPlacementFeedback(undefined);
+    setRotationPreview(null);
+    setSpotlightPreview(null);
+    if (roomActivity) {
+      setWaitingToDecorate(true);
+      stopActivity();
+    } else {
+      setDecorating(true);
+    }
+    onDecorationEntryConsumed?.();
+  }, [decorationEntry, homeRoomId, roomVisible, roomActivity, stopActivity, onDecorationEntryConsumed, setDecorating]);
   const sofaGroundY = sofaApproach ? roomPlacedDecorations
     .filter(item => /^sofa[AB]$/.test(getPlacedDecorationSpriteId(item)))
     .map(item => {
@@ -1346,31 +1376,20 @@ export function PetStage({
             </Animated.View>
             {hasRoomNavigation && !decorating && !sceneSlide?.outgoing && <RoomNavigation roomId={homeRoomId} disabled={!!sceneSlide || !!roomActivityBlocked || roomActivity?.plan.kind === "roomTravel"}
               onVisit={onVisitHomeRoom!} />}
-            {compact && usesNativeCat && !sceneSlide?.outgoing ? (
-              onOpenStore && !decorating ? <RoomActionMenu style={styles.decorateMenu}
-                size={{ width: moderateScale(112), height: moderateScale(44) }}
-                label={t("home.shopAndDecorate")} blocked={!!sceneSlide}
-                actions={[
-                  { label: t("store.title"), icon: "store", onPress: onOpenStore },
-                  { label: t("home.decorateRoom"), icon: "sofa",
-                    disabled: waitingToDecorate || roomActivity?.plan.kind === "roomTravel",
-                    onPress: () => {
-                      setSelectedMoveItem(null); setShowEditor(false); setRotationPreview(null); setSpotlightPreview(null);
-                      if (roomActivity) { setWaitingToDecorate(true); stopActivity(); }
-                      else setDecorating(true);
-                    } },
-                ]}>
-                <View style={[styles.decorateButton, styles.decorateMenuLabel]}>
+            {compact && usesNativeCat && !sceneSlide?.outgoing && !roomToolbar ? (
+              onOpenStore && !decorating ? <Pressable style={styles.decorateButton}
+                disabled={!!sceneSlide || waitingToDecorate}
+                accessibilityRole="button" accessibilityLabel={t("home.a11yStore")}
+                onPress={onOpenStore}>
                   <AppIcon name="store" size={moderateScale(22)} />
-                  <Text style={styles.decorateLabel}>{t("home.decorateRoom")}</Text>
-                </View>
-              </RoomActionMenu> :
+                  <Text style={styles.decorateLabel}>{t("home.shop")}</Text>
+              </Pressable> :
               <Pressable style={[styles.decorateButton, decorating && styles.decorateButtonActive]}
                 disabled={!!sceneSlide || waitingToDecorate || roomActivity?.plan.kind === "roomTravel"}
                 onPress={() => {
                   setSelectedMoveItem(null); setShowEditor(false); setRotationPreview(null); setSpotlightPreview(null);
                   if (!decorating && roomActivity) { setWaitingToDecorate(true); stopActivity(); }
-                  else setDecorating(current => !current);
+                  else setDecorating(!decorating);
                 }}
                 accessibilityRole="button" accessibilityLabel={t(decorating ? "home.finishDecorating" : "home.decorateRoom")}
                 accessibilityState={{ selected: decorating, disabled: waitingToDecorate }}>
@@ -1378,7 +1397,7 @@ export function PetStage({
                 <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
               </Pressable>
             ) : null}
-            {decorating ? <Pressable style={[styles.decorateButton, { left: undefined, right: moderateScale(10), top: moderateScale(60) }]}
+            {decorating ? <Pressable style={[styles.decorateButton, { left: undefined, right: moderateScale(10), top: moderateScale(roomToolbar ? 10 : 60) }]}
               onPress={() => { setShowEditor(true); }} accessibilityRole="button" accessibilityLabel={t("home.roomTools")}>
               <Text style={styles.decorateLabel}>{t("home.roomTools")}</Text>
             </Pressable> : null}
@@ -1469,8 +1488,6 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: GameColors.cardBorder,
   },
   decorateButtonActive: { backgroundColor: GameColors.cardBorder },
-  decorateMenu: { position: "absolute", top: moderateScale(10), left: moderateScale(10), zIndex: ROOM_MENU_OPEN_Z_INDEX + 4 },
-  decorateMenuLabel: { position: "relative", top: 0, left: 0 },
   decorateLabel: { fontSize: moderateScale(13), fontWeight: "700", color: GameColors.text },
   transientMouse: { position: "absolute", zIndex: ROOM_PET_LAYER_Z_INDEX - 1 },
   stage: {

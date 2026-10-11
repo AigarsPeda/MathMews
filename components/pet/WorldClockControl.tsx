@@ -9,19 +9,20 @@ import { WORLD_CLOCK_SPEEDS, worldClockReading } from '@/utils/world-clock';
 import { moderateScale } from '@/utils/scale';
 import { WorldWeatherControl } from './WorldWeatherControl';
 
-export function WorldClockControl() {
+export function WorldClockControl({ inline = false }: { inline?: boolean } = {}) {
   const { t } = useTranslation();
   const { worldClock, setWorldClock } = useGame();
   const now = useWorldClockNow();
   const reading = worldClockReading(worldClock, Math.max(now, worldClock.realMs));
   const [open, setOpen] = useState(false);
   return <>
-    <View style={styles.controls} pointerEvents="box-none">
-      <Pressable style={({ pressed }) => [styles.badge, pressed && styles.pressed]} onPress={() => setOpen(true)} accessibilityRole="button"
+    <View style={inline ? styles.inlineControls : styles.controls} pointerEvents="box-none">
+      <Pressable style={({ pressed }) => [styles.badge, inline && styles.toolbarBadge, pressed && styles.pressed]} onPress={() => setOpen(true)} accessibilityRole="button"
         accessibilityLabel={t('worldClock.open', { time: reading.time, day: reading.day })}>
-        <Text style={styles.time}>{reading.time}</Text>
+        {inline && <Text style={styles.caption} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{t('worldClock.dayNumber', { day: reading.day })}</Text>}
+        <Text style={[styles.time, inline && styles.toolbarTime]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{reading.time}</Text>
       </Pressable>
-      <WorldWeatherControl/>
+      <WorldWeatherControl toolbar={inline}/>
     </View>
     <AppBottomSheet visible={open} onClose={() => setOpen(false)} expanded>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
@@ -46,6 +47,10 @@ export function WorldClockControl() {
 }
 
 const styles = StyleSheet.create({
+  inlineControls: { flex: 2, minWidth: 0, flexDirection: 'row', gap: moderateScale(8) },
+  toolbarBadge: { minHeight: 56, height: undefined, paddingVertical: moderateScale(8), paddingHorizontal: moderateScale(8), gap: moderateScale(3), borderRadius: moderateScale(12) },
+  caption: { color: GameColors.textMuted, fontSize: moderateScale(11), fontWeight: '600' },
+  toolbarTime: { fontSize: moderateScale(16) },
   controls: { position: 'absolute', top: moderateScale(10), left: moderateScale(130), right: moderateScale(10),
     zIndex: 20, flexDirection: 'row', gap: moderateScale(6) },
   badge: { flex: 1, minWidth: 0, height: moderateScale(44), justifyContent: 'center',

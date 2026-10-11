@@ -11,6 +11,7 @@ import { useCallback, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 
 type GameHeaderStatsProps = {
+  layout?: 'inline' | 'home';
   coins: number;
   streak?: number;
   lives: LivesState;
@@ -25,6 +26,7 @@ function triggerHaptic(
 }
 
 export function GameHeaderStats({
+  layout = 'inline',
   coins,
   streak = 0,
 }: GameHeaderStatsProps) {
@@ -49,12 +51,13 @@ export function GameHeaderStats({
   }, []);
 
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, layout === 'home' && styles.homeRow]}>
 
       <CoinCounter
         coins={coins}
         streak={streak}
         compact
+        layout={layout}
         onPress={handleOpenCoinSheet}
       />
       <ParentGateSheet
@@ -71,6 +74,7 @@ export function GameHeaderStats({
 }
 
 const styles = StyleSheet.create({
+  homeRow: { flex: 1, minWidth: 0, height: undefined },
   row: {
     flexDirection: "row",
     alignItems: "center",

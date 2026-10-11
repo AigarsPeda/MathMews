@@ -62,26 +62,40 @@ function wallSnapCandidates(object: NativeRoomObject, world: NativeRoomWorld, zo
 }
 
 /** Match actual cabinet edges, rather than the differently framed sprite anchors. */
-function kitchenJoinCandidates(object: NativeRoomObject, world: NativeRoomWorld): NativeRoomObject[] {
+function kitchenJoinCandidates(object: NativeRoomObject, world: NativeRoomWorld, alignWall: boolean): NativeRoomObject[] {
   if (!kitchenUnits.has(object.modelId)) return [];
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const origin = rotate(object.position, -object.heading);
   const back = origin[2] + meta.min[2] * object.scale;
-  const shifts: { x: number; z: number; distance: number }[] = [];
+  const shifts: { x: number; z: number; distance: number; wall: boolean }[] = [];
+  const facesWall = Math.abs(object.heading) < .00001 || Math.abs(object.heading - Math.PI / 2) < .00001;
   for (const other of world.objects) {
     if (other.instanceId === object.instanceId || !kitchenUnits.has(other.modelId)
       || Math.abs(Math.sin((other.heading - object.heading) / 2)) > .00001) continue;
     const otherMeta = NATIVE_MODEL_CATALOG[other.modelId];
     const otherOrigin = rotate(other.position, -object.heading);
-    const z = otherOrigin[2] + otherMeta.min[2] * other.scale - back;
-    if (Math.abs(z) > KITCHEN_SNAP_DISTANCE) continue;
+    const otherBack = otherOrigin[2] + otherMeta.min[2] * other.scale;
+    const z = otherBack - back;
+    // Side contact identifies a kitchen run even when its old wall gaps exceed
+    // the small point magnet. Use the wall as the common line, not that gap.
+    const rowReach = Math.min(.35, .5 * Math.min(
+      (meta.max[2] - meta.min[2]) * object.scale,
+      (otherMeta.max[2] - otherMeta.min[2]) * other.scale));
+    const wallRow = alignWall && facesWall && Math.abs(back - ROOM_PLACEMENT_MIN) <= rowReach
+      && Math.abs(otherBack - ROOM_PLACEMENT_MIN) <= rowReach;
+    if (!wallRow && Math.abs(z) > KITCHEN_SNAP_DISTANCE) continue;
     for (const side of [-1, 1]) {
       const x = otherOrigin[0] + (side < 0 ? otherMeta.min[0] : otherMeta.max[0]) * other.scale
         - origin[0] - (side < 0 ? meta.max[0] : meta.min[0]) * object.scale;
-      if (Math.abs(x) <= KITCHEN_SNAP_DISTANCE) shifts.push({ x, z, distance: Math.hypot(x, z) });
+      if (Math.abs(x) > KITCHEN_SNAP_DISTANCE) continue;
+      if (wallRow) {
+        const wallZ = ROOM_PLACEMENT_MIN - back;
+        shifts.push({ x, z: wallZ, distance: Math.hypot(x, wallZ), wall: true });
+      }
+      if (Math.abs(z) <= KITCHEN_SNAP_DISTANCE) shifts.push({ x, z, distance: Math.hypot(x, z), wall: false });
     }
   }
-  shifts.sort((a, b) => a.distance - b.distance);
+  shifts.sort((a, b) => Number(b.wall) - Number(a.wall) || a.distance - b.distance);
   return shifts.map(shift => translateObject(object, rotate([shift.x, 0, shift.z], object.heading)));
 }
 
@@ -463,7 +477,7 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
       if (!original) return undefined;
       const moved = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
       const wallCandidates = wallSnapCandidates(moved, world, zoom, snapInsideWalls);
-      const joins = (object: NativeRoomObject) => snapInsideWalls || !canPlace(object) ? kitchenJoinCandidates(object, world) : [];
+      const joins = (object: NativeRoomObject) => snapInsideWalls || !canPlace(object) ? kitchenJoinCandidates(object, world, snapInsideWalls) : [];
       // Neighbor alignment must not pull a unit away from a nearby wall. Also
       // try joins from the corrected pose, for runs of touching kitchen modules.
       const candidates = wallCandidates.flatMap(object => {

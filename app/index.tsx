@@ -102,8 +102,14 @@ export default function HomeScreen() {
     scalePlacedDecoration,
     visitHomeRoom,
     sendCatToRoom,
+    decorationEntry,
+    clearDecorationEntry,
   } = useGame();
   const roomEditor = useRoomEditor(pet, setPet);
+  const [decoratingRoom, setDecoratingRoom] = useState<HomeRoomId | null>(null);
+  const handleDecoratingChange = useCallback((roomId: HomeRoomId, active: boolean) => {
+    setDecoratingRoom(current => active ? roomId : current === roomId ? null : current);
+  }, []);
   const preloadedRooms = useMemo(() => HOME_ROOM_IDS.map(id => previewHomeRoom(pet, id)), [pet]);
   const { transition, progress: roomSlideProgress, visit: slideToRoom, ready: roomSceneReady } = useRoomTransition(pet, visitHomeRoom);
   const handleVisitRoom = useCallback((destination: HomeRoomId) => {
@@ -505,6 +511,9 @@ export default function HomeScreen() {
       catHomeRoomId={getCatHomeRoomId(pet)}
       onSendCatToRoom={handleCatRoomArrival}
       onOpenStore={handleOpenStore}
+      roomToolbar={{ decorating: decoratingRoom === (roomPet.homeRoomId ?? 'livingRoom'), onDecoratingChange: handleDecoratingChange }}
+      decorationEntry={decorationEntry?.roomId === roomPet.homeRoomId ? decorationEntry : null}
+      onDecorationEntryConsumed={clearDecorationEntry}
       roomEditor={roomEditor}
       compact
       name={pet.name}
@@ -592,25 +601,40 @@ export default function HomeScreen() {
     <View style={[styles.safe, screenInsets]}>
       <View style={styles.screen}>
         <View style={styles.header}>
-          <View style={styles.headerSpacer} />
-          <View style={styles.headerRight}>
+          <View style={styles.accountRow}>
             <GameHeaderStats
+              layout="home"
               coins={wallet.coins}
               streak={progress.streak}
               lives={progress.lives}
             />
             <HeaderChip
+              style={styles.settingsButton}
               onPress={handleOpenSettings}
               accessibilityLabel={t("home.a11ySettings")}
             >
               <AppIcon name="settings" size={moderateScale(18) * 1.2} />
             </HeaderChip>
           </View>
+          {isNativeCatPet && <View style={styles.roomToolbar}>
+            <Pressable style={({ pressed }) => [styles.shopButton, decoratingRoom === viewRoom && styles.doneButton, pressed && { opacity: .8 }]}
+              disabled={!!transition}
+              accessibilityRole="button" accessibilityState={{ disabled: !!transition }}
+              accessibilityLabel={t(decoratingRoom === viewRoom ? 'home.finishDecorating' : 'home.a11yStore')}
+              onPress={() => {
+                if (decoratingRoom === viewRoom) { recordInteraction(); triggerHaptic(); setDecoratingRoom(null); }
+                else handleOpenStore();
+              }}>
+              <AppIcon name={decoratingRoom === viewRoom ? 'check' : 'store'} size={moderateScale(19)}/>
+              <Text style={styles.shopLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{t(decoratingRoom === viewRoom ? 'home.finishDecorating' : 'home.shop')}</Text>
+            </Pressable>
+            <WorldClockControl inline/>
+          </View>}
         </View>
 
         <View style={styles.middle}>
           <View style={styles.stageWrap}>
-            <WorldClockControl/>
+            {!isNativeCatPet && <WorldClockControl/>}
             {stageRooms.map(room => {
               const id = room.homeRoomId ?? "livingRoom";
               const visible = id === viewRoom;
@@ -671,21 +695,23 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(10),
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: moderateScale(6),
+    gap: moderateScale(8),
     marginBottom: moderateScale(10),
   },
-  headerSpacer: {
-    flex: 1,
-    minWidth: moderateScale(12),
-  },
-  headerRight: {
+  accountRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: moderateScale(6),
-    flexShrink: 0,
+    backgroundColor: GameColors.card,
+    borderWidth: 1,
+    borderColor: GameColors.cardBorder,
+    borderRadius: moderateScale(16),
+    paddingRight: moderateScale(6),
   },
+  settingsButton: { borderWidth: 0, backgroundColor: 'transparent' },
+  roomToolbar: { flexDirection: 'row', alignItems: 'stretch', gap: moderateScale(8) },
+  shopButton: { flex: 1, minWidth: 0, minHeight: 56, justifyContent: 'center', alignItems: 'center', gap: moderateScale(3), paddingHorizontal: moderateScale(8), paddingVertical: moderateScale(8), backgroundColor: '#E8FAF8', borderRadius: moderateScale(12), borderWidth: 1, borderColor: GameColors.secondary },
+  doneButton: { backgroundColor: GameColors.cardBorder, borderColor: GameColors.cardBorder },
+  shopLabel: { color: GameColors.text, fontSize: moderateScale(13), fontWeight: '700' },
   stageWrap: {
     flex: 1,
     minHeight: 0,

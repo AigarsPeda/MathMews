@@ -14,6 +14,7 @@ import { RoomStoreCard } from "@/components/store/RoomStoreCard";
 import { StoreTabBar, type StoreTab } from "@/components/store/StoreTabBar";
 import { NotificationBanner } from "@/components/ui/NotificationBanner";
 import { SlideInNotificationSlot } from "@/components/ui/SlideInNotificationSlot";
+import type { RoomDecorationTarget } from "@/utils/room-decoration-entry";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { CAT_ROOM_IDS, type CatRoomId } from "@/constants/cat-rooms";
 import { CAT_BED_IDS, type CatBedId } from "@/constants/cat-beds";
@@ -116,6 +117,7 @@ export default function StoreScreen() {
     purchaseSkin,
     equipSkin,
     recordInteraction,
+    requestRoomDecoration,
   } = useGame();
 
   const unlockedRooms = progress.roomsUnlocked as CatRoomId[];
@@ -128,13 +130,14 @@ export default function StoreScreen() {
   const equippedSkinId = pet.catSkinId as CatSkinId | undefined;
   const placedToys = pet.placedToys ?? [];
   const placedDecorations = useMemo(() => pet.placedDecorations ?? [], [pet.placedDecorations]);
-  const [activeTab, setActiveTab] = useState<StoreTab>("living");
+  const [activeTab, setActiveTab] = useState<StoreTab>(() => ({ livingRoom: "living", bedroom: "bedroom", bathroom: "bathroom", kitchen: "kitchen" } as const)[pet.homeRoomId ?? "livingRoom"]);
   const [ownedOnly, setOwnedOnly] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [preview, setPreview] = useState<StorePreviewItem | null>(null);
   const goal = getStoreGoalDetails(progress.storeGoal, wallet.coins, t);
   const [feedback, setFeedback] = useState<StoreFeedback | null>(null);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
+  const leavingForDecoration = useRef(false);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -172,6 +175,14 @@ export default function StoreScreen() {
     },
     [recordInteraction],
   );
+
+  const openDecoration = useCallback((target?: RoomDecorationTarget) => {
+    if (leavingForDecoration.current) return;
+    leavingForDecoration.current = true;
+    setPreview(null);
+    requestRoomDecoration(target);
+    router.dismissTo("/");
+  }, [requestRoomDecoration, router]);
 
   const handleBack = useCallback(() => {
     recordInteraction();
@@ -278,33 +289,33 @@ export default function StoreScreen() {
 
   const handleBuyBed = useCallback(
     (bedId: CatBedId) => {
+      if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
       const result = purchaseBed(bedId);
       if (result === "purchased") {
-        triggerHaptic();
+        openDecoration({ kind: "bed", id: bedId });
+        return;
       }
       if (result !== "already_owned") {
         const { icon, message } = showBedPurchaseMessage(result, bedId);
         showFeedback(icon, message);
       }
     },
-    [purchaseBed, recordInteraction, showBedPurchaseMessage, showFeedback],
+    [openDecoration, purchaseBed, recordInteraction, showBedPurchaseMessage, showFeedback],
   );
 
   const handleEquipBed = useCallback(
     (bedId: CatBedId) => {
+      if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
       const equipped = equipBed(bedId);
       if (equipped) {
-        showFeedback(
-          "sparkle",
-          t("store.equippedBed", { name: t(`store.bedName.${bedId}`) }),
-        );
+        openDecoration({ kind: "bed", id: bedId });
       }
     },
-    [equipBed, recordInteraction, showFeedback, t],
+    [equipBed, openDecoration, recordInteraction],
   );
 
   const handleRemoveBed = useCallback(
@@ -358,33 +369,31 @@ export default function StoreScreen() {
 
   const handleBuyToy = useCallback(
     (toyId: CatToyId) => {
+      if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
       const result = purchaseToy(toyId);
       if (result === "purchased") {
-        triggerHaptic();
+        openDecoration({ kind: "toy", id: toyId });
+        return;
       }
       const { icon, message } = showToyPurchaseMessage(result, toyId);
       showFeedback(icon, message);
     },
-    [purchaseToy, recordInteraction, showFeedback, showToyPurchaseMessage],
+    [openDecoration, purchaseToy, recordInteraction, showFeedback, showToyPurchaseMessage],
   );
 
   const handlePlaceToy = useCallback(
     (toyId: CatToyId) => {
+      if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
       const placed = placeToyInRoom(toyId);
       if (placed) {
-        showFeedback(
-          "sparkle",
-          t("store.placedToy", {
-            name: t(`store.toyName.${toyId}`).replace(/\n/g, " "),
-          }),
-        );
+        openDecoration({ kind: "toy", id: toyId });
       }
     },
-    [placeToyInRoom, recordInteraction, showFeedback, t],
+    [placeToyInRoom, openDecoration, recordInteraction],
   );
 
   const handleRemoveToy = useCallback(
@@ -441,11 +450,13 @@ export default function StoreScreen() {
 
   const handleBuyDecoration = useCallback(
     (decorationId: CatDecorationId) => {
+      if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
       const result = purchaseDecoration(decorationId);
       if (result === "purchased") {
-        triggerHaptic();
+        openDecoration({ kind: "decoration", id: decorationId });
+        return;
       }
       const { icon, message } = showDecorationPurchaseMessage(
         result,
@@ -454,6 +465,7 @@ export default function StoreScreen() {
       showFeedback(icon, message);
     },
     [
+      openDecoration,
       purchaseDecoration,
       recordInteraction,
       showDecorationPurchaseMessage,
@@ -463,19 +475,15 @@ export default function StoreScreen() {
 
   const handlePlaceDecoration = useCallback(
     (decorationId: CatDecorationId) => {
+      if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
       const placed = placeDecorationInRoom(decorationId);
       if (placed) {
-        showFeedback(
-          "sparkle",
-          t("store.placedDecoration", {
-            name: t(`store.decorationName.${decorationId}`).replace(/\n/g, " "),
-          }),
-        );
+        openDecoration({ kind: "decoration", id: decorationId });
       }
     },
-    [placeDecorationInRoom, recordInteraction, showFeedback, t],
+    [placeDecorationInRoom, openDecoration, recordInteraction],
   );
 
   const handleRemoveDecoration = useCallback(
@@ -720,8 +728,15 @@ export default function StoreScreen() {
         </View>
 
         <View style={styles.titleBlock}>
-          <Text style={styles.title}>{t("store.title")}</Text>
-          <Text style={styles.subtitle}>{storeSubtitle}</Text>
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, styles.titleLabel]}>{t("store.title")}</Text>
+            <Pressable style={({ pressed }) => [styles.decorateAction, pressed && { opacity: .8 }]}
+              accessibilityRole="button" onPress={() => { recordInteraction(); triggerHaptic(); openDecoration(); }}>
+              <AppIcon name="sofa" size={moderateScale(20)} />
+              <Text style={styles.decorateText}>{t("store.decorateRoom")}</Text>
+            </Pressable>
+          </View>
+          <Text style={styles.subtitle}>{activeTab === "rooms" || activeTab === "colors" ? storeSubtitle : t("store.buyPlaceHint")}</Text>
         </View>
 
         <StoreTabBar active={activeTab} onChange={handleTabChange} />
@@ -842,6 +857,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: GameColors.text,
   },
+  titleRow: { flexDirection: "row", alignItems: "center", gap: moderateScale(12), flexWrap: "wrap" },
+  titleLabel: { flexGrow: 1 },
+  decorateAction: { flexDirection: "row", alignItems: "center", gap: moderateScale(6), minHeight: 48, paddingHorizontal: moderateScale(12), paddingVertical: moderateScale(8), borderRadius: moderateScale(12), backgroundColor: GameColors.card, borderWidth: 1.5, borderColor: GameColors.cardBorder },
+  decorateText: { color: GameColors.text, fontSize: moderateScale(14), fontWeight: "700" },
   titleBlock: {
     gap: moderateScale(4),
   },
