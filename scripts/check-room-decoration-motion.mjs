@@ -967,26 +967,60 @@ console.log('Verified the actual Smaller menu resizes the reported lamp repeated
 states.length=0;drawingValues.length=0;refs.length=0;
 measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
 const fridgeItem={decorationId:'kitchenModernFridgeNavy',instanceId:'fridge',offset:{x:0,y:0}};
-let fridgeToggled,fridgeOpening,fridgeFlipped;
-const fridgeProps={onTogglePlacedFridge:(id,opening)=>{fridgeToggled=id;fridgeOpening=opening;},onFlipPlacedFridgeHinge:id=>{fridgeFlipped=id;}};
+let fridgeToggled,fridgeOpening,fridgeFlipped,fridgeOpenCalls=0;
+const fridgeProps={onTogglePlacedFridge:(id,opening)=>{fridgeToggled=id;fridgeOpening=opening;fridgeOpenCalls++;},onFlipPlacedFridgeHinge:id=>{fridgeFlipped=id;}};
 let fridgeNodes=render([fridgeItem],fridgeProps);
 const fridgeMenu=decorationNode(fridgeNodes,'fridge').node.props.menuActions;
-assert.deepEqual(Array.from(fridgeMenu,a=>a.label),['home.openFridge','home.openFridgeAjar']);
+assert.deepEqual(Array.from(fridgeMenu,a=>a.label),['home.catCommands.fridgeInvestigate','home.openFridge','home.openFridgeAjar']);
 assert.ok(decorationNode(fridgeNodes,'fridge').node.props.interactive);
-fridgeMenu[0].onPress();assert.equal(fridgeToggled,'fridge');assert.equal(fridgeOpening,undefined);
-fridgeMenu[1].onPress();assert.equal(fridgeToggled,'fridge');assert.equal(fridgeOpening,'ajar');
+fridgeMenu.find(a=>a.label==='home.openFridge').onPress();assert.equal(fridgeToggled,'fridge');assert.equal(fridgeOpening,undefined);
+fridgeMenu.find(a=>a.label==='home.openFridgeAjar').onPress();assert.equal(fridgeToggled,'fridge');assert.equal(fridgeOpening,'ajar');
+fridgeMenu[0].onPress();assert.equal(fridgeToggled,'fridge');assert.equal(fridgeOpening,'full');
+assert.equal(requestedInstanceId,'fridge');
 const fullFridgeMenu=decorationNode(render([{...fridgeItem,fridgeOpen:true}],fridgeProps),'fridge').node.props.menuActions;
-assert.deepEqual(Array.from(fullFridgeMenu,a=>a.label),['home.closeFridge','home.openFridgeAjar']);
-fullFridgeMenu[1].onPress();assert.equal(fridgeOpening,'ajar');
+assert.deepEqual(Array.from(fullFridgeMenu,a=>a.label),['home.catCommands.fridgeInvestigate','home.closeFridge','home.openFridgeAjar']);
+const callsBeforeInvestigation=fridgeOpenCalls;
+fullFridgeMenu[0].onPress();assert.equal(fridgeOpenCalls,callsBeforeInvestigation,'Investigating an already open fridge never toggles it closed');
+fullFridgeMenu.find(a=>a.label==='home.openFridgeAjar').onPress();assert.equal(fridgeOpening,'ajar');
 const ajarFridgeNodes=render([{...fridgeItem,fridgeOpen:'ajar'}],fridgeProps);
 const ajarFridgeMenu=decorationNode(ajarFridgeNodes,'fridge').node.props.menuActions;
-assert.deepEqual(Array.from(ajarFridgeMenu,a=>a.label),['home.closeFridge','home.openFridge']);
+assert.deepEqual(Array.from(ajarFridgeMenu,a=>a.label),['home.catCommands.fridgeInvestigate','home.closeFridge','home.openFridge']);
 assert.equal(roomWorld(ajarFridgeNodes).objects[0].fridgeOpen,'ajar');
-ajarFridgeMenu[1].onPress();assert.equal(fridgeOpening,'full');
-ajarFridgeMenu[0].onPress();assert.equal(fridgeOpening,undefined);
+ajarFridgeMenu[0].onPress();assert.equal(fridgeOpening,'full');assert.equal(requestedInstanceId,'fridge');
+ajarFridgeMenu.find(a=>a.label==='home.openFridge').onPress();assert.equal(fridgeOpening,'full');
+ajarFridgeMenu.find(a=>a.label==='home.closeFridge').onPress();assert.equal(fridgeOpening,undefined);
 fridgeNodes.find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
 const editFridgeMenu=decorationNode(render([fridgeItem],fridgeProps),'fridge').node.props.menuActions;
 editFridgeMenu.find(a=>a.label==='home.fridgeHingeRight').onPress();assert.equal(fridgeFlipped,'fridge');
 assert.ok(decorationNode(render([{...fridgeItem,fridgeHingeSide:'right'}],fridgeProps),'fridge').node.props.menuActions.some(a=>a.label==='home.fridgeHingeLeft'));
 assert.equal(roomWorld(render([{...fridgeItem,fridgeOpen:true,fridgeHingeSide:'right'}],fridgeProps)).objects[0].fridgeHingeSide,'right');
 console.log('Verified actual fridge full/crack/close menus, normal-play interaction and reversible hinge choice only in decoration mode.');
+
+states.length=0;drawingValues.length=0;refs.length=0;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+const kitchenMenuItems=[
+  ...['Windsor','Mint','Upholstered','Bistro'].map(name=>['kitchenChair'+name,'chairNap']),
+  ...['kitchenIsland',...['White','Sage','Navy','Charcoal'].map(name=>'kitchenModernIsland'+name)].map(id=>[id,'islandSit']),
+  ['windowPlain','windowWatch'],['windowOakWide','windowWatch'],['kitchenFridge','fridgeInvestigate'],['kitchenModernFridgeNavy','fridgeInvestigate'],
+];
+for(const [decorationId,kind] of kitchenMenuItems) {
+  const item={decorationId,instanceId:'kitchen-action',offset:{x:0,y:0},fridgeOpen:'ajar'};
+  const nodes=render([item],fridgeProps),menu=decorationNode(nodes,'kitchen-action').node.props.menuActions;
+  const action=menu.find(a=>a.label===`home.catCommands.${kind}`);
+  assert.ok(action,decorationId+' has its kitchen activity in the furnishing menu');
+  assert.equal(action.disabled,false);action.onPress();
+  assert.equal(requestedActivity,kind);assert.equal(requestedInstanceId,'kitchen-action');
+  if(kind==='fridgeInvestigate'){assert.equal(fridgeOpening,'full');assert.equal(fridgeToggled,'kitchen-action');}
+  const catAction=roomCommands.find(a=>a.label===`home.catCommands.${kind}`);
+  assert.ok(catAction,'The cat menu also offers '+kind);catAction.onPress();assert.equal(requestedActivity,kind);
+  if(kind==='fridgeInvestigate'){assert.equal(fridgeOpening,'full');assert.equal(requestedInstanceId,'kitchen-action');}
+  const absent=render([item],{...fridgeProps,homeRoomId:'kitchen',catHomeRoomId:'livingRoom'});
+  assert.ok(!(decorationNode(absent,'kitchen-action').node.props.menuActions??[]).some(a=>a.label===`home.catCommands.${kind}`),'An empty room offers no cat activity');
+}
+render([fridgeItem],fridgeProps);
+roomCommands.find(a=>a.label==='home.catCommands.fridgeInvestigate').onPress();
+assert.equal(fridgeOpening,'full');assert.equal(fridgeToggled,'fridge');assert.equal(requestedInstanceId,'fridge','The cat menu opens and selects the same closed fridge');
+const busyKitchen=render([{decorationId:'kitchenChairUpholstered',instanceId:'busy-chair',offset:{x:0,y:0}}],{roomActivityBlocked:true});
+assert.equal(decorationNode(busyKitchen,'busy-chair').node.props.interactive,false);
+assert.equal(roomCommands.find(a=>a.label==='home.catCommands.chairNap').disabled,true);
+console.log('Verified all four kitchen activities in actual cat and furniture menus, selected-instance dispatch, automatic full fridge opening, empty rooms and care blocking.');

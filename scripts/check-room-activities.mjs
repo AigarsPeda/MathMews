@@ -1030,3 +1030,175 @@ for(const reduced of [false,true]) {
   assert.equal(render().activity.plan.steps[render().activity.stepIndex].mood,'sleeping');
 }
 console.log('Verified pending commands, walking and playing finish offscreen once, sleep reaches and holds its seat, and interactions in other rooms do not interrupt the cat.');
+
+const kitchenBase={...room,width:390,height:420,petSize:80,sizeScale:1.15,
+  homeOffset:{x:0,y:.35},nativeStepCompletion:true,toys:[],decorations:[]};
+const kitchenChairs=['Windsor','Mint','Upholstered','Bistro'].map(name=>'kitchenChair'+name);
+const kitchenIslands=['kitchenIsland',...['White','Sage','Navy','Charcoal'].map(name=>'kitchenModernIsland'+name)];
+function kitchenRoom(modelId,extra={}) {
+  const options={...kitchenBase,decorations:[{decorationId:modelId,instanceId:'kitchen-target',offset:{x:0,y:0},...extra}]};
+  return {...options,nativeWorld:nativeRoom.buildNativeRoomWorld(options)};
+}
+function prepareKitchenPlan(options,kind) {
+  let plan=buildRoomActivity(options,0,kind,'kitchen-target');
+  assert.ok(plan,kind+' is available on the chosen furnishing');
+  let position=options.nativeWorld.home;
+  for(let i=0;i<plan.steps.length;i++) {
+    const step=nativeRoom.prepareNativeStep(plan,plan.steps[i],nativeRoom.catScreenPoint(position,options.nativeWorld),options.nativeWorld,position[1]);
+    assert.equal(step.native.blocked,false,`${kind}/${options.decorations[0].decorationId}/${i}/${step.animation} remains reachable`);
+    plan={...plan,steps:plan.steps.map((s,j)=>i===j?step:s)};
+    position=step.native.path.at(-1);
+    if(step.hold)return {plan,step,position};
+  }
+  assert.fail('Kitchen commands must hold their final pose');
+}
+for(const modelId of [...kitchenChairs,...kitchenIslands])for(const rotationDegrees of [0,90,180,270]) {
+  const kind=kitchenChairs.includes(modelId)?'chairNap':'islandSit';
+  const options=kitchenRoom(modelId,{rotationDegrees});
+  const {plan,step,position}=prepareKitchenPlan(options,kind);
+  assert.equal(step.animation,kind==='chairNap'?'curlSleep':'sit');
+  assert.ok(position[1]>nativeRoom.FLOOR_Y+.15,'Paws rest on the actual seat or worktop');
+  const exit=buildRoomReturn(options,plan,plan.steps.indexOf(step),step.position);
+  assert.ok(exit.steps.some(s=>s.animation==='jumpOff'),'Every kitchen perch has a safe departure');
+  assert.ok(exit.steps.every(s=>s.kitchenNavigation),'Departure retains the passage clearance used to arrive');
+  assert.equal(buildRoomActivity(options,0,kind,'removed'),null,'Commands cannot silently use another instance');
+}
+for(const modelId of ['kitchenFridge',...['White','Sage','Navy','Charcoal'].map(name=>'kitchenModernFridge'+name)]) {
+  assert.equal(buildRoomActivity(kitchenRoom(modelId),0,'fridgeInvestigate','kitchen-target'),null,'Closed fridges cannot be investigated');
+  for(const fridgeOpen of [true,'ajar'])for(const fridgeHingeSide of ['left','right'])for(const rotationDegrees of [0,90,180,270])for(const scale of [.8,1.1]) {
+    const options=kitchenRoom(modelId,{fridgeOpen,fridgeHingeSide,rotationDegrees,scale});
+    const {plan,step,position}=prepareKitchenPlan(options,'fridgeInvestigate');
+    assert.equal(step.animation,'idle2');assert.equal(position[1],nativeRoom.FLOOR_Y);
+    assert.ok(Number.isFinite(step.native.heading),'The cat faces the open fridge');
+    // Check the real panel at every five degrees, independently of the swept-sector solver.
+    const fridge=options.nativeWorld.objects[0],retro=modelId==='kitchenFridge';
+    const latch=fridgeHingeSide==='left'?1:-1,halfWidth=retro?.51:.585,front=retro?.46:.55;
+    const clearance=.55*options.nativeWorld.catScale;
+    const checkPoint=point=>{
+      const dx=(point[0]-fridge.position[0])/fridge.scale,dz=(point[2]-fridge.position[2])/fridge.scale;
+      const x=Math.cos(fridge.heading)*dx-Math.sin(fridge.heading)*dz;
+      const z=Math.sin(fridge.heading)*dx+Math.cos(fridge.heading)*dz;
+      for(let degrees=0;degrees<=85;degrees+=5){
+        const angle=degrees*Math.PI/180,u=latch*Math.cos(angle),v=Math.sin(angle);
+        const along=Math.max(0,Math.min(halfWidth*2,(x+latch*halfWidth)*u+(z-front)*v));
+        const gap=Math.hypot(x+latch*halfWidth-along*u,z-front-along*v)*fridge.scale;
+        assert.ok(gap>=clearance+.06*fridge.scale,`${modelId}/${fridgeHingeSide}/${rotationDegrees}: the cat stays outside the moving door at ${degrees} degrees`);
+      }
+    };
+    const exit=buildRoomReturn(options,plan,plan.steps.indexOf(step),step.position);
+    const departure=nativeRoom.prepareNativeStep(exit,exit.steps[0],step.position,options.nativeWorld,position[1]);
+    assert.equal(departure.native.blocked,false);
+    for(const travel of [...plan.steps.filter(s=>s.native&&!s.native.jump),departure]){
+      const path=travel.native.path;
+      for(let i=1;i<path.length;i++){
+        const a=path[i-1],b=path[i],samples=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[2]-a[2])/.02));
+        for(let j=0;j<=samples;j++)checkPoint(a.map((v,k)=>v+(b[k]-v)*j/samples));
+      }
+    }
+    checkPoint(position);
+  }
+}
+// Move fixture meshes together to make a countertop beneath either wall's window.
+function moveFixture(object,position) {
+  const shift=position.map((v,i)=>v-object.position[i]),move=p=>p.map((v,i)=>v+shift[i]);
+  return {...object,position,min:move(object.min),max:move(object.max),seat:object.seat&&move(object.seat),approach:object.approach&&move(object.approach),
+    collisionBoxes:object.collisionBoxes?.map(box=>({min:move(box.min),max:move(box.max)}))};
+}
+function windowKitchen(wallFlipped=false,withCounter=true) {
+  const options={...kitchenBase,decorations:[{decorationId:'windowPlain',instanceId:'kitchen-target',offset:{x:0,y:-.35},wallFlipped},
+    ...(withCounter?[{decorationId:'kitchenModernCounterNavy',instanceId:'counter',offset:{x:0,y:-.15},rotationDegrees:wallFlipped?90:0}]:[])]};
+  const world=nativeRoom.buildNativeRoomWorld(options);
+  world.objects=world.objects.map(o=>moveFixture(o,o.instanceId==='kitchen-target'
+    ?wallFlipped?[-2.25,.7,0]:[0,.7,-2.25]:wallFlipped?[-1.8,nativeRoom.FLOOR_Y,0]:[0,nativeRoom.FLOOR_Y,-1.8]));
+  world.home=[0,nativeRoom.FLOOR_Y,1.5];
+  return {...options,nativeWorld:world};
+}
+// A mixer covering the middle of the island must leave the cat at a clear end.
+const occupiedIsland=kitchenRoom('kitchenModernIslandNavy');
+const islandObject=occupiedIsland.nativeWorld.objects[0];
+const islandTop=islandObject.position[1]+1.23*islandObject.scale;
+const mixerWorld=nativeRoom.buildNativeRoomWorld({...kitchenBase,decorations:[{decorationId:'kitchenMixerStand',instanceId:'mixer',offset:{x:0,y:0}}]});
+occupiedIsland.nativeWorld.objects.push(moveFixture(mixerWorld.objects[0],[islandObject.position[0],islandTop,islandObject.position[2]]));
+const clearIsland=prepareKitchenPlan(occupiedIsland,'islandSit');
+assert.ok(Math.hypot(clearIsland.position[0]-islandObject.position[0],clearIsland.position[2]-islandObject.position[2])>.15,'The cat avoids a mixer in the centre');
+const fullIsland={...occupiedIsland,nativeWorld:{...occupiedIsland.nativeWorld,objects:[...occupiedIsland.nativeWorld.objects,
+  {instanceId:'cover',modelId:'kitchenMixerStand',position:[0,islandTop,0],min:[-2,islandTop,-2],max:[2,islandTop+1,2],solid:true,movable:false}]}};
+const fullPlan=buildRoomActivity(fullIsland,0,'islandSit','kitchen-target');
+const rejectedIsland=nativeRoom.prepareNativeStep(fullPlan,fullPlan.steps[0],nativeRoom.catScreenPoint(fullIsland.nativeWorld.home,fullIsland.nativeWorld),fullIsland.nativeWorld,nativeRoom.FLOOR_Y);
+assert.equal(rejectedIsland.native.blocked,true,'A completely occupied countertop cannot become a resting perch');
+const sideChair=kitchenRoom('kitchenChairUpholstered');
+const chairSeat=sideChair.nativeWorld.objects[0].seat;
+sideChair.nativeWorld.objects.push({instanceId:'front-unit',modelId:'kitchenModernCounterNavy',position:[0,nativeRoom.FLOOR_Y,1],
+  min:[chairSeat[0]-.3,nativeRoom.FLOOR_Y,chairSeat[2]+.55],max:[chairSeat[0]+.3,2,chairSeat[2]+1.6],solid:true,movable:false});
+const sideNap=prepareKitchenPlan(sideChair,'chairNap');
+assert.ok(Math.abs(sideNap.step.seatApproach[0]-chairSeat[0])>.1,'A blocked front approach uses a clear side of the dining chair');
+const blockedChair={...sideChair,nativeWorld:{...sideChair.nativeWorld,objects:[...sideChair.nativeWorld.objects,
+  {instanceId:'seat-cover',modelId:'kitchenModernCounterNavy',position:chairSeat,min:[chairSeat[0]-1,chairSeat[1],chairSeat[2]-1],
+    max:[chairSeat[0]+1,chairSeat[1]+1,chairSeat[2]+1],solid:true,movable:false}]}};
+const blockedNap=buildRoomActivity(blockedChair,0,'chairNap','kitchen-target');
+assert.equal(nativeRoom.prepareNativeStep(blockedNap,blockedNap.steps[0],nativeRoom.catScreenPoint(blockedChair.nativeWorld.home,blockedChair.nativeWorld),
+  blockedChair.nativeWorld,nativeRoom.FLOOR_Y).native.blocked,true,'A table obstructing the nap pose cannot be ignored to force a landing');
+for(const flipped of [false,true])for(const counter of [false,true]) {
+  const options=windowKitchen(flipped,counter),{plan,step,position}=prepareKitchenPlan(options,'windowWatch');
+  assert.equal(step.animation,'blinkSit');assert.ok(Number.isFinite(step.native.heading));
+  assert.equal(Boolean(plan.sofaApproach),counter,'A clear countertop is used instead of the sill; absent counters use the floor');
+  assert.equal(step.targetInstanceId,counter?'counter':undefined);
+  assert.ok(counter?position[1]>nativeRoom.FLOOR_Y+.2:position[1]===nativeRoom.FLOOR_Y);
+  if(counter) {
+    const fresh=buildRoomActivity(options,0,'windowWatch','kitchen-target');
+    const routed=routeToSofa(options,fresh,nativeRoom.catScreenPoint(options.nativeWorld.home,options.nativeWorld));
+    assert.equal(routed.steps[0].targetInstanceId,'counter','Routing a window command preserves the support furnishing, not the window as a floor target');
+    assert.deepEqual(routed.steps[0].seatPosition,fresh.steps[0].seatPosition);
+    const arrival=nativeRoom.prepareNativeStep(routed,routed.steps[0],nativeRoom.catScreenPoint(options.nativeWorld.home,options.nativeWorld),options.nativeWorld,nativeRoom.FLOOR_Y);
+    assert.equal(arrival.native.blocked,false);
+    assert.ok(nativeRoom.hasNativeArrived(arrival.native.path.at(-1),fresh.steps[0].seatApproach));
+  }
+}
+console.log('Verified all dining chairs and islands at four headings, both fridge openings/hinges, and window watching on either wall with countertop and floor positions.');
+
+const kitchenCases=[['chairNap',()=>kitchenRoom('kitchenChairUpholstered')],['islandSit',()=>kitchenRoom('kitchenModernIslandNavy')],
+  ['windowWatch',()=>windowKitchen()],['fridgeInvestigate',()=>kitchenRoom('kitchenModernFridgeNavy',{fridgeOpen:'ajar'})]];
+for(const [kind,makeRoom] of kitchenCases)for(const reduced of [false,true])for(const hideAt of ['command','walking','held']) {
+  roomVisible=true;enabled=false;render();advance(0);
+  visibility={active:true,reduceMotion:reduced};hookRoom=makeRoom();
+  enabled=true;reportCat(hookRoom.nativeWorld.home);render();
+  interaction++;render().startActivity(kind,'kitchen-target',interaction);render();
+  if(hideAt!=='command'){advance(0);render();}
+  if(hideAt==='held')for(let i=0;i<8&&!render().activity.plan.steps[render().activity.stepIndex].hold;i++) {
+    const state=render().activity,step=state.plan.steps[state.stepIndex];
+    assert.equal(step.native.blocked,false,kind+' reaches the visible interaction');
+    render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));
+    render();
+  }
+  roomVisible=false;render();advance(0);render();
+  for(let i=0;i<30;i++){advance(1000);hookRoom={...hookRoom};render();}
+  const state=render().activity,step=state.plan.steps[state.stepIndex];
+  assert.equal(state.plan.kind,kind,`${kind} survives leaving at ${hideAt}`);
+  assert.equal(step.hold,true);assert.equal(step.native.blocked,false);assert.equal(step.native.awaitCompletion,false);
+  const arrival=Array.from(step.native.path.at(-1));
+  interaction++;render();advance(60000);render();
+  assert.equal(render().activity.plan.kind,kind,'Interactions in other rooms do not cancel kitchen activities');
+  assert.equal(timers.size,0,'Held kitchen activities require no recurring offscreen work');
+  roomVisible=true;render();
+  assert.equal(render().activity.plan.kind,kind);
+  assert.deepEqual(Array.from(render().activity.plan.steps[render().activity.stepIndex].native.path.at(-1)),arrival,'Returning preserves the exact perch or investigation position');
+  render().returnHome();render();advance(0);render();
+  const exits=[];
+  for(let i=0;i<10&&render().activity;i++) {
+    const state=render().activity,step=state.plan.steps[state.stepIndex];exits.push(step.animation);
+    assert.equal(step.native.blocked,false,kind+' can be cancelled safely');
+    render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));
+    render();
+  }
+  assert.equal(render().activity,null);
+  if(!reduced&&kind!=='fridgeInvestigate')assert.ok(exits.includes('jumpOff'));
+}
+// Closing the fridge elsewhere also ends the held investigation cleanly.
+roomVisible=true;enabled=false;render();advance(0);visibility={active:true,reduceMotion:false};
+hookRoom=kitchenRoom('kitchenModernFridgeNavy',{fridgeOpen:true});enabled=true;reportCat(hookRoom.nativeWorld.home);render();
+interaction++;render().startActivity('fridgeInvestigate','kitchen-target',interaction);render();roomVisible=false;render();advance(30000);render();
+assert.equal(render().activity.plan.kind,'fridgeInvestigate');
+hookRoom={...hookRoom,decorations:hookRoom.decorations.map(item=>({...item,fridgeOpen:false})),
+  nativeWorld:{...hookRoom.nativeWorld,objects:hookRoom.nativeWorld.objects.map(o=>({...o,fridgeOpen:false}))}};
+render();advance(0);render();assert.equal(render().activity.plan.kind,'returnHome');advance(30000);render();assert.equal(render().activity,null);
+console.log('Verified all four kitchen activities continue from pending commands, walking and held poses while browsing, retain their exact position on return, and exit safely with Reduce Motion.');

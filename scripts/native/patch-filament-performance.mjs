@@ -9,6 +9,15 @@ function patch(path, marker, before, after) {
   if (!source.includes(before)) throw new Error('Filament performance patch context changed: ' + path);
   writeFileSync(url, source.replace(before, after));
 }
+// Unconditional NSLog bypasses RNF_ENABLE_LOGS and can block both the main
+// and JS threads when a simulator's stderr pipe stops draining. Keep failures.
+for (const [path, messages] of [
+  ['ios/src/RNFFilamentComponent.mm', ['[RNF/FilamentComponent] initWithFrame', '[RNF/FilamentComponent] setupOnViewReady', '[RNF/FilamentComponent] updateProps']],
+  ['ios/src/RNFAppleChoreographer.mm', ['Invalidating choreographer', 'Stopping choreographer', 'Starting choreographer']],
+]) for (const message of messages) {
+  const marker = '// Math Mews: quiet lifecycle log ' + message;
+  patch(path, marker, `NSLog(@"${message}");`, marker);
+}
 for (const file of ['AssetBufferCache', 'loadModelResources', 'PreparedModels'])
   writeFileSync(new URL(`src/utilities/${file}.ts`, root), readFileSync(new URL(`filament-recovery/${file}.ts.txt`, import.meta.url)));
 patch('cpp/RNFFilamentBuffer.h', 'FilamentBuffer::clone',

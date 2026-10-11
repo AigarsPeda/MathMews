@@ -312,7 +312,8 @@ export function useRoomActivity(
       if (current && !newRequest && liveWorld.current && (continuing || resumingRoom)) {
         const step = current.plan.steps[current.stepIndex];
         const target = liveWorld.current.objects.find(o => o.instanceId === current.plan.targetInstanceId);
-        if (!target && current.plan.targetInstanceId && current.plan.kind !== 'returnHome' && returning) {
+        if ((!target && current.plan.targetInstanceId && current.plan.kind !== 'returnHome'
+          || current.plan.kind === 'fridgeInvestigate' && !target?.fridgeOpen) && returning) {
           timer = setTimeout(() => runStep(returning, 0), 0);
         } else if (step.animation === 'eating' && target && step.native?.targetPosition
           && pathLength([target.position, step.native.targetPosition]) > .05) {
@@ -330,7 +331,7 @@ export function useRoomActivity(
         const exit = current ? buildRoomExit(options, current.plan, current.stepIndex, position) : { kind: "returnHome" as const, steps: [] };
         timer = setTimeout(() => startPlan({ ...exit, stopForEditing: true }), 0);
       } else if (next) {
-        const plan = next.kind === "sofaSit" || next.kind === "sofaSleep"
+        const plan = next.sofaApproach && next.steps[1]?.animation === 'jumpOn'
           ? routeToSofa(options, next, position, current)
           : current ? { ...next, steps: [...buildRoomExit(options, current.plan, current.stepIndex, position).steps, ...next.steps] } : next;
         queuedPlan.current = plan;

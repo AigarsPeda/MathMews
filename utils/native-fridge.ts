@@ -1,5 +1,39 @@
 import type { NativeRoomObject, Vec3 } from '@/utils/native-room-world';
 
+/** Door dimensions in model space, shared by rendering and navigation. */
+export function fridgeDoorGeometry(object: Pick<NativeRoomObject, 'modelId' | 'fridgeHingeSide'>) {
+  'worklet';
+  const retro = object.modelId === 'kitchenFridge';
+  const side = object.fridgeHingeSide ?? (retro ? 'right' : 'left');
+  const latch = side === 'left' ? 1 : -1;
+  return { latch, hingeX: -latch * (retro ? .51 : .585), front: retro ? .46 : .55,
+    width: retro ? 1.02 : 1.17, angle: 85 * Math.PI / 180 };
+}
+
+/** Distance to the area swept by the door, including intermediate opening poses. */
+export function fridgeDoorSweepDistance(point: Vec3, object: NativeRoomObject): number {
+  'worklet';
+  const door = fridgeDoorGeometry(object);
+  const dx = (point[0] - object.position[0]) / object.scale;
+  const dz = (point[2] - object.position[2]) / object.scale;
+  const c = Math.cos(object.heading), s = Math.sin(object.heading);
+  const x = (c * dx - s * dz - door.hingeX) * door.latch;
+  const z = s * dx + c * dz - door.front;
+  const angle = Math.atan2(z, x), radius = Math.hypot(x, z);
+  let distance: number;
+  if (angle >= 0 && angle <= door.angle) distance = Math.max(0, radius - door.width);
+  else {
+    // Outside the sector, the nearest point lies on one of its two radial edges.
+    const edgeDistance = (a: number) => {
+      const u = Math.cos(a), v = Math.sin(a);
+      const reach = Math.max(0, Math.min(door.width, x * u + z * v));
+      return Math.hypot(x - reach * u, z - reach * v);
+    };
+    distance = Math.min(edgeDistance(0), edgeDistance(door.angle));
+  }
+  return Math.max(0, distance - .06) * object.scale;
+}
+
 /** Frame-rate independent hinge motion, with no overshoot or idle writes. */
 export function advanceFridge(open: number, target: number, dt: number, reduceMotion: boolean): number {
   'worklet';

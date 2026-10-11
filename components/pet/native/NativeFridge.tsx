@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import { RenderCallbackContext, useEntityInScene, useFilamentContext, useLightEntity, type FilamentAsset, type Float3 } from 'react-native-filament';
 import { useSharedValue, type ISharedValue } from 'react-native-worklets-core';
-import { advanceFridge, fridgeLightIntensity, fridgeLightPose } from '@/utils/native-fridge';
+import { advanceFridge, fridgeDoorGeometry, fridgeLightIntensity, fridgeLightPose } from '@/utils/native-fridge';
 import { nativeRoomPreview } from '@/utils/native-room-preview';
 import type { NativeRoomObject, Vec3 } from '@/utils/native-room-world';
 
@@ -46,8 +46,9 @@ export function NativeFridge({ asset, object, active, reduceMotion, editingObjec
   const appliedPose = useSharedValue<number[]>([]);
   useEffect(() => { state.value = { ...state.value, applied: -1 }; appliedPose.value = []; }, [appliedPose, hinge, lights, materials, state]);
   const side = object.fridgeHingeSide ?? (retro ? 'right' : 'left');
-  const angle = (side === 'right' ? 1 : -1) * 85 * Math.PI / 180;
-  const hingeX = (side === 'right' ? 1 : -1) * (retro ? .51 : .585);
+  const door = fridgeDoorGeometry(object);
+  const angle = -door.latch * door.angle;
+  const hingeX = door.hingeX;
   const handleShift = side === (retro ? 'right' : 'left') ? 0 : retro ? .68 : -1;
   RenderCallbackContext.useRenderCallback(({ timeSinceLastFrame }) => {
     'worklet';

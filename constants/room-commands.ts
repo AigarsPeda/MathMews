@@ -3,6 +3,9 @@ import { bathroomFixtureKind } from "@/constants/bathroom-activities";
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
 import { isPlayablePlant } from "@/constants/plant-play";
 import { isCatSeatDecorationId } from "@/constants/sofa-decorations";
+import { isKitchenChairDecorationId, isKitchenIslandDecorationId } from "@/constants/kitchen-activities";
+import { isWindowDecorationId } from "@/constants/window-decorations";
+import { isFridgeDecorationId } from "@/constants/decoration-motion";
 import type { RoomLayerItem } from "@/types/game";
 
 /** Register an interaction here once for both the cat and furnishing menus. */
@@ -10,6 +13,10 @@ export const ROOM_COMMANDS = [
   { kind: "bowlEat", target: "bowl", icon: "feed", section: "essentials" },
   { kind: "sofaSit", target: "seat", icon: "sofa", section: "essentials" },
   { kind: "sofaSleep", target: "seat", icon: "sleep", section: "essentials" },
+  { kind: "chairNap", target: "kitchenChair", icon: "sleep", section: "essentials" },
+  { kind: "islandSit", target: "island", icon: "sofa", section: "essentials" },
+  { kind: "windowWatch", target: "window", icon: "paw", section: "play" },
+  { kind: "fridgeInvestigate", target: "fridge", icon: "paw", section: "play" },
   { kind: "bathWash", target: "bath", icon: "play", section: "essentials" },
   { kind: "showerWash", target: "shower", icon: "play", section: "essentials" },
   { kind: "toiletUse", target: "toilet", icon: "play", section: "essentials" },
@@ -28,6 +35,10 @@ export function getRoomCommands(item: RoomLayerItem) {
     const id = item.decorationId;
     switch (command.target) {
       case "seat": return isCatSeatDecorationId(id);
+      case "kitchenChair": return isKitchenChairDecorationId(id);
+      case "island": return isKitchenIslandDecorationId(id);
+      case "window": return isWindowDecorationId(id);
+      case "fridge": return isFridgeDecorationId(id);
       case "bowl": return isFoodBowlDecorationId(id);
       case "plant": return isPlayablePlant(id);
       case "toy": return id.startsWith("catTree") || id === "yarnRed" || id === "yarnBlue";
