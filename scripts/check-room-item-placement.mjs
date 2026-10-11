@@ -205,7 +205,7 @@ for (const width of [320, 414, 768]) for (const rotationDegrees of [0, 20, 90]) 
   const input = { width, height: width * 1.1, petSize: width / 3, sizeScale: width / 390,
     decorations: [{ decorationId: 'tablePurple', instanceId: 'table', offset: { x: 0, y: 0 }, rotationDegrees, scale: 1.3 }], toys: [] };
   const tableWorld = buildNativeRoomWorld(input), table = tableWorld.objects[0];
-  for (const modelId of ['lavaLampAni', 'lampTableMushroom', 'lampTableCeramic', 'lampTableBanker']) {
+  for (const modelId of ['lavaLampAni', 'lampTableMushroom', 'lampTableCeramic', 'lampTableBanker', 'halloweenGhostLantern']) {
     const lampInput = { decorationId: modelId, instanceId: 'lamp', offset: { x: .65, y: .6 }, poweredOn: true, rotationDegrees: 20 };
     const floorLamp = buildNativeRoomWorld({ ...input, decorations: [lampInput] }).objects[0];
     const meta = NATIVE_MODEL_CATALOG[modelId];
@@ -246,7 +246,7 @@ for (const width of [320,414,768]) for (const wallFlipped of [false,true]) {
     : ['tablePurple','bathroomLongShelf','bathroomSmallShelf','livingShelvingA','livingShelvingB','japaneseShelf','shelfWood','livingFireplaceCream']) {
     const input={width,height:width*1.1,petSize:width/3,sizeScale:width/390,toys:[],
       decorations:[{decorationId:supportModel,instanceId:'support',scale:/^bathroom.*Shelf/.test(supportModel)?1.5:lampModel==='halloweenGhostLantern'&&supportModel==='shelfWood'?1.6:1,
-        offset: /tablePurple|shelfWood|Fireplace/.test(supportModel) ? {x:0,y:0} : {x:wallFlipped ? -.45 : .45,y:-.25},wallFlipped}]};
+        offset: /tablePurple|shelfWood|Fireplace|Island/.test(supportModel) ? {x:0,y:0} : {x:wallFlipped ? -.45 : .45,y:-.25},wallFlipped}]};
     const support=buildNativeRoomWorld(input).objects[0];
     const surface=NATIVE_MODEL_CATALOG[supportModel].supportSurfaces.at(-1);
     const local=[(surface.min[0]+surface.max[0])/2,surface.max[1],(surface.min[2]+surface.max[2])/2];
@@ -254,7 +254,7 @@ for (const width of [320,414,768]) for (const wallFlipped of [false,true]) {
     const board=[support.position[0]+(cos*local[0]+sin*local[2])*support.scale,
       support.position[1]+local[1]*support.scale+.002,
       support.position[2]+(-sin*local[0]+cos*local[2])*support.scale];
-    const lampInput={decorationId:lampModel,instanceId:'lamp',offset:{x:0,y:.6},rotationDegrees:20,poweredOn:true,
+    const lampInput={decorationId:lampModel,instanceId:'lamp',offset:{x:0,y:.6},rotationDegrees:lampModel==='halloweenGhostLantern'?0:20,poweredOn:true,
       ...(lampModel==='halloweenGhostLantern'?{scale:.7}:{})};
     const lamp=buildNativeRoomWorld({...input,decorations:[lampInput]}).objects[0];
     const resolver=createRoomPlacementResolver({...buildNativeRoomWorld(input),objects:[support,lamp]});
