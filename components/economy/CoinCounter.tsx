@@ -56,14 +56,12 @@ export function CoinCounter({
   return (
     <View style={styles.row}>
       {coinChip}
-      {streak > 0 && (
-        <View style={[styles.pill, styles.streakPill]}>
-          <AppIcon name="flame" size={moderateScale(16) * 1.2} />
-          <Text style={styles.streakValue}>
-            {t("economy.streakDay", { count: streak })}
-          </Text>
-        </View>
-      )}
+      <View style={[styles.pill, styles.streakPill]}>
+        <AppIcon name="flame" size={moderateScale(16) * 1.2} />
+        <Text style={styles.streakValue}>
+          {t("economy.streakDay", { count: streak })}
+        </Text>
+      </View>
     </View>
   );
 }

@@ -108,6 +108,8 @@ export type NativeRoomObject = {
   movable: boolean;
   poweredOn?: boolean;
   curtainOpen?: boolean;
+  fridgeOpen?: boolean;
+  fridgeHingeSide?: "left" | "right";
   spotlightAngle?: number;
   spotlightSwivel?: number;
   /** Fixed coordinate of a wall-mounted item's mounting plane. */
@@ -302,7 +304,7 @@ export function buildNativeRoomWorld(options: {
     // Use the nearest window's frame, rather than its deep sill or a remote window.
     return nearby.length ? nearby[0].depth + .015 : .025;
   };
-  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean, spotlightAngle?: number, spotlightSwivel?: number) => {
+  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean, spotlightAngle?: number, spotlightSwivel?: number, fridgeOpen?: boolean, fridgeHingeSide?: "left" | "right") => {
     const meta = NATIVE_MODEL_CATALOG[modelId];
     if (!meta)
       return;
@@ -381,7 +383,7 @@ export function buildNativeRoomWorld(options: {
     const movable = /Ball$|toy-mouse|^yarn/i.test(modelId);
     const solid = !isFoodBowlDecorationId(modelId) && !wall && !/carpet|rug/i.test(modelId) && !movable && max[1] > FLOOR_Y + .10;
     const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
-    const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, curtainOpen, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
+    const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, curtainOpen, fridgeOpen, fridgeHingeSide, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
       wallAxis: wall ? flip ? 0 : 2 : undefined };
     if (meta.bathroom) object.bathroom = { kind: meta.bathroom.kind,
       contact: rotate(meta.bathroom.contact, heading).map((v, i) => position[i] + v * scale) as Vec3 };
@@ -432,7 +434,7 @@ export function buildNativeRoomWorld(options: {
   if (options.bedId)
     add('bed', 'bed-' + options.bedId, getBedDisplaySize(options.bedId) * getEquippedBedScale(options.bedScale) * sizeScale, options.bedOffset ?? { x: -.15, y: .3 }, options.bedFlipped, undefined, 0, options.bedRotationDegrees);
   for (const item of options.decorations)
-    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen, item.spotlightAngle, item.spotlightSwivel);
+    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen, item.spotlightAngle, item.spotlightSwivel, item.fridgeOpen, item.fridgeHingeSide);
   for (const item of options.toys)
     add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
   world.objects = world.objects.map(object => placeObjectOnSurface(object, world.objects, width));

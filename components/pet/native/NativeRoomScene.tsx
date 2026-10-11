@@ -3,6 +3,7 @@ import { registerRoomModelWarmup } from '@/utils/native-model-warmup';
 import type { HomeRoomId } from '@/constants/home-rooms';
 import { prepareModel, clearPreparedModels } from 'react-native-filament';
 import { advanceSpotlightAim, type SpotlightAim } from '@/utils/native-spotlight-aim';
+import { NativeFridge } from './NativeFridge';
 import { NativeCurtain } from './NativeCurtain';
 import { nativeRoomPreview } from '@/utils/native-room-preview';
 import { NativeLightning } from './NativeLightning';
@@ -14,7 +15,7 @@ import { advanceBathroomMotion, STILL_BATHROOM_MOTION } from '@/utils/native-bat
 import { NativeAirflow } from "./NativeAirflow";
 import { NativeFoodSpill } from "./NativeFoodSpill";
 import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
-import { isAirConditionerDecorationId, isCurtainDecorationId, isLampDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
+import { isFridgeDecorationId, isAirConditionerDecorationId, isCurtainDecorationId, isLampDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
 import { NativeLampLight } from './NativeLampLight';
 import { NativeSpotlightHead } from './NativeSpotlightHead';
 import { NativeLampGlow } from './NativeLampGlow';
@@ -420,6 +421,8 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
     clock.value = s;
   }, [active, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
+  if (asset && isFridgeDecorationId(object.modelId))
+    return <NativeFridge asset={asset} object={object} editingObject={editingObject} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
   if (asset && isCurtainDecorationId(object.modelId))
     return <NativeCurtain asset={asset} object={object} windows={windows} clock={worldClock} progress={curtainProgress} lightning={lightning} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
   if (asset && isWallSpotlightDecorationId(object.modelId))

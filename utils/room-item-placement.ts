@@ -304,6 +304,11 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     }
     return true;
   };
+  const canChange = (before: NativeRoomObject, after: NativeRoomObject) => {
+    const allowed = collisions(before);
+    return outsideRoom(after) <= outsideRoom(before) + .00001
+      && collisions(after).every((hit, i) => hit.depth <= allowed[i].depth + .00001);
+  };
   const preservesSupport = (object: NativeRoomObject) => {
     if (!object.supportId) return true;
     const resting = placeObjectOnSurface({ ...object, supportId: undefined }, world.objects, world.width);
@@ -410,10 +415,20 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
       }
       return undefined;
     },
-    canChange(before: NativeRoomObject, after: NativeRoomObject) {
-      const allowed = collisions(before);
-      return outsideRoom(after) <= outsideRoom(before) + .00001
-        && collisions(after).every((hit, i) => hit.depth <= allowed[i].depth + .00001);
+    canChange,
+    /** Resize around the floor base or wall mounting center, not sprite framing. */
+    resize(before: NativeRoomObject, after: NativeRoomObject) {
+      let delta: Vec3;
+      if (before.wallAxis === undefined) {
+        delta = [before.position[0] - after.position[0],
+          before.supportId ? before.min[1] - after.min[1] : before.position[1] - after.position[1],
+          before.position[2] - after.position[2]];
+      } else {
+        delta = before.min.map((v, i) => (v + before.max[i] - after.min[i] - after.max[i]) / 2) as Vec3;
+        delta[before.wallAxis] = 0;
+      }
+      const resized = { ...translateObject(after, delta), supportId: before.supportId };
+      return preservesSupport(resized) && canChange(before, resized) ? resized : undefined;
     },
     /** A small turn near an edge may need a small positional correction. */
     rotate(before: NativeRoomObject, after: NativeRoomObject) {

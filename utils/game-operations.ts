@@ -7,6 +7,18 @@ import { withCoinDelta } from "@/utils/coin-ledger";
 import { boostStat, canFeedForEffect, withPetCareUpdate } from "@/utils/pet-care";
 import { recordTopicAttempt } from "@/utils/topic-stats";
 
+function puzzleDay(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+}
+
+/** Yesterday's streak remains active until today's opportunity has passed. */
+export function currentPuzzleStreak(progress: Pick<Progress, "streak" | "lastPuzzleDay">, now = Date.now()): number {
+  const today = new Date(now);
+  const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
+  return progress.lastPuzzleDay === puzzleDay(today) || progress.lastPuzzleDay === puzzleDay(yesterday)
+    ? Math.max(0, Math.floor(progress.streak)) : 0;
+}
+
 export function getCompletedPuzzleIds(progress: Pick<Progress, "puzzlesSolved" | "completedPuzzleIds">): string[] {
   return [...new Set(progress.completedPuzzleIds ?? getLegacyCompletedPuzzleIds(progress.puzzlesSolved))];
 }
@@ -28,11 +40,12 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
   const coins = correct ? getPuzzleCoinReward(puzzle.difficulty, replay) : 0;
   const ids = correct && !replay ? [...completed, puzzle.id] : completed;
   const date = new Date(now);
-  const day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  const day = puzzleDay(date);
   const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
-  const previousDay = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
-  const streak = !correct || save.progress.lastPuzzleDay === day ? save.progress.streak
-    : save.progress.lastPuzzleDay === previousDay ? save.progress.streak + 1 : 1;
+  const previousDay = puzzleDay(yesterday);
+  const currentStreak = currentPuzzleStreak(save.progress, now);
+  const streak = !correct || save.progress.lastPuzzleDay === day ? currentStreak
+    : save.progress.lastPuzzleDay === previousDay ? currentStreak + 1 : 1;
   let next: GameSave = {
     ...save,
     progress: { ...save.progress, completedPuzzleIds: ids, puzzlesSolved: getSolvedCounts(ids),

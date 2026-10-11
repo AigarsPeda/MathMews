@@ -1,6 +1,7 @@
 """Coordinated modular kitchens, shared by shop thumbnails and native models."""
 import math
 import bpy
+from fridge_interior import add_fridge_interior
 MODERN_KITCHEN_FINISHES = {
     'White': ('F0E9DF', 'EFE8DA', 'C1B9AD'),
     'Sage': ('91AA97', 'ECEDE4', 'C3C9BE'),
@@ -102,13 +103,22 @@ def build_modern_kitchen(id, h):
         cylinder('Tap aerator', (-.25, .10, 1.564), .025, .028, tap)
         box('Single lever mixer handle', (-.16, .43, 1.32), (.16, .032, .028), tap, .009)
     elif 'Fridge' in id:
-        box('Built-in fridge housing', (0, .015, 1.36), (1.24, 1.05, 2.56), front, .018)
-        box('Integrated fridge door shadow', (0, -.517, 1.21), (1.19, .012, 2.22), recess, .004)
+        # A hollow carcass keeps the original closed footprint and proportions.
+        for x in (-.59, .59):
+            box('Built-in fridge housing side', (x, .015, 1.36), (.06, 1.05, 2.56), front, .012)
+        box('Built-in fridge housing back', (0, .51, 1.36), (1.24, .06, 2.56), front, .012)
+        box('Built-in fridge freezer housing', (0, .015, .42), (1.24, 1.05, .68), front, .012)
+        box('Built-in fridge upper housing', (0, .015, 2.48), (1.24, 1.05, .32), front, .012)
         box('Integrated freezer door', (0, -.55, .42), (1.17, .045, .60), front, .009)
-        box('Integrated fridge door', (0, -.55, 1.53), (1.17, .045, 1.55), front, .009)
+        door = box('Integrated fridge door', (0, -.55, 1.53), (1.17, .045, 1.55), front, .009)
         box('Over-fridge cabinet door', (0, -.55, 2.48), (1.17, .045, .28), front, .009)
+        door_parts = [door]
         for z, height in ((.43, .49), (1.54, 1.39)):
-            box('Integrated recessed door pull', (.50, -.574, z), (.027, .012, height), recess, .005)
+            pull = box('Integrated recessed door pull', (.50, -.574, z), (.027, .012, height), recess, .005)
+            if z > 1:
+                pull.name = 'Fridge door handle'
+                door_parts.append(pull)
+        add_fridge_interior(h, 1.24, 1.05, .755, 2.305, -.55, -.585, door_parts)
         box('Recessed fridge ventilation plinth', (0, 0, .06), (1.13, .97, .12), recess, .009)
         for z in (.025, .05, .075, .10):
             box('Fridge ventilation grille', (0, -.491, z), (.99, .008, .006), front, .002)

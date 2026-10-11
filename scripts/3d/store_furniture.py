@@ -1,5 +1,6 @@
 """Authored room furniture and friendly Halloween props, shared by PNG and GLB exports."""
 import math
+from fridge_interior import add_fridge_interior
 import bpy
 from home_details import HOME_DETAIL_IDS, build_home_detail
 from wall_spotlights import WALL_SPOTLIGHT_IDS, build_wall_spotlight
@@ -115,11 +116,21 @@ def build_store_furniture(id, h):
                 box('Pillow stripe', (.78, -.052, z), (.23, .009, .021), 'coral', .004)
 
     elif id == 'kitchenFridge':
-        box('Retro fridge', (0, 0, 1.03), (1.10, .88, 2.04), 'teal', .13)
+        for x in (-.525, .525):
+            box('Retro fridge side', (x, 0, 1.03), (.05, .88, 2.04), 'teal', .02)
+        box('Retro fridge back', (0, .415, 1.03), (1.10, .05, 2.04), 'teal', .02)
+        box('Retro freezer housing', (0, 0, 1.715), (1.10, .88, .67), 'teal', .07)
+        box('Retro fridge base', (0, 0, .06), (1.10, .88, .10), 'teal', .02)
+        door_parts = []
         for z, height in ((.72, 1.29), (1.71, .61)):
-            box('Fridge door', (0, -.46, z), (1.02, .09, height), 'teal', .07)
+            door = box('Fridge door', (0, -.46, z), (1.02, .09, height), 'teal', .07)
+            if z < 1: door_parts.append(door)
         for z in (1.16, 1.60):
-            box('Chrome fridge handle', (-.34, -.54, z), (.075, .085, .29), 'silver', .025)
+            pull = box('Chrome fridge handle', (-.34, -.54, z), (.075, .085, .29), 'silver', .025)
+            if z < 1.4:
+                pull.name = 'Fridge door handle'
+                door_parts.append(pull)
+        add_fridge_interior(h, 1.10, .88, .075, 1.365, -.46, .51, door_parts)
         box('Fridge badge', (.16, -.517, 1.80), (.22, .018, .065), 'cream', .014)
         feet(1.1, .88, .07, 'dark')
 

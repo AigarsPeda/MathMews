@@ -3,7 +3,7 @@ import { isModernKitchenWallDecoration } from "@/constants/modern-kitchen";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
-import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
+import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import { getDecorationDisplaySize, isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
@@ -137,6 +137,8 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
         poweredOn: isPoweredDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
         spotlightAngle: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightAngle(record.spotlightAngle) : undefined,
         spotlightSwivel: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightSwivel(record.spotlightSwivel) : undefined,
+        fridgeHingeSide: isFridgeDecorationId(placement.decorationId) && (record.fridgeHingeSide === "left" || record.fridgeHingeSide === "right") ? record.fridgeHingeSide : undefined,
+        fridgeOpen: isFridgeDecorationId(placement.decorationId) && record.fridgeOpen === true ? true : undefined,
         curtainOpen: isCurtainDecorationId(placement.decorationId) && record.curtainOpen === false ? false : undefined,
         rotationDegrees: isWindowDecorationId(placement.decorationId) ? undefined : normalizeRotationDegrees(record.rotationDegrees),
         scale: scale !== undefined && scale !== getDecorationDefaultScale(placement.decorationId) ? scale : undefined,
@@ -315,10 +317,11 @@ export function updatePlacedToyScaleByInstance(
   placedToys: PlacedToy[] | undefined,
   instanceId: string,
   scale: number,
+  offset?: RoomItemOffset,
 ): PlacedToy[] {
   const nextScale = clampDecorationScale(scale);
   return (placedToys ?? []).map(item => item.instanceId === instanceId
-    ? { ...item, scale: nextScale !== getDefaultToyScale(item.toyId) ? nextScale : undefined } : item);
+    ? { ...item, ...(offset ? { offset } : {}), scale: nextScale !== getDefaultToyScale(item.toyId) ? nextScale : undefined } : item);
 }
 
 export function updatePlacedToyRotationByInstance(
@@ -349,6 +352,26 @@ export function aimPlacedSpotlightByInstance(
     ? { ...item, spotlightAngle: normalizeSpotlightAngle(angle), spotlightSwivel: normalizeSpotlightSwivel(swivel ?? item.spotlightSwivel) } : item);
 }
 
+export function flipPlacedFridgeHingeByInstance(
+  placedDecorations: PlacedDecoration[] | undefined,
+  instanceId: string,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).map(item => {
+    if (item.instanceId !== instanceId || !isFridgeDecorationId(item.decorationId)) return item;
+    const side = item.fridgeHingeSide ?? (item.decorationId === 'kitchenFridge' ? 'right' : 'left');
+    return { ...item, fridgeHingeSide: side === 'left' ? 'right' : 'left' };
+  });
+}
+
+export function togglePlacedFridgeByInstance(
+  placedDecorations: PlacedDecoration[] | undefined,
+  instanceId: string,
+): PlacedDecoration[] {
+  return (placedDecorations ?? []).map(item =>
+    item.instanceId === instanceId && isFridgeDecorationId(item.decorationId)
+      ? { ...item, fridgeOpen: item.fridgeOpen === true ? undefined : true } : item);
+}
+
 export function togglePlacedCurtainByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
   instanceId: string,
@@ -363,6 +386,7 @@ export function updatePlacedDecorationScaleByInstance(
   placedDecorations: PlacedDecoration[] | undefined,
   instanceId: string,
   scale: number,
+  offset?: RoomItemOffset,
 ): PlacedDecoration[] {
   const nextScale = clampDecorationScale(scale);
 
@@ -371,6 +395,7 @@ export function updatePlacedDecorationScaleByInstance(
 
     return {
       ...item,
+      ...(offset ? { offset } : {}),
       scale: nextScale !== getDecorationDefaultScale(item.decorationId as CatDecorationId) ? nextScale : undefined,
     };
   });

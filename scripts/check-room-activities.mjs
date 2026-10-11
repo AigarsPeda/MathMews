@@ -933,3 +933,50 @@ assert.equal(render().activity.plan.steps[0].animation, 'jumpOff', 'The landed c
 resetClockRoom('day'); visibility = { active: true, reduceMotion: true }; render(); advance(60_000);
 assert.equal(render().activity, null, 'Clock-driven exploration respects Reduce Motion');
 console.log('Verified native night nap arrival, hidden-room pause, safe dawn departure, morning activity, preserved commands, airborne dawn transitions and Reduce Motion.');
+
+// Meals progress while browsing another room, without native drawing callbacks.
+for (const reduced of [false,true]) for (const hideAt of ['command','walking','eating']) {
+  roomVisible=true;enabled=false;render();advance(0);
+  visibility={active:true,reduceMotion:reduced};
+  const offscreenRoom={...mealRoom,nativeStepCompletion:true};
+  hookRoom={...offscreenRoom,nativeWorld:nativeRoom.buildNativeRoomWorld(offscreenRoom)};
+  enabled=true;reportCat(hookRoom.nativeWorld.home);render();
+  const before=meals;
+  interaction++;render().startActivity('bowlEat',foodBowl.instanceId,interaction);render();
+  if(hideAt!=='command') {
+    advance(0);render();
+    if(hideAt==='eating') {
+      const state=render().activity,step=state.plan.steps[state.stepIndex];
+      render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));render();
+      assert.equal(render().activity.plan.steps[render().activity.stepIndex].mood,'eating');
+    }
+  }
+  roomVisible=false;render();advance(0);render();
+  // Frequent layout/context renders must not restart a hidden meal's deadline.
+  for(let i=0;i<50;i++){advance(1000);hookRoom={...hookRoom};render();}
+  assert.equal(meals,before+1,`Hidden ${hideAt} meal finishes exactly once`);
+  assert.equal(render().activity,null);
+  assert.equal(timers.size,0,'A completed hidden meal leaves no idle scheduler running');
+  roomVisible=true;render();advance(0);render();
+  advance(20000);render();assert.equal(meals,before+1,'Returning cannot award the meal again');
+}
+console.log('Verified meals finish from pending commands, walking and eating while browsing another room, with native rendering paused, stable deadlines and no duplicate rewards.');
+
+// Returning mid-meal hands completion back to the renderer, without a second reward.
+roomVisible=true;enabled=false;render();advance(0);
+visibility={active:true,reduceMotion:false};
+const returningMealRoom={...mealRoom,nativeStepCompletion:true};
+hookRoom={...returningMealRoom,nativeWorld:nativeRoom.buildNativeRoomWorld(returningMealRoom)};
+enabled=true;reportCat(hookRoom.nativeWorld.home);render();
+const beforeReturnMeal=meals;
+interaction++;render().startActivity('bowlEat',foodBowl.instanceId,interaction);render();advance(0);render();
+roomVisible=false;render();advance(100);render();
+roomVisible=true;render();
+for(let i=0;i<10&&render().activity;i++) {
+  const state=render().activity,step=state.plan.steps[state.stepIndex];
+  assert.equal(step.native.awaitCompletion,true);
+  render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));render();
+}
+assert.equal(meals,beforeReturnMeal+1);
+advance(20000);render();assert.equal(meals,beforeReturnMeal+1);
+console.log('Verified returning mid-meal restores rendered step completion and awards feeding once.');

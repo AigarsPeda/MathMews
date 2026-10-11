@@ -858,3 +858,96 @@ for (const heading of [0,Math.PI/4,Math.PI/2,Math.PI,Math.PI*1.5]) {
   assert.equal(check.canPlace(inside),false,'Chairs cannot pass through the tabletop or its legs');
 }
 console.log('Verified the reported wall-side chair turns safely, saves angle and position atomically, leaves other instances unchanged and tucks beneath the round tabletop without crossing its legs/backrest.');
+
+// Resizing must not drag the reported floor lamp into the wall.
+const lampEntries = JSON.parse(fs.readFileSync('scripts/fixtures/arc-lamp-kitchen.json', 'utf8'));
+const lampId = 'pi-mv3k95w8-lz12vw';
+const { updatePlacedDecorationScaleByInstance } = load('@/utils/room-placement');
+for (const width of [390,414]) {
+  const input = {width,height:width*1.1,petSize:80,sizeScale:1.15,toys:[],decorations:lampEntries};
+  const world = buildNativeRoomWorld(input), before = world.objects.find(o=>o.instanceId===lampId);
+  const candidate = buildNativeRoomWorld({...input,decorations:lampEntries.map(item=>item.instanceId===lampId?{...item,scale:1.7}:item)})
+    .objects.find(o=>o.instanceId===lampId);
+  const resolver = createRoomPlacementResolver(world);
+  assert.equal(resolver.canChange(before,candidate),false,'Keeping the old sprite offset incorrectly pushes the smaller lamp into the wall');
+  const smaller = resolver.resize(before,candidate);
+  assert.ok(smaller,'The lamp can shrink in the reported kitchen');
+  assert.ok(smaller.position.every((v,i)=>Math.abs(v-before.position[i])<1e-8),'The floor base stays exactly in place');
+  const point = roomItemAnchor(smaller,width),size = smaller.scale*width*NATIVE_MODEL_CATALOG[smaller.modelId].renderScale/ROOM_SPAN;
+  const offset = {x:point.x/((width-size)/2),y:point.y/((input.height-size)/2)};
+  const saved = updatePlacedDecorationScaleByInstance(lampEntries,lampId,1.7,offset);
+  const restored = buildNativeRoomWorld({...input,decorations:normalizePlacedDecorations(JSON.parse(JSON.stringify(saved)))})
+    .objects.find(o=>o.instanceId===lampId);
+  assert.ok(restored.position.every((v,i)=>Math.abs(v-smaller.position[i])<1e-8),'Scale and compensated anchor survive save normalization together');
+  assert.equal(restored.heading,before.heading);
+  for (const item of lampEntries.filter(item=>item.instanceId!==lampId)) assert.equal(saved.find(entry=>entry.instanceId===item.instanceId),item);
+}
+// Even an empty room must retain the surface beneath a tabletop lamp.
+{
+  const width=390,input={width,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:[
+    {decorationId:'kitchenModernIslandNavy',instanceId:'island',offset:{x:0,y:0}},
+    {decorationId:'lampTableMushroom',instanceId:'lamp',offset:{x:0,y:0},scale:1},
+  ]};
+  let world=buildNativeRoomWorld(input);
+  const lamp=world.objects.find(o=>o.instanceId==='lamp'),owner=world.objects[0];
+  const meta=NATIVE_MODEL_CATALOG[owner.modelId],lampMeta=NATIVE_MODEL_CATALOG[lamp.modelId];
+  const height=owner.position[1]+meta.supportSurfaces[0].max[1]*owner.scale+.002;
+  const point=projectWorld([owner.position[0],height+lampMeta.center[1]*lamp.scale,owner.position[2]],width);
+  const supported=createRoomPlacementResolver(world).move('lamp',point).object;
+  assert.equal(supported.supportId,'island');
+  world={...world,objects:[owner,supported]};
+  const next=buildNativeRoomWorld({...input,decorations:[input.decorations[0],{...input.decorations[1],scale:.9}]}).objects[1];
+  const small=createRoomPlacementResolver(world).resize(supported,next);
+  assert.ok(small);assert.equal(small.supportId,'island');
+  assert.ok(Math.abs(small.min[1]-supported.min[1])<1e-8,'The lamp still rests on the same countertop');
+  assert.ok([0,2].every(i=>Math.abs(small.position[i]-supported.position[i])<1e-8));
+}
+console.log('Verified the reported arc lamp shrinks without moving into the wall, saves its base and size together, leaves other items untouched and preserves countertop support.');
+
+for (const wallFlipped of [false,true]) {
+  const width=390,input={width,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:[
+    {decorationId:'windowPlain',instanceId:'window',offset:{x:wallFlipped?-.4:.4,y:-.4},scale:1.5,wallFlipped},
+  ]};
+  const world=buildNativeRoomWorld(input),before=world.objects[0];
+  const after=buildNativeRoomWorld({...input,decorations:[{...input.decorations[0],scale:1.4}]}).objects[0];
+  const smaller=createRoomPlacementResolver(world).resize(before,after);
+  assert.ok(smaller);
+  const along=wallFlipped?2:0;
+  for(const axis of [along,1]) assert.ok(Math.abs((before.min[axis]+before.max[axis]-smaller.min[axis]-smaller.max[axis])/2)<1e-8,'Wall mounting center stays fixed');
+  assert.equal(smaller.position[smaller.wallAxis],after.position[after.wallAxis],'The frame retains its newly scaled mounting plane');
+  const point=roomItemAnchor(smaller,width),size=smaller.scale*width*NATIVE_MODEL_CATALOG[smaller.modelId].renderScale/ROOM_SPAN;
+  const saved=updatePlacedDecorationScaleByInstance(input.decorations,'window',1.4,{x:point.x/((width-size)/2),y:point.y/((input.height-size)/2)});
+  const restored=buildNativeRoomWorld({...input,decorations:saved}).objects[0];
+  assert.ok(restored.position.every((v,i)=>Math.abs(v-smaller.position[i])<1e-8));
+}
+{
+  const width=390,input={width,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:[
+    {decorationId:'sofaA',instanceId:'sofa',offset:{x:0,y:0}},
+    {decorationId:'kitchenChairUpholstered',instanceId:'chair',offset:{x:0,y:0},scale:.7},
+  ]};
+  const built=buildNativeRoomWorld(input),sofa=at(built.objects[0],0,-.8,width);
+  const large=buildNativeRoomWorld({...input,decorations:[{...input.decorations[1],scale:2.2}]}).objects[0];
+  let blocked=false;
+  for(let z=-1.5;z<2;z+=.05) {
+    const before=at(built.objects[1],0,z,width),world={...built,objects:[sofa,before]},resolver=createRoomPlacementResolver(world);
+    if(resolver.canPlace(before)&&!resolver.resize(before,large)){blocked=true;break;}
+  }
+  assert.ok(blocked,'Resizing still refuses to enlarge a clear item through furniture');
+}
+console.log('Verified stable mounting centers on both walls, saved wall planes and blocked enlargement into other furniture.');
+
+for (const decorationId of ['kitchenChairUpholstered','sofaA','lampFloorArc','halloweenGhostLantern']) {
+  const width=390,input={width,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:[
+    {decorationId,instanceId:'item',offset:{x:0,y:0},scale:1.1,rotationDegrees:37},
+  ]};
+  const world=buildNativeRoomWorld(input),before=world.objects[0];
+  const after=buildNativeRoomWorld({...input,decorations:[{...input.decorations[0],scale:1}]}).objects[0];
+  const smaller=createRoomPlacementResolver(world).resize(before,after);
+  assert.ok(smaller,decorationId);
+  assert.ok(smaller.position.every((v,i)=>Math.abs(v-before.position[i])<1e-8),'Floor model origin stays grounded even if its mesh has small foot clearance');
+  const point=roomItemAnchor(smaller,width),size=smaller.scale*width*NATIVE_MODEL_CATALOG[smaller.modelId].renderScale/ROOM_SPAN;
+  const saved=updatePlacedDecorationScaleByInstance(input.decorations,'item',1,{x:point.x/((width-size)/2),y:point.y/((input.height-size)/2)});
+  const restored=buildNativeRoomWorld({...input,decorations:normalizePlacedDecorations(JSON.parse(JSON.stringify(saved)))}).objects[0];
+  assert.ok(restored.position.every((v,i)=>Math.abs(v-smaller.position[i])<1e-8),decorationId+' retains its resized floor position through refresh');
+}
+console.log('Verified stable grounded model origins and saved offsets for chairs, sofas, floor lamps and small lanterns.');

@@ -128,7 +128,7 @@ for (const tier of ['easy', 'medium', 'hard']) {
   }
 }
 const { createDefaultGameSave, parseGameSaveFromValue, saveGameSave, loadGameSave, clearGameSave } = load('@/utils/game-storage');
-const { applyPuzzleAnswer, applyFeed, getSolvedCounts } = load('@/utils/game-operations');
+const { applyPuzzleAnswer, applyFeed, getSolvedCounts, currentPuzzleStreak } = load('@/utils/game-operations');
 const { recordTopicAttempt, normalizeTopicStats, buildTopicStatsRows, findToughestTopicRows } = load('@/utils/topic-stats');
 let improving = { addition: { correct: 0, wrong: 100 } };
 for (let i = 0; i < 12; i++) improving = recordTopicAttempt(improving, 'addition', true);
@@ -153,6 +153,20 @@ assert.equal(wrong.pet.stats.hunger, start.pet.stats.hunger); assert.equal(wrong
 assert.equal(applyPuzzleAnswer(wrong, puzzle, true, 'retry', now).coins, 4, 'Zero lives cannot block learning');
 const day2 = applyPuzzleAnswer(first.save, puzzle, true, 'day2', now + 86400000).save;
 assert.equal(day2.progress.streak, 2); assert.equal(applyPuzzleAnswer(day2, puzzle, true, 'same-day', now + 86400100).save.progress.streak, 2);
+const localDay = date => `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+for (const [year,month,day] of [[2026,9,11],[2026,2,30],[2027,0,1]]) {
+  const midnight=new Date(year,month,day).getTime();
+  const missedDay=new Date(year,month,day-2);
+  const expired={streak:6,lastPuzzleDay:localDay(missedDay)};
+  assert.equal(currentPuzzleStreak(expired,midnight-1),6,'The streak remains available throughout yesterday');
+  assert.equal(currentPuzzleStreak(expired,midnight),0,'A missed local calendar day resets at midnight');
+  assert.equal(currentPuzzleStreak({...expired,lastPuzzleDay:localDay(new Date(year,month,day-1))},midnight),6);
+  assert.equal(currentPuzzleStreak({...expired,lastPuzzleDay:localDay(new Date(year,month,day))},midnight),6);
+  const expiredSave={...start,progress:{...start.progress,...expired}};
+  assert.equal(applyPuzzleAnswer(expiredSave,puzzle,false,'missed-wrong',midnight).save.progress.streak,0);
+  assert.equal(applyPuzzleAnswer(expiredSave,puzzle,true,'missed-correct',midnight).save.progress.streak,1);
+}
+assert.equal(currentPuzzleStreak({streak:6},now),0,'Undated legacy streaks cannot remain active indefinitely');
 const basePet = { ...start.pet, stats: { ...start.pet.stats, hunger: 100, happiness: 100 }, lastCareAt: 0 };
 let minutePet = basePet;
 for (let i = 1; i <= 60; i++) minutePet = applyPetTimeDecay(minutePet, i * 60000);

@@ -936,3 +936,48 @@ assert.ok(restoredChair.position.every((v,i)=>Math.abs(v-previewChair.position[i
 assert.equal(restoredChair.heading,Math.PI/2);
 assert.equal(rotatedDining[0],diningTable,'The atomic edit changes only the selected instance');
 console.log('Verified actual wall-side chair rotation controls, untouched table, atomic angle/position Apply and saved preview consistency.');
+
+// The real menu must save the compensated anchor with each size change.
+states.length=0;drawingValues.length=0;refs.length=0;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+let lampLayout=JSON.parse(fs.readFileSync('scripts/fixtures/arc-lamp-kitchen.json','utf8'));
+const resizeLampId='pi-mv3k95w8-lz12vw';
+let resizeSaves=0;
+const resizeProps={onScalePlacedDecoration:(id,direction,offset)=>{
+  assert.equal(id,resizeLampId);assert.ok(offset,'A size edit includes its stable-base anchor');
+  const entry=lampLayout.find(item=>item.instanceId===id);
+  const variants=load('@/constants/decoration-variants');
+  lampLayout=placement.updatePlacedDecorationScaleByInstance(lampLayout,id,variants.scaleDecorationBy(variants.getPlacedDecorationScale(entry),direction),offset);
+  resizeSaves++;
+}};
+render(lampLayout,resizeProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
+const originalLamp=roomWorld(render(lampLayout,resizeProps)).objects.find(o=>o.instanceId===resizeLampId);
+for(let step=0;step<3;step++) {
+  const nodes=render(lampLayout,resizeProps);
+  const action=decorationNode(nodes,resizeLampId).node.props.menuActions.find(action=>action.icon==='zoom-out');
+  assert.equal(action.disabled,false);action.onPress();
+  assert.equal(resizeSaves,step+1,'Smaller saves exactly once');
+  const savedLamp=roomWorld(render(placement.normalizePlacedDecorations(JSON.parse(JSON.stringify(lampLayout))),resizeProps)).objects.find(o=>o.instanceId===resizeLampId);
+  assert.ok(savedLamp.position.every((v,i)=>Math.abs(v-originalLamp.position[i])<1e-8),'Repeated menu resizing and reload keep the base still');
+  assert.equal(savedLamp.heading,originalLamp.heading);
+}
+console.log('Verified the actual Smaller menu resizes the reported lamp repeatedly, saves once per tap and preserves its base through refresh.');
+
+// Fridge interactions are available without decorating; hinge choice is an edit option.
+states.length=0;drawingValues.length=0;refs.length=0;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+const fridgeItem={decorationId:'kitchenModernFridgeNavy',instanceId:'fridge',offset:{x:0,y:0}};
+let fridgeToggled,fridgeFlipped;
+const fridgeProps={onTogglePlacedFridge:id=>{fridgeToggled=id;},onFlipPlacedFridgeHinge:id=>{fridgeFlipped=id;}};
+let fridgeNodes=render([fridgeItem],fridgeProps);
+const fridgeMenu=decorationNode(fridgeNodes,'fridge').node.props.menuActions;
+assert.deepEqual(Array.from(fridgeMenu,a=>a.label),['home.openFridge']);
+assert.ok(decorationNode(fridgeNodes,'fridge').node.props.interactive);
+fridgeMenu[0].onPress();assert.equal(fridgeToggled,'fridge');
+assert.equal(decorationNode(render([{...fridgeItem,fridgeOpen:true}],fridgeProps),'fridge').node.props.menuActions[0].label,'home.closeFridge');
+fridgeNodes.find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
+const editFridgeMenu=decorationNode(render([fridgeItem],fridgeProps),'fridge').node.props.menuActions;
+editFridgeMenu.find(a=>a.label==='home.fridgeHingeRight').onPress();assert.equal(fridgeFlipped,'fridge');
+assert.ok(decorationNode(render([{...fridgeItem,fridgeHingeSide:'right'}],fridgeProps),'fridge').node.props.menuActions.some(a=>a.label==='home.fridgeHingeLeft'));
+assert.equal(roomWorld(render([{...fridgeItem,fridgeOpen:true,fridgeHingeSide:'right'}],fridgeProps)).objects[0].fridgeHingeSide,'right');
+console.log('Verified actual fridge open/close menus, normal-play interaction and reversible hinge choice only in decoration mode.');

@@ -3,9 +3,9 @@ import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeath
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
 import { switchRoomLayout } from "@/utils/room-layout";
 import { setRoomItemRotation } from "@/utils/room-rotation";
-import { applyPuzzleAnswer, applyFeed } from "@/utils/game-operations";
+import { applyPuzzleAnswer, applyFeed, currentPuzzleStreak } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
-import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
+import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
 import { LIFE_BUY_COST } from "@/constants/game";
 import {
   DEFAULT_BED_SCALE,
@@ -81,6 +81,8 @@ import {
   removePlacedToyByInstance,
   togglePlacedDecorationPowerByInstance,
   togglePlacedCurtainByInstance,
+  togglePlacedFridgeByInstance,
+  flipPlacedFridgeHingeByInstance,
   aimPlacedSpotlightByInstance,
   updatePlacedDecorationRotationByInstance,
   updatePlacedDecorationScaleByInstance,
@@ -162,11 +164,11 @@ type GameContextValue = {
   equipBed: (bedId: CatBedId) => boolean;
   removeBedFromRoom: () => boolean;
   flipEquippedBed: () => boolean;
-  scaleEquippedBed: (direction: "up" | "down") => boolean;
+  scaleEquippedBed: (direction: "up" | "down", offset?: RoomItemOffset) => boolean;
   purchaseToy: (toyId: CatToyId) => ToyPurchaseResult;
   placeToyInRoom: (toyId: CatToyId) => boolean;
   removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
-  scalePlacedToy: (instanceId: string, direction: "up" | "down") => boolean;
+  scalePlacedToy: (instanceId: string, direction: "up" | "down", offset?: RoomItemOffset) => boolean;
   rotatePlacedToy: (instanceId: string) => boolean;
   setRoomItemRotation: (item: RoomLayerItem, degrees: number, offset?: RoomItemOffset) => boolean;
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
@@ -180,9 +182,12 @@ type GameContextValue = {
   togglePlacedDecorationPower: (instanceId: string) => boolean;
   aimPlacedSpotlight: (instanceId: string, angle: number, swivel?: number) => boolean;
   togglePlacedCurtain: (instanceId: string) => boolean;
+  togglePlacedFridge: (instanceId: string) => boolean;
+  flipPlacedFridgeHinge: (instanceId: string) => boolean;
   scalePlacedDecoration: (
     instanceId: string,
     direction: "up" | "down",
+    offset?: RoomItemOffset,
   ) => boolean;
   moveRoomLayerItem: (item: RoomLayerItem, direction: "up" | "down") => boolean;
   purchaseSkin: (skinId: CatSkinId) => SkinPurchaseResult;
@@ -229,7 +234,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const pet = removeRoomNavigationDoors(candidate.pet);
     const clock = candidate.worldClock && candidate.worldClock === saveRef.current.worldClock
       ? candidate.worldClock : normalizeWorldClock(candidate.worldClock ?? initialWorldClock);
-    const next = { ...candidate, pet, worldClock: clock };
+    const streak = currentPuzzleStreak(candidate.progress);
+    const progress = streak === candidate.progress.streak ? candidate.progress : { ...candidate.progress, streak };
+    const next = { ...candidate, pet, progress, worldClock: clock };
     saveRef.current = next;
     setSaveState(next);
   }, [initialWorldClock]);
@@ -354,18 +361,31 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isReady) return;
 
+    let dayBoundary: ReturnType<typeof setTimeout>;
+    const scheduleDayBoundary = () => {
+      clearTimeout(dayBoundary);
+      const now = Date.now();
+      const midnight = new Date(now); midnight.setHours(24, 0, 0, 0);
+      dayBoundary = setTimeout(() => {
+        tickGameTime(false);
+        scheduleDayBoundary();
+      }, midnight.getTime() - now);
+    };
     const handleAppState = (state: AppStateStatus) => {
       if (state === "active") {
         tickGameTime(true);
+        scheduleDayBoundary();
       }
     };
 
+    scheduleDayBoundary();
     const subscription = AppState.addEventListener("change", handleAppState);
     const interval = setInterval(() => tickGameTime(false), CARE_TICK_MS);
 
     return () => {
       subscription.remove();
       clearInterval(interval);
+      clearTimeout(dayBoundary);
     };
   }, [isReady, tickGameTime]);
 
@@ -633,7 +653,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const scaleEquippedBed = useCallback((direction: "up" | "down") => {
+  const scaleEquippedBed = useCallback((direction: "up" | "down", offset?: RoomItemOffset) => {
     const current = saveRef.current;
     const resolvedId = resolveCatBedId(current.pet.bedId);
     if (!resolvedId) {
@@ -655,6 +675,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       pet: {
         ...current.pet,
         bedScale: nextScale !== DEFAULT_BED_SCALE ? nextScale : undefined,
+        ...(offset ? { roomBedOffset: offset } : {}),
       },
     });
 
@@ -950,6 +971,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
+  const flipPlacedFridgeHinge = useCallback((instanceId: string) => {
+    const current = saveRef.current;
+    const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
+    if (!placed || !isFridgeDecorationId(placed.decorationId)) return false;
+    setSave({ ...current, pet: { ...current.pet,
+      placedDecorations: flipPlacedFridgeHingeByInstance(current.pet.placedDecorations, instanceId),
+    } });
+    return true;
+  }, [setSave]);
+
+  const togglePlacedFridge = useCallback((instanceId: string) => {
+    const current = saveRef.current;
+    const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
+    if (!placed || !isFridgeDecorationId(placed.decorationId)) return false;
+    setSave({ ...current, pet: { ...current.pet,
+      placedDecorations: togglePlacedFridgeByInstance(current.pet.placedDecorations, instanceId),
+    } });
+    return true;
+  }, [setSave]);
+
   const togglePlacedCurtain = useCallback((instanceId: string) => {
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
@@ -994,7 +1035,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const scalePlacedToy = useCallback((instanceId: string, direction: "up" | "down") => {
+  const scalePlacedToy = useCallback((instanceId: string, direction: "up" | "down", offset?: RoomItemOffset) => {
     const current = saveRef.current;
     const placed = findPlacedToyByInstance(current.pet.placedToys, instanceId);
     if (!placed) return false;
@@ -1002,13 +1043,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if ((direction === "up" && !canScaleDecorationUp(scale)) ||
       (direction === "down" && !canScaleDecorationDown(scale))) return false;
     setSave({ ...current, pet: { ...current.pet,
-      placedToys: updatePlacedToyScaleByInstance(current.pet.placedToys, instanceId, scaleDecorationBy(scale, direction)),
+      placedToys: updatePlacedToyScaleByInstance(current.pet.placedToys, instanceId, scaleDecorationBy(scale, direction), offset),
     } });
     return true;
   }, [setSave]);
 
   const scalePlacedDecoration = useCallback(
-    (instanceId: string, direction: "up" | "down") => {
+    (instanceId: string, direction: "up" | "down", offset?: RoomItemOffset) => {
       const current = saveRef.current;
       const placed = findPlacedDecorationByInstance(
         current.pet.placedDecorations,
@@ -1036,6 +1077,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             current.pet.placedDecorations,
             instanceId,
             nextScale,
+            offset,
           ),
         },
       });
@@ -1298,6 +1340,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       flipPlacedDecorationWall,
       togglePlacedDecorationPower,
       togglePlacedCurtain,
+      togglePlacedFridge,
+      flipPlacedFridgeHinge,
       aimPlacedSpotlight,
       scalePlacedDecoration,
       moveRoomLayerItem,
@@ -1370,6 +1414,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       flipPlacedDecorationWall,
       togglePlacedDecorationPower,
       togglePlacedCurtain,
+      togglePlacedFridge,
+      flipPlacedFridgeHinge,
       aimPlacedSpotlight,
       scalePlacedDecoration,
       moveRoomLayerItem,

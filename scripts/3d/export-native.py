@@ -109,10 +109,12 @@ def window_area_lightmap(objects):
  bpy.data.objects.remove(light,do_unlink=True)
 def items():
  selected=[a.split('=',1)[1] for a in ARGS if a.startswith('--id=')]
- metadata=json.loads((OUT/'catalog.json').read_text()) if selected else {}
+ existing_metadata=json.loads((OUT/'catalog.json').read_text()) if (OUT/'catalog.json').exists() else {}
+ metadata=dict(existing_metadata) if selected else {}
  for entry in json.loads((ROOT/'scripts/3d/inventory.json').read_text())['entries']:
   if selected and entry['id'] not in selected:continue
   clear();scene=scope['setup'](256);id=entry['id'];kind=entry['kind']
+  prior_framing=existing_metadata.get(id) if id=='kitchenFridge' or id.startswith('kitchenModernFridge') else None
   if kind=='room':
    # Reuse the original room builder without producing another raster or .blend.
    previous=scope['render'];scope['render']=lambda path:None
@@ -159,6 +161,8 @@ def items():
   export(OUT/(id+'.glb'),objects,animated)
   def yup(v):return [v[0],v[2],-v[1]]
   metadata[id]={'kind':kind,'renderScale':render_scale,'center':yup(center),'min':[lo[0],lo[2],-hi[1]],'max':[hi[0],hi[2],-lo[1]],'animated':animated,'wind':wind}
+  if prior_framing:
+   for key in ('renderScale','center'):metadata[id][key]=prior_framing[key]
   contact=next((o for o in objects if o.name=='Bathroom contact'),None)
   if contact:
    metadata[id]['bathroom']={'kind':contact['bathroom_kind'],'contact':yup(list(contact.location))}

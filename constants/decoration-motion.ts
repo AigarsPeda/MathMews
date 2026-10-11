@@ -53,3 +53,7 @@ export function isCurtainDecorationId(id: string): boolean {
 
 // Exported fabric depth and widest reach across the open/closed panel poses.
 export const CURTAIN_FABRIC_BOUNDS = { minX: -.926, maxX: .926, minZ: -.013, maxZ: .078 };
+
+export function isFridgeDecorationId(id: string): boolean {
+  return id === "kitchenFridge" || /^kitchenModernFridge(White|Sage|Navy|Charcoal)$/.test(id);
+}

@@ -1,0 +1,162 @@
+[
+  {
+    "decorationId": "kitchenMixerStand",
+    "instanceId": "pi-mv2pimqt-fbdp8t",
+    "offset": {
+      "x": -0.17302625160177582,
+      "y": 0.07698595321396515
+    },
+    "wallFlipped": true
+  },
+  {
+    "decorationId": "windowPlain",
+    "instanceId": "pi-mv2pr2wg-owranu",
+    "offset": {
+      "x": -0.4366378650293232,
+      "y": -0.44545151952359635
+    },
+    "wallFlipped": true,
+    "scale": 1.5
+  },
+  {
+    "decorationId": "kitchenModernCounterNavy",
+    "instanceId": "pi-mv2rtpad-mtcfwd",
+    "offset": {
+      "x": 0.06655351728087722,
+      "y": -0.22701708268424756
+    },
+    "scale": 1.1
+  },
+  {
+    "decorationId": "kitchenModernInductionNavy",
+    "instanceId": "pi-mv2rtuk3-lhf9qy",
+    "offset": {
+      "x": -0.5419709598101158,
+      "y": -0.0646184051560632
+    },
+    "wallFlipped": true,
+    "scale": 1.1
+  },
+  {
+    "decorationId": "kitchenModernWallCabinetNavy",
+    "instanceId": "pi-mv2ru316-vgwt5j",
+    "offset": {
+      "x": -0.6805360678070972,
+      "y": -0.40827205831748775
+    },
+    "wallFlipped": true
+  },
+  {
+    "decorationId": "kitchenModernShelfNavy",
+    "instanceId": "pi-mv2ru7yn-zg2nvn",
+    "offset": {
+      "x": -0.6872718751290712,
+      "y": -0.29792210621972653
+    },
+    "wallFlipped": true
+  },
+  {
+    "decorationId": "kitchenModernFridgeNavy",
+    "instanceId": "pi-mv2s4uhf-12r5ic",
+    "offset": {
+      "x": 0.4203738838162951,
+      "y": -0.2736084482069254
+    },
+    "scale": 1.1
+  },
+  {
+    "decorationId": "kitchenModernIslandNavy",
+    "instanceId": "pi-mv2s4ya1-ujaau7",
+    "offset": {
+      "x": 0.016234222777824922,
+      "y": 0.16497590528267309
+    },
+    "wallFlipped": true
+  },
+  {
+    "decorationId": "kitchenModernSinkNavy",
+    "instanceId": "pi-mv2sup1x-zj4odm",
+    "offset": {
+      "x": -0.26684333519561404,
+      "y": -0.17766343008542332
+    },
+    "wallFlipped": true,
+    "scale": 1.1
+  },
+  {
+    "decorationId": "lampTableMushroom",
+    "instanceId": "pi-mv3fj3yg-ln5thu",
+    "offset": {
+      "x": 0.04600214253277126,
+      "y": 0.02035500283744286
+    },
+    "poweredOn": true,
+    "scale": 0.8
+  },
+  {
+    "decorationId": "halloweenGhostLantern",
+    "instanceId": "pi-mv3flkiq-13l32l",
+    "offset": {
+      "x": -0.0015541129405645527,
+      "y": -0.3731758623375386
+    },
+    "poweredOn": true,
+    "rotationDegrees": 46.2
+  },
+  {
+    "decorationId": "kitchenDiningTable",
+    "instanceId": "pi-mv3iefhk-lwafm3",
+    "offset": {
+      "x": 0.6173102933876362,
+      "y": 0.13357504501994394
+    },
+    "scale": 1.1
+  },
+  {
+    "decorationId": "kitchenChairUpholstered",
+    "instanceId": "pi-mv3jb9zx-xyrc9w",
+    "offset": {
+      "x": 0.3950334268378984,
+      "y": 0.09915500438052048
+    },
+    "rotationDegrees": 118.1
+  },
+  {
+    "decorationId": "kitchenChairUpholstered",
+    "instanceId": "pi-mv3jbbhk-5mw5lu",
+    "offset": {
+      "x": 0.7092582731840238,
+      "y": 0.09879226979529279
+    },
+    "rotationDegrees": 312.7
+  },
+  {
+    "decorationId": "kitchenChairUpholstered",
+    "instanceId": "pi-mv3jbcg5-pxbmwu",
+    "offset": {
+      "x": 0.5900640539950531,
+      "y": 0.05244505966694488
+    },
+    "rotationDegrees": 58
+  },
+  {
+    "decorationId": "kitchenChairUpholstered",
+    "instanceId": "pi-mv3jbdk0-mpv2hl",
+    "offset": {
+      "x": 0.461294699609489,
+      "y": 0.1806358817307608
+    },
+    "rotationDegrees": 202.3
+  },
+  {
+    "decorationId": "lampFloorArc",
+    "scale": 1.8,
+    "rotationDegrees": 231.6,
+    "instanceId": "pi-mv3k95w8-lz12vw",
+    "offset": {
+      "x": 0.944747002401126,
+      "y": -0.15074412196100492
+    },
+    "poweredOn": true
+  }
+]

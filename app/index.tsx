@@ -94,6 +94,8 @@ export default function HomeScreen() {
     flipPlacedDecorationWall,
     togglePlacedDecorationPower,
     togglePlacedCurtain,
+    togglePlacedFridge,
+    flipPlacedFridgeHinge,
     aimPlacedSpotlight,
     scalePlacedDecoration,
     visitHomeRoom,
@@ -300,6 +302,18 @@ export default function HomeScreen() {
     [flipPlacedDecorationWall, recordInteraction],
   );
 
+  const handleFlipPlacedFridgeHinge = useCallback((instanceId: string) => {
+    if (!flipPlacedFridgeHinge(instanceId)) return;
+    recordInteraction();
+    triggerHaptic();
+  }, [recordInteraction, flipPlacedFridgeHinge]);
+
+  const handleTogglePlacedFridge = useCallback((instanceId: string) => {
+    if (!togglePlacedFridge(instanceId)) return;
+    recordInteraction();
+    triggerHaptic();
+  }, [recordInteraction, togglePlacedFridge]);
+
   const handleTogglePlacedCurtain = useCallback((instanceId: string) => {
     if (!togglePlacedCurtain(instanceId)) return;
     recordInteraction();
@@ -325,8 +339,8 @@ export default function HomeScreen() {
   );
 
   const handleScalePlacedToy = useCallback(
-    (instanceId: string, direction: "up" | "down") => {
-      if (!scalePlacedToy(instanceId, direction)) return;
+    (instanceId: string, direction: "up" | "down", offset?: RoomItemOffset) => {
+      if (!scalePlacedToy(instanceId, direction, offset)) return;
       recordInteraction();
       triggerHaptic();
     },
@@ -334,8 +348,8 @@ export default function HomeScreen() {
   );
 
   const handleScalePlacedDecoration = useCallback(
-    (instanceId: string, direction: "up" | "down") => {
-      const scaled = scalePlacedDecoration(instanceId, direction);
+    (instanceId: string, direction: "up" | "down", offset?: RoomItemOffset) => {
+      const scaled = scalePlacedDecoration(instanceId, direction, offset);
       if (!scaled) return;
 
       recordInteraction();
@@ -397,8 +411,8 @@ export default function HomeScreen() {
   }, [flipEquippedBed, recordInteraction]);
 
   const handleScaleBed = useCallback(
-    (direction: "up" | "down") => {
-      const scaled = scaleEquippedBed(direction);
+    (direction: "up" | "down", offset?: RoomItemOffset) => {
+      const scaled = scaleEquippedBed(direction, offset);
       if (!scaled) return;
 
       recordInteraction();
@@ -539,6 +553,8 @@ export default function HomeScreen() {
       onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
       onTogglePlacedDecorationPower={handleTogglePlacedDecorationPower}
       onTogglePlacedCurtain={handleTogglePlacedCurtain}
+      onTogglePlacedFridge={handleTogglePlacedFridge}
+      onFlipPlacedFridgeHinge={handleFlipPlacedFridgeHinge}
       onAimPlacedSpotlight={(id, angle, swivel) => { if (aimPlacedSpotlight(id, angle, swivel)) recordInteraction(); }}
       onScalePlacedDecoration={handleScalePlacedDecoration}
       onMoveRoomLayerItem={handleMoveRoomLayerItem}

@@ -28,7 +28,7 @@ import { roomActivityStepKey, roomOffsetToPoint, type RoomActivityKind } from "@
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-model-registry";
 import { useRoomActivity } from "@/hooks/use-room-activity";
 import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
-import { isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
+import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { SimpleLampLight } from '@/components/pet/SimpleLampLight';
 import { WorldRoomTint } from '@/components/pet/WorldRoomTint';
@@ -170,17 +170,20 @@ type PetStageProps = {
   onFlipPlacedDecorationWall?: (instanceId: string) => void;
   onAimPlacedSpotlight?: (instanceId: string, angle: number, swivel?: number) => void;
   onTogglePlacedCurtain?: (instanceId: string) => void;
+  onTogglePlacedFridge?: (instanceId: string) => void;
+  onFlipPlacedFridgeHinge?: (instanceId: string) => void;
   onTogglePlacedDecorationPower?: (instanceId: string) => void;
   onScalePlacedDecoration?: (
     instanceId: string,
     direction: "up" | "down",
+    offset?: RoomItemOffset,
   ) => void;
   onMoveRoomLayerItem?: (item: RoomLayerItem, direction: "up" | "down") => void;
   onBedRemove?: () => void;
   onFlipBed?: () => void;
-  onScaleBed?: (direction: "up" | "down") => void;
+  onScaleBed?: (direction: "up" | "down", offset?: RoomItemOffset) => void;
   onPlacedToyRemove?: (instanceId: string) => void;
-  onScalePlacedToy?: (instanceId: string, direction: "up" | "down") => void;
+  onScalePlacedToy?: (instanceId: string, direction: "up" | "down", offset?: RoomItemOffset) => void;
   onOpenMathStats?: () => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (stepIndex: number) => void;
@@ -236,6 +239,8 @@ export function PetStage({
   onFlipPlacedDecorationWall,
   onTogglePlacedDecorationPower,
   onTogglePlacedCurtain,
+  onTogglePlacedFridge,
+  onFlipPlacedFridgeHinge,
   onAimPlacedSpotlight,
   onScalePlacedDecoration,
   onMoveRoomLayerItem,
@@ -434,8 +439,8 @@ export function PetStage({
     const frame = requestAnimationFrame(() => { void placeNewObjects(); });
     return () => { controller.abort(); cancelAnimationFrame(frame); };
   }, [nativeWorld, placement, livePositions, roomVisible, roomPlacedToys, rotationPreview, viewport.width, viewport.height, onRoomBedOffsetChange, onPlacedToyOffsetChange, onPlacedDecorationOffsetChange, onBedRemove, onPlacedToyRemove, onPlacedDecorationRemove, t]);
-  const canResizeItem = useCallback((item: RoomLayerItem, scale: number) => {
-    if (viewport.width <= 0) return true;
+  const resizeItemPlacement = useCallback((item: RoomLayerItem, scale: number): { offset?: RoomItemOffset } | undefined => {
+    if (viewport.width <= 0) return {};
     const id = item.kind === 'bed' ? 'bed' : item.instanceId;
     const before = nativeWorld.objects.find(object => object.instanceId === id);
     const next = buildNativeRoomWorld({ width: viewport.width, height: viewport.height, petSize: displayWidth,
@@ -445,7 +450,11 @@ export function PetStage({
       toys: roomPlacedToys.map(placed => item.kind === 'toy' && placed.instanceId === id ? { ...placed, scale } : placed),
       layerOrder: roomLayerOrder,
     }).objects.find(object => object.instanceId === id);
-    return !!before && !!next && placement.canChange(before, next);
+    const adjusted = before && next ? placement.resize(before, next) : undefined;
+    if (!adjusted) return undefined;
+    const point = roomItemAnchor(adjusted, viewport.width);
+    const size = adjusted.scale * viewport.width * NATIVE_MODEL_CATALOG[adjusted.modelId].renderScale / ROOM_SPAN;
+    return { offset: { x: point.x / Math.max(1, (viewport.width - size) / 2), y: point.y / Math.max(1, (viewport.height - size) / 2) } };
   }, [nativeWorld, placement, viewport.width, viewport.height, displayWidth, roomPetOffset, bedId, roomBedOffset, bedFlipped, bedScale, bedRotationDegrees, roomPlacedDecorations, roomPlacedToys, roomLayerOrder]);
   const livePosition = useCallback((id: string, point: { x: number; y: number }) => {
     if (id === 'cat') { setLivePositions(current => ({ ...current, [id]: point })); return point; }
@@ -608,6 +617,7 @@ export function PetStage({
       if (!decorating) {
         if (roomActivityBlocked) return false;
         if (item.kind === "decoration" && isRoomDoor(item.decorationId)) return false;
+        if (item.kind === "decoration" && isFridgeDecorationId(item.decorationId)) return Boolean(onTogglePlacedFridge);
         if (item.kind === "decoration" && isCurtainDecorationId(item.decorationId)) return Boolean(onTogglePlacedCurtain);
         if (item.kind === "decoration" && isPoweredDecorationId(item.decorationId)) return Boolean(onTogglePlacedDecorationPower);
         if (!catPresent || viewport.width <= displayWidth || viewport.height <= displayWidth) return false;
@@ -650,6 +660,7 @@ export function PetStage({
       onScalePlacedDecoration,
       onTogglePlacedDecorationPower,
       onTogglePlacedCurtain,
+      onTogglePlacedFridge,
     ],
   );
 
@@ -664,6 +675,19 @@ export function PetStage({
             disabled: roomActivityBlocked || (kind === "bowlEat" && (!onFeed || !canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
             onPress: () => { const interactionAt = onRoomInteraction?.(); startActivity(kind, item.instanceId, interactionAt ?? undefined); },
           });
+        }
+      }
+      if (item.kind === "decoration" && isFridgeDecorationId(item.decorationId) && onTogglePlacedFridge) {
+        const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
+        if (placed) actions.push({
+          label: t(placed.fridgeOpen ? "home.closeFridge" : "home.openFridge"),
+          icon: placed.fridgeOpen ? "arrow-right" : "arrow-left",
+          onPress: () => onTogglePlacedFridge(item.instanceId),
+        });
+        if (placed && decorating && onFlipPlacedFridgeHinge) {
+          const side = placed.fridgeHingeSide ?? (placed.decorationId === 'kitchenFridge' ? 'right' : 'left');
+          actions.push({ label: t(side === 'left' ? 'home.fridgeHingeRight' : 'home.fridgeHingeLeft'), icon: 'rotate',
+            onPress: () => onFlipPlacedFridgeHinge(item.instanceId) });
         }
       }
       if (item.kind === "decoration" && isCurtainDecorationId(item.decorationId) && onTogglePlacedCurtain) {
@@ -772,7 +796,8 @@ export function PetStage({
             label: biggerLabel,
             icon: "zoom-in",
             onPress: () => {
-              if (canResizeItem(item, scaleDecorationBy(scale, 'up'))) onScalePlacedDecoration(item.instanceId, "up");
+              const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'up'));
+              if (resized) onScalePlacedDecoration(item.instanceId, "up", resized.offset);
             },
             disabled: !canScaleDecorationUp(scale),
           });
@@ -780,7 +805,8 @@ export function PetStage({
             label: smallerLabel,
             icon: "zoom-out",
             onPress: () => {
-              if (canResizeItem(item, scaleDecorationBy(scale, 'down'))) onScalePlacedDecoration(item.instanceId, "down");
+              const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'down'));
+              if (resized) onScalePlacedDecoration(item.instanceId, "down", resized.offset);
             },
             disabled: !canScaleDecorationDown(scale),
           });
@@ -797,10 +823,12 @@ export function PetStage({
         if (placed) {
           const scale = getPlacedToyScale(placed);
           actions.push({ label: biggerLabel, icon: "zoom-in",
-            onPress: () => { if (canResizeItem(item, scaleDecorationBy(scale, 'up'))) onScalePlacedToy(item.instanceId, "up"); },
+            onPress: () => { const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'up'));
+              if (resized) onScalePlacedToy(item.instanceId, "up", resized.offset); },
             disabled: !canScaleDecorationUp(scale) });
           actions.push({ label: smallerLabel, icon: "zoom-out",
-            onPress: () => { if (canResizeItem(item, scaleDecorationBy(scale, 'down'))) onScalePlacedToy(item.instanceId, "down"); },
+            onPress: () => { const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'down'));
+              if (resized) onScalePlacedToy(item.instanceId, "down", resized.offset); },
             disabled: !canScaleDecorationDown(scale) });
         }
       }
@@ -821,7 +849,8 @@ export function PetStage({
           label: biggerLabel,
           icon: "zoom-in",
           onPress: () => {
-            if (canResizeItem(item, scaleDecorationBy(scale, 'up'))) onScaleBed("up");
+            const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'up'));
+            if (resized) onScaleBed("up", resized.offset);
           },
           disabled: !canScaleBedUp(scale),
         });
@@ -829,7 +858,8 @@ export function PetStage({
           label: smallerLabel,
           icon: "zoom-out",
           onPress: () => {
-            if (canResizeItem(item, scaleDecorationBy(scale, 'down'))) onScaleBed("down");
+            const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'down'));
+            if (resized) onScaleBed("down", resized.offset);
           },
           disabled: !canScaleBedDown(scale),
         });
@@ -902,10 +932,12 @@ export function PetStage({
       onRotatePlacedToy,
       onSetRoomItemRotation,
       openRotation,
-      canResizeItem,
+      resizeItemPlacement,
       onScalePlacedDecoration,
       onTogglePlacedDecorationPower,
       onTogglePlacedCurtain,
+      onTogglePlacedFridge,
+      onFlipPlacedFridgeHinge,
       onAimPlacedSpotlight,
       spotlightAim,
       setSpotlightPreview,
