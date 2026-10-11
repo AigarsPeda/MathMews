@@ -16,7 +16,8 @@ import { isRoomDoor } from '@/constants/home-rooms';
 import { WALL_MOUNT_PLANE, WALL_PLACEMENT_MIN, WALL_PLACEMENT_MAX, WALL_PLACEMENT_BOTTOM, WALL_PLACEMENT_TOP } from '@/constants/room-geometry';
 import { isRoomBackgroundDecoration } from '@/utils/room-depth';
 import { hangingToyPosition } from '@/utils/native-hanging-toy';
-import { roomOffsetToPoint, type RoomPoint, type RoomActivityPlan, type RoomActivityStep } from '@/utils/room-activities';
+import { roomOffsetToPoint, type RoomPoint } from '@/utils/room-coordinates';
+import type { RoomActivityPlan, RoomActivityStep } from '@/utils/room-activities';
 import type { PlacedDecoration, PlacedToy, RoomItemOffset, RoomLayerItem } from '@/types/game';
 export type Vec3 = [
   number,
@@ -31,7 +32,7 @@ export type ModelMetadata = {
   max: number[];
   animated: boolean;
   wind?: boolean;
-  collisionBoxes?: { min: number[]; max: number[] }[];
+  collisionBoxes?: { min: number[]; max: number[]; footprint?: number[][] }[];
   supportSurfaces?: { min: number[]; max: number[] }[];
   baseHull?: number[][];
   wallMountBounds?: { min: number[]; max: number[] };
@@ -435,11 +436,12 @@ export function buildNativeRoomWorld(options: {
   for (const item of options.toys)
     add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
   world.objects = world.objects.map(object => placeObjectOnSurface(object, world.objects, width));
+  const findFree = createFloorSearch(world);
   // Land in navigable floor space so the following walk never relocates its start.
   for (const object of world.objects)
-    if (object.approach) object.approach = nearestFree(object.approach, world);
+    if (object.approach) object.approach = findFree(object.approach);
   const home = catFloorPoint(options.livePositions?.cat ?? roomOffsetToPoint(options.homeOffset ?? { x: 0, y: .12 }, width, height, options.petSize), world);
-  world.home = nearestFree(home, world);
+  world.home = findFree(home);
   return world;
 }
 export function isFree(point: Vec3, world: NativeRoomWorld, ignoreId?: string): boolean {
@@ -465,26 +467,52 @@ export function isFree(point: Vec3, world: NativeRoomWorld, ignoreId?: string): 
     }
   return true;
 }
-export function nearestFree(point: Vec3, world: NativeRoomWorld): Vec3 {
-  if (isFree(point, world))
-    return point;
-  // Only the cat is repositioned if an old save put it inside furniture.
-  let best: Vec3 = [0, FLOOR_Y, 0];
-  let distance = Infinity;
-  for (let x = -2.2; x <= 2.2; x += .1)
-    for (let z = -2.2; z <= 2.2; z += .1) {
-      const p: Vec3 = [x, FLOOR_Y, z];
-      const d = Math.hypot(x - point[0], z - point[2]);
-      if (d < distance && isFree(p, world)) {
-        distance = d;
-        best = p;
-      }
+/** Share one floor occupancy scan across all approach repairs in a layout build.
+ * This cache belongs to the build, so live physics/mutable previews cannot leave
+ * stale obstacles in a later navigation query. */
+function createFloorSearch(world: NativeRoomWorld) {
+  let freeFloor: Vec3[] | undefined;
+  const edge = 2.32 - Math.min(world.radius, .5 * world.catScale);
+  const obstacles = world.objects.flatMap(object => {
+    if (!object.solid) return [];
+    const plant = isPlayablePlant(object.modelId);
+    const parts = (plant || object.modelId === 'lampFloorArc') && object.collisionBoxes?.length ? object.collisionBoxes : [object];
+    const clearance = (/^catTree|^toy-scratchPost/.test(object.modelId) ? Math.min(world.radius, .4 * world.catScale)
+      : plant ? Math.min(world.radius, .65 * world.catScale) : world.radius) + .015;
+    return parts.filter(box => box.min[1] <= FLOOR_Y + .8 * world.catScale)
+      .map(box => ({ minX: box.min[0], maxX: box.max[0], minZ: box.min[2], maxZ: box.max[2], clearance, squared: clearance * clearance }));
+  });
+  const free = (x: number, z: number) => {
+    if (Math.abs(x) > edge || Math.abs(z) > edge) return false;
+    for (const box of obstacles) {
+      if (x <= box.minX - box.clearance || x >= box.maxX + box.clearance || z <= box.minZ - box.clearance || z >= box.maxZ + box.clearance) continue;
+      const dx = x - Math.max(box.minX, Math.min(box.maxX, x));
+      const dz = z - Math.max(box.minZ, Math.min(box.maxZ, z));
+      if (dx * dx + dz * dz < box.squared) return false;
     }
-  if (distance < Infinity)
-    return best;
-  // An overfilled legacy room can still support the cat above its furniture.
-  const top = world.objects.filter(o => o.solid && point[0] > o.min[0] - world.radius && point[0] < o.max[0] + world.radius && point[2] > o.min[2] - world.radius && point[2] < o.max[2] + world.radius).reduce((y, o) => Math.max(y, o.max[1]), FLOOR_Y);
-  return [point[0], top + .01, point[2]];
+    return true;
+  };
+  return (point: Vec3): Vec3 => {
+    if (free(point[0], point[2])) return point;
+    if (!freeFloor) {
+      freeFloor = [];
+      for (let x = -2.2; x <= 2.2; x += .1) for (let z = -2.2; z <= 2.2; z += .1)
+        if (free(x, z)) freeFloor.push([x, FLOOR_Y, z]);
+    }
+    let best: Vec3 | undefined, distance = Infinity;
+    for (const candidate of freeFloor) {
+      const dx = candidate[0] - point[0], dz = candidate[2] - point[2];
+      const squared = dx * dx + dz * dz;
+      if (squared < distance) { distance = squared; best = candidate; }
+    }
+    if (best) return [...best];
+    // An overfilled legacy room can still support the cat above its furniture.
+    const top = world.objects.filter(o => o.solid && point[0] > o.min[0] - world.radius && point[0] < o.max[0] + world.radius && point[2] > o.min[2] - world.radius && point[2] < o.max[2] + world.radius).reduce((y, o) => Math.max(y, o.max[1]), FLOOR_Y);
+    return [point[0], top + .01, point[2]];
+  };
+}
+export function nearestFree(point: Vec3, world: NativeRoomWorld): Vec3 {
+  return createFloorSearch(world)(point);
 }
 
 /** The two open front edges match the left/right room controls. */

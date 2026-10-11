@@ -25,7 +25,8 @@ function ContactShadow({ object, rugs, active, editingObject }: Omit<Props, 'wor
   const model = useModel(source, { addToScene: false });
   const asset = model.state === 'loaded' ? model.asset : undefined;
   const entity = model.state === 'loaded' ? model.rootEntity : undefined;
-  const shape = useMemo(() => contactShadowShape(object), [object]);
+  const modelId = object.modelId;
+  const shape = useMemo(() => contactShadowShape({ modelId }), [modelId]);
   const identity = useMemo(() => transformManager.createIdentityMatrix(), [transformManager]);
   const applied = useSharedValue<number[]>([]);
   useWorkletEffect(() => {
@@ -36,8 +37,6 @@ function ContactShadow({ object, rugs, active, editingObject }: Omit<Props, 'wor
       renderableManager.setCastShadow(part, false);
       renderableManager.setReceiveShadow(part, false);
     }
-    const pose = contactShadowPose(object, shape, rugs);
-    transformManager.setTransform(entity, identity.scaling(pose.scale).rotate(pose.heading, [0, 1, 0]).translate(pose.position));
     if (parts.length) scene.addEntities(parts);
     applied.value = [];
     return () => {
@@ -50,9 +49,9 @@ function ContactShadow({ object, rugs, active, editingObject }: Omit<Props, 'wor
     'worklet';
     if (!active || !entity) return;
     const live = nativeRoomPreview(editingObject?.value, object.instanceId) ?? object;
-    const key = [...live.position, live.scale, live.heading];
-    if (key.every((value, i) => value === applied.value[i])) return;
     const pose = contactShadowPose(live, shape, rugs);
+    const key = [...pose.position, ...pose.scale, pose.heading];
+    if (key.every((value, i) => value === applied.value[i])) return;
     transformManager.setTransform(entity, identity.scaling(pose.scale).rotate(pose.heading, [0, 1, 0]).translate(pose.position));
     applied.value = key;
   }, [active, entity, editingObject, object, shape, rugs, identity, applied, transformManager]);

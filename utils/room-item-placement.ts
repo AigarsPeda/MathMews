@@ -14,7 +14,7 @@ export type RoomPlacementFeedback = {
 export const ROOM_PLACEMENT_MIN = -2.3075;
 export const ROOM_PLACEMENT_MAX = 2.46;
 
-type Box = { center: Vec3; half: Vec3; cos: number; sin: number };
+type Box = { center: Vec3; half: Vec3; cos: number; sin: number; extentX: number; extentZ: number; polygon?: Vec3[] };
 const rotate = (point: number[], angle: number): Vec3 => [Math.cos(angle) * point[0] + Math.sin(angle) * point[2], point[1], -Math.sin(angle) * point[0] + Math.cos(angle) * point[2]];
 const kitchenUnits = new Set<string>([...MODERN_KITCHEN_COUNTER_IDS, ...MODERN_KITCHEN_FLOOR_SHELF_IDS, ...MODERN_KITCHEN_SINK_IDS, ...MODERN_KITCHEN_INDUCTION_IDS, ...MODERN_KITCHEN_FRIDGE_IDS]);
 const KITCHEN_SNAP_DISTANCE = .12;
@@ -24,6 +24,8 @@ const OBJECT_SNAP_POINTS = 10;
 function translateObject(object: NativeRoomObject, delta: Vec3): NativeRoomObject {
   const move = (value: Vec3) => value.map((v, i) => v + delta[i]) as Vec3;
   return { ...object, position: move(object.position), min: move(object.min), max: move(object.max),
+    seat: object.seat && move(object.seat), approach: object.approach && move(object.approach),
+    leaves: object.leaves?.map(move), bathroom: object.bathroom && { ...object.bathroom, contact: move(object.bathroom.contact) },
     collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
 }
 
@@ -112,9 +114,13 @@ function boxes(object: NativeRoomObject): Box[] {
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   return (meta.collisionBoxes ?? [{ min: meta.min, max: meta.max }]).map(box => {
     const center = rotate(box.min.map((v, i) => (v + box.max[i]) / 2), object.heading);
+    const half = box.min.map((v, i) => (box.max[i] - v) * object.scale / 2) as Vec3;
+    const cos = Math.cos(object.heading), sin = Math.sin(object.heading);
     return { center: center.map((v, i) => v * object.scale + object.position[i]) as Vec3,
-      half: box.min.map((v, i) => (box.max[i] - v) * object.scale / 2) as Vec3,
-      cos: Math.cos(object.heading), sin: Math.sin(object.heading) };
+      half, cos, sin, extentX: half[0] * Math.abs(cos) + half[2] * Math.abs(sin),
+      extentZ: half[0] * Math.abs(sin) + half[2] * Math.abs(cos),
+      polygon: box.footprint?.map(([x, z]) => rotate([x, 0, z], object.heading)
+        .map((v, i) => v * object.scale + object.position[i]) as Vec3) };
   });
 }
 
@@ -145,16 +151,22 @@ export function roomItemPlacementOutline(object: NativeRoomObject): Vec3[][] {
 function penetration(a: Box, b: Box, tolerance = .005, planarDepth = false): number {
   // Broad phase rejects distant boxes before the rotated separating-axis test.
   const dx = a.center[0] - b.center[0], dz = a.center[2] - b.center[2];
-  if (Math.abs(dx) >= a.half[0]*Math.abs(a.cos)+a.half[2]*Math.abs(a.sin)+b.half[0]*Math.abs(b.cos)+b.half[2]*Math.abs(b.sin)
-    || Math.abs(dz) >= a.half[0]*Math.abs(a.sin)+a.half[2]*Math.abs(a.cos)+b.half[0]*Math.abs(b.sin)+b.half[2]*Math.abs(b.cos)) return 0;
+  if (Math.abs(dx) >= a.extentX + b.extentX || Math.abs(dz) >= a.extentZ + b.extentZ) return 0;
   const height = a.half[1] + b.half[1] - Math.abs(a.center[1] - b.center[1]);
   if (height <= .005) return 0;
   let depth = Infinity;
-  for (const box of [a, b]) for (const turn of [false, true]) {
-    const x = turn ? box.sin : box.cos, z = turn ? box.cos : -box.sin;
-    const extent = (box: Box) => box.half[0] * Math.abs(x * box.cos - z * box.sin)
-      + box.half[2] * Math.abs(x * box.sin + z * box.cos);
-    const overlap = extent(a) + extent(b) - Math.abs(x * dx + z * dz);
+  for (let axis = 0; axis < 4; axis++) {
+    const box = axis < 2 ? a : b;
+    const x = axis % 2 ? box.sin : box.cos, z = axis % 2 ? box.cos : -box.sin;
+    const overlap = a.half[0] * Math.abs(x * a.cos - z * a.sin) + a.half[2] * Math.abs(x * a.sin + z * a.cos)
+      + b.half[0] * Math.abs(x * b.cos - z * b.sin) + b.half[2] * Math.abs(x * b.sin + z * b.cos)
+      - Math.abs(x * dx + z * dz);
+    if (overlap <= tolerance) return 0;
+    depth = Math.min(depth, overlap);
+  }
+  // A rounded tabletop/seat has empty corners inside its enclosing box.
+  if (a.polygon || b.polygon) for (const axis of [...horizontalAxes(a), ...horizontalAxes(b)]) {
+    const overlap = extent(a, axis) + extent(b, axis) - Math.abs(dx * axis[0] + dz * axis[2]);
     if (overlap <= tolerance) return 0;
     depth = Math.min(depth, overlap);
   }
@@ -162,9 +174,16 @@ function penetration(a: Box, b: Box, tolerance = .005, planarDepth = false): num
 }
 
 const boxAxes = (box: Box): Vec3[] => [[box.cos, 0, -box.sin], [box.sin, 0, box.cos], [0, 1, 0]];
+const horizontalAxes = (box: Box): Vec3[] => box.polygon ? box.polygon.map((point, i, points) => {
+  const next = points[(i + 1) % points.length], x = next[2] - point[2], z = point[0] - next[0];
+  const length = Math.hypot(x, z);
+  return [x / length, 0, z / length];
+}) : boxAxes(box).slice(0, 2);
 const dot = (a: Vec3, b: Vec3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-const extent = (box: Box, axis: Vec3) => box.half[0] * Math.abs(axis[0] * box.cos - axis[2] * box.sin)
-  + box.half[2] * Math.abs(axis[0] * box.sin + axis[2] * box.cos) + box.half[1] * Math.abs(axis[1]);
+const extent = (box: Box, axis: Vec3) => box.polygon
+  ? Math.max(...box.polygon.map(p => Math.abs((p[0] - box.center[0]) * axis[0] + (p[2] - box.center[2]) * axis[2]))) + box.half[1] * Math.abs(axis[1])
+  : box.half[0] * Math.abs(axis[0] * box.cos - axis[2] * box.sin)
+    + box.half[2] * Math.abs(axis[0] * box.sin + axis[2] * box.cos) + box.half[1] * Math.abs(axis[1]);
 
 /** First contact along a direction, including rotated faces and corner contact.
  * Intersect the overlap intervals on every separating axis, then take the
@@ -172,7 +191,7 @@ const extent = (box: Box, axis: Vec3) => box.half[0] * Math.abs(axis[0] * box.co
 function contactShift(a: Box, b: Box, direction: Vec3): Vec3 | undefined {
   let lo = -Infinity, hi = Infinity;
   const relative = a.center.map((v, i) => v - b.center[i]) as Vec3;
-  for (const axis of [...boxAxes(a), ...boxAxes(b).slice(0, 2)]) {
+  for (const axis of [...horizontalAxes(a), ...horizontalAxes(b), [0, 1, 0] as Vec3]) {
     const radius = extent(a, axis) + extent(b, axis), offset = dot(relative, axis), speed = dot(direction, axis);
     if (Math.abs(speed) < .00001) {
       if (Math.abs(offset) > radius + .00001) return undefined;
@@ -188,11 +207,11 @@ function contactShift(a: Box, b: Box, direction: Vec3): Vec3 | undefined {
 
 /** Nearest edge/vertex direction fills diagonal gaps between disjoint boxes. */
 function closestBoxDirection(a: Box, b: Box): Vec3 | undefined {
-  const first = boxCorners(a).slice(0, 4), second = boxCorners(b).slice(0, 4);
+  const first = a.polygon ?? boxCorners(a).slice(0, 4), second = b.polygon ?? boxCorners(b).slice(0, 4);
   let nearest: Vec3 | undefined, distance = Infinity;
   for (const [vertices, edges, sign] of [[first, second, 1], [second, first, -1]] as const) {
-    for (const vertex of vertices) for (let i = 0; i < 4; i++) {
-      const start = edges[i], end = edges[(i + 1) % 4];
+    for (const vertex of vertices) for (let i = 0; i < edges.length; i++) {
+      const start = edges[i], end = edges[(i + 1) % edges.length];
       const dx = end[0] - start[0], dz = end[2] - start[2];
       const length = dx * dx + dz * dz;
       const t = length ? Math.max(0, Math.min(1, ((vertex[0] - start[0]) * dx + (vertex[2] - start[2]) * dz) / length)) : 0;
@@ -207,6 +226,39 @@ function closestBoxDirection(a: Box, b: Box): Vec3 | undefined {
 /** Cache fixed obstacles once per layout, rather than rebuild the room while dragging. */
 export function createRoomPlacementResolver(world: NativeRoomWorld) {
   const obstacles = world.objects.map(object => ({ id: object.instanceId, object, boxes: boxes(object) }));
+  // Index structural boxes, not their enclosing mesh bounds. Open chair frames
+  // and rotated models still use the exact separating-axis test below.
+  const cellSize = .5;
+  const cells = new Map<string, Set<typeof obstacles[number]>>();
+  const unindexed = new Set<typeof obstacles[number]>();
+  const visitCells = (box: Box, visit: (key: string) => void) => {
+    const minX = Math.floor((box.center[0] - box.extentX) / cellSize), maxX = Math.floor((box.center[0] + box.extentX) / cellSize);
+    const minZ = Math.floor((box.center[2] - box.extentZ) / cellSize), maxZ = Math.floor((box.center[2] + box.extentZ) / cellSize);
+    // Before layout, screen-sized models are temporarily enormous in world units.
+    // A large or malformed saved object must never allocate an unbounded grid.
+    const count = (maxX - minX + 1) * (maxZ - minZ + 1);
+    if (!Number.isFinite(count) || count > 256) return false;
+    for (let x = minX; x <= maxX; x++) for (let z = minZ; z <= maxZ; z++) visit(`${x}:${z}`);
+    return true;
+  };
+  for (const obstacle of obstacles) for (const box of obstacle.boxes) {
+    const indexed = visitCells(box, key => {
+      let cell = cells.get(key);
+      if (!cell) { cell = new Set(); cells.set(key, cell); }
+      cell.add(obstacle);
+    });
+    if (!indexed) unindexed.add(obstacle);
+  }
+  const nearby = (own: Box[]) => {
+    const result = new Set(unindexed);
+    for (const box of own) {
+      const indexed = visitCells(box, key => {
+        for (const obstacle of cells.get(key) ?? []) result.add(obstacle);
+      });
+      if (!indexed) return new Set(obstacles);
+    }
+    return result;
+  };
   const templates = new Map<string, { object: NativeRoomObject; boxes: Box[] }>();
   const movingBoxes = (object: NativeRoomObject) => {
     const key = `${object.instanceId}:${object.heading}:${object.scale}`;
@@ -214,7 +266,8 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     if (!template) { template = { object, boxes: boxes(object) }; templates.set(key, template); }
     const origin = template.object.position;
     return template.boxes.map(box => ({ ...box,
-      center: box.center.map((v,i) => v + object.position[i] - origin[i]) as Vec3 }));
+      center: box.center.map((v,i) => v + object.position[i] - origin[i]) as Vec3,
+      polygon: box.polygon?.map(p => p.map((v, i) => v + object.position[i] - origin[i]) as Vec3) }));
   };
   const collisions = (object: NativeRoomObject, tolerance = .005) => {
     const own = movingBoxes(object);
@@ -242,7 +295,15 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     return result;
   };
   const outsideRoom = (object: NativeRoomObject) => boundaryExcess(object).reduce((sum, edge) => sum+edge.depth, 0);
-  const canPlace = (object: NativeRoomObject) => outsideRoom(object) <= .00001 && collisions(object).every(hit => hit.depth === 0);
+  const canPlace = (object: NativeRoomObject) => {
+    if (outsideRoom(object) > .00001) return false;
+    const own = movingBoxes(object);
+    for (const other of nearby(own)) {
+      if (other.id === object.instanceId) continue;
+      for (const a of own) for (const b of other.boxes) if (penetration(a, b) > 0) return false;
+    }
+    return true;
+  };
   const preservesSupport = (object: NativeRoomObject) => {
     if (!object.supportId) return true;
     const resting = placeObjectOnSurface({ ...object, supportId: undefined }, world.objects, world.width);
@@ -276,7 +337,7 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
           || Math.abs(a.center[2] - b.center[2]) > extent(a, [0, 0, 1]) + extent(b, [0, 0, 1]) + reach) continue;
         const overlapping = penetration(a, b) > 0;
         if (!snapGaps && !overlapping) continue;
-        const axes = constrained ? directions : [...boxAxes(a).slice(0, 2), ...boxAxes(b).slice(0, 2)];
+        const axes = constrained ? directions : [...horizontalAxes(a), ...horizontalAxes(b)];
         if (!constrained && !overlapping) {
           const diagonal = closestBoxDirection(a, b);
           if (diagonal) axes.push(diagonal);
@@ -302,30 +363,50 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
         return hits.length ? [{instanceId:other.id,boxes:hits.map(boxCorners)}] : [];
       }) };
   };
+  function* findFree(object: NativeRoomObject): Generator<void, NativeRoomObject | undefined> {
+    if (canPlace(object)) return object;
+    const candidates: { point: RoomPoint; distance: number }[] = [];
+    const center = rotate(NATIVE_MODEL_CATALOG[object.modelId].center, object.heading)
+      .map((v, i) => v * object.scale + object.position[i]) as Vec3;
+    if (object.wallAxis === undefined) {
+      for (let x = -2.2; x <= 2.2; x += .15) for (let z = -2.2; z <= 2.2; z += .15)
+        candidates.push({ point: projectWorld([x, center[1], z], world.width), distance: Math.hypot(x - center[0], z - center[2]) });
+    } else {
+      const along = object.wallAxis === 0 ? 2 : 0;
+      for (let horizontal = -2.2; horizontal <= 2.2; horizontal += .15) for (let y = .2; y <= 2.6; y += .15) {
+        const target: Vec3 = [...center]; target[along] = horizontal; target[1] = y;
+        candidates.push({ point: projectWorld(target, world.width), distance: Math.hypot(horizontal - center[along], y - center[1]) });
+      }
+    }
+    candidates.sort((a, b) => a.distance - b.distance);
+    const size = object.scale * world.width * NATIVE_MODEL_CATALOG[object.modelId].renderScale / ROOM_SPAN;
+    for (const { point } of candidates) {
+      yield;
+      if (Math.abs(point.x) > (world.width - size) / 2 || Math.abs(point.y) > (world.height - size) / 2) continue;
+      const candidate = roomItemAtPoint(object, point, world.width);
+      if (canPlace(candidate)) return candidate;
+    }
+    return undefined;
+  }
   return {
     canPlace,
     /** New items use the nearest empty spot instead of overlapping furniture. */
     nearestFree(object: NativeRoomObject) {
-      if (canPlace(object)) return object;
-      const candidates: { point: RoomPoint; distance: number }[] = [];
-      const center = rotate(NATIVE_MODEL_CATALOG[object.modelId].center, object.heading)
-        .map((v, i) => v * object.scale + object.position[i]) as Vec3;
-      if (object.wallAxis === undefined) {
-        for (let x = -2.2; x <= 2.2; x += .15) for (let z = -2.2; z <= 2.2; z += .15)
-          candidates.push({ point: projectWorld([x, center[1], z], world.width), distance: Math.hypot(x - center[0], z - center[2]) });
-      } else {
-        const along = object.wallAxis === 0 ? 2 : 0;
-        for (let horizontal = -2.2; horizontal <= 2.2; horizontal += .15) for (let y = .2; y <= 2.6; y += .15) {
-          const target: Vec3 = [...center]; target[along] = horizontal; target[1] = y;
-          candidates.push({ point: projectWorld(target, world.width), distance: Math.hypot(horizontal - center[along], y - center[1]) });
+      const search = findFree(object);
+      let next = search.next();
+      while (!next.done) next = search.next();
+      return next.value;
+    },
+    async nearestFreeAsync(object: NativeRoomObject, signal: AbortSignal) {
+      const search = findFree(object);
+      let start = performance.now();
+      while (!signal.aborted) {
+        const next = search.next();
+        if (next.done) return next.value;
+        if (performance.now() - start >= 4) {
+          await new Promise<void>(resolve => setTimeout(resolve, 0));
+          start = performance.now();
         }
-      }
-      candidates.sort((a, b) => a.distance - b.distance);
-      const size = object.scale * world.width * NATIVE_MODEL_CATALOG[object.modelId].renderScale / ROOM_SPAN;
-      for (const { point } of candidates) {
-        if (Math.abs(point.x) > (world.width - size) / 2 || Math.abs(point.y) > (world.height - size) / 2) continue;
-        const candidate = roomItemAtPoint(object, point, world.width);
-        if (canPlace(candidate)) return candidate;
       }
       return undefined;
     },
@@ -333,6 +414,26 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
       const allowed = collisions(before);
       return outsideRoom(after) <= outsideRoom(before) + .00001
         && collisions(after).every((hit, i) => hit.depth <= allowed[i].depth + .00001);
+    },
+    /** A small turn near an edge may need a small positional correction. */
+    rotate(before: NativeRoomObject, after: NativeRoomObject) {
+      if (canPlace(after)) return after;
+      const footprint = roomItemFootprint(after);
+      const shift = [0, 0, 0] as Vec3;
+      if (after.wallAxis === undefined && !after.supportId) for (const axis of [0, 2]) {
+        const low = Math.min(...footprint.map(p => p[axis])), high = Math.max(...footprint.map(p => p[axis]));
+        shift[axis] = low < ROOM_PLACEMENT_MIN ? ROOM_PLACEMENT_MIN - low : high > ROOM_PLACEMENT_MAX ? ROOM_PLACEMENT_MAX - high : 0;
+      }
+      const inside = translateObject(after, shift);
+      const zero = projectWorld(after.position, world.width);
+      const candidates = [inside, ...objectSnapCandidates(inside, 1, false)];
+      const allowed = collisions(before);
+      return candidates.find(candidate => {
+        const point = projectWorld(candidate.position, world.width);
+        return Math.hypot(point.x - zero.x, point.y - zero.y) <= OBJECT_SNAP_POINTS
+          && preservesSupport(candidate) && canPlace(candidate);
+      }) ?? (outsideRoom(after) <= outsideRoom(before) + .00001
+        && collisions(after).every((hit, i) => hit.depth <= allowed[i].depth + .00001) ? after : undefined);
     },
     /** Drag previews follow the pointer freely; contact matters only at release. */
     move(id: string, point: RoomPoint) {

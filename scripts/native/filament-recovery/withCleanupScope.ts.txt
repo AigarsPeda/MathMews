@@ -1,0 +1,9 @@
+/** Queue release after this commit's child cleanup and queued worklet cleanup.
+ * Bound the idle wait so native memory is freed even during continuous gestures. */
+export function withCleanupScope(cleanupFunction: () => void) {
+  return () => {
+    const release = () => setTimeout(cleanupFunction, 0)
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(release, { timeout: 100 })
+    else setTimeout(release, 0)
+  }
+}

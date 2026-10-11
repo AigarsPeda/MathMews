@@ -1,0 +1,61 @@
+import type { Engine } from '../types/Engine'
+import type { FilamentAsset } from '../types/FilamentAsset'
+import type { FilamentBuffer } from '../native/FilamentBuffer'
+import type { IWorkletContext } from 'react-native-worklets-core'
+
+// gltfio's ResourceLoader has one pending asynchronous load per engine.
+const queues = new WeakMap<Engine, Promise<void>>()
+
+export function loadModelResources(engine: Engine, context: IWorkletContext, buffer: FilamentBuffer, instanceCount = 1): Promise<FilamentAsset | undefined> {
+  const previous = queues.get(engine) ?? Promise.resolve()
+  const result = previous.then(async () => {
+    let owner: Engine | undefined
+    let asset: FilamentAsset | undefined
+    let complete = false
+    try {
+      const started = await context.runAsync(() => {
+        'worklet'
+        if (!engine.isValid || !buffer.isValid) return undefined
+        if (typeof engine.beginLoadAsset !== 'function') {
+          return { asset: instanceCount === 1 ? engine.loadAsset(buffer) : engine.loadInstancedAsset(buffer, instanceCount) }
+        }
+        const lease = engine.retain()
+        try { return { owner: lease, asset: lease.beginLoadAsset(buffer, instanceCount) } }
+        catch (error) { lease.release(); throw error }
+      })
+      if (!started) return undefined
+      owner = started.owner
+      asset = started.asset
+      if (owner) {
+        const loader = owner
+        const deadline = Date.now() + 30_000
+        while (true) {
+          const progress = await context.runAsync(() => { 'worklet'; return loader.updateAssetLoad() })
+          if (progress >= 1) break
+          if (Date.now() >= deadline) throw new Error('Native model resource loading timed out')
+          // Texture decoding runs on Filament workers. Let rendering run between
+          // resource updates instead of holding the render thread until it ends.
+          await new Promise<void>(resolve => setTimeout(resolve, 8))
+        }
+      }
+      complete = true
+      return asset
+    } finally {
+      if (owner) {
+        const loader = owner
+        await context.runAsync(() => {
+          'worklet'
+          if (!complete) loader.cancelAssetLoad()
+          loader.release()
+        })
+      }
+      if (!complete && asset?.isValid) asset.release()
+      if (buffer.isValid) buffer.release()
+    }
+  })
+  // A failed asset must not poison later loads in the same room.
+  const settled = result.then(() => {}, () => {})
+  queues.set(engine, settled)
+  void settled.then(() => { if (queues.get(engine) === settled) queues.delete(engine) })
+  return result
+}

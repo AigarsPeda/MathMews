@@ -806,3 +806,55 @@ for(const width of [320,414,768]) for(const wallFlipped of [false,true])
     .drop('window',roomItemAnchor(window,width)).accepted,false,'Real overlapping window frames still block placement');
 }
 console.log('Verified shallow window/tap clearance on both walls, all sink finishes, window sizes, viewports and real frame collisions.');
+
+// The reported chair sits near the wall. Rotating only that instance may
+// nudge it inward, while leaving every other saved item exactly where it was.
+const diningEntries = [
+  {decorationId:'kitchenDiningTable',instanceId:'table',offset:{x:.7579651283871901,y:.12811517440151143},scale:1.1},
+  {decorationId:'kitchenChairUpholstered',instanceId:'left',offset:{x:.41806084794320797,y:.08966184177597702},rotationDegrees:118.1},
+  {decorationId:'kitchenChairUpholstered',instanceId:'right',offset:{x:.8946879957449176,y:.11800410678215711}},
+  {decorationId:'kitchenChairUpholstered',instanceId:'back',offset:{x:.5912700993670853,y:.02850325226910195},rotationDegrees:58},
+  {decorationId:'kitchenChairUpholstered',instanceId:'front',offset:{x:.6242201619868812,y:.21841781750862438},rotationDegrees:202.3},
+];
+const {setRoomItemRotation} = load('@/utils/room-rotation');
+for (const width of [390,414]) {
+  const options={width,height:width*1.1,petSize:80,sizeScale:1,toys:[],decorations:diningEntries};
+  const world=buildNativeRoomWorld(options),check=createRoomPlacementResolver(world),before=world.objects.find(o=>o.instanceId==='right');
+  const unchanged=JSON.stringify(world);
+  for (const degrees of [30,60,90,118,180,270]) {
+    const after=buildNativeRoomWorld({...options,decorations:diningEntries.map(item=>item.instanceId==='right'?{...item,rotationDegrees:degrees}:item)}).objects.find(o=>o.instanceId==='right');
+    const turned=check.rotate(before,after);
+    assert.ok(turned && check.canPlace(turned),`Reported right chair rotates safely to ${degrees} degrees`);
+    const point=roomItemAnchor(turned,width),size=turned.scale*width*NATIVE_MODEL_CATALOG[turned.modelId].renderScale/ROOM_SPAN;
+    const offset={x:point.x/((width-size)/2),y:point.y/((options.height-size)/2)};
+    const pet={placedDecorations:diningEntries};
+    const saved=setRoomItemRotation(pet,{kind:'decoration',decorationId:'kitchenChairUpholstered',instanceId:'right'},degrees,offset);
+    const restored=buildNativeRoomWorld({...options,decorations:normalizePlacedDecorations(JSON.parse(JSON.stringify(saved.placedDecorations)))});
+    const chair=restored.objects.find(o=>o.instanceId==='right');
+    assert.ok(chair.position.every((v,i)=>Math.abs(v-turned.position[i])<1e-8),'The adjusted position and angle survive refresh together');
+    assert.ok(createRoomPlacementResolver(restored).canPlace(chair));
+    for (const item of diningEntries.filter(item=>item.instanceId!=='right'))
+      assert.equal(saved.placedDecorations.find(entry=>entry.instanceId===item.instanceId),item,'Other instances retain their saved positions and angles');
+  }
+  assert.equal(JSON.stringify(world),unchanged,'Rotation previews never mutate saved furniture');
+}
+function diningPose(modelId,position,heading=0) {
+  const meta=NATIVE_MODEL_CATALOG[modelId],corners=[];
+  for(const x of [meta.min[0],meta.max[0]])for(const y of [meta.min[1],meta.max[1]])for(const z of [meta.min[2],meta.max[2]])
+    corners.push([position[0]+x*Math.cos(heading)+z*Math.sin(heading),position[1]+y,position[2]-x*Math.sin(heading)+z*Math.cos(heading)]);
+  return {modelId,instanceId:modelId,scale:1,heading,position,solid:true,collidable:true,movable:false,
+    min:[0,1,2].map(k=>Math.min(...corners.map(p=>p[k]))),max:[0,1,2].map(k=>Math.max(...corners.map(p=>p[k])))};
+}
+for (const heading of [0,Math.PI/4,Math.PI/2,Math.PI,Math.PI*1.5]) {
+  const distance=heading===Math.PI/4?1.08:.82;
+  const table=diningPose('kitchenDiningTable',[0,FLOOR_Y,0]);
+  const chair=diningPose('kitchenChairUpholstered',[-Math.sin(heading)*distance,FLOOR_Y,-Math.cos(heading)*distance],heading);
+  const check=createRoomPlacementResolver({width:390,objects:[table,chair]});
+  assert.ok(check.canPlace(chair),'The seat fits beneath the round tabletop while the back clears its curved edge');
+  const drop=check.drop(chair.instanceId,roomItemAnchor(chair,390));
+  assert.ok(drop.accepted && check.canPlace(drop.object),'A tucked drop snaps to real structural contact');
+  // Pushing further must still stop at the backrest or table legs.
+  const inside=diningPose('kitchenChairUpholstered',[-Math.sin(heading)*.6,FLOOR_Y,-Math.cos(heading)*.6],heading);
+  assert.equal(check.canPlace(inside),false,'Chairs cannot pass through the tabletop or its legs');
+}
+console.log('Verified the reported wall-side chair turns safely, saves angle and position atomically, leaves other instances unchanged and tucks beneath the round tabletop without crossing its legs/backrest.');

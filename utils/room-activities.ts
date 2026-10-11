@@ -12,10 +12,11 @@ import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
 import { getCatWalkMotion, SOFA_JUMP_DURATION_MS, type CatRoomAnimation } from "@/constants/cat-room-motion";
 import type { PetAnimationState, PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
 import type { WorldPeriod } from '@/utils/world-clock';
+import { roomOffsetToPoint, type RoomPoint } from '@/utils/room-coordinates';
+export { roomOffsetToPoint, type RoomPoint } from '@/utils/room-coordinates';
 
 export const ROOM_IDLE_DELAY_MS = 30_000;
 export const ROOM_MEAL_DURATION_MS = 8_000;
-export type RoomPoint = { x: number; y: number };
 export type RoomActivityKind = RoomCommandKind | "doorTravel" | "roomTravel" | "wander";
 export type RoomActivityStep = {
   native?: NativeTravel;
@@ -83,10 +84,6 @@ export function roomIdleDelay(room: RoomActivityOptions): number {
 
 export function roomActivityStepKey(state: { plan: RoomActivityPlan; stepIndex: number; startedAt: number }): string {
   return `${state.plan.kind}:${state.plan.targetInstanceId}:${state.stepIndex}:${state.startedAt}`;
-}
-
-export function roomOffsetToPoint(offset: RoomItemOffset, width: number, height: number, size: number): RoomPoint {
-  return { x: offset.x * Math.max(0, (width - size) / 2), y: offset.y * Math.max(0, (height - size) / 2) };
 }
 
 function clampCatPoint(point: RoomPoint, room: RoomActivityOptions): RoomPoint {

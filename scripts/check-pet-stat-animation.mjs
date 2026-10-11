@@ -85,7 +85,7 @@ const mocks = {
     cancelAnimation: value => value.cancel(), Easing: { out: value => value, inOut: value => value, cubic: 'cubic' },
   },
   '@shopify/react-native-skia': { Canvas: 'Canvas', Circle: 'Circle', Path: 'Path', Text: 'SkiaText',
-    Skia: { Path: { Make: () => ({ addArc: () => ({}) }) } },
+    Skia: { PathBuilder: { Make: () => ({ addArc: () => ({ detach: () => ({}) }) }) } },
     matchFont: () => ({ measureText: text => ({ width: text.length * 7 }), getMetrics: () => ({ ascent: -10, descent: 2 }) }) },
 };
 function load(file) {

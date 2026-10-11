@@ -49,10 +49,10 @@ function StatRing({ stat, expanded, active, onPress }: { stat: Stat; expanded: b
   const metrics = font.getMetrics();
   const percentY = (PERCENT_HEIGHT - metrics.descent - metrics.ascent) / 2;
   const pulseStyle = useAnimatedStyle(() => ({ transform: [{ scale: pulse.get() }] }));
-  const path = useMemo(() => Skia.Path.Make().addArc({
+  const path = useMemo(() => Skia.PathBuilder.Make().addArc({
     x: RING_STROKE / 2, y: RING_STROKE / 2,
     width: RING_SIZE - RING_STROKE, height: RING_SIZE - RING_STROKE,
-  }, -90, 360), []);
+  }, -90, 360).detach(), []);
   return (
     <Pressable onPress={onPress} style={styles.gauge}
       accessibilityRole="button" accessibilityLabel={stat.label}

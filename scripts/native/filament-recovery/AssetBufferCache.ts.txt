@@ -1,0 +1,49 @@
+import { AppState } from 'react-native'
+import { FilamentProxy } from '../native/FilamentProxy'
+import type { FilamentBuffer } from '../native/FilamentBuffer'
+
+// Masters own the bytes; every consumer receives a separate native holder.
+// Releasing a model buffer must never invalidate another room's buffer.
+const budget = 32 * 1024 * 1024
+const entries = new Map<string, { promise: Promise<FilamentBuffer>; buffer?: FilamentBuffer; claimed: boolean }>()
+let bytes = 0
+
+export function clearAssetBufferCache() {
+  for (const entry of entries.values()) if (entry.buffer?.isValid) entry.buffer.release()
+  entries.clear()
+  bytes = 0
+}
+
+AppState.addEventListener('memoryWarning', clearAssetBufferCache)
+
+export async function acquireAssetBuffer(uri: string): Promise<FilamentBuffer> {
+  let entry = entries.get(uri)
+  if (!entry) {
+    entry = { promise: FilamentProxy.loadAsset(uri), claimed: false }
+    entries.set(uri, entry)
+  } else {
+    entries.delete(uri)
+    entries.set(uri, entry)
+  }
+  let master: FilamentBuffer
+  try { master = await entry.promise }
+  catch (error) { if (entries.get(uri) === entry) entries.delete(uri); throw error }
+  // Old development clients remain usable until the native binding is rebuilt.
+  if (typeof master.clone !== 'function') {
+    if (entries.get(uri) === entry) entries.delete(uri)
+    if (!entry.claimed) { entry.claimed = true; return master }
+    return FilamentProxy.loadAsset(uri)
+  }
+  if (!master.isValid) return acquireAssetBuffer(uri)
+  const buffer = master.clone()
+  if (entries.get(uri) !== entry) { master.release(); return buffer }
+  if (!entry.buffer) { entry.buffer = master; bytes += master.byteLength }
+  for (const [key, cached] of entries) {
+    if (bytes <= budget) break
+    if (!cached.buffer?.isValid) continue
+    bytes -= cached.buffer.byteLength
+    cached.buffer.release()
+    entries.delete(key)
+  }
+  return buffer
+}

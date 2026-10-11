@@ -71,7 +71,11 @@ export function derivePlacementBounds() {
     }
     // Retain deliberately authored shapes and animation envelopes. Static
     // furniture gets one box per part instead of a box full of empty air.
-    if (!meta.collisionBoxes && !meta.animated) result[id].collisionBoxes = meshes.map(mesh=>bounds(mesh.points));
+    if (!meta.collisionBoxes && !meta.animated) result[id].collisionBoxes = meshes.map(mesh => ({
+      ...bounds(mesh.points),
+      // Round dining parts must not collide with the empty corners of their box.
+      ...(/^(Round oak tabletop|Dining chair seat)$/.test(mesh.name) ? { footprint: hull(mesh.points) } : {}),
+    }));
   }
   return result;
 }

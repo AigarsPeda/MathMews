@@ -23,7 +23,7 @@ import { useRoomEditor } from "@/hooks/use-room-editor";
 import { useScreenInsets } from "@/hooks/use-screen-insets";
 import { shouldPetSleep } from "@/pet-display/engine/derive-mood";
 import { usePetDisplay } from "@/pet-display/hooks/use-pet-display";
-import type { PetAnimationState, PetProfile, PetStats, RoomLayerItem } from "@/types/game";
+import type { PetAnimationState, PetProfile, PetStats, RoomItemOffset, RoomLayerItem } from "@/types/game";
 import {
   boostStat,
   withPetCareUpdate,
@@ -407,8 +407,8 @@ export default function HomeScreen() {
     [recordInteraction, scaleEquippedBed],
   );
 
-  const handleSetRoomItemRotation = useCallback((item: RoomLayerItem, degrees: number) => {
-    if (!setRoomItemRotation(item, degrees)) return;
+  const handleSetRoomItemRotation = useCallback((item: RoomLayerItem, degrees: number, offset?: RoomItemOffset) => {
+    if (!setRoomItemRotation(item, degrees, offset)) return;
     recordInteraction(); triggerHaptic();
   }, [recordInteraction, setRoomItemRotation]);
 

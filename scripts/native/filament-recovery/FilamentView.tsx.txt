@@ -82,8 +82,10 @@ export class FilamentView extends React.PureComponent<FilamentProps, { error: un
     renderer.setClearContent(enable)
   }
 
+  private latestRenderCallback = Worklets.createSharedValue<{ callback?: RenderCallback }>({})
   private latestToken = 0
   private updateRenderCallback = async (callback: RenderCallback, swapChain: SwapChain) => {
+    this.latestRenderCallback.value = { callback }
     const currentToken = ++this.latestToken
     const { renderer, view, workletContext, choreographer } = this.getContext()
 
@@ -93,6 +95,7 @@ export class FilamentView extends React.PureComponent<FilamentProps, { error: un
 
     // Adding a new render callback listener is an async operation
     Logger.debug('Setting render callback')
+    const callbackValue = this.latestRenderCallback
     const failed = this.failed
     const alive = this.isSurfaceAlive
     const generation = this.surfaceGeneration
@@ -105,7 +108,8 @@ export class FilamentView extends React.PureComponent<FilamentProps, { error: un
         if (failed.value || !alive.value || generation.value !== surfaceToken) return
         try {
           if (!swapChain.isValid) throw new Error('The render surface was released before drawing')
-          callback(frameInfo)
+          const { callback: renderFrame } = callbackValue.value
+          renderFrame?.(frameInfo)
           if (renderer.beginFrame(swapChain, frameInfo.timestamp)) {
             renderer.render(view)
             renderer.endFrame()
@@ -161,9 +165,9 @@ export class FilamentView extends React.PureComponent<FilamentProps, { error: un
     if (prevProps.enableTransparentRendering !== this.props.enableTransparentRendering) {
       this.updateTransparentRendering(this.props.enableTransparentRendering ?? true)
     }
-    if (prevProps.renderCallback !== this.props.renderCallback && this.swapChain != null) {
-      // Note: if swapChain was null, the renderCallback will be set/updated in onSurfaceCreated, which uses the latest renderCallback prop
-      this.updateRenderCallback(this.props.renderCallback, this.swapChain).catch(this.fail)
+    if (prevProps.renderCallback !== this.props.renderCallback) {
+      // Preserve the native frame subscription and its paused/running state.
+      this.latestRenderCallback.value = { callback: this.props.renderCallback }
     }
   }
 

@@ -196,9 +196,11 @@ export function normalizeRoomLayerOrder(
 }
 
 export function syncPetLayerOrder(pet: PetProfile): PetProfile {
+  const order = normalizeRoomLayerOrder(pet);
+  if (pet.roomLayerOrder?.length === order.length && order.every((item, index) => isSameRoomLayerItem(item, pet.roomLayerOrder![index]))) return pet;
   return {
     ...pet,
-    roomLayerOrder: normalizeRoomLayerOrder(pet),
+    roomLayerOrder: order,
   };
 }
 

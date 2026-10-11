@@ -59,3 +59,5 @@ console.log('Filament Bullet actor/impulse bindings ready.');
 await import('./patch-runtime-safety.mjs');
 await import('./patch-filament-recovery.mjs');
 await import('./patch-filament-shadows.mjs');
+
+await import('./patch-filament-performance.mjs');

@@ -32,7 +32,58 @@ function hookHarness() {
 }
 const cleanupMock = { withCleanupScope: fn => fn };
 const recoveryDir = 'scripts/native/filament-recovery/';
-for (const file of ['hooks/useDisposableResource.ts','hooks/useBuffer.ts', 'hooks/useModel.ts','hooks/useWorkletEffect.ts','react/FilamentView.tsx']) {
+{
+  const slots = [], effects = [];
+  let cursor = 0, registrations = 0, removals = 0, frame, calls = [];
+  const slot = init => { const i = cursor++; if (!(i in slots)) slots[i] = init(); return [i, slots[i]]; };
+  const react = {
+    createContext: value => ({ value }), useContext: () => context,
+    useCallback(fn, deps) { return react.useMemo(() => fn, deps); },
+    useMemo(fn, deps) { const [i, old] = slot(() => undefined); if (!old || deps.some((v,j) => v !== old.deps[j])) slots[i] = { value: fn(), deps }; return slots[i].value; },
+    useEffect(fn, deps) { const [i, old] = slot(() => undefined); if (!old || deps.some((v,j) => v !== old.deps[j])) effects.push(() => { old?.cleanup?.(); slots[i] = { deps, cleanup: fn() }; }); },
+  };
+  const context = { addRenderCallback(fn) { registrations++; frame = fn; return () => { removals++; }; } };
+  const { RenderCallbackContext } = execute('node_modules/react-native-filament/src/react/RenderCallbackContext.tsx', {
+    react, 'react/jsx-runtime': { jsx: () => null },
+    'react-native-worklets-core': { useSharedValue: value => slot(() => ({ value }))[1] },
+  });
+  const render = (fn, deps) => {
+    cursor = 0; effects.length = 0;
+    // This dispatcher executes the actual hook without a native renderer.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    RenderCallbackContext.useRenderCallback(fn, deps);
+    effects.forEach(effect => effect());
+  };
+  render(() => calls.push('initial'), [true]); frame({});
+  render(() => calls.push('paused'), [false]); frame({});
+  render(() => calls.push('resumed'), [true]); frame({});
+  assert.deepEqual(calls, ['initial', 'paused', 'resumed']);
+  assert.equal(registrations, 1, 'Pausing and resuming updates the existing drawing callback');
+  assert.equal(removals, 0, 'Updating one callback never copies/removes the scene callback list');
+  for (const value of slots) value?.cleanup?.();
+  frame({}); assert.equal(calls.length, 3, 'A queued frame cannot call a removed callback');
+  assert.equal(removals, 1);
+}
+{
+  const idle = [], timers = [], order = [];
+  const { withCleanupScope } = execute('node_modules/react-native-filament/src/utilities/withCleanupScope.ts', {}, {
+    requestIdleCallback(fn, options) { idle.push(fn); assert.equal(options.timeout, 100); },
+    setTimeout(fn) { timers.push(fn); },
+  });
+  withCleanupScope(() => order.push('release'))();
+  order.push('child cleanup'); idle.shift()();
+  assert.deepEqual(order, ['child cleanup'], 'Native memory release follows child cleanup');
+  timers.shift()(); assert.deepEqual(order, ['child cleanup', 'release']);
+}
+{
+  const errors = [];
+  const { reportWorkletError } = execute('node_modules/react-native-filament/src/ErrorUtils.ts', {
+    'react-native-worklets-core': { Worklets: { createRunOnJS: fn => fn } },
+  }, { global: { ErrorUtils: { reportError(error) { errors.push(error); } } } });
+  reportWorkletError('Native cleanup rejected', false);
+  assert.equal(errors[0].message, 'Native cleanup rejected', 'String native errors retain their original message');
+}
+for (const file of ['hooks/useDisposableResource.ts','hooks/useBuffer.ts', 'hooks/useModel.ts','hooks/useWorkletEffect.ts','react/FilamentView.tsx', 'react/RenderCallbackContext.tsx', 'utilities/withCleanupScope.ts', 'ErrorUtils.ts']) {
   assert.equal(fs.readFileSync(`node_modules/react-native-filament/src/${file}`, 'utf8'),
     fs.readFileSync(recoveryDir + file.split('/').at(-1) + '.txt', 'utf8'), 'Installed dependency must match its reproducible patch');
 }
@@ -67,7 +118,7 @@ for (const reject of [false,true]) {
 for (const releaseOnUnmount of [false,true]) {
   const h=hookHarness(), pending=deferred();let released=0;
   const {useBuffer:hook}=execute('node_modules/react-native-filament/src/hooks/useBuffer.ts',{
-    react:h.react,'../utilities/withCleanupScope':cleanupMock,'../native/FilamentProxy':{FilamentProxy:{loadAsset:()=>pending.promise}},
+    react:h.react,'../utilities/withCleanupScope':cleanupMock,'../utilities/AssetBufferCache':{acquireAssetBuffer:()=>pending.promise},
     'react-native':{Image:{resolveAssetSource:()=>({uri:'bundle://cat.glb'})}},
   });
   h.render(()=>hook({source:1,releaseOnUnmount}));h.mount();await settle();h.unmount();
@@ -78,7 +129,7 @@ for (const releaseOnUnmount of [false,true]) {
 {
   const h=hookHarness(), failure=new Error('Asset missing');
   const {useBuffer:hook}=execute('node_modules/react-native-filament/src/hooks/useBuffer.ts',{
-    react:h.react,'../utilities/withCleanupScope':cleanupMock,'../native/FilamentProxy':{FilamentProxy:{loadAsset:()=>Promise.reject(failure)}},
+    react:h.react,'../utilities/withCleanupScope':cleanupMock,'../utilities/AssetBufferCache':{acquireAssetBuffer:()=>Promise.reject(failure)},
     'react-native':{Image:{resolveAssetSource:()=>({uri:'bundle://cat.glb'})}},
   });h.render(()=>hook({source:1}));h.mount();await settle();
   assert.throws(()=>h.render(()=>hook({source:1})),error=>error===failure,'Failed assets must recover rather than load forever');h.unmount();
@@ -125,6 +176,16 @@ const {FilamentView}=execute('node_modules/react-native-filament/src/react/Filam
   view.context={...context,workletContext:{runAsync:()=>pending.promise}};view.componentDidMount();
   const creating=view.onSurfaceCreated({});view.componentWillUnmount();pending.resolve({release(){released++;}});
   await creating;assert.equal(released,1);assert.equal(view.swapChain,undefined,'Never install a surface after its view was removed');
+}
+{
+  const view=new FilamentView({enableTransparentRendering:true,renderCallback(){}});view.context=context;view.componentDidMount();
+  let oldCalls=0,newCalls=0;
+  await view.updateRenderCallback(()=>oldCalls++,{isValid:true});
+  const oldFrame=frame, priorStops=stops;
+  const previous=view.props;view.props={...previous,renderCallback:()=>newCalls++};view.componentDidUpdate(previous);
+  oldFrame({timestamp:1});assert.equal(oldCalls,0);assert.equal(newCalls,1);
+  assert.equal(frame,oldFrame,'A callback update retains the native frame listener');
+  assert.equal(stops,priorStops,'A prop update cannot pause or restart another room');view.componentWillUnmount();
 }
 let reports=[];
 const {RecoveryBoundary}=execute('components/recovery/RecoveryBoundary.tsx',{
@@ -221,7 +282,8 @@ for (const staleBeforeLoad of [false,true]) {
   const asset={release(){},getBoundingBox:()=>({}),getRoot:()=>({})};
   const {useModel:renderModel}=execute('node_modules/react-native-filament/src/hooks/useModel.ts',{
     react:{useMemo:fn=>fn()},'./useBuffer':{useBuffer:()=>buffer},
-    './useFilamentContext':{useFilamentContext:()=>({engine:{loadAsset(value){assert.equal(value.isValid,true);loaded++;return asset;}},scene:{},workletContext:{runAsync:async fn=>{if(staleBeforeLoad)valid=false;return fn();}}})},
+    './useFilamentContext':{useFilamentContext:()=>({engine:{isValid:true,loadAsset(value){assert.equal(value.isValid,true);loaded++;return asset;}},scene:{},workletContext:{runAsync:async fn=>{if(staleBeforeLoad)valid=false;return fn();}}})},
+    '../utilities/PreparedModels':{loadPreparedModel: (engine,context,buffer,_source,count) => execute('scripts/native/filament-recovery/loadModelResources.ts.txt', {}).loadModelResources(engine,context,buffer,count)},
     './useDisposableResource':{useDisposableResource:fn=>{initializer=fn;}},'./usePrevious':()=>false,'./useWorkletEffect':{useWorkletEffect(){}},
   });
   renderModel(1);await initializer();

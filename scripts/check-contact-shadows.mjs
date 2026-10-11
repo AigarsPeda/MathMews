@@ -4,6 +4,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
 import sharp from 'sharp';
+import babel from '@babel/core';
 const root = process.cwd(), cache = new Map();
 let frame, cleanup, loads = 0;
 const poses = [], shadowFlags = [], scene = new Set();
@@ -118,3 +119,63 @@ assert.equal(alpha(0,0), 0); assert.equal(alpha(127,127), 0);
 assert.ok(alpha(64,64)>alpha(95,64) && alpha(95,64)>alpha(120,64), 'The baked contact shadow fades smoothly to a transparent edge');
 for (let i=0;i<data.length;i+=4) assert.ok(data[i]===0 && data[i+1]===0 && data[i+2]===0,'No diagnostic color survives in the shadow texture');
 console.log('Verified soft floor/rug shadows, 20-degree drag previews, bounded edges, no idle writes, no reloads, finite transforms and native cleanup.');
+
+// Use real worklet closure dependencies to catch scene-wide decal reattachment.
+const compiled = babel.transformSync(ts.transpileModule(fs.readFileSync('components/pet/native/NativeContactShadows.tsx','utf8'), {
+  compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true},
+}).outputText, {filename:path.join(root,'components/pet/native/NativeContactShadows.tsx'),babelrc:false,configFile:false,
+  plugins:[['react-native-worklets/plugin',{processNestedWorklets:true}]]}).code;
+const hookStores=new Map(), context=mocks['react-native-filament'].useFilamentContext();
+let owner, cursor, shadowSequence=0, attachments=0, detachments=0;
+function hooks(id) {owner=id;cursor=0;if(!hookStores.has(id))hookStores.set(id,[]);}
+function hook() {return [hookStores.get(owner),cursor++];}
+mocks.react.useMemo=(fn,deps)=>{
+  const [store,index]=hook(),old=store[index];
+  if(!old || !deps || deps.some((v,i)=>v!==old.deps[i]))store[index]={deps,value:fn()};
+  return store[index].value;
+};
+mocks['react-native-worklets-core'].useSharedValue=value=>{
+  const [store,index]=hook();return store[index]??= {value};
+};
+context.scene.addEntities=()=>{attachments++;};
+context.scene.removeEntities=()=>{detachments++;};
+const independentWrites=new Map();
+context.transformManager.setTransform=(entity,transform)=>{
+  const writes=independentWrites.get(entity.id)??[];writes.push(transform.data);independentWrites.set(entity.id,writes);
+};
+mocks['react-native-filament'].useFilamentContext=()=>context;
+mocks['react-native-filament'].useModel=()=>{
+  const [store,index]=hook();
+  if(!store[index]){
+    const entity={id:++shadowSequence};
+    store[index]={state:'loaded',rootEntity:entity,asset:{getRenderableEntities:()=>[entity]}};
+  }
+  return store[index];
+};
+mocks['react-native-filament'].useWorkletEffect=fn=>{
+  const [store,index]=hook(),deps=Object.values(fn.__closure),old=store[index];
+  if(!old || deps.some((v,i)=>v!==old.deps[i])){
+    old?.cleanup?.();store[index]={deps,cleanup:fn()};
+  }
+};
+const compiledModule={exports:{}};
+vm.runInNewContext(compiled,{module:compiledModule,exports:compiledModule.exports,require:load,Math,Map,Set,global:{Error}});
+function renderShadows(world) {
+  hooks('root');
+  const nodes=compiledModule.exports.NativeContactShadows({world,active:true,editingObject}).props.children;
+  for(const node of nodes){hooks(node.props.object.instanceId);node.type(node.props);frame();}
+}
+editingObject.value=undefined;
+renderShadows(room);
+const stableWrites=new Map([...independentWrites].map(([id,writes])=>[id,writes.length]));
+const initialAttachments=attachments;
+for(let step=1;step<=60;step++){
+  const turned={...chair,heading:step*Math.PI/30};
+  // Even a parent rebuilding the whole world must not reattach unchanged decals.
+  renderShadows({...room,objects:room.objects.map(object=>object.instanceId===chair.instanceId?turned:{...object})});
+  assert.equal(independentWrites.get(2).length,stableWrites.get(2),'Turning a chair never writes the other furniture shadow transform');
+}
+assert.equal(attachments,initialAttachments,'Angle changes never remove/re-add contact shadows');
+assert.equal(detachments,0,'Other shadows stay continuously attached to the scene');
+assert.ok(independentWrites.get(1).length>stableWrites.get(1),'The selected chair shadow follows each angle');
+console.log('Verified compiled native worklets keep other shadow transforms and scene membership unchanged throughout chair rotation.');

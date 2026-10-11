@@ -5,7 +5,7 @@ const packageRoot = new URL('../../node_modules/react-native-filament/', import.
 const version = JSON.parse(readFileSync(new URL('package.json', packageRoot), 'utf8')).version;
 if (version !== '1.11.0') throw new Error(`Review Filament recovery patches before upgrading ${version}`);
 // Keep the exact sources in the repo so reinstalling dependencies preserves recovery.
-for (const file of ['hooks/useDisposableResource.ts', 'hooks/useBuffer.ts', 'hooks/useModel.ts', 'hooks/useWorkletEffect.ts', 'react/FilamentView.tsx']) {
+for (const file of ['hooks/useDisposableResource.ts', 'hooks/useBuffer.ts', 'hooks/useModel.ts', 'hooks/useWorkletEffect.ts', 'react/FilamentView.tsx', 'react/RenderCallbackContext.tsx', 'utilities/withCleanupScope.ts', 'ErrorUtils.ts']) {
   const source = readFileSync(new URL(`filament-recovery/${file.split('/').at(-1)}.txt`, import.meta.url), 'utf8');
   writeFileSync(fileURLToPath(new URL(`src/${file}`, packageRoot)), source);
 }

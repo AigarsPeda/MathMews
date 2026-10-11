@@ -1,4 +1,4 @@
-import type { PetProfile, RoomLayerItem } from "@/types/game";
+import type { PetProfile, RoomItemOffset, RoomLayerItem } from "@/types/game";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 
 /** Extra yaw relative to an item's existing model/style and wall orientation. */
@@ -16,16 +16,17 @@ export function getRoomItemRotation(layout: RotationLayout, item: RoomLayerItem)
   return normalizeRotationDegrees(angle) ?? 0;
 }
 
-export function setRoomItemRotation(pet: PetProfile, item: RoomLayerItem, degrees: number): PetProfile {
+export function setRoomItemRotation(pet: PetProfile, item: RoomLayerItem, degrees: number, offset?: RoomItemOffset): PetProfile {
   if (item.kind === "decoration" && isWindowDecorationId(item.decorationId)) return pet;
   if (!Number.isFinite(degrees)) return pet;
+  if (offset && (!Number.isFinite(offset.x) || !Number.isFinite(offset.y))) return pet;
   const rotationDegrees = normalizeRotationDegrees(degrees);
-  if (getRoomItemRotation(pet, item) === (rotationDegrees ?? 0)) return pet;
-  if (item.kind === "bed") return pet.bedId ? { ...pet, bedRotationDegrees: rotationDegrees } : pet;
+  if (!offset && getRoomItemRotation(pet, item) === (rotationDegrees ?? 0)) return pet;
+  if (item.kind === "bed") return pet.bedId ? { ...pet, bedRotationDegrees: rotationDegrees, ...(offset ? { roomBedOffset: offset } : {}) } : pet;
   if (item.kind === "toy") {
     if (!pet.placedToys?.some(entry => entry.instanceId === item.instanceId)) return pet;
-    return { ...pet, placedToys: pet.placedToys.map(entry => entry.instanceId === item.instanceId ? { ...entry, rotationDegrees } : entry) };
+    return { ...pet, placedToys: pet.placedToys.map(entry => entry.instanceId === item.instanceId ? { ...entry, rotationDegrees, ...(offset ? { offset } : {}) } : entry) };
   }
   if (!pet.placedDecorations?.some(entry => entry.instanceId === item.instanceId)) return pet;
-  return { ...pet, placedDecorations: pet.placedDecorations.map(entry => entry.instanceId === item.instanceId ? { ...entry, rotationDegrees } : entry) };
+  return { ...pet, placedDecorations: pet.placedDecorations.map(entry => entry.instanceId === item.instanceId ? { ...entry, rotationDegrees, ...(offset ? { offset } : {}) } : entry) };
 }

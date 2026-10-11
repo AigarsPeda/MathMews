@@ -954,7 +954,8 @@ console.log('Verified spill lifecycle in the rendered room scene, including canc
 // A cached native surface draws before a slide and stops its GPU clock while hidden.
 React.useState = initial => {
   const i = cursor++, value = memoState(i, initial);
-  return [value, next => { slots[i].value = typeof next === 'function' ? next(slots[i].value) : next; }];
+  const state = slots[i];
+  return [value, next => { state.value = typeof next === 'function' ? next(state.value) : next; }];
 };
 function memoState(i, initial) { if (!slots[i]) slots[i] = { value: initial }; return slots[i].value; }
 React.useEffect = (fn, deps) => {
@@ -1660,9 +1661,11 @@ function findRepairEffect(node) {
 findRepairEffect(stageAst);assert.ok(repairEffect);
 const repairCode=ts.transpileModule(`(${repairEffect})();`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
 const repairLayout={...base,decorations:[{decorationId:'windowOakWide',instanceId:'cached-window',scale:1.6,offset:{x:.3,y:.2}}]};
-let repairWorld=w.buildNativeRoomWorld(repairLayout),saves=0;
+let repairWorld=w.buildNativeRoomWorld(repairLayout),saves=0,repairFrame;
 const repairContext={roomVisible:false,rotationPreview:null,viewport:{width:base.width,height:base.height},nativeWorld:repairWorld,livePositions:{},
   isCurtainDecorationId:load('@/constants/decoration-motion').isCurtainDecorationId,
+  pendingPlacementIds:{current:new Set()},AbortController,
+  requestAnimationFrame(fn){repairFrame=fn;return 1;},cancelAnimationFrame(){},
   seenPlacementIds:{current:undefined},placement:load('@/utils/room-item-placement').createRoomPlacementResolver(repairWorld),
   onPlacedDecorationOffsetChange(id,offset){saves++;repairLayout.decorations[0].offset=offset;}};
 for(let render=0;render<100;render++) vm.runInNewContext(repairCode,repairContext);
@@ -1693,7 +1696,32 @@ repairContext.viewport={width:base.width,height:260};
 repairContext.nativeWorld=w.buildNativeRoomWorld({...lowWindowLayout,height:260});
 repairContext.placement=load('@/utils/room-item-placement').createRoomPlacementResolver(repairContext.nativeWorld);
 vm.runInNewContext(repairCode,repairContext);
+assert.equal(saves,0,'Purchase acknowledgement can paint before new-item fitting');
+repairFrame();
 assert.equal(saves,1,'A newly placed wall item still saves its fitted visible anchor');
+// Rapid purchases must fit against the preceding item's committed blockers,
+// rather than reserve the same free position from an outdated room snapshot.
+const fittedObject=repairContext.nativeWorld.objects[0],purchaseSaves=[];
+repairContext.seenPlacementIds.current=new Set();
+repairContext.pendingPlacementIds.current=new Set();
+repairContext.nativeWorld={...repairContext.nativeWorld,objects:[fittedObject,{...fittedObject,instanceId:'second-window'}]};
+repairContext.placement={canPlace:()=>true};
+repairContext.onPlacedDecorationOffsetChange=(id)=>purchaseSaves.push(id);
+vm.runInNewContext(repairCode,repairContext);repairFrame();
+assert.deepEqual(purchaseSaves,[fittedObject.instanceId],'Only one fitting mutation uses a given room snapshot');
+assert.ok(repairContext.pendingPlacementIds.current.has('second-window'),'The next purchase remains queued for the updated layout');
+vm.runInNewContext(repairCode,repairContext);repairFrame();
+assert.deepEqual(purchaseSaves,[fittedObject.instanceId,'second-window']);
+let finishSearch;
+repairContext.seenPlacementIds.current=new Set();
+repairContext.pendingPlacementIds.current=new Set();
+repairContext.nativeWorld={...repairContext.nativeWorld,objects:[fittedObject]};
+repairContext.placement={canPlace:()=>false,nearestFreeAsync:()=>new Promise(resolve=>{finishSearch=resolve;})};
+purchaseSaves.length=0;
+const cancelRepair=vm.runInNewContext(repairCode,repairContext);repairFrame();cancelRepair();finishSearch(fittedObject);
+for(let i=0;i<5;i++)await Promise.resolve();
+assert.equal(purchaseSaves.length,0,'A canceled in-flight placement cannot save into a switched room');
+assert.ok(repairContext.pendingPlacementIds.current.has(fittedObject.instanceId),'Canceled purchases resume when their room is visible again');
 console.log('Verified local wall display corrections, hidden/visible refreshes, transient viewport sizes, exact saved pose restoration and new-item fitting.');
 
 // Bathroom journeys use authored basin/tray/seat anchors, retain their entry

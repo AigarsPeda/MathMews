@@ -1,0 +1,57 @@
+import { AppState, Image } from 'react-native'
+import type { Engine } from '../types/Engine'
+import type { FilamentAsset } from '../types/FilamentAsset'
+import type { FilamentBuffer } from '../native/FilamentBuffer'
+import type { IWorkletContext } from 'react-native-worklets-core'
+import { acquireAssetBuffer } from './AssetBufferCache'
+import { loadModelResources } from './loadModelResources'
+import type { BufferSource } from '../hooks/useBuffer'
+
+type Entry = { discarded: boolean; promise: Promise<FilamentAsset | undefined> }
+const pools = new Map<Engine, Map<string, Entry>>()
+export const modelSourceKey = (source: BufferSource) => typeof source === 'number' ? String(source) : source.uri
+function discard(entry: Entry) {
+  entry.discarded = true
+  void entry.promise.then(asset => { if (asset?.isValid) asset.release() })
+}
+export function clearPreparedModels(engine: Engine) {
+  for (const entry of pools.get(engine)?.values() ?? []) discard(entry)
+  pools.delete(engine)
+}
+AppState.addEventListener('memoryWarning', () => { for (const engine of pools.keys()) clearPreparedModels(engine) })
+
+/** Prepare a fresh, unmodified asset in its destination engine. No scene entities
+ * or material instances are shared with the preview or another purchased item. */
+export function prepareModel(engine: Engine, context: IWorkletContext, source: BufferSource): void {
+  let pool = pools.get(engine)
+  if (!pool) { pool = new Map(); pools.set(engine, pool) }
+  const key = modelSourceKey(source)
+  if (pool.has(key)) return
+  while (pool.size >= 2) {
+    const oldest = pool.entries().next().value!
+    pool.delete(oldest[0]); discard(oldest[1])
+  }
+  const entry: Entry = { discarded: false, promise: Promise.resolve(undefined) }
+  entry.promise = (async () => {
+    const uri = typeof source === 'number' ? Image.resolveAssetSource(source)?.uri : source.uri
+    if (!uri || !engine.isValid || entry.discarded) return undefined
+    const buffer = await acquireAssetBuffer(uri)
+    if (entry.discarded || !engine.isValid) { buffer.release(); return undefined }
+    return loadModelResources(engine, context, buffer)
+  })().catch(() => {
+    if (pool.get(key) === entry) pool.delete(key)
+    return undefined // A failed warmup never blocks a later normal model load.
+  })
+  pool.set(key, entry)
+}
+
+export async function loadPreparedModel(engine: Engine, context: IWorkletContext, buffer: FilamentBuffer, source: BufferSource, count: number): Promise<FilamentAsset | undefined> {
+  const pool = pools.get(engine), key = modelSourceKey(source)
+  const entry = count === 1 ? pool?.get(key) : undefined
+  if (entry) {
+    pool!.delete(key)
+    const asset = await entry.promise
+    if (asset?.isValid) { if (buffer.isValid) buffer.release(); return asset }
+  }
+  return loadModelResources(engine, context, buffer, count)
+}

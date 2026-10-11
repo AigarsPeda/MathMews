@@ -1,0 +1,143 @@
+{
+  "environment": {
+    "node": "v22.16.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M1 Max"
+  },
+  "scope": "Synthetic desktop Node/VM CPU measurements; excludes React, Hermes, asset IO, native parsing, GPU upload, drawing and persistence IO.",
+  "fixtures": "Overlapping synthetic stress layouts, four rooms; each sample starts from the same snapshot.",
+  "assets": {
+    "glbFiles": 401,
+    "totalFileBytes": 67068632,
+    "largestFiles": [
+      {
+        "file": "cat-grey.glb",
+        "bytes": 4995656
+      },
+      {
+        "file": "cat-white.glb",
+        "bytes": 4984176
+      },
+      {
+        "file": "cat-orange.glb",
+        "bytes": 4942040
+      },
+      {
+        "file": "plantB.glb",
+        "bytes": 941952
+      },
+      {
+        "file": "plantA.glb",
+        "bytes": 872556
+      }
+    ]
+  },
+  "cases": [
+    {
+      "objectsPerRoom": 10,
+      "purchaseStateOnly": {
+        "medianMs": 0.028,
+        "p95Ms": 0.04,
+        "samples": 100,
+        "batch": 10
+      },
+      "switchRoomStateOnly": {
+        "medianMs": 0.019,
+        "p95Ms": 0.029,
+        "samples": 100,
+        "batch": 10
+      },
+      "buildFourWorlds": {
+        "medianMs": 26.529,
+        "p95Ms": 27.251,
+        "samples": 15,
+        "batch": 1
+      },
+      "findSpaceForIsland": {
+        "medianMs": 2.532,
+        "p95Ms": 3.643,
+        "samples": 5,
+        "batch": 1,
+        "foundSpace": true
+      },
+      "stringifySave": {
+        "medianMs": 0.017,
+        "p95Ms": 0.023,
+        "samples": 100,
+        "batch": 10
+      },
+      "saveBytes": 6909
+    },
+    {
+      "objectsPerRoom": 30,
+      "purchaseStateOnly": {
+        "medianMs": 0.132,
+        "p95Ms": 0.163,
+        "samples": 100,
+        "batch": 10
+      },
+      "switchRoomStateOnly": {
+        "medianMs": 0.11,
+        "p95Ms": 0.128,
+        "samples": 100,
+        "batch": 10
+      },
+      "buildFourWorlds": {
+        "medianMs": 295.469,
+        "p95Ms": 298.823,
+        "samples": 15,
+        "batch": 1
+      },
+      "findSpaceForIsland": {
+        "medianMs": 307.368,
+        "p95Ms": 311.27,
+        "samples": 5,
+        "batch": 1,
+        "foundSpace": true
+      },
+      "stringifySave": {
+        "medianMs": 0.046,
+        "p95Ms": 0.058,
+        "samples": 100,
+        "batch": 10
+      },
+      "saveBytes": 18323
+    },
+    {
+      "objectsPerRoom": 60,
+      "purchaseStateOnly": {
+        "medianMs": 0.462,
+        "p95Ms": 0.511,
+        "samples": 100,
+        "batch": 10
+      },
+      "switchRoomStateOnly": {
+        "medianMs": 0.442,
+        "p95Ms": 0.479,
+        "samples": 100,
+        "batch": 10
+      },
+      "buildFourWorlds": {
+        "medianMs": 849.727,
+        "p95Ms": 864.042,
+        "samples": 15,
+        "batch": 1
+      },
+      "findSpaceForIsland": {
+        "medianMs": 2430.756,
+        "p95Ms": 2445.385,
+        "samples": 5,
+        "batch": 1,
+        "foundSpace": true
+      },
+      "stringifySave": {
+        "medianMs": 0.09,
+        "p95Ms": 0.112,
+        "samples": 100,
+        "batch": 10
+      },
+      "saveBytes": 35573
+    }
+  ]
+}

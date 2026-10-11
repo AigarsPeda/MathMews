@@ -37,7 +37,7 @@ import { resolveCatSkinId, type CatSkinId } from "@/constants/cat-skins";
 import type { CatRoomId } from "@/constants/cat-rooms";
 import { resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveAsleepOnLoad } from "@/pet-display/engine/derive-mood";
-import type { PetProfile, Progress, RoomLayerItem, Wallet } from "@/types/game";
+import type { PetProfile, Progress, RoomItemOffset, RoomLayerItem, Wallet } from "@/types/game";
 import type {
   BedPurchaseResult,
   RoomPurchaseResult,
@@ -168,7 +168,7 @@ type GameContextValue = {
   removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
   scalePlacedToy: (instanceId: string, direction: "up" | "down") => boolean;
   rotatePlacedToy: (instanceId: string) => boolean;
-  setRoomItemRotation: (item: RoomLayerItem, degrees: number) => boolean;
+  setRoomItemRotation: (item: RoomLayerItem, degrees: number, offset?: RoomItemOffset) => boolean;
   purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   removeDecorationFromRoom: (
@@ -227,7 +227,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const setSave = useCallback((update: GameSave | ((current: GameSave) => GameSave)) => {
     const candidate = typeof update === "function" ? update(saveRef.current) : update;
     const pet = removeRoomNavigationDoors(candidate.pet);
-    const next = { ...candidate, pet, worldClock: normalizeWorldClock(candidate.worldClock ?? initialWorldClock) };
+    const clock = candidate.worldClock && candidate.worldClock === saveRef.current.worldClock
+      ? candidate.worldClock : normalizeWorldClock(candidate.worldClock ?? initialWorldClock);
+    const next = { ...candidate, pet, worldClock: clock };
     saveRef.current = next;
     setSaveState(next);
   }, [initialWorldClock]);
@@ -984,9 +986,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const changeRoomItemRotation = useCallback((item: RoomLayerItem, degrees: number) => {
+  const changeRoomItemRotation = useCallback((item: RoomLayerItem, degrees: number, offset?: RoomItemOffset) => {
     const current = saveRef.current;
-    const pet = setRoomItemRotation(current.pet, item, degrees);
+    const pet = setRoomItemRotation(current.pet, item, degrees, offset);
     if (pet === current.pet) return false;
     setSave({ ...current, pet });
     return true;

@@ -6,7 +6,7 @@ export function hasContactShadow(object: NativeRoomObject) {
   return object.wallAxis === undefined && (object.solid || object.movable || isLampDecorationId(object.modelId));
 }
 
-export function contactShadowShape(object: NativeRoomObject) {
+export function contactShadowShape(object: Pick<NativeRoomObject, 'modelId'>) {
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const spread = /sofa/i.test(object.modelId) ? .72 : .60;
   return { center: [(meta.min[0] + meta.max[0]) / 2, (meta.min[2] + meta.max[2]) / 2],

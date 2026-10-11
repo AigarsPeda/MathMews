@@ -10,6 +10,8 @@ const states = [];
 let stateIndex = 0, stateWrites = 0, drawingIndex = 0, refIndex = 0;
 const drawingValues = [], refs = [];
 let effects = [], roomCommands = [], cameraZoom = 1;
+const placementFrames = new Map();
+let placementFrameId = 0;
 const React = {
   createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
   useMemo: fn => fn(), useCallback: fn => fn, useEffect: fn => effects.push(fn),
@@ -73,7 +75,10 @@ function load(id) {
   const source = ts.transpileModule(fs.readFileSync(resolved, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.React, esModuleInterop: true },
   }).outputText;
-  vm.runInNewContext(source, { module, exports: module.exports, React, require: load });
+  vm.runInNewContext(source, { module, exports: module.exports, React, require: load,
+    AbortController, performance, setTimeout,
+    requestAnimationFrame: fn => { const id=++placementFrameId; placementFrames.set(id,fn); return id; },
+    cancelAnimationFrame: id => placementFrames.delete(id) });
   return module.exports;
 }
 const placement = load('@/utils/room-placement');
@@ -159,6 +164,7 @@ const style = input => Object.assign({}, ...[input].flat(Infinity).filter(Boolea
 const stage = load(path.join(root, 'components/pet/PetStage.tsx')).PetStage;
 let toggled;
 function render(placedDecorations = powered, extra = {}) {
+  placementFrames.clear();
   stateIndex = 0; drawingIndex = 0; refIndex = 0; effects = [];
   const nodes = flatten(stage({
     name: 'Cat', petType: 'cat', compact: true, stats: { level: 1, hunger: 90, happiness: 90, cleanliness: 90 },
@@ -882,6 +888,10 @@ render([smallSofa],moveProps);
 moved=undefined;
 const newChair={...dragChair,offset:{x:0,y:0}};
 const added=render([smallSofa,newChair],moveProps);
+assert.equal(moved,undefined,'Ownership feedback can paint before the free-position search starts');
+for(const frame of placementFrames.values())frame();
+placementFrames.clear();
+for(let i=0;i<100 && !moved;i++)await new Promise(resolve=>setTimeout(resolve,0));
 assert.equal(moved.id,newChair.instanceId,'The new overlapping chair receives a corrected offset');
 const fixedChair={...newChair,offset:moved.offset};
 const correctedWorld=roomWorld(render([smallSofa,fixedChair],moveProps));
@@ -898,3 +908,31 @@ assert.equal(activityOptionsForTest.period, 'day');
 render([], {});
 assert.equal(activityOptionsForTest.period, undefined, 'Clock-free previews keep their existing behaviour');
 console.log('Verified actual room-stage clock wiring for day, night and clock-free previews.');
+
+// Actual editor wiring saves a rotation and its wall-clearance adjustment once.
+states.length=0;drawingValues.length=0;refs.length=0;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+const diningTable={decorationId:'kitchenDiningTable',instanceId:'dining-table',offset:{x:.7579651283871901,y:.12811517440151143},scale:1.1};
+const wallChair={decorationId:'kitchenChairUpholstered',instanceId:'wall-chair',offset:{x:.8946879957449176,y:.11800410678215711}};
+const dining=[diningTable,wallChair];
+let rotationSave;
+const diningProps={onSetRoomItemRotation:(item,degrees,offset)=>{rotationSave={item,degrees,offset};}};
+render(dining,diningProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
+const chooseRoom=render(dining,diningProps);
+chooseRoom.find(({node})=>node.props.testID==='room-object:wall-chair').node.props.onPetTap();
+render(dining,diningProps).find(({node})=>node.type==='RoomItemMoveControls').node.props.onRotate();
+rotationControls(render(dining,diningProps)).props.onPreview(90);
+const chairPreview=render(dining,diningProps),previewWorld=roomWorld(chairPreview);
+assert.equal(rotationControls(chairPreview).props.placementAllowed,true,'The wall-side chair can turn in the actual editor');
+const previewChair=previewWorld.objects.find(o=>o.instanceId==='wall-chair');
+const previewTable=previewWorld.objects.find(o=>o.instanceId==='dining-table');
+const originalTable=load('@/utils/native-room-world').buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:dining}).objects[0];
+assert.deepEqual(previewTable.position,originalTable.position,'Rotating a chair leaves the table position unchanged');
+rotationControls(chairPreview).props.onApply(90);
+assert.ok(rotationSave.offset,'The small inward adjustment is included in the rotation save');
+const rotatedDining=load('@/utils/room-rotation').setRoomItemRotation({placedDecorations:dining},rotationSave.item,rotationSave.degrees,rotationSave.offset).placedDecorations;
+const restoredChair=roomWorld(render(rotatedDining,diningProps)).objects.find(o=>o.instanceId==='wall-chair');
+assert.ok(restoredChair.position.every((v,i)=>Math.abs(v-previewChair.position[i])<1e-8),'Apply preserves exactly the previewed angle and position');
+assert.equal(restoredChair.heading,Math.PI/2);
+assert.equal(rotatedDining[0],diningTable,'The atomic edit changes only the selected instance');
+console.log('Verified actual wall-side chair rotation controls, untouched table, atomic angle/position Apply and saved preview consistency.');

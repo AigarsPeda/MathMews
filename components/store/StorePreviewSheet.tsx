@@ -1,4 +1,8 @@
-import { getDecorationDefaultPlacementScale } from "@/constants/decoration-variants";
+import { getDecorationDefaultPlacementScale, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
+import { NATIVE_MODEL_SOURCES } from '@/constants/native-model-sources';
+import { DEFAULT_HOME_ROOM_ID } from '@/constants/home-rooms';
+import { warmHomeRoomModel } from '@/utils/native-model-warmup';
+import { useEffect } from 'react';
 import { NativeRoomPreview } from "@/components/pet/native/NativeRoomPreview";
 import { IconText as Text } from "@/components/ui/IconText";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
@@ -15,6 +19,14 @@ export type StorePreviewItem = { kind: NonNullable<Progress["storeGoal"]>["kind"
 type Props = { item: StorePreviewItem | null; pet: PetProfile; coins: number; onClose: () => void; onSaveGoal: () => void };
 export function StorePreviewSheet({ item, pet, coins, onClose, onSaveGoal }: Props) {
   const { t } = useTranslation();
+  const kind = item?.kind, id = item?.id;
+  const homeRoomId = pet.homeRoomId ?? DEFAULT_HOME_ROOM_ID;
+  useEffect(() => {
+    if (!id) return;
+    const modelId = kind === 'bed' ? `bed-${id}` : kind === 'toy' ? `toy-${id}`
+      : kind === 'decoration' ? getPlacedDecorationSpriteId({ decorationId: id as CatDecorationId, instanceId: 'warmup', offset: { x: 0, y: 0 } }) : undefined;
+    if (modelId) warmHomeRoomModel(homeRoomId, NATIVE_MODEL_SOURCES[modelId]);
+  }, [kind, id, homeRoomId]);
   if (!item) return null;
   const bedId = item.kind === "bed" ? item.id : pet.bedId;
   const toys = [...(pet.placedToys ?? []), ...(item.kind === "toy" ? [{ toyId: item.id as CatToyId, instanceId: "preview-toy", offset: { x: .4, y: .5 } }] : [])];

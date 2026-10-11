@@ -38,6 +38,14 @@ for(const [id,meta] of Object.entries(catalog)) {
     assert.equal(derived.collisionBoxes.length,meshes.length,`${id}: no static part is omitted`);
     meshes.forEach((mesh,i)=>{
       const box=derived.collisionBoxes[i];parts++;
+      if (/^(Round oak tabletop|Dining chair seat)$/.test(mesh.name)) {
+        assert.ok(box.footprint.length > 8, 'Round dining parts retain their curved outline');
+        for (const p of mesh.points) for (let edge=0;edge<box.footprint.length;edge++) {
+          const a=box.footprint[edge],b=box.footprint[(edge+1)%box.footprint.length];
+          assert.ok((b[0]-a[0])*(p[2]-a[1])-(b[1]-a[1])*(p[0]-a[0])>=-1e-5,
+            `${id}/${mesh.name}: collider footprint encloses the authored mesh`);
+        }
+      }
       for(const p of mesh.points) for(const k of [0,1,2]) {
         assert.ok(p[k]>=box.min[k]-1e-6&&p[k]<=box.max[k]+1e-6,`${id}/${mesh.name}: collider contains the mesh`);
       }

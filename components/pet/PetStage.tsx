@@ -166,7 +166,7 @@ type PetStageProps = {
   onPlacedDecorationRemove?: (instanceId: string) => void;
   onRotatePlacedDecoration?: (instanceId: string) => void;
   onRotatePlacedToy?: (instanceId: string) => void;
-  onSetRoomItemRotation?: (item: RoomLayerItem, degrees: number) => void;
+  onSetRoomItemRotation?: (item: RoomLayerItem, degrees: number, offset?: RoomItemOffset) => void;
   onFlipPlacedDecorationWall?: (instanceId: string) => void;
   onAimPlacedSpotlight?: (instanceId: string, angle: number, swivel?: number) => void;
   onTogglePlacedCurtain?: (instanceId: string) => void;
@@ -334,24 +334,32 @@ export function PetStage({
   const clockNow = useWorldClockNow(5000, !!worldClock && roomVisible);
   const period = worldClock ? worldClockReading(worldClock, clockNow).period : undefined;
   const rotationInstanceId = rotationPreview && rotationPreview.item.kind !== "bed" ? rotationPreview.item.instanceId : undefined;
-  const rotationPlacement = useMemo(() => {
-    const options = {
+  const nativeWorldOptions = useMemo(() => ({
       width: viewport.width, height: viewport.height, petSize: displayWidth, sizeScale: moderateScale(100) / 100 * ROOM_OBJECT_SCALE,
       homeOffset: roomPetOffset, bedId, bedOffset: roomBedOffset, bedFlipped, bedScale,
       bedRotationDegrees, decorations: roomPlacedDecorations, toys: roomPlacedToys, livePositions, layerOrder: roomLayerOrder,
-    };
-    const saved = buildNativeRoomWorld(options);
-    if (!rotationPreview) return { world: saved, allowed: true };
-    const preview = buildNativeRoomWorld({ ...options,
+    }), [bedFlipped, bedRotationDegrees, bedId, bedScale, displayWidth, livePositions, roomBedOffset, roomPetOffset, roomPlacedDecorations, roomPlacedToys, roomLayerOrder, viewport.height, viewport.width]);
+  const savedNativeWorld = useMemo(() => buildNativeRoomWorld(nativeWorldOptions), [nativeWorldOptions]);
+  const rotationPlacement = useMemo(() => {
+    const saved = savedNativeWorld;
+    if (!rotationPreview) return { world: saved, allowed: true, offset: undefined };
+    const preview = buildNativeRoomWorld({ ...nativeWorldOptions,
       bedRotationDegrees: rotationPreview.item.kind === "bed" ? rotationPreview.degrees : bedRotationDegrees,
       decorations: rotationPreview.item.kind === "decoration" ? roomPlacedDecorations.map(item => item.instanceId === rotationInstanceId ? { ...item, rotationDegrees: rotationPreview.degrees } : item) : roomPlacedDecorations,
       toys: rotationPreview.item.kind === "toy" ? roomPlacedToys.map(item => item.instanceId === rotationInstanceId ? { ...item, rotationDegrees: rotationPreview.degrees } : item) : roomPlacedToys,
     });
     const id = rotationPreview.item.kind === 'bed' ? 'bed' : rotationPreview.item.instanceId;
     const before = saved.objects.find(object => object.instanceId === id), after = preview.objects.find(object => object.instanceId === id);
-    const allowed = viewport.width <= 0 || !!before && !!after && createRoomPlacementResolver(saved).canChange(before, after);
-    return { world: allowed ? preview : saved, allowed };
-  }, [bedFlipped, bedRotationDegrees, bedId, bedScale, displayWidth, livePositions, roomBedOffset, roomPetOffset, roomPlacedDecorations, roomPlacedToys, roomLayerOrder, rotationPreview, rotationInstanceId, viewport.height, viewport.width]);
+    const adjusted = before && after ? viewport.width <= 0 ? after : createRoomPlacementResolver(saved).rotate(before, after) : undefined;
+    if (!adjusted) return { world: saved, allowed: false, offset: undefined };
+    const point = roomItemAnchor(adjusted, viewport.width);
+    const size = adjusted.scale * viewport.width * NATIVE_MODEL_CATALOG[adjusted.modelId].renderScale / ROOM_SPAN;
+    const offset = adjusted.position.some((value, i) => Math.abs(value - after!.position[i]) > 1e-8)
+      ? { x: point.x / Math.max(1, (viewport.width - size) / 2), y: point.y / Math.max(1, (viewport.height - size) / 2) } : undefined;
+    // An angle preview changes one instance. Other models and decals retain
+    // their references and native transforms throughout the slider gesture.
+    return { world: { ...saved, objects: saved.objects.map(object => object.instanceId === id ? adjusted : object) }, allowed: true, offset };
+  }, [savedNativeWorld, nativeWorldOptions, bedRotationDegrees, roomPlacedDecorations, roomPlacedToys, rotationPreview, rotationInstanceId, viewport.height, viewport.width]);
   const nativeWorld = rotationPlacement.world;
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
@@ -359,51 +367,72 @@ export function PetStage({
   }, [spotlightPreview, spotlightAim]);
   const placement = useMemo(() => createRoomPlacementResolver(nativeWorld), [nativeWorld]);
   const seenPlacementIds = useRef<Set<string> | undefined>(undefined);
+  const pendingPlacementIds = useRef(new Set<string>());
   useEffect(() => {
     if (!roomVisible || viewport.width <= 0 || viewport.height <= 0 || rotationPreview) return;
     const previous = seenPlacementIds.current;
-    seenPlacementIds.current = new Set(nativeWorld.objects.map(object => object.instanceId));
-    for (const object of nativeWorld.objects) {
-      if (previous && !previous.has(object.instanceId) && isCurtainDecorationId(object.modelId)) {
-        const window = nativeWorld.objects.find(window => isWindowLightSource(window.modelId) && window.wallAxis === object.wallAxis);
-        if (window) {
-          const fitted = curtainAtWindow(object, window);
-          if (placement.canPlace(fitted)) {
-            const point = roomItemAnchor(fitted, viewport.width);
-            const size = fitted.scale * viewport.width * NATIVE_MODEL_CATALOG[fitted.modelId].renderScale / ROOM_SPAN;
-            onPlacedDecorationOffsetChange?.(object.instanceId, {
-              x: point.x / Math.max(1, (viewport.width - size) / 2),
-              y: point.y / Math.max(1, (viewport.height - size) / 2),
-            });
-            continue;
+    const ids = new Set(nativeWorld.objects.map(object => object.instanceId));
+    seenPlacementIds.current = ids;
+    // Initial saved placements are never auto-repaired. Keep unfinished purchases
+    // queued when a newer layout cancels this job, including rapid repeat buys.
+    if (previous) for (const id of ids) if (!previous.has(id)) pendingPlacementIds.current.add(id);
+    for (const id of pendingPlacementIds.current) if (!ids.has(id)) pendingPlacementIds.current.delete(id);
+    if (!pendingPlacementIds.current.size) return;
+    const controller = new AbortController();
+    const placeNewObjects = async () => {
+      for (const object of nativeWorld.objects) {
+        if (controller.signal.aborted) return;
+        if (!pendingPlacementIds.current.has(object.instanceId)) continue;
+        if (isCurtainDecorationId(object.modelId)) {
+          const window = nativeWorld.objects.find(window => isWindowLightSource(window.modelId) && window.wallAxis === object.wallAxis);
+          if (window) {
+            const fitted = curtainAtWindow(object, window);
+            if (placement.canPlace(fitted)) {
+              const point = roomItemAnchor(fitted, viewport.width);
+              const size = fitted.scale * viewport.width * NATIVE_MODEL_CATALOG[fitted.modelId].renderScale / ROOM_SPAN;
+              pendingPlacementIds.current.delete(object.instanceId);
+              onPlacedDecorationOffsetChange?.(object.instanceId, {
+                x: point.x / Math.max(1, (viewport.width - size) / 2),
+                y: point.y / Math.max(1, (viewport.height - size) / 2),
+              });
+              // Rebuild blockers before fitting the next purchase into the room.
+              if (onPlacedDecorationOffsetChange) return;
+              continue;
+            }
           }
         }
+        if (placement.canPlace(object)) {
+          pendingPlacementIds.current.delete(object.instanceId);
+          if (object.placementOffset && !livePositions[object.instanceId]) {
+            onPlacedDecorationOffsetChange?.(object.instanceId, object.placementOffset);
+            if (onPlacedDecorationOffsetChange) return;
+          }
+          continue;
+        }
+        const free = await placement.nearestFreeAsync(object, controller.signal);
+        if (controller.signal.aborted) return;
+        pendingPlacementIds.current.delete(object.instanceId);
+        if (free) {
+          const point = roomItemAnchor(free, viewport.width);
+          const size = free.scale * viewport.width * NATIVE_MODEL_CATALOG[free.modelId].renderScale / ROOM_SPAN;
+          const offset = { x: point.x / Math.max(1, (viewport.width - size) / 2), y: point.y / Math.max(1, (viewport.height - size) / 2) };
+          if (object.instanceId === 'bed') onRoomBedOffsetChange?.(offset);
+          else if (roomPlacedToys.some(item => item.instanceId === object.instanceId)) onPlacedToyOffsetChange?.(object.instanceId, offset);
+          else onPlacedDecorationOffsetChange?.(object.instanceId, offset);
+          return;
+        } else {
+          // Keep a purchased item in inventory when the room has no space for it.
+          if (object.instanceId === 'bed') onBedRemove?.();
+          else if (roomPlacedToys.some(item => item.instanceId === object.instanceId)) onPlacedToyRemove?.(object.instanceId);
+          else onPlacedDecorationRemove?.(object.instanceId);
+          Alert.alert(t('home.noRoomForItem'), t('home.itemKeptInInventory'));
+          return;
+        }
       }
-      // Initial/layout measurements may temporarily clamp a saved wall item.
-      // Keep that display correction local; only explicit edits or new items
-      // may replace a saved anchor. Existing overlaps can be moved manually.
-      if (!previous || previous.has(object.instanceId)) continue;
-      if (placement.canPlace(object)) {
-        if (object.placementOffset && !livePositions[object.instanceId])
-          onPlacedDecorationOffsetChange?.(object.instanceId, object.placementOffset);
-        continue;
-      }
-      const free = placement.nearestFree(object);
-      if (free) {
-        const point = roomItemAnchor(free, viewport.width);
-        const size = free.scale * viewport.width * NATIVE_MODEL_CATALOG[free.modelId].renderScale / ROOM_SPAN;
-        const offset = { x: point.x / Math.max(1, (viewport.width - size) / 2), y: point.y / Math.max(1, (viewport.height - size) / 2) };
-        if (object.instanceId === 'bed') onRoomBedOffsetChange?.(offset);
-        else if (roomPlacedToys.some(item => item.instanceId === object.instanceId)) onPlacedToyOffsetChange?.(object.instanceId, offset);
-        else onPlacedDecorationOffsetChange?.(object.instanceId, offset);
-      } else {
-        // Keep a purchased item in inventory when the room has no space for it.
-        if (object.instanceId === 'bed') onBedRemove?.();
-        else if (roomPlacedToys.some(item => item.instanceId === object.instanceId)) onPlacedToyRemove?.(object.instanceId);
-        else onPlacedDecorationRemove?.(object.instanceId);
-        Alert.alert(t('home.noRoomForItem'), t('home.itemKeptInInventory'));
-      }
-    }
+    };
+    // Paint the purchase acknowledgement before placement starts.
+    const frame = requestAnimationFrame(() => { void placeNewObjects(); });
+    return () => { controller.abort(); cancelAnimationFrame(frame); };
   }, [nativeWorld, placement, livePositions, roomVisible, roomPlacedToys, rotationPreview, viewport.width, viewport.height, onRoomBedOffsetChange, onPlacedToyOffsetChange, onPlacedDecorationOffsetChange, onBedRemove, onPlacedToyRemove, onPlacedDecorationRemove, t]);
   const canResizeItem = useCallback((item: RoomLayerItem, scale: number) => {
     if (viewport.width <= 0) return true;
@@ -1229,7 +1258,7 @@ export function PetStage({
               <SimpleLampLight world={nativeWorld}/>
               <Text pointerEvents="none" style={styles.graphicsHint}>{t('recovery.graphicsHint')}</Text>
             </> : null}
-            {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene pickerRef={nativePicker} worldClock={worldClock} editingObject={editingObject} spotlightAim={spotlightAim} initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} transitioning={!!sceneSlide} editing={decorating}
+            {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene homeRoomId={homeRoomId} pickerRef={nativePicker} worldClock={worldClock} editingObject={editingObject} spotlightAim={spotlightAim} initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} transitioning={!!sceneSlide} editing={decorating}
               playback={activityPlayback ?? playback} travel={roomActivity?.plan.steps[roomActivity.stepIndex].native}
               activityKey={roomActivity ? roomActivityStepKey(roomActivity) : undefined}
               onRoomStepComplete={completeNativeStep}
@@ -1322,7 +1351,7 @@ export function PetStage({
             degrees={rotationPreview.degrees} simpleGraphics={simpleGraphics}
             onPreview={degrees => setRotationPreview(current => current ? { ...current, degrees } : null)}
             onClose={() => setRotationPreview(null)} onApply={degrees => {
-              if (rotationPlacement.allowed) onSetRoomItemRotation?.(rotationPreview.item, degrees);
+              if (rotationPlacement.allowed) onSetRoomItemRotation?.(rotationPreview.item, degrees, rotationPlacement.offset);
               setRotationPreview(null);
             }} /> : spotlightPreview ? <RoomSpotlightControls key={spotlightPreview.instanceId} simpleGraphics={simpleGraphics}
             name={t(`store.decorationName.${roomPlacedDecorations.find(item => item.instanceId === spotlightPreview.instanceId)?.decorationId}`)}

@@ -6,6 +6,7 @@ import usePrevious from './usePrevious'
 import { useWorkletEffect } from './useWorkletEffect'
 import { AABB, Entity } from '../types'
 import { useMemo } from 'react'
+import { loadPreparedModel } from '../utilities/PreparedModels'
 
 export interface UseModelConfigParams {
   /**
@@ -69,25 +70,7 @@ export function useModel(source: BufferSource, props?: UseModelConfigParams): Fi
       throw new Error('instanceCount must be greater than 0')
     }
 
-    return workletContext.runAsync(() => {
-      'worklet'
-
-      // Fast Refresh can rerun this effect with a buffer consumed by the
-      // previous model load. Wait for useBuffer to publish its fresh allocation.
-      if (!assetBuffer.isValid) return undefined
-
-      let loadedAsset: FilamentAsset
-      if (instanceCount == null || instanceCount === 1) {
-        loadedAsset = engine.loadAsset(assetBuffer)
-      } else {
-        loadedAsset = engine.loadInstancedAsset(assetBuffer, instanceCount)
-      }
-
-      // After loading the asset we can release the buffer
-      assetBuffer.release()
-
-      return loadedAsset
-    })
+    return loadPreparedModel(engine, workletContext, assetBuffer, source, instanceCount ?? 1)
   }, [assetBuffer, workletContext, engine, instanceCount])
 
   useWorkletEffect(() => {

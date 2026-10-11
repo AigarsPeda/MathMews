@@ -1,4 +1,7 @@
 import { configureRoomCamera } from '@/utils/native-room-camera';
+import { registerRoomModelWarmup } from '@/utils/native-model-warmup';
+import type { HomeRoomId } from '@/constants/home-rooms';
+import { prepareModel, clearPreparedModels } from 'react-native-filament';
 import { advanceSpotlightAim, type SpotlightAim } from '@/utils/native-spotlight-aim';
 import { NativeCurtain } from './NativeCurtain';
 import { nativeRoomPreview } from '@/utils/native-room-preview';
@@ -42,6 +45,7 @@ import { enableSimpleGraphicsForSession } from '@/lib/graphics-mode';
 import type { PetPlaybackState } from '@/pet-display/types';
 export type NativeRoomPicker = { pick: (x: number, y: number) => Promise<string | undefined> };
 type Props = {
+  homeRoomId?: HomeRoomId;
   pickerRef?: RefObject<NativeRoomPicker | undefined>;
   spotlightAim?: ISharedValue<SpotlightAim | undefined>;
   editingObject?: ISharedValue<NativeRoomObject | undefined>;
@@ -123,6 +127,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
 }) {
   'use no memo';
   const { transformManager } = useFilamentContext();
+  const modelMetadata = NATIVE_MODEL_CATALOG[object.modelId];
   const model = useModel(NATIVE_MODEL_SOURCES[object.modelId], { shouldReleaseSourceData: false });
   useEffect(() => {
     if (model.state === 'loaded') onReady?.(`${object.instanceId}:${object.modelId}`);
@@ -234,7 +239,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
       const motion = advanceBathroomMotion(bathroomMotion.value, object.instanceId, travel?.bathroom,
         timeSinceLastFrame, active, reduceMotion);
       bathroomMotion.value = motion;
-      const height = NATIVE_MODEL_CATALOG[object.modelId].bathroom?.sprayHeight ?? 0;
+      const height = modelMetadata.bathroom?.sprayHeight ?? 0;
       for (let i = 0; i < bathroomParts.length; i++) {
         const part = bathroomParts[i];
         const anchor = part.transform.translation;
@@ -309,7 +314,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
         s.settled = false;
       }
       s.contact = distance < radius + catRadius + .08;
-      const meta = NATIVE_MODEL_CATALOG[object.modelId];
+      const meta = modelMetadata;
       const localCenter = meta.max.map((v, i) => (v + meta.min[i]) / 2);
       const matrix = transformManager.getTransform(entity).data;
       const { angle, axis } = nativeBodyRotation(matrix);
@@ -357,7 +362,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
           .rotate(hand.name === 'Hour hand' ? angles.hour : angles.minute, [0, 0, 1]).translate([0, .6, z]));
       }
     }
-    if (animator && animator.getAnimationCount() > 0 && !(worldClock && clockHands.length) && !object.bathroom && object.poweredOn !== false && lampAnimationOn && (!NATIVE_MODEL_CATALOG[object.modelId].wind || airflowStrength(center, airflow) > 0)) {
+    if (animator && animator.getAnimationCount() > 0 && !(worldClock && clockHands.length) && !object.bathroom && object.poweredOn !== false && lampAnimationOn && (!modelMetadata.wind || airflowStrength(center, airflow) > 0)) {
       animator.applyAnimation(0, s.time);
       animator.updateBoneMatrices();
     }
@@ -413,7 +418,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [active, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [active, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   if (asset && isCurtainDecorationId(object.modelId))
     return <NativeCurtain asset={asset} object={object} windows={windows} clock={worldClock} progress={curtainProgress} lightning={lightning} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
@@ -427,7 +432,13 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
 }
 function Scene(props: Props) {
   'use no memo';
-  const { camera, view, choreographer } = useFilamentContext();
+  const { camera, view, choreographer, engine, workletContext } = useFilamentContext();
+  const homeRoomId = props.homeRoomId;
+  useEffect(() => {
+    if (!homeRoomId) return;
+    const unregister = registerRoomModelWarmup(homeRoomId, source => prepareModel(engine, workletContext, source));
+    return () => { unregister(); clearPreparedModels(engine); };
+  }, [engine, workletContext, homeRoomId]);
   const pickEntities = useRef(new Map<number, string>());
   const registerPickEntities = useCallback((id: string, entities: { id: number }[]) => {
     const registry = pickEntities.current;

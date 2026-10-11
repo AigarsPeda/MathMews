@@ -1,5 +1,7 @@
 # Native room engine
 
+See [Mobile engine and performance study](mobile-engine-performance-study.md) for the iOS shadow investigation, measured purchase/placement costs, loading architecture and engine alternatives.
+
 The live game uses `react-native-filament` 1.11.0 on iOS and Android. React Native retains navigation, care controls, math puzzles, wallets, localization, accessible menus, and the room editor. Filament renders every room object and cat; Bullet simulates movable toys. Store room previews and cat portraits use the same native models. Static store thumbnails, control icons, and OS launch artwork remain raster UI assets.
 
 3D graphics is the launch default. Only an explicit Settings choice saves Simple graphics under `@mathmews/graphics-mode`. Automatic scene recovery enables it for the current session without writing a preference. The previous `@mathmews/simple-graphics` flag is ignored because it also stored automatic crash fallback and could leave the cat permanently using a still image.
