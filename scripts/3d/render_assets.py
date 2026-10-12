@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
 from store_furniture import STORE_FURNITURE_IDS, MODERN_KITCHEN_IDS, build_store_furniture
+from cat_feeders import CAT_FEEDER_IDS, build_cat_feeder
 from bathroom_additions import build_bathroom_addition, add_bathroom_controls
 from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, key_cat_geometry, smoothstep, smooth_window, pulse, care_action_time
 OUT=ROOT/'assets/3d'
@@ -700,6 +701,7 @@ def tori():
  box('Gate crossbeam',(0,0,1.60),(2.1,.23,.13),'red',.045);box('Gate lintel',(0,0,2.04),(2.3,.35,.21),'wood',.07)
 
 def family(id):
+ if id in CAT_FEEDER_IDS:return 'cat_feeder'
  if id in STORE_FURNITURE_IDS:return "store_furniture"
  low=id.lower()
  if id.startswith('bed-'):return 'bed'
@@ -729,6 +731,7 @@ def family(id):
 def build_item(entry,t=0):
  id=entry['id'];f=family(id);before=set(bpy.context.scene.objects)
  if f=='store_furniture':build_store_furniture(id,globals())
+ elif f=='cat_feeder':build_cat_feeder(id,globals())
  elif f=='bed':bed(id)
  elif f=='toy':toy(id,t)
  elif f=='sofa':sofa(id)
@@ -847,6 +850,8 @@ def main():
   render_furniture([e for e in entries if e['id'] in STORE_FURNITURE_IDS]);return
  if ONLY=='modern-kitchen':
   render_furniture([e for e in entries if e['id'] in MODERN_KITCHEN_IDS]);return
+ if ONLY=='cat-feeders':
+  render_furniture([e for e in entries if e['id'] in CAT_FEEDER_IDS]);return
  if ONLY=='samples':
   (OUT/'rooms').mkdir(exist_ok=True)
   room(next(e for e in entries if e['id']=='room1'));render_furniture([e for e in entries if e['id'] in ['sofaA','livingTable','plantSmall','chairClassicA','bed-brown']]);return

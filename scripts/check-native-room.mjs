@@ -165,8 +165,9 @@ const jumpStart = [-1, w.FLOOR_Y, 1];
 const blockedJump = w.prepareNativeStep(plan, plan.steps[1], w.catScreenPoint(jumpStart, world), { ...world, objects: [...world.objects, { ...obstacle, instanceId: 'jump-barrier', min: [-2, 0, -2], max: [2, 3, 2] }] }, w.FLOOR_Y);
 assert.ok(blockedJump.native.blocked && !blockedJump.native.jump, 'A blocked flight cannot pass through another furnishing');
 
-// Bowl commands use the placed bowl and face it without a duplicate prop.
-for (const decorationId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink']) for (const bowlScale of [.7, 1, 2.2]) {
+// Every feeding surface uses the placed item without a duplicate bowl prop.
+const feederIds = Array.from(load('@/constants/cat-supplies-decorations').CAT_FEEDER_DECORATION_IDS);
+for (const decorationId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink', ...feederIds]) for (const bowlScale of [.7, 1, 2.2]) {
   const bowl = { decorationId, instanceId: 'meal-bowl', offset: { x: .5, y: .15 }, scale: bowlScale };
   const mealWorld = w.buildNativeRoomWorld({ ...base, decorations: [bowl] });
   const mealPlan = buildRoomActivity({ ...base, decorations: [bowl], homeOffset: { x: 0, y: .12 }, ownedToyIds: [], hungry: true }, 0, 'bowlEat');
@@ -175,6 +176,7 @@ for (const decorationId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink']) fo
   const arrival = approach.native.path.at(-1);
   const meal = w.prepareNativeStep(mealPlan, mealPlan.steps[1], w.catScreenPoint(arrival, mealWorld), mealWorld, w.FLOOR_Y);
   assert.equal(meal.native.hideEatingProps, true);
+  assert.equal(meal.native.blocked, false, `${decorationId}/${bowlScale}: meal reaches the feeding surface`);
   assert.ok(Number.isFinite(meal.native.heading), 'The cat faces the food bowl');
   const actualBowl = mealWorld.objects[0];
   assert.ok(Math.abs(Math.hypot(actualBowl.position[0] - arrival[0], actualBowl.position[2] - arrival[2]) - w.CAT_EATING_REACH * mealWorld.catScale) < .001);
@@ -875,9 +877,9 @@ for (const node of spillModel.nodes.filter(n => n.mesh !== undefined)) {
   }
 }
 
-let spillTransform, spillTimes = [];
+let spillTransform, spillTimes = [], spillSources = [];
 mocks['react-native-filament'] = {
-  useModel: () => ({ state: 'loaded', asset: {}, rootEntity: {} }),
+  useModel: source => { spillSources.push(source); return { state: 'loaded', asset: {}, rootEntity: {} }; },
   useAnimator: () => ({ getAnimationDuration: () => spillDuration, applyAnimation: (i, t) => { assert.equal(i, 0); spillTimes.push(t); }, updateBoneMatrices() {} }),
   useFilamentContext: () => ({ transformManager: {
     createIdentityMatrix: () => ({ scaling(v) { this.scale = v; return this; }, rotate(v) { this.heading = v; return this; }, translate(v) { this.position = v; return this; } }),
@@ -886,12 +888,13 @@ mocks['react-native-filament'] = {
   RenderCallbackContext: { useRenderCallback: fn => { renderFrame = fn; } },
 };
 const { NativeFoodSpill } = load('@/components/pet/native/NativeFoodSpill');
-for (const bowlId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink']) {
+for (const bowlId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink', ...feederIds]) {
   for (const itemScale of [.7, 1, 2.2]) {
     const object = w.buildNativeRoomWorld({ ...base, decorations: [{ decorationId: bowlId, instanceId: 'meal', offset: { x: .3, y: -.2 }, scale: itemScale }] }).objects[0];
     assert.ok(object, bowlId);
     slots = []; cursor = 0; mealTime.value = { name: 'eating', time: 1.2 };
     NativeFoodSpill({ object, active: true, animationTime: mealTime }); renderFrame();
+    assert.ok(spillSources.at(-1).endsWith(feederIds.includes(bowlId) ? `${bowlId}-eating-effect.glb` : 'bowl-food-spill.glb'), 'Each feeder loads its own meal effect');
     assert.deepEqual(Array.from(spillTransform.scale), [object.scale, object.scale, object.scale]);
     assert.equal(spillTransform.heading, object.heading); assert.equal(spillTransform.position, object.position);
     assert.equal(spillTimes.at(-1), 1.2, 'A late-loaded effect uses the current eating phase');
@@ -943,14 +946,34 @@ function sceneChildren(props) {
 }
 const sceneMeal = { ...mealProps, world: bowlRoom, playingId: 'meal', activityKey: 'meal-one' };
 let children = sceneChildren(sceneMeal), spill = children.find(c => c.type === 'FoodSpill'), cat = children.find(c => c.type === 'Cat');
-assert.equal(spill.props.object, bowlRoom.objects[0]); assert.equal(spill.key, 'meal-one');
+assert.equal(spill.props.object, bowlRoom.objects[0]); assert.equal(spill.key, 'meal-one:meal:bowlBlue');
 assert.equal(spill.props.animationTime, cat.props.animationTimeValue, 'Scene shares the actual cat clock with the spill');
 assert.equal(sceneChildren({ ...sceneMeal, paused: true }).find(c => c.type === 'FoodSpill').props.active, false);
 for (const patch of [{ playingId: 'missing' }, { travel: undefined }, { playback: { kind: 'segment', segment: registry.getSegment('idle') } }])
   assert.ok(!sceneChildren({ ...sceneMeal, ...patch }).some(c => c.type === 'FoodSpill'), 'Spill is removed when the selected-bowl meal ends');
 sceneReduced = true;
 assert.ok(!sceneChildren(sceneMeal).some(c => c.type === 'FoodSpill'), 'Reduce Motion omits the flying crumbs');
+sceneReduced = false;
+for (const id of feederIds) {
+  const world = w.buildNativeRoomWorld({ ...base, decorations: [
+    { decorationId: id, instanceId: 'selected-feeder', offset: { x: .2, y: .3 }, scale: 1.3 },
+    { decorationId: id, instanceId: 'other-feeder', offset: { x: -.2, y: .3 } },
+  ] });
+  const props = { ...sceneMeal, world, playingId: 'selected-feeder' };
+  const children = sceneChildren(props), effects = children.filter(c => c.type === 'FoodSpill');
+  assert.equal(effects.length, 1, `${id}: only the eating feeder spills`);
+  assert.equal(effects[0].props.object.instanceId, 'selected-feeder');
+  assert.equal(effects[0].props.animationTime, children.find(c => c.type === 'Cat').props.animationTimeValue);
+  assert.equal(sceneChildren({ ...props, paused: true }).find(c => c.type === 'FoodSpill').props.active, false);
+  for (const patch of [{ playingId: 'missing' }, { travel: undefined }, { playback: { kind: 'segment', segment: registry.getSegment('idle') } }, { catPresent: false }])
+    assert.ok(!sceneChildren({ ...props, ...patch }).some(c => c.type === 'FoodSpill'), `${id}: cancellation removes the effect`);
+  sceneReduced = true;
+  assert.ok(!sceneChildren(props).some(c => c.type === 'FoodSpill'), `${id}: Reduce Motion omits the effect`);
+  sceneReduced = false;
+}
+await import('./check-feeder-eating-effects.mjs');
 console.log('Verified spill lifecycle in the rendered room scene, including cancellation and Reduce Motion.');
+if (process.argv.includes('--feeding-effects')) process.exit(0);
 
 // A cached native surface draws before a slide and stops its GPU clock while hidden.
 React.useState = initial => {

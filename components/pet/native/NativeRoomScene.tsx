@@ -14,7 +14,7 @@ import { advanceRockingChair, STILL_ROCKING_MOTION, type RockingMotion } from '@
 import { advanceBathroomMotion, STILL_BATHROOM_MOTION } from '@/utils/native-bathroom';
 import { NativeAirflow } from "./NativeAirflow";
 import { NativeFoodSpill } from "./NativeFoodSpill";
-import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { isFridgeDecorationId, isAirConditionerDecorationId, isCurtainDecorationId, isLampDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
 import { NativeLampLight } from './NativeLampLight';
 import { NativeSpotlightHead } from './NativeSpotlightHead';
@@ -511,9 +511,9 @@ function Scene(props: Props) {
     if (!painted || lightingActive) choreographer.start();
     else choreographer.stop();
   }, [choreographer, painted, lightingActive]);
-  const eatingBowl = catPresent && props.travel?.hideEatingProps && props.playback.kind === 'segment'
+  const eatingFeeder = catPresent && props.travel?.hideEatingProps && props.playback.kind === 'segment'
     && props.playback.segment.assetKey === 'eating'
-    ? props.world.objects.find(object => object.instanceId === props.playingId && isFoodBowlDecorationId(object.modelId))
+    ? props.world.objects.find(object => object.instanceId === props.playingId && isCatFeederDecorationId(object.modelId))
     : undefined;
   const catScale = props.world.catScale;
   const render = useCallback(({ timeSinceLastFrame }: { timeSinceLastFrame: number }) => {
@@ -562,7 +562,7 @@ function Scene(props: Props) {
       position={box.max.map((v, i) => (v + box.min[i]) / 2) as Float3}/>))}
   {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} spotlightPose={spotlightPose} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} lightingActive={lightingActive} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
   {props.world.objects.filter(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn).map(o => <NativeAirflow key={o.instanceId} object={o} editingObject={props.editingObject} active={visible && !reduceMotion}/>)}
-  {eatingBowl && !reduceMotion && <NativeFoodSpill key={props.activityKey} object={eatingBowl} active={visible} animationTime={catAnimationTime}/>}
+  {eatingFeeder && !reduceMotion && <NativeFoodSpill key={`${props.activityKey}:${eatingFeeder.instanceId}:${eatingFeeder.modelId}`} object={eatingFeeder} active={visible} animationTime={catAnimationTime}/>}
   {catPresent && <NativeCatActor registerPickEntities={registerPickEntities} key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}
  </FilamentView>;
 }

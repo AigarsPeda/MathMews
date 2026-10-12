@@ -1,17 +1,17 @@
 import { useMemo } from 'react';
 import { RenderCallbackContext, useAnimator, useFilamentContext, useModel } from 'react-native-filament';
 import type { ISharedValue } from 'react-native-worklets-core';
-import source from '@/assets/3d/native/bowl-food-spill.glb';
+import { getFeedingEffectSource } from '@/constants/feeding-effects';
 import type { NativeRoomObject } from '@/utils/native-room-world';
 
-/** One meal's crumbs are anchored to the placed bowl, independently of the cat. */
+/** Each meal effect follows its feeder and the rendered cat's eating clock. */
 export function NativeFoodSpill({ object, active, animationTime }: {
   object: NativeRoomObject;
   active: boolean;
   animationTime: ISharedValue<{ name: string; time: number }>;
 }) {
   const { transformManager } = useFilamentContext();
-  const model = useModel(source, { shouldReleaseSourceData: false });
+  const model = useModel(getFeedingEffectSource(object.modelId), { shouldReleaseSourceData: false });
   const animator = useAnimator(model.state === 'loaded' ? model.asset : undefined);
   const entity = model.state === 'loaded' ? model.rootEntity : undefined;
   const transform = useMemo(() => transformManager.createIdentityMatrix()

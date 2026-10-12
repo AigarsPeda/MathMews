@@ -1,6 +1,6 @@
 import type { AppIconName } from "@/constants/app-icons";
 import { bathroomFixtureKind } from "@/constants/bathroom-activities";
-import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { isPlayablePlant } from "@/constants/plant-play";
 import { isCatSeatDecorationId } from "@/constants/sofa-decorations";
 import { isKitchenChairDecorationId, isKitchenIslandDecorationId } from "@/constants/kitchen-activities";
@@ -39,7 +39,7 @@ export function getRoomCommands(item: RoomLayerItem) {
       case "island": return isKitchenIslandDecorationId(id);
       case "window": return isWindowDecorationId(id);
       case "fridge": return isFridgeDecorationId(id);
-      case "bowl": return isFoodBowlDecorationId(id);
+      case "bowl": return isCatFeederDecorationId(id);
       case "plant": return isPlayablePlant(id);
       case "toy": return id.startsWith("catTree") || id === "yarnRed" || id === "yarnBlue";
       case "bath": case "shower": case "toilet": return bathroomFixtureKind(id) === command.target;

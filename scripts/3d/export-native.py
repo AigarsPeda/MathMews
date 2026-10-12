@@ -1,5 +1,5 @@
 """Export the game's original models and all cat actions for native Filament.
-Blender --background --python scripts/3d/export-native.py -- [--items|--cats|--food-spill]
+Blender --background --python scripts/3d/export-native.py -- [--items|--cats|--food-spill|--feeding-effects]
 Use --items --id=catTreePink to rebuild selected items without exporting cats.
 The saved catalog IDs and the original raster framing are retained in metadata.
 """
@@ -11,6 +11,7 @@ ROOT=Path(__file__).resolve().parents[2]
 LAMP_GLOW_PARTS=json.loads((ROOT/'constants/lamp-glow-parts.json').read_text())
 sys.path.insert(0,str(ROOT/'scripts/3d'))
 from native_gltf import normalize_animation_times, compact_buffer_views
+from feeding_effects import FEEDING_EFFECT_IDS, build_feeding_effect, pose_feeding_effect
 OUT=ROOT/'assets/3d/native';OUT.mkdir(parents=True,exist_ok=True)
 scope={'__file__':str(ROOT/'scripts/3d/render_assets.py'),'__name__':'__native_assets__'}
 exec(compile((ROOT/'scripts/3d/render_assets.py').read_text(),scope['__file__'],'exec'),scope)
@@ -198,6 +199,7 @@ def items():
  if not selected:
   airflow()
   food_spill()
+  feeding_effects()
  # Selected exports still keep inventory order for deterministic catalog checks.
  inventory_ids=[e['id'] for e in json.loads((ROOT/'scripts/3d/inventory.json').read_text())['entries']]
  metadata={id:metadata[id] for id in inventory_ids if id in metadata}
@@ -258,12 +260,33 @@ def food_spill():
   track.strips.new('Eating spill',1,action);piece.animation_data.action=None
  export(OUT/'bowl-food-spill.glb',[root,*pieces],True)
 
+def feeding_effects():
+ for id in FEEDING_EFFECT_IDS:
+  clear();scene=scope['setup'](256)
+  pieces=build_feeding_effect(id,scope)
+  root=scope['empty'](id+' meal effect')
+  for piece in pieces:piece.parent=root
+  count,fps=json.loads((ROOT/'scripts/3d/clips.json').read_text())['eating']
+  frames=round(count/fps*24)
+  scene.render.fps=24;scene.frame_start=1;scene.frame_end=frames+1
+  for frame in range(frames+1):
+   pose_feeding_effect(id,pieces,frame/frames,scope)
+   for piece in pieces:
+    for prop in ('location','rotation_euler','scale'):piece.keyframe_insert(data_path=prop,frame=frame+1)
+  for piece in pieces:
+   action=piece.animation_data.action
+   track=piece.animation_data.nla_tracks.new();track.name='Eating effect'
+   track.strips.new('Eating effect',1,action);piece.animation_data.action=None
+  export(OUT/(id+'-eating-effect.glb'),[root,*pieces],True)
+  print('FEEDING_EFFECT',id,flush=True)
+
 def cats():
  from game_cat import export_cats
  export_cats(scope,ARGS,export)
 if '--food-spill' in ARGS:food_spill()
-if '--cats' not in ARGS and '--food-spill' not in ARGS:items()
-if '--items' not in ARGS and '--food-spill' not in ARGS:
+if '--feeding-effects' in ARGS:feeding_effects()
+if '--cats' not in ARGS and '--food-spill' not in ARGS and '--feeding-effects' not in ARGS:items()
+if '--items' not in ARGS and '--food-spill' not in ARGS and '--feeding-effects' not in ARGS:
  cats()
  # Keep OS launch and React fallback artwork in sync with a cat rebuild.
  import runpy, subprocess

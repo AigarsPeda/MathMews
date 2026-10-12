@@ -1,4 +1,4 @@
-import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { createWorldClock, normalizeWorldClock } from '@/utils/world-clock';
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import { DEFAULT_HOME_ROOM_ID, isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
@@ -286,8 +286,8 @@ function parseGameSave(
       parsed.progress.decorationsUnlocked,
       placedDecorationIds,
     );
-    // Existing players receive the same free bowl once if they do not own one.
-    if (normalizedPet.type === "cat" && !decorationsUnlocked.some(isFoodBowlDecorationId)) {
+    // Existing players receive a free bowl if they do not own a feeding item.
+    if (normalizedPet.type === "cat" && !decorationsUnlocked.some(isCatFeederDecorationId)) {
       decorationsUnlocked.push("bowlBlue");
       normalizedPet.placedDecorations = [...normalizedPet.placedDecorations ?? [], createStarterFoodBowl()];
     }

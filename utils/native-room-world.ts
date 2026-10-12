@@ -3,7 +3,7 @@ import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import type { BathroomFixtureKind, BathroomPhase } from '@/constants/bathroom-activities';
 import { isPlayablePlant } from "@/constants/plant-play";
-import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 import { isKitchenChairDecorationId, isKitchenIslandDecorationId, isKitchenPerchDecorationId } from '@/constants/kitchen-activities';
 import type { RockingChair } from '@/utils/native-rocking-chair';
@@ -386,7 +386,7 @@ export function buildNativeRoomWorld(options: {
     const min = [0, 1, 2].map(i => Math.min(...corners.map(c => c[i]))) as Vec3;
     const max = [0, 1, 2].map(i => Math.max(...corners.map(c => c[i]))) as Vec3;
     const movable = /Ball$|toy-mouse|^yarn/i.test(modelId);
-    const solid = !isFoodBowlDecorationId(modelId) && !wall && !/carpet|rug/i.test(modelId) && !movable && max[1] > FLOOR_Y + .10;
+    const solid = !isCatFeederDecorationId(modelId) && !wall && !/carpet|rug/i.test(modelId) && !movable && max[1] > FLOOR_Y + .10;
     const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
     const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, curtainOpen, fridgeOpen, fridgeHingeSide, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
       wallAxis: wall ? flip ? 0 : 2 : undefined };
@@ -713,7 +713,7 @@ function findPawApproach(start: Vec3, points: Vec3[], targetRadius: number, worl
 /** Only a temporary store preview may move to make room; saved objects stay put. */
 export function placeNativePreview(world: NativeRoomWorld, id: string): void {
   const object = world.objects.find(o => o.instanceId === id);
-  if (!object || !(object.solid || object.movable))
+  if (!object || !(object.solid || object.movable || isCatFeederDecorationId(object.modelId)))
     return;
   const center = object.min.map((v, i) => (v + object.max[i]) / 2) as Vec3;
   const half = object.min.map((v, i) => (object.max[i] - v) / 2);

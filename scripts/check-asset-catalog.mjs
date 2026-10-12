@@ -6,6 +6,7 @@ const inventory = JSON.parse(fs.readFileSync('scripts/3d/inventory.json', 'utf8'
 const requiredModels = [
   ...inventory.map(entry => entry.id),
   'cat-orange', 'cat-grey', 'cat-white', 'airflow', 'bowl-food-spill',
+  ...['feedingTile', 'feedingPebble', 'foodTrailTray', 'kibbleDispenser', 'lickingPad'].map(id => `${id}-eating-effect`),
 ];
 for (const id of requiredModels) {
   const file = path.join('assets/3d/native', `${id}.glb`);

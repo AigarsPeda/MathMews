@@ -5,7 +5,7 @@ import { isWindowDecorationId } from "@/constants/window-decorations";
 import { isFridgeDecorationId } from "@/constants/decoration-motion";
 import { bathroomFixtureKind, type BathroomPhase } from "@/constants/bathroom-activities";
 import { isPlayablePlant } from "@/constants/plant-play";
-import { isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
+import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { CAT_ANIMATION_CLIPS } from "@/constants/cat-animation-clips";
 import type { NativeRoomWorld, NativeTravel, Vec3 } from "@/utils/native-room-world";
 import { catScreenPoint, findFoodBowlApproach, findWindowWatchPerch } from "@/utils/native-room-world";
@@ -202,7 +202,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     return { kind: "doorTravel", targetInstanceId: door.instanceId, steps: [walkTo(home, threshold, room.petSize)] };
   }
   if (command === "bowlEat") {
-    const bowls = room.decorations.filter(item => isFoodBowlDecorationId(item.decorationId)
+    const bowls = room.decorations.filter(item => isCatFeederDecorationId(item.decorationId)
       && (preferredInstanceId === undefined || item.instanceId === preferredInstanceId));
     // The general Eat command can use another bowl when the first is enclosed.
     // A furnishing-specific command always keeps the selected bowl's identity.

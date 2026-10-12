@@ -34,7 +34,9 @@ const bathtubIds = ['bathroomBathOvalWhite', 'bathroomBathOvalSage', 'bathroomBa
   'bathroomBathOvalCharcoal', 'bathroomBathClawfootCream', 'bathroomBathClawfootNavy',
   'bathroomJacuzziWhite', 'bathroomJacuzziSage'];
 const newBathroomIds = ['bathroomDoubleVanity', 'bathroomShowerCabin', 'bathroomLaundryHamper', 'bathroomTowelStand', ...bathtubIds];
+const feederIds = Array.from(load('@/constants/cat-supplies-decorations').CAT_FEEDER_DECORATION_IDS);
 const collections = {
+  catItems: feederIds,
   chairs: ['kitchenBarStoolOak', 'kitchenBarStoolMetal', 'kitchenBarStoolVelvet', 'kitchenChairWindsor', 'kitchenChairMint', 'kitchenChairUpholstered', 'kitchenChairBistro', 'chairRockingOak'],
   living: ['chairRockingOak', 'livingFireplaceCream'],
   sofas: sofaIds, bathroom: newBathroomIds,
@@ -47,7 +49,7 @@ const collections = {
   bedroom: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.bedroom).filter(id => id.startsWith('bedroom')),
   halloween: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.halloween) };
 const ids = Array.from(new Set(Object.values(collections).flat()));
-assert.equal(ids.length, 100);
+assert.equal(ids.length, 105);
 const { tryPurchaseDecoration, getDecorationStorePrice } = load('@/utils/decoration-store');
 const { appendPlacedDecoration } = load('@/utils/room-placement');
 const { createDefaultGameSave, parseGameSaveFromValue } = load('@/utils/game-storage');
@@ -97,6 +99,28 @@ for (const [section, items] of Object.entries(collections)) {
     const world = native.buildNativeRoomWorld({ ...base, decorations: [savedItem] });
     const model = world.objects.find(item => item.instanceId === savedItem.instanceId);
     assert.equal(model.modelId, id);
+    if (section === 'catItems') {
+      const mealRoom = { ...base, hungry: true, decorations: [savedItem], nativeWorld: world };
+      const plan = buildRoomActivity(mealRoom, 0, 'bowlEat', savedItem.instanceId);
+      assert.equal(plan.targetInstanceId, savedItem.instanceId, `${id}: Eat uses the selected feeder`);
+      let position = world.home;
+      for (const step of plan.steps) {
+        const prepared = native.prepareNativeStep(plan, step, native.catScreenPoint(position, world), world, position[1]);
+        assert.equal(prepared.native.blocked, false, `${id}/${step.animation}: reachable meal and return`);
+        if (step.animation === 'eating') assert.equal(prepared.native.hideEatingProps, true);
+        position = prepared.native.path.at(-1);
+      }
+      // Low feeding surfaces must still move into view in a furnished preview.
+      const previewWorld = native.buildNativeRoomWorld({ ...base, decorations: [
+        { decorationId: 'kitchenIsland', instanceId: 'island', offset: { x: .35, y: -.2 } },
+        { ...savedItem, instanceId: 'preview-decoration', offset: { x: .35, y: -.2 } },
+      ] });
+      native.placeNativePreview(previewWorld, 'preview-decoration');
+      const feeder = previewWorld.objects.find(item => item.instanceId === 'preview-decoration');
+      const island = previewWorld.objects.find(item => item.instanceId === 'island');
+      assert.ok(feeder.max[0] < island.min[0] || feeder.min[0] > island.max[0]
+        || feeder.max[2] < island.min[2] || feeder.min[2] > island.max[2], `${id}: preview is clear of the island`);
+    }
     if (section === 'carpets') {
       assert.equal(model.solid, false, `${id}: the cat can walk across rugs`);
       assert.equal(model.collidable, false, `${id}: rugs never obstruct the tail`);

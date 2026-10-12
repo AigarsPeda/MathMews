@@ -1798,6 +1798,36 @@
       "animated": false
     },
     {
+      "id": "feedingTile",
+      "kind": "decoration",
+      "displaySize": 40,
+      "animated": false
+    },
+    {
+      "id": "feedingPebble",
+      "kind": "decoration",
+      "displaySize": 40,
+      "animated": false
+    },
+    {
+      "id": "foodTrailTray",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "kibbleDispenser",
+      "kind": "decoration",
+      "displaySize": 40,
+      "animated": false
+    },
+    {
+      "id": "lickingPad",
+      "kind": "decoration",
+      "displaySize": 40,
+      "animated": false
+    },
+    {
       "id": "yarnRed",
       "kind": "decoration",
       "displaySize": 20,

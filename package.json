@@ -20,6 +20,7 @@
     "assets:verify": "node scripts/3d/verify.mjs",
     "typecheck": "tsc --noEmit",
     "test:game": "node scripts/check-game.mjs",
+    "test:feeding-effects": "node scripts/check-native-room.mjs --feeding-effects",
     "test:ball-physics": "python3 scripts/native/check-ball-physics.py",
     "test:runtime-safety": "python3 scripts/native/check-runtime-safety.py",
     "crashes": "node scripts/diagnose-crashes.mjs",
