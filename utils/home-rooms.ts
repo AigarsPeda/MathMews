@@ -59,11 +59,11 @@ export function getCatHomeRoomId(pet: PetProfile): HomeRoomId {
 }
 
 /** Follow an explicit cat journey in the same saved update as its arrival. */
-export function sendCatToRoom(pet: PetProfile, destination: HomeRoomId): PetProfile {
+export function sendCatToRoom(pet: PetProfile, destination: HomeRoomId, follow = true): PetProfile {
   if (!isHomeRoomId(destination)) return pet;
   const moved = getCatHomeRoomId(pet) === destination ? pet
     : { ...pet, catHomeRoomId: destination, isAsleep: false, lastInteractionAt: Date.now() };
-  return switchHomeRoom(moved, destination);
+  return follow ? switchHomeRoom(moved, destination) : moved;
 }
 
 export function switchHomeRoom(pet: PetProfile, destination: HomeRoomId): PetProfile {

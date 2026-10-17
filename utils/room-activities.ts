@@ -22,7 +22,7 @@ export { roomOffsetToPoint, type RoomPoint } from '@/utils/room-coordinates';
 export const ROOM_IDLE_DELAY_MS = 30_000;
 export const ROOM_MEAL_DURATION_MS = 8_000;
 export type RoomActivityKind = RoomCommandKind | "doorTravel" | "roomTravel" | "wander";
-export type RoomActivityCommand = { id: number; kind: RoomActivityKind; instanceId?: string; interactionAt?: number };
+export type RoomActivityCommand = { id: number; kind: RoomActivityKind; instanceId?: string; interactionAt?: number; ambientPeriod?: WorldPeriod };
 export type RoomActivityStep = {
   native?: NativeTravel;
   /** Keep the same passage clearance when leaving a kitchen interaction. */

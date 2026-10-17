@@ -1,3 +1,5 @@
+import { useCatBedtime } from '@/hooks/use-cat-bedtime';
+import type { WorldPeriod } from '@/utils/world-clock';
 import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { shouldMountNativeRoom } from "@/utils/native-scene-cache";
 import { getCatHomeRoomId, previewHomeRoom } from "@/utils/home-rooms";
@@ -133,10 +135,10 @@ export default function HomeScreen() {
   }, [pet, slideToRoom, transition]);
   const [catEntry, setCatEntry] = useState<{ roomId: HomeRoomId; entry: RoomEntry } | null>(null);
   const entrySequence = useRef(0);
-  const handleCatRoomArrival = useCallback((destination: HomeRoomId) => {
+  const handleCatRoomArrival = useCallback((destination: HomeRoomId, ambientPeriod?: WorldPeriod) => {
     setCatEntry({ roomId: destination, entry: { id: ++entrySequence.current, direction: roomTravelDirection(getCatHomeRoomId(pet), destination) } });
-    handleVisitRoom(destination);
-    sendCatToRoom(destination);
+    if (!ambientPeriod) handleVisitRoom(destination);
+    sendCatToRoom(destination, !ambientPeriod);
   }, [handleVisitRoom, pet, sendCatToRoom]);
   const careActionPendingRef = useRef(false);
 
@@ -157,6 +159,18 @@ export default function HomeScreen() {
   const handleRoomCommandAccepted = useCallback((id: number) => {
     setRequestedRoomCommand(current => current?.command.id === id ? null : current);
   }, []);
+
+  const handleBedtime = useCallback((instanceId: string) => {
+    setRequestedRoomCommand({ roomId: 'bedroom', command: {
+      id: ++roomCommandSequence.current, kind: 'bedSnuggle', instanceId, ambientPeriod: 'night',
+    } });
+  }, []);
+  const handleMorning = useCallback(() => {
+    setRequestedRoomCommand(current => current?.command.ambientPeriod === 'night' ? null : current);
+  }, []);
+  useCatBedtime({ pet, clock: worldClock, enabled: homeActive && isReady && hasCompletedOnboarding,
+    busy: isCareBlocked || isCareAnimationPlaying || !!decoratingRoom || !!decorationEntry || !!transition,
+    hasCommand: !!requestedRoomCommand, onBedtime: handleBedtime, onMorning: handleMorning });
 
   useEffect(() => {
     if (!isCareBlocked && !isCareAnimationPlaying)

@@ -1,3 +1,4 @@
+import type { WorldPeriod } from '@/utils/world-clock';
 import type { HomeRoomId } from "@/constants/home-rooms";
 import { FLOOR_Y, catFloorPoint, catScreenPoint, hasNativeArrived, mergeNativeRoomWorld, pathLength, prepareNativeStep, updateNativeObjectPosition, type Vec3 } from "@/utils/native-room-world";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
@@ -19,7 +20,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cancelAnimation, Easing, useSharedValue, withDelay, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
 
 type ActivityState = { plan: RoomActivityPlan; stepIndex: number; startedAt: number };
-type ActivityRequest = { id: number; kind: RoomActivityKind | "returnHome" | "stop"; instanceId?: string; interactionAt?: number };
+type ActivityRequest = { id: number; kind: RoomActivityKind | "returnHome" | "stop"; instanceId?: string; interactionAt?: number; ambientPeriod?: WorldPeriod };
 
 /** One scheduler owns idle choices, commands, and the visible journey home. */
 export function useRoomActivity(
@@ -30,7 +31,7 @@ export function useRoomActivity(
   petY: SharedValue<number>,
   onDoorArrival?: (instanceId: string) => void,
   onFeed?: () => void,
-  onRoomArrival?: (roomId: HomeRoomId) => void,
+  onRoomArrival?: (roomId: HomeRoomId, ambientPeriod?: WorldPeriod) => void,
   roomVisible = true,
   preservePositionWhenDisabled = false,
   onStopped?: () => void,
@@ -98,16 +99,16 @@ export function useRoomActivity(
   const [state, setState] = useState<ActivityState | null>(null);
   // Game activities continue while browsing. Only rendering is paused.
   const activity = enabled ? state : null;
-  const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string, interactionAt?: number) => {
+  const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string, interactionAt?: number, ambientPeriod?: WorldPeriod) => {
     const current = running.current;
     if (current && (isCatJump(current.plan.steps[current.stepIndex].animation)
       || current.plan.steps[current.stepIndex].enteringRoom)) {
-      pendingCommand.current = { kind, instanceId, interactionAt };
+      pendingCommand.current = { kind, instanceId, interactionAt, ambientPeriod };
       return;
     }
-    setRequest(current => ({ id: (current?.id ?? 0) + 1, kind, instanceId, interactionAt }));
+    setRequest(current => ({ id: (current?.id ?? 0) + 1, kind, instanceId, interactionAt, ambientPeriod }));
   }, []);
-  const startActivity = useCallback((kind: RoomActivityKind, instanceId?: string, interactionAt?: number) => requestActivity(kind, instanceId, interactionAt), [requestActivity]);
+  const startActivity = useCallback((kind: RoomActivityKind, instanceId?: string, interactionAt?: number, ambientPeriod?: WorldPeriod) => requestActivity(kind, instanceId, interactionAt, ambientPeriod), [requestActivity]);
   const stopActivity = useCallback(() => requestActivity("stop"), [requestActivity]);
   useEffect(() => {
     if (options.period === undefined || options.period === 'night' || running.current?.plan.ambientPeriod !== 'night') return;
@@ -167,7 +168,8 @@ export function useRoomActivity(
           return;
         }
         if (plan.kind === "roomTravel" && plan.destination && !completed?.plan.steps.some(step => step.native?.blocked)) {
-          roomArrival.current?.(plan.destination);
+          if (plan.ambientPeriod !== 'night' || latestOptions.current.period === 'night')
+            roomArrival.current?.(plan.destination, plan.ambientPeriod);
           return;
         }
         if (plan.kind === "bowlEat" && !completed?.plan.steps.some(step => step.native?.blocked)) feedComplete.current?.();
@@ -269,6 +271,13 @@ export function useRoomActivity(
     };
     const startPlan = (plan: RoomActivityPlan) => {
       queuedPlan.current = null;
+      if (plan.ambientPeriod && plan.ambientPeriod !== latestOptions.current.period) {
+        const current = running.current;
+        if (current) runStep(buildRoomReturn(latestOptions.current, current.plan, current.stepIndex,
+          { x: petX.get(), y: petY.get() }), 0);
+        else { running.current = null; setState(null); }
+        return;
+      }
       if (plan.objectStart) {
         objectX.set(plan.objectStart.x);
         objectY.set(plan.objectStart.y);
@@ -303,7 +312,7 @@ export function useRoomActivity(
         handledEntry.current = options.entry!.id;
         if (request && request.id !== handledRequest.current) {
           handledRequest.current = request.id;
-          pendingCommand.current = { kind: request.kind, instanceId: request.instanceId, interactionAt: request.interactionAt };
+          pendingCommand.current = { kind: request.kind, instanceId: request.instanceId, interactionAt: request.interactionAt, ambientPeriod: request.ambientPeriod };
         }
         startPlan(entry);
         return () => { stopped = true; nativeAdvance.current = null; clearTimeout(timer); };
@@ -317,8 +326,10 @@ export function useRoomActivity(
       const sofaCommand = newRequest?.kind === "sofaSit" || newRequest?.kind === "sofaSleep";
       const commandOptions = liveWorld.current ? { ...options, nativeWorld: { ...liveWorld.current,
         home: catFloorPoint(position, liveWorld.current, FLOOR_Y) } } : options;
-      const next = newRequest && newRequest.kind !== "returnHome" && newRequest.kind !== "stop"
+      let next = newRequest && (!newRequest.ambientPeriod || newRequest.ambientPeriod === options.period)
+        && newRequest.kind !== "returnHome" && newRequest.kind !== "stop"
         ? buildRoomActivity(commandOptions, turn.current++, newRequest.kind, newRequest.instanceId ?? (sofaCommand ? current?.plan.targetInstanceId : undefined)) : null;
+      if (next && newRequest?.ambientPeriod) next = { ...next, ambientPeriod: newRequest.ambientPeriod };
       // A refresh can cancel the start timer after a command was accepted.
       // Start that queued plan before considering the previous activity.
       if (!newRequest && queuedPlan.current) {

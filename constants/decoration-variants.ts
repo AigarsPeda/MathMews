@@ -90,7 +90,12 @@ for (const group of DECORATION_ROTATION_GROUPS) {
 
 export const DECORATION_SCALE_MIN = 0.7;
 export const DECORATION_SCALE_MAX = 2.2;
+export const RUG_SCALE_MAX = 4.4;
 export const DECORATION_SCALE_STEP = 0.1;
+
+function decorationScaleMax(decorationId?: string): number {
+  return decorationId && /carpet|rug/i.test(decorationId) ? RUG_SCALE_MAX : DECORATION_SCALE_MAX;
+}
 
 /** Posters use one sprite mirrored horizontally for the opposite isometric wall. */
 export const POSTER_WALL_ORIENTATION_COUNT = 2;
@@ -199,12 +204,12 @@ export function getPlacedDecorationSpriteId(
   return group[Math.min(Math.max(index, 0), group.length - 1)];
 }
 
-export function clampDecorationScale(scale: number): number {
+export function clampDecorationScale(scale: number, decorationId?: string): number {
   return (
     Math.round(
       Math.max(
         DECORATION_SCALE_MIN,
-        Math.min(DECORATION_SCALE_MAX, scale),
+        Math.min(decorationScaleMax(decorationId), scale),
       ) * 10,
     ) / 10
   );
@@ -215,11 +220,11 @@ export function getPlacedDecorationScale(placed: PlacedDecoration): number {
     return getDecorationDefaultScale(placed.decorationId as CatDecorationId);
   }
 
-  return clampDecorationScale(placed.scale);
+  return clampDecorationScale(placed.scale, placed.decorationId);
 }
 
-export function canScaleDecorationUp(scale: number): boolean {
-  return scale + DECORATION_SCALE_STEP <= DECORATION_SCALE_MAX + 0.001;
+export function canScaleDecorationUp(scale: number, decorationId?: string): boolean {
+  return scale + DECORATION_SCALE_STEP <= decorationScaleMax(decorationId) + 0.001;
 }
 
 export function canScaleDecorationDown(scale: number): boolean {
@@ -229,10 +234,11 @@ export function canScaleDecorationDown(scale: number): boolean {
 export function scaleDecorationBy(
   scale: number,
   direction: "up" | "down",
+  decorationId?: string,
 ): number {
   const delta =
     direction === "up" ? DECORATION_SCALE_STEP : -DECORATION_SCALE_STEP;
-  return clampDecorationScale(scale + delta);
+  return clampDecorationScale(scale + delta, decorationId);
 }
 
 export function getNextRotationIndex(

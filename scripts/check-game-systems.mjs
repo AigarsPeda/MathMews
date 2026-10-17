@@ -429,3 +429,31 @@ for (const id of ['livingRoom', 'bedroom', 'bathroom', 'kitchen']) {
   assert.equal(getCatHomeRoomId(legacy), id, 'Old saves keep the cat in the room where it was last seen');
 }
 console.log('Verified view-only browsing, atomic following on cat arrival, sleeping state, layout preservation, legacy migration and saved destination.');
+
+const bedtimeCat = sendCatToRoom(browsing, 'bedroom', false);
+assert.equal(bedtimeCat.catHomeRoomId, 'bedroom');
+assert.equal(bedtimeCat.homeRoomId, browsing.homeRoomId, 'Automatic travel leaves the viewed room alone');
+assert.equal(bedtimeCat.homeRooms, browsing.homeRooms, 'Automatic arrival preserves all room layouts');
+console.log('Verified automatic cat travel preserves the viewed room and its saved furniture.');
+
+// Large rug sizes must survive the same persistence path as other furniture.
+{
+  const variants = load('@/constants/decoration-variants');
+  const { updatePlacedDecorationScaleByInstance } = load('@/utils/room-placement');
+  const rugIds = ['bedroomRug', 'rugBraidedRound', 'rugGeometricTeal', 'rugStripedRunner', 'rugFlowerPink',
+    'carpetTile', 'carpetSmall', 'carpetClassic', 'carpetRound', 'carpetRed'];
+  for (const decorationId of rugIds) {
+    const rug = { decorationId, instanceId: 'large-rug', offset: { x: 0, y: .2 }, scale: 2.2 };
+    assert.equal(variants.canScaleDecorationUp(2.2, decorationId), true);
+    assert.equal(variants.scaleDecorationBy(2.2, 'up', decorationId), 2.3);
+    const grown = updatePlacedDecorationScaleByInstance([rug], rug.instanceId, 4.4);
+    const restored = normalizePlacedDecorations(JSON.parse(JSON.stringify(grown)));
+    assert.equal(variants.getPlacedDecorationScale(restored[0]), 4.4, decorationId+' keeps its large saved size');
+    assert.equal(variants.canScaleDecorationUp(4.4, decorationId), false);
+    assert.equal(variants.scaleDecorationBy(4.4, 'down', decorationId), 4.3, 'Shrinking does not snap down to the furniture limit');
+    assert.equal(variants.clampDecorationScale(100, decorationId), 4.4);
+  }
+  assert.equal(variants.clampDecorationScale(4.4, 'sofaA'), 2.2);
+  assert.equal(variants.clampDecorationScale(4.4), 2.2, 'Beds and toys retain their existing maximum');
+}
+console.log('Verified larger rugs and carpets, save/reload at 4.4×, gradual shrinking, maximum guards and unchanged furniture limits.');

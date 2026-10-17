@@ -1080,3 +1080,15 @@ shopButton(toolbarEditing).props.onPress();
 assert.equal(toolbarShopVisits,1,'The decoration shortcut opens the shop immediately');
 assert.equal(sofaNode(render([sofa],{homeRoomId:'kitchen',roomToolbar:sharedToolbar})).props.allowDrag,false,'Done in the shared header ends scene editing');
 console.log('Verified shared header decoration entry, exact selected item, scene drag controls and Done without duplicate buttons.');
+
+let rugResize;
+const rugAtOldLimit={decorationId:'bedroomRug',instanceId:'resize-rug',offset:{x:0,y:0},scale:2.2};
+const rugResizeProps={onScalePlacedDecoration:(id,direction,offset)=>{rugResize={id,direction,offset};}};
+render([rugAtOldLimit],rugResizeProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
+const largerRug=decorationNode(render([rugAtOldLimit],rugResizeProps),'resize-rug').node.props.menuActions.find(a=>a.icon==='zoom-in');
+assert.equal(largerRug.disabled,false,'The actual Bigger action remains enabled above the old rug maximum');
+largerRug.onPress();assert.equal(rugResize.id,'resize-rug');assert.equal(rugResize.direction,'up');assert.ok(rugResize.offset);
+const rugAtNewLimit=decorationNode(render([{...rugAtOldLimit,scale:4.4}],rugResizeProps),'resize-rug').node.props.menuActions;
+assert.equal(rugAtNewLimit.find(a=>a.icon==='zoom-in').disabled,true);
+assert.equal(rugAtNewLimit.find(a=>a.icon==='zoom-out').disabled,false,'A maximum-size rug can still be shrunk');
+console.log('Verified the actual rug Bigger action passes the old limit, saves its fitted anchor and stops at the new maximum.');

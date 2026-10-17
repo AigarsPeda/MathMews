@@ -1038,3 +1038,34 @@ for (const decorationId of ['kitchenChairUpholstered','sofaA','lampFloorArc','ha
   assert.ok(restored.position.every((v,i)=>Math.abs(v-smaller.position[i])<1e-8),decorationId+' retains its resized floor position through refresh');
 }
 console.log('Verified stable grounded model origins and saved offsets for chairs, sofas, floor lamps and small lanterns.');
+
+// The reported bedroom rug can grow beyond 2.2x without leaving the floor.
+for (const width of [320,390,768]) for (const rotationDegrees of [0,90]) {
+  const input = {width,height:width*1.1,petSize:80,sizeScale:width/390*1.15,toys:[],
+    decorations:[{decorationId:'bedroomRug',instanceId:'large-bedroom-rug',offset:{x:0,y:.3},scale:2.2,rotationDegrees}]};
+  let saved = input.decorations;
+  let priorWidth;
+  for (let tenths=23;tenths<=44;tenths++) {
+    const scale=tenths/10, world=buildNativeRoomWorld({...input,decorations:saved});
+    const before=world.objects[0];
+    const after=buildNativeRoomWorld({...input,decorations:[{...saved[0],scale}]}).objects[0];
+    const resized=createRoomPlacementResolver(world).resize(before,after);
+    if (!resized) {
+      const footprint=roomItemFootprint(after).map(point=>point.map((v,i)=>v+before.position[i]-after.position[i]));
+      assert.ok(footprint.some(point=>[0,2].some(axis=>point[axis]<ROOM_PLACEMENT_MIN-.00001||point[axis]>ROOM_PLACEMENT_MAX+.00001)),
+        'Further enlargement stops when the rug would cross a floor edge at its current position');
+      assert.ok(saved[0].scale>=4,'The rug grows well beyond its old maximum before filling the floor');
+      break;
+    }
+    const point=roomItemAnchor(resized,width),size=resized.scale*width*NATIVE_MODEL_CATALOG[resized.modelId].renderScale/ROOM_SPAN;
+    saved=normalizePlacedDecorations(JSON.parse(JSON.stringify(updatePlacedDecorationScaleByInstance(saved,'large-bedroom-rug',scale,
+      {x:point.x/Math.max(1,(width-size)/2),y:point.y/Math.max(1,(input.height-size)/2)}))));
+    const restored=buildNativeRoomWorld({...input,decorations:saved}).objects[0];
+    assert.ok(restored.position.every((v,i)=>Math.abs(v-resized.position[i])<1e-7),'Large rugs retain their fitted anchors after reload');
+    assert.equal(saved[0].scale,scale);
+    const measuredWidth=restored.max[0]-restored.min[0];
+    if(priorWidth)assert.ok(measuredWidth>priorWidth,'Every Bigger step visibly enlarges the model');
+    priorWidth=measuredWidth;
+  }
+}
+console.log('Verified the bedroom rug grows from 2.2× past 4× on phones/tablets, preserves its saved anchor and stops at the floor boundary.');

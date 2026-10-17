@@ -118,7 +118,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
 
       const scale =
         typeof record.scale === "number"
-          ? clampDecorationScale(record.scale)
+          ? clampDecorationScale(record.scale, placement.decorationId)
           : undefined;
 
       placed.push({
@@ -389,10 +389,9 @@ export function updatePlacedDecorationScaleByInstance(
   scale: number,
   offset?: RoomItemOffset,
 ): PlacedDecoration[] {
-  const nextScale = clampDecorationScale(scale);
-
   return (placedDecorations ?? []).map((item) => {
     if (item.instanceId !== instanceId) return item;
+    const nextScale = clampDecorationScale(scale, item.decorationId);
 
     return {
       ...item,

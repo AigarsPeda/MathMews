@@ -33,7 +33,7 @@ import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isW
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { SimpleLampLight } from '@/components/pet/SimpleLampLight';
 import { WorldRoomTint } from '@/components/pet/WorldRoomTint';
-import { worldClockReading, type WorldClock } from '@/utils/world-clock';
+import { worldClockReading, type WorldClock, type WorldPeriod } from '@/utils/world-clock';
 import { useWorldClockNow } from '@/hooks/use-world-clock-now';
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
@@ -132,7 +132,7 @@ type PetStageProps = {
   roomEntry?: RoomEntry;
   sceneSlide?: RoomSceneSlide;
   onSceneReady?: (roomId: HomeRoomId) => void;
-  onSendCatToRoom?: (roomId: HomeRoomId) => void;
+  onSendCatToRoom?: (roomId: HomeRoomId, ambientPeriod?: WorldPeriod) => void;
   roomCommand?: RoomActivityCommand;
   onRequestRoomCommand?: (roomId: HomeRoomId, kind: RoomActivityKind, instanceId?: string, interactionAt?: number) => void;
   onRoomCommandAccepted?: (id: number) => void;
@@ -357,7 +357,7 @@ export function PetStage({
   const speechHeight = useSharedValue(0);
   const hungry = stats.hunger < 30;
   const asleep = playback.kind === "segment" && playback.mood === "sleeping";
-  const clockNow = useWorldClockNow(5000, !!worldClock && roomVisible);
+  const clockNow = useWorldClockNow(5000, !!worldClock && (roomVisible || catPresent));
   const period = worldClock ? worldClockReading(worldClock, clockNow).period : undefined;
   const rotationInstanceId = rotationPreview && rotationPreview.item.kind !== "bed" ? rotationPreview.item.instanceId : undefined;
   const nativeWorldOptions = useMemo(() => ({
@@ -531,7 +531,7 @@ export function PetStage({
       || decorating || roomActivityBlocked || graphicsMode === 'loading'
       || viewport.width <= displayWidth || viewport.height <= displayWidth) return;
     handledRoomCommand.current = roomCommand.id;
-    startActivity(roomCommand.kind, roomCommand.instanceId, roomCommand.interactionAt);
+    startActivity(roomCommand.kind, roomCommand.instanceId, roomCommand.interactionAt, roomCommand.ambientPeriod);
     onRoomCommandAccepted?.(roomCommand.id);
   }, [catPresent, compact, decorating, displayWidth, graphicsMode, onRoomCommandAccepted,
     roomActivityBlocked, roomCommand, startActivity, usesNativeCat, viewport.height, viewport.width]);
@@ -856,16 +856,16 @@ export function PetStage({
             label: biggerLabel,
             icon: "zoom-in",
             onPress: () => {
-              const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'up'));
+              const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'up', decorationId));
               if (resized) onScalePlacedDecoration(item.instanceId, "up", resized.offset);
             },
-            disabled: !canScaleDecorationUp(scale),
+            disabled: !canScaleDecorationUp(scale, decorationId),
           });
           actions.push({
             label: smallerLabel,
             icon: "zoom-out",
             onPress: () => {
-              const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'down'));
+              const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'down', decorationId));
               if (resized) onScalePlacedDecoration(item.instanceId, "down", resized.offset);
             },
             disabled: !canScaleDecorationDown(scale),

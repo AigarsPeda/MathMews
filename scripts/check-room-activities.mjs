@@ -1317,3 +1317,60 @@ console.log('Verified all four kitchen activities continue from pending commands
   assert.equal(getRoomCommands({ kind: 'bed' }, 'brown').length, 0, 'Small pet baskets do not expose duvet commands');
 }
 console.log('Verified all ten full-size beds, four rotations, mattress-height crawling, held sleep, quilt commands and interrupted exits.');
+
+// Automatic bedroom sleep remains held all night and exits even offscreen.
+for (const reduced of [false, true]) {
+  slots.forEach(value => value?.cleanup?.()); slots.length = 0; timers.clear();
+  visibility = { active: true, reduceMotion: reduced }; roomVisible = true; enabled = true;
+  const layout = { ...room, width: 390, height: 420, petSize: 80, period: 'night', homeRoomId: 'bedroom',
+    decorations: [{ decorationId: 'bedroomDoubleBed', instanceId: 'night-bed', offset: { x: 0, y: -.2 } }] };
+  hookRoom = { ...layout, nativeWorld: nativeRoom.buildNativeRoomWorld(layout), nativeStepCompletion: true };
+  render(); reportCat(hookRoom.nativeWorld.home); render();
+  render().startActivity('bedSnuggle', 'night-bed', undefined, 'night'); render(); advance(0); render();
+  for (let i = 0; i < 10 && !render().activity.plan.steps[render().activity.stepIndex].hold; i++) finishClockStep();
+  let state = render().activity;
+  assert.equal(state.plan.ambientPeriod, 'night');
+  assert.equal(state.plan.steps[state.stepIndex].bedPhase, 'covered');
+  assert.ok(state.plan.steps[state.stepIndex].hold);
+  roomVisible = false; render(); advance(600_000); render();
+  state = render().activity;
+  assert.ok(state.plan.steps[state.stepIndex].hold, 'Automatic sleep lasts until dawn, not a fixed nap timer');
+  assert.equal(timers.size, 0, 'Hidden held sleep needs no drawing or repeated animation timers');
+  hookRoom = { ...hookRoom, period: 'morning' }; render(); render(); advance(0); render();
+  const exit = render().activity;
+  assert.equal(exit.plan.kind, 'returnHome');
+  assert.deepEqual(Array.from(exit.plan.steps, s => s.bedPhase).slice(0,reduced?1:2), reduced?['uncover']:['covered','uncover']);
+  assert.ok(exit.plan.steps.some(s => s.animation === 'jumpOff'), 'Morning includes climbing down');
+  advance(30_000); render();
+  assert.equal(render().activity, null);
+  assert.ok(Math.abs(petY.get()-nativeRoom.catScreenPoint(hookRoom.nativeWorld.home,hookRoom.nativeWorld).y)<.001);
+  roomVisible = true; render();
+  render().startActivity('bedSnuggle', 'night-bed', undefined, 'night'); render(); advance(0); render();
+  assert.equal(render().activity, null, 'A delayed nighttime command cannot start after dawn');
+}
+visibility = { active: true, reduceMotion: false }; roomVisible = true;
+console.log('Verified all-night quilt sleep, offscreen dawn uncurl/crawl/climb-down, no hidden sleep timers, stale nighttime command rejection and Reduce Motion.');
+
+// The hidden destination queues its bedtime command behind room entry.
+// Losing the automatic flag at this handoff would leave the cat asleep at dawn.
+for (const reduced of [false, true]) {
+  slots.forEach(value => value?.cleanup?.()); slots.length = 0; timers.clear();
+  visibility = { active: true, reduceMotion: reduced }; roomVisible = false; enabled = true;
+  const layout = { ...room, width: 390, height: 420, petSize: 80, period: 'night', homeRoomId: 'bedroom',
+    entry: { id: 778, direction: -1 },
+    decorations: [{ decorationId: 'bedroomDoubleBed', instanceId: 'arrival-bed', offset: { x: 0, y: -.2 } }] };
+  hookRoom = { ...layout, nativeWorld: nativeRoom.buildNativeRoomWorld(layout), nativeStepCompletion: true };
+  render(); render().startActivity('bedSnuggle', 'arrival-bed', undefined, 'night'); render();
+  assert.ok(render().activity.plan.steps[render().activity.stepIndex].enteringRoom);
+  for (let i = 0; i < 40; i++) { advance(1000); render(); }
+  let state = render().activity;
+  assert.equal(state.plan.kind, 'bedSnuggle');
+  assert.equal(state.plan.ambientPeriod, 'night', 'Room entry must retain the automatic wake-up policy');
+  assert.equal(state.plan.steps[state.stepIndex].bedPhase, 'covered');
+  assert.ok(state.plan.steps[state.stepIndex].hold);
+  hookRoom = { ...hookRoom, period: 'morning' }; render(); render(); advance(0); render();
+  assert.equal(render().activity.plan.kind, 'returnHome');
+  for (let i = 0; i < 30; i++) { advance(1000); render(); }
+  assert.equal(render().activity, null, 'The cat gets out of bed after a hidden automatic arrival');
+}
+console.log('Verified automatic nighttime metadata survives hidden room entry and pending bed commands, with morning wake-up in 3D and Reduce Motion.');

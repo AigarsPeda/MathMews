@@ -163,7 +163,7 @@ type GameContextValue = {
   purchaseRoom: (roomId: CatRoomId, expectedPrice?: number) => Promise<RoomPurchaseResult>;
   equipRoom: (roomId: CatRoomId) => boolean;
   visitHomeRoom: (roomId: HomeRoomId) => void;
-  sendCatToRoom: (roomId: HomeRoomId) => void;
+  sendCatToRoom: (roomId: HomeRoomId, follow?: boolean) => void;
   decorationEntry: RoomDecorationEntry | null;
   requestRoomDecoration: (target?: RoomDecorationTarget) => void;
   clearDecorationEntry: () => void;
@@ -522,8 +522,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setPet(current => switchHomeRoom(current, roomId));
   }, [setPet]);
 
-  const sendCatToRoom = useCallback((roomId: HomeRoomId) => {
-    setPet(current => moveCatToRoom(current, roomId));
+  const sendCatToRoom = useCallback((roomId: HomeRoomId, follow = true) => {
+    setPet(current => moveCatToRoom(current, roomId, follow));
   }, [setPet]);
 
   const purchaseRoom = useCallback(async (roomId: CatRoomId, expectedPrice?: number): Promise<RoomPurchaseResult> => {
@@ -965,13 +965,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       const currentScale = getPlacedDecorationScale(placed);
       if (
-        (direction === "up" && !canScaleDecorationUp(currentScale)) ||
+        (direction === "up" && !canScaleDecorationUp(currentScale, placed.decorationId)) ||
         (direction === "down" && !canScaleDecorationDown(currentScale))
       ) {
         return false;
       }
 
-      const nextScale = scaleDecorationBy(currentScale, direction);
+      const nextScale = scaleDecorationBy(currentScale, direction, placed.decorationId);
 
       setSave({
         ...current,
