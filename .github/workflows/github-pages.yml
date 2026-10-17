@@ -36,6 +36,9 @@ jobs:
         run: |
           mkdir -p _site
           cp docs/index.html docs/privacy.html docs/support.html docs/delete-account.html docs/site.css _site/
+          mkdir -p _site/lv _site/assets
+          cp docs/lv/index.html docs/lv/privacy.html docs/lv/support.html docs/lv/delete-account.html _site/lv/
+          cp docs/assets/cat.png _site/assets/
           touch _site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
