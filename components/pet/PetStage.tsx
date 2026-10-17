@@ -76,6 +76,7 @@ import {
   canMoveRoomLayerItem,
   isSameRoomLayerItem,
   normalizeRoomLayerOrder,
+  roomLayerItemKey,
   ROOM_MENU_OPEN_Z_INDEX,
   ROOM_PET_LAYER_Z_INDEX,
 } from "@/utils/room-layer-order";
@@ -306,7 +307,7 @@ export function PetStage({
     placedToys: roomPlacedToys,
     roomLayerOrder,
   });
-  const removeMenuLabel = t("home.removeFromRoom");
+  const removeMenuLabel = t("home.putAway");
   const moveUpLabel = t("home.moveLayerUp");
   const moveDownLabel = t("home.moveLayerDown");
   const rotateLabel = t("home.rotateItem");
@@ -343,7 +344,7 @@ export function PetStage({
   const movingItem = decorating && selectedMoveItem
     ? layerOrder.find(item => isSameRoomLayerItem(item, selectedMoveItem))
     : undefined;
-  // Discard a local angle if its room or selection disappears before Apply.
+  // Clear transient previews when their room or selection disappears.
   if ((rotationPreview || spotlightPreview) && (!decorating || !roomVisible || !movingItem)) {
     setRotationPreview(null);
     setSpotlightPreview(null);
@@ -359,22 +360,21 @@ export function PetStage({
   const asleep = playback.kind === "segment" && playback.mood === "sleeping";
   const clockNow = useWorldClockNow(5000, !!worldClock && (roomVisible || catPresent));
   const period = worldClock ? worldClockReading(worldClock, clockNow).period : undefined;
-  const rotationInstanceId = rotationPreview && rotationPreview.item.kind !== "bed" ? rotationPreview.item.instanceId : undefined;
   const nativeWorldOptions = useMemo(() => ({
       width: viewport.width, height: viewport.height, petSize: displayWidth, sizeScale: moderateScale(100) / 100 * ROOM_OBJECT_SCALE,
       homeOffset: roomPetOffset, bedId, bedOffset: roomBedOffset, bedFlipped, bedScale,
       bedRotationDegrees, decorations: roomPlacedDecorations, toys: roomPlacedToys, livePositions, layerOrder: roomLayerOrder,
     }), [bedFlipped, bedRotationDegrees, bedId, bedScale, displayWidth, livePositions, roomBedOffset, roomPetOffset, roomPlacedDecorations, roomPlacedToys, roomLayerOrder, viewport.height, viewport.width]);
   const savedNativeWorld = useMemo(() => buildNativeRoomWorld(nativeWorldOptions), [nativeWorldOptions]);
-  const rotationPlacement = useMemo(() => {
+  const resolveRotation = useCallback((item: RoomLayerItem, degrees: number) => {
     const saved = savedNativeWorld;
-    if (!rotationPreview) return { world: saved, allowed: true, offset: undefined };
+    const instanceId = item.kind === "bed" ? "bed" : item.instanceId;
     const preview = buildNativeRoomWorld({ ...nativeWorldOptions,
-      bedRotationDegrees: rotationPreview.item.kind === "bed" ? rotationPreview.degrees : bedRotationDegrees,
-      decorations: rotationPreview.item.kind === "decoration" ? roomPlacedDecorations.map(item => item.instanceId === rotationInstanceId ? { ...item, rotationDegrees: rotationPreview.degrees } : item) : roomPlacedDecorations,
-      toys: rotationPreview.item.kind === "toy" ? roomPlacedToys.map(item => item.instanceId === rotationInstanceId ? { ...item, rotationDegrees: rotationPreview.degrees } : item) : roomPlacedToys,
+      bedRotationDegrees: item.kind === "bed" ? degrees : bedRotationDegrees,
+      decorations: item.kind === "decoration" ? roomPlacedDecorations.map(entry => entry.instanceId === instanceId ? { ...entry, rotationDegrees: degrees } : entry) : roomPlacedDecorations,
+      toys: item.kind === "toy" ? roomPlacedToys.map(entry => entry.instanceId === instanceId ? { ...entry, rotationDegrees: degrees } : entry) : roomPlacedToys,
     });
-    const id = rotationPreview.item.kind === 'bed' ? 'bed' : rotationPreview.item.instanceId;
+    const id = instanceId;
     const before = saved.objects.find(object => object.instanceId === id), after = preview.objects.find(object => object.instanceId === id);
     const adjusted = before && after ? viewport.width <= 0 ? after : createRoomPlacementResolver(saved).rotate(before, after) : undefined;
     if (!adjusted) return { world: saved, allowed: false, offset: undefined };
@@ -385,7 +385,10 @@ export function PetStage({
     // An angle preview changes one instance. Other models and decals retain
     // their references and native transforms throughout the slider gesture.
     return { world: { ...saved, objects: saved.objects.map(object => object.instanceId === id ? adjusted : object) }, allowed: true, offset };
-  }, [savedNativeWorld, nativeWorldOptions, bedRotationDegrees, roomPlacedDecorations, roomPlacedToys, rotationPreview, rotationInstanceId, viewport.height, viewport.width]);
+  }, [savedNativeWorld, nativeWorldOptions, bedRotationDegrees, roomPlacedDecorations, roomPlacedToys, viewport.height, viewport.width]);
+  const rotationPlacement = useMemo(() => rotationPreview
+    ? resolveRotation(rotationPreview.item, rotationPreview.degrees)
+    : { world: savedNativeWorld, allowed: true, offset: undefined }, [resolveRotation, rotationPreview, savedNativeWorld]);
   const nativeWorld = rotationPlacement.world;
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
@@ -783,7 +786,7 @@ export function PetStage({
         return actions;
       }
 
-      if (onSetRoomItemRotation && !(item.kind === "decoration" && isWindowDecorationId(item.decorationId))) actions.push({ label: rotateLabel, icon: "rotate", onPress: () => openRotation(item) });
+      if (onSetRoomItemRotation && !(item.kind === "decoration" && isWindowDecorationId(item.decorationId))) actions.push({ id: "turn", label: rotateLabel, icon: "rotate", onPress: () => openRotation(item) });
 
       if (onMoveRoomLayerItem && item.kind === "decoration" && isRoomBackgroundDecoration(item.decorationId)) {
         actions.push({
@@ -827,7 +830,7 @@ export function PetStage({
           !isPoster
         ) {
           actions.push({
-            label: flipWallLabel,
+            id: "face-wall", label: flipWallLabel,
             icon: "rotate",
             onPress: () => {
               onFlipPlacedDecorationWall(item.instanceId);
@@ -838,6 +841,7 @@ export function PetStage({
         if (onRotatePlacedDecoration && !isWindowDecorationId(decorationId) && canRotateDecoration(decorationId) && (!onSetRoomItemRotation || isPoster || usesStyleVariantMenu(decorationId))) {
           const styleVariant = usesStyleVariantMenu(decorationId);
           actions.push({
+            id: isPoster ? "face-wall" : undefined,
             label: isPoster
               ? flipWallLabel
               : styleVariant
@@ -853,7 +857,7 @@ export function PetStage({
         if (onScalePlacedDecoration) {
           const scale = getPlacedDecorationScale(placed);
           actions.push({
-            label: biggerLabel,
+            id: "size-up", label: biggerLabel,
             icon: "zoom-in",
             onPress: () => {
               const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'up', decorationId));
@@ -862,7 +866,7 @@ export function PetStage({
             disabled: !canScaleDecorationUp(scale, decorationId),
           });
           actions.push({
-            label: smallerLabel,
+            id: "size-down", label: smallerLabel,
             icon: "zoom-out",
             onPress: () => {
               const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'down', decorationId));
@@ -874,7 +878,7 @@ export function PetStage({
       }
 
       if (item.kind === "toy" && onRotatePlacedToy && !onSetRoomItemRotation) {
-        actions.push({ label: rotateLabel, icon: "rotate",
+        actions.push({ id: "turn", label: rotateLabel, icon: "rotate",
           onPress: () => onRotatePlacedToy(item.instanceId) });
       }
 
@@ -882,11 +886,11 @@ export function PetStage({
         const placed = roomPlacedToys.find(entry => entry.instanceId === item.instanceId);
         if (placed) {
           const scale = getPlacedToyScale(placed);
-          actions.push({ label: biggerLabel, icon: "zoom-in",
+          actions.push({ id: "size-up", label: biggerLabel, icon: "zoom-in",
             onPress: () => { const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'up'));
               if (resized) onScalePlacedToy(item.instanceId, "up", resized.offset); },
             disabled: !canScaleDecorationUp(scale) });
-          actions.push({ label: smallerLabel, icon: "zoom-out",
+          actions.push({ id: "size-down", label: smallerLabel, icon: "zoom-out",
             onPress: () => { const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'down'));
               if (resized) onScalePlacedToy(item.instanceId, "down", resized.offset); },
             disabled: !canScaleDecorationDown(scale) });
@@ -906,7 +910,7 @@ export function PetStage({
       if (item.kind === "bed" && onScaleBed && bedId) {
         const scale = getEquippedBedScale(bedScale);
         actions.push({
-          label: biggerLabel,
+          id: "size-up", label: biggerLabel,
           icon: "zoom-in",
           onPress: () => {
             const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'up'));
@@ -915,7 +919,7 @@ export function PetStage({
           disabled: !canScaleBedUp(scale),
         });
         actions.push({
-          label: smallerLabel,
+          id: "size-down", label: smallerLabel,
           icon: "zoom-out",
           onPress: () => {
             const resized = resizeItemPlacement(item, scaleDecorationBy(scale, 'down'));
@@ -927,34 +931,31 @@ export function PetStage({
 
       if (item.kind === "bed" && onBedRemove) {
         actions.push({
-          label: removeMenuLabel,
-          icon: "trash",
+          id: "put-away", label: removeMenuLabel,
+          icon: "box",
           onPress: () => {
             onBedRemove();
           },
-          destructive: true,
         });
       }
 
       if (item.kind === "decoration" && onPlacedDecorationRemove) {
         actions.push({
-          label: removeMenuLabel,
-          icon: "trash",
+          id: "put-away", label: removeMenuLabel,
+          icon: "box",
           onPress: () => {
             onPlacedDecorationRemove(item.instanceId);
           },
-          destructive: true,
         });
       }
 
       if (item.kind === "toy" && onPlacedToyRemove) {
         actions.push({
-          label: removeMenuLabel,
-          icon: "trash",
+          id: "put-away", label: removeMenuLabel,
+          icon: "box",
           onPress: () => {
             onPlacedToyRemove(item.instanceId);
           },
-          destructive: true,
         });
       }
 
@@ -1021,8 +1022,8 @@ export function PetStage({
     }
     return t(item.kind === "bed" ? `store.bedName.${bedId}` : item.kind === "toy" ? `store.toyName.${item.toyId}` : `store.decorationName.${item.decorationId}`).replace(/\n/g, " ");
   }, [bedId, roomPlacedDecorations, t]);
-  const itemPicture = (item: RoomLayerItem) => {
-    const size = moderateScale(64);
+  const itemPicture = (item: RoomLayerItem, pictureSize = 64) => {
+    const size = moderateScale(pictureSize);
     if (item.kind === "bed") return <Image source={getCatBedSource(bedId)} style={{ width: size, height: size }} resizeMode="contain" />;
     if (item.kind === "toy") return <ToySpriteImage toyId={item.toyId as CatToyId} size={size} still />;
     const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
@@ -1409,16 +1410,24 @@ export function PetStage({
                 <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
               </Pressable>
             ) : null}
-            {decorating && onOpenStore ? <Pressable style={[styles.decorateButton, { top: moderateScale(roomToolbar ? 10 : 60) }]}
-              disabled={!!sceneSlide} onPress={onOpenStore}
-              accessibilityRole="button" accessibilityLabel={t("home.a11yStore")}>
-              <AppIcon name="store" size={moderateScale(22)} />
-              <Text style={styles.decorateLabel}>{t("home.shop")}</Text>
-            </Pressable> : null}
-            {decorating ? <Pressable style={[styles.decorateButton, { left: undefined, right: moderateScale(10), top: moderateScale(roomToolbar ? 10 : 60) }]}
-              onPress={() => { setShowEditor(true); }} accessibilityRole="button" accessibilityLabel={t("home.roomTools")}>
-              <Text style={styles.decorateLabel}>{t("home.roomTools")}</Text>
-            </Pressable> : null}
+            {decorating && <View style={[styles.editorToolbar, { top: moderateScale(roomToolbar ? 10 : 60) }]}>
+              {onOpenStore && <Pressable style={styles.editorToolbarButton} disabled={!!sceneSlide}
+                onPress={onOpenStore} accessibilityRole="button" accessibilityLabel={t("home.a11yStore")}>
+                <AppIcon name="store" size={22} /><Text style={styles.decorateLabel}>{t("home.shop")}</Text>
+              </Pressable>}
+              {roomEditor && <Pressable style={styles.editorToolbarButton}
+                disabled={!roomEditor.canUndo || !!spotlightPreview}
+                accessibilityRole="button" accessibilityLabel={t("home.undo")}
+                accessibilityState={{ disabled: !roomEditor.canUndo || !!spotlightPreview }}
+                onPress={() => { setPlacementFeedback(undefined); setRotationPreview(null); roomEditor.undo(); }}>
+                <AppIcon name="undo" size={22} style={{ opacity: roomEditor.canUndo && !spotlightPreview ? 1 : .35 }} />
+                <Text style={[styles.decorateLabel, (!roomEditor.canUndo || !!spotlightPreview) && { color: GameColors.textMuted }]}>{t("home.undoShort")}</Text>
+              </Pressable>}
+              <Pressable style={styles.editorToolbarButton} onPress={() => setShowEditor(true)}
+                accessibilityRole="button" accessibilityLabel={t("home.roomTools")}>
+                <AppIcon name="chair" size={22} /><Text style={[styles.decorateLabel, { flexShrink: 1 }]}>{t("home.roomTools")}</Text>
+              </Pressable>
+            </View>}
           </View>
           </GestureDetector>
 
@@ -1437,9 +1446,10 @@ export function PetStage({
             placementAllowed={rotationPlacement.allowed} name={itemLabel(rotationPreview.item)}
             degrees={rotationPreview.degrees} simpleGraphics={simpleGraphics}
             onPreview={degrees => setRotationPreview(current => current ? { ...current, degrees } : null)}
-            onClose={() => setRotationPreview(null)} onApply={degrees => {
-              if (rotationPlacement.allowed) onSetRoomItemRotation?.(rotationPreview.item, degrees, rotationPlacement.offset);
-              setRotationPreview(null);
+            onClose={() => setRotationPreview(null)} onCommit={degrees => {
+              // Validate the released angle itself, including a tap before preview rerenders.
+              const result = resolveRotation(rotationPreview.item, degrees);
+              if (result.allowed) onSetRoomItemRotation?.(rotationPreview.item, degrees, result.offset);
             }} /> : spotlightPreview ? <RoomSpotlightControls key={spotlightPreview.instanceId} simpleGraphics={simpleGraphics}
             name={t(`store.decorationName.${roomPlacedDecorations.find(item => item.instanceId === spotlightPreview.instanceId)?.decorationId}`)}
             angle={spotlightPreview.angle} swivel={spotlightPreview.swivel}
@@ -1451,14 +1461,18 @@ export function PetStage({
             onClose={() => setSpotlightPreview(null)} onApply={(angle, swivel) => {
               onAimPlacedSpotlight?.(spotlightPreview.instanceId, angle, swivel);
               setSpotlightPreview(null);
-            }} /> : movingItem ? <RoomItemMoveControls name={itemLabel(movingItem)} feedback={placementMessage}
+            }} /> : movingItem ? <RoomItemMoveControls key={roomLayerItemKey(movingItem)} name={itemLabel(movingItem)} picture={itemPicture(movingItem, 44)} feedback={placementMessage}
             rotationDegrees={getRoomItemRotation({ bedId, bedRotationDegrees, placedDecorations, placedToys }, movingItem)}
             onRotate={onSetRoomItemRotation && !(movingItem.kind === "decoration" && isWindowDecorationId(movingItem.decorationId)) ? () => openRotation(movingItem) : undefined}
             onFaceWall={movingItem.kind === "decoration" && isWindowDecorationId(movingItem.decorationId) && onFlipPlacedDecorationWall
               ? () => { setPlacementFeedback(undefined); onFlipPlacedDecorationWall(movingItem.instanceId); } : undefined}
             actions={buildRoomItemMenuActions(movingItem)}
             onMove={direction => nudgeItem(movingItem, direction)} onDone={() => { setPlacementFeedback(undefined); setSelectedMoveItem(null); }} />
-            : <Text style={{ color: GameColors.textMuted, fontSize: 14, padding: 8 }}>{t("home.decorateHint")}</Text>}
+            : <View style={styles.editorWelcome}>
+              <AppIcon name="chair" size={30} />
+              <View style={{ flex: 1, gap: 4 }}><Text style={styles.editorWelcomeTitle}>{t("home.decorateStart")}</Text>
+              <Text style={styles.editorWelcomeHint}>{t("home.decorateHint")}</Text></View>
+            </View>}
           </View>}
           </View>
           <RoomEditorSheet visible={showEditor} onClose={() => setShowEditor(false)} controls={roomEditor}
@@ -1505,6 +1519,11 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(20), backgroundColor: GameColors.card,
     borderWidth: 1, borderColor: GameColors.cardBorder,
   },
+  editorToolbar: { position: "absolute", left: moderateScale(10), right: moderateScale(10), zIndex: ROOM_MENU_OPEN_Z_INDEX + 4, flexDirection: "row", gap: 8 },
+  editorToolbarButton: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, minHeight: 48, paddingHorizontal: 8, paddingVertical: 6, backgroundColor: GameColors.card, borderRadius: 16, borderWidth: 1, borderColor: GameColors.cardBorder },
+  editorWelcome: { flexDirection: "row", alignItems: "center", padding: 14, gap: 10, minHeight: 104 },
+  editorWelcomeTitle: { fontSize: moderateScale(17), fontWeight: "700", color: GameColors.text },
+  editorWelcomeHint: { fontSize: moderateScale(14), color: GameColors.textMuted },
   decorateButtonActive: { backgroundColor: GameColors.cardBorder },
   decorateLabel: { fontSize: moderateScale(13), fontWeight: "700", color: GameColors.text },
   transientMouse: { position: "absolute", zIndex: ROOM_PET_LAYER_Z_INDEX - 1 },

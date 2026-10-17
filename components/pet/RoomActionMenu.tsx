@@ -5,6 +5,8 @@ import { useState, type ReactElement } from "react";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 
 export type RoomItemMenuAction = {
+  /** Semantic action used by the decoration dock; native menu IDs stay positional. */
+  id?: "turn" | "size-up" | "size-down" | "put-away" | "face-wall";
   label: string;
   icon: AppIconName;
   section?: string;

@@ -284,7 +284,7 @@ assert.equal(selectedRoom.find(({ node }) => node.type === 'RoomEditorSheet').no
 assert.equal(sofaNode(selectedRoom).props.selected, true, 'Highlight the one item being moved');
 assert.equal(selectedRoom.some(({ node }) => node.type === 'RoomActionMenu'), false, 'Choosing an item must not open an unrelated action menu');
 const moveControls = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node;
-assert.ok(moveControls.props.actions.some(action => action.label === 'home.removeFromRoom'), 'Object options remain available beside the movement controls');
+assert.ok(moveControls.props.actions.some(action => action.label === 'home.putAway'), 'Object options remain available beside the movement controls');
 let appliedRotation;
 const rotationProps = { ...moveProps, onSetRoomItemRotation: (item, degrees) => { appliedRotation = { item, degrees }; } };
 const rotationControls = nodes => nodes.find(({ node }) => node.type === 'RoomRotationControls')?.node;
@@ -298,12 +298,14 @@ const previewRoom = render([sofa], rotationProps);
 assert.ok(Math.abs(roomWorld(previewRoom).objects[0].heading - 37.5 * Math.PI / 180) < 1e-8, 'Slider preview uses an arbitrary angle in the native scene');
 assert.equal(appliedRotation, undefined, 'Preview never writes to the saved layout');
 rotationControls(previewRoom).props.onClose();
-assert.equal(roomWorld(render([sofa], rotationProps)).objects[0].heading, 0, 'Cancel restores the saved orientation');
+assert.equal(roomWorld(render([sofa], rotationProps)).objects[0].heading, 0, 'Leaving an unfinished slider preview restores its saved orientation');
 rotatableRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onRotate();
-rotationControls(render([sofa], rotationProps)).props.onApply(137.5);
+rotationControls(render([sofa], rotationProps)).props.onCommit(137.5);
 assert.equal(appliedRotation.item.instanceId, 'sofa');
 assert.equal(appliedRotation.degrees, 137.5);
-assert.equal(rotationControls(render([sofa], rotationProps)), undefined, 'Apply returns to movement controls');
+assert.ok(rotationControls(render([sofa], rotationProps)), 'Automatic saving keeps the rotation tool open for another turn');
+rotationControls(render([sofa], rotationProps)).props.onClose();
+assert.equal(appliedRotation.degrees, 137.5, 'Back does not cancel the saved turn');
 const spot = { decorationId:'spotlightChromePicture', instanceId:'aim-lamp', poweredOn:true, spotlightAngle:-25, offset:{x:.3,y:-.2} };
 // Use an actual catalog ID rather than depending on a particular style name.
 spot.decorationId = Object.keys(LAMP_LIGHT_ORIGINS).find(isWallSpotlightDecorationId);
@@ -367,7 +369,7 @@ measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
 // Restore the selected sofa for the existing movement assertions below.
 picker.props.onSelect(picker.props.items[0].item);
 console.log('Verified Rotate for beds, toys and furniture; local preview; Apply; Cancel; and window wall switches without free rotation.');
-const hintSlot = editingRoom.find(({ node }) => node.props.children?.includes('home.decorateHint')).ancestors.at(-1);
+const hintSlot = editingRoom.find(({ node }) => node.props.children?.includes('home.decorateHint')).ancestors.findLast(node => style(node.props.style).position === 'absolute' && style(node.props.style).bottom === 0);
 const controlsSlot = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').ancestors.at(-1);
 assert.equal(style(hintSlot.props.style).minHeight, style(controlsSlot.props.style).minHeight, 'Reserve the same space before and after selecting an item so dragging does not shift the room');
 const statsPanel = nodes => nodes.find(({ node }) => node.type === 'PetStatsPanel');
@@ -507,7 +509,7 @@ postNode.props.onDragStart();
 assert.equal(render([sofa], toyProps).find(({ node }) => node.type === 'RoomItemMoveControls').node.props.name, 'store.toyName.scratchPostRed', 'Dragging selects the exact object for its separate controls');
 assert.equal(postNode.props.petSize, 72 * load('@/constants/room-scale').ROOM_OBJECT_SCALE, 'Render and drag bounds both use the saved scratching-post size and room proportions');
 const postMenu = postNode.props.menuActions;
-assert.deepEqual(Array.from(postMenu, action => action.label), ['home.makeBigger', 'home.makeSmaller', 'home.removeFromRoom']);
+assert.deepEqual(Array.from(postMenu, action => action.label), ['home.makeBigger', 'home.makeSmaller', 'home.putAway']);
 let rotatedToy;
 const rotatedPostNode = render([sofa], { ...toyProps, onRotatePlacedToy: id => { rotatedToy = id; } })
   .find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:post').node;
@@ -717,31 +719,33 @@ console.log('Verified real bathtub, shower, toilet and Jacuzzi menu taps target 
 // Exercise the actual rotation form rather than only PetStage's sheet callbacks.
 const { RoomRotationControls } = load(path.join(root, 'components/pet/RoomRotationControls.tsx'));
 states.length = 0;
-let formPreview, formApplied, formCancelled = false;
+let formPreview, formCommitted, formClosed = false;
 function rotationForm(extra = {}) {
   stateIndex = 0;
   const controls = RoomRotationControls({ name: 'Chair', degrees: 0, simpleGraphics: false,
-    onPreview: value => { formPreview = value; }, onApply: value => { formApplied = value; }, onClose: () => { formCancelled = true; }, ...extra });
+    onPreview: value => { formPreview = value; }, onCommit: value => { formCommitted = value; }, onClose: () => { formClosed = true; }, ...extra });
   return flatten(controls).map(entry => entry.node);
 }
 const angleInput = nodes => nodes.find(node => node.props.accessibilityLabel === 'home.rotationAngle');
-const applyButton = nodes => nodes.find(node => node.props.accessibilityState?.disabled !== undefined);
+assert.equal(angleInput(rotationForm()), undefined, 'Exact angles stay behind Fine tune');
+rotationForm().find(node => node.props.accessibilityState?.expanded === false).props.onPress();
 angleInput(rotationForm()).props.onChangeText('37,5');
 assert.equal(formPreview, 37.5, 'Decimal input accepts both locale separators');
+assert.equal(formCommitted, 37.5, 'Valid numeric angles save without confirmation');
 assert.equal(rotationForm().find(node => node.props.minimumValue === 0).props.value, 37.5);
 for (const invalid of ['', '-1', '361', 'invalid']) {
   angleInput(rotationForm()).props.onChangeText(invalid);
-  assert.equal(applyButton(rotationForm()).props.disabled, true, 'Empty and out-of-range angles cannot be applied');
+  assert.equal(formCommitted, 37.5, 'Empty and out-of-range angles cannot overwrite the saved angle');
 }
 rotationForm().find(node => node.props.minimumValue === 0).props.onValueChange(137.54);
 assert.equal(formPreview, 137.5, 'Slider supports precise arbitrary angles');
-assert.equal(angleInput(rotationForm()).props.value, '137.5');
-applyButton(rotationForm()).props.onPress();
-assert.equal(formApplied, 137.5);
-rotationForm().find(node => node.props.onPress && !node.props.accessibilityState).props.onPress();
-assert.equal(formCancelled, true);
-assert.equal(applyButton(rotationForm({placementAllowed:false})).props.disabled,true,'Colliding rotations cannot be applied');
-console.log('Verified the actual rotation form, slider precision, numeric input, locale decimals, invalid input, Apply and Cancel.');
+assert.equal(formCommitted, 37.5, 'Moving the slider previews without saving every frame');
+rotationForm().find(node => node.props.minimumValue === 0).props.onSlidingComplete(137.54);
+assert.equal(formCommitted, 137.5, 'Releasing the slider saves the selected angle');
+rotationForm().find(node => node.type === 'Pressable' && node.props.children.some(child => child?.props?.children?.includes('common.back'))).props.onPress();
+assert.equal(formClosed, true);
+assert.equal(formCommitted, 137.5, 'Back keeps the selected angle');
+console.log('Verified automatic turn saving, slider release, decimal input, invalid-input protection and Back without cancellation.');
 
 // Exercise spotlight presets and the slider without opening a modal.
 const { RoomSpotlightControls } = load(path.join(root, 'components/pet/RoomSpotlightControls.tsx'));
@@ -959,6 +963,8 @@ render(dining,diningProps).find(({node})=>node.props.accessibilityLabel==='home.
 const chooseRoom=render(dining,diningProps);
 chooseRoom.find(({node})=>node.props.testID==='room-object:wall-chair').node.props.onPetTap();
 render(dining,diningProps).find(({node})=>node.type==='RoomItemMoveControls').node.props.onRotate();
+rotationControls(render(dining,diningProps)).props.onCommit(90);
+assert.equal(rotationSave.degrees,90,'A turn validates and saves its new angle before a preview rerender');
 rotationControls(render(dining,diningProps)).props.onPreview(90);
 const chairPreview=render(dining,diningProps),previewWorld=roomWorld(chairPreview);
 assert.equal(rotationControls(chairPreview).props.placementAllowed,true,'The wall-side chair can turn in the actual editor');
@@ -966,7 +972,6 @@ const previewChair=previewWorld.objects.find(o=>o.instanceId==='wall-chair');
 const previewTable=previewWorld.objects.find(o=>o.instanceId==='dining-table');
 const originalTable=load('@/utils/native-room-world').buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:dining}).objects[0];
 assert.deepEqual(previewTable.position,originalTable.position,'Rotating a chair leaves the table position unchanged');
-rotationControls(chairPreview).props.onApply(90);
 assert.ok(rotationSave.offset,'The small inward adjustment is included in the rotation save');
 const rotatedDining=load('@/utils/room-rotation').setRoomItemRotation({placedDecorations:dining},rotationSave.item,rotationSave.degrees,rotationSave.offset).placedDecorations;
 const restoredChair=roomWorld(render(rotatedDining,diningProps)).objects.find(o=>o.instanceId==='wall-chair');

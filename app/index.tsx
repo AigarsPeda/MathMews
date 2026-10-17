@@ -659,6 +659,7 @@ export default function HomeScreen() {
   );
 
   const viewRoom = pet.homeRoomId ?? "livingRoom";
+  const editingCurrentRoom = isNativeCatPet && decoratingRoom === viewRoom;
   const stageRooms = Array.from(new Map([
     ...(isNativeCatPet ? preloadedRooms : [pet]), ...(transition ? [transition.outgoing] : []),
   ].map(room => [room.homeRoomId ?? "livingRoom", room])).values());
@@ -683,16 +684,10 @@ export default function HomeScreen() {
             </HeaderChip>
           </View>
           {isNativeCatPet && <View style={styles.roomToolbar}>
-            {decoratingRoom === viewRoom ? <Pressable style={({ pressed }) => [styles.shopButton, styles.doneButton, pressed && { opacity: .8 }]}
-              disabled={!!transition}
-              accessibilityRole="button" accessibilityState={{ disabled: !!transition }}
-              accessibilityLabel={t('home.finishDecorating')}
-              onPress={() => {
-                recordInteraction(); triggerHaptic(); setDecoratingRoom(null);
-              }}>
-              <AppIcon name="check" size={moderateScale(19)}/>
-              <Text style={styles.shopLabel}>{t('home.finishDecorating')}</Text>
-            </Pressable> : <RoomActionMenu style={styles.decorationMenu} blocked={!!transition}
+            {editingCurrentRoom ? <View style={[styles.shopButton, styles.doneButton]}>
+              <AppIcon name="sofa" size={moderateScale(19)}/>
+              <Text style={styles.shopLabel}>{t('home.decoratingNow')}</Text>
+            </View> : <RoomActionMenu style={styles.decorationMenu} blocked={!!transition}
               label={t('home.decorateRoom')} actions={[
                 { label: t('home.decorateRoom'), icon: 'sofa', onPress: () => { triggerHaptic(); requestRoomDecoration(); } },
                 { label: t('home.buy'), icon: 'store', onPress: handleOpenStore },
@@ -727,17 +722,20 @@ export default function HomeScreen() {
 
         <View style={styles.footer}>
           <Pressable
-            style={styles.primaryBtn}
-            onPress={handlePlayPuzzle}
+            style={[styles.primaryBtn, editingCurrentRoom && styles.finishDecoratingButton]}
+            onPress={editingCurrentRoom ? () => {
+              recordInteraction(); triggerHaptic(); setDecoratingRoom(null);
+            } : handlePlayPuzzle}
             accessibilityRole="button"
-            accessibilityLabel={t("home.a11ySolve")}
+            accessibilityLabel={t(editingCurrentRoom ? "home.finishDecorating" : "home.a11ySolve")}
           >
             <View style={styles.primaryTitle}>
-              <AppIcon name="puzzles" size={moderateScale(28)} />
-              <Text style={styles.primaryBtnText}>{t("home.solvePuzzle")}</Text>
+              <AppIcon name={editingCurrentRoom ? "check" : "puzzles"} size={moderateScale(28)}
+                style={editingCurrentRoom ? { tintColor: GameColors.card } : undefined} />
+              <Text style={[styles.primaryBtnText, editingCurrentRoom && styles.finishDecoratingText]}>{t(editingCurrentRoom ? "home.finishDecorating" : "home.solvePuzzle")}</Text>
             </View>
-            <Text style={styles.primaryBtnHint}>
-              {savingGoal
+            <Text style={[styles.primaryBtnHint, editingCurrentRoom && styles.finishDecoratingText]}>
+              {editingCurrentRoom ? t("home.savedAsYouGo") : savingGoal
                 ? t("store.goalProgress", {
                     name: savingGoal.name,
                     remaining: savingGoal.remaining,
@@ -820,6 +818,8 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
+  finishDecoratingButton: { backgroundColor: GameColors.secondaryDark, shadowColor: GameColors.text, shadowOpacity: .12 },
+  finishDecoratingText: { color: GameColors.card },
   primaryBtnText: {
     fontSize: moderateScale(18),
     fontWeight: "800",

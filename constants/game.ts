@@ -10,6 +10,7 @@ export const GameColors = {
   primary: "#C73948",
   primaryDark: "#A52C3B",
   secondary: "#4ECDC4",
+  secondaryDark: "#087F79",
   coin: "#F7B731",
   coinText: "#8B6914",
   text: "#2D3436",

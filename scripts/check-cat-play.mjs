@@ -232,8 +232,9 @@ assert.ok(visibleStage(house).props.roomToolbar, 'The visible room uses the shar
 visibleStage(house).props.roomToolbar.onDecoratingChange('livingRoom', true);
 house = renderHome();
 assert.equal(visibleStage(house).props.roomToolbar.decorating, true);
-assert.equal(house.filter(node => node.props.accessibilityLabel === 'home.finishDecorating').length, 1, 'The shared Decorate dropdown becomes Done');
-assert.equal(house.filter(node => node.type === 'RoomActionMenu').length, 0, 'Editing replaces the dropdown with Done');
+assert.equal(house.filter(node => node.props.accessibilityLabel === 'home.finishDecorating').length, 1, 'Decorating has one clear finish action');
+assert.equal(house.filter(node => node.type === 'RoomActionMenu').length, 0, 'Editing replaces the dropdown with a mode label');
+assert.equal(house.some(node => node.props.accessibilityLabel === 'home.a11ySolve'), false, 'The puzzle action does not compete with finishing decoration');
 house.find(node => node.props.accessibilityLabel === 'home.finishDecorating').props.onPress();
 house = renderHome();
 assert.equal(visibleStage(house).props.roomToolbar.decorating, false, 'Done ends editing in the controlled room');

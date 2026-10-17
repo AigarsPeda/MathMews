@@ -73,6 +73,7 @@ function RoomPicker({ controls, items, onSelect, onClose, snap, onSnap, t, onOpe
         <Text style={styles.itemName}>{label}</Text>
       </Pressable>}
     ListFooterComponent={<View style={styles.header}>
+    <Text style={styles.hint}>{t("home.putAwayHint")}</Text>
     <Pressable style={styles.more} accessibilityRole="button" accessibilityLabel={t("home.moreRoomOptions")} accessibilityState={{ expanded: moreOptions }}
       onPress={() => setMoreOptions(current => !current)}>
       <Text style={styles.label}>{t("home.moreRoomOptions")}</Text>
