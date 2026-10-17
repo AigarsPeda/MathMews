@@ -14,6 +14,13 @@ export const KITCHEN_DECORATION_CATALOG = {
 export const KITCHEN_DECORATION_IDS = Object.keys(KITCHEN_DECORATION_CATALOG) as (keyof typeof KITCHEN_DECORATION_CATALOG)[];
 
 export const BEDROOM_DECORATION_CATALOG = {
+  bedroomBedRose: { source: require("@/assets/3d/decoration/bedroomBedRose.png"), displaySize: 88 },
+  bedroomBedLilac: { source: require("@/assets/3d/decoration/bedroomBedLilac.png"), displaySize: 88 },
+  bedroomVanity: { source: require("@/assets/3d/decoration/bedroomVanity.png"), displaySize: 64 },
+  bedroomBench: { source: require("@/assets/3d/decoration/bedroomBench.png"), displaySize: 56 },
+  bedroomQuiltChest: { source: require("@/assets/3d/decoration/bedroomQuiltChest.png"), displaySize: 48 },
+  bedroomSlippers: { source: require("@/assets/3d/decoration/bedroomSlippers.png"), displaySize: 24 },
+  bedroomRug: { source: require("@/assets/3d/decoration/bedroomRug.png"), displaySize: 72 },
   bedroomDoubleBed: { source: require("@/assets/3d/decoration/bedroomDoubleBed.png"), displaySize: 88 },
   bedroomDresser: { source: require("@/assets/3d/decoration/bedroomDresser.png"), displaySize: 64 },
   bedroomNightstand: { source: require("@/assets/3d/decoration/bedroomNightstand.png"), displaySize: 40 },

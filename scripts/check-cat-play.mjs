@@ -12,6 +12,7 @@ const routes = []; let focusCleanups = [];
 const prefetched = [], idleTasks = new Map();
 class TestDate extends Date { static now() { return Date.now() + clockOffset; } }
 const react = {
+  useSyncExternalStore: (_subscribe, getSnapshot) => getSnapshot(),
   useState: initial => {
     const i = stateIndex++;
     if (!(i in states)) states[i] = typeof initial === 'function' ? initial() : initial;
@@ -242,3 +243,29 @@ assert.equal(visibleStage(house).props.roomEntry.direction, -1);
 visibleStage(house).props.onSendCatToRoom('livingRoom'); house = renderHome();
 assert.equal(visibleStage(house).props.roomEntry.direction, 1);
 console.log('Verified retained scene hosts, preloading of all four rooms, stable header controls, independent browsing and explicit travel with opposite-side entries.');
+
+const stageIn = (tree, id) => tree.find(node => node.type === 'PetStage' && node.props.homeRoomId === id).props;
+visibleStage(house).props.onVisitHomeRoom('bathroom'); house = renderHome();
+visibleStage(house).props.onRequestRoomCommand('bathroom', 'bathWash', 'selected-bath', 123);
+house = renderHome();
+assert.equal(getCatHomeRoomId(game.pet), 'livingRoom', 'An object request waits for departure before changing the cat location');
+assert.equal(stageIn(house, 'bathroom').roomCommand, undefined, 'An empty room cannot perform the action before arrival');
+assert.equal(stageIn(house, 'livingRoom').roomCommand.kind, 'roomTravel');
+assert.equal(stageIn(house, 'livingRoom').roomCommand.instanceId, 'bathroom');
+assert.equal(stageIn(house, 'livingRoom').onRoomCommandAccepted, undefined, 'Departure keeps the selected action queued');
+const oldCommand = stageIn(house, 'livingRoom').roomCommand.id;
+visibleStage(house).props.onRequestRoomCommand('bathroom', 'toiletUse', 'selected-toilet', 124);
+house = renderHome();
+const latestCommand = stageIn(house, 'livingRoom').roomCommand.id;
+assert.ok(latestCommand > oldCommand, 'A later selection replaces the queued action');
+stageIn(house, 'livingRoom').onSendCatToRoom('bathroom'); house = renderHome();
+const arrived = stageIn(house, 'bathroom');
+assert.equal(getCatHomeRoomId(game.pet), 'bathroom');
+assert.equal(arrived.roomCommand.kind, 'toiletUse');
+assert.equal(arrived.roomCommand.instanceId, 'selected-toilet', 'Arrival retains the exact selected fixture');
+assert.equal(arrived.roomCommand.interactionAt, 124);
+arrived.onRoomCommandAccepted(oldCommand); house = renderHome();
+assert.equal(stageIn(house, 'bathroom').roomCommand.id, latestCommand, 'A stale acknowledgment cannot clear a newer selection');
+arrived.onRoomCommandAccepted(latestCommand); house = renderHome();
+assert.ok(house.filter(node => node.type === 'PetStage').every(node => !node.props.roomCommand), 'Accepted actions clear once and cannot summon the cat again later');
+console.log('Verified cross-room object requests, departure before arrival, latest selection, exact target retention and one-shot delivery.');

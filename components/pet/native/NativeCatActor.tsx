@@ -228,7 +228,8 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     const turn = Math.atan2(Math.sin(desiredHeading - frameState.heading), Math.cos(desiredHeading - frameState.heading));
     frameState.heading += turn * Math.min(1, deltaSeconds * 12);
     const perched = journey?.treePlay && !journey.jump && frameState.position[1] > FLOOR_Y + .1;
-    const clip = clips[walking ? 'walk' : perched && segment.name === 'batToy' ? 'sit' : segment.name] ?? clips.idle;
+    const walkClip = journey?.bed && journey.bed.phase !== 'covered' ? 'crawl' : 'walk';
+    const clip = clips[walking ? walkClip : perched && segment.name === 'batToy' ? 'sit' : segment.name] ?? clips.idle;
     if (!clip)
       return;
     let time = walking ? (frameState.distance / (.8 * scale) % 1) * clip.duration
@@ -245,7 +246,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     }
     frameState.clipTime = time;
     if (animationTimeValue)
-      animationTimeValue.value = { name: walking ? 'walk' : segment.name, time };
+      animationTimeValue.value = { name: walking ? walkClip : segment.name, time };
     frameState.blend = Math.min(1, frameState.blend + deltaSeconds / .12);
     animator.applyAnimation(clip.index, time);
     if (frameState.previous >= 0 && frameState.blend < 1)

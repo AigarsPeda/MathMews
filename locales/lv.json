@@ -186,7 +186,9 @@
       "returnHome": "Doties uz savu vietu",
       "bathWash": "Mazgāties vannā",
       "showerWash": "Mazgāties dušā",
-      "toiletUse": "Lietot tualeti"
+      "toiletUse": "Lietot tualeti",
+      "bedSleep": "Gulēt gultā",
+      "bedSnuggle": "Ieritināties zem segas"
     },
     "decorateRoom": "Iekārtot",
     "buy": "Pirkt",
@@ -265,7 +267,7 @@
     "decorateRoom": "Iekārtot istabu",
     "buyPlaceHint": "Iegādājies priekšmetu un novieto to savā istabā.",
     "title": "Mājdzīvnieku veikals",
-    "subtitleRooms": "Izvēlies jaunu fonu sava kaķa mājai.",
+    "subtitleRooms": "Izvēlies šai istabai tapetes, sienu apdari un koka grīdu.",
     "subtitleColors": "Pērc jaunas kaķa kažokāda krāsas.",
     "subtitleBeds": "Pērc mīkstas gultas un novieto tās istabā.",
     "subtitleToys": "Pērc jautras rotaļlietas un izvieto tās istabā.",
@@ -659,7 +661,14 @@
       "kitchenModernFloorShelfWhite": "Silti balts kvadrātveida grīdas plaukts",
       "kitchenModernFloorShelfSage": "Salvijas krāsas kvadrātveida grīdas plaukts",
       "kitchenModernFloorShelfNavy": "Tumši zils kvadrātveida grīdas plaukts",
-      "kitchenModernFloorShelfCharcoal": "Antracīta kvadrātveida grīdas plaukts"
+      "kitchenModernFloorShelfCharcoal": "Antracīta kvadrātveida grīdas plaukts",
+      "bedroomBedRose": "Gulta ar rozā segu",
+      "bedroomBedLilac": "Gulta ar ceriņkrāsas segu",
+      "bedroomVanity": "Ozolkoka tualetes galdiņš",
+      "bedroomBench": "Salvijzaļš guļamistabas sols",
+      "bedroomQuiltChest": "Segu lāde",
+      "bedroomSlippers": "Čības ar bumbuļiem",
+      "bedroomRug": "Austs paklājs pie gultas"
     },
     "free": "Bezmaksas",
     "buyFor": "{{cost}} 🪙",
@@ -671,7 +680,7 @@
     "place": "Novietot",
     "placed": "Novietots",
     "remove": "Noņemt",
-    "equippedRoom": "Istaba {{number}} tagad ir tava māja!",
+    "equippedRoom": "{{name}} tagad ir tavā mājā!",
     "equippedBed": "{{name}} tagad ir tavā istabā!",
     "equippedToy": "{{name}} tagad ir tavā istabā!",
     "equippedDecoration": "{{name}} tagad ir tavā istabā!",
@@ -679,7 +688,7 @@
     "placedToy": "{{name}} tagad ir tavā istabā!",
     "placedDecoration": "{{name}} tagad ir tavā istabā!",
     "removedFromRoom": "{{name}} ir noņemts no istabas.",
-    "purchased": "Istaba {{number}} ir tava!",
+    "purchased": "{{name}} tagad pieder tev!",
     "purchasedBed": "{{name}} ir tava!",
     "purchasedToy": "{{name}} ir tava!",
     "purchasedDecoration": "{{name}} ir tavs!",
@@ -694,16 +703,16 @@
     "needCoinsToy": "Vajag {{cost}} monētas šai rotaļlietai.",
     "needCoinsDecoration": "Vajag {{cost}} monētas šim dekoram.",
     "needCoinsSkin": "Vajag {{cost}} monētas šai krāsai.",
-    "walletOffline": "Lai sinhronizētu maku un iegādātos šo preci, izveido savienojumu ar internetu.",
+    "walletOffline": "Neizdevās saglabāt maku. Mēģini vēlreiz. Ja šis ir pirmais pirkums, pieslēdzies internetam, lai sinhronizētu monētu atlikumu.",
     "unavailable": "Šī istaba vēl nav pieejama.",
     "unavailableBed": "Šī gulta vēl nav pieejama.",
     "unavailableToy": "Šī rotaļlieta vēl nav pieejama.",
     "unavailableDecoration": "Šis dekors vēl nav pieejams.",
     "unavailableSkin": "Šī krāsa vēl nav pieejama.",
     "comingSoon": "Drīz",
-    "a11yBuy": "Pirkt istabu {{number}} par {{cost}} monētām",
-    "a11yClaim": "Saņemt istabu {{number}}",
-    "a11yEquip": "Izvēlēties istabu {{number}}",
+    "a11yBuy": "Pirkt {{name}} par {{cost}} monētām",
+    "a11yClaim": "Saņemt {{name}}",
+    "a11yEquip": "Izvēlēties {{name}}",
     "a11yBuyBed": "Pirkt {{name}} par {{cost}} monētām",
     "a11yClaimBed": "Saņemt {{name}}",
     "a11yEquipBed": "Izvēlēties {{name}}",
@@ -778,7 +787,156 @@
     "tabAppliances": "Sadzīves tehnika",
     "subtitleAppliances": "Virtuves tehnika, tīrīšanas roboti un istabas aprīkojums.",
     "tabAccessories": "Mazie rotājumi",
-    "subtitleAccessories": "Spilveni, sveces, vāzes un mazi rotājumi."
+    "subtitleAccessories": "Spilveni, sveces, vāzes un mazi rotājumi.",
+    "roomStyles": {
+      "room1": {
+        "name": "Rozā lins",
+        "description": "Austas sienas · Gaišs ozols"
+      },
+      "room2": {
+        "name": "Piekrastes svītras",
+        "description": "Zilas svītras · Smilšu ozols"
+      },
+      "room3": {
+        "name": "Lavandas zariņi",
+        "description": "Ziedu tapetes · Gaišs ozols"
+      },
+      "room4": {
+        "name": "Siltais ozols",
+        "description": "Koka paneļi · Dabīgs ozols"
+      },
+      "room5": {
+        "name": "Salvijas lapas",
+        "description": "Lapu tapetes · Medus ozols"
+      },
+      "room6": {
+        "name": "Rozā zvīņas",
+        "description": "Zvīņu raksts · Gaišs ozols"
+      },
+      "room7": {
+        "name": "Tirkīza art deco",
+        "description": "Vēdekļu raksts · Zeltains ozols"
+      },
+      "room8": {
+        "name": "Lauku krēms",
+        "description": "Dēļu apdare · Dabīgs ozols"
+      },
+      "room9": {
+        "name": "Medus rombi",
+        "description": "Ģeometrisks raksts · Silts ozols"
+      },
+      "room10": {
+        "name": "Gaišais lofts",
+        "description": "Krāsoti ķieģeļi · Vecināts ozols"
+      },
+      "room11": {
+        "name": "Ceriņu režģis",
+        "description": "Režģa raksts · Gaišs ozols"
+      },
+      "room12": {
+        "name": "Zilās flīzes",
+        "description": "Glazētas flīzes · Gaišs ozols"
+      },
+      "room13": {
+        "name": "Salvijas pinums",
+        "description": "Austas šķiedras · Medus ozols"
+      },
+      "room14": {
+        "name": "Terakota",
+        "description": "Kaļķa apmetums · Silts ozols"
+      },
+      "room15": {
+        "name": "Riekstkoka miers",
+        "description": "Koka paneļi · Medus ozols"
+      },
+      "room16": {
+        "name": "Pusnakts zvaigznes",
+        "description": "Zelta zvaigznes · Tumšs ozols"
+      },
+      "room17": {
+        "name": "Lauku margrietiņas",
+        "description": "Ziedu tapetes · Rūtainas flīzes"
+      },
+      "room18": {
+        "name": "Tropu lapotne",
+        "description": "Tropu lapas · Bambuss"
+      },
+      "room19": {
+        "name": "Japāņu viļņi",
+        "description": "Viļņu raksts · Tatami"
+      },
+      "room20": {
+        "name": "Ķieģeļu lofts",
+        "description": "Sarkani ķieģeļi · Betons"
+      },
+      "room21": {
+        "name": "Ogļu studija",
+        "description": "Betona sienas · Šīferis"
+      },
+      "room22": {
+        "name": "Retro arkas",
+        "description": "Okera arkas · Teraco"
+      },
+      "room23": {
+        "name": "Rozā teraco",
+        "description": "Akmens šķembas · Gaišs teraco"
+      },
+      "room24": {
+        "name": "Marokas tirkīzs",
+        "description": "Četrlapju raksts · Mozaīka"
+      },
+      "room25": {
+        "name": "Rozā rūtiņas",
+        "description": "Rūtainas tapetes · Gaišs ozols"
+      },
+      "room26": {
+        "name": "Klasiskais zilais",
+        "description": "Puspaneļi · Ozola parkets"
+      },
+      "room27": {
+        "name": "Medus šūnas",
+        "description": "Sešstūru raksts · Akmens flīzes"
+      },
+      "room28": {
+        "name": "Saulrieta arkas",
+        "description": "Arku raksts · Korķis"
+      },
+      "room29": {
+        "name": "Meža stūrītis",
+        "description": "Sēņu tapetes · Parkets"
+      },
+      "room30": {
+        "name": "Jūras zilais",
+        "description": "Svītraini paneļi · Rūtainas flīzes"
+      }
+    },
+    "sale": "Atlaide",
+    "wasPrice": "Iepriekš {{cost}} monētas",
+    "priceChanged": "Cena mainījās. Veikala cenas ir atjauninātas. Mēģini vēlreiz.",
+    "purchaseQueued": "Pievienots istabai. Pirkums gaida apstiprinājumu.",
+    "pendingPurchases_zero": "{{count}} pirkumu gaida sinhronizāciju",
+    "pendingPurchases_one": "{{count}} pirkums gaida sinhronizāciju",
+    "pendingPurchases_other": "{{count}} pirkumi gaida sinhronizāciju",
+    "syncCancelledTitle": "Pirkums atcelts",
+    "syncAcknowledge": "Sapratu",
+    "syncCancelled": {
+      "insufficient_funds": "Nepietika monētu, lai apstiprinātu pirkumu: {{name}}. Prece tika noņemta no tavām istabām, un monētu atlikums tika atjaunināts.",
+      "price_changed": "Pirms apstiprināšanas mainījās preces {{name}} cena. Prece tika noņemta no istabām. Monētas netika iztērētas. Vari to iegādāties vēlreiz par pašreizējo cenu.",
+      "not_for_sale": "{{name}} vairs nav pieejams. Prece tika noņemta no istabām, un rezervētās monētas tika atbrīvotas.",
+      "already_owned": "{{name}} tev jau pieder. Atkārtotais pirkums tika atcelts. Esošā prece paliek tavā īpašumā."
+    },
+    "discountPercent": "−{{percent}}%",
+    "discountUnderOne": "Atlaide <1%",
+    "saleEndsAt": "Atlaide beidzas {{date}}",
+    "saleCountdown": {
+      "days": "Beidzas pēc {{days}} d {{hours}} h",
+      "hours": "Beidzas pēc {{hours}} h {{minutes}} min",
+      "minutes": "Beidzas pēc {{minutes}} min {{seconds}} s",
+      "seconds": "Beidzas pēc {{seconds}} s"
+    },
+    "discountUpTo": "Līdz {{percent}}% atlaide",
+    "saleBannerTitle": "{{category}} · {{discount}}",
+    "viewDeals": "Skatīt atlaides"
   },
   "onboarding": {
     "title": "Iepazīsties ar savu kaķi!",

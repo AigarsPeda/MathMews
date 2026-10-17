@@ -64,7 +64,7 @@ export const DEFAULT_PROGRESS = {
 export const MAX_LIVES = 5;
 /** Minutes until one life regenerates. */
 export const LIFE_REGEN_MINUTES = 30;
-export const LIFE_BUY_COST = 15;
+export const LIFE_BUY_COST = 7;
 
 export const FEED_HUNGER_RESTORE = 25;
 export const FEED_HAPPINESS_BOOST = 5;

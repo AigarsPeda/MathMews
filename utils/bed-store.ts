@@ -1,4 +1,4 @@
-import STORE_PRICES from "@/data/store-prices.json";
+import { getCatalogStorePrice } from "@/utils/store-catalog";
 import {
   CAT_BED_IDS,
   isCatBedId,
@@ -12,10 +12,9 @@ import type { BedPurchaseResult, StorePrice } from "@/types/store";
 
 
 
-/** Catalog pricing — change amounts here; swap kind to `iap` per bed later. */
+/** Current server price, with bundled display defaults while offline. */
 export function getBedStorePrice(bedId: CatBedId): StorePrice {
-  const amount = STORE_PRICES.bed[bedId];
-  return amount === 0 ? { kind: "free" } : { kind: "coins", amount };
+  return getCatalogStorePrice("bed", bedId);
 }
 
 export function isBedUnlocked(

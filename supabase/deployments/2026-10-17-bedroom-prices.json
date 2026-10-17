@@ -1,0 +1,29 @@
+{
+  "project_ref": "jcfppquntstgxubtlvqo",
+  "verified_at": "2026-10-17T16:34:39.216911+00:00",
+  "migrations": [
+    "20261017163022_catalog_items.sql",
+    "20261017163100_accessible_coin_prices.sql"
+  ],
+  "catalog_items": 425,
+  "existing_items_reduced": 414,
+  "added_bedroom_items": [
+    "bedroomBedRose",
+    "bedroomBedLilac",
+    "bedroomVanity",
+    "bedroomBench",
+    "bedroomQuiltChest",
+    "bedroomSlippers",
+    "bedroomRug"
+  ],
+  "existing_sale_dates_preserved": true,
+  "sql_query_name": "Store - Bedroom Furniture and Half-Price Coin Items",
+  "sql_query_id": "1f350470-0f67-4691-8317-f58bf9256694",
+  "native_ui_verified": {
+    "bed_sleep_and_snuggle_commands": true,
+    "under_quilt_pose": true,
+    "wake_and_climb_down": true,
+    "switch_sleep_style_on_mattress": true,
+    "new_bedroom_store_prices": true
+  }
+}

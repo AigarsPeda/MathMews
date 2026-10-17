@@ -1,3 +1,4 @@
+import { projectedWalletCoins, type WalletNotice } from "@/services/wallet/offline-orders";
 import { useServerWallet, type ServerWallet } from "@/hooks/use-server-wallet";
 import { getWalletEnvironment } from "@/services/wallet/environment";
 import type { HomeRoomId } from "@/constants/home-rooms";
@@ -147,34 +148,37 @@ type GameContextValue = {
   wallet: Wallet;
   progress: Progress;
   coinTransactions: CoinTransaction[];
+  pendingPurchaseCount: number;
+  walletNotices: WalletNotice[];
+  dismissWalletNotice: (id:string) => void;
   creditedPurchaseIds: string[];
   setPet: (updater: (current: PetProfile) => PetProfile) => void;
   syncToCloud: () => Promise<void>;
   reloadProgressFromCloud: () => Promise<void>;
   setProgress: (updater: (current: Progress) => Progress) => void;
-  buyLife: () => Promise<boolean>;
+  buyLife: (expectedPrice?: number) => Promise<boolean>;
   refreshWallet: () => Promise<void>;
   isWalletReady: boolean;
   purchaseVisualHelp: (puzzleId: string, cost: number) => boolean;
-  purchaseRoom: (roomId: CatRoomId) => Promise<RoomPurchaseResult>;
+  purchaseRoom: (roomId: CatRoomId, expectedPrice?: number) => Promise<RoomPurchaseResult>;
   equipRoom: (roomId: CatRoomId) => boolean;
   visitHomeRoom: (roomId: HomeRoomId) => void;
   sendCatToRoom: (roomId: HomeRoomId) => void;
   decorationEntry: RoomDecorationEntry | null;
   requestRoomDecoration: (target?: RoomDecorationTarget) => void;
   clearDecorationEntry: () => void;
-  purchaseBed: (bedId: CatBedId) => Promise<BedPurchaseResult>;
+  purchaseBed: (bedId: CatBedId, expectedPrice?: number) => Promise<BedPurchaseResult>;
   equipBed: (bedId: CatBedId) => boolean;
   removeBedFromRoom: () => boolean;
   flipEquippedBed: () => boolean;
   scaleEquippedBed: (direction: "up" | "down", offset?: RoomItemOffset) => boolean;
-  purchaseToy: (toyId: CatToyId) => Promise<ToyPurchaseResult>;
+  purchaseToy: (toyId: CatToyId, expectedPrice?: number) => Promise<ToyPurchaseResult>;
   placeToyInRoom: (toyId: CatToyId) => boolean;
   removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
   scalePlacedToy: (instanceId: string, direction: "up" | "down", offset?: RoomItemOffset) => boolean;
   rotatePlacedToy: (instanceId: string) => boolean;
   setRoomItemRotation: (item: RoomLayerItem, degrees: number, offset?: RoomItemOffset) => boolean;
-  purchaseDecoration: (decorationId: CatDecorationId) => Promise<DecorationPurchaseResult>;
+  purchaseDecoration: (decorationId: CatDecorationId, expectedPrice?: number) => Promise<DecorationPurchaseResult>;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   removeDecorationFromRoom: (
     decorationId: CatDecorationId,
@@ -193,7 +197,7 @@ type GameContextValue = {
     offset?: RoomItemOffset,
   ) => boolean;
   moveRoomLayerItem: (item: RoomLayerItem, direction: "up" | "down") => boolean;
-  purchaseSkin: (skinId: CatSkinId) => Promise<SkinPurchaseResult>;
+  purchaseSkin: (skinId: CatSkinId, expectedPrice?: number) => Promise<SkinPurchaseResult>;
   equipSkin: (skinId: CatSkinId) => boolean;
   completeOnboarding: (options: {
     name: string;
@@ -255,7 +259,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const cached = candidate.walletAuthority;
     const scoped = authority ?? ((accountRef.current === null || cached?.user_id === accountRef.current) && cached?.environment === getWalletEnvironment() ? cached : null);
     const next = { ...candidate, accountOwnerId: candidate.accountOwnerId ?? cached?.user_id, pet, progress, worldClock: clock,
-      wallet: { coins: scoped ? Number(scoped.balance) : cached ? 0 : candidate.wallet.coins }, walletAuthority: scoped ?? undefined };
+      wallet: { coins: scoped ? projectedWalletCoins({...candidate,walletAuthority:scoped},scoped.user_id,scoped.environment) : cached ? 0 : candidate.wallet.coins }, walletAuthority: scoped ?? undefined };
     saveRef.current = next;
     setSaveState(next);
   }, [initialWorldClock]);
@@ -271,7 +275,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const current = saveRef.current;
     const result = applyPuzzleAnswer(current, puzzle, correct, attemptId);
     const pending = result.coins > 0 && accountRef.current ? [{ userId:accountRef.current,
-      environment:getWalletEnvironment(), puzzleId:puzzle.id, attemptId }] : [];
+      environment:getWalletEnvironment(), puzzleId:puzzle.id, attemptId, amount:result.coins, at:Date.now() }] : [];
     setSave({ ...result.save, wallet:current.wallet,
       pendingCoinRewards:[...(current.pendingCoinRewards ?? []),...pending] });
     return result.coins;
@@ -499,10 +503,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return now;
   }, [setSave]);
 
-  const buyLife = useCallback(async () => {
+  const buyLife = useCallback(async (expectedPrice?: number) => {
     const current = saveRef.current;
     if (!canBuyLife(current.progress.lives,current.wallet.coins)) return false;
-    return await spendCoins('life','one') === 'purchased';
+    const result=await spendCoins('life','one',expectedPrice);
+    return result==='purchased'||result==='queued';
   },[spendCoins]);
 
   const purchaseVisualHelp = useCallback((puzzleId: string, _cost: number) => {
@@ -521,11 +526,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setPet(current => moveCatToRoom(current, roomId));
   }, [setPet]);
 
-  const purchaseRoom = useCallback(async (roomId: CatRoomId): Promise<RoomPurchaseResult> => {
+  const purchaseRoom = useCallback(async (roomId: CatRoomId, expectedPrice?: number): Promise<RoomPurchaseResult> => {
     const id = resolveCatRoomId(roomId);
     if (!id) return "invalid_room";
     if (saveRef.current.progress.roomsUnlocked.includes(id)) return "already_owned";
-    return spendCoins('room',id);
+    return spendCoins('room',id,expectedPrice);
   },[spendCoins]);
 
   const equipRoom = useCallback((roomId: CatRoomId) => {
@@ -545,11 +550,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const purchaseBed = useCallback(async (bedId: CatBedId): Promise<BedPurchaseResult> => {
+  const purchaseBed = useCallback(async (bedId: CatBedId, expectedPrice?: number): Promise<BedPurchaseResult> => {
     const id = resolveCatBedId(bedId);
     if (!id) return "invalid_item";
     if (saveRef.current.progress.bedsUnlocked.includes(id)) return "already_owned";
-    return spendCoins('bed',id);
+    return spendCoins('bed',id,expectedPrice);
   },[spendCoins]);
 
   const equipBed = useCallback((bedId: CatBedId) => {
@@ -649,10 +654,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const purchaseToy = useCallback(async (toyId: CatToyId): Promise<ToyPurchaseResult> => {
+  const purchaseToy = useCallback(async (toyId: CatToyId, expectedPrice?: number): Promise<ToyPurchaseResult> => {
     const id = resolveCatToyId(toyId);
     if (!id) return "invalid_item";
-    return spendCoins('toy',id);
+    return spendCoins('toy',id,expectedPrice);
   },[spendCoins]);
 
   const placeToyInRoom = useCallback((toyId: CatToyId) => {
@@ -711,10 +716,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const purchaseDecoration = useCallback(async (decorationId: CatDecorationId): Promise<DecorationPurchaseResult> => {
+  const purchaseDecoration = useCallback(async (decorationId: CatDecorationId, expectedPrice?: number): Promise<DecorationPurchaseResult> => {
     const id = resolveCatDecorationId(decorationId);
     if (!id) return "invalid_item";
-    return spendCoins('decoration',id);
+    return spendCoins('decoration',id,expectedPrice);
   },[spendCoins]);
 
   const placeDecorationInRoom = useCallback((decorationId: CatDecorationId) => {
@@ -1008,11 +1013,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [setSave],
   );
 
-  const purchaseSkin = useCallback(async (skinId: CatSkinId): Promise<SkinPurchaseResult> => {
+  const purchaseSkin = useCallback(async (skinId: CatSkinId, expectedPrice?: number): Promise<SkinPurchaseResult> => {
     const id = resolveCatSkinId(skinId);
     if (!id) return "invalid_item";
     if (saveRef.current.progress.skinsUnlocked.includes(id)) return "already_owned";
-    return spendCoins('skin',id);
+    return spendCoins('skin',id,expectedPrice);
   },[spendCoins]);
 
   const equipSkin = useCallback((skinId: CatSkinId) => {
@@ -1171,6 +1176,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [userId, setSave],
   );
 
+  const dismissWalletNotice = useCallback((id:string)=>{setSave(save=>({...save,walletNotices:(save.walletNotices??[]).filter(notice=>notice.id!==id)}));},[setSave]);
+
   const value = useMemo<GameContextValue>(
     () => ({
       worldClock: save.worldClock ?? initialWorldClock,
@@ -1186,6 +1193,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       isWalletReady,
       progress: save.progress,
       coinTransactions: save.coinTransactions ?? [],
+      pendingPurchaseCount: (save.pendingWalletPurchases??[]).filter(p=>p.userId===userId && p.environment===getWalletEnvironment() && p.status==='pending').length,
+      walletNotices: save.walletNotices ?? [],
+      dismissWalletNotice,
       creditedPurchaseIds: save.creditedPurchaseIds ?? [],
       setPet,
       syncToCloud,
@@ -1257,6 +1267,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       answerPuzzle,
       feedPet,
       save.coinTransactions,
+      save.pendingWalletPurchases,
+      save.walletNotices,
+      dismissWalletNotice,
       save.creditedPurchaseIds,
       save.progress,
       save.wallet,

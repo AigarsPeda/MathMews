@@ -11,6 +11,8 @@ import { SplashGate } from "@/components/branding/SplashGate";
 import { ExpoUIHost } from "@/components/ui/ExpoUIHost";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { GameProvider } from "@/contexts/GameProvider";
+import { WalletSyncNotice } from "@/components/economy/WalletSyncNotice";
+import { StoreCatalogSync } from "@/components/store/StoreCatalogSync";
 import { IAPProvider } from "@/contexts/IAPProvider";
 import { LocaleProvider } from "@/contexts/LocaleProvider";
 import { PetDisplayProvider } from "@/pet-display/PetDisplayProvider";
@@ -41,6 +43,7 @@ export default function RootLayout() {
       <SafeAreaProvider initialMetrics={INITIAL_SAFE_AREA}>
       <LocaleProvider>
         <AuthProvider>
+        <StoreCatalogSync />
         <GameProvider>
           <RecoveryBoundary scope="app-screen" fallback={(_, retry) => <AppRecoveryScreen retry={retry}/>}><SplashGate>
             <IAPProvider>
@@ -79,6 +82,7 @@ export default function RootLayout() {
                       options={{ presentation: "modal", title: "Modal" }}
                     />
                   </Stack>
+                  <WalletSyncNotice />
                 </ThemeProvider>
               </ExpoUIHost>
             </PetDisplayProvider>

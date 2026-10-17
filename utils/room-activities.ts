@@ -1,3 +1,4 @@
+import { isSleepingBed, type BedPhase } from '@/constants/bedroom-activities';
 import type { RoomCommandKind } from "@/constants/room-commands";
 import { isCatSeatDecorationId } from "@/constants/sofa-decorations";
 import { isKitchenChairDecorationId, isKitchenIslandDecorationId } from "@/constants/kitchen-activities";
@@ -21,6 +22,7 @@ export { roomOffsetToPoint, type RoomPoint } from '@/utils/room-coordinates';
 export const ROOM_IDLE_DELAY_MS = 30_000;
 export const ROOM_MEAL_DURATION_MS = 8_000;
 export type RoomActivityKind = RoomCommandKind | "doorTravel" | "roomTravel" | "wander";
+export type RoomActivityCommand = { id: number; kind: RoomActivityKind; instanceId?: string; interactionAt?: number };
 export type RoomActivityStep = {
   native?: NativeTravel;
   /** Keep the same passage clearance when leaving a kitchen interaction. */
@@ -43,6 +45,7 @@ export type RoomActivityStep = {
   seatHeading?: number;
   treeApproach?: Vec3;
   plantApproach?: Vec3;
+  bedPhase?: BedPhase;
   bathroomPhase?: BathroomPhase;
   bathroomApproach?: Vec3;
   bowlApproach?: boolean;
@@ -76,6 +79,8 @@ export type RoomActivityOptions = {
   height: number;
   petSize: number;
   sizeScale: number;
+  bedId?: string;
+  bedOffset?: RoomItemOffset;
   homeOffset: RoomItemOffset;
   decorations: PlacedDecoration[];
   toys: PlacedToy[];
@@ -129,6 +134,18 @@ export function buildRoomReturn(room: RoomActivityOptions, plan: RoomActivityPla
       steps.push({ position, mood: "idle", animation: "sit", bathroomPhase: "close",
         bathroomApproach: step.bathroomApproach, targetInstanceId: sourceInstanceId, durationMs: 700 });
   }
+  if (step.bedPhase && approach) {
+    if (step.animation === 'curlUp' || step.animation === 'curlSleep') steps.push({ ...step, position,
+      animation: 'curlUp', reverse: true, mood: 'lyingDown', hold: false, durationMs: 1000, moveMs: 0,
+      targetInstanceId: sourceInstanceId });
+    steps.push({ ...step, position, animation: 'walk', reverse: false, mood: 'idle', bedPhase: 'uncover',
+      hold: false, durationMs: 1400, moveMs: 1400, targetInstanceId: sourceInstanceId });
+    steps.push({ position: approach, mood: 'idle', animation: 'jumpOff', sofaApproach: approach,
+      seatApproach: step.seatApproach, targetInstanceId: sourceInstanceId,
+      durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
+    steps.push({ ...walkTo(approach, home, room.petSize), returnHome: true });
+    return { kind: 'returnHome', targetInstanceId: sourceInstanceId, steps };
+  }
   if (step.sofaApproach && approach) {
     if (step.animation === "curlUp" || step.animation === "curlSleep") {
       steps.push({ position, mood: "lyingDown", animation: "curlUp", reverse: true, sofaApproach: approach, seatApproach: step.seatApproach, seatPosition: step.seatPosition, seatHeading: step.seatHeading, targetInstanceId: sourceInstanceId, durationMs: 1000 });
@@ -160,6 +177,15 @@ export function routeToSofa(
   const sameSofa = current?.plan.targetInstanceId === next.targetInstanceId;
   const onSofa = Boolean(step?.sofaApproach && step.animation !== "jumpOff");
   const curled = step?.animation === "curlUp" || step?.animation === "curlSleep";
+  if (sameSofa && onSofa && (next.kind === 'bedSleep' || next.kind === 'bedSnuggle')) {
+    if (current?.plan.kind === next.kind && step?.animation === 'curlSleep')
+      return { ...next, steps: [{ ...step, hold: true }] };
+    const exit = step?.bedPhase ? buildRoomReturn(room, current!.plan, current!.stepIndex, position).steps
+      .filter(item => item.animation !== 'jumpOff' && !item.returnHome)
+      : curled ? [{ ...step!, position, animation: 'curlUp' as const, reverse: true,
+        hold: false, durationMs: 1000, moveMs: 0 }] : [];
+    return { ...next, steps: [...exit, ...next.steps.slice(2)] };
+  }
   if (sameSofa && onSofa) {
     const distance = Math.hypot(position.x - seatStep.position.x, position.y - seatStep.position.y);
     if (distance <= 2) {
@@ -240,6 +266,33 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
       ...(kind === "toilet" ? [{ position: approach, mood: "idle" as const, animation: "sit" as const, bathroomPhase: "close" as const, durationMs: 700 }] : []),
       { ...walkTo(approach, home, room.petSize), returnHome: true },
     ] };
+  }
+  const beds = room.decorations.filter(item => isSleepingBed(item.decorationId)).map(item => ({
+    id: item.instanceId, offset: item.offset, size: getPlacedDecorationDragSize(item) * room.sizeScale,
+  }));
+  if (room.bedId && isSleepingBed(`bed-${room.bedId}`)) beds.push({ id: 'bed',
+    offset: room.bedOffset ?? { x: -.15, y: .3 }, size: 112 * room.sizeScale });
+  for (const bed of beds) {
+    const center = roomOffsetToPoint(bed.offset, room.width, room.height, bed.size);
+    const seat = clampCatPoint({ x: center.x, y: center.y - bed.size * .1 }, room);
+    const approach = clampCatPoint({ x: center.x, y: center.y + bed.size * .4 }, room);
+    for (const covered of [false, true]) {
+      const common = { position: seat, sofaApproach: approach };
+      const bedPhase = covered ? 'covered' as const : undefined;
+      candidates.push({ kind: covered ? 'bedSnuggle' : 'bedSleep', targetInstanceId: bed.id, sofaApproach: approach, steps: [
+        { ...walkTo(home, approach, room.petSize), approachingSeat: true },
+        { ...common, mood: 'idle', animation: 'jumpOn', durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS },
+        ...(covered ? [{ ...common, mood: 'idle' as const, animation: 'walk' as const,
+          bedPhase: 'crawl' as const, durationMs: 1600, moveMs: 1600 }] : []),
+        { ...common, mood: 'lyingDown', animation: 'curlUp', bedPhase, durationMs: 1000 },
+        { ...common, mood: 'sleeping', animation: 'curlSleep', bedPhase, durationMs: 25_000, hold: Boolean(command) },
+        { ...common, mood: 'lyingDown', animation: 'curlUp', bedPhase, reverse: true, durationMs: 1000 },
+        ...(covered ? [{ ...common, mood: 'idle' as const, animation: 'walk' as const,
+          bedPhase: 'uncover' as const, durationMs: 1400, moveMs: 1400 }] : []),
+        { position: approach, sofaApproach: approach, mood: 'idle', animation: 'jumpOff', durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS },
+        { ...walkTo(approach, home, room.petSize), returnHome: true },
+      ] });
+    }
   }
   for (const sofa of room.decorations) {
     const sprite = getPlacedDecorationSpriteId(sofa);
@@ -386,7 +439,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
         { position: first, mood: 'idle', animation: 'idle', durationMs: 2000 },
         walkTo(first, second, room.petSize), { ...walkTo(second, home, room.petSize), returnHome: true }] });
     }
-    const naps = candidates.filter(plan => plan.kind === 'sofaSleep' || plan.kind === 'chairNap');
+    const naps = candidates.filter(plan => plan.kind === 'sofaSleep' || plan.kind === 'chairNap' || plan.kind === 'bedSleep' || plan.kind === 'bedSnuggle');
     const rests = candidates.filter(plan => plan.kind === 'sofaSit' || plan.kind === 'islandSit' || plan.kind === 'windowWatch');
     const active = candidates.filter(plan => !naps.includes(plan) && !rests.includes(plan));
     const night = room.period === 'night';

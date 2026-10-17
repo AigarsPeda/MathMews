@@ -25,7 +25,7 @@ import { RoomSpotlightControls } from "@/components/pet/RoomSpotlightControls";
 import { RoomRotationControls } from "@/components/pet/RoomRotationControls";
 import { getRoomItemRotation } from "@/utils/room-rotation";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { roomActivityStepKey, roomOffsetToPoint, type RoomActivityKind } from "@/utils/room-activities";
+import { roomActivityStepKey, roomOffsetToPoint, type RoomActivityCommand, type RoomActivityKind } from "@/utils/room-activities";
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-model-registry";
 import { useRoomActivity } from "@/hooks/use-room-activity";
 import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
@@ -133,6 +133,9 @@ type PetStageProps = {
   sceneSlide?: RoomSceneSlide;
   onSceneReady?: (roomId: HomeRoomId) => void;
   onSendCatToRoom?: (roomId: HomeRoomId) => void;
+  roomCommand?: RoomActivityCommand;
+  onRequestRoomCommand?: (roomId: HomeRoomId, kind: RoomActivityKind, instanceId?: string, interactionAt?: number) => void;
+  onRoomCommandAccepted?: (id: number) => void;
   onOpenStore?: () => void;
   name: string;
   petType: PetType;
@@ -208,6 +211,9 @@ export function PetStage({
   sceneSlide,
   onSceneReady,
   onSendCatToRoom,
+  roomCommand,
+  onRequestRoomCommand,
+  onRoomCommandAccepted,
   onOpenStore,
   nativeSceneMounted = true,
   name,
@@ -504,8 +510,8 @@ export function PetStage({
     homeOffset: roomPetOffset ?? { x: 0, y: 0.12 },
     decorations: roomPlacedDecorations,
     toys: placedToys ?? [], ownedToyIds: ownedToyIds ?? [],
-    hungry, asleep, period,
-  }), [nativeRendering, homeRoomId, roomEntry, nativeWorld, displayWidth, ownedToyIds, placedToys, asleep, hungry, period, roomPetOffset, roomPlacedDecorations, viewport.height, viewport.width]);
+    bedId, bedOffset: roomBedOffset, hungry, asleep, period,
+  }), [bedId, roomBedOffset, nativeRendering, homeRoomId, roomEntry, nativeWorld, displayWidth, ownedToyIds, placedToys, asleep, hungry, period, roomPetOffset, roomPlacedDecorations, viewport.height, viewport.width]);
   const entryPosition = useMemo(() => roomEntry ? nativeRoomEdge(nativeWorld, roomEntry.direction === 1 ? -1 : 1) : undefined, [nativeWorld, roomEntry]);
   const handleReadyToDecorate = useCallback(() => {
     setWaitingToDecorate(false);
@@ -519,6 +525,16 @@ export function PetStage({
       if (door?.doorDestination) onVisitHomeRoom?.(door.doorDestination);
     }, onFeed, onSendCatToRoom, roomVisible, decorating, handleReadyToDecorate, onRoomActivityCompleted);
   const sofaApproach = roomActivity?.plan.steps[roomActivity.stepIndex]?.sofaApproach;
+  const handledRoomCommand = useRef(0);
+  useEffect(() => {
+    if (!roomCommand || handledRoomCommand.current === roomCommand.id || !compact || !usesNativeCat || !catPresent
+      || decorating || roomActivityBlocked || graphicsMode === 'loading'
+      || viewport.width <= displayWidth || viewport.height <= displayWidth) return;
+    handledRoomCommand.current = roomCommand.id;
+    startActivity(roomCommand.kind, roomCommand.instanceId, roomCommand.interactionAt);
+    onRoomCommandAccepted?.(roomCommand.id);
+  }, [catPresent, compact, decorating, displayWidth, graphicsMode, onRoomCommandAccepted,
+    roomActivityBlocked, roomCommand, startActivity, usesNativeCat, viewport.height, viewport.width]);
   useEffect(() => {
     if (!decorationEntry || decorationEntry.roomId !== homeRoomId || !roomVisible) return;
     // Consume a one-shot navigation command and synchronize the native activity exit.
@@ -644,8 +660,8 @@ export function PetStage({
         if (item.kind === "decoration" && isFridgeDecorationId(item.decorationId)) return Boolean(onTogglePlacedFridge);
         if (item.kind === "decoration" && isCurtainDecorationId(item.decorationId)) return Boolean(onTogglePlacedCurtain);
         if (item.kind === "decoration" && isPoweredDecorationId(item.decorationId)) return Boolean(onTogglePlacedDecorationPower);
-        if (!catPresent || viewport.width <= displayWidth || viewport.height <= displayWidth) return false;
-        return getRoomCommands(item).length > 0;
+        if ((!catPresent && !onRequestRoomCommand) || viewport.width <= displayWidth || viewport.height <= displayWidth) return false;
+        return getRoomCommands(item, bedId).length > 0;
       }
       if (item.kind === "bed") {
         return Boolean(
@@ -666,8 +682,10 @@ export function PetStage({
       return Boolean(onSetRoomItemRotation || onPlacedToyRemove || onMoveRoomLayerItem || onScalePlacedToy || onRotatePlacedToy);
     },
     [
+      bedId,
       decorating,
       catPresent,
+      onRequestRoomCommand,
       roomActivityBlocked,
       viewport.width, viewport.height, displayWidth,
       onBedRemove,
@@ -697,19 +715,20 @@ export function PetStage({
       if (fridge.fridgeOpen !== true) onTogglePlacedFridge(instanceId, 'full');
     }
     const interactionAt = onRoomInteraction?.();
-    startActivity(kind, instanceId, interactionAt ?? undefined);
-  }, [roomPlacedDecorations, onTogglePlacedFridge, onRoomInteraction, startActivity]);
+    if (onRequestRoomCommand) onRequestRoomCommand(homeRoomId, kind, instanceId, interactionAt ?? undefined);
+    else startActivity(kind, instanceId, interactionAt ?? undefined);
+  }, [homeRoomId, onRequestRoomCommand, roomPlacedDecorations, onTogglePlacedFridge, onRoomInteraction, startActivity]);
 
   const buildRoomItemMenuActions = useCallback(
     (item: RoomLayerItem) => {
       const actions: RoomItemMenuAction[] = [];
-      if (!decorating && catPresent && viewport.width > displayWidth && viewport.height > displayWidth && item.kind !== "bed") {
-        for (const { kind, icon } of getRoomCommands(item)) {
+      if (!decorating && (catPresent || onRequestRoomCommand) && viewport.width > displayWidth && viewport.height > displayWidth) {
+        for (const { kind, icon } of getRoomCommands(item, bedId)) {
           const labelKind = item.kind === "decoration" && item.decorationId === "chairRockingOak"
             ? kind === "sofaSit" ? "chairSit" : kind === "sofaSleep" ? "chairSleep" : kind : kind;
           actions.push({ label: t(`home.catCommands.${labelKind}`), icon,
             disabled: roomActivityBlocked || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!onFeed || !canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
-            onPress: () => startRoomCommand(kind, item.instanceId),
+            onPress: () => startRoomCommand(kind, item.kind === "bed" ? "bed" : item.instanceId),
           });
         }
       }
@@ -946,6 +965,7 @@ export function PetStage({
       bedScale,
       decorating,
       catPresent,
+      onRequestRoomCommand,
       roomActivityBlocked,
       viewport.width, viewport.height, displayWidth,
       onFeed,
@@ -1158,7 +1178,7 @@ export function PetStage({
     for (const command of ROOM_COMMANDS.filter(command => command.section === essentials)) addRoomAction(command.kind, command.section);
     function addRoomAction(kind: RoomActivityKind, section: string) {
       if (viewport.width <= displayWidth || viewport.height <= displayWidth) return;
-      const target = layerOrder.find(item => getRoomCommands(item).some(command => command.kind === kind));
+      const target = layerOrder.find(item => getRoomCommands(item, bedId).some(command => command.kind === kind));
       if (!target || (kind === "bowlEat" && !onFeed)) return;
       const command = ROOM_COMMANDS.find(command => command.kind === kind)!;
       const chair = target.kind === "decoration" && target.decorationId === "chairRockingOak";
@@ -1173,7 +1193,7 @@ export function PetStage({
       label: t("home.goToRoom", { room: t(`home.rooms.${id}`) }), icon: HOME_ROOM_ICONS[id],
       section: travel,
       disabled: roomActivityBlocked || roomActivity?.plan.kind === "roomTravel",
-      onPress: () => { const interactionAt = onRoomInteraction?.(); startActivity("roomTravel", id, interactionAt ?? undefined); },
+      onPress: () => startRoomCommand("roomTravel", id),
     })));
     if (roomActivity) actions.push({
       label: t("home.catCommands.returnHome"), icon: "home", section: travel, onPress: handleRoomTouch,
@@ -1186,8 +1206,8 @@ export function PetStage({
       onPress: () => onPlay(activity),
     })));
     return actions;
-  }, [viewport.width, viewport.height, displayWidth, asleep, compact, catPresent, catHomeRoomId, onSendCatToRoom, decorating, handleCatTap, handleRoomTouch, onFeed, onPetPress, onPlay,
-    onRoomInteraction, onTogglePlacedFridge, roomActivity, roomActivityBlocked, layerOrder, startRoomCommand, startActivity, stats, t, usesNativeCat]);
+  }, [bedId, viewport.width, viewport.height, displayWidth, asleep, compact, catPresent, catHomeRoomId, onSendCatToRoom, decorating, handleCatTap, handleRoomTouch, onFeed, onPetPress, onPlay,
+    onTogglePlacedFridge, roomActivity, roomActivityBlocked, layerOrder, startRoomCommand, stats, t, usesNativeCat]);
 
   const roomPetLayer =
     compact && usesNativeCat && !catPresent ? null : compact && usesNativeCat ? (

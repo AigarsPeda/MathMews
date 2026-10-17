@@ -1,0 +1,662 @@
+[
+  {
+    "id": "room1",
+    "initialPrice": 0,
+    "wall": {
+      "pattern": "linen",
+      "base": "C2ABA9",
+      "ink": "A68C89"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "F1E5D2",
+      "ink": "D1B991"
+    },
+    "en": {
+      "name": "Rose linen",
+      "description": "Woven walls · Pale oak"
+    },
+    "lv": {
+      "name": "Rozā lins",
+      "description": "Austas sienas · Gaišs ozols"
+    }
+  },
+  {
+    "id": "room2",
+    "initialPrice": 6,
+    "wall": {
+      "pattern": "stripe",
+      "base": "D5E6EC",
+      "ink": "9DBDCD"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E8D8B8",
+      "ink": "D0B88F"
+    },
+    "en": {
+      "name": "Coastal stripes",
+      "description": "Blue stripes · Sandy oak"
+    },
+    "lv": {
+      "name": "Piekrastes svītras",
+      "description": "Zilas svītras · Smilšu ozols"
+    }
+  },
+  {
+    "id": "room3",
+    "initialPrice": 8,
+    "wall": {
+      "pattern": "sprig",
+      "base": "E7DDEC",
+      "ink": "A190AC"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E4D7C6",
+      "ink": "C6B399"
+    },
+    "en": {
+      "name": "Lavender sprigs",
+      "description": "Floral paper · Light oak"
+    },
+    "lv": {
+      "name": "Lavandas zariņi",
+      "description": "Ziedu tapetes · Gaišs ozols"
+    }
+  },
+  {
+    "id": "room4",
+    "initialPrice": 10,
+    "wall": {
+      "pattern": "panel",
+      "base": "C9996D",
+      "ink": "A37650"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E6D9C1",
+      "ink": "C3AA87"
+    },
+    "en": {
+      "name": "Warm oak",
+      "description": "Wood panels · Natural oak"
+    },
+    "lv": {
+      "name": "Siltais ozols",
+      "description": "Koka paneļi · Dabīgs ozols"
+    }
+  },
+  {
+    "id": "room5",
+    "initialPrice": 12,
+    "wall": {
+      "pattern": "botanical",
+      "base": "D7E0CC",
+      "ink": "789171"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "DECEAC",
+      "ink": "BCA17C"
+    },
+    "en": {
+      "name": "Botanical sage",
+      "description": "Leaf wallpaper · Honey oak"
+    },
+    "lv": {
+      "name": "Salvijas lapas",
+      "description": "Lapu tapetes · Medus ozols"
+    }
+  },
+  {
+    "id": "room6",
+    "initialPrice": 12,
+    "wall": {
+      "pattern": "scallop",
+      "base": "F0D3CD",
+      "ink": "D09C99"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E9D9C5",
+      "ink": "CCB69A"
+    },
+    "en": {
+      "name": "Blush scallops",
+      "description": "Scallop paper · Pale oak"
+    },
+    "lv": {
+      "name": "Rozā zvīņas",
+      "description": "Zvīņu raksts · Gaišs ozols"
+    }
+  },
+  {
+    "id": "room7",
+    "initialPrice": 14,
+    "wall": {
+      "pattern": "deco",
+      "base": "739F9B",
+      "ink": "D5BE85"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "C9AE86",
+      "ink": "A48965"
+    },
+    "en": {
+      "name": "Teal deco",
+      "description": "Fan wallpaper · Golden oak"
+    },
+    "lv": {
+      "name": "Tirkīza art deco",
+      "description": "Vēdekļu raksts · Zeltains ozols"
+    }
+  },
+  {
+    "id": "room8",
+    "initialPrice": 16,
+    "wall": {
+      "pattern": "beadboard",
+      "base": "F2EBDD",
+      "ink": "D4C7AF"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E3D4B8",
+      "ink": "BDA784"
+    },
+    "en": {
+      "name": "Country cream",
+      "description": "Beadboard · Natural oak"
+    },
+    "lv": {
+      "name": "Lauku krēms",
+      "description": "Dēļu apdare · Dabīgs ozols"
+    }
+  },
+  {
+    "id": "room9",
+    "initialPrice": 16,
+    "wall": {
+      "pattern": "diamond",
+      "base": "F1DFB7",
+      "ink": "D1B272"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E3CCAA",
+      "ink": "BDA17C"
+    },
+    "en": {
+      "name": "Honey diamonds",
+      "description": "Geometric paper · Warm oak"
+    },
+    "lv": {
+      "name": "Medus rombi",
+      "description": "Ģeometrisks raksts · Silts ozols"
+    }
+  },
+  {
+    "id": "room10",
+    "initialPrice": 18,
+    "wall": {
+      "pattern": "brick",
+      "base": "D4D2CC",
+      "ink": "F1EDE4"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "C3B7A6",
+      "ink": "A19485"
+    },
+    "en": {
+      "name": "Soft loft",
+      "description": "Painted brick · Weathered oak"
+    },
+    "lv": {
+      "name": "Gaišais lofts",
+      "description": "Krāsoti ķieģeļi · Vecināts ozols"
+    }
+  },
+  {
+    "id": "room11",
+    "initialPrice": 20,
+    "wall": {
+      "pattern": "trellis",
+      "base": "D9CEE5",
+      "ink": "B29FC4"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E0D1BE",
+      "ink": "B9A58C"
+    },
+    "en": {
+      "name": "Lilac trellis",
+      "description": "Trellis paper · Light oak"
+    },
+    "lv": {
+      "name": "Ceriņu režģis",
+      "description": "Režģa raksts · Gaišs ozols"
+    }
+  },
+  {
+    "id": "room12",
+    "initialPrice": 20,
+    "wall": {
+      "pattern": "tile",
+      "base": "B6D3E0",
+      "ink": "F1EADD"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E7DFCE",
+      "ink": "C9BEA6"
+    },
+    "en": {
+      "name": "Blue tile",
+      "description": "Glazed tile · Pale oak"
+    },
+    "lv": {
+      "name": "Zilās flīzes",
+      "description": "Glazētas flīzes · Gaišs ozols"
+    }
+  },
+  {
+    "id": "room13",
+    "initialPrice": 22,
+    "wall": {
+      "pattern": "grasscloth",
+      "base": "C5D4B5",
+      "ink": "9BAB88"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "DDC9A6",
+      "ink": "B89C76"
+    },
+    "en": {
+      "name": "Sage grasscloth",
+      "description": "Woven fibers · Honey oak"
+    },
+    "lv": {
+      "name": "Salvijas pinums",
+      "description": "Austas šķiedras · Medus ozols"
+    }
+  },
+  {
+    "id": "room14",
+    "initialPrice": 24,
+    "wall": {
+      "pattern": "plaster",
+      "base": "D99E8C",
+      "ink": "B77A69"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "E6CBAA",
+      "ink": "C4A17D"
+    },
+    "en": {
+      "name": "Terracotta",
+      "description": "Limewash plaster · Warm oak"
+    },
+    "lv": {
+      "name": "Terakota",
+      "description": "Kaļķa apmetums · Silts ozols"
+    }
+  },
+  {
+    "id": "room15",
+    "initialPrice": 24,
+    "wall": {
+      "pattern": "panel",
+      "base": "A58872",
+      "ink": "745D4E"
+    },
+    "floor": {
+      "pattern": "classicOak",
+      "base": "D9C4A2",
+      "ink": "B49872"
+    },
+    "en": {
+      "name": "Walnut retreat",
+      "description": "Wood panels · Honey oak"
+    },
+    "lv": {
+      "name": "Riekstkoka miers",
+      "description": "Koka paneļi · Medus ozols"
+    }
+  },
+  {
+    "id": "room16",
+    "initialPrice": 26,
+    "wall": {
+      "pattern": "stars",
+      "base": "293D65",
+      "ink": "EED79D"
+    },
+    "floor": {
+      "pattern": "oak",
+      "base": "80644F",
+      "ink": "4E3D32"
+    },
+    "en": {
+      "name": "Midnight stars",
+      "description": "Gold stars · Dark oak"
+    },
+    "lv": {
+      "name": "Pusnakts zvaigznes",
+      "description": "Zelta zvaigznes · Tumšs ozols"
+    }
+  },
+  {
+    "id": "room17",
+    "initialPrice": 26,
+    "wall": {
+      "pattern": "daisy",
+      "base": "F4E9D2",
+      "ink": "D58E8F"
+    },
+    "floor": {
+      "pattern": "checker",
+      "base": "F2E8D6",
+      "ink": "87978B"
+    },
+    "en": {
+      "name": "Cottage daisies",
+      "description": "Daisy paper · Checkerboard"
+    },
+    "lv": {
+      "name": "Lauku margrietiņas",
+      "description": "Ziedu tapetes · Rūtainas flīzes"
+    }
+  },
+  {
+    "id": "room18",
+    "initialPrice": 28,
+    "wall": {
+      "pattern": "tropical",
+      "base": "346D61",
+      "ink": "90B693"
+    },
+    "floor": {
+      "pattern": "bamboo",
+      "base": "D6BC83",
+      "ink": "A68B57"
+    },
+    "en": {
+      "name": "Tropical canopy",
+      "description": "Tropical leaves · Bamboo"
+    },
+    "lv": {
+      "name": "Tropu lapotne",
+      "description": "Tropu lapas · Bambuss"
+    }
+  },
+  {
+    "id": "room19",
+    "initialPrice": 28,
+    "wall": {
+      "pattern": "waves",
+      "base": "E7EBDF",
+      "ink": "527E9A"
+    },
+    "floor": {
+      "pattern": "tatami",
+      "base": "C6BE8A",
+      "ink": "8A8E60"
+    },
+    "en": {
+      "name": "Japanese waves",
+      "description": "Wave paper · Tatami mats"
+    },
+    "lv": {
+      "name": "Japāņu viļņi",
+      "description": "Viļņu raksts · Tatami"
+    }
+  },
+  {
+    "id": "room20",
+    "initialPrice": 24,
+    "wall": {
+      "pattern": "redbrick",
+      "base": "B96B52",
+      "ink": "DBCFB8"
+    },
+    "floor": {
+      "pattern": "concrete",
+      "base": "B6AEA1",
+      "ink": "8F877B"
+    },
+    "en": {
+      "name": "Red brick loft",
+      "description": "Rustic brick · Concrete"
+    },
+    "lv": {
+      "name": "Ķieģeļu lofts",
+      "description": "Sarkani ķieģeļi · Betons"
+    }
+  },
+  {
+    "id": "room21",
+    "initialPrice": 26,
+    "wall": {
+      "pattern": "concrete",
+      "base": "687175",
+      "ink": "3C484E"
+    },
+    "floor": {
+      "pattern": "slate",
+      "base": "7C878A",
+      "ink": "4B595E"
+    },
+    "en": {
+      "name": "Charcoal studio",
+      "description": "Concrete walls · Slate tile"
+    },
+    "lv": {
+      "name": "Ogļu studija",
+      "description": "Betona sienas · Šīferis"
+    }
+  },
+  {
+    "id": "room22",
+    "initialPrice": 28,
+    "wall": {
+      "pattern": "arches",
+      "base": "E9C9A2",
+      "ink": "BD734F"
+    },
+    "floor": {
+      "pattern": "terrazzo",
+      "base": "EADBC6",
+      "ink": "A28777"
+    },
+    "en": {
+      "name": "Retro arches",
+      "description": "Ochre arches · Terrazzo"
+    },
+    "lv": {
+      "name": "Retro arkas",
+      "description": "Okera arkas · Teraco"
+    }
+  },
+  {
+    "id": "room23",
+    "initialPrice": 28,
+    "wall": {
+      "pattern": "terrazzo",
+      "base": "E9C6BC",
+      "ink": "AE7C70"
+    },
+    "floor": {
+      "pattern": "terrazzo",
+      "base": "EBE5D6",
+      "ink": "939E93"
+    },
+    "en": {
+      "name": "Blush terrazzo",
+      "description": "Stone chips · Cream terrazzo"
+    },
+    "lv": {
+      "name": "Rozā teraco",
+      "description": "Akmens šķembas · Gaišs teraco"
+    }
+  },
+  {
+    "id": "room24",
+    "initialPrice": 30,
+    "wall": {
+      "pattern": "quatrefoil",
+      "base": "4B8F91",
+      "ink": "EAE4CA"
+    },
+    "floor": {
+      "pattern": "mosaic",
+      "base": "CFAD82",
+      "ink": "9C6D50"
+    },
+    "en": {
+      "name": "Moroccan teal",
+      "description": "Quatrefoil paper · Mosaic"
+    },
+    "lv": {
+      "name": "Marokas tirkīzs",
+      "description": "Četrlapju raksts · Mozaīka"
+    }
+  },
+  {
+    "id": "room25",
+    "initialPrice": 24,
+    "wall": {
+      "pattern": "gingham",
+      "base": "F2E9DD",
+      "ink": "CFA4B0"
+    },
+    "floor": {
+      "pattern": "oak",
+      "base": "E8E3D8",
+      "ink": "BEB5A4"
+    },
+    "en": {
+      "name": "Rose gingham",
+      "description": "Gingham paper · Pale oak"
+    },
+    "lv": {
+      "name": "Rozā rūtiņas",
+      "description": "Rūtainas tapetes · Gaišs ozols"
+    }
+  },
+  {
+    "id": "room26",
+    "initialPrice": 28,
+    "wall": {
+      "pattern": "wainscot",
+      "base": "D8E6DF",
+      "ink": "547B80"
+    },
+    "floor": {
+      "pattern": "parquet",
+      "base": "B99C77",
+      "ink": "816549"
+    },
+    "en": {
+      "name": "Heritage blue",
+      "description": "Half paneling · Oak parquet"
+    },
+    "lv": {
+      "name": "Klasiskais zilais",
+      "description": "Puspaneļi · Ozola parkets"
+    }
+  },
+  {
+    "id": "room27",
+    "initialPrice": 28,
+    "wall": {
+      "pattern": "honeycomb",
+      "base": "EDE3C9",
+      "ink": "B79A64"
+    },
+    "floor": {
+      "pattern": "stone",
+      "base": "D6D0BD",
+      "ink": "ABA28F"
+    },
+    "en": {
+      "name": "Honeycomb stone",
+      "description": "Hexagon paper · Stone tile"
+    },
+    "lv": {
+      "name": "Medus šūnas",
+      "description": "Sešstūru raksts · Akmens flīzes"
+    }
+  },
+  {
+    "id": "room28",
+    "initialPrice": 26,
+    "wall": {
+      "pattern": "rainbow",
+      "base": "F3E8D6",
+      "ink": "C99580"
+    },
+    "floor": {
+      "pattern": "cork",
+      "base": "CFAD82",
+      "ink": "A68A63"
+    },
+    "en": {
+      "name": "Sunset arches",
+      "description": "Layered arches · Cork"
+    },
+    "lv": {
+      "name": "Saulrieta arkas",
+      "description": "Arku raksts · Korķis"
+    }
+  },
+  {
+    "id": "room29",
+    "initialPrice": 28,
+    "wall": {
+      "pattern": "mushroom",
+      "base": "DCE1CD",
+      "ink": "A2694C"
+    },
+    "floor": {
+      "pattern": "parquet",
+      "base": "A68A66",
+      "ink": "705C44"
+    },
+    "en": {
+      "name": "Woodland nook",
+      "description": "Mushroom paper · Parquet"
+    },
+    "lv": {
+      "name": "Meža stūrītis",
+      "description": "Sēņu tapetes · Parkets"
+    }
+  },
+  {
+    "id": "room30",
+    "initialPrice": 28,
+    "wall": {
+      "pattern": "nautical",
+      "base": "E9E4D7",
+      "ink": "3E5975"
+    },
+    "floor": {
+      "pattern": "checker",
+      "base": "ECE5D6",
+      "ink": "506775"
+    },
+    "en": {
+      "name": "Nautical navy",
+      "description": "Striped paneling · Checkerboard"
+    },
+    "lv": {
+      "name": "Jūras zilais",
+      "description": "Svītraini paneļi · Rūtainas flīzes"
+    }
+  }
+]

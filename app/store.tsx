@@ -1,3 +1,8 @@
+import { useStoreCatalog } from "@/hooks/use-store-catalog";
+import { getActiveStoreSales, type StoreSale } from "@/utils/store-catalog";
+import { STORE_SALE_CATEGORIES } from "@/utils/store-promotion";
+import { StoreSaleBanner } from "@/components/store/StoreSaleBanner";
+import { refreshStoreCatalog } from "@/services/store-catalog";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { IconText as Text } from "@/components/ui/IconText";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
@@ -92,6 +97,7 @@ type StoreFeedback = {
 };
 
 export default function StoreScreen() {
+  useStoreCatalog();
   const router = useRouter();
   const { t } = useTranslation();
   const { height } = useWindowDimensions();
@@ -101,6 +107,7 @@ export default function StoreScreen() {
     hasCompletedOnboarding,
     pet,
     wallet,
+    pendingPurchaseCount,
     progress,
     setProgress,
     purchaseRoom,
@@ -135,6 +142,7 @@ export default function StoreScreen() {
   const [showCategories, setShowCategories] = useState(false);
   const [categoriesMounted, setCategoriesMounted] = useState(false);
   const [preview, setPreview] = useState<StorePreviewItem | null>(null);
+  const sales = getActiveStoreSales();
   const goal = getStoreGoalDetails(progress.storeGoal, wallet.coins, t);
   const [feedback, setFeedback] = useState<StoreFeedback | null>(null);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
@@ -142,6 +150,7 @@ export default function StoreScreen() {
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useFocusEffect(useCallback(() => {
+    void refreshStoreCatalog();
     leavingForDecoration.current = false;
     // Prefetch may have happened before the player changed rooms.
     setActiveTab(({ livingRoom: "living", bedroom: "bedroom", bathroom: "bathroom", kitchen: "kitchen" } as const)[pet.homeRoomId ?? "livingRoom"]);
@@ -183,6 +192,19 @@ export default function StoreScreen() {
     [recordInteraction],
   );
 
+  const handleOpenSale = useCallback((sale: StoreSale) => {
+    let tab: StoreTab = STORE_SALE_CATEGORIES[sale.kind].tab;
+    if (sale.kind === 'decoration') {
+      const includesSale = (ids: readonly string[]) => ids.some(id => sale.itemIds.includes(id));
+      tab = isDecorationStoreTab(activeTab) && includesSale(DECORATION_IDS_BY_STORE_TAB[activeTab]) ? activeTab
+        : (Object.entries(DECORATION_IDS_BY_STORE_TAB).find(([, ids]) => includesSale(ids))?.[0] as StoreTab | undefined) ?? 'living';
+    }
+    setOwnedOnly(false);
+    setShowCategories(false);
+    setPreview(null);
+    handleTabChange(tab);
+  }, [activeTab, handleTabChange]);
+
   const openDecoration = useCallback((target?: RoomDecorationTarget) => {
     if (leavingForDecoration.current) return;
     leavingForDecoration.current = true;
@@ -203,13 +225,15 @@ export default function StoreScreen() {
 
   const showPurchaseMessage = useCallback(
     (result: RoomPurchaseResult, roomId: CatRoomId): StoreFeedback => {
-      const roomNumber = Number.parseInt(roomId.replace("room", ""), 10);
+      const name = t(`store.roomStyles.${roomId}.name`);
       switch (result) {
+        case "queued": return { icon:"coin",message:t("store.purchaseQueued") };
         case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
+        case "price_changed": return { icon:"coin",message:t("store.priceChanged") };
         case "purchased":
           return {
             icon: "home",
-            message: t("store.purchased", { number: roomNumber }),
+            message: t("store.purchased", { name }),
           };
         case "already_owned":
           return {
@@ -235,11 +259,11 @@ export default function StoreScreen() {
   );
 
   const handleBuy = useCallback(
-    async (roomId: CatRoomId) => {
+    async (roomId: CatRoomId, expectedPrice?: number) => {
       recordInteraction();
       triggerHaptic();
-      const result = await purchaseRoom(roomId);
-      if (result === "purchased") {
+      const result = await purchaseRoom(roomId, expectedPrice);
+      if (result === "purchased" || result === "queued") {
         triggerHaptic();
       }
       if (result !== "already_owned") {
@@ -256,8 +280,8 @@ export default function StoreScreen() {
       triggerHaptic();
       const equipped = equipRoom(roomId);
       if (equipped) {
-        const roomNumber = Number.parseInt(roomId.replace("room", ""), 10);
-        showFeedback("sparkle", t("store.equippedRoom", { number: roomNumber }));
+        const name = t(`store.roomStyles.${roomId}.name`);
+        showFeedback("sparkle", t("store.equippedRoom", { name }));
       }
     },
     [equipRoom, recordInteraction, showFeedback, t],
@@ -267,7 +291,9 @@ export default function StoreScreen() {
     (result: BedPurchaseResult, bedId: CatBedId): StoreFeedback => {
       const bedName = t(`store.bedName.${bedId}`);
       switch (result) {
+        case "queued": return { icon:"coin",message:t("store.purchaseQueued") };
         case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
+        case "price_changed": return { icon:"coin",message:t("store.priceChanged") };
         case "purchased":
           return {
             icon: "bed",
@@ -297,12 +323,12 @@ export default function StoreScreen() {
   );
 
   const handleBuyBed = useCallback(
-    async (bedId: CatBedId) => {
+    async (bedId: CatBedId, expectedPrice?: number) => {
       if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
-      const result = await purchaseBed(bedId);
-      if (result === "purchased") {
+      const result = await purchaseBed(bedId, expectedPrice);
+      if (result === "purchased" || result === "queued") {
         openDecoration({ kind: "bed", id: bedId });
         return;
       }
@@ -348,7 +374,9 @@ export default function StoreScreen() {
     (result: ToyPurchaseResult, toyId: CatToyId): StoreFeedback => {
       const toyName = t(`store.toyName.${toyId}`).replace(/\n/g, " ");
       switch (result) {
+        case "queued": return { icon:"coin",message:t("store.purchaseQueued") };
         case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
+        case "price_changed": return { icon:"coin",message:t("store.priceChanged") };
         case "purchased":
           return {
             icon: "play",
@@ -378,12 +406,12 @@ export default function StoreScreen() {
   );
 
   const handleBuyToy = useCallback(
-    async (toyId: CatToyId) => {
+    async (toyId: CatToyId, expectedPrice?: number) => {
       if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
-      const result = await purchaseToy(toyId);
-      if (result === "purchased") {
+      const result = await purchaseToy(toyId, expectedPrice);
+      if (result === "purchased" || result === "queued") {
         openDecoration({ kind: "toy", id: toyId });
         return;
       }
@@ -430,7 +458,9 @@ export default function StoreScreen() {
         " ",
       );
       switch (result) {
+        case "queued": return { icon:"coin",message:t("store.purchaseQueued") };
         case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
+        case "price_changed": return { icon:"coin",message:t("store.priceChanged") };
         case "purchased":
           return {
             icon: "plant",
@@ -460,12 +490,12 @@ export default function StoreScreen() {
   );
 
   const handleBuyDecoration = useCallback(
-    async (decorationId: CatDecorationId) => {
+    async (decorationId: CatDecorationId, expectedPrice?: number) => {
       if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
-      const result = await purchaseDecoration(decorationId);
-      if (result === "purchased") {
+      const result = await purchaseDecoration(decorationId, expectedPrice);
+      if (result === "purchased" || result === "queued") {
         openDecoration({ kind: "decoration", id: decorationId });
         return;
       }
@@ -518,7 +548,9 @@ export default function StoreScreen() {
     (result: SkinPurchaseResult, skinId: CatSkinId): StoreFeedback => {
       const skinName = t(`store.skinName.${skinId}`);
       switch (result) {
+        case "queued": return { icon:"coin",message:t("store.purchaseQueued") };
         case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
+        case "price_changed": return { icon:"coin",message:t("store.priceChanged") };
         case "purchased":
           return {
             icon: "cat",
@@ -548,11 +580,11 @@ export default function StoreScreen() {
   );
 
   const handleBuySkin = useCallback(
-    async (skinId: CatSkinId) => {
+    async (skinId: CatSkinId, expectedPrice?: number) => {
       recordInteraction();
       triggerHaptic();
-      const result = await purchaseSkin(skinId);
-      if (result === "purchased") {
+      const result = await purchaseSkin(skinId, expectedPrice);
+      if (result === "purchased" || result === "queued") {
         triggerHaptic();
       }
       if (result !== "already_owned") {
@@ -614,8 +646,8 @@ export default function StoreScreen() {
           isOwned={owned}
           isEquipped={equippedRoomId === roomId}
           canAfford={canAfford}
-          onPreview={() => setPreview({ kind: "room", id: roomId, name: t("store.roomName", { number: Number(roomId.replace("room", "")) }), price: getRoomStorePrice(roomId), owned, onBuy: () => handleBuy(roomId) })}
-          onBuy={() => handleBuy(roomId)}
+          onPreview={() => setPreview({ kind: "room", id: roomId, name: t(`store.roomStyles.${roomId}.name`), owned, onBuy: expectedPrice => handleBuy(roomId, expectedPrice) })}
+          onBuy={() => handleBuy(roomId, price.kind === "coins" ? price.amount : 0)}
           onEquip={() => handleEquip(roomId)}
         />
       );
@@ -634,8 +666,8 @@ export default function StoreScreen() {
           isOwned={owned}
           isEquipped={equippedSkinId === skinId}
           canAfford={canAfford}
-          onPreview={() => setPreview({ kind: "skin", id: skinId, name: t(`store.skinName.${skinId}`), price: getSkinStorePrice(skinId), owned, onBuy: () => handleBuySkin(skinId) })}
-          onBuy={() => handleBuySkin(skinId)}
+          onPreview={() => setPreview({ kind: "skin", id: skinId, name: t(`store.skinName.${skinId}`), owned, onBuy: expectedPrice => handleBuySkin(skinId, expectedPrice) })}
+          onBuy={() => handleBuySkin(skinId, price.kind === "coins" ? price.amount : 0)}
           onEquip={() => handleEquipSkin(skinId)}
         />
       );
@@ -654,8 +686,8 @@ export default function StoreScreen() {
           isOwned={owned}
           isEquipped={equippedBedId === bedId}
           canAfford={canAfford}
-          onPreview={() => setPreview({ kind: "bed", id: bedId, name: t(`store.bedName.${bedId}`), price: getBedStorePrice(bedId), owned, onBuy: () => handleBuyBed(bedId) })}
-          onBuy={() => handleBuyBed(bedId)}
+          onPreview={() => setPreview({ kind: "bed", id: bedId, name: t(`store.bedName.${bedId}`), owned, onBuy: expectedPrice => handleBuyBed(bedId, expectedPrice) })}
+          onBuy={() => handleBuyBed(bedId, price.kind === "coins" ? price.amount : 0)}
           onEquip={() => handleEquipBed(bedId)}
           onRemove={() => handleRemoveBed(bedId)}
         />
@@ -676,8 +708,8 @@ export default function StoreScreen() {
           placedCount={countPlacedToys(toyId, placedToys)}
           ownedCount={getToyOwnedCount(toyId, progress)}
           canAfford={canAfford}
-          onPreview={() => setPreview({ kind: "toy", id: toyId, name: t(`store.toyName.${toyId}`), price: getToyStorePrice(toyId), owned, onBuy: () => handleBuyToy(toyId) })}
-          onBuy={() => handleBuyToy(toyId)}
+          onPreview={() => setPreview({ kind: "toy", id: toyId, name: t(`store.toyName.${toyId}`), owned, onBuy: expectedPrice => handleBuyToy(toyId, expectedPrice) })}
+          onBuy={() => handleBuyToy(toyId, price.kind === "coins" ? price.amount : 0)}
           onPlace={() => handlePlaceToy(toyId)}
           onRemove={() => handleRemoveToy(toyId)}
         />
@@ -700,8 +732,8 @@ export default function StoreScreen() {
         )}
         ownedCount={getDecorationOwnedCount(decorationId, progress)}
         canAfford={canAfford}
-        onPreview={() => setPreview({ kind: "decoration", id: decorationId, name: t(`store.decorationName.${decorationId}`), price: getDecorationStorePrice(decorationId), owned, onBuy: () => handleBuyDecoration(decorationId) })}
-        onBuy={() => handleBuyDecoration(decorationId)}
+        onPreview={() => setPreview({ kind: "decoration", id: decorationId, name: t(`store.decorationName.${decorationId}`), owned, onBuy: expectedPrice => handleBuyDecoration(decorationId, expectedPrice) })}
+        onBuy={() => handleBuyDecoration(decorationId, price.kind === "coins" ? price.amount : 0)}
         onPlace={() => handlePlaceDecoration(decorationId)}
         onRemove={() => handleRemoveDecoration(decorationId)}
       />
@@ -751,7 +783,8 @@ export default function StoreScreen() {
           <Text style={styles.subtitle}>{activeTab === "rooms" || activeTab === "colors" ? storeSubtitle : t("store.buyPlaceHint")}</Text>
         </View>
 
-        <StoreTabBar active={activeTab} onChange={handleTabChange} />
+        {sales.length > 0 ? <StoreSaleBanner sales={sales} activeTab={activeTab} onOpenSale={handleOpenSale} /> : null}
+        <StoreTabBar active={activeTab} onChange={handleTabChange} sales={sales} />
         <View style={styles.filters}>
           {isDecorationStoreTab(activeTab) ? <Pressable style={styles.filter} accessibilityRole="button" onPress={() => { setCategoriesMounted(true); setShowCategories(true); }}><Text style={styles.filterText}>{t(`store.tab${activeTab[0].toUpperCase()}${activeTab.slice(1)}`)}</Text><AppIcon name="chevron-down" size={moderateScale(14)} /></Pressable> : null}
           <Pressable style={styles.filter} accessibilityRole="checkbox" accessibilityState={{ checked: ownedOnly }} onPress={() => setOwnedOnly(value => !value)}><View style={styles.checkbox}>{ownedOnly && <AppIcon name="check" size={moderateScale(16)} />}</View><Text style={styles.filterText}>{t("store.ownedOnly")}</Text></Pressable>
@@ -771,6 +804,7 @@ export default function StoreScreen() {
             ) : null}
           </SlideInNotificationSlot>
 
+          {pendingPurchaseCount > 0 ? <Text style={styles.subtitle}>{t("store.pendingPurchases", { count: pendingPurchaseCount })}</Text> : null}
           <FlatList<string>
             key={activeTab}
             data={storeItems}

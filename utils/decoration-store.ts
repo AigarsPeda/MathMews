@@ -1,7 +1,7 @@
 import { MODERN_KITCHEN_COUNTER_IDS, MODERN_KITCHEN_FLOOR_SHELF_IDS, MODERN_KITCHEN_SINK_IDS, MODERN_KITCHEN_ISLAND_IDS, MODERN_KITCHEN_FRIDGE_IDS, MODERN_KITCHEN_INDUCTION_IDS, MODERN_KITCHEN_STORAGE_IDS } from "@/constants/modern-kitchen";
 import { DOOR_DECORATION_IDS, LAMP_DECORATION_IDS, CURTAIN_DECORATION_IDS } from "@/constants/home-details-decorations";
 import { KITCHEN_DECORATION_IDS, BEDROOM_DECORATION_IDS, HALLOWEEN_DECORATION_IDS } from "@/constants/room-furnishings";
-import STORE_PRICES from "@/data/store-prices.json";
+import { getCatalogStorePrice } from "@/utils/store-catalog";
 import {
   CARPET_DECORATION_IDS,
   CAT_DECORATION_IDS,
@@ -149,12 +149,11 @@ export const BEDROOM_DECORATION_STORE_IDS = storeIds(
 export const HALLOWEEN_DECORATION_STORE_IDS = storeIds(HALLOWEEN_DECORATION_IDS);
 export const BATHROOM_DECORATION_STORE_IDS = storeIds(BATHROOM_DECORATION_IDS);
 
-/** Catalog pricing — change amounts here; swap kind to `iap` per item later. */
+/** Current server price, with bundled display defaults while offline. */
 export function getDecorationStorePrice(
   decorationId: CatDecorationId,
 ): StorePrice {
-  const amount = STORE_PRICES.decoration[decorationId];
-  return amount === 0 ? { kind: "free" } : { kind: "coins", amount };
+  return getCatalogStorePrice("decoration", decorationId);
 }
 
 export function isDecorationUnlocked(

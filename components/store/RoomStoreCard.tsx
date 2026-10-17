@@ -1,3 +1,4 @@
+import { StorePromotion } from "@/components/store/StorePromotion";
 import { IconText as Text } from "@/components/ui/IconText";
 import { getCatRoomSource, type CatRoomId } from "@/constants/cat-rooms";
 import { GameColors } from "@/constants/game";
@@ -28,7 +29,7 @@ export function RoomStoreCard({
 }: RoomStoreCardProps) {
   const { t } = useTranslation();
   const price = getRoomStorePrice(roomId);
-  const roomNumber = Number.parseInt(roomId.replace("room", ""), 10);
+  const roomName = t(`store.roomStyles.${roomId}.name`);
 
   return (
     <View
@@ -37,7 +38,7 @@ export function RoomStoreCard({
         isEquipped && styles.cardEquipped,
       ]}
     >
-      <Pressable style={styles.previewWrap} onPress={onPreview} accessibilityRole="button" accessibilityLabel={t("store.previewItem", { name: t("store.roomName", { number: roomNumber }) })}>
+      <Pressable style={styles.previewWrap} onPress={onPreview} accessibilityRole="button" accessibilityLabel={t("store.previewItem", { name: roomName })}>
         <Image
           source={getCatRoomSource(roomId)}
           style={styles.preview}
@@ -52,9 +53,11 @@ export function RoomStoreCard({
       </Pressable>
 
       <Text style={styles.title}>
-        {t("store.roomName", { number: roomNumber })}
+        {roomName}
       </Text>
+      <Text style={styles.description}>{t(`store.roomStyles.${roomId}.description`)}</Text>
 
+      {!isOwned ? <StorePromotion price={price} /> : null}
       {isOwned ? (
         <Pressable
           onPress={onEquip}
@@ -65,7 +68,7 @@ export function RoomStoreCard({
             pressed && !isEquipped && styles.actionPressed,
           ]}
           accessibilityRole="button"
-          accessibilityLabel={t("store.a11yEquip", { number: roomNumber })}
+          accessibilityLabel={t("store.a11yEquip", { name: roomName })}
         >
           <Text
             style={[
@@ -85,7 +88,7 @@ export function RoomStoreCard({
             pressed && styles.actionPressed,
           ]}
           accessibilityRole="button"
-          accessibilityLabel={t("store.a11yClaim", { number: roomNumber })}
+          accessibilityLabel={t("store.a11yClaim", { name: roomName })}
         >
           <Text style={styles.actionText}>{t("store.free")}</Text>
         </Pressable>
@@ -101,7 +104,7 @@ export function RoomStoreCard({
           ]}
           accessibilityRole="button"
           accessibilityLabel={t("store.a11yBuy", {
-            number: roomNumber,
+            name: roomName,
             cost: price.amount,
           })}
         >
@@ -160,6 +163,13 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(15),
     fontWeight: "700",
     color: GameColors.text,
+    textAlign: "center",
+  },
+  description: {
+    fontSize: moderateScale(12),
+    lineHeight: moderateScale(17),
+    minHeight: moderateScale(34),
+    color: GameColors.textMuted,
     textAlign: "center",
   },
   actionBtn: {

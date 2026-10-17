@@ -1,8 +1,10 @@
+import { getStoreCoinPrice } from "@/utils/store-catalog";
+import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { IconText as Text } from "@/components/ui/IconText";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { LifeRegenClock } from "@/components/economy/LifeRegenClock";
 import { HeaderChip } from "@/components/home/HeaderChip";
-import { GameColors, LIFE_BUY_COST, MAX_LIVES } from "@/constants/game";
+import { GameColors, MAX_LIVES } from "@/constants/game";
 import type { LivesState } from "@/types/game";
 import { applyLifeRegen, msUntilNextLife } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
@@ -88,7 +90,7 @@ export function LivesCounter({
 type NoLivesPanelProps = {
   lives: LivesState;
   coins: number;
-  onBuyLife: () => void;
+  onBuyLife: (expectedPrice?: number) => void;
   onBack?: () => void;
 };
 
@@ -102,8 +104,10 @@ export function NoLivesPanel({
   const now = useRegenNow();
 
   const synced = applyLifeRegen(lives, now);
+  useStoreCatalog();
+  const lifeBuyCost = getStoreCoinPrice("life", "one")!;
   const regenMs = msUntilNextLife(synced, now);
-  const canBuy = synced.current < MAX_LIVES && coins >= LIFE_BUY_COST;
+  const canBuy = synced.current < MAX_LIVES && coins >= lifeBuyCost;
 
   return (
     <View style={styles.panel}>
@@ -121,18 +125,18 @@ export function NoLivesPanel({
       {canBuy ? (
         <Pressable
           style={styles.buyBtn}
-          onPress={onBuyLife}
+          onPress={() => onBuyLife(lifeBuyCost)}
           accessibilityRole="button"
-          accessibilityLabel={t("lives.a11yBuy", { cost: LIFE_BUY_COST })}
+          accessibilityLabel={t("lives.a11yBuy", { cost: lifeBuyCost })}
         >
           <Text style={styles.buyBtnText}>
-            {t("lives.buyLife", { cost: LIFE_BUY_COST })}
+            {t("lives.buyLife", { cost: lifeBuyCost })}
           </Text>
         </Pressable>
       ) : (
         <Text style={styles.cantBuy}>
-          {coins < LIFE_BUY_COST
-            ? t("lives.needCoinsShort", { cost: LIFE_BUY_COST })
+          {coins < lifeBuyCost
+            ? t("lives.needCoinsShort", { cost: lifeBuyCost })
             : t("lives.livesFull")}
         </Text>
       )}

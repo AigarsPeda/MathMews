@@ -12,6 +12,8 @@ See [Adding cat animations and room interactions](cat-animations.md) for clip re
 
 `assets/3d/native/` contains the inventory models, three cat coats, and room effects. `catalog.json` records original camera scale, mesh bounds, and animation flags. `constants/native-model-sources.ts` provides Metro's static asset references. The exporter shares identical GLB buffer data without changing geometry or animations.
 
+All 30 room IDs have distinct wall finishes and coordinated floors defined in `data/room-catalog.json` and authored by `scripts/3d/room_finishes.py`. Linen, stripes, floral paper, paneling, botanical paper, scallops, Art Deco fans, beadboard, diamonds, brick, trellis, tile, grasscloth and limewash share the existing room geometry. The additional collection adds stars, daisies, tropical leaves, Japanese waves, red brick, concrete, retro arches, terrazzo, quatrefoils, gingham, half paneling, honeycomb, sunset arches, mushrooms and nautical stripes. Its floors include bamboo, tatami, checkerboard, concrete, slate, terrazzo, mosaic, parquet, stone and cork. New IDs `room16` through `room30` use migration `202610170001_room_finishes.sql` to register authoritative server prices. Deterministic packed color and tangent-space normal maps give walls and floors texture in both Filament and PNG previews without runtime generation. Both walls share one material and consistent physical UV scale. Existing room IDs, ownership, prices, wall planes and floor height stay intact. Shop names, finish descriptions, accessibility labels and saved shopping goals use `store.roomStyles` in both locales. `npm run catalog:sync` generates these from the room manifest. Prices and scheduled sales are read from Supabase; manifest prices are initial seeds and offline display defaults. See [catalog workflow](../store-catalog.md). Rebuild thumbnails with `render_assets.py -- --only rooms --refresh`; rebuild a native room with `export-native.py -- --items --id=room1`, repeating `--id` for more rooms. Use `BRAINPET_BLENDER_ASSET_DIR` to place intermediate blends outside the repository.
+
 `scripts/3d/export-native.py` reuses the catalog generators and builds an original cat through `original_cat.py` and `game_cat.py`. The body, head, legs, ears and tail form one sealed main surface, with separate sealed ear inserts. Mesh proportions and anatomical pivots share a rest pose; smooth regional weights keep belly vertices separate from leg bending. Every coat has 36 clips: the existing 35 actions plus a separate sofa `sit` pose. Expressions and care/play props remain independently animated. Walking uses two-segment authoring IK and a distance-matched stance. Doors export closed and stationary. Foliage and appliance power/wind rules remain intact.
 
 Regenerate with locally installed Blender:
@@ -58,13 +60,23 @@ The drag controller retains movement while an asynchronous pick completes, coale
 
 ## Verification
 
-Room interactions use separate floor approaches and contact points. Sofa and
-chair commands search front-side takeoff candidates, require a reachable floor
+Room interactions use separate floor approaches and contact points. Object
+menus also work while the cat is in another room. The selected action
+and object stay queued while the cat leaves its current activity, travels, and
+finishes entering the destination. A newer selection replaces the queued action;
+accepting it in the destination clears it so future room visits cannot replay it.
+Sofa and chair commands search front-side takeoff candidates, require a reachable floor
 route and clear flights both up and down, and retain the chosen exit point.
 Sitting and sleeping require arrival at the cushion in all three dimensions;
 washing and toilet use require arrival at their fixture contact. Both the native
 renderer and scheduler check the rendered endpoint before advancing. A blocked
 step releases any held pose and ends standing instead of sleeping on the floor.
+Bath water uses a shaded, opaque surface to hide the submerged lower body,
+with translucent, tapered highlights drifting while the room is visible.
+Washing adds expanding arcs that fade between cycles. Surface motion and the
+water stream pause offscreen and remain stationary with Reduce Motion.
+Native exports and thumbnails retain the existing bath framing so water detail
+does not change saved placement or fixture scale.
 Arc-lamp collision uses separate base, shade and short stem sections so its
 bounding box cannot fill the open air beneath its arch.
 

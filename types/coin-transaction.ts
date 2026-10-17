@@ -18,6 +18,8 @@ export type CoinTransactionKind =
   | "store_skin";
 
 export type CoinTransaction = {
+  syncStatus?: 'pending' | 'rejected';
+  failureReason?: string;
   id: string;
   kind: CoinTransactionKind;
   /** Positive = earned, negative = spent. */

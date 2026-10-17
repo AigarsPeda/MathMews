@@ -149,6 +149,8 @@ The rooms, furniture, beds, toys and app graphics use the existing Blender model
 
 See [3D asset instructions](assets/3d/README.md) for editable models and regeneration. Run `npm run assets:verify` to check asset coverage and animation states, `npm run assets:native` to rebuild the native models, or `npm run assets:3d` to rebuild catalog thumbnails.
 
+Room definitions live in `data/room-catalog.json`. Use `npm run catalog:build -- room31` after adding a room, or `npm run catalog:sync` for metadata and new server registrations. Current prices and timed promotions are managed in Supabase without another app update. See [shop catalog instructions](store-catalog.md).
+
 The migration notes and verification results are in [HANDOFF.md](HANDOFF.md).
 
 ## Release account safeguards

@@ -115,7 +115,7 @@ def items():
  for entry in json.loads((ROOT/'scripts/3d/inventory.json').read_text())['entries']:
   if selected and entry['id'] not in selected:continue
   clear();scene=scope['setup'](256);id=entry['id'];kind=entry['kind']
-  prior_framing=existing_metadata.get(id) if id=='kitchenFridge' or id.startswith('kitchenModernFridge') else None
+  prior_framing=existing_metadata.get(id) if id=='bedroomDoubleBed' or id.startswith('bed-house') or id=='kitchenFridge' or id.startswith('kitchenModernFridge') or existing_metadata.get(id,{}).get('bathroom',{}).get('kind')=='bath' else None
   if kind=='room':
    # Reuse the original room builder without producing another raster or .blend.
    previous=scope['render'];scope['render']=lambda path:None
@@ -169,6 +169,8 @@ def items():
    metadata[id]['bathroom']={'kind':contact['bathroom_kind'],'contact':yup(list(contact.location))}
    outlet=next((o for o in objects if o.name=='Bathroom water outlet'),None)
    if outlet:metadata[id]['bathroom']['sprayHeight']=max(.01,outlet.location.z-contact.location.z)
+  if any(o.name=='Bed cover lift' for o in objects):
+   metadata[id]['bed']={'surface':[0,.78,.08], 'covered':[0,.63,-.27]}
   if id in PLAYABLE_PLANTS:
    metadata[id]['leaves']=[{'node':o.parent.name,'contact':o.name,'point':yup(list(o.matrix_world.translation))} for o in sorted(objects,key=lambda o:o.name) if o.name.startswith('Leaf contact ')]
   if (id.startswith('sofa') and id!='sofaPillow') or 'catTree' in id or 'scratchPost' in id or id in PLAYABLE_PLANTS or id=='lampFloorArc':

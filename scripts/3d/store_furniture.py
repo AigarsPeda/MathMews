@@ -1,5 +1,6 @@
 """Authored room furniture and friendly Halloween props, shared by PNG and GLB exports."""
 import math
+from bedroom_additions import BEDROOM_ADDITION_IDS, build_bedroom_addition, add_bed_quilt
 from fridge_interior import add_fridge_interior
 import bpy
 from home_details import HOME_DETAIL_IDS, build_home_detail
@@ -18,6 +19,7 @@ STORE_FURNITURE_IDS = {
     'halloweenGhostLantern', 'halloweenBatGarland', 'halloweenWitchHat',
     'halloweenCauldron',
 }
+STORE_FURNITURE_IDS.update(BEDROOM_ADDITION_IDS)
 STORE_FURNITURE_IDS.update(HOME_DETAIL_IDS)
 STORE_FURNITURE_IDS.update(WALL_SPOTLIGHT_IDS)
 STORE_FURNITURE_IDS.update(KITCHEN_ADDITION_IDS)
@@ -76,7 +78,9 @@ def build_store_furniture(id, h):
         curve('Gooseneck faucet', [(x, y + .26, z), (x, y + .26, z + .32), (x, y + .08, z + .32), (x, y + .07, z + .23)], .022, 'silver')
         sphere('Tap handle', (x + .09, y + .25, z + .06), (.055, .035, .025), 'gold')
 
-    if id in MODERN_KITCHEN_IDS:
+    if id in BEDROOM_ADDITION_IDS:
+        build_bedroom_addition(id, h)
+    elif id in MODERN_KITCHEN_IDS:
         build_modern_kitchen(id, h)
     elif id in WALL_SPOTLIGHT_IDS:
         build_wall_spotlight(id, h)
@@ -190,13 +194,9 @@ def build_store_furniture(id, h):
         box('Oak bed frame', (0, 0, .30), (1.78, 2.22, .27), 'wood', .07)
         box('Upholstered headboard', (0, .99, .79), (1.84, .15, 1.25), 'rose', .09)
         box('Mattress', (0, -.02, .49), (1.65, 2.06, .27), 'cream', .10)
-        box('Sage duvet', (0, -.32, .64), (1.68, 1.50, .14), 'sage', .085)
-        box('Folded duvet edge', (0, .34, .69), (1.69, .18, .085), 'green', .035)
         for x in (-.42, .42):
             box('Bed pillow', (x, .66, .68), (.67, .40, .18), 'white', .08)
-        box('Knitted throw', (.49, -.60, .735), (.46, .95, .065), 'pink', .025)
-        for y in (-.98, -.86, -.74, -.62, -.50, -.38, -.26):
-            box('Throw stripe', (.49, y, .773), (.44, .024, .008), 'cream', .003)
+        add_bed_quilt(h, 'sage')
 
     elif id in ('bedroomDresser', 'bedroomNightstand', 'bedroomWardrobe'):
         wardrobe = id == 'bedroomWardrobe'

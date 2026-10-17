@@ -11,7 +11,10 @@ export const STORE_PLACEMENT_SCALES = {
   catTreeTan: 1.6, catTreeBlue: 1.6, catTreePink: 1.6,
 
   // Tall furniture follows the fridge and human-bed proportions.
-  bedroomDoubleBed: 1.6, bedroomWardrobe: 1.6,
+  bedroomDoubleBed: 1.6,
+  bedroomBedRose: 1.6,
+  bedroomBedLilac: 1.6,
+  bedroomWardrobe: 1.6,
   japaneseCloset: 1.6, japaneseClosetBase: 1.6,
   officeMetallicClosetAni: 1.6, officeWoodClosetAni: 1.6,
   officeRack: 1.3, officeLongRack: 1.7,

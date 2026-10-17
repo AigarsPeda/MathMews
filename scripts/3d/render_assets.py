@@ -5,9 +5,11 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/3d'))
 from store_furniture import STORE_FURNITURE_IDS, MODERN_KITCHEN_IDS, build_store_furniture
+from bedroom_additions import add_bed_quilt
 from cat_feeders import CAT_FEEDER_IDS, build_cat_feeder
 from bathroom_additions import build_bathroom_addition, add_bathroom_controls
 from cat_model import create_cat, pose_cat, configure_cat_camera, animated_parts, key_cat_geometry, smoothstep, smooth_window, pulse, care_action_time
+from room_finishes import wall_material, floor_material, map_surface
 OUT=ROOT/'assets/3d'
 OUT.mkdir(parents=True,exist_ok=True)
 BLENDER_OUT=Path(os.environ.get('BRAINPET_BLENDER_ASSET_DIR',str(ROOT.parent/'BrainPet-blender-assest'))).expanduser().resolve()
@@ -349,9 +351,8 @@ def bed(id):
  color=color_for(id)
  if 'house' in id:
   legs(1.48,1.7,.22);box('Bed frame',(0,0,.25),(1.8,2.25,.25),'wood',.08);box('Mattress',(0,0,.46),(1.72,2.14,.23),'cream',.12)
-  box('Duvet',(0,-.37,.60),(1.73,1.36,.20),color,.13);box('Headboard',(0,1.07,.77),(1.88,.15,1.02),'wood',.07)
+  add_bed_quilt(globals(),color);box('Headboard',(0,1.07,.77),(1.88,.15,1.02),'wood',.07)
   for x in [-.43,.43]:box('Pillow',(x,.64,.64),(.70,.48,.18),'white',.12)
-  for x in [-.45,0,.45]:box('Blanket seam',(x,-.37,.703),(.009,1.10,.004),'cream',0)
  else:
   cushion=sphere('Pet bed cushion',(0,0,.15),(.77,.63,.17),'cream')
   rim=torus('Soft bed rim',(0,0,.26),.64,.17,color);rim.scale=(1.20,1,1)
@@ -769,21 +770,20 @@ def build_item(entry,t=0):
 
 
 def room(entry):
- scene=setup(1024,True);index=int(entry['id'][4:])-1
- colors=['rose','blue','lilac','wood','sage','pink','teal','cream','gold','grey','purple','blue','green','coral','brown'];wall=colors[index]
+ scene=setup(1024,True)
+ wall=wall_material(entry['id']);floor=floor_material(entry['id'])
  box('Rounded room foundation',(0,0,-.13),(5.1,5.1,.26),'wood',.10)
- box('Cream floor',(0,0,.018),(5.0,5.0,.10),'cream',.04)
- box('Left wall',(-2.46,0,1.38),(.17,5.0,2.8),wall,.035)
- box('Back wall',(0,2.46,1.38),(5.0,.17,2.8),wall,.035)
+ map_surface(box('Cream floor',(0,0,.018),(5.0,5.0,.10),floor,.04),'floor')
+ map_surface(box('Left wall',(-2.46,0,1.38),(.17,5.0,2.8),wall,.035),'left')
+ map_surface(box('Back wall',(0,2.46,1.38),(5.0,.17,2.8),wall,.035),'back')
  box('Left skirting',(-2.35,0,.12),(.085,4.9,.18),'cream',.025)
  box('Back skirting',(0,2.35,.12),(4.9,.085,.18),'cream',.025)
- for x in [-1.6,-.8,0,.8,1.6]:box('Subtle floor joint',(x,0,.071),(.011,4.8,.002),'paper',0)
  objects=[o for o in scene.objects if o.type=='MESH'];scene.camera.location=(8,-8,7);aim(scene.camera,(0,0,.9));scene.camera.data.ortho_scale=7.85
  render(OUT/'rooms'/f"{entry['id']}.png")
  library=BLENDER_OUT/'rooms';library.mkdir(parents=True,exist_ok=True);bpy.ops.wm.save_as_mainfile(filepath=str(library/(entry['id']+'.blend')),compress=True)
 
 
-def animate_furniture(objects,t):
+def animate_furniture(objects,t,water=False):
  for o in objects:
   name=o.name
   if name.startswith('Door hinge'):o.rotation_euler.z=.7*math.sin(t*math.pi)
@@ -802,6 +802,10 @@ def animate_furniture(objects,t):
   elif name.startswith('Flowing water'):o.scale.z=1+.2*math.sin(t*math.tau)
   elif name.startswith('Minute hand'):o.rotation_euler.y=.10*math.sin(t*math.tau)
   elif name.startswith('Water ripple'):o.scale=(1+.25*math.sin(t*math.tau),)*3
+  elif water and name.startswith('Bath water glint'):
+   phase=t*math.tau+int(name[-1])*1.7
+   size=.94+.06*math.sin(phase);o.scale=(size,size,1)
+   o.active_material.node_tree.nodes['Principled BSDF'].inputs['Alpha'].default_value=.23+.10*math.sin(phase)
 
 
 def render_furniture(entries):
@@ -813,10 +817,18 @@ def render_furniture(entries):
   if '--refresh' not in ARGS and not animated and (dest/f'{thumbnail}.png').exists():continue
   dest.mkdir(parents=True,exist_ok=True)
   scene=setup(192 if animated or 'thumbnailId' in entry else 256);objects,root=build_item(entry);frame_camera(objects,1.22)
+  # Water detail must not move a saved bath or change its preview framing.
+  contact=next((o for o in objects if o.name=='Bathroom contact'),None)
+  catalog_path=OUT/'native/catalog.json'
+  if contact and contact.get('bathroom_kind')=='bath' and catalog_path.exists():
+   meta=json.loads(catalog_path.read_text()).get(id)
+   if meta:
+    center=Vector((meta['center'][0],-meta['center'][2],meta['center'][1]))
+    scene.camera.location=center+Vector(ROOM_VIEW_DIRECTION);aim(scene.camera,center);scene.camera.data.ortho_scale=meta['renderScale']
   scene.render.fps=12;scene.frame_start=1;scene.frame_end=count
   for i in range(count):
    scene.frame_set(i+1)
-   animate_furniture(objects,i/count)
+   animate_furniture(objects,i/count,water=True)
    if id.startswith('toy-'):
     root.rotation_euler.z=.15*math.sin(i/count*math.tau);root.location.z=.03*max(0,math.sin(i/count*math.tau))
    if animated:

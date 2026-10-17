@@ -2,8 +2,10 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import type { AppIconName } from "@/constants/app-icons";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
+import type { StoreSale } from "@/utils/store-catalog";
+import { STORE_SALE_CATEGORIES } from "@/utils/store-promotion";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export type StoreTab =
   | "rooms"
@@ -40,6 +42,7 @@ export type StoreTab =
 type StoreTabBarProps = {
   active: StoreTab;
   onChange: (tab: StoreTab) => void;
+  sales?: StoreSale[];
 };
 
 function StoreTabButton({
@@ -48,12 +51,14 @@ function StoreTabButton({
   icon,
   isActive,
   onPress,
+  saleLabel,
 }: {
   tab: StoreTab;
   label: string;
   icon: AppIconName;
   isActive: boolean;
   onPress: (tab: StoreTab) => void;
+  saleLabel?: string;
 }) {
   return (
     <Pressable
@@ -61,8 +66,9 @@ function StoreTabButton({
       style={[styles.tab, isActive && styles.tabActive]}
       accessibilityRole="tab"
       accessibilityState={{ selected: isActive }}
-      accessibilityLabel={label}
+      accessibilityLabel={saleLabel ? `${label}, ${saleLabel}` : label}
     >
+      {saleLabel ? <View style={styles.saleBadge}><Text style={styles.saleText}>{saleLabel}</Text></View> : null}
       <AppIcon name={icon} size={moderateScale(26)} />
       <Text
         style={[styles.tabText, isActive && styles.tabTextActive]}
@@ -76,7 +82,7 @@ function StoreTabButton({
   );
 }
 
-export function StoreTabBar({ active, onChange }: StoreTabBarProps) {
+export function StoreTabBar({ active, onChange, sales = [] }: StoreTabBarProps) {
   const { t } = useTranslation();
 
   const tabs = [
@@ -94,6 +100,7 @@ export function StoreTabBar({ active, onChange }: StoreTabBarProps) {
     accessibilityRole="tablist"
   >
     {tabs.map(([tab, icon, key]) => <StoreTabButton key={tab} tab={tab} icon={icon}
+      saleLabel={sales.some(sale => STORE_SALE_CATEGORIES[sale.kind].tab === tab) ? t('store.sale') : undefined}
       label={t(key)} isActive={primary === tab} onPress={onChange} />)}
   </ScrollView>;
 }
@@ -108,6 +115,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: moderateScale(8),
     paddingRight: moderateScale(4),
+    paddingTop: moderateScale(8),
+    paddingBottom: moderateScale(2),
   },
   tab: {
     flexShrink: 0,
@@ -122,8 +131,11 @@ const styles = StyleSheet.create({
     borderColor: GameColors.cardBorder,
     backgroundColor: GameColors.card,
     paddingHorizontal: moderateScale(6),
-    paddingVertical: moderateScale(8),
+    paddingTop: moderateScale(12),
+    paddingBottom: moderateScale(8),
   },
+  saleBadge: { position: 'absolute', top: -moderateScale(7), right: moderateScale(4), backgroundColor: '#23766F', borderRadius: moderateScale(6), paddingHorizontal: moderateScale(6), paddingVertical: moderateScale(2) },
+  saleText: { color: GameColors.card, fontSize: moderateScale(10), fontWeight: '800' },
   tabActive: {
     borderColor: GameColors.secondary,
     backgroundColor: "#E8FAF8",

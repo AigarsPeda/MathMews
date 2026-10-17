@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(14),
   },
   text: {
+    flexShrink: 1,
     fontSize: moderateScale(15),
     fontWeight: "700",
     color: GameColors.text,

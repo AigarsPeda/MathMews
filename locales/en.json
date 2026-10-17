@@ -170,7 +170,9 @@
       "returnHome": "Go to your spot",
       "bathWash": "Wash in the bathtub",
       "showerWash": "Take a shower",
-      "toiletUse": "Use the toilet"
+      "toiletUse": "Use the toilet",
+      "bedSleep": "Sleep on bed",
+      "bedSnuggle": "Snuggle under covers"
     },
     "decorateRoom": "Decorate",
     "buy": "Buy",
@@ -265,7 +267,7 @@
     "decorateRoom": "Decorate room",
     "buyPlaceHint": "Buy an item, then place it in your room.",
     "title": "Pet Store",
-    "subtitleRooms": "Pick a new background for your cat's home.",
+    "subtitleRooms": "Choose wallpaper, wall finishes and wood floors for this room.",
     "subtitleColors": "Buy new fur colors for your cat.",
     "subtitleBeds": "Buy cozy beds and place them in the room.",
     "subtitleToys": "Buy fun toys and scatter them around the room.",
@@ -659,7 +661,14 @@
       "kitchenModernFloorShelfWhite": "Warm white square floor shelf",
       "kitchenModernFloorShelfSage": "Sage square floor shelf",
       "kitchenModernFloorShelfNavy": "Navy square floor shelf",
-      "kitchenModernFloorShelfCharcoal": "Charcoal square floor shelf"
+      "kitchenModernFloorShelfCharcoal": "Charcoal square floor shelf",
+      "bedroomBedRose": "Rose quilt bed",
+      "bedroomBedLilac": "Lilac quilt bed",
+      "bedroomVanity": "Oak dressing table",
+      "bedroomBench": "Sage bedroom bench",
+      "bedroomQuiltChest": "Blanket chest",
+      "bedroomSlippers": "Pom-pom slippers",
+      "bedroomRug": "Woven bedside rug"
     },
     "free": "Free",
     "buyFor": "{{cost}} 🪙",
@@ -671,7 +680,7 @@
     "place": "Place",
     "placed": "Placed",
     "remove": "Remove",
-    "equippedRoom": "Room {{number}} is now your home!",
+    "equippedRoom": "{{name}} is now in your home!",
     "equippedBed": "{{name}} is in your room!",
     "equippedToy": "{{name}} is in your room!",
     "equippedDecoration": "{{name}} is in your room!",
@@ -679,7 +688,7 @@
     "placedToy": "{{name}} is in your room!",
     "placedDecoration": "{{name}} is in your room!",
     "removedFromRoom": "{{name}} was removed from your room.",
-    "purchased": "Room {{number}} is yours!",
+    "purchased": "{{name}} is yours!",
     "purchasedBed": "{{name}} is yours!",
     "purchasedToy": "{{name}} is yours!",
     "purchasedDecoration": "{{name}} is yours!",
@@ -694,16 +703,16 @@
     "needCoinsToy": "Need {{cost}} coins for this toy.",
     "needCoinsDecoration": "Need {{cost}} coins for this decoration.",
     "needCoinsSkin": "Need {{cost}} coins for this color.",
-    "walletOffline": "Connect to the internet to sync your wallet and buy this item.",
+    "walletOffline": "Your wallet could not be saved. Please try again. If this is your first purchase, connect once to sync your balance.",
     "unavailable": "This room isn't available yet.",
     "unavailableBed": "This bed isn't available yet.",
     "unavailableToy": "This toy isn't available yet.",
     "unavailableDecoration": "This decoration isn't available yet.",
     "unavailableSkin": "This color isn't available yet.",
     "comingSoon": "Soon",
-    "a11yBuy": "Buy room {{number}} for {{cost}} coins",
-    "a11yClaim": "Claim room {{number}}",
-    "a11yEquip": "Equip room {{number}}",
+    "a11yBuy": "Buy {{name}} for {{cost}} coins",
+    "a11yClaim": "Claim {{name}}",
+    "a11yEquip": "Equip {{name}}",
     "a11yBuyBed": "Buy {{name}} for {{cost}} coins",
     "a11yClaimBed": "Claim {{name}}",
     "a11yEquipBed": "Equip {{name}}",
@@ -778,7 +787,155 @@
     "tabAppliances": "Appliances",
     "subtitleAppliances": "Kitchen appliances, cleaning robots, and room equipment.",
     "tabAccessories": "Small decor",
-    "subtitleAccessories": "Cushions, candles, vases, and little decorations."
+    "subtitleAccessories": "Cushions, candles, vases, and little decorations.",
+    "roomStyles": {
+      "room1": {
+        "name": "Rose linen",
+        "description": "Woven walls · Pale oak"
+      },
+      "room2": {
+        "name": "Coastal stripes",
+        "description": "Blue stripes · Sandy oak"
+      },
+      "room3": {
+        "name": "Lavender sprigs",
+        "description": "Floral paper · Light oak"
+      },
+      "room4": {
+        "name": "Warm oak",
+        "description": "Wood panels · Natural oak"
+      },
+      "room5": {
+        "name": "Botanical sage",
+        "description": "Leaf wallpaper · Honey oak"
+      },
+      "room6": {
+        "name": "Blush scallops",
+        "description": "Scallop paper · Pale oak"
+      },
+      "room7": {
+        "name": "Teal deco",
+        "description": "Fan wallpaper · Golden oak"
+      },
+      "room8": {
+        "name": "Country cream",
+        "description": "Beadboard · Natural oak"
+      },
+      "room9": {
+        "name": "Honey diamonds",
+        "description": "Geometric paper · Warm oak"
+      },
+      "room10": {
+        "name": "Soft loft",
+        "description": "Painted brick · Weathered oak"
+      },
+      "room11": {
+        "name": "Lilac trellis",
+        "description": "Trellis paper · Light oak"
+      },
+      "room12": {
+        "name": "Blue tile",
+        "description": "Glazed tile · Pale oak"
+      },
+      "room13": {
+        "name": "Sage grasscloth",
+        "description": "Woven fibers · Honey oak"
+      },
+      "room14": {
+        "name": "Terracotta",
+        "description": "Limewash plaster · Warm oak"
+      },
+      "room15": {
+        "name": "Walnut retreat",
+        "description": "Wood panels · Honey oak"
+      },
+      "room16": {
+        "name": "Midnight stars",
+        "description": "Gold stars · Dark oak"
+      },
+      "room17": {
+        "name": "Cottage daisies",
+        "description": "Daisy paper · Checkerboard"
+      },
+      "room18": {
+        "name": "Tropical canopy",
+        "description": "Tropical leaves · Bamboo"
+      },
+      "room19": {
+        "name": "Japanese waves",
+        "description": "Wave paper · Tatami mats"
+      },
+      "room20": {
+        "name": "Red brick loft",
+        "description": "Rustic brick · Concrete"
+      },
+      "room21": {
+        "name": "Charcoal studio",
+        "description": "Concrete walls · Slate tile"
+      },
+      "room22": {
+        "name": "Retro arches",
+        "description": "Ochre arches · Terrazzo"
+      },
+      "room23": {
+        "name": "Blush terrazzo",
+        "description": "Stone chips · Cream terrazzo"
+      },
+      "room24": {
+        "name": "Moroccan teal",
+        "description": "Quatrefoil paper · Mosaic"
+      },
+      "room25": {
+        "name": "Rose gingham",
+        "description": "Gingham paper · Pale oak"
+      },
+      "room26": {
+        "name": "Heritage blue",
+        "description": "Half paneling · Oak parquet"
+      },
+      "room27": {
+        "name": "Honeycomb stone",
+        "description": "Hexagon paper · Stone tile"
+      },
+      "room28": {
+        "name": "Sunset arches",
+        "description": "Layered arches · Cork"
+      },
+      "room29": {
+        "name": "Woodland nook",
+        "description": "Mushroom paper · Parquet"
+      },
+      "room30": {
+        "name": "Nautical navy",
+        "description": "Striped paneling · Checkerboard"
+      }
+    },
+    "sale": "Sale",
+    "wasPrice": "Was {{cost}} coins",
+    "priceChanged": "The price changed. The shop has been updated. Please try again.",
+    "purchaseQueued": "Added to your room. Purchase confirmation is pending.",
+    "pendingPurchases_one": "{{count}} purchase waiting to sync",
+    "pendingPurchases_other": "{{count}} purchases waiting to sync",
+    "syncCancelledTitle": "Purchase cancelled",
+    "syncAcknowledge": "Got it",
+    "syncCancelled": {
+      "insufficient_funds": "There were not enough coins to confirm {{name}}. The item was removed from your rooms and your balance was updated.",
+      "price_changed": "The price of {{name}} changed before confirmation. The item was removed from your rooms. Your coins were not charged. You can buy it again at the current price.",
+      "not_for_sale": "{{name}} is no longer available. The item was removed from your rooms and your reserved coins were released.",
+      "already_owned": "You already own {{name}}. The duplicate purchase was cancelled and your existing item is still yours."
+    },
+    "discountPercent": "{{percent}}% off",
+    "discountUnderOne": "<1% off",
+    "saleEndsAt": "Sale ends {{date}}",
+    "saleCountdown": {
+      "days": "Ends in {{days}}d {{hours}}h",
+      "hours": "Ends in {{hours}}h {{minutes}}m",
+      "minutes": "Ends in {{minutes}}m {{seconds}}s",
+      "seconds": "Ends in {{seconds}}s"
+    },
+    "discountUpTo": "Up to {{percent}}% off",
+    "saleBannerTitle": "{{category}} · {{discount}}",
+    "viewDeals": "View deals"
   },
   "onboarding": {
     "title": "Meet your cat!",

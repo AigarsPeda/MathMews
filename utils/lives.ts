@@ -1,4 +1,5 @@
-import { LIFE_BUY_COST, LIFE_REGEN_MINUTES, MAX_LIVES } from "@/constants/game";
+import { getStoreCoinPrice } from "@/utils/store-catalog";
+import { LIFE_REGEN_MINUTES, MAX_LIVES } from "@/constants/game";
 import type { LivesState } from "@/types/game";
 
 const REGEN_MS = LIFE_REGEN_MINUTES * 60 * 1000;
@@ -98,7 +99,7 @@ export function canBuyLife(
   now = Date.now(),
 ): boolean {
   const synced = applyLifeRegen(lives, now);
-  return synced.current < MAX_LIVES && coins >= LIFE_BUY_COST;
+  return synced.current < MAX_LIVES && coins >= getStoreCoinPrice("life", "one")!;
 }
 
 export function buyOneLife(lives: LivesState, now = Date.now()): LivesState {

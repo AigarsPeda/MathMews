@@ -1,0 +1,23 @@
+{
+  "project_ref": "jcfppquntstgxubtlvqo",
+  "sql": "supabase/promotions/20261017_room_autumn_sale.sql",
+  "sale_label": "Autumn sale",
+  "kind": "room",
+  "discount_percent": 25,
+  "duration_hours": 48,
+  "rooms_updated": 29,
+  "existing_room_promotions_before_update": [],
+  "starts_at": "2026-10-17T15:58:48.445886+00:00",
+  "ends_at": "2026-10-19T15:58:48.445886+00:00",
+  "display_timezone": "Europe/Riga",
+  "normal_prices_unchanged": true,
+  "public_catalog_verified_at": "2026-10-17T15:59:47.49257+00:00",
+  "active_room_sales_verified": 29,
+  "native_ui_verified": {
+    "discount_percentage_badge": true,
+    "original_price_struck_out": true,
+    "sale_label": true,
+    "countdown": true,
+    "discounted_purchase_price": true
+  }
+}

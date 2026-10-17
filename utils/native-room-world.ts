@@ -1,6 +1,7 @@
 import { CURTAIN_FABRIC_BOUNDS, isCurtainDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
+import type { BedPhase } from '@/constants/bedroom-activities';
 import type { BathroomFixtureKind, BathroomPhase } from '@/constants/bathroom-activities';
 import { isPlayablePlant } from "@/constants/plant-play";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
@@ -40,6 +41,7 @@ export type ModelMetadata = {
   wallMountBounds?: { min: number[]; max: number[] };
   placementHull?: number[][];
   leaves?: { node: string; contact: string; point: number[] }[];
+  bed?: { surface: number[]; covered: number[] };
   bathroom?: { kind: BathroomFixtureKind; contact: number[]; sprayHeight?: number };
 };
 export type CollisionBox = { min: Vec3; max: Vec3 };
@@ -125,6 +127,7 @@ export type NativeRoomObject = {
   approach?: Vec3;
   collisionBoxes?: CollisionBox[];
   leaves?: Vec3[];
+  bed?: { surface: Vec3; covered: Vec3 };
   bathroom?: { kind: BathroomFixtureKind; contact: Vec3 };
 };
 export type NativeRoomWorld = {
@@ -155,6 +158,7 @@ export type NativeTravel = {
   treePlay?: boolean;
   plantPlay?: boolean;
   rockingChair?: RockingChair;
+  bed?: { instanceId: string; phase: BedPhase };
   bathroom?: { instanceId: string; kind: BathroomFixtureKind; phase: BathroomPhase };
 };
 
@@ -168,6 +172,7 @@ export function updateNativeObjectPosition(world: NativeRoomWorld, id: string, c
   const moved = { ...object, position: move(object.position), min: move(object.min), max: move(object.max),
     seat: object.seat && move(object.seat), approach: object.approach && move(object.approach),
     leaves: object.leaves?.map(move),
+    bed: object.bed && { surface: move(object.bed.surface), covered: move(object.bed.covered) },
     bathroom: object.bathroom && { ...object.bathroom, contact: move(object.bathroom.contact) },
     collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
   return { ...world, objects: world.objects.map(o => o === object ? moved : o) };
@@ -390,6 +395,13 @@ export function buildNativeRoomWorld(options: {
     const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
     const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, curtainOpen, fridgeOpen, fridgeHingeSide, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
       wallAxis: wall ? flip ? 0 : 2 : undefined };
+    if (meta.bed) {
+      const at = (point: number[]) => rotate(point, heading).map((v, i) => position[i] + v * scale) as Vec3;
+      object.bed = { surface: at(meta.bed.surface), covered: at(meta.bed.covered) };
+      object.seat = object.bed.surface;
+      object.seatHeading = heading;
+      object.approach = at([0, 0, 1.2 + world.radius / scale]);
+    }
     if (meta.bathroom) object.bathroom = { kind: meta.bathroom.kind,
       contact: rotate(meta.bathroom.contact, heading).map((v, i) => position[i] + v * scale) as Vec3 };
     if (meta.collisionBoxes) {
@@ -935,14 +947,15 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const previousSeatPosition = plan.steps.find(s => s.seatPosition && (s.targetInstanceId ?? plan.targetInstanceId) === sourceObject?.instanceId)?.seatPosition;
   const kitchenPerch = sourceObject && isKitchenIslandDecorationId(sourceObject.modelId) && plan.kind === 'islandSit';
   const kitchenArrival = kitchenPerch && !step.seatPosition && !previousSeatPosition ? findKitchenIslandPerch(start, sourceObject, world) : undefined;
-  const seatPosition = step.seatPosition ?? previousSeatPosition ?? kitchenArrival?.seat;
+  const seatPosition = sourceObject?.bed ? (step.bedPhase === 'crawl' || step.bedPhase === 'covered'
+    ? sourceObject.bed.covered : sourceObject.bed.surface) : step.seatPosition ?? previousSeatPosition ?? kitchenArrival?.seat;
   const object = sourceObject && seatPosition ? { ...sourceObject, seat: seatPosition, seatHeading: step.seatHeading ?? sourceObject.seatHeading,
     approach: sourceObject.approach ?? [seatPosition[0], FLOOR_Y, sourceObject.max[2] + world.radius + .05] as Vec3 } : sourceObject;
   const tree = object && /^catTree|^toy-scratchPost/.test(object.modelId);
   const plant = object && plan.kind === 'plantPlay' && isPlayablePlant(object.modelId);
   const previousSeatApproach = plan.steps.find(s => s.seatApproach && (s.targetInstanceId ?? plan.targetInstanceId) === object?.instanceId)?.seatApproach;
   const seating = object?.seat && !tree && (step.approachingSeat || step.sofaApproach);
-  const seatApproach = seating ? walking ? kitchenArrival?.approach ?? findSeatApproach(start, object, world)
+  const seatApproach = seating ? walking && !step.bedPhase ? kitchenArrival?.approach ?? findSeatApproach(start, object, world)
     : step.seatApproach ?? previousSeatApproach ?? findSeatApproach(start, object, world) : undefined;
   let bowlPath: Vec3[] | undefined;
   const previousBathroomApproach = plan.steps.find(s => s.bathroomApproach && (s.targetInstanceId ?? plan.targetInstanceId) === object?.instanceId)?.bathroomApproach;
@@ -984,7 +997,8 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   }
   // A resting/play clip stays where navigation actually arrived. Reusing the
   // old sprite target here would undo the detour and snap into the furniture.
-  let path = jump ? [start, target] : walking ? bowlPath ?? findRoomPath(start, target, world) : [start];
+  const bedCrawl = !!object?.bed && (step.bedPhase === 'crawl' || step.bedPhase === 'uncover');
+  let path = jump || bedCrawl ? [start, target] : walking ? bowlPath ?? findRoomPath(start, target, world) : [start];
   let blocked = !!walking && path.length === 1 && Math.hypot(start[0] - target[0], start[2] - target[2]) > .05;
   if (plan.kind === 'bowlEat' && step.bowlApproach && !bowlPath) { blocked = true; path = [start]; }
   if (plan.kind === 'bowlEat' && step.animation === 'eating' && object
@@ -993,7 +1007,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   if (seating && !seatApproach) { blocked = true; path = [start]; }
   if (kitchenPerch && !seatPosition || !step.returnHome && walking && (plan.kind === 'fridgeInvestigate' || plan.kind === 'windowWatch' && !step.approachingSeat) && !kitchenFloor
     || plan.kind === 'fridgeInvestigate' && !step.returnHome && !object?.fridgeOpen) { blocked = true; path = [start]; }
-  if (onSeat && !jump && object?.seat && !hasNativeArrived(start, object.seat)) blocked = true;
+  if (onSeat && !jump && !bedCrawl && object?.seat && !hasNativeArrived(start, object.seat)) blocked = true;
   if (object?.bathroom && ['wash', 'use'].includes(step.bathroomPhase ?? '')
     && !hasNativeArrived(start, object.bathroom.contact)) blocked = true;
   if ((tree && !treeApproach || plant && !plantApproach) && walking && !step.returnHome) { blocked = true; path = [start]; }
@@ -1004,7 +1018,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   if (walking && (object?.seat || step.bathroomPhase || plan.kind === 'bowlEat' || step.leavingRoom) && Math.hypot(path.at(-1)![0] - target[0], path.at(-1)![2] - target[2]) > .12)
     blocked = true;
   if (jump && !isNativeJumpClear(start, target, world, object?.instanceId)) { blocked = true; path = [start]; }
-  const distance = pathLength(path), duration = walking ? Math.max(.18, distance / (.8 * world.catScale * 2.25)) : (step.moveMs ?? step.durationMs) / 1000;
+  const distance = pathLength(path), duration = bedCrawl ? (step.moveMs ?? 1600) / 1000 : walking ? Math.max(.18, distance / (.8 * world.catScale * 2.25)) : (step.moveMs ?? step.durationMs) / 1000;
   const position = catScreenPoint(path.at(-1)!, world);
   let objectPath: Vec3[] | undefined;
   if (object && plan.kind === 'mouseChase' && step.objectPosition) {
@@ -1023,8 +1037,10 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
       axis: [Math.cos(object.heading), 0, -Math.sin(object.heading)], seat: object.seat!, scale: object.scale, leaving: step.animation === 'jumpOff' }
     : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking ? duration * 1000 : step.durationMs, moveMs: walking ? duration * 1000 : step.moveMs,
-    native: { path, distance, duration, rockingChair, bathroom: object?.bathroom && step.bathroomPhase && !blocked
+    native: { path, distance, duration, rockingChair, bed: object?.bed && step.bedPhase && !blocked
+      ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
       jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, targetPosition: object?.position, objectPath, objectDuration: duration * .6,
-      heading: object?.bathroom && step.bathroomPhase ? object.heading : object?.seat && onSeat ? object.seatHeading : targetHeading } };
+      heading: object?.bed && (step.bedPhase === 'crawl' || step.bedPhase === 'covered') ? object.heading + Math.PI
+        : object?.bathroom && step.bathroomPhase ? object.heading : object?.seat && onSeat ? object.seatHeading : targetHeading } };
 }

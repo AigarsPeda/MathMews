@@ -1,3 +1,4 @@
+import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { shouldMountNativeRoom } from "@/utils/native-scene-cache";
 import { getCatHomeRoomId, previewHomeRoom } from "@/utils/home-rooms";
 import { HOME_ROOM_IDS, roomTravelDirection, type HomeRoomId, type RoomEntry } from "@/constants/home-rooms";
@@ -12,7 +13,7 @@ import type { CatBedId } from "@/constants/cat-beds";
 import type { CatDecorationId } from "@/constants/cat-decorations";
 import type { CatPlayActivity } from "@/constants/cat-play";
 import { getRoomPlayHappinessBoost } from "@/constants/cat-play";
-import type { RoomActivityKind } from "@/utils/room-activities";
+import type { RoomActivityCommand, RoomActivityKind } from "@/utils/room-activities";
 import type { CatToyId } from "@/constants/cat-toys";
 import {
   GameColors,
@@ -65,6 +66,7 @@ function triggerHaptic() {
 }
 
 export default function HomeScreen() {
+  useStoreCatalog();
   const router = useRouter();
   const { pendingCoinCelebration, clearCoinCelebration } = useIAP();
   const { active: homeActive, reduceMotion } = useAnimationActivity();
@@ -117,7 +119,7 @@ export default function HomeScreen() {
     const task = requestIdleCallback(() => router.prefetch("/store"), { timeout: 1500 });
     return () => cancelIdleCallback(task);
   }, [isReady, hasCompletedOnboarding, router]));
-  const roomEditor = useRoomEditor(pet, setPet);
+  const roomEditor = useRoomEditor(pet, setPet, progress);
   const [decoratingRoom, setDecoratingRoom] = useState<HomeRoomId | null>(null);
   const handleDecoratingChange = useCallback((roomId: HomeRoomId, active: boolean) => {
     setDecoratingRoom(current => active ? roomId : current === roomId ? null : current);
@@ -145,6 +147,16 @@ export default function HomeScreen() {
     isCareBlocked,
     isCareAnimationPlaying,
   } = usePetDisplay(pet, worldClock);
+
+  const [requestedRoomCommand, setRequestedRoomCommand] = useState<{ roomId: HomeRoomId; command: RoomActivityCommand } | null>(null);
+  const roomCommandSequence = useRef(0);
+  const handleRoomCommand = useCallback((roomId: HomeRoomId, kind: RoomActivityKind, instanceId?: string, interactionAt?: number) => {
+    if (isCareBlocked || isCareAnimationPlaying) return;
+    setRequestedRoomCommand({ roomId, command: { id: ++roomCommandSequence.current, kind, instanceId, interactionAt } });
+  }, [isCareAnimationPlaying, isCareBlocked]);
+  const handleRoomCommandAccepted = useCallback((id: number) => {
+    setRequestedRoomCommand(current => current?.command.id === id ? null : current);
+  }, []);
 
   useEffect(() => {
     if (!isCareBlocked && !isCareAnimationPlaying)
@@ -544,6 +556,12 @@ export default function HomeScreen() {
       onVisitHomeRoom={handleVisitRoom}
       catHomeRoomId={getCatHomeRoomId(pet)}
       onSendCatToRoom={handleCatRoomArrival}
+      onRequestRoomCommand={handleRoomCommand}
+      onRoomCommandAccepted={requestedRoomCommand?.roomId === roomPet.homeRoomId ? handleRoomCommandAccepted : undefined}
+      roomCommand={requestedRoomCommand && getCatHomeRoomId(pet) === roomPet.homeRoomId
+        ? requestedRoomCommand.roomId === roomPet.homeRoomId ? requestedRoomCommand.command
+          : { ...requestedRoomCommand.command, kind: 'roomTravel', instanceId: requestedRoomCommand.roomId }
+        : undefined}
       onOpenStore={handleOpenStore}
       roomToolbar={{ decorating: decoratingRoom === (roomPet.homeRoomId ?? 'livingRoom'), onDecoratingChange: handleDecoratingChange }}
       decorationEntry={decorationEntry?.roomId === roomPet.homeRoomId ? decorationEntry : null}

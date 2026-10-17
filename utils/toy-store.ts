@@ -1,4 +1,4 @@
-import STORE_PRICES from "@/data/store-prices.json";
+import { getCatalogStorePrice } from "@/utils/store-catalog";
 import {
   CAT_TOY_IDS,
   isCatToyId,
@@ -14,8 +14,7 @@ import { countPlacedToys } from "@/utils/room-placement";
 
 /** Catalog pricing — change amounts here; swap kind to `iap` per toy later. */
 export function getToyStorePrice(toyId: CatToyId): StorePrice {
-  const amount = STORE_PRICES.toy[toyId];
-  return amount === 0 ? { kind: "free" } : { kind: "coins", amount };
+  return getCatalogStorePrice("toy", toyId);
 }
 
 export function isToyUnlocked(

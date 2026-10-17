@@ -1,3 +1,4 @@
+import { isSleepingBed } from '@/constants/bedroom-activities';
 import type { AppIconName } from "@/constants/app-icons";
 import { bathroomFixtureKind } from "@/constants/bathroom-activities";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
@@ -10,6 +11,8 @@ import type { RoomLayerItem } from "@/types/game";
 
 /** Register an interaction here once for both the cat and furnishing menus. */
 export const ROOM_COMMANDS = [
+  { kind: "bedSleep", target: "sleepingBed", icon: "sleep", section: "essentials" },
+  { kind: "bedSnuggle", target: "sleepingBed", icon: "sleep", section: "essentials" },
   { kind: "bowlEat", target: "bowl", icon: "feed", section: "essentials" },
   { kind: "sofaSit", target: "seat", icon: "sofa", section: "essentials" },
   { kind: "sofaSleep", target: "seat", icon: "sleep", section: "essentials" },
@@ -28,12 +31,13 @@ export const ROOM_COMMANDS = [
 export type RoomCommandKind = typeof ROOM_COMMANDS[number]["kind"];
 
 /** Menu eligibility must not build animation plans or solve navigation paths. */
-export function getRoomCommands(item: RoomLayerItem) {
+export function getRoomCommands(item: RoomLayerItem, bedId?: string) {
   return ROOM_COMMANDS.filter(command => {
-    if (item.kind === "bed") return false;
+    if (item.kind === "bed") return command.target === "sleepingBed" && isSleepingBed(`bed-${bedId}`);
     if (item.kind === "toy") return command.target === (item.toyId === "mouse" ? "mouse" : "toy");
     const id = item.decorationId;
     switch (command.target) {
+      case "sleepingBed": return isSleepingBed(id);
       case "seat": return isCatSeatDecorationId(id);
       case "kitchenChair": return isKitchenChairDecorationId(id);
       case "island": return isKitchenIslandDecorationId(id);

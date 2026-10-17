@@ -48,7 +48,7 @@ export const WALL_FACING_DECORATION_IDS: readonly CatDecorationId[] = [
   ...MODERN_KITCHEN_DECORATION_IDS,
   "kitchenWallCabinetSage", "kitchenWallCabinetOak", "kitchenWallCabinetGlass", "kitchenIsland", "kitchenBarStoolOak", "kitchenBarStoolMetal", "kitchenBarStoolVelvet", "kitchenMixerStand", "kitchenMixerHand", "kitchenChairWindsor", "kitchenChairMint", "kitchenChairUpholstered", "kitchenChairBistro", "chairRockingOak", "livingFireplaceCream",
   "doorOakPanel", "doorMintGlass", "doorBarnSliding", "curtainRoseTieback", "curtainBlueDrape", "curtainCreamLinen", "lampFloorArc", "lampFloorTripod", "lampFloorPaper", "lampTableMushroom", "lampTableCeramic", "lampTableBanker", "sofaCornerSage",
-  "sofaBlueClassic", "sofaRoseTufted", "sofaTanLeather", "sofaCreamCloud", "kitchenFridge", "kitchenRange", "kitchenSinkCabinet", "kitchenMicrowave", "bedroomDoubleBed", "bedroomDresser", "bedroomNightstand", "bedroomWardrobe", "bathroomDoubleVanity", "bathroomShowerCabin", "halloweenBatGarland",
+  "sofaBlueClassic", "sofaRoseTufted", "sofaTanLeather", "sofaCreamCloud", "kitchenFridge", "kitchenRange", "kitchenSinkCabinet", "kitchenMicrowave", "bedroomDoubleBed", "bedroomBedRose", "bedroomBedLilac", "bedroomVanity", "bedroomBench", "bedroomQuiltChest", "bedroomDresser", "bedroomNightstand", "bedroomWardrobe", "bathroomDoubleVanity", "bathroomShowerCabin", "halloweenBatGarland",
   "portraitCat", "japaneseCanvas", "japaneseCanvasLetters",
   "livingAirCon", "officeAc", "officeClockAni", "officeDiploma",
   "officePhotosA", "officePhotosB", "officePictureFrame",

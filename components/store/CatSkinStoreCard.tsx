@@ -1,3 +1,4 @@
+import { StorePromotion } from "@/components/store/StorePromotion";
 import { IconText as Text } from "@/components/ui/IconText";
 import { Image } from "expo-image";
 import { CAT_SKIN_PREVIEWS, type CatSkinId } from "@/constants/cat-skins";
@@ -44,6 +45,7 @@ export function CatSkinStoreCard({
 
       <Text style={styles.title}>{skinName}</Text>
 
+      {!isOwned ? <StorePromotion price={price} /> : null}
       {isOwned ? (
         <Pressable
           onPress={onEquip}
@@ -62,7 +64,7 @@ export function CatSkinStoreCard({
             {isEquipped ? t("store.equipped") : t("store.equip")}
           </Text>
         </Pressable>
-      ) : price.kind === "coins" ? (
+      ) : price.kind !== "iap" ? (
         <Pressable
           onPress={onBuy}
           disabled={!canAfford}
@@ -75,11 +77,11 @@ export function CatSkinStoreCard({
           accessibilityRole="button"
           accessibilityLabel={t("store.a11yBuySkin", {
             name: skinName,
-            cost: price.amount,
+            cost: price.kind === "coins" ? price.amount : 0,
           })}
         >
           <Text style={styles.actionText}>
-            {t("store.buyFor", { cost: price.amount })}
+            {price.kind === "free" ? t("store.free") : t("store.buyFor", { cost: price.amount })}
           </Text>
         </Pressable>
       ) : (

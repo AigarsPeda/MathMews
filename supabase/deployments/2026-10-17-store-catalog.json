@@ -1,0 +1,22 @@
+{
+  "project_ref": "jcfppquntstgxubtlvqo",
+  "date": "2026-10-17",
+  "migrations": [
+    "202610170001_room_finishes.sql",
+    "202610170002_store_promotions.sql"
+  ],
+  "promotion_migration_sha256": "5e095c23d13c73cf1749b154799deea624ac7035ee586e9e270ef48ea1eb9a1c",
+  "catalog_items_verified": 418,
+  "acceptance": {
+    "anonymous_price_read": true,
+    "player_price_updates_blocked": true,
+    "scheduled_start_and_expiration": true,
+    "invalid_sale_price_rejected": true,
+    "stale_price_causes_no_debit": true,
+    "discounted_purchase": true,
+    "receipt_replay_after_price_change": true,
+    "five_argument_client_compatibility": true,
+    "free_promotion": true,
+    "fixtures_and_ledger_changes_rolled_back": true
+  }
+}

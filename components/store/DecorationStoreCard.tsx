@@ -1,3 +1,4 @@
+import { StorePromotion } from "@/components/store/StorePromotion";
 import { IconText as Text } from "@/components/ui/IconText";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import type { CatDecorationId } from "@/constants/cat-decorations";
@@ -62,6 +63,7 @@ export function DecorationStoreCard({
         <Text style={styles.title}>{decorationLabel}</Text>
       </View>
 
+      <StorePromotion price={price} />
       <View style={styles.actions}>
         {showBuy ? (
           <Pressable

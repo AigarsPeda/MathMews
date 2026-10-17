@@ -218,7 +218,7 @@ def limb_pose(bones, names, shoulder, toe):
 
 
 def pose(arm, driver, state, t, idle_controls):
-    pose_controls(driver, 'idle' if state == 'sit' else state, t)
+    pose_controls(driver, 'walk' if state == 'crawl' else 'idle' if state == 'sit' else state, t)
     driver['root'].rotation_euler = (0, 0, 0)
     driver_standing = driver['torso'].data.shape_keys.key_blocks['Standing feline waist'].value
     sleeping = state in ('curlUp', 'curlSleep', 'layDown', 'sleep', 'sleepy', 'restSleep', 'lieDown')
@@ -235,8 +235,10 @@ def pose(arm, driver, state, t, idle_controls):
     baseline_body = idle_controls['standing_height'] if driver_standing else idle_controls['body_height']
     shift = Vector((driver['body'].location.x, 0, driver['body'].location.z-baseline_body))*.6
     shift.z -= .24*settle
-    if state.startswith('walk'):
+    if state.startswith('walk') or state == 'crawl':
         shift.z -= .07
+    if state == 'crawl':
+        shift.z -= .20
     body = Matrix.Translation(origin+shift) @ rotation.to_4x4() @ Matrix.Translation(-origin)
     desired = {name: body @ bones[name].matrix_local for name in ('spine', 'belly', 'chest', 'pelvis')}
     chest_shift = (body @ bones['chest'].head_local)-bones['chest'].head_local
@@ -244,6 +246,9 @@ def pose(arm, driver, state, t, idle_controls):
     if standing:
         head_shift = Vector((0, 0, .002*math.cos(t*math.tau*2)))
     head_rotation = driver['head'].rotation_euler.to_matrix()
+    if state == 'crawl':
+        head_shift.z -= .16
+        head_rotation = Matrix.Rotation(.12, 3, 'X')
     if state == 'eating':
         # Bend the chest and neck toward the food while IK keeps all paws planted.
         munch = math.sin(eating_time*math.tau*5)*eating_lean
@@ -266,7 +271,7 @@ def pose(arm, driver, state, t, idle_controls):
                 toe.y = toe.y*(1-seated)+(shoulder.y+(-.04 if rear else -.025))*seated
             if settle:
                 toe.y += -.08*settle if not rear else -.05*settle
-            if state.startswith('walk'):
+            if state.startswith('walk') or state == 'crawl':
                 baseline = Vector((driver[key][i].location.x, .44 if rear else -.38, .105 if rear else .12))
                 delta = driver[key][i].location-baseline
             else:

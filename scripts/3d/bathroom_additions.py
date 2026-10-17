@@ -20,11 +20,6 @@ def add_bathroom_controls(kind, h, contact, water_z=None, outlet=None):
                                (outlet[0] + spread * math.sin(i * 2.4), outlet[1] + spread * math.cos(i * 2.4), outlet[2]),
                                (.012, .012, .055), 'blue')
             drop.hide_render = True
-    if water_z is not None:
-        for i in range(3):
-            ripple = h['torus']('Bathroom wash ripple ' + str(i + 1),
-                                (-.35 + i * .35, -.12, water_z + .008), .12 + i * .025, .010, 'white')
-            ripple.hide_render = True
 
 
 def build_bathroom_addition(id, h):
@@ -39,7 +34,10 @@ def build_bathroom_addition(id, h):
     porcelain = material('Bath porcelain', 'FFF9F0', roughness=.22)
     chrome = material('Bath chrome', 'BCC7CF', roughness=.24, metallic=.65)
     brass = material('Bath brass', 'D4AD69', roughness=.28, metallic=.5)
-    water = material('Bath water', '91CEDA', roughness=.24)
+    water = material('Bath water', 'FFFFFF', roughness=.18, metallic=.08)
+    tint = water.node_tree.nodes.new('ShaderNodeVertexColor')
+    tint.layer_name = 'Water tint'
+    water.node_tree.links.new(tint.outputs['Color'], water.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
     rectangular = id == 'bathroomBathAni'
     exponent = 6 if rectangular else 3.8 if jacuzzi else 2
     width, depth = (1, .53) if rectangular else (1.15, .95) if jacuzzi else (1.23, .61)
@@ -89,13 +87,67 @@ def build_bathroom_addition(id, h):
 
     water_z = top - (.18 if jacuzzi else .145)
     water_x, water_y = width - .21, depth - .20
-    vertices = [(0, 0, water_z)] + [outline(water_x, water_y, water_z, i) for i in range(segments)]
+    # Smooth color and shallow relief give the opaque surface depth while
+    # keeping the submerged cat occluded on mobile, without refraction passes.
+    rings = 8
+    vertices = [(0, 0, water_z)]
+    for ring in range(1, rings + 1):
+        r = ring / rings
+        for i in range(segments):
+            x, y, z = outline(water_x * r, water_y * r, water_z, i)
+            vertices.append((x, y, z + .003 * (1-r*r) * math.sin(x*9+y*14)))
+    faces = [(0, i + 1, (i + 1) % segments + 1) for i in range(segments)]
+    for ring in range(rings - 1):
+        a, b = 1 + ring * segments, 1 + (ring + 1) * segments
+        faces.extend((a+i, b+i, b+(i+1) % segments, a+(i+1) % segments) for i in range(segments))
     mesh = bpy.data.meshes.new('Recessed bath water')
-    mesh.from_pydata(vertices, [], [(0, i + 1, (i + 1) % segments + 1) for i in range(segments)])
+    mesh.from_pydata(vertices, [], faces)
     mesh.update()
+    colors = mesh.color_attributes.new(name='Water tint', type='FLOAT_COLOR', domain='POINT')
+    for i, (x, y, _) in enumerate(vertices):
+        r = 0 if i == 0 else ((i-1) // segments + 1) / rings
+        light = max(0, min(1, .70 - .38*r*r + .12*math.sin(x*4+y*7)))
+        colors.data[i].color = (.065 + .13*light, .32 + .28*light, .36 + .27*light, 1)
+    for face in mesh.polygons:
+        face.use_smooth = True
     obj = bpy.data.objects.new('Recessed bath water', mesh)
     bpy.context.collection.objects.link(obj)
     finish(obj, obj.name, water)
+
+    def water_arc(name, center, radius, angles, thickness, opacity):
+        # Tapered open arcs read as reflections and waves, rather than hoops.
+        vertices = []
+        for i in range(33):
+            t = i / 32
+            angle = angles[0] + (angles[1]-angles[0])*t
+            half = thickness * math.sin(math.pi*t)**.7
+            for side in (-1, 1):
+                vertices.append(((radius[0]+side*half)*math.cos(angle),
+                                 (radius[1]+side*half)*math.sin(angle), 0))
+        mesh = bpy.data.meshes.new(name)
+        mesh.from_pydata(vertices, [], [(i*2, i*2+1, i*2+3, i*2+2) for i in range(32)])
+        mesh.update()
+        obj = bpy.data.objects.new(name, mesh)
+        bpy.context.collection.objects.link(obj)
+        obj.location = center
+        sheen = material(name, 'C4F3EC', roughness=.3)
+        sheen.diffuse_color = (*sheen.diffuse_color[:3], opacity)
+        sheen.node_tree.nodes['Principled BSDF'].inputs['Alpha'].default_value = opacity
+        sheen.surface_render_method = 'DITHERED'
+        finish(obj, name, sheen)
+        return obj
+
+    for i, (x, y, rx, ry, start) in enumerate([
+        (-.40, -.12, .23, .045, .10), (.30, .12, .30, .055, .95),
+        (-.21, .17, .18, .035, .05), (.38, -.17, .17, .040, 1.05),
+    ]):
+        water_arc('Bath water glint ' + str(i+1), (x, y, water_z+.010),
+                  (rx, ry), (start*math.pi, (start+.75)*math.pi), .008, .30)
+    for i in range(3):
+        ripple = water_arc('Bathroom wash ripple ' + str(i+1),
+                          ((i-1)*.24, .01, water_z+.015), (.28, .17),
+                          ((.15+i*.6)*math.pi, (1.55+i*.6)*math.pi), .006, .42)
+        ripple.hide_render = True
 
     metal = brass if clawfoot else chrome
     faucet_y = depth * .86
@@ -104,11 +156,9 @@ def build_bathroom_addition(id, h):
     for x in (-.17, .17):
         cylinder('Bath tap base', (x, faucet_y, top + .018), .048, .035, metal)
         box('Bath tap handle', (x, faucet_y, top + .05), (.12, .035, .025), metal, .012)
-    add_bathroom_controls('bath', h, (0, 0, water_z - .10), water_z,
+    # Submerge the seated cat's lower body instead of only its paws.
+    add_bathroom_controls('bath', h, (0, 0, water_z - .32), water_z,
                          (0, faucet_y - .29, top + .20))
-    if rectangular:
-        for i in range(3):
-            torus('Water ripple', (-.30 + i * .30, 0, water_z + .015), .10 + i * .03, .012, 'cream')
 
     if clawfoot:
         for x in (-.79, .79):
@@ -129,9 +179,6 @@ def build_bathroom_addition(id, h):
                       chrome, rotation=(math.pi / 2, 0, 0))
                 cylinder('Jacuzzi jet nozzle', (x + dx, depth - .147, water_z + .07), .027, .018,
                          'grey', rotation=(math.pi / 2, 0, 0))
-            for y in (-.40, -.03, .34):
-                ring = torus('Jacuzzi water bubbles', (x * .6, y, water_z + .006), .07, .007, 'white')
-                ring.scale.y = .75
         box('Jacuzzi control panel', (.74, -.86, top + .014), (.26, .10, .022), 'dark', .015)
         for x in (.66, .74, .82):
             cylinder('Jacuzzi control button', (x, -.86, top + .03), .020, .012, 'silver')

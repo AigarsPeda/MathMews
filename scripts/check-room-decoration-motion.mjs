@@ -632,6 +632,28 @@ assert.equal(roomActivityEnabled, false, 'An empty room cannot run cat idle acti
 assert.equal(emptyView.find(({ node }) => node.type === 'NativeRoomScene').node.props.catPresent, false, 'Native cat and physics are hidden in unoccupied rooms');
 for (const id of ['bowl', 'sofa']) assert.equal(decorationNode(emptyView, id).node.props.interactive, false, 'Unoccupied furniture cannot command a cat in another room');
 assert.equal(emptyView.some(({ node }) => node.type === 'PetSpeechBubble'), false);
+const remoteCommands=[];
+const remoteProps={...travelProps,...mealProps,homeRoomId:'bedroom',placedToys:[ball],
+  onRequestRoomCommand:(...args)=>remoteCommands.push(args)};
+const callableRoom=render([bowl,sofa],remoteProps);
+for(const [id,kind] of [['bowl','bowlEat'],['sofa','sofaSleep']]) {
+  const object=decorationNode(callableRoom,id).node;
+  assert.equal(object.props.interactive,true,'An empty room exposes object commands when travel is available');
+  const action=object.props.menuActions.find(action=>action.label===`home.catCommands.${kind}`);
+  assert.ok(action);assert.equal(action.disabled,false);action.onPress();
+  assert.equal(remoteCommands.at(-1)[0],'bedroom');assert.equal(remoteCommands.at(-1)[1],kind);assert.equal(remoteCommands.at(-1)[2],id);
+}
+const ballNode=callableRoom.find(({node})=>node.props.testID==='room-object:ball').node;
+ballNode.props.menuActions.find(action=>action.label==='home.catCommands.toyPlay').onPress();
+assert.equal(remoteCommands.at(-1)[1],'toyPlay');assert.equal(remoteCommands.at(-1)[2],'ball');
+const accepted=[];
+const delivered={...remoteProps,catHomeRoomId:'bedroom',roomCommand:{id:401,kind:'sofaSleep',instanceId:'sofa'},
+  onRoomCommandAccepted:id=>accepted.push(id)};
+render([sofa],delivered);
+assert.equal(requestedActivity,'sofaSleep');assert.equal(requestedInstanceId,'sofa');
+requestedActivity=undefined;render([sofa],delivered);
+assert.equal(requestedActivity,undefined,'Rerenders cannot restart a delivered object command');
+assert.deepEqual(accepted,[401]);
 emptyView.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
 assert.equal(decorationNode(render([bowl, sofa], { ...travelProps, homeRoomId: 'bedroom' }), 'bowl').node.props.allowDrag, true, 'Unoccupied rooms can still be decorated');
 render([], { ...travelProps, homeRoomId: 'bedroom' }).find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();

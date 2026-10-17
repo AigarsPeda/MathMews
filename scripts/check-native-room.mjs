@@ -1809,6 +1809,13 @@ assert.ok(Math.max(...washPaws.map(p => p[0][1])) - Math.min(...washPaws.map(p =
   'The actual washing clip visibly lifts the forepaw to wash the face');
 assert.ok(Math.max(...washPaws.map(p => p[1][1])) - Math.min(...washPaws.map(p => p[1][1])) < .025,
   'The supporting forepaw stays planted while washing');
+const bathMaterials = new Map();
+context.renderableManager = { getMaterialInstanceAt: entity => {
+  if (!bathMaterials.has(entity.name)) bathMaterials.set(entity.name, {
+    color: [], setFloat4Parameter(_name, color) { this.color = [...color]; },
+  });
+  return bathMaterials.get(entity.name);
+} };
 for (const id of ['bathroomBathAni', 'bathroomShowerCabin', 'bathroomWcAni', 'bathroomJacuzziWhite']) for (const fps of [30,60,120]) {
   const room = w.buildNativeRoomWorld({ ...base, petSize:80, decorations:[{decorationId:id,instanceId:'fixture',scale:1.8,offset:{x:0,y:0}}] });
   const model=glb(id), fixture=room.objects[0], fixtureKind=fixture.bathroom.kind;
@@ -1820,6 +1827,21 @@ for (const id of ['bathroomBathAni', 'bathroomShowerCabin', 'bathroomWcAni', 'ba
   const paint=(phase,extra={})=>{cursor=0;effects=[];child.type({...child.props,onReady:undefined,
     travel:phase?{bathroom:{instanceId:'fixture',kind:fixtureKind,phase}}:undefined,...extra});effects.forEach(fn=>fn());return renderFrame;};
   let frame=paint();frame({timeSinceLastFrame:0});
+  const glint = model.nodes.find(n=>n.name==='Bath water glint 1');
+  if(glint) {
+    const surface=model.nodes.find(n=>n.name==='Recessed bath water');
+    assert.ok(model.meshes[surface.mesh].primitives[0].attributes.COLOR_0 !== undefined,
+      'The shipped water has shaded depth rather than a single flat color');
+    assert.ok(!model.nodes.some(n=>n.name?.startsWith('Water ripple')),'The old solid hoops are removed');
+    const initial=JSON.stringify(toyLocals.get(glint.name));
+    for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+    assert.notEqual(JSON.stringify(toyLocals.get(glint.name)),initial,'Idle bath water gently moves without a washing command');
+    frame=paint(undefined,{active:false});
+    const still=JSON.stringify([...toyLocals]);
+    for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+    assert.equal(JSON.stringify([...toyLocals]),still,'Idle water pauses in covered scenes');
+    frame=paint();
+  }
   const drops=model.nodes.filter(n=>n.name?.startsWith('Bathroom water drop ')).map(n=>n.name);
   for(const name of drops) assert.equal(Math.hypot(...toyLocals.get(name).slice(0,3)),0,'Water is hidden before the cat washes');
   const hinge=fixtureKind==='toilet' ? toyLocals.get('Toilet lid hinge').slice() : undefined;
@@ -1830,6 +1852,11 @@ for (const id of ['bathroomBathAni', 'bathroomShowerCabin', 'bathroomWcAni', 'ba
     assert.ok(drops.every(name=>Math.hypot(...toyLocals.get(name).slice(0,3))>0),'Washing starts the water');
     const prior=toyLocals.get(drops[0]).slice();frame({timeSinceLastFrame:1/fps});
     assert.notEqual(toyLocals.get(drops[0])[13],prior[13],'The running water falls visibly');
+    if(glint) {
+      const ripple='Bathroom wash ripple 1', before=bathMaterials.get(ripple).color[3];
+      for(let i=0;i<Math.ceil(fps*.3);i++)frame({timeSinceLastFrame:1/fps});
+      assert.notEqual(bathMaterials.get(ripple).color[3],before,'Wash ripples expand and fade instead of popping at the loop seam');
+    }
   }
   const beforeLayoutRefresh=JSON.stringify([...toyLocals]);
   frame=paint(fixtureKind==='toilet'?'use':'wash',{object:{...fixture,bathroom:{...fixture.bathroom,contact:[...fixture.bathroom.contact]}}});
@@ -1843,6 +1870,10 @@ for (const id of ['bathroomBathAni', 'bathroomShowerCabin', 'bathroomWcAni', 'ba
   else for(const name of drops)assert.equal(Math.hypot(...toyLocals.get(name).slice(0,3)),0,'Finishing or cancelling a wash stops its water');
   frame=paint(fixtureKind==='toilet'?'open':'wash',{active:false,reduceMotion:true});frame({timeSinceLastFrame:1/fps});
   if(hinge) assert.ok(Math.abs(toyLocals.get('Toilet lid hinge')[6])>.98,'Reduce Motion opens the lid immediately');
+  frame=paint(fixtureKind==='toilet'?'use':'wash',{reduceMotion:true});frame({timeSinceLastFrame:1/fps});
+  const reduced=JSON.stringify([...toyLocals]);
+  for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+  assert.equal(JSON.stringify([...toyLocals]),reduced,'Reduce Motion keeps the surface, wash ripples and stream stationary');
 }
 console.log('Verified all bathroom anchors and rotated/resized journeys, safe wash interruptions, real paw washing, running water, toilet lid opening/closing, pause and Reduce Motion at 30/60/120 FPS.');
 

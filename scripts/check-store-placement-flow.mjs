@@ -8,6 +8,7 @@ const root = process.cwd(), cache = new Map();
 let states = [], index = 0, game, events = [], purchaseResult = 'purchased', focusEffect;
 const jsx = (type, props) => ({ type, props });
 const react = {
+  useSyncExternalStore: (_subscribe, getSnapshot) => getSnapshot(),
   useMemo: fn => fn(), useCallback: fn => fn, useEffect() {},
   useState: initial => { const i = index++; if (!(i in states)) states[i] = typeof initial === 'function' ? initial() : initial;
     return [states[i], next => { states[i] = typeof next === 'function' ? next(states[i]) : next; }]; },
@@ -16,6 +17,7 @@ const react = {
 function load(id) {
   if (id === 'react') return react;
   if (id === 'react/jsx-runtime') return { jsx, jsxs: jsx };
+  if (id === '@/services/store-catalog') return { refreshStoreCatalog: async () => false };
   if (id === 'react-i18next') return { useTranslation: () => ({ t: key => key }) };
   if (id === 'react-native') return { Platform: { OS:'web' }, View:'View', Text:'Text', Pressable:'Pressable', FlatList:'FlatList', ScrollView:'ScrollView', StyleSheet:{ create:s=>s }, useWindowDimensions:()=>({height:800}) };
   if (id === 'react-native-safe-area-context') return { SafeAreaView:'SafeAreaView', useSafeAreaInsets:()=>({top:0,bottom:0}) };
@@ -84,3 +86,26 @@ assert.equal(render().find(n=>n.type==='AppBottomSheet').props.visible,false,'Na
 setup();render();game.pet={...game.pet,homeRoomId:'bedroom'};render();focusEffect();
 assert.equal(render().find(n=>n.type==='StoreTabBar').props.active,'bedroom','A prefetched shop opens in the current room category');
 console.log('Verified bounded first card mount, lazy categories with native dismissal, and fresh category selection after prefetch.');
+
+const catalog=load('@/utils/store-catalog');
+const saleItem=(kind,item_id)=>({kind,item_id,base_price:40,sale_price:30,sale_starts_at:null,sale_ends_at:null,sale_label:'Autumn sale'});
+setup();catalog.acceptStoreCatalog({server_time:new Date().toISOString(),items:[saleItem('room','room2')]});
+let discovery=render();
+assert.equal(discovery.find(n=>n.type==='StoreTabBar').props.active,'kitchen');
+discovery.find(n=>n.props?.accessibilityRole==='checkbox').props.onPress();
+discovery=render();
+const saleBanner=discovery.find(n=>n.type==='StoreSaleBanner');
+assert.ok(saleBanner,'Room offers are discoverable while browsing Decor');
+saleBanner.props.onOpenSale(saleBanner.props.sales[0]);
+discovery=render();
+assert.equal(discovery.find(n=>n.type==='StoreTabBar').props.active,'rooms');
+assert.ok(discovery.find(n=>n.type==='FlatList').props.data.includes('room2'),'View deals clears Owned so unowned offers are visible');
+assert.equal(events.length,0,'Discovering offers never buys an item');
+setup();catalog.acceptStoreCatalog({server_time:new Date().toISOString(),items:[saleItem('decoration','kitchenModernFloorShelfNavy')]});
+discovery=render();discovery.find(n=>n.type==='StoreTabBar').props.onChange('living');
+discovery=render();const decorBanner=discovery.find(n=>n.type==='StoreSaleBanner');
+decorBanner.props.onOpenSale(decorBanner.props.sales[0]);
+assert.ok(render().find(n=>n.type==='FlatList').props.data.includes('kitchenModernFloorShelfNavy'),'Decor offers open a category that contains the discounted item');
+catalog.acceptStoreCatalog({server_time:new Date().toISOString(),items:[{...saleItem('room','room2'),sale_price:null}]});
+assert.equal(render().some(n=>n.type==='StoreSaleBanner'),false,'The banner disappears when no active offers remain');
+console.log('Verified cross-category sale discovery, Owned filter reset, relevant decor destinations and no purchase side effects.');

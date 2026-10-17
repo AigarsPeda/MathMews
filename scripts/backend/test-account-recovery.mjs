@@ -112,7 +112,11 @@ test('legacy wallet ownership is respected, corrupt archives fail closed, and de
   h.stored.set('@mathmews/account-game:sandbox:a','{broken');
   await assert.rejects(()=>api.prepareAccountGame('a',b.save,'b-save',13));
   h.stored.set('@mathmews/account-game:production:a','server-independent-cache');
+  for(const environment of ['sandbox','production']) h.stored.set(`@mathmews/wallet-outbox:a:${environment}`,'pending');
+  h.stored.set('@mathmews/wallet-outbox:b:sandbox','other-account');
   await api.clearAccountGameArchives('a');
+  for(const environment of ['sandbox','production']) assert.ok(!h.stored.has(`@mathmews/wallet-outbox:a:${environment}`));
+  assert.ok(h.stored.has('@mathmews/wallet-outbox:b:sandbox'));
   assert.ok(!h.stored.has('@mathmews/account-game:sandbox:a'));
   assert.ok(!h.stored.has('@mathmews/account-game:production:a'));
   assert.ok(h.stored.has('@mathmews/account-game:sandbox:b'),'Other accounts remain intact');

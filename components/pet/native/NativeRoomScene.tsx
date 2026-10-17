@@ -11,7 +11,7 @@ import type { CurtainProgress } from '@/utils/native-curtains';
 /* Native worklet shared values synchronize the drawing thread with React. */
 /* eslint-disable react-hooks/immutability */
 import { advanceRockingChair, STILL_ROCKING_MOTION, type RockingMotion } from '@/utils/native-rocking-chair';
-import { advanceBathroomMotion, STILL_BATHROOM_MOTION } from '@/utils/native-bathroom';
+import { advanceBathroomMotion, bathWaterDetailPose, STILL_BATHROOM_MOTION } from '@/utils/native-bathroom';
 import { NativeAirflow } from "./NativeAirflow";
 import { NativeFoodSpill } from "./NativeFoodSpill";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
@@ -127,7 +127,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
   }, center?: Vec3, settled?: boolean) => void;
 }) {
   'use no memo';
-  const { transformManager } = useFilamentContext();
+  const { transformManager, renderableManager } = useFilamentContext();
   const modelMetadata = NATIVE_MODEL_CATALOG[object.modelId];
   const model = useModel(NATIVE_MODEL_SOURCES[object.modelId], { shouldReleaseSourceData: false });
   useEffect(() => {
@@ -151,16 +151,24 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
     const ball = asset.getFirstEntityByName('Dangling toy');
     return pivot && ball ? { entity: pivot, ball, transform: transformManager.getTransform(pivot) } : undefined;
   }, [asset, transformManager]);
+  const bedCover = useMemo(() => {
+    const entity = asset?.getFirstEntityByName('Bed cover lift');
+    return entity ? { entity, transform: transformManager.getTransform(entity) } : undefined;
+  }, [asset, transformManager]);
+  const coverLift = useSharedValue(0);
   const bathroomKind = object.bathroom?.kind;
   const bathroomParts = useMemo(() => {
     if (!asset || !bathroomKind) return [];
     const names = ['Toilet lid hinge', ...Array.from({ length: 8 }, (_, i) => `Bathroom water drop ${i + 1}`),
-      ...Array.from({ length: 3 }, (_, i) => `Bathroom wash ripple ${i + 1}`)];
+      ...Array.from({ length: 3 }, (_, i) => `Bathroom wash ripple ${i + 1}`),
+      ...Array.from({ length: 4 }, (_, i) => `Bath water glint ${i + 1}`)];
     return names.flatMap(name => {
       const entity = asset.getFirstEntityByName(name);
-      return entity ? [{ entity, name, transform: transformManager.getTransform(entity) }] : [];
+      const surfaceDetail = name.startsWith('Bath water glint') || name.startsWith('Bathroom wash ripple');
+      return entity ? [{ entity, name, transform: transformManager.getTransform(entity),
+        material: surfaceDetail ? renderableManager.getMaterialInstanceAt(entity, 0) : undefined }] : [];
     });
-  }, [asset, bathroomKind, transformManager]);
+  }, [asset, bathroomKind, renderableManager, transformManager]);
   const bathroomMotion = useSharedValue(STILL_BATHROOM_MOTION);
   const leaves = useMemo(() => {
     if (!asset) return [];
@@ -206,7 +214,8 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
     if (entity)
       transformManager.setTransform(entity, initialTransform);
     if (!bathroomMotion.value.runningWater) for (const part of bathroomParts) {
-      if (part.name !== 'Toilet lid hinge') transformManager.setTransform(part.entity, part.transform.scaling([0, 0, 0]));
+      if (part.name !== 'Toilet lid hinge' && !part.name.startsWith('Bath water glint'))
+        transformManager.setTransform(part.entity, part.transform.scaling([0, 0, 0]));
     }
   });
   const chase = playingId === object.instanceId ? travel?.objectPath : undefined;
@@ -236,6 +245,15 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
       transformManager.setTransform(entity, initialTransform);
       appliedPreview.value = [];
     }
+    if (bedCover) {
+      const target = travel?.bed?.instanceId === object.instanceId && travel.bed.phase !== 'uncover' ? 1 : 0;
+      const lift = reduceMotion ? target : coverLift.value + (target - coverLift.value)
+        * (1 - Math.exp(-Math.min(1 / 15, active ? timeSinceLastFrame : 0) * 4));
+      coverLift.value = lift;
+      const anchor = bedCover.transform.translation;
+      transformManager.setTransform(bedCover.entity, bedCover.transform.translate(anchor.map(v => -v) as Vec3)
+        .scaling([1, 1 + 5.6 * lift, 1]).translate(anchor));
+    }
     if (bathroomParts.length) {
       const motion = advanceBathroomMotion(bathroomMotion.value, object.instanceId, travel?.bathroom,
         timeSinceLastFrame, active, reduceMotion);
@@ -247,14 +265,19 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
         let local = part.transform;
         if (part.name === 'Toilet lid hinge') local = local.translate(anchor.map(v => -v) as Vec3)
           .rotate(-motion.lid, [1, 0, 0]).translate(anchor);
+        else if (part.material) {
+          const ripple = part.name.startsWith('Bathroom wash ripple');
+          const detail = bathWaterDetailPose(Number(part.name.at(-1)) - 1,
+            reduceMotion ? 0 : motion.surfaceTime, ripple);
+          const visible = !ripple || motion.runningWater;
+          local = visible ? local.translate(anchor.map(v => -v) as Vec3).scaling([detail.scale, 1, detail.scale])
+            .translate(anchor).translate([detail.x, 0, detail.z]) : local.scaling([0, 0, 0]);
+          part.material.setFloat4Parameter('baseColorFactor', [.552, .896, .839, visible ? detail.opacity : 0]);
+        }
         else if (!motion.runningWater) local = local.scaling([0, 0, 0]);
         else if (part.name.startsWith('Bathroom water drop')) local = local.translate(anchor.map(v => -v) as Vec3)
           .scaling([1.6, 1, 1.6]).translate(anchor).translate([0,
             -((motion.time * 1.8 + i * .19) % Math.max(.01, height)), 0]);
-        else {
-          const factor = .65 + .40 * ((motion.time * .8 + i * .33) % 1);
-          local = local.translate(anchor.map(v => -v) as Vec3).scaling([factor, 1, factor]).translate(anchor);
-        }
         transformManager.setTransform(part.entity, local);
       }
     }
@@ -419,7 +442,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [active, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [active, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   if (asset && isFridgeDecorationId(object.modelId))
     return <NativeFridge asset={asset} object={object} editingObject={editingObject} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;

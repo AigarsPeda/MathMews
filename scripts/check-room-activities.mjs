@@ -754,6 +754,33 @@ for (const reduced of [false, true]) {
 }
 console.log('Verified entry after sliding, exact rendered completion and no repeated entry on browsing, layout refresh or Reduce Motion.');
 
+for (const reduced of [false,true]) for (const nativeStepCompletion of [false,true]) for (const beforeEntry of [false,true]) {
+  enabled=false;render();advance(0);
+  visibility={active:true,reduceMotion:reduced};roomVisible=true;
+  const layout={...room,width:390,height:420,petSize:80,homeRoomId:'bathroom',nativeStepCompletion,
+    entry:{id:300+(reduced?2:0)+(nativeStepCompletion?1:0)+(beforeEntry?4:0),direction:1},
+    decorations:[{decorationId:'bathroomBathAni',instanceId:'selected-bath',scale:1.8,offset:{x:0,y:-.2}}]};
+  hookRoom={...layout,nativeWorld:nativeRoom.buildNativeRoomWorld(layout)};
+  interaction++; // Saving the room arrival also records an interaction.
+  enabled=true;roomVisible=!beforeEntry;render();
+  if(beforeEntry){render().startActivity('bathWash','selected-bath',interaction);render();roomVisible=true;render();}
+  const entry=render().activity;
+  assert.equal(entry.plan.steps[entry.stepIndex].enteringRoom,true);
+  if(!beforeEntry)render().startActivity('bathWash','selected-bath',interaction);
+  render();advance(0);
+  assert.equal(render().activity.plan.steps[render().activity.stepIndex].enteringRoom,true,
+    'A delivered object action waits for the cat to finish entering');
+  const step=entry.plan.steps[entry.stepIndex];
+  if(nativeStepCompletion)render().completeNativeStep(roomActivityStepKey(entry),step.native.path.at(-1));
+  else advance(reduced?600:step.durationMs);
+  render();advance(0);
+  const action=render().activity;
+  assert.equal(action.plan.kind,'bathWash');
+  assert.equal(action.plan.targetInstanceId,'selected-bath');
+  assert.equal(action.plan.steps[action.stepIndex].native.blocked,false,'The selected fixture is reachable after entry');
+}
+console.log('Verified queued object actions start after room entry, retain the selected fixture, and survive arrival interactions in 3D, Simple graphics and Reduce Motion.');
+
 const chair = { decorationId: 'chairRockingOak', instanceId: 'rocker', offset: { x: .1, y: .15 } };
 const chairOptions = { ...room, decorations: [chair] };
 const chairSizes = load('@/constants/decoration-variants');
@@ -775,6 +802,41 @@ for (const kind of ['sofaSit', 'sofaSleep']) {
   assert.ok(exit.steps.some(s => s.animation === 'jumpOff'), 'A chair command can be cancelled with a safe jump down');
 }
 console.log('Verified rocking-chair defaults, explicit size persistence, sit/sleep commands and jump-off cancellation.');
+
+// A parent acknowledging a delivered command can refresh room options before
+// its zero-delay start callback runs, while the previous sofa pose still exists.
+enabled=false;render();advance(0);
+visibility={active:true,reduceMotion:false};roomVisible=true;
+const chairTransferRoom={...furnished,width:390,height:420,petSize:80,sizeScale:1.15,nativeStepCompletion:true,
+  decorations:[{...sofa,offset:{x:.35,y:-.35}},{...chair,offset:{x:-.45,y:-.1}}],entry:{id:900,direction:1}};
+hookRoom={...chairTransferRoom,nativeWorld:nativeRoom.buildNativeRoomWorld(chairTransferRoom)};
+enabled=true;render();
+const finishTransferStep=()=>{const state=render().activity,step=state.plan.steps[state.stepIndex];
+  assert.equal(step.native.blocked,false,'The sofa/chair route is reachable');
+  render().completeNativeStep(roomActivityStepKey(state),step.native.path.at(-1));render();};
+render().startActivity('sofaSleep','sofa',interaction);render();
+finishTransferStep();
+hookRoom={...hookRoom};render();advance(0);
+assert.equal(render().activity.plan.targetInstanceId,'sofa','The arrival command also survives its acknowledgment refresh');
+for(let i=0;!render().activity.plan.steps[render().activity.stepIndex].hold&&i<8;i++)finishTransferStep();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation,'curlSleep');
+render().startActivity('sofaSit','rocker',interaction);render();
+hookRoom={...hookRoom};render();advance(0);
+assert.equal(render().activity.plan.targetInstanceId,'rocker',
+  'Acknowledging the chair command must start it instead of resuming the old sofa pose');
+assert.equal(render().activity.plan.steps[0].reverse,true,'Wake up on the sofa before changing seats');
+for(let i=0;!render().activity.plan.steps[render().activity.stepIndex].hold&&i<8;i++)finishTransferStep();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation,'sit');
+assert.ok(nativeRoom.pathLength([render().activity.plan.steps[render().activity.stepIndex].native.path[0],
+  hookRoom.nativeWorld.objects.find(object=>object.instanceId==='rocker').seat])<1e-6,
+  'The cat reaches the actual rocking-chair seat');
+render().startActivity('sofaSit','sofa',interaction);render();
+for(let i=0;i<3;i++){hookRoom={...hookRoom};render();}
+advance(0);
+assert.equal(render().activity.plan.targetInstanceId,'sofa','Repeated refreshes also retain the next sofa command');
+for(let i=0;!render().activity.plan.steps[render().activity.stepIndex].hold&&i<8;i++)finishTransferStep();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation,'sit');
+console.log('Verified room entry, held sofa sleep, queued chair sitting, actual chair arrival and repeated sofa/chair commands through acknowledgment refreshes.');
 for (const [decorationId, customScale] of [['windowOakWide',1.6],['kitchenFridge',1.5]]) {
   for (const scale of [1,customScale]) {
     const placement = { decorationId, instanceId:'existing-custom', offset:{x:.1,y:-.2}, scale };
@@ -1202,3 +1264,56 @@ hookRoom={...hookRoom,decorations:hookRoom.decorations.map(item=>({...item,fridg
   nativeWorld:{...hookRoom.nativeWorld,objects:hookRoom.nativeWorld.objects.map(o=>({...o,fridgeOpen:false}))}};
 render();advance(0);render();assert.equal(render().activity.plan.kind,'returnHome');advance(30000);render();assert.equal(render().activity,null);
 console.log('Verified all four kitchen activities continue from pending commands, walking and held poses while browsing, retain their exact position on return, and exit safely with Reduce Motion.');
+
+// Mattress travel must preserve elevation, selected bed identity and safe exits.
+{
+  const { getRoomCommands } = load('@/constants/room-commands');
+  const { buildNativeRoomWorld, prepareNativeStep, catScreenPoint } = load('@/utils/native-room-world');
+  const bedIds = ['bedroomDoubleBed', 'bedroomBedRose', 'bedroomBedLilac', ...'ABCDEFG'.split('').map(c => `bed-house${c}`)];
+  for (const modelId of bedIds) for (const rotationDegrees of [0, 90, 180, 270]) {
+    const human = modelId.startsWith('bed-');
+    const id = human ? 'bed' : 'sleep-bed';
+    const decoration = { decorationId: modelId, instanceId: id, offset: { x: 0, y: -.2 }, rotationDegrees };
+    const options = { ...room, width: 390, height: 420, homeOffset: { x: .3, y: .3 },
+      bedId: human ? modelId.slice(4) : undefined, bedOffset: { x: 0, y: -.2 }, bedRotationDegrees: rotationDegrees,
+      decorations: human ? [] : [decoration] };
+    const world = buildNativeRoomWorld(options);
+    options.nativeWorld = world;
+    const object = world.objects.find(o => o.instanceId === id);
+    assert.ok(object.bed && object.seat, `${modelId} exports mattress contacts`);
+    const commands = getRoomCommands(human ? { kind: 'bed' } : { kind: 'decoration', ...decoration }, options.bedId);
+    assert.deepEqual(Array.from(commands, c => c.kind), ['bedSleep', 'bedSnuggle']);
+    for (const kind of ['bedSleep', 'bedSnuggle']) {
+      let plan = buildRoomActivity(options, 0, kind, id);
+      assert.equal(plan.targetInstanceId, id);
+      let position = world.home;
+      for (let i = 0; i < plan.steps.length; i++) {
+        const step = prepareNativeStep(plan, plan.steps[i], catScreenPoint(position, world), world, position[1]);
+        assert.ok(!step.native.blocked, `${modelId}/${rotationDegrees}/${kind}/${i} reaches its real contact`);
+        plan.steps[i] = step;
+        position = step.native.path.at(-1);
+        if (step.bedPhase) assert.ok(position[1] > .1, 'Crawling and snuggling stay on the mattress');
+        if (step.hold) {
+          assert.equal(step.mood, 'sleeping');
+          for (const nextKind of ['bedSleep', 'bedSnuggle']) {
+            const next = buildRoomActivity(options, 0, nextKind, id);
+            const switched = routeToSofa(options, next, step.position, { plan, stepIndex: i });
+            assert.ok(!switched.steps.slice(0, switched.steps.findIndex(s => s.hold) + 1).some(s => s.animation === 'jumpOn' || s.animation === 'jumpOff'), 'Changing bed sleep style stays on the mattress');
+            if (nextKind === kind) assert.ok(switched.steps[0].hold, 'Repeated sleep retains the held sleeping pose');
+          }
+          const exit = buildRoomReturn(options, plan, i, step.position);
+          if (kind === 'bedSnuggle') assert.deepEqual(Array.from(exit.steps.slice(0,3), s => s.animation), ['curlUp','walk','jumpOff']);
+          else assert.deepEqual(Array.from(exit.steps.slice(0,2), s => s.animation), ['curlUp','jumpOff']);
+          for (let j = 0; j < exit.steps.length; j++) {
+            const leave = prepareNativeStep(exit, exit.steps[j], catScreenPoint(position, world), world, position[1]);
+            assert.ok(!leave.native.blocked, `${modelId}/${kind} leaves safely after an interruption`);
+            exit.steps[j] = leave; position = leave.native.path.at(-1);
+          }
+          break;
+        }
+      }
+    }
+  }
+  assert.equal(getRoomCommands({ kind: 'bed' }, 'brown').length, 0, 'Small pet baskets do not expose duvet commands');
+}
+console.log('Verified all ten full-size beds, four rotations, mattress-height crawling, held sleep, quilt commands and interrupted exits.');

@@ -31,5 +31,7 @@ export async function prepareAccountGame(userId: string, save: GameSave, saveId:
 }
 
 export async function clearAccountGameArchives(userId: string): Promise<void> {
-  await AsyncStorage.multiRemove([archiveKey(userId, 'sandbox'), archiveKey(userId, 'production')]);
+  await AsyncStorage.multiRemove((['sandbox','production'] as const).flatMap(environment => [
+    archiveKey(userId, environment), `@mathmews/wallet-outbox:${userId}:${environment}`, `@mathmews/wallet-order:${userId}:${environment}`,
+  ]));
 }

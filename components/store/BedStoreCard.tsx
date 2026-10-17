@@ -1,3 +1,4 @@
+import { StorePromotion } from "@/components/store/StorePromotion";
 import { IconText as Text } from "@/components/ui/IconText";
 import { getCatBedSource } from "@/constants/cat-beds";
 import type { CatBedId } from "@/constants/cat-beds";
@@ -53,6 +54,7 @@ export function BedStoreCard({
 
       <Text style={styles.title}>{t(`store.bedName.${bedId}`)}</Text>
 
+      {!isOwned ? <StorePromotion price={price} /> : null}
       {isOwned ? (
         isEquipped ? (
           <Pressable

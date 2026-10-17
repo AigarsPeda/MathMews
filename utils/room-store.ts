@@ -1,4 +1,4 @@
-import STORE_PRICES from "@/data/store-prices.json";
+import { getCatalogStorePrice } from "@/utils/store-catalog";
 import {
   CAT_ROOM_IDS,
   DEFAULT_CAT_ROOM_ID,
@@ -10,10 +10,9 @@ import type { RoomPurchaseResult, StorePrice } from "@/types/store";
 
 
 
-/** Catalog pricing — change amounts here; swap kind to `iap` per room later. */
+/** Current server price, with bundled display defaults while offline. */
 export function getRoomStorePrice(roomId: CatRoomId): StorePrice {
-  const amount = STORE_PRICES.room[roomId];
-  return amount === 0 ? { kind: "free" } : { kind: "coins", amount };
+  return getCatalogStorePrice("room", roomId);
 }
 
 export function isRoomUnlocked(

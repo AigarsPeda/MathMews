@@ -2308,6 +2308,48 @@
       "animated": false
     },
     {
+      "id": "bedroomBedRose",
+      "kind": "decoration",
+      "displaySize": 88,
+      "animated": false
+    },
+    {
+      "id": "bedroomBedLilac",
+      "kind": "decoration",
+      "displaySize": 88,
+      "animated": false
+    },
+    {
+      "id": "bedroomVanity",
+      "kind": "decoration",
+      "displaySize": 64,
+      "animated": false
+    },
+    {
+      "id": "bedroomBench",
+      "kind": "decoration",
+      "displaySize": 56,
+      "animated": false
+    },
+    {
+      "id": "bedroomQuiltChest",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "bedroomSlippers",
+      "kind": "decoration",
+      "displaySize": 24,
+      "animated": false
+    },
+    {
+      "id": "bedroomRug",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
       "id": "room1",
       "kind": "room",
       "animated": false
@@ -2379,6 +2421,81 @@
     },
     {
       "id": "room15",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room16",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room17",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room18",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room19",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room20",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room21",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room22",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room23",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room24",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room25",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room26",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room27",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room28",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room29",
+      "kind": "room",
+      "animated": false
+    },
+    {
+      "id": "room30",
       "kind": "room",
       "animated": false
     }

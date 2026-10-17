@@ -1,3 +1,4 @@
+import { normalizePendingWalletPurchases } from "@/services/wallet/offline-orders";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { createWorldClock, normalizeWorldClock } from '@/utils/world-clock';
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
@@ -349,10 +350,12 @@ function parseGameSave(
         worldClock: normalizeWorldClock(parsed.worldClock),
         pet: removeRoomNavigationDoors(pet),
         wallet: { coins: Math.max(0, Math.floor(parsed.wallet.coins)) },
+        pendingWalletPurchases: normalizePendingWalletPurchases(parsed.pendingWalletPurchases),
+        walletNotices: Array.isArray(parsed.walletNotices) ? parsed.walletNotices.filter(n => isRecord(n) && typeof n.id==='string' && typeof n.itemId==='string' && ['room','bed','toy','decoration','skin','life'].includes(String(n.kind)) && ['insufficient_funds','price_changed','already_owned','not_for_sale'].includes(String(n.reason))) as GameSave['walletNotices'] : [],
         appliedWalletOrderIds: Array.isArray(parsed.appliedWalletOrderIds) ? [...new Set(parsed.appliedWalletOrderIds.filter((id): id is string => typeof id === 'string'))] : [],
         pendingCoinRewards: Array.isArray(parsed.pendingCoinRewards) ? parsed.pendingCoinRewards.filter(r => isRecord(r)
           && typeof r.userId==='string' && typeof r.puzzleId==='string' && typeof r.attemptId==='string'
-          && (r.environment==='sandbox' || r.environment==='production')) as GameSave['pendingCoinRewards'] : [],
+          && (r.environment==='sandbox' || r.environment==='production') && (r.amount===undefined || typeof r.amount==='number' && Number.isSafeInteger(r.amount) && r.amount>=0) && (r.at===undefined || typeof r.at==='number' && Number.isFinite(r.at))) as GameSave['pendingCoinRewards'] : [],
         walletAuthority: isRecord(parsed.walletAuthority) && typeof parsed.walletAuthority.user_id==='string'
           && typeof parsed.walletAuthority.balance==='number' && Number.isFinite(parsed.walletAuthority.balance)
           && typeof parsed.walletAuthority.revision==='number' && Number.isFinite(parsed.walletAuthority.revision)

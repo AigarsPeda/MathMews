@@ -35,7 +35,11 @@
     "release:check": "node --env-file-if-exists=.env scripts/backend/check-release.mjs",
     "legal:generate": "node --env-file-if-exists=.env scripts/backend/generate-legal-pages.mjs",
     "release:android:pages": "python3 scripts/release/check-android-pages.py",
-    "test:release": "python3 scripts/release/test_android_pages.py"
+    "test:release": "python3 scripts/release/test_android_pages.py",
+    "catalog:sync": "node scripts/catalog/sync.mjs",
+    "catalog:check": "node scripts/catalog/sync.mjs --check",
+    "catalog:build": "node scripts/catalog/build.mjs",
+    "test:catalog": "node --test scripts/catalog/test-*.mjs scripts/backend/test-store-catalog.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

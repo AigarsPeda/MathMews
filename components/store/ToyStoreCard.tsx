@@ -1,3 +1,4 @@
+import { StorePromotion } from "@/components/store/StorePromotion";
 import { IconText as Text } from "@/components/ui/IconText";
 import { ToySpriteImage } from "@/components/pet/ToySpriteImage";
 import { getToyStorePreviewSize } from "@/constants/cat-toys";
@@ -58,6 +59,7 @@ export function ToyStoreCard({
         <Text style={styles.title}>{toyLabel}</Text>
       </View>
 
+      <StorePromotion price={price} />
       <View style={styles.actions}>
         {showBuy ? (
           <Pressable

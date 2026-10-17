@@ -1,3 +1,5 @@
+import { getStoreCoinPrice } from "@/utils/store-catalog";
+import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
@@ -9,7 +11,6 @@ import {
   GameColors,
   getPuzzleCoinReward,
   getVisualHelpCost,
-  LIFE_BUY_COST,
 } from "@/constants/game";
 import {
   canPlayPuzzleIndex,
@@ -128,6 +129,8 @@ export default function PlayScreen() {
 }
 
 function PlaySession() {
+  useStoreCatalog();
+  const lifeBuyCost = getStoreCoinPrice("life", "one")!;
   const router = useRouter();
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -762,7 +765,7 @@ function PlaySession() {
             onContinue={handleContinue}
             onGoHome={isCorrect && !isReplay ? handleGoHome : undefined}
             onBuyLife={undefined}
-            buyLifeCost={LIFE_BUY_COST}
+            buyLifeCost={lifeBuyCost}
             coins={wallet.coins}
           />
         ) : null}

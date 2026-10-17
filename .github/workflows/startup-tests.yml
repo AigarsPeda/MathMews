@@ -21,6 +21,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run typecheck:backend
       - run: npm run test:backend
+      - run: npm run catalog:check
+      - run: npm run test:catalog
       - run: npm run test:release
       - run: npx eslint . --max-warnings 0
       - run: npm run test:startup

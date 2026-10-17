@@ -100,7 +100,8 @@ export function useRoomActivity(
   const activity = enabled ? state : null;
   const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string, interactionAt?: number) => {
     const current = running.current;
-    if (current && isCatJump(current.plan.steps[current.stepIndex].animation)) {
+    if (current && (isCatJump(current.plan.steps[current.stepIndex].animation)
+      || current.plan.steps[current.stepIndex].enteringRoom)) {
       pendingCommand.current = { kind, instanceId, interactionAt };
       return;
     }
@@ -124,6 +125,9 @@ export function useRoomActivity(
     previousInteraction.current = lastInteractionAt;
     // Taps in another room do not interrupt the cat's activity here.
     if (!roomVisible) return;
+    // Saving a room arrival records an interaction. Let its entry finish.
+    if ((options.entry && options.entry.id !== handledEntry.current)
+      || running.current?.plan.steps[running.current.stepIndex].enteringRoom) return;
     // Context state can publish the command's interaction after its request has
     // already started. Match the timestamp so that delayed render cannot cancel it.
     if (lastInteractionAt === request?.interactionAt || lastInteractionAt === pendingCommand.current?.interactionAt) return;
@@ -131,7 +135,7 @@ export function useRoomActivity(
     // including one queued during a jump, instead of replacing it with home.
     if ((request && request.id !== handledRequest.current) || pendingCommand.current) return;
     requestActivity("returnHome");
-  }, [lastInteractionAt, request, requestActivity, roomVisible]);
+  }, [lastInteractionAt, options.entry, request, requestActivity, roomVisible]);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -183,7 +187,7 @@ export function useRoomActivity(
           // A failed interaction cannot hold a sleep/use pose at the floor.
           const position = room.nativeStepCompletion && nativePosition.current ? nativePosition.current : step.native.path[0];
           step = { ...step, position: catScreenPoint(position, liveWorld.current), animation: "idle", mood: "idle", hold: false,
-            sofaApproach: undefined, bathroomPhase: undefined, durationMs: 200, moveMs: 0,
+            sofaApproach: undefined, bedPhase: undefined, bathroomPhase: undefined, durationMs: 200, moveMs: 0,
             native: { ...step.native, path: [position], distance: 0, duration: .2, jump: false, awaitCompletion: roomVisible && room.nativeStepCompletion } };
         }
         if (reduceMotion) step.native = { ...step.native!, path: [step.native!.path.at(-1)!], distance: 0, jump: false };
@@ -239,8 +243,8 @@ export function useRoomActivity(
         const kind = pendingCommand.current;
         if (kind) {
           pendingCommand.current = null;
-          // The flight is complete. Route from the landed pose so a queued
-          // touch after jump-down does not start a second jump off the sofa.
+          // Continue from the landed or entered pose. A queued touch after
+          // jump-down must not start a second jump off the sofa.
           const landedStep = { ...step, animation: undefined,
             bathroomPhase: step.animation === "jumpOff" ? undefined : step.bathroomPhase,
             sofaApproach: step.animation === "jumpOff" ? undefined : step.sofaApproach };
@@ -297,6 +301,10 @@ export function useRoomActivity(
       const entry = options.entry && handledEntry.current !== options.entry.id ? buildRoomEntry(options) : null;
       if (entry) {
         handledEntry.current = options.entry!.id;
+        if (request && request.id !== handledRequest.current) {
+          handledRequest.current = request.id;
+          pendingCommand.current = { kind: request.kind, instanceId: request.instanceId, interactionAt: request.interactionAt };
+        }
         startPlan(entry);
         return () => { stopped = true; nativeAdvance.current = null; clearTimeout(timer); };
       }
@@ -311,7 +319,12 @@ export function useRoomActivity(
         home: catFloorPoint(position, liveWorld.current, FLOOR_Y) } } : options;
       const next = newRequest && newRequest.kind !== "returnHome" && newRequest.kind !== "stop"
         ? buildRoomActivity(commandOptions, turn.current++, newRequest.kind, newRequest.instanceId ?? (sofaCommand ? current?.plan.targetInstanceId : undefined)) : null;
-      if (current && !newRequest && liveWorld.current && (continuing || resumingRoom)) {
+      // A refresh can cancel the start timer after a command was accepted.
+      // Start that queued plan before considering the previous activity.
+      if (!newRequest && queuedPlan.current) {
+        const queued = queuedPlan.current;
+        timer = setTimeout(() => startPlan(queued), 0);
+      } else if (current && !newRequest && liveWorld.current && (continuing || resumingRoom)) {
         const step = current.plan.steps[current.stepIndex];
         const target = liveWorld.current.objects.find(o => o.instanceId === current.plan.targetInstanceId);
         if ((!target && current.plan.targetInstanceId && current.plan.kind !== 'returnHome'
@@ -326,9 +339,6 @@ export function useRoomActivity(
             : isCatWalk(step.animation) ? 0 : options.nativeStepCompletion ? nativeElapsed.current : Math.max(0, (Date.now() - current.startedAt) / 1000);
           runStep(current.plan, current.stepIndex, elapsed, Boolean(isCatWalk(step.animation)));
         }
-      } else if (!newRequest && queuedPlan.current) {
-        const queued = queuedPlan.current;
-        timer = setTimeout(() => startPlan(queued), 0);
       } else if (newRequest?.kind === "stop") {
         const exit = current ? buildRoomExit(options, current.plan, current.stepIndex, position) : { kind: "returnHome" as const, steps: [] };
         timer = setTimeout(() => startPlan({ ...exit, stopForEditing: true }), 0);

@@ -1,8 +1,10 @@
+import { getStoreCoinPrice } from "@/utils/store-catalog";
+import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { IconText as Text } from "@/components/ui/IconText";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { LifeRegenClock } from "@/components/economy/LifeRegenClock";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
-import { GameColors, LIFE_BUY_COST, MAX_LIVES } from "@/constants/game";
+import { GameColors, MAX_LIVES } from "@/constants/game";
 import type { LivesState } from "@/types/game";
 import { applyLifeRegen, canBuyLife, msUntilNextLife } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
@@ -14,7 +16,7 @@ type BuyLifeSheetProps = {
   visible: boolean;
   lives: LivesState;
   coins: number;
-  onBuyLife: () => boolean;
+  onBuyLife: (expectedPrice?: number) => boolean;
   onClose: () => void;
 };
 
@@ -37,6 +39,8 @@ export function BuyLifeSheet({
   onBuyLife,
   onClose,
 }: BuyLifeSheetProps) {
+  useStoreCatalog();
+  const lifeBuyCost = getStoreCoinPrice("life", "one")!;
   const { t } = useTranslation();
   const now = useRegenNow(visible);
 
@@ -47,7 +51,7 @@ export function BuyLifeSheet({
 
   const handleBuy = () => {
     if (!canBuy) return;
-    onBuyLife();
+    onBuyLife(lifeBuyCost);
   };
 
   return (
@@ -73,15 +77,15 @@ export function BuyLifeSheet({
             style={styles.buyBtn}
             onPress={handleBuy}
             accessibilityRole="button"
-            accessibilityLabel={t("lives.a11yBuy", { cost: LIFE_BUY_COST })}
+            accessibilityLabel={t("lives.a11yBuy", { cost: lifeBuyCost })}
           >
             <Text style={styles.buyBtnText}>
-              {t("lives.buyLife", { cost: LIFE_BUY_COST })}
+              {t("lives.buyLife", { cost: lifeBuyCost })}
             </Text>
           </Pressable>
         ) : (
           <Text style={styles.hint}>
-            {t("lives.needCoinsBuy", { cost: LIFE_BUY_COST, coins })}
+            {t("lives.needCoinsBuy", { cost: coins })}
           </Text>
         )}
 

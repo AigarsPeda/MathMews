@@ -14,7 +14,7 @@ export function normalizeCoinTransactions(value: unknown): CoinTransaction[] {
     .filter((entry): entry is Record<string, unknown> => {
       return typeof entry === "object" && entry !== null;
     })
-    .map((entry) => ({
+    .map((entry): CoinTransaction => ({
       id: typeof entry.id === "string" ? entry.id : createCoinTransactionId(),
       kind:
         typeof entry.kind === "string"
@@ -24,6 +24,8 @@ export function normalizeCoinTransactions(value: unknown): CoinTransaction[] {
       balanceAfter:
         typeof entry.balanceAfter === "number" ? entry.balanceAfter : 0,
       at: typeof entry.at === "number" ? entry.at : Date.now(),
+      syncStatus: entry.syncStatus==='pending'||entry.syncStatus==='rejected' ? entry.syncStatus : undefined,
+      failureReason: typeof entry.failureReason==='string' ? entry.failureReason : undefined,
       itemId: typeof entry.itemId === "string" ? entry.itemId : undefined,
       productId:
         typeof entry.productId === "string" ? entry.productId : undefined,

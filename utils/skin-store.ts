@@ -1,10 +1,10 @@
-import STORE_PRICES from "@/data/store-prices.json";
+import { getCatalogStorePrice } from "@/utils/store-catalog";
 import {
   CAT_SKIN_IDS,
   isCatSkinId,
   type CatSkinId,
 } from "@/constants/cat-skins";
-import type { SkinPurchaseResult } from "@/types/store";
+import type { StorePrice, SkinPurchaseResult } from "@/types/store";
 
 
 
@@ -12,9 +12,8 @@ import type { SkinPurchaseResult } from "@/types/store";
 /** Store pricing — starter color is unlocked at onboarding, not sold free here. */
 export function getSkinStorePrice(
   skinId: CatSkinId,
-): { kind: "coins"; amount: number } {
-  const amount = STORE_PRICES.skin[skinId];
-  return { kind: "coins", amount };
+): StorePrice {
+  return getCatalogStorePrice("skin", skinId);
 }
 
 export function isSkinUnlocked(
@@ -65,8 +64,10 @@ export function tryPurchaseSkin(params: {
   }
 
   const price = getSkinStorePrice(skinId);
+  if (price.kind === "iap") return { result: "not_for_sale", walletCoins: params.walletCoins, skinsUnlocked: params.skinsUnlocked };
+  const amount = price.kind === "free" ? 0 : price.amount;
 
-  if (params.walletCoins < price.amount) {
+  if (params.walletCoins < amount) {
     return {
       result: "insufficient_funds",
       walletCoins: params.walletCoins,
@@ -76,7 +77,7 @@ export function tryPurchaseSkin(params: {
 
   return {
     result: "purchased",
-    walletCoins: params.walletCoins - price.amount,
+    walletCoins: params.walletCoins - amount,
     skinsUnlocked: [...params.skinsUnlocked, skinId],
   };
 }

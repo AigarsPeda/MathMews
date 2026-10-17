@@ -49,7 +49,7 @@ const collections = {
   bedroom: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.bedroom).filter(id => id.startsWith('bedroom')),
   halloween: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.halloween) };
 const ids = Array.from(new Set(Object.values(collections).flat()));
-assert.equal(ids.length, 105);
+assert.equal(ids.length, 112);
 const { tryPurchaseDecoration, getDecorationStorePrice } = load('@/utils/decoration-store');
 const { appendPlacedDecoration } = load('@/utils/room-placement');
 const { createDefaultGameSave, parseGameSaveFromValue } = load('@/utils/game-storage');
