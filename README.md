@@ -151,7 +151,6 @@ See [3D asset instructions](assets/3d/README.md) for editable models and regener
 
 The migration notes and verification results are in [HANDOFF.md](HANDOFF.md).
 
-
 ## Release account safeguards
 
 Settings now has a parent-gated account protection/recovery section. The Apple
@@ -165,3 +164,5 @@ The authenticated deletion endpoint is deployed. Live anonymous-account deletion
 passed against Supabase and RevenueCat using an agent-created disposable fixture.
 Apple revocation still needs developer credentials. Cron remains disabled.
 See [release status](RELEASE_PLAN.md) for the remaining submission requirements.
+
+https://aigarspeda.github.io/MathMews/index.html

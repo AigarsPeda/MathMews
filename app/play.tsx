@@ -1,11 +1,10 @@
-import { IconText as Text } from "@/components/ui/IconText";
-import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
-import { shufflePuzzleChoices } from "@/utils/puzzle-practice";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
+import { IconText as Text } from "@/components/ui/IconText";
 import {
   GameColors,
   getPuzzleCoinReward,
@@ -25,16 +24,17 @@ import { useLocale } from "@/contexts/LocaleProvider";
 import type { PetAnimationState } from "@/types/game";
 import type { MathOperator, Puzzle, PuzzleDifficulty } from "@/types/puzzle";
 import {
+  buildFractionMatchCards,
+  isFractionMatchPair,
+} from "@/utils/fraction-match";
+import { shufflePuzzleChoices } from "@/utils/puzzle-practice";
+import {
   asFractionMatchPuzzle,
   asOrderNumbersPuzzle,
   checkPuzzleAnswer,
   getOperatorSlotCount,
   getPuzzleType,
 } from "@/utils/puzzle-type";
-import {
-  buildFractionMatchCards,
-  isFractionMatchPair,
-} from "@/utils/fraction-match";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
@@ -86,12 +86,26 @@ function createInitialOrder(puzzle: Puzzle): number[] {
   return shuffleNumbers(orderPuzzle.payload.numbers, puzzle.id);
 }
 
-function applyAnswerResult({ correct, puzzle, attemptId, answerPuzzle, setCoinsEarned, setIsCorrect }: {
-  correct: boolean; puzzle: Puzzle; attemptId: string;
+function applyAnswerResult({
+  correct,
+  puzzle,
+  attemptId,
+  answerPuzzle,
+  setCoinsEarned,
+  setIsCorrect,
+}: {
+  correct: boolean;
+  puzzle: Puzzle;
+  attemptId: string;
   answerPuzzle: ReturnType<typeof useGame>["answerPuzzle"];
-  setCoinsEarned: (value: number) => void; setIsCorrect: (value: boolean) => void;
+  setCoinsEarned: (value: number) => void;
+  setIsCorrect: (value: boolean) => void;
 }) {
-  triggerHaptic(correct ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Light);
+  triggerHaptic(
+    correct
+      ? Haptics.ImpactFeedbackStyle.Medium
+      : Haptics.ImpactFeedbackStyle.Light,
+  );
   setIsCorrect(correct);
   setCoinsEarned(answerPuzzle(puzzle, correct, attemptId));
 }
@@ -100,8 +114,17 @@ export default function PlayScreen() {
   const { isReady } = useGame();
   const params = useLocalSearchParams();
   const { locale } = useLocale();
-  if (!isReady) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
-  return <PlaySession key={`${locale}-${params.difficulty}-${params.index}-${params.replay}`} />;
+  if (!isReady)
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator color={GameColors.primary} />
+      </View>
+    );
+  return (
+    <PlaySession
+      key={`${locale}-${params.difficulty}-${params.index}-${params.replay}`}
+    />
+  );
 }
 
 function PlaySession() {
@@ -134,7 +157,6 @@ function PlaySession() {
     wallet,
     isReady,
     progress,
-
     hasCompletedOnboarding,
     recordInteraction,
     purchaseVisualHelp,
@@ -148,22 +170,32 @@ function PlaySession() {
   const attemptId = useRef("");
   const isReplay =
     replayParam === "true" ||
-    (Number.isFinite(parsedIndex) && (entryCompleted.includes(puzzles[parsedIndex]?.id) || parsedIndex < entryIndex));
-  const [puzzle, setPuzzle] = useState(() => shufflePuzzleChoices(
-    getPuzzleForSession(locale, difficulty, Math.max(0, Math.min(sessionIndex, puzzles.length - 1))),
-    `${difficulty}-${sessionIndex}-${progress.puzzleStreak}-${Object.values(progress.topicStats ?? {}).reduce((sum, stats) => sum + stats.correct + stats.wrong, 0)}`,
-  ));
+    (Number.isFinite(parsedIndex) &&
+      (entryCompleted.includes(puzzles[parsedIndex]?.id) ||
+        parsedIndex < entryIndex));
+  const [puzzle, setPuzzle] = useState(() =>
+    shufflePuzzleChoices(
+      getPuzzleForSession(
+        locale,
+        difficulty,
+        Math.max(0, Math.min(sessionIndex, puzzles.length - 1)),
+      ),
+      `${difficulty}-${sessionIndex}-${progress.puzzleStreak}-${Object.values(progress.topicStats ?? {}).reduce((sum, stats) => sum + stats.correct + stats.wrong, 0)}`,
+    ),
+  );
 
   const puzzleNumber = sessionIndex + 1;
   const coinReward = getPuzzleCoinReward(difficulty, isReplay);
 
   const [pendingChoice, setPendingChoice] = useState<number | null>(null);
-  const [pendingNumberLine, setPendingNumberLine] = useState<number | null>(null);
+  const [pendingNumberLine, setPendingNumberLine] = useState<number | null>(
+    null,
+  );
   const [pairSubmitted, setPairSubmitted] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [selectedOperators, setSelectedOperators] = useState<(MathOperator | null)[]>(
-    () => createEmptyOperators(puzzle),
-  );
+  const [selectedOperators, setSelectedOperators] = useState<
+    (MathOperator | null)[]
+  >(() => createEmptyOperators(puzzle));
   const [operatorSubmitted, setOperatorSubmitted] = useState(false);
   const [fractionPieces, setFractionPieces] = useState(0);
   const [numberLineValue, setNumberLineValue] = useState<number | null>(null);
@@ -173,9 +205,9 @@ function PlaySession() {
   );
   const [orderSwapIndex, setOrderSwapIndex] = useState<number | null>(null);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
-  const [fractionMatchMatchedIds, setFractionMatchMatchedIds] = useState<string[]>(
-    [],
-  );
+  const [fractionMatchMatchedIds, setFractionMatchMatchedIds] = useState<
+    string[]
+  >([]);
   const [fractionMatchSelectedId, setFractionMatchSelectedId] = useState<
     string | null
   >(null);
@@ -250,7 +282,14 @@ function PlaySession() {
       if (answered) return;
       const correct = checkPuzzleAnswer(puzzle, { kind: "choice", index });
       setSelectedIndex(index);
-      applyAnswerResult({ correct: correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+      applyAnswerResult({
+        correct: correct,
+        puzzle,
+        attemptId: attemptId.current,
+        answerPuzzle,
+        setCoinsEarned,
+        setIsCorrect,
+      });
     },
     [answered, puzzle, answerPuzzle],
   );
@@ -279,7 +318,14 @@ function PlaySession() {
       operators,
     });
     setOperatorSubmitted(true);
-    applyAnswerResult({ correct: correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+    applyAnswerResult({
+      correct: correct,
+      puzzle,
+      attemptId: attemptId.current,
+      answerPuzzle,
+      setCoinsEarned,
+      setIsCorrect,
+    });
   }, [answered, puzzle, selectedOperators, answerPuzzle]);
 
   const handleChangeFractionPieces = useCallback(
@@ -298,7 +344,14 @@ function PlaySession() {
       shaded: fractionPieces,
     });
     setOperatorSubmitted(true);
-    applyAnswerResult({ correct: correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+    applyAnswerResult({
+      correct: correct,
+      puzzle,
+      attemptId: attemptId.current,
+      answerPuzzle,
+      setCoinsEarned,
+      setIsCorrect,
+    });
   }, [answered, fractionPieces, puzzle, answerPuzzle]);
 
   const handleSelectNumberLineValue = useCallback(
@@ -306,7 +359,14 @@ function PlaySession() {
       if (answered) return;
       const correct = checkPuzzleAnswer(puzzle, { kind: "value", value });
       setNumberLineValue(value);
-      applyAnswerResult({ correct: correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+      applyAnswerResult({
+        correct: correct,
+        puzzle,
+        attemptId: attemptId.current,
+        answerPuzzle,
+        setCoinsEarned,
+        setIsCorrect,
+      });
     },
     [answered, puzzle, answerPuzzle],
   );
@@ -325,17 +385,25 @@ function PlaySession() {
       }
 
       setPairIndices(next);
-
-
     },
     [answered, pairIndices],
   );
 
   const handleCheckPair = useCallback(() => {
     if (answered || pairIndices.length !== 2) return;
-    const correct = checkPuzzleAnswer(puzzle, { kind: "pair", indices: [pairIndices[0], pairIndices[1]] });
+    const correct = checkPuzzleAnswer(puzzle, {
+      kind: "pair",
+      indices: [pairIndices[0], pairIndices[1]],
+    });
     setPairSubmitted(true);
-    applyAnswerResult({ correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+    applyAnswerResult({
+      correct,
+      puzzle,
+      attemptId: attemptId.current,
+      answerPuzzle,
+      setCoinsEarned,
+      setIsCorrect,
+    });
   }, [answered, pairIndices, puzzle, answerPuzzle]);
 
   const handleTapOrderIndex = useCallback(
@@ -354,7 +422,10 @@ function PlaySession() {
 
       setNumberOrder((current) => {
         const next = [...current];
-        [next[orderSwapIndex], next[index]] = [next[index], next[orderSwapIndex]];
+        [next[orderSwapIndex], next[index]] = [
+          next[index],
+          next[orderSwapIndex],
+        ];
         return next;
       });
       setOrderSwapIndex(null);
@@ -370,7 +441,14 @@ function PlaySession() {
       numbers: numberOrder,
     });
     setOrderSubmitted(true);
-    applyAnswerResult({ correct: correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+    applyAnswerResult({
+      correct: correct,
+      puzzle,
+      attemptId: attemptId.current,
+      answerPuzzle,
+      setCoinsEarned,
+      setIsCorrect,
+    });
   }, [answered, numberOrder, puzzle, answerPuzzle]);
 
   const handleTapFractionMatchCard = useCallback(
@@ -409,7 +487,14 @@ function PlaySession() {
             matchedCount: matchPuzzle.payload.pairs.length,
           });
           setFractionMatchAnswered(true);
-          applyAnswerResult({ correct: correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+          applyAnswerResult({
+            correct: correct,
+            puzzle,
+            attemptId: attemptId.current,
+            answerPuzzle,
+            setCoinsEarned,
+            setIsCorrect,
+          });
         }
         return;
       }
@@ -418,7 +503,13 @@ function PlaySession() {
       setFractionMatchSelectedId(null);
       triggerHaptic();
     },
-    [fractionMatchAnswered, fractionMatchMatchedIds, fractionMatchSelectedId, puzzle, answerPuzzle],
+    [
+      fractionMatchAnswered,
+      fractionMatchMatchedIds,
+      fractionMatchSelectedId,
+      puzzle,
+      answerPuzzle,
+    ],
   );
 
   const handleContinue = useCallback(() => {
@@ -442,7 +533,12 @@ function PlaySession() {
 
     if (!isCorrect) {
       attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      setPuzzle(current => shufflePuzzleChoices(current, `${current.id}-${Date.now()}-${Math.random()}`));
+      setPuzzle((current) =>
+        shufflePuzzleChoices(
+          current,
+          `${current.id}-${Date.now()}-${Math.random()}`,
+        ),
+      );
       setPendingChoice(null);
       setPendingNumberLine(null);
       setPairSubmitted(false);
@@ -463,7 +559,18 @@ function PlaySession() {
       setCoinsEarned(0);
       return;
     }
-  }, [difficulty, exitToPath, isCorrect, isReplay, puzzles.length, recordInteraction, router, sessionIndex, puzzle, setPuzzle]);
+  }, [
+    difficulty,
+    exitToPath,
+    isCorrect,
+    isReplay,
+    puzzles.length,
+    recordInteraction,
+    router,
+    sessionIndex,
+    puzzle,
+    setPuzzle,
+  ]);
 
   const handleGoHome = useCallback(() => {
     if (isReplay) {
@@ -493,7 +600,13 @@ function PlaySession() {
     return <Redirect href={{ pathname: "/puzzles", params: { difficulty } }} />;
   }
 
-  if (!canPlayPuzzleIndex(sessionIndex, savedIndex, entryCompleted.includes(puzzle.id))) {
+  if (
+    !canPlayPuzzleIndex(
+      sessionIndex,
+      savedIndex,
+      entryCompleted.includes(puzzle.id),
+    )
+  ) {
     return <Redirect href={{ pathname: "/puzzles", params: { difficulty } }} />;
   }
 
@@ -562,7 +675,14 @@ function PlaySession() {
           ) : null}
 
           <View style={styles.taskArea}>
-            {!(progress.completedPuzzleIds ?? []).some(id => puzzles.find(item => item.id === id)?.type === puzzle.type) && <Text style={styles.mechanicIntro}>{t(`play.mechanicIntro.${getPuzzleType(puzzle)}`)}</Text>}
+            {!(progress.completedPuzzleIds ?? []).some(
+              (id) =>
+                puzzles.find((item) => item.id === id)?.type === puzzle.type,
+            ) && (
+              <Text style={styles.mechanicIntro}>
+                {t(`play.mechanicIntro.${getPuzzleType(puzzle)}`)}
+              </Text>
+            )}
             <PuzzleTaskView
               puzzle={puzzle}
               selectedIndex={selectedIndex ?? pendingChoice}
@@ -591,13 +711,23 @@ function PlaySession() {
               onTapFractionMatchCard={handleTapFractionMatchCard}
             />
 
-            {!answered && (pendingChoice !== null || pendingNumberLine !== null || pairIndices.length === 2) ? (
-              <Pressable accessibilityRole="button" onPress={() => {
-                if (pendingChoice !== null) handleChoice(pendingChoice);
-                else if (pendingNumberLine !== null) handleSelectNumberLineValue(pendingNumberLine);
-                else handleCheckPair();
-              }} style={styles.checkAnswer}>
-                <Text style={styles.checkAnswerText}>{t("play.checkAnswer")}</Text>
+            {!answered &&
+            (pendingChoice !== null ||
+              pendingNumberLine !== null ||
+              pairIndices.length === 2) ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  if (pendingChoice !== null) handleChoice(pendingChoice);
+                  else if (pendingNumberLine !== null)
+                    handleSelectNumberLineValue(pendingNumberLine);
+                  else handleCheckPair();
+                }}
+                style={styles.checkAnswer}
+              >
+                <Text style={styles.checkAnswerText}>
+                  {t("play.checkAnswer")}
+                </Text>
               </Pressable>
             ) : null}
           </View>
@@ -654,8 +784,20 @@ function PlaySession() {
 }
 
 const styles = StyleSheet.create({
-  mechanicIntro: { color: GameColors.textMuted, fontSize: 15, lineHeight: 22, marginBottom: 12 },
-  checkAnswer: { minHeight: 48, borderRadius: 16, backgroundColor: GameColors.primary, alignItems: "center", justifyContent: "center", marginTop: 16 },
+  mechanicIntro: {
+    color: GameColors.textMuted,
+    fontSize: 15,
+    lineHeight: 22,
+    marginBottom: 12,
+  },
+  checkAnswer: {
+    minHeight: 48,
+    borderRadius: 16,
+    backgroundColor: GameColors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 16,
+  },
   checkAnswerText: { fontSize: 18, fontWeight: "700", color: "#FFFFFF" },
   loading: {
     flex: 1,
