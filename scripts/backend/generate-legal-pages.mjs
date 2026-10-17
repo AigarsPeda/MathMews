@@ -84,7 +84,7 @@ function renderPage(filename, locale, index) {
 <body>
 <a class="skip" href="#content">${text.skip}</a>
 <header class="site-header"><a class="brand" href="index.html"><img src="${prefix}assets/cat.png" width="44" height="44" alt="">Math Mews</a><nav class="main-nav" aria-label="${text.mainNav}">${navigation()}</nav>${languageLinks}</header>
-<main id="content">
+<main id="content"${index === 0 ? '' : ' class="document-page"'}>
 <div class="background-decorations" aria-hidden="true"><span class="decoration-blue"></span><span class="decoration-pink"></span><span class="decoration-purple"></span></div>
 <div class="hero${index === 0 ? ' hero-home' : ''}"><div class="hero-copy"><h1>${escape(text.titles[index])}</h1><p class="intro">${escape(text.intros[index])}</p></div><div class="cat-portrait"><img src="${prefix}assets/cat.png" width="512" height="512" alt="${escape(text.catAlt)}" fetchpriority="high"></div></div>
 <aside class="notice" aria-label="${text.draftTitle}"><p><strong>${text.draftTitle}.</strong> ${escape(text.draft)}</p></aside>
