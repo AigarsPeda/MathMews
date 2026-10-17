@@ -1,13 +1,15 @@
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { AppBottomSheet } from '@/components/ui/AppBottomSheet';
+import { ParentGateSheet } from '@/components/economy/ParentGateSheet';
 import { GameColors } from "@/constants/game";
 import { useGame } from "@/contexts/GameProvider";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  AppState,
   Platform,
   Pressable,
   StyleSheet,
@@ -26,6 +28,13 @@ export function DataManagementSection() {
   const router = useRouter();
   const { deleteAllUserData } = useGame();
   const [showConfirm, setShowConfirm] = useState(false);
+  const [parentPassed, setParentPassed] = useState(false);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'background') setParentPassed(false);
+    });
+    return () => subscription.remove();
+  }, []);
   const [isWorking, setIsWorking] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusKind, setStatusKind] = useState<"success" | "error" | null>(null);
@@ -54,7 +63,9 @@ export function DataManagementSection() {
     }
 
     setStatusKind("error");
-    setStatusMessage(t("settings.dataManagement.failed"));
+    setStatusMessage(result.pending
+      ? t("settings.dataManagement.pending", { id: result.requestId })
+      : t("settings.dataManagement.failed"));
   }, [deleteAllUserData, goToOnboarding, t]);
 
   return (
@@ -65,6 +76,7 @@ export function DataManagementSection() {
       <Pressable
         onPress={() => {
           triggerHaptic();
+          setParentPassed(false);
           setShowConfirm(true);
         }}
         disabled={isWorking}
@@ -87,16 +99,23 @@ export function DataManagementSection() {
       ) : null}
 
       {showConfirm ? (
-        <ConfirmDialog
+        <AppBottomSheet
           visible
-          title={t("settings.dataManagement.deleteConfirmTitle")}
-          message={t("settings.dataManagement.deleteConfirmMessage")}
-          confirmLabel={t("settings.dataManagement.deleteConfirmAction")}
-          cancelLabel={t("common.cancel")}
-          destructive
-          onConfirm={runDelete}
-          onCancel={() => setShowConfirm(false)}
-        />
+          onClose={() => setShowConfirm(false)}
+        >
+          {parentPassed ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>{t('settings.dataManagement.deleteConfirmTitle')}</Text>
+              <Text style={styles.sectionHint}>{t('settings.dataManagement.deleteConfirmMessage')}</Text>
+              <Pressable accessibilityRole="button" disabled={isWorking} onPress={runDelete} style={[styles.button,styles.deleteButton]}>
+                {isWorking ? <ActivityIndicator color="#FFFFFF"/> : <Text style={styles.deleteButtonText}>{t('settings.dataManagement.deleteConfirmAction')}</Text>}
+              </Pressable>
+              <Pressable accessibilityRole="button" disabled={isWorking} onPress={() => setShowConfirm(false)} style={styles.button}>
+                <Text style={styles.sectionHint}>{t('common.cancel')}</Text>
+              </Pressable>
+            </View>
+          ) : <ParentGateSheet visible embedded onPass={() => setParentPassed(true)} onClose={() => setShowConfirm(false)}/>}
+        </AppBottomSheet>
       ) : null}
     </View>
   );

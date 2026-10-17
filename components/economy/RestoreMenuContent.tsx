@@ -112,12 +112,13 @@ export function RestoreMenuContent({
     triggerHaptic();
 
     try {
-      const restoredCoins = await restorePurchases();
+      const result = await restorePurchases();
+      const restoredCoins = result.coins;
       setStatusKind(restoredCoins > 0 ? "success" : "info");
       setStatusMessage(
         restoredCoins > 0
           ? t("iap.restoreCoinsRestored", { count: restoredCoins })
-          : t("iap.restoreDone"),
+          : t(result.recoveryQueued ? "iap.restoreDone" : "iap.restoreRecoveryUnavailable"),
       );
     } catch {
       setStatusKind("error");

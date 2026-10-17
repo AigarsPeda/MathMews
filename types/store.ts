@@ -5,6 +5,7 @@ export type StorePrice =
   | { kind: "iap"; productId: string };
 
 export type StorePurchaseResult =
+  | "unavailable"
   | "purchased"
   | "already_owned"
   | "insufficient_funds"

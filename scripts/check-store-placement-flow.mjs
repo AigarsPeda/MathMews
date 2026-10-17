@@ -47,22 +47,22 @@ function setup() {
     const name=kind[0].toUpperCase()+kind.slice(1);
     const commit=id=>{ if(kind==='bed') game.pet.bedId=id;
       else { const key=kind==='toy'?'placedToys':'placedDecorations'; game.pet[key]=[...(game.pet[key]??[]),{[`${kind}Id`]:id,instanceId:'new-copy'}]; } };
-    game[`purchase${name}`]=id=>{events.push(['buy',kind]);if(purchaseResult==='purchased')commit(id);return purchaseResult;};
+    game[`purchase${name}`]=async id=>{events.push(['buy',kind]);if(purchaseResult==='purchased')commit(id);return purchaseResult;};
     game[`${verb}${name}${kind==='bed'?'':'InRoom'}`]=id=>{commit(id);return true;};
   }
 }
 function card(tab,id) { const nodes=render();nodes.find(n=>n.type==='StoreTabBar').props.onChange(tab);return render().find(n=>n.type==='FlatList').props.renderItem({item:id}); }
 for(const [kind,tab,id] of [['decoration','kitchen','kitchenModernFloorShelfNavy'],['toy','toys','orangeBall'],['bed','beds','brown']]) {
-  setup();const item=card(tab,id);item.props.onBuy();
+  setup();const item=card(tab,id);await item.props.onBuy();
   assert.equal(events[0][0],'buy');assert.equal(events[1][1].item.kind,kind);
   assert.equal(events[1][1].roomId,'kitchen');
   if(kind!=='bed')assert.equal(events[1][1].item.instanceId,'new-copy','Selection reads the committed purchase, not stale render props');
   assert.deepEqual(events[2],['route','/']);
-  item.props.onBuy();assert.equal(events.length,3,'A repeated tap during navigation cannot buy a second copy');
+  await item.props.onBuy();assert.equal(events.length,3,'A repeated tap during navigation cannot buy a second copy');
   setup();const previewCard=card(tab,id);previewCard.props.onPreview();
-  render().find(n=>n.type==='StorePreviewSheet').props.item.onBuy();
+  await render().find(n=>n.type==='StorePreviewSheet').props.item.onBuy();
   assert.deepEqual(events.at(-1),['route','/'],'Preview purchases use the same handoff');
-  setup();purchaseResult='insufficient_funds';card(tab,id).props.onBuy();
+  setup();purchaseResult='insufficient_funds';await card(tab,id).props.onBuy();
   assert.equal(events.length,1,'Failed purchases remain in the shop');
   setup();const owned=card(tab,id);owned.props[kind==='bed'?'onEquip':'onPlace']();
   assert.equal(events[0][1].item.kind,kind,'Placing owned items enters the editor too');

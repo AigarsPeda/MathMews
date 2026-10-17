@@ -18,7 +18,7 @@ function load(id) {
   const module = { exports: {} };cache.set(resolved, module);
   if (resolved.endsWith('.json')) { module.exports = JSON.parse(fs.readFileSync(resolved, 'utf8')); return module.exports; }
   const code = ts.transpileModule(fs.readFileSync(resolved, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } }).outputText;
-  vm.runInNewContext(code, { module, exports: module.exports, require: load, Math, Map, Set,
+  vm.runInNewContext(code, { module, exports: module.exports, require: load, Math, Map, Set, performance, setTimeout, clearTimeout,
     requestAnimationFrame: fn => { const id = ++frameRequest; frameRequests.set(id, fn); return id; },
     cancelAnimationFrame: id => frameRequests.delete(id) });return module.exports;
 }
@@ -1676,18 +1676,22 @@ console.log('Verified real rocking-chair cushion alignment, approach/jumps, shar
 // call the bathroom's editing callback, even through many parent refreshes.
 const stageSource=fs.readFileSync('components/pet/PetStage.tsx','utf8');
 const stageAst=ts.createSourceFile('PetStage.tsx',stageSource,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
-let repairEffect;
+const repairEffects=[];
 function findRepairEffect(node) {
   if(ts.isCallExpression(node) && node.expression.getText(stageAst)==='useEffect'
-    && node.arguments[0]?.getText(stageAst).includes('object.placementOffset')) repairEffect=node.arguments[0].getText(stageAst);
+    && node.arguments[0]?.getText(stageAst).includes('pendingPlacementIds.current')
+    && node.arguments[0]?.getText(stageAst).includes('placement.nearestFreeAsync')) repairEffects.push(node.arguments[0].getText(stageAst));
   ts.forEachChild(node,findRepairEffect);
 }
-findRepairEffect(stageAst);assert.ok(repairEffect);
+findRepairEffect(stageAst);assert.equal(repairEffects.length,1,'Find the actual queued new-item placement effect');
+const [repairEffect]=repairEffects;
 const repairCode=ts.transpileModule(`(${repairEffect})();`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
 const repairLayout={...base,decorations:[{decorationId:'windowOakWide',instanceId:'cached-window',scale:1.6,offset:{x:.3,y:.2}}]};
 let repairWorld=w.buildNativeRoomWorld(repairLayout),saves=0,repairFrame;
 const repairContext={roomVisible:false,rotationPreview:null,viewport:{width:base.width,height:base.height},nativeWorld:repairWorld,livePositions:{},
   isCurtainDecorationId:load('@/constants/decoration-motion').isCurtainDecorationId,
+  roomItemAnchor:load('@/utils/room-item-placement').roomItemAnchor,
+  NATIVE_MODEL_CATALOG:w.NATIVE_MODEL_CATALOG,ROOM_SPAN:w.ROOM_SPAN,roomPlacedToys:[],
   pendingPlacementIds:{current:new Set()},AbortController,
   requestAnimationFrame(fn){repairFrame=fn;return 1;},cancelAnimationFrame(){},
   seenPlacementIds:{current:undefined},placement:load('@/utils/room-item-placement').createRoomPlacementResolver(repairWorld),
@@ -1721,7 +1725,14 @@ repairContext.nativeWorld=w.buildNativeRoomWorld({...lowWindowLayout,height:260}
 repairContext.placement=load('@/utils/room-item-placement').createRoomPlacementResolver(repairContext.nativeWorld);
 vm.runInNewContext(repairCode,repairContext);
 assert.equal(saves,0,'Purchase acknowledgement can paint before new-item fitting');
-repairFrame();
+// The resolver now yields to the UI while searching. Wait for the actual save,
+// so this regression exercises the real resolver rather than synchronous mocks.
+await new Promise((resolve,reject)=>{
+  const timeout=setTimeout(()=>reject(new Error('New-item fitting did not finish')),5000);
+  const save=repairContext.onPlacedDecorationOffsetChange;
+  repairContext.onPlacedDecorationOffsetChange=(...args)=>{save(...args);clearTimeout(timeout);resolve();};
+  repairFrame();
+});
 assert.equal(saves,1,'A newly placed wall item still saves its fitted visible anchor');
 // Rapid purchases must fit against the preceding item's committed blockers,
 // rather than reserve the same free position from an outdated room snapshot.
@@ -1729,12 +1740,14 @@ const fittedObject=repairContext.nativeWorld.objects[0],purchaseSaves=[];
 repairContext.seenPlacementIds.current=new Set();
 repairContext.pendingPlacementIds.current=new Set();
 repairContext.nativeWorld={...repairContext.nativeWorld,objects:[fittedObject,{...fittedObject,instanceId:'second-window'}]};
-repairContext.placement={canPlace:()=>true};
+repairContext.placement={nearestFreeAsync:async object=>object};
 repairContext.onPlacedDecorationOffsetChange=(id)=>purchaseSaves.push(id);
 vm.runInNewContext(repairCode,repairContext);repairFrame();
+await new Promise(resolve=>setImmediate(resolve));
 assert.deepEqual(purchaseSaves,[fittedObject.instanceId],'Only one fitting mutation uses a given room snapshot');
 assert.ok(repairContext.pendingPlacementIds.current.has('second-window'),'The next purchase remains queued for the updated layout');
 vm.runInNewContext(repairCode,repairContext);repairFrame();
+await new Promise(resolve=>setImmediate(resolve));
 assert.deepEqual(purchaseSaves,[fittedObject.instanceId,'second-window']);
 let finishSearch;
 repairContext.seenPlacementIds.current=new Set();

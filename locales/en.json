@@ -40,6 +40,22 @@
     "licensesEmpty": "No licenses found. Run npm run licenses to generate them.",
     "privacy": "Privacy policy",
     "privacyHint": "How Math Mews handles data and purchases.",
+    "account": {
+      "title": "Account recovery",
+      "guest": "This game uses a guest account.",
+      "linked": "This account is linked to {{provider}}.",
+      "unavailable": "Account recovery is not available yet on this device. Keep this game installed until recovery is available.",
+      "protect": "Protect this account",
+      "restore": "Restore another account",
+      "protectHint": "A parent or guardian should continue with their own account. Linking keeps this game and its coin wallet on the same account.",
+      "restoreWarning": "Sign in with the account used on your previous device. The current game stays saved separately on this phone. Games and coins from different accounts are not combined.",
+      "continue": "Continue with {{provider}}",
+      "protectSuccess": "Your account is linked. Progress can sync to this account.",
+      "restoreSuccess": "Signed in. Checking this account for saved games.",
+      "failed": "The account could not be connected. Your current game has been kept. Check your connection and try again.",
+      "busy": "Finish the current purchase or account action before trying again.",
+      "accountId": "Account ID: {{id}}"
+    },
     "progressBackup": {
       "appleId": "Apple ID",
       "googleAccount": "Google account",
@@ -71,13 +87,14 @@
       "notConfigured": "Cloud save is not set up yet."
     },
     "dataManagement": {
-      "title": "Start over",
-      "hint": "This cannot be undone.",
-      "deleteAction": "Delete all my data",
-      "deleteConfirmTitle": "Start over?",
-      "deleteConfirmMessage": "This deletes your pet, coins, unlocks, and purchases on this device and in the cloud. You will start a brand-new game from the beginning.",
-      "deleteConfirmAction": "Yes, start over",
-      "failed": "Something went wrong. Try again."
+      "title": "Delete account",
+      "hint": "Deletes every pet and remaining coins on this account, on all devices. This cannot be undone.",
+      "deleteAction": "Delete account and data",
+      "deleteConfirmTitle": "Delete this account?",
+      "deleteConfirmMessage": "This permanently removes all your pets, progress and remaining coins in both test and live games. Purchases are not refunded. Limited transaction records are retained to prevent duplicate grants and process refunds. Keep the app open while deletion completes.",
+      "deleteConfirmAction": "Delete my account",
+      "failed": "Deletion could not be completed. Your local game and sign-in have been kept. Check your connection and try again.",
+      "pending": "Deletion request {{id}} is pending. Cloud saves and purchases are paused. Keep your session and tap Delete account again to retry."
     }
   },
   "locale": {
@@ -677,6 +694,7 @@
     "needCoinsToy": "Need {{cost}} coins for this toy.",
     "needCoinsDecoration": "Need {{cost}} coins for this decoration.",
     "needCoinsSkin": "Need {{cost}} coins for this color.",
+    "walletOffline": "Connect to the internet to sync your wallet and buy this item.",
     "unavailable": "This room isn't available yet.",
     "unavailableBed": "This bed isn't available yet.",
     "unavailableToy": "This toy isn't available yet.",
@@ -1015,11 +1033,23 @@
     "a11yCoins": "You have {{coins}} coins. Tap to get more coins."
   },
   "parentGate": {
-    "title": "Ask a grown-up",
-    "subtitle": "A parent or guardian needs to answer this before buying coins.",
-    "question": "What is {{a}} + {{b}}?",
-    "wrong": "That's not right — try again or ask a grown-up.",
-    "a11yChoice": "Answer {{value}}"
+    "title": "For grown-ups",
+    "subtitle": "Read the number words below. Type their digits in reverse order, starting with the last word.",
+    "wrong": "Please try again, or ask a grown-up for help.",
+    "inputLabel": "Six digits in reverse order",
+    "continue": "Continue",
+    "digits": {
+      "0": "zero",
+      "1": "one",
+      "2": "two",
+      "3": "three",
+      "4": "four",
+      "5": "five",
+      "6": "six",
+      "7": "seven",
+      "8": "eight",
+      "9": "nine"
+    }
   },
   "iap": {
     "getCoins": "Get coins",
@@ -1028,16 +1058,19 @@
     "buy": "Buy",
     "priceLoading": "Loading…",
     "notAvailable": "Coin purchases are unavailable right now.",
-    "offeringsMissing": "Coin packs could not be loaded. In RevenueCat, add products to an offering (or set CoinPacksTEST as Current) and reload the app.",
+    "offeringsMissing": "Coin packs are unavailable right now. Please try again later.",
     "purchaseSuccess": "+{{count}} coins added!",
     "purchaseFailed": "Purchase did not go through. Try again.",
+    "deliveryPending": "Your payment succeeded. Coins are syncing and will appear automatically. You do not need to buy again.",
     "purchasePending": "Waiting for approval…",
     "restore": "Restore purchases",
     "restorePurchases": "Restore purchases",
     "restoring": "Restoring…",
-    "restoreDone": "Restore complete.",
+    "restoreDone": "Your current wallet has been checked. Purchase history recovery is queued; any missing coins will sync automatically. Spent coins are not issued again.",
     "restoreCoinsRestored": "Restored {{count}} coins from your purchase history.",
-    "a11yBuyPack": "Buy {{count}} coins for {{price}}"
+    "a11yBuyPack": "Buy {{count}} coins for {{price}}",
+    "restoreRecoveryUnavailable": "Your current wallet was checked. Purchase-history recovery is temporarily unavailable. Please try again later.",
+    "protectAccountFirst": "Protect your account in Settings before buying coins, so you can recover your balance on another phone."
   },
   "cloudRestore": {
     "openMenu": "Restore saved games",

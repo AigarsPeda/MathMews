@@ -1,7 +1,7 @@
-"""Approved dumpling cat, with procedural coat markings and editable expressions.
+"""Procedural cat controls, coat markings and editable expressions.
 
-All dimensions are Blender units. Front is -Y and up is +Z. See HANDOFF.md
-and docs/art/cat-approved-concept.png for the approved visual reference.
+All dimensions are Blender units. Front is -Y and up is +Z. Current character
+geometry comes from original_cat.py and game_cat.py; see DESIGN.md for visual guidance.
 """
 import math
 import bpy

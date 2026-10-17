@@ -205,6 +205,7 @@ export default function StoreScreen() {
     (result: RoomPurchaseResult, roomId: CatRoomId): StoreFeedback => {
       const roomNumber = Number.parseInt(roomId.replace("room", ""), 10);
       switch (result) {
+        case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
         case "purchased":
           return {
             icon: "home",
@@ -234,10 +235,10 @@ export default function StoreScreen() {
   );
 
   const handleBuy = useCallback(
-    (roomId: CatRoomId) => {
+    async (roomId: CatRoomId) => {
       recordInteraction();
       triggerHaptic();
-      const result = purchaseRoom(roomId);
+      const result = await purchaseRoom(roomId);
       if (result === "purchased") {
         triggerHaptic();
       }
@@ -266,6 +267,7 @@ export default function StoreScreen() {
     (result: BedPurchaseResult, bedId: CatBedId): StoreFeedback => {
       const bedName = t(`store.bedName.${bedId}`);
       switch (result) {
+        case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
         case "purchased":
           return {
             icon: "bed",
@@ -295,11 +297,11 @@ export default function StoreScreen() {
   );
 
   const handleBuyBed = useCallback(
-    (bedId: CatBedId) => {
+    async (bedId: CatBedId) => {
       if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
-      const result = purchaseBed(bedId);
+      const result = await purchaseBed(bedId);
       if (result === "purchased") {
         openDecoration({ kind: "bed", id: bedId });
         return;
@@ -346,6 +348,7 @@ export default function StoreScreen() {
     (result: ToyPurchaseResult, toyId: CatToyId): StoreFeedback => {
       const toyName = t(`store.toyName.${toyId}`).replace(/\n/g, " ");
       switch (result) {
+        case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
         case "purchased":
           return {
             icon: "play",
@@ -375,11 +378,11 @@ export default function StoreScreen() {
   );
 
   const handleBuyToy = useCallback(
-    (toyId: CatToyId) => {
+    async (toyId: CatToyId) => {
       if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
-      const result = purchaseToy(toyId);
+      const result = await purchaseToy(toyId);
       if (result === "purchased") {
         openDecoration({ kind: "toy", id: toyId });
         return;
@@ -427,6 +430,7 @@ export default function StoreScreen() {
         " ",
       );
       switch (result) {
+        case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
         case "purchased":
           return {
             icon: "plant",
@@ -456,11 +460,11 @@ export default function StoreScreen() {
   );
 
   const handleBuyDecoration = useCallback(
-    (decorationId: CatDecorationId) => {
+    async (decorationId: CatDecorationId) => {
       if (leavingForDecoration.current) return;
       recordInteraction();
       triggerHaptic();
-      const result = purchaseDecoration(decorationId);
+      const result = await purchaseDecoration(decorationId);
       if (result === "purchased") {
         openDecoration({ kind: "decoration", id: decorationId });
         return;
@@ -514,6 +518,7 @@ export default function StoreScreen() {
     (result: SkinPurchaseResult, skinId: CatSkinId): StoreFeedback => {
       const skinName = t(`store.skinName.${skinId}`);
       switch (result) {
+        case "unavailable": return { icon:"warning",message:t("store.walletOffline") };
         case "purchased":
           return {
             icon: "cat",
@@ -543,10 +548,10 @@ export default function StoreScreen() {
   );
 
   const handleBuySkin = useCallback(
-    (skinId: CatSkinId) => {
+    async (skinId: CatSkinId) => {
       recordInteraction();
       triggerHaptic();
-      const result = purchaseSkin(skinId);
+      const result = await purchaseSkin(skinId);
       if (result === "purchased") {
         triggerHaptic();
       }

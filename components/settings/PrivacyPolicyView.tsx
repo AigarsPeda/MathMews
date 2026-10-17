@@ -1,11 +1,12 @@
 import { PRIVACY_POLICY_URL } from "@/constants/legal";
+import { ParentGateSheet } from '@/components/economy/ParentGateSheet';
 import { GameColors } from "@/constants/game";
 import { useLocale } from "@/contexts/LocaleProvider";
 import { getPrivacyPolicyContent } from "@/legal/privacy-policy-content";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { openBrowserAsync } from "expo-web-browser";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 function triggerHaptic() {
@@ -21,11 +22,12 @@ type PrivacyPolicyViewProps = {
 export function PrivacyPolicyView({ style }: PrivacyPolicyViewProps) {
   const { locale } = useLocale();
   const content = getPrivacyPolicyContent(locale);
+  const [showParentGate,setShowParentGate] = useState(false);
 
   const handleViewOnline = useCallback(() => {
     triggerHaptic();
-    void openBrowserAsync(PRIVACY_POLICY_URL);
-  }, []);
+    setShowParentGate(true);
+  }, [setShowParentGate]);
 
   return (
     <View style={[styles.wrap, style]}>
@@ -43,15 +45,19 @@ export function PrivacyPolicyView({ style }: PrivacyPolicyViewProps) {
       <View style={styles.footer}>
         <Text style={styles.updated}>{content.lastUpdatedLabel}</Text>
 
-        <Pressable
+        {PRIVACY_POLICY_URL ? <Pressable
           onPress={handleViewOnline}
           style={styles.onlineBtn}
           accessibilityRole="link"
           accessibilityLabel={content.viewOnline}
         >
           <Text style={styles.onlineBtnText}>{content.viewOnline}</Text>
-        </Pressable>
+        </Pressable> : null}
       </View>
+      <ParentGateSheet visible={showParentGate} onClose={() => setShowParentGate(false)} onPass={() => {
+        // Keep the sheet in place while Safari is presented, then dismiss it.
+        void openBrowserAsync(PRIVACY_POLICY_URL).catch(() => undefined).finally(() => setShowParentGate(false));
+      }}/>
     </View>
   );
 }

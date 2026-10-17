@@ -52,23 +52,25 @@ export async function finishOAuthFromUrl(
     return { ok: false, error: "supabase_not_configured" };
   }
 
+  // Only an active browser sign-in calls this function. PKCE binds the returned
+  // authorization code to the verifier on this phone; never accept URL tokens.
+  let callback: URL;
+  try { callback = new URL(url); } catch { return { ok: false, error: 'invalid_callback' }; }
+  if (callback.protocol !== 'mathmews:' || `${callback.hostname}${callback.pathname}`.replace(/^\/+|\/+$/g, '') !== 'auth/callback') {
+    return { ok: false, error: 'invalid_callback' };
+  }
+
   const { params, errorCode } = QueryParams.getQueryParams(url);
 
   if (errorCode) {
     return { ok: false, error: errorCode };
   }
 
-  const accessToken = params.access_token;
-  const refreshToken = params.refresh_token;
-
-  if (typeof accessToken !== "string" || typeof refreshToken !== "string") {
-    return { ok: false, error: "missing_tokens" };
+  if (typeof params.code !== 'string' || !params.code || params.access_token || params.refresh_token) {
+    return { ok: false, error: "missing_auth_code" };
   }
 
-  const { error } = await supabase.auth.setSession({
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  });
+  const { error } = await supabase.auth.exchangeCodeForSession(params.code);
 
   if (error) {
     return { ok: false, error: error.message };
@@ -130,8 +132,6 @@ export async function restorePlatformAccount(): Promise<PlatformAccountResult> {
   if (!provider) {
     return { ok: false, error: "unsupported_platform" };
   }
-
-  await supabase.auth.signOut({ scope: "local" });
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,

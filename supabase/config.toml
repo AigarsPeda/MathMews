@@ -1,0 +1,16 @@
+project_id = "math-mews"
+
+# RevenueCat authenticates with the exact shared Authorization header. It does
+# not send a Supabase JWT; handler.ts performs that check before parsing a body.
+[functions.revenuecat-webhook]
+verify_jwt = false
+
+# Account deletion also validates the JWT against Auth's /user endpoint. Keep
+# the gateway enabled; no shared webhook credential authorizes account deletion.
+[functions.delete-account]
+verify_jwt = true
+
+# Cron only. The handler requires the runtime service credential or a service
+# JWT independently verified by PostgREST. Ordinary user JWTs cannot run batches.
+[functions.reconcile-purchases]
+verify_jwt = true

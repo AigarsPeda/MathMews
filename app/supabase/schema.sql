@@ -1,9 +1,9 @@
 -- Math Mews — Supabase schema (game_saves only)
 -- Multiple saves per user — each game has its own row (id), never overwritten by a new game.
 --
--- Wallet + IAP history live inside save JSON:
---   save.wallet.coins
---   save.coinTransactions[] (transactionId prevents double-credit)
+-- Wallet and purchases are authoritative in supabase/migrations/.
+-- Save JSON contains a display cache and durable item-delivery receipt IDs.
+-- Apply the wallet migrations and environment migration after this base schema.
 --
 -- If you previously created iap_grants, drop it first:
 --   drop table if exists public.iap_grants;

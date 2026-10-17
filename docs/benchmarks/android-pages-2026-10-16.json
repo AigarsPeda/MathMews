@@ -1,0 +1,18 @@
+{
+  "artifact": "android/app/build/outputs/apk/debug/app-debug.apk",
+  "libraries_checked": 56,
+  "passed": true,
+  "nonaligned_relro_ends": 47,
+  "failures": [],
+  "scope": "64-bit LOAD alignment, RELRO writable-range overlap, and uncompressed APK native ZIP alignment only",
+  "remaining": "Verify a final signed artifact, bundle-to-APK packaging, and runtime on a 16 KB device.",
+  "artifact_type": "existing debug APK, not a distribution build",
+  "sha256": "c0ab3d7430e44328c6f098e3ef401047842702f733eb88e19bae2ee6ba42cd6f",
+  "target_sdk_observed": 36,
+  "debuggable_observed": true,
+  "billing_permission_observed": true,
+  "android_zipalign_36_tool_passed": true,
+  "runtime_16kb_tested": false,
+  "store_readiness_established": false,
+  "relro_note": "47 nonaligned ends have no page-rounding overlap with writable LOAD bytes. This is a static layout check, not proof of runtime compatibility."
+}

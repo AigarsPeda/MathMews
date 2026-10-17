@@ -20,6 +20,8 @@ import {
 } from "@/constants/game";
 import { computePetWisdom } from "@/constants/puzzles";
 import { useGame } from "@/contexts/GameProvider";
+import { useIAP } from "@/contexts/IAPProvider";
+import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { useLocale } from "@/contexts/LocaleProvider";
 import { usePetSpeech } from "@/hooks/use-pet-speech";
 import { useRoomEditor } from "@/hooks/use-room-editor";
@@ -64,6 +66,8 @@ function triggerHaptic() {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { pendingCoinCelebration, clearCoinCelebration } = useIAP();
+  const { active: homeActive, reduceMotion } = useAnimationActivity();
   const roomActivityRef = useRef<{
     active: boolean;
     returnHome: () => void;
@@ -170,6 +174,29 @@ export default function HomeScreen() {
   );
 
   const { speechMessage, showSpeech } = usePetSpeech(contextualSpeech);
+
+  useEffect(() => {
+    if (!pendingCoinCelebration || !homeActive || !isReady || !hasCompletedOnboarding
+      || transition || isCareAnimationPlaying) return;
+    // Let the native purchase sheet dismiss before revealing the reaction.
+    const timer = setTimeout(() => {
+      const catRoom = getCatHomeRoomId(pet);
+      if (pet.type === "cat" && (pet.homeRoomId ?? "livingRoom") !== catRoom) {
+        handleVisitRoom(catRoom);
+        return;
+      }
+      clearCoinCelebration();
+      setDecoratingRoom(null);
+      recordInteraction();
+      showSpeech(t("iap.purchaseSuccess", { count: pendingCoinCelebration }));
+      if (!reduceMotion) {
+        sendPetCommand({ type: "playAction", wasAsleep: pet.isAsleep === true, mood: "dancing" });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [clearCoinCelebration, handleVisitRoom, hasCompletedOnboarding, homeActive,
+    isCareAnimationPlaying, isReady, pendingCoinCelebration, pet, recordInteraction,
+    reduceMotion, sendPetCommand, showSpeech, t, transition]);
 
   const rejectCareAction = useCallback(
     (text: string) => {

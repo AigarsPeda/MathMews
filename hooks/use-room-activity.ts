@@ -96,10 +96,6 @@ export function useRoomActivity(
   const handledEntry = useRef<number | null>(null);
   const [request, setRequest] = useState<ActivityRequest | null>(null);
   const [state, setState] = useState<ActivityState | null>(null);
-  const continueActivity = enabled && (state !== null || queuedPlan.current !== null
-    || request !== null && request.id !== handledRequest.current);
-  const backgroundActivity = !roomVisible && continueActivity;
-  const active = screenActive && (roomVisible || continueActivity);
   // Game activities continue while browsing. Only rendering is paused.
   const activity = enabled ? state : null;
   const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string, interactionAt?: number) => {
@@ -140,6 +136,12 @@ export function useRoomActivity(
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     let stopped = false;
+    // Scheduler refs are read after commit. They must not determine render
+    // output or dependency arrays, which React Compiler cannot track.
+    const continueActivity = enabled && (running.current !== null || queuedPlan.current !== null
+      || request !== null && request.id !== handledRequest.current);
+    const backgroundActivity = !roomVisible && continueActivity;
+    const active = screenActive && (roomVisible || continueActivity);
     const resumingRoom = !wasRoomVisible.current && roomVisible;
     const wasHiddenActivity = hiddenActivity.current;
     hiddenActivity.current = backgroundActivity;
@@ -349,6 +351,6 @@ export function useRoomActivity(
       clearTimeout(timer);
       for (const value of [petX, petY, scale, objectX, objectY, objectRotation]) cancelAnimation(value);
     };
-  }, [active, backgroundActivity, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
+  }, [screenActive, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
   return { activity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
 }

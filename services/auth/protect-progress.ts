@@ -1,4 +1,3 @@
-import { clearBackedUpSession } from "@/lib/auth-session-backup";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import {
   getNativeAppleIdToken,
@@ -7,6 +6,7 @@ import {
 } from "@/services/auth/apple-native";
 import {
   getPlatformRestoreProvider,
+  isPlatformAuthEnabled,
   type PlatformAuthProvider,
 } from "@/constants/platform-auth";
 import {
@@ -26,11 +26,6 @@ async function openGoogleOAuthSession(
   mode: "link" | "restore",
 ): Promise<ProgressAuthResult> {
   if (!supabase) return { ok: false, error: "supabase_not_configured" };
-
-  if (mode === "restore") {
-    await supabase.auth.signOut({ scope: "local" });
-    await clearBackedUpSession();
-  }
 
   const redirectTo = getOAuthRedirectUri();
   const request =
@@ -89,9 +84,6 @@ async function protectWithApple(): Promise<ProgressAuthResult> {
 }
 
 async function restoreWithApple(): Promise<ProgressAuthResult> {
-  await supabase!.auth.signOut({ scope: "local" });
-  await clearBackedUpSession();
-
   const apple = await getNativeAppleIdToken();
   if (!apple.ok) {
     return {
@@ -116,6 +108,7 @@ export async function protectProgress(): Promise<ProgressAuthResult> {
   }
 
   const provider = getPlatformRestoreProvider();
+  if (!isPlatformAuthEnabled(provider)) return { ok: false, error: 'provider_not_configured' };
   if (provider === "apple") {
     return protectWithApple();
   }
@@ -133,6 +126,7 @@ export async function restoreProgress(): Promise<ProgressAuthResult> {
   }
 
   const provider = getPlatformRestoreProvider();
+  if (!isPlatformAuthEnabled(provider)) return { ok: false, error: 'provider_not_configured' };
   if (provider === "apple") {
     return restoreWithApple();
   }
@@ -157,9 +151,6 @@ export async function sendParentEmailCode(
   }
 
   if (mode === "restore") {
-    await supabase.auth.signOut({ scope: "local" });
-    await clearBackedUpSession();
-
     const { error } = await supabase.auth.signInWithOtp({
       email: trimmed,
       options: { shouldCreateUser: false },

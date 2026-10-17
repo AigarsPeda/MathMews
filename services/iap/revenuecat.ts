@@ -18,6 +18,20 @@ import Purchases, {
 } from "react-native-purchases";
 
 let isConfigured = false;
+let configuredUserId: string | null = null;
+let identityQueue: Promise<unknown> = Promise.resolve();
+
+// Identity changes and the complete SDK purchase operation share one queue.
+// A purchase can never run while a previous anonymous login is still pending.
+export function withRevenueCatUser<T>(userId:string, action:()=>Promise<T>):Promise<T> {
+  const next = identityQueue.catch(()=>undefined).then(async()=>{
+    configureRevenueCat(userId);
+    if (configuredUserId!==userId) { await Purchases.logIn(userId); configuredUserId=userId; }
+    return action();
+  });
+  identityQueue=next;
+  return next;
+}
 
 export type CoinPackPurchaseResult =
   | {
@@ -27,6 +41,7 @@ export type CoinPackPurchaseResult =
       transactionId: string;
       priceString: string | null;
     }
+  | { status: "delivery_pending" }
   | { status: "cancelled" }
   | { status: "pending" }
   | { status: "error"; message: string };
@@ -47,7 +62,7 @@ export function isRevenueCatSupported(): boolean {
   return Platform.OS === "ios" || Platform.OS === "android";
 }
 
-export function configureRevenueCat(): void {
+function configureRevenueCat(userId: string): void {
   if (!isRevenueCatSupported() || isConfigured) return;
 
   if (__DEV__) {
@@ -57,7 +72,8 @@ export function configureRevenueCat(): void {
   const apiKey = resolveRevenueCatApiKey();
   assertValidReleaseRevenueCatKey(apiKey);
 
-  Purchases.configure({ apiKey });
+  Purchases.configure({ apiKey, appUserID: userId });
+  configuredUserId = userId;
   isConfigured = true;
 }
 

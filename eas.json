@@ -9,6 +9,9 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_APP_ENVIRONMENT": "sandbox"
       }
     },
     "development-device": {
@@ -16,12 +19,32 @@
       "distribution": "internal",
       "ios": {
         "simulator": false
+      },
+      "env": {
+        "EXPO_PUBLIC_APP_ENVIRONMENT": "sandbox"
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENVIRONMENT": "sandbox"
+      }
     },
-    "production": {}
+    "production": {
+      "environment": "production",
+      "env": {
+        "EXPO_PUBLIC_APP_ENVIRONMENT": "production"
+      },
+      "autoIncrement": true
+    },
+    "store-sandbox": {
+      "distribution": "store",
+      "environment": "preview",
+      "env": {
+        "EXPO_PUBLIC_APP_ENVIRONMENT": "sandbox"
+      },
+      "autoIncrement": true
+    }
   },
   "submit": {
     "production": {}

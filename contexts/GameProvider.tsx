@@ -1,3 +1,5 @@
+import { useServerWallet, type ServerWallet } from "@/hooks/use-server-wallet";
+import { getWalletEnvironment } from "@/services/wallet/environment";
 import type { HomeRoomId } from "@/constants/home-rooms";
 import { roomDecorationEntry, type RoomDecorationEntry, type RoomDecorationTarget } from '@/utils/room-decoration-entry';
 import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeather, type WorldClock, type WeatherMode } from '@/utils/world-clock';
@@ -7,7 +9,6 @@ import { setRoomItemRotation } from "@/utils/room-rotation";
 import { applyPuzzleAnswer, applyFeed, currentPuzzleStreak } from "@/utils/game-operations";
 import type { Puzzle } from "@/types/puzzle";
 import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
-import { LIFE_BUY_COST } from "@/constants/game";
 import {
   DEFAULT_BED_SCALE,
   resolveCatBedId,
@@ -49,25 +50,20 @@ import type {
 import type { GameSave } from "@/types/save";
 import {
   isBedUnlocked,
-  tryPurchaseBed,
 } from "@/utils/bed-store";
 import {
   isRoomUnlocked,
-  tryPurchaseRoom,
 } from "@/utils/room-store";
 import {
   isToyUnlocked,
-  tryPurchaseToy,
   getToyOwnedCount,
 } from "@/utils/toy-store";
 import {
   isDecorationUnlocked,
-  tryPurchaseDecoration,
   getDecorationOwnedCount,
 } from "@/utils/decoration-store";
 import {
   isSkinUnlocked,
-  tryPurchaseSkin,
 } from "@/utils/skin-store";
 import {
   appendPlacedDecoration,
@@ -98,13 +94,15 @@ import {
 } from "@/utils/room-layer-order";
 import { PET_NAME_MAX_LENGTH } from "@/types/save";
 import { useAuth } from "@/contexts/AuthProvider";
+import { clearAccountGameArchives } from '@/services/cloud-save/account-game';
 import { useCloudSaveSync } from "@/hooks/use-cloud-save-sync";
 import { pullRemoteSave, pushRemoteSave, listRemoteSaveSnapshots } from "@/services/cloud-save/cloud-save";
 import type { CloudSaveSummary } from "@/services/cloud-save/merge-game-save";
 import { listRestorableCloudSaves, listSwitchableCloudSaves } from "@/services/cloud-save/restorable-cloud-save";
-import type { CoinTransaction, CoinTransactionInput, CoinTransactionKind } from "@/types/coin-transaction";
-import { withCoinDelta } from "@/utils/coin-ledger";
+import type { CoinTransaction } from "@/types/coin-transaction";
 import { deleteRemoteUserData } from "@/services/cloud-save/delete-user-data";
+import { clearDeletionReceipt, loadDeletionReceipt } from '@/services/cloud-save/deletion-receipt';
+import { acquireAccountOperation } from '@/services/auth/account-operation';
 import { clearBackedUpSession } from "@/lib/auth-session-backup";
 import { supabase } from "@/lib/supabase";
 import {
@@ -120,13 +118,14 @@ import {
   loadGameSave,
   saveGameSave,
 } from "@/utils/game-storage";
-import { applyLifeRegen, buyOneLife, canBuyLife } from "@/utils/lives";
+import { applyLifeRegen, canBuyLife } from "@/utils/lives";
 import { applyPetTimeDecay } from "@/utils/pet-care";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -150,32 +149,32 @@ type GameContextValue = {
   coinTransactions: CoinTransaction[];
   creditedPurchaseIds: string[];
   setPet: (updater: (current: PetProfile) => PetProfile) => void;
-  setWallet: (updater: (current: Wallet) => Wallet) => void;
-  adjustCoins: (delta: number, meta: CoinTransactionInput) => boolean;
   syncToCloud: () => Promise<void>;
   reloadProgressFromCloud: () => Promise<void>;
   setProgress: (updater: (current: Progress) => Progress) => void;
-  buyLife: () => boolean;
+  buyLife: () => Promise<boolean>;
+  refreshWallet: () => Promise<void>;
+  isWalletReady: boolean;
   purchaseVisualHelp: (puzzleId: string, cost: number) => boolean;
-  purchaseRoom: (roomId: CatRoomId) => RoomPurchaseResult;
+  purchaseRoom: (roomId: CatRoomId) => Promise<RoomPurchaseResult>;
   equipRoom: (roomId: CatRoomId) => boolean;
   visitHomeRoom: (roomId: HomeRoomId) => void;
   sendCatToRoom: (roomId: HomeRoomId) => void;
   decorationEntry: RoomDecorationEntry | null;
   requestRoomDecoration: (target?: RoomDecorationTarget) => void;
   clearDecorationEntry: () => void;
-  purchaseBed: (bedId: CatBedId) => BedPurchaseResult;
+  purchaseBed: (bedId: CatBedId) => Promise<BedPurchaseResult>;
   equipBed: (bedId: CatBedId) => boolean;
   removeBedFromRoom: () => boolean;
   flipEquippedBed: () => boolean;
   scaleEquippedBed: (direction: "up" | "down", offset?: RoomItemOffset) => boolean;
-  purchaseToy: (toyId: CatToyId) => ToyPurchaseResult;
+  purchaseToy: (toyId: CatToyId) => Promise<ToyPurchaseResult>;
   placeToyInRoom: (toyId: CatToyId) => boolean;
   removeToyFromRoom: (toyId: CatToyId, instanceId?: string) => boolean;
   scalePlacedToy: (instanceId: string, direction: "up" | "down", offset?: RoomItemOffset) => boolean;
   rotatePlacedToy: (instanceId: string) => boolean;
   setRoomItemRotation: (item: RoomLayerItem, degrees: number, offset?: RoomItemOffset) => boolean;
-  purchaseDecoration: (decorationId: CatDecorationId) => DecorationPurchaseResult;
+  purchaseDecoration: (decorationId: CatDecorationId) => Promise<DecorationPurchaseResult>;
   placeDecorationInRoom: (decorationId: CatDecorationId) => boolean;
   removeDecorationFromRoom: (
     decorationId: CatDecorationId,
@@ -194,7 +193,7 @@ type GameContextValue = {
     offset?: RoomItemOffset,
   ) => boolean;
   moveRoomLayerItem: (item: RoomLayerItem, direction: "up" | "down") => boolean;
-  purchaseSkin: (skinId: CatSkinId) => SkinPurchaseResult;
+  purchaseSkin: (skinId: CatSkinId) => Promise<SkinPurchaseResult>;
   equipSkin: (skinId: CatSkinId) => boolean;
   completeOnboarding: (options: {
     name: string;
@@ -209,7 +208,7 @@ type GameContextValue = {
   showCloudRestorePrompt: () => void;
   fetchSwitchableCloudSaves: () => Promise<CloudSaveSummary[]>;
   switchToCloudSave: (saveId: string) => Promise<boolean>;
-  deleteAllUserData: () => Promise<{ ok: true } | { ok: false }>;
+  deleteAllUserData: () => Promise<{ ok: true } | { ok: false; pending?: boolean; requestId?: string }>;
 };
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -232,6 +231,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     useState(false);
   const skipNextPersist = useRef(true);
   const saveRef = useRef(save);
+  const walletAuthorityRef = useRef<ServerWallet | null>(null);
+  const accountRef = useRef(userId);
+  useLayoutEffect(() => {
+    accountRef.current = userId;
+    if (walletAuthorityRef.current?.user_id !== userId) walletAuthorityRef.current = null;
+  },[userId]);
   // Navigation intent is local UI state, never part of the cloud save.
   const [decorationEntry, setDecorationEntry] = useState<RoomDecorationEntry | null>(null);
   const requestRoomDecoration = useCallback((target?: RoomDecorationTarget) => {
@@ -246,7 +251,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ? candidate.worldClock : normalizeWorldClock(candidate.worldClock ?? initialWorldClock);
     const streak = currentPuzzleStreak(candidate.progress);
     const progress = streak === candidate.progress.streak ? candidate.progress : { ...candidate.progress, streak };
-    const next = { ...candidate, pet, progress, worldClock: clock };
+    const authority = walletAuthorityRef.current;
+    const cached = candidate.walletAuthority;
+    const scoped = authority ?? ((accountRef.current === null || cached?.user_id === accountRef.current) && cached?.environment === getWalletEnvironment() ? cached : null);
+    const next = { ...candidate, accountOwnerId: candidate.accountOwnerId ?? cached?.user_id, pet, progress, worldClock: clock,
+      wallet: { coins: scoped ? Number(scoped.balance) : cached ? 0 : candidate.wallet.coins }, walletAuthority: scoped ?? undefined };
     saveRef.current = next;
     setSaveState(next);
   }, [initialWorldClock]);
@@ -259,8 +268,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     } }));
   }, [initialWorldClock, setSave]);
   const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string) => {
-    const result = applyPuzzleAnswer(saveRef.current, puzzle, correct, attemptId);
-    setSave(result.save);
+    const current = saveRef.current;
+    const result = applyPuzzleAnswer(current, puzzle, correct, attemptId);
+    const pending = result.coins > 0 && accountRef.current ? [{ userId:accountRef.current,
+      environment:getWalletEnvironment(), puzzleId:puzzle.id, attemptId }] : [];
+    setSave({ ...result.save, wallet:current.wallet,
+      pendingCoinRewards:[...(current.pendingCoinRewards ?? []),...pending] });
     return result.coins;
   }, [setSave]);
   const feedPet = useCallback(() => {
@@ -273,13 +286,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const getSave = useCallback(() => saveRef.current, []);
   const cloudSyncRef = useRef<(() => Promise<void>) | null>(null);
   const blockCloudPushRef = useRef(false);
-
-  const commitPurchase = useCallback((current: GameSave, next: GameSave, kind: CoinTransactionKind, itemId: string) => {
-    if (current.progress.storeGoal?.kind === kind.replace("store_", "") && current.progress.storeGoal.id === itemId) next = { ...next, progress: { ...next.progress, storeGoal: undefined } };
-    const delta = next.wallet.coins - current.wallet.coins;
-    const funded = delta ? withCoinDelta({ ...next, wallet: current.wallet }, delta, { kind, itemId }) : next;
-    if (funded) setSave(funded);
-  }, [setSave]);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const handleRestorableCloudSaves = useCallback((saves: CloudSaveSummary[]) => {
     setCloudRestoreCandidates(saves);
@@ -296,13 +303,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setCloudRestoreCandidates([]);
     setCloudRestorePromptDismissed(false);
     blockCloudPushRef.current = false;
+    setIsDeletingAccount(false);
     activeSaveIdRef.current = null;
   }, [userId]);
 
   useCloudSaveSync({
     isGameReady: isReady,
     isAuthReady,
-    userId,
+    userId: isDeletingAccount ? null : userId,
     save,
     getSave,
     setSave,
@@ -313,6 +321,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     onInitialCloudCheckComplete: handleInitialCloudCheckComplete,
     blockCloudPushRef,
   });
+
+
+  const serverWallet = useServerWallet({ userId: isDeletingAccount ? null : userId,
+    enabled:isReady && isAuthReady && save.accountOwnerId===userId && cloudRestoreCheckComplete && save.hasCompletedOnboarding,
+    activeSaveIdRef,getSave,setSave,authorityRef:walletAuthorityRef,syncRef:cloudSyncRef });
+  const { spend:spendCoins,refresh:refreshWallet,isReady:isWalletReady } = serverWallet;
 
 
   useEffect(() => {
@@ -339,7 +353,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [setSave]);
 
   useEffect(() => {
-    if (!isReady) return;
+    if (!isReady || !isAuthReady || (userId && save.accountOwnerId !== userId)) return;
     if (skipNextPersist.current) {
       skipNextPersist.current = false;
       return;
@@ -348,7 +362,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     saveGameSave(save).catch(() => {
       // Persistence failures should not block gameplay.
     });
-  }, [isReady, save]);
+  }, [isReady, isAuthReady, userId, save]);
 
   const tickGameTime = useCallback((resolveSleep = false) => {
     const now = Date.now();
@@ -403,26 +417,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setSave((current) => ({ ...current, pet: updater(current.pet) }));
   }, [setSave]);
 
-  const setWallet = useCallback((updater: (current: Wallet) => Wallet) => {
-    setSave((current) => ({ ...current, wallet: updater(current.wallet) }));
-  }, [setSave]);
-
-  const adjustCoins = useCallback(
-    (delta: number, meta: CoinTransactionInput): boolean => {
-      let applied = false;
-
-      setSave((current) => {
-        const next = withCoinDelta(current, delta, meta);
-        if (!next) return current;
-        applied = true;
-        return next;
-      });
-
-      return applied;
-    },
-    [setSave],
-  );
-
   const syncToCloud = useCallback(async () => {
     await cloudSyncRef.current?.();
   }, []);
@@ -438,37 +432,52 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     skipNextPersist.current = false;
     setSave(remote.save);
-    await saveGameSave(remote.save);
+    await saveGameSave(saveRef.current);
     await cloudSyncRef.current?.();
   }, [userId, setSave]);
 
   const deleteAllUserData = useCallback(async (): Promise<
-    { ok: true } | { ok: false }
+    { ok: true } | { ok: false; pending?: boolean; requestId?: string }
   > => {
+    const release = acquireAccountOperation('auth');
+    if (!release) return { ok: false };
     try {
-      const currentUserId = userId;
-      if (currentUserId) {
-        await deleteRemoteUserData(currentUserId);
+      // Pause all local cloud writers before the request. The database also
+      // rejects in-flight writes from this phone and other signed-in devices.
+      setIsDeletingAccount(true);
+      const result = await deleteRemoteUserData(userId);
+      if (result.state === 'pending') return { ok: false, pending: true, requestId: result.id };
+      if (result.state !== 'completed') {
+        setIsDeletingAccount(false);
+        return { ok: false };
       }
 
       await clearGameSave();
+      const deletedUserId = userId ?? (await loadDeletionReceipt())?.userId;
+      if (deletedUserId) await clearAccountGameArchives(deletedUserId);
       await clearActiveSaveId();
       await clearBackedUpSession();
 
       if (supabase) {
-        await supabase.auth.signOut({ scope: "global" });
-        await supabase.auth.signInAnonymously();
+        // The server already removed the old account. Clear its local session
+        // even when a global sign-out cannot reach an account that is gone.
+        await supabase.auth.signOut({ scope: "local" });
       }
 
       const fresh = createDefaultGameSave();
+      walletAuthorityRef.current = null;
+      accountRef.current = null;
       skipNextPersist.current = true;
       activeSaveIdRef.current = null;
       setSave(fresh);
+      await saveGameSave(fresh);
+      await clearDeletionReceipt();
+      if (supabase) await supabase.auth.signInAnonymously();
 
       return { ok: true };
     } catch {
       return { ok: false };
-    }
+    } finally { release(); }
   }, [userId, setSave]);
 
   const setProgress = useCallback(
@@ -490,14 +499,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return now;
   }, [setSave]);
 
-  const buyLife = useCallback(() => {
+  const buyLife = useCallback(async () => {
     const current = saveRef.current;
-    if (!canBuyLife(current.progress.lives, current.wallet.coins)) return false;
-    const funded = withCoinDelta(current, -LIFE_BUY_COST, { kind: "life_purchase" });
-    if (!funded) return false;
-    setSave({ ...funded, progress: { ...funded.progress, lives: buyOneLife(current.progress.lives) } });
-    return true;
-  }, [setSave]);
+    if (!canBuyLife(current.progress.lives,current.wallet.coins)) return false;
+    return await spendCoins('life','one') === 'purchased';
+  },[spendCoins]);
 
   const purchaseVisualHelp = useCallback((puzzleId: string, _cost: number) => {
     const current = saveRef.current;
@@ -515,30 +521,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setPet(current => moveCatToRoom(current, roomId));
   }, [setPet]);
 
-  const purchaseRoom = useCallback((roomId: CatRoomId): RoomPurchaseResult => {
-    const resolvedId = resolveCatRoomId(roomId);
-    const current = saveRef.current;
-    const unlocked = current.progress.roomsUnlocked as CatRoomId[];
-    const attempt = tryPurchaseRoom({
-      roomId: resolvedId,
-      walletCoins: current.wallet.coins,
-      roomsUnlocked: unlocked,
-    });
-
-    if (attempt.result === "purchased") {
-      commitPurchase(current, {
-        ...current,
-        wallet: { coins: attempt.walletCoins },
-        progress: {
-          ...current.progress,
-          roomsUnlocked: attempt.roomsUnlocked,
-        },
-        pet: switchRoomLayout(current.pet, resolvedId),
-      }, "store_room", resolvedId);
-    }
-
-    return attempt.result;
-  }, [commitPurchase]);
+  const purchaseRoom = useCallback(async (roomId: CatRoomId): Promise<RoomPurchaseResult> => {
+    const id = resolveCatRoomId(roomId);
+    if (!id) return "invalid_room";
+    if (saveRef.current.progress.roomsUnlocked.includes(id)) return "already_owned";
+    return spendCoins('room',id);
+  },[spendCoins]);
 
   const equipRoom = useCallback((roomId: CatRoomId) => {
     const resolvedId = resolveCatRoomId(roomId);
@@ -557,43 +545,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const purchaseBed = useCallback((bedId: CatBedId): BedPurchaseResult => {
-    const resolvedId = resolveCatBedId(bedId);
-    if (!resolvedId) {
-      return "invalid_item";
-    }
-
-    const current = saveRef.current;
-    const unlocked = current.progress.bedsUnlocked as CatBedId[];
-    const attempt = tryPurchaseBed({
-      bedId: resolvedId,
-      walletCoins: current.wallet.coins,
-      bedsUnlocked: unlocked,
-    });
-
-    if (attempt.result === "purchased") {
-      commitPurchase(current, {
-        ...current,
-        wallet: { coins: attempt.walletCoins },
-        progress: {
-          ...current.progress,
-          bedsUnlocked: attempt.bedsUnlocked,
-        },
-        pet: syncPetLayerOrder({
-          ...current.pet,
-          bedId: resolvedId,
-          roomBedOffset: current.pet.roomBedOffset ?? { x: -0.15, y: 0.3 },
-          bedFlipped:
-            current.pet.bedId === resolvedId ? current.pet.bedFlipped : undefined,
-          bedRotationDegrees: current.pet.bedId === resolvedId ? current.pet.bedRotationDegrees : undefined,
-          bedScale:
-            current.pet.bedId === resolvedId ? current.pet.bedScale : undefined,
-        }),
-      }, "store_bed", resolvedId);
-    }
-
-    return attempt.result;
-  }, [commitPurchase]);
+  const purchaseBed = useCallback(async (bedId: CatBedId): Promise<BedPurchaseResult> => {
+    const id = resolveCatBedId(bedId);
+    if (!id) return "invalid_item";
+    if (saveRef.current.progress.bedsUnlocked.includes(id)) return "already_owned";
+    return spendCoins('bed',id);
+  },[spendCoins]);
 
   const equipBed = useCallback((bedId: CatBedId) => {
     const resolvedId = resolveCatBedId(bedId);
@@ -692,42 +649,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const purchaseToy = useCallback((toyId: CatToyId): ToyPurchaseResult => {
-    const resolvedId = resolveCatToyId(toyId);
-    if (!resolvedId) {
-      return "invalid_item";
-    }
-
-    const current = saveRef.current;
-    const unlocked = current.progress.toysUnlocked as CatToyId[];
-    const attempt = tryPurchaseToy({
-      toyId: resolvedId,
-      walletCoins: current.wallet.coins,
-      toysUnlocked: unlocked,
-    });
-
-    if (attempt.result === "purchased") {
-      const ownedCount = getToyOwnedCount(resolvedId, current.progress);
-      commitPurchase(current, {
-        ...current,
-        wallet: { coins: attempt.walletCoins },
-        progress: {
-          ...current.progress,
-          toysUnlocked: attempt.toysUnlocked,
-          toyQuantities: {
-            ...current.progress.toyQuantities,
-            [resolvedId]: ownedCount + 1,
-          },
-        },
-        pet: syncPetLayerOrder({
-          ...current.pet,
-          placedToys: appendPlacedToy(current.pet.placedToys, resolvedId),
-        }),
-      }, "store_toy", resolvedId);
-    }
-
-    return attempt.result;
-  }, [commitPurchase]);
+  const purchaseToy = useCallback(async (toyId: CatToyId): Promise<ToyPurchaseResult> => {
+    const id = resolveCatToyId(toyId);
+    if (!id) return "invalid_item";
+    return spendCoins('toy',id);
+  },[spendCoins]);
 
   const placeToyInRoom = useCallback((toyId: CatToyId) => {
     const resolvedId = resolveCatToyId(toyId);
@@ -785,48 +711,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
-  const purchaseDecoration = useCallback(
-    (decorationId: CatDecorationId): DecorationPurchaseResult => {
-      const resolvedId = resolveCatDecorationId(decorationId);
-      if (!resolvedId) {
-        return "invalid_item";
-      }
-
-      const current = saveRef.current;
-      const unlocked = current.progress.decorationsUnlocked as CatDecorationId[];
-      const attempt = tryPurchaseDecoration({
-        decorationId: resolvedId,
-        walletCoins: current.wallet.coins,
-        decorationsUnlocked: unlocked,
-      });
-
-      if (attempt.result === "purchased") {
-        const ownedCount = getDecorationOwnedCount(resolvedId, current.progress);
-        commitPurchase(current, {
-          ...current,
-          wallet: { coins: attempt.walletCoins },
-          progress: {
-            ...current.progress,
-            decorationsUnlocked: attempt.decorationsUnlocked,
-            decorationQuantities: {
-              ...current.progress.decorationQuantities,
-              [resolvedId]: ownedCount + 1,
-            },
-          },
-          pet: syncPetLayerOrder({
-            ...current.pet,
-            placedDecorations: appendPlacedDecoration(
-              current.pet.placedDecorations,
-              resolvedId,
-            ),
-          }),
-        }, "store_decoration", resolvedId);
-      }
-
-      return attempt.result;
-    },
-    [commitPurchase],
-  );
+  const purchaseDecoration = useCallback(async (decorationId: CatDecorationId): Promise<DecorationPurchaseResult> => {
+    const id = resolveCatDecorationId(decorationId);
+    if (!id) return "invalid_item";
+    return spendCoins('decoration',id);
+  },[spendCoins]);
 
   const placeDecorationInRoom = useCallback((decorationId: CatDecorationId) => {
     const resolvedId = resolveCatDecorationId(decorationId);
@@ -1119,37 +1008,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [setSave],
   );
 
-  const purchaseSkin = useCallback((skinId: CatSkinId): SkinPurchaseResult => {
-    const resolvedId = resolveCatSkinId(skinId);
-    if (!resolvedId) {
-      return "invalid_item";
-    }
-
-    const current = saveRef.current;
-    const unlocked = current.progress.skinsUnlocked as CatSkinId[];
-    const attempt = tryPurchaseSkin({
-      skinId: resolvedId,
-      walletCoins: current.wallet.coins,
-      skinsUnlocked: unlocked,
-    });
-
-    if (attempt.result === "purchased") {
-      commitPurchase(current, {
-        ...current,
-        wallet: { coins: attempt.walletCoins },
-        progress: {
-          ...current.progress,
-          skinsUnlocked: attempt.skinsUnlocked,
-        },
-        pet: {
-          ...current.pet,
-          catSkinId: resolvedId,
-        },
-      }, "store_skin", skinId);
-    }
-
-    return attempt.result;
-  }, [commitPurchase]);
+  const purchaseSkin = useCallback(async (skinId: CatSkinId): Promise<SkinPurchaseResult> => {
+    const id = resolveCatSkinId(skinId);
+    if (!id) return "invalid_item";
+    if (saveRef.current.progress.skinsUnlocked.includes(id)) return "already_owned";
+    return spendCoins('skin',id);
+  },[spendCoins]);
 
   const equipSkin = useCallback((skinId: CatSkinId) => {
     const resolvedId = resolveCatSkinId(skinId);
@@ -1181,13 +1045,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     activeSaveIdRef.current = newId;
     blockCloudPushRef.current = true;
 
-    const fresh = createDefaultGameSave();
+    const fresh = { ...createDefaultGameSave(), accountOwnerId: userId ?? undefined };
     skipNextPersist.current = false;
     setSave(fresh);
     await clearGameSave();
     await saveGameSave(fresh);
     setCloudRestorePromptDismissed(true);
-  }, [setSave]);
+  }, [setSave, userId]);
 
   const switchToCloudSave = useCallback(
     async (saveId: string): Promise<boolean> => {
@@ -1202,7 +1066,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         activeSaveIdRef.current = saveId;
         skipNextPersist.current = false;
         setSave(remote.save);
-        const clientUpdatedAt = await saveGameSave(remote.save);
+        const clientUpdatedAt = await saveGameSave(saveRef.current);
         await pushRemoteSave(userId, saveId, {
           save: remote.save,
           clientUpdatedAt,
@@ -1280,6 +1144,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
       const nextSave: GameSave = {
         ...createDefaultGameSave(),
+        accountOwnerId: userId,
         pet: {
           ...createDefaultGameSave().pet,
           name: trimmed,
@@ -1313,16 +1178,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setWorldWeather,
       answerPuzzle,
       feedPet,
-      isReady,
+      isReady: isReady && isAuthReady && (!userId || save.accountOwnerId === userId),
       hasCompletedOnboarding: save.hasCompletedOnboarding,
       pet: save.pet,
-      wallet: save.wallet,
+      wallet: { coins: save.walletAuthority?.user_id===userId && save.walletAuthority.environment===getWalletEnvironment() ? save.wallet.coins : 0 },
+      refreshWallet,
+      isWalletReady,
       progress: save.progress,
       coinTransactions: save.coinTransactions ?? [],
       creditedPurchaseIds: save.creditedPurchaseIds ?? [],
       setPet,
-      setWallet,
-      adjustCoins,
       syncToCloud,
       reloadProgressFromCloud,
       setProgress,
@@ -1384,6 +1249,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       switchToCloudSave,
       deleteAllUserData,
       isReady,
+      isAuthReady,
+      save.accountOwnerId,
       recordInteraction,
       save.hasCompletedOnboarding,
       save.pet,
@@ -1393,14 +1260,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
       save.creditedPurchaseIds,
       save.progress,
       save.wallet,
+      save.walletAuthority,
+      userId,
+      refreshWallet,
+      isWalletReady,
       save.worldClock,
       initialWorldClock,
       setWorldClock,
       setWorldWeather,
-      adjustCoins,
       reloadProgressFromCloud,
       setPet,
-      setWallet,
       syncToCloud,
       setProgress,
       buyLife,

@@ -33,6 +33,8 @@ const mocks = {
     useFocusEffect: fn => { focusCleanups.push(fn()); },
   },
   '@/contexts/GameProvider': { useGame: () => game },
+  '@/contexts/IAPProvider': { useIAP: () => ({ pendingCoinCelebration: 0, clearCoinCelebration() {} }) },
+  '@/hooks/use-animation-activity': { useAnimationActivity: () => ({ active: true, reduceMotion: false }) },
   '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
   '@/hooks/use-screen-insets': { useScreenInsets: () => ({}) },
   '@/hooks/use-room-transition': { useRoomTransition: (_, visit) => ({ transition: null, visit, ready() {} }) },

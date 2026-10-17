@@ -40,6 +40,22 @@
     "licensesEmpty": "Licences nav atrastas. Palaid npm run licenses, lai tās ģenerētu.",
     "privacy": "Privātuma politika",
     "privacyHint": "Kā Math Mews apstrādā datus un pirkumus.",
+    "account": {
+      "title": "Konta atjaunošana",
+      "guest": "Šī spēle izmanto viesa kontu.",
+      "linked": "Šis konts ir piesaistīts {{provider}}.",
+      "unavailable": "Konta atjaunošana šajā ierīcē vēl nav pieejama. Saglabā spēli instalētu, līdz atjaunošana būs pieejama.",
+      "protect": "Aizsargāt šo kontu",
+      "restore": "Atjaunot citu kontu",
+      "protectHint": "Vecākam vai aizbildnim jāizmanto savs konts. Piesaistīšana saglabā šo spēli un monētu maku tajā pašā kontā.",
+      "restoreWarning": "Pieraksties ar iepriekšējā ierīcē izmantoto kontu. Pašreizējā spēle paliks atsevišķi saglabāta šajā tālrunī. Dažādu kontu spēles un monētas netiek apvienotas.",
+      "continue": "Turpināt ar {{provider}}",
+      "protectSuccess": "Konts ir piesaistīts. Progresu var sinhronizēt ar šo kontu.",
+      "restoreSuccess": "Pierakstīšanās pabeigta. Pārbaudām šī konta saglabātās spēles.",
+      "failed": "Kontu neizdevās pievienot. Pašreizējā spēle ir saglabāta. Pārbaudi savienojumu un mēģini vēlreiz.",
+      "busy": "Pirms atkārtota mēģinājuma pabeidz pašreizējo pirkumu vai konta darbību.",
+      "accountId": "Konta ID: {{id}}"
+    },
     "progressBackup": {
       "appleId": "Apple ID",
       "googleAccount": "Google konts",
@@ -71,13 +87,14 @@
       "notConfigured": "Mākoņa saglabāšana vēl nav iestatīta."
     },
     "dataManagement": {
-      "title": "Sākt no jauna",
-      "hint": "Šo nevar atsaukt.",
-      "deleteAction": "Dzēst visus manus datus",
-      "deleteConfirmTitle": "Sākt no jauna?",
-      "deleteConfirmMessage": "Tas izdzēš tavu mīluli, monētas, atslēgās un pirkumus šajā ierīcē un mākonī. Sāksi pilnīgi jaunu spēli no sākuma.",
-      "deleteConfirmAction": "Jā, sākt no jauna",
-      "failed": "Kaut kas nogāja greizi. Mēģini vēlreiz."
+      "title": "Dzēst kontu",
+      "hint": "Dzēš visus šī konta mīluļus un atlikušās monētas visās ierīcēs. Šo darbību nevar atsaukt.",
+      "deleteAction": "Dzēst kontu un datus",
+      "deleteConfirmTitle": "Dzēst šo kontu?",
+      "deleteConfirmMessage": "Tas neatgriezeniski dzēš visus mīluļus, progresu un atlikušās monētas gan testa, gan īstajā spēlē. Pirkumu maksa netiek atmaksāta. Ierobežoti darījumu ieraksti tiek saglabāti, lai novērstu atkārtotu monētu piešķiršanu un apstrādātu atmaksas. Atstāj lietotni atvērtu, kamēr dzēšana pabeidzas.",
+      "deleteConfirmAction": "Dzēst manu kontu",
+      "failed": "Dzēšanu neizdevās pabeigt. Vietējā spēle un pieteikšanās ir saglabāta. Pārbaudi savienojumu un mēģini vēlreiz.",
+      "pending": "Dzēšanas pieprasījums {{id}} gaida izpildi. Mākoņa saglabāšana un pirkumi ir apturēti. Saglabā pieteikšanos un vēlreiz spied Dzēst kontu, lai mēģinātu atkārtoti."
     }
   },
   "locale": {
@@ -677,6 +694,7 @@
     "needCoinsToy": "Vajag {{cost}} monētas šai rotaļlietai.",
     "needCoinsDecoration": "Vajag {{cost}} monētas šim dekoram.",
     "needCoinsSkin": "Vajag {{cost}} monētas šai krāsai.",
+    "walletOffline": "Lai sinhronizētu maku un iegādātos šo preci, izveido savienojumu ar internetu.",
     "unavailable": "Šī istaba vēl nav pieejama.",
     "unavailableBed": "Šī gulta vēl nav pieejama.",
     "unavailableToy": "Šī rotaļlieta vēl nav pieejama.",
@@ -1016,11 +1034,23 @@
     "a11yCoins": "Tev ir {{coins}} monētas. Pieskaries, lai iegūtu vairāk."
   },
   "parentGate": {
-    "title": "Jautā pieaugušajam",
-    "subtitle": "Pirms monētu pirkšanas vecākam jāatbild uz šo jautājumu.",
-    "question": "Cik ir {{a}} + {{b}}?",
-    "wrong": "Nepareizi — mēģini vēlreiz vai jautā pieaugušajam.",
-    "a11yChoice": "Atbilde {{value}}"
+    "title": "Pieaugušajiem",
+    "subtitle": "Izlasi zemāk rakstītos skaitļu vārdus. Ievadi to ciparus apgrieztā secībā, sākot ar pēdējo vārdu.",
+    "wrong": "Lūdzu, mēģini vēlreiz vai lūdz palīdzību pieaugušajam.",
+    "inputLabel": "Seši cipari apgrieztā secībā",
+    "continue": "Turpināt",
+    "digits": {
+      "0": "nulle",
+      "1": "viens",
+      "2": "divi",
+      "3": "trīs",
+      "4": "četri",
+      "5": "pieci",
+      "6": "seši",
+      "7": "septiņi",
+      "8": "astoņi",
+      "9": "deviņi"
+    }
   },
   "iap": {
     "getCoins": "Iegūt monētas",
@@ -1029,16 +1059,19 @@
     "buy": "Pirkt",
     "priceLoading": "Ielādē…",
     "notAvailable": "Monētu pirkšana pašlaik nav pieejama.",
-    "offeringsMissing": "Monētu pakas neizdevās ielādēt. RevenueCat pievieno produktus offeringam (vai iestati CoinPacksTEST kā Current) un pārlādē lietotni.",
+    "offeringsMissing": "Monētu pakas pašlaik nav pieejamas. Lūdzu, mēģini vēlāk.",
     "purchaseSuccess": "+{{count}} monētas pievienotas!",
     "purchaseFailed": "Pirkums neizdevās. Mēģini vēlreiz.",
+    "deliveryPending": "Maksājums ir veiksmīgs. Monētas tiek sinhronizētas un parādīsies automātiski. Nav jāpērk vēlreiz.",
     "purchasePending": "Gaida apstiprinājumu…",
     "restore": "Atjaunot pirkumus",
     "restorePurchases": "Atjaunot pirkumus",
     "restoring": "Atjauno…",
-    "restoreDone": "Atjaunošana pabeigta.",
+    "restoreDone": "Tavs pašreizējais maks ir pārbaudīts. Pirkumu vēstures atjaunošana ir pieprasīta; trūkstošās monētas sinhronizēsies automātiski. Iztērētās monētas netiek piešķirtas vēlreiz.",
     "restoreCoinsRestored": "Atjaunoti {{count}} monētas no pirkumu vēstures.",
-    "a11yBuyPack": "Pirkt {{count}} monētas par {{price}}"
+    "a11yBuyPack": "Pirkt {{count}} monētas par {{price}}",
+    "restoreRecoveryUnavailable": "Tavs pašreizējais maks ir pārbaudīts. Pirkumu vēstures atjaunošana pašlaik nav pieejama. Lūdzu, mēģini vēlāk.",
+    "protectAccountFirst": "Pirms monētu iegādes aizsargā kontu iestatījumos, lai atlikumu varētu atgūt citā tālrunī."
   },
   "cloudRestore": {
     "openMenu": "Atjaunot saglabātās spēles",

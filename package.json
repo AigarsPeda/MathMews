@@ -19,6 +19,8 @@
     "assets:3d": "node scripts/3d/build.mjs",
     "assets:verify": "node scripts/3d/verify.mjs",
     "typecheck": "tsc --noEmit",
+    "typecheck:backend": "tsc --project supabase/functions/tsconfig.json",
+    "test:backend": "node --test scripts/backend/test-*.mjs",
     "test:game": "node scripts/check-game.mjs",
     "test:feeding-effects": "node scripts/check-native-room.mjs --feeding-effects",
     "test:ball-physics": "python3 scripts/native/check-ball-physics.py",
@@ -29,7 +31,11 @@
     "assets:native": "BRAINPET_BLENDER_ASSET_DIR=/tmp/brainpet-native-blends /Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/export-native.py",
     "test:recovery": "node scripts/check-crash-recovery.mjs",
     "animations:check": "node scripts/check-room-activities.mjs && node scripts/check-native-room.mjs",
-    "assets:cat-thumbnails": "/Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/render-cat-thumbnails.py"
+    "assets:cat-thumbnails": "/Applications/Blender.app/Contents/MacOS/Blender --background --python-exit-code 1 --python scripts/3d/render-cat-thumbnails.py",
+    "release:check": "node --env-file-if-exists=.env scripts/backend/check-release.mjs",
+    "legal:generate": "node --env-file-if-exists=.env scripts/backend/generate-legal-pages.mjs",
+    "release:android:pages": "python3 scripts/release/check-android-pages.py",
+    "test:release": "python3 scripts/release/test_android_pages.py"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

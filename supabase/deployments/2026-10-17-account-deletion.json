@@ -1,0 +1,35 @@
+{
+  "project_ref": "jcfppquntstgxubtlvqo",
+  "function": "delete-account",
+  "date": "2026-10-17",
+  "verify_jwt": true,
+  "source_sha256": {
+    "index.ts": "bf7abd1efc2b5b8715aa5b7241711f713356609158854dbeb21fb83c4cb84cb5",
+    "handler.ts": "626b83bccbde3ca6447ce1c12a5f5b1f5e012f6796c952594463d9b471450581",
+    "providers.ts": "7ab525c2cf74a6e41233df569c249b1baf1e76c7c96a914b96c7a1d71ffac0fb"
+  },
+  "acceptance": {
+    "fixture_user_id": "b4c86758-8b6f-4276-9e1a-c790ad4e2222",
+    "fixture_created_by": "agent acceptance test",
+    "first_call_status": 202,
+    "retry_status": 200,
+    "public_key_rejected": true,
+    "user_server_retry_rejected": true,
+    "save_write_fence_passed": true,
+    "revenuecat_customer_removed": true,
+    "supabase_auth_removed": true,
+    "cloud_saves_removed": true,
+    "old_session_rejected": true,
+    "receipt_without_session": "completed",
+    "incorrect_receipt_returned_no_status": true,
+    "private_journal_removed": true,
+    "existing_owner_wallet_balance": 3200,
+    "existing_owner_wallet_revision": 8
+  },
+  "cron_status": "disabled_manual_only_by_user_choice",
+  "vault_service_credential_saved": false,
+  "remaining": [
+    "Apple revocation credentials and linked-provider native acceptance",
+    "Killed-app and expired-session acceptance on both platforms"
+  ]
+}

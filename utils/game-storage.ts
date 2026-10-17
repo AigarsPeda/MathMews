@@ -345,9 +345,19 @@ function parseGameSave(
     return {
       save: {
         ...(parsed as GameSave),
+        accountOwnerId: typeof parsed.accountOwnerId === 'string' ? parsed.accountOwnerId : undefined,
         worldClock: normalizeWorldClock(parsed.worldClock),
         pet: removeRoomNavigationDoors(pet),
         wallet: { coins: Math.max(0, Math.floor(parsed.wallet.coins)) },
+        appliedWalletOrderIds: Array.isArray(parsed.appliedWalletOrderIds) ? [...new Set(parsed.appliedWalletOrderIds.filter((id): id is string => typeof id === 'string'))] : [],
+        pendingCoinRewards: Array.isArray(parsed.pendingCoinRewards) ? parsed.pendingCoinRewards.filter(r => isRecord(r)
+          && typeof r.userId==='string' && typeof r.puzzleId==='string' && typeof r.attemptId==='string'
+          && (r.environment==='sandbox' || r.environment==='production')) as GameSave['pendingCoinRewards'] : [],
+        walletAuthority: isRecord(parsed.walletAuthority) && typeof parsed.walletAuthority.user_id==='string'
+          && typeof parsed.walletAuthority.balance==='number' && Number.isFinite(parsed.walletAuthority.balance)
+          && typeof parsed.walletAuthority.revision==='number' && Number.isFinite(parsed.walletAuthority.revision)
+          && (parsed.walletAuthority.environment==='sandbox' || parsed.walletAuthority.environment==='production')
+          ? parsed.walletAuthority as GameSave['walletAuthority'] : undefined,
         coinTransactions: normalizeCoinTransactions(parsed.coinTransactions),
         creditedPurchaseIds: [...new Set([...(Array.isArray(parsed.creditedPurchaseIds) ? parsed.creditedPurchaseIds.filter((id): id is string => typeof id === "string") : []), ...normalizeCoinTransactions(parsed.coinTransactions).filter(tx => tx.kind === "iap_purchase" && tx.transactionId).map(tx => tx.transactionId!)])],
         progress: {
@@ -384,7 +394,7 @@ export type LoadedGameSave = {
   awayMsAtSessionStart: number;
 };
 
-const GAME_SAVE_UPDATED_AT_KEY = "@mathmews/game-save-updated-at";
+const GAME_SAVE_UPDATED_AT_KEY = `${GAME_SAVE_STORAGE_KEY}-updated-at`;
 
 export function parseGameSaveFromValue(value: unknown): LoadedGameSave | null {
   if (value === null || value === undefined) return null;
@@ -420,6 +430,17 @@ export function saveGameSave(save: GameSave): Promise<number> {
   ]));
   persistQueue = write;
   return write.then(() => updatedAt);
+}
+
+/** Binding or restoring an account snapshot is not a gameplay edit. Preserve
+ * its original timestamp so a newer cloud save can still win the merge. */
+export function restoreGameSaveSnapshot(save: GameSave, updatedAt: number): Promise<void> {
+  const raw = JSON.stringify(save);
+  const write = persistQueue.catch(() => undefined).then(() => AsyncStorage.multiSet([
+    [GAME_SAVE_STORAGE_KEY, raw], [GAME_SAVE_UPDATED_AT_KEY, String(updatedAt)],
+  ]));
+  persistQueue = write;
+  return write;
 }
 
 export function clearGameSave(): Promise<void> {

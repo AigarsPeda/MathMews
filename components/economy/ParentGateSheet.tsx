@@ -9,10 +9,12 @@ import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 type ParentGateSheetProps = {
   visible: boolean;
+  /** Render within the coin shop's existing native sheet. */
+  embedded?: boolean;
   onPass: () => void;
   onClose: () => void;
 };
@@ -27,6 +29,7 @@ function triggerHaptic(
 
 export function ParentGateSheet({
   visible,
+  embedded = false,
   onPass,
   onClose,
 }: ParentGateSheetProps) {
@@ -35,63 +38,72 @@ export function ParentGateSheet({
     createParentGateChallenge(),
   );
   const [showWrong, setShowWrong] = useState(false);
+  const [answer, setAnswer] = useState("");
+  const [attempts, setAttempts] = useState(0);
 
   const [wasVisible, setWasVisible] = useState(visible);
   if (visible !== wasVisible) {
     setWasVisible(visible);
-    if (visible) { setChallenge(createParentGateChallenge()); setShowWrong(false); }
+    if (visible) { setChallenge(createParentGateChallenge()); setShowWrong(false); setAnswer(""); setAttempts(0); }
   }
 
-  const handleChoice = useCallback(
-    (choice: number) => {
+  const handleContinue = useCallback(
+    () => {
       triggerHaptic();
 
-      if (choice === challenge.answer) {
+      if (answer === challenge.answer) {
         triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
         onPass();
         return;
       }
 
+      if (attempts >= 2) { onClose(); return; }
+      setAttempts(attempts + 1);
+      setAnswer("");
       setShowWrong(true);
       setChallenge(createParentGateChallenge());
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
     },
-    [challenge.answer, onPass],
+    [answer, attempts, challenge.answer, onClose, onPass],
   );
 
-  return (
-    <AppBottomSheet visible={visible} onClose={onClose}>
+  const content = (
       <View style={styles.card}>
         <AppIcon name="parent" size={moderateScale(32) * 1.2} />
         <Text style={styles.title}>{t("parentGate.title")}</Text>
         <Text style={styles.subtitle}>{t("parentGate.subtitle")}</Text>
 
         <Text style={styles.question}>
-          {t("parentGate.question", { a: challenge.a, b: challenge.b })}
+          {challenge.digits.map(digit => t(`parentGate.digits.${digit}`)).join(" · ")}
         </Text>
 
         {showWrong ? (
           <Text style={styles.wrong}>{t("parentGate.wrong")}</Text>
         ) : null}
 
-        <View style={styles.choices}>
-          {challenge.choices.map((choice) => (
-            <Pressable
-              key={`${challenge.a}-${challenge.b}-${choice}`}
-              onPress={() => handleChoice(choice)}
-              style={({ pressed }) => [
-                styles.choiceBtn,
-                pressed && styles.choiceBtnPressed,
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={t("parentGate.a11yChoice", { value: choice })}
-            >
-              <Text style={styles.choiceText}>{choice}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <TextInput
+          value={answer}
+          onChangeText={value => setAnswer(value.replace(/[^0-9]/g, "").slice(0, 6))}
+          keyboardType="number-pad"
+          maxLength={6}
+          autoComplete="off"
+          textContentType="none"
+          accessibilityLabel={t("parentGate.inputLabel")}
+          placeholder={t("parentGate.inputLabel")}
+          placeholderTextColor={GameColors.textMuted}
+          style={[styles.choiceBtn, styles.choiceText, { textAlign: "center" }]}
+        />
+        <Pressable
+          onPress={handleContinue}
+          disabled={answer.length !== 6}
+          accessibilityRole="button"
+          accessibilityLabel={t("parentGate.continue")}
+          style={[styles.choiceBtn, answer.length !== 6 && { opacity: 0.5 }]}
+        >
+          <Text style={styles.choiceText}>{t("parentGate.continue")}</Text>
+        </Pressable>
 
         <Pressable
           onPress={onClose}
@@ -102,8 +114,8 @@ export function ParentGateSheet({
           <Text style={styles.cancelBtnText}>{t("common.cancel")}</Text>
         </Pressable>
       </View>
-    </AppBottomSheet>
   );
+  return embedded ? content : <AppBottomSheet visible={visible} onClose={onClose}>{content}</AppBottomSheet>;
 }
 
 const styles = StyleSheet.create({

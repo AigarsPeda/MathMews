@@ -12,12 +12,14 @@ import {
 } from "@/services/cloud-save/merge-game-save";
 import { listRestorableCloudSaves } from "@/services/cloud-save/restorable-cloud-save";
 import type { GameSave } from "@/types/save";
-import { getLocalSaveUpdatedAt, saveGameSave } from "@/utils/game-storage";
-import { createSaveId, getActiveSaveId, setActiveSaveId } from "@/utils/save-id";
+import { getLocalSaveUpdatedAt, restoreGameSaveSnapshot, saveGameSave } from "@/utils/game-storage";
+import { clearActiveSaveId, createSaveId, getActiveSaveId, setActiveSaveId } from "@/utils/save-id";
+import { prepareAccountGame } from '@/services/cloud-save/account-game';
 import {
   useCallback,
   useEffect,
   useRef,
+  useState,
   type Dispatch,
   type MutableRefObject,
   type SetStateAction,
@@ -59,6 +61,7 @@ export function useCloudSaveSync({
   const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const saveRef = useRef(save);
   const lastSyncedUserId = useRef<string | null>(null);
+  const [syncAttempt, setSyncAttempt] = useState(0);
 
   useEffect(() => {
     saveRef.current = save;
@@ -72,7 +75,7 @@ export function useCloudSaveSync({
   }, [userId]);
 
   const flushPush = useCallback(async () => {
-    if (!userId || !isCloudSaveAvailable()) return;
+    if (!userId || !isCloudSaveAvailable() || !initialSyncDone.current) return;
 
     const saveId = activeSaveIdRef.current ?? (await getActiveSaveId());
     if (!saveId) return;
@@ -116,16 +119,26 @@ export function useCloudSaveSync({
     if (initialSyncDone.current) return;
 
     let active = true;
-    initialSyncDone.current = true;
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    const complete = () => {
+      if (!active) return;
+      initialSyncDone.current = true;
+      onInitialCloudCheckComplete?.();
+    };
 
     (async () => {
-      const clientUpdatedAt = await getLocalSaveUpdatedAt();
-      const local = {
-        save: saveRef.current,
-        clientUpdatedAt,
-      };
-
       let saveId = activeSaveIdRef.current ?? (await getActiveSaveId());
+      const prepared = await prepareAccountGame(userId, getSave?.() ?? saveRef.current, saveId, await getLocalSaveUpdatedAt());
+      if (!active) return;
+      const local = { save: prepared.save, clientUpdatedAt: prepared.clientUpdatedAt };
+      saveId = prepared.saveId;
+      if (saveId) await setActiveSaveId(saveId); else await clearActiveSaveId();
+      if (!active) return;
+      activeSaveIdRef.current = saveId;
+      skipNextPersist.current = true;
+      setSave(prepared.save);
+      await restoreGameSaveSnapshot(prepared.save, prepared.clientUpdatedAt);
+      if (!active) return;
 
       if (!saveId) {
         const remotes = await listRemoteSaveSnapshots(userId);
@@ -134,14 +147,14 @@ export function useCloudSaveSync({
         const restorable = listRestorableCloudSaves(local, remotes, null);
         if (restorable.length > 0) {
           onRestorableCloudSaves?.(restorable);
-          onInitialCloudCheckComplete?.();
+          complete();
           return;
         }
 
         saveId = createSaveId();
         await setActiveSaveId(saveId);
         activeSaveIdRef.current = saveId;
-        onInitialCloudCheckComplete?.();
+        complete();
         return;
       }
 
@@ -156,7 +169,7 @@ export function useCloudSaveSync({
       if (merged !== saveRef.current) {
         skipNextPersist.current = false;
         setSave(merged);
-        await saveGameSave(merged);
+        await saveGameSave(getSave?.() ?? merged);
       }
 
       if (shouldUpload) {
@@ -166,16 +179,21 @@ export function useCloudSaveSync({
         });
       }
 
-      onInitialCloudCheckComplete?.();
+      complete();
     })().catch(() => {
-      onInitialCloudCheckComplete?.();
+      // Storage or ownership errors must not enable uploads of another account's game.
+      if (!active) return;
+      if (saveRef.current.accountOwnerId === userId) onInitialCloudCheckComplete?.();
+      retry = setTimeout(() => setSyncAttempt(value => value + 1), 15_000);
     });
 
     return () => {
       active = false;
+      if (retry) clearTimeout(retry);
     };
   }, [
     activeSaveIdRef,
+    getSave,
     isAuthReady,
     isGameReady,
     onInitialCloudCheckComplete,
@@ -183,6 +201,7 @@ export function useCloudSaveSync({
     setSave,
     skipNextPersist,
     userId,
+    syncAttempt,
   ]);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-# Publishes docs/ → https://aigarspeda.github.io/MathMews/
+# Publishes only the public release pages → https://aigarspeda.github.io/MathMews/
 # One-time setup: Settings → Pages → Source: GitHub Actions (see docs/README.md)
 name: Deploy GitHub Pages
 
@@ -30,9 +30,17 @@ jobs:
 
       - uses: actions/configure-pages@v5
 
+      # docs/ also contains private project notes and development artifacts.
+      # Only this explicit list belongs in the public Pages artifact.
+      - name: Stage public pages
+        run: |
+          mkdir -p _site
+          cp docs/index.html docs/privacy.html docs/support.html docs/delete-account.html docs/site.css _site/
+          touch _site/.nojekyll
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: _site
 
       - id: deployment
         uses: actions/deploy-pages@v4

@@ -68,7 +68,7 @@ That verifies the final Info.plist and the PNGs inside the app bundle. After Exp
 
 ## In-app purchases (RevenueCat)
 
-Math Mews sells **coin packs only**. Real money credits `wallet.coins`; store purchases and extra lives spend coins. Feeding and visual help are free. Click the cat or room objects for their actions; new games start with a food bowl. Full plan: [doc/IAP_PLAN.md](doc/IAP_PLAN.md).
+Math Mews sells **coin packs only**. Real money credits `wallet.coins`; store purchases and extra lives spend coins. Feeding and visual help are free. Click the cat or room objects for their actions; new games start with a food bowl. Wallet setup and admin adjustments: [supabase/README.md](supabase/README.md). Store release work: [RELEASE_PLAN.md](RELEASE_PLAN.md).
 
 ### Development — Test Store (no Apple / Google accounts yet)
 
@@ -83,7 +83,7 @@ You **do** need a free [RevenueCat](https://www.revenuecat.com/) account and a *
 2. Add consumable products matching `constants/iap-products.ts` (e.g. `mathmews_coins_100`)
 3. Add products to your **default offering**
 
-When `__DEV__` is true, the app uses the **Test Store API key** from `constants/revenuecat.ts` automatically. Purchases show a RevenueCat test modal (success / fail / cancel) instead of the real App Store or Play billing UI.
+When `__DEV__` is true, the app uses `EXPO_PUBLIC_REVENUECAT_TEST_STORE_API_KEY`, with the existing key in `constants/revenuecat.ts` as a fallback. Purchases show a RevenueCat test modal (success / fail / cancel) instead of the real App Store or Play billing UI.
 
 Test with an EAS **development** build on a simulator or device — not Expo Go (Preview API Mode mocks purchases only).
 
@@ -102,19 +102,23 @@ EXPO_PUBLIC_REVENUECAT_IOS_API_KEY=appl_...
 EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY=goog_...
 ```
 
-For EAS production builds, set secrets instead (optional — v1 uses local Xcode):
+For remote EAS builds, set these public SDK keys and the existing Supabase public
+configuration in the EAS production environment. The ignored local `.env` is not
+uploaded automatically. Never add database passwords or the private webhook
+Authorization value to the phone's `EXPO_PUBLIC_*` configuration.
 
-```bash
-eas secret:create --name EXPO_PUBLIC_REVENUECAT_IOS_API_KEY --value appl_...
-eas secret:create --name EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY --value goog_...
-```
+`eas build --profile production` selects production data in the existing Supabase
+project. Use `--profile store-sandbox` with the preview environment for TestFlight
+or Google Play sandbox billing. Local development uses separate sandbox rows and
+phone storage in that same project. No second database or Docker is needed.
 
 ### TestFlight / App Store (local Xcode)
 
 See [doc/APP_STORE_PLAN.md §5](doc/APP_STORE_PLAN.md#5-production-build-local-xcode). Summary:
 
 ```bash
-cp .env.example .env   # fill production keys
+# Only on a fresh clone without .env: copy .env.example, then fill its placeholders.
+# Preserve an existing .env and its private backend configuration.
 npx expo prebuild --platform ios
 # create ios/.xcode.env.local with same EXPO_PUBLIC_* exports
 open ios/MathMews.xcworkspace
@@ -123,12 +127,14 @@ open ios/MathMews.xcworkspace
 
 ### Release build safety
 
-Release builds (`__DEV__` false) **crash on launch** if:
+The production and store-sandbox EAS profiles reject missing or placeholder
+Supabase configuration and platform RevenueCat keys before building. Runtime
+configuration errors disable purchasing while keeping gameplay available.
 
-- A production API key is **missing**, or
-- A **Test Store** key (`test_…`) is still configured
-
-This is intentional — misconfigured store builds must not ship. Logic lives in `utils/revenuecat-keys.ts`; configuration runs in `contexts/IAPProvider.tsx`.
+Purchases never credit coins directly on the phone. The authenticated webhook
+updates the server wallet, and the app refreshes it. Shop debits use the server
+catalog; durable request and receipt IDs recover interrupted purchases. See the
+wallet README for test/production isolation and admin SQL examples.
 
 | Build                    | API key               | Apple / Google account |
 | ------------------------ | --------------------- | ---------------------- |
@@ -136,17 +142,6 @@ This is intentional — misconfigured store builds must not ship. Logic lives in
 | App Store / Play release | Platform keys via env | Required               |
 
 **Never** submit to the stores with a `test_` API key.
-
-## Docs
-
-- [doc/GAME_PLAN.md](doc/GAME_PLAN.md) — game design and implementation status
-- [doc/IAP_PLAN.md](doc/IAP_PLAN.md) — coin pack IAP rollout
-- [doc/SUPABASE_PLAN.md](doc/SUPABASE_PLAN.md) — local-first cloud save + remote puzzles
-- [doc/APP_STORE_PLAN.md](doc/APP_STORE_PLAN.md) — iOS App Store production checklist (full)
-- [doc/APP_STORE_CHECKLIST.md](doc/APP_STORE_CHECKLIST.md) — iOS App Store quick tick-list
-- [doc/PLAY_STORE_CHECKLIST.md](doc/PLAY_STORE_CHECKLIST.md) — Google Play quick tick-list
-- [docs/privacy.html](docs/privacy.html) — public privacy policy (GitHub Pages)
-- [doc/STYLE_GUIDE.md](doc/STYLE_GUIDE.md) — UI and copy guidelines
 
 ## Assets
 
@@ -156,5 +151,17 @@ See [3D asset instructions](assets/3d/README.md) for editable models and regener
 
 The migration notes and verification results are in [HANDOFF.md](HANDOFF.md).
 
-Just to read at some point
-https://learn.ragdolldynamics.com/documentation/import_physics/
+
+## Release account safeguards
+
+Settings now has a parent-gated account protection/recovery section. The Apple
+and Google provider flags in `.env` stay false until provider configuration and
+native acceptance are complete. Store preflight requires the appropriate flag.
+Production coin checkout requires a recoverable linked account; development and
+sandbox guests remain available for testing. Phone saves are scoped to their
+account as well as environment, and cancelled sign-in preserves the current game.
+
+The authenticated deletion endpoint is deployed. Live anonymous-account deletion
+passed against Supabase and RevenueCat using an agent-created disposable fixture.
+Apple revocation still needs developer credentials. Cron remains disabled.
+See [release status](RELEASE_PLAN.md) for the remaining submission requirements.

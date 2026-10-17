@@ -4,6 +4,7 @@ import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { PrivacyLink } from "@/components/settings/PrivacyLink";
 import { DataManagementSection } from "@/components/settings/DataManagementSection";
+import { AccountRecoverySection } from '@/components/settings/AccountRecoverySection';
 import { LicensesLink } from "@/components/settings/LicensesLink";
 import { GameColors } from "@/constants/game";
 import { useLocale } from "@/contexts/LocaleProvider";
@@ -95,6 +96,8 @@ export default function SettingsScreen() {
         </View>
 
         <GraphicsSettings />
+
+        <AccountRecoverySection />
 
         <PrivacyLink />
 

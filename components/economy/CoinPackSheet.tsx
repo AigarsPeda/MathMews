@@ -1,3 +1,4 @@
+import { ParentGateSheet } from "@/components/economy/ParentGateSheet";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import type { CoinPackProductId } from "@/constants/iap-products";
@@ -6,10 +7,12 @@ import { RestoreMenuContent } from "@/components/economy/RestoreMenuContent";
 import { useIAP } from "@/contexts/IAPProvider";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  AppState,
   Platform,
   Pressable,
   StyleSheet,
@@ -32,19 +35,21 @@ function triggerHaptic(
 
 export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const {
     isReady,
     isSupported,
+    requiresAccountLink,
     coinPackCatalog,
     purchaseCoinPack,
     refreshOfferings,
   } = useIAP();
-  const [view, setView] = useState<"coins" | "restore">("coins");
+  const [view, setView] = useState<"parent" | "coins" | "restore">(isSupported ? "parent" : "coins");
   const [purchasingId, setPurchasingId] = useState<CoinPackProductId | null>(
     null,
   );
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [statusKind, setStatusKind] = useState<"success" | "error" | "info" | null>(
+  const [statusKind, setStatusKind] = useState<"error" | "info" | null>(
     null,
   );
 
@@ -53,9 +58,17 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
   const [wasVisible, setWasVisible] = useState(visible);
   if (visible !== wasVisible) {
     setWasVisible(visible); setStatusMessage(null); setStatusKind(null);
-    if (!visible) { setView("coins"); setPurchasingId(null); }
+    if (visible) setView(isSupported ? "parent" : "coins");
+    if (!visible) setPurchasingId(null);
   }
   useEffect(() => { if (visible) void refreshOfferings(); }, [refreshOfferings, visible]);
+  useEffect(() => {
+    if (!visible) return;
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'background') setView('parent');
+    });
+    return () => subscription.remove();
+  }, [visible]);
 
   const handlePurchase = useCallback(
     async (productId: CoinPackProductId) => {
@@ -71,14 +84,17 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
 
       if (result.status === "purchased") {
         triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
-        setStatusKind("success");
-        setStatusMessage(
-          t("iap.purchaseSuccess", { count: result.coins }),
-        );
+        onClose();
         return;
       }
 
       if (result.status === "cancelled") return;
+
+      if (result.status === "delivery_pending") {
+        setStatusKind("info");
+        setStatusMessage(t("iap.deliveryPending"));
+        return;
+      }
 
       if (result.status === "pending") {
         setStatusKind("info");
@@ -89,7 +105,7 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
       setStatusKind("error");
       setStatusMessage(result.message || t("iap.purchaseFailed"));
     },
-    [purchaseCoinPack, purchasingId, t],
+    [onClose, purchaseCoinPack, purchasingId, t],
   );
 
   const handleOpenRestoreMenu = useCallback(() => {
@@ -100,8 +116,10 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
   const isLoadingOfferings = visible && isSupported && !isReady;
 
   return (
-    <AppBottomSheet visible={visible} onClose={onClose} expanded>
-      {view === "restore" ? (
+    <AppBottomSheet visible={visible} onClose={onClose} expanded={view !== "parent"}>
+      {view === "parent" ? (
+        <ParentGateSheet embedded visible={visible} onPass={() => setView("coins")} onClose={onClose} />
+      ) : view === "restore" ? (
         <>
           <RestoreMenuContent
             onBack={() => setView("coins")}
@@ -124,6 +142,14 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
 
           {!isSupported ? (
             <Text style={styles.hint}>{t("iap.notAvailable")}</Text>
+          ) : requiresAccountLink ? (
+            <>
+              <Text style={styles.hint}>{t('iap.protectAccountFirst')}</Text>
+              <Pressable style={styles.restoreBtn} accessibilityRole="button"
+                onPress={() => { onClose(); router.push('/settings'); }}>
+                <Text style={styles.restoreBtnText}>{t('settings.account.protect')}</Text>
+              </Pressable>
+            </>
           ) : isLoadingOfferings ? (
             <ActivityIndicator
               color={GameColors.primary}
@@ -134,7 +160,7 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
               {displayItems.map((item) => {
                 const isPurchasing = purchasingId === item.productId;
                 const canBuy =
-                  (item.package != null || item.storeProduct != null) &&
+                  isReady && (item.package != null || item.storeProduct != null) &&
                   !purchasingId;
 
                 return (
@@ -185,7 +211,6 @@ export function CoinPackSheet({ visible, onClose }: CoinPackSheetProps) {
             <Text
               style={[
                 styles.status,
-                statusKind === "success" && styles.statusSuccess,
                 statusKind === "error" && styles.statusError,
               ]}
             >
@@ -298,9 +323,6 @@ const styles = StyleSheet.create({
     color: GameColors.textMuted,
     textAlign: "center",
     marginTop: moderateScale(4),
-  },
-  statusSuccess: {
-    color: GameColors.primary,
   },
   statusError: {
     color: GameColors.primaryDark,

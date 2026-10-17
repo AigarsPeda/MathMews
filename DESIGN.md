@@ -1,6 +1,6 @@
 ---
 name: Math Mews
-description: Cozy pastel rooms for a native mobile math companion.
+description: Cozy cat rooms and clear, encouraging math puzzles for native mobile.
 colors:
   background: "#FFF5EB"
   card: "#FFFFFF"
@@ -21,115 +21,168 @@ typography:
   puzzle-action:
     fontSize: "18px"
     fontWeight: 800
-  action-label:
-    fontSize: "15px"
+  toolbar-label:
+    fontSize: "13px"
     fontWeight: 700
-    lineHeight: 20
   preview-title:
     fontSize: "22px"
     fontWeight: 800
+  puzzle-question:
+    fontSize: "20px"
+    fontWeight: 600
+    lineHeight: 30
+  answer-label:
+    fontSize: "20px"
+    fontWeight: 700
   stat-value:
     fontSize: "12px"
     fontWeight: 700
-    lineHeight: 16
 rounded:
   header-square: "12px"
   store-button: "14px"
-  care-card: "16px"
-  stage: "20px"
+  card: "16px"
+  compact-stage: "16px"
+  puzzle-action: "20px"
 spacing:
-  care-inset: "8px"
-  action-gap: "10px"
+  toolbar-gap: "8px"
+  section-gap: "10px"
   compact-stage-inset: "12px"
-  stage-inset: "20px"
+  card-inset: "16px"
+  screen-inset: "20px"
 components:
   puzzle-action:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.card}"
     typography: "{typography.puzzle-action}"
-    rounded: "{rounded.stage}"
+    rounded: "{rounded.puzzle-action}"
     padding: "14px 20px"
-  care-action:
+  answer-choice:
     backgroundColor: "{colors.card}"
     textColor: "{colors.text}"
-    typography: "{typography.action-label}"
-    rounded: "{rounded.care-card}"
-    padding: "8px"
+    typography: "{typography.answer-label}"
+    rounded: "{rounded.card}"
+    padding: "14px 16px"
   store-purchase:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.card}"
     rounded: "{rounded.store-button}"
-    height: "48px"
+  name-input:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.text}"
+    rounded: "{rounded.store-button}"
+  header-square:
+    backgroundColor: "{colors.card}"
+    rounded: "{rounded.header-square}"
 ---
 
 # Design system: Math Mews
 
 ## Overview
 
-The existing Math Mews room is the visual authority. Preserve its cozy math-companion shell, pastel dimensional furniture, large expressive cat, warm cream background, and bold controls. PRODUCT.md defines this as an iOS and Android engine migration within the existing product.
+Math Mews pairs math puzzles with a cat living in furnished rooms. Preserve the warm cream shell, white cards, peach outlines, bold controls, pastel dimensional furniture, and expressive cat. The room invites exploration; puzzle screens keep the question and next action easy to find. Copy stays short, warm, and encouraging after mistakes.
 
-The native room keeps the original Blender geometry and materials. Filament gives the observed room quieter highlights and darker mauve walls than the raster incumbent. Keep that native material character while retaining the recognizable room and furniture silhouettes. This document records the shipped migration direction; it does not approve a new visual concept.
+This guide describes the current iOS and Android implementation, reviewed against source and bundled art on 2026-10-16. It covers the app beyond the original room-engine migration. No running native client was inspected during this review; screenshots and source do not certify current device performance, movement quality, or accessibility across platforms.
 
-Observed references are [sofa landing](docs/art/native-room-engine.png), [furniture preview](docs/art/native-room-store.png), and [ball preview](docs/art/native-room-ball.png). The migration reviewer returned `ship` with no material visual fixes. Screenshots cannot certify gait or Android interaction.
+Use [GameColors](constants/game.ts), the active screens in [app/](app/), and their shared components as implementation authority. [STYLE_GUIDE.md](doc/STYLE_GUIDE.md) provides implementation patterns and review checks for applying this system. [.impeccable/native-room.json](.impeccable/native-room.json) records the original migration, including old camera and catalog facts; treat it as history.
+
+Superseded room, startup, and cat review imagery has been removed. Use the current exported cat models and [cat preview](assets/3d/cat-preview.png) for character proportions. Capture fresh native screenshots when reviewing the current application.
 
 ## Colors
 
-The frontmatter extracts the existing `GameColors` values in `constants/game.ts`. Use the warm cream background and white cards to separate controls from the room. Peach borders define care cards, header controls, and room overlays.
+The frontmatter copies the shared `GameColors` palette. The game screens use this light palette even though the navigator follows the system color scheme. A complete dark game theme is not implemented. The Expo template palette in `constants/theme.ts` does not define the game UI.
 
-The primary red identifies the puzzle CTA and store purchase action. Turquoise remains the secondary accent. Gold identifies coins, with the darker coin text for numbers. Hunger, happiness, cleanliness, and wisdom retain their existing orange, pink, blue, and lavender assignments. Charcoal labels and muted gray supporting text preserve the current hierarchy.
+- Warm cream is the screen background. White cards and peach borders separate content and controls.
+- Primary red identifies the main puzzle and purchase actions. Primary-dark supplies the home CTA shadow.
+- Turquoise marks selection and secondary controls. Store tabs and the home Decorate tile use a pale mint surface, currently `#E8FAF8` in their styles.
+- Gold identifies coins; darker coin text keeps amounts readable. Charcoal and muted gray establish text hierarchy.
+- Orange, pink, and lavender identify the visible fed, happiness, and wisdom stats. Cleanliness blue remains a shared token, but the compact home panel currently shows only those three stats.
+- Answer choices use turquoise for selected, green for correct, and soft orange for wrong. Keep textual feedback and selected/disabled semantics alongside color. Gentle wrong-answer orange is distinct from red placement-error outlines in the room editor.
 
-Room colors belong to the authored models. Mint seating and foliage, mauve walls, pink toys and textiles, pale flooring, and warm wooden edges remain recognizable in the observed room. Do not recolor GLB materials to match interface tokens.
+Room materials belong to the Blender assets. Preserve the pastel walls, pale floors, warm wood, soft textiles, and authored furniture finishes. Weather, time, windows, curtains, and lamps change their lighting. Do not recolor GLBs to match UI tokens or force all rooms to the mauve of one older screenshot.
 
 ## Typography
 
-The inspected controls use React Native's platform default font. Preserve the existing bold label hierarchy and localized strings. The frontmatter records source sizes; `px` represents the numeric React Native baseline, not screenshot pixels. Home styles apply `moderateScale` relative to a 390-point screen width. Store preview styles use their literal numeric sizes.
+Game controls use the platform default font. No custom Nunito or Fredoka font is loaded. Use the existing bold hierarchy and English/Latvian translations rather than introducing a new font identity.
 
-The puzzle action uses weight 800, care labels use weight 700, and the store preview title uses weight 800. Keep supporting reward, price, and stat text subordinate. Preserve label space and dropdown indicators when localized copy grows.
+The frontmatter records numeric React Native baseline sizes. `px` is a portable token notation, not a measurement of screenshot pixels. Most screen styles apply [moderateScale](utils/scale.ts) against a 390-point width; some sheets use literal sizes. These are representative component roles, not a universal type scale.
+
+| Role | Current baseline | Source |
+| --- | --- | --- |
+| Home puzzle action | 18, weight 800 | `app/index.tsx` |
+| Home toolbar label | 13, weight 700 | `app/index.tsx` |
+| Store preview title | 22, weight 800 | `StorePreviewSheet` |
+| Puzzle question | 20, weight 600, line height 30 | `PuzzleCard` |
+| Answer choice | 20, weight 700 | `ChoiceButton` |
+| Compact stat percentage | 12, weight 700 | `PetStatsPanel` |
+
+Clock digits use tabular numbers. Compact labels and captions are smaller than body copy. Do not promote these small sizes to general reading text. Preserve wrapping and space for longer Latvian labels; retain accessibility labels when visible text shrinks or truncates. Stat percentages are drawn with Skia and expose their values through the surrounding accessible controls.
 
 ## Layout
 
-The portrait home places wallet and navigation controls above the room, care stats beneath it, and care actions above the wide Solve a Puzzle CTA. The room occupies the flexible central area. Keep Decorate near its upper left and zoom near its lower right. The compact stage uses a rounded outer card and an inset, clipped room viewport.
+The app is portrait-only in [app.json](app.json). The scaling helpers use a 390 × 844 baseline. Screens respect safe areas; long content scrolls, and onboarding avoids the keyboard. iPad support is enabled, but the current screens do not implement a separate two-column tablet layout.
 
-The world uses the incumbent orthographic view. `NativeRoomScene` sets a horizontal span of 7.85 world units and looks from `[8, 7, 8]` toward `[0, 0.9, 0]`; vertical coverage follows the viewport aspect ratio. Cat scale stays uniform during travel, so walking deeper into the room does not shrink it. Preserve its apparent size when adjusting viewport layout.
+The current cat home in [app/index.tsx](app/index.tsx) has this order:
 
-Saved normalized placements map to their original screen anchors. Preserve furniture scale, wall orientation, per-room layouts, and rug or wall-art ordering. Doors remain aligned to their wall and stationary. Store previews reuse the native room and cat models inside the existing purchase sheet.
+1. A white account row with coins, streak, and settings.
+2. A toolbar with the Decorate menu, world day/time, and weather report. These tiles have a minimum height of 56.
+3. A flexible, clipped room viewport. Below the scene, previous/next arrows, the room name, and four position dots browse the living room, bedroom, bathroom, and kitchen.
+4. Three stat rings and a math-stats shortcut. Decoration controls occupy this area while editing; the hidden stats retain their space so the viewport does not jump.
+5. The full-width Solve a Puzzle action with a supporting hint or saved shopping-goal progress.
+
+Care actions open from the cat and placed-object menus. There is no separate home care-card row. Pinch zoom spans 1× to 3×, with panning when zoomed; there is no fixed lower-right zoom button. [RoomNavigation](components/pet/RoomNavigation.tsx) browses rooms independently of commands that send the cat through a door.
+
+The room camera uses distant perspective with near-isometric framing, configured in [native-room-camera.ts](utils/native-room-camera.ts). It looks from `[56, 43.6, 56]` toward `[0, 0.9, 0]` and derives its field of view from the existing room span and viewport aspect. The cat's model scale stays uniform during travel; perspective allows slight apparent-size variation. Preserve the agreement between rendering, picking, and saved screen anchors when changing framing.
+
+Keep per-room layouts, stable catalog IDs, normalized placement anchors, furniture proportions, wall orientation, and rug/wall-art ordering. Decoration mode adds Shop and Room tools overlays plus a movement/rotation/aiming dock below the room. Invalid drops show the attempted position in orange and blockers or crossed boundaries in red, then explain why the item returned to its saved position. Preserve arrow nudges as an alternative to dragging.
+
+Other screens share the cream background, a back action, readable titles, and scrollable content. The puzzle path has difficulty selection, progress, and available/completed/locked states. Play places the question above its task-specific controls. The store has primary tabs, a decoration category sheet, an owned-only filter, and a two-column catalog grid.
 
 ## Elevation & Depth
 
-The world gets depth from rounded meshes, material shading, contact shadows, and ambient occlusion. The scene uses `DefaultLight` and ambient occlusion with radius 0.3 and intensity 1. These are implementation facts; future lighting changes must preserve readable cat faces, furniture silhouettes, and the quieter native highlights seen in the references.
+The world gets depth from rounded meshes, material shading, ambient occlusion, and shadows. Home lighting follows the world clock and weather through `NativeWorldLighting`, plus window and lamp lights. `DefaultLight` remains the fallback for scenes without a clock, including store room previews; it no longer describes the home lighting system.
 
-Interface depth stays modest. The puzzle CTA has the existing primary-dark shadow, vertical offset 3, opacity 0.25, radius 6, and Android elevation 3. Cards and control outlines supply most of the shell's separation. Keep world lighting independent of UI text and icons.
+Ambient occlusion uses radius 0.3 and intensity 1 with medium quality/filtering. Grounding contact shadows follow furniture footprints and rugs. Supported device builds additionally enable cast/receive shadows with a limited light budget; iOS simulators use the fallback because native shadow maps are unsupported there. Preserve readable cat faces and furniture silhouettes through day/night changes. Physical-device shadow appearance and performance need runtime validation.
+
+UI depth stays modest. The home puzzle CTA uses its primary-dark shadow with offset `[0, 3]`, opacity 0.25, radius 6, and Android elevation 3. A faint shadow below the room separates it from the stats. White surfaces and peach outlines do most of the remaining work. Keep scene lighting independent of UI text and icon colors.
 
 ## Shapes
 
-Keep the authored rounded cushions, cylindrical plant pots, soft cat paws and face, and beveled furniture edges. Preserve the cutaway corner-room silhouette and its raised wooden floor edge.
+Keep the cutaway corner-room silhouette, raised wooden floor edge, rounded cushions, soft paws, and beveled furniture. The current cat is a compact cartoon quadruped with a large rounded head, short neck, continuous torso, thick rounded legs and paws, triangular pink inner ears, small charcoal eyes, hooked upright tail, and a thin red collar with a small bell. Orange/cream, grey/white, and white coats share the same proportions and rig.
 
-The interface uses rounded rectangles and pills. Care cards, the stage, store buttons, and square header chips retain the radii in the frontmatter. Header pills derive their radius from half their height. Header controls have a baseline height of 44; the room selector and zoom control also retain their existing 44-point minimum height.
+The current cat comes from [original_cat.py](scripts/3d/original_cat.py) and [game_cat.py](scripts/3d/game_cat.py). The editable orange rig is [cat-orange.blend](prototypes/cat-model/cat-orange.blend). Keep skin transitions smooth in standing, sitting, walking, sleep, and jump poses. Earlier longhair figurine and real-cat proportion notes are superseded by this implemented character. The older marketing concept is not the runtime mesh specification.
+
+UI shapes are rounded rectangles and pills. Square header controls and toolbar tiles use radius 12, store buttons and the name input use 14, and many cards and answer choices use 16. The compact stage uses radius 16 with a 12-point horizontal inset; the home puzzle CTA and puzzle question card use radius 20. These baselines are usually moderately scaled. Header pills derive their radius from half their height.
 
 ## Components
 
-- `PetStage` owns the existing room selection, Decorate, zoom, stats, interaction overlays, and editor controls. React Native keeps these touch targets and accessible menus around the native scene.
-- `NativeRoomScene` renders room objects and the cat with Filament. Solid furniture and room bounds participate in collision handling; movable balls, yarn, and mice use Bullet bodies.
-- `NativeCatActor` plays the original 35 actions plus a separate sofa sitting clip in orange, grey, and white coats. Walk phase advances with actual travel distance. Preserve sofa cushion landings, arrival poses, and action completion callbacks when changing motion. Live paw IK and active ragdoll joints are not implemented.
-- `NativeRoomPreview` renders the same catalog models for purchase previews. Static store thumbnails, control artwork, and OS launch branding remain appropriate UI assets.
-- Care cards, the activities menu, and the puzzle CTA retain their eligibility, completion, reward, and navigation behavior. Backgrounding or covering the room pauses native playback. Reduce Motion retains completion without continuous travel.
+Reuse the existing components and their state handling rather than copying only their appearance.
 
-The native catalog contains 292 GLBs, including 288 inventory IDs, three cat coats, and airflow, under the 60 MiB asset budget. Keep catalog IDs and saved placements stable when extending the world. Engine details and verification live in [native-room-engine.md](docs/native-room-engine.md); migration metadata lives in [.impeccable/native-room.json](.impeccable/native-room.json).
+- [PetStage](components/pet/PetStage.tsx) coordinates the scene, gestures, object/cat menus, speech, room navigation, stats, and decoration dock. Native hit testing and React Native controls must continue to agree after zooming or moving objects.
+- [PetStatsPanel](components/pet/PetStatsPanel.tsx) shows fed, happiness, and wisdom rings with percentages. Tapping a ring opens a detail sheet. The math-stats shortcut leads to topic progress. Stat changes animate while active and respect Reduce Motion.
+- [RoomActionMenu](components/pet/RoomActionMenu.tsx) uses platform-native menus through `NativeActionMenu`: SwiftUI on iOS and Material menus on Android. Retain grouped actions, disabled/destructive states, and the app's untinted icon artwork.
+- [AppIcon](components/ui/AppIcon.tsx) displays the original Blender-rendered artwork from [app-icons.ts](constants/app-icons.ts). The surrounding control supplies its accessible name. [IconText](components/ui/IconText.tsx) replaces supported inline markers with that same artwork while preserving localized word order. Use this family for new game actions.
+- [AppBottomSheet](components/ui/AppBottomSheet.tsx) uses native Expo UI presentation. Standard sheets open at half height; expanded sheets use an 88% fraction on iOS and full height on Android. Preserve scrolling, dismissal, and bottom safe-area padding.
+- [PuzzleCard](components/puzzle/PuzzleCard.tsx), [ChoiceButton](components/puzzle/ChoiceButton.tsx), and task-specific puzzle components keep the question, interaction, and feedback distinct. White answer buttons have peach outlines at rest, clear selection/result states, and a 56-point scaled minimum height. [ResultOverlay](components/puzzle/ResultOverlay.tsx) supplies the next/retry/help path. Worked visual help is free; preserve its explanation and practice flow.
+- [StoreTabBar](components/store/StoreTabBar.tsx) groups rooms, beds, toys, decor, and cat colors. The store opens a category for the current home room. Catalog cards distinguish buying, ownership, placement, and equipping. Purchase/place flows can return to decoration mode with the affected item selected. [StorePreviewSheet](components/store/StorePreviewSheet.tsx) shows a 300-point native room preview, price, purchase eligibility, saved goal, and close action. Purchase buttons have a 48-point minimum height, not a fixed height.
+- [GameHeaderStats](components/economy/GameHeaderStats.tsx) currently displays coins and streak. Lives remain in game state but are not rendered by this header. Supported real-money coin-pack flows pass through `ParentGateSheet`; room goods use game coins. Keep purchase feedback and unaffordable states explicit. Feeding is free.
+- [Onboarding](app/onboarding/name-pet.tsx) offers English/Latvian selection, cat coat choice, a named input with a character count, and a bottom continue action. Cloud restore candidates can replace this form with a restore choice. [Settings](app/settings/index.tsx) groups language, graphics/diagnostics, privacy, licenses, and data management in bordered white sections.
+- [SplashGate](components/branding/SplashGate.tsx) keeps the cream branding screen and cat visible while assets and initial scenes prepare. Its bar reflects loading progress. Preserve the still-to-native-cat transition and timeout recovery. Prepared home rooms switch directly; unpainted scenes retain the outgoing view until ready.
+
+The live room, store preview, and cat portraits use Filament models. `NativeCatActor` reads authored timings from [clips.json](scripts/3d/clips.json), currently 37 clips per coat including `sit`, `wash`, and `batToy`. Walking follows travel distance; rest/play holds the actual arrival pose. Limb IK is baked during authoring, not a live runtime IK or active ragdoll system. Bullet handles movable toy bodies and contact with the controlled cat and room obstacles. Feeding props and effects, curtains, fridge doors/lights, lamps, weather, and airflow have their own state and pause rules.
+
+Backgrounding and hidden rooms pause ongoing native updates. Reduce Motion suppresses continuous travel and effects such as lightning while preserving action completion. [Simple graphics](lib/graphics-mode.ts) provides still-image room/object/cat fallbacks and explains previews that require 3D. An explicit graphics choice persists; automatic crash recovery applies for the session. Keep fallback care callbacks completing so controls do not remain blocked.
+
+Asset counts and sizes change with the catalog and belong in generated reports or engine checks, not permanent visual rules. Use [native-model-sources.ts](constants/native-model-sources.ts), [inventory.json](scripts/3d/inventory.json), and the actual GLBs to verify coverage. Technical behavior and checks are documented in [native-room-engine.md](docs/native-room-engine.md) and [cat-animations.md](docs/cat-animations.md).
 
 ## Do's and Don'ts
 
-- Preserve the incumbent geometry, material palette, controls, and puzzle CTA hierarchy.
-- Keep cat scale uniform, wall-mounted objects aligned, and saved placement anchors stable.
-- Check movement and object contact in a running native client when changing animation, physics, or camera mapping.
-- Reuse native models for live rooms, store room previews, and cat portraits.
-- Do not replace the room with a new composition or introduce a new shell identity under this migration contract.
-- Do not treat screenshots as evidence of gait quality, Android interactions, or real-device performance.
-- Do not describe the rigged animation controller as live IK or active ragdoll simulation.
-
-### Longhair cat revision
-
-The user supplied a longhair figurine reference on 2026-10-05. Use its broad cheek line, large glossy eyes, thin pointed pink ears, connected chest and forelegs, and rounded hind haunches while retaining orange/cream, grey/white and white game coats. Smooth skin transitions must remain intact in motion. Room geometry, UI, saved placements and action meanings retain their existing design. Review exports in `docs/art/native-cat-rebuild/`; model construction and rig checks are documented in `docs/native-room-engine.md`.
-
-The user's later real-cat photos guide the body proportions. Keep a continuous neck-to-shoulder line, a full ribcage with a narrower waist, and hips tucked beneath the sloping back when seated. Standing poses retain a level back. The expressive face remains stylized. The editable finished rig is `prototypes/cat-model/cat-orange.blend`.
-
-The latest visual reference is a compact cartoon quadruped: a large rounded head, short neck, thick rounded legs and paws, smooth torso, upright hooked tail, small black eyes, clean cream and brown patches, and a thin red collar. Apply these proportions to every coat. The original Blender mesh and anatomical rest skeleton are generated together, with a sealed body, blended shoulder/hip weights and a dedicated coat texture. No paid or downloaded cat model is required.
+- Do preserve the cozy room identity, shared UI palette, current cat proportions, and clear puzzle-action hierarchy.
+- Do keep saved layouts, item IDs, wall mounting, and screen-to-world placement consistent.
+- Do preserve English/Latvian copy, screen-reader names/values/states, room-navigation accessibility actions, and editor nudges. Hidden rooms and hidden stats must stay out of the accessibility tree.
+- Do keep controls comfortably tappable. Room arrows are 44 points, shared header controls use a scaled 44 baseline, and major actions generally use 48 or 56. These are observed component values, not proof that every target meets one universal minimum.
+- Do check small-screen layout, larger system text, both languages, Reduce Motion, simple graphics, and native menu/sheet behavior when changing their controls.
+- Do validate motion, object contact, lighting, and camera changes in a running native client. Review physical-device shadows separately from simulator output.
+- Don't restore the removed home care-card row, room picker, or fixed zoom button based on old screenshots.
+- Don't treat historical migration approval, catalog counts, or screenshots as current runtime verification.
+- Don't replace the current character with the earlier longhair, dog/video, or marketing-concept design.
+- Don't claim a complete dark theme, two-column tablet UI, live paw IK, or active ragdoll simulation unless those are implemented and verified.

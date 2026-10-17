@@ -1,76 +1,66 @@
-# Math Mews — GitHub Pages (privacy policy)
+# Public release pages
 
-**URL:** https://aigarspeda.github.io/MathMews/privacy.html
+The public site is hosted by GitHub Pages at:
 
----
+- https://aigarspeda.github.io/MathMews/privacy.html
+- https://aigarspeda.github.io/MathMews/support.html
+- https://aigarspeda.github.io/MathMews/delete-account.html
 
-## Setup (one-time)
+These URLs are configured in `.env` and `.env.example`. Copy the same public
+values to the EAS build environment. The pages are release drafts. Confirm the
+publisher's legal name, monitored support email, launch-country child privacy
+requirements, deletion timeframe and retained-record periods before submission.
+Keep the draft banner until those decisions and the deletion workflow are complete.
 
-1. Open **Settings → Pages**:  
-   https://github.com/AigarsPeda/MathMews/settings/pages
+## Update the pages
 
-2. Under **Build and deployment → Source**, choose **GitHub Actions** (not “Deploy from a branch”).
+Fill `EXPO_PUBLIC_PUBLISHER_NAME` and `EXPO_PUBLIC_SUPPORT_EMAIL` in `.env`.
+Edit `legal/privacy-policy-content.ts` for the shared English/Latvian policy,
+`constants/legal.ts` for its date, `scripts/backend/generate-legal-pages.mjs` for
+support/deletion content and `docs/site.css` for styling. Then run:
 
-3. Push this repo (includes `.github/workflows/github-pages.yml`).
-
-4. **Actions** → **Deploy GitHub Pages** → confirm it runs green, or use **Run workflow**.
-
-5. Wait 1–2 minutes. Refresh:  
-   https://aigarspeda.github.io/MathMews/privacy.html
-
-**Why GitHub Actions?** Branch deploy runs a built-in workflow on **every** push to `main`. Our workflow only runs when files under **`docs/`** change (or the workflow file itself).
-
----
-
-## If you see 404
-
-| Check | Fix |
-| ----- | --- |
-| Source is still “Deploy from a branch” | Switch to **GitHub Actions** (see above) |
-| Workflow never ran | Push a change under `docs/`, or **Actions → Run workflow** |
-| Just saved | Wait 2–5 minutes for first deploy |
-| File missing | Confirm [docs/privacy.html](https://github.com/AigarsPeda/MathMews/blob/main/docs/privacy.html) exists on `main` |
-
-**Do not** use the “Static HTML” / “Jekyll” buttons on the Pages screen.
-
----
-
-## Deploy stuck / failed
-
-If **Deploy GitHub Pages** fails with *“in progress deployment”*:
-
-1. **Actions** → cancel any **running** Pages workflows.
-2. Wait **10–15 minutes**.
-3. **Re-run** the latest failed job (one at a time).
-
-If a **`gh-pages`** branch exists from old experiments, you can delete it:  
-https://github.com/AigarsPeda/MathMews/branches
-
----
-
-## App Store Connect
-
-Privacy Policy URL:
-
-```
-https://aigarspeda.github.io/MathMews/privacy.html
+```sh
+npm run legal:generate
 ```
 
-Same as `PRIVACY_POLICY_URL` in `constants/legal.ts`.
+The generator writes `docs/index.html`, `docs/privacy.html`, `docs/support.html`
+and `docs/delete-account.html`. It reads only the selected public identity fields;
+server credentials are never inserted into the pages. Regenerate and commit the
+HTML whenever its source or contact details change. Do not commit `.env`.
 
----
+## Deletion requests
 
-## When you change the policy
+Once a valid support email is configured, the deletion page displays a prominent
+email request button. The visitor sends the email from their own mail app, without
+reinstalling Math Mews or using a GitHub account. The site itself does not collect
+or submit account data. A mailbox and an operational process are still required.
 
-1. `docs/privacy.html` — public English page (triggers deploy)
-2. `legal/privacy-policy-content.ts` — in-app EN + LV (no deploy)
-3. `constants/legal.ts` — `PRIVACY_POLICY_LAST_UPDATED` (no deploy)
-4. Push to `main`
+Before release, confirm the mailbox is monitored, test the email links, verify
+ownership through the linked provider, track requests and notify the requester
+when complete. An account ID alone must never authorize deletion. Do not ask for
+passwords or authentication codes, or collect requests in public GitHub issues.
+Anonymous accounts with lost devices may not have sufficient ownership proof.
+Activate and test the prepared Supabase account deletion workflow separately.
+An email request button does not deploy the server worker or remove accounts.
 
-Only edits under `docs/` trigger a new Pages deploy. App-only policy changes do not.
+## Deployment
 
----
+The existing `.github/workflows/github-pages.yml` runs on pushes to `main` or
+manual dispatch. Repository Settings → Pages → Source must be **GitHub Actions**.
+The local workflow change stages only the four HTML pages and `site.css`, plus an
+empty `.nojekyll` file. It excludes development notes, benchmarks and artwork.
+This workflow restriction is prepared locally but was not published: the current
+GitHub OAuth login has `repo` scope but lacks `workflow` scope. The live workflow
+still publishes the repository’s `docs/` folder. The five public HTML/CSS files
+were published separately; no local development notes or artwork were uploaded.
+There is no custom domain, build service, database or paid hosting requirement.
+The public repository's ordinary code visibility is independent of Pages.
 
-## Support email
+After deployment, open all three HTTPS URLs while signed out and check both
+languages, navigation, contact and deletion links on a phone. Only use the final,
+reviewed versions in App Store Connect and Play Console. GitHub logs visitor IP
+addresses for security; the policy discloses this hosting behavior.
 
-Update `SUPPORT_EMAIL` in `constants/legal.ts` and the mailto in `privacy.html` before launch.
+Publication commit: `e5f6e22d2e6c657f79e99fe86121951d3fd1e3ac` contains only
+the four HTML pages and stylesheet. Granting GitHub CLI workflow permission or
+saving the prepared workflow through GitHub is a separate publisher action.

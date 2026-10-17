@@ -7,7 +7,7 @@ type SupabaseExtra = {
   supabaseAnonKey?: string;
 };
 
-function resolveSupabaseConfig(): { url: string; anonKey: string } {
+export function resolveSupabaseConfig(): { url: string; anonKey: string } {
   const extra = Constants.expoConfig?.extra as SupabaseExtra | undefined;
 
   const url = (
@@ -51,6 +51,7 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured()
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: false,
+        flowType: 'pkce',
       },
     })
   : null;

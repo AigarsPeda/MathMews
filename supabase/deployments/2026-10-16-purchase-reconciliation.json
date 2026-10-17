@@ -1,0 +1,92 @@
+{
+  "verified_on": "2026-10-16",
+  "supabase_project": "jcfppquntstgxubtlvqo",
+  "revenuecat_project_id": "projfbac6be5",
+  "function": "reconcile-purchases",
+  "jwt_verification": true,
+  "secrets_saved_and_digests_verified": [
+    "REVENUECAT_SECRET_API_KEY",
+    "REVENUECAT_PROJECT_ID"
+  ],
+  "live_test_environment": "sandbox",
+  "first_sweep": {
+    "purchase_items": 6,
+    "event_items": 6,
+    "recovered_coins": 500,
+    "before_balance": 2700,
+    "after_balance": 3200,
+    "before_revision": 7,
+    "after_revision": 8
+  },
+  "full_replay": {
+    "purchase_items": 6,
+    "event_items": 6,
+    "after_balance": 3200,
+    "after_revision": 8,
+    "duplicate_credits": 0
+  },
+  "worker_failures": 0,
+  "review_items": 0,
+  "quarantined_events": 0,
+  "anonymous_worker_http_status": 401,
+  "service_worker_http_status": 200,
+  "hosted_transactional_regression": "passed_all_fixtures_rolled_back",
+  "backend_unit_tests": 40,
+  "running_ios_coin_balance": 3200,
+  "cron_status": "disabled_manual_only_by_user_choice",
+  "account_deletion_worker": "not_deployed",
+  "source_sha256": {
+    "supabase/functions/reconcile-purchases/index.ts": "7374ddaddb3ec76897735deaad63f426dcb6dcf6e041df497368ee5595405739",
+    "supabase/functions/reconcile-purchases/handler.ts": "f454995b672476314590de2f88644d23e952c7053fbe25a7b9bb2f5fa53be824",
+    "supabase/functions/reconcile-purchases/revenuecat.ts": "1af8e951ddc27b6a187c1675030b1faf4a6eaadb567daae5a1f319b7a19cf3ad",
+    "supabase/functions/reconcile-purchases/worker.ts": "5a538a309cfdea9aac914b486e00863867c5bc9469f2f37fee2cf9a36c028dc2",
+    "supabase/migrations/202610160009_account_deletion.sql": "af859e6dca1b26810151fb578719918de8e5eeac123be9d35a4003b290c5e5c6",
+    "supabase/migrations/202610160010_purchase_reconciliation.sql": "ee3efa6636125ff87fb4c84303d21da5a72182dc0eacf1cf051c04341fc77e6c",
+    "supabase/migrations/202610160011_reconciliation_service_authorization.sql": "9fda91058ef43d4d1ca162be0ab9419a8d2a4f799b21b2ab803bbf9bcda8d875"
+  },
+  "vault_service_credential_saved": false,
+  "latest_manual_retest": {
+    "verified_on": "2026-10-16",
+    "backend_unit_tests_passed": 40,
+    "backend_typecheck": "passed",
+    "targeted_strict_lint": "passed",
+    "hosted_rollback_regression": "passed",
+    "live_requests": [
+      {
+        "label": "unauthorized",
+        "status": 401,
+        "result": {
+          "error": "service_authorization_required"
+        }
+      },
+      {
+        "label": "purchase_scan",
+        "status": 200,
+        "result": {
+          "pages": 1,
+          "processed": 6,
+          "quarantined": 0,
+          "review": 0,
+          "failed": 0
+        }
+      },
+      {
+        "label": "history_scan",
+        "status": 200,
+        "result": {
+          "pages": 1,
+          "processed": 6,
+          "quarantined": 0,
+          "review": 0,
+          "failed": 0
+        }
+      }
+    ],
+    "wallet_balance_before": 3200,
+    "wallet_balance_after": 3200,
+    "wallet_revision_before": 8,
+    "wallet_revision_after": 8,
+    "running_ios_coin_balance": 3200,
+    "cron_enabled": false
+  }
+}

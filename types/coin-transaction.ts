@@ -1,4 +1,10 @@
 export type CoinTransactionKind =
+  | "admin_adjustment"
+  | "purchase_grant"
+  | "purchase_refund"
+  | "purchase_refund_reversed"
+  | "legacy_import"
+  | "starter_grant"
   | "iap_purchase"
   | "puzzle_reward"
   | "pet_feed"

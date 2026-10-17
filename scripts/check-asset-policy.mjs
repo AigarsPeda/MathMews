@@ -13,7 +13,8 @@ try {
   fs.mkdirSync(native, { recursive: true });
   fs.mkdirSync(path.join(fixture, 'scripts/3d'), { recursive: true });
   fs.writeFileSync(path.join(fixture, 'scripts/3d/inventory.json'), JSON.stringify({ entries: [{ id: 'test-item' }] }));
-  for (const id of ['test-item', 'cat-orange', 'cat-grey', 'cat-white', 'airflow', 'bowl-food-spill']) {
+  for (const id of ['test-item', 'cat-orange', 'cat-grey', 'cat-white', 'airflow', 'bowl-food-spill',
+    ...['feedingTile', 'feedingPebble', 'foodTrailTray', 'kibbleDispenser', 'lickingPad'].map(id => `${id}-eating-effect`)]) {
     fs.writeFileSync(path.join(native, `${id}.glb`), 'fixture');
   }
   const summary = path.join(fixture, 'summary.md');
