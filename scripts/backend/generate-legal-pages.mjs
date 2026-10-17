@@ -3,6 +3,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
 import process from 'node:process';
+import { createHash } from 'node:crypto';
 import { siteContent } from './public-site-content.mjs';
 
 const compile = source => ts.transpileModule(source, {
@@ -30,6 +31,7 @@ const filenames = ['index.html', 'privacy.html', 'support.html', 'delete-account
 const outputIndex = process.argv.indexOf('--out-dir');
 if (outputIndex !== -1 && !process.argv[outputIndex + 1]) throw new Error('--out-dir requires a directory');
 const output = outputIndex === -1 ? 'docs' : process.argv[outputIndex + 1];
+const stylesheetVersion = createHash('sha256').update(await fs.readFile('docs/site.css')).digest('hex').slice(0, 12);
 
 function identity(locale) {
   const text = siteContent[locale];
@@ -77,7 +79,7 @@ function renderPage(filename, locale, index) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="${escape(text.intros[index])}">
 <title>${escape(index === 0 ? 'Math Mews' : text.titles[index])}${index === 0 ? '' : ' | Math Mews'}</title>
-<link rel="stylesheet" href="${prefix}site.css">
+<link rel="stylesheet" href="${prefix}site.css?v=${stylesheetVersion}">
 <link rel="icon" type="image/png" href="${prefix}assets/cat.png">
 <link rel="alternate" hreflang="${locale === 'en' ? 'lv' : 'en'}" href="${alternate}">
 </head>

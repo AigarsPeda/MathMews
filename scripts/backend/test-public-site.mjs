@@ -39,7 +39,7 @@ test('language switches preserve the page, and every local link and asset resolv
     assert.ok(html.includes(`href="${locale==='en'?'lv/':'../'}${file}" lang="${locale==='en'?'lv':'en'}"`));
     for(const [,attribute] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
       if(/^(https:|mailto:|#)/.test(attribute))continue;
-      const resolved=path.resolve(output,path.dirname(relative),attribute);
+      const resolved=path.resolve(output,path.dirname(relative),attribute.split(/[?#]/)[0]);
       assert.ok(resolved.startsWith(output+path.sep));assert.ok(fs.existsSync(resolved),`${relative}: missing ${attribute}`);
     }
   }
