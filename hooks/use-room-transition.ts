@@ -38,10 +38,12 @@ export function useRoomTransition(pet: PetProfile, onVisit: (room: HomeRoomId) =
     finish(transition.id);
   }, [finish, progress, transition]);
   useEffect(() => {
-    if (transition && (!active || reduceMotion)) {
+    // Following the cat can change rooms before a cold destination has painted.
+    // Its late readiness must not keep the new destination hidden.
+    if (transition && (!active || reduceMotion || (pet.homeRoomId ?? 'livingRoom') !== transition.destination)) {
       progress.set(1);
       finish(transition.id);
     }
-  }, [active, finish, progress, reduceMotion, transition]);
+  }, [active, finish, pet.homeRoomId, progress, reduceMotion, transition]);
   return { transition, progress, visit, ready };
 }

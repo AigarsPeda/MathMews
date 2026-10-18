@@ -1374,3 +1374,30 @@ for (const reduced of [false, true]) {
   assert.equal(render().activity, null, 'The cat gets out of bed after a hidden automatic arrival');
 }
 console.log('Verified automatic nighttime metadata survives hidden room entry and pending bed commands, with morning wake-up in 3D and Reduce Motion.');
+
+// A walking command may contain jumps. Editing must wait for a safe floor arrival.
+{
+  slots.forEach(value=>value?.cleanup?.());slots.length=0;timers.clear();
+  visibility={active:true,reduceMotion:false};roomVisible=true;enabled=true;
+  const world={width:390,height:420,catScale:.45,radius:.30,home:[-1.4,nativeRoom.FLOOR_Y,0],objects:[{
+    instanceId:'books',modelId:'booksPile',scale:1,heading:0,position:[0,nativeRoom.FLOOR_Y,0],solid:true,movable:false,
+    min:[-.12,nativeRoom.FLOOR_Y,-2.5],max:[.12,nativeRoom.FLOOR_Y+.20,2.5],
+  }]};
+  hookRoom={...room,width:390,height:420,petSize:80,period:'morning',homeRoomId:'livingRoom',nativeWorld:world,nativeStepCompletion:true};
+  render();reportCat(world.home);render();render().startActivity('roomTravel','kitchen');render();advance(0);render();
+  let state=render().activity, step=state.plan.steps[state.stepIndex];
+  assert.ok(step.native.legs?.some(leg=>leg.kind==='hop'),'The real scheduler publishes the traversal itinerary');
+  const legs=step.native.legs, elapsed=legs[0].duration+.4;
+  const halfway=load('@/utils/native-cat-locomotion').catMotionSample(legs,elapsed).position;
+  render().updateNativeHeight(halfway,elapsed);
+  visibility={active:false,reduceMotion:false};render();visibility={active:true,reduceMotion:false};render();render();
+  state=render().activity;step=state.plan.steps[state.stepIndex];
+  assert.equal(step.native.elapsed,elapsed,'Resuming retains the jump clock instead of planning a floor path from the air');
+  render().stopActivity();render();advance(0);render();
+  assert.equal(render().activity.plan.kind,'roomTravel','A decoration request waits for traversal to finish');
+  const before=roomArrivals.length;
+  finishClockStep();render();advance(0);render();advance(0);render();
+  assert.equal(roomArrivals.length,before,'An interrupted departure does not switch rooms after landing');
+  assert.equal(render().activity,null,'The editor is released only after the cat has landed safely');
+}
+console.log('Verified traversal scheduling, pause/resume clock, queued editing and safe interrupted room departures.');

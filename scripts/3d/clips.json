@@ -110,6 +110,8 @@
   "walkTowardDiagonal": [24, 24],
   "jumpOn": [24, 24],
   "jumpOff": [24, 24],
+  "hop": [24, 24],
+  "turn": [24, 24],
   "curlUp": [
     24,
     24

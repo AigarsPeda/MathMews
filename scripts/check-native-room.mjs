@@ -730,6 +730,45 @@ for (const reduced of [false, true]) {
 }
 console.log('Verified actual renderer arrival and eating completion, slow frames, pause, exact endpoints and Reduce Motion.');
 
+// Execute the real drawing callback across a multi-leg route, not just its planner.
+{
+  const motion = load('@/utils/native-cat-locomotion');
+  const path = [[-.8,w.FLOOR_Y,0],[-.4,w.FLOOR_Y,0],[.4,w.FLOOR_Y,0],[.8,w.FLOOR_Y,0]];
+  const legs = [
+    {kind:'walk',path:path.slice(0,2),duration:.8},
+    {kind:'hop',path:path.slice(1,3),duration:1.6,turnDuration:.4,arcHeight:.25},
+    {kind:'walk',path:path.slice(2),duration:.8},
+  ];
+  const duration = legs.reduce((sum,leg)=>sum+leg.duration,0);
+  for(const fps of [30,60,120]) {
+    slots=[];applies=[];
+    const positions={value:path[0]}, times={value:{name:'idle',time:0}}, arrivals=[];
+    const props={playback:{kind:'segment',segment:registry.getSegment('idle')},active:true,world:empty,
+      activityKey:'traversal',positionValue:positions,animationTimeValue:times,
+      travel:{path,legs,duration,distance:1.6,jump:false,awaitCompletion:true},onRoomStepComplete:(key,p)=>arrivals.push(p)};
+    render(props);
+    const names=new Set();let previous=path[0];
+    for(let frame=0;frame<Math.ceil(duration*fps)+2;frame++) {
+      renderFrame({timeSinceLastFrame:1/fps});names.add(times.value.name);
+      assert.ok(w.pathLength([previous,positions.value])<.15,'The real actor never teleports between walk/turn/hop legs');
+      previous=Array.from(positions.value);
+      if(frame===Math.floor(fps*.9)) {
+        const paused=Array.from(positions.value);render({...props,active:false});
+        for(let i=0;i<10;i++)renderFrame({timeSinceLastFrame:1/fps});
+        assert.deepEqual(Array.from(positions.value),paused,'Backgrounding freezes the exact traversal pose');render(props);
+      }
+    }
+    assert.ok(names.has('walk')&&names.has('hop')&&names.has('turn'),'All route phases use their actual exported clips');
+    assert.equal(arrivals.length,1);assert.ok(w.hasNativeArrived(arrivals[0],path.at(-1)));
+    assert.ok(w.hasNativeArrived(motion.catMotionSample(legs,duration).position,path.at(-1)));
+    slots=[];arrivals.length=0;
+    render({...props,reduceMotion:true,travel:{...props.travel,legs:undefined,path:[path.at(-1)],distance:0}});
+    for(let i=0;i<fps;i++)renderFrame({timeSinceLastFrame:1/fps});
+    assert.equal(arrivals.length,1,'Reduce Motion completes the journey without hops or turning');
+  }
+}
+console.log('Verified actual walk/turn/hop playback, no teleports, pause/resume, final arrival once and Reduce Motion at 30/60/120 FPS.');
+
 // A longer placed-bowl meal must extend native playback and its shared spill clock.
 {
   const { createRoomActivitySegment } = load('@/pet-display/registry/cat-model-registry');
@@ -809,7 +848,8 @@ const sharedReroutePath = new Proxy([staleReportedStart, destination], {
 const reroutedProps = { ...movingProps, world: changedWorld, travel: { path: sharedReroutePath, distance: w.pathLength([staleReportedStart, destination]), duration: 2, jump: false, replanned: true } };
 render(reroutedProps); renderFrame({ timeSinceLastFrame: 1 / 60 });
 assert.ok(w.pathLength([beforeReroute, livePosition.value]) < .03, 'Replanning starts at the exact rendered cat position, even with delayed RN reports');
-for (let i = 0; i < 130; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
+const rerouteBudget = 2 + load('@/utils/native-cat-turn').catTurnDuration(Math.PI) + .1;
+for (let i = 0; i < Math.ceil(rerouteBudget * 60); i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
 assert.ok(w.pathLength([destination, livePosition.value]) < 1e-6, 'A reroute reaches the new destination');
 render({ ...reroutedProps, travel: undefined }); renderFrame({ timeSinceLastFrame: 1 / 60 });
 assert.ok(w.pathLength([destination, livePosition.value]) < 1e-6, 'Ending a blocked/cancelled route never snaps the cat home');

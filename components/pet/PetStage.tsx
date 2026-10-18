@@ -12,6 +12,7 @@ import { GestureDetector } from "react-native-gesture-handler";
 import { useRoomCamera } from "@/hooks/use-room-camera";
 import { NativeRoomScene, type NativeRoomPicker } from "@/components/pet/native/NativeRoomScene";
 import { RoomPlacementOverlay } from '@/components/pet/RoomPlacementOverlay';
+import { RoomActivityNotice } from '@/components/pet/RoomActivityNotice';
 import { NativeRoomEditor } from "@/components/pet/NativeRoomEditor";
 import { buildNativeRoomWorld, nativeObjectPlacementOffset, nativeRoomEdge, projectWorld, ROOM_SPAN, NATIVE_MODEL_CATALOG, type NativeRoomObject, type Vec3 } from "@/utils/native-room-world";
 import { createRoomPlacementResolver, roomItemAnchor, type RoomPlacementFeedback } from '@/utils/room-item-placement';
@@ -30,7 +31,7 @@ import { getRoomItemRotation } from "@/utils/room-rotation";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { roomActivityStepKey, roomOffsetToPoint, type RoomActivityCommand, type RoomActivityKind } from "@/utils/room-activities";
 import { createRoomActivitySegment } from "@/pet-display/registry/cat-model-registry";
-import { useRoomActivity } from "@/hooks/use-room-activity";
+import { useRoomActivity, type BlockedRoomActivity } from "@/hooks/use-room-activity";
 import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
 import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
@@ -122,6 +123,13 @@ function avatarDisplayWidth(
   return usesNativeCat ? displayWidth : avatarWidth;
 }
 
+export type RoomActivityFailureNotice = {
+  roomId: HomeRoomId;
+  target?: string;
+  onMove: () => void;
+  onDismiss: () => void;
+};
+
 type PetStageProps = {
   roomToolbar?: { decorating: boolean; onDecoratingChange: (roomId: HomeRoomId, active: boolean) => void };
   decorationEntry?: RoomDecorationEntry | null;
@@ -163,6 +171,7 @@ type PetStageProps = {
   onRoomActivityChange?: (active: boolean, returnHome: () => void) => void;
   onFeed?: () => void;
   onRoomActivityCompleted?: (kind: RoomActivityKind, instanceId?: string) => void;
+  onRoomActivityFailure?: (notice: RoomActivityFailureNotice) => void;
   onPlay?: (activity: CatPlayActivity) => void;
   speechMessage?: string | null;
   playback: PetPlaybackState;
@@ -243,6 +252,7 @@ export function PetStage({
   onRoomActivityChange,
   onFeed,
   onRoomActivityCompleted,
+  onRoomActivityFailure,
   onPlay,
   speechMessage,
   playback,
@@ -525,13 +535,15 @@ export function PetStage({
     setWaitingToDecorate(false);
     setDecorating(true);
   }, [setWaitingToDecorate, setDecorating]);
-  const { activity: roomActivity, scale: activityScale, facing: activityFacing,
+  const blockedActivityHandler = useRef<((failure: BlockedRoomActivity) => void) | null>(null);
+  const { activity: roomActivity, blockedActivity, clearBlockedActivity, scale: activityScale, facing: activityFacing,
     objectX, objectY, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep } = useRoomActivity(activityOptions,
     compact && usesNativeCat && graphicsMode !== "loading" && catPresent && !decorating && !roomActivityBlocked,
     lastInteractionAt, petSceneX, petSceneY, instanceId => {
       const door = roomPlacedDecorations.find(item => item.instanceId === instanceId);
       if (door?.doorDestination) onVisitHomeRoom?.(door.doorDestination);
-    }, onFeed, onSendCatToRoom, roomVisible, decorating, handleReadyToDecorate, onRoomActivityCompleted);
+    }, onFeed, onSendCatToRoom, roomVisible, decorating, handleReadyToDecorate, onRoomActivityCompleted,
+    failure => blockedActivityHandler.current?.(failure));
   const sofaApproach = roomActivity?.plan.steps[roomActivity.stepIndex]?.sofaApproach;
   const handledRoomCommand = useRef(0);
   useEffect(() => {
@@ -737,6 +749,7 @@ export function PetStage({
   }, [roomPlacedDecorations, roomActivity, returnHome, onTogglePlacedDecorationOpen]);
 
   const startRoomCommand = useCallback((kind: RoomActivityKind, instanceId?: string) => {
+    clearBlockedActivity();
     if (kind === 'drawerHide' || kind === 'cupboardHide') {
       const drawer = roomPlacedDecorations.find(item => item.instanceId === instanceId);
       if (!drawer || !onTogglePlacedDecorationOpen) return;
@@ -753,7 +766,7 @@ export function PetStage({
     const interactionAt = onRoomInteraction?.();
     if (onRequestRoomCommand) onRequestRoomCommand(homeRoomId, kind, instanceId, interactionAt ?? undefined);
     else startActivity(kind, instanceId, interactionAt ?? undefined);
-  }, [homeRoomId, onRequestRoomCommand, roomPlacedDecorations, onTogglePlacedFridge, onTogglePlacedDecorationOpen, onRoomInteraction, startActivity]);
+  }, [clearBlockedActivity, homeRoomId, onRequestRoomCommand, roomPlacedDecorations, onTogglePlacedFridge, onTogglePlacedDecorationOpen, onRoomInteraction, startActivity]);
 
   const buildRoomItemMenuActions = useCallback(
     (item: RoomLayerItem) => {
@@ -1070,6 +1083,25 @@ export function PetStage({
     }
     return t(item.kind === "bed" ? `store.bedName.${bedId}` : item.kind === "toy" ? `store.toyName.${item.toyId}` : `store.decorationName.${item.decorationId}`).replace(/\n/g, " ");
   }, [bedId, roomPlacedDecorations, t]);
+  const blockedItem = blockedActivity?.instanceId ? layerOrder.find(item =>
+    (item.kind === 'bed' ? 'bed' : item.instanceId) === blockedActivity.instanceId) : undefined;
+  const moveBlockedFurniture = useCallback((item?: RoomLayerItem) => {
+    clearBlockedActivity();
+    setSelectedMoveItem(item ?? blockedItem ?? null);
+    setShowEditor(false);
+    setPlacementFeedback(undefined);
+    setRotationPreview(null);
+    setSpotlightPreview(null);
+    if (roomActivity) { setWaitingToDecorate(true); stopActivity(); }
+    else setDecorating(true);
+  }, [blockedItem, clearBlockedActivity, roomActivity, setDecorating, setSelectedMoveItem,
+    setShowEditor, setPlacementFeedback, setRotationPreview, setSpotlightPreview, setWaitingToDecorate, stopActivity]);
+  const notifyBlockedActivity = useCallback((failure: BlockedRoomActivity) => {
+    const item = layerOrder.find(item => (item.kind === 'bed' ? 'bed' : item.instanceId) === failure.instanceId);
+    onRoomActivityFailure?.({ roomId: homeRoomId, target: item ? itemLabel(item) : undefined,
+      onMove: () => moveBlockedFurniture(item), onDismiss: clearBlockedActivity });
+  }, [clearBlockedActivity, homeRoomId, itemLabel, layerOrder, moveBlockedFurniture, onRoomActivityFailure]);
+  useEffect(() => { blockedActivityHandler.current = notifyBlockedActivity; }, [notifyBlockedActivity]);
   const itemPicture = (item: RoomLayerItem, pictureSize = 64) => {
     const size = moderateScale(pictureSize);
     if (item.kind === "bed") return <Image source={getCatBedSource(bedId)} style={{ width: size, height: size }} resizeMode="contain" />;
@@ -1462,6 +1494,11 @@ export function PetStage({
                 <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
               </Pressable>
             ) : null}
+            {blockedActivity && !onRoomActivityFailure && roomVisible && catPresent && !decorating && !roomActivityBlocked && !sceneSlide &&
+              <View style={styles.activityNotice}>
+                <RoomActivityNotice name={name} target={blockedItem ? itemLabel(blockedItem) : undefined}
+                  onMove={() => moveBlockedFurniture(blockedItem)} onDismiss={clearBlockedActivity} />
+              </View>}
             <RoomControlsTransition visible={decorating} instant={reduceMotion || !roomVisible} offsetY={-6}
               style={[styles.editorToolbar, { top: moderateScale(roomToolbar ? 10 : 60) }]}>
               {onOpenStore && !roomToolbar && <Pressable style={styles.editorToolbarButton} disabled={!!sceneSlide}
@@ -1573,6 +1610,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(20), backgroundColor: GameColors.card,
     borderWidth: 1, borderColor: GameColors.cardBorder,
   },
+  activityNotice: { position: 'absolute', top: moderateScale(10), left: moderateScale(10), right: moderateScale(10), zIndex: ROOM_MENU_OPEN_Z_INDEX + 4 },
   editorToolbar: { position: "absolute", left: moderateScale(10), right: moderateScale(10), zIndex: ROOM_MENU_OPEN_Z_INDEX + 4, flexDirection: "row", gap: 8 },
   editorToolbarButton: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, minHeight: 48, paddingHorizontal: 8, paddingVertical: 6, backgroundColor: GameColors.card, borderRadius: 16, borderWidth: 1, borderColor: GameColors.cardBorder },
   editorWelcome: { flexDirection: "row", alignItems: "center", padding: 14, gap: 10, minHeight: 104 },

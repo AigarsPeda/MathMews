@@ -472,13 +472,13 @@ def pose_cat(rig, state, t):
         for side, ear in zip((-1,1), rig['ears']):
             ear.rotation_euler.x += .18 * pulse(t,.22 + side*.018,.055)
         rig['feet'][1].location.z += .045 * pulse(t,.58,.12)
-    if state.startswith('walk'):
+    if state.startswith('walk') or state == 'turn':
         standing = 1
         # Lateral-sequence feline walk: hind, same-side front, opposite hind,
         # opposite front. Planted paws move backward at the runtime's stride
         # speed; low, smooth swings avoid a high-stepping marching gait.
         yaw = {'walk': 107.5, 'walkAwayDiagonal': 152.5, 'walkAway': 197.5,
-               'walkTowardDiagonal': 62.5, 'walkToward': 17.5}[state]
+               'walkTowardDiagonal': 62.5, 'walkToward': 17.5}.get(state, 107.5)
         root.rotation_euler.z = math.radians(yaw)
         body.location = (.006 * math.sin(phase), .08, .59 + .004 * math.cos(phase * 2))
         body.scale = (.98, 1.40, .80)
@@ -506,28 +506,34 @@ def pose_cat(rig, state, t):
             paw.location.z = height + lift
             paw.scale.z = height
             paw.rotation_euler = (-.10 * lift / .065, 0, 0)
+            if state == 'turn':
+                paw.location.y = y + travel * .20
+                paw.location.x += .025 * math.sin(phase + offset * math.tau)
         tail.location = (0, .65, .44)
         tail.rotation_euler = (0, .08 * math.sin(phase), .10 * math.sin(phase))
-    if state in ('jumpOn', 'jumpOff'):
+    if state in ('jumpOn', 'jumpOff', 'hop'):
         # The room supplies the flight arc. Bake a planted crouch, tucked paws,
         # and landing compression rather than a second vertical translation.
         onto = state == 'jumpOn'
         settle = smoothstep((t - .70) / .30)
         launch = smoothstep(t / .20)
-        seated = settle if onto else 1 - launch
+        seated = 0 if state == 'hop' else settle if onto else 1 - launch
         standing = 1 - seated
         crouch = pulse(t, .14, .14)
         landing = pulse(t, .77, .07)
         squash = .09 * crouch + .075 * landing
         tuck = smooth_window(t, .20, .70, .10)
+        # Forepaws reach for the landing first; hind paws follow after the body.
+        front_tuck = smooth_window(t, .20, .66, .08)
+        reach = smooth_window(t, .51, .74, .08)
         root.rotation_euler.z = math.radians(197.5 + 162.5 * settle if onto else 17.5 * launch)
         body.location = (0, .08, .59 - .15 * seated - squash)
         body.scale = (.98 + .02 * seated + squash, 1.4 - .4 * seated, .8 + .2 * seated - squash)
         head.scale = (.94 + .06 * seated,) * 3
         head.location = (0, -.32 + .285 * seated, 1.02 + .08 * seated - squash)
-        head.rotation_euler = (-.10 * tuck, 0, 0)
+        head.rotation_euler = (-.10 * tuck + .06 * reach, 0, 0)
         for side, front, back in zip((-1, 1), rig['feet'], rig['back_feet']):
-            front.location = (side * .23, -.49 + .18 * seated + .14 * tuck, .12 + .06 * seated + .20 * tuck)
+            front.location = (side * .23, -.49 + .18 * seated + .14 * front_tuck - .06 * reach, .12 + .06 * seated + .20 * front_tuck)
             front.scale = (.14 + .02 * seated, .17 + .04 * seated, .12 + .08 * seated)
             back.location = (side * (.27 + .09 * seated), .43 - .27 * seated - .14 * tuck, .105 + .035 * seated + .22 * tuck)
             back.scale = (.16 + .02 * seated, .18 + .02 * seated, .105 + .045 * seated)

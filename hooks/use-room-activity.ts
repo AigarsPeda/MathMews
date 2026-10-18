@@ -20,6 +20,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cancelAnimation, Easing, useSharedValue, withDelay, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
 
 type ActivityState = { plan: RoomActivityPlan; stepIndex: number; startedAt: number };
+export type BlockedRoomActivity = { kind: RoomActivityPlan['kind']; instanceId?: string };
 type ActivityRequest = { id: number; kind: RoomActivityKind | "returnHome" | "stop"; instanceId?: string; interactionAt?: number; ambientPeriod?: WorldPeriod };
 
 /** One scheduler owns idle choices, commands, and the visible journey home. */
@@ -36,6 +37,7 @@ export function useRoomActivity(
   preservePositionWhenDisabled = false,
   onStopped?: () => void,
   onCompleted?: (kind: RoomActivityKind, instanceId?: string) => void,
+  onBlocked?: (failure: BlockedRoomActivity) => void,
 ) {
   const { active: screenActive, reduceMotion } = useAnimationActivity();
   const wasRoomVisible = useRef(roomVisible);
@@ -84,24 +86,31 @@ export function useRoomActivity(
   const stopComplete = useRef(onStopped);
   const feedComplete = useRef(onFeed);
   const activityComplete = useRef(onCompleted);
+  const activityBlocked = useRef(onBlocked);
   const roomArrival = useRef(onRoomArrival);
   useEffect(() => {
     doorArrival.current = onDoorArrival;
     stopComplete.current = onStopped;
     feedComplete.current = onFeed;
     activityComplete.current = onCompleted;
+    activityBlocked.current = onBlocked;
     roomArrival.current = onRoomArrival;
-  }, [onDoorArrival, onStopped, onFeed, onRoomArrival, onCompleted]);
+  }, [onDoorArrival, onStopped, onFeed, onRoomArrival, onCompleted, onBlocked]);
   const previousInteraction = useRef(lastInteractionAt);
   const handledRequest = useRef(0);
   const handledEntry = useRef<number | null>(null);
   const [request, setRequest] = useState<ActivityRequest | null>(null);
   const [state, setState] = useState<ActivityState | null>(null);
+  const [blockedActivity, setBlockedActivity] = useState<BlockedRoomActivity | null>(null);
+  const failureReported = useRef(false);
+  const clearBlockedActivity = useCallback(() => setBlockedActivity(null), []);
   // Game activities continue while browsing. Only rendering is paused.
   const activity = enabled ? state : null;
   const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string, interactionAt?: number, ambientPeriod?: WorldPeriod) => {
+    setBlockedActivity(null);
     const current = running.current;
     if (current && (isCatJump(current.plan.steps[current.stepIndex].animation)
+      || current.plan.steps[current.stepIndex].native?.legs?.some(leg => leg.kind === 'hop')
       || current.plan.steps[current.stepIndex].enteringRoom)) {
       pendingCommand.current = { kind, instanceId, interactionAt, ambientPeriod };
       return;
@@ -152,6 +161,7 @@ export function useRoomActivity(
     hiddenActivity.current = backgroundActivity;
     wasRoomVisible.current = roomVisible;
     const continuing = wasActive.current && active;
+    const resumingActivity = !wasActive.current && active;
     wasActive.current = active;
     const home = roomOffsetToPoint(options.homeOffset, options.width, options.height, options.petSize);
     const runStep = (plan: RoomActivityPlan, stepIndex: number, elapsed = 0, replanned = false) => {
@@ -179,12 +189,18 @@ export function useRoomActivity(
       }
       const room = latestOptions.current;
       if (liveWorld.current) {
-        step = step.native?.blocked || step.native && (reduceMotion || elapsed && isCatJump(step.animation)) ? { ...step } :
+        step = step.native?.blocked || step.native && (reduceMotion || elapsed && (isCatJump(step.animation) || step.native.legs?.length)) ? { ...step } :
           prepareNativeStep(plan, step, room.nativeStepCompletion && nativePosition.current
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
         step.native = { ...step.native!, elapsed, replanned, awaitCompletion: roomVisible && room.nativeStepCompletion && !step.hold };
         nativeElapsed.current = elapsed;
         if (step.native?.blocked) {
+          if (plan.userRequested && !failureReported.current && !pendingCommand.current) {
+            failureReported.current = true;
+            const failure = { kind: plan.kind, instanceId: plan.targetInstanceId };
+            setBlockedActivity(failure);
+            activityBlocked.current?.(failure);
+          }
           plan = { ...plan, steps: plan.steps.slice(0, stepIndex + 1) };
           // A failed interaction cannot hold a sleep/use pose at the floor.
           const position = room.nativeStepCompletion && nativePosition.current ? nativePosition.current : step.native.path[0];
@@ -192,7 +208,7 @@ export function useRoomActivity(
             sofaApproach: undefined, bedPhase: undefined, bathroomPhase: undefined, durationMs: 200, moveMs: 0,
             native: { ...step.native, path: [position], distance: 0, duration: .2, jump: false, awaitCompletion: roomVisible && room.nativeStepCompletion } };
         }
-        if (reduceMotion) step.native = { ...step.native!, path: [step.native!.path.at(-1)!], distance: 0, jump: false };
+        if (reduceMotion) step.native = { ...step.native!, path: [step.native!.path.at(-1)!], legs: undefined, distance: 0, jump: false };
       }
       const duration = reduceMotion ? 0 : step.moveMs ?? 0;
       let visibleStep = step;
@@ -305,10 +321,11 @@ export function useRoomActivity(
       if (!preservePositionWhenDisabled) { petX.set(home.x); petY.set(home.y); }
       scale.set(1); facing.set(1);
       if (request) handledRequest.current = request.id;
-      timer = setTimeout(() => setState(null), 0);
+      timer = setTimeout(() => { setState(null); setBlockedActivity(null); }, 0);
     } else {
       const entry = options.entry && handledEntry.current !== options.entry.id ? buildRoomEntry(options) : null;
       if (entry) {
+        setBlockedActivity(null);
         handledEntry.current = options.entry!.id;
         if (request && request.id !== handledRequest.current) {
           handledRequest.current = request.id;
@@ -319,7 +336,7 @@ export function useRoomActivity(
       }
       const newRequest = request && request.id !== handledRequest.current ? request : null;
       if (newRequest) handledRequest.current = newRequest.id;
-      if (newRequest) queuedPlan.current = null;
+      if (newRequest) { queuedPlan.current = null; failureReported.current = false; }
       const position = options.nativeStepCompletion && nativePosition.current && liveWorld.current
         ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() };
       const returning = current ? buildRoomReturn(options, current.plan, current.stepIndex, position) : null;
@@ -329,13 +346,18 @@ export function useRoomActivity(
       let next = newRequest && (!newRequest.ambientPeriod || newRequest.ambientPeriod === options.period)
         && newRequest.kind !== "returnHome" && newRequest.kind !== "stop"
         ? buildRoomActivity(commandOptions, turn.current++, newRequest.kind, newRequest.instanceId ?? (sofaCommand ? current?.plan.targetInstanceId : undefined)) : null;
+      if (next) next = { ...next, userRequested: !newRequest?.ambientPeriod };
+      // A cupboard/chair exit can land inside its coarse floor bounds. Keep
+      // the detailed collision geometry for the next journey in this room.
+      if (next && current?.plan.steps[current.stepIndex].kitchenNavigation)
+        next = { ...next, steps: next.steps.map(step => ({ ...step, kitchenNavigation: true })) };
       if (next && newRequest?.ambientPeriod) next = { ...next, ambientPeriod: newRequest.ambientPeriod };
       // A refresh can cancel the start timer after a command was accepted.
       // Start that queued plan before considering the previous activity.
       if (!newRequest && queuedPlan.current) {
         const queued = queuedPlan.current;
         timer = setTimeout(() => startPlan(queued), 0);
-      } else if (current && !newRequest && liveWorld.current && (continuing || resumingRoom)) {
+      } else if (current && !newRequest && liveWorld.current && (continuing || resumingRoom || resumingActivity)) {
         const step = current.plan.steps[current.stepIndex];
         const target = liveWorld.current.objects.find(o => o.instanceId === current.plan.targetInstanceId);
         if ((!target && current.plan.targetInstanceId && current.plan.kind !== 'returnHome'
@@ -348,8 +370,8 @@ export function useRoomActivity(
           if (meal) timer = setTimeout(() => startPlan(meal), 0);
         } else {
           const elapsed = wasHiddenActivity ? Math.max(0, (Date.now() - current.startedAt) / 1000)
-            : isCatWalk(step.animation) ? 0 : options.nativeStepCompletion ? nativeElapsed.current : Math.max(0, (Date.now() - current.startedAt) / 1000);
-          runStep(current.plan, current.stepIndex, elapsed, Boolean(isCatWalk(step.animation)));
+            : isCatWalk(step.animation) && !step.native?.legs?.length ? 0 : options.nativeStepCompletion ? nativeElapsed.current : Math.max(0, (Date.now() - current.startedAt) / 1000);
+          runStep(current.plan, current.stepIndex, elapsed, Boolean(isCatWalk(step.animation) && !step.native?.legs?.length));
         }
       } else if (newRequest?.kind === "stop") {
         const exit = current ? buildRoomExit(options, current.plan, current.stepIndex, position) : { kind: "returnHome" as const, steps: [] };
@@ -374,5 +396,5 @@ export function useRoomActivity(
       for (const value of [petX, petY, scale, objectX, objectY, objectRotation]) cancelAnimation(value);
     };
   }, [screenActive, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
-  return { activity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
+  return { activity, blockedActivity, clearBlockedActivity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
 }

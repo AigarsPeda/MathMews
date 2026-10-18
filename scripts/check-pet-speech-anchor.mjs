@@ -27,7 +27,7 @@ const mocks = {
   "@/lib/graphics-mode": { useGraphicsMode: () => "3d" },
   '@/utils/native-room-world': { buildNativeRoomWorld: () => ({ width: 320, height: 320, objects: [], home: [0,0,0] }) },
   '@/utils/room-activities': { buildRoomActivity: () => null },
-  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, scale: shared(), facing: shared(), objectX: shared(), objectY: shared(), objectRotation: shared(), returnHome() {}, startActivity() {} }) },
+  '@/hooks/use-room-activity': { useRoomActivity: () => ({ activity: null, blockedActivity: null, clearBlockedActivity() {}, scale: shared(), facing: shared(), objectX: shared(), objectY: shared(), objectRotation: shared(), returnHome() {}, startActivity() {} }) },
   react: React,
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   'react-native': {

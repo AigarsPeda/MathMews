@@ -1,4 +1,7 @@
 import { isDecorationOpen } from '@/constants/item-interactions';
+import { roundCatPath, catJumpPoint, catWalkTiming, type CatMotionLeg } from '@/utils/native-cat-locomotion';
+import { catTurnDuration } from '@/utils/native-cat-turn';
+import { buildCatTraversalLinks, type CatTraversalLink } from '@/utils/native-cat-traversal';
 import { CURTAIN_FABRIC_BOUNDS, isCurtainDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
@@ -153,6 +156,8 @@ export type NativeRoomWorld = {
   objects: NativeRoomObject[];
 };
 export type NativeTravel = {
+  legs?: CatMotionLeg[];
+  paces?: number[];
   awaitCompletion?: boolean;
   path: Vec3[];
   distance: number;
@@ -595,19 +600,63 @@ export function nativeRoomEdge(world: NativeRoomWorld, side: -1 | 1): Vec3 {
   return nearestFree(side === 1 ? [edge, FLOOR_Y, 1] : [1, FLOOR_Y, edge], world);
 }
 function clearLine(a: Vec3, b: Vec3, world: NativeRoomWorld): boolean {
+  if (!isFree(a,world)) return false;
   const n = Math.ceil(Math.hypot(b[0] - a[0], b[2] - a[2]) / .04);
   for (let i = 1; i <= n; i++)
     if (!isFree([a[0] + (b[0] - a[0]) * i / n, FLOOR_Y, a[2] + (b[2] - a[2]) * i / n], world))
       return false;
+  // Sampling alone can miss a grazing collision between two very close curve
+  // vertices. Sweep the circular footprint exactly against ordinary boxes.
+  const dx=b[0]-a[0], dz=b[2]-a[2], squared=dx*dx+dz*dz;
+  const hits = (box: CollisionBox, radius: number) => {
+    if (box.min[1]>FLOOR_Y+.8*world.catScale) return false;
+    if (Math.max(a[0],b[0])<box.min[0]-radius || Math.min(a[0],b[0])>box.max[0]+radius
+      || Math.max(a[2],b[2])<box.min[2]-radius || Math.min(a[2],b[2])>box.max[2]+radius) return false;
+    let entry=0,exit=1;
+    for (const axis of [0,2]) {
+      const delta=b[axis]-a[axis];
+      if (Math.abs(delta)<1e-9) { if(a[axis]<box.min[axis]||a[axis]>box.max[axis]) {entry=2;break;} }
+      else {
+        const first=(box.min[axis]-a[axis])/delta,last=(box.max[axis]-a[axis])/delta;
+        entry=Math.max(entry,Math.min(first,last));exit=Math.min(exit,Math.max(first,last));
+      }
+    }
+    if (entry<=exit) return true;
+    for (const x of [box.min[0],box.max[0]]) for (const z of [box.min[2],box.max[2]]) {
+      const t=squared>0?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[2])*dz)/squared)):0;
+      if ((a[0]+dx*t-x)**2+(a[2]+dz*t-z)**2<radius*radius) return true;
+    }
+    return false;
+  };
+  for (const object of world.objects) {
+    if ((object.interactionBoxes??[]).some(box=>hits(box,world.radius+.015))) return false;
+    if (!object.solid || world.kitchenNavigation && (isKitchenChairDecorationId(object.modelId)||object.modelId==='kitchenDiningTable')) continue;
+    const radius=(/^catTree|^toy-scratchPost/.test(object.modelId)?Math.min(world.radius,.4*world.catScale)
+      :isPlayablePlant(object.modelId)?Math.min(world.radius,.65*world.catScale):world.radius)+.015;
+    const boxes=(isPlayablePlant(object.modelId)||object.modelId==='lampFloorArc')&&object.collisionBoxes?.length?object.collisionBoxes:[object];
+    if (boxes.some(box=>hits(box,radius))) return false;
+  }
   return true;
 }
 /** Navigation runs when a command/layout changes, never on the render thread. */
 export function findRoomPath(start: Vec3, target: Vec3, world: NativeRoomWorld): Vec3[] {
+  return searchRoomRoute(start, target, world).path;
+}
+
+type CatRoute = { path: Vec3[]; legs?: CatMotionLeg[] };
+/** A* over floor cells and directed furniture connections. Costs include jump recovery. */
+export function findCatRoomRoute(start: Vec3, target: Vec3, world: NativeRoomWorld): CatRoute {
+  if (clearLine(start, target, world)) return { path: [start, target] };
+  const links = buildCatTraversalLinks(world, point => isFree(point, world));
+  return searchRoomRoute(start, target, world, links);
+}
+
+function searchRoomRoute(start: Vec3, target: Vec3, world: NativeRoomWorld, links: CatTraversalLink[] = []): CatRoute {
   const end = nearestFree(target, world);
   if (!isFree(start, world))
     start = nearestFree(start, world);
   if (clearLine(start, end, world))
-    return [start, end];
+    return { path: [start, end] };
   // Include the usable floor edges: a narrow passage next to a furnishing can
   // lie entirely between the regular grid's last column and the room boundary.
   const limit = 2.32 - Math.min(world.radius, .5 * world.catScale) - .001;
@@ -625,7 +674,27 @@ export function findRoomPath(start: Vec3, target: Vec3, world: NativeRoomWorld):
     distance: (p[0] - points[id][0]) ** 2 + (p[2] - points[id][2]) ** 2 }))
     .sort((a, b) => a.distance - b.distance).find(node => clearLine(p, points[node.id], world))?.id;
   const first = connection(start), last = connection(end);
-  if (first === undefined || last === undefined) return [start];
+  if (first === undefined || last === undefined) return { path: [start] };
+  const extra = new Map<number, { to: number; leg?: CatMotionLeg; cost: number }[]>();
+  const addEdge = (from: number, to: number, leg?: CatMotionLeg) => {
+    const distance = pathLength([points[from], points[to]]);
+    const cost = leg ? Math.max(distance, leg.duration * 1.8 * world.catScale + .08 * world.catScale) : distance;
+    extra.set(from, [...(extra.get(from) ?? []), { to, leg, cost }]);
+  };
+  const anchors = new Map<string, number>();
+  const anchor = (p: Vec3) => {
+    const key = p.map(v => v.toFixed(6)).join(':');
+    const existing = anchors.get(key);
+    if (existing !== undefined) return existing;
+    const id = points.length;
+    points.push(p); anchors.set(key, id);
+    if (Math.abs(p[1] - FLOOR_Y) < .01) {
+      const floor = connection(p);
+      if (floor !== undefined) { addEdge(id, floor); addEdge(floor, id); }
+    }
+    return id;
+  };
+  for (const link of links) addEdge(anchor(link.from), anchor(link.to), link.leg);
   const heuristic = points.map(p => Math.hypot(p[0] - end[0], p[2] - end[2]));
   // A min-heap avoids sorting the entire frontier at every visited floor tile.
   type Node = { id: number; cost: number; estimate: number; order: number };
@@ -663,26 +732,57 @@ export function findRoomPath(start: Vec3, target: Vec3, world: NativeRoomWorld):
     const node = pop(), current = node.id;
     if (closed.has(current) || node.cost !== costs.get(current)) continue;
     if (current === last) {
-      const route: Vec3[] = [end];
+      const ids = [current];
       let i = current;
       while (i !== first) {
-        route.unshift(point(i));
         i = parents.get(i)!;
+        ids.unshift(i);
       }
-      route.unshift(point(first));
-      route.unshift(start);
-      const smooth = [start];
-      let from = 0;
-      while (from < route.length - 1) {
-        let to = route.length - 1;
-        while (to > from + 1 && !clearLine(route[from], route[to], world))
-          to--;
-        smooth.push(route[to]);
-        from = to;
+      const legs: CatMotionLeg[] = [];
+      let floorPath = [start, point(first)];
+      const flush = () => {
+        const smooth = [floorPath[0]];
+        let from = 0;
+        while (from < floorPath.length - 1) {
+          let to = floorPath.length - 1;
+          while (to > from + 1 && !clearLine(floorPath[from], floorPath[to], world)) to--;
+          smooth.push(floorPath[to]); from = to;
+        }
+        const path = links.length ? roundCatPath(smooth, .35 * world.catScale, (a,b) => clearLine(a,b,world)) : smooth;
+        const distance = pathLength(path);
+        if (distance > 1e-6) legs.push({ kind: 'walk', path, ...catWalkTiming(path, world.catScale) });
+      };
+      for (let j = 1; j < ids.length; j++) {
+        const leg = extra.get(ids[j - 1])?.find(edge => edge.to === ids[j])?.leg;
+        if (leg) { flush(); legs.push(leg); floorPath = [point(ids[j])]; }
+        else floorPath.push(point(ids[j]));
       }
-      return smooth;
+      floorPath.push(end); flush();
+      for (let j = 1; j < legs.length; j++) {
+        const leg = legs[j], before = legs[j - 1].path;
+        if (leg.kind !== 'hop' || before.length < 2) continue;
+        const a = before[before.length - 2], b = before[before.length - 1], c = leg.path[leg.path.length - 1];
+        const heading = Math.atan2(b[0] - a[0], b[2] - a[2]);
+        const desired = Math.atan2(c[0] - b[0], c[2] - b[2]);
+        const turn = Math.abs(Math.atan2(Math.sin(desired - heading), Math.cos(desired - heading)));
+        if (turn > .5) {
+          const turnDuration = leg.animation === 'jumpOff' ? turn / 4 + .08 : catTurnDuration(turn);
+          legs[j] = { ...leg, turnDuration, duration: leg.duration + turnDuration };
+        }
+      }
+      const path = legs.flatMap((leg, index) => index ? leg.path.slice(1) : leg.path);
+      return { path: path.length ? path : [start, end], legs: legs.some(leg => leg.kind === 'hop') ? legs : undefined };
     }
     closed.add(current);
+    const visit = (next: number, edgeCost: number) => {
+      if (closed.has(next)) return;
+      const cost = node.cost + edgeCost;
+      if (cost < (costs.get(next) ?? Infinity)) {
+        parents.set(next, current); costs.set(next, cost); push(next, cost);
+      }
+    };
+    for (const edge of extra.get(current) ?? []) visit(edge.to, edge.cost);
+    if (current >= count * count) continue;
     for (const dx of [-1, 0, 1])
       for (const dz of [-1, 0, 1]) {
         if (!dx && !dz)
@@ -693,33 +793,39 @@ export function findRoomPath(start: Vec3, target: Vec3, world: NativeRoomWorld):
         const next = x + z * count;
         if (closed.has(next) || !free[next] || !clearLine(point(current), point(next), world))
           continue;
-        const cost = node.cost + Math.hypot(points[current][0] - points[next][0], points[current][2] - points[next][2]);
-        if (cost < (costs.get(next) ?? Infinity)) {
-          parents.set(next, current);
-          costs.set(next, cost);
-          push(next, cost);
-        }
+        visit(next, Math.hypot(points[current][0] - points[next][0], points[current][2] - points[next][2]));
       }
   }
   // An unreachable target never causes a direct walk through an obstacle.
-  return [start];
+  return { path: [start] };
 }
 export function pathLength(path: Vec3[]): number {
   return path.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - path[i][0], p[1] - path[i][1], p[2] - path[i][2]), 0);
 }
+function findTraversalApproach(start: Vec3, points: Vec3[], world: NativeRoomWorld): Vec3[] | undefined {
+  const links = buildCatTraversalLinks(world,point=>isFree(point,world));
+  if (!links.length) return undefined;
+  for (const point of points) {
+    const path = searchRoomRoute(start,point,world,links).path;
+    if (hasNativeArrived(path.at(-1)!,point)) return path;
+  }
+  return undefined;
+}
 /** Face the food from a reachable point, retaining the route already solved. */
 export function findFoodBowlApproach(start: Vec3, bowl: NativeRoomObject, world: NativeRoomWorld): Vec3[] | undefined {
   const heading = Math.atan2(bowl.position[0] - start[0], bowl.position[2] - start[2]);
+  const candidates: Vec3[] = [];
   for (let i = 0; i < 64; i++) {
     const turn = i % 2 ? (i + 1) / 2 : -i / 2;
     const angle = heading + turn * Math.PI / 32;
     const point: Vec3 = [bowl.position[0] - Math.sin(angle) * CAT_EATING_REACH * world.catScale, FLOOR_Y,
       bowl.position[2] - Math.cos(angle) * CAT_EATING_REACH * world.catScale];
     if (!isFree(point, world)) continue;
+    candidates.push(point);
     const path = findRoomPath(start, point, world);
     if (pathLength([path.at(-1)!, point]) < .02) return path;
   }
-  return undefined;
+  return findTraversalApproach(start,candidates,world);
 }
 /** Try reachable leaves from free floor positions, including corner approaches. */
 export function findPlantApproach(start: Vec3, object: NativeRoomObject, world: NativeRoomWorld): Vec3 | undefined {
@@ -810,7 +916,7 @@ function isNativeJumpClear(start: Vec3, target: Vec3, world: NativeRoomWorld, ig
     ? .55 * world.catScale : world.radius;
   for (let i = 0; i <= 40; i++) {
     const t = i / 40;
-    const p: Vec3 = [start[0] + (target[0] - start[0]) * t, start[1] + (target[1] - start[1]) * t + Math.sin(Math.PI * t) * .35 * world.catScale, start[2] + (target[2] - start[2]) * t];
+    const p = catJumpPoint(start, target, t, .35 * world.catScale);
     if (world.objects.some(o => o.solid && o.instanceId !== ignoreId
       && (o.collisionBoxes?.length ? o.collisionBoxes : [o]).some((box, index) =>
         p[1] < box.max[1] && p[1] + .8 * world.catScale > box.min[1]
@@ -952,7 +1058,8 @@ export function findInvestigateApproach(start: Vec3, object: NativeRoomObject, w
     points.push([cx + x * distance, FLOOR_Y, cz + z * distance]);
   }
   points.sort((a,b) => pathLength([start,a]) - pathLength([start,b]));
-  return points.find(point => isFree(point,world) && hasNativeArrived(findRoomPath(start,point,world).at(-1)!,point));
+  return points.find(point => isFree(point,world) && hasNativeArrived(findRoomPath(start,point,world).at(-1)!,point))
+    ?? findTraversalApproach(start,points.filter(point=>isFree(point,world)),world)?.at(-1);
 }
 
 /** Animation completion is not proof that navigation reached its endpoint. */
@@ -1056,7 +1163,9 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   // A resting/play clip stays where navigation actually arrived. Reusing the
   // old sprite target here would undo the detour and snap into the furniture.
   const bedCrawl = !!object?.bed && (step.bedPhase === 'crawl' || step.bedPhase === 'uncover');
-  let path = jump || bedCrawl ? [start, target] : walking ? bowlPath ?? findRoomPath(start, target, world) : [start];
+  const route = walking && !bedCrawl ? findCatRoomRoute(start, target, world) : undefined;
+  let path = jump || bedCrawl ? [start, target] : walking ? route!.path : [start];
+  if (walking && !route?.legs) path = roundCatPath(path, .35 * world.catScale, (a,b) => clearLine(a,b,world));
   let blocked = !!walking && path.length === 1 && Math.hypot(start[0] - target[0], start[2] - target[2]) > .05;
   if (plan.kind === 'bowlEat' && step.bowlApproach && !bowlPath) { blocked = true; path = [start]; }
   if (plan.kind === 'bowlEat' && step.animation === 'eating' && object
@@ -1079,7 +1188,9 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   if (walking && (object?.seat || step.bathroomPhase || plan.kind === 'bowlEat' || step.leavingRoom) && Math.hypot(path.at(-1)![0] - target[0], path.at(-1)![2] - target[2]) > .12)
     blocked = true;
   if (jump && !isNativeJumpClear(start, target, world, object?.instanceId)) { blocked = true; path = [start]; }
-  const distance = pathLength(path), duration = bedCrawl ? (step.moveMs ?? 1600) / 1000 : walking ? Math.max(.18, distance / (.8 * world.catScale * 2.25)) : (step.moveMs ?? step.durationMs) / 1000;
+  const walkTiming = walking && !bedCrawl ? catWalkTiming(path,world.catScale) : undefined;
+  const distance = pathLength(path), duration = route?.legs && !blocked ? route.legs.reduce((sum, leg) => sum + leg.duration, 0)
+    : bedCrawl ? (step.moveMs ?? 1600) / 1000 : walking ? walkTiming!.duration : (step.moveMs ?? step.durationMs) / 1000;
   const position = catScreenPoint(path.at(-1)!, world);
   let objectPath: Vec3[] | undefined;
   if (object && plan.kind === 'mouseChase' && step.objectPosition) {
@@ -1098,7 +1209,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
       axis: [Math.cos(object.heading), 0, -Math.sin(object.heading)], seat: object.seat!, scale: object.scale, leaving: step.animation === 'jumpOff' }
     : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking ? duration * 1000 : step.durationMs, moveMs: walking ? duration * 1000 : step.moveMs,
-    native: { path, distance, duration, rockingChair, bed: object?.bed && step.bedPhase && !blocked
+    native: { path, distance, duration, paces: walkTiming?.paces, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
       ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
       jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, targetPosition: object?.position, objectPath, objectDuration: duration * .6,

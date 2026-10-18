@@ -224,7 +224,7 @@ def pose(arm, driver, state, t, idle_controls):
     sleeping = state in ('curlUp', 'curlSleep', 'layDown', 'sleep', 'sleepy', 'restSleep', 'lieDown')
     settle = min(1, t/.78) if state in ('sleepy', 'lieDown') else t if state == 'curlUp' else 1
     settle = settle*settle*(3-2*settle) if sleeping else 0
-    standing = driver_standing if state in ('jumpOn', 'jumpOff') else 0 if state in ('sit', 'wash') or sleeping else 1
+    standing = driver_standing if state in ('jumpOn', 'jumpOff', 'hop') else 0 if state in ('sit', 'wash') or sleeping else 1
     seated = (1-standing)*(1-settle)
     bones = arm.data.bones
     # Sitting lowers the pelvis around the shoulders; normal idle is standing.
@@ -235,7 +235,7 @@ def pose(arm, driver, state, t, idle_controls):
     baseline_body = idle_controls['standing_height'] if driver_standing else idle_controls['body_height']
     shift = Vector((driver['body'].location.x, 0, driver['body'].location.z-baseline_body))*.6
     shift.z -= .24*settle
-    if state.startswith('walk') or state == 'crawl':
+    if state.startswith('walk') or state in ('crawl', 'turn'):
         shift.z -= .07
     if state == 'crawl':
         shift.z -= .20
@@ -243,7 +243,7 @@ def pose(arm, driver, state, t, idle_controls):
     desired = {name: body @ bones[name].matrix_local for name in ('spine', 'belly', 'chest', 'pelvis')}
     chest_shift = (body @ bones['chest'].head_local)-bones['chest'].head_local
     head_shift = (driver['head'].location-idle_controls['head'])*.65
-    if standing:
+    if standing and state not in ('jumpOn', 'jumpOff', 'hop'):
         head_shift = Vector((0, 0, .002*math.cos(t*math.tau*2)))
     head_rotation = driver['head'].rotation_euler.to_matrix()
     if state == 'crawl':
@@ -271,7 +271,7 @@ def pose(arm, driver, state, t, idle_controls):
                 toe.y = toe.y*(1-seated)+(shoulder.y+(-.04 if rear else -.025))*seated
             if settle:
                 toe.y += -.08*settle if not rear else -.05*settle
-            if state.startswith('walk') or state == 'crawl':
+            if state.startswith('walk') or state in ('crawl', 'turn'):
                 baseline = Vector((driver[key][i].location.x, .44 if rear else -.38, .105 if rear else .12))
                 delta = driver[key][i].location-baseline
             else:

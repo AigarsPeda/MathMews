@@ -1,0 +1,58 @@
+import type { Vec3 } from '@/utils/native-room-world';
+
+function smooth(t: number) {
+  'worklet';
+  const x = Math.max(0, Math.min(1, t));
+  return x * x * (3 - 2 * x);
+}
+
+export function catTurnDuration(angle: number) {
+  'worklet';
+  return .24 + Math.max(1, Math.ceil(Math.abs(angle) / (Math.PI / 4) - 1e-6)) * .40;
+}
+
+/** Look first, then step around the planted feet, then straighten the neck. */
+export function catTurnPose(angle: number, progress: number, initialHead = 0, initialCrouch = 0) {
+  'worklet';
+  const t = Math.max(0, Math.min(1, progress));
+  const travel = Math.max(0, Math.min(1, (t - .12) / .80)), ramp = .06;
+  const body = travel < ramp ? travel * travel / (2 * ramp * (1 - ramp))
+    : travel > 1 - ramp ? 1 - (1 - travel) ** 2 / (2 * ramp * (1 - ramp))
+    : (travel - ramp / 2) / (1 - ramp);
+  const look = smooth(t / .16) * (1 - smooth((t - .72) / .28));
+  return { heading: angle * body, head: initialHead * (1 - smooth(t / .16)) + Math.sign(angle) * Math.min(.48, Math.abs(angle) * .6) * look,
+    crouch: initialCrouch * (1 - smooth(t / .12)) + .10 * smooth(t / .12) * (1 - smooth((t - .92) / .08)) };
+}
+
+function turnStep(angle: number, progress: number, paw: number) {
+  'worklet';
+  const cycles = Math.max(1, Math.ceil(Math.abs(angle) / (Math.PI / 4) - 1e-6));
+  const travel = Math.max(0, Math.min(cycles, (progress - .12) / .80 * cycles));
+  const cycle = Math.min(cycles - 1, Math.floor(travel));
+  const order = angle > 0 ? [2, 0, 3, 1] : [0, 2, 1, 3];
+  const step = Math.max(0, Math.min(1, (travel - cycle) * 4 - order[paw]));
+  return { before: angle * cycle / cycles, after: angle * (cycle + 1) / cycles, step };
+}
+
+export function catTurnPawOrientation(angle: number, progress: number, paw: number) {
+  'worklet';
+  const { before, after, step } = turnStep(angle, progress, paw);
+  return { heading: before + (after - before) * smooth(step), settled: before === 0 ? smooth(step) : 1 };
+}
+
+/** Coordinates are relative to the heading at the start of the turn.
+ * Three paws remain planted while the fourth lifts and places. Each cycle
+ * turns at most 45 degrees, so even a U-turn uses small, reachable steps.
+ * Paw order is left fore, right fore, left hind, right hind.
+ */
+export function catTurnPaw(neutral: Vec3, initial: Vec3, angle: number, progress: number, paw: number): Vec3 {
+  'worklet';
+  // The forepaw on the inside leads; the hind paw follows on the same side.
+  const { before, after, step } = turnStep(angle, progress, paw);
+  const from: Vec3 = before === 0 ? initial : [neutral[0] * Math.cos(before) + neutral[2] * Math.sin(before), neutral[1], neutral[2] * Math.cos(before) - neutral[0] * Math.sin(before)];
+  const to: Vec3 = [neutral[0] * Math.cos(after) + neutral[2] * Math.sin(after), neutral[1], neutral[2] * Math.cos(after) - neutral[0] * Math.sin(after)];
+  const blend = smooth(step);
+  // A zero-velocity lift/touchdown avoids a visible snap at either contact.
+  const lift = .085 * Math.sin(Math.PI * step) ** 2;
+  return [from[0] + (to[0] - from[0]) * blend, from[1] + (to[1] - from[1]) * blend + lift, from[2] + (to[2] - from[2]) * blend];
+}

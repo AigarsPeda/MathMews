@@ -8,7 +8,8 @@ import { useRoomTransition } from "@/hooks/use-room-transition";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { RoomControlsTransition } from "@/components/pet/RoomControlsTransition";
-import { PetStage } from "@/components/pet/PetStage";
+import { PetStage, type RoomActivityFailureNotice } from "@/components/pet/PetStage";
+import { RoomActivityNotice } from '@/components/pet/RoomActivityNotice';
 import { RoomActionMenu } from "@/components/pet/RoomActionMenu";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { IconText as Text } from "@/components/ui/IconText";
@@ -124,8 +125,10 @@ export default function HomeScreen() {
     return () => cancelIdleCallback(task);
   }, [isReady, hasCompletedOnboarding, router]));
   const roomEditor = useRoomEditor(pet, setPet, progress);
+  const [roomFailure, setRoomFailure] = useState<RoomActivityFailureNotice | null>(null);
   const [decoratingRoom, setDecoratingRoom] = useState<HomeRoomId | null>(null);
   const handleDecoratingChange = useCallback((roomId: HomeRoomId, active: boolean) => {
+    if (active) setRoomFailure(null);
     setDecoratingRoom(current => active ? roomId : current === roomId ? null : current);
   }, []);
   const preloadedRooms = useMemo(() => HOME_ROOM_IDS.map(id => previewHomeRoom(pet, id)), [pet]);
@@ -156,11 +159,29 @@ export default function HomeScreen() {
   const roomCommandSequence = useRef(0);
   const handleRoomCommand = useCallback((roomId: HomeRoomId, kind: RoomActivityKind, instanceId?: string, interactionAt?: number) => {
     if (isCareBlocked || isCareAnimationPlaying) return;
+    setRoomFailure(null);
     setRequestedRoomCommand({ roomId, command: { id: ++roomCommandSequence.current, kind, instanceId, interactionAt } });
   }, [isCareAnimationPlaying, isCareBlocked]);
   const handleRoomCommandAccepted = useCallback((id: number) => {
     setRequestedRoomCommand(current => current?.command.id === id ? null : current);
   }, []);
+  const handleRoomActivityFailure = useCallback((notice: RoomActivityFailureNotice) => {
+    // A blocked departure happens in the cat's room, which may be offscreen.
+    // Stop retrying that command and keep its recovery visible in Home.
+    setRequestedRoomCommand(null);
+    setRoomFailure(notice);
+  }, []);
+  const moveUnreachableFurniture = useCallback(() => {
+    if (!roomFailure) return;
+    const notice = roomFailure;
+    setRoomFailure(null);
+    visitHomeRoom(notice.roomId);
+    notice.onMove();
+  }, [roomFailure, visitHomeRoom]);
+  const dismissRoomFailure = useCallback(() => {
+    roomFailure?.onDismiss();
+    setRoomFailure(null);
+  }, [roomFailure]);
 
   const handleBedtime = useCallback((instanceId: string) => {
     setRequestedRoomCommand({ roomId: 'bedroom', command: {
@@ -337,6 +358,7 @@ export default function HomeScreen() {
   }, [recordInteraction, router]);
 
   const handleOpenStore = useCallback(() => {
+    setRoomFailure(null);
     triggerHaptic();
     router.push("/store");
   }, [router]);
@@ -580,6 +602,7 @@ export default function HomeScreen() {
       onSendCatToRoom={handleCatRoomArrival}
       onRequestRoomCommand={handleRoomCommand}
       onRoomCommandAccepted={requestedRoomCommand?.roomId === roomPet.homeRoomId ? handleRoomCommandAccepted : undefined}
+      onRoomActivityFailure={handleRoomActivityFailure}
       roomCommand={requestedRoomCommand && getCatHomeRoomId(pet) === roomPet.homeRoomId
         ? requestedRoomCommand.roomId === roomPet.homeRoomId ? requestedRoomCommand.command
           : { ...requestedRoomCommand.command, kind: 'roomTravel', instanceId: requestedRoomCommand.roomId }
@@ -737,6 +760,11 @@ export default function HomeScreen() {
                 {renderStage(room, visible)}
               </View>;
             })}
+            {roomFailure && !editingCurrentRoom && !isCareBlocked && !isCareAnimationPlaying && !transition &&
+              <View style={styles.roomFailureNotice}>
+                <RoomActivityNotice name={pet.name} target={roomFailure.target}
+                  onMove={moveUnreachableFurniture} onDismiss={dismissRoomFailure} />
+              </View>}
           </View>
         </View>
 
@@ -812,6 +840,7 @@ const styles = StyleSheet.create({
   shopButton: { flex: 1, minWidth: 0, minHeight: 56, justifyContent: 'center', alignItems: 'center', gap: moderateScale(3), paddingHorizontal: moderateScale(8), paddingVertical: moderateScale(8), backgroundColor: '#E8FAF8', borderRadius: moderateScale(12), borderWidth: 1, borderColor: GameColors.secondary },
   doneButton: { backgroundColor: GameColors.cardBorder, borderColor: GameColors.cardBorder },
   shopLabel: { color: GameColors.text, fontSize: moderateScale(13), fontWeight: '700' },
+  roomFailureNotice: { position: 'absolute', top: moderateScale(10), left: moderateScale(22), right: moderateScale(22) },
   stageWrap: {
     flex: 1,
     minHeight: 0,

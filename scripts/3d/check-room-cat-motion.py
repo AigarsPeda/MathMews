@@ -66,7 +66,7 @@ for skin in ('orange', 'grey', 'white'):
     scope['cat_pose'](rig, 'jumpOff', 0)
     for obj, (location, scale) in zip(scope['animated_parts'](rig), sitting):
         assert (obj.location-location).length < .001 and (obj.scale-scale).length < .001, 'Jumping off must start from the seated pose'
-    for state in ('jumpOn', 'jumpOff'):
+    for state in ('jumpOn', 'jumpOff', 'hop'):
         scope['cat_pose'](rig, state, .14)
         crouched_height = rig['body'].scale.z
         scope['cat_pose'](rig, state, .45)
@@ -76,6 +76,14 @@ for skin in ('orange', 'grey', 'white'):
         assert rig['body'].scale.z < .90, 'Landing must absorb the impact'
     scope['cat_pose'](rig, 'jumpOff', 1)
     assert all(abs(paw.location.z-paw.scale.z) < .001 for paw in rig['feet'] + rig['back_feet']), 'Jump-down must land on four paws before walking'
+    for t in (0, 1):
+        scope['cat_pose'](rig, 'hop', t)
+        assert all(abs(paw.location.z-paw.scale.z) < .001 for paw in rig['feet'] + rig['back_feet']), 'Traversal hops start and end standing on four paws'
+    scope['cat_pose'](rig, 'hop', .66)
+    assert max(p.location.z-p.scale.z for p in rig['feet']) < min(p.location.z-p.scale.z for p in rig['back_feet']), 'Forepaws reach the landing before the hind paws'
+    for t in (.15, .4, .65, .85):
+        scope['cat_pose'](rig, 'turn', t)
+        assert sum(abs(p.location.z-p.scale.z)<.001 for p in rig['feet']+rig['back_feet'])>=2, 'Turning keeps two paws in support while the others shuffle'
     scope['cat_pose'](rig, 'curlUp', 1)
     curled = [(obj.location.copy(), obj.scale.copy()) for obj in scope['animated_parts'](rig)]
     tail = [point.co.copy() for point in rig['tail_curve'].data.splines[0].bezier_points]

@@ -62,6 +62,8 @@ export type RoomActivityStep = {
 export type RoomActivityPlan = {
   kind: RoomActivityKind | "returnHome";
   ambientPeriod?: WorldPeriod;
+  /** Only user commands show a notice when their route is blocked. */
+  userRequested?: boolean;
   stopForEditing?: boolean;
   destination?: HomeRoomId;
   targetInstanceId?: string;
