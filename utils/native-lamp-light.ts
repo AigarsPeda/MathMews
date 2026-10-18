@@ -1,8 +1,8 @@
-import { LAMP_LIGHT_ORIGINS, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel, SPOTLIGHT_PIVOT } from '@/constants/decoration-motion';
+import { LAMP_LIGHT_ORIGINS, isBathroomLightDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel, SPOTLIGHT_PIVOT } from '@/constants/decoration-motion';
 import type { NativeRoomObject, Vec3 } from '@/utils/native-room-world';
 
 /** Light origins are measured inside the shade or bottle in model coordinates. */
-export function lampLightPose(object: Pick<NativeRoomObject, 'modelId' | 'spotlightAngle' | 'spotlightSwivel' | 'heading' | 'position' | 'scale'>) {
+export function lampLightPose(object: Pick<NativeRoomObject, 'modelId' | 'spotlightAngle' | 'spotlightSwivel' | 'heading' | 'position' | 'scale'>, offsetX = 0) {
   'worklet';
   // Keep the pose usable on the drawing thread without JS-side classification.
   const wall = object.modelId.startsWith('wallSpot');
@@ -13,10 +13,11 @@ export function lampLightPose(object: Pick<NativeRoomObject, 'modelId' | 'spotli
   const local = wall ? [SPOTLIGHT_PIVOT[0] + direction[0] * .16,
     SPOTLIGHT_PIVOT[1] + direction[1] * .16, SPOTLIGHT_PIVOT[2] + direction[2] * .16] : LAMP_LIGHT_ORIGINS[object.modelId];
   const c = Math.cos(object.heading), s = Math.sin(object.heading);
+  const x = local[0] + offsetX;
   return {
-    position: [object.position[0] + (c * local[0] + s * local[2]) * object.scale,
+    position: [object.position[0] + (c * x + s * local[2]) * object.scale,
       object.position[1] + local[1] * object.scale,
-      object.position[2] + (-s * local[0] + c * local[2]) * object.scale] as Vec3,
+      object.position[2] + (-s * x + c * local[2]) * object.scale] as Vec3,
     direction: [c * direction[0] + s * direction[2], direction[1], -s * direction[0] + c * direction[2]] as Vec3,
   };
 }
@@ -28,15 +29,17 @@ export function lampLightConfig(object: NativeRoomObject) {
   const { position, direction } = lampLightPose({ ...object, spotlightAngle: normalizeSpotlightAngle(object.spotlightAngle), spotlightSwivel: normalizeSpotlightSwivel(object.spotlightSwivel) });
   const lava = object.modelId === 'lavaLampOff' || object.modelId === 'lavaLampAni';
   const lantern = object.modelId === 'halloweenGhostLantern';
+  const bathroom = isBathroomLightDecorationId(object.modelId);
+  const bathroomIntensity = object.modelId === 'bathroomMirrorBacklit' ? 130_000 : object.modelId === 'bathroomLightStrip' ? 200_000 : 170_000;
   return {
-    type: lava || lantern ? 'point' as const : 'spot' as const,
+    type: lava || lantern || bathroom ? 'point' as const : 'spot' as const,
     position,
     direction,
-    colorKelvin: lava ? 2200 : wall ? 3000 : 2700,
+    colorKelvin: lava ? 2200 : wall || bathroom ? 3000 : 2700,
     // The room's daylight is bright; enough power makes the warm pool visible.
-    intensity: (lava ? 160_000 : lantern || wall ? 95_000 : 230_000) * object.scale * object.scale,
+    intensity: (bathroom ? bathroomIntensity : lava ? 160_000 : lantern || wall ? 95_000 : 230_000) * object.scale * object.scale,
     // Keep light volumes bounded; attenuation fades before their outer limit.
-    falloffRadius: Math.max(3, (lava ? 5 : 3) * object.scale),
+    falloffRadius: Math.max(3, (lava ? 5 : bathroom ? 4 : 3) * object.scale),
     // A focused core fades smoothly to the outer cone.
     spotLightCone: (wall ? [.30, .85] : lava ? [.35, .85] : [.65, 1.45]) as [number, number],
     // Keep local lights inexpensive when several lamps are placed in a room.

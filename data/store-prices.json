@@ -426,7 +426,11 @@
     "bedroomBench": 10,
     "bedroomQuiltChest": 9,
     "bedroomSlippers": 2,
-    "bedroomRug": 6
+    "bedroomRug": 6,
+    "bathroomLightGlobe": 14,
+    "bathroomLightVanity": 18,
+    "bathroomMirrorBacklit": 24,
+    "bathroomLightStrip": 20
   },
   "skin": {
     "orange": 6,

@@ -34,6 +34,8 @@ const bathtubIds = ['bathroomBathOvalWhite', 'bathroomBathOvalSage', 'bathroomBa
   'bathroomBathOvalCharcoal', 'bathroomBathClawfootCream', 'bathroomBathClawfootNavy',
   'bathroomJacuzziWhite', 'bathroomJacuzziSage'];
 const newBathroomIds = ['bathroomDoubleVanity', 'bathroomShowerCabin', 'bathroomLaundryHamper', 'bathroomTowelStand', ...bathtubIds];
+const bathroomLights = Array.from(load('@/constants/bathroom-decorations').BATHROOM_LIGHT_DECORATION_IDS);
+newBathroomIds.push(...bathroomLights);
 const feederIds = Array.from(load('@/constants/cat-supplies-decorations').CAT_FEEDER_DECORATION_IDS);
 const collections = {
   catItems: feederIds,
@@ -43,13 +45,13 @@ const collections = {
   carpets: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.carpets).filter(id => id.startsWith('rug')),
   windows: ['windowWhiteClassic', 'windowOakWide', 'windowArched', 'windowRoundPorthole'],
   doors: ['doorOakPanel', 'doorMintGlass', 'doorBarnSliding'],
-  lamps: ['lampFloorArc', 'lampFloorTripod', 'lampFloorPaper', 'lampTableMushroom', 'lampTableCeramic', 'lampTableBanker'],
+  lamps: ['lampFloorArc', 'lampFloorTripod', 'lampFloorPaper', 'lampTableMushroom', 'lampTableCeramic', 'lampTableBanker', ...bathroomLights],
   curtains: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.curtains),
   kitchen: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.kitchen).filter(id => id.startsWith('kitchen')),
   bedroom: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.bedroom).filter(id => id.startsWith('bedroom')),
   halloween: Array.from(sections.DECORATION_IDS_BY_STORE_TAB.halloween) };
 const ids = Array.from(new Set(Object.values(collections).flat()));
-assert.equal(ids.length, 112);
+assert.equal(ids.length, 116);
 const { tryPurchaseDecoration, getDecorationStorePrice } = load('@/utils/decoration-store');
 const { appendPlacedDecoration } = load('@/utils/room-placement');
 const { createDefaultGameSave, parseGameSaveFromValue } = load('@/utils/game-storage');

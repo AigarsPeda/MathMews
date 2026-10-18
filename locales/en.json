@@ -697,7 +697,11 @@
       "bedroomBench": "Sage bedroom bench",
       "bedroomQuiltChest": "Blanket chest",
       "bedroomSlippers": "Pom-pom slippers",
-      "bedroomRug": "Woven bedside rug"
+      "bedroomRug": "Woven bedside rug",
+      "bathroomLightGlobe": "Frosted globe sconce",
+      "bathroomLightVanity": "Chrome vanity light bar",
+      "bathroomMirrorBacklit": "Backlit round mirror",
+      "bathroomLightStrip": "Indirect wall light strip"
     },
     "free": "Free",
     "buyFor": "{{cost}} 🪙",

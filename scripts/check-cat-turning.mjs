@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { fileURLToPath } from 'node:url';
 
 const identity = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
 function multiply(a,b) { return Array.from({length:16},(_,i)=>[0,1,2,3].reduce((s,k)=>s+a[k*4+i%4]*b[Math.floor(i/4)*4+k],0)); }
@@ -22,6 +23,7 @@ class Transform {
 }
 let slots=[],cursor=0,effects=[],draw,asset,animator,rootTransform=new Transform(),locals,parents,model,read;
 const rootEntity={root:true};
+let crossfadeEnabled=false, animatedNodes;
 function world(i) { return new Transform(multiply(parents.has(i)?world(parents.get(i)).data:rootTransform.data,locals[i].data)); }
 const transforms={createIdentityMatrix:()=>new Transform(),
   getWorldTransform:e=>e.root?rootTransform:world(e.i), getTransform:e=>e.root?rootTransform:locals[e.i],
@@ -53,7 +55,22 @@ function openSkin(skin) {
     return Array.from({length:a.count},(_,row)=>Array.from({length:width},(_,k)=>binary.readFloatLE((v.byteOffset??0)+(a.byteOffset??0)+row*(v.byteStride??width*4)+k*4)));};
   const channels=model.animations.map(animation=>animation.channels.map(channel=>{const s=animation.samplers[channel.sampler];return {...channel,times:read(s.input).flat(),output:read(s.output)};}));
   animator={getAnimationCount:()=>model.animations.length,getAnimationName:i=>model.animations[i].name,
-    getAnimationDuration:i=>Math.max(...channels[i][0].times),applyCrossFade(){},updateBoneMatrices(){},
+    getAnimationDuration:i=>Math.max(...channels[i][0].times),applyCrossFade(index,time,alpha){
+      if(!crossfadeEnabled)return;
+      const current=animatedNodes;this.applyAnimation(index,time);const previous=animatedNodes;
+      animatedNodes=current.map((node,i)=>{
+        const result={...node};
+        for(const [key,fallback]of [['translation',[0,0,0]],['scale',[1,1,1]],['rotation',[0,0,0,1]]]) {
+          const a=previous[i][key]??fallback;let b=node[key]??fallback;
+          if(key==='rotation'&&a.reduce((sum,v,k)=>sum+v*b[k],0)<0)b=b.map(v=>-v);
+          let value=a.map((v,k)=>v+(b[k]-v)*alpha);
+          if(key==='rotation'){const n=Math.hypot(...value);value=value.map(v=>v/n);}
+          result[key]=value;
+        }
+        return result;
+      });
+      locals=animatedNodes.map(n=>new Transform(n.matrix??matrix(n.translation,n.rotation,n.scale)));
+    },updateBoneMatrices(){},
     applyAnimation(index,time) {
       const nodes=model.nodes.map(n=>({...n}));
       for(const channel of channels[index]) {
@@ -63,7 +80,7 @@ function openSkin(skin) {
         let value=output[start].map((v,k)=>v+(next[k]-v)*t);if(channel.target.path==='rotation'){const d=Math.hypot(...value);value=value.map(v=>v/d);}
         nodes[channel.target.node][channel.target.path]=value;
       }
-      locals=nodes.map(n=>new Transform(n.matrix??matrix(n.translation,n.rotation,n.scale)));
+      animatedNodes=nodes;locals=nodes.map(n=>new Transform(n.matrix??matrix(n.translation,n.rotation,n.scale)));
     }};
   asset={getFirstEntityByName:name=>{const i=model.nodes.findIndex(n=>n.name===name);return i<0?undefined:{i};}};
   animator.applyAnimation(model.animations.findIndex(a=>a.name==='idle'),0);rootTransform=new Transform();
@@ -77,6 +94,7 @@ const pawNames=['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'];
 function render(props) { cursor=0;effects=[];NativeCatActor(props);effects.forEach(fn=>fn()); }
 function point(name) { return world(asset.getFirstEntityByName(name).i).translation; }
 const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
+if (path.resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) {
 const poses=[],launchPoses=[];
 for(const skin of ['orange','grey','white']) {
   openSkin(skin);
@@ -297,4 +315,19 @@ for(let frame=0;frame<=240;frame++)for(let i=0;i<4;i++) {
 if(process.argv.includes('--poses')) {
   fs.writeFileSync('/tmp/brainpet-turn-poses.json',JSON.stringify(poses));
   fs.writeFileSync('/tmp/brainpet-turn-walk-poses.json',JSON.stringify(launchPoses));
+}
+
+}
+
+// The gait checks use the same actual-GLB actor harness as the turn checks.
+export { openSkin, render, point, load, walking, idle };
+export function resetCatActor() { slots=[];rootTransform=new Transform(); }
+export function drawCat(seconds) { draw({timeSinceLastFrame:seconds}); }
+export function actorState() { return slots.find(s=>s?.value?.value?.turnLeg!==undefined).value.value; }
+export function actorBones() { return Object.fromEntries(model.nodes.map((node,i)=>[node.name,world(i).data])); }
+
+export function enableActorCrossfade(value=true) { crossfadeEnabled=value; }
+export function sampleCatClip(name,time) {
+  rootTransform=new Transform();animator.applyAnimation(model.animations.findIndex(a=>a.name===name),time);
+  return actorBones();
 }

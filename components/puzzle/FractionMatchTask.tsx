@@ -62,7 +62,6 @@ export function FractionMatchTask({
 }: FractionMatchTaskProps) {
   const { t } = useTranslation();
   const cards = useMemo(() => buildFractionMatchCards(puzzle), [puzzle]);
-  const matchedSet = useMemo(() => new Set(matchedIds), [matchedIds]);
   const wrongSet = useMemo(() => new Set(wrongIds), [wrongIds]);
 
   return (
@@ -72,7 +71,12 @@ export function FractionMatchTask({
       <View style={styles.grid}>
         {cards.map((card) => {
           const selected = selectedId === card.id;
-          const matched = matchedSet.has(card.id);
+          const matchedIndex = matchedIds.indexOf(card.id);
+          const matched = matchedIndex !== -1;
+          // Successful matches append both card IDs together, in completion order.
+          const matchedStyle = matched
+            ? matchedPairStyles[Math.floor(matchedIndex / 2) % matchedPairStyles.length]
+            : undefined;
           const wrong = wrongSet.has(card.id);
           const showCorrect = answered && isCorrect && matched;
           const showWrong = answered && !isCorrect && wrong;
@@ -83,8 +87,8 @@ export function FractionMatchTask({
               style={[
                 styles.card,
                 selected && !answered && styles.cardSelected,
-                matched && !answered && styles.cardMatched,
-                showCorrect && styles.cardCorrect,
+                matched && !answered && matchedStyle,
+                showCorrect && matchedStyle,
                 showWrong && styles.cardWrong,
                 answered && !matched && !showWrong && styles.cardMuted,
               ]}
@@ -151,11 +155,15 @@ const styles = StyleSheet.create({
   },
   cardMatched: {
     borderColor: GameColors.success,
-    backgroundColor: "rgba(107, 203, 119, 0.12)",
+    backgroundColor: "#EDF6EF",
   },
-  cardCorrect: {
-    borderColor: GameColors.success,
-    backgroundColor: "rgba(107, 203, 119, 0.15)",
+  cardMatchedBlue: {
+    borderColor: "#2864B4",
+    backgroundColor: "#EAF2FF",
+  },
+  cardMatchedPurple: {
+    borderColor: "#7A45B8",
+    backgroundColor: "#F3EDFC",
   },
   cardWrong: {
     borderColor: "#FF9F43",
@@ -193,3 +201,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+const matchedPairStyles = [
+  styles.cardMatched,
+  styles.cardMatchedBlue,
+  styles.cardMatchedPurple,
+];

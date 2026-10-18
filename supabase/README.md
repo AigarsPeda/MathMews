@@ -6,6 +6,7 @@ and an authenticated RevenueCat webhook with purchase/refund processing.
 
 Migrations 001 through 011 are deployed to the existing MathMews Supabase project.
 The 2026-10-17 room catalog and store promotion migrations are also deployed.
+The 2026-10-18 bathroom-light catalog migration is deployed with all four coin prices.
 Current prices and scheduled sales are managed in `wallet_private.store_catalog`;
 the app fetches them through `get_store_catalog()`. See [catalog and promotion instructions](../store-catalog.md).
 `revenuecat-webhook`, `reconcile-purchases` and `delete-account` are deployed.

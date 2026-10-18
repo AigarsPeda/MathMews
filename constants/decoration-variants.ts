@@ -1,6 +1,7 @@
 import { MODERN_KITCHEN_DECORATION_IDS } from "@/constants/modern-kitchen";
 import { STORE_PLACEMENT_SCALES } from "@/constants/store-placement-scales";
 import { WALL_SPOTLIGHT_DECORATION_IDS } from "@/constants/home-details-decorations";
+import { BATHROOM_LIGHT_DECORATION_IDS } from "@/constants/bathroom-decorations";
 import { isRoomDoor } from "@/constants/home-rooms";
 import {
   resolveCatDecorationId,
@@ -45,6 +46,7 @@ const ROTATION_VARIANT_ONLY_IDS = new Set<CatDecorationId>();
  */
 export const WALL_FACING_DECORATION_IDS: readonly CatDecorationId[] = [
   ...WALL_SPOTLIGHT_DECORATION_IDS,
+  ...BATHROOM_LIGHT_DECORATION_IDS,
   ...MODERN_KITCHEN_DECORATION_IDS,
   "kitchenWallCabinetSage", "kitchenWallCabinetOak", "kitchenWallCabinetGlass", "kitchenIsland", "kitchenBarStoolOak", "kitchenBarStoolMetal", "kitchenBarStoolVelvet", "kitchenMixerStand", "kitchenMixerHand", "kitchenChairWindsor", "kitchenChairMint", "kitchenChairUpholstered", "kitchenChairBistro", "chairRockingOak", "livingFireplaceCream",
   "doorOakPanel", "doorMintGlass", "doorBarnSliding", "curtainRoseTieback", "curtainBlueDrape", "curtainCreamLinen", "lampFloorArc", "lampFloorTripod", "lampFloorPaper", "lampTableMushroom", "lampTableCeramic", "lampTableBanker", "sofaCornerSage",

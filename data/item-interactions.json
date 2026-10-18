@@ -1271,5 +1271,17 @@
   },
   "bedroomRug": {
     "cat": "investigate"
+  },
+  "bathroomLightGlobe": {
+    "cat": "investigate"
+  },
+  "bathroomLightVanity": {
+    "cat": "investigate"
+  },
+  "bathroomMirrorBacklit": {
+    "cat": "investigate"
+  },
+  "bathroomLightStrip": {
+    "cat": "investigate"
   }
 }

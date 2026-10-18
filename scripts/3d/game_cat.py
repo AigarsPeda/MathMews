@@ -11,6 +11,7 @@ from mathutils import Matrix, Vector
 from cat_model import COATS, STRIPES, rgba, create_cat as create_controls, pose_cat as pose_controls, ball, line, solid_material, care_action_time, smooth_window
 
 ROOT = Path(__file__).resolve().parents[2]
+GAITS = __import__('json').loads((ROOT/'constants/cat-gaits.json').read_text())
 from original_cat import create_cat as create_original_cat
 
 
@@ -217,35 +218,97 @@ def limb_pose(bones, names, shoulder, toe):
             for name, position, rotation in zip(names, (shoulder, elbow, toe), rotations)}
 
 
+def pose_gait(driver, state, t):
+    """Diagonal trot and paired running footfalls, with linear planted travel.
+
+    Hermite swing has the same backward velocity at liftoff and touchdown;
+    this avoids snapping the feet when a faster stride hits the ground.
+    """
+    spec = GAITS[state]
+    stride, stance = spec['stride'], spec['stance']
+    phase = t*math.tau
+    bounce = .014*math.cos(phase*2) if state == 'trot' else .026*math.cos(phase*2+.4)
+    driver['body'].location.z = .59+bounce
+    paws = [*driver['feet'], *driver['back_feet']]
+    for i, paw in enumerate(paws):
+        gait = (t-spec['offsets'][i]) % 1
+        if gait < stance:
+            travel, lift = stride*(gait-stance/2), 0
+        else:
+            swing = (gait-stance)/(1-stance)
+            start, end, tangent = stride*stance/2, -stride*stance/2, stride*(1-stance)
+            travel = (2*swing**3-3*swing**2+1)*start+(-2*swing**3+3*swing**2)*end+(2*swing**3-3*swing**2+swing)*tangent
+            lift = (.075 if state == 'trot' else .12)*math.sin(math.pi*swing)**2
+        paw.location.y = (-.38 if i<2 else .44)+travel
+        height = .12 if i<2 else .105
+        paw.location.z = height+lift
+        paw.rotation_euler = (-.10*lift/.12, 0, 0)
+    driver['tail'].rotation_euler = ((.14 if state=='trot' else .32)+.04*math.sin(phase), .04*math.sin(phase), .04*math.sin(phase))
+
+
 def pose(arm, driver, state, t, idle_controls):
-    pose_controls(driver, 'walk' if state == 'crawl' else 'idle' if state == 'sit' else state, t)
+    jumping = state in ('jumpOn', 'jumpOff', 'hop')
+    pose_controls(driver, 'idle' if jumping else 'walk' if state in ('crawl', 'trot', 'run') else 'idle' if state == 'sit' else state, 0 if jumping else t)
+    if state in ('trot', 'run'):
+        pose_gait(driver, state, t)
     driver['root'].rotation_euler = (0, 0, 0)
     driver_standing = driver['torso'].data.shape_keys.key_blocks['Standing feline waist'].value
     sleeping = state in ('curlUp', 'curlSleep', 'layDown', 'sleep', 'sleepy', 'restSleep', 'lieDown')
     settle = min(1, t/.78) if state in ('sleepy', 'lieDown') else t if state == 'curlUp' else 1
     settle = settle*settle*(3-2*settle) if sleeping else 0
-    standing = driver_standing if state in ('jumpOn', 'jumpOff', 'hop') else 0 if state in ('sit', 'wash') or sleeping else 1
+    standing = 1 if jumping else 0 if state in ('sit', 'wash') or sleeping else 1
     seated = (1-standing)*(1-settle)
     bones = arm.data.bones
     # Sitting lowers the pelvis around the shoulders; normal idle is standing.
     eating_time = care_action_time(state, t)
     eating_lean = smooth_window(eating_time, .03, .90, .15) if state == 'eating' else 0
     origin = bones['pelvis'].head_local if state == 'eating' else (bones['L.forelegjoint0'].head_local+bones['R.forelegjoint0'].head_local)/2
-    rotation = Matrix.Rotation(-.52*seated+.24*eating_lean, 3, 'X')
+    lean = .045 if state == 'trot' else .075+.025*math.sin(t*math.tau) if state == 'run' else 0
+    if jumping:
+        # Anticipation, hind-leg push, nose-led flight and a soft landing.
+        # The native root owns translation and yaw; this pose never spins.
+        crouch = math.sin(math.pi*min(1,t/.20))**2 if t < .20 else 0
+        landing = math.sin(math.pi*max(0,min(1,(t-.70)/.28)))**2
+        airborne = smooth_window(t,.20,.70,.10)
+        lean = -.12*smooth_window(t,.14,.39,.08)+.12*smooth_window(t,.50,.78,.10)
+    rotation = Matrix.Rotation(-.52*seated+.24*eating_lean+lean, 3, 'X')
     baseline_body = idle_controls['standing_height'] if driver_standing else idle_controls['body_height']
     shift = Vector((driver['body'].location.x, 0, driver['body'].location.z-baseline_body))*.6
     shift.z -= .24*settle
-    if state.startswith('walk') or state in ('crawl', 'turn'):
+    if jumping:
+        shift.z += -.085*crouch-.095*landing+.018*airborne
+    if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run'):
         shift.z -= .07
+    if state in ('trot','run'):
+        # Leave enough bend for the hind paws at both stance extremes. The
+        # forward lean otherwise raises the hips beyond their reachable length.
+        shift.z -= .035 if state == 'trot' else .065
     if state == 'crawl':
         shift.z -= .20
     body = Matrix.Translation(origin+shift) @ rotation.to_4x4() @ Matrix.Translation(-origin)
-    desired = {name: body @ bones[name].matrix_local for name in ('spine', 'belly', 'chest', 'pelvis')}
-    chest_shift = (body @ bones['chest'].head_local)-bones['chest'].head_local
+    # The shoulders and pelvis compress/extend in opposition once per running
+    # stride. Keep this subtle on the short stylized torso rather than scaling
+    # the skin or bouncing the entire cat like a rigid toy.
+    fore_body, hind_body = body, body
+    if state == 'run':
+        flex = math.sin(t*math.tau+.35)
+        def bend_at(name, angle):
+            pivot = bones[name].head_local
+            return body @ Matrix.Translation(pivot) @ Matrix.Rotation(angle, 4, 'X') @ Matrix.Translation(-pivot)
+        fore_body = bend_at('chest', .065*flex)
+        hind_body = bend_at('pelvis', -.085*flex)
+    desired = {name: body @ bones[name].matrix_local for name in ('spine', 'belly')}
+    desired.update(chest=fore_body @ bones['chest'].matrix_local, pelvis=hind_body @ bones['pelvis'].matrix_local)
+    chest_shift = (fore_body @ bones['chest'].head_local)-bones['chest'].head_local
     head_shift = (driver['head'].location-idle_controls['head'])*.65
     if standing and state not in ('jumpOn', 'jumpOff', 'hop'):
-        head_shift = Vector((0, 0, .002*math.cos(t*math.tau*2)))
+        head_shift = Vector((0, 0, (.008 if state in ('trot','run') else .002)*math.cos(t*math.tau*2)-(.025 if state=='run' else 0)))
     head_rotation = driver['head'].rotation_euler.to_matrix()
+    if state in ('trot','run'):
+        head_rotation = Matrix.Rotation(-lean*.65, 3, 'X')
+    if jumping:
+        head_shift = Vector((0,-.025*airborne,-.035*landing))
+        head_rotation = Matrix.Rotation(-lean*.55,3,'X')
     if state == 'crawl':
         head_shift.z -= .16
         head_rotation = Matrix.Rotation(.12, 3, 'X')
@@ -265,18 +328,24 @@ def pose(arm, driver, state, t, idle_controls):
     for side, i in (('L', 0), ('R', 1)):
         for rear, key, label, paw in ((False, 'feet', 'foreleg', 'front.paw'), (True, 'back_feet', 'hindleg', 'rear.paw')):
             names = (side+'.'+label+'joint0', side+'.'+label+'joint1', side+'.'+paw)
-            shoulder = body @ bones[names[0]].head_local
+            shoulder = (hind_body if rear else fore_body) @ bones[names[0]].head_local
             toe = bones[names[2]].head_local.copy()
             if seated:
                 toe.y = toe.y*(1-seated)+(shoulder.y+(-.04 if rear else -.025))*seated
             if settle:
                 toe.y += -.08*settle if not rear else -.05*settle
-            if state.startswith('walk') or state in ('crawl', 'turn'):
+            if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run'):
                 baseline = Vector((driver[key][i].location.x, .44 if rear else -.38, .105 if rear else .12))
                 delta = driver[key][i].location-baseline
             else:
                 delta = driver[key][i].location-idle_controls[key][i]
             toe += delta
+            if jumping:
+                # Forepaws reach the destination first; hind paws finish their
+                # swing after forepaw contact while the torso absorbs impact.
+                tuck = smooth_window(t,.18 if not rear else .20,.70 if not rear else .80,.13)
+                reach = smooth_window(t,.48,.70,.10) if not rear else 0
+                toe += Vector((0,(.10 if rear else .07)*tuck-.06*reach,(.20 if rear else .16)*tuck))
             if state == 'wash' and not rear and side == 'R':
                 lift = smooth_window(t, .08, .88, .12)
                 wipe = math.sin(t*math.tau*2)
@@ -285,9 +354,9 @@ def pose(arm, driver, state, t, idle_controls):
                 toe = toe.lerp(target, lift)
             desired.update(limb_pose(bones, names, shoulder, toe))
     # The upright hooked tail follows the pelvis.
-    tail_rotation = driver['tail'].rotation_euler.to_matrix()
+    tail_rotation = Matrix.Rotation(.22*airborne-.08*landing,3,'X') if jumping else driver['tail'].rotation_euler.to_matrix()
     anchor = bones['tailjoint0'].head_local
-    tail_transform = body @ Matrix.Translation(anchor) @ tail_rotation.to_4x4() @ Matrix.Translation(-anchor)
+    tail_transform = hind_body @ Matrix.Translation(anchor) @ tail_rotation.to_4x4() @ Matrix.Translation(-anchor)
     for name in [*('tailjoint'+str(i) for i in range(4)), 'tailTip']:
         desired[name] = tail_transform @ bones[name].matrix_local
     head_motion = desired['head'] @ bones['head'].matrix_local.inverted()
@@ -311,7 +380,7 @@ def pose(arm, driver, state, t, idle_controls):
 
 
 def export_cats(scope, args, export):
-    clips = __import__('json').loads((ROOT/'scripts/3d/clips.json').read_text())
+    clips = {**__import__('json').loads((ROOT/'scripts/3d/clips.json').read_text()), **{name: spec['clip'] for name, spec in GAITS.items() if 'clip' in spec}}
     skins = [a.split('=', 1)[1] for a in args if a.startswith('--skin=')] or ('orange', 'grey', 'white')
     for skin in skins:
         scope['MATS'].clear()

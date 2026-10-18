@@ -9,13 +9,27 @@ import { nativeRoomPreview } from '@/utils/native-room-preview';
 import type { NativeRoomObject } from '@/utils/native-room-world';
 
 type Props = { castShadows?: boolean; spotlightPose?: ISharedValue<SpotlightAim | undefined>; object: NativeRoomObject; active: boolean; editingObject?: ISharedValue<NativeRoomObject | undefined> };
+// Equal segments cover the authored opal diffusers, including both ends.
+const LINEAR_LAMP_DIFFUSERS: Record<string, { width: number; count: number }> = {
+  bathroomLightStrip: { width: 1.80, count: 7 },
+  bathroomLightVanity: { width: 1.01, count: 5 },
+};
 export function NativeLampLight({ object, active, editingObject, spotlightPose, castShadows }: Props) {
   // Numeric properties avoid sending native light handles through shared-value listeners.
   const light = lampLightConfig(object);
+  if (light && LINEAR_LAMP_DIFFUSERS[object.modelId]) {
+    const { width, count } = LINEAR_LAMP_DIFFUSERS[object.modelId];
+    return <>{Array.from({ length: count }, (_, index) => {
+      const offsetX = ((index + .5) / count - .5) * width;
+      const config = { ...light, position: lampLightPose(object, offsetX).position, intensity: light.intensity / count };
+      return <MovingLampLight key={index} object={object} active={active} editingObject={editingObject}
+        config={config} offsetX={offsetX}/>;
+    })}</>;
+  }
   return light ? <MovingLampLight object={object} castShadows={castShadows} active={active} editingObject={editingObject} spotlightPose={spotlightPose} config={light}/> : null;
 }
 
-function MovingLampLight({ object, active, editingObject, config, spotlightPose, castShadows = false }: Props & { config: NonNullable<ReturnType<typeof lampLightConfig>> }) {
+function MovingLampLight({ object, active, editingObject, config, spotlightPose, castShadows = false, offsetX = 0 }: Props & { config: NonNullable<ReturnType<typeof lampLightConfig>>; offsetX?: number }) {
   'use no memo';
   const { lightManager, scene } = useFilamentContext();
   // Pose changes update the same light handle, including slider previews.
@@ -35,7 +49,7 @@ function MovingLampLight({ object, active, editingObject, config, spotlightPose,
     const aim = spotlightPose?.value;
     const aimed = aim?.instanceId === object.instanceId;
     const { position, direction } = preview || aimed ? lampLightPose({ ...object, ...preview,
-      spotlightAngle: aimed ? aim.angle : object.spotlightAngle, spotlightSwivel: aimed ? aim.swivel : object.spotlightSwivel })
+      spotlightAngle: aimed ? aim.angle : object.spotlightAngle, spotlightSwivel: aimed ? aim.swivel : object.spotlightSwivel }, offsetX)
       : { position: [px, py, pz], direction: [dx, dy, dz] };
     const values = [position[0], position[1], position[2], direction[0], direction[1], direction[2]];
     let changed = false;
@@ -44,6 +58,6 @@ function MovingLampLight({ object, active, editingObject, config, spotlightPose,
     applied.value = values;
     lightManager.setPosition(light, position as unknown as Float3[]);
     if (object.modelId.startsWith('wallSpot')) lightManager.setDirection(light, direction as unknown as Float3[]);
-  }, [active, px, py, pz, dx, dy, dz, editingObject, spotlightPose, object, applied, lightManager, light]);
+  }, [active, px, py, pz, dx, dy, dz, offsetX, editingObject, spotlightPose, object, applied, lightManager, light]);
   return null;
 }

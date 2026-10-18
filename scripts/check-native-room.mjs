@@ -32,7 +32,9 @@ for (const entry of inventory) {
   if (/door/i.test(entry.id)) assert.ok(!model.animations?.length, 'Doors stay still until commanded');
   if (entry.id === 'sofaA') assert.ok(model.accessors.some(a => a.type === 'VEC3' && a.count > 24), 'Sofa rounding must survive export');
 }
-const authored = JSON.parse(fs.readFileSync('scripts/3d/clips.json'));
+const gaitSpecs = JSON.parse(fs.readFileSync('constants/cat-gaits.json'));
+const authored = { ...JSON.parse(fs.readFileSync('scripts/3d/clips.json')),
+  ...Object.fromEntries(Object.entries(gaitSpecs).filter(([,spec])=>spec.clip).map(([name,spec])=>[name,spec.clip])) };
 for (const skin of ['orange', 'grey', 'white']) {
   const model = glb('cat-' + skin);
   assert.deepEqual(model.animations.map(a => a.name), Object.keys(authored));

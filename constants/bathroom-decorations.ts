@@ -6,6 +6,10 @@ type AnimatedEntry = { source: number; sheetWidth: number; sheetHeight: number; 
 
 /** Bathroom pack — shown in the dedicated store tab. */
 export const BATHROOM_DECORATION_CATALOG = {
+  bathroomLightGlobe: { source: require("@/assets/3d/decoration/bathroomLightGlobe.png"), displaySize: 32 },
+  bathroomLightVanity: { source: require("@/assets/3d/decoration/bathroomLightVanity.png"), displaySize: 48 },
+  bathroomMirrorBacklit: { source: require("@/assets/3d/decoration/bathroomMirrorBacklit.png"), displaySize: 48 },
+  bathroomLightStrip: { source: require("@/assets/3d/decoration/bathroomLightStrip.png"), displaySize: 72 },
   bathroomBathOvalWhite: { source: require("@/assets/3d/decoration/bathroomBathOvalWhite.png"), displaySize: 64 },
   bathroomBathOvalSage: { source: require("@/assets/3d/decoration/bathroomBathOvalSage.png"), displaySize: 64 },
   bathroomBathOvalRose: { source: require("@/assets/3d/decoration/bathroomBathOvalRose.png"), displaySize: 64 },
@@ -47,6 +51,10 @@ export const BATHROOM_DECORATION_CATALOG = {
 } as const satisfies Record<string, ImageEntry | AnimatedEntry>;
 
 export type BathroomDecorationId = keyof typeof BATHROOM_DECORATION_CATALOG;
+
+export const BATHROOM_LIGHT_DECORATION_IDS = [
+  'bathroomLightGlobe', 'bathroomLightVanity', 'bathroomMirrorBacklit', 'bathroomLightStrip',
+] as const satisfies readonly BathroomDecorationId[];
 
 export const BATHROOM_DECORATION_IDS = Object.keys(
   BATHROOM_DECORATION_CATALOG,

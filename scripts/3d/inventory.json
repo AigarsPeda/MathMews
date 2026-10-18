@@ -2350,6 +2350,30 @@
       "animated": false
     },
     {
+      "id": "bathroomLightGlobe",
+      "kind": "decoration",
+      "displaySize": 32,
+      "animated": false
+    },
+    {
+      "id": "bathroomLightVanity",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "bathroomMirrorBacklit",
+      "kind": "decoration",
+      "displaySize": 48,
+      "animated": false
+    },
+    {
+      "id": "bathroomLightStrip",
+      "kind": "decoration",
+      "displaySize": 72,
+      "animated": false
+    },
+    {
       "id": "room1",
       "kind": "room",
       "animated": false

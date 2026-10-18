@@ -8,6 +8,7 @@ from wall_spotlights import WALL_SPOTLIGHT_IDS, build_wall_spotlight
 from kitchen_additions import KITCHEN_ADDITION_IDS, build_kitchen_addition
 from modern_kitchen import MODERN_KITCHEN_IDS, build_modern_kitchen
 from bathroom_additions import BATHROOM_ADDITION_IDS, build_bathroom_addition, add_bathroom_controls
+from bathroom_lights import BATHROOM_LIGHT_IDS, build_bathroom_light
 
 STORE_FURNITURE_IDS = {
     'sofaBlueClassic', 'sofaRoseTufted', 'sofaTanLeather', 'sofaCreamCloud',
@@ -25,6 +26,7 @@ STORE_FURNITURE_IDS.update(WALL_SPOTLIGHT_IDS)
 STORE_FURNITURE_IDS.update(KITCHEN_ADDITION_IDS)
 STORE_FURNITURE_IDS.update(MODERN_KITCHEN_IDS)
 STORE_FURNITURE_IDS.update(BATHROOM_ADDITION_IDS)
+STORE_FURNITURE_IDS.update(BATHROOM_LIGHT_IDS)
 
 
 def build_store_furniture(id, h):
@@ -78,7 +80,9 @@ def build_store_furniture(id, h):
         curve('Gooseneck faucet', [(x, y + .26, z), (x, y + .26, z + .32), (x, y + .08, z + .32), (x, y + .07, z + .23)], .022, 'silver')
         sphere('Tap handle', (x + .09, y + .25, z + .06), (.055, .035, .025), 'gold')
 
-    if id in BEDROOM_ADDITION_IDS:
+    if id in BATHROOM_LIGHT_IDS:
+        build_bathroom_light(id, h)
+    elif id in BEDROOM_ADDITION_IDS:
         build_bedroom_addition(id, h)
     elif id in MODERN_KITCHEN_IDS:
         build_modern_kitchen(id, h)

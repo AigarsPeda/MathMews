@@ -697,7 +697,11 @@
       "bedroomBench": "Salvijzaļš guļamistabas sols",
       "bedroomQuiltChest": "Segu lāde",
       "bedroomSlippers": "Čības ar bumbuļiem",
-      "bedroomRug": "Austs paklājs pie gultas"
+      "bedroomRug": "Austs paklājs pie gultas",
+      "bathroomLightGlobe": "Matēta stikla sienas lampa",
+      "bathroomLightVanity": "Hromēta spoguļa gaismas josla",
+      "bathroomMirrorBacklit": "Apaļš spogulis ar apgaismojumu",
+      "bathroomLightStrip": "Netiešā sienas gaismas josla"
     },
     "free": "Bezmaksas",
     "buyFor": "{{cost}} 🪙",

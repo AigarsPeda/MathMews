@@ -1,7 +1,23 @@
 {
   "halloweenGhostLantern": [
-    { "node": "Ghost body", "emission": [0.55, 0.34, 0.15, 1] },
-    { "node": "Scalloped ghost hem", "emission": [0.55, 0.34, 0.15, 1] }
+    {
+      "node": "Ghost body",
+      "emission": [
+        0.55,
+        0.34,
+        0.15,
+        1
+      ]
+    },
+    {
+      "node": "Scalloped ghost hem",
+      "emission": [
+        0.55,
+        0.34,
+        0.15,
+        1
+      ]
+    }
   ],
   "lampFloorArc": [
     {
@@ -265,6 +281,50 @@
         1,
         0.78,
         0.44,
+        1
+      ]
+    }
+  ],
+  "bathroomLightGlobe": [
+    {
+      "node": "Frosted globe diffuser",
+      "emission": [
+        0.65,
+        0.48,
+        0.29,
+        1
+      ]
+    }
+  ],
+  "bathroomLightVanity": [
+    {
+      "node": "Vanity opal diffuser",
+      "emission": [
+        0.65,
+        0.48,
+        0.29,
+        1
+      ]
+    }
+  ],
+  "bathroomMirrorBacklit": [
+    {
+      "node": "Mirror illuminated rim",
+      "emission": [
+        0.65,
+        0.48,
+        0.29,
+        1
+      ]
+    }
+  ],
+  "bathroomLightStrip": [
+    {
+      "node": "Indirect strip diffuser",
+      "emission": [
+        0.65,
+        0.48,
+        0.29,
         1
       ]
     }

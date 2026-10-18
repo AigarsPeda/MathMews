@@ -30,6 +30,34 @@ const { canFlipWallDecoration } = load('@/constants/decoration-variants');
 const { roomItemAtPoint, roomItemAnchor, createRoomPlacementResolver } = load('@/utils/room-item-placement');
 const { WALL_PLACEMENT_MIN, WALL_PLACEMENT_MAX } = load('@/constants/room-geometry');
 const data = file => JSON.parse(fs.readFileSync(file, 'utf8'));
+// Bathroom fixtures use broad diffuse lights and the same wall editor/persistence.
+for (const id of load('@/constants/bathroom-decorations').BATHROOM_LIGHT_DECORATION_IDS) {
+  const glb=fs.readFileSync(`assets/3d/native/${id}.glb`), model=JSON.parse(glb.subarray(20,20+glb.readUInt32LE(12)));
+  const parts=data('constants/lamp-glow-parts.json')[id];
+  assert.ok(parts.length && parts.every(part=>model.nodes.some(node=>node.name===part.node)),`${id}: authored diffusers exist`);
+  assert.ok(model.materials.some(material=>material.name.startsWith('Lamp glow ')),`${id}: diffuser glow is isolated from chrome and mirror glass`);
+  assert.ok(canFlipWallDecoration(id));
+  for (const width of [320,414,768]) for (const wallFlipped of [false,true]) {
+    const item={decorationId:id,instanceId:'bath-light',offset:{x:wallFlipped?-.2:.2,y:-.65},wallFlipped,poweredOn:true};
+    const options={width,height:width*1.1,petSize:width/3,sizeScale:width/390,decorations:[item],toys:[]};
+    const world=buildNativeRoomWorld(options), object=world.objects[0], normal=wallFlipped?0:2;
+    assert.equal(object.wallAxis,normal);assert.equal(object.solid,false);
+    assert.ok(object.min[normal]>=-2.351 && object.min[normal]<-2.30,`${id}: fixture mounts against the selected wall`);
+    assert.ok(object.min[1]>=.18-1e-6 && object.max[1]<=2.65+1e-6,`${id}: fixture stays within the wall height`);
+    const light=lampLightConfig(object);
+    assert.equal(light.type,'point');assert.ok(light.intensity>0&&light.colorKelvin>=2700&&light.colorKelvin<=3200);
+    assert.ok(light.position[normal]>object.min[normal],`${id}: light shines from the room side of the wall`);
+    assert.equal(lampLightConfig({...object,poweredOn:false}),undefined);
+    const anchor=roomItemAnchor(object,width),preview=roomItemAtPoint(object,{x:anchor.x+10,y:anchor.y+10},width);
+    assert.equal(preview.position[normal],object.position[normal],'Dragging stays on the mounting wall');
+    const copies=[item,{...item,instanceId:'other'}],off=placement.togglePlacedDecorationPowerByInstance(copies,'bath-light');
+    assert.equal(off[0].poweredOn,false);assert.equal(off[1].poweredOn,true);
+    const saved=placement.normalizePlacedDecorations(JSON.parse(JSON.stringify(off)));
+    assert.equal(Boolean(saved[0].poweredOn),false);assert.equal(Boolean(saved[0].wallFlipped),wallFlipped);
+    assert.equal(saved[1].poweredOn,true,'The second fixture remains lit after save/reload');
+  }
+}
+console.log('Verified four bathroom lights, diffuse illumination, isolated diffuser materials, both wall mounts, live dragging and independent saved power at phone/tablet sizes.');
 const english = data('locales/en.json'), latvian = data('locales/lv.json');
 assert.equal(ids.length, 6);
 for (const id of ids) {
@@ -252,7 +280,7 @@ const poses = [], directions = [], applied = { value: [] };
 mocks.react.useEffect = (fn, deps) => {
   if (effectLight !== deps[1]) { effectLight = deps[1]; fn(); }
 };
-mocks.react.createElement = (type, props) => ({ type, props });
+mocks.react.createElement = (type, props, ...children) => ({ type, props: { ...props, children } });
 mocks['react-native-worklets-core'] = { useSharedValue: () => applied };
 Object.assign(mocks['react-native-filament'], {
   useFilamentContext: () => ({ scene: {}, lightManager: {
@@ -396,3 +424,72 @@ for(let i=0;i<30;i++){
 }
 assert.equal(creates,priorCreates,'Shared aiming never recreates the light');
 console.log('Verified smoothing uses the same pose for lens and beam without React rendering or light recreation.');
+
+// Linear bathroom diffusers illuminate their full exported width, on either wall.
+let emitterState;
+const emitterWrites = [];
+mocks['react-native-worklets-core'].useSharedValue = () => emitterState.applied;
+mocks.react.useEffect = (fn, deps) => {
+  if (emitterState.effectLight !== deps[1]) { emitterState.effectLight = deps[1]; fn(); }
+};
+mocks['react-native-filament'].useLightEntity = (_manager, config) => {
+  const key = JSON.stringify(config);
+  if (emitterState.config !== key) {
+    emitterState.config = key;
+    emitterState.light = { id: ++creates };
+  }
+  return emitterState.light;
+};
+mocks['react-native-filament'].useFilamentContext = () => ({ scene: {}, lightManager: {
+  setPosition: (light, position) => emitterWrites.push({ light, position: Array.from(position) }),
+  setDirection: () => assert.fail('Diffuse bathroom lights do not need aiming writes'),
+} });
+mocks['react-native-filament'].RenderCallbackContext.useRenderCallback = fn => { emitterState.frame = fn; };
+for (const [id, count] of [['bathroomLightStrip', 7], ['bathroomLightVanity', 5]]) {
+  const diffuser = readModel(id).find(mesh => /opal diffuser|strip diffuser/i.test(mesh.name));
+  const width = Math.max(...diffuser.points.map(p => p[0])) - Math.min(...diffuser.points.map(p => p[0]));
+  for (const wallFlipped of [false, true]) for (const scale of [.7, 1, 1.8]) {
+    const fixture = buildNativeRoomWorld({ width: 390, height: 430, petSize: 90, sizeScale: 1, toys: [],
+      decorations: [{ decorationId: id, instanceId: 'linear', offset: { x: wallFlipped ? -.2 : .2, y: -.65 }, wallFlipped, scale, poweredOn: true }],
+    }).objects[0];
+    const drag = { value: undefined }, states = Array.from({ length: count }, () => ({ applied: { value: [] } }));
+    const paint = (object, active = true) => {
+      const node = NativeLampLight({ object, active, editingObject: drag });
+      const children = node.props.children.flat();
+      assert.equal(children.length, count);
+      children.forEach((child, index) => { emitterState = states[index]; child.type(child.props); });
+      return children.map(child => child.props);
+    };
+    const emitters = paint(fixture), center = originalConfig(fixture);
+    assert.ok(Math.abs(emitters.reduce((sum, emitter) => sum + emitter.config.intensity, 0) - center.intensity) < 1e-6,
+      'Distributed emitters retain the total lamp power');
+    emitters.forEach(({ config, offsetX }, index) => {
+      assert.equal(config.type, 'point');
+      assert.ok(Math.abs(offsetX - ((index + .5) / count - .5) * width) < .002,
+        'Each emitter covers an equal segment of the actual exported diffuser');
+      assert.ok(config.position[wallFlipped ? 0 : 2] > fixture.min[wallFlipped ? 0 : 2], 'All emitters remain in front of the mounting wall');
+    });
+    states.forEach(state => state.frame());
+    assert.deepEqual(emitterWrites.slice(-count).map(write => write.position), emitters.map(emitter => Array.from(emitter.config.position)));
+    const idleWrites = emitterWrites.length, initialCreates = creates;
+    for (let frame = 0; frame < 120; frame++) states.forEach(state => state.frame());
+    assert.equal(emitterWrites.length, idleWrites, 'Every settled emitter skips idle native writes');
+    drag.value = { ...fixture, position: fixture.position.map((v, i) => v + (i === 1 ? .1 : 0)), heading: fixture.heading + .4, scale: fixture.scale * 1.2 };
+    states.forEach(state => state.frame());
+    const expected = emitters.map(({ offsetX }) => Array.from(lampModule.lampLightPose(drag.value, offsetX).position));
+    assert.deepEqual(emitterWrites.slice(-count).map(write => write.position), expected, 'All emitters follow live translation, rotation and scale');
+    paint(fixture);
+    assert.equal(creates, initialCreates, 'Dragging retains every native light entity');
+    paint(fixture, false);
+    const hiddenWrites = emitterWrites.length;
+    drag.value = undefined;
+    states.forEach(state => state.frame());
+    assert.equal(emitterWrites.length, hiddenWrites, 'Hidden fixtures pause every emitter');
+    paint(fixture);
+    states.forEach(state => state.frame());
+    assert.deepEqual(emitterWrites.slice(-count).map(write => write.position), emitters.map(emitter => Array.from(emitter.config.position)),
+      'Cancel and room return restore the saved emitter positions');
+    assert.equal(NativeLampLight({ object: { ...fixture, poweredOn: false }, active: true }), null, 'Power off removes all emitters');
+  }
+}
+console.log('Verified full-width strip and vanity illumination, conserved power, both walls, resizing, live rotated drags, retained light entities, idle work, hidden pauses and power off.');

@@ -137,8 +137,8 @@ for (const modelId of Object.keys(LAMP_LIGHT_ORIGINS)) {
   assert.ok(Math.abs(light.position[1] - (.1 + origin[1] * 2)) < 1e-8);
   assert.ok(Math.abs(light.position[2] - (3 - origin[0] * 2)) < 1e-8);
   assert.deepEqual(Array.from(light.direction), [0, -1, 0]);
-  if (modelId.startsWith('lavaLamp') || modelId === 'halloweenGhostLantern') {
-    assert.equal(light.type,'point','Lanterns light surrounding surfaces in every direction');
+  if (modelId.startsWith('lavaLamp') || modelId === 'halloweenGhostLantern' || modelId.startsWith('bathroom')) {
+    assert.equal(light.type,'point','Lanterns and bathroom lights illuminate surrounding surfaces in every direction');
     if (modelId.startsWith('lavaLamp')) assert.ok(light.colorKelvin<2700,'Lava casts warm amber light');
   } else {
     assert.equal(light.type,'spot','Shaded lamps retain their downward light');

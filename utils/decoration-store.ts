@@ -28,6 +28,7 @@ import {
 } from "@/constants/office-decorations";
 import {
   BATHROOM_DECORATION_IDS,
+  BATHROOM_LIGHT_DECORATION_IDS,
 } from "@/constants/bathroom-decorations";
 import {
   BOOKS_DECORATION_IDS,
@@ -62,7 +63,7 @@ function storeIds(...groups: readonly (readonly CatDecorationId[])[]): CatDecora
 export const DOOR_DECORATION_STORE_IDS = storeIds(DOOR_DECORATION_IDS, [
   "japaneseDoorAni", "japaneseSlidingDoorAni",
 ]);
-export const LAMP_DECORATION_STORE_IDS = storeIds(LAMP_DECORATION_IDS, [
+export const LAMP_DECORATION_STORE_IDS = storeIds(LAMP_DECORATION_IDS, BATHROOM_LIGHT_DECORATION_IDS, [
   "bedroomFloorLamp", "japaneseLamp", "lavaLampOff", "lavaLampAni", "halloweenGhostLantern",
 ]);
 export const CURTAIN_DECORATION_STORE_IDS = storeIds(CURTAIN_DECORATION_IDS);

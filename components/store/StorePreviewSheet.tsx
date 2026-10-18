@@ -2,6 +2,7 @@ import { getCatalogStorePrice } from "@/utils/store-catalog";
 import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { StorePromotion } from "@/components/store/StorePromotion";
 import { getDecorationDefaultPlacementScale, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
+import { isBathroomLightDecorationId } from "@/constants/decoration-motion";
 import { NATIVE_MODEL_SOURCES } from '@/constants/native-model-sources';
 import { DEFAULT_HOME_ROOM_ID } from '@/constants/home-rooms';
 import { warmHomeRoomModel } from '@/utils/native-model-warmup';
@@ -33,7 +34,7 @@ export function StorePreviewSheet({ item, pet, coins, onClose, onSaveGoal }: Pro
   if (!item) return null;
   const bedId = item.kind === "bed" ? item.id : pet.bedId;
   const toys = [...(pet.placedToys ?? []), ...(item.kind === "toy" ? [{ toyId: item.id as CatToyId, instanceId: "preview-toy", offset: { x: .4, y: .5 } }] : [])];
-  const decorations = [...(pet.placedDecorations ?? []), ...(item.kind === "decoration" ? [{ decorationId: item.id as CatDecorationId, scale: getDecorationDefaultPlacementScale(item.id as CatDecorationId), instanceId: "preview-decoration", offset: { x: .35, y: -.2 } }] : [])];
+  const decorations = [...(pet.placedDecorations ?? []), ...(item.kind === "decoration" ? [{ decorationId: item.id as CatDecorationId, scale: getDecorationDefaultPlacementScale(item.id as CatDecorationId), instanceId: "preview-decoration", offset: { x: .35, y: -.2 }, poweredOn: isBathroomLightDecorationId(item.id) }] : [])];
   const repeatable = item.kind === "toy" || item.kind === "decoration";
   const canBuy = !item.owned || repeatable;
   const price = getCatalogStorePrice(item.kind, item.id);

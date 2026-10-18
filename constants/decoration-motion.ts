@@ -7,6 +7,10 @@ export function isWallSpotlightDecorationId(id: string): boolean {
   return /^wallSpot(Cylinder|Bell|Bar)(Black|White|Brass|Rose|Oak|Chrome)$/.test(id);
 }
 
+export function isBathroomLightDecorationId(id: string): boolean {
+  return /^bathroomLight(Globe|Vanity|Strip)$/.test(id) || id === 'bathroomMirrorBacklit';
+}
+
 export const DEFAULT_SPOTLIGHT_ANGLE = -25;
 export function normalizeSpotlightAngle(value: unknown): number {
   return typeof value === "number" && Number.isFinite(value)
@@ -21,6 +25,10 @@ export function normalizeSpotlightSwivel(value: unknown): number {
 export const SPOTLIGHT_PIVOT: [number, number, number] = [0, .30, .40];
 
 export const LAMP_LIGHT_ORIGINS: Record<string, [number, number, number]> = {
+  bathroomLightGlobe: [0, .39, .44],
+  bathroomLightVanity: [0, .22, .25],
+  bathroomMirrorBacklit: [0, .60, .20],
+  bathroomLightStrip: [0, .055, .22],
   wallSpotCylinderBlack: [0, .14, .40],
   wallSpotCylinderWhite: [0, .14, .40],
   wallSpotBellBrass: [0, .14, .40],
