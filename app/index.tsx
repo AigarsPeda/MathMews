@@ -106,6 +106,7 @@ export default function HomeScreen() {
     flipPlacedDecorationWall,
     togglePlacedDecorationPower,
     togglePlacedCurtain,
+    togglePlacedDecorationOpen,
     togglePlacedFridge,
     flipPlacedFridgeHinge,
     aimPlacedSpotlight,
@@ -391,6 +392,12 @@ export default function HomeScreen() {
     triggerHaptic();
   }, [recordInteraction, togglePlacedFridge]);
 
+  const handleTogglePlacedDecorationOpen = useCallback((instanceId: string) => {
+    if (!togglePlacedDecorationOpen(instanceId)) return;
+    recordInteraction();
+    triggerHaptic();
+  }, [recordInteraction, togglePlacedDecorationOpen]);
+
   const handleTogglePlacedCurtain = useCallback((instanceId: string) => {
     if (!togglePlacedCurtain(instanceId)) return;
     recordInteraction();
@@ -643,6 +650,7 @@ export default function HomeScreen() {
       onTogglePlacedDecorationPower={handleTogglePlacedDecorationPower}
       onTogglePlacedCurtain={handleTogglePlacedCurtain}
       onTogglePlacedFridge={handleTogglePlacedFridge}
+      onTogglePlacedDecorationOpen={handleTogglePlacedDecorationOpen}
       onFlipPlacedFridgeHinge={handleFlipPlacedFridgeHinge}
       onAimPlacedSpotlight={(id, angle, swivel) => { if (aimPlacedSpotlight(id, angle, swivel)) recordInteraction(); }}
       onScalePlacedDecoration={handleScalePlacedDecoration}

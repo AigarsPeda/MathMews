@@ -1,3 +1,4 @@
+import { isDecorationOpen } from '@/constants/item-interactions';
 import { CURTAIN_FABRIC_BOUNDS, isCurtainDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import { isSeatingSofaDecorationId } from "@/constants/sofa-decorations";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
@@ -35,6 +36,8 @@ export type ModelMetadata = {
   max: number[];
   animated: boolean;
   wind?: boolean;
+  interactionParts?: { node: string; pivot: number[]; axis: number[]; angle: number; offset: number[]; mode: string }[];
+  drawer?: { surface: number[] };
   collisionBoxes?: { min: number[]; max: number[]; footprint?: number[][] }[];
   supportSurfaces?: { min: number[]; max: number[] }[];
   baseHull?: number[][];
@@ -111,6 +114,8 @@ export type NativeRoomObject = {
   collidable?: boolean;
   movable: boolean;
   poweredOn?: boolean;
+  opened?: boolean;
+  drawer?: Vec3;
   curtainOpen?: boolean;
   fridgeOpen?: boolean | "ajar";
   fridgeHingeSide?: "left" | "right";
@@ -314,7 +319,7 @@ export function buildNativeRoomWorld(options: {
     // Use the nearest window's frame, rather than its deep sill or a remote window.
     return nearby.length ? nearby[0].depth + .015 : .025;
   };
-  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean, spotlightAngle?: number, spotlightSwivel?: number, fridgeOpen?: boolean | "ajar", fridgeHingeSide?: "left" | "right") => {
+  const add = (instanceId: string, modelId: string, size: number, offset: RoomItemOffset, flip = false, poweredOn?: boolean, rotationIndex = 0, rotationDegrees?: number, curtainOpen?: boolean, spotlightAngle?: number, spotlightSwivel?: number, fridgeOpen?: boolean | "ajar", fridgeHingeSide?: "left" | "right", opened?: boolean) => {
     const meta = NATIVE_MODEL_CATALOG[modelId];
     if (!meta)
       return;
@@ -393,8 +398,9 @@ export function buildNativeRoomWorld(options: {
     const movable = /Ball$|toy-mouse|^yarn/i.test(modelId);
     const solid = !isCatFeederDecorationId(modelId) && !wall && !/carpet|rug/i.test(modelId) && !movable && max[1] > FLOOR_Y + .10;
     const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
-    const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, curtainOpen, fridgeOpen, fridgeHingeSide, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
+    const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, opened, curtainOpen, fridgeOpen, fridgeHingeSide, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
       wallAxis: wall ? flip ? 0 : 2 : undefined };
+    if (meta.drawer) object.drawer = rotate(meta.drawer.surface, heading).map((v,i) => position[i] + v * scale) as Vec3;
     if (meta.bed) {
       const at = (point: number[]) => rotate(point, heading).map((v, i) => position[i] + v * scale) as Vec3;
       object.bed = { surface: at(meta.bed.surface), covered: at(meta.bed.covered) };
@@ -460,7 +466,7 @@ export function buildNativeRoomWorld(options: {
   if (options.bedId)
     add('bed', 'bed-' + options.bedId, getBedDisplaySize(options.bedId) * getEquippedBedScale(options.bedScale) * sizeScale, options.bedOffset ?? { x: -.15, y: .3 }, options.bedFlipped, undefined, 0, options.bedRotationDegrees);
   for (const item of options.decorations)
-    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen, item.spotlightAngle, item.spotlightSwivel, item.fridgeOpen, item.fridgeHingeSide);
+    add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen, item.spotlightAngle, item.spotlightSwivel, item.fridgeOpen, item.fridgeHingeSide, isDecorationOpen(item));
   for (const item of options.toys)
     add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
   world.objects = world.objects.map(object => placeObjectOnSurface(object, world.objects, width));
@@ -902,6 +908,20 @@ function findKitchenFloorApproach(start: Vec3, object: NativeRoomObject, world: 
   return undefined;
 }
 
+export function findInvestigateApproach(start: Vec3, object: NativeRoomObject, world: NativeRoomWorld): Vec3 | undefined {
+  const cx = (object.min[0] + object.max[0]) / 2, cz = (object.min[2] + object.max[2]) / 2;
+  const hx = (object.max[0] - object.min[0]) / 2 + world.radius + .08;
+  const hz = (object.max[2] - object.min[2]) / 2 + world.radius + .08;
+  const points: Vec3[] = [];
+  for (let i = 0; i < 24; i++) {
+    const angle = object.heading + i * Math.PI / 12, x = Math.sin(angle), z = Math.cos(angle);
+    const distance = Math.min(Math.abs(x) < 1e-6 ? Infinity : hx / Math.abs(x), Math.abs(z) < 1e-6 ? Infinity : hz / Math.abs(z));
+    points.push([cx + x * distance, FLOOR_Y, cz + z * distance]);
+  }
+  points.sort((a,b) => pathLength([start,a]) - pathLength([start,b]));
+  return points.find(point => isFree(point,world) && hasNativeArrived(findRoomPath(start,point,world).at(-1)!,point));
+}
+
 /** Animation completion is not proof that navigation reached its endpoint. */
 export function hasNativeArrived(position: Vec3, target: Vec3): boolean {
   'worklet';
@@ -947,7 +967,8 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const previousSeatPosition = plan.steps.find(s => s.seatPosition && (s.targetInstanceId ?? plan.targetInstanceId) === sourceObject?.instanceId)?.seatPosition;
   const kitchenPerch = sourceObject && isKitchenIslandDecorationId(sourceObject.modelId) && plan.kind === 'islandSit';
   const kitchenArrival = kitchenPerch && !step.seatPosition && !previousSeatPosition ? findKitchenIslandPerch(start, sourceObject, world) : undefined;
-  const seatPosition = sourceObject?.bed ? (step.bedPhase === 'crawl' || step.bedPhase === 'covered'
+  const drawerSeat = plan.kind === 'drawerHide' || plan.kind === 'returnHome' && previousSeatPosition && sourceObject?.drawer;
+  const seatPosition = drawerSeat ? sourceObject?.drawer ?? previousSeatPosition : sourceObject?.bed ? (step.bedPhase === 'crawl' || step.bedPhase === 'covered'
     ? sourceObject.bed.covered : sourceObject.bed.surface) : step.seatPosition ?? previousSeatPosition ?? kitchenArrival?.seat;
   const object = sourceObject && seatPosition ? { ...sourceObject, seat: seatPosition, seatHeading: step.seatHeading ?? sourceObject.seatHeading,
     approach: sourceObject.approach ?? [seatPosition[0], FLOOR_Y, sourceObject.max[2] + world.radius + .05] as Vec3 } : sourceObject;
@@ -968,6 +989,9 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   let target = plantApproach ?? catFloorPoint(step.position, world);
   const kitchenFloor = !step.returnHome && walking && (plan.kind === 'fridgeInvestigate' || plan.kind === 'windowWatch' && !step.approachingSeat)
     ? object && findKitchenFloorApproach(start, object, world, plan.kind === 'fridgeInvestigate') : undefined;
+  const investigateApproach = !step.returnHome && walking && plan.kind === 'investigate' && object
+    ? findInvestigateApproach(start, object, world) : undefined;
+  if (investigateApproach) target = investigateApproach;
   if (kitchenFloor) target = kitchenFloor;
   if (step.returnHome) target = nearestFree(world.home, world);
   if (step.leavingRoom) target = nativeRoomEdge(world, step.travelDirection ?? 1);
@@ -1004,6 +1028,8 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   if (plan.kind === 'bowlEat' && step.animation === 'eating' && object
     && Math.abs(Math.hypot(start[0] - object.position[0], start[2] - object.position[2]) - CAT_EATING_REACH * world.catScale) > .08) blocked = true;
   if (step.bathroomPhase && (!object?.bathroom || !bathroomApproach)) { blocked = true; path = [start]; }
+  if (plan.kind === 'investigate' && !step.returnHome && (!object || walking && !investigateApproach)
+    || plan.kind === 'drawerHide' && (!object?.drawer || !object.opened)) { blocked = true; path = [start]; }
   if (seating && !seatApproach) { blocked = true; path = [start]; }
   if (kitchenPerch && !seatPosition || !step.returnHome && walking && (plan.kind === 'fridgeInvestigate' || plan.kind === 'windowWatch' && !step.approachingSeat) && !kitchenFloor
     || plan.kind === 'fridgeInvestigate' && !step.returnHome && !object?.fridgeOpen) { blocked = true; path = [start]; }
@@ -1031,7 +1057,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const aim = plan.kind === 'windowWatch' ? world.objects.find(o => o.instanceId === plan.targetInstanceId)?.position
     : plant ? [...(object.leaves ?? [])].sort((a,b) => Math.hypot(...a.map((v,i)=>v-start[i])) - Math.hypot(...b.map((v,i)=>v-start[i])))[0]
     : tree && plan.kind === 'toyPlay' ? hangingToyPosition(object) : object?.position;
-  const targetHeading = aim && !onSeat && !walking && !step.returnHome && (plan.kind === 'toyPlay' || plan.kind === 'plantPlay' || plan.kind === 'bowlEat' || plan.kind === 'windowWatch' || plan.kind === 'fridgeInvestigate') ? Math.atan2(aim[0] - start[0], aim[2] - start[2]) : undefined;
+  const targetHeading = aim && !onSeat && !walking && !step.returnHome && (plan.kind === 'toyPlay' || plan.kind === 'plantPlay' || plan.kind === 'bowlEat' || plan.kind === 'windowWatch' || plan.kind === 'fridgeInvestigate' || plan.kind === 'investigate') ? Math.atan2(aim[0] - start[0], aim[2] - start[2]) : undefined;
   const rockingChair: RockingChair | undefined = object?.modelId === 'chairRockingOak' && step.sofaApproach && !blocked
     ? { instanceId: object.instanceId, pivot: [object.position[0], FLOOR_Y, object.position[2]],
       axis: [Math.cos(object.heading), 0, -Math.sin(object.heading)], seat: object.seat!, scale: object.scale, leaving: step.animation === 'jumpOff' }

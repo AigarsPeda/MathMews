@@ -10,6 +10,7 @@ from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[2]
 LAMP_GLOW_PARTS=json.loads((ROOT/'constants/lamp-glow-parts.json').read_text())
 sys.path.insert(0,str(ROOT/'scripts/3d'))
+from item_interactions import rig_item_interactions, PROFILES as INTERACTION_PROFILES
 from native_gltf import normalize_animation_times, compact_buffer_views
 from feeding_effects import FEEDING_EFFECT_IDS, build_feeding_effect, pose_feeding_effect
 OUT=ROOT/'assets/3d/native';OUT.mkdir(parents=True,exist_ok=True)
@@ -136,6 +137,13 @@ def items():
    center=list(sum(points,Vector())/len(points))
    if id in scope['STORE_FURNITURE_IDS']:center=list(framed_center)
    objects=[root,*objects]
+  interaction_parts=[];drawer_surface=None
+  if id in INTERACTION_PROFILES and (INTERACTION_PROFILES[id].get('open') or INTERACTION_PROFILES[id].get('power')):
+   prior_framing=existing_metadata.get(id)
+   interaction_parts,drawer_surface,_=rig_item_interactions(id,scope)
+   objects=[o for o in bpy.context.scene.objects if o.type in ('MESH','CURVE','EMPTY') and o.name!='Camera target']
+   for obj in objects:
+    if obj != root and obj.parent is None:obj.parent=root
   if id.startswith('window') or id=='bathroomBathWindow':
    window_sky_materials(objects)
    window_area_lightmap(objects)
@@ -145,6 +153,7 @@ def items():
   wind=id in ('plantSmall','plantA','plantB','plantE','plantPotted','plantSunflower','plantTallGreen','plantTallPink','plantTallBlue','plantTallPurple')
   lava=id in ('lavaLampOff','lavaLampAni')
   animated=kind!='room' and id not in PLAYABLE_PLANTS and (entry.get('animated',False) or wind or lava) and 'door' not in id.lower()
+  if INTERACTION_PROFILES.get(id,{}).get('open'):animated=False
   rotations={o:o.rotation_euler.copy() for o in objects}
   if animated:
    scene=bpy.context.scene;scene.render.fps=24;scene.frame_start=1;scene.frame_end=481 if lava else 49
@@ -162,6 +171,8 @@ def items():
   export(OUT/(id+'.glb'),objects,animated)
   def yup(v):return [v[0],v[2],-v[1]]
   metadata[id]={'kind':kind,'renderScale':render_scale,'center':yup(center),'min':[lo[0],lo[2],-hi[1]],'max':[hi[0],hi[2],-lo[1]],'animated':animated,'wind':wind}
+  if interaction_parts:metadata[id]['interactionParts']=interaction_parts
+  if drawer_surface:metadata[id]['drawer']={'surface':drawer_surface}
   if prior_framing:
    for key in ('renderScale','center'):metadata[id][key]=prior_framing[key]
   contact=next((o for o in objects if o.name=='Bathroom contact'),None)

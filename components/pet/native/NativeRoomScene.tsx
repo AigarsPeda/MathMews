@@ -1,3 +1,5 @@
+import { itemInteraction } from '@/constants/item-interactions';
+import { NativeItemInteraction } from './NativeItemInteraction';
 import { configureRoomCamera } from '@/utils/native-room-camera';
 import { registerRoomModelWarmup } from '@/utils/native-model-warmup';
 import type { HomeRoomId } from '@/constants/home-rooms';
@@ -15,7 +17,7 @@ import { advanceBathroomMotion, bathWaterDetailPose, STILL_BATHROOM_MOTION } fro
 import { NativeAirflow } from "./NativeAirflow";
 import { NativeFoodSpill } from "./NativeFoodSpill";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
-import { isFridgeDecorationId, isAirConditionerDecorationId, isCurtainDecorationId, isLampDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
+import { isFridgeDecorationId, isPoweredDecorationId, isAirConditionerDecorationId, isCurtainDecorationId, isLampDecorationId, isWallSpotlightDecorationId } from "@/constants/decoration-motion";
 import { NativeLampLight } from './NativeLampLight';
 import { NativeSpotlightHead } from './NativeSpotlightHead';
 import { NativeLampGlow } from './NativeLampGlow';
@@ -224,6 +226,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
   useEffect(() => { chaseTime.value = 0; body?.setKinematic(!!chase); }, [activityKey, body, chase, chaseTime]);
   useEffect(() => { clock.value = { time: 0, contact: false, nextTap: .65, reset: true, report: 0, screenX: Infinity, screenY: Infinity,
     lastPosition: [centerX, centerY, centerZ], still: 0, settled: false }; }, [body, clock, centerX, centerY, centerZ, object.heading, object.scale]);
+  const objectAnimationOn = !itemInteraction(object.modelId)?.open && (!isPoweredDecorationId(object.modelId) || object.poweredOn === true);
   const lampAnimationOn = !isLampDecorationId(object.modelId) || object.poweredOn === true;
   const render = useCallback(({ timeSinceLastFrame }: {
     timeSinceLastFrame: number;
@@ -386,7 +389,7 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
           .rotate(hand.name === 'Hour hand' ? angles.hour : angles.minute, [0, 0, 1]).translate([0, .6, z]));
       }
     }
-    if (animator && animator.getAnimationCount() > 0 && !(worldClock && clockHands.length) && !object.bathroom && object.poweredOn !== false && lampAnimationOn && (!modelMetadata.wind || airflowStrength(center, airflow) > 0)) {
+    if (animator && animator.getAnimationCount() > 0 && !(worldClock && clockHands.length) && !object.bathroom && objectAnimationOn && lampAnimationOn && (!modelMetadata.wind || airflowStrength(center, airflow) > 0)) {
       animator.applyAnimation(0, s.time);
       animator.updateBoneMatrices();
     }
@@ -442,8 +445,10 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [active, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [active, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, objectAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
+  const interaction = asset && (modelMetadata.interactionParts?.length || itemInteraction(object.modelId)?.power)
+    ? <NativeItemInteraction asset={asset} object={object} active={lightingActive ?? active} reduceMotion={reduceMotion}/> : null;
   if (asset && isFridgeDecorationId(object.modelId))
     return <NativeFridge asset={asset} object={object} editingObject={editingObject} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
   if (asset && isCurtainDecorationId(object.modelId))
@@ -451,10 +456,10 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
   if (asset && isWallSpotlightDecorationId(object.modelId))
     return <><NativeSpotlightHead asset={asset} instanceId={object.instanceId} angle={object.spotlightAngle} swivel={object.spotlightSwivel} pose={spotlightPose}/><NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/></>;
   if (asset && isLampDecorationId(object.modelId))
-    return <NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/>;
+    return <>{interaction}<NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/></>;
   return asset && worldClock && isWindowLightSource(object.modelId)
-    ? <><NativeWindowPane asset={asset} clock={worldClock} lightning={lightning} active={lightingActive ?? active}/>
-      <NativeWindowWeather object={object} editingObject={editingObject} clock={worldClock} active={lightingActive ?? active} reduceMotion={reduceMotion}/></> : null;
+    ? <>{interaction}<NativeWindowPane asset={asset} clock={worldClock} lightning={lightning} active={lightingActive ?? active}/>
+      <NativeWindowWeather object={object} editingObject={editingObject} clock={worldClock} active={lightingActive ?? active} reduceMotion={reduceMotion}/></> : interaction;
 }
 function Scene(props: Props) {
   'use no memo';

@@ -5086,7 +5086,7 @@
     ],
     "min": [
       -0.9100000262260437,
-      0,
+      0.0,
       -0.23999999463558197
     ],
     "max": [
@@ -5095,7 +5095,49 @@
       0.3659999966621399
     ],
     "animated": false,
-    "wind": false
+    "wind": false,
+    "interactionParts": [
+      {
+        "node": "Interaction part 0",
+        "pivot": [
+          -0.8350000381469727,
+          0.08000001311302185,
+          0.2929999977350235
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "angle": -1.6580627893946132,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "mode": "open"
+      },
+      {
+        "node": "Interaction part 1",
+        "pivot": [
+          0.8350000381469727,
+          0.08000001311302185,
+          0.2929999977350235
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "angle": 1.6580627893946132,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "mode": "open"
+      }
+    ]
   },
   "kitchenWallCabinetGlass": {
     "kind": "decoration",
@@ -6022,7 +6064,7 @@
     ],
     "min": [
       -0.7699999809265137,
-      0,
+      0.0,
       -0.38999998569488525
     ],
     "max": [
@@ -6031,7 +6073,76 @@
       0.4555000066757202
     ],
     "animated": false,
-    "wind": false
+    "wind": false,
+    "interactionParts": [
+      {
+        "node": "Interaction part 0",
+        "pivot": [
+          0.0,
+          0.9683333039283752,
+          0.38100001215934753
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "angle": 0,
+        "offset": [
+          0,
+          0,
+          0.558
+        ],
+        "mode": "open"
+      },
+      {
+        "node": "Interaction part 1",
+        "pivot": [
+          0.0,
+          0.3216666504740715,
+          0.38100001215934753
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "angle": 0,
+        "offset": [
+          0,
+          0,
+          0.558
+        ],
+        "mode": "open"
+      },
+      {
+        "node": "Interaction part 2",
+        "pivot": [
+          0.0,
+          0.6449999809265137,
+          0.38100001215934753
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "angle": 0,
+        "offset": [
+          0,
+          0,
+          0.558
+        ],
+        "mode": "open"
+      }
+    ],
+    "drawer": {
+      "surface": [
+        0.0,
+        0.8841666555404664,
+        0.6290000121593475
+      ]
+    }
   },
   "bedroomNightstand": {
     "kind": "decoration",
@@ -6064,7 +6175,7 @@
     ],
     "min": [
       -0.7799999713897705,
-      0,
+      0.0,
       -0.4000000059604645
     ],
     "max": [
@@ -6073,7 +6184,49 @@
       0.48500001430511475
     ],
     "animated": false,
-    "wind": false
+    "wind": false,
+    "interactionParts": [
+      {
+        "node": "Interaction part 0",
+        "pivot": [
+          -0.7224999666213989,
+          0.19499999284744263,
+          0.42650000751018524
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "angle": -1.6580627893946132,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "mode": "open"
+      },
+      {
+        "node": "Interaction part 1",
+        "pivot": [
+          0.7224999666213989,
+          0.19499999284744263,
+          0.42650000751018524
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "angle": 1.6580627893946132,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "mode": "open"
+      }
+    ]
   },
   "bedroomFloorLamp": {
     "kind": "decoration",
@@ -9924,7 +10077,29 @@
       0.27000001072883606
     ],
     "animated": false,
-    "wind": false
+    "wind": false,
+    "interactionParts": [
+      {
+        "node": "Interaction part 0",
+        "pivot": [
+          -0.6499999761581421,
+          0.09999996423721313,
+          0.03750000052154064
+        ],
+        "axis": [
+          0,
+          1,
+          0
+        ],
+        "angle": -1.1344640137963142,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "mode": "open"
+      }
+    ]
   },
   "windowRoundPorthole": {
     "kind": "decoration",

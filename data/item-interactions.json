@@ -1,0 +1,1274 @@
+{
+  "shelfWood": {
+    "cat": "investigate"
+  },
+  "shelfBlue": {
+    "cat": "investigate"
+  },
+  "shelfGreen": {
+    "cat": "investigate"
+  },
+  "tableTan": {
+    "cat": "investigate"
+  },
+  "tablePink": {
+    "cat": "investigate"
+  },
+  "tableBlue": {
+    "cat": "investigate"
+  },
+  "tablePurple": {
+    "cat": "investigate"
+  },
+  "carpetTile": {
+    "cat": "investigate"
+  },
+  "carpetSmall": {
+    "cat": "investigate"
+  },
+  "carpetClassic": {
+    "cat": "investigate"
+  },
+  "carpetRound": {
+    "cat": "investigate"
+  },
+  "carpetRed": {
+    "cat": "investigate"
+  },
+  "chairOfficeA": {
+    "cat": "investigate"
+  },
+  "chairOfficeB": {
+    "cat": "investigate"
+  },
+  "chairOfficeMain": {
+    "cat": "investigate"
+  },
+  "chairClassicA": {
+    "cat": "investigate"
+  },
+  "chairClassicB": {
+    "cat": "investigate"
+  },
+  "chairClassicC": {
+    "cat": "investigate"
+  },
+  "chairClassicD": {
+    "cat": "investigate"
+  },
+  "chairGamingA": {
+    "cat": "investigate"
+  },
+  "chairGamingB": {
+    "cat": "investigate"
+  },
+  "chairGamingC": {
+    "cat": "investigate"
+  },
+  "chairGamingD": {
+    "cat": "investigate"
+  },
+  "deskWoodA": {
+    "cat": "investigate"
+  },
+  "deskWoodB": {
+    "cat": "investigate"
+  },
+  "deskOffice": {
+    "cat": "investigate"
+  },
+  "computerBendedScreen": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerNewImacA": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerNewImacB": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerNewKeyboard": {
+    "cat": "investigate"
+  },
+  "computerOldImacA": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerOldImacB": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerOldKeyboard": {
+    "cat": "investigate"
+  },
+  "computerOldPcA": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerOldPcB": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerPcTower": {
+    "power": "fan",
+    "cat": "investigate"
+  },
+  "computerRotationScreenA": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerRotationScreenB": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerRotationScreenC": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerVerticalScreen": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerWacomTablet": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerMacbookClosed": {
+    "open": "laptop",
+    "initiallyOpen": false,
+    "cat": "investigate"
+  },
+  "computerMacbookOpen": {
+    "open": "laptop",
+    "initiallyOpen": true,
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "consoleAtari": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleDreamcast": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleGameboy": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleGameboyAdvance": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleGamecube": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleNes": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleNes4": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleNes4B": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleN64": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleSwitch": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consolePsp": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consolePs1": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consolePs2": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consolePs3": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consolePs4": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consolePs5": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleSnes": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleSegaGenesis": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleWii": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleXbox": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleXbox360": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "consoleXboxX": {
+    "power": "console",
+    "cat": "investigate"
+  },
+  "lavaLampOff": {
+    "cat": "investigate"
+  },
+  "japaneseBonsai": {
+    "cat": "investigate"
+  },
+  "japaneseCandle": {
+    "power": "fire",
+    "cat": "investigate"
+  },
+  "japaneseCartonBox": {
+    "open": "lid",
+    "cat": "investigate"
+  },
+  "japaneseClothesCase": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "japaneseCanvas": {
+    "cat": "investigate"
+  },
+  "japaneseCanvasLetters": {
+    "cat": "investigate"
+  },
+  "japaneseLamp": {
+    "cat": "investigate"
+  },
+  "japanesePlant": {
+    "cat": "investigate"
+  },
+  "japaneseSeat": {
+    "cat": "investigate"
+  },
+  "japaneseShelf": {
+    "cat": "investigate"
+  },
+  "japaneseTable": {
+    "cat": "investigate"
+  },
+  "japaneseToriGate": {
+    "cat": "investigate"
+  },
+  "japaneseBaseCup": {
+    "cat": "investigate"
+  },
+  "japaneseCup": {
+    "cat": "investigate"
+  },
+  "japaneseDish": {
+    "cat": "investigate"
+  },
+  "japaneseTea": {
+    "cat": "investigate"
+  },
+  "japaneseVase": {
+    "cat": "investigate"
+  },
+  "japaneseCloset": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "japaneseClosetBase": {
+    "cat": "investigate"
+  },
+  "japaneseClosetDrawerClosed": {
+    "open": "drawer",
+    "initiallyOpen": false,
+    "cat": "investigate"
+  },
+  "japaneseClosetDrawerOpen": {
+    "open": "drawer",
+    "initiallyOpen": true,
+    "cat": "investigate"
+  },
+  "japaneseClosetDoor1Closed": {
+    "open": "panel",
+    "initiallyOpen": false,
+    "cat": "investigate"
+  },
+  "japaneseClosetDoor1Open": {
+    "open": "panel",
+    "initiallyOpen": true,
+    "cat": "investigate"
+  },
+  "japaneseClosetDoor2Closed": {
+    "open": "panel",
+    "initiallyOpen": false,
+    "cat": "investigate"
+  },
+  "japaneseClosetDoor2Open": {
+    "open": "panel",
+    "initiallyOpen": true,
+    "cat": "investigate"
+  },
+  "japaneseDoorAni": {
+    "open": "door",
+    "cat": "investigate"
+  },
+  "japaneseSlidingDoorAni": {
+    "open": "door",
+    "cat": "investigate"
+  },
+  "livingAirCon": {
+    "cat": "investigate"
+  },
+  "livingBook": {
+    "cat": "investigate"
+  },
+  "livingSmallTable": {
+    "cat": "investigate"
+  },
+  "livingSpeaker": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "livingTable": {
+    "cat": "investigate"
+  },
+  "livingShelvingA": {
+    "cat": "investigate"
+  },
+  "livingShelvingB": {
+    "cat": "investigate"
+  },
+  "officeAc": {
+    "cat": "investigate"
+  },
+  "officeBlueprint": {
+    "cat": "investigate"
+  },
+  "officeBoardEmpty": {
+    "cat": "investigate"
+  },
+  "officeBoardFull": {
+    "cat": "investigate"
+  },
+  "officeCalculator": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "officeCartonBox": {
+    "open": "lid",
+    "cat": "investigate"
+  },
+  "officeCorkboardA": {
+    "cat": "investigate"
+  },
+  "officeCorkboardB": {
+    "cat": "investigate"
+  },
+  "officeDiploma": {
+    "cat": "investigate"
+  },
+  "officeDrawingTable": {
+    "cat": "investigate"
+  },
+  "officeFireExtinguisher": {
+    "cat": "investigate"
+  },
+  "officeGlassWall": {
+    "cat": "investigate"
+  },
+  "officeHeadset": {
+    "cat": "investigate"
+  },
+  "officeKitchenTable": {
+    "cat": "investigate"
+  },
+  "officeLongRack": {
+    "cat": "investigate"
+  },
+  "officePaper1": {
+    "cat": "investigate"
+  },
+  "officePaper2": {
+    "cat": "investigate"
+  },
+  "officePaper3": {
+    "cat": "investigate"
+  },
+  "officePaper4": {
+    "cat": "investigate"
+  },
+  "officePaper5": {
+    "cat": "investigate"
+  },
+  "officePaper6": {
+    "cat": "investigate"
+  },
+  "officePartition": {
+    "cat": "investigate"
+  },
+  "officePencilHolder": {
+    "cat": "investigate"
+  },
+  "officePhotosA": {
+    "cat": "investigate"
+  },
+  "officePhotosB": {
+    "cat": "investigate"
+  },
+  "officePictureFrame": {
+    "cat": "investigate"
+  },
+  "officeProjectorStand": {
+    "cat": "investigate"
+  },
+  "officeRack": {
+    "cat": "investigate"
+  },
+  "officeRolledPapers": {
+    "cat": "investigate"
+  },
+  "officeRuler": {
+    "cat": "investigate"
+  },
+  "officeRumbaRobot": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "officeStickyNote1": {
+    "cat": "investigate"
+  },
+  "officeStickyNote2": {
+    "cat": "investigate"
+  },
+  "officeStickyNote3": {
+    "cat": "investigate"
+  },
+  "officeStickyNote4": {
+    "cat": "investigate"
+  },
+  "officeStickyNote5": {
+    "cat": "investigate"
+  },
+  "officeStickyNote6": {
+    "cat": "investigate"
+  },
+  "officeStickyNoteBlue": {
+    "cat": "investigate"
+  },
+  "officeStickyNoteGreen": {
+    "cat": "investigate"
+  },
+  "officeStickyNotePink": {
+    "cat": "investigate"
+  },
+  "officeStickyNoteRed": {
+    "cat": "investigate"
+  },
+  "officeTelephone": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "officeTrashEmpty": {
+    "cat": "investigate"
+  },
+  "officeTrashFull": {
+    "cat": "investigate"
+  },
+  "officeTrashSquare": {
+    "cat": "investigate"
+  },
+  "officeTvOff": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "officeWhiteBox": {
+    "open": "lid",
+    "cat": "investigate"
+  },
+  "officeWhiteboardEraser": {
+    "cat": "investigate"
+  },
+  "officeClockAni": {
+    "cat": "investigate"
+  },
+  "officeCopyMachineDarkAni": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "officeCopyMachineWhiteAni": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "officeDocumentShredderAni": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "officeMedicalKitAni": {
+    "open": "lid",
+    "cat": "investigate"
+  },
+  "officeMetallicClosetAni": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "officePrinterAni": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "officeProjectorAni": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "officeProjectorScreenAni": {
+    "open": "screen",
+    "cat": "investigate"
+  },
+  "officeWaterDispenserAni": {
+    "power": "water",
+    "cat": "investigate"
+  },
+  "officeWoodClosetAni": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "bathroomBathCarpet": {
+    "cat": "investigate"
+  },
+  "bathroomBathWindow": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "bathroomDuck": {
+    "cat": "investigate"
+  },
+  "bathroomHanger": {
+    "cat": "investigate"
+  },
+  "bathroomHangingTowel": {
+    "cat": "investigate"
+  },
+  "bathroomLongShelf": {
+    "cat": "investigate"
+  },
+  "bathroomMirror": {
+    "cat": "investigate"
+  },
+  "bathroomShowerBin": {
+    "cat": "investigate"
+  },
+  "bathroomShowerFloor": {
+    "cat": "investigate"
+  },
+  "bathroomShowerTap": {
+    "power": "water",
+    "cat": "investigate"
+  },
+  "bathroomShowerTray": {
+    "cat": "investigate"
+  },
+  "bathroomSmallShelf": {
+    "cat": "investigate"
+  },
+  "bathroomSoapGreen": {
+    "cat": "investigate"
+  },
+  "bathroomSoapRed": {
+    "cat": "investigate"
+  },
+  "bathroomSoapYellow": {
+    "cat": "investigate"
+  },
+  "bathroomTapShower": {
+    "power": "water",
+    "cat": "investigate"
+  },
+  "bathroomTapWall": {
+    "power": "water",
+    "cat": "investigate"
+  },
+  "bathroomTissues": {
+    "cat": "investigate"
+  },
+  "bathroomToiletPaper": {
+    "cat": "investigate"
+  },
+  "bathroomTowelBlue": {
+    "cat": "investigate"
+  },
+  "bathroomTowelGreen": {
+    "cat": "investigate"
+  },
+  "bathroomTowelRed": {
+    "cat": "investigate"
+  },
+  "bathroomWcFurniture": {
+    "open": "doors",
+    "power": "water",
+    "cat": "investigate"
+  },
+  "bathroomBathAni": {
+    "cat": "investigate"
+  },
+  "bathroomWcAni": {
+    "cat": "investigate"
+  },
+  "bathroomWcTapAni": {
+    "power": "water",
+    "cat": "investigate"
+  },
+  "booksBookGreen": {
+    "cat": "investigate"
+  },
+  "booksPile": {
+    "cat": "investigate"
+  },
+  "booksNotebooks": {
+    "cat": "investigate"
+  },
+  "booksRingBinderBlue": {
+    "cat": "investigate"
+  },
+  "booksRingBinderDark": {
+    "cat": "investigate"
+  },
+  "booksRingBinderGreen": {
+    "cat": "investigate"
+  },
+  "booksRingBinderOrange": {
+    "cat": "investigate"
+  },
+  "booksRingBinderRed": {
+    "cat": "investigate"
+  },
+  "booksRingBinderYellow": {
+    "cat": "investigate"
+  },
+  "catTreeTan": {
+    "cat": "investigate"
+  },
+  "catTreeBlue": {
+    "cat": "investigate"
+  },
+  "catTreePink": {
+    "cat": "investigate"
+  },
+  "portraitCat": {
+    "cat": "investigate"
+  },
+  "bowlTan": {
+    "cat": "investigate"
+  },
+  "bowlBlue": {
+    "cat": "investigate"
+  },
+  "bowlPurple": {
+    "cat": "investigate"
+  },
+  "bowlPink": {
+    "cat": "investigate"
+  },
+  "feedingTile": {
+    "cat": "investigate"
+  },
+  "feedingPebble": {
+    "cat": "investigate"
+  },
+  "foodTrailTray": {
+    "cat": "investigate"
+  },
+  "kibbleDispenser": {
+    "cat": "investigate"
+  },
+  "lickingPad": {
+    "cat": "investigate"
+  },
+  "yarnRed": {
+    "cat": "investigate"
+  },
+  "yarnBlue": {
+    "cat": "investigate"
+  },
+  "foodBag": {
+    "cat": "investigate"
+  },
+  "plantSmall": {
+    "cat": "investigate"
+  },
+  "plantA": {
+    "cat": "investigate"
+  },
+  "plantB": {
+    "cat": "investigate"
+  },
+  "plantE": {
+    "cat": "investigate"
+  },
+  "plantCactusA": {
+    "cat": "investigate"
+  },
+  "plantCactusB": {
+    "cat": "investigate"
+  },
+  "plantSunflower": {
+    "cat": "investigate"
+  },
+  "plantPotted": {
+    "cat": "investigate"
+  },
+  "plantTallGreen": {
+    "cat": "investigate"
+  },
+  "plantTallPink": {
+    "cat": "investigate"
+  },
+  "plantTallBlue": {
+    "cat": "investigate"
+  },
+  "plantTallPurple": {
+    "cat": "investigate"
+  },
+  "poster1": {
+    "cat": "investigate"
+  },
+  "poster2": {
+    "cat": "investigate"
+  },
+  "poster3": {
+    "cat": "investigate"
+  },
+  "poster4": {
+    "cat": "investigate"
+  },
+  "poster5": {
+    "cat": "investigate"
+  },
+  "poster16": {
+    "cat": "investigate"
+  },
+  "poster17": {
+    "cat": "investigate"
+  },
+  "posterMap": {
+    "cat": "investigate"
+  },
+  "posterFire": {
+    "cat": "investigate"
+  },
+  "posterMedical": {
+    "cat": "investigate"
+  },
+  "sofaA": {
+    "cat": "investigate"
+  },
+  "sofaB": {
+    "cat": "investigate"
+  },
+  "sofaPillow": {
+    "cat": "investigate"
+  },
+  "tvBigOff": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "tvBigAniA": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "tvBigAniB": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "tvDvdAni": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "windowPlain": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "windowBlinds": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window7A": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window7B": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window7C": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window8A": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window8B": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window8C": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window11A": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window11B": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "window11C": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "windowJapaneseL": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "windowJapaneseR": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "cleaningRobot": {
+    "power": "machine",
+    "cat": "investigate"
+  },
+  "computerBendedScreenAni": {
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerMacbookAni": {
+    "open": "laptop",
+    "initiallyOpen": true,
+    "power": "screen",
+    "cat": "investigate"
+  },
+  "computerPcTowerAni": {
+    "power": "fan",
+    "cat": "investigate"
+  },
+  "lavaLampAni": {
+    "cat": "investigate"
+  },
+  "sofaBlueClassic": {
+    "cat": "investigate"
+  },
+  "sofaRoseTufted": {
+    "cat": "investigate"
+  },
+  "sofaTanLeather": {
+    "cat": "investigate"
+  },
+  "sofaCreamCloud": {
+    "cat": "investigate"
+  },
+  "kitchenFridge": {
+    "cat": "investigate"
+  },
+  "kitchenRange": {
+    "open": "oven",
+    "power": "heat",
+    "cat": "investigate"
+  },
+  "kitchenSinkCabinet": {
+    "open": "doors",
+    "power": "water",
+    "cat": "investigate"
+  },
+  "kitchenDiningTable": {
+    "cat": "investigate"
+  },
+  "kitchenMicrowave": {
+    "open": "microwave",
+    "power": "heat",
+    "cat": "investigate"
+  },
+  "kitchenBreadBasket": {
+    "cat": "investigate"
+  },
+  "bedroomDoubleBed": {
+    "cat": "investigate"
+  },
+  "bedroomDresser": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "bedroomNightstand": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "bedroomWardrobe": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "bedroomFloorLamp": {
+    "cat": "investigate"
+  },
+  "bathroomDoubleVanity": {
+    "open": "doors",
+    "power": "water",
+    "cat": "investigate"
+  },
+  "bathroomShowerCabin": {
+    "cat": "investigate"
+  },
+  "bathroomLaundryHamper": {
+    "cat": "investigate"
+  },
+  "bathroomTowelStand": {
+    "cat": "investigate"
+  },
+  "halloweenPumpkin": {
+    "power": "fire",
+    "cat": "investigate"
+  },
+  "halloweenGhostLantern": {
+    "cat": "investigate"
+  },
+  "halloweenBatGarland": {
+    "cat": "investigate"
+  },
+  "halloweenWitchHat": {
+    "cat": "investigate"
+  },
+  "halloweenCauldron": {
+    "power": "fire",
+    "cat": "investigate"
+  },
+  "rugBraidedRound": {
+    "cat": "investigate"
+  },
+  "rugGeometricTeal": {
+    "cat": "investigate"
+  },
+  "rugStripedRunner": {
+    "cat": "investigate"
+  },
+  "rugFlowerPink": {
+    "cat": "investigate"
+  },
+  "windowWhiteClassic": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "windowOakWide": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "windowArched": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "windowRoundPorthole": {
+    "open": "window",
+    "cat": "investigate"
+  },
+  "doorOakPanel": {
+    "open": "door",
+    "cat": "investigate"
+  },
+  "doorMintGlass": {
+    "open": "door",
+    "cat": "investigate"
+  },
+  "doorBarnSliding": {
+    "open": "door",
+    "cat": "investigate"
+  },
+  "lampFloorArc": {
+    "cat": "investigate"
+  },
+  "lampFloorTripod": {
+    "cat": "investigate"
+  },
+  "lampFloorPaper": {
+    "cat": "investigate"
+  },
+  "lampTableMushroom": {
+    "cat": "investigate"
+  },
+  "lampTableCeramic": {
+    "cat": "investigate"
+  },
+  "lampTableBanker": {
+    "cat": "investigate"
+  },
+  "curtainRoseTieback": {
+    "cat": "investigate"
+  },
+  "curtainBlueDrape": {
+    "cat": "investigate"
+  },
+  "curtainCreamLinen": {
+    "cat": "investigate"
+  },
+  "sofaCornerSage": {
+    "cat": "investigate"
+  },
+  "kitchenWallCabinetSage": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "kitchenWallCabinetOak": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "kitchenWallCabinetGlass": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "kitchenIsland": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "kitchenModernCounterWhite": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "kitchenModernCounterSage": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "kitchenModernCounterNavy": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "kitchenModernCounterCharcoal": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "kitchenModernInductionWhite": {
+    "open": "oven",
+    "power": "heat",
+    "cat": "investigate"
+  },
+  "kitchenModernInductionSage": {
+    "open": "oven",
+    "power": "heat",
+    "cat": "investigate"
+  },
+  "kitchenModernInductionNavy": {
+    "open": "oven",
+    "power": "heat",
+    "cat": "investigate"
+  },
+  "kitchenModernInductionCharcoal": {
+    "open": "oven",
+    "power": "heat",
+    "cat": "investigate"
+  },
+  "kitchenModernWallCabinetWhite": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "kitchenModernWallCabinetSage": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "kitchenModernWallCabinetNavy": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "kitchenModernWallCabinetCharcoal": {
+    "open": "doors",
+    "cat": "investigate"
+  },
+  "kitchenModernShelfWhite": {
+    "cat": "investigate"
+  },
+  "kitchenModernShelfSage": {
+    "cat": "investigate"
+  },
+  "kitchenModernShelfNavy": {
+    "cat": "investigate"
+  },
+  "kitchenModernShelfCharcoal": {
+    "cat": "investigate"
+  },
+  "kitchenModernFridgeWhite": {
+    "cat": "investigate"
+  },
+  "kitchenModernFridgeSage": {
+    "cat": "investigate"
+  },
+  "kitchenModernFridgeNavy": {
+    "cat": "investigate"
+  },
+  "kitchenModernFridgeCharcoal": {
+    "cat": "investigate"
+  },
+  "kitchenModernIslandWhite": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "kitchenModernIslandSage": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "kitchenModernIslandNavy": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "kitchenModernIslandCharcoal": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "kitchenBarStoolOak": {
+    "cat": "investigate"
+  },
+  "kitchenBarStoolMetal": {
+    "cat": "investigate"
+  },
+  "kitchenBarStoolVelvet": {
+    "cat": "investigate"
+  },
+  "kitchenMixerStand": {
+    "power": "mixer",
+    "cat": "investigate"
+  },
+  "kitchenMixerHand": {
+    "power": "mixer",
+    "cat": "investigate"
+  },
+  "kitchenChairWindsor": {
+    "cat": "investigate"
+  },
+  "kitchenChairMint": {
+    "cat": "investigate"
+  },
+  "kitchenChairUpholstered": {
+    "cat": "investigate"
+  },
+  "kitchenChairBistro": {
+    "cat": "investigate"
+  },
+  "chairRockingOak": {
+    "cat": "investigate"
+  },
+  "livingFireplaceCream": {
+    "power": "fire",
+    "cat": "investigate"
+  },
+  "bathroomBathOvalWhite": {
+    "cat": "investigate"
+  },
+  "bathroomBathOvalSage": {
+    "cat": "investigate"
+  },
+  "bathroomBathOvalRose": {
+    "cat": "investigate"
+  },
+  "bathroomBathOvalCharcoal": {
+    "cat": "investigate"
+  },
+  "bathroomBathClawfootCream": {
+    "cat": "investigate"
+  },
+  "bathroomBathClawfootNavy": {
+    "cat": "investigate"
+  },
+  "bathroomJacuzziWhite": {
+    "cat": "investigate"
+  },
+  "bathroomJacuzziSage": {
+    "cat": "investigate"
+  },
+  "wallSpotCylinderBlack": {
+    "cat": "investigate"
+  },
+  "wallSpotCylinderWhite": {
+    "cat": "investigate"
+  },
+  "wallSpotBellBrass": {
+    "cat": "investigate"
+  },
+  "wallSpotBellRose": {
+    "cat": "investigate"
+  },
+  "wallSpotBarOak": {
+    "cat": "investigate"
+  },
+  "wallSpotBarChrome": {
+    "cat": "investigate"
+  },
+  "kitchenModernSinkWhite": {
+    "open": "doors",
+    "power": "water",
+    "cat": "investigate"
+  },
+  "kitchenModernSinkSage": {
+    "open": "doors",
+    "power": "water",
+    "cat": "investigate"
+  },
+  "kitchenModernSinkNavy": {
+    "open": "doors",
+    "power": "water",
+    "cat": "investigate"
+  },
+  "kitchenModernSinkCharcoal": {
+    "open": "doors",
+    "power": "water",
+    "cat": "investigate"
+  },
+  "kitchenModernFloorShelfWhite": {
+    "cat": "investigate"
+  },
+  "kitchenModernFloorShelfSage": {
+    "cat": "investigate"
+  },
+  "kitchenModernFloorShelfNavy": {
+    "cat": "investigate"
+  },
+  "kitchenModernFloorShelfCharcoal": {
+    "cat": "investigate"
+  },
+  "bedroomBedRose": {
+    "cat": "investigate"
+  },
+  "bedroomBedLilac": {
+    "cat": "investigate"
+  },
+  "bedroomVanity": {
+    "open": "drawers",
+    "cat": "investigate"
+  },
+  "bedroomBench": {
+    "cat": "investigate"
+  },
+  "bedroomQuiltChest": {
+    "open": "lid",
+    "cat": "investigate"
+  },
+  "bedroomSlippers": {
+    "cat": "investigate"
+  },
+  "bedroomRug": {
+    "cat": "investigate"
+  }
+}

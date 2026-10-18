@@ -2,7 +2,10 @@
 
 The home, privacy, support and account-deletion pages each have complete English
 and Latvian versions. The language switch preserves the current page. Navigation
-within a language stays in that language; no JavaScript or cookies are required.
+within a language stays in that language. JavaScript updates translations in place,
+preserves scroll position and slides the language indicator. Browser back/forward
+also restores the language. Without JavaScript, the links open the complete static
+translations. No cookies are required.
 
 | Page | English | Latvian |
 | --- | --- | --- |
@@ -18,7 +21,7 @@ Existing English URLs remain valid for the app and store configuration.
 
 - Edit website translations in `scripts/backend/public-site-content.mjs`.
 - Edit the shared app/website privacy text in `legal/privacy-policy-content.ts`.
-- Edit the layout in `scripts/backend/generate-legal-pages.mjs` and styling in `docs/site.css`.
+- Edit the layout in `scripts/backend/generate-legal-pages.mjs`, styling in `docs/site.css` and language switching in `docs/site.js`.
 - Set the public publisher/support fields in the ignored `.env`, then run `npm run legal:generate`.
 - The generator writes eight HTML pages and copies the app's existing cat artwork to `docs/assets/cat.png`.
 - Only the two public identity fields enter the generator. Never commit `.env` or put server credentials in website content.
@@ -44,7 +47,7 @@ and the final external support process remain release requirements.
 
 GitHub Pages uses `.github/workflows/github-pages.yml` on pushes to `main` or
 manual dispatch. Its explicit staging list includes the eight HTML pages,
-`site.css`, `assets/cat.png` and `.nojekyll`. Development notes, benchmarks and
+`site.css`, `site.js`, `assets/cat.png` and `.nojekyll`. Development notes, benchmarks and
 other artwork must stay outside the Pages artifact.
 
 Run `node --test scripts/backend/test-public-site.mjs` for translation coverage,

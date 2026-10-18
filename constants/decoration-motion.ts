@@ -1,3 +1,4 @@
+import { itemInteraction } from '@/constants/item-interactions';
 export function isAirConditionerDecorationId(id: string): boolean {
   return id === "livingAirCon" || id === "officeAc";
 }
@@ -44,7 +45,7 @@ export function isLampDecorationId(id: string): boolean {
 }
 
 export function isPoweredDecorationId(id: string): boolean {
-  return isAirConditionerDecorationId(id) || isLampDecorationId(id);
+  return isAirConditionerDecorationId(id) || isLampDecorationId(id) || Boolean(itemInteraction(id)?.power);
 }
 
 export function isCurtainDecorationId(id: string): boolean {

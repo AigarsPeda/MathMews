@@ -1,3 +1,5 @@
+import { isOpenableDecorationId } from '@/constants/item-interactions';
+import { togglePlacedDecorationOpenByInstance } from '@/utils/room-placement';
 import { projectedWalletCoins, type WalletNotice } from "@/services/wallet/offline-orders";
 import { useServerWallet, type ServerWallet } from "@/hooks/use-server-wallet";
 import { getWalletEnvironment } from "@/services/wallet/environment";
@@ -189,6 +191,7 @@ type GameContextValue = {
   togglePlacedDecorationPower: (instanceId: string) => boolean;
   aimPlacedSpotlight: (instanceId: string, angle: number, swivel?: number) => boolean;
   togglePlacedCurtain: (instanceId: string) => boolean;
+  togglePlacedDecorationOpen: (instanceId: string) => boolean;
   togglePlacedFridge: (instanceId: string, opening?: "full" | "ajar") => boolean;
   flipPlacedFridgeHinge: (instanceId: string) => boolean;
   scalePlacedDecoration: (
@@ -895,6 +898,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
     return true;
   }, [setSave]);
 
+  const togglePlacedDecorationOpen = useCallback((instanceId: string) => {
+    const current = saveRef.current;
+    const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
+    if (!placed || !isOpenableDecorationId(placed.decorationId)) return false;
+    setSave({ ...current, pet: { ...current.pet,
+      placedDecorations: togglePlacedDecorationOpenByInstance(current.pet.placedDecorations, instanceId),
+    } });
+    return true;
+  }, [setSave]);
+
   const togglePlacedCurtain = useCallback((instanceId: string) => {
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
@@ -1228,6 +1241,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       flipPlacedDecorationWall,
       togglePlacedDecorationPower,
       togglePlacedCurtain,
+      togglePlacedDecorationOpen,
       togglePlacedFridge,
       flipPlacedFridgeHinge,
       aimPlacedSpotlight,
@@ -1312,6 +1326,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       flipPlacedDecorationWall,
       togglePlacedDecorationPower,
       togglePlacedCurtain,
+      togglePlacedDecorationOpen,
       togglePlacedFridge,
       flipPlacedFridgeHinge,
       aimPlacedSpotlight,

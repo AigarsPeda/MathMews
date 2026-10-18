@@ -25,6 +25,7 @@ export const ROOM_COMMANDS = [
   { kind: "toiletUse", target: "toilet", icon: "play", section: "essentials" },
   { kind: "toyPlay", target: "toy", icon: "play", section: "play" },
   { kind: "mouseChase", target: "mouse", icon: "mouse", section: "play" },
+  { kind: "investigate", target: "decoration", icon: "paw", section: "play" },
   { kind: "plantPlay", target: "plant", icon: "play", section: "play" },
 ] as const satisfies readonly { kind: string; target: string; icon: AppIconName; section: string }[];
 
@@ -32,7 +33,7 @@ export type RoomCommandKind = typeof ROOM_COMMANDS[number]["kind"];
 
 /** Menu eligibility must not build animation plans or solve navigation paths. */
 export function getRoomCommands(item: RoomLayerItem, bedId?: string) {
-  return ROOM_COMMANDS.filter(command => {
+  const commands = ROOM_COMMANDS.filter(command => {
     if (item.kind === "bed") return command.target === "sleepingBed" && isSleepingBed(`bed-${bedId}`);
     if (item.kind === "toy") return command.target === (item.toyId === "mouse" ? "mouse" : "toy");
     const id = item.decorationId;
@@ -50,4 +51,6 @@ export function getRoomCommands(item: RoomLayerItem, bedId?: string) {
       default: return false;
     }
   });
+  return commands.length || item.kind !== 'decoration' ? commands
+    : ROOM_COMMANDS.filter(command => command.kind === 'investigate');
 }

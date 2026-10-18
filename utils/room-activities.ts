@@ -341,6 +341,14 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
         { ...walkTo(approach, home, room.petSize), returnHome: true },
       ] });
     }
+    if (command === 'investigate' && (!preferredInstanceId || item.instanceId === preferredInstanceId)) {
+      const position = clampCatPoint({ x: center.x, y: center.y + size * .4 }, room);
+      candidates.push({ kind: 'investigate', targetInstanceId: item.instanceId, steps: [
+        walkTo(home, position, room.petSize),
+        { position, mood: 'idle', animation: 'idle2', durationMs: 4500 },
+        { ...walkTo(position, home, room.petSize), returnHome: true },
+      ] });
+    }
     if ((!command || command === 'fridgeInvestigate') && isFridgeDecorationId(item.decorationId) && item.fridgeOpen && (!room.asleep || command === 'fridgeInvestigate')) {
       const position = clampCatPoint({ x: center.x, y: center.y + size * .4 }, room);
       candidates.push({ kind: 'fridgeInvestigate', targetInstanceId: item.instanceId, steps: [

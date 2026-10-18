@@ -35,7 +35,7 @@ jobs:
       - name: Stage public pages
         run: |
           mkdir -p _site
-          cp docs/index.html docs/privacy.html docs/support.html docs/delete-account.html docs/site.css _site/
+          cp docs/index.html docs/privacy.html docs/support.html docs/delete-account.html docs/site.css docs/site.js _site/
           mkdir -p _site/lv _site/assets
           cp docs/lv/index.html docs/lv/privacy.html docs/lv/support.html docs/lv/delete-account.html _site/lv/
           cp docs/assets/cat.png _site/assets/

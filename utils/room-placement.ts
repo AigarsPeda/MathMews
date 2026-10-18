@@ -1,3 +1,4 @@
+import { isOpenableDecorationId, isDecorationOpen } from '@/constants/item-interactions';
 import nativeCatalog from "@/assets/3d/native/catalog.json";
 import { isModernKitchenWallDecoration } from "@/constants/modern-kitchen";
 import { isWindowDecorationId } from "@/constants/window-decorations";
@@ -134,6 +135,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
           placement.rotationIndex > 0 ? placement.rotationIndex : undefined,
         wallFlipped: isRoomDoor(placement.decorationId) && typeof record.wallFlipped === "boolean"
           ? record.wallFlipped : record.wallFlipped === true ? true : undefined,
+        opened: isOpenableDecorationId(placement.decorationId) && typeof record.opened === "boolean" ? record.opened : undefined,
         poweredOn: isPoweredDecorationId(placement.decorationId) && record.poweredOn === true ? true : undefined,
         spotlightAngle: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightAngle(record.spotlightAngle) : undefined,
         spotlightSwivel: isWallSpotlightDecorationId(placement.decorationId) ? normalizeSpotlightSwivel(record.spotlightSwivel) : undefined,
@@ -503,4 +505,9 @@ export function collectPlacedDecorationIds(
   return (placedDecorations ?? [])
     .map((item) => item.decorationId)
     .filter((id): id is CatDecorationId => isCatDecorationId(id));
+}
+
+export function togglePlacedDecorationOpenByInstance(items: PlacedDecoration[] | undefined, instanceId: string): PlacedDecoration[] {
+  return (items ?? []).map(item => item.instanceId === instanceId && isOpenableDecorationId(item.decorationId)
+    ? { ...item, opened: !isDecorationOpen(item) } : item);
 }

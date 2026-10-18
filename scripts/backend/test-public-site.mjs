@@ -63,6 +63,6 @@ test('the real Pages staging step includes both languages and the cat, excluding
   const script=workflow.match(/name: Stage public pages\n\s+run: \|\n([\s\S]*?)(?=\n\s*- uses:)/)[1].split('\n').map(line=>line.replace(/^          /,'')).join('\n');
   execFileSync('sh',['-eu','-c',script],{cwd:root});
   for(const locale of ['','lv/'])for(const file of files)assert.ok(fs.existsSync(path.join(root,'_site',locale,file)));
-  for(const file of ['site.css','assets/cat.png','.nojekyll'])assert.ok(fs.existsSync(path.join(root,'_site',file)));
+  for(const file of ['site.css','site.js','assets/cat.png','.nojekyll'])assert.ok(fs.existsSync(path.join(root,'_site',file)));
   assert.ok(!fs.existsSync(path.join(root,'_site','DO-NOT-PUBLISH.md')));
 }));

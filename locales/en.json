@@ -172,7 +172,8 @@
       "showerWash": "Take a shower",
       "toiletUse": "Use the toilet",
       "bedSleep": "Sleep on bed",
-      "bedSnuggle": "Snuggle under covers"
+      "bedSnuggle": "Snuggle under covers",
+      "investigate": "Investigate"
     },
     "decorateRoom": "Decorate",
     "buy": "Buy",
@@ -277,7 +278,11 @@
     "goToRoom": "Go to {{room}}",
     "doorLeadsTo": "Leads to {{room}}",
     "chooseDoorDestination": "Choose where this door leads",
-    "furnishRoom": "Find furniture and toys"
+    "furnishRoom": "Find furniture and toys",
+    "openItem": "Open {{name}}",
+    "closeItem": "Close {{name}}",
+    "runWater": "Run water",
+    "stopWater": "Turn water off"
   },
   "store": {
     "decorateRoom": "Decorate room",

@@ -32,6 +32,7 @@ const outputIndex = process.argv.indexOf('--out-dir');
 if (outputIndex !== -1 && !process.argv[outputIndex + 1]) throw new Error('--out-dir requires a directory');
 const output = outputIndex === -1 ? 'docs' : process.argv[outputIndex + 1];
 const stylesheetVersion = createHash('sha256').update(await fs.readFile('docs/site.css')).digest('hex').slice(0, 12);
+const scriptVersion = createHash('sha256').update(await fs.readFile('docs/site.js')).digest('hex').slice(0, 12);
 
 function identity(locale) {
   const text = siteContent[locale];
@@ -80,6 +81,7 @@ function renderPage(filename, locale, index) {
 <meta name="description" content="${escape(text.intros[index])}">
 <title>${escape(index === 0 ? 'Math Mews' : text.titles[index])}${index === 0 ? '' : ' | Math Mews'}</title>
 <link rel="stylesheet" href="${prefix}site.css?v=${stylesheetVersion}">
+<script src="${prefix}site.js?v=${scriptVersion}" defer></script>
 <link rel="icon" type="image/png" href="${prefix}assets/cat.png">
 <link rel="alternate" hreflang="${locale === 'en' ? 'lv' : 'en'}" href="${alternate}">
 </head>
@@ -100,7 +102,9 @@ ${body}
 await fs.mkdir(path.join(output, 'lv'), { recursive: true });
 await fs.mkdir(path.join(output, 'assets'), { recursive: true });
 await fs.copyFile('assets/3d/cat-preview.png', path.join(output, 'assets/cat.png'));
-if (path.resolve(output) !== path.resolve('docs')) await fs.copyFile('docs/site.css', path.join(output, 'site.css'));
+if (path.resolve(output) !== path.resolve('docs')) {
+  for (const file of ['site.css', 'site.js']) await fs.copyFile(path.join('docs', file), path.join(output, file));
+}
 for (const locale of ['en', 'lv']) {
   for (const [index, filename] of filenames.entries()) {
     await fs.writeFile(path.join(output, locale === 'lv' ? 'lv' : '', filename), renderPage(filename, locale, index));

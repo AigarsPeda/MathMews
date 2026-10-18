@@ -1,3 +1,4 @@
+import { isOpenableDecorationId, isDecorationOpen, itemInteraction } from '@/constants/item-interactions';
 import type { RoomDecorationEntry } from "@/utils/room-decoration-entry";
 import type { SpotlightAim } from '@/utils/native-spotlight-aim';
 import { curtainAtWindow } from '@/utils/native-curtains';
@@ -180,6 +181,7 @@ type PetStageProps = {
   onSetRoomItemRotation?: (item: RoomLayerItem, degrees: number, offset?: RoomItemOffset) => void;
   onFlipPlacedDecorationWall?: (instanceId: string) => void;
   onAimPlacedSpotlight?: (instanceId: string, angle: number, swivel?: number) => void;
+  onTogglePlacedDecorationOpen?: (instanceId: string) => void;
   onTogglePlacedCurtain?: (instanceId: string) => void;
   onTogglePlacedFridge?: (instanceId: string, opening?: "full" | "ajar") => void;
   onFlipPlacedFridgeHinge?: (instanceId: string) => void;
@@ -258,6 +260,7 @@ export function PetStage({
   onTogglePlacedDecorationPower,
   onTogglePlacedCurtain,
   onTogglePlacedFridge,
+  onTogglePlacedDecorationOpen,
   onFlipPlacedFridgeHinge,
   onAimPlacedSpotlight,
   onScalePlacedDecoration,
@@ -661,6 +664,7 @@ export function PetStage({
     (item: RoomLayerItem) => {
       if (!decorating) {
         if (roomActivityBlocked) return false;
+        if (item.kind === "decoration" && isOpenableDecorationId(item.decorationId) && onTogglePlacedDecorationOpen) return true;
         if (item.kind === "decoration" && isRoomDoor(item.decorationId)) return false;
         if (item.kind === "decoration" && isFridgeDecorationId(item.decorationId)) return Boolean(onTogglePlacedFridge);
         if (item.kind === "decoration" && isCurtainDecorationId(item.decorationId)) return Boolean(onTogglePlacedCurtain);
@@ -708,6 +712,7 @@ export function PetStage({
       onTogglePlacedDecorationPower,
       onTogglePlacedCurtain,
       onTogglePlacedFridge,
+  onTogglePlacedDecorationOpen,
     ],
   );
 
@@ -736,6 +741,14 @@ export function PetStage({
             onPress: () => startRoomCommand(kind, item.kind === "bed" ? "bed" : item.instanceId),
           });
         }
+      }
+      if (item.kind === 'decoration' && isOpenableDecorationId(item.decorationId) && onTogglePlacedDecorationOpen) {
+        const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
+        if (placed) actions.push({
+          label: t(isDecorationOpen(placed) ? 'home.closeItem' : 'home.openItem', { name: t(`store.decorationName.${item.decorationId}`) }),
+          icon: isDecorationOpen(placed) ? 'arrow-right' : 'arrow-left',
+          onPress: () => onTogglePlacedDecorationOpen(item.instanceId),
+        });
       }
       if (item.kind === "decoration" && isFridgeDecorationId(item.decorationId) && onTogglePlacedFridge) {
         const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
@@ -781,7 +794,9 @@ export function PetStage({
         if (item.kind !== "decoration" || !isPoweredDecorationId(item.decorationId) || !onTogglePlacedDecorationPower) return actions;
         const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
         if (placed) actions.push({
-          label: t(placed.poweredOn ? "home.turnOffDecoration" : "home.turnOnDecoration"),
+          label: t(itemInteraction(placed.decorationId)?.power === "water"
+            ? placed.poweredOn ? "home.stopWater" : "home.runWater"
+            : placed.poweredOn ? "home.turnOffDecoration" : "home.turnOnDecoration"),
           icon: "power",
           onPress: () => onTogglePlacedDecorationPower(item.instanceId),
         });
@@ -818,7 +833,9 @@ export function PetStage({
 
         if (onTogglePlacedDecorationPower && isPoweredDecorationId(decorationId)) {
           actions.unshift({
-            label: t(placed.poweredOn ? "home.turnOffDecoration" : "home.turnOnDecoration"),
+            label: t(itemInteraction(placed.decorationId)?.power === "water"
+            ? placed.poweredOn ? "home.stopWater" : "home.runWater"
+            : placed.poweredOn ? "home.turnOffDecoration" : "home.turnOnDecoration"),
             icon: "power",
             onPress: () => onTogglePlacedDecorationPower(item.instanceId),
           });
@@ -1000,6 +1017,7 @@ export function PetStage({
       onTogglePlacedDecorationPower,
       onTogglePlacedCurtain,
       onTogglePlacedFridge,
+  onTogglePlacedDecorationOpen,
       onFlipPlacedFridgeHinge,
       onAimPlacedSpotlight,
       spotlightAim,
@@ -1210,7 +1228,8 @@ export function PetStage({
     })));
     return actions;
   }, [bedId, viewport.width, viewport.height, displayWidth, asleep, compact, catPresent, catHomeRoomId, onSendCatToRoom, decorating, handleCatTap, handleRoomTouch, onFeed, onPetPress, onPlay,
-    onTogglePlacedFridge, roomActivity, roomActivityBlocked, layerOrder, startRoomCommand, stats, t, usesNativeCat]);
+    onTogglePlacedFridge,
+  onTogglePlacedDecorationOpen, roomActivity, roomActivityBlocked, layerOrder, startRoomCommand, stats, t, usesNativeCat]);
 
   const roomPetLayer =
     compact && usesNativeCat && !catPresent ? null : compact && usesNativeCat ? (

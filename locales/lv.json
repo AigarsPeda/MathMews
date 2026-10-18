@@ -188,7 +188,8 @@
       "showerWash": "Mazgāties dušā",
       "toiletUse": "Lietot tualeti",
       "bedSleep": "Gulēt gultā",
-      "bedSnuggle": "Ieritināties zem segas"
+      "bedSnuggle": "Ieritināties zem segas",
+      "investigate": "Izpētīt"
     },
     "decorateRoom": "Iekārtot",
     "buy": "Pirkt",
@@ -277,7 +278,11 @@
     "goToRoom": "Doties uz istabu: {{room}}",
     "doorLeadsTo": "Ved uz istabu: {{room}}",
     "chooseDoorDestination": "Izvēlies, kurp ved šīs durvis",
-    "furnishRoom": "Atrast mēbeles un rotaļlietas"
+    "furnishRoom": "Atrast mēbeles un rotaļlietas",
+    "openItem": "Atvērt: {{name}}",
+    "closeItem": "Aizvērt: {{name}}",
+    "runWater": "Palaist ūdeni",
+    "stopWater": "Aizgriezt ūdeni"
   },
   "store": {
     "decorateRoom": "Iekārtot istabu",
