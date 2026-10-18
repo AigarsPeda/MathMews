@@ -6,14 +6,16 @@ Frames are written to /tmp/brainpet-turn-review for contact-sheet or GIF review.
 import json
 import math
 import struct
+import sys
 from pathlib import Path
 import bpy
 from mathutils import Matrix, Vector
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = Path('/tmp/brainpet-turn-review')
+launch = '--launch' in sys.argv
+OUT = Path('/tmp/brainpet-turn-walk-review' if launch else '/tmp/brainpet-turn-review')
 OUT.mkdir(exist_ok=True)
-poses = json.loads(Path('/tmp/brainpet-turn-poses.json').read_text())
+poses = json.loads(Path('/tmp/brainpet-turn-walk-poses.json' if launch else '/tmp/brainpet-turn-poses.json').read_text())
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 bpy.ops.import_scene.gltf(filepath=str(ROOT/'assets/3d/native/cat-orange.glb'))
@@ -40,7 +42,7 @@ bpy.ops.object.camera_add(location=(3, -5, 3.0))
 camera = bpy.context.object
 camera.rotation_euler = (Vector((0, 0, .7))-camera.location).to_track_quat('-Z', 'Y').to_euler()
 camera.data.type = 'ORTHO'
-camera.data.ortho_scale = 2.0
+camera.data.ortho_scale = 2.8 if launch else 2.0
 scene.camera = camera
 bpy.ops.mesh.primitive_plane_add(size=200)
 floor = bpy.context.object

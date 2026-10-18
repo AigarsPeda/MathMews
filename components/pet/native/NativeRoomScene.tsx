@@ -1,5 +1,6 @@
 import { itemInteraction } from '@/constants/item-interactions';
 import { NativeItemInteraction } from './NativeItemInteraction';
+import { NativeFireplace } from './NativeFireplace';
 import { configureRoomCamera } from '@/utils/native-room-camera';
 import { registerRoomModelWarmup } from '@/utils/native-model-warmup';
 import type { HomeRoomId } from '@/constants/home-rooms';
@@ -449,6 +450,8 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
   RenderCallbackContext.useRenderCallback(render, [render]);
   const interaction = asset && (modelMetadata.interactionParts?.length || itemInteraction(object.modelId)?.power)
     ? <NativeItemInteraction asset={asset} object={object} active={lightingActive ?? active} reduceMotion={reduceMotion}/> : null;
+  if (asset && object.modelId === 'livingFireplaceCream')
+    return <NativeFireplace asset={asset} object={object} editingObject={editingObject} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
   if (asset && isFridgeDecorationId(object.modelId))
     return <NativeFridge asset={asset} object={object} editingObject={editingObject} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
   if (asset && isCurtainDecorationId(object.modelId))

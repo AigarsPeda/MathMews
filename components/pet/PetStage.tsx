@@ -18,6 +18,7 @@ import { buildNativeRoomWorld, nativeObjectPlacementOffset, nativeRoomEdge, proj
 import { createRoomPlacementResolver, roomItemAnchor, type RoomPlacementFeedback } from '@/utils/room-item-placement';
 import { useSharedValue as useDrawingSharedValue } from 'react-native-worklets-core';
 import { lampSwitchPosition } from '@/utils/native-lamp-light';
+import { fireplaceLightPosition } from '@/utils/native-fireplace';
 import { RoomActionMenu } from '@/components/pet/RoomActionMenu';
 import type { RoomSceneSlide } from "@/hooks/use-room-transition";
 import { DEFAULT_HOME_ROOM_ID, HOME_ROOM_IDS, HOME_ROOM_ICONS, isRoomDoor, type HomeRoomId, type RoomEntry } from "@/constants/home-rooms";
@@ -833,7 +834,9 @@ export function PetStage({
         if (item.kind !== "decoration" || !isPoweredDecorationId(item.decorationId) || !onTogglePlacedDecorationPower) return actions;
         const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
         if (placed) actions.push({
-          label: t(itemInteraction(placed.decorationId)?.power === "water"
+          label: t(placed.decorationId === 'livingFireplaceCream'
+            ? placed.poweredOn ? "home.extinguishFire" : "home.lightFire"
+            : itemInteraction(placed.decorationId)?.power === "water"
             ? placed.poweredOn ? "home.stopWater" : "home.runWater"
             : placed.poweredOn ? "home.turnOffDecoration" : "home.turnOnDecoration"),
           icon: "power",
@@ -872,7 +875,9 @@ export function PetStage({
 
         if (onTogglePlacedDecorationPower && isPoweredDecorationId(decorationId)) {
           actions.unshift({
-            label: t(itemInteraction(placed.decorationId)?.power === "water"
+            label: t(placed.decorationId === 'livingFireplaceCream'
+            ? placed.poweredOn ? "home.extinguishFire" : "home.lightFire"
+            : itemInteraction(placed.decorationId)?.power === "water"
             ? placed.poweredOn ? "home.stopWater" : "home.runWater"
             : placed.poweredOn ? "home.turnOffDecoration" : "home.turnOnDecoration"),
             icon: "power",
@@ -1449,12 +1454,13 @@ export function PetStage({
                 select={selectNativeItem} move={moveNativeItem} commit={commitNativeDrag} discard={discardNativeDrag}/>}
             {compact && nativeRendering && !decorating && onTogglePlacedDecorationPower && <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: ROOM_MENU_OPEN_Z_INDEX }]}>
               {nativeWorld.objects.map(object => {
-                const position = lampSwitchPosition(object);
+                const fireplace = object.modelId === 'livingFireplaceCream';
+                const position = fireplace ? fireplaceLightPosition(object) : lampSwitchPosition(object);
                 const item = layerOrder.find(entry => entry.kind === "decoration" && entry.instanceId === object.instanceId);
                 if (!position || !item || !canManageRoomItem(item)) return null;
                 const point = projectWorld(position, viewport.width);
                 const size = Math.max(32, Math.min(56, viewport.width * .07 * object.scale));
-                return <RoomActionMenu key={`lamp-switch:${object.instanceId}`} label={t('home.lampSwitch', { name: itemLabel(item) })}
+                return <RoomActionMenu key={`lamp-switch:${object.instanceId}`} label={fireplace ? itemLabel(item) : t('home.lampSwitch', { name: itemLabel(item) })}
                   actions={buildRoomItemMenuActions(item)} size={{ width: size, height: size }}
                   style={{ position: 'absolute', left: viewport.width / 2 + point.x - size / 2, top: viewport.height / 2 + point.y - size / 2 }}>
                   <View pointerEvents="none" style={{ width: size, height: size }}/>

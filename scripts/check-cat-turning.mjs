@@ -70,13 +70,14 @@ function openSkin(skin) {
 }
 const {NativeCatActor}=load('@/components/pet/native/NativeCatActor');
 const {catTurnDuration,catTurnPose,catTurnPaw,catTurnPawOrientation}=load('@/utils/native-cat-turn');
+const {catLaunchStep,catLaunchPaw}=load('@/utils/native-cat-walk-launch');
 const {FLOOR_Y}=load('@/utils/native-room-world');
 const idle={kind:'segment',segment:{assetKey:'idle',loop:true}},walking={kind:'segment',segment:{assetKey:'walk',loop:true}};
 const pawNames=['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'];
 function render(props) { cursor=0;effects=[];NativeCatActor(props);effects.forEach(fn=>fn()); }
 function point(name) { return world(asset.getFirstEntityByName(name).i).translation; }
 const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
-const poses=[];
+const poses=[],launchPoses=[];
 for(const skin of ['orange','grey','white']) {
   openSkin(skin);
   for(const fps of [30,60,120])for(const degrees of [-180,-135,-90,-70,-45,-23,23,45,70,90,110,135,179,180])for(const scale of [.3,.8]) {
@@ -87,8 +88,7 @@ for(const skin of ['orange','grey','white']) {
     const facing=Math.atan2(Math.sin(heading),Math.cos(heading)),angle=Math.atan2(Math.sin(facing-startHeading),Math.cos(facing-startHeading)),duration=catTurnDuration(angle);
     const initial=pawNames.map(point),neutral=initial.map(p=>{const x=(p[0]-room.home[0])/scale,z=(p[2]-room.home[2])/scale,c=Math.cos(startHeading),s=Math.sin(startHeading);return [x*c-z*s,(p[1]-FLOOR_Y)/scale,z*c+x*s];});
     const soles=pawNames.map(name=>transforms.getWorldTransform(asset.getFirstEntityByName(name)).data);
-    const end=[Math.sin(heading),FLOOR_Y,Math.cos(heading)];
-    const props={active:true,world:room,playback:walking,activityKey:'pivot',travel:{path:[room.home,end],duration:2,distance:1,jump:false}};
+    const props={active:true,world:room,playback:idle,activityKey:'pivot',travel:{path:[room.home],heading:facing,duration:2,distance:0,jump:false}};
     render(props);
     for(let frame=1;frame<=Math.floor(duration*fps);frame++) {
       draw({timeSinceLastFrame:1/fps});
@@ -121,7 +121,69 @@ for(const skin of ['orange','grey','white']) {
         nodes:Object.fromEntries(model.nodes.map((n,i)=>[n.name,world(i).data]))});
     }
   }
-  for(const phase of [.3,.65]) {
+  for(const fps of [30,60,120])for(const degrees of [-135,-90,-45,45,90,135,179])for(const length of [.08,.5,1.5]) {
+    slots=[];rootTransform=new Transform();
+    const scale=.8,room={width:390,height:420,catScale:scale,radius:.3,home:[0,FLOOR_Y,0],objects:[]};
+    render({active:true,world:room,playback:idle});draw({timeSinceLastFrame:1/fps});
+    const angle=Math.PI/4+degrees*Math.PI/180,end=[Math.sin(angle)*length,FLOOR_Y,Math.cos(angle)*length],duration=length/(1.8*scale)+.18;
+    let props={active:true,world:room,playback:walking,activityKey:'turn-walk',travel:{path:[room.home,end],distance:length,duration,jump:false}};
+    render(props);
+    let overlap=false,contacts=0,previousRoot=room.home,previousFeet=pawNames.map(point),previousProgress=0,previousPhase=0,paused=false;
+    const turningDuration=catTurnDuration(degrees*Math.PI/180);
+    for(let frame=1;frame<=Math.ceil((turningDuration+duration+.15)*fps);frame++) {
+      draw({timeSinceLastFrame:1/fps});
+      const state=slots.find(s=>s?.value?.value?.turnLeg!==undefined).value.value;
+      const progress=(state.distance-state.launchDistance)/(state.walkStride*scale),feet=pawNames.map(point);
+      if(state.launchStarted&&state.elapsed<state.routeDuration) {
+        const moved=distance(rootTransform.translation,previousRoot);
+        assert.ok(moved>1e-8,'Forward motion never pauses after the walking handoff starts');
+        if(state.turnElapsed<state.turnDuration)overlap=true;
+        const phase=state.distance/(state.walkStride*scale)+state.walkOffset;
+        feet.forEach((p,i)=>{
+          const step=catLaunchStep(state.launchPhase,progress,i);
+          if(progress<.9&&step.progress===0) {
+            contacts++;
+            assert.ok(distance(p,state.launchFeet[i])<.004*scale,`${skin}/${degrees}/${length}/${fps}: first-stance paw ${i} stays fixed (${distance(p,state.launchFeet[i])/scale})`);
+            const sole=transforms.getWorldTransform(asset.getFirstEntityByName(pawNames[i])).data;
+            for(const column of [0,4,8])assert.ok(distance(sole.slice(column,column+3),state.launchSoles[i].slice(column,column+3))<.002*scale,'A planted sole cannot swivel with the torso during the handoff');
+          }
+          if(progress<.9&&!step.done) {
+            const expected=catLaunchPaw(state.launchFeet[i],state.turnNeutral[i],p,rootTransform.translation,state.heading,scale,state.walkStride,state.launchPhase,progress,i);
+            assert.ok(distance(p,expected)<.004*scale,`${skin}/${degrees}/${length}/${fps}: first walking swing ${i} stays within reach (${distance(p,expected)/scale})`);
+          }
+          if(progress>=step.end&&previousProgress<step.end) {
+            const delta=(progress-step.end+1e-6)*state.walkStride*scale;
+            const atContact=[rootTransform.translation[0]-Math.sin(state.heading)*delta,FLOOR_Y,rootTransform.translation[2]-Math.cos(state.heading)*delta];
+            const landing=catLaunchPaw(state.launchFeet[i],state.turnNeutral[i],p,atContact,state.heading,scale,state.walkStride,state.launchPhase,step.end-1e-6,i);
+            assert.ok(distance(p,landing)<.008*scale,`${skin}/${degrees}/${length}/${fps}: paw ${i} joins the authored stance at touchdown (${distance(p,landing)/scale})`);
+          }
+          const offsets=[.18,.68,0,.5],gait=((phase-offsets[i])%1+1)%1,oldGait=((previousPhase-offsets[i])%1+1)%1;
+          if(step.done&&previousProgress>=step.end&&gait<.59&&oldGait<.59&&gait>oldGait) {
+            assert.ok(distance(p,previousFeet[i])<.004*scale,'The first touchdown joins the distance-driven planted walk without sliding');
+          }
+          if(progress<.91)assert.ok(distance(p,previousFeet[i])<8/fps*scale,`${skin}/${degrees}/${length}/${fps} frame=${frame} paw=${i} progress=${progress} before=${previousProgress} step=${step.progress} jump=${distance(p,previousFeet[i])/scale}: no paw snaps at the turn/walk seam`);
+        });
+        if(progress>.2&&progress<.8&&!paused) {
+          const before=model.nodes.map((_,i)=>world(i).data);
+          render({...props,active:false});draw({timeSinceLastFrame:.5});
+          props={...props,travel:{...props.travel,elapsed:Math.max(.001,state.elapsed-.02)}};
+          render(props);draw({timeSinceLastFrame:0});
+          before.forEach((m,i)=>assert.ok(distance(world(i).data,m)<1e-6,'A paused handoff retains its exact contacts, gait phase and crouch'));
+          paused=true;
+        }
+        previousPhase=phase;
+      }
+      if(skin==='orange'&&fps===60&&length===1.5&&[-90,90,179].includes(degrees)&&frame%3===0
+        &&frame/fps>turningDuration*.65&&frame/fps<turningDuration+.45) {
+        launchPoses.push({degrees:degrees===179?180:degrees,progress:frame/fps,
+          nodes:Object.fromEntries(model.nodes.map((n,i)=>[n.name,world(i).data]))});
+      }
+      previousRoot=rootTransform.translation;previousFeet=feet;previousProgress=progress;
+    }
+    assert.ok(overlap&&contacts>0,`${skin}/${degrees}/${length}: walking overlaps the turn while stance paws remain anchored`);
+    assert.ok(distance(rootTransform.translation,end)<1e-6,'The blended start still reaches the exact destination');
+  }
+  for(const phase of [.3,.65,1.3]) {
     slots=[];rootTransform=new Transform();
     const room={width:390,height:420,catScale:.8,radius:.3,home:[0,FLOOR_Y,0],objects:[]};
     render({active:true,world:room,playback:idle});draw({timeSinceLastFrame:1/60});
@@ -137,6 +199,47 @@ for(const skin of ['orange','grey','white']) {
     const change=Math.atan2(Math.sin(Math.atan2(after[8],after[10])-yaw),Math.cos(Math.atan2(after[8],after[10])-yaw));
     assert.ok(Math.abs(change)<.04,`Changing commands carries the head pose into the new anticipation: ${change} at ${phase}`);
     assert.ok(distance(spine,point('spine'))<.003,'Changing commands preserves the current body crouch');
+  }
+  console.log(`Verified ${skin}: turn-to-walk overlap, short strides, fixed first contacts, continuous touchdowns, mid-handoff pause and interruptions at 30/60/120 FPS.`);
+  slots=[];rootTransform=new Transform();
+  {
+    const room={width:390,height:420,catScale:.8,radius:.3,home:[0,FLOOR_Y,0],objects:[]},a=[.3,FLOOR_Y,0],b=[.6,FLOOR_Y,0],end=[1.6,FLOOR_Y,0];
+    render({active:true,world:room,playback:idle});draw({timeSinceLastFrame:1/60});
+    const legs=[{kind:'walk',path:[room.home,a],duration:.4},{kind:'hop',path:[a,b],duration:.9,arcHeight:.2},{kind:'walk',path:[b,end],duration:.9}];
+    render({active:true,world:room,playback:walking,activityKey:'launch-hop-walk',travel:{path:[room.home,a,b,end],distance:1.6,duration:2.2,jump:false,legs}});
+    for(let frame=0;frame<180;frame++) {
+      draw({timeSinceLastFrame:1/60});
+      const state=slots.find(s=>s?.value?.value?.turnLeg!==undefined).value.value;
+      if(state.elapsed>.5) {
+        assert.equal(state.walkStride,.8,'Small first steps must not shorten later walking legs after a hop');
+        assert.equal(state.launchStarted,false,'The first-step constraints finish before the next traversal leg');
+      }
+    }
+    assert.ok(distance(rootTransform.translation,end)<1e-6);
+  }
+  slots=[];rootTransform=new Transform();
+  {
+    const room={width:390,height:420,catScale:.8,radius:.3,home:[0,FLOOR_Y,0],objects:[
+      {modelId:'carpetRound',instanceId:'rug',position:[0,FLOOR_Y,0],heading:0,scale:3,min:[-3,FLOOR_Y,-3],max:[3,FLOOR_Y+.04,3]},
+    ]};
+    render({active:true,world:room,playback:idle});draw({timeSinceLastFrame:1/60});
+    const targetHeading=Math.PI/4-Math.PI/2,end=[Math.sin(targetHeading)*1.5,FLOOR_Y,Math.cos(targetHeading)*1.5];
+    render({active:true,world:room,playback:walking,activityKey:'rug-launch',travel:{path:[room.home,end],distance:1.5,duration:1.3,jump:false}});
+    let before=pawNames.map(point),contacts,checks=0;
+    for(let frame=0;frame<100;frame++) {
+      draw({timeSinceLastFrame:1/60});
+      const state=slots.find(s=>s?.value?.value?.turnLeg!==undefined).value.value;
+      const progress=(state.distance-state.launchDistance)/(state.walkStride*room.catScale);
+      if(state.launchStarted) {
+        contacts??=before;
+        for(let i=0;i<4;i++)if(progress<.4&&catLaunchStep(state.launchPhase,progress,i).progress===0) {
+          checks++;
+          assert.ok(distance(point(pawNames[i]),contacts[i])<.008,'Rug clearance is applied once; a planted first-step paw must not slide or pop upward');
+        }
+      }
+      before=pawNames.map(point);
+    }
+    assert.ok(checks>0&&contacts);
   }
   for(const fps of [30,60,120])for(const sign of [-1,1]) {
     slots=[];rootTransform=new Transform();
@@ -191,4 +294,7 @@ for(let frame=0;frame<=240;frame++)for(let i=0;i<4;i++) {
   const a=catTurnPaw(left,left,-Math.PI*.7,frame/240,i),b=catTurnPaw(right,right,Math.PI*.7,frame/240,i%2?i-1:i+1);
   assert.ok(distance(a,[-b[0],b[1],b[2]])<1e-8,'Left/right steps mirror with the inside forepaw leading');
 }
-if(process.argv.includes('--poses'))fs.writeFileSync('/tmp/brainpet-turn-poses.json',JSON.stringify(poses));
+if(process.argv.includes('--poses')) {
+  fs.writeFileSync('/tmp/brainpet-turn-poses.json',JSON.stringify(poses));
+  fs.writeFileSync('/tmp/brainpet-turn-walk-poses.json',JSON.stringify(launchPoses));
+}

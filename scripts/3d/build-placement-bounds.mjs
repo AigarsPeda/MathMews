@@ -15,14 +15,15 @@ function matrix(node) {
     2*(x*y-z*w)*s[1],(1-2*(x*x+z*z))*s[1],2*(y*z+x*w)*s[1],0,
     2*(x*z+y*w)*s[2],2*(y*z-x*w)*s[2],(1-2*(x*x+y*y))*s[2],0,...t,1];
 }
-export function readModel(id) {
+export function readModel(id, { triangles: includeTriangles = false } = {}) {
   const data = fs.readFileSync(path.join(native, id+'.glb')), length = data.readUInt32LE(12);
   const gltf = JSON.parse(data.subarray(20,20+length)), binary = data.subarray(28+length), meshes = [];
   function visit(index, parent, ancestors = []) {
     const node = gltf.nodes[index], transform = multiply(parent,matrix(node));
     if (node.mesh !== undefined) {
-      const points = [];
+      const points = [], triangles = [];
       for (const primitive of gltf.meshes[node.mesh].primitives) {
+        const start = points.length;
         const accessor = gltf.accessors[primitive.attributes.POSITION], view = gltf.bufferViews[accessor.bufferView];
         if (accessor.componentType !== 5126 || accessor.type !== 'VEC3') throw new Error(`Unsupported positions: ${id}`);
         for (let i=0;i<accessor.count;i++) {
@@ -30,8 +31,16 @@ export function readModel(id) {
           const p = [0,1,2].map(k => binary.readFloatLE(offset+k*4));
           points.push([0,1,2].map(k => transform[k]*p[0]+transform[k+4]*p[1]+transform[k+8]*p[2]+transform[k+12]));
         }
+        if (includeTriangles) {
+          if ((primitive.mode ?? 4) !== 4) throw new Error(`Unsupported triangles: ${id}`);
+          const a = primitive.indices === undefined ? undefined : gltf.accessors[primitive.indices];
+          const v = a && gltf.bufferViews[a.bufferView];
+          const [bytes,read] = a ? {5121:[1,'readUInt8'],5123:[2,'readUInt16LE'],5125:[4,'readUInt32LE']}[a.componentType] : [0,''];
+          const index = i => a ? binary[read]((v.byteOffset??0)+(a.byteOffset??0)+i*bytes) : i;
+          for (let i=0;i<(a?.count??accessor.count);i+=3) triangles.push([0,1,2].map(k=>points[start+index(i+k)]));
+        }
       }
-      meshes.push({name:node.name,points,ancestors});
+      meshes.push({name:node.name,points,ancestors,...(includeTriangles?{triangles}:{})});
     }
     for (const child of node.children??[]) visit(child,transform,[...ancestors,node.name]);
   }
@@ -46,16 +55,37 @@ function hull(points) {
   const half = list => {const out=[];for(const p of list){while(out.length>1&&cross(out.at(-2),out.at(-1),p)<=0)out.pop();out.push(p);}return out;};
   return [...half(sorted).slice(0,-1),...half([...sorted].reverse()).slice(0,-1)];
 }
+
+/** Spatial cells keep both sides of an arch separate, including at its crown.
+ * Group whole triangles so no surface disappears between neighboring cells.
+ */
+function curvedPartBoxes(mesh) {
+  const cells = new Map();
+  for (const triangle of mesh.triangles) {
+    const key = [0,1,2].map(k=>Math.floor(triangle.reduce((sum,p)=>sum+p[k],0)/3/.12)).join(':');
+    if (!cells.has(key)) cells.set(key,[]);
+    cells.get(key).push(...triangle);
+  }
+  return [...cells.values()].map(points=>({...bounds(points),footprint:hull(points)}));
+}
 export function derivePlacementBounds() {
   const result = {};
   for (const [id,meta] of Object.entries(catalog)) {
     if (meta.kind==='room') continue;
-    const meshes = readModel(id), points = meshes.flatMap(mesh=>mesh.points);
+    const meshes = readModel(id, {triangles:id==='lampFloorArc'}), points = meshes.flatMap(mesh=>mesh.points);
     const actual = bounds(points);
     // A bad transform would invalidate the audit, so fail instead of shipping it.
     for(const axis of [0,1,2]) if(actual.min[axis]<meta.min[axis]-.025 || actual.max[axis]>meta.max[axis]+.025)
       throw new Error(`GLB exceeds catalog bounds: ${id}, axis ${axis}`);
     result[id] = {placementHull:hull(points)};
+    if (id==='lampFloorArc') result[id].placementBoxes = meshes.map(mesh=>mesh.name==='Brass arch stem'
+      ? curvedPartBoxes(mesh) : [{...bounds(mesh.points),footprint:hull(mesh.points)}]).flat();
+    // Plant navigation deliberately ignores foliage. Retain that choice while
+    // removing the empty square corners around round pots during decorating.
+    if (meta.leaves) result[id].placementBoxes = meta.collisionBoxes.map(box=>{
+      const mesh = meshes.find(mesh=>{const b=bounds(mesh.points);return [0,1,2].every(k=>Math.abs(b.min[k]-box.min[k])<1e-5&&Math.abs(b.max[k]-box.max[k])<1e-5);});
+      return mesh ? {...box,footprint:hull(mesh.points)} : box;
+    });
     const openingBounds=(meta.interactionParts??[]).filter(part=>part.mode==='open').flatMap(part=>{
       const points=meshes.filter(mesh=>mesh.ancestors.includes(part.node)).flatMap(mesh=>mesh.points);
       return points.length ? [{node:part.node,...bounds(points)}] : [];

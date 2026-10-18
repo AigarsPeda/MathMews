@@ -45,6 +45,7 @@ export type ModelMetadata = {
   drawer?: { surface: number[] };
   cupboard?: { surface: number[]; clearance: number[] };
   collisionBoxes?: { min: number[]; max: number[]; footprint?: number[][] }[];
+  placementBoxes?: { min: number[]; max: number[]; footprint?: number[][] }[];
   supportSurfaces?: { min: number[]; max: number[] }[];
   baseHull?: number[][];
   wallMountBounds?: { min: number[]; max: number[] };
@@ -55,7 +56,7 @@ export type ModelMetadata = {
 };
 export type CollisionBox = { min: Vec3; max: Vec3 };
 export const NATIVE_MODEL_CATALOG: Record<string, ModelMetadata> = Object.fromEntries(
-  Object.entries(catalog as Record<string, ModelMetadata>).map(([id, metadata]) => [id, { ...metadata, ...(placementBounds as Record<string, Pick<ModelMetadata, "placementHull" | "collisionBoxes" | "supportSurfaces" | "baseHull" | "wallMountBounds" | "interactionBounds">>)[id] }]),
+  Object.entries(catalog as Record<string, ModelMetadata>).map(([id, metadata]) => [id, { ...metadata, ...(placementBounds as Record<string, Pick<ModelMetadata, "placementHull" | "collisionBoxes" | "placementBoxes" | "supportSurfaces" | "baseHull" | "wallMountBounds" | "interactionBounds">>)[id] }]),
 );
 export const FLOOR_Y = .068;
 export const ROOM_SPAN = 7.45;
@@ -134,6 +135,8 @@ export type NativeRoomObject = {
   wallAxis?: 0 | 2;
   /** Surface holding this lamp, reconstructed from its saved screen anchor. */
   supportId?: string;
+  /** Carpet clearance along the camera ray, preserving the saved screen anchor. */
+  rugLift?: number;
   /** Corrected wall anchor when a saved window placement lies outside the walls. */
   placementOffset?: RoomItemOffset;
   seat?: Vec3;
@@ -255,10 +258,51 @@ export function isSurfacePlaceable(modelId: string): boolean {
   return !!NATIVE_MODEL_CATALOG[modelId]?.baseHull;
 }
 
+/** Support floor furniture on rugs using its feet/runners, rather than its overhang. */
+export function placeObjectOnRugs(object: NativeRoomObject, objects: NativeRoomObject[]): NativeRoomObject {
+  if (object.wallAxis !== undefined || object.movable || /carpet|rug/i.test(object.modelId) || object.supportId) return object;
+  const rugs = objects.filter(other => /carpet|rug/i.test(other.modelId));
+  if (!rugs.length && !object.rugLift) return object;
+  const meta = NATIVE_MODEL_CATALOG[object.modelId];
+  const previousLift = object.rugLift ?? 0;
+  if (Math.abs(object.position[1] - previousLift - FLOOR_Y) > .00001) return object;
+  const footprint = (owner: NativeRoomObject, hull: number[][], lift = 0) => hull.map(([x,z]) => {
+    const p = rotate([x,0,z], owner.heading);
+    return [p[0] * owner.scale + owner.position[0] - lift * 8 / 6.1,
+      p[2] * owner.scale + owner.position[2] - lift * 8 / 6.1];
+  });
+  const rectangle = (box: { min: number[]; max: number[] }) =>
+    [[box.min[0],box.min[2]], [box.max[0],box.min[2]], [box.max[0],box.max[2]], [box.min[0],box.max[2]]];
+  const bases = (meta.collisionBoxes ?? [meta]).filter(box => box.min[1] <= meta.min[1] + .02)
+    .map(box => footprint(object, rectangle(box), previousLift));
+  const overlaps = (a: number[][], b: number[][]) => ![a,b].some(polygon => polygon.some((p,i) => {
+    const next = polygon[(i + 1) % polygon.length], x = next[1] - p[1], z = p[0] - next[0];
+    const first = a.map(point => point[0] * x + point[1] * z);
+    const second = b.map(point => point[0] * x + point[1] * z);
+    return Math.max(...first) <= Math.min(...second) || Math.max(...second) <= Math.min(...first);
+  }));
+  let lift = 0;
+  for (const rug of rugs) {
+    const rugMeta = NATIVE_MODEL_CATALOG[rug.modelId];
+    const hull = footprint(rug, rugMeta.placementHull ?? rectangle(rugMeta));
+    if (bases.some(base => overlaps(base, hull))) lift = Math.max(lift, rug.max[1] + .002 - (FLOOR_Y + meta.min[1] * object.scale));
+  }
+  if (lift === previousLift) return object;
+  const delta: Vec3 = [(lift - previousLift) * 8 / 6.1, lift - previousLift, (lift - previousLift) * 8 / 6.1];
+  const move = (point: Vec3) => point.map((v,i) => v + delta[i]) as Vec3;
+  return { ...object, rugLift: lift || undefined, position: move(object.position), min: move(object.min), max: move(object.max),
+    seat: object.seat && move(object.seat), cupboard: object.cupboard && move(object.cupboard), drawer: object.drawer && move(object.drawer),
+    bed: object.bed && { surface: move(object.bed.surface), covered: move(object.bed.covered) },
+    bathroom: object.bathroom && { ...object.bathroom, contact: move(object.bathroom.contact) },
+    leaves: object.leaves?.map(move), approach: object.approach && [object.approach[0] + delta[0], object.approach[1], object.approach[2] + delta[2]],
+    collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })),
+    interactionBoxes: object.interactionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
+}
+
 /** Rest a small object on an authored surface. Saved anchors use the exact
  * elevated pose; dragging may also target the surface and snap the base onto it. */
 export function placeObjectOnSurface(object: NativeRoomObject, objects: NativeRoomObject[], width: number, snapToSurface = false): NativeRoomObject {
-  if (!isSurfacePlaceable(object.modelId)) return object;
+  if (!isSurfacePlaceable(object.modelId)) return placeObjectOnRugs(object, objects);
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const centerOffset = rotate(meta.center, object.heading);
   const center = centerOffset.map((v, i) => v * object.scale + object.position[i]) as Vec3;
@@ -284,10 +328,10 @@ export function placeObjectOnSurface(object: NativeRoomObject, objects: NativeRo
     if (!fits) continue;
     const delta = position.map((v, i) => v - object.position[i]);
     const move = (value: Vec3) => value.map((v, i) => v + delta[i]) as Vec3;
-    return { ...object, supportId: owner.instanceId, position, min: move(object.min), max: move(object.max),
+    return { ...object, supportId: owner.instanceId, rugLift: undefined, position, min: move(object.min), max: move(object.max),
       collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
   }
-  return object;
+  return placeObjectOnRugs(object, objects);
 }
 export function buildNativeRoomWorld(options: {
   width: number;
@@ -499,6 +543,7 @@ export function buildNativeRoomWorld(options: {
     add(item.instanceId, getPlacedDecorationSpriteId(item), getPlacedDecorationDragSize(item) * sizeScale, item.offset, getPlacedDecorationWallFlipped(item), item.poweredOn, 0, item.rotationDegrees, item.curtainOpen, item.spotlightAngle, item.spotlightSwivel, item.fridgeOpen, item.fridgeHingeSide, isDecorationOpen(item));
   for (const item of options.toys)
     add(item.instanceId, 'toy-' + item.toyId, getPlacedToyDisplaySize(item) * sizeScale, item.offset, false, undefined, getPlacedToyRotationIndex(item), item.rotationDegrees);
+  world.objects = world.objects.map(object => placeObjectOnRugs(object, world.objects));
   world.objects = world.objects.map(object => placeObjectOnSurface(object, world.objects, width));
   const findFree = createFloorSearch(world);
   // Land in navigable floor space so the following walk never relocates its start.
@@ -1205,7 +1250,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     : tree && plan.kind === 'toyPlay' ? hangingToyPosition(object) : object?.position;
   const targetHeading = aim && !onSeat && !walking && !step.returnHome && (plan.kind === 'toyPlay' || plan.kind === 'plantPlay' || plan.kind === 'bowlEat' || plan.kind === 'windowWatch' || plan.kind === 'fridgeInvestigate' || plan.kind === 'investigate') ? Math.atan2(aim[0] - start[0], aim[2] - start[2]) : undefined;
   const rockingChair: RockingChair | undefined = object?.modelId === 'chairRockingOak' && step.sofaApproach && !blocked
-    ? { instanceId: object.instanceId, pivot: [object.position[0], FLOOR_Y, object.position[2]],
+    ? { instanceId: object.instanceId, pivot: [...object.position],
       axis: [Math.cos(object.heading), 0, -Math.sin(object.heading)], seat: object.seat!, scale: object.scale, leaving: step.animation === 'jumpOff' }
     : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking ? duration * 1000 : step.durationMs, moveMs: walking ? duration * 1000 : step.moveMs,

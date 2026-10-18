@@ -152,6 +152,8 @@
     "closeCurtains": "Close curtains",
     "turnOnDecoration": "Turn on",
     "turnOffDecoration": "Turn off",
+    "lightFire": "Light fire",
+    "extinguishFire": "Extinguish fire",
     "makeBigger": "Bigger",
     "makeSmaller": "Smaller",
     "catCommands": {

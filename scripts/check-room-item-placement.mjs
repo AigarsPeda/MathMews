@@ -18,13 +18,64 @@ function load(id) {
   }).outputText, { module, exports: module.exports, require: load });
   return module.exports;
 }
-const { buildNativeRoomWorld, projectWorld, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN } = load('@/utils/native-room-world');
+const { buildNativeRoomWorld, placeObjectOnRugs, projectWorld, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN, FLOOR_Y } = load('@/utils/native-room-world');
 const { roomItemAnchor, roomItemAtPoint, roomItemFootprint, ROOM_PLACEMENT_MIN, ROOM_PLACEMENT_MAX, createRoomPlacementResolver } = load('@/utils/room-item-placement');
 const { updatePlacedDecorationOffsetByInstance, updatePlacedDecorationWallFlipByInstance, normalizePlacedDecorations } = load('@/utils/room-placement');
 function at(object, x, z, width) {
   const centerY = (object.min[1] + object.max[1]) / 2;
   return roomItemAtPoint(object, projectWorld([x, centerY, z], width), width);
 }
+// Furniture must clear the rug mesh without changing its persisted screen anchor.
+for (const rugId of ['carpetRound', 'carpetClassic', 'rugBraidedRound', 'rugStripedRunner']) for (const angle of [0,37,90]) {
+  const layout = { width:390, height:420, petSize:120, sizeScale:1, toys:[], decorations:[
+    {decorationId:'chairRockingOak',instanceId:'chair',offset:{x:0,y:0},rotationDegrees:angle},
+    {decorationId: rugId,instanceId:'rug',offset:{x:0,y:0},scale:2.2,rotationDegrees:37},
+  ] };
+  const initial = buildNativeRoomWorld({...layout,decorations:layout.decorations.slice(0,1)}).objects[0];
+  const world = buildNativeRoomWorld(layout), chair = world.objects[0], rug = world.objects[1];
+  assert.ok(chair.rugLift > 0 && chair.min[1] >= rug.max[1] + .0019, 'Runners rest above the rug, including rotated/resized rugs');
+  for (const field of ['position','min','max','seat']) assert.ok(Math.abs(chair[field][1] - initial[field][1] - chair.rugLift) < 1e-8);
+  for (let i=0;i<initial.collisionBoxes.length;i++) assert.ok(Math.abs(chair.collisionBoxes[i].min[1] - initial.collisionBoxes[i].min[1] - chair.rugLift)<1e-8);
+  const anchor = roomItemAnchor(chair,390), originalAnchor = roomItemAnchor(initial,390);
+  assert.ok(Math.hypot(anchor.x-originalAnchor.x,anchor.y-originalAnchor.y)<1e-8,'Carpet clearance preserves the saved anchor');
+  assert.equal(placeObjectOnRugs(chair,world.objects),chair,'Repeated support does not accumulate height');
+  if (rugId === 'carpetRound' && angle === 0) {
+    const edge = at(initial,(rug.min[0]+rug.max[0])/2,rug.max[2]+(initial.max[2]-initial.min[2])*.2,390);
+    assert.ok(placeObjectOnRugs(edge,[edge,rug]).rugLift>0,'Runner contact lifts the chair even when its center is outside the carpet');
+  }
+  const reloaded = buildNativeRoomWorld({...layout,livePositions:{chair:anchor}}).objects[0];
+  assert.ok(reloaded.position.every((v,i)=>Math.abs(v-chair.position[i])<1e-8),'Saving the visible anchor reloads without drift');
+  const resolver = createRoomPlacementResolver(world);
+  const preview = resolver.move('chair',anchor).object;
+  assert.ok(preview.min[1] >= rug.max[1]+.0019,'A drag preview retains rug clearance');
+  const dropped = resolver.drop('chair',anchor,{snapInsideWalls:false});
+  assert.ok(dropped.accepted && dropped.object.min[1] >= rug.max[1]+.0019,'Releasing the chair preserves clearance');
+  const enlarged = buildNativeRoomWorld({...layout,decorations:[{...layout.decorations[0],scale:1.6},layout.decorations[1]]}).objects[0];
+  const resized = resolver.resize(chair,enlarged);
+  assert.ok(resized && resized.min[1]>=rug.max[1]+.0019,'Resizing preserves runner clearance');
+  const away = roomItemAnchor(at(initial,2,2,390),390);
+  const moved = resolver.move('chair',away).object;
+  assert.equal(moved.rugLift,undefined,'Moving off the rug returns the chair to the floor');
+  assert.ok(Math.abs(moved.position[1]-FLOOR_Y)<1e-8);
+  const removed = buildNativeRoomWorld({...layout,decorations:layout.decorations.slice(0,1),livePositions:{chair:anchor}}).objects[0];
+  assert.ok(removed.position.every((v,i)=>Math.abs(v-initial.position[i])<1e-8),'Removing the rug restores the original floor pose');
+}
+{
+  const layout={width:390,height:420,petSize:120,sizeScale:1,toys:[],decorations:[
+    {decorationId:'chairRockingOak',instanceId:'chair',offset:{x:0,y:0}},
+    {decorationId:'carpetRound',instanceId:'rug',offset:{x:0,y:0},scale:.2},
+  ]};
+  const world=buildNativeRoomWorld(layout), originalRug=world.objects[1];
+  const rug={...originalRug,scale:originalRug.scale*.1,
+    min:originalRug.min.map((v,i)=>originalRug.position[i]+(v-originalRug.position[i])*.1),
+    max:originalRug.max.map((v,i)=>originalRug.position[i]+(v-originalRug.position[i])*.1)};
+  const plain=buildNativeRoomWorld({...layout,decorations:layout.decorations.slice(0,1)}).objects[0];
+  const chair=at(plain,(rug.min[0]+rug.max[0])/2,(rug.min[2]+rug.max[2])/2,390);
+  assert.equal(placeObjectOnRugs(chair,[chair,rug]).rugLift,undefined,'A small rug between the two runners cannot lift the chair');
+  const corner={...plain,scale:.01,position:[originalRug.max[0]-.005,FLOOR_Y,originalRug.max[2]-.005]};
+  assert.equal(placeObjectOnRugs(corner,[corner,originalRug]).rugLift,undefined,'Empty corners inside a round rug bounding box cannot lift furniture');
+}
+console.log('Verified furniture rug clearance, seat/collider alignment, stable anchors, previews, save/reload, floor return and gaps between runners.');
 for (const width of [320, 414, 768]) {
   const input = { width, height: width * 1.1, petSize: width / 3, sizeScale: width / 390,
     decorations: [{ decorationId: 'sofaA', instanceId: 'sofa', offset: { x: 0, y: 0 } },
@@ -198,8 +249,41 @@ for(const width of [354,390]) {
 }
 console.log('Verified the screenshot chair position is allowed, while the separate attempted destination intersects the lamp/wall and has its own furniture outline.');
 
+// Reported living-room lamp: the base fits beside the planter/fireplace, but
+// square base corners and a broad box under the arch used to reject it.
+for(const width of [354,390,768]) {
+  const input={width,height:width*420/390,petSize:80*width/390,sizeScale:1.15*width/390,toys:[],decorations:[
+    {decorationId:'lampFloorArc',instanceId:'lamp',offset:{x:-.14408440017989146,y:-.5216254006403184},rotationDegrees:53,scale:1.8},
+    {decorationId:'plantB',instanceId:'plant',offset:{x:-.09405185324228767,y:-.322725393257792},scale:1.7},
+    {decorationId:'livingFireplaceCream',instanceId:'fireplace',offset:{x:-.6878426887379766,y:-.056746550942773304},rotationDegrees:90},
+    {decorationId:'windowOakWide',instanceId:'window',offset:{x:.6863000072190298,y:-.4706359865071423},scale:1.6},
+  ]};
+  const world=buildNativeRoomWorld(input),lamp=world.objects[0],plant=world.objects[1],resolver=createRoomPlacementResolver(world);
+  const anchor=(x,z)=>roomItemAnchor({...lamp,position:[x,FLOOR_Y,z]},width);
+  for(const [x,z] of [[-1.7,-1.1],[-1.4,-1.1],[-1.3,.4]]) {
+    const preview=resolver.move('lamp',anchor(x,z));
+    assert.equal(resolver.canPlace(preview.object),true,'A clear round base and empty space below the arch allow placement');
+    const drop=resolver.drop('lamp',preview.point);
+    assert.equal(drop.accepted,true,'Clear lamp placements survive release beside the existing furniture');
+    const offset={x:drop.point.x/((width-drop.object.scale*width*NATIVE_MODEL_CATALOG.lampFloorArc.renderScale/ROOM_SPAN)/2),
+      y:drop.point.y/((input.height-drop.object.scale*width*NATIVE_MODEL_CATALOG.lampFloorArc.renderScale/ROOM_SPAN)/2)};
+    const saved=buildNativeRoomWorld({...input,decorations:input.decorations.map(item=>item.instanceId==='lamp'?{...item,offset}:item)});
+    assert.ok(createRoomPlacementResolver(saved).canPlace(saved.objects[0]),'The valid lamp placement stays valid after save/reload');
+  }
+  const c=Math.cos(lamp.heading),s=Math.sin(lamp.heading);
+  const overlap=resolver.drop('lamp',anchor(plant.position[0]+.3*lamp.scale*c,plant.position[2]-.3*lamp.scale*s),{zoom:100});
+  assert.equal(overlap.accepted,false,'The lamp cannot share the planter’s actual solid base');
+  assert.ok(overlap.feedback.blockers.some(hit=>hit.instanceId==='plant'));
+  const clearLamp=resolver.move('lamp',anchor(-1.4,-1.1)).object;
+  assert.equal(createRoomPlacementResolver({...world,objects:[clearLamp]}).canPlace(clearLamp),true);
+  const shadePoint=[clearLamp.position[0]+.72*lamp.scale*c,clearLamp.position[1]+1.42*lamp.scale,clearLamp.position[2]-.72*lamp.scale*s];
+  const raisedPlant={...plant,position:[shadePoint[0],shadePoint[1]-.2,shadePoint[2]]};
+  assert.equal(createRoomPlacementResolver({...world,objects:[clearLamp,raisedPlant]}).canPlace(clearLamp),false,'The bulb/shade still reject a real obstruction above the floor');
+}
+console.log('Verified clear arc-lamp bases beside the reported planter/fireplace, preview/drop/save agreement, and rejection of actual base and shade collisions.');
+
 // Lamps rest on a rotated/scaled tabletop, and the screen anchor survives saves.
-const { FLOOR_Y, placeObjectOnSurface } = load('@/utils/native-room-world');
+const { placeObjectOnSurface } = load('@/utils/native-room-world');
 const { lampLightConfig } = load('@/utils/native-lamp-light');
 for (const width of [320, 414, 768]) for (const rotationDegrees of [0, 20, 90]) {
   const input = { width, height: width * 1.1, petSize: width / 3, sizeScale: width / 390,

@@ -168,6 +168,8 @@
     "closeCurtains": "Aizvērt aizkarus",
     "turnOnDecoration": "Ieslēgt",
     "turnOffDecoration": "Izslēgt",
+    "lightFire": "Iekurt uguni",
+    "extinguishFire": "Nodzēst uguni",
     "makeBigger": "Lielāks",
     "makeSmaller": "Mazāks",
     "catCommands": {

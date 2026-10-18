@@ -144,6 +144,76 @@ for(const part of metadata.interactionParts.filter(p=>p.mode==='open'))assert.ok
 hooks.length=0;render();frame({timeSinceLastFrame:1/60});assert.ok(writes.length>openedWrites,'A retained model reapplies its saved state after remount');
 console.log('Verified compiled cupboard and water callbacks, opening, closing, Reduce Motion, hidden-room pause, retained remounts and no idle writes.');
 
+// Exercise the actual fireplace callback and the shipped flame vertices.
+{
+ const fireFile=path.resolve('components/pet/native/NativeFireplace.tsx');
+ const fireCode=babel.transformSync(ts.transpileModule(fs.readFileSync(fireFile,'utf8'),{compilerOptions:{
+  target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,
+ }}).outputText,{filename:fireFile,babelrc:false,configFile:false,plugins:[['react-native-worklets/plugin',{processNestedWorklets:true}]]}).code;
+ const bytes=fs.readFileSync('assets/3d/native/livingFireplaceCream.glb');
+ const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12))),binary=bytes.subarray(28+bytes.readUInt32LE(12));
+ const {FIREPLACE_FLAMES,fireplaceLightPosition}=load('@/utils/native-fireplace');
+ const flameVertices=new Map(FIREPLACE_FLAMES.map(part=>{
+  const node=gltf.nodes.find(n=>n.name===part.node),a=gltf.accessors[gltf.meshes[node.mesh].primitives[0].attributes.POSITION],v=gltf.bufferViews[a.bufferView];
+  return [part.node,Array.from({length:a.count},(_,i)=>[0,1,2].map(axis=>binary.readFloatLE((v.byteOffset??0)+(a.byteOffset??0)+i*(v.byteStride??12)+axis*4)))];
+ }));
+ const fireAsset={getFirstEntityByName:name=>gltf.nodes.find(n=>n.name===name)};
+ const poses=new Map(),emissions=new Map();let intensity=0,position=[],lightConfig,lightCreates=0,fireWrites=0;
+ const lightManager={setIntensity(_light,value){assert.ok(Number.isFinite(value)&&value>=0);intensity=value;fireWrites++},
+  setPosition(_light,value){position=Array.from(value);fireWrites++},setFalloff(){fireWrites++}};
+ mocks['react-native-filament'].useFilamentContext=()=>({lightManager,scene:{},
+  transformManager:{createIdentityMatrix:()=>matrix(),setTransform(entity,pose){poses.set(entity.name,pose.ops);fireWrites++}},
+  renderableManager:{getPrimitiveCount:()=>1,getMaterialInstanceAt:entity=>({setFloat4Parameter(_key,value){emissions.set(entity.name,Array.from(value));fireWrites++}})},
+ });
+ mocks['react-native-filament'].useLightEntity=(_manager,config)=>mocks.react.useMemo(()=>{lightConfig=config;lightCreates++;return {id:lightCreates}},[config.falloffRadius]);
+ mocks['react-native-filament'].useEntityInScene=()=>{};
+ const fireRuntime={exports:{}};vm.runInNewContext(fireCode,{module:fireRuntime,exports:fireRuntime.exports,require:load,Math,Map,Set,global:{Error}});
+ function transformed(point,ops) {
+  let p=point;
+  for(const op of ops) {
+   if(op[0]==='translate')p=p.map((v,i)=>v+op[1][i]);
+   if(op[0]==='scale')p=p.map((v,i)=>v*op[1][i]);
+   if(op[0]==='rotate'){const c=Math.cos(op[1]),s=Math.sin(op[1]);p=[p[0]*c-p[1]*s,p[0]*s+p[1]*c,p[2]]}
+  }
+  return p;
+ }
+ for(const fps of [30,60,120])for(const wallFlipped of [false,true]) {
+  hooks.length=0;poses.clear();emissions.clear();lightCreates=0;
+  const room=buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale:1,toys:[],decorations:[
+   {decorationId:'livingFireplaceCream',instanceId:'fire',offset:{x:0,y:0},scale:wallFlipped?1.7:.7,wallFlipped,rotationDegrees:37},
+  ]});
+  let fireObject=room.objects[0];const preview={value:undefined};
+  function renderFire(extra={}){cursor=0;effects=[];fireRuntime.exports.NativeFireplace({asset:fireAsset,object:fireObject,active:true,reduceMotion:false,editingObject:preview,...extra});effects.forEach(fn=>fn())}
+  renderFire();frame({timeSinceLastFrame:1/fps});assert.equal(intensity,0);
+  const idle=fireWrites;for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});assert.equal(fireWrites,idle,'An unlit fireplace has no idle native writes');
+  fireObject={...fireObject,poweredOn:true};renderFire();const heights=[],lightLevels=[];
+  for(let i=0;i<fps*3;i++) {
+   frame({timeSinceLastFrame:1/fps});
+   heights.push(poses.get(FIREPLACE_FLAMES[1].node).find(op=>op[0]==='scale')[1][1]);
+   if(i>fps)lightLevels.push(intensity);
+   if(i%15===0)for(const part of FIREPLACE_FLAMES)for(const vertex of flameVertices.get(part.node)) {
+    const p=transformed(vertex,poses.get(part.node));
+    assert.ok(Math.abs(p[0])<.49&&p[1]>=.23&&p[1]<.94&&p[2]>-.02&&p[2]<.30,`Animated flame meshes stay inside the firebox: ${part.node}/${i} ${JSON.stringify(p)}`);
+   }
+  }
+  assert.ok(Math.max(...heights)-Math.min(...heights)>.15,'Lit flames visibly rise and fall');
+  assert.ok(Math.max(...lightLevels)/Math.min(...lightLevels)>1.05,'The warm room light flickers with the fire');
+  assert.equal(lightConfig.type,'point');assert.equal(lightConfig.colorKelvin,1900);assert.equal(lightCreates,1);
+  assert.ok([...emissions.values()].every(color=>color[0]>color[1]&&color[1]>color[2]&&color[0]>1),'All flame materials emit warm light');
+  assert.ok(position.every((v,i)=>Math.abs(v-fireplaceLightPosition(fireObject)[i])<1e-8),'The light follows rotated/scaled fireplaces');
+  const frozen=fireWrites;renderFire({active:false});for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});assert.equal(fireWrites,frozen,'Hidden rooms freeze flame and light work');
+  renderFire({reduceMotion:true});frame({timeSinceLastFrame:1/fps});
+  for(const part of FIREPLACE_FLAMES)assert.deepEqual(poses.get(part.node).find(op=>op[0]==='scale')[1],[1,1,1],'Reduce Motion keeps a steady visible fire');
+  const still=fireWrites;for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});assert.equal(fireWrites,still,'Reduce Motion has no flicker or repeated native writes');
+  preview.value={...fireObject,position:[1,.068,1],heading:Math.PI/2};frame({timeSinceLastFrame:1/fps});
+  assert.ok(position.every((v,i)=>Math.abs(v-fireplaceLightPosition(preview.value)[i])<1e-8),'Light follows live dragging without handle recreation');assert.equal(lightCreates,1);
+  fireObject={...fireObject,poweredOn:false};renderFire();for(let i=0;i<fps*2;i++)frame({timeSinceLastFrame:1/fps});assert.equal(intensity,0,'Extinguishing removes all room light');
+  for(const part of FIREPLACE_FLAMES)assert.deepEqual(poses.get(part.node).find(op=>op[0]==='scale')[1],[0,0,0],'Extinguished flames disappear');
+  fireObject={...fireObject,poweredOn:true};hooks.length=0;renderFire();frame({timeSinceLastFrame:1/fps});assert.ok(intensity>0,'A saved lit fireplace restores after remount');
+ }
+ console.log('Verified real fireplace flames, warm flickering light, both orientations/scales, ignition/extinguishing, drag previews, remounts, pauses and Reduce Motion at 30/60/120 FPS.');
+}
+
 // The reported wardrobe has a bed beside its front, so approach the open gap.
 {
  const fixture=load('@/scripts/fixtures/cupboard-bedroom.json');

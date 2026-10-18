@@ -11,6 +11,13 @@ for(const [id,meta] of Object.entries(catalog)) {
   const meshes=readModel(id), derived=data[id];
   assert.ok(derived?.placementHull.length>=3,`${id} has a footprint`);
   assert.ok(derived.placementHull.every(p=>p.length===2&&p.every(Number.isFinite)));
+  for(const box of derived.placementBoxes??[]) {
+    assert.ok(box.footprint.length>=3);
+    box.footprint.forEach((p,i,polygon)=>{
+      const next=polygon[(i+1)%polygon.length];
+      assert.ok(p.every(Number.isFinite)&&Math.hypot(p[0]-next[0],p[1]-next[1])>1e-8,`${id}: rounded placement polygons have finite, nonzero collision axes`);
+    });
+  }
   const boards = meshes.filter(mesh=>/^(Rounded tabletop|Wall shelf(?:\.\d+)?|Shelf(?:\.\d+)?|Broad fireplace mantel|Thick stone worktop(?:\.\d+)?)$/.test(mesh.name));
   assert.equal(derived.supportSurfaces?.length ?? 0,boards.length,`${id}: support surfaces match authored boards`);
   boards.forEach((board,i)=>{
@@ -52,7 +59,26 @@ for(const [id,meta] of Object.entries(catalog)) {
       }
     });
   }
+  if (meta.leaves) {
+    assert.equal(derived.placementBoxes.length,meta.collisionBoxes.length,`${id}: decorating retains all solid planter parts`);
+    derived.placementBoxes.forEach((box,i)=>{
+      assert.deepEqual(box.min,meta.collisionBoxes[i].min.map(v=>Math.round(v*1e6)/1e6));
+      assert.deepEqual(box.max,meta.collisionBoxes[i].max.map(v=>Math.round(v*1e6)/1e6));
+      assert.ok(box.footprint?.length>=8,`${id}: round planters do not acquire square corners`);
+    });
+  }
 }
+const lamp=readModel('lampFloorArc',{triangles:true});
+const lampBoxes=data.lampFloorArc.placementBoxes;
+const contains=(box,p)=>[0,1,2].every(k=>p[k]>=box.min[k]-1e-6&&p[k]<=box.max[k]+1e-6)
+  && box.footprint.every((a,i,poly)=>{const b=poly[(i+1)%poly.length];return (b[0]-a[0])*(p[2]-a[1])-(b[1]-a[1])*(p[0]-a[0])>=-1e-6;});
+for(const mesh of lamp)for(const triangle of mesh.triangles)
+  assert.ok(lampBoxes.some(box=>triangle.every(p=>contains(box,p))),`${mesh.name}: every physical triangle remains inside a placement collider`);
+for(const box of lampBoxes.filter(box=>box.max[2]-box.min[2]<.06))for(const k of [0,1,2])
+  assert.ok(box.max[k]-box.min[k]<.18,'Stem cells never fill the empty space under the arch');
+const base=lampBoxes.find(box=>box.min[1]===0);
+assert.ok(base.footprint.length>=24,'The floor-lamp base has its actual rounded footprint');
+console.log('Verified round lamp bases and planters, small arch cells, and complete triangle coverage of the lamp without removing physical parts.');
 assert.equal(Object.keys(data).length,models,'Removed assets do not retain stale bounds');
 const room=readModel('room1');
 const floor=room.find(mesh=>mesh.name==='Cream floor').points.filter(p=>p[1]>.06799);

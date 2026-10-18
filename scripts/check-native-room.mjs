@@ -1642,9 +1642,18 @@ const cushion = chairModel.nodes.find(n => n.name === 'Soft sage seat pad');
 const cushionPrimitive = chairModel.meshes[cushion.mesh].primitives[0];
 const cushionTop = cushion.translation[1] + chairModel.accessors[cushionPrimitive.attributes.POSITION].max[1];
 assert.ok(Math.abs(cushionTop - .69) < .0001);
+const chairFile = fs.readFileSync('assets/3d/native/chairRockingOak.glb');
+const chairBinary = chairFile.subarray(28 + chairFile.readUInt32LE(12));
+const runnerVertices = chairModel.nodes.filter(n => n.name.startsWith('Curved rocking runner')).flatMap(node => {
+  const a = chairModel.accessors[chairModel.meshes[node.mesh].primitives[0].attributes.POSITION], view = chairModel.bufferViews[a.bufferView];
+  return Array.from({length:a.count},(_,i)=>[0,1,2].map(axis => (node.translation?.[axis] ?? 0)
+    + chairBinary.readFloatLE((view.byteOffset ?? 0)+(a.byteOffset ?? 0)+i*(view.byteStride ?? 12)+axis*4)));
+});
+assert.ok(runnerVertices.length > 100, 'Clearance checks cover both shipped runner meshes');
 for (const wallFlipped of [false,true]) for (const size of [undefined,1,1.4,2.2]) for (const kind of ['sofaSit','sofaSleep']) {
   const layout = { ...base, petSize: roomScale.ROOM_CAT_SIZE, sizeScale: roomScale.ROOM_OBJECT_SCALE,
-    decorations: [{ decorationId:'chairRockingOak',instanceId:'rocker',offset:{x:0,y:.15},wallFlipped,scale:size}] };
+    decorations: [{ decorationId:'chairRockingOak',instanceId:'rocker',offset:{x:0,y:.15},wallFlipped,scale:size},
+      ...(size === 1.4 ? [{decorationId:'carpetRound',instanceId:'rug',offset:{x:0,y:.15},scale:3}] : [])] };
   const world = w.buildNativeRoomWorld(layout), chair = world.objects[0];
   const options = { ...layout, nativeWorld:world, homeOffset:{x:0,y:.12}, ownedToyIds:[], hungry:false, asleep:false };
   const plan = buildRoomActivity(options,0,kind,'rocker');
@@ -1689,6 +1698,9 @@ for (const wallFlipped of [false,true]) for (const size of [undefined,1,1.4,2.2]
       chairFrame({timeSinceLastFrame:1/fps});catFrame({timeSinceLastFrame:1/fps});
       const actualSeat=[0,1,2].map(i=>toyRoot[4+i]*cushionTop+toyRoot[8+i]*cushion.translation[2]+toyRoot[12+i]);
       assert.ok(w.pathLength([catRoot.slice(12,15),actualSeat])<.0001, 'Cat and chair remain attached to the same cushion through every rock');
+      const rug = world.objects.find(o=>o.instanceId==='rug');
+      if (rug) for (const p of runnerVertices) assert.ok(toyRoot[1]*p[0]+toyRoot[5]*p[1]+toyRoot[9]*p[2]+toyRoot[13] >= rug.max[1]-.0001,
+        'The real animated runners stay above the carpet throughout rocking');
       min=Math.min(min,motion.value.angle);max=Math.max(max,motion.value.angle);
     }
     assert.ok(max-min>.14,'Occupied chair visibly rocks in both directions');

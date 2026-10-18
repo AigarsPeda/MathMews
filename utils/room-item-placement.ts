@@ -1,4 +1,4 @@
-import { FLOOR_Y, isSurfacePlaceable, placeObjectOnSurface, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN, projectWorld, unprojectFloor, type NativeRoomObject, type NativeRoomWorld, type Vec3 } from '@/utils/native-room-world';
+import { FLOOR_Y, isSurfacePlaceable, placeObjectOnSurface, placeObjectOnRugs, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN, projectWorld, unprojectFloor, type NativeRoomObject, type NativeRoomWorld, type Vec3 } from '@/utils/native-room-world';
 import type { RoomPoint } from '@/utils/room-activities';
 import { isCurtainDecorationId } from '@/constants/decoration-motion';
 import { WALL_MOUNT_PLANE, WALL_PLACEMENT_MIN, WALL_PLACEMENT_MAX, WALL_PLACEMENT_BOTTOM, WALL_PLACEMENT_TOP } from '@/constants/room-geometry';
@@ -134,14 +134,15 @@ export function roomItemAtPoint(object: NativeRoomObject, point: RoomPoint, widt
   }
   const delta = desired.map((v, i) => v - center[i]);
   const move = (value: Vec3) => value.map((v, i) => v + delta[i]) as Vec3;
-  return { ...object, supportId: undefined, position: move(object.position), min: move(object.min), max: move(object.max),
+  return { ...object, supportId: undefined, rugLift: isSurfacePlaceable(object.modelId) ? undefined : object.rugLift,
+    position: move(object.position), min: move(object.min), max: move(object.max),
     collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
 }
 
 function boxes(object: NativeRoomObject): Box[] {
   if (object.collidable === false) return [];
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
-  return (meta.collisionBoxes ?? [{ min: meta.min, max: meta.max }]).map(box => {
+  return (meta.placementBoxes ?? meta.collisionBoxes ?? [{ min: meta.min, max: meta.max }]).map(box => {
     const center = rotate(box.min.map((v, i) => (v + box.max[i]) / 2), object.heading);
     const half = box.min.map((v, i) => (box.max[i] - v) * object.scale / 2) as Vec3;
     const cos = Math.cos(object.heading), sin = Math.sin(object.heading);
@@ -469,14 +470,16 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     resize(before: NativeRoomObject, after: NativeRoomObject) {
       let delta: Vec3;
       if (before.wallAxis === undefined) {
+        const supportDelta = (before.rugLift ?? 0) - (after.rugLift ?? 0);
         delta = [before.position[0] - after.position[0],
           before.supportId ? before.min[1] - after.min[1] : before.position[1] - after.position[1],
           before.position[2] - after.position[2]];
+        delta = delta.map((v,i) => v - supportDelta * (i === 1 ? 1 : 8 / 6.1)) as Vec3;
       } else {
         delta = before.min.map((v, i) => (v + before.max[i] - after.min[i] - after.max[i]) / 2) as Vec3;
         delta[before.wallAxis] = 0;
       }
-      const resized = { ...translateObject(after, delta), supportId: before.supportId };
+      const resized = placeObjectOnRugs({ ...translateObject(after, delta), supportId: before.supportId }, world.objects);
       return preservesSupport(resized) && canChange(before, resized) ? resized : undefined;
     },
     /** A small turn near an edge may need a small positional correction. */
@@ -511,7 +514,7 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
       const original = world.objects.find(object => object.instanceId === id);
       if (!original) return undefined;
       const moved = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
-      const candidate = snapObject(moved, zoom, snapInsideWalls);
+      const candidate = placeObjectOnRugs(snapObject(moved, zoom, snapInsideWalls), world.objects);
       const details = feedback(candidate);
       const accepted = details.boundaries.length === 0 && details.blockers.length === 0;
       const object = accepted ? candidate : original;
