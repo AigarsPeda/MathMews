@@ -34,6 +34,7 @@ function loadComponent(file, exportName) {
     '@/constants/game': { GameColors: {} },
     '@/components/ui/AppIcon': { AppIcon: 'AppIcon' },
     '@/components/pet/RoomActionMenu': { RoomActionMenu: 'RoomActionMenu' },
+    '@/components/pet/RoomToolTransition': { RoomToolTransition: 'RoomToolTransition' },
     '@react-native-community/slider': { default: 'Slider', __esModule: true },
   };
   vm.runInNewContext(source, { module, exports: module.exports, React, require: id => {
@@ -57,6 +58,7 @@ const button = (nodes, label) => {
 for (language of ['en', 'lv']) {
   state = []; calls = [];
   let nodes = render();
+  assert.equal(nodes[0].props.panelKey, 'item', 'The item panel has a stable animation identity');
   assert.ok(nodes.some(n => n.type === 'Text' && text(n) === props.name), 'Show the selected furniture name');
   assert.equal(nodes.some(n => n.props.accessibilityLabel === t('home.moveItemleft', { name: props.name })), false, 'Nudges do not compete with dragging');
   const more = nodes.find(n => n.type === 'RoomActionMenu').props.actions;
@@ -70,11 +72,13 @@ for (language of ['en', 'lv']) {
   assert.deepEqual(calls, ['rotate-preview'], 'Turn opens a reversible preview, not an immediate save');
   button(nodes, t('home.itemSize')).props.onPress();
   nodes = render();
+  assert.equal(nodes[0].props.panelKey, 'size', 'Opening Size transitions to the compact panel');
   assert.equal(button(nodes, 'Smaller').props.disabled, true, 'Resizing respects its lower limit');
   button(nodes, 'Bigger').props.onPress();
   assert.equal(calls.at(-1), 'size-up');
   button(nodes, t('common.back')).props.onPress();
   nodes = render();
+  assert.equal(nodes[0].props.panelKey, 'item', 'Back transitions to the item panel');
   nodes.find(n => n.type === 'RoomActionMenu').props.actions[0].onPress();
   nodes = render();
   for (const direction of ['left', 'right', 'up', 'down']) button(nodes, t('home.moveItem' + direction, { name: props.name })).props.onPress();

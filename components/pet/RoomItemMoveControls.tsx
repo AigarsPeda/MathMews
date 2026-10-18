@@ -1,3 +1,4 @@
+import { RoomToolTransition } from "@/components/pet/RoomToolTransition";
 import { GameColors } from "@/constants/game";
 import type { AppIconName } from "@/constants/app-icons";
 import { moderateScale } from "@/utils/scale";
@@ -45,7 +46,7 @@ export function RoomItemMoveControls({ name, picture, actions = [], onMove, onDo
   const backButton = <Pressable accessibilityRole="button" onPress={() => setTool(null)} style={styles.back}>
     <AppIcon name="arrow-left" size={18} /><Text style={styles.placeText}>{t("common.back")}</Text>
   </Pressable>;
-  return <View style={styles.content}>
+  return <RoomToolTransition panelKey={tool ?? "item"} style={styles.content}>
     <View style={styles.heading}>
       {tool !== "size" && picture && <View style={styles.picture} pointerEvents="none" accessible={false}
         accessibilityElementsHidden importantForAccessibility="no-hide-descendants">{picture}</View>}
@@ -85,7 +86,7 @@ export function RoomItemMoveControls({ name, picture, actions = [], onMove, onDo
         </View>
       </RoomActionMenu>
     </View>}
-  </View>;
+  </RoomToolTransition>;
 }
 
 const styles = StyleSheet.create({

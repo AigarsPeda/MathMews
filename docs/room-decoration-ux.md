@@ -31,16 +31,22 @@ The picker also needed more truthful instructions. It lists objects already plac
 
 ## Implemented interaction
 
-1. Enter Decorate. The header says Decorating, and the bottom action becomes Done decorating. The puzzle action returns after leaving the editor.
+1. Enter Decorate. The header says Decorating and keeps its dropdown chevron. Its menu still opens Shop; Decorate is disabled while already editing. The separate Shop button above the room is removed, and opening Shop then returning preserves decoration mode. The bottom action becomes Done decorating. The puzzle action returns after leaving the editor.
 2. Drag furniture directly in the room, or use Choose an item to pick a picture. The picker explains that these are the items currently in this room.
 3. The selected item has its picture and name in the dock. A short hint explains dragging and releasing. Place here clears that selection so another item can be chosen. Accepted moves are already saved; this button is not a separate save transaction.
 4. Turn opens Turn left and Turn right. Accepted quarter turns save immediately. Fine tune exposes the slider and decimal angle field; releasing the slider saves once, while valid numeric input saves as it changes. Back leaves the tools and keeps the angle. Blocked angles never overwrite the last accepted rotation. There is no confirmation or Cancel button for furniture rotation.
 5. Size shows only the item name, Smaller, Bigger and Back, with minus/plus artwork instead of magnifying glasses. The item picture, Place here, drag instructions, wall action, extra Size heading and standing size hint are hidden in this panel. Existing item-specific limits and room boundaries still apply, with feedback if a resize is blocked.
 6. Put away uses a storage box, removes the selected placed instance and closes its controls. It does not revoke ownership. The picker explains where to find stored items in Shop → Owned. Undo can restore the placement.
 7. More contains Move a little and any item-specific extra tools. The four directional buttons remain available there, and existing screen-reader movement actions on objects remain available. Layer order, style variants, power, spotlight aim and wall-facing options keep their existing callbacks.
-8. Undo is visible beside Shop and Choose an item. It stays available during furniture rotation and closes the rotation tool when used. It is temporarily disabled during a spotlight preview, which still has Cancel. Existing ownership checks continue to prevent Undo from restoring a revoked purchase.
+8. Undo is visible beside Choose an item. It stays available during furniture rotation and closes the rotation tool when used. It is temporarily disabled during a spotlight preview, which still has Cancel. Existing ownership checks continue to prevent Undo from restoring a revoked purchase.
 
 Face other wall appears directly in the dock for every supporting item, including wardrobe furniture, windows and posters, without opening More. It hides while resizing to keep the Size panel focused. Its full-width button leaves room for the complete label in English and Latvian. Window decorations keep their wall-switching action rather than receiving unsupported free rotation. Switching the selected object resets its local tool panel, so a new selection does not inherit a previous object's Size or Move a little view.
+
+## Switching modes
+
+The Decorate header, room navigation, stats, editor toolbar, editing dock and bottom action crossfade when entering or leaving decoration mode. Controls slide only 6–8 points over 220 ms, while the room keeps its viewport and placement anchors. Both sets stay mounted for their outgoing fade, but the inactive set stops accepting touches and is removed from accessibility navigation immediately. Reduce Motion or an inactive room skips the animation. Rapid changes reverse from the current animation progress instead of queuing transitions.
+
+Size, Turn and Back also transition between tool panels. The old panel fades out over 100 ms, the new panel fades/slides in over 180 ms, and the floating dock adjusts to its content height. Nested panels skip duplicate animations on mount or removal. These transitions respect Reduce Motion and preserve automatic angle saving and the compact resize layout.
 
 ## Engineering boundaries
 

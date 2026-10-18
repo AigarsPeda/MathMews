@@ -292,6 +292,7 @@ const roomWorld = nodes => nodes.find(({ node }) => node.type === 'NativeRoomSce
 const rotatableRoom = render([sofa], rotationProps);
 rotatableRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onRotate();
 assert.ok(rotationControls(render([sofa], rotationProps)), 'Rotation opens inline while decorating');
+assert.equal(render([sofa], rotationProps).find(({node}) => node.type === 'RoomToolTransition').node.props.panelKey, 'turn', 'Turn uses its own animated panel identity');
 assert.ok(!render([sofa], rotationProps).some(({node}) => node.type === 'RoomItemMoveControls'), 'The angle dock replaces movement controls');
 rotationControls(render([sofa], rotationProps)).props.onPreview(37.5);
 const previewRoom = render([sofa], rotationProps);
@@ -316,7 +317,7 @@ const openAim = () => decorationNode(render([spot],aimProps),'aim-lamp').node.pr
 openAim();
 let aiming = render([spot],aimProps);
 const aimDock = aiming.find(({node}) => node.type === 'RoomSpotlightControls');
-assert.ok(aimDock.ancestors.some(node => node.type === 'View' && style(node.props.style).bottom === 0), 'Aim lives in the inline dock below the viewport');
+assert.ok(aimDock.ancestors.some(node => style(node.props.style).bottom === 0), 'Aim lives in the inline dock below the viewport');
 assert.ok(!rotationControls(aiming));
 const aimValue = aiming.find(({node}) => node.type === 'NativeRoomScene').node.props.spotlightAim;
 const writesBeforeAim = stateWrites;
@@ -370,7 +371,7 @@ measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
 picker.props.onSelect(picker.props.items[0].item);
 console.log('Verified Rotate for beds, toys and furniture; local preview; Apply; Cancel; and window wall switches without free rotation.');
 const hintSlot = editingRoom.find(({ node }) => node.props.children?.includes('home.decorateHint')).ancestors.findLast(node => style(node.props.style).position === 'absolute' && style(node.props.style).bottom === 0);
-const controlsSlot = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').ancestors.at(-1);
+const controlsSlot = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').ancestors.findLast(node => style(node.props.style).position === 'absolute' && style(node.props.style).bottom === 0);
 assert.equal(style(hintSlot.props.style).minHeight, style(controlsSlot.props.style).minHeight, 'Reserve the same space before and after selecting an item so dragging does not shift the room');
 const statsPanel = nodes => nodes.find(({ node }) => node.type === 'PetStatsPanel');
 const normalStats = statsPanel(normalRoom), editingStats = statsPanel(editingRoom), selectedStats = statsPanel(selectedRoom);
@@ -388,10 +389,9 @@ assert.equal(style(controlsSlot.props.style).bottom, 0, 'The taller editing dock
 const roomFrame = normalRoom.find(({ node }) => style(node.props.style).marginHorizontal < 0);
 assert.equal(style(roomFrame.node.props.style).alignSelf, 'stretch');
 assert.equal(style(roomFrame.node.props.style).width, undefined, 'The scene can expand through the card’s side insets');
-assert.equal(style(editingStats.ancestors.at(-1).props.style).opacity, 0, 'Stats retain their measured height while hidden in decoration mode');
+assert.equal(editingStats.ancestors.at(-1).props.visible, false, 'Stats fade out while retaining their measured height in decoration mode');
 assert.notEqual(style(editingStats.ancestors.at(-1).props.style).display, 'none', 'Expanded stats must keep their layout space across modes');
-assert.equal(editingStats.ancestors.at(-1).props.pointerEvents, 'none');
-assert.equal(editingStats.ancestors.at(-1).props.accessibilityElementsHidden, true, 'Hidden stats cannot be tapped or announced');
+assert.equal(editingStats.ancestors.at(-1).type, 'RoomControlsTransition', 'Hidden stats use the shared touch and accessibility guard');
 assert.equal(style(controlsSlot.props.style).position, 'absolute', 'Movement controls share the stats footprint instead of taking additional room space');
 measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
 for (const zoom of [1,2.5]) {
@@ -413,7 +413,7 @@ editingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.finishDec
 const finishedRoom = render([sofa]);
 assert.equal(sofaNode(finishedRoom).props.allowDrag, false);
 assert.deepEqual(style(footer(statsPanel(finishedRoom)).props.style), style(footer(normalStats).props.style), 'Finishing decoration mode preserves the viewport used to save object positions');
-assert.equal(statsPanel(finishedRoom).ancestors.at(-1).props.accessibilityElementsHidden, false);
+assert.equal(statsPanel(finishedRoom).ancestors.at(-1).props.visible, true, 'Stats return when decorating finishes');
 console.log('Verified explicit decorating, protected furniture taps, cat repositioning, and Done restoring normal interaction.');
 console.log('Verified a compact footer, wider scene, stable play/edit viewport, and an editing dock that borrows the hidden navigation strip.');
 console.log('Verified picture selection closes the picker, highlights one item, and moves it with the room visible.');
@@ -556,7 +556,9 @@ houseEditor.find(({ node }) => node.props.accessibilityLabel === 'home.decorateR
 const editableDoor = decorationNode(render([homeDoor], houseProps), homeDoor.decorationId).node;
 assert.equal(editableDoor.props.allowDrag, true, 'Optional door decor still moves normally');
 assert.equal(editableDoor.props.menuActions.some(action => action.label === 'home.doorLeadsTo'), false);
-assert.equal(render([homeDoor], houseProps).some(({ node }) => node.type === 'RoomNavigation'), false, 'Room arrows cannot switch away from an active edit');
+const hiddenNavigation = render([homeDoor], houseProps).find(({ node }) => node.type === 'RoomNavigation');
+assert.equal(hiddenNavigation.node.props.disabled, true, 'Room arrows cannot switch away during an edit or outgoing fade');
+assert.equal(hiddenNavigation.ancestors.at(-1).props.visible, false, 'Room arrows fade out while editing');
 render([homeDoor], houseProps).find(({ node }) => node.props.accessibilityLabel === 'home.finishDecorating').node.props.onPress();
 const { RoomNavigation, ROOM_NAVIGATION_HEIGHT } = load(path.join(root, 'components/pet/RoomNavigation.tsx'));
 const ids = ['bedroom', 'livingRoom', 'kitchen', 'bathroom'];
@@ -1075,14 +1077,11 @@ const toolbarRoom = render([sofa], { homeRoomId:'kitchen', roomToolbar:sharedToo
   decorationEntry:{roomId:'kitchen',item:{kind:'decoration',decorationId:'sofaA',instanceId:'sofa'}}, onDecorationEntryConsumed() {} });
 assert.equal(toolbarChange.roomId,'kitchen');assert.equal(toolbarChange.active,true,'Purchase handoff enters the shared header decoration mode');
 assert.ok(!toolbarRoom.some(({node})=>node.props.accessibilityLabel==='home.a11yStore'),'The scene does not duplicate the shared Shop action');
-let toolbarShopVisits = 0;
-const toolbarEditing=render([sofa],{homeRoomId:'kitchen',roomToolbar:{...sharedToolbar,decorating:true},onOpenStore:()=>toolbarShopVisits++});
+const toolbarEditing=render([sofa],{homeRoomId:'kitchen',roomToolbar:{...sharedToolbar,decorating:true},onOpenStore:()=>assert.fail('Use the shared header Shop menu')});
 assert.equal(sofaNode(toolbarEditing).props.allowDrag,true);
 assert.equal(sofaNode(toolbarEditing).props.selected,true,'The shared toolbar preserves the purchased-item selection');
 assert.ok(!toolbarEditing.some(({node})=>node.props.accessibilityLabel==='home.finishDecorating'),'The scene does not duplicate the shared Done action');
-assert.equal(toolbarEditing.filter(({node})=>node.props.accessibilityLabel==='home.a11yStore').length,1,'Editing exposes one direct Shop shortcut');
-shopButton(toolbarEditing).props.onPress();
-assert.equal(toolbarShopVisits,1,'The decoration shortcut opens the shop immediately');
+assert.equal(toolbarEditing.filter(({node})=>node.props.accessibilityLabel==='home.a11yStore').length,0,'The shared header removes the duplicate Shop shortcut above the room');
 assert.equal(sofaNode(render([sofa],{homeRoomId:'kitchen',roomToolbar:sharedToolbar})).props.allowDrag,false,'Done in the shared header ends scene editing');
 console.log('Verified shared header decoration entry, exact selected item, scene drag controls and Done without duplicate buttons.');
 

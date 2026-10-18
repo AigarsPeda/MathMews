@@ -7,6 +7,7 @@ import { HOME_ROOM_IDS, roomTravelDirection, type HomeRoomId, type RoomEntry } f
 import { useRoomTransition } from "@/hooks/use-room-transition";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { HeaderChip } from "@/components/home/HeaderChip";
+import { RoomControlsTransition } from "@/components/pet/RoomControlsTransition";
 import { PetStage } from "@/components/pet/PetStage";
 import { RoomActionMenu } from "@/components/pet/RoomActionMenu";
 import { AppIcon } from "@/components/ui/AppIcon";
@@ -684,22 +685,33 @@ export default function HomeScreen() {
             </HeaderChip>
           </View>
           {isNativeCatPet && <View style={styles.roomToolbar}>
-            {editingCurrentRoom ? <View style={[styles.shopButton, styles.doneButton]}>
-              <AppIcon name="sofa" size={moderateScale(19)}/>
-              <Text style={styles.shopLabel}>{t('home.decoratingNow')}</Text>
-            </View> : <RoomActionMenu style={styles.decorationMenu} blocked={!!transition}
-              label={t('home.decorateRoom')} actions={[
-                { label: t('home.decorateRoom'), icon: 'sofa', onPress: () => { triggerHaptic(); requestRoomDecoration(); } },
-                { label: t('home.buy'), icon: 'store', onPress: handleOpenStore },
+            <RoomActionMenu style={styles.decorationMenu} blocked={!!transition}
+              label={t(editingCurrentRoom ? 'home.decoratingNow' : 'home.decorateRoom')} actions={[
+                { label: t('home.decorateRoom'), icon: 'sofa', disabled: editingCurrentRoom,
+                  onPress: () => { triggerHaptic(); requestRoomDecoration(); } },
+                { label: t('home.shop'), icon: 'store', onPress: handleOpenStore },
               ]}>
-              <View style={styles.shopButton}>
-                <AppIcon name="sofa" size={moderateScale(19)}/>
-                <View style={styles.menuLabel}>
-                  <Text style={styles.shopLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{t('home.decorateRoom')}</Text>
-                  <AppIcon name="chevron-down" size={moderateScale(10)}/>
-                </View>
+              <View style={styles.modeHeaderContent}>
+                <RoomControlsTransition visible={!editingCurrentRoom} instant={reduceMotion || !homeActive} style={styles.modeHeaderContent}>
+                  <View style={styles.shopButton}>
+                    <AppIcon name="sofa" size={moderateScale(19)}/>
+                    <View style={styles.menuLabel}>
+                      <Text style={styles.shopLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{t('home.decorateRoom')}</Text>
+                      <AppIcon name="chevron-down" size={moderateScale(10)}/>
+                    </View>
+                  </View>
+                </RoomControlsTransition>
+                <RoomControlsTransition visible={editingCurrentRoom} instant={reduceMotion || !homeActive} style={StyleSheet.absoluteFill}>
+                  <View style={[styles.shopButton, styles.doneButton]}>
+                    <AppIcon name="sofa" size={moderateScale(19)}/>
+                    <View style={styles.menuLabel}>
+                      <Text style={styles.shopLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{t('home.decoratingNow')}</Text>
+                      <AppIcon name="chevron-down" size={moderateScale(10)}/>
+                    </View>
+                  </View>
+                </RoomControlsTransition>
               </View>
-            </RoomActionMenu>}
+            </RoomActionMenu>
             <WorldClockControl inline/>
           </View>}
         </View>
@@ -721,28 +733,30 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.footer}>
-          <Pressable
-            style={[styles.primaryBtn, editingCurrentRoom && styles.finishDecoratingButton]}
-            onPress={editingCurrentRoom ? () => {
-              recordInteraction(); triggerHaptic(); setDecoratingRoom(null);
-            } : handlePlayPuzzle}
-            accessibilityRole="button"
-            accessibilityLabel={t(editingCurrentRoom ? "home.finishDecorating" : "home.a11ySolve")}
-          >
-            <View style={styles.primaryTitle}>
-              <AppIcon name={editingCurrentRoom ? "check" : "puzzles"} size={moderateScale(28)}
-                style={editingCurrentRoom ? { tintColor: GameColors.card } : undefined} />
-              <Text style={[styles.primaryBtnText, editingCurrentRoom && styles.finishDecoratingText]}>{t(editingCurrentRoom ? "home.finishDecorating" : "home.solvePuzzle")}</Text>
-            </View>
-            <Text style={[styles.primaryBtnHint, editingCurrentRoom && styles.finishDecoratingText]}>
-              {editingCurrentRoom ? t("home.savedAsYouGo") : savingGoal
-                ? t("store.goalProgress", {
-                    name: savingGoal.name,
-                    remaining: savingGoal.remaining,
-                  })
-                : t("home.solvePuzzleHint", { name: pet.name })}
-            </Text>
-          </Pressable>
+          <RoomControlsTransition visible={!editingCurrentRoom} instant={reduceMotion || !homeActive} offsetY={6}>
+            <Pressable style={styles.primaryBtn} onPress={handlePlayPuzzle} disabled={editingCurrentRoom}
+              accessibilityRole="button" accessibilityLabel={t("home.a11ySolve")}>
+              <View style={styles.primaryTitle}>
+                <AppIcon name="puzzles" size={moderateScale(28)} />
+                <Text style={styles.primaryBtnText}>{t("home.solvePuzzle")}</Text>
+              </View>
+              <Text style={styles.primaryBtnHint}>
+                {savingGoal ? t("store.goalProgress", { name: savingGoal.name, remaining: savingGoal.remaining })
+                  : t("home.solvePuzzleHint", { name: pet.name })}
+              </Text>
+            </Pressable>
+          </RoomControlsTransition>
+          <RoomControlsTransition visible={editingCurrentRoom} instant={reduceMotion || !homeActive} offsetY={6} style={StyleSheet.absoluteFill}>
+            <Pressable style={[styles.primaryBtn, styles.finishDecoratingButton]} disabled={!editingCurrentRoom}
+              onPress={() => { recordInteraction(); triggerHaptic(); setDecoratingRoom(null); }}
+              accessibilityRole="button" accessibilityLabel={t("home.finishDecorating")}>
+              <View style={styles.primaryTitle}>
+                <AppIcon name="check" size={moderateScale(28)} style={{ tintColor: GameColors.card }} />
+                <Text style={[styles.primaryBtnText, styles.finishDecoratingText]}>{t("home.finishDecorating")}</Text>
+              </View>
+              <Text style={[styles.primaryBtnHint, styles.finishDecoratingText]}>{t("home.savedAsYouGo")}</Text>
+            </Pressable>
+          </RoomControlsTransition>
         </View>
       </View>
     </View>
@@ -785,6 +799,7 @@ const styles = StyleSheet.create({
   settingsButton: { borderWidth: 0, backgroundColor: 'transparent' },
   roomToolbar: { flexDirection: 'row', alignItems: 'stretch', gap: moderateScale(8) },
   decorationMenu: { flex: 1, minWidth: 0, minHeight: 56 },
+  modeHeaderContent: { flex: 1, minHeight: 56 },
   menuLabel: { flexDirection: 'row', alignItems: 'center', gap: moderateScale(4) },
   shopButton: { flex: 1, minWidth: 0, minHeight: 56, justifyContent: 'center', alignItems: 'center', gap: moderateScale(3), paddingHorizontal: moderateScale(8), paddingVertical: moderateScale(8), backgroundColor: '#E8FAF8', borderRadius: moderateScale(12), borderWidth: 1, borderColor: GameColors.secondary },
   doneButton: { backgroundColor: GameColors.cardBorder, borderColor: GameColors.cardBorder },
@@ -818,7 +833,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
-  finishDecoratingButton: { backgroundColor: GameColors.secondaryDark, shadowColor: GameColors.text, shadowOpacity: .12 },
+  finishDecoratingButton: { flex: 1, justifyContent: "center", backgroundColor: GameColors.secondaryDark, shadowColor: GameColors.text, shadowOpacity: .12 },
   finishDecoratingText: { color: GameColors.card },
   primaryBtnText: {
     fontSize: moderateScale(18),

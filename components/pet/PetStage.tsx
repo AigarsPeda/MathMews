@@ -20,6 +20,8 @@ import { RoomActionMenu } from '@/components/pet/RoomActionMenu';
 import type { RoomSceneSlide } from "@/hooks/use-room-transition";
 import { DEFAULT_HOME_ROOM_ID, HOME_ROOM_IDS, HOME_ROOM_ICONS, isRoomDoor, type HomeRoomId, type RoomEntry } from "@/constants/home-rooms";
 import { RoomEditorSheet, type RoomEditorControls } from "@/components/pet/RoomEditorSheet";
+import { RoomToolTransition, ROOM_TOOL_LAYOUT } from "@/components/pet/RoomToolTransition";
+import { RoomControlsTransition } from "@/components/pet/RoomControlsTransition";
 import { RoomItemMoveControls } from "@/components/pet/RoomItemMoveControls";
 import { RoomSpotlightControls } from "@/components/pet/RoomSpotlightControls";
 import { RoomRotationControls } from "@/components/pet/RoomRotationControls";
@@ -1387,8 +1389,11 @@ export function PetStage({
               </Animated.View>
             ) : null}
             </Animated.View>
-            {hasRoomNavigation && !decorating && !sceneSlide?.outgoing && <RoomNavigation roomId={homeRoomId} disabled={!!sceneSlide || !!roomActivityBlocked || roomActivity?.plan.kind === "roomTravel"}
-              onVisit={onVisitHomeRoom!} />}
+            {hasRoomNavigation && !sceneSlide?.outgoing && <RoomControlsTransition visible={!decorating}
+              instant={reduceMotion || !roomVisible} offsetY={8} style={StyleSheet.absoluteFill}>
+              <RoomNavigation roomId={homeRoomId} disabled={decorating || !!sceneSlide || !!roomActivityBlocked || roomActivity?.plan.kind === "roomTravel"}
+                onVisit={onVisitHomeRoom!} />
+            </RoomControlsTransition>}
             {compact && usesNativeCat && !sceneSlide?.outgoing && !roomToolbar ? (
               onOpenStore && !decorating ? <Pressable style={styles.decorateButton}
                 disabled={!!sceneSlide || waitingToDecorate}
@@ -1410,9 +1415,10 @@ export function PetStage({
                 <Text style={styles.decorateLabel}>{t(decorating ? "home.finishDecorating" : "home.decorateRoom")}</Text>
               </Pressable>
             ) : null}
-            {decorating && <View style={[styles.editorToolbar, { top: moderateScale(roomToolbar ? 10 : 60) }]}>
-              {onOpenStore && <Pressable style={styles.editorToolbarButton} disabled={!!sceneSlide}
-                onPress={onOpenStore} accessibilityRole="button" accessibilityLabel={t("home.a11yStore")}>
+            <RoomControlsTransition visible={decorating} instant={reduceMotion || !roomVisible} offsetY={-6}
+              style={[styles.editorToolbar, { top: moderateScale(roomToolbar ? 10 : 60) }]}>
+              {onOpenStore && !roomToolbar && <Pressable style={styles.editorToolbarButton} disabled={!!sceneSlide}
+                onPress={onOpenStore} accessibilityRole="button" accessibilityLabel={decorating ? t("home.a11yStore") : undefined}>
                 <AppIcon name="store" size={22} /><Text style={styles.decorateLabel}>{t("home.shop")}</Text>
               </Pressable>}
               {roomEditor && <Pressable style={styles.editorToolbarButton}
@@ -1424,10 +1430,10 @@ export function PetStage({
                 <Text style={[styles.decorateLabel, (!roomEditor.canUndo || !!spotlightPreview) && { color: GameColors.textMuted }]}>{t("home.undoShort")}</Text>
               </Pressable>}
               <Pressable style={styles.editorToolbarButton} onPress={() => setShowEditor(true)}
-                accessibilityRole="button" accessibilityLabel={t("home.roomTools")}>
+                accessibilityRole="button" accessibilityLabel={decorating ? t("home.roomTools") : undefined}>
                 <AppIcon name="chair" size={22} /><Text style={[styles.decorateLabel, { flexShrink: 1 }]}>{t("home.roomTools")}</Text>
               </Pressable>
-            </View>}
+            </RoomControlsTransition>
           </View>
           </GestureDetector>
 
@@ -1435,13 +1441,13 @@ export function PetStage({
           {compact ? <View pointerEvents="none" style={styles.roomBottomShadowClip}>
             <View style={styles.roomBottomShadow} />
           </View> : null}
-          <View style={[styles.stats, compact && styles.statsCompact, decorating && styles.hiddenStats]}
-            pointerEvents={decorating ? "none" : "auto"}
-            accessibilityElementsHidden={decorating}
-            importantForAccessibility={decorating ? "no-hide-descendants" : "auto"}>
+          <RoomControlsTransition visible={!decorating} instant={reduceMotion || !roomVisible} offsetY={6}
+            style={[styles.stats, compact && styles.statsCompact]}>
             <PetStatsPanel stats={stats} wisdom={wisdom} compact={compact} visible={roomVisible && !decorating} onOpenMathStats={onOpenMathStats} />
-          </View>
-          {decorating && <View style={[styles.moveControlsSlot, compact && styles.moveControlsSlotCompact]}>
+          </RoomControlsTransition>
+          <RoomControlsTransition visible={decorating} instant={reduceMotion || !roomVisible} offsetY={8}
+            layout={ROOM_TOOL_LAYOUT} style={[styles.moveControlsSlot, compact && styles.moveControlsSlotCompact]}>
+          <RoomToolTransition panelKey={rotationPreview ? "turn" : spotlightPreview ? "spotlight" : movingItem ? roomLayerItemKey(movingItem) : "welcome"}>
           {rotationPreview ? <RoomRotationControls key={rotationPreview.item.kind === "bed" ? "bed" : rotationPreview.item.instanceId}
             placementAllowed={rotationPlacement.allowed} name={itemLabel(rotationPreview.item)}
             degrees={rotationPreview.degrees} simpleGraphics={simpleGraphics}
@@ -1473,7 +1479,8 @@ export function PetStage({
               <View style={{ flex: 1, gap: 4 }}><Text style={styles.editorWelcomeTitle}>{t("home.decorateStart")}</Text>
               <Text style={styles.editorWelcomeHint}>{t("home.decorateHint")}</Text></View>
             </View>}
-          </View>}
+          </RoomToolTransition>
+          </RoomControlsTransition>
           </View>
           <RoomEditorSheet visible={showEditor} onClose={() => setShowEditor(false)} controls={roomEditor}
             onOpenStore={onOpenStore ? () => { setShowEditor(false); onOpenStore(); } : undefined}

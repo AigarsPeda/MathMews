@@ -49,6 +49,7 @@ for (const [file, name] of [
   ['components/ui/AppIcon', 'AppIcon'], ['components/ui/IconText', 'IconText'],
   ['components/economy/GameHeaderStats', 'GameHeaderStats'], ['components/home/HeaderChip', 'HeaderChip'],
   ['components/pet/PetStage', 'PetStage'],
+  ['components/pet/RoomControlsTransition', 'RoomControlsTransition'],
   ['components/pet/RoomActionMenu', 'RoomActionMenu'],
   ['components/pet/WorldClockControl', 'WorldClockControl'],
 ]) mocks[`@/${file}`] = { [name]: name };
@@ -77,6 +78,7 @@ function load(file) {
   return module.exports;
 }
 function nodes(node) {
+  if (node?.type === 'RoomControlsTransition' && !node.props.visible) return [];
   if (Array.isArray(node)) return node.flatMap(nodes);
   return node?.props ? [node, ...nodes(node.props.children)] : [];
 }
@@ -127,15 +129,15 @@ console.log('Verified immediate shop navigation while the cat is active and no d
 {
   const test = home();
   assert.equal(test.decorationMenu.label, 'home.decorateRoom');
-  assert.deepEqual(Array.from(test.decorationMenu.actions, action => action.label), ['home.decorateRoom', 'home.buy']);
+  assert.deepEqual(Array.from(test.decorationMenu.actions, action => action.label), ['home.decorateRoom', 'home.shop']);
   test.decorationMenu.actions[0].onPress();
   assert.equal(test.decorationRequests.length, 1, 'Decorate uses the existing safe room-editor handoff');
   assert.equal(routes.length, 0, 'Decorate stays in the current room');
   test.decorationMenu.actions[1].onPress();
-  assert.deepEqual(routes, ['/store'], 'Buy opens the shop directly');
+  assert.deepEqual(routes, ['/store'], 'Shop opens the store directly');
   assert.equal(test.interactions(), 0, 'The menu does not dispatch a game-state update before shop navigation');
 }
-console.log('Verified the Decorate dropdown, safe decoration entry and immediate Buy navigation.');
+console.log('Verified the Decorate dropdown, safe decoration entry and immediate Shop navigation.');
 {
   home();
   assert.equal(prefetched.length,0,'Shop preparation does not run during the initial home render');
@@ -233,7 +235,17 @@ visibleStage(house).props.roomToolbar.onDecoratingChange('livingRoom', true);
 house = renderHome();
 assert.equal(visibleStage(house).props.roomToolbar.decorating, true);
 assert.equal(house.filter(node => node.props.accessibilityLabel === 'home.finishDecorating').length, 1, 'Decorating has one clear finish action');
-assert.equal(house.filter(node => node.type === 'RoomActionMenu').length, 0, 'Editing replaces the dropdown with a mode label');
+assert.equal(house.filter(node => node.type === 'RoomActionMenu').length, 1, 'The header dropdown remains available while editing');
+const editingMenu = house.find(node => node.type === 'RoomActionMenu').props;
+assert.equal(editingMenu.label, 'home.decoratingNow');
+assert.equal(editingMenu.blocked, false, 'Decorating does not disable the dropdown');
+assert.equal(editingMenu.actions[0].disabled, true, 'The current decoration mode does not need to be restarted');
+const storeVisitsBefore = routes.length;
+editingMenu.actions.find(action => action.label === 'home.shop').onPress();
+assert.equal(routes.length, storeVisitsBefore + 1);
+assert.equal(routes.at(-1), '/store', 'The active decoration dropdown opens Shop');
+house = renderHome();
+assert.equal(visibleStage(house).props.roomToolbar.decorating, true, 'Opening Shop preserves decoration mode for returning');
 assert.equal(house.some(node => node.props.accessibilityLabel === 'home.a11ySolve'), false, 'The puzzle action does not compete with finishing decoration');
 house.find(node => node.props.accessibilityLabel === 'home.finishDecorating').props.onPress();
 house = renderHome();
