@@ -25,6 +25,41 @@ function at(object, x, z, width) {
   const centerY = (object.min[1] + object.max[1]) / 2;
   return roomItemAtPoint(object, projectWorld([x, centerY, z], width), width);
 }
+// Probe real empty spaces and solids at several scales/headings. These include
+// concave parts, slanted legs, asymmetric outlines and formerly boxed animations.
+{
+  const probeMeta={kind:'decoration',renderScale:1,center:[0,0,0],min:[-.018,-.018,-.018],max:[.018,.018,.018],animated:false};
+  NATIVE_MODEL_CATALOG.placementProbe=probeMeta;
+  const cases=[
+    ['livingTable',[0,.4,0],[0,1.02,0]],
+    ['kitchenChairBistro',[0,.9,-.31],[0,1.39,-.3]],
+    ['kitchenChairBistro',[.315,.49,.315],[.27,.29,.27]],
+    ['chairRockingOak',[.34,.18,0],[0,.55,0]],
+    ['sofaCornerSage',[0,.1,0],[0,.38,0]],
+    ['sofaCornerSage',[-.5,.5,1], [.7,.4,1]],
+    ['bedroomDoubleBed',[0,.07,0],[0,.48,0]],
+    ['tvBigAniA',[0,.09,0],[0,.7,0]],
+  ];
+  NATIVE_MODEL_CATALOG.placementWedge={...probeMeta,min:[-.4,0,-.4],max:[.4,1,.4],
+    placementBoxes:[{min:[-.4,0,-.4],max:[.4,1,.4],footprint:[[-.4,-.4],[.4,-.4],[-.4,.4]]}]};
+  cases.push(['placementWedge',[.28,.5,.28],[-.2,.5,-.2]]);
+  for(const [modelId,clear,blocked]of cases)for(const degrees of [0,37,90,173])for(const scale of [.6,1]) {
+    const meta=NATIVE_MODEL_CATALOG[modelId],heading=degrees*Math.PI/180;
+    const transform=([x,y,z])=>[scale*(x*Math.cos(heading)+z*Math.sin(heading)),FLOOR_Y+y*scale,scale*(-x*Math.sin(heading)+z*Math.cos(heading))];
+    const corners=[meta.min[0],meta.max[0]].flatMap(x=>[meta.min[1],meta.max[1]].flatMap(y=>[meta.min[2],meta.max[2]].map(z=>transform([x,y,z]))));
+    const item={instanceId:'fixture',modelId,position:[0,FLOOR_Y,0],heading,scale,collidable:true,
+      min:[0,1,2].map(k=>Math.min(...corners.map(p=>p[k]))),max:[0,1,2].map(k=>Math.max(...corners.map(p=>p[k])))};
+    const world=buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale:1,decorations:[],toys:[]});
+    world.objects=[item];
+    const resolver=createRoomPlacementResolver(world);
+    const probe=point=>{const position=transform(point);return {instanceId:'probe',modelId:'placementProbe',position,heading:0,scale,collidable:true,
+      min:position.map(v=>v-.018*scale),max:position.map(v=>v+.018*scale)};};
+    assert.ok(resolver.canPlace(probe(clear)),`${modelId}: usable gap stays clear at ${degrees} degrees / ${scale} scale`);
+    assert.equal(resolver.canPlace(probe(blocked)),false,`${modelId}: actual solid still blocks at ${degrees} degrees / ${scale} scale`);
+  }
+  delete NATIVE_MODEL_CATALOG.placementProbe;delete NATIVE_MODEL_CATALOG.placementWedge;
+  console.log('Verified gaps beneath tables/beds/sofas, curved chair frames and runners, slanted legs, animated TV feet and asymmetric footprints at four angles and two scales.');
+}
 // Furniture must clear the rug mesh without changing its persisted screen anchor.
 for (const rugId of ['carpetRound', 'carpetClassic', 'rugBraidedRound', 'rugStripedRunner']) for (const angle of [0,37,90]) {
   const layout = { width:390, height:420, petSize:120, sizeScale:1, toys:[], decorations:[
@@ -99,9 +134,9 @@ for (const width of [320, 414, 768]) {
   assert.ok(blockedResize,'Making a nearby chair bigger cannot intersect the sofa');
   const inside = roomItemAnchor(at(chair, 0, -.8, width), width);
   const chairMeta=NATIVE_MODEL_CATALOG.chairRockingOak;
-  const descriptor=Object.getOwnPropertyDescriptor(chairMeta,'collisionBoxes');
+  const descriptor=Object.getOwnPropertyDescriptor(chairMeta,'placementBoxes');
   let collisionReads=0;
-  Object.defineProperty(chairMeta,'collisionBoxes',{configurable:true,get:()=>{collisionReads++;return descriptor?.value;}});
+  Object.defineProperty(chairMeta,'placementBoxes',{configurable:true,get:()=>{collisionReads++;return descriptor?.value;}});
   try {
     const releaseOnly=createRoomPlacementResolver(world);
     collisionReads=0;
@@ -110,8 +145,8 @@ for (const width of [320, 414, 768]) {
     releaseOnly.drop('chair',inside);
     assert.ok(collisionReads>0,'The release performs the contact check');
   } finally {
-    if(descriptor)Object.defineProperty(chairMeta,'collisionBoxes',descriptor);
-    else delete chairMeta.collisionBoxes;
+    if(descriptor)Object.defineProperty(chairMeta,'placementBoxes',descriptor);
+    else delete chairMeta.placementBoxes;
   }
   const original = JSON.stringify(world);
   const previewInside = resolver.move('chair', inside);
@@ -594,7 +629,7 @@ for(const width of [320,414,768]) for(const heading of [0,Math.PI/2,20*Math.PI/1
     const free=resolver.drop('moving',roomItemAnchor(distant,width));
     assert.equal(free.accepted,true);
     const spaced=kitchenLocal(free.object);
-    assert.ok(Math.abs(spaced.back-neighbor.back)>.005,'General edge contact does not force back alignment outside the cabinet alignment range');
+    assert.ok(Math.abs(spaced.back-neighbor.back)>.005,`General edge contact does not force back alignment outside the cabinet alignment range: ${width}/${heading}/${side}/${modelId}, ${spaced.back-neighbor.back}`);
     if(heading===0||heading===Math.PI/2) {
       const wallZ=-2.3075-meta.min[2]*moving.scale;
       const nearWall=kitchenPose(moving,0,wallZ+.08,width);
@@ -904,7 +939,10 @@ for(const width of [320,414,768]) for(const zoom of [1,2.5]) {
   const resolver=createRoomPlacementResolver({...built,objects:[fixed,moving]});
   const drop=resolver.drop('moving',roomItemAnchor(attempt,width),{zoom});
   assert.equal(drop.accepted,true);
-  assert.ok(Math.abs(drop.object.min[0]-fixed.max[0])<1e-6&&Math.abs(drop.object.min[2]-fixed.max[2])<1e-6,'Diagonal gaps settle into real corner contact');
+  // Rounded stone corners touch slightly inside their enclosing rectangles.
+  const gaps=[drop.object.min[0]-fixed.max[0],drop.object.min[2]-fixed.max[2]];
+  assert.ok(gaps.every(gap=>gap<=1e-6&&gap>-.02)&&resolver.canPlace(drop.object),'Diagonal gaps settle into valid rounded corner contact');
+  assert.equal(resolver.canPlace(shiftPose(drop.object,[-.02,0,-.02],width)),false,'Moving past rounded corner contact intersects the actual stone');
   const far=shiftPose(moving,[fixed.max[0]+16/screenUnit-moving.min[0],0,fixed.max[2]+16/screenUnit-moving.min[2]],width);
   const free=resolver.drop('moving',roomItemAnchor(far,width),{zoom});
   assert.equal(free.accepted,true);

@@ -16,7 +16,7 @@ export function NativeFireplace({ asset, object, active, reduceMotion, editingOb
   const { transformManager, renderableManager, lightManager, scene } = useFilamentContext();
   // Keep one native handle even when unlit; only numeric intensity/pose updates cross runtimes.
   const light = useLightEntity(lightManager, { type: 'point', colorKelvin: 1900, intensity: 0,
-    position: [0, 0, 0], castShadows: false, falloffRadius: Math.max(3, 4 * object.scale) });
+    position: [0, 0, 0], castShadows: false, falloffRadius: Math.max(3.5, 4.6 * object.scale) });
   useEntityInScene(scene, light);
   const identity = useMemo(() => transformManager.createIdentityMatrix(), [transformManager]);
   const group = useMemo(() => asset.getFirstEntityByName('Interaction part 0'), [asset]);
@@ -46,14 +46,18 @@ export function NativeFireplace({ asset, object, active, reduceMotion, editingOb
       const motion = fireplaceFlamePose(time, flame.index, reduceMotion);
       transformManager.setTransform(flame.entity, identity.translate(flame.base.map(v => -v) as Vec3)
         .scaling([motion.width * power, motion.height * power, motion.width * power]).rotate(motion.sway, [0, 0, 1]).translate(flame.base));
-      const emission = power * fireplaceFlicker(time, reduceMotion) * 3.2;
-      for (const material of flame.materials) material.setFloat4Parameter('emissiveFactor',
-        [flame.color[0] * emission, flame.color[1] * emission, flame.color[2] * emission, 1]);
+      const emission = power * fireplaceFlicker(time, reduceMotion) * .85;
+      for (const material of flame.materials) {
+        // Keep direct room lighting from bleaching the translucent orange fire.
+        if (previous.appliedPower === -1) material.setFloat4Parameter('baseColorFactor', [.16, .16, .16, 1]);
+        material.setFloat4Parameter('emissiveFactor',
+          [flame.color[0] * emission, flame.color[1] * emission, flame.color[2] * emission, 1]);
+      }
     }
-    if (changed || moved) lightManager.setIntensity(light, 110_000 * source.scale * source.scale * power * fireplaceFlicker(time, reduceMotion));
+    if (changed || moved) lightManager.setIntensity(light, 280_000 * source.scale * source.scale * power * fireplaceFlicker(time, reduceMotion));
     if (moved) {
       lightManager.setPosition(light, position as unknown as Float3[]);
-      lightManager.setFalloff(light, Math.max(3, 4 * source.scale));
+      lightManager.setFalloff(light, Math.max(3.5, 4.6 * source.scale));
     }
     if (changed || moved) state.value = { power, time, appliedPower: power, appliedTime: time, appliedReduced: reduceMotion, pose };
   }, [active, reduceMotion, object, editingObject, state, group, flames, identity, transformManager, lightManager, light]);

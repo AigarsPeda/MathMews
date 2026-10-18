@@ -171,22 +171,37 @@ def build_kitchen_addition(id, h):
             log = cylinder('Firewood log', (0, y, .22), .07, .75, 'brown', rotation=(0, math.pi / 2, a))
             for x in (-.37, .37):
                 cylinder('Log end grain', (x, y, .22), .048, .016, 'wood', rotation=(0, math.pi / 2, 0))
-        glow = h['material']('Warm fireplace flame', 'F3B85F')
+        glow = h['material']('Warm fireplace flame', 'FF862E')
         shader = glow.node_tree.nodes.get('Principled BSDF')
         shader.inputs['Emission Color'].default_value = (*glow.diffuse_color[:3], 1)
         shader.inputs['Emission Strength'].default_value = .65
-        for x, height in ((-.22, .29), (0, .45), (.22, .33)):
+        tint = glow.node_tree.nodes.new('ShaderNodeVertexColor')
+        tint.layer_name = 'Flame softness'
+        glow.node_tree.links.new(tint.outputs['Color'], shader.inputs['Base Color'])
+        glow.node_tree.links.new(tint.outputs['Alpha'], shader.inputs['Alpha'])
+        glow.surface_render_method = 'DITHERED'
+        glow.use_backface_culling = True
+        for x, height, curl in ((-.22, .31, -.07), (0, .44, .08), (.22, .35, -.045)):
             vertices = []
-            rings = [(0, .075), (.28, .10), (.65, .055), (1, .002)]
+            rings = [(0, .075), (.08, .11), (.18, .135), (.30, .14), (.43, .125),
+                     (.56, .10), (.68, .074), (.79, .049), (.88, .027), (.95, .011), (1, .001)]
+            sides = 24
             for t, radius in rings:
-                for i in range(16):
-                    a = i * math.tau / 16
-                    vertices.append((x + .05 * t * t + radius * math.cos(a), -.13 + radius * .55 * math.sin(a), .25 + t * height))
-            faces = [(r * 16 + i, r * 16 + (i + 1) % 16, (r + 1) * 16 + (i + 1) % 16, (r + 1) * 16 + i) for r in range(3) for i in range(16)]
-            faces += [tuple(range(15, -1, -1)), tuple(range(48, 64))]
+                for i in range(sides):
+                    a = i * math.tau / sides
+                    vertices.append((x + curl * t * t + radius * math.cos(a), -.13 + radius * .55 * math.sin(a), .25 + t * height))
+            faces = [(r * sides + i, r * sides + (i + 1) % sides, (r + 1) * sides + (i + 1) % sides, (r + 1) * sides + i)
+                     for r in range(len(rings) - 1) for i in range(sides)]
+            faces += [tuple(range(sides - 1, -1, -1)), tuple(range((len(rings) - 1) * sides, len(rings) * sides))]
             mesh = bpy.data.meshes.new('Soft teardrop flame')
             mesh.from_pydata(vertices, [], faces)
             mesh.update()
+            colors = mesh.color_attributes.new(name='Flame softness', type='FLOAT_COLOR', domain='POINT')
+            for r, (t, _) in enumerate(rings):
+                fade = max(0, min(1, (t - .55) / .45))
+                alpha = .86 * (1 - fade * fade * (3 - 2 * fade))
+                for i in range(sides):
+                    colors.data[r * sides + i].color = (1, .32 - .18 * t, .055 - .045 * t, alpha)
             obj = bpy.data.objects.new('Soft teardrop flame', mesh)
             bpy.context.collection.objects.link(obj)
             h['finish'](obj, obj.name, glow)

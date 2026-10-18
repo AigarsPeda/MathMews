@@ -55,8 +55,14 @@ export type ModelMetadata = {
   bathroom?: { kind: BathroomFixtureKind; contact: number[]; sprayHeight?: number };
 };
 export type CollisionBox = { min: Vec3; max: Vec3 };
+type PlacementMetadata = Pick<ModelMetadata, "placementHull" | "collisionBoxes" | "placementBoxes" | "supportSurfaces" | "baseHull" | "wallMountBounds" | "interactionBounds"> & { placementBoxesFrom?: string };
+const derivedPlacement = placementBounds as Record<string, PlacementMetadata>;
 export const NATIVE_MODEL_CATALOG: Record<string, ModelMetadata> = Object.fromEntries(
-  Object.entries(catalog as Record<string, ModelMetadata>).map(([id, metadata]) => [id, { ...metadata, ...(placementBounds as Record<string, Pick<ModelMetadata, "placementHull" | "collisionBoxes" | "placementBoxes" | "supportSurfaces" | "baseHull" | "wallMountBounds" | "interactionBounds">>)[id] }]),
+  Object.entries(catalog as Record<string, ModelMetadata>).map(([id, metadata]) => {
+    const derived = derivedPlacement[id];
+    return [id, { ...metadata, ...derived, placementBoxes: derived?.placementBoxesFrom
+      ? derivedPlacement[derived.placementBoxesFrom].placementBoxes : derived?.placementBoxes }];
+  }),
 );
 export const FLOOR_Y = .068;
 export const ROOM_SPAN = 7.45;

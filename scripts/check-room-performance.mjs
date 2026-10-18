@@ -26,7 +26,7 @@ function load(id) {
 }
 const { buildNativeRoomWorld, isFree, nearestFree, prepareNativeStep, catScreenPoint, FLOOR_Y, NATIVE_MODEL_CATALOG } = load('@/utils/native-room-world');
 const { buildRoomActivity } = load('@/utils/room-activities');
-const { createRoomPlacementResolver } = load('@/utils/room-item-placement');
+const { createRoomPlacementResolver, roomItemAnchor } = load('@/utils/room-item-placement');
 const { switchHomeRoom } = load('@/utils/home-rooms');
 const { syncPetLayerOrder } = load('@/utils/room-layer-order');
 
@@ -74,6 +74,20 @@ for (const kind of ['chairNap', 'fridgeInvestigate', 'islandSit']) {
   timings.push(`${kind}: ${elapsed.toFixed(0)} ms`);
 }
 console.log(`Verified crowded-kitchen navigation stays below 250 ms without changing clearance (${timings.join(', ')}).`);
+
+// Detailed placement shapes must keep release validation responsive as well.
+{
+  const world=crowdedKitchen.nativeWorld,object=world.objects.find(o=>o.modelId==='lampFloorArc');
+  let elapsed=Infinity;
+  for(let attempt=0;attempt<3;attempt++) {
+    const start=performance.now(),resolver=createRoomPlacementResolver(world);
+    const result=resolver.drop(object.instanceId,roomItemAnchor(object,world.width));
+    assert.ok(result.object,'A release always returns a valid saved or accepted object');
+    elapsed=Math.min(elapsed,performance.now()-start);
+  }
+  assert.ok(elapsed<250,`Detailed crowded-kitchen placement blocked input for ${elapsed.toFixed(0)} ms`);
+  console.log(`Verified detailed placement setup and release in a crowded kitchen (${elapsed.toFixed(0)} ms).`);
+}
 
 // Compare with the exhaustive floor search's observable result, including
 // constrained furniture clearances and the overfilled-room fallback.

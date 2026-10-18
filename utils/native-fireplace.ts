@@ -11,21 +11,21 @@ export function fireplaceFlamePose(time: number, index: number, reduceMotion: bo
   'worklet';
   const phase = index * 2.3;
   return reduceMotion ? { width: 1, height: 1, sway: 0 } : {
-    width: .94 + .08 * Math.sin(time * 4.7 + phase),
-    height: .94 + .15 * Math.sin(time * 5.1 + phase) + .06 * Math.sin(time * 9.7 + phase),
-    sway: .035 * Math.sin(time * 3.9 + phase),
+    width: .98 + .10 * Math.sin(time * 2.7 + phase),
+    height: .93 + .13 * Math.sin(time * 3.1 + phase) + .055 * Math.sin(time * 6.7 + phase),
+    sway: .06 * Math.sin(time * 2.3 + phase) + .018 * Math.sin(time * 5.3 + phase),
   };
 }
 
 export function fireplaceFlicker(time: number, reduceMotion: boolean) {
   'worklet';
-  return reduceMotion ? 1 : .94 + .04 * Math.sin(time * 5.1) + .02 * Math.sin(time * 9.7 + 1.4);
+  return reduceMotion ? 1 : .94 + .04 * Math.sin(time * 3.1) + .02 * Math.sin(time * 6.7 + 1.4);
 }
 
 /** Put the warm source at the open face so its light reaches the hearth and room. */
 export function fireplaceLightPosition(object: Pick<NativeRoomObject, 'position' | 'heading' | 'scale'>): Vec3 {
   'worklet';
-  return [object.position[0] + Math.sin(object.heading) * .36 * object.scale,
-    object.position[1] + .46 * object.scale,
-    object.position[2] + Math.cos(object.heading) * .36 * object.scale];
+  return [object.position[0] + Math.sin(object.heading) * .48 * object.scale,
+    object.position[1] + .36 * object.scale,
+    object.position[2] + Math.cos(object.heading) * .48 * object.scale];
 }

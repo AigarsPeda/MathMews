@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import process from 'node:process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { bounds, hull, placementPrisms, compactPrisms } from './placement-shapes.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const native = path.join(root, 'assets/3d/native');
 const catalog = JSON.parse(fs.readFileSync(path.join(native, 'catalog.json')));
@@ -47,15 +48,6 @@ export function readModel(id, { triangles: includeTriangles = false } = {}) {
   for (const index of gltf.scenes[gltf.scene??0].nodes) visit(index,identity);
   return meshes;
 }
-const bounds = points => ({min:[0,1,2].map(k=>points.reduce((v,p)=>Math.min(v,p[k]),Infinity)),
-  max:[0,1,2].map(k=>points.reduce((v,p)=>Math.max(v,p[k]),-Infinity))});
-function hull(points) {
-  const sorted = [...new Map(points.map(p=>[[p[0],p[2]].join(','),[p[0],p[2]]])).values()].sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
-  const cross = (a,b,p) => (b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);
-  const half = list => {const out=[];for(const p of list){while(out.length>1&&cross(out.at(-2),out.at(-1),p)<=0)out.pop();out.push(p);}return out;};
-  return [...half(sorted).slice(0,-1),...half([...sorted].reverse()).slice(0,-1)];
-}
-
 /** Spatial cells keep both sides of an arch separate, including at its crown.
  * Group whole triangles so no surface disappears between neighboring cells.
  */
@@ -72,20 +64,20 @@ export function derivePlacementBounds() {
   const result = {};
   for (const [id,meta] of Object.entries(catalog)) {
     if (meta.kind==='room') continue;
-    const meshes = readModel(id, {triangles:id==='lampFloorArc'}), points = meshes.flatMap(mesh=>mesh.points);
+    const meshes = readModel(id, {triangles:true}), points = meshes.flatMap(mesh=>mesh.points);
     const actual = bounds(points);
     // A bad transform would invalidate the audit, so fail instead of shipping it.
     for(const axis of [0,1,2]) if(actual.min[axis]<meta.min[axis]-.025 || actual.max[axis]>meta.max[axis]+.025)
       throw new Error(`GLB exceeds catalog bounds: ${id}, axis ${axis}`);
     result[id] = {placementHull:hull(points)};
-    if (id==='lampFloorArc') result[id].placementBoxes = meshes.map(mesh=>mesh.name==='Brass arch stem'
-      ? curvedPartBoxes(mesh) : [{...bounds(mesh.points),footprint:hull(mesh.points)}]).flat();
-    // Plant navigation deliberately ignores foliage. Retain that choice while
-    // removing the empty square corners around round pots during decorating.
-    if (meta.leaves) result[id].placementBoxes = meta.collisionBoxes.map(box=>{
-      const mesh = meshes.find(mesh=>{const b=bounds(mesh.points);return [0,1,2].every(k=>Math.abs(b.min[k]-box.min[k])<1e-5&&Math.abs(b.max[k]-box.max[k])<1e-5);});
-      return mesh ? {...box,footprint:hull(mesh.points)} : box;
-    });
+    const physical = meshes.filter(mesh => !/^(Interaction (water|power LED)|Flowing water|Bath water glint|Bathroom (wash ripple|water drop)|Recessed bath water)/.test(mesh.name));
+    // Preserve the authored choice to ignore leaves and loose cat-tree toys.
+    // All other items use their physical model parts, including animated items.
+    const selected = meta.leaves || /^(catTree(Tan|Blue|Pink)|toy-scratchPost)/.test(id)
+      ? physical.filter(mesh=>{const b=bounds(mesh.points);return meta.collisionBoxes.some(box=>[0,1,2].every(k=>Math.abs(b.min[k]-box.min[k])<1e-5&&Math.abs(b.max[k]-box.max[k])<1e-5));})
+      : physical;
+    result[id].placementBoxes = compactPrisms(selected.flatMap(mesh => id==='lampFloorArc' && mesh.name==='Brass arch stem'
+      ? curvedPartBoxes(mesh) : placementPrisms(mesh)));
     const openingBounds=(meta.interactionParts??[]).filter(part=>part.mode==='open').flatMap(part=>{
       const points=meshes.filter(mesh=>mesh.ancestors.includes(part.node)).flatMap(mesh=>mesh.points);
       return points.length ? [{node:part.node,...bounds(points)}] : [];
@@ -111,6 +103,19 @@ export function derivePlacementBounds() {
       // Round dining parts must not collide with the empty corners of their box.
       ...(/^(Round oak tabletop|Dining chair seat)$/.test(mesh.name) ? { footprint: hull(mesh.points) } : {}),
     }));
+  }
+  // Round before rebuilding polygons: clipping can create vertices that become
+  // identical at export precision, which must not produce zero-length SAT axes.
+  for(const meta of Object.values(result))for(const box of meta.placementBoxes)if(box.footprint) {
+    const footprint=hull(box.footprint.map(([x,z])=>[Math.round(x*1e6)/1e6,0,Math.round(z*1e6)/1e6]));
+    if(footprint.length>=3)box.footprint=footprint;else delete box.footprint;
+  }
+  // Color variants share their geometry instead of duplicating placement data.
+  const shared = new Map();
+  for (const [id,meta] of Object.entries(result)) {
+    const key=JSON.stringify(meta.placementBoxes,(_k,v)=>typeof v==='number'?Math.round(v*1e6)/1e6:v);
+    if(shared.has(key)){meta.placementBoxesFrom=shared.get(key);delete meta.placementBoxes;}
+    else shared.set(key,id);
   }
   return result;
 }

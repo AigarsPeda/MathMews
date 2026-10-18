@@ -166,4 +166,6 @@ Opening and power state belong to each placed instance and survive local saves, 
 
 When adding an item, add its capability entry alongside the normal catalog entry. `scripts/3d/item_interactions.py` authors named moving groups and power materials; `scripts/3d/export-native.py` records their pivots, travel and drawer contact in the generated native catalog. A `cat: "cupboardHide"` entry raises the interior shelf and exports a lower-compartment contact and clearance. Rebuild a changed model with the existing native export command and `--items --id=<itemId>`. The export also rebuilds placement bounds. Do not edit generated pivots by hand.
 
+Placement shapes are generated from each physical mesh part, with rounded footprints and separate pieces for tapered legs, arches and other concave shapes. Color variants share identical placement data. This is separate from cat-navigation clearance. After changing geometry, run `node scripts/check-placement-bounds.mjs` and `node scripts/check-room-item-placement.mjs` to check physical coverage, usable gaps, support surfaces and saved placements.
+
 Run `node scripts/check-item-interactions.mjs` and `npm run test:game`. The checks cover catalog completeness, independent copies, saved state, shipped moving parts, drawing callbacks, all four drawer orientations, safe exit, and the actual room menus.

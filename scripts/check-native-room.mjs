@@ -955,6 +955,7 @@ mocks['react/jsx-runtime'] = { jsx: (type, props, key) => ({ type, props, key })
 mocks['react-native'] = { View: 'View', ActivityIndicator: 'ActivityIndicator', StyleSheet: { absoluteFill: {}, flatten: v => v, create: v => v } };
 mocks['./NativeFoodSpill'] = { NativeFoodSpill: 'FoodSpill' };
 mocks['./NativeAirflow'] = { NativeAirflow: 'Airflow' };
+mocks['./NativeFireplace'] = { NativeFireplace: 'Fireplace' };
 mocks['./NativeLampLight'] = { NativeLampLight: 'LampLight' };
 mocks['./NativeSpotlightHead'] = { NativeSpotlightHead: 'SpotlightHead' };
 mocks['./NativeLampGlow'] = { NativeLampGlow: 'LampGlow' };

@@ -154,7 +154,14 @@ console.log('Verified compiled cupboard and water callbacks, opening, closing, R
  const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12))),binary=bytes.subarray(28+bytes.readUInt32LE(12));
  const {FIREPLACE_FLAMES,fireplaceLightPosition}=load('@/utils/native-fireplace');
  const flameVertices=new Map(FIREPLACE_FLAMES.map(part=>{
-  const node=gltf.nodes.find(n=>n.name===part.node),a=gltf.accessors[gltf.meshes[node.mesh].primitives[0].attributes.POSITION],v=gltf.bufferViews[a.bufferView];
+  const node=gltf.nodes.find(n=>n.name===part.node),primitive=gltf.meshes[node.mesh].primitives[0];
+  const a=gltf.accessors[primitive.attributes.POSITION],v=gltf.bufferViews[a.bufferView];
+  assert.ok(a.count>=240,'Curved flame silhouettes retain their smooth geometry');
+  assert.equal(gltf.materials[primitive.material].alphaMode,'BLEND','Flame edges support translucent fading');
+  const tint=gltf.accessors[primitive.attributes.COLOR_0],colors=gltf.bufferViews[tint.bufferView];
+  const [size,read,divisor]={5121:[1,'readUInt8',255],5123:[2,'readUInt16LE',65535],5126:[4,'readFloatLE',1]}[tint.componentType];
+  const alpha=Array.from({length:tint.count},(_,i)=>binary[read]((colors.byteOffset??0)+(tint.byteOffset??0)+i*(colors.byteStride??size*4)+3*size)/divisor);
+  assert.ok(Math.min(...alpha)<.01&&Math.max(...alpha)>.7&&Math.max(...alpha)<.95,'Flames fade from translucent bodies to invisible tips');
   return [part.node,Array.from({length:a.count},(_,i)=>[0,1,2].map(axis=>binary.readFloatLE((v.byteOffset??0)+(a.byteOffset??0)+i*(v.byteStride??12)+axis*4)))];
  }));
  const fireAsset={getFirstEntityByName:name=>gltf.nodes.find(n=>n.name===name)};
@@ -199,7 +206,8 @@ console.log('Verified compiled cupboard and water callbacks, opening, closing, R
   assert.ok(Math.max(...heights)-Math.min(...heights)>.15,'Lit flames visibly rise and fall');
   assert.ok(Math.max(...lightLevels)/Math.min(...lightLevels)>1.05,'The warm room light flickers with the fire');
   assert.equal(lightConfig.type,'point');assert.equal(lightConfig.colorKelvin,1900);assert.equal(lightCreates,1);
-  assert.ok([...emissions.values()].every(color=>color[0]>color[1]&&color[1]>color[2]&&color[0]>1),'All flame materials emit warm light');
+  assert.ok([...emissions.values()].every(color=>color[0]>3*color[1]&&color[1]>color[2]&&color[0]>.5&&color[0]<1),
+   'Flames keep a soft orange emission without bleaching to white');
   assert.ok(position.every((v,i)=>Math.abs(v-fireplaceLightPosition(fireObject)[i])<1e-8),'The light follows rotated/scaled fireplaces');
   const frozen=fireWrites;renderFire({active:false});for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});assert.equal(fireWrites,frozen,'Hidden rooms freeze flame and light work');
   renderFire({reduceMotion:true});frame({timeSinceLastFrame:1/fps});
