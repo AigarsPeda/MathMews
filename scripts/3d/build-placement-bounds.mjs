@@ -18,7 +18,7 @@ function matrix(node) {
 export function readModel(id) {
   const data = fs.readFileSync(path.join(native, id+'.glb')), length = data.readUInt32LE(12);
   const gltf = JSON.parse(data.subarray(20,20+length)), binary = data.subarray(28+length), meshes = [];
-  function visit(index, parent) {
+  function visit(index, parent, ancestors = []) {
     const node = gltf.nodes[index], transform = multiply(parent,matrix(node));
     if (node.mesh !== undefined) {
       const points = [];
@@ -31,9 +31,9 @@ export function readModel(id) {
           points.push([0,1,2].map(k => transform[k]*p[0]+transform[k+4]*p[1]+transform[k+8]*p[2]+transform[k+12]));
         }
       }
-      meshes.push({name:node.name,points});
+      meshes.push({name:node.name,points,ancestors});
     }
-    for (const child of node.children??[]) visit(child,transform);
+    for (const child of node.children??[]) visit(child,transform,[...ancestors,node.name]);
   }
   for (const index of gltf.scenes[gltf.scene??0].nodes) visit(index,identity);
   return meshes;
@@ -56,6 +56,11 @@ export function derivePlacementBounds() {
     for(const axis of [0,1,2]) if(actual.min[axis]<meta.min[axis]-.025 || actual.max[axis]>meta.max[axis]+.025)
       throw new Error(`GLB exceeds catalog bounds: ${id}, axis ${axis}`);
     result[id] = {placementHull:hull(points)};
+    const openingBounds=(meta.interactionParts??[]).filter(part=>part.mode==='open').flatMap(part=>{
+      const points=meshes.filter(mesh=>mesh.ancestors.includes(part.node)).flatMap(mesh=>mesh.points);
+      return points.length ? [{node:part.node,...bounds(points)}] : [];
+    });
+    if(openingBounds.length)result[id].interactionBounds=openingBounds;
     // Only authored horizontal boards can support objects. Brackets, backs,
     // shades and decorative trim must not become accidental placement targets.
     const surfaces = meshes.filter(mesh => /^(Rounded tabletop|Wall shelf(?:\.\d+)?|Shelf(?:\.\d+)?|Broad fireplace mantel|Thick stone worktop(?:\.\d+)?)$/.test(mesh.name))
@@ -71,7 +76,7 @@ export function derivePlacementBounds() {
     }
     // Retain deliberately authored shapes and animation envelopes. Static
     // furniture gets one box per part instead of a box full of empty air.
-    if (!meta.collisionBoxes && !meta.animated) result[id].collisionBoxes = meshes.map(mesh => ({
+    if (!meta.collisionBoxes && !meta.animated) result[id].collisionBoxes = meshes.filter(mesh => !/^Interaction (water|power LED)/.test(mesh.name)).map(mesh => ({
       ...bounds(mesh.points),
       // Round dining parts must not collide with the empty corners of their box.
       ...(/^(Round oak tabletop|Dining chair seat)$/.test(mesh.name) ? { footprint: hull(mesh.points) } : {}),

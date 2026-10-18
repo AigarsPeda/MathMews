@@ -138,7 +138,8 @@
   "computerMacbookClosed": {
     "open": "laptop",
     "initiallyOpen": false,
-    "cat": "investigate"
+    "cat": "investigate",
+    "power": "screen"
   },
   "computerMacbookOpen": {
     "open": "laptop",
@@ -293,7 +294,7 @@
   },
   "japaneseCloset": {
     "open": "doors",
-    "cat": "investigate"
+    "cat": "cupboardHide"
   },
   "japaneseClosetBase": {
     "cat": "investigate"
@@ -529,7 +530,7 @@
   },
   "officeMetallicClosetAni": {
     "open": "doors",
-    "cat": "investigate"
+    "cat": "cupboardHide"
   },
   "officePrinterAni": {
     "power": "machine",
@@ -549,7 +550,7 @@
   },
   "officeWoodClosetAni": {
     "open": "doors",
-    "cat": "investigate"
+    "cat": "cupboardHide"
   },
   "bathroomBathCarpet": {
     "cat": "investigate"
@@ -924,7 +925,7 @@
   },
   "bedroomWardrobe": {
     "open": "doors",
-    "cat": "investigate"
+    "cat": "cupboardHide"
   },
   "bedroomFloorLamp": {
     "cat": "investigate"

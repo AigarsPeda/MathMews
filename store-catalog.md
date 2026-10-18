@@ -144,3 +144,26 @@ The seven added bedroom items cost 2–28 coins. Full-size beds support **Sleep 
 The source models live in `scripts/3d/bedroom_additions.py`. `Bed cover lift` is the quilt node used by the renderer; `bed.surface` and `bed.covered` in the exported model catalog define the mattress contacts. Keep these when adding a bed variant.
 
 The applied SQL is recorded in `supabase/deployments/2026-10-17-bedroom-prices.json`. The named Supabase query is **Store - Bedroom Furniture and Half-Price Coin Items**. Its exact price targets make it safe to rerun without halving prices again. Future routine catalog syncs continue to preserve server-managed prices.
+
+## Item interactions
+
+`data/item-interactions.json` reviews every decoration ID, including visual variants. It is shared by the app menus and the Blender exporter. Existing fridges, curtains, lamps, beds, toys and cat activities keep their specialized behavior.
+
+| Items | Interaction |
+| --- | --- |
+| Cupboards, wardrobes and sink cabinets | Swing doors open and closed, revealing shelves and stored linen. The oak wardrobe, Japanese closet and two office closets also offer Hide in cupboard when their resized interior fits the cat. Closing waits for the cat to leave. |
+| Dressers, nightstands, vanity drawers and modular kitchen drawers | Slide out real trays. Sit in the drawer opens the selected copy and sends the cat into its top tray. Closing waits for the cat's exit. |
+| Chests, storage boxes and first-aid kits | Open and close their lid or front. |
+| Windows and doors | Open and close a moving sash, leaf or sliding panel. The window's outside sky stays in the wall opening. |
+| Laptops, oven and microwave doors, projection screen | Open, close or retract their moving parts. |
+| Displays, consoles and office electronics | Turn on and off with screen or status-light feedback. Existing animated machines run while powered. |
+| Mixers | Turn on rotating whisks and beaters, or stop them. |
+| Taps and dispensers | Run water and stop it. |
+| Fireplace, lantern, pumpkin and cauldron | Switch their glow or flame effects on and off. |
+| Other decorations | Keep their existing cat activity, or offer Investigate using a reachable floor position. Rooms, coats and colors retain their customization purpose. |
+
+Opening and power state belong to each placed instance and survive local saves, cloud layout normalization and room changes. Open-part clearance is derived from the shipped mesh hierarchy. Cat navigation checks the selected tray, approach and jump path. Existing ownership reconciliation removes these items normally if a queued purchase is cancelled.
+
+When adding an item, add its capability entry alongside the normal catalog entry. `scripts/3d/item_interactions.py` authors named moving groups and power materials; `scripts/3d/export-native.py` records their pivots, travel and drawer contact in the generated native catalog. A `cat: "cupboardHide"` entry raises the interior shelf and exports a lower-compartment contact and clearance. Rebuild a changed model with the existing native export command and `--items --id=<itemId>`. The export also rebuilds placement bounds. Do not edit generated pivots by hand.
+
+Run `node scripts/check-item-interactions.mjs` and `npm run test:game`. The checks cover catalog completeness, independent copies, saved state, shipped moving parts, drawing callbacks, all four drawer orientations, safe exit, and the actual room menus.

@@ -50,8 +50,12 @@ def rig_item_interactions(id, h):
         for zz in (lo[2]+thickness/2, hi[2]-thickness/2):
             box('Storage inner floor', (x,y,zz), (w,d,thickness), color, .008)
         # A shelf and folded towels make the opening readable.
-        box('Storage interior shelf', (x,y,z), (w-.09,d-.08,.035), color, .008)
-        box('Stored folded linen', (x,y,z+.08), (w*.48,d*.58,.10), 'cream', .025)
+        shelf_z=lo[2]+height*.78 if profile.get('cat')=='cupboardHide' else z
+        box('Storage interior shelf', (x,y,shelf_z), (w-.09,d-.08,.035), color, .008)
+        box('Stored folded linen', (x,y,shelf_z+.08), (w*.48,d*.58,.10), 'cream', .025)
+        if profile.get('cat')=='cupboardHide':
+            contact=empty('Cupboard hiding contact',(x,y,lo[2]+thickness+.015))
+            contact['clearance']=[w-2*thickness,shelf_z-lo[2]-thickness-.04,d-2*thickness]
         drop(obj)
 
     opening = profile.get('open')
@@ -72,10 +76,14 @@ def rig_item_interactions(id, h):
                 for side in (-1,1):
                     box('Glass leaf rail', (side*.43,obj.location.y,obj.location.z), (.84,.06,.055),'wood',.012)
                 drop(obj)
-            objects = [o for o in objects if o.name in bpy.data.objects] + [o for o in bpy.context.scene.objects if o.name.startswith('Glass leaf rail')]
+            for obj in named('Glass door mullion'):
+                if abs(obj.location.x)<.001:drop(obj)
+            for x in (-.015,.015):
+                box('Glass leaf stile',(x,-.245,.54),(.028,.06,.93),'wood',.008)
+            objects = [o for o in objects if o.name in bpy.data.objects] + [o for o in bpy.context.scene.objects if o.name.startswith(('Glass leaf rail','Glass leaf stile'))]
         leaves = named('Cabinet door','Handleless sink cabinet door','Flat handleless cabinet door','Wall cabinet door','Island cupboard door')
         trims = named('Brass handle','Wardrobe door handle','Inset oak panel','Door handle','Cabinet handle',
-                      'Oak door panel border','Inset oak door panel','Glass door mullion','Glass door reflection','Glass leaf rail')
+                      'Oak door panel border','Inset oak door panel','Glass door mullion','Glass door reflection','Glass leaf rail','Glass leaf stile')
         if id == 'kitchenIsland': trims=[o for o in trims if o.location.z < .8]
         if id == 'kitchenWallCabinetGlass': leaves = [o for o in trims if o.location.x != 0]
         for side in (-1,1):
@@ -146,9 +154,10 @@ def rig_item_interactions(id, h):
         # Keep the outside sky fixed in the wall opening. Move a real sash in front.
         panes=named('Window glass','Sky blue glass','Arched glass lower pane','Round sky glass')
         if panes:
-            lo,hi=bounds(panes);w=hi[0]-lo[0];height=hi[2]-lo[2];y=lo[1]-.04
-            for x in (lo[0],hi[0]):group.append(box('Opening sash upright',(x,y,(lo[2]+hi[2])/2),(.04,.045,height),'cream',.008))
-            for z in (lo[2],hi[2]):group.append(box('Opening sash rail',((lo[0]+hi[0])/2,y,z),(w,.045,.04),'cream',.008))
+            lo,hi=bounds(panes);w=hi[0]-lo[0];height=hi[2]-lo[2];y=lo[1]-(.003 if id=='windowPlain' else .04)
+            sash_depth=.006 if id=='windowPlain' else .045
+            for x in (lo[0],hi[0]):group.append(box('Opening sash upright',(x,y,(lo[2]+hi[2])/2),(.04,sash_depth,height),'cream',.008))
+            for z in (lo[2],hi[2]):group.append(box('Opening sash rail',((lo[0]+hi[0])/2,y,z),(w,sash_depth,.04),'cream',.008))
             # Outer frame crossbars should remain stationary on authored modern windows.
             if id in ('windowWhiteClassic','windowOakWide'):group=[o for o in group if not o.name.startswith('Window crossbar')]
             attach(group,(lo[0],y,lo[2]),-math.radians(65))
@@ -178,12 +187,13 @@ def rig_item_interactions(id, h):
             from mathutils import Matrix
             for obj in group:obj.matrix_local=Matrix.Rotation(-math.pi/2,4,'X') @ obj.matrix_local
 
+    objects=[o for o in bpy.context.scene.objects if o.type in ('MESH','CURVE','EMPTY')]
     power=profile.get('power')
     if power:
         glow=named('Screen','Screen content','TV screen','TV sun','TV landscape','Game screen','Power indicator','Blue power line',
                    'Cooling fan','Display','Projector lens','Control panel','Digital clock','Oven clock display','Etched induction zone',
-                   'Induction touch control','Burner ring','Flame','Fire flame','Carved triangle eye','Pumpkin smile')
-        if power=='fire':glow += [o for o in objects if o.name.startswith(('Flame','Dancing flame','Fire flame','Cauldron bubble'))]
+                   'Induction touch control','Burner ring','Flame','Fire flame','Soft teardrop flame','Carved triangle eye','Pumpkin smile','Paper lantern','Mint potion','Potion bubble','Drawing surface')
+        if power=='fire':glow += [o for o in objects if o.name.startswith(('Flame','Dancing flame','Fire flame','Soft teardrop flame','Potion bubble'))]
         for obj in set(glow):
             if obj.type!='MESH':continue
             for slot in obj.material_slots:
@@ -204,9 +214,13 @@ def rig_item_interactions(id, h):
             if id=='kitchenMixerStand':attach(named('Whisk spindle','Whisk wire'),(-.20,-.025,.49),axis=(0,0,1),mode='spin')
             else:
                 attach(named('Beater shaft','Beater loop'),(0,-.015,.23),axis=(0,0,1),mode='spin')
+        if power=='fire':
+            flames=named('Flame','Soft teardrop flame','Potion bubble')
+            if flames:attach(flames,(0,0,0),mode='visible')
         # Small status LEDs make power visible on devices without a display.
         if power in ('machine','mixer','console','fan','heat'):
-            meshes=[o for o in bpy.context.scene.objects if o.type=='MESH' and not o.name.startswith('Interaction')]
+            housings=named('Mixer motor head','Hand mixer motor housing','Console housing','Handheld console','Device','Office machine','Projector','PC tower','Speaker','Robot vacuum','Cooktop','Oven control strip')
+            meshes=housings[:1] or [o for o in bpy.context.scene.objects if o.type=='MESH' and not o.name.startswith('Interaction')]
             lo,hi=bounds(meshes)
             led=box('Interaction power LED',(lo[0]+(hi[0]-lo[0])*.18,lo[1]-.009,lo[2]+(hi[2]-lo[2])*.70),(.035,.015,.035),'teal',.006)
             mat=led.data.materials[0].copy();mat.name='Interaction glow status'

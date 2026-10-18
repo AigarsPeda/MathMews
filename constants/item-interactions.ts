@@ -4,7 +4,7 @@ export type ItemInteraction = {
   open?: 'window' | 'doors' | 'drawers' | 'drawer' | 'panel' | 'oven' | 'microwave' | 'lid' | 'laptop' | 'door' | 'screen';
   initiallyOpen?: boolean;
   power?: 'screen' | 'console' | 'fan' | 'machine' | 'mixer' | 'heat' | 'fire' | 'water';
-  cat: 'investigate';
+  cat: 'investigate' | 'cupboardHide';
 };
 export function itemInteraction(id: string): ItemInteraction | undefined {
   return (profiles as Record<string, ItemInteraction>)[id];

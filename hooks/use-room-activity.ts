@@ -339,7 +339,8 @@ export function useRoomActivity(
         const step = current.plan.steps[current.stepIndex];
         const target = liveWorld.current.objects.find(o => o.instanceId === current.plan.targetInstanceId);
         if ((!target && current.plan.targetInstanceId && current.plan.kind !== 'returnHome'
-          || current.plan.kind === 'fridgeInvestigate' && !target?.fridgeOpen) && returning) {
+          || current.plan.kind === 'fridgeInvestigate' && !target?.fridgeOpen
+          || (current.plan.kind === 'drawerHide' || current.plan.kind === 'cupboardHide') && !target?.opened) && returning) {
           timer = setTimeout(() => runStep(returning, 0), 0);
         } else if (step.animation === 'eating' && target && step.native?.targetPosition
           && pathLength([target.position, step.native.targetPosition]) > .05) {

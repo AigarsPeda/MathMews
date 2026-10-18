@@ -1,9 +1,8 @@
 import { isOpenableDecorationId } from '@/constants/item-interactions';
-import { togglePlacedDecorationOpenByInstance } from '@/utils/room-placement';
 import { projectedWalletCoins, type WalletNotice } from "@/services/wallet/offline-orders";
 import { useServerWallet, type ServerWallet } from "@/hooks/use-server-wallet";
 import { getWalletEnvironment } from "@/services/wallet/environment";
-import type { HomeRoomId } from "@/constants/home-rooms";
+import { DEFAULT_HOME_ROOM_ID, type HomeRoomId } from "@/constants/home-rooms";
 import { roomDecorationEntry, type RoomDecorationEntry, type RoomDecorationTarget } from '@/utils/room-decoration-entry';
 import { changeWorldClock, createWorldClock, normalizeWorldClock, normalizeWeather, type WorldClock, type WeatherMode } from '@/utils/world-clock';
 import { removeRoomNavigationDoors, sendCatToRoom as moveCatToRoom, switchHomeRoom } from "@/utils/home-rooms";
@@ -80,6 +79,7 @@ import {
   removePlacedDecorationByInstance,
   removePlacedToyByInstance,
   togglePlacedDecorationPowerByInstance,
+  togglePlacedDecorationOpenByInstance,
   togglePlacedCurtainByInstance,
   togglePlacedFridgeByInstance,
   flipPlacedFridgeHingeByInstance,
@@ -901,10 +901,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const togglePlacedDecorationOpen = useCallback((instanceId: string) => {
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(current.pet.placedDecorations, instanceId);
-    if (!placed || !isOpenableDecorationId(placed.decorationId)) return false;
-    setSave({ ...current, pet: { ...current.pet,
-      placedDecorations: togglePlacedDecorationOpenByInstance(current.pet.placedDecorations, instanceId),
-    } });
+    if (placed && isOpenableDecorationId(placed.decorationId)) {
+      setSave({ ...current, pet: { ...current.pet,
+        placedDecorations: togglePlacedDecorationOpenByInstance(current.pet.placedDecorations, instanceId),
+      } });
+      return true;
+    }
+    // The cat can finish leaving a drawer after the player visits another room.
+    const roomEntry = Object.entries(current.pet.homeRooms ?? {}).find(([roomId, room]) =>
+      roomId !== (current.pet.homeRoomId ?? DEFAULT_HOME_ROOM_ID) && room.placedDecorations?.some(item => item.instanceId === instanceId && isOpenableDecorationId(item.decorationId)));
+    if (!roomEntry) return false;
+    const [roomId, room] = roomEntry;
+    setSave({ ...current, pet: { ...current.pet, homeRooms: { ...current.pet.homeRooms,
+      [roomId]: { ...room, placedDecorations: togglePlacedDecorationOpenByInstance(room.placedDecorations, instanceId) },
+    } } });
     return true;
   }, [setSave]);
 

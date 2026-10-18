@@ -1,3 +1,4 @@
+import { itemInteraction, isDecorationOpen } from '@/constants/item-interactions';
 import { isSleepingBed, type BedPhase } from '@/constants/bedroom-activities';
 import type { RoomCommandKind } from "@/constants/room-commands";
 import { isCatSeatDecorationId } from "@/constants/sofa-decorations";
@@ -338,6 +339,18 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
         ...(perch ? [{ position, mood: 'idle' as const, animation: 'jumpOn' as const, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS, ...contact }] : []),
         { position, mood: 'idle', animation: 'blinkSit', durationMs: 18_000, hold: Boolean(command), ...contact },
         ...(perch ? [{ position: approach, mood: 'idle' as const, animation: 'jumpOff' as const, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS, ...contact }] : []),
+        { ...walkTo(approach, home, room.petSize), returnHome: true },
+      ] });
+    }
+    if ((command === 'drawerHide' && ['drawers','drawer'].includes(itemInteraction(item.decorationId)?.open ?? '')
+      || command === 'cupboardHide' && itemInteraction(item.decorationId)?.cat === 'cupboardHide') && isDecorationOpen(item)) {
+      const approach = clampCatPoint({ x: center.x, y: center.y + size * .65 }, room);
+      const position = clampCatPoint({ x: center.x, y: center.y - size * .12 }, room);
+      candidates.push({ kind: command, targetInstanceId: item.instanceId, sofaApproach: approach, steps: [
+        { ...walkTo(home, approach, room.petSize), approachingSeat: true },
+        { position, mood: 'idle', animation: 'jumpOn', sofaApproach: approach, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS },
+        { position, mood: 'idle', animation: 'sit', sofaApproach: approach, durationMs: 12_000, hold: true },
+        { position: approach, mood: 'idle', animation: 'jumpOff', sofaApproach: approach, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS },
         { ...walkTo(approach, home, room.petSize), returnHome: true },
       ] });
     }

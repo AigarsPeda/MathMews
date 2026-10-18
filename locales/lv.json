@@ -189,7 +189,9 @@
       "toiletUse": "Lietot tualeti",
       "bedSleep": "Gulēt gultā",
       "bedSnuggle": "Ieritināties zem segas",
-      "investigate": "Izpētīt"
+      "investigate": "Izpētīt",
+      "drawerHide": "Iekāpt atvilktnē",
+      "cupboardHide": "Paslēpties skapī"
     },
     "decorateRoom": "Iekārtot",
     "buy": "Pirkt",

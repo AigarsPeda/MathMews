@@ -35,8 +35,9 @@ for(const [id,meta] of Object.entries(catalog)) {
   }
   if(meta.collisionBoxes || meta.animated) assert.equal(derived.collisionBoxes,undefined,`${id}: keep authored shapes/animation envelope`);
   else {
-    assert.equal(derived.collisionBoxes.length,meshes.length,`${id}: no static part is omitted`);
-    meshes.forEach((mesh,i)=>{
+    const physicalMeshes=meshes.filter(mesh=>!/^Interaction (water|power LED)/.test(mesh.name));
+    assert.equal(derived.collisionBoxes.length,physicalMeshes.length,`${id}: physical parts collide; water and status lights do not`);
+    physicalMeshes.forEach((mesh,i)=>{
       const box=derived.collisionBoxes[i];parts++;
       if (/^(Round oak tabletop|Dining chair seat)$/.test(mesh.name)) {
         assert.ok(box.footprint.length > 8, 'Round dining parts retain their curved outline');

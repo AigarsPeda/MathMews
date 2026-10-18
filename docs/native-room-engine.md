@@ -6,6 +6,8 @@ The live game uses `react-native-filament` 1.11.0 on iOS and Android. React Nati
 
 3D graphics is the launch default. Only an explicit Settings choice saves Simple graphics under `@mathmews/graphics-mode`. Automatic scene recovery enables it for the current session without writing a preference. The previous `@mathmews/simple-graphics` flag is ignored because it also stored automatic crash fallback and could leave the cat permanently using a still image.
 
+Room items retain their saved anchors in React Native layout; animated transforms apply movement relative to those anchors. Switching from 3D placeholders to still images therefore preserves the arrangement even when a native view reapplies its initial animated style. `check-simple-graphics-layout.mjs` covers this transition, viewport sizes, dragging and live movement without saving layout changes during a graphics switch.
+
 See [Adding cat animations and room interactions](cat-animations.md) for clip registration, shared command menus, rebuilding and validation.
 
 ## Assets and saved rooms

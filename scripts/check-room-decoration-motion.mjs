@@ -1096,3 +1096,60 @@ const rugAtNewLimit=decorationNode(render([{...rugAtOldLimit,scale:4.4}],rugResi
 assert.equal(rugAtNewLimit.find(a=>a.icon==='zoom-in').disabled,true);
 assert.equal(rugAtNewLimit.find(a=>a.icon==='zoom-out').disabled,false,'A maximum-size rug can still be shrunk');
 console.log('Verified the actual rug Bigger action passes the old limit, saves its fitted anchor and stops at the new maximum.');
+
+// Drawers open the selected copy before the cat approaches. Closing waits for exit.
+states.length=0;drawingValues.length=0;refs.length=0;roomActivityForTest=null;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+let drawerItems=[{decorationId:'bedroomDresser',instanceId:'dresser-one',offset:{x:0,y:0}},
+ {decorationId:'bedroomDresser',instanceId:'dresser-two',offset:{x:.5,y:.5}}];
+let drawerWrites=0;
+const drawerProps={onTogglePlacedDecorationOpen:id=>{drawerWrites++;drawerItems=placement.togglePlacedDecorationOpenByInstance(drawerItems,id)}};
+let drawerNodes=render(drawerItems,drawerProps);
+const drawerAction=decorationNode(drawerNodes,'dresser-one').node.props.menuActions.find(a=>a.label==='home.catCommands.drawerHide');
+assert.ok(drawerAction);assert.equal(drawerAction.disabled,false);drawerAction.onPress();
+assert.equal(drawerWrites,1);assert.equal(drawerItems[0].opened,true);assert.equal(drawerItems[1].opened,undefined);
+assert.equal(requestedActivity,'drawerHide');assert.equal(requestedInstanceId,'dresser-one');
+roomActivityForTest={plan:planner.buildRoomActivity({...room,decorations:drawerItems},0,'drawerHide','dresser-one'),stepIndex:2};
+drawerNodes=render(drawerItems,drawerProps);
+const returnsBeforeDrawerClose=returnedHome;
+decorationNode(drawerNodes,'dresser-one').node.props.menuActions.find(a=>a.label==='home.closeItem').onPress();
+assert.equal(returnedHome,returnsBeforeDrawerClose+1,'Closing asks the occupied cat to jump down first');
+assert.equal(drawerWrites,1,'The drawer stays open during exit');
+render(drawerItems,drawerProps);assert.equal(drawerItems[0].opened,true);
+roomActivityForTest=null;render(drawerItems,drawerProps);
+await new Promise(resolve=>setTimeout(resolve,5));
+assert.equal(drawerWrites,2);assert.equal(drawerItems[0].opened,false,'The saved drawer closes after the cat leaves');
+assert.equal(drawerItems[1].opened,undefined);
+const openAgain=decorationNode(render(drawerItems,drawerProps),'dresser-one').node.props.menuActions.find(a=>a.label==='home.openItem');
+assert.ok(openAgain,'The next tap offers Open after deferred closing');
+console.log('Verified actual drawer menus, automatic opening, exact instance selection, sitting dispatch and closing only after the cat exits.');
+
+{
+// Cupboards share the safe close queue, with their own hiding command.
+states.length=0;drawingValues.length=0;refs.length=0;roomActivityForTest=null;
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
+let drawerItems=[{decorationId:'bedroomWardrobe',instanceId:'wardrobe-one',offset:{x:0,y:0}},
+ {decorationId:'bedroomWardrobe',instanceId:'wardrobe-two',offset:{x:.5,y:.5}}];
+let drawerWrites=0;
+const drawerProps={onTogglePlacedDecorationOpen:id=>{drawerWrites++;drawerItems=placement.togglePlacedDecorationOpenByInstance(drawerItems,id)}};
+let drawerNodes=render(drawerItems,drawerProps);
+const drawerAction=decorationNode(drawerNodes,'wardrobe-one').node.props.menuActions.find(a=>a.label==='home.catCommands.cupboardHide');
+assert.ok(drawerAction);assert.equal(drawerAction.disabled,false);drawerAction.onPress();
+assert.equal(drawerWrites,1);assert.equal(drawerItems[0].opened,true);assert.equal(drawerItems[1].opened,undefined);
+assert.equal(requestedActivity,'cupboardHide');assert.equal(requestedInstanceId,'wardrobe-one');
+roomActivityForTest={plan:planner.buildRoomActivity({...room,decorations:drawerItems},0,'cupboardHide','wardrobe-one'),stepIndex:2};
+drawerNodes=render(drawerItems,drawerProps);
+const returnsBeforeDrawerClose=returnedHome;
+decorationNode(drawerNodes,'wardrobe-one').node.props.menuActions.find(a=>a.label==='home.closeItem').onPress();
+assert.equal(returnedHome,returnsBeforeDrawerClose+1,'Closing asks the occupied cat to jump down first');
+assert.equal(drawerWrites,1,'The drawer stays open during exit');
+render(drawerItems,drawerProps);assert.equal(drawerItems[0].opened,true);
+roomActivityForTest=null;render(drawerItems,drawerProps);
+await new Promise(resolve=>setTimeout(resolve,5));
+assert.equal(drawerWrites,2);assert.equal(drawerItems[0].opened,false,'The saved drawer closes after the cat leaves');
+assert.equal(drawerItems[1].opened,undefined);
+const openAgain=decorationNode(render(drawerItems,drawerProps),'wardrobe-one').node.props.menuActions.find(a=>a.label==='home.openItem');
+assert.ok(openAgain,'The next tap offers Open after deferred closing');
+console.log('Verified actual cupboard menus, automatic opening, exact instance selection, hiding dispatch and closing only after the cat exits.');
+
+}

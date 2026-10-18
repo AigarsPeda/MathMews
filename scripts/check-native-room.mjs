@@ -920,6 +920,7 @@ mocks['./NativeSpotlightHead'] = { NativeSpotlightHead: 'SpotlightHead' };
 mocks['./NativeLampGlow'] = { NativeLampGlow: 'LampGlow' };
 mocks['./NativeContactShadows'] = { NativeContactShadows: 'ContactShadows' };
 mocks['./NativeCurtain'] = { NativeCurtain: 'Curtain' };
+mocks['./NativeItemInteraction'] = { NativeItemInteraction: 'ItemInteraction' };
 mocks['./NativeFridge'] = { NativeFridge: 'Fridge' };
 mocks['./NativeLightning'] = { NativeLightning: 'Lightning' };
 mocks['./NativeWorldLighting'] = { NativeWorldLighting: 'WorldLighting' };

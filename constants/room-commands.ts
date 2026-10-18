@@ -1,3 +1,4 @@
+import { itemInteraction } from '@/constants/item-interactions';
 import { isSleepingBed } from '@/constants/bedroom-activities';
 import type { AppIconName } from "@/constants/app-icons";
 import { bathroomFixtureKind } from "@/constants/bathroom-activities";
@@ -25,6 +26,8 @@ export const ROOM_COMMANDS = [
   { kind: "toiletUse", target: "toilet", icon: "play", section: "essentials" },
   { kind: "toyPlay", target: "toy", icon: "play", section: "play" },
   { kind: "mouseChase", target: "mouse", icon: "mouse", section: "play" },
+  { kind: "cupboardHide", target: "cupboard", icon: "box", section: "play" },
+  { kind: "drawerHide", target: "drawer", icon: "box", section: "play" },
   { kind: "investigate", target: "decoration", icon: "paw", section: "play" },
   { kind: "plantPlay", target: "plant", icon: "play", section: "play" },
 ] as const satisfies readonly { kind: string; target: string; icon: AppIconName; section: string }[];
@@ -38,6 +41,8 @@ export function getRoomCommands(item: RoomLayerItem, bedId?: string) {
     if (item.kind === "toy") return command.target === (item.toyId === "mouse" ? "mouse" : "toy");
     const id = item.decorationId;
     switch (command.target) {
+      case 'cupboard': return itemInteraction(id)?.cat === 'cupboardHide';
+      case 'drawer': return ['drawers', 'drawer'].includes(itemInteraction(id)?.open ?? '');
       case "sleepingBed": return isSleepingBed(id);
       case "seat": return isCatSeatDecorationId(id);
       case "kitchenChair": return isKitchenChairDecorationId(id);

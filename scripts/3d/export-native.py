@@ -173,6 +173,10 @@ def items():
   metadata[id]={'kind':kind,'renderScale':render_scale,'center':yup(center),'min':[lo[0],lo[2],-hi[1]],'max':[hi[0],hi[2],-lo[1]],'animated':animated,'wind':wind}
   if interaction_parts:metadata[id]['interactionParts']=interaction_parts
   if drawer_surface:metadata[id]['drawer']={'surface':drawer_surface}
+  cupboard=next((o for o in objects if o.name=='Cupboard hiding contact'),None)
+  if cupboard:metadata[id]['cupboard']={'surface':yup(list(cupboard.location)),'clearance':list(cupboard['clearance'])}
+  if INTERACTION_PROFILES.get(id,{}).get('power'):
+   metadata[id]['powerMaterials']=[{'node':o.name,'color':list(o.data.materials[0].diffuse_color)} for o in objects if o.type=='MESH' and len(o.data.materials) and o.data.materials[0].name.startswith('Interaction glow')]
   if prior_framing:
    for key in ('renderScale','center'):metadata[id][key]=prior_framing[key]
   contact=next((o for o in objects if o.name=='Bathroom contact'),None)

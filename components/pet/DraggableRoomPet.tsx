@@ -250,15 +250,19 @@ export function DraggableRoomPet({
   );
 
   const halfPet = petSize / 2;
+  // Keep the saved anchor in layout. Replacing the 3D placeholder with a still
+  // image can reapply the animated style's initial zero translation.
+  const layoutX = animatedPosition ? 0 : externalPosition?.x ?? position.x;
+  const layoutY = animatedPosition ? 0 : externalPosition?.y ?? position.y;
   const left =
-    roomSize.width > 0 ? roomSize.width / 2 - halfPet : 0;
+    roomSize.width > 0 ? roomSize.width / 2 - halfPet + layoutX : 0;
   const top =
-    roomSize.height > 0 ? roomSize.height / 2 - halfPet : 0;
+    roomSize.height > 0 ? roomSize.height / 2 - halfPet + layoutY : 0;
 
   const livePositionStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: animatedPosition && !dragging.get() ? animatedPosition.x.get() : externalPosition && !dragging.get() ? externalPosition.x : liveX.get() },
-      { translateY: animatedPosition && !dragging.get() ? animatedPosition.y.get() : externalPosition && !dragging.get() ? externalPosition.y : liveY.get() },
+      { translateX: (animatedPosition && !dragging.get() ? animatedPosition.x.get() : externalPosition && !dragging.get() ? externalPosition.x : liveX.get()) - layoutX },
+      { translateY: (animatedPosition && !dragging.get() ? animatedPosition.y.get() : externalPosition && !dragging.get() ? externalPosition.y : liveY.get()) - layoutY },
     ],
   }));
   const depthStyle = useAnimatedStyle(() => ({

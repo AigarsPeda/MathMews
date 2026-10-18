@@ -173,7 +173,9 @@
       "toiletUse": "Use the toilet",
       "bedSleep": "Sleep on bed",
       "bedSnuggle": "Snuggle under covers",
-      "investigate": "Investigate"
+      "investigate": "Investigate",
+      "drawerHide": "Sit in the drawer",
+      "cupboardHide": "Hide in cupboard"
     },
     "decorateRoom": "Decorate",
     "buy": "Buy",

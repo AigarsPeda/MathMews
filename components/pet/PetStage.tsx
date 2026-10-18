@@ -716,7 +716,33 @@ export function PetStage({
     ],
   );
 
+  const [pendingCloseId, setPendingCloseId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!pendingCloseId || roomActivity) return;
+    const timer = setTimeout(() => {
+      setPendingCloseId(null);
+      const placed = roomPlacedDecorations.find(item => item.instanceId === pendingCloseId);
+      if (placed && isDecorationOpen(placed)) onTogglePlacedDecorationOpen?.(pendingCloseId);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [pendingCloseId, roomActivity, roomPlacedDecorations, onTogglePlacedDecorationOpen]);
+
+  const toggleItemOpen = useCallback((instanceId: string) => {
+    const placed = roomPlacedDecorations.find(item => item.instanceId === instanceId);
+    if (placed && isDecorationOpen(placed) && roomActivity?.plan.targetInstanceId === instanceId
+      && (roomActivity.plan.kind === 'drawerHide' || roomActivity.plan.kind === 'cupboardHide' || roomActivity.plan.kind === 'returnHome')) {
+      setPendingCloseId(instanceId);
+      returnHome();
+    } else onTogglePlacedDecorationOpen?.(instanceId);
+  }, [roomPlacedDecorations, roomActivity, returnHome, onTogglePlacedDecorationOpen]);
+
   const startRoomCommand = useCallback((kind: RoomActivityKind, instanceId?: string) => {
+    if (kind === 'drawerHide' || kind === 'cupboardHide') {
+      const drawer = roomPlacedDecorations.find(item => item.instanceId === instanceId);
+      if (!drawer || !onTogglePlacedDecorationOpen) return;
+      setPendingCloseId(null);
+      if (!isDecorationOpen(drawer)) onTogglePlacedDecorationOpen(drawer.instanceId);
+    }
     if (kind === 'fridgeInvestigate') {
       const fridge = roomPlacedDecorations.find(item => isFridgeDecorationId(item.decorationId)
         && (!instanceId || item.instanceId === instanceId));
@@ -727,7 +753,7 @@ export function PetStage({
     const interactionAt = onRoomInteraction?.();
     if (onRequestRoomCommand) onRequestRoomCommand(homeRoomId, kind, instanceId, interactionAt ?? undefined);
     else startActivity(kind, instanceId, interactionAt ?? undefined);
-  }, [homeRoomId, onRequestRoomCommand, roomPlacedDecorations, onTogglePlacedFridge, onRoomInteraction, startActivity]);
+  }, [homeRoomId, onRequestRoomCommand, roomPlacedDecorations, onTogglePlacedFridge, onTogglePlacedDecorationOpen, onRoomInteraction, startActivity]);
 
   const buildRoomItemMenuActions = useCallback(
     (item: RoomLayerItem) => {
@@ -737,7 +763,7 @@ export function PetStage({
           const labelKind = item.kind === "decoration" && item.decorationId === "chairRockingOak"
             ? kind === "sofaSit" ? "chairSit" : kind === "sofaSleep" ? "chairSleep" : kind : kind;
           actions.push({ label: t(`home.catCommands.${labelKind}`), icon,
-            disabled: roomActivityBlocked || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!onFeed || !canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
+            disabled: roomActivityBlocked || (kind === 'cupboardHide' && !nativeWorld.objects.find(object => object.instanceId === (item.kind === 'bed' ? 'bed' : item.instanceId))?.cupboardFits) || ((kind === 'drawerHide' || kind === 'cupboardHide') && !onTogglePlacedDecorationOpen) || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!onFeed || !canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
             onPress: () => startRoomCommand(kind, item.kind === "bed" ? "bed" : item.instanceId),
           });
         }
@@ -747,7 +773,7 @@ export function PetStage({
         if (placed) actions.push({
           label: t(isDecorationOpen(placed) ? 'home.closeItem' : 'home.openItem', { name: t(`store.decorationName.${item.decorationId}`) }),
           icon: isDecorationOpen(placed) ? 'arrow-right' : 'arrow-left',
-          onPress: () => onTogglePlacedDecorationOpen(item.instanceId),
+          onPress: () => toggleItemOpen(item.instanceId),
         });
       }
       if (item.kind === "decoration" && isFridgeDecorationId(item.decorationId) && onTogglePlacedFridge) {
@@ -981,6 +1007,7 @@ export function PetStage({
       return actions;
     },
     [
+      nativeWorld,
       bedId,
       bedScale,
       decorating,
@@ -1015,6 +1042,7 @@ export function PetStage({
       resizeItemPlacement,
       onScalePlacedDecoration,
       onTogglePlacedDecorationPower,
+      toggleItemOpen,
       onTogglePlacedCurtain,
       onTogglePlacedFridge,
   onTogglePlacedDecorationOpen,
@@ -1206,8 +1234,8 @@ export function PetStage({
       const labelKind = chair ? kind === "sofaSit" ? "chairSit" : kind === "sofaSleep" ? "chairSleep" : kind : kind;
       actions.push({
         label: t(`home.catCommands.${labelKind}`), section, icon: command.icon,
-        disabled: roomActivityBlocked || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
-        onPress: () => startRoomCommand(kind, kind === 'fridgeInvestigate' && target.kind === 'decoration' ? target.instanceId : undefined),
+        disabled: roomActivityBlocked || (kind === 'cupboardHide' && !nativeWorld.objects.find(object => object.instanceId === (target.kind === 'bed' ? 'bed' : target.instanceId))?.cupboardFits) || ((kind === 'drawerHide' || kind === 'cupboardHide') && !onTogglePlacedDecorationOpen) || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
+        onPress: () => startRoomCommand(kind, (kind === 'fridgeInvestigate' || kind === 'drawerHide' || kind === 'cupboardHide' || kind === 'investigate') && target.kind === 'decoration' ? target.instanceId : undefined),
       });
     }
     if (onSendCatToRoom) actions.push(...HOME_ROOM_IDS.filter(id => id !== catHomeRoomId).map(id => ({
@@ -1227,7 +1255,7 @@ export function PetStage({
       onPress: () => onPlay(activity),
     })));
     return actions;
-  }, [bedId, viewport.width, viewport.height, displayWidth, asleep, compact, catPresent, catHomeRoomId, onSendCatToRoom, decorating, handleCatTap, handleRoomTouch, onFeed, onPetPress, onPlay,
+  }, [nativeWorld, bedId, viewport.width, viewport.height, displayWidth, asleep, compact, catPresent, catHomeRoomId, onSendCatToRoom, decorating, handleCatTap, handleRoomTouch, onFeed, onPetPress, onPlay,
     onTogglePlacedFridge,
   onTogglePlacedDecorationOpen, roomActivity, roomActivityBlocked, layerOrder, startRoomCommand, stats, t, usesNativeCat]);
 

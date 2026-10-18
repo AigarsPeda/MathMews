@@ -1,0 +1,68 @@
+{
+  "roomId": "room11",
+  "roomPetOffset": {
+    "x": 0,
+    "y": 0.12
+  },
+  "bedId": "houseE",
+  "roomBedOffset": {
+    "x": -0.775652659253453,
+    "y": 0.10637820667987209
+  },
+  "bedFlipped": true,
+  "placedDecorations": [
+    {
+      "decorationId": "wallSpotBellRose",
+      "instanceId": "wallSpotBellRose-1",
+      "offset": {
+        "x": -0.5423249939011222,
+        "y": -0.271681616275144
+      },
+      "wallFlipped": true,
+      "poweredOn": true,
+      "spotlightAngle": -25,
+      "spotlightSwivel": 0
+    },
+    {
+      "decorationId": "wallSpotBellRose",
+      "instanceId": "wallSpotBellRose-2",
+      "offset": {
+        "x": -0.7399509016729926,
+        "y": -0.1853726270106275
+      },
+      "wallFlipped": true,
+      "poweredOn": true,
+      "spotlightAngle": -25,
+      "spotlightSwivel": 0
+    },
+    {
+      "decorationId": "windowArched",
+      "instanceId": "windowArched-1",
+      "offset": {
+        "x": 0.806507918627044,
+        "y": -0.44779647823505536
+      },
+      "scale": 1.9
+    },
+    {
+      "decorationId": "bedroomWardrobe",
+      "instanceId": "bedroomWardrobe-1",
+      "offset": {
+        "x": 0.11360831772915173,
+        "y": -0.5437215749483171
+      },
+      "opened": true,
+      "scale": 1.6
+    },
+    {
+      "decorationId": "bedroomRug",
+      "instanceId": "bedroomRug-1",
+      "offset": {
+        "x": -0.9515051893144917,
+        "y": 0.6672959755455072
+      },
+      "scale": 3.3
+    }
+  ],
+  "placedToys": []
+}
