@@ -1,4 +1,5 @@
 import { itemInteraction } from '@/constants/item-interactions';
+import { isFurniturePerch } from '@/constants/cat-furniture';
 import { isSleepingBed } from '@/constants/bedroom-activities';
 import type { AppIconName } from "@/constants/app-icons";
 import { bathroomFixtureKind } from "@/constants/bathroom-activities";
@@ -34,6 +35,12 @@ export const ROOM_COMMANDS = [
 
 export type RoomCommandKind = typeof ROOM_COMMANDS[number]["kind"];
 
+export function roomCommandLabel(kind: string, decorationId?: string): string {
+  if (decorationId === 'chairRockingOak') return kind === 'sofaSit' ? 'chairSit' : kind === 'sofaSleep' ? 'chairSleep' : kind;
+  if (decorationId && (isFurniturePerch(decorationId) || isSleepingBed(decorationId)) && kind === 'sofaSit') return 'furnitureSit';
+  return kind;
+}
+
 /** Menu eligibility must not build animation plans or solve navigation paths. */
 export function getRoomCommands(item: RoomLayerItem, bedId?: string) {
   const commands = ROOM_COMMANDS.filter(command => {
@@ -44,7 +51,7 @@ export function getRoomCommands(item: RoomLayerItem, bedId?: string) {
       case 'cupboard': return itemInteraction(id)?.cat === 'cupboardHide';
       case 'drawer': return ['drawers', 'drawer'].includes(itemInteraction(id)?.open ?? '');
       case "sleepingBed": return isSleepingBed(id);
-      case "seat": return isCatSeatDecorationId(id);
+      case "seat": return isCatSeatDecorationId(id) || command.kind === 'sofaSit' && (isFurniturePerch(id) || isSleepingBed(id));
       case "kitchenChair": return isKitchenChairDecorationId(id);
       case "island": return isKitchenIslandDecorationId(id);
       case "window": return isWindowDecorationId(id);

@@ -3,7 +3,7 @@ import type { RoomDecorationEntry } from "@/utils/room-decoration-entry";
 import type { SpotlightAim } from '@/utils/native-spotlight-aim';
 import { curtainAtWindow } from '@/utils/native-curtains';
 import { isWindowLightSource } from '@/utils/native-window-light';
-import { ROOM_COMMANDS, getRoomCommands } from "@/constants/room-commands";
+import { ROOM_COMMANDS, getRoomCommands, roomCommandLabel } from "@/constants/room-commands";
 import { useGraphicsMode } from "@/lib/graphics-mode";
 import { getCatRoomSource } from "@/constants/cat-rooms";
 import { canFeedForEffect } from "@/utils/pet-care";
@@ -774,8 +774,7 @@ export function PetStage({
       const actions: RoomItemMenuAction[] = [];
       if (!decorating && (catPresent || onRequestRoomCommand) && viewport.width > displayWidth && viewport.height > displayWidth) {
         for (const { kind, icon } of getRoomCommands(item, bedId)) {
-          const labelKind = item.kind === "decoration" && item.decorationId === "chairRockingOak"
-            ? kind === "sofaSit" ? "chairSit" : kind === "sofaSleep" ? "chairSleep" : kind : kind;
+          const labelKind = roomCommandLabel(kind,item.kind === 'decoration' ? item.decorationId : undefined);
           actions.push({ label: t(`home.catCommands.${labelKind}`), icon,
             disabled: roomActivityBlocked || (kind === 'cupboardHide' && !nativeWorld.objects.find(object => object.instanceId === (item.kind === 'bed' ? 'bed' : item.instanceId))?.cupboardFits) || ((kind === 'drawerHide' || kind === 'cupboardHide') && !onTogglePlacedDecorationOpen) || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!onFeed || !canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
             onPress: () => startRoomCommand(kind, item.kind === "bed" ? "bed" : item.instanceId),
@@ -1267,8 +1266,7 @@ export function PetStage({
       const target = layerOrder.find(item => getRoomCommands(item, bedId).some(command => command.kind === kind));
       if (!target || (kind === "bowlEat" && !onFeed)) return;
       const command = ROOM_COMMANDS.find(command => command.kind === kind)!;
-      const chair = target.kind === "decoration" && target.decorationId === "chairRockingOak";
-      const labelKind = chair ? kind === "sofaSit" ? "chairSit" : kind === "sofaSleep" ? "chairSleep" : kind : kind;
+      const labelKind = roomCommandLabel(kind,target.kind === 'decoration' ? target.decorationId : undefined);
       actions.push({
         label: t(`home.catCommands.${labelKind}`), section, icon: command.icon,
         disabled: roomActivityBlocked || (kind === 'cupboardHide' && !nativeWorld.objects.find(object => object.instanceId === (target.kind === 'bed' ? 'bed' : target.instanceId))?.cupboardFits) || ((kind === 'drawerHide' || kind === 'cupboardHide') && !onTogglePlacedDecorationOpen) || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),

@@ -175,6 +175,7 @@
     "catCommands": {
       "bowlEat": "Ēst",
       "chairSit": "Sēdēt šūpuļkrēslā",
+      "furnitureSit": "Uzlēkt un apsēsties",
       "chairSleep": "Gulēt šūpuļkrēslā",
       "chairNap": "Nosnausties uz virtuves krēsla",
       "islandSit": "Sēdēt uz virtuves salas",

@@ -259,7 +259,7 @@ const angled={...frame,heading:Math.PI/4,scale:.5};
 const hull=roomItemFootprint(angled),maxX=Math.max(...hull.map(p=>p[0]));
 const edgePose={...angled,position:[ROOM_PLACEMENT_MAX-maxX-.001,.068,0]};
 assert.ok(createRoomPlacementResolver({width:390,objects:[edgePose]}).canPlace(edgePose),'Mesh footprint reaches the real open floor edge');
-const overEdge={...edgePose,position:[edgePose.position[0]+.02,.068,0]};
+const overEdge={...edgePose,position:[edgePose.position[0]+.6,.068,0]};
 const actualEdge=createRoomPlacementResolver({width:390,objects:[edgePose]}).drop('chair',roomItemAnchor(overEdge,390));
 assert.equal(actualEdge.accepted,false);
 assert.deepEqual(Array.from(actualEdge.feedback.boundaries),['rightEdge']);
@@ -811,6 +811,44 @@ function shiftPose(object, delta, width) {
   const anchor=roomItemAnchor(object,width),zero=projectWorld([0,0,0],width),shift=projectWorld(delta,width);
   return roomItemAtPoint(object,{x:anchor.x+shift.x-zero.x,y:anchor.y+shift.y-zero.y},width);
 }
+// A vanity at the end of a wall can cross the adjacent open floor edge by a
+// few points. Correct that overrun together with the wall gap at release.
+for(const width of [320,414,768]) for(const zoom of [1,2.5]) for(const wallFlipped of [false,true]) {
+  const entry={decorationId:'bathroomDoubleVanity',instanceId:'sink',offset:{x:0,y:0},wallFlipped};
+  const input={width,height:width*1.1,petSize:width/3,sizeScale:width/390,toys:[],decorations:[entry]};
+  const world=buildNativeRoomWorld(input),sink=world.objects[0],footprint=roomItemFootprint(sink);
+  const wallAxis=wallFlipped?0:2,edgeAxis=wallFlipped?2:0;
+  const delta=[0,0,0];
+  delta[wallAxis]=ROOM_PLACEMENT_MIN-Math.min(...footprint.map(p=>p[wallAxis]));
+  delta[edgeAxis]=ROOM_PLACEMENT_MAX-Math.max(...footprint.map(p=>p[edgeAxis]));
+  const flush=shiftPose(sink,delta,width),resolver=createRoomPlacementResolver(world);
+  const zero=projectWorld([0,0,0],width),unit=projectWorld([1,0,0],width);
+  const screenUnit=Math.hypot(unit.x-zero.x,unit.y-zero.y)*zoom;
+  const overrun=[0,0,0];
+  overrun[edgeAxis]=8/screenUnit;
+  overrun[wallAxis]=6/screenUnit;
+  const attempt=shiftPose(flush,overrun,width),point=roomItemAnchor(attempt,width);
+  assert.equal(resolver.canPlace(attempt),false,'The uncorrected vanity really crosses the floor edge');
+  assert.ok(resolver.move('sink',point).object.position.every((v,i)=>Math.abs(v-attempt.position[i])<1e-8),'Preview follows the pointer at the edge');
+  const drop=resolver.drop('sink',point,{zoom});
+  assert.equal(drop.accepted,true,`Vanity settles at the wall end: ${width}/${zoom}/${wallFlipped}`);
+  assert.ok(drop.object.position.every((v,i)=>Math.abs(v-flush.position[i])<1e-8),'Wall and floor-edge corrections apply together');
+  assert.equal(drop.object.heading,sink.heading);
+  const size=sink.scale*width*NATIVE_MODEL_CATALOG[sink.modelId].renderScale/ROOM_SPAN;
+  const saved={...entry,offset:{x:drop.point.x/((width-size)/2),y:drop.point.y/((input.height-size)/2)}};
+  const restored=buildNativeRoomWorld({...input,decorations:[saved]}).objects[0];
+  assert.ok(restored.position.every((v,i)=>Math.abs(v-drop.object.position[i])<1e-8),'Corrected vanity survives save/reload');
+  const inside=[0,0,0];inside[edgeAxis]=-8/screenUnit;
+  const spaced=shiftPose(flush,inside,width),free=resolver.drop('sink',roomItemAnchor(spaced,width),{zoom});
+  assert.ok(free.object.position.every((v,i)=>Math.abs(v-spaced.position[i])<1e-8),'An intentional gap inside the open edge stays unchanged');
+  const far=[0,0,0];far[edgeAxis]=11/screenUnit;
+  const rejected=resolver.drop('sink',roomItemAnchor(shiftPose(flush,far,width),width),{zoom});
+  assert.equal(rejected.accepted,false,'Distant overruns still reject placement');
+  assert.ok(rejected.feedback.boundaries.includes(edgeAxis===0?'rightEdge':'frontEdge'));
+  const occupied=createRoomPlacementResolver({...world,objects:[sink,{...flush,instanceId:'blocker'}]});
+  assert.equal(occupied.drop('sink',point,{zoom}).accepted,false,'Edge correction cannot overlap another fixture');
+}
+console.log('Verified vanity placement at both wall ends, edge overrun correction, free previews, intentional gaps, save/reload, zoom reach and occupied-edge rejection.');
 // The magnet has the same reach in screen points on phones, tablets and zoomed views.
 for(const width of [320,414,768]) for(const zoom of [1,2.5]) for(const heading of [0,Math.PI/2,.35])
   for(const modelId of ['shelfWood','chairRockingOak','kitchenModernFloorShelfNavy']) {

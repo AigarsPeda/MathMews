@@ -1,4 +1,5 @@
 import { itemInteraction, isDecorationOpen } from '@/constants/item-interactions';
+import { isFurniturePerch } from '@/constants/cat-furniture';
 import { isSleepingBed, type BedPhase } from '@/constants/bedroom-activities';
 import type { RoomCommandKind } from "@/constants/room-commands";
 import { isCatSeatDecorationId } from "@/constants/sofa-decorations";
@@ -10,7 +11,7 @@ import { isPlayablePlant } from "@/constants/plant-play";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { CAT_ANIMATION_CLIPS } from "@/constants/cat-animation-clips";
 import type { NativeRoomWorld, NativeTravel, Vec3 } from "@/utils/native-room-world";
-import { catScreenPoint, findFoodBowlApproach, findWindowWatchPerch } from "@/utils/native-room-world";
+import { catFloorPoint, catScreenPoint, findFoodBowlApproach, findFurnitureTransfer, findWindowWatchPerch } from "@/utils/native-room-world";
 import { isHomeRoomId, isRoomDoor, roomTravelDirection, type HomeRoomId, type RoomEntry, type RoomTravelDirection } from "@/constants/home-rooms";
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
 import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
@@ -30,6 +31,9 @@ export type RoomActivityStep = {
   kitchenNavigation?: boolean;
   /** The source furnishing stays attached to exit steps after a new command. */
   targetInstanceId?: string;
+  /** Direct flight from another furnishing, retaining both support colliders. */
+  jumpFromInstanceId?: string;
+  jumpLaunchHeading?: number;
   position: RoomPoint;
   mood: PetAnimationState;
   animation?: CatRoomAnimation;
@@ -64,6 +68,8 @@ export type RoomActivityPlan = {
   ambientPeriod?: WorldPeriod;
   /** Only user commands show a notice when their route is blocked. */
   userRequested?: boolean;
+  /** Perches already visited in this short autonomous outing. */
+  exploredFurniture?: string[];
   stopForEditing?: boolean;
   destination?: HomeRoomId;
   targetInstanceId?: string;
@@ -173,6 +179,7 @@ export function routeToSofa(
   next: RoomActivityPlan,
   position: RoomPoint,
   current?: { plan: RoomActivityPlan; stepIndex: number } | null,
+  nativePosition?: Vec3,
 ): RoomActivityPlan {
   const seatStep = next.steps[1];
   const approach = next.sofaApproach!;
@@ -190,12 +197,16 @@ export function routeToSofa(
     return { ...next, steps: [...exit, ...next.steps.slice(2)] };
   }
   if (sameSofa && onSofa) {
-    const distance = Math.hypot(position.x - seatStep.position.x, position.y - seatStep.position.y);
+    const supportedSeat=room.nativeWorld && room.nativeStepCompletion!==false && step?.animation!=='jumpOn' ? step?.seatPosition : undefined;
+    const distance = supportedSeat ? 0 : Math.hypot(position.x - seatStep.position.x, position.y - seatStep.position.y);
     if (distance <= 2) {
-      let rest = next.steps.slice(2);
+      let rest = next.steps.slice(2).map(item=>supportedSeat && !item.returnHome ? {...item,seatPosition:supportedSeat,
+        seatApproach:step!.seatApproach,seatHeading:step!.seatHeading,sofaApproach:step!.sofaApproach} : item);
       if ((next.kind === "sofaSleep" || next.kind === "chairNap") && step?.animation === "curlSleep") rest = rest.slice(1);
       if (seatStep.animation === "jumpOn" && next.steps[2]?.animation === "sit" && curled) rest = [
-        { ...seatStep, mood: "lyingDown", animation: "curlUp", reverse: true, moveMs: 0, durationMs: 1000 }, ...rest,
+        { ...seatStep, ...(supportedSeat ? {seatPosition:supportedSeat,seatApproach:step!.seatApproach,
+          seatHeading:step!.seatHeading,sofaApproach:step!.sofaApproach} : {}),
+          mood: "lyingDown", animation: "curlUp", reverse: true, moveMs: 0, durationMs: 1000 }, ...rest,
       ];
       return { ...next, steps: rest };
     }
@@ -204,9 +215,59 @@ export function routeToSofa(
     const durationMs = Math.max(200, SOFA_JUMP_DURATION_MS * distance / Math.max(1, jumpDistance));
     return { ...next, steps: [{ ...seatStep, durationMs, moveMs: durationMs, animationFps: 24 / (durationMs / 1000) }, ...next.steps.slice(2)] };
   }
+  const world=room.nativeWorld,sourceId=step?.targetInstanceId ?? current?.plan.targetInstanceId;
+  if (world && room.nativeStepCompletion!==false && step && onSofa && step.animation!=='jumpOn' && !step.bedPhase && !step.bathroomPhase && sourceId && next.targetInstanceId) {
+    const source=world.objects.find(o=>o.instanceId===sourceId);
+    const from=nativePosition ?? catFloorPoint(position,world,step.native?.path.at(-1)?.[1] ?? source?.seat?.[1] ?? 0);
+    const launchHeading=step.seatHeading ?? step.native?.heading ?? source?.seatHeading;
+    const transfer=findFurnitureTransfer(from,sourceId,next.targetInstanceId,world,launchHeading);
+    if (transfer) {
+      const targetPosition=catScreenPoint(transfer.seat,world),floorApproach=catScreenPoint(transfer.approach,world);
+      const contact={seatPosition:transfer.seat,seatApproach:transfer.approach,seatHeading:transfer.heading,sofaApproach:floorApproach};
+      const stand: RoomActivityStep[] = curled ? [{ ...step, native: undefined, position, targetInstanceId:sourceId,
+        animation:'curlUp',reverse:true,hold:false,jumpFromInstanceId:undefined,durationMs:1000,moveMs:0 }] : [];
+      return { ...next,sofaApproach:floorApproach,steps:[...stand,{
+        ...seatStep,...contact,position:targetPosition,targetInstanceId:next.targetInstanceId,jumpFromInstanceId:sourceId,jumpLaunchHeading:launchHeading,
+        animation:transfer.seat[1]<from[1]-.08*world.catScale?'jumpOff':'jumpOn',
+      },...next.steps.slice(2).map(item=>item.returnHome ? item : {...item,...contact,
+        position:item.animation==='jumpOff'?floorApproach:targetPosition})] };
+    }
+  }
   const exit = current ? buildRoomReturn(room, current.plan, current.stepIndex, position).steps.slice(0, -1) : [];
   const floorStart = exit.at(-1)?.position ?? position;
   return { ...next, steps: [...exit, { ...next.steps[0], ...walkTo(floorStart, approach, room.petSize), approachingSeat: true }, ...next.steps.slice(1)] };
+}
+
+/** Continue an idle perch visit only when another safe, unvisited support exists. */
+export function continueFurnitureExploration(
+  room: RoomActivityOptions,
+  current: { plan: RoomActivityPlan; stepIndex: number },
+  position: Vec3,
+  turn: number,
+): RoomActivityPlan | null {
+  const { plan, stepIndex } = current, step = plan.steps[stepIndex], world = room.nativeWorld;
+  if (!world || room.nativeStepCompletion === false || room.hungry || room.asleep || room.period === 'night'
+    || plan.userRequested || step.hold || step.native?.blocked || !['sofaSit','islandSit'].includes(plan.kind) || step.animation !== 'sit') return null;
+  const sourceId = step.targetInstanceId ?? plan.targetInstanceId;
+  if (!sourceId || !step.sofaApproach) return null;
+  const visited = plan.exploredFurniture ?? [sourceId];
+  // At most two transfers, without bouncing between the same two chairs.
+  if (visited.length >= 3) return null;
+  const nearby = world.objects.filter(object => object.seat && !visited.includes(object.instanceId))
+    .sort((a, b) => Math.hypot(a.seat![0] - position[0], a.seat![2] - position[2])
+      - Math.hypot(b.seat![0] - position[0], b.seat![2] - position[2]));
+  for (const object of nearby) {
+    const next = buildRoomActivity(room, turn, isKitchenIslandDecorationId(object.modelId) ? 'islandSit' : 'sofaSit', object.instanceId);
+    if (!next) continue;
+    const routed = routeToSofa(room, next, catScreenPoint(position, world), current, position);
+    // Exploration never takes a floor detour just to extend the outing.
+    if (!routed.steps[0]?.jumpFromInstanceId) continue;
+    return { ...routed, ambientPeriod: room.period, userRequested: false,
+      exploredFurniture: [...visited, object.instanceId],
+      steps: routed.steps.map(item => ({ ...item, hold: false,
+        durationMs: item.animation === 'sit' ? 6000 + turn % 4 * 1500 : item.durationMs })) };
+  }
+  return null;
 }
 
 /** Commands and idle choices share object eligibility and rendered coordinates. */
@@ -300,7 +361,8 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
   for (const sofa of room.decorations) {
     const sprite = getPlacedDecorationSpriteId(sofa);
     const chair = isKitchenChairDecorationId(sprite), island = isKitchenIslandDecorationId(sprite);
-    if (!isCatSeatDecorationId(sprite) && !chair && !island) continue;
+    if (!isCatSeatDecorationId(sprite) && !chair && !island && !isFurniturePerch(sprite) && !isSleepingBed(sprite)) continue;
+    if(!command && isFurniturePerch(sprite) && isDecorationOpen(sofa))continue;
     const size = getPlacedDecorationDragSize(sofa) * room.sizeScale;
     const center = roomOffsetToPoint(sofa.offset, room.width, room.height, size);
     const seatSide = (sprite === "sofaB" ? 1 : -1) * (sofa.wallFlipped ? -1 : 1);
@@ -314,10 +376,10 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
       { position: approach, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS, sofaApproach: approach },
       { ...walkTo(approach, home, room.petSize), returnHome: true },
     ];
-    if (!chair && (!room.asleep || command === "sofaSit" || command === "islandSit")) candidates.push({ kind: island ? "islandSit" : "sofaSit", targetInstanceId: sofa.instanceId, sofaApproach: approach, steps: [
-      ...arrive, { position: seat, mood: "idle", animation: "sit", durationMs: 12_000, sofaApproach: approach, hold: Boolean(command) }, ...leave,
-    ] });
-    if (!island) candidates.push({ kind: chair ? "chairNap" : "sofaSleep", targetInstanceId: sofa.instanceId, sofaApproach: approach, steps: [
+    if ((!chair || !command || command === 'sofaSit') && (!room.asleep || command === "sofaSit" || command === "islandSit")) candidates.push({ kind: island ? "islandSit" : "sofaSit", targetInstanceId: sofa.instanceId, sofaApproach: approach, steps: [
+      ...arrive, { position: seat, mood: "idle" as const, animation: "sit" as const, durationMs: 12_000, sofaApproach: approach, hold: Boolean(command) }, ...leave,
+    ].map(step => chair ? { ...step, kitchenNavigation: true } : step) });
+    if (!island && (chair || isCatSeatDecorationId(sprite))) candidates.push({ kind: chair ? "chairNap" : "sofaSleep", targetInstanceId: sofa.instanceId, sofaApproach: approach, steps: [
       ...arrive,
       { position: seat, mood: "lyingDown", animation: "curlUp", durationMs: 1000, sofaApproach: approach },
       { position: seat, mood: "sleeping", animation: "curlSleep", durationMs: 25_000, sofaApproach: approach, hold: Boolean(command) },
@@ -466,13 +528,21 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
     const rests = candidates.filter(plan => plan.kind === 'sofaSit' || plan.kind === 'islandSit' || plan.kind === 'windowWatch');
     const active = candidates.filter(plan => !naps.includes(plan) && !rests.includes(plan));
     const night = room.period === 'night';
+    // Perch exploration shares daytime choices with floor wandering and toys.
+    // Add one choice so a room full of chairs does not crowd out other play.
+    const perches = rests.filter(plan => plan.kind === 'sofaSit');
+    if (!night && !room.asleep && room.nativeWorld && room.nativeStepCompletion !== false && perches.length)
+      active.push(perches[Math.floor(turn / 5) % perches.length]);
     // Four of five choices favour sleep at night and activity during the day,
     // independently of how many toys or seats happen to be in the room.
     const primary = night ? naps : active;
     const secondary = night ? active : [...rests, ...naps];
     const choices = turn % 5 < 4 ? primary : secondary;
     const eligible = choices.length ? choices : primary.length ? primary : secondary;
-    const plan = eligible[turn % eligible.length];
+    // Count each pool's own turns. Using turn % length skips a fifth primary
+    // choice forever when there happen to be exactly five activities.
+    const choiceTurn = turn % 5 < 4 ? Math.floor(turn / 5) * 4 + turn % 5 : Math.floor(turn / 5);
+    const plan = eligible[choiceTurn % eligible.length];
     return plan ? { ...plan, ambientPeriod: room.period, steps: plan.steps.map(step =>
       step.animation === 'curlSleep' ? { ...step, durationMs: night ? 120_000 : 20_000 } : step) } : null;
   }

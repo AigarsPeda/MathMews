@@ -64,6 +64,17 @@ export function resolveTailContact(points: Vec3[], world: NativeRoomWorld, previ
     if (distance > reach) continue;
     boxes.push(...(object.collisionBoxes ?? [{ min: object.min, max: object.max }]));
   }
+  // The hip attachment cannot move when the tail rotates. Searching for a
+  // clearing pose while this fixed point is embedded in a seat/backrest only
+  // folds the connected skin into a long, thin sliver. Relax to the authored
+  // attachment and report the unresolved contact instead.
+  const anchor = points[0];
+  const pinned = anchor[1] < FLOOR_Y + radius || Math.abs(anchor[0]) + radius > 2.35 || Math.abs(anchor[2]) + radius > 2.35
+    || boxes.some(box => Math.hypot(...anchor.map((v, k) => v - Math.max(box.min[k], Math.min(box.max[k], v)))) < radius);
+  if (pinned) {
+    const angle = previous.angle * Math.exp(-delta * 12);
+    return angle < .001 ? { ...REST, blocked: true } : { ...previous, angle, blocked: true };
+  }
   // A clearance margin prevents alternate relaxation/contact frames at the
   // surface. Keep the previous axis and solve continuously before trying others.
   const relaxed = { ...previous, angle: previous.angle * Math.exp(-delta * 4), blocked: false };
@@ -71,9 +82,8 @@ export function resolveTailContact(points: Vec3[], world: NativeRoomWorld, previ
   if (penetration(points, boxes, radius, previous) < 1e-8) return { ...previous, blocked: false };
   if (penetration(points, boxes, radius, REST) < 1e-8) return REST;
   if (previous.blocked) {
-    // An anchored root inside a furnishing cannot be freed by rotating it.
-    // Follow the least-penetrating pose locally instead of exhausting all axes
-    // on every frame and snapping between unrelated solutions.
+    // If no clear bend exists, follow the least-penetrating pose locally
+    // instead of exhausting all axes and switching solutions every frame.
     let best = previous, depth = penetration(points, boxes, radius, previous);
     for (const sign of [-1, 1]) {
       const candidate = { ...previous, angle: Math.max(0, Math.min(Math.PI * 5 / 6, previous.angle + sign * delta * 1.5)) };

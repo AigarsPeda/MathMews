@@ -8,6 +8,7 @@ import {
   buildRoomReturn,
   buildRoomExit,
   buildRoomEntry,
+  continueFurnitureExploration,
   routeToSofa,
   roomOffsetToPoint,
   roomActivityStepKey,
@@ -192,7 +193,7 @@ export function useRoomActivity(
         step = step.native?.blocked || step.native && (reduceMotion || elapsed && (isCatJump(step.animation) || step.native.legs?.length)) ? { ...step } :
           prepareNativeStep(plan, step, room.nativeStepCompletion && nativePosition.current
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
-        step.native = { ...step.native!, elapsed, replanned, awaitCompletion: roomVisible && room.nativeStepCompletion && !step.hold };
+        step.native = { ...step.native!, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: roomVisible && room.nativeStepCompletion && !step.hold };
         nativeElapsed.current = elapsed;
         if (step.native?.blocked) {
           if (plan.userRequested && !failureReported.current && !pendingCommand.current) {
@@ -265,10 +266,16 @@ export function useRoomActivity(
           // jump-down must not start a second jump off the sofa.
           const landedStep = { ...step, animation: undefined,
             bathroomPhase: step.animation === "jumpOff" ? undefined : step.bathroomPhase,
-            sofaApproach: step.animation === "jumpOff" ? undefined : step.sofaApproach };
+            sofaApproach: step.animation === "jumpOff" && !step.jumpFromInstanceId ? undefined : step.sofaApproach };
           running.current = { plan: { ...next.plan, steps: next.plan.steps.map((item, index) => index === stepIndex ? landedStep : item) }, stepIndex, startedAt: Date.now() };
           setRequest(current => ({ id: (current?.id ?? 0) + 1, ...kind }));
-        } else runStep(next.plan, stepIndex + 1);
+        } else {
+          const exploration = !reduceMotion && roomVisible && nativePosition.current
+            ? continueFurnitureExploration({ ...latestOptions.current, nativeWorld: liveWorld.current }, next,
+              nativePosition.current, turn.current) : null;
+          if (exploration) { turn.current++; startPlan(exploration); }
+          else runStep(next.plan, stepIndex + 1);
+        }
       };
       nativeAdvance.current = step.native?.awaitCompletion ? (key, position) => {
         if (stopped || !running.current || roomActivityStepKey(running.current) !== key) return;
@@ -378,7 +385,7 @@ export function useRoomActivity(
         timer = setTimeout(() => startPlan({ ...exit, stopForEditing: true }), 0);
       } else if (next) {
         const plan = next.sofaApproach && next.steps[1]?.animation === 'jumpOn'
-          ? routeToSofa(options, next, position, current)
+          ? routeToSofa({ ...options,nativeWorld:liveWorld.current ?? undefined }, next, position, current,nativePosition.current ?? undefined)
           : current ? { ...next, steps: [...buildRoomExit(options, current.plan, current.stepIndex, position).steps, ...next.steps] } : next;
         queuedPlan.current = plan;
         timer = setTimeout(() => startPlan(plan), 0);

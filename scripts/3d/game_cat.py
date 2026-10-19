@@ -12,7 +12,50 @@ from cat_model import COATS, STRIPES, rgba, create_cat as create_controls, pose_
 
 ROOT = Path(__file__).resolve().parents[2]
 GAITS = __import__('json').loads((ROOT/'constants/cat-gaits.json').read_text())
+JUMP = __import__('json').loads((ROOT/'constants/cat-jump.json').read_text())
 from original_cat import create_cat as create_original_cat
+
+
+def keyed(t, keys):
+    """Clamped, eased pose keys. End tangents settle without overshoot."""
+    for (start, a), (end, b) in zip(keys, keys[1:]):
+        if t <= end:
+            u = max(0, min(1, (t-start)/(end-start)))
+            return a+(b-a)*u*u*(3-2*u)
+    return keys[-1][1]
+
+
+def jump_pose(state, t):
+    """Hind-driven launch, gathered flight, fore-first impact and recovery.
+
+    Upward jumps reach up; a downward jump looks and reaches down instead of
+    replaying the same spring. Feet stay on their support until released.
+    Values are offsets in the original cat's unscaled rest space.
+    """
+    off = state == 'jumpOff'
+    takeoff, contact, hind_contact = JUMP['takeoff'], JUMP['touchdown'], JUMP['hindTouchdown']
+    # Load the haunches, then visibly extend while the hind pads are STILL
+    # planted. Finishing this after liftoff reads as an unsupported body bob.
+    crouch = keyed(t, [(0, 0), (.11, 1), (takeoff, 0), (1, 0)])
+    # Continue downward immediately after forepaw contact, then ease out at
+    # maximum flexion. A smoothstep starting at contact would stop the torso
+    # first and only then dip, making the landing feel like a separate bounce.
+    impact = (0 if t <= contact else math.sin(min(1,(t-contact)/(.80-contact))*math.pi/2)
+              if t <= .80 else keyed(t, [(.80, 1), (1, 0)]))
+    # Negative pitch raises the nose in Blender's -Y forward convention.
+    pitch = keyed(t, [(0, 0), (.12, .02 if off else -.035),
+                      (.24, 0 if off else -.20), (.42, .10 if off else -.10),
+                      (.62, .16 if off else .025), (.80, .055), (1, 0)])
+    fore_lift = keyed(t, [(0, 0), (.09, 0), (takeoff, .17 if off else .21),
+                          (.40, .19), (.58, -.035 if off else .045), (contact, 0), (1, 0)])
+    fore_reach = keyed(t, [(0, 0), (.10, 0), (.25, -.11), (.44, -.035),
+                           (.58, -.13 if off else -.17), (contact, 0), (1, 0)])
+    rear_lift = keyed(t, [(0, 0), (takeoff, 0), (.28, .055), (.43, .25),
+                          (.62, .18), (hind_contact, 0), (1, 0)])
+    rear_reach = keyed(t, [(0, 0), (takeoff, 0), (.28, .12 if off else .16), (.46, -.14),
+                           (.63, -.09), (hind_contact, 0), (1, 0)])
+    gather = keyed(t, [(0, 0), (.27, 0), (.44, 1), (.67, 0), (1, 0)])
+    return crouch, impact, pitch, fore_lift, fore_reach, rear_lift, rear_reach, gather
 
 
 def load_cat(skin):
@@ -265,18 +308,14 @@ def pose(arm, driver, state, t, idle_controls):
     origin = bones['pelvis'].head_local if state == 'eating' else (bones['L.forelegjoint0'].head_local+bones['R.forelegjoint0'].head_local)/2
     lean = .045 if state == 'trot' else .075+.025*math.sin(t*math.tau) if state == 'run' else 0
     if jumping:
-        # Anticipation, hind-leg push, nose-led flight and a soft landing.
-        # The native root owns translation and yaw; this pose never spins.
-        crouch = math.sin(math.pi*min(1,t/.20))**2 if t < .20 else 0
-        landing = math.sin(math.pi*max(0,min(1,(t-.70)/.28)))**2
-        airborne = smooth_window(t,.20,.70,.10)
-        lean = -.12*smooth_window(t,.14,.39,.08)+.12*smooth_window(t,.50,.78,.10)
+        crouch, landing, lean, fore_lift, fore_reach, rear_lift, rear_reach, gather = jump_pose(state, t)
+        airborne = smooth_window(t,JUMP['takeoff'],JUMP['touchdown'],.10)
     rotation = Matrix.Rotation(-.52*seated+.24*eating_lean+lean, 3, 'X')
     baseline_body = idle_controls['standing_height'] if driver_standing else idle_controls['body_height']
     shift = Vector((driver['body'].location.x, 0, driver['body'].location.z-baseline_body))*.6
     shift.z -= .24*settle
     if jumping:
-        shift.z += -.085*crouch-.095*landing+.018*airborne
+        shift.z += -(.055 if state == 'jumpOff' else .08)*crouch
     if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run'):
         shift.z -= .07
     if state in ('trot','run'):
@@ -297,6 +336,24 @@ def pose(arm, driver, state, t, idle_controls):
             return body @ Matrix.Translation(pivot) @ Matrix.Rotation(angle, 4, 'X') @ Matrix.Translation(-pivot)
         fore_body = bend_at('chest', .065*flex)
         hind_body = bend_at('pelvis', -.085*flex)
+    if jumping:
+        # The short torso bends through the gathering/impact, rather than
+        # travelling as one rigid block. No axial twist or airborne yaw.
+        def bend_jump(name, angle):
+            pivot = bones[name].head_local
+            return body @ Matrix.Translation(pivot) @ Matrix.Rotation(angle, 4, 'X') @ Matrix.Translation(-pivot)
+        # Forelimbs receive the impact first. The pelvis follows after the
+        # hind paws arrive, rather than both halves bouncing simultaneously.
+        hind_impact = (0 if t <= JUMP['hindTouchdown'] else
+                       math.sin(min(1,(t-JUMP['hindTouchdown'])/.07)*math.pi/2)
+                       if t <= .89 else keyed(t, [(.89, 1), (1, 0)]))
+        extension = keyed(t, [(0, 0), (.11, 0), (JUMP['takeoff'], 1), (.28, .65), (.42, 0), (1, 0)])
+        hip_push = (0 if state == 'jumpOff' else .12)*extension
+        fore_body = Matrix.Translation((0, 0, -.14*landing)) @ bend_jump('chest', .055*gather+.045*landing)
+        hind_body = Matrix.Translation((0, 0, hip_push-.07*crouch-.035*landing-.085*hind_impact)) @ bend_jump('pelvis', -.09*gather-.04*crouch)
+        # Blend the spine through the shoulder/hip absorption, keeping the
+        # contact legs independent and the head quieter than the torso.
+        body = Matrix.Translation((0, 0, hip_push*.4-.075*landing-.045*hind_impact)) @ body
     desired = {name: body @ bones[name].matrix_local for name in ('spine', 'belly')}
     desired.update(chest=fore_body @ bones['chest'].matrix_local, pelvis=hind_body @ bones['pelvis'].matrix_local)
     chest_shift = (fore_body @ bones['chest'].head_local)-bones['chest'].head_local
@@ -307,8 +364,10 @@ def pose(arm, driver, state, t, idle_controls):
     if state in ('trot','run'):
         head_rotation = Matrix.Rotation(-lean*.65, 3, 'X')
     if jumping:
-        head_shift = Vector((0,-.025*airborne,-.035*landing))
-        head_rotation = Matrix.Rotation(-lean*.55,3,'X')
+        head_shift = Vector((0,-.045*airborne,-.025*landing))
+        # These are absolute bone targets: retain a quieter version of the
+        # body's pitch, keeping the gaze toward the destination.
+        head_rotation = Matrix.Rotation(lean*.35,3,'X')
     if state == 'crawl':
         head_shift.z -= .16
         head_rotation = Matrix.Rotation(.12, 3, 'X')
@@ -341,11 +400,8 @@ def pose(arm, driver, state, t, idle_controls):
                 delta = driver[key][i].location-idle_controls[key][i]
             toe += delta
             if jumping:
-                # Forepaws reach the destination first; hind paws finish their
-                # swing after forepaw contact while the torso absorbs impact.
-                tuck = smooth_window(t,.18 if not rear else .20,.70 if not rear else .80,.13)
-                reach = smooth_window(t,.48,.70,.10) if not rear else 0
-                toe += Vector((0,(.10 if rear else .07)*tuck-.06*reach,(.20 if rear else .16)*tuck))
+                toe += Vector((0,rear_reach if rear else fore_reach,rear_lift if rear else fore_lift))
+                toe.x *= 1-(.36 if rear else .28)*gather
             if state == 'wash' and not rear and side == 'R':
                 lift = smooth_window(t, .08, .88, .12)
                 wipe = math.sin(t*math.tau*2)
@@ -354,7 +410,7 @@ def pose(arm, driver, state, t, idle_controls):
                 toe = toe.lerp(target, lift)
             desired.update(limb_pose(bones, names, shoulder, toe))
     # The upright hooked tail follows the pelvis.
-    tail_rotation = Matrix.Rotation(.22*airborne-.08*landing,3,'X') if jumping else driver['tail'].rotation_euler.to_matrix()
+    tail_rotation = Matrix.Rotation(.10*airborne-.045*landing,3,'X') if jumping else driver['tail'].rotation_euler.to_matrix()
     anchor = bones['tailjoint0'].head_local
     tail_transform = hind_body @ Matrix.Translation(anchor) @ tail_rotation.to_4x4() @ Matrix.Translation(-anchor)
     for name in [*('tailjoint'+str(i) for i in range(4)), 'tailTip']:
@@ -425,9 +481,11 @@ def export_cats(scope, args, export):
             out.parent = arm
             exports.append(out)
         arm.animation_data_create()
-        scene.render.fps = 24
+        # Denser keys keep planted toes from dipping between large knee/hip
+        # rotations when glTF interpolates the baked bone quaternions.
+        scene.render.fps = 48
         for clip, (count, fps) in clips.items():
-            frames = round(count/fps*24)
+            frames = round(count/fps*scene.render.fps)
             action = bpy.data.actions.new(clip)
             arm.animation_data.action = action
             for frame in range(frames+1):
@@ -457,7 +515,7 @@ def export_cats(scope, args, export):
             arm.animation_data.action = None
         for bone in arm.pose.bones:
             bone.matrix_basis = Matrix.Identity(4)
-        scene.frame_start, scene.frame_end = 1, 121
+        scene.frame_start, scene.frame_end = 1, 241
         # Authoring controls are never exported or visible in the saved rig.
         for obj in driver_objects | set(categories):
             if obj.type not in ('CAMERA', 'LIGHT'):

@@ -9,6 +9,14 @@ checks.push('check-cat-command-motion');
 checks.push('check-cat-turning');
 checks.push('check-cat-gaits');
 checks.push('check-cat-jumps');
+checks.push('check-cat-jump-anatomy');
+checks.push('check-cat-landing-walk');
+checks.push('check-rocking-chair-navigation');
+checks.push('check-furniture-perches');
+checks.push('check-furniture-transfers');
+checks.push('check-catalog-furniture-jumps');
+checks.push('check-close-furniture-jumps');
+checks.push('check-cat-tail-contact');
 for (const check of checks) {
   const result = spawnSync(process.execPath, [`scripts/${check}.mjs`], { stdio: 'inherit' });
   if (result.status !== 0) process.exit(result.status ?? 1);

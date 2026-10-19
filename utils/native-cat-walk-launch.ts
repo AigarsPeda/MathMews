@@ -40,10 +40,11 @@ export function catLaunchPaw(initial: Vec3, neutral: Vec3, animated: Vec3, root:
     initial[2] + (target[2] - initial[2]) * step.progress];
 }
 
-/** Keep the turning crouch through the first steps, then join the walk height. */
-export function catLaunchSpine(initial: number, walking: number, distance: number, stride: number) {
+/** Carry the current crouch into the walk. A landing recovers after the hind
+ * paws can step; it must not add the second dip used for a turning push-off. */
+export function catLaunchSpine(initial: number, walking: number, distance: number, stride: number, landing = false) {
   'worklet';
-  const settle = catLaunchBlend(distance / .20);
+  const settle = catLaunchBlend(landing ? (distance - .35) / .55 : distance / .20);
   return (initial - walking) * (1 - settle)
-    - .08 * Math.min(1, stride / .8) * settle * (1 - catLaunchBlend((distance - .50) / .40));
+    - (landing ? 0 : .08) * Math.min(1, stride / .8) * settle * (1 - catLaunchBlend((distance - .50) / .40));
 }

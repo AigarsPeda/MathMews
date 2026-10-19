@@ -1,5 +1,6 @@
 import type { NativeRoomObject, NativeRoomWorld, Vec3 } from '@/utils/native-room-world';
-import { catJumpPoint, type CatMotionLeg } from '@/utils/native-cat-locomotion';
+import { catJumpPoint, catJumpDuration, type CatMotionLeg } from '@/utils/native-cat-locomotion';
+import { CAT_FURNITURE } from '@/constants/cat-furniture';
 
 export type CatTraversalLink = { from: Vec3; to: Vec3; leg: CatMotionLeg };
 const length = (a: Vec3, b: Vec3) => Math.hypot(...a.map((v, i) => v - b[i]));
@@ -28,9 +29,9 @@ export function catFlightClear(from: Vec3, to: Vec3, height: number, world: Nati
 function jumpLink(from: Vec3, to: Vec3, world: NativeRoomWorld, supportId: string): CatTraversalLink | undefined {
   const scale = world.catScale, distance = length(from, to);
   if (distance > 4 * scale || Math.abs(to[1] - from[1]) > 1.65 * scale) return undefined;
-  for (let height = .24 * scale; height <= 2.21 * scale; height += .13 * scale) {
+  for (let height = Math.max(.24 * scale,Math.abs(to[1]-from[1])*.25+.06*scale); height <= 2.21 * scale; height += .13 * scale) {
     if (!catFlightClear(from, to, height, world)) continue;
-    const duration = .65 + .18 * distance / scale + .16 * height / scale;
+    const duration = catJumpDuration(from,to,height,scale);
     return { from, to, leg: { kind: 'hop', path: [from, to], duration, arcHeight: height, supportId } };
   }
   return undefined;
@@ -55,11 +56,23 @@ export function buildCatTraversalLinks(world: NativeRoomWorld, floorFree: (point
         if (floorFree(from) && floorFree(to)) { addJump(from, to, object); addJump(to, from, object); }
       }
     }
-    if (!object.seat || !/^(kitchenChair|chairRockingOak|sofa)/.test(object.modelId)
+    const furniture = CAT_FURNITURE[object.modelId];
+    if (!object.seat || !furniture && !/^(kitchenChair|chairRockingOak|sofa)/.test(object.modelId)
       || object.modelId === 'sofaPillow' || object.seat[1] - floor > 1.65 * scale) continue;
     // Reserve room for all four paws on the cushion, excluding narrow miniatures.
     if (Math.min(max[0] - min[0], max[2] - min[2]) < .65 * scale) continue;
-    const sin = Math.sin(object.heading), cos = Math.cos(object.heading);
+    const frontHeading = object.heading+(furniture?.front ?? (object.modelId === 'sofaB' ? Math.PI/2 : 0));
+    const sin = Math.sin(frontHeading), cos = Math.cos(frontHeading);
+    if (furniture) {
+      const dx=(object.seat[0]-object.position[0])/object.scale,dz=(object.seat[2]-object.position[2])/object.scale;
+      const x=Math.cos(object.heading)*dx-Math.sin(object.heading)*dz,z=Math.sin(object.heading)*dx+Math.cos(object.heading)*dz;
+      const paws=[-.30,.30].flatMap(side=>[-.55,.55].map(forward=>{
+        const s=Math.sin(furniture.front),c=Math.cos(furniture.front),r=scale/object.scale;
+        return [x+(side*c+forward*s)*r,z+(forward*c-side*s)*r];
+      }));
+      if (!furniture.surfaces.some(top=>paws.every(p=>top.footprint.every((a,i,poly)=>{const b=poly[(i+1)%poly.length];
+        return (b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0])>=0;})))) continue;
+    }
     const seatFront: Vec3 = [...object.seat];
     // Gather toward the cushion's front before turning to clear the backrest.
     const seatBack: Vec3 = [object.seat[0] + sin * .06 * object.scale, object.seat[1], object.seat[2] + cos * .06 * object.scale];

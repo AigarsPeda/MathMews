@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
+import {furnitureTransferScene,furnitureExplorationScene} from './fixtures/furniture-transfers.mjs';
 const root = process.cwd();
 const cache = new Map();
 const mocks = {};
@@ -978,7 +979,7 @@ assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation
 finishClockStep(); finishClockStep();
 assert.equal(render().activity, null);
 advance(12_700); render();
-assert.equal(render().activity.plan.kind, 'wander', 'Morning resumes floor exploration');
+assert.ok(['wander','sofaSit'].includes(render().activity.plan.kind), 'Morning resumes floor or furniture exploration');
 
 resetClockRoom('night'); render().startActivity('sofaSleep', sofa.instanceId); render(); advance(0);
 for (let i = 0; i < 3; i++) finishClockStep();
@@ -1282,7 +1283,7 @@ console.log('Verified all four kitchen activities continue from pending commands
     const object = world.objects.find(o => o.instanceId === id);
     assert.ok(object.bed && object.seat, `${modelId} exports mattress contacts`);
     const commands = getRoomCommands(human ? { kind: 'bed' } : { kind: 'decoration', ...decoration }, options.bedId);
-    assert.deepEqual(Array.from(commands, c => c.kind), ['bedSleep', 'bedSnuggle']);
+    assert.deepEqual(Array.from(commands, c => c.kind), human ? ['bedSleep', 'bedSnuggle'] : ['bedSleep', 'bedSnuggle','sofaSit']);
     for (const kind of ['bedSleep', 'bedSnuggle']) {
       let plan = buildRoomActivity(options, 0, kind, id);
       assert.equal(plan.targetInstanceId, id);
@@ -1401,3 +1402,144 @@ console.log('Verified automatic nighttime metadata survives hidden room entry an
   assert.equal(render().activity,null,'The editor is released only after the cat has landed safely');
 }
 console.log('Verified traversal scheduling, pause/resume clock, queued editing and safe interrupted room departures.');
+
+// Keep support identity through the real hook's queued descending jump. A
+// downward transfer still lands on furniture, unlike an ordinary jump down.
+for(const reduced of [false,true]) {
+  slots.forEach(value=>value?.cleanup?.());slots.length=0;timers.clear();
+  visibility={active:true,reduceMotion:reduced};roomVisible=true;enabled=true;
+  const scene=furnitureTransferScene(nativeRoom,load('@/constants/decoration-variants').getDecorationRotationGroup,'chairRockingOak');
+  hookRoom={...scene.options,nativeStepCompletion:true,period:'morning',homeRoomId:'livingRoom'};
+  render();reportCat(scene.world.home);render();
+  render().startActivity('sofaSit','sofa');render();advance(0);render();
+  for(let i=0;i<8&&!render().activity.plan.steps[render().activity.stepIndex].hold;i++)finishClockStep();
+  assert.ok(render().activity.plan.steps[render().activity.stepIndex].hold);
+  render().startActivity('sofaSit','target');render();advance(0);render();
+  let state=render().activity,step=state.plan.steps[state.stepIndex];
+  assert.equal(step.jumpFromInstanceId,'sofa','The hook dispatches a direct elevated transfer');
+  assert.equal(step.native.jump,!reduced,'Reduce Motion retains the same destination without flight animation');
+  finishClockStep();
+  assert.ok(render().activity.plan.steps[render().activity.stepIndex].hold);
+  render().startActivity('sofaSit','target');render();advance(0);render();
+  assert.ok(render().activity.plan.steps[render().activity.stepIndex].hold,'Repeating the same furniture command does not restart a jump');
+  render().startActivity('sofaSit','sofa');render();advance(0);render();
+  state=render().activity;step=state.plan.steps[state.stepIndex];
+  assert.equal(step.jumpFromInstanceId,'target');
+  if(!reduced) {
+    assert.equal(step.animation,'jumpOff');
+    const half=load('@/utils/native-cat-locomotion').catJumpPoint(step.native.path[0],step.native.path.at(-1),.5,step.native.arcHeight,true);
+    reportCat(half);render().updateNativeHeight(half,step.native.duration*.45);
+    visibility={active:false,reduceMotion:false};render();visibility={active:true,reduceMotion:false};render();render();
+    assert.equal(render().activity.plan.steps[render().activity.stepIndex].jumpFromInstanceId,'target','Pause/resume retains both supports');
+    render().startActivity('sofaSit','target');render();advance(0);render();
+    assert.equal(render().activity.plan.targetInstanceId,'sofa','A new command waits for the descending transfer to land');
+    const oldKey=roomActivityStepKey(render().activity),oldEnd=step.native.path.at(-1);
+    finishClockStep();render();advance(0);render();
+    const queued=render().activity;
+    assert.equal(queued.plan.targetInstanceId,'target');
+    assert.equal(queued.plan.steps[queued.stepIndex].jumpFromInstanceId,'sofa','The queued command recognizes a supported landing and jumps again');
+    render().completeNativeStep(oldKey,oldEnd);render();
+    assert.equal(roomActivityStepKey(render().activity),roomActivityStepKey(queued),'A late arrival callback cannot advance the new jump');
+    finishClockStep();
+  } else finishClockStep();
+  render().returnHome();render();advance(0);render();
+  for(let i=0;i<8&&render().activity;i++)finishClockStep();
+  assert.equal(render().activity,null,'A later ground task gets down and finishes normally');
+}
+console.log('Verified direct furniture commands, queued descending transfers, repeated jumps, pause/resume, stale callbacks, Reduce Motion and later floor returns through the real scheduler.');
+
+// No command starts this journey: the idle scheduler chooses the sofa itself.
+function startAutonomousPerch(threePerches=false) {
+  slots.forEach(value=>value?.cleanup?.());slots.length=0;timers.clear();
+  visibility={active:true,reduceMotion:false};roomVisible=true;enabled=true;
+  const group=load('@/constants/decoration-variants').getDecorationRotationGroup;
+  const scene=threePerches?furnitureExplorationScene(nativeRoom,group):furnitureTransferScene(nativeRoom,group,'chairRockingOak');
+  hookRoom={...scene.options,nativeStepCompletion:true,period:'morning',homeRoomId:'livingRoom'};
+  render();reportCat(scene.world.home);render();
+  for(let i=0;i<30;i++) {
+    const state=render().activity,step=state?.plan.steps[state.stepIndex];
+    if(state?.plan.kind==='sofaSit'&&step?.animation==='sit') {
+      assert.equal(state.plan.targetInstanceId,'sofa');assert.ok(!state.plan.userRequested&&!step.hold);
+      return scene;
+    }
+    if(state)finishClockStep();else{advance(16_000);render();}
+  }
+  assert.fail('Idle exploration should discover a reachable perch without a command');
+}
+{
+  startAutonomousPerch();
+  finishClockStep();
+  let state=render().activity,step=state.plan.steps[state.stepIndex];
+  assert.equal(step.jumpFromInstanceId,'sofa','A completed automatic rest starts a direct furniture hop');
+  assert.equal(state.plan.targetInstanceId,'target');assert.equal(state.plan.userRequested,false);
+  assert.ok(step.native.jump&&!step.native.blocked);
+  const jumpKey=roomActivityStepKey(state),landing=step.native.path.at(-1);
+  visibility={active:false,reduceMotion:false};render();
+  render().completeNativeStep(jumpKey,landing);render();
+  assert.equal(roomActivityStepKey(render().activity),jumpKey,'Backgrounding suspends automatic flight completion');
+  visibility={active:true,reduceMotion:false};render();render();finishClockStep();
+  state=render().activity;step=state.plan.steps[state.stepIndex];
+  assert.equal(step.animation,'sit');assert.ok(!step.hold);
+  assert.ok(step.durationMs>=6000&&step.durationMs<=10500);
+  render().completeNativeStep(jumpKey,landing);render();
+  assert.equal(render().activity.stepIndex,state.stepIndex,'A duplicate arrival cannot skip the perch rest');
+  finishClockStep();
+  state=render().activity;step=state.plan.steps[state.stepIndex];
+  assert.equal(step.animation,'jumpOff');assert.equal(step.jumpFromInstanceId,undefined,'Visited furniture is not revisited in the same outing');
+  finishClockStep();finishClockStep();assert.equal(render().activity,null,'Exploration returns to normal idle choices');
+}
+{
+  startAutonomousPerch(true);
+  for(const target of ['target','third']) {
+    finishClockStep();
+    const state=render().activity;
+    assert.equal(state.plan.targetInstanceId,target);assert.ok(state.plan.steps[state.stepIndex].jumpFromInstanceId);
+    finishClockStep();
+    assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation,'sit');
+  }
+  finishClockStep();
+  assert.equal(render().activity.plan.steps[render().activity.stepIndex].jumpFromInstanceId,undefined);
+  finishClockStep();finishClockStep();assert.equal(render().activity,null,'A three-perch outing finishes with a safe floor return');
+}
+for(const condition of ['hungry','asleep','night','hidden','reduceMotion','simple','blocked']) {
+  const scene=startAutonomousPerch();
+  if(condition==='hungry'||condition==='asleep')hookRoom={...hookRoom,[condition]:true};
+  if(condition==='night')hookRoom={...hookRoom,period:'night'};
+  if(condition==='hidden')roomVisible=false;
+  if(condition==='reduceMotion')visibility={active:true,reduceMotion:true};
+  if(condition==='simple')hookRoom={...hookRoom,nativeStepCompletion:false};
+  if(condition==='blocked') {
+    const p=scene.target.seat;
+    const obstacle={instanceId:'blocked-landing',modelId:'test-blocker',solid:true,collidable:true,scale:1,heading:0,position:p,
+      min:[p[0]-.5,p[1]-.1,p[2]-.5],max:[p[0]+.5,p[1]+2,p[2]+.5]};
+    hookRoom={...hookRoom,nativeWorld:{...scene.world,objects:[...scene.world.objects,obstacle]}};
+  }
+  render();render();
+  if(condition==='hidden'||condition==='simple'){advance(14_000);render();}
+  else finishClockStep();
+  const state=render().activity;
+  assert.ok(!state?.plan.steps.some(s=>s.jumpFromInstanceId),`${condition} prevents starting another autonomous hop`);
+  assert.equal(render().blockedActivity,null,'An abandoned automatic choice does not show a command failure');
+}
+{
+  startAutonomousPerch();finishClockStep();
+  assert.equal(render().activity.plan.steps[0].jumpFromInstanceId,'sofa');
+  render().startActivity('sofaSit','sofa');render();advance(0);render();
+  assert.equal(render().activity.plan.targetInstanceId,'target','A command during autonomous flight waits for safe landing');
+  finishClockStep();render();advance(0);render();
+  assert.equal(render().activity.plan.targetInstanceId,'sofa');assert.ok(render().activity.plan.userRequested);
+  for(let i=0;i<8&&!render().activity.plan.steps[render().activity.stepIndex].hold;i++)finishClockStep();
+  const held=render().activity;
+  advance(120_000);render();
+  assert.equal(roomActivityStepKey(render().activity),roomActivityStepKey(held),'An autonomous outing cannot override the commanded rest');
+}
+{
+  startAutonomousPerch();finishClockStep();
+  render().stopActivity();render();advance(0);render();
+  assert.equal(render().activity.plan.targetInstanceId,'target','Editing also waits for the autonomous jump to land');
+  finishClockStep();render();advance(0);render();
+  assert.ok(render().activity.plan.stopForEditing);
+  assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation,'jumpOff');
+  finishClockStep();assert.equal(render().activity,null,'The cat gets down before the editor can move its support');
+}
+console.log('Verified unprompted perch discovery and hopping, landing rests, no ping-pong, safe return, pause/resume, duplicate callbacks, live blocked landings, hidden/simple/Reduce Motion/care/night suppression and midair command priority.');

@@ -50,14 +50,20 @@ function wallSnapCandidates(object: NativeRoomObject, world: NativeRoomWorld, zo
       .map(({ distance }) => translateObject(object, shift(distance)));
   }
   const footprint = roomItemFootprint(object);
-  const x = ROOM_PLACEMENT_MIN - Math.min(...footprint.map(p => p[0]));
-  const z = ROOM_PLACEMENT_MIN - Math.min(...footprint.map(p => p[2]));
-  const nearX = near([x, 0, 0], -x), nearZ = near([0, 0, z], -z);
+  const correction = (axis: 0 | 2): number | undefined => {
+    const shift = (distance: number): Vec3 => axis === 0 ? [distance, 0, 0] : [0, 0, distance];
+    const start = ROOM_PLACEMENT_MIN - Math.min(...footprint.map(p => p[axis]));
+    if (near(shift(start), -start)) return start;
+    const end = ROOM_PLACEMENT_MAX - Math.max(...footprint.map(p => p[axis]));
+    // Open edges correct small overruns without attracting items across gaps.
+    if (end < 0 && near(shift(end), end)) return end;
+  };
+  const x = correction(0), z = correction(2);
   const shifts: Vec3[] = [];
-  // Correct both axes first; a single-wall correction can still cross the other.
-  if (nearX && nearZ) shifts.push([x, 0, z]);
-  if (nearX) shifts.push([x, 0, 0]);
-  if (nearZ) shifts.push([0, 0, z]);
+  // Correct both axes first; fixing one boundary can leave the other crossed.
+  if (x !== undefined && z !== undefined) shifts.push([x, 0, z]);
+  if (x !== undefined) shifts.push([x, 0, 0]);
+  if (z !== undefined) shifts.push([0, 0, z]);
   return shifts.map(delta => translateObject(object, delta));
 }
 

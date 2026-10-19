@@ -2,7 +2,7 @@
 /* Native asset requires are statically resolved by Metro. */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { rockingChairContact, type RockingMotion } from '@/utils/native-rocking-chair';
-import { catJumpPoint, catMotionSample, catPathFromPosition, catPathPoint, catTravelProgress, type CatMotionLeg } from '@/utils/native-cat-locomotion';
+import { catJumpPoint, catJumpAim, catMotionSample, CAT_LANDING_WALK_PHASE, CAT_JUMP_TAKEOFF, CAT_JUMP_TOUCHDOWN, catPathFromPosition, catPathPoint, catTravelProgress, type CatMotionLeg } from '@/utils/native-cat-locomotion';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { RenderCallbackContext, useAnimator, useFilamentContext, useModel } from 'react-native-filament';
 import { useSharedValue, Worklets, type ISharedValue } from 'react-native-worklets-core';
@@ -138,13 +138,13 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     position: (initialPosition ?? world?.home ?? [0, 0, 0]) as Vec3, home: (world?.home ?? [0, 0, 0]) as Vec3, routeStart: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1, blendSeconds: .12,
     clipLoop: false, previousLoop: false, clipDuration: 1, previousDuration: 1,
     routePath: [] as Vec3[], routePaces: [] as number[], routeLegs: [] as CatMotionLeg[], routeDuration: 0, routeRamp: .18,
-    sourcePath: [] as Vec3[], sourceDuration: 0, sourceJump: false, jumpPhase: 0, jumpOffset: 0, jumpDuration: 0, jumpFrom: [0, 0, 0] as Vec3,
+    sourcePath: [] as Vec3[], sourceDuration: 0, sourceJump: false, jumpPhase: 0, jumpOffset: 0, jumpDuration: 0, jumpArcHeight: 0, jumpFrom: [0, 0, 0] as Vec3,
     turnElapsed: 0, turnDuration: 0, turnFrom: 0, turnAngle: 0,
     turnFeet: [] as Vec3[], turnNeutral: [] as Vec3[], turnLeg: -1,
     turnSoles: [] as number[][], turnHead: 0, turnSpineHeight: 0, turnCrouch: 0,
     turnInitialSoles: [] as number[][],
     turnOverlap: 0, launchStarted: false, launchFeet: [] as Vec3[], launchSoles: [] as number[][],
-    launchDistance: 0, launchStride: .8, launchPhase: 0, launchHeight: 0, walkStride: .8, walkOffset: 0,
+    landingPending: false, launchFromLanding: false, launchDistance: 0, launchStride: .8, launchPhase: 0, launchHeight: 0, walkStride: .8, walkOffset: 0,
     gait: 'walk' as CatGait, gaitSpeed: 0, gaitContacts: [] as (Vec3 | null)[],
     gaitSwings: [] as ({ from: Vec3; elapsed: number } | null)[],
     supportLift: 0,
@@ -196,6 +196,8 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       frameState.complete = false;
       frameState.roomComplete = false;
       if (!request.travel?.path.length) {
+        frameState.landingPending = false;
+        frameState.launchFromLanding = false;
         frameState.turnElapsed = 0;
         frameState.turnDuration = 0;
         frameState.turnFeet = [];
@@ -223,16 +225,19 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
           frameState.turnLeg = -1;
           frameState.turnOverlap = 0;
           frameState.launchStarted = false;
+          frameState.launchFromLanding = false;
+          if (journey.jump || !request.segments[0]?.name.startsWith('walk')) frameState.landingPending = false;
           const phase = frameState.distance / (frameState.walkStride * (request.world?.catScale ?? 1)) + frameState.walkOffset;
           frameState.walkStride = .8;
           frameState.walkOffset = phase - frameState.distance / (.8 * (request.world?.catScale ?? 1));
-          const continuingJump = journey.jump && frameState.sourceJump && frameState.jumpPhase > .20 && frameState.jumpPhase < 1
+          const continuingJump = journey.jump && frameState.sourceJump && frameState.jumpPhase > CAT_JUMP_TAKEOFF && frameState.jumpPhase < 1
             && frameState.sourcePath.length > 1 && journey.path.length > 1
             && Math.hypot(...journey.path[journey.path.length-1].map((v,k)=>v-frameState.sourcePath[frameState.sourcePath.length-1][k])) < .001;
           frameState.jumpOffset = continuingJump ? frameState.jumpPhase : 0;
-          if (!continuingJump) {
+          if (journey.jump && !continuingJump) {
             frameState.jumpFrom = frameState.ready && !journey.elapsed ? frameState.position : journey.path[0];
             frameState.jumpDuration = journey.duration;
+            frameState.jumpArcHeight = journey.arcHeight ?? .35*(request.world?.catScale ?? 1);
           }
           frameState.jumpPhase = frameState.jumpOffset;
           frameState.sourcePath = journey.path;
@@ -276,6 +281,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
               const angle = Math.atan2(Math.sin(facing - frameState.heading), Math.cos(facing - frameState.heading));
               if (!frameState.ready) frameState.heading = facing;
               else if (Math.abs(angle) > .35) {
+                frameState.landingPending = false;
                 frameState.turnFrom = frameState.heading;
                 frameState.turnAngle = angle;
                 frameState.turnDuration = catTurnDuration(angle);
@@ -327,6 +333,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     let maximumGait = journey?.gait ?? 'walk';
     let hopPhase: number | undefined;
     let jumpHeading: number | undefined;
+    let jumpLook = 0;
     let turnPhase: number | undefined;
     let routeAnimation: string | undefined;
     let lookAhead: Vec3 | undefined;
@@ -344,7 +351,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
         hopPhase = sample.kind === 'hop' ? sample.progress : undefined;
         turnPhase = sample.kind === 'turn' ? sample.progress : undefined;
         routeAnimation = sample.kind === 'turn' ? 'turn' : sample.animation;
-        if (sample.kind === 'hop') jumpHeading = sample.heading;
+        if (sample.kind === 'hop') { jumpHeading = sample.heading; frameState.jumpDuration = sample.actionDuration; }
         lookAhead = sample.ahead;
         maximumGait = sample.gait ?? maximumGait;
         if (sample.kind === 'turn' && routeAnimation !== 'sit') {
@@ -363,10 +370,11 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
         hopPhase = frameState.jumpOffset+(1-frameState.jumpOffset)*Math.max(0,Math.min(1,frameState.elapsed / frameState.routeDuration));
         frameState.jumpPhase = hopPhase;
         routeAnimation = segment.name;
-        const t = Math.max(0, Math.min(1, (hopPhase - .20) / .50));
+        const t = Math.max(0, Math.min(1, (hopPhase - CAT_JUMP_TAKEOFF) / (CAT_JUMP_TOUCHDOWN - CAT_JUMP_TAKEOFF)));
         const first = frameState.jumpFrom, last = path[path.length - 1];
-        jumpHeading = Math.atan2(last[0]-first[0],last[2]-first[2]);
-        frameState.position = catJumpPoint(first, last, t, .35 * scale, true);
+        const aim=catJumpAim(first,last,t,journey.landingHeading);
+        jumpHeading = aim.heading;jumpLook=aim.headTurn;
+        frameState.position = catJumpPoint(first, last, t, frameState.jumpArcHeight, true);
       }
       else if (path.length > 1) {
         walking = frameState.elapsed < frameState.routeDuration;
@@ -401,7 +409,19 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       frameState.launchStarted = false;
       frameState.turnOverlap = 0;
     }
-    if (walking && frameState.turnOverlap > 0 && !frameState.launchStarted && turningRig) {
+    if (hopPhase !== undefined) frameState.landingPending = hopPhase >= CAT_JUMP_TOUCHDOWN;
+    const landingCapture = walking && frameState.landingPending && !turning && !steppingTurn && !frameState.launchStarted && !request.reduceMotion;
+    if (walking && (frameState.turnOverlap > 0 || landingCapture) && !frameState.launchStarted && turningRig) {
+      if (landingCapture) {
+        frameState.turnFrom = frameState.heading;
+        frameState.turnAngle = 0;
+        frameState.turnFeet = [];
+        frameState.turnNeutral = [];
+        const end = frameState.routePath[frameState.routePath.length-1];
+        frameState.walkStride = Math.min(.8,Math.max(.05,Math.hypot(...end.map((v,k)=>v-frameState.position[k]))/(scale*1.1)));
+      }
+      frameState.launchFromLanding = landingCapture;
+      frameState.landingPending = false;
       frameState.launchStarted = true;
       frameState.launchFeet = turningRig.legs.map(leg => {
         const p = transformManager.getWorldTransform(leg.paw).translation;
@@ -438,11 +458,15 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       return;
     let time = walking ? ((frameState.distance / (frameState.walkStride * scale) + frameState.walkOffset) % 1 + 1) % 1 * clip.duration : turnPhase !== undefined ? turnPhase * clip.duration : hopPhase !== undefined ? hopPhase * clip.duration : routeAnimation === 'sit' ? frameState.elapsed % clip.duration
       : Math.min(segment.duration, segment.loop ? frameState.elapsed % segment.duration : frameState.elapsed) / segment.duration * clip.duration;
+    // Retain the departure-ready contacts while JS dispatches the queued walk,
+    // rather than standing up and stretching the planted hind legs first.
+    if (journey?.jump && journey.walkAfterLanding && hopPhase !== undefined && hopPhase > CAT_LANDING_WALK_PHASE)
+      time = CAT_LANDING_WALK_PHASE * clip.duration;
     if (arrivedWalk) time = journey.bed ? frameState.clipTime : (frameState.elapsed - frameState.routeDuration) % clip.duration;
     if (segment.reverse)
       time = clip.duration - time;
     if (request.reduceMotion)
-      time = hopPhase !== undefined ? hopPhase >= .70 ? clip.duration : 0 : clip.duration * .25;
+      time = hopPhase !== undefined ? hopPhase >= CAT_JUMP_TOUCHDOWN ? clip.duration : 0 : clip.duration * .25;
     if (steppingTurn && !walking) time = 0;
     if (clip.index !== frameState.clip) {
       frameState.previous = frameState.clip;
@@ -459,7 +483,7 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     if (animationTimeValue)
       animationTimeValue.value = { name: clipName, time };
     frameState.blend = Math.min(1, frameState.blend + deltaSeconds / frameState.blendSeconds);
-    if (steppingTurn && turningRig && !frameState.turnFeet.length) {
+    if ((steppingTurn || landingCapture) && turningRig && !frameState.turnFeet.length) {
       // Retain the visible contacts, including an interrupted walk or turn.
       const head = transformManager.getWorldTransform(turningRig.head).data;
       const headYaw = Math.atan2(head[8], head[10]) - frameState.turnFrom;
@@ -479,13 +503,36 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
     }
     // The turn starts from standing, then uses the distance-driven walk while
     // IK carries the actual foot contacts through the first forward steps.
+    if (landingCapture && turningRig && clips.idle) {
+      // First-step targets need the standing stance, not a sampled mid-stride
+      // foot position. Otherwise a lifted paw overshoots and snaps at touchdown.
+      animator.applyAnimation(clips.idle.index,0);
+      const root = transformManager.getWorldTransform(entity).data;
+      frameState.turnNeutral = turningRig.legs.map(leg => {
+        const p = transformManager.getWorldTransform(leg.paw).translation;
+        const delta = p.map((v,k)=>v-root[12+k]);
+        return [0,1,2].map(axis => {
+          const start = axis*4, squared = root[start]**2+root[start+1]**2+root[start+2]**2;
+          return (delta[0]*root[start]+delta[1]*root[start+1]+delta[2]*root[start+2])/squared;
+        }) as Vec3;
+      });
+      const c = Math.cos(frameState.turnFrom), s = Math.sin(frameState.turnFrom);
+      frameState.turnSoles = turningRig.legs.map(leg => {
+        const m = transformManager.getWorldTransform(leg.paw).data;
+        return [0,1,2].flatMap(k=>[m[k*4]*c-m[k*4+2]*s,m[k*4+1],m[k*4+2]*c+m[k*4]*s]);
+      });
+      frameState.turnCrouch = 0;
+    }
     animator.applyAnimation(clip.index, time);
-    if ((!posingFeet || arrivedWalk) && frameState.previous >= 0 && frameState.blend < 1) {
+    if ((!posingFeet || arrivedWalk || frameState.launchFromLanding && launching) && frameState.previous >= 0 && frameState.blend < 1) {
       // Keep the outgoing pose moving while blending instead of freezing a paw mid-stride.
       if (frameState.previousLoop) {
         const previousGait = frameState.previous === clips.run?.index ? 'run' : frameState.previous === clips.trot?.index ? 'trot' : frameState.previous === clips.walk?.index ? 'walk' : undefined;
         const advance = walking && previousGait ? moved/(CAT_GAITS[previousGait].stride*scale)*frameState.previousDuration : deltaSeconds;
         frameState.previousTime = (frameState.previousTime + advance) % frameState.previousDuration;
+      }
+      else if (frameState.launchFromLanding && launching) {
+        frameState.previousTime = Math.min(frameState.previousDuration,frameState.previousTime+deltaSeconds*frameState.previousDuration/Math.max(.1,frameState.jumpDuration));
       }
       animator.applyCrossFade(frameState.previous, frameState.previousTime, frameState.blend);
     }
@@ -498,6 +545,59 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
         .translate([chair.pivot[0], chair.pivot[1] + motion.lift * contact, chair.pivot[2]]);
     }
     transformManager.setTransform(entity, transform);
+    if (jumpLook && turningRig && !request.reduceMotion) {
+      const local=transformManager.getTransform(turningRig.head),origin=local.translation;
+      transformManager.setTransform(turningRig.head,local.translate(origin.map(v=>-v) as Vec3)
+        .rotate(jumpLook,tailParentAxis([0,1,0],transformManager.getWorldTransform(turningRig.neck).data)).translate(origin));
+    }
+    // Small seats need the paws gathered beneath the body. Keep this same
+    // stance in the support test and the rendered turn/push/landing poses.
+    const phase = hopPhase ?? 0;
+    const release = Math.max(0,Math.min(1,(phase-CAT_JUMP_TAKEOFF)/.15));
+    const gather = Math.max(0,Math.min(1,(phase-(CAT_JUMP_TOUCHDOWN-.15))/.15));
+    const stance = journey?.jump ? 1-(1-(journey.launchStance ?? 1))*(1-release*release*(3-2*release))
+      -(1-(journey.stance ?? 1))*gather*gather*(3-2*gather) : journey?.stance ?? 1;
+    const stanceWidth = journey?.jump ? 1-(1-(journey.launchStanceWidth ?? 1))*(1-release*release*(3-2*release))
+      -(1-(journey.stanceWidth ?? 1))*gather*gather*(3-2*gather) : journey?.stanceWidth ?? 1;
+    if ((stance < .999 || stanceWidth < .999) && turningRig) {
+      const supportedPaws=turningRig.legs.map(leg=>{
+        const paw=transformManager.getWorldTransform(leg.paw);
+        return {translation:paw.translation,data:paw.data};
+      });
+      // Adducted legs need a little knee bend. Lower the torso while retaining
+      // the original contact heights, instead of suspending the paw pads.
+      const spine=transformManager.getTransform(turningRig.spine);
+      transformManager.setTransform(turningRig.spine,spine.translate([0,-.06*(1-stance)-.08*(1-stanceWidth),0]));
+      for(let i=0;i<turningRig.legs.length;i++) {
+        const leg=turningRig.legs[i],paw=supportedPaws[i],sole=paw.data;
+        const c=Math.cos(frameState.heading),s=Math.sin(frameState.heading);
+        const forward=(paw.translation[0]-frameState.position[0])*s+(paw.translation[2]-frameState.position[2])*c;
+        const sideways=(paw.translation[0]-frameState.position[0])*c-(paw.translation[2]-frameState.position[2])*s;
+        const delta=forward*(stance-1);
+        const lateral=sideways*(stanceWidth-1);
+        const reach: Vec3=[paw.translation[0]+s*delta+c*lateral,paw.translation[1],paw.translation[2]+c*delta-s*lateral];
+        const shoulder=transformManager.getWorldTransform(leg.upper).translation;
+        const elbow=transformManager.getWorldTransform(leg.lower).translation;
+        const currentPaw=transformManager.getWorldTransform(leg.paw).translation;
+        const knee=reachingElbow(shoulder,elbow,currentPaw,reach,frameState.heading+(leg.rear?Math.PI:0));
+        const aim=limbAim(elbow.map((v,k)=>v-shoulder[k]) as Vec3,knee.map((v,k)=>v-shoulder[k]) as Vec3);
+        const upper=transformManager.getTransform(leg.upper),origin=upper.translation;
+        transformManager.setTransform(leg.upper,upper.translate(origin.map(v=>-v) as Vec3)
+          .rotate(aim.angle,tailParentAxis(aim.axis,transformManager.getWorldTransform(leg.parent).data)).translate(origin));
+        const movedElbow=transformManager.getWorldTransform(leg.lower).translation,movedPaw=transformManager.getWorldTransform(leg.paw).translation;
+        const lowerAim=limbAim(movedPaw.map((v,k)=>v-movedElbow[k]) as Vec3,reach.map((v,k)=>v-movedElbow[k]) as Vec3);
+        const lower=transformManager.getTransform(leg.lower),lowerOrigin=lower.translation;
+        transformManager.setTransform(leg.lower,lower.translate(lowerOrigin.map(v=>-v) as Vec3)
+          .rotate(lowerAim.angle,tailParentAxis(lowerAim.axis,transformManager.getWorldTransform(leg.upper).data)).translate(lowerOrigin));
+        for (const axis of [1,0]) {
+          const now=transformManager.getWorldTransform(leg.paw).data,k=axis*4;
+          const restore=limbAim([now[k],now[k+1],now[k+2]],[sole[k],sole[k+1],sole[k+2]]);
+          const local=transformManager.getTransform(leg.paw),origin=local.translation;
+          transformManager.setTransform(leg.paw,local.translate(origin.map(v=>-v) as Vec3)
+            .rotate(restore.angle,tailParentAxis(restore.axis,transformManager.getWorldTransform(leg.lower).data)).translate(origin));
+        }
+      }
+    }
     if (posingFeet && turningRig && !request.reduceMotion) {
       if (!frameState.turnNeutral.length) {
         const c = Math.cos(frameState.heading), s = Math.sin(frameState.heading);
@@ -525,9 +625,24 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       const turnPose = catTurnPose(frameState.turnAngle, turnPhase ?? 1, frameState.turnHead, frameState.turnCrouch);
       const spineLocal = transformManager.getTransform(turningRig.spine);
       const walkHeight = (transformManager.getWorldTransform(turningRig.spine).translation[1] - frameState.position[1]) / scale;
-      const spineShift = launching ? catLaunchSpine(frameState.launchHeight, walkHeight, launchProgress, frameState.walkStride)
+      const spineShift = launching ? catLaunchSpine(frameState.launchHeight, walkHeight, launchProgress, frameState.walkStride, frameState.launchFromLanding)
         : walking ? 0 : -turnPose.crouch;
       transformManager.setTransform(turningRig.spine, spineLocal.translate([0, spineShift, 0]));
+      if(launching && frameState.launchFromLanding) {
+        // Keep recovering shoulders/hips within reach of feet that have not
+        // lifted yet. A tiny contact correction avoids pulling those pads
+        // along the floor as the independent impact poses blend into a walk.
+        let drop=0;
+        for(let i=0;i<turningRig.legs.length;i++) {
+          if(catLaunchStep(frameState.launchPhase,launchProgress,i).progress>0)continue;
+          const leg=turningRig.legs[i],a=transformManager.getWorldTransform(leg.upper).translation;
+          const b=transformManager.getWorldTransform(leg.lower).translation,p=transformManager.getWorldTransform(leg.paw).translation;
+          const target=frameState.launchFeet[i],length=Math.hypot(...a.map((v,k)=>v-b[k]))+Math.hypot(...b.map((v,k)=>v-p[k]))-.001;
+          const vertical=Math.sqrt(Math.max(0,length*length-(a[0]-target[0])**2-(a[2]-target[2])**2));
+          drop=Math.max(drop,a[1]-target[1]-vertical);
+        }
+        if(drop>0)transformManager.setTransform(turningRig.spine,transformManager.getTransform(turningRig.spine).translate([0,-Math.min(.01,drop/scale),0]));
+      }
       const headAngle = turnPose.head;
       const headLocal = transformManager.getTransform(turningRig.head), headOrigin = headLocal.translation;
       transformManager.setTransform(turningRig.head, headLocal.translate(headOrigin.map(v => -v) as Vec3)
@@ -705,7 +820,8 @@ export function NativeCatActor({ skinId, playback, world, travel, activityKey, l
       notify('ready', 0);
     }
     if (request.activityKey && request.travel?.awaitCompletion && !frameState.roomComplete
-      && frameState.elapsed >= (request.reduceMotion ? .6 : frameState.routeDuration)
+      && (frameState.elapsed >= (request.reduceMotion ? .6 : frameState.routeDuration)
+        || !request.reduceMotion && request.travel.jump && request.travel.walkAfterLanding && frameState.jumpPhase >= CAT_LANDING_WALK_PHASE)
       && hasNativeArrived(frameState.position, request.travel.path[request.travel.path.length - 1])) {
       frameState.roomComplete = true;
       notify('roomComplete', { key: request.activityKey, position: [frameState.position[0], frameState.position[1], frameState.position[2]] });

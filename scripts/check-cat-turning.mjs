@@ -230,7 +230,7 @@ for(const skin of ['orange','grey','white']) {
       const state=slots.find(s=>s?.value?.value?.turnLeg!==undefined).value.value;
       if(state.elapsed>.5) {
         assert.equal(state.walkStride,.8,'Small first steps must not shorten later walking legs after a hop');
-        assert.equal(state.launchStarted,false,'The first-step constraints finish before the next traversal leg');
+        assert.ok(!state.launchStarted || state.launchFromLanding,'After a hop, only the new landing-to-walk contacts may constrain the first steps');
       }
     }
     assert.ok(distance(rootTransform.translation,end)<1e-6);

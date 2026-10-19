@@ -1,0 +1,9 @@
+{
+  "takeoff": 0.20,
+  "touchdown": 0.70,
+  "hindTouchdown": 0.82,
+  "walkReady": 0.88,
+  "gravity": 24,
+  "minDuration": 0.65,
+  "maxDuration": 1.50
+}

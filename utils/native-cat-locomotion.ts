@@ -1,8 +1,34 @@
 import { CAT_GAITS, type CatGait } from '@/utils/native-cat-gaits';
+import jumpProfile from '@/constants/cat-jump.json';
 import type { Vec3 } from '@/utils/native-room-world';
+
+/** All four paws have landed; the remaining recovery can join a first stride. */
+export const CAT_LANDING_WALK_PHASE = jumpProfile.walkReady;
+export const CAT_JUMP_TAKEOFF = jumpProfile.takeoff;
+export const CAT_JUMP_TOUCHDOWN = jumpProfile.touchdown;
+
+/** A planned, small landing adjustment starts after takeoff. The head leads
+ * the body; ordinary jumps retain their fixed heading throughout. */
+export function catJumpAim(from: Vec3, to: Vec3, progress: number, landingHeading?: number) {
+  'worklet';
+  const heading=Math.atan2(to[0]-from[0],to[2]-from[2]);
+  const delta=landingHeading===undefined ? 0 : Math.atan2(Math.sin(landingHeading-heading),Math.cos(landingHeading-heading));
+  const t=Math.max(0,Math.min(1,progress)),blend=Math.max(0,Math.min(1,(t-.25)/.65));
+  return { heading:heading+delta*blend*blend*(3-2*blend),headTurn:Math.max(-.12,Math.min(.12,delta*.25))*Math.sin(Math.PI*t) };
+}
+
+/** Scale the flight clock with the validated arc, rather than floating through
+ * every jump for the same time. Units are relative to the cat's own size. */
+export function catJumpDuration(from: Vec3, to: Vec3, height: number, scale: number): number {
+  const flight = Math.max(Math.sqrt(8 * height / (jumpProfile.gravity * scale)),
+    Math.hypot(to[0] - from[0], to[2] - from[2]) / (7 * scale));
+  return Math.max(jumpProfile.minDuration, Math.min(jumpProfile.maxDuration,
+    flight / (CAT_JUMP_TOUCHDOWN - CAT_JUMP_TAKEOFF)));
+}
 
 export type CatMotionLeg = {
   kind: 'walk' | 'hop';
+  landingWalk?: boolean;
   path: Vec3[];
   duration: number;
   arcHeight?: number;
@@ -151,14 +177,14 @@ export function catMotionSample(legs: readonly CatMotionLeg[], elapsed: number) 
   for (; index < legs.length - 1 && remaining >= legs[index].duration; index++) remaining -= legs[index].duration;
   const leg = legs[index];
   const turning = remaining < (leg.turnDuration ?? 0);
-  const actionDuration = leg.duration - (leg.turnDuration ?? 0);
+  const actionDuration = (leg.duration - (leg.turnDuration ?? 0)) / (leg.landingWalk ? CAT_LANDING_WALK_PHASE : 1);
   const actionProgress = Math.max(0, Math.min(1, (remaining - (leg.turnDuration ?? 0)) / actionDuration));
-  const flight = Math.max(0, Math.min(1, (actionProgress - .20) / .50));
+  const flight = Math.max(0, Math.min(1, (actionProgress - CAT_JUMP_TAKEOFF) / (CAT_JUMP_TOUCHDOWN - CAT_JUMP_TAKEOFF)));
   const position = turning ? [...leg.path[0]] as Vec3 : leg.kind === 'hop'
     ? catJumpPoint(leg.path[0], leg.path[leg.path.length - 1], flight, leg.arcHeight ?? .35)
     : catPathPoint(leg.path, catTravelProgress(remaining, leg.duration, leg.ramp), leg.paces);
   const ahead = leg.kind === 'hop' ? leg.path[leg.path.length - 1]
     : catPathPoint(leg.path, catTravelProgress(remaining + .10, leg.duration, leg.ramp), leg.paces);
-  return { position, ahead, kind: turning ? 'turn' as const : leg.kind, progress: turning ? remaining / leg.turnDuration! : actionProgress, index, animation: leg.animation, gait: leg.gait,
+  return { position, ahead, kind: turning ? 'turn' as const : leg.kind, progress: turning ? remaining / leg.turnDuration! : actionProgress, index, animation: leg.animation, gait: leg.gait, actionDuration,
     heading: leg.kind === 'hop' ? Math.atan2(leg.path[leg.path.length-1][0]-leg.path[0][0],leg.path[leg.path.length-1][2]-leg.path[0][2]) : undefined };
 }

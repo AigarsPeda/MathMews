@@ -159,6 +159,7 @@
     "catCommands": {
       "bowlEat": "Eat",
       "chairSit": "Sit on the rocking chair",
+      "furnitureSit": "Jump up and sit",
       "chairSleep": "Sleep on the rocking chair",
       "chairNap": "Nap on the kitchen chair",
       "islandSit": "Sit on the kitchen island",
