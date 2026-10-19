@@ -60,6 +60,50 @@ function numbers(values: string[], positions?: number[], tones?: PracticeToken["
 // Every token has a stable identity across steps. Moving the same object shows
 // joining, taking away, dealing, sorting and calculating instead of swapping slides.
 export const VISUAL_PRACTICE = {
+  sort_buckets: frames("sort_buckets", [0, 1, 2].map(step => board("< 7     |     ≥ 7", [
+    tile("small", "4", step ? 75 : 110, 60, { tone: step ? "primary" : "secondary" }),
+    tile("large", "9", step === 2 ? 225 : 190, 60, { tone: step === 2 ? "primary" : "secondary" }),
+  ], step === 2 ? "4 < 7; 9 ≥ 7" : undefined))),
+  fraction_sort: frames("fraction_sort", [0, 1, 2].map(step => board("1/3     |     2/3", [
+    tile("first", "2/6", step ? 75 : 110, 60, { tone: step ? "primary" : "secondary" }),
+    tile("second", "4/6", step === 2 ? 225 : 190, 60, { tone: step === 2 ? "primary" : "secondary" }),
+  ], step === 2 ? "2/6 = 1/3; 4/6 = 2/3" : undefined))),
+  repair_pattern: frames("repair_pattern", [0, 1, 2].map(step => board("+2", [
+    tile("a", "2", 42), tile("b", step ? "4" : "?", 114, 55, { tone: step ? "primary" : "muted" }),
+    tile("c", "6", 186), tile("d", step === 2 ? "8" : "?", 258, 55, { tone: step === 2 ? "primary" : "muted" }),
+  ], step === 2 ? "2, 4, 6, 8" : undefined))),
+  route_grid: frames("route_grid", [0, 1, 2].map(step => board("4 → +2 → ×2", [
+    tile("start", "4", 60, 35), tile("turn", "+2", 210, 35, { tone: step ? "primary" : "muted" }),
+    tile("exit", "×2", 210, 110, { tone: step === 2 ? "primary" : "muted" }),
+  ], step === 2 ? "6 × 2 = 12" : step === 1 ? "4 + 2 = 6" : undefined))),
+  budget_plan: frames("budget_plan", [0, 1, 2].map(step => board("30 − ? = 10", [
+    tile("item", step ? "20 − 5 = 15" : "20; −25%", 150, 35, { width: 210 }),
+    tile("extra", "5", 150, 110, { tone: step === 2 ? "primary" : "secondary" }),
+  ], step === 2 ? "30 − 15 − 5 = 10" : step === 1 ? "20 − 5 = 15" : undefined))),
+  number_range: frames("number_range", [0, 1, 2].map(step => board("3 < ? < 8", [
+    tile("low", "3", 50), tile("middle", step === 0 ? "?" : "6", 150, 55, { tone: step > 0 ? "primary" : "muted", scale: step === 2 ? 1.15 : 1 }), tile("high", "8", 250),
+  ], step === 2 ? "3 < 6 < 8" : undefined))),
+  fraction_of_set: frames("fraction_of_set", [0, 1, 2].map(step => board("3/4 × 12 = ?", [
+    ...counters(12, "●", i => [42 + (i % 4) * 72, 26 + Math.floor(i / 4) * 36], i => ({ tone: step > 0 && i % 4 < 3 ? "primary" : "secondary", scale: step === 2 && i % 4 < 3 ? 1.15 : 1 })),
+  ], step === 2 ? "3 × 3 = 9" : step === 1 ? "12 ÷ 4 = 3" : undefined))),
+  percent_of: frames("percent_of", [0, 1, 2].map(step => board("25% × 20 = ?", [
+    ...Array.from({ length: 4 }, (_, i) => tile(`quarter-${i}`, step === 0 ? "?" : "5", 42 + i * 72, 55, { tone: step > 0 && i === 0 ? "primary" : "secondary", scale: step === 2 && i === 0 ? 1.15 : 1 })),
+  ], step === 2 ? "25% × 20 = 5" : step === 1 ? "20 ÷ 4 = 5" : undefined))),
+  percent_fifth: frames("percent_fifth", [0, 1, 2].map(step => board("20% × 30 = ?", [
+    ...Array.from({ length: 5 }, (_, i) => tile(`fifth-${i}`, step === 0 ? "?" : "6", 30 + i * 60, 55, { tone: step > 0 && i === 0 ? "primary" : "secondary", scale: step === 2 && i === 0 ? 1.15 : 1 })),
+  ], step === 2 ? "20% × 30 = 6" : step === 1 ? "30 ÷ 5 = 6" : undefined))),
+  percent_fifth_discount: frames("percent_fifth_discount", [0, 1, 2].map(step => board("30 − 20% × 30 = ?", [
+    ...Array.from({ length: 5 }, (_, i) => tile(`fifth-${i}`, step === 0 ? "?" : "6", 30 + i * 60, 55, { tone: i === 0 && step > 0 ? "primary" : "secondary", visible: i !== 0 || step < 2 })),
+  ], step === 2 ? "30 − 6 = 24" : step === 1 ? "30 ÷ 5 = 6" : undefined))),
+  percent_discount: frames("percent_discount", [0, 1, 2].map(step => board("20 − 25% × 20 = ?", [
+    ...Array.from({ length: 4 }, (_, i) => tile(`quarter-${i}`, step === 0 ? "?" : "5", 42 + i * 72, 55, { tone: i === 0 && step > 0 ? "primary" : "secondary", visible: i !== 0 || step < 2 })),
+  ], step === 2 ? "20 − 5 = 15" : step === 1 ? "20 ÷ 4 = 5" : undefined))),
+  all_pairs: frames("all_pairs", [0, 1, 2].map(step => board("? + ? = 8", [
+    tile("two", "2", step > 0 ? 100 : 42, 35, { tone: step > 0 ? "primary" : "secondary" }), tile("six", "6", step > 0 ? 200 : 114, 35, { tone: step > 0 ? "primary" : "secondary" }),
+    tile("three", "3", step === 2 ? 100 : 186, step === 2 ? 105 : 35), tile("five", "5", step === 2 ? 200 : 258, step === 2 ? 105 : 35),
+    plain("plus-a", "+", 150, 35, { visible: step > 0 }), plain("plus-b", "+", 150, 105, { visible: step === 2 }),
+  ], step === 2 ? "2 + 6 = 8; 3 + 5 = 8" : undefined))),
+
   subtraction: takeAway("subtraction", "🍎", 7, [2, 2], "7 − 2 = ?", ["7 − 2 = 5", "7 − 2 = 5"]),
   addition: frames("addition", [0, 1, 2].map(step => board("2 + 4 = ?", counters(6, "🎈", i => step === 0
     ? [i < 2 ? 48 + i * 40 : 178 + (i - 2) % 2 * 40, 34 + (i < 2 ? 0 : Math.floor((i - 2) / 2) * 42)]

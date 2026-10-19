@@ -1,3 +1,4 @@
+import { PUZZLE_CONTENT_VERSION } from "@/constants/puzzle-content-version";
 import { DEFAULT_CAT_ROOM_ID } from "@/constants/cat-rooms";
 import { DEFAULT_CAT_SKIN_ID } from "@/constants/cat-skins";
 import type { PetAnimationState, PetMood, TopicStatsMap } from "@/types/game";
@@ -47,6 +48,7 @@ export const DEFAULT_PET = {
 
 export const DEFAULT_WALLET = { coins: 42 };
 export const DEFAULT_PROGRESS = {
+  puzzleContentVersion: PUZZLE_CONTENT_VERSION,
   streak: 0,
   puzzleStreak: 0,
   puzzlesSolved: { easy: 0, medium: 0, hard: 0 },

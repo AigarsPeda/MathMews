@@ -16,7 +16,7 @@ function stageProperty(name,context){if(!propertyScripts.has(name)){const node=f
 const delivery=find(stageSource,n=>ts.isCallExpression(n)&&n.expression.getText(stageSource)==='useEffect'&&n.arguments[0]?.getText(stageSource).includes('handledRoomCommand.current === roomCommand.id')).arguments[0].getText(stageSource);
 const deliverCommand=new vm.Script(compile(`(${delivery})()`));
 
-function harness({reduced=false,native=true,cold=false,targets={}}={}){
+function harness({reduced=false,native=true,cold=false,targets={},doors=false}={}){
   let now=1_800_000_000_000, timerId=0, dirty=true, owner, effects=[], active=true, interaction=now;
   const timers=new Map(), cache=new Map(), rooms=new Map(), arrivals=[], completions=[], feeds=[], failures=[];
   const clock={now:()=>now};
@@ -52,6 +52,7 @@ function harness({reduced=false,native=true,cold=false,targets={}}={}){
   const fixtures={bedroom:['bedroomDoubleBed','bedSnuggle'],livingRoom:['sofaA','sofaSit'],kitchen:['bowlBlue','bowlEat'],bathroom:['bathroomBathAni','bathWash'],...targets};
   const saved=Object.fromEntries(HOME_ROOM_IDS.map(id=>[id,{roomId:'room1',placedDecorations:[{decorationId:fixtures[id][0],instanceId:id+'-target',offset:{x:0,y:-.25},
     ...(/Hide$/.test(fixtures[id][1])?{opened:true}:{}),...fixtures[id][2]}],placedToys:[],roomPetOffset:{x:.5,y:.6}}]));
+  if(doors)saved.livingRoom.placedDecorations.push({decorationId:'japaneseDoorAni',instanceId:'passage',doorDestination:'kitchen',offset:{x:-.6,y:-.3}});
   const env={pet:{type:'cat',homeRoomId:'livingRoom',catHomeRoomId:'livingRoom',homeRooms:saved,...saved.livingRoom},
     transition:null,requestedRoomCommand:null,catEntry:null,entrySequence:{current:0},roomCommandSequence:{current:0},
     isCareBlocked:false,isCareAnimationPlaying:false,getCatHomeRoomId,roomTravelDirection,
@@ -59,7 +60,7 @@ function harness({reduced=false,native=true,cold=false,targets={}}={}){
     setRequestedRoomCommand:update=>{env.requestedRoomCommand=typeof update==='function'?update(env.requestedRoomCommand):update;dirty=true;},
     setCatEntry:value=>{env.catEntry=value;dirty=true;},
     sendCatToRoom:(destination,follow)=>{arrivals.push({from:getCatHomeRoomId(env.pet),destination,at:now});env.pet=sendCatToRoom(env.pet,destination,follow);dirty=true;},
-    slideToRoom:destination=>transitionApi.visit(destination),
+    slideToRoom:(destination,waitForCat)=>transitionApi.visit(destination,waitForCat),
   };
   env.handleVisitRoom=homeCallback('handleVisitRoom',env);
   env.handleCatRoomArrival=homeCallback('handleCatRoomArrival',env);
@@ -84,7 +85,7 @@ function harness({reduced=false,native=true,cold=false,targets={}}={}){
       const entry=props.roomEntry;
       if(room.options.entry!==entry)room.options={...room.base,entry};
       room.props=props;owner=room;room.cursor=0;
-      room.api=useRoomActivity(room.options,props.catHomeRoomId===room.id,interaction,room.x,room.y,undefined,
+      room.api=useRoomActivity(room.options,props.catHomeRoomId===room.id,interaction,room.x,room.y,(id,motion)=>{const door=room.options.decorations.find(item=>item.instanceId===id);if(door?.doorDestination)env.handleCatRoomArrival(door.doorDestination,undefined,motion);},
         ()=>feeds.push(room.id),props.onSendCatToRoom,props.roomVisible,false,undefined,(kind,id)=>completions.push({room:room.id,kind,id}),failure=>failures.push({room:room.id,...failure}));
       pending.push(()=>deliverCommand.runInNewContext({
         roomCommand:props.roomCommand,handledRoomCommand:room.handled,compact:true,usesNativeCat:true,catPresent:props.catHomeRoomId===room.id,
@@ -93,6 +94,12 @@ function harness({reduced=false,native=true,cold=false,targets={}}={}){
       }));
     }
     const committed=effects;effects=[];committed.forEach(fn=>fn());pending.forEach(fn=>fn());
+    // Warm native scenes paint once their incoming route exists. Cold fixtures
+    // retain explicit readiness control for delayed-load and interruption tests.
+    if(!cold && env.transition){
+      const destination=rooms.get(env.transition.destination),state=destination.api.activity;
+      if(state?.plan.steps[state.stepIndex].enteringRoom)transitionApi.ready(destination.id);
+    }
   }
   function flush(){
     let count=0;
@@ -115,10 +122,11 @@ function harness({reduced=false,native=true,cold=false,targets={}}={}){
     const step=state.plan.steps[state.stepIndex];assert.ok(!step.hold,'A held task needs a new command');
     assert.ok(!step.native?.blocked,`${room.id}/${state.plan.kind}/${step.animation} must be reachable`);
     const key=roomActivityStepKey(state),end=step.native.path.at(-1);
+    const transit=step.native.through?{speed:1.8,phase:1.375,gait:'walk',tailYaw:[.03,.01,-.02,-.03],tailPitch:[0,0,0,0]}:undefined;
     assert.ok(end.every(Number.isFinite));
-    if(step.native.awaitCompletion){room.api.updateNativeHeight(end,step.native.duration);room.api.completeNativeStep(key,end);flush();
+    if(step.native.awaitCompletion){room.api.updateNativeHeight(end,step.native.duration);room.api.completeNativeStep(key,end,transit);flush();
       // Delayed drawing callbacks from the previous step cannot advance a new task.
-      room.api.completeNativeStep(key,end);flush();
+      room.api.completeNativeStep(key,end,transit);flush();
     }else advance(Math.max(1,state.startedAt+(reduced?600:step.durationMs)-now+1));
   }
   function until(predicate,limit=40){for(let i=0;i<limit;i++){flush();if(predicate())return;finishStep();}assert.fail('Task chain did not reach its requested state');}
@@ -206,6 +214,19 @@ console.log('Verified entry-time command replacement, safe entry completion and 
   assert.equal(h.env.pet.catHomeRoomId,'kitchen','Late readiness from an old room never moves the cat back');
 }
 console.log('Verified rapid chained journeys while cold room scenes are loading and delayed readiness arrives out of order.');
+
+{
+  const h=harness({cold:true});h.request('livingRoom','roomTravel','bedroom');
+  h.until(()=>h.current().id==='bedroom'&&h.env.transition?.destination==='bedroom');
+  assert.equal(h.env.requestedRoomCommand,null,'A plain travel command has no destination task waiting to wake the scheduler');
+  assert.ok(h.state()?.step.enteringRoom,'A hidden destination must prepare entry before its first painted frame can release the camera');
+  assert.equal(h.current().props.roomVisible,false);
+  h.ready('bedroom');
+  assert.equal(h.current().props.roomVisible,true);
+  h.until(()=>h.current().api.activity===null);
+  h.assertSingleCat();
+}
+console.log('Verified plain room travel prepares entry behind the outgoing frame without a task request or readiness deadlock.');
 
 for(const phase of ['departure','entry','jump','meal']){
   const h=harness();
@@ -310,3 +331,48 @@ console.log('Verified an unreachable destination ends without a held pose or fal
   assert.equal(h.failures.length,1);
 }
 console.log('Verified readable item-specific failure notices, dismiss/retry, new-command cleanup and silent automatic activity failures.');
+
+// Smoothness has semantic consequences too: enter toward the selected fixture,
+// retain the source gait token, and replace an entry task at its current point.
+{
+  const h=harness();h.request('bedroom');
+  h.until(()=>h.current().id==='bedroom'&&h.state()?.step.enteringRoom);
+  const entry=h.state();
+  assert.equal(entry.plan.kind,'bedSnuggle','Entry heads straight to the requested task');
+  assert.ok(!entry.step.returnHome,'A selected task does not first visit the saved home');
+  assert.equal(entry.step.native.entryMotion.phase,1.375,'Home forwards the renderer stride token into the new room');
+  assert.equal(h.env.catEntry.entry.motion.speed,1.8);
+  const before=h.partial(.3);h.request('kitchen');
+  const redirected=h.state();
+  assert.equal(redirected.plan.kind,'roomTravel','A floor entry can accept the latest destination immediately');
+  assert.ok(redirected.step.enteringRoom&&redirected.step.entryFromCurrent);
+  assert.ok(Math.hypot(...redirected.step.native.path[0].map((v,k)=>v-before[k]))<1e-6,'The entry handoff starts at the real reported position');
+  assert.ok(!redirected.plan.steps.some(step=>step.returnHome),'Task changes do not take a detour home');
+  h.until(()=>h.atInteraction('kitchen'));h.assertSingleCat();
+  assert.deepEqual(h.arrivals.map(a=>a.destination),['bedroom','kitchen']);
+}
+{
+  const h=harness({doors:true});h.request('livingRoom','doorTravel','passage');
+  assert.ok(h.state().step.native.through,'An actual placed door has a walking threshold handoff');
+  h.until(()=>h.current().id==='kitchen'&&h.state()?.step.enteringRoom);
+  assert.equal(h.env.catEntry.entry.motion.phase,1.375,'A physical doorway preserves locomotion metadata');
+  assert.equal(h.env.pet.catHomeRoomId,'kitchen','Using a door moves the cat as well as the view');
+  h.assertSingleCat();
+}
+console.log('Verified direct entry-to-task routing, renderer gait transfer through Home, mid-entry destination replacement without home detours and physical door travel.');
+
+{
+  const node=find(stageSource,n=>ts.isVariableDeclaration(n)&&n.name.getText(stageSource)==='buildRoomItemMenuActions');
+  const calls=[],door={instanceId:'passage',decorationId:'japaneseDoorAni',doorDestination:'kitchen'};
+  const menu=vm.runInNewContext(compile(`(${node.initializer.arguments[0].getText(stageSource)})`),{
+    decorating:false,catPresent:true,bedId:'basic',onRequestRoomCommand:undefined,onSendCatToRoom:()=>{},viewport:{width:390,height:420},displayWidth:80,
+    roomPlacedDecorations:[door],roomActivityBlocked:false,HOME_ROOM_ICONS:{kitchen:'cooking-pot'},
+    getRoomCommands:()=>[],isRoomDoor:id=>id==='japaneseDoorAni',isOpenableDecorationId:()=>false,
+    isFridgeDecorationId:()=>false,isCurtainDecorationId:()=>false,isPoweredDecorationId:()=>false,
+    startRoomCommand:(...args)=>calls.push(args),t:(key,values)=>key==='home.goToRoom'?`Go to ${values.room}`:key,
+  });
+  const actions=menu({kind:'decoration',...door});
+  assert.equal(actions[0].label,'Go to home.rooms.kitchen');actions[0].onPress();
+  assert.deepEqual(calls,[['doorTravel','passage']],'The real item menu dispatches physical-door travel');
+}
+console.log('Verified the placed-door menu sends the cat to its assigned room.');

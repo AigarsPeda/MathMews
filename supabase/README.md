@@ -7,6 +7,15 @@ and an authenticated RevenueCat webhook with purchase/refund processing.
 Migrations 001 through 011 are deployed to the existing MathMews Supabase project.
 The 2026-10-17 room catalog and store promotion migrations are also deployed.
 The 2026-10-18 bathroom-light catalog migration is deployed with all four coin prices.
+Both 2026-10-19 puzzle reward migrations are deployed. All 201 curriculum puzzles
+have matching first-clear and replay rates. Hosted rollback checks verified all
+54 boss stages in sandbox and production, including duplicate attempt protection.
+See [deployment evidence](deployments/2026-10-19-puzzle-rewards.json) and the
+[boss reward acceptance query](tests/puzzle-rewards.sql).
+The optional challenge expansion is also deployed: all 209 curriculum IDs are
+registered. All eleven challenge rewards passed first-clear, replay and duplicate
+attempt checks in both environments, with every test fixture rolled back. See
+[challenge deployment evidence](deployments/2026-10-19-challenge-rewards.json).
 Current prices and scheduled sales are managed in `wallet_private.store_catalog`;
 the app fetches them through `get_store_catalog()`. See [catalog and promotion instructions](../store-catalog.md).
 `revenuecat-webhook`, `reconcile-purchases` and `delete-account` are deployed.

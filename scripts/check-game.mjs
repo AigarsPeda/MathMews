@@ -17,6 +17,11 @@ checks.push('check-furniture-transfers');
 checks.push('check-catalog-furniture-jumps');
 checks.push('check-close-furniture-jumps');
 checks.push('check-cat-tail-contact');
+checks.push('check-cat-expression');
+checks.push('check-cat-waking');
+checks.push('check-cat-fluid-motion');
+checks.push('check-cat-room-flow');
+checks.push('check-curriculum');
 for (const check of checks) {
   const result = spawnSync(process.execPath, [`scripts/${check}.mjs`], { stdio: 'inherit' });
   if (result.status !== 0) process.exit(result.status ?? 1);

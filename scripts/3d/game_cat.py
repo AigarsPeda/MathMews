@@ -291,7 +291,7 @@ def pose_gait(driver, state, t):
 
 def pose(arm, driver, state, t, idle_controls):
     jumping = state in ('jumpOn', 'jumpOff', 'hop')
-    pose_controls(driver, 'idle' if jumping else 'walk' if state in ('crawl', 'trot', 'run') else 'idle' if state == 'sit' else state, 0 if jumping else t)
+    pose_controls(driver, 'idle' if jumping else 'walk' if state in ('crawl', 'trot', 'run') else 'idle' if state in ('sit', 'wakeStretch') else state, 0 if jumping or state == 'wakeStretch' else t)
     if state in ('trot', 'run'):
         pose_gait(driver, state, t)
     driver['root'].rotation_euler = (0, 0, 0)
@@ -354,6 +354,13 @@ def pose(arm, driver, state, t, idle_controls):
         # Blend the spine through the shoulder/hip absorption, keeping the
         # contact legs independent and the head quieter than the torso.
         body = Matrix.Translation((0, 0, hip_push*.4-.075*landing-.045*hind_impact)) @ body
+    stretch = keyed(t, [(0, 0), (.16, .12), (.40, 1), (.61, 1), (.84, .18), (1, 0)]) if state == 'wakeStretch' else 0
+    if state == 'wakeStretch':
+        # A compact waking bow: chest lowers below the hips, pads stay planted.
+        # Absolute bone targets preserve the footprint on narrow seats.
+        fore_body = Matrix.Translation((0, -.035*stretch, -.20*stretch)) @ body
+        hind_body = Matrix.Translation((0, 0, -.015*stretch)) @ body
+        body = Matrix.Translation((0, 0, -.045*stretch)) @ body
     desired = {name: body @ bones[name].matrix_local for name in ('spine', 'belly')}
     desired.update(chest=fore_body @ bones['chest'].matrix_local, pelvis=hind_body @ bones['pelvis'].matrix_local)
     chest_shift = (fore_body @ bones['chest'].head_local)-bones['chest'].head_local
@@ -368,6 +375,9 @@ def pose(arm, driver, state, t, idle_controls):
         # These are absolute bone targets: retain a quieter version of the
         # body's pitch, keeping the gaze toward the destination.
         head_rotation = Matrix.Rotation(lean*.35,3,'X')
+    if state == 'wakeStretch':
+        head_shift = Vector((0, -.035*stretch, -.10*stretch))
+        head_rotation = Matrix.Rotation(.20*stretch, 3, 'X')
     if state == 'crawl':
         head_shift.z -= .16
         head_rotation = Matrix.Rotation(.12, 3, 'X')
@@ -416,6 +426,13 @@ def pose(arm, driver, state, t, idle_controls):
     for name in [*('tailjoint'+str(i) for i in range(4)), 'tailTip']:
         desired[name] = tail_transform @ bones[name].matrix_local
     head_motion = desired['head'] @ bones['head'].matrix_local.inverted()
+    for side in ('L', 'R'):
+        name = 'ear.'+side
+        # Sleep relaxes outward, flight tucks back; waking gently perks up.
+        pitch = -.14*airborne if jumping else -.06*stretch if state == 'wakeStretch' else -.035*settle
+        spread = (.10 if side == 'L' else -.10)*settle
+        rotation = Matrix.Rotation(pitch, 3, 'X') @ Matrix.Rotation(spread, 3, 'Y')
+        desired[name] = head_motion @ joint_matrix(bones[name], bones[name].head_local, rotation)
     for side, i in (('L', 0), ('R', 1)):
         blink = max(.045, min(1, driver['eyes'][i].scale.z/.105))
         for suffix in ('', '.glint'):

@@ -2,7 +2,7 @@ import { useStartupVisualReady } from "@/contexts/StartupVisualContext";
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { DefaultLight, FilamentScene, FilamentView, useFilamentContext } from 'react-native-filament';
-import { NativeCatActor } from './NativeCatActor';
+import { NativeCatActor, useCatModel } from './NativeCatActor';
 import { useAnimationActivity } from '@/hooks/use-animation-activity';
 import type { PetPlaybackState } from '@/pet-display/types';
 import { RecoveryBoundary } from '@/components/recovery/RecoveryBoundary';
@@ -21,6 +21,7 @@ type Props = {
   onStepComplete?: (index: number) => void;
 };
 function PortraitScene(props: Props) {
+  const model = useCatModel(props.skinId);
   const [ready, setReady] = useState(false);
   useStartupVisualReady(ready);
   const { camera } = useFilamentContext();
@@ -29,7 +30,7 @@ function PortraitScene(props: Props) {
       'worklet';
       camera.setOrthographicProjection(-1.35, 1.35, -1.35, 1.35, .1, 40);
       camera.lookAt([3.2, 4, 10], [.04, .94, 0], [0, 1, 0]);
-    }}><DefaultLight /><NativeCatActor skinId={props.skinId} playback={props.playback} loop={props.loop} active={active && props.playing !== false} reduceMotion={reduceMotion} onReady={() => { setReady(true); props.onReady?.(); }} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/></FilamentView>;
+    }}><DefaultLight /><NativeCatActor model={model} skinId={props.skinId} playback={props.playback} loop={props.loop} active={active && props.playing !== false} reduceMotion={reduceMotion} onReady={() => { setReady(true); props.onReady?.(); }} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/></FilamentView>;
 }
 function PortraitSurface(props: Props) {
   const [ready, setReady] = useState(false);

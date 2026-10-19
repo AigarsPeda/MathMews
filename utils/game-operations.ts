@@ -1,5 +1,5 @@
 import { FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
-import { getLegacyCompletedPuzzleIds, getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES } from "@/constants/puzzles";
+import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES, PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
 import type { Progress, PuzzleProgress } from "@/types/game";
 import type { Puzzle } from "@/types/puzzle";
 import type { GameSave } from "@/types/save";
@@ -19,16 +19,16 @@ export function currentPuzzleStreak(progress: Pick<Progress, "streak" | "lastPuz
     ? Math.max(0, Math.floor(progress.streak)) : 0;
 }
 
-export function getCompletedPuzzleIds(progress: Pick<Progress, "puzzlesSolved" | "completedPuzzleIds">): string[] {
-  return [...new Set(progress.completedPuzzleIds ?? getLegacyCompletedPuzzleIds(progress.puzzlesSolved))];
+export function getCompletedPuzzleIds(progress: Pick<Progress, "completedPuzzleIds">): string[] {
+  const known = new Set(PUZZLE_DIFFICULTIES.flatMap(tier => getPuzzlesByDifficulty("en", tier).map(puzzle => puzzle.id)));
+  return [...new Set(progress.completedPuzzleIds ?? [])].filter(id => known.has(id));
 }
 
 export function getSolvedCounts(ids: readonly string[]): PuzzleProgress {
   const completed = new Set(ids);
   return Object.fromEntries(PUZZLE_DIFFICULTIES.map(tier => {
     const puzzles = getPuzzlesByDifficulty("en", tier);
-    const index = puzzles.findIndex(puzzle => !completed.has(puzzle.id));
-    return [tier, index < 0 ? puzzles.length : index];
+    return [tier, puzzles.filter(puzzle => completed.has(puzzle.id)).length];
   })) as PuzzleProgress;
 }
 
@@ -48,9 +48,11 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
     : save.progress.lastPuzzleDay === previousDay ? currentStreak + 1 : 1;
   let next: GameSave = {
     ...save,
-    progress: { ...save.progress, completedPuzzleIds: ids, puzzlesSolved: getSolvedCounts(ids),
+    progress: { ...save.progress, puzzleContentVersion: PUZZLE_CONTENT_VERSION, completedPuzzleIds: ids, puzzlesSolved: getSolvedCounts(ids),
       processedAttemptIds: [...(save.progress.processedAttemptIds ?? []), attemptId].slice(-200),
       topicStats: recordTopicAttempt(save.progress.topicStats, puzzle.topic, correct),
+      topicStatsByDifficulty: { ...save.progress.topicStatsByDifficulty,
+        [puzzle.difficulty]: recordTopicAttempt(save.progress.topicStatsByDifficulty?.[puzzle.difficulty], puzzle.topic, correct) },
       puzzleStreak: correct ? save.progress.puzzleStreak + (replay ? 0 : 1) : save.progress.puzzleStreak,
       streak, lastPuzzleDay: correct ? day : save.progress.lastPuzzleDay },
     pet: { ...withPetCareUpdate(save.pet, stats => ({ ...stats,

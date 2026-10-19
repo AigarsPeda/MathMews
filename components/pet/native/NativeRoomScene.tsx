@@ -1,3 +1,4 @@
+import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { itemInteraction } from '@/constants/item-interactions';
 import { NativeItemInteraction } from './NativeItemInteraction';
 import { NativeFireplace } from './NativeFireplace';
@@ -36,7 +37,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState, type RefObject
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { DefaultLight, FilamentScene, FilamentView, RenderCallbackContext, useAnimator, useBoxShape, useFilamentContext, useModel, useRigidBody, useWorkletEffect, useSphereShape, useStaticPlaneShape, useWorld, type DiscreteDynamicWorld, type Float3, } from 'react-native-filament';
 import { useSharedValue, Worklets, type ISharedValue } from 'react-native-worklets-core';
-import { NativeCatActor } from './NativeCatActor';
+import { NativeCatActor, useCatModel } from './NativeCatActor';
 import { advancePlantLeaf, attachedPlantLeaf, detachPlantLeaf, LEAF_REGROW_DELAY, type PlantLeafState } from '@/utils/native-plant-play';
 import { airflowStrength, roomAirflowSources, type AirflowSource } from '@/utils/native-airflow';
 import { advanceHangingToy, containHangingToySwing, hangingToyContact } from '@/utils/native-hanging-toy';
@@ -49,6 +50,7 @@ import { enableSimpleGraphicsForSession } from '@/lib/graphics-mode';
 import type { PetPlaybackState } from '@/pet-display/types';
 export type NativeRoomPicker = { pick: (x: number, y: number) => Promise<string | undefined> };
 type Props = {
+  entryId?: number;
   homeRoomId?: HomeRoomId;
   pickerRef?: RefObject<NativeRoomPicker | undefined>;
   spotlightAim?: ISharedValue<SpotlightAim | undefined>;
@@ -77,7 +79,7 @@ type Props = {
     y: number;
   }) => void;
   onContactPosition?: (position: Vec3, elapsed?: number) => void;
-  onRoomStepComplete?: (key: string, position: Vec3) => void;
+  onRoomStepComplete?: (key: string, position: Vec3, motion?: CatTravelMotion) => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (index: number) => void;
 };
@@ -500,15 +502,19 @@ function Scene(props: Props) {
   const shadowLamps = useMemo(() => shadowCastingLampIds(props.world.objects), [props.world.objects]);
   const catPresent = props.catPresent !== false;
   const objectKeys = props.world.objects.map(object => `${object.instanceId}:${object.modelId}`);
-  const catKey = `${props.roomId ?? 'room1'}:${catPresent ? props.skinId ?? 'orange' : 'empty'}`;
+  const catKey = `${props.roomId ?? 'room1'}:${catPresent ? props.skinId ?? 'orange' : 'empty'}${catPresent && props.entryId !== undefined ? `:${props.entryId}` : ''}`;
   const visualKey = `${catKey}:${objectKeys.join(',')}`;
   const [readyObjects, setReadyObjects] = useState<Record<string, true>>({});
   const handleObjectReady = useCallback((key: string) => {
     setReadyObjects(current => current[key] ? current : { ...current, [key]: true });
   }, []);
   const [catReadyFor, setCatReadyFor] = useState<string | null>(null);
+  // Home publishes arrival before the scheduler publishes its first path.
+  // Keep the prepared model hidden until that path can pose its first frame.
+  const renderCat = catPresent && (props.entryId === undefined || !!props.travel || catReadyFor === catKey);
+  const catModel = useCatModel(props.skinId, renderCat);
   const [paintedFor, setPaintedFor] = useState<string | null>(null);
-  const ready = roomReady && objectKeys.every(key => readyObjects[key]) && (!catPresent || catReadyFor === catKey);
+  const ready = roomReady && catModel.state === 'loaded' && objectKeys.every(key => readyObjects[key]) && (!catPresent || catReadyFor === catKey);
   const painted = paintedFor === visualKey;
   const handleRoomReady = useCallback(() => setRoomReady(true), []);
   useStartupVisualReady(painted);
@@ -594,7 +600,7 @@ function Scene(props: Props) {
   {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} spotlightPose={spotlightPose} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} lightingActive={lightingActive} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
   {props.world.objects.filter(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn).map(o => <NativeAirflow key={o.instanceId} object={o} editingObject={props.editingObject} active={visible && !reduceMotion}/>)}
   {eatingFeeder && !reduceMotion && <NativeFoodSpill key={`${props.activityKey}:${eatingFeeder.instanceId}:${eatingFeeder.modelId}`} object={eatingFeeder} active={visible} animationTime={catAnimationTime}/>}
-  {catPresent && <NativeCatActor registerPickEntities={registerPickEntities} key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}
+  {renderCat && <NativeCatActor model={catModel} registerPickEntities={registerPickEntities} key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}
  </FilamentView>;
 }
 export const NativeRoomSurface = memo(function NativeRoomSurface(props: Props) {

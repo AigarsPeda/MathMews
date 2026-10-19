@@ -2,7 +2,19 @@ import type { VISUAL_PRACTICE } from "@/constants/visual-practice";
 type Lessons = Record<keyof typeof VISUAL_PRACTICE, { title: string; s0: string; s1: string; s2: string }>;
 
 export const visualLessonsEn = {
+  sort_buckets: { title: "Sort into baskets", s0: "Compare each tile with the basket boundary, seven.", s1: "Four is below seven. Put it in the left basket.", s2: "Nine is at least seven. Put it in the right basket. Check every tile." },
+  fraction_sort: { title: "Sort equal fractions", s0: "The addresses are one third and two thirds.", s1: "Two sixths equals one third. Deliver it to that address.", s2: "Four sixths equals two thirds. Changing the pieces does not change the amount." },
+  repair_pattern: { title: "Repair every gap", s0: "Two, gap, six, gap. Look for one rule that fits the whole pattern.", s1: "Counting in twos puts four in the first gap.", s2: "Eight fits the second gap. Drag each tile into its gap. Check the whole strip." },
+  route_grid: { title: "Plan a grid route", s0: "Start with four. Move only to a neighboring square.", s1: "Entering plus two changes four into six.", s2: "Turn down onto times two to make twelve. Undo and try another way if needed." },
+  budget_plan: { title: "Plan with discounts", s0: "A pretend budget is thirty. The goal is to leave ten.", s1: "A twenty-coin item with twenty-five percent off costs fifteen.", s2: "Add a five-coin item. Thirty minus fifteen minus five leaves ten. Compare your own plans." },
   subtraction: { title: "How to take away", s0: "Start with 7 apples. Take away 2.", s1: "Watch 2 apples leave.", s2: "5 apples are left. Choose the number left." },
+  number_range: { title: "Check a number range", s0: "The number must be greater than 3 and smaller than 8.", s1: "Try 6. It is greater than 3.", s2: "6 is also smaller than 8. It fits both bounds." },
+  fraction_of_set: { title: "A fraction of a group", s0: "Find three quarters of 12 dots.", s1: "Divide into four equal groups. Each group has 3 dots.", s2: "Take three groups. Three times three is 9 dots." },
+  percent_of: { title: "Find a percentage", s0: "Find 25 percent of 20. Twenty is the whole amount.", s1: "25 percent is a quarter. Divide 20 into four equal groups of 5.", s2: "One quarter is 5. That is 25 percent of 20." },
+  percent_fifth: { title: "Twenty percent is a fifth", s0: "Find 20 percent of 30. Thirty is the whole amount.", s1: "20 percent is one fifth. Split 30 into five equal groups of 6.", s2: "One fifth is 6. That is 20 percent of 30." },
+  percent_fifth_discount: { title: "A twenty percent discount", s0: "A 30-coin price has a 20 percent discount.", s1: "One fifth of 30 is 6 coins. This is the discount amount.", s2: "30 minus 6 is 24 coins. That is the final price." },
+  percent_discount: { title: "Take off a discount", s0: "A 20-coin price has a 25 percent discount.", s1: "A quarter of 20 is 5 coins. This is the discount amount.", s2: "Take away 5 from 20. The final price is 15 coins." },
+  all_pairs: { title: "Collect all pairs", s0: "Find every pair making 8 from the four tiles.", s1: "2 and 6 make one pair. Keep it and check the other tiles.", s2: "3 and 5 also make 8. Both pairs are needed. Reversing a pair adds nothing new." },
   addition: { title: "How to add", s0: "Here are 2 balloons and 4 more.", s1: "Move both groups together.", s2: "6 balloons in all. Choose the total." },
   multiplication: { title: "How to multiply", s0: "One row has 3 bears.", s1: "Add another row of 3.", s2: "3 rows of 3 make 9. Choose the total." },
   division: { title: "How to share equally", s0: "Share 8 cookies between 2 friends.", s1: "Give each friend the same number.", s2: "4 cookies each. Choose the amount each friend gets." },
@@ -32,7 +44,19 @@ export const visualLessonsEn = {
 } satisfies Lessons;
 
 export const visualLessonsLv = {
+  sort_buckets: { title: "Šķiro grozos", s0: "Salīdzini katru kartīti ar grozu robežu, septiņi.", s1: "Četri ir zem septiņi. Liec kreisajā grozā.", s2: "Deviņi ir vismaz septiņi. Liec labajā grozā. Pārbaudi katru kartīti." },
+  fraction_sort: { title: "Šķiro vienādas daļas", s0: "Adreses ir viena trešdaļa un divas trešdaļas.", s1: "Divas sestdaļas ir viena trešdaļa. Nogādā šajā adresē.", s2: "Četras sestdaļas ir divas trešdaļas. Gabalu maiņa nemaina daudzumu." },
+  repair_pattern: { title: "Aizpildi visas vietas", s0: "Divi, tukšums, seši, tukšums. Meklē vienu likumu visai virknei.", s1: "Skaitot pa divi, pirmajā tukšumā liec četri.", s2: "Otrajā tukšumā der astoņi. Ievelc katru kartīti tās vietā. Pārbaudi visu virkni." },
+  route_grid: { title: "Plāno ceļu režģī", s0: "Sāc ar četri. Pārvietojies tikai uz blakus lauciņu.", s1: "Ieejot plus divi lauciņā, četri kļūst par seši.", s2: "Nogriezies lejup uz reiz divi un iegūsti divpadsmit. Ja vajag, atsauc soli un mēģini citādi." },
+  budget_plan: { title: "Plāno ar atlaidēm", s0: "Izdomātais budžets ir trīsdesmit. Mērķis ir atstāt desmit.", s1: "Divdesmit monētu priekšmets ar divdesmit piecu procentu atlaidi maksā piecpadsmit.", s2: "Pievieno piecu monētu priekšmetu. Trīsdesmit mīnus piecpadsmit mīnus pieci atstāj desmit. Salīdzini savus plānus." },
   subtraction: { title: "Kā atņemt", s0: "Sāc ar 7 āboliem. Atņem 2.", s1: "Skaties, kā 2 āboli aiziet.", s2: "Paliek 5 āboli. Izvēlies atlikušo skaitu." },
+  number_range: { title: "Pārbaudi skaitļu robežas", s0: "Skaitlim jābūt lielākam par 3 un mazākam par 8.", s1: "Izmēģini 6. Tas ir lielāks par 3.", s2: "6 ir arī mazāks par 8. Tas atbilst abām robežām." },
+  fraction_of_set: { title: "Daļa no grupas", s0: "Atrodi trīs ceturtdaļas no 12 punktiem.", s1: "Sadali četrās vienādās grupās. Katrā ir 3 punkti.", s2: "Ņem trīs grupas. Trīs reiz trīs ir 9 punkti." },
+  percent_of: { title: "Atrodi procentus", s0: "Atrodi 25 procentus no 20. Divdesmit ir viss daudzums.", s1: "25 procenti ir ceturtdaļa. Sadali 20 četrās vienādās grupās pa 5.", s2: "Viena ceturtdaļa ir 5. Tie ir 25 procenti no 20." },
+  percent_fifth: { title: "Divdesmit procenti ir piektdaļa", s0: "Atrodi 20 procentus no 30. Trīsdesmit ir viss daudzums.", s1: "20 procenti ir piektdaļa. Sadali 30 piecās vienādās grupās pa 6.", s2: "Viena piektdaļa ir 6. Tie ir 20 procenti no 30." },
+  percent_fifth_discount: { title: "Divdesmit procentu atlaide", s0: "30 monētu cenai ir 20 procentu atlaide.", s1: "Piektdaļa no 30 ir 6 monētas. Tā ir atlaides summa.", s2: "30 mīnus 6 ir 24 monētas. Tā ir gala cena." },
+  percent_discount: { title: "Atņem atlaidi", s0: "20 monētu cenai ir 25 procentu atlaide.", s1: "Ceturtdaļa no 20 ir 5 monētas. Tā ir atlaides summa.", s2: "No 20 atņem 5. Gala cena ir 15 monētas." },
+  all_pairs: { title: "Savāc visus pārus", s0: "No četrām kartītēm atrodi visus pārus ar summu 8.", s1: "2 un 6 ir viens pāris. Saglabā to un pārbaudi pārējās kartītes.", s2: "Arī 3 un 5 summa ir 8. Vajag abus pārus. Apgriezta secība neveido jaunu pāri." },
   addition: { title: "Kā saskaitīt", s0: "Te ir 2 baloni un vēl 4.", s1: "Saliec abas grupas kopā.", s2: "Pavisam 6 baloni. Izvēlies kopējo skaitu." },
   multiplication: { title: "Kā reizināt", s0: "Vienā rindā ir 3 lāči.", s1: "Pievieno vēl vienu rindu ar 3 lāčiem.", s2: "3 rindās pa 3 ir 9. Izvēlies kopējo skaitu." },
   division: { title: "Kā sadalīt vienādi", s0: "Sadali 8 cepumus 2 draugiem.", s1: "Dod katram draugam vienādu skaitu.", s2: "Katram 4 cepumi. Izvēlies, cik saņem katrs." },

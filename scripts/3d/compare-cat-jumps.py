@@ -2,8 +2,8 @@
 from pathlib import Path
 from PIL import Image, ImageDraw
 import argparse
-parser=argparse.ArgumentParser();parser.add_argument('--output',default='/tmp/brainpet-cat-jumps');parser.add_argument('--landing-walk',action='store_true');args=parser.parse_args()
-out=Path(args.output);out.mkdir(parents=True,exist_ok=True);source=Path('/tmp/brainpet-landing-walk-review' if args.landing_walk else '/tmp/brainpet-jump-review')
+parser=argparse.ArgumentParser();parser.add_argument('--output',default='/tmp/brainpet-cat-jumps');parser.add_argument('--source');parser.add_argument('--landing-walk',action='store_true');args=parser.parse_args()
+out=Path(args.output);out.mkdir(parents=True,exist_ok=True);source=Path(args.source or ('/tmp/brainpet-landing-walk-review' if args.landing_walk else '/tmp/brainpet-jump-review'))
 frames=[]
 actions=[('landingWalk','Landing into the next task')] if args.landing_walk else [('jumpOn','Jump onto sofa'),('sit','Settle and turn on the cushion'),('jumpOff','Jump down')]
 for action,label in actions:

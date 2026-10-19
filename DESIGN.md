@@ -138,7 +138,7 @@ The room camera uses distant perspective with near-isometric framing, configured
 
 Keep per-room layouts, stable catalog IDs, normalized placement anchors, furniture proportions, wall orientation, and rug/wall-art ordering. The Decorate header menu stays available as Decorating while editing, with Shop in the same dropdown. The editor toolbar contains Undo and Choose an item, plus a movement/rotation/aiming dock below the room. Opening Shop and returning preserves decoration mode. Invalid drops show the attempted position in orange and blockers or crossed boundaries in red, then explain why the item returned to its saved position. Preserve arrow nudges as an alternative to dragging.
 
-Other screens share the cream background, a back action, readable titles, and scrollable content. The puzzle path has difficulty selection, progress, and available/completed/locked states. Play places the question above its task-specific controls. The store has primary tabs, a decoration category sheet, an owned-only filter, and a two-column catalog grid.
+Other screens share the cream background, a back action, readable titles, and scrollable content. Puzzle learning follows difficulty, topic, lesson and puzzle. Topics show independent practice progress; lessons show available/completed/locked states. Optional gold boss missions expose three saved stages, and lavender challenges use a collection goal. Their requirements and authoring flow are in [puzzle-curriculum.md](docs/puzzle-curriculum.md). Play places the question above its task-specific controls. The store has primary tabs, a decoration category sheet, an owned-only filter, and a two-column catalog grid.
 
 ## Elevation & Depth
 

@@ -61,13 +61,13 @@ for (const coat of ['orange', 'grey', 'white']) {
   for (let i = 0; i < ids.length; i++) {
     if (body.has(ids[i])) weights[i].forEach((weight,k) => { if (weight > .01) bodyJoints.add(jointNames[joints[i][k]]); });
     else weights[i].forEach((weight,k) => {
-      if (weight > .01) assert.ok(['head','neck'].includes(jointNames[joints[i][k]]), 'Separate ear/nose inserts stay attached to the head');
+      if (weight > .01) assert.ok(['head','neck','ear.L','ear.R'].includes(jointNames[joints[i][k]]), 'Separate ear/nose inserts stay attached to the head');
     });
   }
-  for (const joint of ['spine','head','neck','L.forelegjoint0','R.forelegjoint0','L.hindlegjoint0','R.hindlegjoint0','tailjoint0'])
+  for (const joint of ['spine','head','neck','ear.L','ear.R','L.forelegjoint0','R.forelegjoint0','L.hindlegjoint0','R.hindlegjoint0','tailjoint0'])
     assert.ok(bodyJoints.has(joint), `${coat}: ${joint} deforms the same connected body`);
   const named = new Map(model.nodes.map((n, i) => [n.name, i]));
-  for (const [parent, child] of [['spine', 'chest'], ['chest', 'neck'], ['neck', 'head'], ['chest', 'L.forelegjoint0'], ['pelvis', 'L.hindlegjoint0'], ['L.forelegjoint1', 'L.front.paw'], ['spine', 'tailjoint0']]) {
+  for (const [parent, child] of [['head', 'ear.L'], ['head', 'ear.R'], ['spine', 'chest'], ['chest', 'neck'], ['neck', 'head'], ['chest', 'L.forelegjoint0'], ['pelvis', 'L.hindlegjoint0'], ['L.forelegjoint1', 'L.front.paw'], ['spine', 'tailjoint0']]) {
     assert.ok(model.nodes[named.get(parent)]?.children?.includes(named.get(child)), `${coat}: anatomical ${parent} → ${child} hierarchy`);
   }
   console.log(`${coat}: connected body and sealed ear inserts, ${welded.size} vertices, safe normalized four-joint weights and anatomical hierarchy.`);

@@ -162,6 +162,9 @@ export type TopicStatsMap = Partial<
 >;
 
 export type Progress = {
+  /** Separate from the save format: replacing the curriculum resets learning only. */
+  puzzleContentVersion?: number;
+  topicStatsByDifficulty?: Partial<Record<import("@/types/puzzle").PuzzleDifficulty, TopicStatsMap>>;
   storeGoal?: { kind: "room" | "bed" | "toy" | "decoration" | "skin"; id: string };
   completedPuzzleIds?: string[];
   processedAttemptIds?: string[];

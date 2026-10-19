@@ -79,6 +79,7 @@ function createCatScenarios(): Record<BuiltInPetScenarioId, PetMediaScenario> {
       label: "Waking up…",
       steps: [
         modelSegment("sleepy", { loop: false, reverse: true, fps: 72 }),
+        modelSegment("wakeStretch", { loop: false }),
       ],
     },
   };

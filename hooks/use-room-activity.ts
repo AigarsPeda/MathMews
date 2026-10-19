@@ -1,6 +1,7 @@
+import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import type { WorldPeriod } from '@/utils/world-clock';
 import type { HomeRoomId } from "@/constants/home-rooms";
-import { FLOOR_Y, catFloorPoint, catScreenPoint, hasNativeArrived, mergeNativeRoomWorld, pathLength, prepareNativeStep, updateNativeObjectPosition, type Vec3 } from "@/utils/native-room-world";
+import { FLOOR_Y, nativeRoomEdge, catFloorPoint, catScreenPoint, hasNativeArrived, mergeNativeRoomWorld, pathLength, prepareNativeStep, updateNativeObjectPosition, type Vec3 } from "@/utils/native-room-world";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { getCatJumpMotion, getCatWalkMotion, isCatJump, isCatWalk } from "@/constants/cat-room-motion";
 import {
@@ -31,9 +32,9 @@ export function useRoomActivity(
   lastInteractionAt: number | undefined,
   petX: SharedValue<number>,
   petY: SharedValue<number>,
-  onDoorArrival?: (instanceId: string) => void,
+  onDoorArrival?: (instanceId: string, motion?: CatTravelMotion) => void,
   onFeed?: () => void,
-  onRoomArrival?: (roomId: HomeRoomId, ambientPeriod?: WorldPeriod) => void,
+  onRoomArrival?: (roomId: HomeRoomId, ambientPeriod?: WorldPeriod, motion?: CatTravelMotion) => void,
   roomVisible = true,
   preservePositionWhenDisabled = false,
   onStopped?: () => void,
@@ -57,8 +58,9 @@ export function useRoomActivity(
     nativePosition.current = [position[0], position[1], position[2]];
     if (elapsed !== undefined) nativeElapsed.current = elapsed;
   }, []);
-  const nativeAdvance = useRef<((key: string, position: Vec3) => void) | null>(null);
-  const completeNativeStep = useCallback((key: string, position: Vec3) => nativeAdvance.current?.(key, position), []);
+  const exitMotion = useRef<CatTravelMotion | undefined>(undefined);
+  const nativeAdvance = useRef<((key: string, position: Vec3, motion?: CatTravelMotion) => void) | null>(null);
+  const completeNativeStep = useCallback((key: string, position: Vec3, motion?: CatTravelMotion) => nativeAdvance.current?.(key, position, motion), []);
   const running = useRef<ActivityState | null>(null);
   const queuedPlan = useRef<RoomActivityPlan | null>(null);
   const latestOptions = useRef(options);
@@ -112,12 +114,12 @@ export function useRoomActivity(
     const current = running.current;
     if (current && (isCatJump(current.plan.steps[current.stepIndex].animation)
       || current.plan.steps[current.stepIndex].native?.legs?.some(leg => leg.kind === 'hop')
-      || current.plan.steps[current.stepIndex].enteringRoom)) {
+      || current.plan.steps[current.stepIndex].enteringRoom && (reduceMotion || latestOptions.current.nativeStepCompletion===false))) {
       pendingCommand.current = { kind, instanceId, interactionAt, ambientPeriod };
       return;
     }
     setRequest(current => ({ id: (current?.id ?? 0) + 1, kind, instanceId, interactionAt, ambientPeriod }));
-  }, []);
+  }, [reduceMotion]);
   const startActivity = useCallback((kind: RoomActivityKind, instanceId?: string, interactionAt?: number, ambientPeriod?: WorldPeriod) => requestActivity(kind, instanceId, interactionAt, ambientPeriod), [requestActivity]);
   const stopActivity = useCallback(() => requestActivity("stop"), [requestActivity]);
   useEffect(() => {
@@ -153,7 +155,9 @@ export function useRoomActivity(
     let stopped = false;
     // Scheduler refs are read after commit. They must not determine render
     // output or dependency arrays, which React Compiler cannot track.
-    const continueActivity = enabled && (running.current !== null || queuedPlan.current !== null
+    const pendingEntry = !reduceMotion && options.nativeStepCompletion !== false
+      && options.entry && options.entry.id !== handledEntry.current;
+    const continueActivity = enabled && (pendingEntry || running.current !== null || queuedPlan.current !== null
       || request !== null && request.id !== handledRequest.current);
     const backgroundActivity = !roomVisible && continueActivity;
     const active = screenActive && (roomVisible || continueActivity);
@@ -175,12 +179,12 @@ export function useRoomActivity(
         setState(null);
         if (plan.stopForEditing) { stopComplete.current?.(); return; }
         if (plan.kind === "doorTravel" && plan.targetInstanceId && !completed?.plan.steps.at(-1)?.native?.blocked) {
-          doorArrival.current?.(plan.targetInstanceId);
+          doorArrival.current?.(plan.targetInstanceId,exitMotion.current);
           return;
         }
         if (plan.kind === "roomTravel" && plan.destination && !completed?.plan.steps.some(step => step.native?.blocked)) {
           if (plan.ambientPeriod !== 'night' || latestOptions.current.period === 'night')
-            roomArrival.current?.(plan.destination, plan.ambientPeriod);
+            roomArrival.current?.(plan.destination, plan.ambientPeriod,exitMotion.current);
           return;
         }
         if (plan.kind === "bowlEat" && !completed?.plan.steps.some(step => step.native?.blocked)) feedComplete.current?.();
@@ -195,6 +199,10 @@ export function useRoomActivity(
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
         step.native = { ...step.native!, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: roomVisible && room.nativeStepCompletion && !step.hold };
         nativeElapsed.current = elapsed;
+        if(step.enteringRoom && !step.entryFromCurrent && !elapsed && !reduceMotion) {
+          nativePosition.current=step.native.path[0];nativeHeight.current=nativePosition.current[1];
+          const edge=catScreenPoint(nativePosition.current,liveWorld.current);petX.set(edge.x);petY.set(edge.y);
+        }
         if (step.native?.blocked) {
           if (plan.userRequested && !failureReported.current && !pendingCommand.current) {
             failureReported.current = true;
@@ -277,7 +285,7 @@ export function useRoomActivity(
           else runStep(next.plan, stepIndex + 1);
         }
       };
-      nativeAdvance.current = step.native?.awaitCompletion ? (key, position) => {
+      nativeAdvance.current = step.native?.awaitCompletion ? (key, position, motion) => {
         if (stopped || !running.current || roomActivityStepKey(running.current) !== key) return;
         if (!hasNativeArrived(position, step.native!.path.at(-1)!)) return;
         // Use the exact rendered arrival, rather than the last throttled UI anchor.
@@ -286,6 +294,7 @@ export function useRoomActivity(
         // Reanimated writes from JS reach the UI thread asynchronously. Keep the
         // rendered arrival synchronously so the next step cannot read the old home.
         nativePosition.current = position;
+        exitMotion.current=motion;
         nativeAdvance.current = null;
         advanceStep();
       } : null;
@@ -294,6 +303,7 @@ export function useRoomActivity(
     };
     const startPlan = (plan: RoomActivityPlan) => {
       queuedPlan.current = null;
+      exitMotion.current=undefined;
       if (plan.ambientPeriod && plan.ambientPeriod !== latestOptions.current.period) {
         const current = running.current;
         if (current) runStep(buildRoomReturn(latestOptions.current, current.plan, current.stepIndex,
@@ -315,7 +325,7 @@ export function useRoomActivity(
       else timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
     };
     const current = running.current;
-    if (!active || !roomVisible && !current && !queuedPlan.current
+    if (!active || !roomVisible && !pendingEntry && !current && !queuedPlan.current
       && !(request && request.id !== handledRequest.current)) {
       // Cleanup stops travel and timers. Preserve the current pose so focus
       // can resume with a visible journey home, including getting off a sofa.
@@ -334,6 +344,19 @@ export function useRoomActivity(
       if (entry) {
         setBlockedActivity(null);
         handledEntry.current = options.entry!.id;
+        if (request && request.id !== handledRequest.current && !reduceMotion && options.nativeStepCompletion!==false
+          && request.kind!=='returnHome' && request.kind!=='stop') {
+          const edgeOptions=liveWorld.current ? {...options,nativeWorld:{...liveWorld.current,
+            home:nativeRoomEdge(liveWorld.current,options.entry!.direction===1?-1:1)}} : options;
+          const task=buildRoomActivity(edgeOptions,turn.current++,request.kind,request.instanceId);
+          if(task && isCatWalk(task.steps[0]?.animation)) {
+            handledRequest.current=request.id;pendingCommand.current=null;
+            startPlan({...task,userRequested:!request.ambientPeriod,ambientPeriod:request.ambientPeriod,
+              steps:task.steps.map((step,index)=>index?step:{...step,enteringRoom:true,
+                travelDirection:options.entry!.direction,entryMotion:options.entry!.motion})});
+            return () => {stopped=true;nativeAdvance.current=null;clearTimeout(timer);};
+          }
+        }
         if (request && request.id !== handledRequest.current) {
           handledRequest.current = request.id;
           pendingCommand.current = { kind: request.kind, instanceId: request.instanceId, interactionAt: request.interactionAt, ambientPeriod: request.ambientPeriod };
@@ -384,6 +407,11 @@ export function useRoomActivity(
         const exit = current ? buildRoomExit(options, current.plan, current.stepIndex, position) : { kind: "returnHome" as const, steps: [] };
         timer = setTimeout(() => startPlan({ ...exit, stopForEditing: true }), 0);
       } else if (next) {
+        const entering=current?.plan.steps[current.stepIndex];
+        if(entering?.enteringRoom && !reduceMotion && options.nativeStepCompletion!==false && isCatWalk(next.steps[0]?.animation)) {
+          next={...next,steps:next.steps.map((step,index)=>index?step:{...step,enteringRoom:true,
+            entryFromCurrent:true,travelDirection:entering.travelDirection,entryMotion:options.entry?.motion})};
+        }
         const plan = next.sofaApproach && next.steps[1]?.animation === 'jumpOn'
           ? routeToSofa({ ...options,nativeWorld:liveWorld.current ?? undefined }, next, position, current,nativePosition.current ?? undefined)
           : current ? { ...next, steps: [...buildRoomExit(options, current.plan, current.stepIndex, position).steps, ...next.steps] } : next;

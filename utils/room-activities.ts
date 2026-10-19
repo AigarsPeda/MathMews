@@ -1,3 +1,4 @@
+import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { itemInteraction, isDecorationOpen } from '@/constants/item-interactions';
 import { isFurniturePerch } from '@/constants/cat-furniture';
 import { isSleepingBed, type BedPhase } from '@/constants/bedroom-activities';
@@ -57,6 +58,8 @@ export type RoomActivityStep = {
   returnHome?: boolean;
   leavingRoom?: boolean;
   enteringRoom?: boolean;
+  entryFromCurrent?: boolean;
+  entryMotion?: CatTravelMotion;
   travelDirection?: RoomTravelDirection;
   objectPosition?: RoomPoint;
   objectRotation?: number;
@@ -123,7 +126,16 @@ export function buildRoomEntry(room: RoomActivityOptions): RoomActivityPlan | nu
   const home = roomOffsetToPoint(room.homeOffset, room.width, room.height, room.petSize);
   const edge = clampCatPoint({ x: -room.entry.direction * room.width * .3, y: room.height * .25 }, room);
   return { kind: "returnHome", steps: [{ ...walkTo(edge, home, room.petSize), enteringRoom: true,
-    returnHome: true, travelDirection: room.entry.direction }] };
+    returnHome: true, travelDirection: room.entry.direction, entryMotion: room.entry.motion }] };
+}
+
+function wakeStretch(step: Pick<RoomActivityStep, 'position'> & Partial<RoomActivityStep>, position = step.position): RoomActivityStep {
+  return { position, mood: 'idle', animation: 'wakeStretch', durationMs: 2500,
+    sofaApproach: step.sofaApproach, seatApproach: step.seatApproach,
+    // Covered sleep's recorded seat is under the quilt. After uncovering use
+    // the exposed mattress contact, which prepareNativeStep resolves afresh.
+    seatPosition: step.bedPhase ? undefined : step.seatPosition,
+    seatHeading: step.seatHeading, targetInstanceId: step.targetInstanceId };
 }
 
 /** Getting up and jumping down precede the floor walk, including interruptions. */
@@ -149,6 +161,7 @@ export function buildRoomReturn(room: RoomActivityOptions, plan: RoomActivityPla
       targetInstanceId: sourceInstanceId });
     steps.push({ ...step, position, animation: 'walk', reverse: false, mood: 'idle', bedPhase: 'uncover',
       hold: false, durationMs: 1400, moveMs: 1400, targetInstanceId: sourceInstanceId });
+    if (step.animation === 'curlUp' || step.animation === 'curlSleep') steps.push(wakeStretch({ ...step, targetInstanceId: sourceInstanceId }, position));
     steps.push({ position: approach, mood: 'idle', animation: 'jumpOff', sofaApproach: approach,
       seatApproach: step.seatApproach, targetInstanceId: sourceInstanceId,
       durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
@@ -158,6 +171,7 @@ export function buildRoomReturn(room: RoomActivityOptions, plan: RoomActivityPla
   if (step.sofaApproach && approach) {
     if (step.animation === "curlUp" || step.animation === "curlSleep") {
       steps.push({ position, mood: "lyingDown", animation: "curlUp", reverse: true, sofaApproach: approach, seatApproach: step.seatApproach, seatPosition: step.seatPosition, seatHeading: step.seatHeading, targetInstanceId: sourceInstanceId, durationMs: 1000 });
+      steps.push(wakeStretch({ ...step, targetInstanceId: sourceInstanceId }, position));
     }
     floorStart = approach;
     steps.push({ position: floorStart, mood: "idle", animation: "jumpOff", animationFps: 24_000 / SOFA_JUMP_DURATION_MS, sofaApproach: approach, seatApproach: step.seatApproach, seatPosition: step.seatPosition, seatHeading: step.seatHeading, treeApproach: step.treeApproach, targetInstanceId: sourceInstanceId, durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS });
@@ -353,6 +367,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
         { ...common, mood: 'lyingDown', animation: 'curlUp', bedPhase, reverse: true, durationMs: 1000 },
         ...(covered ? [{ ...common, mood: 'idle' as const, animation: 'walk' as const,
           bedPhase: 'uncover' as const, durationMs: 1400, moveMs: 1400 }] : []),
+        wakeStretch(common),
         { position: approach, sofaApproach: approach, mood: 'idle', animation: 'jumpOff', durationMs: SOFA_JUMP_DURATION_MS, moveMs: SOFA_JUMP_DURATION_MS },
         { ...walkTo(approach, home, room.petSize), returnHome: true },
       ] });
@@ -384,6 +399,7 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
       { position: seat, mood: "lyingDown", animation: "curlUp", durationMs: 1000, sofaApproach: approach },
       { position: seat, mood: "sleeping", animation: "curlSleep", durationMs: 25_000, sofaApproach: approach, hold: Boolean(command) },
       { position: seat, mood: "lyingDown", animation: "curlUp", reverse: true, durationMs: 1000, sofaApproach: approach },
+      wakeStretch({ position: seat, mood: "idle", durationMs: 2500, sofaApproach: approach }),
       ...leave,
     ] });
   }

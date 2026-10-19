@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { challengeAnswers } from './puzzles/solve-challenges.mjs';
 const root = process.cwd(), cache = new Map(), stored = new Map();
 const storage = {
   getItem: async key => stored.get(key) ?? null,
@@ -27,7 +28,7 @@ function load(id) {
   return module.exports;
 }
 const { getPuzzlesByDifficulty, computePetWisdom } = load('@/constants/puzzles');
-const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
+const { checkPuzzleAnswer, getValidPairs } = load('@/utils/puzzle-type');
 const { shufflePuzzleChoices } = load("@/utils/puzzle-practice");
 const { getVisualExplanation } = load('@/constants/visual-explanations');
 const helpLocales = {
@@ -75,9 +76,11 @@ for (const tier of ['easy', 'medium', 'hard']) {
   for (const locale of ['en', 'lv']) for (const p of getPuzzlesByDifficulty(locale, tier)) {
     count++;
     assert.equal(p.difficulty, tier);
-    if (p.type === 'number_line') assert.equal(tier, 'hard', 'Number-line puzzles belong only in Hard'); assert.ok(p.question && p.hint && p.explanation);
+    assert.ok(p.question && p.hint && p.explanation);
     let answer;
     switch (p.type) {
+      case 'sort_buckets': case 'repair_pattern': case 'route_grid': case 'budget_plan': answer=challengeAnswers(p)[0]; break;
+      case 'find_all_pairs': answer = { kind: 'pairs', pairs: getValidPairs(p.payload.numbers, p.payload.target) }; break;
       case 'target_build': answer = { kind: 'operators', operators: p.payload.solution }; break;
       case 'operation_path': answer = { kind: 'operators', operators: p.payload.steps.map(step => step.operator) }; break;
       case 'fraction_build': answer = { kind: 'fraction', shaded: p.payload.numerator }; assert.ok(p.payload.numerator <= p.payload.denominator); break;
@@ -200,26 +203,17 @@ assert.equal(migratedBowl.wallet.coins, start.wallet.coins);
 assert.equal(parseGameSaveFromValue(migratedBowl).save.pet.placedDecorations.length, 1, 'Old saves receive one starter bowl');
 const storedBowl = parseGameSaveFromValue({ ...start, pet: { ...start.pet, placedDecorations: [] } }).save;
 assert.equal(storedBowl.pet.placedDecorations.length, 0, 'A player can keep the bowl in inventory');
-const old = { ...start, progress: { ...start.progress, completedPuzzleIds: undefined, puzzlesSolved: { easy: 6, medium: 0, hard: 0 } } };
-assert.equal(parseGameSaveFromValue(old).save.progress.completedPuzzleIds.length, 6, 'Existing sequential progress migrates');
-for (const tier of ['easy', 'medium', 'hard']) {
-  const authored = JSON.parse(fs.readFileSync(path.join(root, `assets/puzzles/${tier}.json`), 'utf8'));
-  for (let solved = 0; solved <= authored.length; solved++) {
-    const legacy = { ...start, progress: { ...start.progress, completedPuzzleIds: undefined, puzzlesSolved: { easy: 0, medium: 0, hard: 0, [tier]: solved } } };
-    const migrated = parseGameSaveFromValue(legacy).save;
-    assert.deepEqual(Array.from(migrated.progress.completedPuzzleIds), authored.slice(0, solved).map(p => p.id), 'Legacy counts preserve the original completion order');
-    assert.deepEqual(parseGameSaveFromValue(migrated).save.progress.completedPuzzleIds, migrated.progress.completedPuzzleIds, 'Reopening preserves migrated completion IDs');
-    assert.equal(computePetWisdom(migrated.progress.puzzlesSolved, migrated.progress.completedPuzzleIds), Math.round(solved / totalPuzzles * 100), 'Migrated completions keep their wisdom credit');
-    assert.deepEqual(migrated.progress.puzzlesSolved, getSolvedCounts(migrated.progress.completedPuzzleIds));
-  }
-}
-const movedIds = ['easy-nl-1', 'easy-nl-2', 'medium-nl-1', 'medium-nl-2'];
-assert.ok(movedIds.every(id => getPuzzlesByDifficulty('en', 'hard').some(p => p.id === id)), 'Every moved puzzle remains available');
-const movedSave = parseGameSaveFromValue({ ...start, progress: { ...start.progress, completedPuzzleIds: movedIds } }).save;
-assert.deepEqual(Array.from(movedSave.progress.completedPuzzleIds), movedIds, 'Solved number-line puzzles remain completed and replayable');
-assert.equal(computePetWisdom(movedSave.progress.puzzlesSolved, movedSave.progress.completedPuzzleIds), Math.round(4 / totalPuzzles * 100), 'Moved completions keep their wisdom credit');
-const replayMoved = applyPuzzleAnswer(movedSave, getPuzzlesByDifficulty('en', 'hard').find(p => p.id === movedIds[0]), true, 'moved-replay', now);
-assert.equal(replayMoved.save.progress.completedPuzzleIds.length, 4, 'Moving categories does not reward a new completion twice');
+const old = { ...start, progress: { ...start.progress, puzzleContentVersion: undefined, completedPuzzleIds: ['easy-mc-01'], puzzlesSolved: { easy: 6, medium: 0, hard: 0 } } };
+const newCurriculum = parseGameSaveFromValue(old).save;
+assert.equal(newCurriculum.progress.completedPuzzleIds.length, 0, 'The replacement curriculum starts fresh');
+assert.equal(newCurriculum.wallet.coins, old.wallet.coins, 'Replacing puzzles preserves the wallet');
+assert.deepEqual(Array.from(newCurriculum.progress.toysUnlocked), Array.from(old.progress.toysUnlocked), 'Replacing puzzles preserves owned toys');
+assert.deepEqual(newCurriculum.progress.puzzlesSolved, getSolvedCounts([]));
+assert.equal(computePetWisdom(newCurriculum.progress.puzzlesSolved, newCurriculum.progress.completedPuzzleIds), 0);
+const currentIds = getPuzzlesByDifficulty('en', 'hard').slice(0, 4).map(p => p.id);
+const currentSave = parseGameSaveFromValue({ ...start, progress: { ...start.progress, completedPuzzleIds: currentIds } }).save;
+assert.deepEqual(Array.from(currentSave.progress.completedPuzzleIds), currentIds, 'Current-curriculum completions survive reopening');
+assert.equal(computePetWisdom(currentSave.progress.puzzlesSolved, currentSave.progress.completedPuzzleIds), Math.round(4 / totalPuzzles * 100));
 
 const changed = { ...switchRoomLayout(start.pet, 'room2'), roomPetOffset: { x: .7, y: .2 }, bedId: undefined };
 const back = switchRoomLayout(changed, 'room1'); assert.deepEqual(captureRoomLayout(back), captureRoomLayout(start.pet));

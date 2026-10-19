@@ -1,0 +1,3310 @@
+{
+  "version": 2,
+  "topics": [
+    {
+      "id": "addition",
+      "title": {
+        "en": "Addition",
+        "lv": "Saskaitīšana"
+      },
+      "description": {
+        "en": "Join quantities and find missing parts.",
+        "lv": "Apvieno daudzumus un atrodi trūkstošās daļas."
+      },
+      "icon": "addition"
+    },
+    {
+      "id": "subtraction",
+      "title": {
+        "en": "Subtraction",
+        "lv": "Atņemšana"
+      },
+      "description": {
+        "en": "Take away, compare and check what remains.",
+        "lv": "Atņem, salīdzini un pārbaudi atlikušo."
+      },
+      "icon": "subtraction"
+    },
+    {
+      "id": "numbers",
+      "title": {
+        "en": "Numbers and order",
+        "lv": "Skaitļi un secība"
+      },
+      "description": {
+        "en": "Compare quantities and put numbers in order.",
+        "lv": "Salīdzini daudzumus un sakārto skaitļus."
+      },
+      "icon": "scale"
+    },
+    {
+      "id": "patterns",
+      "title": {
+        "en": "Patterns",
+        "lv": "Virknes"
+      },
+      "description": {
+        "en": "Discover how numbers change.",
+        "lv": "Atklāj, kā mainās skaitļi."
+      },
+      "icon": "patterns"
+    },
+    {
+      "id": "multiplication",
+      "title": {
+        "en": "Equal groups",
+        "lv": "Vienādas grupas"
+      },
+      "description": {
+        "en": "Build rows and explore multiplication.",
+        "lv": "Veido rindas un iepazīsti reizināšanu."
+      },
+      "icon": "multiplication"
+    },
+    {
+      "id": "division",
+      "title": {
+        "en": "Sharing and division",
+        "lv": "Dalīšana"
+      },
+      "description": {
+        "en": "Share fairly and understand leftovers.",
+        "lv": "Sadali vienādi un izproti atlikumu."
+      },
+      "icon": "division"
+    },
+    {
+      "id": "fractions",
+      "title": {
+        "en": "Fractions",
+        "lv": "Daļas"
+      },
+      "description": {
+        "en": "Explore equal parts of the same whole.",
+        "lv": "Iepazīsti viena veselā vienādās daļas."
+      },
+      "icon": "fractions"
+    },
+    {
+      "id": "operations",
+      "title": {
+        "en": "Number routes",
+        "lv": "Skaitļu ceļi"
+      },
+      "description": {
+        "en": "Choose operations and plan your steps.",
+        "lv": "Izvēlies darbības un plāno soļus."
+      },
+      "icon": "operations"
+    },
+    {
+      "id": "percentages",
+      "title": {
+        "en": "Percentages",
+        "lv": "Procenti"
+      },
+      "description": {
+        "en": "Connect percentages, fractions and prices.",
+        "lv": "Saisti procentus, daļas un cenas."
+      },
+      "icon": "store"
+    },
+    {
+      "id": "measurement",
+      "title": {
+        "en": "Measure and estimate",
+        "lv": "Mērīšana un aptuvenie aprēķini"
+      },
+      "description": {
+        "en": "Use units, area and sensible estimates.",
+        "lv": "Izmanto mērvienības, laukumu un aptuvenus aprēķinus."
+      },
+      "icon": "stats"
+    },
+    {
+      "id": "logic",
+      "title": {
+        "en": "Reasoning",
+        "lv": "Spriešana"
+      },
+      "description": {
+        "en": "Check clues and explain what must be true.",
+        "lv": "Pārbaudi norādes un pamato secinājumus."
+      },
+      "icon": "brain"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "easy-numbers-small",
+      "difficulty": "easy",
+      "topicId": "numbers",
+      "title": {
+        "en": "Small numbers in order",
+        "lv": "Mazi skaitļi secībā"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-numbers-small-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-small-1"
+          ]
+        },
+        {
+          "id": "v2-easy-numbers-small-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-small-2"
+          ]
+        },
+        {
+          "id": "v2-easy-numbers-small-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-small-3"
+          ]
+        },
+        {
+          "id": "v2-easy-numbers-small-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-small-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-numbers-tens",
+      "difficulty": "easy",
+      "topicId": "numbers",
+      "title": {
+        "en": "Across the first ten",
+        "lv": "Pāri pirmajam desmitam"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-numbers-tens-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-tens-1"
+          ]
+        },
+        {
+          "id": "v2-easy-numbers-tens-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-tens-2"
+          ]
+        },
+        {
+          "id": "v2-easy-numbers-tens-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-tens-3"
+          ]
+        },
+        {
+          "id": "v2-easy-numbers-tens-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-tens-4"
+          ]
+        },
+        {
+          "id": "easy-numbers-tens-number-baskets",
+          "kind": "challenge",
+          "title": {
+            "en": "The number baskets",
+            "lv": "Skaitļu grozi"
+          },
+          "description": {
+            "en": "Sort every tile into a basket. You can move a tile again before checking.",
+            "lv": "Sašķiro visas kartītes grozos. Pirms pārbaudes vari tās pārvietot vēlreiz."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-number-baskets-1"
+          ]
+        },
+        {
+          "id": "easy-numbers-tens-train",
+          "kind": "boss",
+          "title": {
+            "en": "The midnight train",
+            "lv": "Pusnakts vilciens"
+          },
+          "description": {
+            "en": "Order the platforms, choose the longest train and find the waiting carriage.",
+            "lv": "Sakārto peronus, izvēlies garāko vilcienu un atrodi gaidošo vagonu."
+          },
+          "puzzleIds": [
+            "v2-easy-numbers-train-1",
+            "v2-easy-numbers-train-2",
+            "v2-easy-numbers-train-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-addition-join",
+      "difficulty": "easy",
+      "topicId": "addition",
+      "title": {
+        "en": "Put quantities together",
+        "lv": "Apvieno daudzumus"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-addition-join-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-join-1"
+          ]
+        },
+        {
+          "id": "v2-easy-addition-join-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-join-2"
+          ]
+        },
+        {
+          "id": "v2-easy-addition-join-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-join-3"
+          ]
+        },
+        {
+          "id": "v2-easy-addition-join-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-join-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-addition-ten",
+      "difficulty": "easy",
+      "topicId": "addition",
+      "title": {
+        "en": "Make ten and keep going",
+        "lv": "Izveido desmitu un turpini"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-addition-ten-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-ten-1"
+          ]
+        },
+        {
+          "id": "v2-easy-addition-ten-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-ten-2"
+          ]
+        },
+        {
+          "id": "v2-easy-addition-ten-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-ten-3"
+          ]
+        },
+        {
+          "id": "v2-easy-addition-ten-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-ten-4"
+          ]
+        },
+        {
+          "id": "easy-addition-ten-pair-hunt",
+          "kind": "challenge",
+          "title": {
+            "en": "The ten treasure hunt",
+            "lv": "Desmita dārgumu medības"
+          },
+          "description": {
+            "en": "One answer is not enough. Collect every different pair that reaches the target. This side activity is optional.",
+            "lv": "Ar vienu atbildi nepietiek. Savāc visus atšķirīgos pārus, kas sasniedz mērķi. Šī papildu nodarbe ir pēc izvēles."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-pair-hunt-1"
+          ]
+        },
+        {
+          "id": "easy-addition-ten-picnic",
+          "kind": "boss",
+          "title": {
+            "en": "The cat picnic",
+            "lv": "Kaķa pikniks"
+          },
+          "description": {
+            "en": "Pack ribbons, finish the places and open the picnic. Three saved stages.",
+            "lv": "Saliec lentes, sagatavo vietas un atklāj pikniku. Trīs saglabājami posmi."
+          },
+          "puzzleIds": [
+            "v2-easy-addition-picnic-1",
+            "v2-easy-addition-picnic-2",
+            "v2-easy-addition-picnic-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-subtraction-take",
+      "difficulty": "easy",
+      "topicId": "subtraction",
+      "title": {
+        "en": "Take some away",
+        "lv": "Atņem daļu"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-subtraction-take-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-take-1"
+          ]
+        },
+        {
+          "id": "v2-easy-subtraction-take-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-take-2"
+          ]
+        },
+        {
+          "id": "v2-easy-subtraction-take-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-take-3"
+          ]
+        },
+        {
+          "id": "v2-easy-subtraction-take-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-take-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-subtraction-back",
+      "difficulty": "easy",
+      "topicId": "subtraction",
+      "title": {
+        "en": "Count back across ten",
+        "lv": "Skaiti atpakaļ pāri desmitam"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-subtraction-back-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-back-1"
+          ]
+        },
+        {
+          "id": "v2-easy-subtraction-back-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-back-2"
+          ]
+        },
+        {
+          "id": "v2-easy-subtraction-back-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-back-3"
+          ]
+        },
+        {
+          "id": "v2-easy-subtraction-back-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-back-4"
+          ]
+        },
+        {
+          "id": "easy-subtraction-back-boats",
+          "kind": "boss",
+          "title": {
+            "en": "Rescue the paper boats",
+            "lv": "Izglāb papīra laiviņas"
+          },
+          "description": {
+            "en": "Launch the boats, follow them downstream and bring the last boats home.",
+            "lv": "Palaid laiviņas, seko tām lejup pa straumi un nogādā pēdējās mājās."
+          },
+          "puzzleIds": [
+            "v2-easy-subtraction-boats-1",
+            "v2-easy-subtraction-boats-2",
+            "v2-easy-subtraction-boats-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-patterns-jumps",
+      "difficulty": "easy",
+      "topicId": "patterns",
+      "title": {
+        "en": "Same jump each time",
+        "lv": "Vienāds solis katru reizi"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-patterns-jumps-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-jumps-1"
+          ]
+        },
+        {
+          "id": "v2-easy-patterns-jumps-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-jumps-2"
+          ]
+        },
+        {
+          "id": "v2-easy-patterns-jumps-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-jumps-3"
+          ]
+        },
+        {
+          "id": "v2-easy-patterns-jumps-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-jumps-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-patterns-fives",
+      "difficulty": "easy",
+      "topicId": "patterns",
+      "title": {
+        "en": "Count in fives",
+        "lv": "Skaiti pa pieci"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-patterns-fives-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-fives-1"
+          ]
+        },
+        {
+          "id": "v2-easy-patterns-fives-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-fives-2"
+          ]
+        },
+        {
+          "id": "v2-easy-patterns-fives-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-fives-3"
+          ]
+        },
+        {
+          "id": "v2-easy-patterns-fives-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-fives-4"
+          ]
+        },
+        {
+          "id": "easy-patterns-fives-stepping-stones",
+          "kind": "challenge",
+          "title": {
+            "en": "Mend the stepping stones",
+            "lv": "Salabo lēcienu akmeņus"
+          },
+          "description": {
+            "en": "Two stepping stones are missing. Repair the whole path and leave the spare tiles.",
+            "lv": "Trūkst divu lēcienu akmeņu. Salabo visu ceļu un atstāj liekās kartītes."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-stepping-stones-1"
+          ]
+        },
+        {
+          "id": "easy-patterns-fives-music",
+          "kind": "boss",
+          "title": {
+            "en": "Wake the music box",
+            "lv": "Iedarbini mūzikas lādīti"
+          },
+          "description": {
+            "en": "Find the beat, repair the winding rule and finish the tune.",
+            "lv": "Atrodi ritmu, salabo uzvilkšanas likumu un pabeidz melodiju."
+          },
+          "puzzleIds": [
+            "v2-easy-patterns-music-1",
+            "v2-easy-patterns-music-2",
+            "v2-easy-patterns-music-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-multiplication-rows",
+      "difficulty": "easy",
+      "topicId": "multiplication",
+      "title": {
+        "en": "Rows of toys",
+        "lv": "Rotaļlietu rindas"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-multiplication-rows-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-rows-1"
+          ]
+        },
+        {
+          "id": "v2-easy-multiplication-rows-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-rows-2"
+          ]
+        },
+        {
+          "id": "v2-easy-multiplication-rows-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-rows-3"
+          ]
+        },
+        {
+          "id": "v2-easy-multiplication-rows-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-rows-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-multiplication-groups",
+      "difficulty": "easy",
+      "topicId": "multiplication",
+      "title": {
+        "en": "More equal groups",
+        "lv": "Vairāk vienādu grupu"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-multiplication-groups-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-groups-1"
+          ]
+        },
+        {
+          "id": "v2-easy-multiplication-groups-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-groups-2"
+          ]
+        },
+        {
+          "id": "v2-easy-multiplication-groups-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-groups-3"
+          ]
+        },
+        {
+          "id": "v2-easy-multiplication-groups-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-groups-4"
+          ]
+        },
+        {
+          "id": "easy-multiplication-groups-shelves",
+          "kind": "boss",
+          "title": {
+            "en": "The toy workshop",
+            "lv": "Rotaļlietu darbnīca"
+          },
+          "description": {
+            "en": "Fill three displays with equal rows. Finish one display at a time.",
+            "lv": "Piepildi trīs stendus ar vienādām rindām. Pabeidz pa vienam."
+          },
+          "puzzleIds": [
+            "v2-easy-multiplication-shelves-1",
+            "v2-easy-multiplication-shelves-2",
+            "v2-easy-multiplication-shelves-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-fractions-parts",
+      "difficulty": "easy",
+      "topicId": "fractions",
+      "title": {
+        "en": "Equal pieces of one whole",
+        "lv": "Viena veselā vienādās daļas"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-fractions-parts-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-parts-1"
+          ]
+        },
+        {
+          "id": "v2-easy-fractions-parts-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-parts-2"
+          ]
+        },
+        {
+          "id": "v2-easy-fractions-parts-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-parts-3"
+          ]
+        },
+        {
+          "id": "v2-easy-fractions-parts-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-parts-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-fractions-pictures",
+      "difficulty": "easy",
+      "topicId": "fractions",
+      "title": {
+        "en": "Read fraction pictures",
+        "lv": "Nolasi daļu attēlus"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-easy-fractions-pictures-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-pictures-1"
+          ]
+        },
+        {
+          "id": "v2-easy-fractions-pictures-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-pictures-2"
+          ]
+        },
+        {
+          "id": "v2-easy-fractions-pictures-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-pictures-3"
+          ]
+        },
+        {
+          "id": "v2-easy-fractions-pictures-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-pictures-4"
+          ]
+        },
+        {
+          "id": "easy-fractions-pictures-kite",
+          "kind": "boss",
+          "title": {
+            "en": "Mend the festival kite",
+            "lv": "Salabo svētku pūķi"
+          },
+          "description": {
+            "en": "Color the sail, check equal patches and match the repair pieces.",
+            "lv": "Iekrāso buru, pārbaudi vienādus ielāpus un savieno remonta gabalus."
+          },
+          "puzzleIds": [
+            "v2-easy-fractions-kite-1",
+            "v2-easy-fractions-kite-2",
+            "v2-easy-fractions-kite-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-addition-tens",
+      "difficulty": "medium",
+      "topicId": "addition",
+      "title": {
+        "en": "Join tens and ones",
+        "lv": "Apvieno desmitus un vienus"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-addition-tens-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-tens-1"
+          ]
+        },
+        {
+          "id": "v2-medium-addition-tens-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-tens-2"
+          ]
+        },
+        {
+          "id": "v2-medium-addition-tens-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-tens-3"
+          ]
+        },
+        {
+          "id": "v2-medium-addition-tens-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-tens-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-addition-regroup",
+      "difficulty": "medium",
+      "topicId": "addition",
+      "title": {
+        "en": "Build a new ten",
+        "lv": "Izveido jaunu desmitu"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-addition-regroup-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-regroup-1"
+          ]
+        },
+        {
+          "id": "v2-medium-addition-regroup-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-regroup-2"
+          ]
+        },
+        {
+          "id": "v2-medium-addition-regroup-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-regroup-3"
+          ]
+        },
+        {
+          "id": "v2-medium-addition-regroup-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-regroup-4"
+          ]
+        },
+        {
+          "id": "medium-addition-regroup-pair-hunt",
+          "kind": "challenge",
+          "title": {
+            "en": "The workshop pair collection",
+            "lv": "Darbnīcas pāru kolekcija"
+          },
+          "description": {
+            "en": "One answer is not enough. Collect every different pair that reaches the target. This side activity is optional.",
+            "lv": "Ar vienu atbildi nepietiek. Savāc visus atšķirīgos pārus, kas sasniedz mērķi. Šī papildu nodarbe ir pēc izvēles."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-pair-hunt-1"
+          ]
+        },
+        {
+          "id": "medium-addition-regroup-tickets",
+          "kind": "boss",
+          "title": {
+            "en": "The festival ticket desk",
+            "lv": "Svētku biļešu kase"
+          },
+          "description": {
+            "en": "Count the guests, fill the guest list and welcome the late arrivals.",
+            "lv": "Saskaiti viesus, aizpildi viesu sarakstu un sagaidi nokavējušos."
+          },
+          "puzzleIds": [
+            "v2-medium-addition-tickets-1",
+            "v2-medium-addition-tickets-2",
+            "v2-medium-addition-tickets-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-subtraction-parts",
+      "difficulty": "medium",
+      "topicId": "subtraction",
+      "title": {
+        "en": "Subtract in useful parts",
+        "lv": "Atņem pa ērtām daļām"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-subtraction-parts-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-parts-1"
+          ]
+        },
+        {
+          "id": "v2-medium-subtraction-parts-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-parts-2"
+          ]
+        },
+        {
+          "id": "v2-medium-subtraction-parts-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-parts-3"
+          ]
+        },
+        {
+          "id": "v2-medium-subtraction-parts-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-parts-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-subtraction-check",
+      "difficulty": "medium",
+      "topicId": "subtraction",
+      "title": {
+        "en": "Check the difference",
+        "lv": "Pārbaudi starpību"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-subtraction-check-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-check-1"
+          ]
+        },
+        {
+          "id": "v2-medium-subtraction-check-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-check-2"
+          ]
+        },
+        {
+          "id": "v2-medium-subtraction-check-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-check-3"
+          ]
+        },
+        {
+          "id": "v2-medium-subtraction-check-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-check-4"
+          ]
+        },
+        {
+          "id": "medium-subtraction-check-lift",
+          "kind": "boss",
+          "title": {
+            "en": "The mountain supply lift",
+            "lv": "Kalnu krājumu pacēlājs"
+          },
+          "description": {
+            "en": "Send supplies uphill, count the second load and check the reserve.",
+            "lv": "Nosūti krājumus kalnā, saskaiti otro kravu un pārbaudi rezervi."
+          },
+          "puzzleIds": [
+            "v2-medium-subtraction-lift-1",
+            "v2-medium-subtraction-lift-2",
+            "v2-medium-subtraction-lift-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-multiplication-arrays",
+      "difficulty": "medium",
+      "topicId": "multiplication",
+      "title": {
+        "en": "Arrays and multiplication",
+        "lv": "Rindas un reizināšana"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-multiplication-arrays-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-arrays-1"
+          ]
+        },
+        {
+          "id": "v2-medium-multiplication-arrays-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-arrays-2"
+          ]
+        },
+        {
+          "id": "v2-medium-multiplication-arrays-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-arrays-3"
+          ]
+        },
+        {
+          "id": "v2-medium-multiplication-arrays-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-arrays-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-multiplication-facts",
+      "difficulty": "medium",
+      "topicId": "multiplication",
+      "title": {
+        "en": "Connect multiplication facts",
+        "lv": "Saisti reizināšanas vienādības"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-multiplication-facts-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-facts-1"
+          ]
+        },
+        {
+          "id": "v2-medium-multiplication-facts-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-facts-2"
+          ]
+        },
+        {
+          "id": "v2-medium-multiplication-facts-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-facts-3"
+          ]
+        },
+        {
+          "id": "v2-medium-multiplication-facts-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-facts-4"
+          ]
+        },
+        {
+          "id": "medium-multiplication-facts-seat-labels",
+          "kind": "challenge",
+          "title": {
+            "en": "The missing seat labels",
+            "lv": "Trūkstošās vietu etiķetes"
+          },
+          "description": {
+            "en": "Label the ends of five rows of seven seats. Two labels need replacing.",
+            "lv": "Atzīmē piecu rindu galus, katrā pa septiņām vietām. Divas etiķetes jānomaina."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-seat-labels-1"
+          ]
+        },
+        {
+          "id": "medium-multiplication-facts-theatre",
+          "kind": "boss",
+          "title": {
+            "en": "The firefly theatre",
+            "lv": "Jāņtārpiņu teātris"
+          },
+          "description": {
+            "en": "Arrange the audience, extend the rows and prepare the final performance.",
+            "lv": "Sakārto skatītāju vietas, pagarini rindas un sagatavo izrādi."
+          },
+          "puzzleIds": [
+            "v2-medium-multiplication-theatre-1",
+            "v2-medium-multiplication-theatre-2",
+            "v2-medium-multiplication-theatre-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-division-equal",
+      "difficulty": "medium",
+      "topicId": "division",
+      "title": {
+        "en": "Share into equal groups",
+        "lv": "Sadali vienādās grupās"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-division-equal-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-division-equal-1"
+          ]
+        },
+        {
+          "id": "v2-medium-division-equal-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-division-equal-2"
+          ]
+        },
+        {
+          "id": "v2-medium-division-equal-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-division-equal-3"
+          ]
+        },
+        {
+          "id": "v2-medium-division-equal-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-division-equal-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-division-leftovers",
+      "difficulty": "medium",
+      "topicId": "division",
+      "title": {
+        "en": "Whole groups and leftovers",
+        "lv": "Veselas grupas un atlikums"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-division-leftovers-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-division-leftovers-1"
+          ]
+        },
+        {
+          "id": "v2-medium-division-leftovers-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-division-leftovers-2"
+          ]
+        },
+        {
+          "id": "v2-medium-division-leftovers-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-division-leftovers-3"
+          ]
+        },
+        {
+          "id": "v2-medium-division-leftovers-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-division-leftovers-4"
+          ]
+        },
+        {
+          "id": "medium-division-leftovers-parcels",
+          "kind": "boss",
+          "title": {
+            "en": "The parcel station",
+            "lv": "Sūtījumu stacija"
+          },
+          "description": {
+            "en": "Count the arriving parcels, load the carts and deal with a late delivery.",
+            "lv": "Saskaiti pienākušos sūtījumus, piepildi ratiņus un sadali vēlo piegādi."
+          },
+          "puzzleIds": [
+            "v2-medium-division-parcels-1",
+            "v2-medium-division-parcels-2",
+            "v2-medium-division-parcels-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-fractions-value",
+      "difficulty": "medium",
+      "topicId": "fractions",
+      "title": {
+        "en": "Same whole and same value",
+        "lv": "Tas pats veselais un tā pati vērtība"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-fractions-value-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-value-1"
+          ]
+        },
+        {
+          "id": "v2-medium-fractions-value-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-value-2"
+          ]
+        },
+        {
+          "id": "v2-medium-fractions-value-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-value-3"
+          ]
+        },
+        {
+          "id": "v2-medium-fractions-value-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-value-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-fractions-equivalent",
+      "difficulty": "medium",
+      "topicId": "fractions",
+      "title": {
+        "en": "Match equivalent fractions",
+        "lv": "Savieno vienādas daļas"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-fractions-equivalent-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-equivalent-1"
+          ]
+        },
+        {
+          "id": "v2-medium-fractions-equivalent-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-equivalent-2"
+          ]
+        },
+        {
+          "id": "v2-medium-fractions-equivalent-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-equivalent-3"
+          ]
+        },
+        {
+          "id": "v2-medium-fractions-equivalent-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-equivalent-4"
+          ]
+        },
+        {
+          "id": "medium-fractions-equivalent-fraction-post",
+          "kind": "challenge",
+          "title": {
+            "en": "The fraction post office",
+            "lv": "Daļu pasts"
+          },
+          "description": {
+            "en": "Deliver six fraction letters to the addresses with the same value.",
+            "lv": "Nogādā sešas daļu vēstules adresēs ar tādu pašu vērtību."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-fraction-post-1"
+          ]
+        },
+        {
+          "id": "medium-fractions-equivalent-fountain",
+          "kind": "boss",
+          "title": {
+            "en": "Restore the mosaic fountain",
+            "lv": "Atjauno mozaīkas strūklaku"
+          },
+          "description": {
+            "en": "Lay the blue mosaic, replace its tiles and finish the matching border.",
+            "lv": "Ieklāj zilo mozaīku, nomaini flīzes un pabeidz atbilstošu apmali."
+          },
+          "puzzleIds": [
+            "v2-medium-fractions-fountain-1",
+            "v2-medium-fractions-fountain-2",
+            "v2-medium-fractions-fountain-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-operations-routes",
+      "difficulty": "medium",
+      "topicId": "operations",
+      "title": {
+        "en": "Plan a number route",
+        "lv": "Plāno skaitļu ceļu"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-operations-routes-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-routes-1"
+          ]
+        },
+        {
+          "id": "v2-medium-operations-routes-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-routes-2"
+          ]
+        },
+        {
+          "id": "v2-medium-operations-routes-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-routes-3"
+          ]
+        },
+        {
+          "id": "v2-medium-operations-routes-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-routes-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-operations-order",
+      "difficulty": "medium",
+      "topicId": "operations",
+      "title": {
+        "en": "Which operation comes first?",
+        "lv": "Kura darbība ir pirmā?"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-medium-operations-order-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-order-1"
+          ]
+        },
+        {
+          "id": "v2-medium-operations-order-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-order-2"
+          ]
+        },
+        {
+          "id": "v2-medium-operations-order-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-order-3"
+          ]
+        },
+        {
+          "id": "v2-medium-operations-order-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-order-4"
+          ]
+        },
+        {
+          "id": "medium-operations-order-courier-maze",
+          "kind": "challenge",
+          "title": {
+            "en": "The courier maze",
+            "lv": "Kurjera labirints"
+          },
+          "description": {
+            "en": "Choose your own route through a grid. Every visited square changes your number.",
+            "lv": "Izvēlies savu ceļu pa režģi. Katrs apmeklētais lauciņš maina tavu skaitli."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-courier-maze-1"
+          ]
+        },
+        {
+          "id": "medium-operations-order-lanterns",
+          "kind": "boss",
+          "title": {
+            "en": "Light the lantern trail",
+            "lv": "Iededz laternu taku"
+          },
+          "description": {
+            "en": "Carry power from one lantern to the next. Each repaired route lights another part of the trail.",
+            "lv": "Pārnes enerģiju no vienas laternas uz nākamo. Katrs salabotais ceļš iededz vēl vienu takas daļu."
+          },
+          "puzzleIds": [
+            "v2-medium-operations-lanterns-1",
+            "v2-medium-operations-lanterns-2",
+            "v2-medium-operations-lanterns-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-operations-connected",
+      "difficulty": "hard",
+      "topicId": "operations",
+      "title": {
+        "en": "Connect several operations",
+        "lv": "Saisti vairākas darbības"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-operations-connected-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-connected-1"
+          ]
+        },
+        {
+          "id": "v2-hard-operations-connected-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-connected-2"
+          ]
+        },
+        {
+          "id": "v2-hard-operations-connected-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-connected-3"
+          ]
+        },
+        {
+          "id": "v2-hard-operations-connected-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-connected-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-operations-strategies",
+      "difficulty": "hard",
+      "topicId": "operations",
+      "title": {
+        "en": "Choose a useful strategy",
+        "lv": "Izvēlies noderīgu paņēmienu"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-operations-strategies-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-strategies-1"
+          ]
+        },
+        {
+          "id": "v2-hard-operations-strategies-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-strategies-2"
+          ]
+        },
+        {
+          "id": "v2-hard-operations-strategies-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-strategies-3"
+          ]
+        },
+        {
+          "id": "v2-hard-operations-strategies-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-strategies-4"
+          ]
+        },
+        {
+          "id": "hard-operations-strategies-power-detour",
+          "kind": "challenge",
+          "title": {
+            "en": "The power-grid detour",
+            "lv": "Enerģijas režģa līkums"
+          },
+          "description": {
+            "en": "A direct route will not work. Plan a six-move detour without reusing squares.",
+            "lv": "Tiešais ceļš nederēs. Izplāno sešu soļu līkumu, neatkārtojot lauciņus."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-power-detour-1"
+          ]
+        },
+        {
+          "id": "hard-operations-strategies-observatory",
+          "kind": "boss",
+          "title": {
+            "en": "Restart the observatory",
+            "lv": "Iedarbini observatoriju"
+          },
+          "description": {
+            "en": "Route the power, align the telescope and tune the star tracker.",
+            "lv": "Novadi enerģiju, noregulē teleskopu un noskaņo zvaigžņu sekotāju."
+          },
+          "puzzleIds": [
+            "v2-hard-operations-observatory-1",
+            "v2-hard-operations-observatory-2",
+            "v2-hard-operations-observatory-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-fractions-amounts",
+      "difficulty": "hard",
+      "topicId": "fractions",
+      "title": {
+        "en": "Fractions of quantities",
+        "lv": "Daļas no daudzuma"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-fractions-amounts-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-amounts-1"
+          ]
+        },
+        {
+          "id": "v2-hard-fractions-amounts-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-amounts-2"
+          ]
+        },
+        {
+          "id": "v2-hard-fractions-amounts-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-amounts-3"
+          ]
+        },
+        {
+          "id": "v2-hard-fractions-amounts-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-amounts-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-fractions-apply",
+      "difficulty": "hard",
+      "topicId": "fractions",
+      "title": {
+        "en": "Use fractions in a plan",
+        "lv": "Izmanto daļas plānā"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-fractions-apply-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-apply-1"
+          ]
+        },
+        {
+          "id": "v2-hard-fractions-apply-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-apply-2"
+          ]
+        },
+        {
+          "id": "v2-hard-fractions-apply-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-apply-3"
+          ]
+        },
+        {
+          "id": "v2-hard-fractions-apply-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-apply-4"
+          ]
+        },
+        {
+          "id": "hard-fractions-apply-garden",
+          "kind": "boss",
+          "title": {
+            "en": "The garden plan",
+            "lv": "Dārza plāns"
+          },
+          "description": {
+            "en": "Choose the flower area, finish the border and prepare the supplies.",
+            "lv": "Izvēlies puķu laukumu, pabeidz apmali un sagatavo krājumus."
+          },
+          "puzzleIds": [
+            "v2-hard-fractions-garden-1",
+            "v2-hard-fractions-garden-2",
+            "v2-hard-fractions-garden-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-patterns-multiply",
+      "difficulty": "hard",
+      "topicId": "patterns",
+      "title": {
+        "en": "Multiplicative patterns",
+        "lv": "Reizināšanas virknes"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-patterns-multiply-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-multiply-1"
+          ]
+        },
+        {
+          "id": "v2-hard-patterns-multiply-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-multiply-2"
+          ]
+        },
+        {
+          "id": "v2-hard-patterns-multiply-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-multiply-3"
+          ]
+        },
+        {
+          "id": "v2-hard-patterns-multiply-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-multiply-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-patterns-scale",
+      "difficulty": "hard",
+      "topicId": "patterns",
+      "title": {
+        "en": "Scaling the pattern",
+        "lv": "Virknes mērogošana"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-patterns-scale-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-scale-1"
+          ]
+        },
+        {
+          "id": "v2-hard-patterns-scale-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-scale-2"
+          ]
+        },
+        {
+          "id": "v2-hard-patterns-scale-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-scale-3"
+          ]
+        },
+        {
+          "id": "v2-hard-patterns-scale-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-scale-4"
+          ]
+        },
+        {
+          "id": "hard-patterns-scale-signal-gaps",
+          "kind": "challenge",
+          "title": {
+            "en": "The broken signal strip",
+            "lv": "Pārrautā signālu virkne"
+          },
+          "description": {
+            "en": "Two signals are missing. Restore a multiplying pattern and ignore the decoys.",
+            "lv": "Trūkst divu signālu. Atjauno reizināšanas virkni un ignorē mānekļus."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-signal-gaps-1"
+          ]
+        },
+        {
+          "id": "hard-patterns-scale-signal",
+          "kind": "boss",
+          "title": {
+            "en": "The distant signal tower",
+            "lv": "Tālais signālu tornis"
+          },
+          "description": {
+            "en": "Decode the signal, tune the amplifier and send the final transmission.",
+            "lv": "Atšifrē signālu, noskaņo pastiprinātāju un nosūti pēdējo pārraidi."
+          },
+          "puzzleIds": [
+            "v2-hard-patterns-signal-1",
+            "v2-hard-patterns-signal-2",
+            "v2-hard-patterns-signal-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-percentages-quarters",
+      "difficulty": "hard",
+      "topicId": "percentages",
+      "title": {
+        "en": "A quarter as a percentage",
+        "lv": "Ceturtdaļa procentos"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-percentages-quarters-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-quarters-1"
+          ]
+        },
+        {
+          "id": "v2-hard-percentages-quarters-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-quarters-2"
+          ]
+        },
+        {
+          "id": "v2-hard-percentages-quarters-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-quarters-3"
+          ]
+        },
+        {
+          "id": "v2-hard-percentages-quarters-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-quarters-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-percentages-discounts",
+      "difficulty": "hard",
+      "topicId": "percentages",
+      "title": {
+        "en": "Discounts and final prices",
+        "lv": "Atlaides un gala cenas"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-percentages-discounts-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-discounts-1"
+          ]
+        },
+        {
+          "id": "v2-hard-percentages-discounts-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-discounts-2"
+          ]
+        },
+        {
+          "id": "v2-hard-percentages-discounts-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-discounts-3"
+          ]
+        },
+        {
+          "id": "v2-hard-percentages-discounts-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-discounts-4"
+          ]
+        },
+        {
+          "id": "hard-percentages-discounts-camp-budget",
+          "kind": "challenge",
+          "title": {
+            "en": "Plan the camp supplies",
+            "lv": "Izplāno nometnes krājumus"
+          },
+          "description": {
+            "en": "Compare discounts and choose a shopping plan. More than one plan can work.",
+            "lv": "Salīdzini atlaides un izvēlies iepirkumu plānu. Var derēt vairāki plāni."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-camp-budget-1"
+          ]
+        },
+        {
+          "id": "hard-percentages-discounts-shop",
+          "kind": "boss",
+          "title": {
+            "en": "Open the toy shop",
+            "lv": "Atver rotaļlietu veikalu"
+          },
+          "description": {
+            "en": "Calculate the discount, set the price and check a customer’s change.",
+            "lv": "Aprēķini atlaidi, nosaki cenu un pārbaudi pircēja atlikumu."
+          },
+          "puzzleIds": [
+            "v2-hard-percentages-shop-1",
+            "v2-hard-percentages-shop-2",
+            "v2-hard-percentages-shop-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-measurement-area",
+      "difficulty": "hard",
+      "topicId": "measurement",
+      "title": {
+        "en": "Area and equal units",
+        "lv": "Laukums un vienādas mērvienības"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-measurement-area-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-area-1"
+          ]
+        },
+        {
+          "id": "v2-hard-measurement-area-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-area-2"
+          ]
+        },
+        {
+          "id": "v2-hard-measurement-area-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-area-3"
+          ]
+        },
+        {
+          "id": "v2-hard-measurement-area-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-area-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-measurement-rates",
+      "difficulty": "hard",
+      "topicId": "measurement",
+      "title": {
+        "en": "Find one, then scale",
+        "lv": "Atrodi vienu un mērogo"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-measurement-rates-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-rates-1"
+          ]
+        },
+        {
+          "id": "v2-hard-measurement-rates-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-rates-2"
+          ]
+        },
+        {
+          "id": "v2-hard-measurement-rates-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-rates-3"
+          ]
+        },
+        {
+          "id": "v2-hard-measurement-rates-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-rates-4"
+          ]
+        },
+        {
+          "id": "hard-measurement-rates-shelter",
+          "kind": "boss",
+          "title": {
+            "en": "Build the rooftop shelter",
+            "lv": "Uzbūvē jumta patvērumu"
+          },
+          "description": {
+            "en": "Measure the roof, scale the delivery and estimate the spare supplies.",
+            "lv": "Izmēri jumtu, pārrēķini piegādi un aptuveni novērtē rezerves krājumus."
+          },
+          "puzzleIds": [
+            "v2-hard-measurement-shelter-1",
+            "v2-hard-measurement-shelter-2",
+            "v2-hard-measurement-shelter-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-logic-clues",
+      "difficulty": "hard",
+      "topicId": "logic",
+      "title": {
+        "en": "Check every clue",
+        "lv": "Pārbaudi katru norādi"
+      },
+      "description": {
+        "en": "Start with a model, then try the idea in different ways.",
+        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-logic-clues-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-clues-1"
+          ]
+        },
+        {
+          "id": "v2-hard-logic-clues-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-clues-2"
+          ]
+        },
+        {
+          "id": "v2-hard-logic-clues-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-clues-3"
+          ]
+        },
+        {
+          "id": "v2-hard-logic-clues-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-clues-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-logic-claims",
+      "difficulty": "hard",
+      "topicId": "logic",
+      "title": {
+        "en": "Test a mathematical claim",
+        "lv": "Pārbaudi matemātisku apgalvojumu"
+      },
+      "description": {
+        "en": "Use what you learned with a new goal and different numbers.",
+        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+      },
+      "levels": [
+        {
+          "id": "v2-hard-logic-claims-1",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 1",
+            "lv": "Uzdevums 1"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-claims-1"
+          ]
+        },
+        {
+          "id": "v2-hard-logic-claims-2",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 2",
+            "lv": "Uzdevums 2"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-claims-2"
+          ]
+        },
+        {
+          "id": "v2-hard-logic-claims-3",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 3",
+            "lv": "Uzdevums 3"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-claims-3"
+          ]
+        },
+        {
+          "id": "v2-hard-logic-claims-4",
+          "kind": "practice",
+          "title": {
+            "en": "Puzzle 4",
+            "lv": "Uzdevums 4"
+          },
+          "description": {
+            "en": "Practise this lesson’s idea.",
+            "lv": "Vingrinies šīs nodarbības prasmē."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-claims-4"
+          ]
+        },
+        {
+          "id": "hard-logic-claims-pair-hunt",
+          "kind": "challenge",
+          "title": {
+            "en": "The vault pair search",
+            "lv": "Glabātavas pāru meklējumi"
+          },
+          "description": {
+            "en": "One answer is not enough. Collect every different pair that reaches the target. This side activity is optional.",
+            "lv": "Ar vienu atbildi nepietiek. Savāc visus atšķirīgos pārus, kas sasniedz mērķi. Šī papildu nodarbe ir pēc izvēles."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-pair-hunt-1"
+          ]
+        },
+        {
+          "id": "hard-logic-claims-vault",
+          "kind": "boss",
+          "title": {
+            "en": "The archive vault",
+            "lv": "Arhīva glabātava"
+          },
+          "description": {
+            "en": "Solve the door clues, check the drawer labels and arrange the final code.",
+            "lv": "Atrisini durvju norādes, pārbaudi atvilktņu etiķetes un sakārto gala kodu."
+          },
+          "puzzleIds": [
+            "v2-hard-logic-vault-1",
+            "v2-hard-logic-vault-2",
+            "v2-hard-logic-vault-3"
+          ]
+        }
+      ]
+    }
+  ]
+}

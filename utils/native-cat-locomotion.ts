@@ -2,6 +2,9 @@ import { CAT_GAITS, type CatGait } from '@/utils/native-cat-gaits';
 import jumpProfile from '@/constants/cat-jump.json';
 import type { Vec3 } from '@/utils/native-room-world';
 
+/** Transient presentation state passed through a doorway, never persisted. */
+export type CatTravelMotion = { speed: number; phase: number; gait: CatGait; tailYaw: number[]; tailPitch: number[] };
+
 /** All four paws have landed; the remaining recovery can join a first stride. */
 export const CAT_LANDING_WALK_PHASE = jumpProfile.walkReady;
 export const CAT_JUMP_TAKEOFF = jumpProfile.takeoff;
@@ -28,6 +31,8 @@ export function catJumpDuration(from: Vec3, to: Vec3, height: number, scale: num
 
 export type CatMotionLeg = {
   kind: 'walk' | 'hop';
+  through?: boolean;
+  initialRate?: number;
   landingWalk?: boolean;
   path: Vec3[];
   duration: number;
@@ -53,14 +58,29 @@ export function catJumpPoint(from: Vec3, to: Vec3, progress: number, height: num
 }
 
 /** A short acceleration/braking ramp, with constant speed through intermediate points. */
-export function catTravelProgress(elapsed: number, duration: number, acceleration = .18): number {
+export function catTravelProgress(elapsed: number, duration: number, acceleration = .18, initialRate = 0, finalRate = 0): number {
   'worklet';
   if (duration <= 0 || elapsed >= duration) return 1;
   const t = Math.max(0, elapsed), ramp = Math.min(acceleration, duration * .22);
-  const area = duration - ramp;
-  if (t < ramp) return t * t / (2 * ramp * area);
-  if (t > duration - ramp) return 1 - (duration - t) ** 2 / (2 * ramp * area);
-  return (t - ramp / 2) / area;
+  // Integrate a linear acceleration/cruise/braking profile. Doorways can
+  // finish at cruising speed; interaction targets retain zero terminal speed.
+  const first=Math.max(0,Math.min(.9/Math.max(.001,ramp),initialRate));
+  const last=Math.max(0,Math.min(.9/Math.max(.001,ramp),finalRate));
+  const cruise=(1-(first+last)*ramp/2)/(duration-ramp);
+  if(t<ramp)return first*t+(cruise-first)*t*t/(2*ramp);
+  if(t>duration-ramp) {
+    const remaining=duration-t;
+    return 1-last*remaining-(cruise-last)*remaining*remaining/(2*ramp);
+  }
+  return first*ramp/2+cruise*(t-ramp/2);
+}
+
+/** Terminal progress rate that carries cruise speed across a doorway. */
+export function catWalkExitRate(duration: number, acceleration = .18, initialRate = 0) {
+  'worklet';
+  const ramp=Math.min(acceleration,duration*.22);
+  const first=Math.max(0,Math.min(.9/Math.max(.001,ramp),initialRate));
+  return (1-first*ramp/2)/Math.max(.001,duration-ramp/2);
 }
 
 export function catPathPoint(path: readonly Vec3[], progress: number, paces?: readonly number[]): Vec3 {
@@ -118,7 +138,7 @@ export function catPacedPath(path: Vec3[], scale: number): Vec3[] {
 }
 
 /** A tighter curve needs more time. Cache these weights when the route changes. */
-export function catWalkTiming(path: Vec3[], scale: number, gait: CatGait = 'walk', clearance?: (point: Vec3) => boolean) {
+export function catWalkTiming(path: Vec3[], scale: number, gait: CatGait = 'walk', clearance?: (point: Vec3) => boolean, through = false) {
   const speed = CAT_GAITS[gait].speed * scale, ramp = CAT_GAITS[gait].ramp;
   const paces = path.map(point => clearance && !clearance(point) ? speed / (1.8 * scale) : 1);
   if (gait !== 'walk' && paces.length) {
@@ -128,7 +148,7 @@ export function catWalkTiming(path: Vec3[], scale: number, gait: CatGait = 'walk
     for(let i=0;i<path.length;i++) {
       // Finish the first walking step before asking for a faster footfall
       // pattern, and recover a walking approach before the final stop.
-      const t=Math.max(0,Math.min(1,(Math.min(distances[i],total-distances[i])-.8)/1.25));
+      const t=Math.max(0,Math.min(1,(Math.min(distances[i],through?Infinity:total-distances[i])-.8)/1.25));
       const limit=(1.8+(CAT_GAITS[gait].speed-1.8)*t*t*(3-2*t))*scale;
       paces[i]=Math.max(paces[i],speed/limit);
     }
@@ -182,9 +202,47 @@ export function catMotionSample(legs: readonly CatMotionLeg[], elapsed: number) 
   const flight = Math.max(0, Math.min(1, (actionProgress - CAT_JUMP_TAKEOFF) / (CAT_JUMP_TOUCHDOWN - CAT_JUMP_TAKEOFF)));
   const position = turning ? [...leg.path[0]] as Vec3 : leg.kind === 'hop'
     ? catJumpPoint(leg.path[0], leg.path[leg.path.length - 1], flight, leg.arcHeight ?? .35)
-    : catPathPoint(leg.path, catTravelProgress(remaining, leg.duration, leg.ramp), leg.paces);
+    : catPathPoint(leg.path, catTravelProgress(remaining, leg.duration, leg.ramp, leg.initialRate??0, leg.through?catWalkExitRate(leg.duration,leg.ramp,leg.initialRate):0), leg.paces);
   const ahead = leg.kind === 'hop' ? leg.path[leg.path.length - 1]
-    : catPathPoint(leg.path, catTravelProgress(remaining + .10, leg.duration, leg.ramp), leg.paces);
+    : catPathPoint(leg.path, catTravelProgress(remaining + .10, leg.duration, leg.ramp, leg.initialRate??0, leg.through?catWalkExitRate(leg.duration,leg.ramp,leg.initialRate):0), leg.paces);
   return { position, ahead, kind: turning ? 'turn' as const : leg.kind, progress: turning ? remaining / leg.turnDuration! : actionProgress, index, animation: leg.animation, gait: leg.gait, actionDuration,
     heading: leg.kind === 'hop' ? Math.atan2(leg.path[leg.path.length-1][0]-leg.path[0][0],leg.path[leg.path.length-1][2]-leg.path[0][2]) : undefined };
+}
+
+/** A tangent-continuous handoff for an already moving cat. Every new chord
+ * must clear the same body envelope as navigation, including the route join. */
+export function steerCatPath(path: Vec3[], position: Vec3, heading: number, scale: number,
+  clear: (from: Vec3, to: Vec3) => boolean): Vec3[] | undefined {
+  const route=catPathFromPosition(path,position).path;
+  let total=0;
+  for(let i=1;i<route.length;i++)total+=Math.hypot(...route[i].map((v,k)=>v-route[i-1][k]));
+  if(total<1.5*scale)return undefined;
+  const first=route.find(p=>Math.hypot(p[0]-position[0],p[2]-position[2])>.03*scale);
+  if(!first)return undefined;
+  const delta=Math.atan2(Math.sin(Math.atan2(first[0]-position[0],first[2]-position[2])-heading),
+    Math.cos(Math.atan2(first[0]-position[0],first[2]-position[2])-heading));
+  if(Math.abs(delta)>Math.PI*.57)return undefined;
+  const cut=Math.min(total*.65,(1.2+Math.abs(delta)*.65)*scale);
+  let left=cut,index=1;
+  for(;index<route.length;index++) {
+    const length=Math.hypot(...route[index].map((v,k)=>v-route[index-1][k]));
+    if(length>=left&&length>1e-6)break;
+    left-=length;
+  }
+  if(index>=route.length)return undefined;
+  const a=route[index-1],b=route[index],length=Math.hypot(...b.map((v,k)=>v-a[k]));
+  const end=a.map((v,k)=>v+(b[k]-v)*left/length) as Vec3;
+  const lead=Math.min(.7*scale,cut*.45);
+  const control:Vec3=[position[0]+Math.sin(heading)*lead,position[1],position[2]+Math.cos(heading)*lead];
+  const incoming=end.map((v,k)=>v-(b[k]-a[k])*lead/length) as Vec3;
+  const result=[position];
+  for(let i=1;i<=24;i++) {
+    const t=i/24,u=1-t;
+    const point=position.map((v,k)=>u*u*u*v+3*u*u*t*control[k]+3*u*t*t*incoming[k]+t*t*t*end[k]) as Vec3;
+    if(!clear(result[result.length-1],point))return undefined;
+    result.push(point);
+  }
+  if(!clear(end,b))return undefined;
+  for(let i=index;i<route.length;i++)result.push(route[i]);
+  return result;
 }

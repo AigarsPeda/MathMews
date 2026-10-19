@@ -1,0 +1,55 @@
+{
+  "project_ref": "jcfppquntstgxubtlvqo",
+  "applied_at": "2026-10-19T10:41:44.607489Z",
+  "verified_at": "2026-10-19T10:42:16.082248Z",
+  "deployment_method": "Authenticated Supabase SQL editor as postgres",
+  "migrations": [
+    {
+      "file": "20261019095912_learning_curriculum.sql",
+      "sha256": "75430222bfccb888167c1157eee766a3597218cedb662d67d2bb1a9822a576fc"
+    },
+    {
+      "file": "20261019102550_puzzle_catalog.sql",
+      "sha256": "4ef7f363831678992feabb917b5898a4a2ed0479b56b4ad3613dc64826061dba"
+    }
+  ],
+  "catalog": {
+    "previous_registered": 123,
+    "current_curriculum_expected": 201,
+    "current_curriculum_registered": 201,
+    "correct_rewards": 201,
+    "missing": 0,
+    "incorrect": 0
+  },
+  "rewards": {
+    "easy": {
+      "first_clear": 4,
+      "replay": 2
+    },
+    "medium": {
+      "first_clear": 7,
+      "replay": 3
+    },
+    "hard": {
+      "first_clear": 9,
+      "replay": 4
+    }
+  },
+  "acceptance": {
+    "bosses": 18,
+    "boss_stages": 54,
+    "environments": [
+      "sandbox",
+      "production"
+    ],
+    "database_role": "authenticated",
+    "first_clear": true,
+    "replay": true,
+    "duplicate_attempts_idempotent": true,
+    "fixtures_rolled_back": true
+  },
+  "deployment_query_id": "0650a7ce-7657-4425-91d4-338e49eb64b6",
+  "acceptance_query_id": "9b84fae3-b27a-4f88-8da6-2070e334b1a7",
+  "acceptance_source": "supabase/tests/puzzle-rewards.sql",
+  "acceptance_sha256": "aade3ce84f826fc48a4c57814eb3cc615ab7379b00d0e714ced94c59c0a3e8f4"
+}

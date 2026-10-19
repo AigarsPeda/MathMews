@@ -166,12 +166,14 @@ assert.equal(sofaCommand.steps[3].hold, true, 'Commanded rest lasts until intera
 const wake = buildRoomReturn(furnished, sofaCommand, 3, sofaCommand.steps[3].position);
 assert.equal(wake.steps[0].animation, 'curlUp');
 assert.equal(wake.steps[0].reverse, true);
-assert.equal(wake.steps[1].position, sofaCommand.sofaApproach);
-assert.equal(wake.steps[1].animation, 'jumpOff');
-assert.ok(!wake.steps[1].reverse, 'Jumping down has its own takeoff and landing, rather than reversed jump-up frames');
-assert.equal(wake.steps[2].animation, 'walk');
-assert.ok(wake.steps[2].durationMs >= 180);
-assert.ok(isCatWalk(wake.steps[2].animation), 'Floor travel after landing must use footsteps');
+assert.equal(wake.steps[1].animation, 'wakeStretch');
+assert.equal(wake.steps[1].position, sofaCommand.steps[3].position, 'Stretch stays on the seat');
+assert.equal(wake.steps[2].position, sofaCommand.sofaApproach);
+assert.equal(wake.steps[2].animation, 'jumpOff');
+assert.ok(!wake.steps[2].reverse, 'Jumping down has its own takeoff and landing, rather than reversed jump-up frames');
+assert.equal(wake.steps[3].animation, 'walk');
+assert.ok(wake.steps[3].durationMs >= 180);
+assert.ok(isCatWalk(wake.steps[3].animation), 'Floor travel after landing must use footsteps');
 assert.equal(buildRoomActivity(room, 0, 'sofaSleep'), null, 'Sofa commands require a placed sofa');
 assert.equal(buildRoomActivity(room, 0, 'mouseChase'), null, 'Mouse commands require a mouse placed in this room');
 const yarn = { decorationId: 'yarnRed', instanceId: 'yarn', offset: { x: .2, y: .5 } };
@@ -244,8 +246,8 @@ assert.equal(jumpingSleep.steps[1].animation, 'curlUp');
 const otherSofaSleep = buildRoomActivity(twoSofas, 0, 'sofaSleep', 'second-sofa');
 const changingSofas = routeToSofa(twoSofas, otherSofaSleep, seatedPosition, { plan: inPlaceSleep, stepIndex: 1 });
 assert.equal(changingSofas.steps[0].reverse, true);
-assert.equal(JSON.stringify(changingSofas.steps[1].position), JSON.stringify(sofaCommand.sofaApproach));
-assert.equal(changingSofas.steps[2].position, otherSofaSleep.sofaApproach, 'Changing sofas walks between them without visiting home');
+assert.equal(JSON.stringify(changingSofas.steps[2].position), JSON.stringify(sofaCommand.sofaApproach));
+assert.equal(changingSofas.steps[3].position, otherSofaSleep.sofaApproach, 'Changing sofas walks between them without visiting home');
 console.log('Verified direct sofa walks, sitting-to-sleep in place, repeated sleep, sitting up, interrupted jumping, and commands with multiple sofas.');
 
 assert.ok(play.steps[1].objectDelayMs > 0 && play.steps[1].objectMoveMs > 0, 'The ball rolls after paw contact over a visible duration');
@@ -277,6 +279,8 @@ advance(600); render(); advance(0);
 assert.equal(render().activity.plan.steps[0].animation, 'curlUp', 'After landing, sleep starts in place');
 advance(1000); render();
 render().returnHome(); render(); advance(0); advance(1000); render();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'wakeStretch');
+advance(2500); render();
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOff');
 advance(300); interaction++; render(); render(); advance(0);
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOff', 'A room touch must not restart a jump down');
@@ -351,7 +355,7 @@ for (const kind of ['sofaSit', 'sofaSleep']) {
   visibility = { active: true, reduceMotion: false }; render(); advance(0);
   const exit = render().activity.plan;
   assert.equal(exit.kind, 'returnHome');
-  assert.equal(exit.steps[kind === 'sofaSleep' ? 1 : 0].animation, 'jumpOff');
+  assert.equal(exit.steps[kind === 'sofaSleep' ? 2 : 0].animation, 'jumpOff');
   if (kind === 'sofaSleep') {
     assert.equal(exit.steps[0].reverse, true, 'Wake up on the sofa before jumping down');
     assert.equal(petY.get(), sofaY);
@@ -659,7 +663,8 @@ const departure = render().activity.plan;
 assert.equal(departure.destination, 'bedroom');
 assert.equal(departure.steps[0].animation, 'curlUp');
 assert.equal(departure.steps[0].reverse, true, 'Wake up before leaving the sofa');
-assert.equal(departure.steps[1].animation, 'jumpOff');
+assert.equal(departure.steps[1].animation, 'wakeStretch');
+assert.equal(departure.steps[2].animation, 'jumpOff');
 assert.equal(departure.steps.at(-1).leavingRoom, true);
 assert.equal(roomArrivals.length, 0);
 advance(departure.steps.reduce((sum, step) => sum + step.durationMs, 0) - 1);
@@ -739,8 +744,12 @@ for (const reduced of [false, true]) {
   visibility = { active: true, reduceMotion: reduced };
   const entryOptions = { ...room, homeRoomId: 'livingRoom', entry: { id: reduced ? 202 : 201, direction: 1 }, nativeStepCompletion: true };
   hookRoom = { ...entryOptions, nativeWorld: nativeRoom.buildNativeRoomWorld(entryOptions) };
-  enabled = true; roomVisible = false; render(); advance(1000); render();
-  assert.equal(render().activity, null, 'Entry waits for the room slide to finish');
+  enabled = true; roomVisible = false; render(); advance(reduced ? 1000 : 0); render();
+  if(reduced)assert.equal(render().activity,null,'Reduce Motion retains its visible entry handoff');
+  else {
+    assert.equal(render().activity.plan.steps[0].enteringRoom,true,'Native entry prepares its first pose while the outgoing room is retained');
+    assert.equal(render().activity.plan.steps[0].native.awaitCompletion,false,'A hidden room cannot wait for an active drawing clock');
+  }
   roomVisible = true; render();
   const entered = render().activity;
   assert.equal(entered.plan.steps[0].enteringRoom, true);
@@ -974,6 +983,8 @@ roomVisible = true; render();
 hookRoom = { ...hookRoom, period: 'morning' }; render(); render(); advance(0);
 assert.equal(render().activity.plan.kind, 'returnHome');
 assert.equal(render().activity.plan.steps[0].animation, 'curlUp', 'Dawn uncurls the cat before leaving the sofa');
+finishClockStep();
+assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'wakeStretch');
 finishClockStep();
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOff');
 finishClockStep(); finishClockStep();
@@ -1303,8 +1314,8 @@ console.log('Verified all four kitchen activities continue from pending commands
             if (nextKind === kind) assert.ok(switched.steps[0].hold, 'Repeated sleep retains the held sleeping pose');
           }
           const exit = buildRoomReturn(options, plan, i, step.position);
-          if (kind === 'bedSnuggle') assert.deepEqual(Array.from(exit.steps.slice(0,3), s => s.animation), ['curlUp','walk','jumpOff']);
-          else assert.deepEqual(Array.from(exit.steps.slice(0,2), s => s.animation), ['curlUp','jumpOff']);
+          if (kind === 'bedSnuggle') assert.deepEqual(Array.from(exit.steps.slice(0,4), s => s.animation), ['curlUp','walk','wakeStretch','jumpOff']);
+          else assert.deepEqual(Array.from(exit.steps.slice(0,3), s => s.animation), ['curlUp','wakeStretch','jumpOff']);
           for (let j = 0; j < exit.steps.length; j++) {
             const leave = prepareNativeStep(exit, exit.steps[j], catScreenPoint(position, world), world, position[1]);
             assert.ok(!leave.native.blocked, `${modelId}/${kind} leaves safely after an interruption`);

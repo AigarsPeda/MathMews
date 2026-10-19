@@ -1,344 +1,177 @@
-import { IconText as Text } from "@/components/ui/IconText";
-import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
-import { AppIcon } from "@/components/ui/AppIcon";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
+import { LearningLevelCard } from "@/components/puzzle/LearningLevelCard";
 import { PuzzlePathItem } from "@/components/puzzle/PuzzlePathItem";
+import { AppIcon } from "@/components/ui/AppIcon";
+import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
+import { IconText as Text } from "@/components/ui/IconText";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import {
-  PuzzlePathProgressChip,
-  PuzzlePathProgressSheet,
-} from "@/components/puzzle/PuzzlePathProgress";
-import { MathStatsChip } from "@/components/puzzle/MathStatsChip";
+  getLearningLesson, getLearningLevelState, getLearningProgress, getLearningTopics,
+  getLevelPuzzles, getPracticeIds, getRequiredIds, getTopicLessons, getTopicProgress, isLessonAvailable,
+} from "@/constants/curriculum";
 import { GameColors } from "@/constants/game";
-import {
-  canPlayPuzzleIndex,
-  getPuzzlePathState,
-  getPuzzlesByDifficulty,
-  isPuzzleDifficulty,
-  resolvePuzzlePathDifficulty,
-} from "@/constants/puzzles";
+import { isPuzzleDifficulty } from "@/constants/puzzles";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
-import { useDifficultyLabelLower } from "@/hooks/use-difficulty-label";
+import type { LearningLevel } from "@/types/curriculum";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-function triggerHaptic() {
-  if (Platform.OS !== "web") {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }
-}
 
 export default function PuzzlesScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { locale } = useLocale();
-  const { difficulty: difficultyParam } = useLocalSearchParams<{
-    difficulty?: string;
-  }>();
-  const rawDifficulty = Array.isArray(difficultyParam)
-    ? difficultyParam[0]
-    : difficultyParam;
-  const paramDifficulty = isPuzzleDifficulty(rawDifficulty ?? "")
-    ? rawDifficulty
-    : null;
+  const params = useLocalSearchParams<{ difficulty?: string; topic?: string; lesson?: string }>();
+  const { isReady, hasCompletedOnboarding, wallet, progress, recordInteraction } = useGame();
+  const difficulty: PuzzleDifficulty = isPuzzleDifficulty(params.difficulty ?? "") ? params.difficulty as PuzzleDifficulty : "easy";
+  const topics = getLearningTopics(difficulty);
+  const topic = topics.find(item => item.id === params.topic);
+  const lesson = getLearningLesson(difficulty, params.lesson);
+  const completed = progress.completedPuzzleIds ?? [];
+  const lessons = topic ? getTopicLessons(difficulty, topic.id) : [];
+  const practiceComplete = lesson ? getLearningProgress(getPracticeIds(lesson), completed).complete : false;
+  const scopeProgress = lesson ? getLearningProgress(getRequiredIds(lesson), completed)
+    : topic ? getTopicProgress(difficulty, topic.id, completed) : null;
+  const title = lesson?.title[locale] ?? topic?.title[locale] ?? t("learning.chooseTopic");
+  const description = lesson?.description[locale] ?? topic?.description[locale] ?? t("learning.topicIntro");
+  const availableLevels = lesson?.levels.filter(level => getLearningLevelState(lesson, level, completed) === "current");
+  const firstAvailable = availableLevels?.find(level => level.kind === "practice")
+    ?? availableLevels?.find(level => level.kind === "boss") ?? availableLevels?.[0];
 
-  const {
-    isReady,
-    hasCompletedOnboarding,
-    pet,
-    wallet,
-    progress,
-    recordInteraction,
-  } = useGame();
-  const [chosenDifficulty, setDifficulty] = useState<PuzzleDifficulty | null>(null);
-  const difficulty = chosenDifficulty ?? resolvePuzzlePathDifficulty(locale, progress.puzzlesSolved, paramDifficulty ?? "easy");
-  const [showProgress, setShowProgress] = useState(false);
-  const difficultyLabelLower = useDifficultyLabelLower(difficulty);
-
-  const puzzles = getPuzzlesByDifficulty(locale, difficulty);
-  const solvedCount = progress.puzzlesSolved[difficulty];
-  const completedCount = progress.completedPuzzleIds
-    ? puzzles.filter(puzzle => progress.completedPuzzleIds?.includes(puzzle.id)).length
-    : solvedCount;
-  const scrollRef = useRef<ScrollView>(null);
-  const currentIndex = Math.min(solvedCount, Math.max(0, puzzles.length - 1));
-
-  const scrollToCurrent = useCallback((y: number) => {
-    scrollRef.current?.scrollTo({
-      y: Math.max(0, y - moderateScale(8)),
-      animated: true,
-    });
-  }, []);
-
-  const handleSelectDifficulty = useCallback(
-    (next: PuzzleDifficulty) => {
-      recordInteraction();
-      triggerHaptic();
-      setDifficulty(next);
-    },
-    [recordInteraction],
-  );
-
-  const handlePlayPuzzle = useCallback(
-    (index: number, isReplay: boolean) => {
-      if (!canPlayPuzzleIndex(index, solvedCount, progress.completedPuzzleIds?.includes(puzzles[index]?.id))) return;
-      recordInteraction();
-      triggerHaptic();
-      router.push({
-        pathname: "/play",
-        params: {
-          difficulty,
-          index: String(index),
-          ...(isReplay ? { replay: "true" } : {}),
-        },
-      });
-    },
-    [difficulty, recordInteraction, router, solvedCount, progress.completedPuzzleIds, puzzles],
-  );
-
-  const handleBackHome = useCallback(() => {
+  function navigate(topicId?: string, lessonId?: string, tier = difficulty) {
     recordInteraction();
-    triggerHaptic();
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-    router.replace("/");
-  }, [recordInteraction, router]);
-
-  const handlePlayCurrent = useCallback(() => {
-    if (solvedCount >= puzzles.length) return;
-    handlePlayPuzzle(solvedCount, false);
-  }, [handlePlayPuzzle, puzzles.length, solvedCount]);
-
-  if (!isReady) {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" color={GameColors.primary} />
-      </View>
-    );
+    router.push({ pathname: "/puzzles", params: { difficulty: tier, ...(topicId && { topic: topicId }), ...(lessonId && { lesson: lessonId }) } });
+  }
+  function back() {
+    recordInteraction();
+    if (router.canGoBack()) { router.back(); return; }
+    if (lesson && topic) router.replace({ pathname: "/puzzles", params: { difficulty, topic: topic.id } });
+    else if (topic) router.replace({ pathname: "/puzzles", params: { difficulty } });
+    else router.replace("/");
+  }
+  function play(level: LearningLevel) {
+    if (!lesson || getLearningLevelState(lesson, level, completed) === "locked") return;
+    recordInteraction();
+    router.push({ pathname: "/play", params: { difficulty, lesson: lesson.id, level: level.id } });
   }
 
-  if (!hasCompletedOnboarding) {
-    return <Redirect href="/onboarding/name-pet" />;
+  if (!isReady) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
+  if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
+  if ((params.topic && !topic) || (params.lesson && (!lesson || lesson.topicId !== topic?.id || !isLessonAvailable(lesson, completed)))) {
+    return <Redirect href={{ pathname: "/puzzles", params: { difficulty, ...(topic && { topic: topic.id }) } }} />;
   }
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.screen}>
         <View style={styles.header}>
-          <Pressable
-            onPress={handleBackHome}
-            style={styles.backBtn}
-            accessibilityRole="button"
-            accessibilityLabel={t("puzzlePath.a11yBack")}
-          >
+          <Pressable onPress={back} style={styles.back} accessibilityRole="button" accessibilityLabel={t("puzzlePath.a11yBack")}>
             <BackButtonLabel style={styles.backText} />
           </Pressable>
-          <GameHeaderStats
-            coins={wallet.coins}
-            streak={progress.streak}
-            lives={progress.lives}
-          />
+          <GameHeaderStats coins={wallet.coins} streak={progress.streak} lives={progress.lives} />
         </View>
+        <DifficultyPicker selected={difficulty} onSelect={tier => {
+          recordInteraction();
+          router.replace({ pathname: "/puzzles", params: { difficulty: tier } });
+        }} />
+        <ScrollView key={`${difficulty}-${topic?.id}-${lesson?.id}`} style={styles.scroll} contentContainerStyle={styles.content}>
+          {topic && <Text style={styles.location}>{[t(`difficulty.${difficulty}`), ...(lesson ? [topic.title[locale]] : [])].join(" / ")}</Text>}
+          <Text style={styles.title} accessibilityRole="header">{title}</Text>
+          <Text style={styles.description}>{description}</Text>
+          {scopeProgress && <View style={styles.scopeProgress} accessible accessibilityLabel={t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}>
+            <Text style={styles.progressText}>{t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}</Text>
+            <ProgressBar progress={scopeProgress.total ? scopeProgress.solved / scopeProgress.total : 0} fillColor={GameColors.success} />
+          </View>}
 
-        <Text style={styles.title}>{t("puzzlePath.title")}</Text>
-        <Text style={styles.subtitle}>
-          {t("puzzlePath.subtitle", { name: pet.name })}
-        </Text>
+          {!topic && topics.map(item => {
+            const status = getTopicProgress(difficulty, item.id, completed);
+            const topicLessons = getTopicLessons(difficulty, item.id);
+            return <Pressable key={item.id} onPress={() => navigate(item.id)} style={styles.topic} accessibilityRole="button"
+              accessibilityLabel={`${item.title[locale]}. ${t("learning.requiredProgress", { count: status.solved, total: status.total })}`}>
+              <View style={styles.topicHeading}>
+                <AppIcon name={item.icon} size={moderateScale(38)} />
+                <Text style={styles.topicTitle}>{item.title[locale]}</Text>
+                <AppIcon name={status.complete ? "check" : "chevron-right"} size={moderateScale(22)} />
+              </View>
+              <Text style={styles.description}>{item.description[locale]}</Text>
+              <View style={styles.row}>
+                <Text style={styles.progressText}>{t("learning.lessonsCount", { count: topicLessons.length })}</Text>
+                <Text style={styles.progressText}>{status.solved} / {status.total}</Text>
+              </View>
+              <ProgressBar progress={status.total ? status.solved / status.total : 0} fillColor={GameColors.success} />
+            </Pressable>;
+          })}
 
-        <DifficultyPicker
-          selected={difficulty}
-          onSelect={handleSelectDifficulty}
-        />
+          {topic && !lesson && lessons.map((item, index) => {
+            const status = getLearningProgress(getRequiredIds(item), completed);
+            const available = isLessonAvailable(item, completed);
+            const specials = item.levels.filter(level => level.kind !== "practice");
+            return <Pressable key={item.id} disabled={!available} onPress={() => navigate(topic.id, item.id)}
+              style={[styles.lesson, !available && styles.locked]} accessibilityRole="button" accessibilityState={{ disabled: !available }}>
+              <Text style={styles.progressText}>{t("learning.lessonNumber", { number: index + 1 })}</Text>
+              <View style={styles.row}>
+                <Text style={styles.lessonTitle}>{item.title[locale]}</Text>
+                <AppIcon name={!available ? "lock" : status.complete ? "check" : "chevron-right"} size={moderateScale(24)} />
+              </View>
+              <Text style={styles.description}>{item.description[locale]}</Text>
+              <Text style={styles.progressText}>{t("learning.requiredProgress", { count: status.solved, total: status.total })}</Text>
+              {specials.length > 0 && <Text style={styles.specials}>{specials.map(level => `${t(`learning.${level.kind}`)}${getLearningProgress(level.puzzleIds, completed).complete ? ` · ${t("learning.finished")}` : ""}`).join("  /  ")}</Text>}
+              {!available && <Text style={styles.description}>{t("learning.lessonLocked")}</Text>}
+            </Pressable>;
+          })}
 
-        {(
-          <>
-            <PuzzlePathProgressChip
-              difficulty={difficulty}
-              solvedCount={completedCount}
-              totalCount={puzzles.length}
-              onPress={() => {
-                recordInteraction();
-                triggerHaptic();
-                setShowProgress(true);
-              }}
-            />
-
-            <MathStatsChip
-              onPress={() => {
-                recordInteraction();
-                triggerHaptic();
-                router.push("/stats");
-              }}
-            />
-
-            <PuzzlePathProgressSheet
-              visible={showProgress}
-              difficulty={difficulty}
-              solvedCount={completedCount}
-              totalCount={puzzles.length}
-              onClose={() => setShowProgress(false)}
-            />
-
-            <ScrollView
-              ref={scrollRef}
-              style={styles.scroll}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
-            >
-              {puzzles.map((puzzle, index) => {
-                const state = getPuzzlePathState(index, solvedCount, progress.completedPuzzleIds?.includes(puzzle.id));
-                return (
-                  <PuzzlePathItem
-                    key={puzzle.id}
-                    puzzle={puzzle}
-                    puzzleNumber={index + 1}
-                    state={state}
-                    onLayout={(y) => {
-                      if (index === currentIndex) {
-                        requestAnimationFrame(() => scrollToCurrent(y));
-                      }
-                    }}
-                    onPress={() =>
-                      handlePlayPuzzle(index, state === "completed")
-                    }
-                  />
-                );
-              })}
-
-              {solvedCount >= puzzles.length ? (
-                <View style={styles.completeCard}>
-                  <AppIcon name="sparkle" size={moderateScale(32) * 1.2} />
-                  <Text style={styles.completeTitle}>
-                    {t("puzzlePath.allNutsCracked", {
-                      difficulty: difficultyLabelLower,
-                    })}
-                  </Text>
-                  <Text style={styles.completeText}>
-                    {t("puzzlePath.tryAnother")}
-                  </Text>
-                </View>
-              ) : null}
-            </ScrollView>
-
-            {solvedCount < puzzles.length ? (
-              <Pressable
-                style={styles.primaryBtn}
-                onPress={handlePlayCurrent}
-                accessibilityRole="button"
-                accessibilityLabel={t("puzzlePath.playCurrent")}
-              >
-                <Text style={styles.primaryBtnText}>
-                  {t("puzzlePath.playNut", { number: solvedCount + 1 })}
-                </Text>
-              </Pressable>
-            ) : null}
-          </>
-        )}
+          {lesson && lesson.levels.map((level, index) => {
+            const state = getLearningLevelState(lesson, level, completed);
+            if (level.kind !== "practice") return <LearningLevelCard key={level.id} level={level} state={state} completedIds={completed} onPress={() => play(level)} />;
+            return <PuzzlePathItem key={level.id} puzzle={getLevelPuzzles(locale, lesson, level)[0]} puzzleNumber={index + 1}
+              state={state} lockedMessage={t("learning.puzzleLocked")} onPress={() => play(level)} />;
+          })}
+          {lesson && practiceComplete && <View style={styles.completion}>
+            <AppIcon name={scopeProgress?.complete ? "check" : "paw"} size={moderateScale(30)} />
+            <Text style={styles.lessonTitle}>{t(scopeProgress?.complete ? "learning.lessonComplete" : "learning.practiceComplete")}</Text>
+            <Text style={styles.description}>{t(scopeProgress?.complete ? "learning.bonusOptional" : "learning.bossRequired")}</Text>
+            <Pressable onPress={() => navigate(topic!.id)} style={styles.secondary} accessibilityRole="button">
+              <Text style={styles.backText}>{t("learning.chooseLesson")}</Text>
+            </Pressable>
+          </View>}
+          {!topic && <Pressable onPress={() => router.push("/stats")} style={styles.secondary} accessibilityRole="button"><Text style={styles.backText}>{t("stats.title")}</Text></Pressable>}
+        </ScrollView>
+        {lesson && firstAvailable && <Pressable onPress={() => play(firstAvailable)} style={styles.primary} accessibilityRole="button">
+          <Text style={styles.primaryText}>{firstAvailable.kind === "practice" ? t("learning.continueLesson") : t(`learning.start_${firstAvailable.kind}`)}</Text>
+        </Pressable>}
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: GameColors.background,
-  },
-  safe: {
-    flex: 1,
-    backgroundColor: GameColors.background,
-  },
-  screen: {
-    flex: 1,
-    paddingHorizontal: moderateScale(16),
-    paddingTop: moderateScale(4),
-    paddingBottom: moderateScale(4),
-    gap: moderateScale(12),
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  backBtn: {
-    minHeight: moderateScale(48),
-    justifyContent: "center",
-    paddingRight: moderateScale(12),
-  },
-  backText: {
-    fontSize: moderateScale(16),
-    fontWeight: "700",
-    color: GameColors.text,
-  },
-  title: {
-    fontSize: moderateScale(24),
-    fontWeight: "800",
-    color: GameColors.text,
-  },
-  subtitle: {
-    fontSize: moderateScale(14),
-    fontWeight: "500",
-    color: GameColors.textMuted,
-    marginTop: moderateScale(-4),
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingTop: moderateScale(4),
-    paddingBottom: moderateScale(16),
-  },
-  primaryBtn: {
-    minHeight: moderateScale(52),
-    borderRadius: moderateScale(16),
-    backgroundColor: GameColors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: moderateScale(16),
-  },
-  primaryBtnText: {
-    fontSize: moderateScale(17),
-    fontWeight: "800",
-    color: "#FFFFFF",
-  },
-  completeCard: {
-    backgroundColor: GameColors.card,
-    borderRadius: moderateScale(16),
-    borderWidth: 2,
-    borderColor: GameColors.success,
-    padding: moderateScale(16),
-    alignItems: "center",
-    gap: moderateScale(6),
-    marginTop: moderateScale(4),
-  },
-  completeTitle: {
-    fontSize: moderateScale(18),
-    fontWeight: "800",
-    color: GameColors.text,
-    textAlign: "center",
-  },
-  completeText: {
-    fontSize: moderateScale(14),
-    fontWeight: "500",
-    color: GameColors.textMuted,
-    textAlign: "center",
-  },
+  safe: { flex: 1, backgroundColor: GameColors.background },
+  loading: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: GameColors.background },
+  screen: { flex: 1, paddingHorizontal: moderateScale(16), gap: moderateScale(12), paddingBottom: moderateScale(8) },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  back: { minHeight: moderateScale(48), justifyContent: "center", paddingRight: moderateScale(12) },
+  backText: { fontSize: moderateScale(16), fontWeight: "700", color: GameColors.text },
+  scroll: { flex: 1 }, content: { paddingBottom: moderateScale(24), gap: moderateScale(14) },
+  location: { fontSize: moderateScale(14), color: GameColors.textMuted },
+  title: { fontSize: moderateScale(26), fontWeight: "800", color: GameColors.text },
+  description: { fontSize: moderateScale(15), lineHeight: moderateScale(22), color: GameColors.textMuted },
+  scopeProgress: { gap: moderateScale(8), paddingVertical: moderateScale(8) },
+  progressText: { fontSize: moderateScale(14), color: GameColors.textMuted, fontWeight: "600" },
+  topic: { padding: moderateScale(16), gap: moderateScale(10), backgroundColor: GameColors.card, borderWidth: 2, borderColor: GameColors.cardBorder, borderRadius: moderateScale(16) },
+  topicHeading: { flexDirection: "row", gap: moderateScale(12), alignItems: "center" },
+  topicTitle: { flex: 1, fontSize: moderateScale(20), fontWeight: "800", color: GameColors.text },
+  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: moderateScale(12) },
+  lesson: { padding: moderateScale(16), gap: moderateScale(10), borderBottomWidth: 2, borderColor: GameColors.cardBorder },
+  lessonTitle: { flexShrink: 1, fontSize: moderateScale(19), fontWeight: "800", color: GameColors.text },
+  locked: { opacity: 0.65 },
+  specials: { color: GameColors.secondaryDark, fontSize: moderateScale(14), fontWeight: "700" },
+  completion: { alignItems: "center", padding: moderateScale(20), gap: moderateScale(12), backgroundColor: "#E8FAF8", borderRadius: moderateScale(16) },
+  primary: { minHeight: moderateScale(54), alignItems: "center", justifyContent: "center", backgroundColor: GameColors.primary, borderRadius: moderateScale(16), padding: moderateScale(14) },
+  primaryText: { fontSize: moderateScale(17), fontWeight: "800", color: GameColors.card, textAlign: "center" },
+  secondary: { minHeight: moderateScale(48), alignItems: "center", justifyContent: "center", padding: moderateScale(12) },
 });

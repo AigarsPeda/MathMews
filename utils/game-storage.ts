@@ -1,3 +1,4 @@
+import { PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
 import { normalizePendingWalletPurchases } from "@/services/wallet/offline-orders";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { createWorldClock, normalizeWorldClock } from '@/utils/world-clock';
@@ -26,7 +27,6 @@ import type {
   LivesState,
   PetProfile,
   Progress,
-  PuzzleProgress,
 } from "@/types/game";
 import {
   GAME_SAVE_STORAGE_KEY,
@@ -64,21 +64,6 @@ export function createDefaultGameSave(): GameSave {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
-}
-
-function normalizePuzzleProgress(value: unknown): PuzzleProgress {
-  if (typeof value === "number") {
-    return { easy: value, medium: 0, hard: 0 };
-  }
-  if (!isRecord(value)) {
-    return { easy: 0, medium: 0, hard: 0 };
-  }
-
-  return {
-    easy: typeof value.easy === "number" ? value.easy : 0,
-    medium: typeof value.medium === "number" ? value.medium : 0,
-    hard: typeof value.hard === "number" ? value.hard : 0,
-  };
 }
 
 function clampOffsetAxis(value: number) {
@@ -246,11 +231,12 @@ function parseGameSave(
     if (!isRecord(parsed.progress)) return null;
     if (typeof parsed.progress.streak !== "number") return null;
 
-    const legacySolved = normalizePuzzleProgress(
-      parsed.progress.puzzlesSolved,
-    );
-    const completedPuzzleIds = getCompletedPuzzleIds({ puzzlesSolved: legacySolved, completedPuzzleIds: Array.isArray(parsed.progress.completedPuzzleIds) ? parsed.progress.completedPuzzleIds.filter((id): id is string => typeof id === "string") : undefined });
+    const currentCurriculum = parsed.progress.puzzleContentVersion === PUZZLE_CONTENT_VERSION;
+    const completedPuzzleIds = currentCurriculum
+      ? getCompletedPuzzleIds({ completedPuzzleIds: Array.isArray(parsed.progress.completedPuzzleIds) ? parsed.progress.completedPuzzleIds.filter((id): id is string => typeof id === "string") : [] })
+      : [];
     const puzzlesSolved = getSolvedCounts(completedPuzzleIds);
+    const difficultyStats = currentCurriculum && isRecord(parsed.progress.topicStatsByDifficulty) ? parsed.progress.topicStatsByDifficulty : {};
     const lives = normalizeLives(parsed.progress.lives);
     const visualHelpsUnlocked = Array.isArray(
       parsed.progress.visualHelpsUnlocked,
@@ -348,7 +334,7 @@ function parseGameSave(
         ...(parsed as GameSave),
         accountOwnerId: typeof parsed.accountOwnerId === 'string' ? parsed.accountOwnerId : undefined,
         worldClock: normalizeWorldClock(parsed.worldClock),
-        pet: removeRoomNavigationDoors(pet),
+        pet: removeRoomNavigationDoors({ ...pet, stats: { ...pet.stats, level: 1 + Math.floor(completedPuzzleIds.length / 10) } }),
         wallet: { coins: Math.max(0, Math.floor(parsed.wallet.coins)) },
         pendingWalletPurchases: normalizePendingWalletPurchases(parsed.pendingWalletPurchases),
         walletNotices: Array.isArray(parsed.walletNotices) ? parsed.walletNotices.filter(n => isRecord(n) && typeof n.id==='string' && typeof n.itemId==='string' && ['room','bed','toy','decoration','skin','life'].includes(String(n.kind)) && ['insufficient_funds','price_changed','already_owned','not_for_sale'].includes(String(n.reason))) as GameSave['walletNotices'] : [],
@@ -365,16 +351,18 @@ function parseGameSave(
         creditedPurchaseIds: [...new Set([...(Array.isArray(parsed.creditedPurchaseIds) ? parsed.creditedPurchaseIds.filter((id): id is string => typeof id === "string") : []), ...normalizeCoinTransactions(parsed.coinTransactions).filter(tx => tx.kind === "iap_purchase" && tx.transactionId).map(tx => tx.transactionId!)])],
         progress: {
           ...(parsed.progress as Progress),
+          puzzleContentVersion: PUZZLE_CONTENT_VERSION,
+          streak: currentCurriculum ? parsed.progress.streak : 0,
           puzzleStreak:
-            typeof parsed.progress.puzzleStreak === "number"
+            currentCurriculum && typeof parsed.progress.puzzleStreak === "number"
               ? parsed.progress.puzzleStreak
               : 0,
           puzzlesSolved,
         completedPuzzleIds,
-        processedAttemptIds: Array.isArray(parsed.progress.processedAttemptIds) ? parsed.progress.processedAttemptIds.filter((id): id is string => typeof id === "string").slice(-200) : [],
-        lastPuzzleDay: typeof parsed.progress.lastPuzzleDay === "string" ? parsed.progress.lastPuzzleDay : undefined,
+        processedAttemptIds: currentCurriculum && Array.isArray(parsed.progress.processedAttemptIds) ? parsed.progress.processedAttemptIds.filter((id): id is string => typeof id === "string").slice(-200) : [],
+        lastPuzzleDay: currentCurriculum && typeof parsed.progress.lastPuzzleDay === "string" ? parsed.progress.lastPuzzleDay : undefined,
           lives,
-          visualHelpsUnlocked,
+          visualHelpsUnlocked: currentCurriculum ? visualHelpsUnlocked : [],
           roomsUnlocked,
           bedsUnlocked,
           toysUnlocked,
@@ -382,7 +370,8 @@ function parseGameSave(
           decorationsUnlocked,
           decorationQuantities,
           skinsUnlocked,
-          topicStats: normalizeTopicStats(parsed.progress.topicStats),
+          topicStats: normalizeTopicStats(currentCurriculum ? parsed.progress.topicStats : {}),
+          topicStatsByDifficulty: Object.fromEntries((["easy", "medium", "hard"] as const).map(tier => [tier, normalizeTopicStats(difficultyStats[tier])])),
         },
       },
       awayMsAtSessionStart: awayMs,

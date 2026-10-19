@@ -21,6 +21,7 @@ import type {
   FairSharePuzzle,
 } from "@/types/puzzle";
 import { evaluateExpression, runOperationPath } from "@/utils/puzzle-math";
+import { checkChallengeAnswer, isOptionalChallengePuzzle, type ChallengeAnswer } from "@/utils/challenge-puzzles";
 
 const INTERACTIVE_TYPES = new Set<PuzzleType>([
   "compare",
@@ -39,6 +40,8 @@ const INTERACTIVE_TYPES = new Set<PuzzleType>([
   "function_machine",
   "order_numbers",
   "fraction_match",
+  "find_all_pairs",
+  "sort_buckets", "repair_pattern", "route_grid", "budget_plan",
 ]);
 
 export function getPuzzleType(puzzle: Puzzle): PuzzleType {
@@ -50,15 +53,36 @@ export function getPuzzlePreview(puzzle: Puzzle): string {
 }
 
 export type PuzzleAnswer =
+  | ChallengeAnswer
   | { kind: "choice"; index: number }
   | { kind: "operators"; operators: MathOperator[] }
   | { kind: "fraction"; shaded: number }
   | { kind: "value"; value: number }
   | { kind: "pair"; indices: [number, number] }
   | { kind: "order"; numbers: number[] }
-  | { kind: "fraction_match"; matchedCount: number };
+  | { kind: "fraction_match"; matchedCount: number }
+  | { kind: "pairs"; pairs: [number, number][] };
+
+export function getValidPairs(numbers: readonly number[], target: number): [number, number][] {
+  const pairs: [number, number][] = [];
+  for (let a = 0; a < numbers.length; a++) for (let b = a + 1; b < numbers.length; b++) {
+    if (numbers[a] + numbers[b] === target) pairs.push([a, b]);
+  }
+  return pairs;
+}
 
 export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean {
+  if (isOptionalChallengePuzzle(puzzle)) {
+    return (answer.kind === "sort" || answer.kind === "sequence" || answer.kind === "route" || answer.kind === "budget")
+      && checkChallengeAnswer(puzzle, answer);
+  }
+  if (puzzle.type === "find_all_pairs") {
+    if (answer.kind !== "pairs") return false;
+    const valid = new Set(getValidPairs(puzzle.payload.numbers, puzzle.payload.target).map(([a, b]) => `${a}:${b}`));
+    const submitted = answer.pairs.map(([a, b]) => a < b ? `${a}:${b}` : `${b}:${a}`);
+    return valid.size > 0 && submitted.length === valid.size && new Set(submitted).size === valid.size
+      && submitted.every(pair => valid.has(pair));
+  }
   if (puzzle.type === "fraction_build") {
     if (answer.kind !== "fraction") return false;
     return answer.shaded === puzzle.payload.numerator;

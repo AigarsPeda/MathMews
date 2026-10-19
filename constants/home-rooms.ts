@@ -1,3 +1,4 @@
+import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import type { AppIconName } from "@/constants/app-icons";
 
 export const HOME_ROOM_IDS = ["bedroom", "livingRoom", "kitchen", "bathroom"] as const;
@@ -8,7 +9,7 @@ export const HOME_ROOM_ICONS = {
 export const DEFAULT_HOME_ROOM_ID: HomeRoomId = "livingRoom";
 
 export type RoomTravelDirection = -1 | 1;
-export type RoomEntry = { id: number; direction: RoomTravelDirection };
+export type RoomEntry = { id: number; direction: RoomTravelDirection; motion?: CatTravelMotion };
 
 export function roomTravelDirection(origin: HomeRoomId, destination: HomeRoomId): RoomTravelDirection {
   return HOME_ROOM_IDS.indexOf(destination) < HOME_ROOM_IDS.indexOf(origin) ? -1 : 1;

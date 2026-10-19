@@ -1,3 +1,6 @@
+import { FindAllPairsTask } from "@/components/puzzle/FindAllPairsTask";
+import { ChallengeTask } from "@/components/puzzle/ChallengeTasks";
+import { isOptionalChallengePuzzle, type ChallengeAnswer } from "@/utils/challenge-puzzles";
 import { BalanceTask } from "@/components/puzzle/BalanceTask";
 import { CompareTask } from "@/components/puzzle/CompareTask";
 import { EstimateTask } from "@/components/puzzle/EstimateTask";
@@ -38,11 +41,16 @@ import {
 
 type PuzzleTaskViewProps = {
   puzzle: Puzzle;
+  onSubmitChallenge: (answer: ChallengeAnswer) => void;
+  onChallengeDragStateChange: (dragging: boolean) => void;
   selectedIndex: number | null;
   selectedOperators: (MathOperator | null)[];
   fractionPieces: number;
   numberLineValue: number | null;
   pairIndices: number[];
+  foundPairs: [number, number][];
+  onFoundPairsChange: (pairs: [number, number][]) => void;
+  onCheckPairs: () => void;
   numberOrder: number[];
   orderSwapIndex: number | null;
   orderSubmitted: boolean;
@@ -66,11 +74,14 @@ type PuzzleTaskViewProps = {
 
 export function PuzzleTaskView({
   puzzle,
+  onSubmitChallenge,
+  onChallengeDragStateChange,
   selectedIndex,
   selectedOperators,
   fractionPieces,
   numberLineValue,
   pairIndices,
+  foundPairs, onFoundPairsChange, onCheckPairs,
   numberOrder,
   orderSwapIndex,
   orderSubmitted,
@@ -91,6 +102,8 @@ export function PuzzleTaskView({
   onCheckOrder,
   onTapFractionMatchCard,
 }: PuzzleTaskViewProps) {
+  if (isOptionalChallengePuzzle(puzzle)) return <ChallengeTask puzzle={puzzle} answered={answered} onSubmit={onSubmitChallenge} onDragStateChange={onChallengeDragStateChange} />;
+  if (puzzle.type === "find_all_pairs") return <FindAllPairsTask puzzle={puzzle} pairs={foundPairs} answered={answered} onChange={onFoundPairsChange} onCheck={onCheckPairs} />;
   const fractionMatchPuzzle = asFractionMatchPuzzle(puzzle);
   if (fractionMatchPuzzle) {
     return (

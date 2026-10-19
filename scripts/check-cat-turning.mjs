@@ -85,13 +85,13 @@ function openSkin(skin) {
   asset={getFirstEntityByName:name=>{const i=model.nodes.findIndex(n=>n.name===name);return i<0?undefined:{i};}};
   animator.applyAnimation(model.animations.findIndex(a=>a.name==='idle'),0);rootTransform=new Transform();
 }
-const {NativeCatActor}=load('@/components/pet/native/NativeCatActor');
+const {NativeCatActor,useCatModel}=load('@/components/pet/native/NativeCatActor');
 const {catTurnDuration,catTurnPose,catTurnPaw,catTurnPawOrientation}=load('@/utils/native-cat-turn');
 const {catLaunchStep,catLaunchPaw}=load('@/utils/native-cat-walk-launch');
 const {FLOOR_Y}=load('@/utils/native-room-world');
 const idle={kind:'segment',segment:{assetKey:'idle',loop:true}},walking={kind:'segment',segment:{assetKey:'walk',loop:true}};
 const pawNames=['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'];
-function render(props) { cursor=0;effects=[];NativeCatActor(props);effects.forEach(fn=>fn()); }
+function render(props) { cursor=0;effects=[];NativeCatActor({model:useCatModel(props.skinId),...props});effects.forEach(fn=>fn()); }
 function point(name) { return world(asset.getFirstEntityByName(name).i).translation; }
 const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
 if (path.resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) {
@@ -274,6 +274,7 @@ for(const skin of ['orange','grey','white']) {
     for(let frame=0;frame<Math.ceil((.6+turnDuration+.1)*fps);frame++) {
       draw({timeSinceLastFrame:1/fps});
       const state=slots.find(s=>s?.value?.value?.turnLeg!==undefined).value.value;
+      for(const name of ['ear.L','ear.R'])assert.ok(world(asset.getFirstEntityByName(name).i).data.every(Number.isFinite),'Pre-hop ear anticipation uses the route turn phase');
       if(state.elapsed>=.6&&state.elapsed<.6+turnDuration) {
         samples++;
         assert.ok(distance(rootTransform.translation,takeoff)<1e-7,'The turn before a hop stays on the takeoff point');
@@ -324,7 +325,13 @@ export { openSkin, render, point, load, walking, idle };
 export function resetCatActor() { slots=[];rootTransform=new Transform(); }
 export function drawCat(seconds) { draw({timeSinceLastFrame:seconds}); }
 export function actorState() { return slots.find(s=>s?.value?.value?.turnLeg!==undefined).value.value; }
-export function actorBones() { return Object.fromEntries(model.nodes.map((node,i)=>[node.name,world(i).data])); }
+export function actorBones() {
+  const result={};
+  // Eye meshes share the bone names. Preserve the first, skeletal entity,
+  // just as the native actor's getFirstEntityByName does.
+  model.nodes.forEach((node,i)=>{if(!(node.name in result))result[node.name]=world(i).data;});
+  return result;
+}
 
 export function enableActorCrossfade(value=true) { crossfadeEnabled=value; }
 export function sampleCatClip(name,time) {

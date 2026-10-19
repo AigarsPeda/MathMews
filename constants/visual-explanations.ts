@@ -27,24 +27,11 @@ const VISUAL_EXAMPLES = { ...VISUAL_PRACTICE, number_line: NUMBER_LINE_EXAMPLES.
 
 type ExampleKey = keyof typeof VISUAL_EXAMPLES;
 
-// Story puzzles need a concept match, rather than one example per difficulty.
-const STORY_EXAMPLES: Record<string, ExampleKey> = {
-  "easy-mc-02": "all_but",
-  "easy-mc-06": "odd_range",
-  "medium-mc-03": "division",
-  "medium-mc-04": "multiply_add",
-  "medium-mc-05": "place_value",
-  "hard-mc-01": "fraction_left",
-  "hard-mc-02": "rate",
-  "hard-mc-03": "percent",
-  "hard-mc-04": "multiply_subtract",
-  "hard-mc-05": "fair_share",
-};
-
 export function getVisualHelpTemplateKey(puzzle: Puzzle): ExampleKey {
+  if (puzzle.helpTemplate) return puzzle.helpTemplate;
   const type = getPuzzleType(puzzle);
+  if (type === "find_all_pairs") return "all_pairs";
   if (type !== "multiple_choice") return type;
-  if (STORY_EXAMPLES[puzzle.id]) return STORY_EXAMPLES[puzzle.id];
   switch (puzzle.topic) {
     case "addition": return "addition";
     case "subtraction": return "subtraction";

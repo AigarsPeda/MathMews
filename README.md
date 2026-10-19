@@ -38,6 +38,17 @@ Press **`i`** to open on the simulator. If Expo reports a simulator-launch timeo
 
 For in-app purchases, use an [EAS development build](https://docs.expo.dev/develop/development-builds/introduction/) — IAP does not work in Expo Go.
 
+## Puzzle learning
+
+Choose a difficulty, topic, lesson and puzzle. Each topic has independent progress.
+The replacement catalog has 36 lessons and 209 puzzles per language, including
+18 checkpointed boss missions, one at the end of every topic, and eleven optional
+challenges across five interactions. Bosses count toward completion but never block learning
+another topic. Existing learning
+progress starts fresh; the wallet, cat, rooms and owned items remain available.
+See [curriculum authoring and verification](docs/puzzle-curriculum.md) for adding
+content and applying the new puzzle reward registration migration.
+
 ## Connected cat rooms
 
 The cat, rooms, furniture, toys, and store room previews now render with native **Filament** on iOS and Android. All 288 catalog models and all 35 cat actions in three coats retain their original IDs. Saved offsets, sizes, orientations, and room assignments are projected into the 3D scene without rewriting the save. Walking follows obstacle-aware routes; its paw cadence follows distance traveled. An orthographic camera keeps the cat the same size throughout the room.

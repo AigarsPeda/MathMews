@@ -1,3 +1,4 @@
+import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { isOpenableDecorationId, isDecorationOpen, itemInteraction } from '@/constants/item-interactions';
 import type { RoomDecorationEntry } from "@/utils/room-decoration-entry";
 import type { SpotlightAim } from '@/utils/native-spotlight-aim';
@@ -145,7 +146,7 @@ type PetStageProps = {
   roomEntry?: RoomEntry;
   sceneSlide?: RoomSceneSlide;
   onSceneReady?: (roomId: HomeRoomId) => void;
-  onSendCatToRoom?: (roomId: HomeRoomId, ambientPeriod?: WorldPeriod) => void;
+  onSendCatToRoom?: (roomId: HomeRoomId, ambientPeriod?: WorldPeriod, motion?: CatTravelMotion) => void;
   roomCommand?: RoomActivityCommand;
   onRequestRoomCommand?: (roomId: HomeRoomId, kind: RoomActivityKind, instanceId?: string, interactionAt?: number) => void;
   onRoomCommandAccepted?: (id: number) => void;
@@ -302,8 +303,6 @@ export function PetStage({
     const next = { ...current }; delete next[id]; return next;
   }), []);
   const [viewport, setViewport] = useState({ width: 0, height: 0 });
-  const sceneSlideStyle = useAnimatedStyle(() => ({ transform: [{ translateX: sceneSlide
-    ? viewport.width * sceneSlide.direction * (sceneSlide.outgoing ? -sceneSlide.progress.get() : 1 - sceneSlide.progress.get()) : 0 }] }));
   const handleSceneReady = useCallback(() => onSceneReady?.(homeRoomId), [homeRoomId, onSceneReady]);
   const reduceMotion = useReducedMotion();
   const bedScaleMultiplier = getEquippedBedScale(bedScale);
@@ -540,9 +539,12 @@ export function PetStage({
   const { activity: roomActivity, blockedActivity, clearBlockedActivity, scale: activityScale, facing: activityFacing,
     objectX, objectY, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep } = useRoomActivity(activityOptions,
     compact && usesNativeCat && graphicsMode !== "loading" && catPresent && !decorating && !roomActivityBlocked,
-    lastInteractionAt, petSceneX, petSceneY, instanceId => {
+    lastInteractionAt, petSceneX, petSceneY, (instanceId, motion) => {
       const door = roomPlacedDecorations.find(item => item.instanceId === instanceId);
-      if (door?.doorDestination) onVisitHomeRoom?.(door.doorDestination);
+      if (door?.doorDestination) {
+        if(onSendCatToRoom)onSendCatToRoom(door.doorDestination,undefined,motion);
+        else onVisitHomeRoom?.(door.doorDestination);
+      }
     }, onFeed, onSendCatToRoom, roomVisible, decorating, handleReadyToDecorate, onRoomActivityCompleted,
     failure => blockedActivityHandler.current?.(failure));
   const sofaApproach = roomActivity?.plan.steps[roomActivity.stepIndex]?.sofaApproach;
@@ -678,7 +680,7 @@ export function PetStage({
       if (!decorating) {
         if (roomActivityBlocked) return false;
         if (item.kind === "decoration" && isOpenableDecorationId(item.decorationId) && onTogglePlacedDecorationOpen) return true;
-        if (item.kind === "decoration" && isRoomDoor(item.decorationId)) return false;
+        if (item.kind === "decoration" && isRoomDoor(item.decorationId)) return Boolean(onSendCatToRoom && roomPlacedDecorations.find(placed=>placed.instanceId===item.instanceId)?.doorDestination);
         if (item.kind === "decoration" && isFridgeDecorationId(item.decorationId)) return Boolean(onTogglePlacedFridge);
         if (item.kind === "decoration" && isCurtainDecorationId(item.decorationId)) return Boolean(onTogglePlacedCurtain);
         if (item.kind === "decoration" && isPoweredDecorationId(item.decorationId)) return Boolean(onTogglePlacedDecorationPower);
@@ -707,6 +709,7 @@ export function PetStage({
       bedId,
       decorating,
       catPresent,
+      onSendCatToRoom, roomPlacedDecorations,
       onRequestRoomCommand,
       roomActivityBlocked,
       viewport.width, viewport.height, displayWidth,
@@ -757,6 +760,10 @@ export function PetStage({
       setPendingCloseId(null);
       if (!isDecorationOpen(drawer)) onTogglePlacedDecorationOpen(drawer.instanceId);
     }
+    if(kind==='doorTravel') {
+      const door=roomPlacedDecorations.find(item=>item.instanceId===instanceId);
+      if(door && !isDecorationOpen(door))onTogglePlacedDecorationOpen?.(door.instanceId);
+    }
     if (kind === 'fridgeInvestigate') {
       const fridge = roomPlacedDecorations.find(item => isFridgeDecorationId(item.decorationId)
         && (!instanceId || item.instanceId === instanceId));
@@ -780,6 +787,13 @@ export function PetStage({
             onPress: () => startRoomCommand(kind, item.kind === "bed" ? "bed" : item.instanceId),
           });
         }
+      }
+      if(!decorating && item.kind==='decoration' && isRoomDoor(item.decorationId) && onSendCatToRoom && (catPresent || onRequestRoomCommand)) {
+        const door=roomPlacedDecorations.find(placed=>placed.instanceId===item.instanceId);
+        if(door?.doorDestination)actions.push({
+          label:t('home.goToRoom',{room:t(`home.rooms.${door.doorDestination}`)}),icon:HOME_ROOM_ICONS[door.doorDestination],
+          disabled:roomActivityBlocked,onPress:()=>startRoomCommand('doorTravel',item.instanceId),
+        });
       }
       if (item.kind === 'decoration' && isOpenableDecorationId(item.decorationId) && onTogglePlacedDecorationOpen) {
         const placed = roomPlacedDecorations.find(entry => entry.instanceId === item.instanceId);
@@ -1029,6 +1043,7 @@ export function PetStage({
       bedScale,
       decorating,
       catPresent,
+      onSendCatToRoom,
       onRequestRoomCommand,
       roomActivityBlocked,
       viewport.width, viewport.height, displayWidth,
@@ -1423,7 +1438,7 @@ export function PetStage({
               sceneSlide && styles.transparentScene,
             ]}
           >
-            <Animated.View style={[compact ? StyleSheet.absoluteFill : { width: "100%", minHeight: displayWidth }, hasRoomNavigation && styles.roomSceneInset, sceneSlideStyle, { backgroundColor: GameColors.background }]}
+            <Animated.View style={[compact ? StyleSheet.absoluteFill : { width: "100%", minHeight: displayWidth }, hasRoomNavigation && styles.roomSceneInset, { backgroundColor: GameColors.background }]}
               onLayout={event => {
                 const { width, height } = event.nativeEvent.layout;
                 setViewport({ width, height });
@@ -1435,7 +1450,7 @@ export function PetStage({
               <SimpleLampLight world={nativeWorld}/>
               <Text pointerEvents="none" style={styles.graphicsHint}>{t('recovery.graphicsHint')}</Text>
             </> : null}
-            {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene homeRoomId={homeRoomId} pickerRef={nativePicker} worldClock={worldClock} editingObject={editingObject} spotlightAim={spotlightAim} initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} transitioning={!!sceneSlide} editing={decorating}
+            {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene homeRoomId={homeRoomId} pickerRef={nativePicker} worldClock={worldClock} editingObject={editingObject} spotlightAim={spotlightAim} entryId={roomEntry?.id} initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} transitioning={!!sceneSlide} editing={decorating}
               playback={activityPlayback ?? playback} travel={roomActivity?.plan.steps[roomActivity.stepIndex].native}
               activityKey={roomActivity ? roomActivityStepKey(roomActivity) : undefined}
               onRoomStepComplete={completeNativeStep}

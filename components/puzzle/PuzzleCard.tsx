@@ -10,12 +10,14 @@ type PuzzleCardProps = {
   puzzle: Puzzle;
   puzzleNumber: number;
   coinReward?: number;
+  levelKind?: "practice" | "boss" | "challenge";
 };
 
 export function PuzzleCard({
   puzzle,
   puzzleNumber,
   coinReward,
+  levelKind = "practice",
 }: PuzzleCardProps) {
   const { t } = useTranslation();
   const puzzleType = getPuzzleType(puzzle);
@@ -26,7 +28,7 @@ export function PuzzleCard({
         <View style={styles.badgeGroup}>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
-              {t("play.hardNut", { number: puzzleNumber })}
+              {t(levelKind === "boss" ? "learning.stageNumber" : levelKind === "challenge" ? "learning.challenge" : "play.hardNut", { number: puzzleNumber })}
             </Text>
           </View>
           {puzzleType !== "multiple_choice" ? (

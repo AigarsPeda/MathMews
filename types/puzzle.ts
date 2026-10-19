@@ -31,7 +31,12 @@ export type PuzzleType =
   | "pattern_next"
   | "function_machine"
   | "order_numbers"
-  | "fraction_match";
+  | "fraction_match"
+  | "find_all_pairs"
+  | "sort_buckets"
+  | "repair_pattern"
+  | "route_grid"
+  | "budget_plan";
 
 export type MathOperator = "+" | "-" | "×" | "÷";
 
@@ -137,6 +142,8 @@ export type FractionMatchPayload = {
 };
 
 type PuzzleBase = {
+  /** Selects an independent worked example, never an answer to this task. */
+  helpTemplate?: keyof typeof import("@/constants/visual-practice").VISUAL_PRACTICE;
   /** Authored quantities for worked help, shared across locales. */
   visualHelp?: { scene: import("@/types/visual-explanation").VisualScene; worked: import("@/types/visual-explanation").VisualScene };
   id: string;
@@ -244,6 +251,8 @@ export type FractionMatchPuzzle = PuzzleBase & {
 };
 
 export type Puzzle =
+  | OptionalChallengePuzzle
+  | FindAllPairsPuzzle
   | MultipleChoicePuzzle
   | ComparePuzzle
   | OperationPathPuzzle
@@ -261,5 +270,30 @@ export type Puzzle =
   | FunctionMachinePuzzle
   | OrderNumbersPuzzle
   | FractionMatchPuzzle;
+
+export type FindAllPairsPuzzle = PuzzleBase & {
+  type: "find_all_pairs";
+  payload: { numbers: number[]; target: number };
+};
+
+export type SortBucketsPuzzle = PuzzleBase & {
+  type: "sort_buckets";
+  payload:
+    | { rule: "range"; numbers: number[]; boundary: number }
+    | { rule: "fractions"; fractions: [number, number][]; targets: [number, number][] };
+};
+export type RepairPatternPuzzle = PuzzleBase & {
+  type: "repair_pattern";
+  payload: { sequence: (number | null)[]; tiles: number[]; solution: number[] };
+};
+export type RouteGridPuzzle = PuzzleBase & {
+  type: "route_grid";
+  payload: { columns: number; start: number; target: number; moves: number; cells: ({ operator: MathOperator; operand: number } | null)[] };
+};
+export type BudgetPlanPuzzle = PuzzleBase & {
+  type: "budget_plan";
+  payload: { budget: number; remaining: number; pickCount: number; items: { label: string; price: number; discountPercent: number }[] };
+};
+export type OptionalChallengePuzzle = SortBucketsPuzzle | RepairPatternPuzzle | RouteGridPuzzle | BudgetPlanPuzzle;
 
 export const MATH_OPERATORS: MathOperator[] = ["+", "-", "×", "÷"];

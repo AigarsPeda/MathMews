@@ -70,6 +70,21 @@ for (const room of HOME_ROOM_IDS) {
 }
 assert.equal(animations.length, 0);
 assert.equal(pet.catHomeRoomId, 'livingRoom');
+// A warm room's old empty frame cannot stand in for an incoming cat's pose.
+current.visit('kitchen',true);current=render();
+const previousCatReady=current.ready;
+assert.equal(current.transition.destination,'kitchen','Following the cat waits for its newly painted pose even in a cached room');
+current.ready('bathroom');current=render();
+assert.equal(current.progress.get(),0,'Another cached room cannot release the cat handoff');
+current.ready('kitchen');current=render();
+assert.equal(current.transition,null);
+assert.equal(current.progress.get(),1);
+current.visit('livingRoom');current=render();current.visit('kitchen',true);current=render();
+previousCatReady('kitchen');current=render();
+assert.equal(current.progress.get(),0,'A late callback from a prior visit to the same room cannot expose an empty frame');
+assert.equal(current.transition.destination,'kitchen');
+current.ready('kitchen');current=render();
+assert.equal(current.transition,null);
 // Covering the app must still settle a genuinely cold destination.
 slots.length = 0; pet = { ...pet, homeRoomId: 'livingRoom' };
 current = render(); current.visit('kitchen'); current = render();
@@ -101,3 +116,26 @@ current.ready('bathroom'); current = render();
 assert.equal(current.transition, null);
 assert.equal(pet.catHomeRoomId, 'kitchen');
 console.log('Verified instant preloaded room changes, cold-scene readiness, repeated input, abandoned loads, stale callbacks, covered screens and independent cat location.');
+
+// Exercise Home's actual visibility expression before native transform updates.
+const homeSource=ts.createSourceFile('app/index.tsx',fs.readFileSync('app/index.tsx','utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+let shownExpression;
+function findShown(node){if(ts.isVariableDeclaration(node)&&node.name.getText(homeSource)==='shown')shownExpression=node.initializer.getText(homeSource);ts.forEachChild(node,findShown);}
+findShown(homeSource);assert.ok(shownExpression);
+const shownScript=new vm.Script(ts.transpileModule(`(${shownExpression})`,{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText);
+for(const origin of HOME_ROOM_IDS)for(const destination of HOME_ROOM_IDS){
+  if(origin===destination)continue;
+  const shown=transition=>Array.from(HOME_ROOM_IDS).filter(id=>shownScript.runInNewContext({id,visible:id===destination,transition}));
+  assert.deepEqual(shown({outgoing:{homeRoomId:origin}}),[origin],'Only the outgoing native buffer is exposed while the destination prepares');
+  assert.deepEqual(shown(null),[destination],'The painted destination replaces the outgoing buffer in one visibility commit');
+}
+console.log('Verified Home never exposes the incoming empty buffer while native transform updates are pending.');
+
+const stageSource=ts.createSourceFile('PetStage.tsx',fs.readFileSync('components/pet/PetStage.tsx','utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+function checkSceneTransforms(node){
+  if(ts.isCallExpression(node)&&node.expression.getText(stageSource)==='useAnimatedStyle'){
+    assert.ok(!node.arguments[0].getText(stageSource).includes('sceneSlide'),'Readiness holds cannot move either native buffer ahead of the React visibility commit');
+  }
+  ts.forEachChild(node,checkSceneTransforms);
+}
+checkSceneTransforms(stageSource);

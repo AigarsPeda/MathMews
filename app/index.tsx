@@ -1,3 +1,4 @@
+import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { useCatBedtime } from '@/hooks/use-cat-bedtime';
 import type { WorldPeriod } from '@/utils/world-clock';
 import { useStoreCatalog } from "@/hooks/use-store-catalog";
@@ -133,16 +134,16 @@ export default function HomeScreen() {
   }, []);
   const preloadedRooms = useMemo(() => HOME_ROOM_IDS.map(id => previewHomeRoom(pet, id)), [pet]);
   const { transition, progress: roomSlideProgress, visit: slideToRoom, ready: roomSceneReady } = useRoomTransition(pet, visitHomeRoom);
-  const handleVisitRoom = useCallback((destination: HomeRoomId) => {
+  const handleVisitRoom = useCallback((destination: HomeRoomId, waitForCat = false) => {
     const origin = pet.homeRoomId ?? 'livingRoom';
     if (origin === destination || transition) return;
-    slideToRoom(destination);
+    slideToRoom(destination, waitForCat);
   }, [pet, slideToRoom, transition]);
   const [catEntry, setCatEntry] = useState<{ roomId: HomeRoomId; entry: RoomEntry } | null>(null);
   const entrySequence = useRef(0);
-  const handleCatRoomArrival = useCallback((destination: HomeRoomId, ambientPeriod?: WorldPeriod) => {
-    setCatEntry({ roomId: destination, entry: { id: ++entrySequence.current, direction: roomTravelDirection(getCatHomeRoomId(pet), destination) } });
-    if (!ambientPeriod) handleVisitRoom(destination);
+  const handleCatRoomArrival = useCallback((destination: HomeRoomId, ambientPeriod?: WorldPeriod, motion?: CatTravelMotion) => {
+    setCatEntry({ roomId: destination, entry: { id: ++entrySequence.current, direction: roomTravelDirection(getCatHomeRoomId(pet), destination), motion } });
+    if (!ambientPeriod) handleVisitRoom(destination, true);
     sendCatToRoom(destination, !ambientPeriod);
   }, [handleVisitRoom, pet, sendCatToRoom]);
   const careActionPendingRef = useRef(false);
@@ -753,7 +754,9 @@ export default function HomeScreen() {
             {stageRooms.map(room => {
               const id = room.homeRoomId ?? "livingRoom";
               const visible = id === viewRoom;
-              const shown = visible || id === transition?.outgoing.homeRoomId;
+              // Keep the outgoing buffer visible until the incoming cat has painted.
+              // Native transform updates can arrive after this React commit.
+              const shown = transition ? id === transition.outgoing.homeRoomId : visible;
               return <View key={id} style={[StyleSheet.absoluteFill, { opacity: shown ? 1 : 0 }]}
                 pointerEvents={visible && !transition ? "auto" : "none"}
                 accessibilityElementsHidden={!visible} importantForAccessibility={visible ? "auto" : "no-hide-descendants"}>

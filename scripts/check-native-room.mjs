@@ -629,11 +629,15 @@ const transformManager = { createIdentityMatrix: () => ({ scaling: v => { scale 
 };
 const asset = { getFirstEntityByName: name => rigMatrices?.has(name) || exposeFoodProps && name==='Bowl base Game prop' ? {name} : undefined }, entity = {}, context = { transformManager };
 let actorAsset = asset;
-mocks['react-native-filament'] = { useModel: () => ({ state: 'loaded', asset: actorAsset, rootEntity: entity }), useAnimator: () => animator, useFilamentContext: () => context, RenderCallbackContext: { useRenderCallback: fn => { renderFrame = fn; } } };
-const { NativeCatActor } = load('@/components/pet/native/NativeCatActor');
+const catModelLoads = [];
+mocks['react-native-filament'] = { useModel: (source,options) => {catModelLoads.push({source,options});return { state: 'loaded', asset: actorAsset, rootEntity: entity };}, useAnimator: () => animator, useFilamentContext: () => context, RenderCallbackContext: { useRenderCallback: fn => { renderFrame = fn; } } };
+const { NativeCatActor, useCatModel } = load('@/components/pet/native/NativeCatActor');
+useCatModel('grey',false);
+assert.equal(catModelLoads.at(-1).options.addToScene,false,'A standby cat model loads without placing another cat in the room');
+assert.equal(catModelLoads.at(-1).options.shouldReleaseSourceData,false,'The prepared skeleton retains its animation bindings');
 const registry = load('@/pet-display/registry/cat-model-registry').catModelRegistry;
 assert.equal(registry.mediaKind, 'model');
-function render(props) { cursor = 0;effects = [];NativeCatActor(props);effects.forEach(fn => fn()); }
+function render(props) { cursor = 0;effects = [];NativeCatActor({model:useCatModel(props.skinId),...props});effects.forEach(fn => fn()); }
 for (const fps of [30, 60, 120]) {
   slots = [];applies = [];let complete = 0, steps = [];
   const props = { playback: { kind: 'scenario', steps: [registry.getSegment('excited'), registry.getSegment('eating')] }, active: true, onAnimationComplete: () => complete++, onStepComplete: i => steps.push(i) };
@@ -969,7 +973,9 @@ mocks['./NativeLightning'] = { NativeLightning: 'Lightning' };
 mocks['./NativeWorldLighting'] = { NativeWorldLighting: 'WorldLighting' };
 mocks['./NativeWindowPane'] = { NativeWindowPane: 'WindowPane' };
 mocks['./NativeWindowWeather'] = { NativeWindowWeather: 'WindowWeather' };
-mocks['./NativeCatActor'] = { NativeCatActor: 'Cat' };
+const preparedCat = {state:'loaded',asset:{},rootEntity:{}};
+const preparedCatRequests = [];
+mocks['./NativeCatActor'] = { NativeCatActor: 'Cat', useCatModel:(skin,present)=>{preparedCatRequests.push({skin,present});return preparedCat;} };
 const startupVisualReadiness = [];
 mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { startupVisualReadiness.push(ready); } };
 let sceneReduced = false;
@@ -1057,6 +1063,7 @@ function renderCachedScene(props) {
 function paintFrame() { sceneRender({ timeSinceLastFrame: 1 / 60 }); }
 const cachedProps = { ...sceneMeal, paused: true, catPresent: false, onSceneReady,
   worldClock: { worldMs: 23 * 3_600_000, realMs: Date.now(), speed: 60 } };
+preparedCat.state='loading';
 let cached = renderCachedScene(cachedProps);
 assert.equal(cached.find(child => child.type === 'WorldLighting').props.active, true, 'Night lighting runs during hidden scene warmup');
 assert.ok(cached.filter(child => child.type.name === 'RoomObject').every(child => child.props.lightingActive), 'Window materials initialize before scene readiness');
@@ -1066,6 +1073,10 @@ paintFrame(); paintFrame(); renderCachedScene(cachedProps);
 assert.equal(sceneReady, 0, 'Room geometry alone does not preload its furniture');
 for (const child of cached.filter(child => child.type.name === 'RoomObject'))
   child.props.onReady(`${child.props.object.instanceId}:${child.props.object.modelId}`);
+renderCachedScene(cachedProps);
+paintFrame();paintFrame();paintFrame();renderCachedScene(cachedProps);
+assert.equal(sceneReady,0,'A cached empty room must also finish preparing its incoming cat asset');
+preparedCat.state='loaded';
 renderCachedScene(cachedProps);
 assert.equal(sceneReady, 0, 'Loading the room asset is not a drawn frame');
 paintFrame(); renderCachedScene(cachedProps);
@@ -1090,12 +1101,29 @@ cached = renderCachedScene(arrivalProps);
 assert.equal(sceneReady, 1, 'A previously empty room waits for the incoming cat');
 assert.equal(sceneClock.at(-1), 'start', 'The cached renderer wakes to draw a newly arriving cat');
 const incomingCat = cached.find(child => child.type === 'Cat');
+assert.equal(incomingCat.props.model,preparedCat,'Arrival reuses the prepared skeleton instead of starting another model load');
+assert.equal(preparedCatRequests.at(-1).present,true,'Only the room with the cat adds its prepared asset to the native scene');
 assert.equal(incomingCat.props.initialPosition, arrivalProps.initialCatPosition);
 incomingCat.props.onReady(); renderCachedScene(arrivalProps);
 paintFrame(); renderCachedScene(arrivalProps); paintFrame(); renderCachedScene(arrivalProps);
 paintFrame(); renderCachedScene(arrivalProps);
 assert.equal(sceneReady, 2);
 assert.equal(sceneClock.at(-1), 'stop');
+const pendingArrival = {...arrivalProps,entryId:2,travel:undefined};
+cached=renderCachedScene(pendingArrival);
+assert.equal(cached.find(child=>child.type==='Cat'),undefined,'Arrival cannot display an idle pose before its first route is published');
+assert.equal(preparedCatRequests.at(-1).present,false,'The ready model stays outside the scene while entry is being planned');
+const routedArrival={...pendingArrival,travel:sceneMeal.travel};
+cached=renderCachedScene(routedArrival);
+const routedCat=cached.find(child=>child.type==='Cat');
+assert.equal(routedCat.props.model,preparedCat);
+assert.equal(routedCat.props.travel,routedArrival.travel,'The first visible actor already has its route');
+routedCat.props.onReady();renderCachedScene(routedArrival);
+cached=renderCachedScene({...routedArrival,travel:undefined});
+assert.ok(cached.find(child=>child.type==='Cat'),'Finishing the entry keeps the cat visible');
+renderCachedScene(cachedProps);
+cached=renderCachedScene({...pendingArrival,entryId:3});
+assert.equal(cached.find(child=>child.type==='Cat'),undefined,'A later visit cannot reuse an older arrival readiness flag');
 console.log('Verified native first-frame handoff, retained hidden surfaces, paused GPU clocks and new-cat readiness in cached rooms.');
 
 sceneReduced = false;

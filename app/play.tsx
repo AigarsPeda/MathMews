@@ -12,13 +12,8 @@ import {
   getPuzzleCoinReward,
   getVisualHelpCost,
 } from "@/constants/game";
-import {
-  canPlayPuzzleIndex,
-  getNextIncompleteDifficulty,
-  getPuzzleForSession,
-  getPuzzlesByDifficulty,
-  isPuzzleDifficulty,
-} from "@/constants/puzzles";
+import { isPuzzleDifficulty } from "@/constants/puzzles";
+import { getLevelPuzzles, getNextPracticeLevel, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
 import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
@@ -37,9 +32,10 @@ import {
   getPuzzleType,
 } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
+import type { ChallengeAnswer } from "@/utils/challenge-puzzles";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -113,82 +109,46 @@ function applyAnswerResult({
 
 export default function PlayScreen() {
   const { isReady } = useGame();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ difficulty?: string; lesson?: string; level?: string; phase?: string }>();
   const { locale } = useLocale();
-  if (!isReady)
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator color={GameColors.primary} />
-      </View>
-    );
-  return (
-    <PlaySession
-      key={`${locale}-${params.difficulty}-${params.index}-${params.replay}`}
-    />
-  );
+  if (!isReady) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
+  const difficulty: PuzzleDifficulty = isPuzzleDifficulty(params.difficulty ?? "") ? params.difficulty as PuzzleDifficulty : "easy";
+  return <LearningPlayGate key={`${locale}-${difficulty}-${params.lesson}-${params.level}-${params.phase}`}
+    difficulty={difficulty} lessonId={params.lesson} levelId={params.level} phaseParam={params.phase} />;
 }
 
-function PlaySession() {
+function LearningPlayGate({ difficulty, lessonId, levelId, phaseParam }: {
+  difficulty: PuzzleDifficulty; lessonId?: string; levelId?: string; phaseParam?: string;
+}) {
+  const { progress, hasCompletedOnboarding } = useGame();
+  // Freeze entry context. Recording a successful stage must not advance the task
+  // until the child dismisses its result, nor turn its first reward into a replay.
+  const [session] = useState(() => resolveLearningSession(difficulty, lessonId, levelId, phaseParam, progress.completedPuzzleIds ?? []));
+  if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
+  if (!session) return <Redirect href={{ pathname: "/puzzles", params: { difficulty } }} />;
+  return <PlaySession session={session} />;
+}
+
+function PlaySession({ session }: { session: LearningSession }) {
   useStoreCatalog();
   const lifeBuyCost = getStoreCoinPrice("life", "one")!;
   const router = useRouter();
   const { t } = useTranslation();
   const { locale } = useLocale();
-  const {
-    difficulty: difficultyParam,
-    index: indexParam,
-    replay: replayParam,
-  } = useLocalSearchParams<{
-    difficulty?: string;
-    index?: string;
-    replay?: string;
-  }>();
-  const rawDifficulty = Array.isArray(difficultyParam)
-    ? difficultyParam[0]
-    : difficultyParam;
-  const difficulty: PuzzleDifficulty = isPuzzleDifficulty(rawDifficulty ?? "")
-    ? rawDifficulty
-    : "easy";
-  const rawIndex = Array.isArray(indexParam) ? indexParam[0] : indexParam;
-  const parsedIndex =
-    rawIndex !== undefined && rawIndex !== ""
-      ? Number.parseInt(rawIndex, 10)
-      : NaN;
-  const {
-    pet,
-    answerPuzzle,
-    wallet,
-    isReady,
-    progress,
-    hasCompletedOnboarding,
-    recordInteraction,
-    purchaseVisualHelp,
-  } = useGame();
-
-  const puzzles = getPuzzlesByDifficulty(locale, difficulty);
-  const savedIndex = progress.puzzlesSolved[difficulty];
-  const [entryIndex] = useState(savedIndex);
+  const { lesson, level, phase: sessionIndex } = session;
+  const difficulty = lesson.difficulty;
+  const { pet, answerPuzzle, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp } = useGame();
+  const puzzles = getLevelPuzzles(locale, lesson, level);
   const [entryCompleted] = useState(progress.completedPuzzleIds ?? []);
-  const sessionIndex = Number.isFinite(parsedIndex) ? parsedIndex : entryIndex;
-  const attemptId = useRef("");
-  const isReplay =
-    replayParam === "true" ||
-    (Number.isFinite(parsedIndex) &&
-      (entryCompleted.includes(puzzles[parsedIndex]?.id) ||
-        parsedIndex < entryIndex));
-  const [puzzle, setPuzzle] = useState(() =>
-    shufflePuzzleChoices(
-      getPuzzleForSession(
-        locale,
-        difficulty,
-        Math.max(0, Math.min(sessionIndex, puzzles.length - 1)),
-      ),
-      `${difficulty}-${sessionIndex}-${progress.puzzleStreak}-${Object.values(progress.topicStats ?? {}).reduce((sum, stats) => sum + stats.correct + stats.wrong, 0)}`,
-    ),
-  );
-
-  const puzzleNumber = sessionIndex + 1;
+  const [initialAttemptId] = useState(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const attemptId = useRef(initialAttemptId);
+  const isReplay = entryCompleted.includes(puzzles[sessionIndex].id);
+  const [puzzle, setPuzzle] = useState(() => shufflePuzzleChoices(puzzles[sessionIndex],
+    `${level.id}-${sessionIndex}-${progress.puzzleStreak}`));
+  const puzzleNumber = level.kind === "practice" ? lesson.levels.findIndex(item => item.id === level.id) + 1 : sessionIndex + 1;
   const coinReward = getPuzzleCoinReward(difficulty, isReplay);
+  const [foundPairs, setFoundPairs] = useState<[number, number][]>([]);
+  const [isDraggingChallenge, setIsDraggingChallenge] = useState(false);
 
   const [pendingChoice, setPendingChoice] = useState<number | null>(null);
   const [pendingNumberLine, setPendingNumberLine] = useState<number | null>(
@@ -235,10 +195,6 @@ function PlaySession() {
     fractionMatchAnswered;
   const resultMood: PetAnimationState = isCorrect ? "correct" : "incorrect";
 
-  useEffect(() => {
-    attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  }, []);
-
   const handleOpenVisualHelp = useCallback(() => {
     if (answered || !hasVisualHelp) return;
     recordInteraction();
@@ -251,30 +207,24 @@ function PlaySession() {
     return purchaseVisualHelp(puzzle.id, visualHelpCost);
   }, [purchaseVisualHelp, puzzle.id, recordInteraction, visualHelpCost]);
 
-  const exitToPath = useCallback(
-    (options?: { tierJustCompleted?: boolean }) => {
-      recordInteraction();
-      let pathDifficulty = difficulty;
-      if (options?.tierJustCompleted) {
-        const projectedSolved = {
-          ...progress.puzzlesSolved,
-          [difficulty]: progress.puzzlesSolved[difficulty],
-        };
-        pathDifficulty =
-          getNextIncompleteDifficulty(locale, projectedSolved, difficulty) ??
-          difficulty;
-      }
-      if (router.canGoBack()) {
-        router.back();
-        return;
-      }
-      router.replace({
-        pathname: "/puzzles",
-        params: { difficulty: pathDifficulty },
-      });
-    },
-    [difficulty, locale, progress.puzzlesSolved, recordInteraction, router],
-  );
+  const exitToPath = useCallback(() => {
+    recordInteraction();
+    router.dismissTo({ pathname: "/puzzles", params: { difficulty, topic: lesson.topicId, lesson: lesson.id } });
+  }, [difficulty, lesson.id, lesson.topicId, recordInteraction, router]);
+
+  const handleCheckPairs = useCallback(() => {
+    if (answered) return;
+    const correct = checkPuzzleAnswer(puzzle, { kind: "pairs", pairs: foundPairs });
+    setOperatorSubmitted(true);
+    applyAnswerResult({ correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+  }, [answered, puzzle, foundPairs, answerPuzzle]);
+
+  const handleSubmitChallenge = useCallback((answer: ChallengeAnswer) => {
+    if (answered) return;
+    const correct = checkPuzzleAnswer(puzzle, answer);
+    setOperatorSubmitted(true);
+    applyAnswerResult({ correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
+  }, [answered, puzzle, answerPuzzle]);
 
   const handleExitToPath = useCallback(() => {
     exitToPath();
@@ -517,20 +467,15 @@ function PlaySession() {
 
   const handleContinue = useCallback(() => {
     recordInteraction();
-    if (isCorrect && isReplay) {
-      exitToPath();
-      return;
-    }
-
     if (isCorrect) {
-      if (sessionIndex + 1 >= puzzles.length) {
-        exitToPath({ tierJustCompleted: true });
+      if (level.kind === "boss" && sessionIndex + 1 < puzzles.length) {
+        router.replace({ pathname: "/play", params: { difficulty, lesson: lesson.id, level: level.id, phase: String(sessionIndex + 1) } });
         return;
       }
-      router.replace({
-        pathname: "/play",
-        params: { difficulty, index: String(sessionIndex + 1) },
-      });
+      const next = !isReplay && getNextPracticeLevel(lesson, level);
+      if (next) {
+        router.replace({ pathname: "/play", params: { difficulty, lesson: lesson.id, level: next.id } });
+      } else exitToPath();
       return;
     }
 
@@ -564,6 +509,8 @@ function PlaySession() {
     }
   }, [
     difficulty,
+    lesson,
+    level,
     exitToPath,
     isCorrect,
     isReplay,
@@ -575,45 +522,13 @@ function PlaySession() {
     setPuzzle,
   ]);
 
-  const handleGoHome = useCallback(() => {
-    if (isReplay) {
-      exitToPath();
-      return;
-    }
-    if (isCorrect && sessionIndex + 1 >= puzzles.length) {
-      exitToPath({ tierJustCompleted: true });
-      return;
-    }
-    router.dismissTo("/");
-  }, [exitToPath, isCorrect, isReplay, puzzles.length, router, sessionIndex]);
+  const handleGoHome = useCallback(() => { router.dismissTo("/"); }, [router]);
 
-  if (!isReady) {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" color={GameColors.primary} />
-      </View>
-    );
-  }
-
-  if (!hasCompletedOnboarding) {
-    return <Redirect href="/onboarding/name-pet" />;
-  }
-
-  if (sessionIndex < 0 || sessionIndex >= puzzles.length) {
-    return <Redirect href={{ pathname: "/puzzles", params: { difficulty } }} />;
-  }
-
-  if (
-    !canPlayPuzzleIndex(
-      sessionIndex,
-      savedIndex,
-      entryCompleted.includes(puzzle.id),
-    )
-  ) {
-    return <Redirect href={{ pathname: "/puzzles", params: { difficulty } }} />;
-  }
+  if (!isReady) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
+  if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
 
   const canRetry = true;
+  const replayingMission = level.kind === "boss" && level.puzzleIds.every(id => entryCompleted.includes(id));
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
@@ -638,21 +553,34 @@ function PlaySession() {
           />
         </View>
 
-        <Text style={styles.title}>
-          {isReplay
-            ? t("play.replayNut", { number: puzzleNumber })
-            : t("play.solveFor", { name: pet.name })}
-        </Text>
+        <Text style={styles.title}>{level.kind === "practice" ? lesson.title[locale] : level.title[locale]}</Text>
 
         <ScrollView
+          scrollEnabled={!isDraggingChallenge}
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+          {level.kind !== "practice" && <View style={[styles.mission, level.kind === "boss" ? styles.bossMission : styles.challengeMission]}>
+            <Text style={styles.missionTitle}>{t(`learning.${level.kind}`)}</Text>
+            <Text style={styles.missionDescription}>{level.description[locale]}</Text>
+            {level.kind === "boss" && <>
+              <Text style={styles.missionTitle}>{t("learning.stageOf", { number: sessionIndex + 1, total: puzzles.length })}</Text>
+              <View style={styles.stageRow}>{puzzles.map((stage, index) => {
+                const done = replayingMission ? index < sessionIndex || index === sessionIndex && answered && isCorrect
+                  : (progress.completedPuzzleIds ?? []).includes(stage.id);
+                return <View key={stage.id} style={[styles.stageMarker, done && styles.stageMarkerDone]}>
+                  <Text style={styles.missionDescription}>{t(done ? "learning.stageDone" : index === sessionIndex ? "learning.stageActive" : "learning.stagePending", { number: index + 1 })}</Text>
+                </View>;
+              })}</View>
+              <Text style={styles.missionDescription}>{t("learning.stagesSaved")}</Text>
+            </>}
+          </View>}
           <PuzzleCard
             puzzle={puzzle}
             puzzleNumber={puzzleNumber}
             coinReward={coinReward}
+            levelKind={level.kind}
           />
 
           {hasVisualHelp ? (
@@ -688,11 +616,16 @@ function PlaySession() {
             )}
             <PuzzleTaskView
               puzzle={puzzle}
+              onSubmitChallenge={handleSubmitChallenge}
+              onChallengeDragStateChange={setIsDraggingChallenge}
               selectedIndex={selectedIndex ?? pendingChoice}
               selectedOperators={selectedOperators}
               fractionPieces={fractionPieces}
               numberLineValue={numberLineValue ?? pendingNumberLine}
               pairIndices={pairIndices}
+              foundPairs={foundPairs}
+              onFoundPairsChange={setFoundPairs}
+              onCheckPairs={handleCheckPairs}
               numberOrder={numberOrder}
               orderSwapIndex={orderSwapIndex}
               orderSubmitted={orderSubmitted}
@@ -745,7 +678,10 @@ function PlaySession() {
             petMood={resultMood}
             message={
               isCorrect
-                ? isReplay
+                ? level.kind === "boss" && sessionIndex === puzzles.length - 1
+                  ? t("learning.bossComplete")
+                  : level.kind === "challenge" ? t("learning.challengeComplete")
+                  : isReplay
                   ? t("play.crackedAgain")
                   : t("play.greatJob")
                 : t("play.goodTry")
@@ -753,15 +689,10 @@ function PlaySession() {
             detail={isCorrect ? puzzle.explanation : puzzle.hint}
             coinsEarned={coinsEarned}
             coinType={isReplay ? "sparkle" : "regular"}
-            continueLabel={
-              isCorrect
-                ? isReplay
-                  ? t("play.backToPath")
-                  : t("play.nextPuzzle")
-                : canRetry
-                  ? t("play.tryAgain")
-                  : t("play.backToPath")
-            }
+            continueLabel={isCorrect
+              ? level.kind === "boss" && sessionIndex + 1 < puzzles.length ? t("learning.nextStage")
+                : level.kind !== "practice" || isReplay || !getNextPracticeLevel(lesson, level) ? t("learning.backToLesson") : t("play.nextPuzzle")
+              : canRetry ? t("play.tryAgain") : t("learning.backToLesson")}
             onContinue={handleContinue}
             onGoHome={isCorrect && !isReplay ? handleGoHome : undefined}
             onBuyLife={undefined}
@@ -787,6 +718,14 @@ function PlaySession() {
 }
 
 const styles = StyleSheet.create({
+  mission: { padding: moderateScale(16), gap: moderateScale(10), borderRadius: moderateScale(16), borderWidth: 2, marginBottom: moderateScale(16) },
+  bossMission: { backgroundColor: "#FFF3D9", borderColor: "#C99632" },
+  challengeMission: { backgroundColor: "#F3EEFF", borderColor: "#BBA4E6" },
+  missionTitle: { color: GameColors.text, fontSize: moderateScale(17), fontWeight: "800" },
+  missionDescription: { color: GameColors.text, fontSize: moderateScale(15), lineHeight: moderateScale(22) },
+  stageRow: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(8) },
+  stageMarker: { padding: moderateScale(8), backgroundColor: GameColors.card, borderRadius: moderateScale(10) },
+  stageMarkerDone: { backgroundColor: "#D9EFDF" },
   mechanicIntro: {
     color: GameColors.textMuted,
     fontSize: 15,

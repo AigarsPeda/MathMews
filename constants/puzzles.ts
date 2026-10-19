@@ -30,26 +30,9 @@ const AUTHORED_PUZZLES: Record<
   },
 };
 
-// Keep the authored order for migrating saves that stored counts without IDs.
-// Stable IDs also let previously solved number-line puzzles remain replayable.
-export function getLegacyCompletedPuzzleIds(counts: PuzzleProgress): string[] {
-  return PUZZLE_DIFFICULTIES.flatMap(tier =>
-    AUTHORED_PUZZLES.en[tier].slice(0, Math.max(0, counts[tier])).map(puzzle => puzzle.id));
-}
+export { PUZZLE_CONTENT_VERSION } from "@/constants/puzzle-content-version";
 
-const PUZZLES_BY_LOCALE = Object.fromEntries(
-  (Object.keys(AUTHORED_PUZZLES) as AppLocale[]).map(locale => {
-    const authored = AUTHORED_PUZZLES[locale];
-    const moved = [...authored.easy, ...authored.medium]
-      .filter(puzzle => puzzle.type === "number_line")
-      .map(puzzle => ({ ...puzzle, difficulty: "hard" as const }));
-    return [locale, {
-      easy: authored.easy.filter(puzzle => puzzle.type !== "number_line"),
-      medium: authored.medium.filter(puzzle => puzzle.type !== "number_line"),
-      hard: [...authored.hard, ...moved],
-    }];
-  }),
-) as Record<AppLocale, Record<PuzzleDifficulty, Puzzle[]>>;
+const PUZZLES_BY_LOCALE = AUTHORED_PUZZLES;
 
 export function getPuzzlesByDifficulty(
   locale: AppLocale,
@@ -62,34 +45,7 @@ export function isPuzzleDifficulty(value: string): value is PuzzleDifficulty {
   return value === "easy" || value === "medium" || value === "hard";
 }
 
-export function getPuzzleForSession(
-  locale: AppLocale,
-  difficulty: PuzzleDifficulty,
-  puzzleIndex: number,
-): Puzzle {
-  const puzzles = getPuzzlesByDifficulty(locale, difficulty);
-  return puzzles[puzzleIndex];
-}
-
 export type PuzzlePathState = "completed" | "current" | "locked";
-
-export function getPuzzlePathState(
-  puzzleIndex: number,
-  solvedCount: number,
-  completed?: boolean,
-): PuzzlePathState {
-  if (completed === true || (completed === undefined && puzzleIndex < solvedCount)) return "completed";
-  if (puzzleIndex === solvedCount) return "current";
-  return "locked";
-}
-
-export function canPlayPuzzleIndex(
-  puzzleIndex: number,
-  solvedCount: number,
-  completed = false,
-): boolean {
-  return puzzleIndex >= 0 && (completed || puzzleIndex <= solvedCount);
-}
 
 export function isDifficultyComplete(
   locale: AppLocale,
@@ -107,34 +63,6 @@ export function hasIncompletePuzzles(
   return PUZZLE_DIFFICULTIES.some(
     (difficulty) => !isDifficultyComplete(locale, difficulty, puzzlesSolved),
   );
-}
-
-/** First difficulty after `after` that still has unsolved puzzles, if any. */
-export function getNextIncompleteDifficulty(
-  locale: AppLocale,
-  puzzlesSolved: PuzzleProgress,
-  after: PuzzleDifficulty,
-): PuzzleDifficulty | null {
-  const startIndex = PUZZLE_DIFFICULTIES.indexOf(after) + 1;
-  for (let i = startIndex; i < PUZZLE_DIFFICULTIES.length; i++) {
-    const difficulty = PUZZLE_DIFFICULTIES[i];
-    if (!isDifficultyComplete(locale, difficulty, puzzlesSolved)) {
-      return difficulty;
-    }
-  }
-  return null;
-}
-
-/** Prefer `requested` when it has work left; otherwise advance to the next incomplete tier. */
-export function resolvePuzzlePathDifficulty(
-  locale: AppLocale,
-  puzzlesSolved: PuzzleProgress,
-  requested: PuzzleDifficulty,
-): PuzzleDifficulty {
-  if (!isDifficultyComplete(locale, requested, puzzlesSolved)) {
-    return requested;
-  }
-  return getNextIncompleteDifficulty(locale, puzzlesSolved, requested) ?? requested;
 }
 
 const LOCALES = Object.keys(PUZZLES_BY_LOCALE) as AppLocale[];

@@ -3,7 +3,8 @@ from pathlib import Path
 import bpy, math, json, struct, sys
 from mathutils import Vector, Matrix, Quaternion
 ROOT=Path(__file__).resolve().parents[2]
-OUT=Path('/tmp/brainpet-gait-review');OUT.mkdir(exist_ok=True)
+fluid='--fluid' in sys.argv
+OUT=Path('/tmp/brainpet-fluid-review' if fluid else '/tmp/brainpet-gait-review');OUT.mkdir(exist_ok=True)
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 bpy.ops.import_scene.gltf(filepath=str(ROOT/'assets/3d/native/cat-orange.glb'))
 arm=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE')
@@ -36,16 +37,19 @@ def bind_world(i):
         local=Matrix.LocRotScale(Vector(n.get('translation',[0,0,0])),Quaternion((q[3],*q[:3])),Vector(n.get('scale',[1,1,1])))
         binds[i]=(bind_world(parents[i]) if i in parents else Matrix.Identity(4))@local
     return binds[i]
-corrections={n['name']:bind_world(i).inverted()@inverse@arm.matrix_world@arm.data.bones[n['name']].matrix_local for i,n in enumerate(model['nodes']) if n['name'] in arm.pose.bones}
-if '--runtime' in sys.argv:
-    poses=json.loads(Path('/tmp/brainpet-gait-poses.json').read_text())
+corrections={}
+for i,n in enumerate(model['nodes']):
+    if n['name'] in arm.pose.bones and n['name'] not in corrections:
+        corrections[n['name']]=bind_world(i).inverted()@inverse@arm.matrix_world@arm.data.bones[n['name']].matrix_local
+if '--runtime' in sys.argv or fluid:
+    poses=json.loads(Path('/tmp/brainpet-fluid-poses.json' if fluid else '/tmp/brainpet-gait-poses.json').read_text())
     for track in arm.animation_data.nla_tracks:track.mute=True
     arm.animation_data.action=None
     floor.location.z=.068
     for obj in grid:obj.location.z+=.068
     counts={}
     for pose in poses:
-        if pose['time']>6:continue
+        if pose['time']>(3.8 if fluid else 6):continue
         index=counts.get(pose['gait'],0);counts[pose['gait']]=index+1
         if index%2:continue
         desired={name:arm.matrix_world.inverted()@conversion@Matrix([values[j::4] for j in range(4)])@corrections[name] for name,values in pose['nodes'].items() if name in corrections}

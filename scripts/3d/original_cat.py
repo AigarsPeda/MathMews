@@ -128,6 +128,8 @@ def make_armature():
     bone('pelvis', (0, .43, .78), (0, .30, .82), 'spine')
     bone('neck', (0, -.43, 1.0), (0, -.53, 1.14), 'chest')
     bone('head', (0, -.53, 1.14), (0, -.61, 1.55), 'neck')
+    for side, x in (('L', -.32), ('R', .32)):
+        bone('ear.'+side, (x, -.63, 1.59), (x*1.18, -.61, 1.85), 'head')
     for side, x in (('L', -.215), ('R', .215)):
         for label, points, parent in (
                 ('foreleg', [(x, -.40, .79), (x, -.37, .42), (x, -.40, .10)], 'chest'),
@@ -189,6 +191,12 @@ def bind(mesh, arm):
                 weights[names[i]] = tail*(1-t if i < 3 else 1)
                 if i < 3:
                     weights[names[i+1]] = tail*t
+        # Fade across the fused base; the pink insert follows the same shell
+        # weights so a swivel cannot leave it floating inside a stationary ear.
+        ear_weight = ramp(1.60, 1.77, p.z)*(1-ramp(-.46, -.31, p.y))*ramp(.13, .22, abs(p.x))
+        if ear_weight:
+            weights = {name: value*(1-ear_weight) for name, value in weights.items()}
+            weights['ear.'+('L' if p.x < 0 else 'R')] = ear_weight
         strongest = sorted(((n, w) for n, w in weights.items() if w > 1e-5), key=lambda v: -v[1])[:4]
         total = sum(w for _, w in strongest)
         for name, weight in strongest:

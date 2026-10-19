@@ -20,10 +20,10 @@ export function useRoomTransition(pet: PetProfile, onVisit: (room: HomeRoomId) =
     inFlight.current = null;
     setTransition(current => current?.id === id ? null : current);
   }, []);
-  const visit = useCallback((destination: HomeRoomId) => {
+  const visit = useCallback((destination: HomeRoomId, waitForCat = false) => {
     const origin = pet.homeRoomId ?? 'livingRoom';
     if (origin === destination || inFlight.current !== null) return;
-    if (active && !reduceMotion && pet.type === 'cat' && !readyRooms.current.has(destination)) {
+    if (active && !reduceMotion && pet.type === 'cat' && (waitForCat || !readyRooms.current.has(destination))) {
       progress.set(0);
       const id = ++sequence.current;
       inFlight.current = id;
@@ -33,7 +33,7 @@ export function useRoomTransition(pet: PetProfile, onVisit: (room: HomeRoomId) =
   }, [active, onVisit, pet, progress, reduceMotion]);
   const ready = useCallback((room: HomeRoomId) => {
     readyRooms.current.add(room);
-    if (!transition || room !== transition.destination) return;
+    if (!transition || room !== transition.destination || inFlight.current !== transition.id) return;
     progress.set(1);
     finish(transition.id);
   }, [finish, progress, transition]);

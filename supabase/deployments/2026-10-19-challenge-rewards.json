@@ -1,0 +1,27 @@
+{
+  "project_ref": "jcfppquntstgxubtlvqo",
+  "applied_at": "2026-10-19T10:54:28.652554Z",
+  "verified_at": "2026-10-19T10:54:45.969156Z",
+  "deployment_method": "Authenticated Supabase SQL editor as postgres",
+  "migration": "20261019104853_puzzle_catalog.sql",
+  "migration_sha256": "76ee33d2132367f2eb108810e3a263106c68b058316186d735e83fb38e6a1643",
+  "new_challenges": 8,
+  "new_challenges_registered": 8,
+  "correct_rewards": 8,
+  "curriculum_registered": 209,
+  "acceptance": {
+    "challenges": 11,
+    "environments": [
+      "sandbox",
+      "production"
+    ],
+    "database_role": "authenticated",
+    "first_clear": true,
+    "replay": true,
+    "duplicate_attempts_idempotent": true,
+    "fixtures_rolled_back": true
+  },
+  "query_id": "e9c611c2-d87a-4dd0-a932-019b5a3f6434",
+  "acceptance_source": "supabase/tests/challenge-rewards.sql",
+  "acceptance_sha256": "569285b52f23d0de9bc6b3ef2036f28bf616d88a8deca54a9c5965748f187c44"
+}

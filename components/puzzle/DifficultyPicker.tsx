@@ -39,9 +39,8 @@ function DifficultyTab({
       <Text style={[styles.tabText, isSelected && styles.tabTextSelected]}>
         {label}
       </Text>
-      <Text style={styles.ageText}>{t("difficultyPicker.ages", { min: difficulty === "easy" ? 6 : difficulty === "medium" ? 8 : 10, max: difficulty === "easy" ? 8 : difficulty === "medium" ? 10 : 12 })}</Text>
       <Text style={[styles.coinText, isSelected && styles.coinTextSelected]}>
-        🪙 {coinReward}
+        🪙 {t("difficultyPicker.earnCoins", { coins: coinReward })}
       </Text>
     </Pressable>
   );
@@ -66,7 +65,6 @@ export function DifficultyPicker({
 }
 
 const styles = StyleSheet.create({
-  ageText: { fontSize: 11, color: GameColors.textMuted },
   row: {
     flexDirection: "row",
     gap: moderateScale(8),
@@ -100,6 +98,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(13),
     fontWeight: "700",
     color: GameColors.coinText,
+    textAlign: "center",
   },
   coinTextSelected: {
     color: GameColors.coinText,

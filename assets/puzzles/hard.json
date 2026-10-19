@@ -1,1031 +1,1625 @@
 [
   {
-    "id": "hard-mc-01",
+    "id": "v2-hard-operations-connected-1",
     "difficulty": "hard",
-    "topic": "logic",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "question": "A pizza is cut into 8 slices. You eat 3 slices and your friend eats 2. What fraction of the pizza is left?",
-    "choices": [
-      "3/8",
-      "5/8",
-      "1/2"
-    ],
-    "correctIndex": 0,
-    "hint": "5 slices were eaten. How many slices remain out of 8?",
-    "explanation": "8 − 5 = 3 slices left, so 3/8 of the pizza remains.",
-    "visualHelp": {
-      "scene": {
-        "kind": "fraction",
-        "numerator": 8,
-        "denominator": 8
-      },
-      "worked": {
-        "kind": "fraction",
-        "numerator": 3,
-        "denominator": 8
-      }
-    }
-  },
-  {
-    "id": "hard-pat-1",
-    "difficulty": "hard",
-    "topic": "patterns",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "pattern_next",
-    "question": "What number comes next in the pattern?",
-    "payload": {
-      "sequence": [
-        1,
-        1,
-        2,
-        3,
-        5
-      ],
-      "choices": [
-        "8",
-        "6",
-        "7"
-      ]
-    },
-    "correctIndex": 0,
-    "hint": "Look at how each number changes (Fibonacci).",
-    "explanation": "The next number is 8."
-  },
-  {
-    "id": "hard-mc-02",
-    "difficulty": "hard",
-    "topic": "logic",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "question": "A train travels 60 miles in 2 hours. At the same speed, how far will it go in 5 hours?",
-    "choices": [
-      "120 miles",
-      "150 miles",
-      "300 miles"
-    ],
-    "correctIndex": 1,
-    "hint": "Find miles per hour first, then multiply by 5.",
-    "explanation": "60 ÷ 2 = 30 mph. 30 × 5 = 150 miles."
-  },
-  {
-    "id": "hard-fn-1",
-    "difficulty": "hard",
-    "topic": "operations",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "function_machine",
-    "question": "What rule does the machine use?",
-    "payload": {
-      "input": 3,
-      "output": 27,
-      "choices": [
-        "+20",
-        "×9",
-        "×3"
-      ]
-    },
-    "correctIndex": 1,
-    "hint": "What do you do to 3 to get 27?",
-    "explanation": "3 ×9 = 27."
-  },
-  {
-    "id": "hard-mc-03",
-    "difficulty": "hard",
-    "topic": "logic",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "question": "A store marks up a $40 toy by 25%. What is the new price?",
-    "choices": [
-      "$45",
-      "$50",
-      "$65"
-    ],
-    "correctIndex": 1,
-    "hint": "25% of 40 is 10. Add that to the original price.",
-    "explanation": "25% of $40 = $10. $40 + $10 = $50."
-  },
-  {
-    "id": "hard-ord-1",
-    "difficulty": "hard",
-    "topic": "comparison",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "order_numbers",
-    "question": "Put the numbers in order from smallest to largest!",
-    "payload": {
-      "numbers": [
-        120,
-        45,
-        89,
-        67
-      ],
-      "correctOrder": [
-        45,
-        67,
-        89,
-        120
-      ]
-    },
-    "hint": "Tap two numbers to swap them, then check your order.",
-    "explanation": "The correct order is 45, 67, 89, 120."
-  },
-  {
-    "id": "hard-mc-04",
-    "difficulty": "hard",
-    "topic": "multiplication",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "question": "A box has 4 rows of 6 cookies. You eat 5 cookies and give 7 to a friend. How many cookies are left?",
-    "choices": [
-      "12",
-      "14",
-      "16"
-    ],
-    "correctIndex": 0,
-    "hint": "Find the total cookies, then subtract what you ate and gave away.",
-    "explanation": "4 × 6 = 24 cookies. 24 − 5 − 7 = 12 left.",
-    "visualHelp": {
-      "scene": {
-        "kind": "grid",
-        "rows": 4,
-        "cols": 6,
-        "filled": 24,
-        "emoji": "🍪"
-      },
-      "worked": {
-        "kind": "items",
-        "emoji": "🍪",
-        "count": 24,
-        "removed": 12
-      }
-    }
-  },
-  {
-    "id": "hard-cmp-1",
-    "difficulty": "hard",
-    "topic": "comparison",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "compare",
-    "question": "Which expression is greatest?",
-    "payload": {
-      "optionA": "2³ = 8",
-      "optionB": "4² = 16"
-    },
-    "correctIndex": 1,
-    "hint": "Evaluate each power.",
-    "explanation": "2³ = 8 and 4² = 16. 16 is greater."
-  },
-  {
-    "id": "hard-mc-05",
-    "difficulty": "hard",
-    "topic": "logic",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "question": "Three friends share 5 apples equally. How many whole apples does each friend get, with some left over?",
-    "choices": [
-      "1 each, 2 left",
-      "2 each, 1 left",
-      "1 each, none left"
-    ],
-    "correctIndex": 0,
-    "hint": "Divide 5 by 3 and think about remainders.",
-    "explanation": "5 ÷ 3 = 1 with 2 left over.",
-    "visualHelp": {
-      "scene": {
-        "kind": "items",
-        "emoji": "🍎",
-        "count": 5
-      },
-      "worked": {
-        "kind": "groups",
-        "emoji": "🍎",
-        "groups": [
-          {
-            "count": 1,
-            "color": "#23766F"
-          },
-          {
-            "count": 1,
-            "color": "#23766F"
-          },
-          {
-            "count": 1,
-            "color": "#23766F"
-          },
-          {
-            "count": 2,
-            "color": "#99501A"
-          }
-        ]
-      }
-    }
-  },
-  {
-    "id": "hard-op-1",
-    "difficulty": "hard",
-    "topic": "operations",
     "ageRange": [
       10,
       12
     ],
     "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "72 ÷ 8 = 9; 9 + 7 = 16.",
     "payload": {
-      "start": 8,
-      "target": 20,
+      "start": 72,
+      "target": 16,
       "steps": [
         {
-          "operand": 2,
-          "operator": "×"
+          "operand": 8,
+          "operator": "÷"
         },
         {
-          "operand": 4,
+          "operand": 7,
           "operator": "+"
         }
       ]
-    },
-    "hint": "Try one operator at a time.",
-    "explanation": "Start 8, reach 20."
-  },
-  {
-    "id": "hard-mc-06",
-    "difficulty": "hard",
-    "topic": "multiplication",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "question": "A garden is 12 m long and 5 m wide. What is its area?",
-    "choices": [
-      "17 m²",
-      "60 m²",
-      "34 m²"
-    ],
-    "correctIndex": 1,
-    "hint": "Multiply length by width for area.",
-    "explanation": "12 × 5 = 60 square metres.",
-    "visualHelp": {
-      "scene": {
-        "kind": "grid",
-        "rows": 5,
-        "cols": 12,
-        "filled": 60
-      },
-      "worked": {
-        "kind": "grid",
-        "rows": 5,
-        "cols": 12,
-        "filled": 60
-      }
     }
   },
   {
-    "id": "hard-tgt-1",
+    "id": "v2-hard-operations-connected-2",
     "difficulty": "hard",
-    "topic": "operations",
     "ageRange": [
       10,
       12
     ],
     "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "7 + 8 × 9 = 79.",
     "payload": {
       "numbers": [
-        12,
-        6,
-        3,
-        2
+        7,
+        8,
+        9
       ],
-      "target": 8,
+      "target": 79,
       "solution": [
-        "÷",
         "+",
         "×"
       ]
-    },
-    "hint": "Think about order of operations.",
-    "explanation": "12 ÷ 6 + 3 × 2 = 8."
+    }
   },
   {
-    "id": "hard-frac-1",
+    "id": "v2-hard-operations-connected-3",
     "difficulty": "hard",
-    "topic": "fractions",
     "ageRange": [
       10,
       12
     ],
-    "type": "fraction_build",
-    "question": "Create this fraction!",
+    "type": "function_machine",
+    "topic": "operations",
+    "correctIndex": 0,
+    "question": "Select the rule that turns input into output.",
+    "hint": "Test the whole rule, in the order shown.",
+    "explanation": "9 × 8 + 7 = 79.",
     "payload": {
-      "numerator": 3,
-      "denominator": 8
-    },
-    "hint": "Color 3 piece(s) out of 8 equal parts.",
-    "explanation": "3/8 means 3 piece(s) out of 8."
-  },
-  {
-    "id": "hard-tf-1",
-    "difficulty": "hard",
-    "topic": "multiplication",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "true_false",
-    "question": "Spot check! Is this true?",
-    "payload": {
-      "statement": "2⁴ = 16"
-    },
-    "isTrue": true,
-    "hint": "Work it out step by step.",
-    "explanation": "2 × 2 × 2 × 2 = 16."
-  },
-  {
-    "id": "hard-bal-1",
-    "difficulty": "hard",
-    "topic": "equality",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "balance",
-    "question": "Balance the scale!",
-    "payload": {
-      "leftDisplay": "3 × ?",
-      "rightValue": 24,
+      "input": 9,
+      "output": 79,
       "choices": [
-        "6",
-        "9",
-        "8"
+        "×8+7",
+        "×8",
+        "+8"
       ]
-    },
-    "correctIndex": 2,
-    "hint": "What makes both sides equal?",
-    "explanation": "3 × 8 = 24."
+    }
   },
   {
-    "id": "hard-nl-1",
+    "id": "v2-hard-operations-connected-4",
     "difficulty": "hard",
-    "topic": "subtraction",
     "ageRange": [
       10,
       12
     ],
-    "type": "number_line",
-    "question": "Jump on the number line!",
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Which expression has the greater value?",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "16 < 79.",
     "payload": {
-      "start": 35,
-      "jump": -12,
-      "min": 0,
-      "max": 50,
-      "correctValue": 23
-    },
-    "hint": "Start at 35 and jump -12.",
-    "explanation": "35 − 12 = 23."
+      "optionA": "72 ÷ 8 + 7",
+      "optionB": "72 + 7"
+    }
   },
   {
-    "id": "hard-pair-1",
+    "id": "v2-hard-operations-strategies-1",
     "difficulty": "hard",
-    "topic": "mental_math",
     "ageRange": [
       10,
       12
     ],
-    "type": "pair_sum",
-    "question": "Pick two numbers that make the target!",
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "96 ÷ 6 = 16; 16 + 9 = 25.",
+    "payload": {
+      "start": 96,
+      "target": 25,
+      "steps": [
+        {
+          "operand": 6,
+          "operator": "÷"
+        },
+        {
+          "operand": 9,
+          "operator": "+"
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-operations-strategies-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "9 + 6 × 16 = 105.",
     "payload": {
       "numbers": [
-        12,
-        8,
-        15,
-        5,
-        20,
-        7
+        9,
+        6,
+        16
       ],
-      "target": 20,
-      "correctIndices": [
-        0,
-        1
+      "target": 105,
+      "solution": [
+        "+",
+        "×"
       ]
-    },
-    "hint": "Look for a pair that adds to 20.",
-    "explanation": "12 + 8 = 20."
+    }
   },
   {
-    "id": "hard-fix-1",
+    "id": "v2-hard-operations-strategies-3",
     "difficulty": "hard",
-    "topic": "subtraction",
     "ageRange": [
       10,
       12
     ],
-    "type": "fix_mistake",
-    "question": "What mistake did Minka make?",
-    "payload": {
-      "wrongWork": [
-        "48 ÷ 6 = 7"
-      ],
-      "choices": [
-        "She divided wrong — 48 ÷ 6 = 8",
-        "She should multiply instead of divide",
-        "48 ÷ 6 = 6"
-      ]
-    },
+    "type": "function_machine",
+    "topic": "operations",
     "correctIndex": 0,
-    "hint": "How many 6s fit into 48?",
-    "explanation": "48 ÷ 6 = 8, not 7 — Minka divided wrong."
+    "question": "Select the rule that turns input into output.",
+    "hint": "Test the whole rule, in the order shown.",
+    "explanation": "16 × 6 + 9 = 105.",
+    "payload": {
+      "input": 16,
+      "output": 105,
+      "choices": [
+        "×6+9",
+        "×6",
+        "+6"
+      ]
+    }
   },
   {
-    "id": "hard-est-1",
+    "id": "v2-hard-operations-strategies-4",
     "difficulty": "hard",
-    "topic": "estimation",
     "ageRange": [
       10,
       12
     ],
-    "type": "estimate",
-    "question": "About how much is this?",
-    "payload": {
-      "expression": "198 + 203",
-      "choices": [
-        "About 300",
-        "About 400",
-        "About 500"
-      ]
-    },
+    "type": "compare",
+    "topic": "comparison",
     "correctIndex": 1,
-    "hint": "Round to friendly numbers first.",
-    "explanation": "198 + 203 is close to 400."
+    "question": "Which expression has the greater value?",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "25 < 105.",
+    "payload": {
+      "optionA": "96 ÷ 6 + 9",
+      "optionB": "96 + 9"
+    }
   },
   {
-    "id": "hard-share-1",
+    "id": "v2-hard-fractions-amounts-1",
     "difficulty": "hard",
-    "topic": "division",
     "ageRange": [
       10,
       12
     ],
-    "type": "fair_share",
-    "question": "Share the treats fairly!",
-    "payload": {
-      "items": 10,
-      "people": 3,
-      "emoji": "🍪",
-      "choices": [
-        "4 each, none left",
-        "3 each, 1 left over",
-        "3 each, none left"
-      ]
-    },
-    "correctIndex": 1,
-    "hint": "Divide 10 by 3.",
-    "explanation": "3 each, 1 left over."
-  },
-  {
-    "id": "hard-feq-1",
-    "difficulty": "hard",
+    "type": "multiple_choice",
     "topic": "fractions",
+    "choices": [
+      "12",
+      "13",
+      "17"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 20 seedlings. 3/5 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 3 parts make 12."
+  },
+  {
+    "id": "v2-hard-fractions-amounts-2",
+    "difficulty": "hard",
     "ageRange": [
       10,
       12
     ],
     "type": "fraction_equivalent",
-    "question": "Which fraction is the same amount?",
-    "payload": {
-      "numerator": 1,
-      "denominator": 2,
-      "choices": [
-        "2/3",
-        "1/3",
-        "2/4"
-      ]
-    },
-    "correctIndex": 2,
-    "hint": "Same amount means the same part of a whole.",
-    "explanation": "1/2 = 2/4."
-  },
-  {
-    "id": "hard-pat-2",
-    "difficulty": "hard",
-    "topic": "patterns",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "pattern_next",
-    "question": "What number comes next in the pattern?",
-    "payload": {
-      "sequence": [
-        2,
-        3,
-        5,
-        8,
-        13
-      ],
-      "choices": [
-        "21",
-        "20",
-        "18"
-      ]
-    },
+    "topic": "fractions",
     "correctIndex": 0,
-    "hint": "Look at how each number changes (Fibonacci).",
-    "explanation": "The next number is 21."
-  },
-  {
-    "id": "hard-fn-2",
-    "difficulty": "hard",
-    "topic": "operations",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "function_machine",
-    "question": "What rule does the machine use?",
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "3/5 = 6/10.",
     "payload": {
-      "input": 48,
-      "output": 6,
+      "numerator": 3,
+      "denominator": 5,
       "choices": [
-        "÷8",
-        "÷6",
-        "−40"
+        "6/10",
+        "3/10",
+        "6/5"
       ]
-    },
-    "correctIndex": 0,
-    "hint": "What do you do to 48 to get 6?",
-    "explanation": "48 ÷8 = 6."
-  },
-  {
-    "id": "hard-ord-2",
-    "difficulty": "hard",
-    "topic": "comparison",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "order_numbers",
-    "question": "Put the numbers in order from smallest to largest!",
-    "payload": {
-      "numbers": [
-        200,
-        150,
-        175,
-        125
-      ],
-      "correctOrder": [
-        125,
-        150,
-        175,
-        200
-      ]
-    },
-    "hint": "Tap two numbers to swap them, then check your order.",
-    "explanation": "The correct order is 125, 150, 175, 200."
-  },
-  {
-    "id": "hard-mc-07",
-    "difficulty": "hard",
-    "topic": "multiplication",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "question": "You save $8 each week. How much will you have after 7 weeks?",
-    "choices": [
-      "$48",
-      "$56",
-      "$64"
-    ],
-    "correctIndex": 1,
-    "hint": "Multiply weekly savings by 7.",
-    "explanation": "8 × 7 = $56 saved.",
-    "visualHelp": {
-      "scene": {
-        "kind": "grid",
-        "rows": 7,
-        "cols": 8,
-        "filled": 56,
-        "emoji": "🪙"
-      },
-      "worked": {
-        "kind": "grid",
-        "rows": 7,
-        "cols": 8,
-        "filled": 56,
-        "emoji": "🪙"
-      }
     }
   },
   {
-    "id": "hard-cmp-2",
+    "id": "v2-hard-fractions-amounts-3",
     "difficulty": "hard",
-    "topic": "comparison",
     "ageRange": [
       10,
       12
     ],
     "type": "compare",
-    "question": "Which is bigger?",
-    "payload": {
-      "optionA": "½ of 100",
-      "optionB": "⅓ of 99"
-    },
-    "correctIndex": 0,
-    "hint": "Find each value.",
-    "explanation": "½ of 100 = 50. ⅓ of 99 = 33."
-  },
-  {
-    "id": "hard-op-2",
-    "difficulty": "hard",
-    "topic": "operations",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
-    "payload": {
-      "start": 36,
-      "target": 9,
-      "steps": [
-        {
-          "operand": 4,
-          "operator": "÷"
-        }
-      ]
-    },
-    "hint": "How many 4s fit into 36?",
-    "explanation": "36 ÷ 4 = 9 — you reach the goal!"
-  },
-  {
-    "id": "hard-tgt-2",
-    "difficulty": "hard",
-    "topic": "operations",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
-    "payload": {
-      "numbers": [
-        20,
-        5,
-        2,
-        3
-      ],
-      "target": 11,
-      "solution": [
-        "÷",
-        "×",
-        "+"
-      ]
-    },
-    "hint": "Think about order of operations.",
-    "explanation": "20 ÷ 5 × 2 + 3 = 11."
-  },
-  {
-    "id": "hard-frac-2",
-    "difficulty": "hard",
     "topic": "fractions",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "fraction_build",
-    "question": "Create this fraction!",
-    "payload": {
-      "numerator": 5,
-      "denominator": 8
-    },
-    "hint": "Color 5 piece(s) out of 8 equal parts.",
-    "explanation": "5/8 means 5 piece(s) out of 8."
-  },
-  {
-    "id": "hard-tf-2",
-    "difficulty": "hard",
-    "topic": "multiplication",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "true_false",
-    "question": "Spot check! Is this true?",
-    "payload": {
-      "statement": "15% of 200 is 25"
-    },
-    "isTrue": false,
-    "hint": "Work it out step by step.",
-    "explanation": "15% of 200 = 30."
-  },
-  {
-    "id": "hard-bal-2",
-    "difficulty": "hard",
-    "topic": "equality",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "balance",
-    "question": "Balance the scale!",
-    "payload": {
-      "leftDisplay": "? + 14",
-      "rightValue": 30,
-      "choices": [
-        "18",
-        "16",
-        "14"
-      ]
-    },
     "correctIndex": 1,
-    "hint": "What makes both sides equal?",
-    "explanation": "16 + 14 = 30."
-  },
-  {
-    "id": "hard-nl-2",
-    "difficulty": "hard",
-    "topic": "subtraction",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "number_line",
-    "question": "Jump on the number line!",
+    "helpTemplate": "fraction_equivalent",
+    "question": "The ribbons have the same length. Which colored amount is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "4/5 > 3/5.",
     "payload": {
-      "start": 18,
-      "jump": 9,
-      "min": 0,
-      "max": 40,
-      "correctValue": 27
-    },
-    "hint": "Start at 18 and jump +9.",
-    "explanation": "18 + 9 = 27."
+      "optionA": "3/5",
+      "optionB": "4/5"
+    }
   },
   {
-    "id": "hard-pair-2",
+    "id": "v2-hard-fractions-amounts-4",
     "difficulty": "hard",
-    "topic": "mental_math",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "pair_sum",
-    "question": "Pick two numbers that make the target!",
-    "payload": {
-      "numbers": [
-        9,
-        11,
-        6,
-        14,
-        3,
-        17
-      ],
-      "target": 20,
-      "correctIndices": [
-        0,
-        1
-      ]
-    },
-    "hint": "Look for a pair that adds to 20.",
-    "explanation": "9 + 11 = 20."
-  },
-  {
-    "id": "hard-fix-2",
-    "difficulty": "hard",
-    "topic": "subtraction",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "fix_mistake",
-    "question": "What mistake did Minka make?",
-    "payload": {
-      "wrongWork": [
-        "25% of 80 = 15"
-      ],
-      "choices": [
-        "She found 25% wrong — 25% of 80 = 20",
-        "She should find half instead of 25%",
-        "25% of 80 = 15 is correct"
-      ]
-    },
-    "correctIndex": 0,
-    "hint": "25% is the same as one quarter. What is 80 ÷ 4?",
-    "explanation": "25% of 80 = 20, not 15 — Minka calculated wrong."
-  },
-  {
-    "id": "hard-est-2",
-    "difficulty": "hard",
-    "topic": "estimation",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "estimate",
-    "question": "About how much is this?",
-    "payload": {
-      "expression": "49 × 21",
-      "choices": [
-        "About 2000",
-        "About 500",
-        "About 1000"
-      ]
-    },
-    "correctIndex": 2,
-    "hint": "Round to friendly numbers first.",
-    "explanation": "49 × 21 is close to 1000."
-  },
-  {
-    "id": "hard-share-2",
-    "difficulty": "hard",
-    "topic": "division",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "fair_share",
-    "question": "Share the treats fairly!",
-    "payload": {
-      "items": 7,
-      "people": 2,
-      "emoji": "🍎",
-      "choices": [
-        "3 each, 1 left over",
-        "4 each, none left",
-        "2 each, none left"
-      ]
-    },
-    "correctIndex": 0,
-    "hint": "Divide 7 by 2.",
-    "explanation": "3 each, 1 left over."
-  },
-  {
-    "id": "hard-feq-2",
-    "difficulty": "hard",
-    "topic": "fractions",
     "ageRange": [
       10,
       12
     ],
     "type": "fraction_match",
-    "question": "Match each fraction to its picture!",
+    "topic": "fractions",
+    "question": "Match the fractions to equal-part models.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "The shaded count is the numerator; all equal parts give the denominator.",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 3,
+          "denominator": 5,
+          "visual": "pie"
+        },
+        {
+          "numerator": 4,
+          "denominator": 5,
+          "visual": "grid"
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-fractions-apply-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "20",
+      "21",
+      "27"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 32 seedlings. 5/8 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 5 parts make 20."
+  },
+  {
+    "id": "v2-hard-fractions-apply-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "5/8 = 10/16.",
+    "payload": {
+      "numerator": 5,
+      "denominator": 8,
+      "choices": [
+        "10/16",
+        "5/16",
+        "10/8"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-fractions-apply-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "helpTemplate": "fraction_equivalent",
+    "question": "The ribbons have the same length. Which colored amount is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "6/8 > 5/8.",
+    "payload": {
+      "optionA": "5/8",
+      "optionB": "6/8"
+    }
+  },
+  {
+    "id": "v2-hard-fractions-apply-4",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_match",
+    "topic": "fractions",
+    "question": "Match the fractions to equal-part models.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "The shaded count is the numerator; all equal parts give the denominator.",
     "payload": {
       "pairs": [
         {
           "numerator": 5,
-          "denominator": 6,
+          "denominator": 8,
           "visual": "pie"
         },
         {
-          "numerator": 3,
+          "numerator": 6,
           "denominator": 8,
-          "visual": "grid"
-        },
-        {
-          "numerator": 2,
-          "denominator": 9,
           "visual": "grid"
         }
       ]
-    },
-    "hint": "Look carefully — some pictures use many small equal parts.",
-    "explanation": "Match the shaded amount to the fraction: shaded ÷ total."
+    }
   },
   {
-    "id": "hard-pat-3",
+    "id": "v2-hard-patterns-multiply-1",
     "difficulty": "hard",
-    "topic": "patterns",
     "ageRange": [
       10,
       12
     ],
     "type": "pattern_next",
-    "question": "What number comes next in the pattern?",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses ×3. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 162.",
     "payload": {
       "sequence": [
-        1,
-        4,
-        9,
-        16
+        2,
+        6,
+        18,
+        54
       ],
       "choices": [
-        "20",
-        "25",
-        "24"
+        "162",
+        "163",
+        "165"
       ]
-    },
-    "correctIndex": 1,
-    "hint": "Look at how each number changes (squares).",
-    "explanation": "The next number is 25."
+    }
   },
   {
-    "id": "hard-fn-3",
+    "id": "v2-hard-patterns-multiply-2",
     "difficulty": "hard",
-    "topic": "operations",
     "ageRange": [
       10,
       12
     ],
     "type": "function_machine",
-    "question": "What rule does the machine use?",
-    "payload": {
-      "input": 5,
-      "output": 26,
-      "choices": [
-        "×5+1",
-        "×4",
-        "+20"
-      ]
-    },
+    "topic": "patterns",
     "correctIndex": 0,
-    "hint": "What do you do to 5 to get 26?",
-    "explanation": "5 ×5+1 = 26."
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is ×3.",
+    "payload": {
+      "input": 3,
+      "output": 9,
+      "choices": [
+        "×3",
+        "×4",
+        "×5"
+      ]
+    }
   },
   {
-    "id": "hard-ord-3",
+    "id": "v2-hard-patterns-multiply-3",
     "difficulty": "hard",
-    "topic": "comparison",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses ×3. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 324.",
+    "payload": {
+      "sequence": [
+        4,
+        12,
+        36,
+        108
+      ],
+      "choices": [
+        "324",
+        "325",
+        "327"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-patterns-multiply-4",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses ×3. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 486.",
+    "payload": {
+      "sequence": [
+        6,
+        18,
+        54,
+        162
+      ],
+      "choices": [
+        "486",
+        "487",
+        "489"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-patterns-scale-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses ×4. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 768.",
+    "payload": {
+      "sequence": [
+        3,
+        12,
+        48,
+        192
+      ],
+      "choices": [
+        "768",
+        "769",
+        "772"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-patterns-scale-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is ×4.",
+    "payload": {
+      "input": 4,
+      "output": 16,
+      "choices": [
+        "×4",
+        "×5",
+        "×6"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-patterns-scale-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses ×4. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 1536.",
+    "payload": {
+      "sequence": [
+        6,
+        24,
+        96,
+        384
+      ],
+      "choices": [
+        "1536",
+        "1537",
+        "1540"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-patterns-scale-4",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses ×4. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 2304.",
+    "payload": {
+      "sequence": [
+        9,
+        36,
+        144,
+        576
+      ],
+      "choices": [
+        "2304",
+        "2305",
+        "2308"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-percentages-quarters-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "20",
+      "25",
+      "60"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_of",
+    "question": "What is 25% of 80 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "80 × 25/100 = 20."
+  },
+  {
+    "id": "v2-hard-percentages-quarters-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "60",
+      "100",
+      "61"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_discount",
+    "question": "A 80-coin toy has a 25% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "80 − 20 = 60 coins."
+  },
+  {
+    "id": "v2-hard-percentages-quarters-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "fractions",
+    "isTrue": true,
+    "helpTemplate": "percent_of",
+    "question": "Check the percentage claim.",
+    "hint": "Use one hundred as the whole percentage.",
+    "explanation": "True. 25% of 80 is 20.",
+    "payload": {
+      "statement": "25% × 80 = 20"
+    }
+  },
+  {
+    "id": "v2-hard-percentages-quarters-4",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fix_mistake",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "helpTemplate": "percent_discount",
+    "question": "Minka added the discount. Repair the sale price.",
+    "hint": "A discount reduces the original price.",
+    "explanation": "80 − 20 = 60.",
+    "payload": {
+      "wrongWork": [
+        "80 + 20 = 100"
+      ],
+      "choices": [
+        "60",
+        "100",
+        "62"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-percentages-discounts-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "24",
+      "29",
+      "96"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth",
+    "question": "What is 20% of 120 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "120 × 20/100 = 24."
+  },
+  {
+    "id": "v2-hard-percentages-discounts-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "96",
+      "144",
+      "97"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth_discount",
+    "question": "A 120-coin toy has a 20% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "120 − 24 = 96 coins."
+  },
+  {
+    "id": "v2-hard-percentages-discounts-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "fractions",
+    "isTrue": true,
+    "helpTemplate": "percent_fifth",
+    "question": "Check the percentage claim.",
+    "hint": "Use one hundred as the whole percentage.",
+    "explanation": "True. 20% of 120 is 24.",
+    "payload": {
+      "statement": "20% × 120 = 24"
+    }
+  },
+  {
+    "id": "v2-hard-percentages-discounts-4",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fix_mistake",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth_discount",
+    "question": "Minka added the discount. Repair the sale price.",
+    "hint": "A discount reduces the original price.",
+    "explanation": "120 − 24 = 96.",
+    "payload": {
+      "wrongWork": [
+        "120 + 24 = 144"
+      ],
+      "choices": [
+        "96",
+        "144",
+        "98"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-measurement-area-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "48",
+      "14",
+      "28"
+    ],
+    "correctIndex": 0,
+    "question": "A garden has 8 rows of 6 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "8 × 6 = 48 square spaces."
+  },
+  {
+    "id": "v2-hard-measurement-area-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "64",
+      "50",
+      "96"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "48 grams of clay fill 6 equal bags. How many grams for 8 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "48 ÷ 6 × 8 = 64 grams."
+  },
+  {
+    "id": "v2-hard-measurement-area-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "estimate",
+    "topic": "estimation",
+    "correctIndex": 0,
+    "question": "Round each amount to the nearest ten, then add.",
+    "hint": "Keep track of the size of the whole answer.",
+    "explanation": "Add the two rounded amounts.",
+    "payload": {
+      "expression": "49 + 50",
+      "choices": [
+        "About 100",
+        "About 144",
+        "About 192"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-measurement-area-4",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "helpTemplate": "multiplication",
+    "question": "Find the missing number of equal rows.",
+    "hint": "Count the same number in every group.",
+    "explanation": "8 × 6 = 48.",
+    "payload": {
+      "leftDisplay": "? × 6",
+      "rightValue": 48,
+      "choices": [
+        "8",
+        "9",
+        "10"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-measurement-rates-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "60",
+      "17",
+      "34"
+    ],
+    "correctIndex": 0,
+    "question": "A garden has 12 rows of 5 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "12 × 5 = 60 square spaces."
+  },
+  {
+    "id": "v2-hard-measurement-rates-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "84",
+      "62",
+      "120"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "60 grams of clay fill 5 equal bags. How many grams for 7 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "60 ÷ 5 × 7 = 84 grams."
+  },
+  {
+    "id": "v2-hard-measurement-rates-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "estimate",
+    "topic": "estimation",
+    "correctIndex": 0,
+    "question": "Round each amount to the nearest ten, then add.",
+    "hint": "Keep track of the size of the whole answer.",
+    "explanation": "Add the two rounded amounts.",
+    "payload": {
+      "expression": "61 + 62",
+      "choices": [
+        "About 120",
+        "About 180",
+        "About 240"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-measurement-rates-4",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "helpTemplate": "multiplication",
+    "question": "Find the missing number of equal rows.",
+    "hint": "Count the same number in every group.",
+    "explanation": "12 × 5 = 60.",
+    "payload": {
+      "leftDisplay": "? × 5",
+      "rightValue": 60,
+      "choices": [
+        "12",
+        "13",
+        "14"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-logic-clues-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "22",
+      "21",
+      "24"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 20, less than 24, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "22 is even and lies strictly between the endpoints."
+  },
+  {
+    "id": "v2-hard-logic-clues-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "multiplication",
+    "isTrue": false,
+    "question": "The cat says multiplication always makes a positive whole number bigger. Is that true?",
+    "hint": "What happens when you multiply by one?",
+    "explanation": "False. 20 × 1 = 20, so it stays equal.",
+    "payload": {
+      "statement": "20 × 1 > 20"
+    }
+  },
+  {
+    "id": "v2-hard-logic-clues-3",
+    "difficulty": "hard",
     "ageRange": [
       10,
       12
     ],
     "type": "order_numbers",
-    "question": "Put the numbers in order from smallest to largest!",
+    "topic": "comparison",
+    "question": "Arrange the clues from smallest to largest.",
+    "hint": "Compare the numbers before moving them.",
+    "explanation": "20 < 22 < 26 < 28.",
     "payload": {
       "numbers": [
-        99,
-        33,
-        66,
-        11
+        28,
+        22,
+        26,
+        20
       ],
       "correctOrder": [
-        11,
-        33,
-        66,
-        99
+        20,
+        22,
+        26,
+        28
       ]
-    },
-    "hint": "Tap two numbers to swap them, then check your order.",
-    "explanation": "The correct order is 11, 33, 66, 99."
+    }
   },
   {
-    "id": "hard-frac-4",
+    "id": "v2-hard-logic-clues-4",
     "difficulty": "hard",
-    "topic": "fractions",
     "ageRange": [
       10,
       12
     ],
-    "type": "fraction_match",
-    "question": "Match each fraction to its picture!",
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "21",
+      "19",
+      "18"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A box holds fewer than 20 balls. Which amount is impossible?",
+    "hint": "Test each amount against “fewer than”.",
+    "explanation": "21 is greater than 20."
+  },
+  {
+    "id": "v2-hard-logic-claims-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "42",
+      "41",
+      "44"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 40, less than 44, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "42 is even and lies strictly between the endpoints."
+  },
+  {
+    "id": "v2-hard-logic-claims-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "multiplication",
+    "isTrue": false,
+    "question": "The cat says multiplication always makes a positive whole number bigger. Is that true?",
+    "hint": "What happens when you multiply by one?",
+    "explanation": "False. 40 × 1 = 40, so it stays equal.",
     "payload": {
-      "pairs": [
+      "statement": "40 × 1 > 40"
+    }
+  },
+  {
+    "id": "v2-hard-logic-claims-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Arrange the clues from smallest to largest.",
+    "hint": "Compare the numbers before moving them.",
+    "explanation": "40 < 42 < 46 < 48.",
+    "payload": {
+      "numbers": [
+        48,
+        42,
+        46,
+        40
+      ],
+      "correctOrder": [
+        40,
+        42,
+        46,
+        48
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-logic-claims-4",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "41",
+      "39",
+      "38"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A box holds fewer than 40 balls. Which amount is impossible?",
+    "hint": "Test each amount against “fewer than”.",
+    "explanation": "41 is greater than 40."
+  },
+  {
+    "id": "v2-hard-fractions-garden-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "18",
+      "6",
+      "20"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "The garden has 24 equal spaces. Three quarters need flowers. How many flower spaces?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "24 ÷ 4 × 3 = 18 flower spaces."
+  },
+  {
+    "id": "v2-hard-fractions-garden-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Three quarters are planted. Shade the quarter that is still empty.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One of four equal parts is still empty.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 4
+    }
+  },
+  {
+    "id": "v2-hard-fractions-garden-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "54",
+      "21",
+      "48"
+    ],
+    "correctIndex": 0,
+    "question": "Each of the 18 flower spaces needs 3 seeds. How many seeds?",
+    "hint": "Count the same number in every group.",
+    "explanation": "18 × 3 = 54 seeds. The garden is ready!"
+  },
+  {
+    "id": "v2-hard-percentages-shop-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "20",
+      "25",
+      "60"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_of",
+    "question": "A toy costs 80 coins. The discount is 25%. How many coins are taken off?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "80 ÷ 4 = 20 coins off."
+  },
+  {
+    "id": "v2-hard-percentages-shop-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "60",
+      "100",
+      "70"
+    ],
+    "correctIndex": 0,
+    "question": "Take the 20-coin discount off 80 coins. What is the sale price?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "80 − 20 = 60 coins."
+  },
+  {
+    "id": "v2-hard-percentages-shop-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "30",
+      "90",
+      "120"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "multiply_subtract",
+    "question": "Two toys cost 60 coins each. A customer pays 150. How much change?",
+    "hint": "Calculate both toys first, then find the change.",
+    "explanation": "150 − 2 × 60 = 30 coins. The shop is open!"
+  },
+  {
+    "id": "v2-hard-operations-observatory-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "The power starts at 84. Use 7, then 9, to reach 21.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "84 ÷ 7 + 9 = 21. The power is connected.",
+    "payload": {
+      "start": 84,
+      "target": 21,
+      "steps": [
         {
-          "numerator": 7,
-          "denominator": 8,
-          "visual": "pie"
+          "operand": 7,
+          "operator": "÷"
         },
         {
-          "numerator": 4,
-          "denominator": 9,
-          "visual": "grid"
-        },
-        {
-          "numerator": 1,
-          "denominator": 5,
-          "visual": "pie"
+          "operand": 9,
+          "operator": "+"
         }
       ]
-    },
-    "hint": "Look carefully — some pictures use many small equal parts.",
-    "explanation": "Match the shaded amount to the fraction: shaded ÷ total."
+    }
+  },
+  {
+    "id": "v2-hard-operations-observatory-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Align the telescope at 27. Keep 21, 3, 2 in order and choose the operations.",
+    "hint": "Multiplication happens before addition.",
+    "explanation": "21 + 3 × 2 = 27. The telescope is aligned.",
+    "payload": {
+      "numbers": [
+        21,
+        3,
+        2
+      ],
+      "target": 27,
+      "solution": [
+        "+",
+        "×"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-operations-observatory-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "operations",
+    "correctIndex": 0,
+    "question": "The tracker turns 27 into 79. Choose its two-step rule.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "27 × 3 − 2 = 79. The stars are in view!",
+    "payload": {
+      "input": 27,
+      "output": 79,
+      "choices": [
+        "×3−2",
+        "×3+2",
+        "+3"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-patterns-signal-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "The signal pulses 3, 6, 12, 24. Find the next pulse.",
+    "hint": "Look for a multiplication rule between neighboring pulses.",
+    "explanation": "24 × 2 = 48. The signal is decoded.",
+    "payload": {
+      "sequence": [
+        3,
+        6,
+        12,
+        24
+      ],
+      "choices": [
+        "48",
+        "36",
+        "25"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-patterns-signal-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "The amplifier changes 48 into 96. Which rule keeps the signal growing?",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "48 × 2 = 96. The amplifier works.",
+    "payload": {
+      "input": 48,
+      "output": 96,
+      "choices": [
+        "×2",
+        "+2",
+        "×3"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-patterns-signal-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Continue the same signal: 96, 192, 384. What is the final pulse?",
+    "hint": "Keep the multiplier unchanged.",
+    "explanation": "384 × 2 = 768. The message reaches the next tower!",
+    "payload": {
+      "sequence": [
+        96,
+        192,
+        384
+      ],
+      "choices": [
+        "768",
+        "576",
+        "769"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-measurement-shelter-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "63",
+      "32",
+      "16"
+    ],
+    "correctIndex": 0,
+    "question": "The shelter roof is 9 tiles long and 7 tiles wide. How many square tiles cover it?",
+    "hint": "Count the same number in every group.",
+    "explanation": "9 × 7 = 63 square tiles cover the roof."
+  },
+  {
+    "id": "v2-hard-measurement-shelter-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "81",
+      "65",
+      "126"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "7 equal crates hold 63 tiles. How many tiles will 9 crates hold?",
+    "hint": "Find tiles per crate, then scale to nine crates.",
+    "explanation": "63 ÷ 7 × 9 = 81 tiles arrive."
+  },
+  {
+    "id": "v2-hard-measurement-shelter-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "estimate",
+    "topic": "estimation",
+    "correctIndex": 0,
+    "question": "81 tiles arrive, then 27 spares. Round each delivery to the nearest ten and estimate the total.",
+    "hint": "Round each delivery separately before adding.",
+    "explanation": "80 + 30 = 110. The shelter has enough supplies!",
+    "payload": {
+      "expression": "81 + 27",
+      "choices": [
+        "About 110",
+        "About 90",
+        "About 150"
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-logic-vault-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "42",
+      "44",
+      "46"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "The door number is even, greater than 40, less than 46 and divisible by 3. Which is it?",
+    "hint": "A number must satisfy every clue.",
+    "explanation": "42 is even, lies between 40 and 46, and 42 ÷ 3 = 14."
+  },
+  {
+    "id": "v2-hard-logic-vault-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "division",
+    "isTrue": true,
+    "helpTemplate": "division",
+    "question": "There are 42 records in 6 equal drawers. Check the claim of 7 records per drawer.",
+    "hint": "Multiply the claimed amount by the number of drawers.",
+    "explanation": "True. 6 × 7 = 42. The drawer labels are correct.",
+    "payload": {
+      "statement": "42 ÷ 6 = 7"
+    }
+  },
+  {
+    "id": "v2-hard-logic-vault-3",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "The final code uses increasing multiples of 7. Arrange the code tiles.",
+    "hint": "Start at the smallest multiple, then keep the same gap.",
+    "explanation": "7, 14, 21, 28. The archive opens!",
+    "payload": {
+      "numbers": [
+        21,
+        7,
+        28,
+        14
+      ],
+      "correctOrder": [
+        7,
+        14,
+        21,
+        28
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-logic-pair-hunt-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "find_all_pairs",
+    "topic": "mental_math",
+    "helpTemplate": "all_pairs",
+    "question": "Find every pair adding to 50. A tile may appear in different pairs.",
+    "hint": "Work through one tile at a time and look for its partner.",
+    "explanation": "You found every pair. Reversing a pair does not make a new one.",
+    "payload": {
+      "numbers": [
+        8,
+        13,
+        19,
+        25,
+        31,
+        37,
+        42,
+        45,
+        50,
+        6
+      ],
+      "target": 50
+    }
+  },
+  {
+    "id": "v2-hard-patterns-signal-gaps-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "repair_pattern",
+    "topic": "patterns",
+    "question": "Fill both gaps. Use each tile at most once; some tiles stay unused.",
+    "hint": "Find one rule that fits every neighboring step, including the filled gaps.",
+    "explanation": "3, 9, 27, 81, 243. Every step multiplies by 3.",
+    "payload": {
+      "sequence": [
+        3,
+        null,
+        27,
+        null,
+        243
+      ],
+      "tiles": [
+        54,
+        81,
+        9,
+        108
+      ],
+      "solution": [
+        9,
+        81
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-operations-power-detour-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "route_grid",
+    "topic": "operations",
+    "question": "Start with 24. Reach the bottom-right exit with 18 in exactly 6 moves.",
+    "hint": "Work backward from the exit: before dividing by 5, you need 90.",
+    "explanation": "24 → 8 → 32 → 25 → 30 → 90 → 18 uses six moves and no square twice.",
+    "payload": {
+      "columns": 3,
+      "start": 24,
+      "target": 18,
+      "moves": 6,
+      "cells": [
+        null,
+        {
+          "operator": "÷",
+          "operand": 3
+        },
+        {
+          "operator": "×",
+          "operand": 4
+        },
+        {
+          "operator": "-",
+          "operand": 6
+        },
+        {
+          "operator": "+",
+          "operand": 5
+        },
+        {
+          "operator": "-",
+          "operand": 7
+        },
+        {
+          "operator": "÷",
+          "operand": 2
+        },
+        {
+          "operator": "×",
+          "operand": 3
+        },
+        {
+          "operator": "÷",
+          "operand": 5
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2-hard-percentages-camp-budget-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "budget_plan",
+    "topic": "fractions",
+    "question": "Use a pretend budget of 100. Choose exactly two supplies and leave 20 after discounts.",
+    "hint": "Find each discounted price first. Your two items must cost 80 together.",
+    "explanation": "The lantern costs 30 and the blanket 50. The tent costs 60 and the rope 20. Either pair leaves 20.",
+    "payload": {
+      "budget": 100,
+      "remaining": 20,
+      "pickCount": 2,
+      "items": [
+        {
+          "label": "Lantern",
+          "price": 40,
+          "discountPercent": 25
+        },
+        {
+          "label": "Blanket",
+          "price": 50,
+          "discountPercent": 0
+        },
+        {
+          "label": "Tent",
+          "price": 80,
+          "discountPercent": 25
+        },
+        {
+          "label": "Rope",
+          "price": 25,
+          "discountPercent": 20
+        }
+      ]
+    }
   }
 ]

@@ -11,7 +11,7 @@ const rewards = { easy:[4,2],medium:[7,3],hard:[9,4] };
 const rows = [];
 for (const tier of Object.keys(rewards)) for (const puzzle of JSON.parse(fs.readFileSync(`assets/puzzles/${tier}.json`,'utf8'))) {
   if (known.has(puzzle.id)) continue;
-  const [first,replay] = rewards[puzzle.type === 'number_line' ? 'hard' : tier];
+  const [first,replay] = rewards[tier];
   rows.push(`('${puzzle.id.replaceAll("'","''")}',${first},${replay})`);
 }
 if (rows.length) {

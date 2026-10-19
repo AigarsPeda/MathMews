@@ -40,7 +40,10 @@
     "catalog:sync": "node scripts/catalog/sync.mjs",
     "catalog:check": "node scripts/catalog/sync.mjs --check",
     "catalog:build": "node scripts/catalog/build.mjs",
-    "test:catalog": "node --test scripts/catalog/test-*.mjs scripts/backend/test-store-catalog.mjs"
+    "test:catalog": "node --test scripts/catalog/test-*.mjs scripts/backend/test-store-catalog.mjs",
+    "puzzles:build": "node scripts/puzzles/build-content.mjs",
+    "test:puzzles": "node scripts/check-curriculum.mjs && node scripts/check-puzzle-drag.mjs",
+    "test:puzzles:ios": "node scripts/native/check-puzzle-drag.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

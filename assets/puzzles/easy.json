@@ -1,46 +1,535 @@
 [
   {
-    "id": "easy-mc-01",
+    "id": "v2-easy-numbers-small-1",
     "difficulty": "easy",
-    "topic": "subtraction",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 1, 3, 6, 8.",
+    "payload": {
+      "numbers": [
+        8,
+        1,
+        6,
+        3
+      ],
+      "correctOrder": [
+        1,
+        3,
+        6,
+        8
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-numbers-small-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "8 > 3.",
+    "payload": {
+      "optionA": "3",
+      "optionB": "8"
+    }
+  },
+  {
+    "id": "v2-easy-numbers-small-3",
+    "difficulty": "easy",
     "ageRange": [
       6,
       8
     ],
     "type": "multiple_choice",
-    "question": "Maya had 12 apples. She gave 4 to her dog. How many apples does Maya have left?",
+    "topic": "comparison",
     "choices": [
-      "8",
-      "9",
-      "16"
+      "3",
+      "1",
+      "8"
     ],
     "correctIndex": 0,
-    "hint": "Start with 12 and take away 4.",
-    "explanation": "12 − 4 = 8 apples left.",
-    "visualHelp": {
-      "scene": {
-        "kind": "items",
-        "emoji": "🍎",
-        "count": 12
-      },
-      "worked": {
-        "kind": "items",
-        "emoji": "🍎",
-        "count": 12,
-        "removed": 4
-      }
+    "helpTemplate": "number_range",
+    "question": "Which number is between 1 and 6?",
+    "hint": "The endpoints are not between themselves.",
+    "explanation": "1 < 3 < 6."
+  },
+  {
+    "id": "v2-easy-numbers-small-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "addition",
+    "question": "Make a forward jump.",
+    "hint": "Start at the marked number and count forward.",
+    "explanation": "1 + 3 = 4.",
+    "payload": {
+      "start": 1,
+      "jump": 3,
+      "min": 0,
+      "max": 11,
+      "correctValue": 4
     }
   },
   {
-    "id": "easy-pat-1",
+    "id": "v2-easy-numbers-tens-1",
     "difficulty": "easy",
-    "topic": "patterns",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 4, 7, 12, 19.",
+    "payload": {
+      "numbers": [
+        19,
+        4,
+        12,
+        7
+      ],
+      "correctOrder": [
+        4,
+        7,
+        12,
+        19
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-numbers-tens-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "19 > 7.",
+    "payload": {
+      "optionA": "7",
+      "optionB": "19"
+    }
+  },
+  {
+    "id": "v2-easy-numbers-tens-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "comparison",
+    "choices": [
+      "7",
+      "4",
+      "19"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "Which number is between 4 and 12?",
+    "hint": "The endpoints are not between themselves.",
+    "explanation": "4 < 7 < 12."
+  },
+  {
+    "id": "v2-easy-numbers-tens-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "addition",
+    "question": "Make a forward jump.",
+    "hint": "Start at the marked number and count forward.",
+    "explanation": "4 + 7 = 11.",
+    "payload": {
+      "start": 4,
+      "jump": 7,
+      "min": 0,
+      "max": 26,
+      "correctValue": 11
+    }
+  },
+  {
+    "id": "v2-easy-addition-join-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "7",
+      "6",
+      "8"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 4 red ribbons and 3 blue ribbons. How many ribbons?",
+    "hint": "Can you make a full ten first?",
+    "explanation": "4 + 3 = 7 ribbons."
+  },
+  {
+    "id": "v2-easy-addition-join-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 4 to make 7?",
+    "explanation": "4 + 3 = 7.",
+    "payload": {
+      "leftDisplay": "4 + ?",
+      "rightValue": 7,
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-addition-join-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pair_sum",
+    "topic": "mental_math",
+    "question": "Choose two tiles that make 7.",
+    "hint": "Choose one number and find its missing partner.",
+    "explanation": "Any two different tiles adding to 7 work.",
+    "payload": {
+      "numbers": [
+        4,
+        3,
+        1,
+        6,
+        2,
+        5
+      ],
+      "target": 7,
+      "correctIndices": [
+        0,
+        1
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-addition-join-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fix_mistake",
+    "topic": "addition",
+    "correctIndex": 0,
+    "question": "Minka tried adding. Which repair is right?",
+    "hint": "Can you make a full ten first?",
+    "explanation": "The total is 7, not 6.",
+    "payload": {
+      "wrongWork": [
+        "4 + 3 = 6"
+      ],
+      "choices": [
+        "4 + 3 = 7",
+        "4 + 3 = 8",
+        "4 + 3 = 9"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-addition-ten-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "13",
+      "12",
+      "14"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 8 red ribbons and 5 blue ribbons. How many ribbons?",
+    "hint": "Can you make a full ten first?",
+    "explanation": "8 + 5 = 13 ribbons."
+  },
+  {
+    "id": "v2-easy-addition-ten-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 8 to make 13?",
+    "explanation": "8 + 5 = 13.",
+    "payload": {
+      "leftDisplay": "8 + ?",
+      "rightValue": 13,
+      "choices": [
+        "5",
+        "6",
+        "7"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-addition-ten-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pair_sum",
+    "topic": "mental_math",
+    "question": "Choose two tiles that make 13.",
+    "hint": "Choose one number and find its missing partner.",
+    "explanation": "Any two different tiles adding to 13 work.",
+    "payload": {
+      "numbers": [
+        8,
+        5,
+        1,
+        12,
+        2,
+        11
+      ],
+      "target": 13,
+      "correctIndices": [
+        0,
+        1
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-addition-ten-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fix_mistake",
+    "topic": "addition",
+    "correctIndex": 0,
+    "question": "Minka tried adding. Which repair is right?",
+    "hint": "Can you make a full ten first?",
+    "explanation": "The total is 13, not 12.",
+    "payload": {
+      "wrongWork": [
+        "8 + 5 = 12"
+      ],
+      "choices": [
+        "8 + 5 = 13",
+        "8 + 5 = 14",
+        "8 + 5 = 15"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-subtraction-take-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "6",
+      "7",
+      "12"
+    ],
+    "correctIndex": 0,
+    "question": "There are 9 paper stars. Use 3 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "9 − 3 = 6 stay."
+  },
+  {
+    "id": "v2-easy-subtraction-take-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "9 − 3 = 6.",
+    "payload": {
+      "start": 9,
+      "jump": -3,
+      "min": 0,
+      "max": 12,
+      "correctValue": 6
+    }
+  },
+  {
+    "id": "v2-easy-subtraction-take-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "true_false",
+    "topic": "subtraction",
+    "isTrue": false,
+    "question": "Check the cat’s subtraction.",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "False. 9 − 3 = 6.",
+    "payload": {
+      "statement": "9 − 3 = 7"
+    }
+  },
+  {
+    "id": "v2-easy-subtraction-take-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fix_mistake",
+    "topic": "subtraction",
+    "correctIndex": 0,
+    "question": "Which calculation repairs Minka’s work?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "Take away 3, leaving 6.",
+    "payload": {
+      "wrongWork": [
+        "9 − 3 = 5"
+      ],
+      "choices": [
+        "9 − 3 = 6",
+        "9 − 3 = 8",
+        "9 + 3 = 12"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-subtraction-back-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "8",
+      "9",
+      "20"
+    ],
+    "correctIndex": 0,
+    "question": "There are 14 paper stars. Use 6 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "14 − 6 = 8 stay."
+  },
+  {
+    "id": "v2-easy-subtraction-back-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "14 − 6 = 8.",
+    "payload": {
+      "start": 14,
+      "jump": -6,
+      "min": 0,
+      "max": 17,
+      "correctValue": 8
+    }
+  },
+  {
+    "id": "v2-easy-subtraction-back-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "true_false",
+    "topic": "subtraction",
+    "isTrue": false,
+    "question": "Check the cat’s subtraction.",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "False. 14 − 6 = 8.",
+    "payload": {
+      "statement": "14 − 6 = 9"
+    }
+  },
+  {
+    "id": "v2-easy-subtraction-back-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fix_mistake",
+    "topic": "subtraction",
+    "correctIndex": 0,
+    "question": "Which calculation repairs Minka’s work?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "Take away 6, leaving 8.",
+    "payload": {
+      "wrongWork": [
+        "14 − 6 = 7"
+      ],
+      "choices": [
+        "14 − 6 = 8",
+        "14 − 6 = 10",
+        "14 + 6 = 20"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-patterns-jumps-1",
+    "difficulty": "easy",
     "ageRange": [
       6,
       8
     ],
     "type": "pattern_next",
-    "question": "What number comes next in the pattern?",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses +2. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 10.",
     "payload": {
       "sequence": [
         2,
@@ -49,500 +538,102 @@
         8
       ],
       "choices": [
-        "12",
         "10",
-        "9"
+        "11",
+        "12"
       ]
-    },
-    "correctIndex": 1,
-    "hint": "Look at how each number changes (+2).",
-    "explanation": "The next number is 10."
-  },
-  {
-    "id": "easy-mc-02",
-    "difficulty": "easy",
-    "topic": "logic",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "multiple_choice",
-    "question": "A farmer has 17 sheep. All but 9 run away. How many sheep stayed?",
-    "choices": [
-      "9",
-      "8",
-      "17"
-    ],
-    "correctIndex": 0,
-    "hint": "\"All but 9\" means 9 did not run away.",
-    "explanation": "9 sheep stayed with the farmer.",
-    "visualHelp": {
-      "scene": {
-        "kind": "items",
-        "emoji": "🐑",
-        "count": 17
-      },
-      "worked": {
-        "kind": "items",
-        "emoji": "🐑",
-        "count": 9
-      }
     }
   },
   {
-    "id": "easy-fn-1",
+    "id": "v2-easy-patterns-jumps-2",
     "difficulty": "easy",
-    "topic": "operations",
     "ageRange": [
       6,
       8
     ],
     "type": "function_machine",
-    "question": "What rule does the machine use?",
-    "payload": {
-      "input": 4,
-      "output": 7,
-      "choices": [
-        "+3",
-        "×2",
-        "+1"
-      ]
-    },
-    "correctIndex": 0,
-    "hint": "What do you do to 4 to get 7?",
-    "explanation": "4 +3 = 7."
-  },
-  {
-    "id": "easy-mc-03",
-    "difficulty": "easy",
-    "topic": "addition",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "multiple_choice",
-    "question": "Leo has 5 red balloons and 3 blue balloons. How many balloons in total?",
-    "choices": [
-      "7",
-      "8",
-      "15"
-    ],
-    "correctIndex": 1,
-    "hint": "Add the red and blue balloons together.",
-    "explanation": "5 + 3 = 8 balloons.",
-    "visualHelp": {
-      "scene": {
-        "kind": "groups",
-        "emoji": "🎈",
-        "groups": [
-          {
-            "count": 5,
-            "color": "#C73948"
-          },
-          {
-            "count": 3,
-            "color": "#23766F"
-          }
-        ]
-      },
-      "worked": {
-        "kind": "items",
-        "emoji": "🎈",
-        "count": 8
-      }
-    }
-  },
-  {
-    "id": "easy-ord-1",
-    "difficulty": "easy",
-    "topic": "comparison",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "order_numbers",
-    "question": "Put the numbers in order from smallest to largest!",
-    "payload": {
-      "numbers": [
-        15,
-        3,
-        9,
-        7
-      ],
-      "correctOrder": [
-        3,
-        7,
-        9,
-        15
-      ]
-    },
-    "hint": "Tap two numbers to swap them, then check your order.",
-    "explanation": "The correct order is 3, 7, 9, 15."
-  },
-  {
-    "id": "easy-mc-04",
-    "difficulty": "easy",
-    "topic": "subtraction",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "multiple_choice",
-    "question": "There are 10 cookies. You eat 3. How many cookies are left?",
-    "choices": [
-      "6",
-      "7",
-      "13"
-    ],
-    "correctIndex": 1,
-    "hint": "Subtract the cookies you ate from 10.",
-    "explanation": "10 − 3 = 7 cookies left.",
-    "visualHelp": {
-      "scene": {
-        "kind": "items",
-        "emoji": "🍪",
-        "count": 10
-      },
-      "worked": {
-        "kind": "items",
-        "emoji": "🍪",
-        "count": 10,
-        "removed": 3
-      }
-    }
-  },
-  {
-    "id": "easy-cmp-1",
-    "difficulty": "easy",
-    "topic": "comparison",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "compare",
-    "question": "Which gives a bigger number?",
-    "payload": {
-      "optionA": "Add: 0 + 1 + 2 + 3 + 4",
-      "optionB": "Multiply: 0 × 1 × 2 × 3 × 4"
-    },
-    "correctIndex": 0,
-    "hint": "Adding positive numbers grows. Multiplying with 0 stays at 0.",
-    "explanation": "0 + 1 + 2 + 3 + 4 = 10. Anything × 0 = 0."
-  },
-  {
-    "id": "easy-mc-05",
-    "difficulty": "easy",
-    "topic": "multiplication",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "multiple_choice",
-    "question": "A box has 2 rows of 4 toys. How many toys are in the box?",
-    "choices": [
-      "6",
-      "8",
-      "10"
-    ],
-    "correctIndex": 1,
-    "hint": "Multiply rows by toys in each row.",
-    "explanation": "2 × 4 = 8 toys.",
-    "visualHelp": {
-      "scene": {
-        "kind": "grid",
-        "rows": 2,
-        "cols": 4,
-        "filled": 8,
-        "emoji": "🧸"
-      },
-      "worked": {
-        "kind": "grid",
-        "rows": 2,
-        "cols": 4,
-        "filled": 8,
-        "emoji": "🧸"
-      }
-    }
-  },
-  {
-    "id": "easy-op-1",
-    "difficulty": "easy",
-    "topic": "operations",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
-    "payload": {
-      "start": 10,
-      "target": 14,
-      "steps": [
-        {
-          "operand": 2,
-          "operator": "+"
-        },
-        {
-          "operand": 2,
-          "operator": "+"
-        }
-      ]
-    },
-    "hint": "Try one operator at a time.",
-    "explanation": "Start 10, reach 14."
-  },
-  {
-    "id": "easy-mc-06",
-    "difficulty": "easy",
-    "topic": "logic",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "multiple_choice",
-    "question": "I am an odd number, greater than 10 and less than 13. What am I?",
-    "choices": [
-      "11",
-      "12",
-      "14"
-    ],
-    "correctIndex": 0,
-    "hint": "Check 11 and 12. Which is odd?",
-    "explanation": "11 is odd. 12 is even."
-  },
-  {
-    "id": "easy-tgt-1",
-    "difficulty": "easy",
-    "topic": "operations",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
-    "payload": {
-      "numbers": [
-        2,
-        3,
-        4
-      ],
-      "target": 9,
-      "solution": [
-        "+",
-        "+"
-      ]
-    },
-    "hint": "Think about order of operations.",
-    "explanation": "2 + 3 + 4 = 9."
-  },
-  {
-    "id": "easy-frac-1",
-    "difficulty": "easy",
-    "topic": "fractions",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "fraction_build",
-    "question": "Create this fraction!",
-    "payload": {
-      "numerator": 1,
-      "denominator": 4
-    },
-    "hint": "Color 1 piece(s) out of 4 equal parts.",
-    "explanation": "1/4 means 1 piece(s) out of 4."
-  },
-  {
-    "id": "easy-tf-1",
-    "difficulty": "easy",
-    "topic": "multiplication",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "true_false",
-    "question": "Spot check! Is this true?",
-    "payload": {
-      "statement": "3 × 4 = 11"
-    },
-    "isTrue": false,
-    "hint": "Work it out step by step.",
-    "explanation": "3 × 4 = 12, not 11."
-  },
-  {
-    "id": "easy-bal-1",
-    "difficulty": "easy",
-    "topic": "equality",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "balance",
-    "question": "Balance the scale!",
-    "payload": {
-      "leftDisplay": "7 + ?",
-      "rightValue": 10,
-      "choices": [
-        "2",
-        "3",
-        "4"
-      ]
-    },
-    "correctIndex": 1,
-    "hint": "What makes both sides equal?",
-    "explanation": "7 + 3 = 10."
-  },
-  {
-    "id": "easy-nl-1",
-    "difficulty": "easy",
-    "topic": "subtraction",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "number_line",
-    "question": "Jump on the number line!",
-    "payload": {
-      "start": 12,
-      "jump": -5,
-      "min": 0,
-      "max": 24,
-      "correctValue": 7
-    },
-    "hint": "Start at 12 and jump -5.",
-    "explanation": "12 − 5 = 7."
-  },
-  {
-    "id": "easy-pair-1",
-    "difficulty": "easy",
-    "topic": "mental_math",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "pair_sum",
-    "question": "Pick two numbers that make the target!",
-    "payload": {
-      "numbers": [
-        2,
-        8,
-        5,
-        3,
-        7,
-        1
-      ],
-      "target": 10,
-      "correctIndices": [
-        0,
-        1
-      ]
-    },
-    "hint": "Look for a pair that adds to 10.",
-    "explanation": "2 + 8 = 10, and 7 + 3 = 10 too — any matching pair works!"
-  },
-  {
-    "id": "easy-fix-1",
-    "difficulty": "easy",
-    "topic": "subtraction",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "fix_mistake",
-    "question": "What mistake did Minka make?",
-    "payload": {
-      "wrongWork": [
-        "8 + 5 = 12"
-      ],
-      "choices": [
-        "She added wrong — 8 + 5 = 13",
-        "She used subtraction instead of addition",
-        "8 + 5 = 10"
-      ]
-    },
-    "correctIndex": 0,
-    "hint": "Add 8 and 5 in your head. Is the answer really 12?",
-    "explanation": "8 + 5 = 13, not 12 — Minka added wrong."
-  },
-  {
-    "id": "easy-est-1",
-    "difficulty": "easy",
-    "topic": "estimation",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "estimate",
-    "question": "About how much is this?",
-    "payload": {
-      "expression": "19 + 21",
-      "choices": [
-        "About 60",
-        "About 20",
-        "About 40"
-      ]
-    },
-    "correctIndex": 2,
-    "hint": "Round to friendly numbers first.",
-    "explanation": "19 + 21 is close to 40."
-  },
-  {
-    "id": "easy-share-1",
-    "difficulty": "easy",
-    "topic": "division",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "fair_share",
-    "question": "Share the treats fairly!",
-    "payload": {
-      "items": 10,
-      "people": 3,
-      "emoji": "🍪",
-      "choices": [
-        "4 each, none left",
-        "3 each, none left",
-        "3 each, 1 left over"
-      ]
-    },
-    "correctIndex": 2,
-    "hint": "Divide 10 by 3.",
-    "explanation": "3 each, 1 left over."
-  },
-  {
-    "id": "easy-feq-1",
-    "difficulty": "easy",
-    "topic": "fractions",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "fraction_equivalent",
-    "question": "Which fraction is the same amount?",
-    "payload": {
-      "numerator": 1,
-      "denominator": 2,
-      "choices": [
-        "1/3",
-        "2/4",
-        "2/3"
-      ]
-    },
-    "correctIndex": 1,
-    "hint": "Same amount means the same part of a whole.",
-    "explanation": "1/2 = 2/4."
-  },
-  {
-    "id": "easy-pat-2",
-    "difficulty": "easy",
     "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is +2.",
+    "payload": {
+      "input": 3,
+      "output": 5,
+      "choices": [
+        "+2",
+        "+3",
+        "+4"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-patterns-jumps-3",
+    "difficulty": "easy",
     "ageRange": [
       6,
       8
     ],
     "type": "pattern_next",
-    "question": "What number comes next in the pattern?",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses +2. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 11.",
+    "payload": {
+      "sequence": [
+        3,
+        5,
+        7,
+        9
+      ],
+      "choices": [
+        "11",
+        "12",
+        "13"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-patterns-jumps-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses +2. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 12.",
+    "payload": {
+      "sequence": [
+        4,
+        6,
+        8,
+        10
+      ],
+      "choices": [
+        "12",
+        "13",
+        "14"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-patterns-fives-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses +5. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 25.",
     "payload": {
       "sequence": [
         5,
@@ -551,356 +642,385 @@
         20
       ],
       "choices": [
-        "30",
         "25",
-        "22"
+        "26",
+        "30"
       ]
-    },
-    "correctIndex": 1,
-    "hint": "Look at how each number changes (+5).",
-    "explanation": "The next number is 25."
+    }
   },
   {
-    "id": "easy-fn-2",
+    "id": "v2-easy-patterns-fives-2",
     "difficulty": "easy",
-    "topic": "operations",
     "ageRange": [
       6,
       8
     ],
     "type": "function_machine",
-    "question": "What rule does the machine use?",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is +5.",
     "payload": {
-      "input": 5,
-      "output": 10,
+      "input": 6,
+      "output": 11,
       "choices": [
-        "+3",
-        "×2",
-        "+4"
+        "+5",
+        "+6",
+        "+7"
       ]
-    },
-    "correctIndex": 1,
-    "hint": "What do you do to 5 to get 10?",
-    "explanation": "5 ×2 = 10."
+    }
   },
   {
-    "id": "easy-ord-2",
+    "id": "v2-easy-patterns-fives-3",
     "difficulty": "easy",
-    "topic": "comparison",
     "ageRange": [
       6,
       8
     ],
-    "type": "order_numbers",
-    "question": "Put the numbers in order from smallest to largest!",
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses +5. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 26.",
     "payload": {
-      "numbers": [
-        12,
-        4,
-        8,
-        2
+      "sequence": [
+        6,
+        11,
+        16,
+        21
       ],
-      "correctOrder": [
-        2,
-        4,
-        8,
-        12
+      "choices": [
+        "26",
+        "27",
+        "31"
       ]
-    },
-    "hint": "Tap two numbers to swap them, then check your order.",
-    "explanation": "The correct order is 2, 4, 8, 12."
+    }
   },
   {
-    "id": "easy-mc-07",
+    "id": "v2-easy-patterns-fives-4",
     "difficulty": "easy",
-    "topic": "addition",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Every step uses +5. What comes next?",
+    "hint": "Apply the stated rule to the last number.",
+    "explanation": "The next number is 27.",
+    "payload": {
+      "sequence": [
+        7,
+        12,
+        17,
+        22
+      ],
+      "choices": [
+        "27",
+        "28",
+        "32"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-multiplication-rows-1",
+    "difficulty": "easy",
     "ageRange": [
       6,
       8
     ],
     "type": "multiple_choice",
-    "question": "Sam found 6 shells at the beach, then 4 more. How many shells does Sam have?",
+    "topic": "multiplication",
     "choices": [
-      "10",
-      "2",
-      "9"
+      "12",
+      "7",
+      "16"
     ],
     "correctIndex": 0,
-    "hint": "Add the two groups of shells.",
-    "explanation": "6 + 4 = 10 shells.",
-    "visualHelp": {
-      "scene": {
-        "kind": "groups",
-        "emoji": "🐚",
-        "groups": [
-          {
-            "count": 6,
-            "color": "#C73948"
-          },
-          {
-            "count": 4,
-            "color": "#23766F"
-          }
-        ]
-      },
-      "worked": {
-        "kind": "items",
-        "emoji": "🐚",
-        "count": 10
-      }
+    "question": "Make 3 rows with 4 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "3 × 4 = 12."
+  },
+  {
+    "id": "v2-easy-multiplication-rows-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 4.",
+    "payload": {
+      "input": 3,
+      "output": 12,
+      "choices": [
+        "×4",
+        "+4",
+        "×5"
+      ]
     }
   },
   {
-    "id": "easy-cmp-2",
+    "id": "v2-easy-multiplication-rows-3",
     "difficulty": "easy",
-    "topic": "comparison",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "compare",
-    "question": "Which is bigger?",
-    "payload": {
-      "optionA": "5 + 3",
-      "optionB": "2 × 5"
-    },
-    "correctIndex": 1,
-    "hint": "Work out both sides.",
-    "explanation": "5 + 3 = 8. 2 × 5 = 10 — multiplication gives the bigger number."
-  },
-  {
-    "id": "easy-op-2",
-    "difficulty": "easy",
-    "topic": "operations",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "operation_path",
-    "question": "Pick operators to reach the goal!",
-    "payload": {
-      "start": 20,
-      "target": 10,
-      "steps": [
-        {
-          "operand": 2,
-          "operator": "÷"
-        }
-      ]
-    },
-    "hint": "What do you do to 20 to get 10?",
-    "explanation": "20 ÷ 2 = 10 — you reach the goal!"
-  },
-  {
-    "id": "easy-tgt-2",
-    "difficulty": "easy",
-    "topic": "operations",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "target_build",
-    "question": "Use +, −, ×, and ÷ to make the target!",
-    "payload": {
-      "numbers": [
-        10,
-        2,
-        3
-      ],
-      "target": 5,
-      "solution": [
-        "-",
-        "-"
-      ]
-    },
-    "hint": "Think about order of operations.",
-    "explanation": "10 - 2 - 3 = 5."
-  },
-  {
-    "id": "easy-frac-2",
-    "difficulty": "easy",
-    "topic": "fractions",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "fraction_build",
-    "question": "Create this fraction!",
-    "payload": {
-      "numerator": 2,
-      "denominator": 4
-    },
-    "hint": "Color 2 piece(s) out of 4 equal parts.",
-    "explanation": "2/4 means 2 piece(s) out of 4."
-  },
-  {
-    "id": "easy-tf-2",
-    "difficulty": "easy",
-    "topic": "multiplication",
     "ageRange": [
       6,
       8
     ],
     "type": "true_false",
-    "question": "Spot check! Is this true?",
-    "payload": {
-      "statement": "10 − 6 = 4"
-    },
+    "topic": "multiplication",
     "isTrue": true,
-    "hint": "Work it out step by step.",
-    "explanation": "10 − 6 = 4 — correct!"
+    "question": "Check the equal-group claim.",
+    "hint": "Count the same number in every group.",
+    "explanation": "True. 3 groups of 4 make 12.",
+    "payload": {
+      "statement": "3 × 4 = 12"
+    }
   },
   {
-    "id": "easy-bal-2",
+    "id": "v2-easy-multiplication-rows-4",
     "difficulty": "easy",
-    "topic": "equality",
     "ageRange": [
       6,
       8
     ],
     "type": "balance",
-    "question": "Balance the scale!",
+    "topic": "equality",
+    "correctIndex": 0,
+    "helpTemplate": "multiplication",
+    "question": "How many toys are in each equal row?",
+    "hint": "Count the same number in every group.",
+    "explanation": "3 × 4 = 12.",
     "payload": {
-      "leftDisplay": "5 + ?",
-      "rightValue": 9,
+      "leftDisplay": "3 × ?",
+      "rightValue": 12,
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-multiplication-groups-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "20",
+      "9",
+      "25"
+    ],
+    "correctIndex": 0,
+    "question": "Make 4 rows with 5 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "4 × 5 = 20."
+  },
+  {
+    "id": "v2-easy-multiplication-groups-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 5.",
+    "payload": {
+      "input": 4,
+      "output": 20,
+      "choices": [
+        "×5",
+        "+5",
+        "×6"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-multiplication-groups-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "true_false",
+    "topic": "multiplication",
+    "isTrue": true,
+    "question": "Check the equal-group claim.",
+    "hint": "Count the same number in every group.",
+    "explanation": "True. 4 groups of 5 make 20.",
+    "payload": {
+      "statement": "4 × 5 = 20"
+    }
+  },
+  {
+    "id": "v2-easy-multiplication-groups-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "helpTemplate": "multiplication",
+    "question": "How many toys are in each equal row?",
+    "hint": "Count the same number in every group.",
+    "explanation": "4 × 5 = 20.",
+    "payload": {
+      "leftDisplay": "4 × ?",
+      "rightValue": 20,
       "choices": [
         "5",
-        "3",
-        "4"
+        "6",
+        "7"
       ]
-    },
-    "correctIndex": 2,
-    "hint": "What makes both sides equal?",
-    "explanation": "5 + 4 = 9."
+    }
   },
   {
-    "id": "easy-nl-2",
+    "id": "v2-easy-fractions-parts-1",
     "difficulty": "easy",
-    "topic": "subtraction",
     "ageRange": [
       6,
       8
     ],
-    "type": "number_line",
-    "question": "Jump on the number line!",
-    "payload": {
-      "start": 5,
-      "jump": 4,
-      "min": 0,
-      "max": 20,
-      "correctValue": 9
-    },
-    "hint": "Start at 5 and jump +4.",
-    "explanation": "5 + 4 = 9."
-  },
-  {
-    "id": "easy-pair-2",
-    "difficulty": "easy",
-    "topic": "mental_math",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "pair_sum",
-    "question": "Pick two numbers that make the target!",
-    "payload": {
-      "numbers": [
-        4,
-        6,
-        9,
-        1,
-        5,
-        3
-      ],
-      "target": 9,
-      "correctIndices": [
-        0,
-        4
-      ]
-    },
-    "hint": "Look for a pair that adds to 9.",
-    "explanation": "4 + 5 = 9."
-  },
-  {
-    "id": "easy-fix-2",
-    "difficulty": "easy",
-    "topic": "subtraction",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "fix_mistake",
-    "question": "What mistake did Minka make?",
-    "payload": {
-      "wrongWork": [
-        "9 − 4 = 6"
-      ],
-      "choices": [
-        "She subtracted one too many — 9 − 4 = 5",
-        "She should add instead of subtract",
-        "9 − 4 = 3"
-      ]
-    },
-    "correctIndex": 0,
-    "hint": "Start at 9 and count back 4.",
-    "explanation": "9 − 4 = 5, not 6 — Minka subtracted one too many."
-  },
-  {
-    "id": "easy-est-2",
-    "difficulty": "easy",
-    "topic": "estimation",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "estimate",
-    "question": "About how much is this?",
-    "payload": {
-      "expression": "48 + 11",
-      "choices": [
-        "About 40",
-        "About 60",
-        "About 80"
-      ]
-    },
-    "correctIndex": 1,
-    "hint": "Round to friendly numbers first.",
-    "explanation": "48 + 11 is close to 60."
-  },
-  {
-    "id": "easy-share-2",
-    "difficulty": "easy",
-    "topic": "division",
-    "ageRange": [
-      6,
-      8
-    ],
-    "type": "fair_share",
-    "question": "Share the treats fairly!",
-    "payload": {
-      "items": 7,
-      "people": 2,
-      "emoji": "🍎",
-      "choices": [
-        "4 each, none left",
-        "2 each, none left",
-        "3 each, 1 left over"
-      ]
-    },
-    "correctIndex": 2,
-    "hint": "Divide 7 by 2.",
-    "explanation": "3 each, 1 left over."
-  },
-  {
-    "id": "easy-feq-2",
-    "difficulty": "easy",
+    "type": "fraction_build",
     "topic": "fractions",
+    "question": "Color 1/4 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 1 out of 4 equal parts.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 4
+    }
+  },
+  {
+    "id": "v2-easy-fractions-parts-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 2/4 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 2 out of 4 equal parts.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 4
+    }
+  },
+  {
+    "id": "v2-easy-fractions-parts-3",
+    "difficulty": "easy",
     "ageRange": [
       6,
       8
     ],
     "type": "fraction_match",
-    "question": "Match each fraction to its picture!",
+    "topic": "fractions",
+    "question": "Match each fraction to its picture.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Count the shaded parts and all equal parts.",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 1,
+          "denominator": 4,
+          "visual": "pie"
+        },
+        {
+          "numerator": 2,
+          "denominator": 4,
+          "visual": "grid"
+        }
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-fractions-parts-4",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Which fraction covers the same amount of the same-size whole?",
+    "hint": "Split every equal part in two.",
+    "explanation": "1/4 = 2/8.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 4,
+      "choices": [
+        "2/8",
+        "1/8",
+        "2/4"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-fractions-pictures-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 1/6 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 1 out of 6 equal parts.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 6
+    }
+  },
+  {
+    "id": "v2-easy-fractions-pictures-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 2/6 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 2 out of 6 equal parts.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 6
+    }
+  },
+  {
+    "id": "v2-easy-fractions-pictures-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fraction_match",
+    "topic": "fractions",
+    "question": "Match each fraction to its picture.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Count the shaded parts and all equal parts.",
     "payload": {
       "pairs": [
         {
@@ -909,127 +1029,507 @@
           "visual": "pie"
         },
         {
-          "numerator": 1,
-          "denominator": 9,
-          "visual": "grid"
-        },
-        {
           "numerator": 2,
-          "denominator": 5,
-          "visual": "pie"
+          "denominator": 6,
+          "visual": "grid"
         }
       ]
-    },
-    "hint": "Tap a fraction, then tap the picture that shows the same amount.",
-    "explanation": "Each picture shades the same part of the whole as its fraction."
+    }
   },
   {
-    "id": "easy-pat-3",
+    "id": "v2-easy-fractions-pictures-4",
     "difficulty": "easy",
-    "topic": "patterns",
     "ageRange": [
       6,
       8
     ],
-    "type": "pattern_next",
-    "question": "What number comes next in the pattern?",
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Which fraction covers the same amount of the same-size whole?",
+    "hint": "Split every equal part in two.",
+    "explanation": "1/6 = 2/12.",
     "payload": {
-      "sequence": [
-        1,
-        3,
-        5,
-        7
-      ],
+      "numerator": 1,
+      "denominator": 6,
       "choices": [
-        "11",
-        "8",
-        "9"
+        "2/12",
+        "1/12",
+        "2/6"
       ]
-    },
-    "correctIndex": 2,
-    "hint": "Look at how each number changes (+2).",
-    "explanation": "The next number is 9."
+    }
   },
   {
-    "id": "easy-fn-3",
+    "id": "v2-easy-addition-picnic-1",
     "difficulty": "easy",
-    "topic": "operations",
     "ageRange": [
       6,
       8
     ],
-    "type": "function_machine",
-    "question": "What rule does the machine use?",
-    "payload": {
-      "input": 9,
-      "output": 4,
-      "choices": [
-        "÷2",
-        "+5",
-        "−5"
-      ]
-    },
-    "correctIndex": 2,
-    "hint": "What do you do to 9 to get 4?",
-    "explanation": "9 −5 = 4."
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "13",
+      "12",
+      "14"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 8 red ribbons and 5 blue ribbons for the picnic. How many ribbons?",
+    "hint": "Can you make a full ten first?",
+    "explanation": "13 ribbons are packed. The first stage is ready."
   },
   {
-    "id": "easy-ord-3",
+    "id": "v2-easy-addition-picnic-2",
     "difficulty": "easy",
-    "topic": "comparison",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "helpTemplate": "addition",
+    "question": "Five places are ready. Complete ten places. How many more?",
+    "hint": "Can you make a full ten first?",
+    "explanation": "5 + 5 = 10. Every place is ready.",
+    "payload": {
+      "leftDisplay": "5 + ?",
+      "rightValue": 10,
+      "choices": [
+        "5",
+        "4",
+        "6"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-addition-picnic-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "6",
+      "5",
+      "7"
+    ],
+    "correctIndex": 0,
+    "question": "Seven flags are up. How many more make thirteen flags?",
+    "hint": "Use the part you have already worked out. Finished stages stay saved.",
+    "explanation": "7 + 6 = 13. The picnic is open!"
+  },
+  {
+    "id": "v2-easy-multiplication-shelves-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "10",
+      "7",
+      "11"
+    ],
+    "correctIndex": 0,
+    "question": "Display 1 needs 2 rows of 5 toys. How many toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "2 × 5 = 10. This display is ready."
+  },
+  {
+    "id": "v2-easy-multiplication-shelves-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "12",
+      "7",
+      "13"
+    ],
+    "correctIndex": 0,
+    "question": "Display 2 needs 3 rows of 4 toys. How many toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "3 × 4 = 12. This display is ready."
+  },
+  {
+    "id": "v2-easy-multiplication-shelves-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "24",
+      "10",
+      "25"
+    ],
+    "correctIndex": 0,
+    "question": "Display 3 needs 4 rows of 6 toys. How many toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "4 × 6 = 24. This display is ready."
+  },
+  {
+    "id": "v2-easy-numbers-train-1",
+    "difficulty": "easy",
     "ageRange": [
       6,
       8
     ],
     "type": "order_numbers",
-    "question": "Put the numbers in order from smallest to largest!",
+    "topic": "comparison",
+    "question": "The train visits platforms in number order. Arrange its stops.",
+    "hint": "Start at the smallest platform number.",
+    "explanation": "The stops are 5, 9, 12, 18.",
     "payload": {
       "numbers": [
-        6,
-        1,
+        12,
         5,
-        3
+        18,
+        9
       ],
       "correctOrder": [
-        1,
-        3,
         5,
-        6
+        9,
+        12,
+        18
       ]
-    },
-    "hint": "Tap two numbers to swap them, then check your order.",
-    "explanation": "The correct order is 1, 3, 5, 6."
+    }
   },
   {
-    "id": "easy-frac-4",
+    "id": "v2-easy-numbers-train-2",
     "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Two trains have 12 and 18 carriages. Choose the longer train.",
+    "hint": "More carriages make a longer train.",
+    "explanation": "18 > 12. The longer train is ready.",
+    "payload": {
+      "optionA": "12",
+      "optionB": "18"
+    }
+  },
+  {
+    "id": "v2-easy-numbers-train-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "comparison",
+    "choices": [
+      "12",
+      "5",
+      "18"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "The last passenger waits at a platform between 9 and 18. Which platform?",
+    "hint": "Check both ends of the interval.",
+    "explanation": "9 < 12 < 18. Everyone is aboard!"
+  },
+  {
+    "id": "v2-easy-subtraction-boats-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "8",
+      "7",
+      "20"
+    ],
+    "correctIndex": 0,
+    "question": "There are 14 paper boats. Launch 6. How many wait on the bank?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "14 − 6 = 8 boats wait on the bank."
+  },
+  {
+    "id": "v2-easy-subtraction-boats-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Three of the 8 waiting boats float away. Move back to find how many remain.",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "8 − 3 = 5 boats remain.",
+    "payload": {
+      "start": 8,
+      "jump": -3,
+      "min": 0,
+      "max": 10,
+      "correctValue": 5
+    }
+  },
+  {
+    "id": "v2-easy-subtraction-boats-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fix_mistake",
+    "topic": "subtraction",
+    "correctIndex": 0,
+    "question": "Two of the last 5 boats reach home. Repair the count of boats still coming.",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "5 − 2 = 3. Guide the last three home!",
+    "payload": {
+      "wrongWork": [
+        "5 − 2 = 4"
+      ],
+      "choices": [
+        "5 − 2 = 3",
+        "5 − 2 = 4",
+        "5 − 2 = 7"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-patterns-music-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "The music box plays 3, 6, 9, 12 beats. How many come next?",
+    "hint": "Find the same increase each time.",
+    "explanation": "12 + 3 = 15. The beat is restored.",
+    "payload": {
+      "sequence": [
+        3,
+        6,
+        9,
+        12
+      ],
+      "choices": [
+        "15",
+        "14",
+        "16"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-patterns-music-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "The next winding turns 15 beats into 18. Choose the rule.",
+    "hint": "Test the change from input to output.",
+    "explanation": "15 + 3 = 18. The gears turn again.",
+    "payload": {
+      "input": 15,
+      "output": 18,
+      "choices": [
+        "+3",
+        "+2",
+        "×3"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-patterns-music-3",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Keep the same rhythm: 18, 21, 24, 27. Finish the tune.",
+    "hint": "Use the music box’s rule once more.",
+    "explanation": "27 + 3 = 30. The tune is complete!",
+    "payload": {
+      "sequence": [
+        18,
+        21,
+        24,
+        27
+      ],
+      "choices": [
+        "30",
+        "29",
+        "31"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-fractions-kite-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fraction_build",
     "topic": "fractions",
+    "question": "The kite sail has 6 equal panels. Color 2 panels for its red patch.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "2 of 6 equal panels make 2/6 of the sail.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 6
+    }
+  },
+  {
+    "id": "v2-easy-fractions-kite-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "The repair sheet has 12 equal pieces. Choose the same fraction as the 2/6 patch.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "2/6 = 4/12. The patch has the same size.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 6,
+      "choices": [
+        "4/12",
+        "2/12",
+        "6/12"
+      ]
+    }
+  },
+  {
+    "id": "v2-easy-fractions-kite-3",
+    "difficulty": "easy",
     "ageRange": [
       6,
       8
     ],
     "type": "fraction_match",
-    "question": "Match each fraction to its picture!",
+    "topic": "fractions",
+    "question": "Match the 2/6 patch and the remaining 4/6 sail to their pictures.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "2/6 and 4/6 cover the whole sail. The kite can fly!",
     "payload": {
       "pairs": [
         {
-          "numerator": 1,
-          "denominator": 3,
+          "numerator": 2,
+          "denominator": 6,
           "visual": "pie"
         },
         {
-          "numerator": 2,
-          "denominator": 4,
-          "visual": "grid"
-        },
-        {
-          "numerator": 1,
-          "denominator": 8,
+          "numerator": 4,
+          "denominator": 6,
           "visual": "grid"
         }
       ]
-    },
-    "hint": "Tap a fraction, then tap the picture that shows the same amount.",
-    "explanation": "Each picture shades the same part of the whole as its fraction."
+    }
+  },
+  {
+    "id": "v2-easy-addition-pair-hunt-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "find_all_pairs",
+    "topic": "mental_math",
+    "helpTemplate": "all_pairs",
+    "question": "Find every pair adding to 10. A tile may appear in different pairs.",
+    "hint": "Work through one tile at a time and look for its partner.",
+    "explanation": "You found every pair. Reversing a pair does not make a new one.",
+    "payload": {
+      "numbers": [
+        1,
+        2,
+        3,
+        7,
+        8,
+        9
+      ],
+      "target": 10
+    }
+  },
+  {
+    "id": "v2-easy-numbers-number-baskets-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "sort_buckets",
+    "topic": "comparison",
+    "question": "Pack numbers below 10 in one basket and numbers from 10 upward in the other.",
+    "hint": "Compare each number with ten. Ten belongs with the bigger numbers.",
+    "explanation": "3, 8 and 6 are below 10. 12, 10 and 19 are at least 10.",
+    "payload": {
+      "rule": "range",
+      "numbers": [
+        12,
+        3,
+        10,
+        8,
+        19,
+        6
+      ],
+      "boundary": 10
+    }
+  },
+  {
+    "id": "v2-easy-patterns-stepping-stones-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "repair_pattern",
+    "topic": "patterns",
+    "question": "Fill both gaps. Use each tile at most once; some tiles stay unused.",
+    "hint": "Find one rule that fits every neighboring step, including the filled gaps.",
+    "explanation": "5, 10, 15, 20, 25. Each step adds 5.",
+    "payload": {
+      "sequence": [
+        5,
+        null,
+        15,
+        null,
+        25
+      ],
+      "tiles": [
+        20,
+        12,
+        10,
+        30
+      ],
+      "solution": [
+        10,
+        20
+      ]
+    }
   }
 ]
