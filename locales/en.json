@@ -1063,6 +1063,36 @@
     "estimation": "Estimate",
     "division": "Fair share"
   },
+  "puzzleCompanion": {
+    "says": "{{name}} says: {{message}}",
+    "progress0": "One puzzle at a time. Let's see what we can discover next.",
+    "progress1": "I'm right here with you. Ready for our next puzzle?",
+    "progress2": "High paw! You found a way through that one.",
+    "progress3": "That step is done. Let's keep exploring together.",
+    "retry": "We can try a different way. I'm right here with you.",
+    "retryPatient": "There's no rush. Let's look at the clues and try one small step.",
+    "persistence": "You tried again and found a way. High paw!",
+    "practiceComplete": "Practice finished! Let's choose our next adventure.",
+    "bossStage": "Another part of the boss cleared! Let's take the next step together.",
+    "bossComplete": "Boss cleared! High paw for sticking with it.",
+    "challengeComplete": "You explored something different. Thanks for trying it with me!",
+    "replay": "Back for another look! Practice helps us notice new things.",
+    "milestone": "You've solved {{count}} puzzles! I'm glad we're learning together."
+  },
+  "taskScenes": {
+    "joinReady": "Two groups: {{left}} counters and {{right}} counters. Join them and count.",
+    "joinDone": "The two groups are together. Count the counters to find the total.",
+    "take_awayReady": "Start with {{left}} counters. The red counters are the {{right}} to take away.",
+    "take_awayDone": "The red counters moved away. Count how many stay.",
+    "arrayReady": "Build {{rows}} rows with {{columns}} counters in each.",
+    "arrayBuilt": "The counters are in {{rows}} rows, with {{columns}} in each. How many altogether?",
+    "shareDescription": "Counters in the pool: {{remaining}}. {{groups}} groups, {{each}} in each.",
+    "joinAction": "Join the counters",
+    "take_awayAction": "Take away {{count}}",
+    "arrayAction": "Build the rows",
+    "shareAction": "Share one round",
+    "reset": "Start again"
+  },
   "puzzleTypes": {
     "multiple_choice": "Story",
     "compare": "Compare",
@@ -1088,8 +1118,10 @@
     "machineIn": "In",
     "machineOut": "Out",
     "machineRule": "Rule",
-    "orderTapToSwap": "Tap two numbers to swap them.",
-    "orderTapAnother": "Tap another number to swap.",
+    "orderDragToMove": "Drag a number to the place where it belongs.",
+    "orderPosition": "Position {{position}}",
+    "orderTile": "Number {{value}}, position {{position}}",
+    "orderMoveTo": "Move to position {{position}}",
     "goal": "Goal",
     "make": "Make",
     "checkAnswer": "Check answer",
@@ -1197,7 +1229,7 @@
       "fraction_equivalent": "Choose a fraction with the same value, then check.",
       "pattern_next": "Find the rule. Choose what comes next, then check.",
       "function_machine": "Choose the rule that changes input to output, then check.",
-      "order_numbers": "Tap two numbers to swap them. When ready, check the order.",
+      "order_numbers": "Drag the numbers into order. When ready, check your answer.",
       "fraction_match": "Match each fraction with its picture. A missed match keeps your completed pairs.",
       "find_all_pairs": "Collect every different pair that reaches the target, then check your collection.",
       "sort_buckets": "Drag every tile into the right group, then check your baskets.",
@@ -1425,5 +1457,12 @@
     "returnHere": "Drag a tile back here to take it out of a basket.",
     "placeInGap": "Move to position {{position}}",
     "dragA11yHint": "Drag to a destination. With a screen reader, use the available actions to choose where to put the tile."
+  },
+  "bossStory": {
+    "scene": "Mission scene: {{count}} of {{total}} tasks complete",
+    "replay": "Watch the ending again",
+    "catReacting": "The cat is reacting to your answer",
+    "catReady": "Ready for the next task",
+    "missionReady": "The mission is complete"
   }
 }

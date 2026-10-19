@@ -184,6 +184,11 @@
       "8"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 4,
+      "right": 3
+    },
     "question": "Kaķis saliek 4 sarkanas un 3 zilas lentes. Cik lenšu kopā?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
     "explanation": "4 + 3 = 7 lentes."
@@ -278,6 +283,11 @@
       "14"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 5
+    },
     "question": "Kaķis saliek 8 sarkanas un 5 zilas lentes. Cik lenšu kopā?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
     "explanation": "8 + 5 = 13 lentes."
@@ -372,6 +382,11 @@
       "12"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 9,
+      "right": 3
+    },
     "question": "Ir 9 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek kastē?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
     "explanation": "9 − 3 = 6 paliek."
@@ -452,6 +467,11 @@
       "20"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 14,
+      "right": 6
+    },
     "question": "Ir 14 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
     "explanation": "14 − 6 = 8 paliek."
@@ -740,6 +760,11 @@
       "16"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 3,
+      "columns": 4
+    },
     "question": "Izveido 3 rindas, katrā pa 4 rotaļu pelēm. Cik peļu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
     "explanation": "3 × 4 = 12."
@@ -823,6 +848,11 @@
       "25"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 4,
+      "columns": 5
+    },
     "question": "Izveido 4 rindas, katrā pa 5 rotaļu pelēm. Cik peļu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
     "explanation": "4 × 5 = 20."
@@ -1089,16 +1119,16 @@
     "topic": "equality",
     "correctIndex": 0,
     "helpTemplate": "addition",
-    "question": "Piecas vietas ir gatavas. Sagatavo desmit vietas. Cik vēl vajag?",
+    "question": "Katra no 13 lentēm ir vienam viesim. Piecas vietas ir gatavas. Cik vēl vietu vajag?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
-    "explanation": "5 + 5 = 10. Visas vietas ir gatavas.",
+    "explanation": "5 + 8 = 13. Katram viesim ir vieta.",
     "payload": {
       "leftDisplay": "5 + ?",
-      "rightValue": 10,
+      "rightValue": 13,
       "choices": [
-        "5",
-        "4",
-        "6"
+        "8",
+        "7",
+        "9"
       ]
     }
   },

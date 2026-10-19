@@ -1,0 +1,19 @@
+{
+  "configuration": "Release",
+  "serviceEnvironment": "sandbox",
+  "platform": "iphonesimulator",
+  "bundleIdentifier": "com.mathmews.app",
+  "version": "1.0.0",
+  "build": "2",
+  "architectures": "arm64",
+  "bundleSHA256": "6d5fe6401970b0ebeb9c0989a6087f44beb746f0d6fb8ce41791195ab530127b",
+  "executableSHA256": "ed609c3cbe194d069e0fa22210bfaf98ffe075a8216362791cb770bee67058b6",
+  "hermesBytecodeMagic": "c61fbc03c103191f",
+  "embeddedBundleBytes": 13237570,
+  "temporaryCaptureRouteAbsent": true,
+  "dependsOnMetro": false,
+  "buildCommand": "EXPO_PUBLIC_APP_ENVIRONMENT=sandbox NODE_ENV=production xcodebuild -workspace ios/MathMews.xcworkspace -scheme MathMews -configuration Release -destination platform=iOS Simulator,id=85A0697F-2C5B-43EC-91BC-77CC3DBCE9D5 -jobs 4 ONLY_ACTIVE_ARCH=YES ARCHS=arm64 CODE_SIGNING_ALLOWED=NO",
+  "nativeCatModelSHA256": "276834606d3bf4a853193ca5d86469fee57019056f0d2a740aff9867613fcf18",
+  "packagedNativeCatModelMatches": true,
+  "packagedSplashPixelsMatch": true
+}

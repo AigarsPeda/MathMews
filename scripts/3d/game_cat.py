@@ -36,12 +36,12 @@ def jump_pose(state, t):
     takeoff, contact, hind_contact = JUMP['takeoff'], JUMP['touchdown'], JUMP['hindTouchdown']
     # Load the haunches, then visibly extend while the hind pads are STILL
     # planted. Finishing this after liftoff reads as an unsupported body bob.
-    crouch = keyed(t, [(0, 0), (.11, 1), (takeoff, 0), (1, 0)])
+    crouch = keyed(t, [(0, 0), (.115, 1), (takeoff, 0), (1, 0)])
     # Continue downward immediately after forepaw contact, then ease out at
     # maximum flexion. A smoothstep starting at contact would stop the torso
     # first and only then dip, making the landing feel like a separate bounce.
-    impact = (0 if t <= contact else math.sin(min(1,(t-contact)/(.80-contact))*math.pi/2)
-              if t <= .80 else keyed(t, [(.80, 1), (1, 0)]))
+    impact = (0 if t <= contact else math.sin(min(1,(t-contact)/(.775-contact))*math.pi/2)
+              if t <= .775 else keyed(t, [(.775, 1), (1, 0)]))
     # Negative pitch raises the nose in Blender's -Y forward convention.
     pitch = keyed(t, [(0, 0), (.12, .02 if off else -.035),
                       (.24, 0 if off else -.20), (.42, .10 if off else -.10),
@@ -291,7 +291,7 @@ def pose_gait(driver, state, t):
 
 def pose(arm, driver, state, t, idle_controls):
     jumping = state in ('jumpOn', 'jumpOff', 'hop')
-    pose_controls(driver, 'idle' if jumping else 'walk' if state in ('crawl', 'trot', 'run') else 'idle' if state in ('sit', 'wakeStretch') else state, 0 if jumping or state == 'wakeStretch' else t)
+    pose_controls(driver, 'idle' if jumping else 'walk' if state in ('crawl', 'trot', 'run', 'rubLeft', 'rubRight') else 'idle' if state in ('sit', 'wakeStretch') else state, 0 if jumping or state == 'wakeStretch' else t)
     if state in ('trot', 'run'):
         pose_gait(driver, state, t)
     driver['root'].rotation_euler = (0, 0, 0)
@@ -315,8 +315,8 @@ def pose(arm, driver, state, t, idle_controls):
     shift = Vector((driver['body'].location.x, 0, driver['body'].location.z-baseline_body))*.6
     shift.z -= .24*settle
     if jumping:
-        shift.z += -(.055 if state == 'jumpOff' else .08)*crouch
-    if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run'):
+        shift.z += -(.065 if state == 'jumpOff' else .10)*crouch
+    if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run', 'rubLeft', 'rubRight'):
         shift.z -= .07
     if state in ('trot','run'):
         # Leave enough bend for the hind paws at both stance extremes. The
@@ -347,10 +347,10 @@ def pose(arm, driver, state, t, idle_controls):
         hind_impact = (0 if t <= JUMP['hindTouchdown'] else
                        math.sin(min(1,(t-JUMP['hindTouchdown'])/.07)*math.pi/2)
                        if t <= .89 else keyed(t, [(.89, 1), (1, 0)]))
-        extension = keyed(t, [(0, 0), (.11, 0), (JUMP['takeoff'], 1), (.28, .65), (.42, 0), (1, 0)])
-        hip_push = (0 if state == 'jumpOff' else .12)*extension
-        fore_body = Matrix.Translation((0, 0, -.14*landing)) @ bend_jump('chest', .055*gather+.045*landing)
-        hind_body = Matrix.Translation((0, 0, hip_push-.07*crouch-.035*landing-.085*hind_impact)) @ bend_jump('pelvis', -.09*gather-.04*crouch)
+        extension = keyed(t, [(0, 0), (.11, 0), (.23, 1), (.30, .65), (.42, 0), (1, 0)])
+        hip_push = (0 if state == 'jumpOff' else .155)*extension
+        fore_body = Matrix.Translation((0, -.045*landing, -.18*landing)) @ bend_jump('chest', .055*gather+.045*landing)
+        hind_body = Matrix.Translation((0, 0, hip_push-.085*crouch-.02*landing-.085*hind_impact)) @ bend_jump('pelvis', -.09*gather-.04*crouch)
         # Blend the spine through the shoulder/hip absorption, keeping the
         # contact legs independent and the head quieter than the torso.
         body = Matrix.Translation((0, 0, hip_push*.4-.075*landing-.045*hind_impact)) @ body
@@ -361,6 +361,14 @@ def pose(arm, driver, state, t, idle_controls):
         fore_body = Matrix.Translation((0, -.035*stretch, -.20*stretch)) @ body
         hind_body = Matrix.Translation((0, 0, -.015*stretch)) @ body
         body = Matrix.Translation((0, 0, -.045*stretch)) @ body
+    if state in ('rubLeft', 'rubRight'):
+        # Cheek leads the shoulder along the edge; feet keep their walking path.
+        side = 1 if state == 'rubLeft' else -1
+        pivot = bones['chest'].head_local
+        brush = Matrix.Translation((side*.035, 0, -.025)) @ Matrix.Translation(pivot) @ Matrix.Rotation(side*-.105, 4, 'Y') @ Matrix.Translation(-pivot)
+        fore_body = brush @ body
+        hind_body = Matrix.Translation((side*.018, 0, 0)) @ body
+        body = Matrix.Translation((side*.024, 0, -.012)) @ body
     desired = {name: body @ bones[name].matrix_local for name in ('spine', 'belly')}
     desired.update(chest=fore_body @ bones['chest'].matrix_local, pelvis=hind_body @ bones['pelvis'].matrix_local)
     chest_shift = (fore_body @ bones['chest'].head_local)-bones['chest'].head_local
@@ -403,7 +411,7 @@ def pose(arm, driver, state, t, idle_controls):
                 toe.y = toe.y*(1-seated)+(shoulder.y+(-.04 if rear else -.025))*seated
             if settle:
                 toe.y += -.08*settle if not rear else -.05*settle
-            if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run'):
+            if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run', 'rubLeft', 'rubRight'):
                 baseline = Vector((driver[key][i].location.x, .44 if rear else -.38, .105 if rear else .12))
                 delta = driver[key][i].location-baseline
             else:
@@ -421,6 +429,8 @@ def pose(arm, driver, state, t, idle_controls):
             desired.update(limb_pose(bones, names, shoulder, toe))
     # The upright hooked tail follows the pelvis.
     tail_rotation = Matrix.Rotation(.10*airborne-.045*landing,3,'X') if jumping else driver['tail'].rotation_euler.to_matrix()
+    if state == 'crawl':
+        tail_rotation = Matrix.Rotation(-1.0, 3, 'X') @ tail_rotation
     anchor = bones['tailjoint0'].head_local
     tail_transform = hind_body @ Matrix.Translation(anchor) @ tail_rotation.to_4x4() @ Matrix.Translation(-anchor)
     for name in [*('tailjoint'+str(i) for i in range(4)), 'tailTip']:
@@ -500,7 +510,7 @@ def export_cats(scope, args, export):
         arm.animation_data_create()
         # Denser keys keep planted toes from dipping between large knee/hip
         # rotations when glTF interpolates the baked bone quaternions.
-        scene.render.fps = 48
+        scene.render.fps = 60
         for clip, (count, fps) in clips.items():
             frames = round(count/fps*scene.render.fps)
             action = bpy.data.actions.new(clip)
@@ -532,7 +542,7 @@ def export_cats(scope, args, export):
             arm.animation_data.action = None
         for bone in arm.pose.bones:
             bone.matrix_basis = Matrix.Identity(4)
-        scene.frame_start, scene.frame_end = 1, 241
+        scene.frame_start, scene.frame_end = 1, round(max(count/fps for count, fps in clips.values())*scene.render.fps)+1
         # Authoring controls are never exported or visible in the saved rig.
         for obj in driver_objects | set(categories):
             if obj.type not in ('CAMERA', 'LIGHT'):

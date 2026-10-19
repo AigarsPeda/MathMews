@@ -31,7 +31,7 @@ export function FractionEquivalentTask({
       <View style={styles.choices}>
         {choices.map((choice, index) => {
           const selected = selectedIndex === index;
-          const isCorrectOption = answered && index === puzzle.correctIndex;
+          const isCorrectOption = answered && isCorrect && index === puzzle.correctIndex;
           const isWrongPick = answered && !isCorrect && selected;
 
           return (

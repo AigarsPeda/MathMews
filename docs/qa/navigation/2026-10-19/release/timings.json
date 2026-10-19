@@ -1,0 +1,362 @@
+{
+  "date": "2026-10-19",
+  "configuration": "Release, optimized arm64, embedded Hermes bundle",
+  "serviceEnvironment": "sandbox",
+  "device": "iPhone 18 Pro simulator",
+  "osVersion": "27.0",
+  "savedGame": "Existing save retained; no answers submitted and no purchases made",
+  "method": "Monotonic process uptime measured before launch/tap until target control exists and is hittable. First launch follows installation over the existing app; two further process-cold launches terminate and relaunch without resetting data. Three first-navigation rounds and three warm rounds traverse eight routes each, with a difficulty switch and native back swipe afterward.",
+  "limitations": [
+    "Simulator, not physical-device performance.",
+    "Times include XCTest application launch, native tap synthesis and accessibility querying; they are not isolated JS or frame-paint times.",
+    "Application data and OS caches were retained. Process-cold does not mean a wiped device or first-ever install.",
+    "Both named simulators stayed booted. The release app does not fetch JavaScript from Metro."
+  ],
+  "summary": {
+    "launchMs": {
+      "samples": [
+        9128.13,
+        8847.7,
+        8942.23
+      ],
+      "median": 8942.23,
+      "min": 8847.7,
+      "max": 9128.13
+    },
+    "firstPuzzleMenuMs": {
+      "samples": [
+        703.22,
+        692.59,
+        676.63
+      ],
+      "median": 692.59
+    },
+    "warmNavigationMs": {
+      "sampleCount": 24,
+      "median": 463.15,
+      "min": 442.38,
+      "max": 705.28
+    },
+    "firstNavigationActions": 24,
+    "warmNavigationActions": 24,
+    "difficultySwitching": "Passed: Medium, Hard, Easy",
+    "nativeBackSwipe": "Passed"
+  },
+  "samples": [
+    {
+      "kind": "launch",
+      "round": 0,
+      "route": "first-after-install",
+      "elapsedMs": 9128.13
+    },
+    {
+      "kind": "first-navigation",
+      "round": 0,
+      "route": "home-topics",
+      "elapsedMs": 703.22
+    },
+    {
+      "kind": "first-navigation",
+      "round": 0,
+      "route": "topics-lessons",
+      "elapsedMs": 451.52
+    },
+    {
+      "kind": "first-navigation",
+      "round": 0,
+      "route": "lessons-levels",
+      "elapsedMs": 467.8
+    },
+    {
+      "kind": "first-navigation",
+      "round": 0,
+      "route": "levels-play",
+      "elapsedMs": 457.25
+    },
+    {
+      "kind": "first-navigation",
+      "round": 0,
+      "route": "play-levels",
+      "elapsedMs": 443.95
+    },
+    {
+      "kind": "first-navigation",
+      "round": 0,
+      "route": "levels-lessons",
+      "elapsedMs": 440.8
+    },
+    {
+      "kind": "first-navigation",
+      "round": 0,
+      "route": "lessons-topics",
+      "elapsedMs": 441.59
+    },
+    {
+      "kind": "first-navigation",
+      "round": 0,
+      "route": "topics-home",
+      "elapsedMs": 623.19
+    },
+    {
+      "kind": "launch",
+      "round": 1,
+      "route": "process-cold",
+      "elapsedMs": 8847.7
+    },
+    {
+      "kind": "first-navigation",
+      "round": 1,
+      "route": "home-topics",
+      "elapsedMs": 692.59
+    },
+    {
+      "kind": "first-navigation",
+      "round": 1,
+      "route": "topics-lessons",
+      "elapsedMs": 474.55
+    },
+    {
+      "kind": "first-navigation",
+      "round": 1,
+      "route": "lessons-levels",
+      "elapsedMs": 477.2
+    },
+    {
+      "kind": "first-navigation",
+      "round": 1,
+      "route": "levels-play",
+      "elapsedMs": 463.12
+    },
+    {
+      "kind": "first-navigation",
+      "round": 1,
+      "route": "play-levels",
+      "elapsedMs": 468.41
+    },
+    {
+      "kind": "first-navigation",
+      "round": 1,
+      "route": "levels-lessons",
+      "elapsedMs": 459.04
+    },
+    {
+      "kind": "first-navigation",
+      "round": 1,
+      "route": "lessons-topics",
+      "elapsedMs": 443.87
+    },
+    {
+      "kind": "first-navigation",
+      "round": 1,
+      "route": "topics-home",
+      "elapsedMs": 647.82
+    },
+    {
+      "kind": "launch",
+      "round": 2,
+      "route": "process-cold",
+      "elapsedMs": 8942.23
+    },
+    {
+      "kind": "first-navigation",
+      "round": 2,
+      "route": "home-topics",
+      "elapsedMs": 676.63
+    },
+    {
+      "kind": "first-navigation",
+      "round": 2,
+      "route": "topics-lessons",
+      "elapsedMs": 458.85
+    },
+    {
+      "kind": "first-navigation",
+      "round": 2,
+      "route": "lessons-levels",
+      "elapsedMs": 453.47
+    },
+    {
+      "kind": "first-navigation",
+      "round": 2,
+      "route": "levels-play",
+      "elapsedMs": 466.16
+    },
+    {
+      "kind": "first-navigation",
+      "round": 2,
+      "route": "play-levels",
+      "elapsedMs": 460.22
+    },
+    {
+      "kind": "first-navigation",
+      "round": 2,
+      "route": "levels-lessons",
+      "elapsedMs": 441.11
+    },
+    {
+      "kind": "first-navigation",
+      "round": 2,
+      "route": "lessons-topics",
+      "elapsedMs": 470.73
+    },
+    {
+      "kind": "first-navigation",
+      "round": 2,
+      "route": "topics-home",
+      "elapsedMs": 638.95
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 0,
+      "route": "home-topics",
+      "elapsedMs": 592.0
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 0,
+      "route": "topics-lessons",
+      "elapsedMs": 449.88
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 0,
+      "route": "lessons-levels",
+      "elapsedMs": 453.54
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 0,
+      "route": "levels-play",
+      "elapsedMs": 468.43
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 0,
+      "route": "play-levels",
+      "elapsedMs": 455.48
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 0,
+      "route": "levels-lessons",
+      "elapsedMs": 463.53
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 0,
+      "route": "lessons-topics",
+      "elapsedMs": 457.43
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 0,
+      "route": "topics-home",
+      "elapsedMs": 705.28
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 1,
+      "route": "home-topics",
+      "elapsedMs": 646.17
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 1,
+      "route": "topics-lessons",
+      "elapsedMs": 445.79
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 1,
+      "route": "lessons-levels",
+      "elapsedMs": 447.49
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 1,
+      "route": "levels-play",
+      "elapsedMs": 487.63
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 1,
+      "route": "play-levels",
+      "elapsedMs": 442.68
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 1,
+      "route": "levels-lessons",
+      "elapsedMs": 544.72
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 1,
+      "route": "lessons-topics",
+      "elapsedMs": 467.31
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 1,
+      "route": "topics-home",
+      "elapsedMs": 644.41
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 2,
+      "route": "home-topics",
+      "elapsedMs": 624.63
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 2,
+      "route": "topics-lessons",
+      "elapsedMs": 458.33
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 2,
+      "route": "lessons-levels",
+      "elapsedMs": 459.1
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 2,
+      "route": "levels-play",
+      "elapsedMs": 474.29
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 2,
+      "route": "play-levels",
+      "elapsedMs": 462.78
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 2,
+      "route": "levels-lessons",
+      "elapsedMs": 442.38
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 2,
+      "route": "lessons-topics",
+      "elapsedMs": 447.17
+    },
+    {
+      "kind": "warm-navigation",
+      "round": 2,
+      "route": "topics-home",
+      "elapsedMs": 632.88
+    }
+  ],
+  "testResult": "Passed",
+  "splashValidation": {
+    "startupSuite": "Passed",
+    "packagedResources": "All three scale variants matched expected pixels within 1/255 premultiplied rounding",
+    "nativeVisualCheck": "Separate cold-launch recording inspected at 0.5, 2, 4, 6, 8 and 10 seconds; see startup-sequence.png",
+    "captureScreenRemoved": true
+  },
+  "savePreservation": "Passed; see save-preservation.json",
+  "installedDevice": "BrainPet Puzzle QA (85A0697F-2C5B-43EC-91BC-77CC3DBCE9D5)"
+}

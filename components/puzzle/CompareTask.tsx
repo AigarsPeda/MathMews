@@ -28,7 +28,7 @@ export function CompareTask({
       {options.map(({ label, index }) => {
         const selected = selectedIndex === index;
         const isCorrectOption =
-          answered && index === puzzle.correctIndex;
+          answered && isCorrect && index === puzzle.correctIndex;
         const isWrongPick = answered && !isCorrect && selected;
 
         return (

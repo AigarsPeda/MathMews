@@ -1,84 +1,27 @@
 import { GameColors } from "@/constants/game";
 import type { OrderNumbersPuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, {
-  LinearTransition,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
-
-const TILE_LAYOUT = LinearTransition.duration(220);
-const SELECT_MS = 140;
-
-type OrderNumberTileProps = {
-  value: number;
-  selected: boolean;
-  answered: boolean;
-  isCorrectSlot: boolean;
-  isWrongSlot: boolean;
-  onPress: () => void;
-};
-
-function OrderNumberTile({
-  value,
-  selected,
-  answered,
-  isCorrectSlot,
-  isWrongSlot,
-  onPress,
-}: OrderNumberTileProps) {
-  const scale = useSharedValue(1);
-
-  useEffect(() => {
-    scale.value = withTiming(selected && !answered ? 1.04 : 1, {
-      duration: SELECT_MS,
-    });
-  }, [answered, scale, selected]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <Animated.View layout={TILE_LAYOUT} style={[styles.tileWrap, animatedStyle]}>
-      <Pressable
-        style={[
-          styles.tile,
-          selected && !answered && styles.tileSelected,
-          isCorrectSlot && styles.tileCorrect,
-          isWrongSlot && styles.tileWrong,
-        ]}
-        disabled={answered}
-        onPress={onPress}
-        accessibilityRole="button"
-      >
-        <Text style={styles.tileText}>{value}</Text>
-      </Pressable>
-    </Animated.View>
-  );
-}
+import { PuzzleDragBoard, PuzzleDragTile, PuzzleDropArea } from "./PuzzleDragBoard";
 
 type OrderNumbersTaskProps = {
   puzzle: OrderNumbersPuzzle;
   order: number[];
-  selectedSwapIndex: number | null;
   answered: boolean;
   isCorrect: boolean;
-  onTapIndex: (index: number) => void;
+  onMove: (from: number, to: number) => void;
+  onDragStateChange: (dragging: boolean) => void;
   onCheck: () => void;
 };
 
 export function OrderNumbersTask({
   puzzle,
   order,
-  selectedSwapIndex,
   answered,
   isCorrect,
-  onTapIndex,
+  onMove,
+  onDragStateChange,
   onCheck,
 }: OrderNumbersTaskProps) {
   const { t } = useTranslation();
@@ -86,34 +29,51 @@ export function OrderNumbersTask({
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.row}>
-        {order.map((value, index) => {
-          const selected = selectedSwapIndex === index;
-          const isCorrectSlot =
-            answered && isCorrect && value === correctOrder[index];
-          const isWrongSlot =
-            answered && !isCorrect && value !== correctOrder[index];
+      <PuzzleDragBoard
+        onDragStateChange={onDragStateChange}
+        onDrop={(source, target) => {
+          if (!answered) onMove(Number(source), Number(target));
+        }}
+      >
+        <View style={styles.row}>
+          {order.map((value, index) => {
+            const isCorrectSlot =
+              answered && isCorrect && value === correctOrder[index];
+            const isWrongSlot =
+              answered && !isCorrect && value !== correctOrder[index];
 
-          return (
-            <OrderNumberTile
-              key={`${puzzle.id}-${value}`}
-              value={value}
-              selected={selected}
-              answered={answered}
-              isCorrectSlot={isCorrectSlot}
-              isWrongSlot={isWrongSlot}
-              onPress={() => onTapIndex(index)}
-            />
-          );
-        })}
-      </View>
+            return (
+              <PuzzleDropArea
+                key={index}
+                id={String(index)}
+                label={t("puzzleTypes.orderPosition", { position: index + 1 })}
+              >
+                <PuzzleDragTile
+                  id={String(index)}
+                  label={String(value)}
+                  disabled={answered}
+                  style={[
+                    styles.tile,
+                    isCorrectSlot && styles.tileCorrect,
+                    isWrongSlot && styles.tileWrong,
+                  ]}
+                  accessibilityLabel={t("puzzleTypes.orderTile", { value, position: index + 1 })}
+                  accessibilityHint={t("challenges.dragA11yHint")}
+                  actions={order.flatMap((_, position) => position === index ? [] : [{
+                    id: String(position),
+                    label: t("puzzleTypes.orderMoveTo", { position: position + 1 }),
+                  }])}
+                />
+              </PuzzleDropArea>
+            );
+          })}
+        </View>
+      </PuzzleDragBoard>
 
       {!answered ? (
         <>
           <Text style={styles.hint}>
-            {selectedSwapIndex === null
-              ? t("puzzleTypes.orderTapToSwap")
-              : t("puzzleTypes.orderTapAnother")}
+            {t("puzzleTypes.orderDragToMove")}
           </Text>
           <Pressable
             style={({ pressed }) => [
@@ -140,9 +100,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-  },
-  tileWrap: {
-    margin: moderateScale(5),
+    gap: moderateScale(10),
   },
   tile: {
     minWidth: moderateScale(64),
@@ -155,10 +113,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: moderateScale(12),
   },
-  tileSelected: {
-    borderColor: GameColors.secondary,
-    backgroundColor: "rgba(78, 205, 196, 0.12)",
-  },
   tileCorrect: {
     borderColor: GameColors.success,
     backgroundColor: "rgba(107, 203, 119, 0.15)",
@@ -166,12 +120,6 @@ const styles = StyleSheet.create({
   tileWrong: {
     borderColor: "#FF9F43",
     backgroundColor: "rgba(255, 159, 67, 0.12)",
-  },
-  tileText: {
-    fontSize: moderateScale(22),
-    fontWeight: "800",
-    color: GameColors.text,
-    fontVariant: ["tabular-nums"],
   },
   hint: {
     fontSize: moderateScale(14),

@@ -1,0 +1,254 @@
+[
+  {
+    "scene": "boats",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "fountain",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "garden",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "kite",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "lanterns",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "lift",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "music",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "observatory",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "parcels",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "picnic",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "shelter",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "shelves",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "shop",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "signal",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "theatre",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "tickets",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "train",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  },
+  {
+    "scene": "vault",
+    "catBones": 89,
+    "frames": [
+      1,
+      36
+    ],
+    "markers": [
+      1,
+      2,
+      11,
+      20
+    ]
+  }
+]

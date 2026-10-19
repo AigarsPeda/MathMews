@@ -13,19 +13,29 @@ export function getDeviceLocale(): AppLocale {
   return isAppLocale(code) ? code : 'en';
 }
 
-// Register on the shared i18next instance.
-// eslint-disable-next-line import/no-named-as-default-member
-void i18n.use(initReactI18next).init({
-  resources: {
-    en: { translation: { ...en, visualHelp: visualHelpEn } },
-    lv: { translation: { ...lv, visualHelp: visualHelpLv } },
-  },
-  lng: getDeviceLocale(),
-  fallbackLng: 'en',
-  interpolation: {
-    escapeValue: false,
-  },
-  compatibilityJSON: 'v4',
-});
+const resources = {
+  en: { translation: { ...en, visualHelp: visualHelpEn } },
+  lv: { translation: { ...lv, visualHelp: visualHelpLv } },
+};
+
+// Fast Refresh reuses the instance. Merge newly authored keys without resetting
+// the player's selected language or leaving the old resource store in place.
+if (i18n.isInitialized) {
+  for (const [locale, resource] of Object.entries(resources)) {
+    i18n.addResourceBundle(locale, 'translation', resource.translation, true, true);
+  }
+} else {
+  // eslint-disable-next-line import/no-named-as-default-member
+  void i18n.use(initReactI18next).init({
+    resources,
+    lng: getDeviceLocale(),
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
+    },
+    compatibilityJSON: 'v4',
+    react: { bindI18nStore: 'added removed' },
+  });
+}
 
 export default i18n;

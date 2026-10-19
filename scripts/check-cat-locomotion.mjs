@@ -99,3 +99,26 @@ for(let run=0;run<24;run++) {
 }
 console.log('Verified floor/seat/backrest traversal, low hops, unsafe jumps, all four rotations, acceleration, braking, collision-safe corners and continuous 30/60/120 FPS trajectories.');
 console.log('Verified 24 seeded obstacle layouts, collision-free walking/flight and deterministic routes after save/reload.');
+
+// An overhead panel and separate legs expose real empty space below a table.
+const panel={min:[-.13,floor+.78,-2.5],max:[.13,floor+.87,2.5]};
+const supports=[-1,1].map(sign=>({min:[-.13,floor,sign<0?-2.5:2.3],max:[.13,floor+.78,sign<0?-2.3:2.5]}));
+const table={...barrier,instanceId:'underpass',modelId:'tableCoffeeGlass',max:panel.max,collisionBoxes:[panel,...supports]};
+const crawlWorld={...world,objects:[table]};
+const under=w.findCatRoomRoute(world.home,target,crawlWorld);
+assert.ok(under.legs?.some(leg=>leg.animation==='crawl'),'A real opening under a table is usable');
+assert.deepEqual(Array.from(under.path.at(-1)),target);
+for(const leg of under.legs.filter(leg=>leg.animation==='crawl')) {
+  assert.ok(traversal.catCrawlClear(leg.path[0],leg.path.at(-1),crawlWorld),'Every low passage clears the torso, head and supports');
+  for(const fps of [30,60,120])for(let frame=0;frame<=Math.ceil(leg.duration*fps);frame++) {
+    const sample=motion.catMotionSample([leg],frame/fps);
+    assert.equal(sample.animation,'crawl');assert.ok(sample.position.every(Number.isFinite));
+  }
+}
+const lowered={...crawlWorld,objects:[{...table,collisionBoxes:[{...panel,min:[-.13,floor+.4,-2.5]},...supports]}]};
+assert.ok(!traversal.buildCatTraversalLinks(lowered,p=>w.isFree(p,lowered)).some(link=>link.leg.animation==='crawl'),'A panel that is too low cannot produce a crawl');
+const door={...barrier,instanceId:'door',modelId:'door',solid:false,collidable:true,min:[-.2,floor,-.2],max:[.2,floor+1,.2],interactionBoxes:[{min:[-.2,floor,-2.5],max:[.2,floor+1,2.5]}]};
+assert.ok(!traversal.catCrawlClear([-1,floor,0],[1,floor,0],{...crawlWorld,objects:[table,door]}),'Open-door geometry blocks a passage too');
+const plainLow={...barrier,modelId:'lowBench',instanceId:'low-unknown'};
+assert.ok(traversal.buildCatTraversalLinks({...world,objects:[plainLow]},p=>w.isFree(p,{...world,objects:[plainLow]})).some(link=>link.leg.kind==='hop'),'Low safe obstacles do not need a model-name exception');
+console.log('Verified low passages, full-body clearance, lowered ceilings, open doors, ordinary low obstacles and crawl sampling at 30/60/120 FPS.');

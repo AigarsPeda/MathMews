@@ -28,14 +28,17 @@ for(const skin of ['orange','grey','white']) {
     assert.ok(Math.abs(contact['L.front.paw'][13]-.10)<.004&&contact['L.rear.paw'][13]>.17,'Forefeet contact before the hind feet');
     assert.ok(compression.chest[13]<contact.chest[13]-.07,'Shoulders absorb the impact after contact');
     assert.ok(sampleCatClip(clip,.72).chest[13]<contact.chest[13]-.015,'The torso continues into compression immediately, without stopping before its landing dip');
+    const firstImpact=sampleCatClip(clip,.76);
+    const shoulderDrop=contact.chest[13]-firstImpact.chest[13],hipDrop=contact.pelvis[13]-firstImpact.pelvis[13];
+    assert.ok(shoulderDrop>.10 && shoulderDrop>Math.max(0,hipDrop)*2.5,'The shoulders visibly absorb the initial load before the hips follow');
     const recovery=sampleCatClip(clip,jump.walkReady);
     for(const paw of ['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'])assert.ok(Math.abs(recovery[paw][13]-.10)<.004,`${skin}/${clip}: all four paws support the recovery-to-walk handoff`);
     assert.ok(Math.abs(gather['L.rear.paw'][12]-gather['R.rear.paw'][12])<
       Math.abs(idle['L.rear.paw'][12]-idle['R.rear.paw'][12])*.8,'Airborne hind paws gather laterally under the belly');
   }
   const loaded=sampleCatClip('jumpOn',.11),up=sampleCatClip('jumpOn',.20);
-  assert.ok(loaded.pelvis[13]<idle.pelvis[13]-.12,'Upward takeoff loads the haunches');
-  assert.ok(up.pelvis[13]>loaded.pelvis[13]+.10,'The hips extend before the hind paws leave their support');
+  assert.ok(loaded.pelvis[13]<idle.pelvis[13]-.18,'Upward takeoff loads the haunches');
+  assert.ok(up.pelvis[13]>loaded.pelvis[13]+.18,'The hips extend before the hind paws leave their support');
   assert.ok(up.chest[13]>up.pelvis[13],'The shoulders lead the upward push');
   console.log(`Verified ${skin}: planted hind-leg push, forepaw release, gathered flight, reaching, successive contacts and shoulder compression.`);
 }

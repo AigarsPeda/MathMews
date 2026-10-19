@@ -1387,18 +1387,26 @@ for (const reduced of [false, true]) {
 }
 console.log('Verified automatic nighttime metadata survives hidden room entry and pending bed commands, with morning wake-up in 3D and Reduce Motion.');
 
-// A walking command may contain jumps. Editing must wait for a safe floor arrival.
-{
+// Jumps and low passages must reach safe floor space before editing.
+for (const traversalKind of ['hop','crawl']) {
   slots.forEach(value=>value?.cleanup?.());slots.length=0;timers.clear();
   visibility={active:true,reduceMotion:false};roomVisible=true;enabled=true;
   const world={width:390,height:420,catScale:.45,radius:.30,home:[-1.4,nativeRoom.FLOOR_Y,0],objects:[{
     instanceId:'books',modelId:'booksPile',scale:1,heading:0,position:[0,nativeRoom.FLOOR_Y,0],solid:true,movable:false,
     min:[-.12,nativeRoom.FLOOR_Y,-2.5],max:[.12,nativeRoom.FLOOR_Y+.20,2.5],
   }]};
+  if(traversalKind==='crawl') {
+    const floor=nativeRoom.FLOOR_Y;
+    world.objects[0]={...world.objects[0],modelId:'deskWoodA',max:[.12,floor+.9,2.5],collisionBoxes:[
+      {min:[-.12,floor+.78,-2.5],max:[.12,floor+.9,2.5]},
+      {min:[-.12,floor,-2.5],max:[.12,floor+.78,-2.3]},
+      {min:[-.12,floor,2.3],max:[.12,floor+.78,2.5]},
+    ]};
+  }
   hookRoom={...room,width:390,height:420,petSize:80,period:'morning',homeRoomId:'livingRoom',nativeWorld:world,nativeStepCompletion:true};
   render();reportCat(world.home);render();render().startActivity('roomTravel','kitchen');render();advance(0);render();
   let state=render().activity, step=state.plan.steps[state.stepIndex];
-  assert.ok(step.native.legs?.some(leg=>leg.kind==='hop'),'The real scheduler publishes the traversal itinerary');
+  assert.ok(step.native.legs?.some(leg=>traversalKind==='hop'?leg.kind==='hop':leg.animation==='crawl'),'The real scheduler publishes the traversal itinerary');
   const legs=step.native.legs, elapsed=legs[0].duration+.4;
   const halfway=load('@/utils/native-cat-locomotion').catMotionSample(legs,elapsed).position;
   render().updateNativeHeight(halfway,elapsed);
@@ -1554,3 +1562,37 @@ for(const condition of ['hungry','asleep','night','hidden','reduceMotion','simpl
   finishClockStep();assert.equal(render().activity,null,'The cat gets down before the editor can move its support');
 }
 console.log('Verified unprompted perch discovery and hopping, landing rests, no ping-pong, safe return, pause/resume, duplicate callbacks, live blocked landings, hidden/simple/Reduce Motion/care/night suppression and midair command priority.');
+
+// Preserve a real autonomous edge pass through a pause and a queued next task.
+{
+  slots.forEach(value=>value?.cleanup?.());slots.length=0;timers.clear();
+  visibility={active:true,reduceMotion:false};roomVisible=true;enabled=true;
+  const layout={...room,width:390,height:420,petSize:80,period:'day',hungry:false,asleep:false,toys:[],decorations:[{decorationId:'bedroomWardrobe',instanceId:'brush-cupboard',offset:{x:0,y:0},scale:1.2}]};
+  hookRoom={...layout,nativeWorld:nativeRoom.buildNativeRoomWorld(layout),nativeStepCompletion:true};
+  render();reportCat(hookRoom.nativeWorld.home);render();
+  let brushing;
+  for(let i=0;i<180;i++) {
+    const state=render().activity,step=state?.plan.steps[state.stepIndex];
+    if(step?.brush && step.native?.brushSide!==undefined){brushing=state;break;}
+    if(!state){advance(20_000);render();advance(0);render();}
+    else if(step.native?.awaitCompletion&&!step.native.blocked){finishClockStep();advance(0);render();}
+    else {advance(step.durationMs+1);render();advance(0);render();}
+  }
+  assert.ok(brushing,'The actual idle scheduler selects a furniture brush');
+  const step=brushing.plan.steps[brushing.stepIndex],original=step.native.path;
+  const elapsed=step.native.duration*.35,position=load('@/utils/native-cat-locomotion').catPathPoint(original,.35,step.native.paces);
+  render().updateNativeHeight(position,elapsed);
+  visibility={active:false,reduceMotion:false};render();advance(10_000);visibility={active:true,reduceMotion:false};render();render();
+  const resumed=render().activity.plan.steps[render().activity.stepIndex];
+  assert.ok(resumed.native.brushSide!==undefined&&!resumed.native.blocked,'Resume retains the existing contact pass instead of invalidating its moved start');
+  assert.equal(JSON.stringify(resumed.native.path),JSON.stringify(original));
+  render().startActivity('roomTravel','kitchen');render();advance(0);render();
+  assert.ok(render().activity.plan.steps[render().activity.stepIndex].brush,'The next command waits for clear floor space');
+  finishClockStep();advance(0);render();advance(0);render();
+  const next=render().activity;
+  assert.equal(next.plan.kind,'roomTravel');
+  const travel=next.plan.steps[next.stepIndex].native;
+  assert.ok(!travel.blocked);
+  assert.ok(nativeRoom.pathLength([travel.path[0],original.at(-1)])<1e-6,'The next task starts at the brush exit without relocation');
+}
+console.log('Verified actual autonomous brushing, pause/resume of its contact route and queued room travel from its safe exit.');

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, { FadeIn, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSequence, withTiming } from "react-native-reanimated";
 
-type PracticeScene = { prompt: string; tokens: PracticeToken[]; result?: string };
+type PracticeScene = { prompt: string; tokens: PracticeToken[]; result?: string; compact?: boolean; boardHeight?: number };
 
 function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: number; delay: number }) {
   const reducedMotion = useReducedMotion();
@@ -40,7 +40,8 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
   const fillStyle = useAnimatedStyle(() => ({ opacity: fill.value * (token.shape === "part" ? 1 : .16) }));
   const plain = token.shape === "plain";
   const size = (token.width ?? (plain ? Math.max(40, token.label.length * 14) : 40)) * ratio;
-  const color = token.tone === "primary" ? GameColors.primary : GameColors.secondary;
+  const height = (token.height ?? 36) * ratio;
+  const color = token.tone === "primary" ? GameColors.primary : token.tone === "blue" ? "#246FA8" : GameColors.secondary;
   return (
     <Animated.View
       accessible={token.visible !== false && token.label.length > 0}
@@ -49,7 +50,7 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
       importantForAccessibility={token.visible === false ? "no-hide-descendants" : "auto"}
       style={[
         styles.token,
-        { width: size, height: 36 * ratio, marginLeft: -size / 2, marginTop: -18 * ratio },
+        { width: size, height, marginLeft: -size / 2, marginTop: -height / 2 },
         movingStyle,
       ]}
     >
@@ -70,25 +71,25 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
   );
 }
 
-export function VisualPracticeBoard({ prompt, tokens, result }: PracticeScene) {
+export function VisualPracticeBoard({ prompt, tokens, result, compact = false, boardHeight = 140 }: PracticeScene) {
   const [width, setWidth] = useState(0);
   const ratio = width / 300;
   return (
     <View style={styles.stage}>
       <Text style={styles.prompt}>{prompt}</Text>
-      <View style={styles.board} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
+      <View style={[styles.board, { aspectRatio: 300 / boardHeight }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
         {width > 0 ? tokens.map((token, i) => (
           <MovingToken key={token.id} token={token} ratio={ratio} delay={Math.min(i, 5) * 55} />
         )) : null}
       </View>
-      <View style={styles.resultHost}>
+      {!compact || result ? <View style={styles.resultHost}>
         {result ? (
           <Animated.Text key={result} entering={FadeIn.duration(300).reduceMotion(ReduceMotion.System)}
             style={styles.result} accessibilityLiveRegion="polite">
             {result}
           </Animated.Text>
         ) : null}
-      </View>
+      </View> : null}
     </View>
   );
 }
@@ -96,7 +97,7 @@ export function VisualPracticeBoard({ prompt, tokens, result }: PracticeScene) {
 const styles = StyleSheet.create({
   stage: { width: "100%", backgroundColor: GameColors.background, borderRadius: moderateScale(16), padding: moderateScale(12) },
   prompt: { fontSize: moderateScale(18), fontWeight: "800", color: GameColors.text, textAlign: "center", minHeight: moderateScale(28) },
-  board: { width: "100%", aspectRatio: 300 / 140, overflow: "hidden" },
+  board: { width: "100%", overflow: "hidden" },
   token: { position: "absolute", left: 0, top: 0, alignItems: "center", justifyContent: "center" },
   tokenShape: { borderRadius: moderateScale(8) },
   tokenText: { fontWeight: "800", textAlign: "center" },

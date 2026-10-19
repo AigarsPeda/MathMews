@@ -30,7 +30,27 @@ const { getPuzzlesByDifficulty, computePetWisdom, PUZZLE_CONTENT_VERSION } = loa
 const { checkPuzzleAnswer, getValidPairs } = load('@/utils/puzzle-type');
 const { getVisualExplanation } = load('@/constants/visual-explanations');
 const curriculum = load('@/constants/curriculum');
-const { findPuzzleDropZone, movePatternTile } = load('@/utils/puzzle-drag');
+const { getPuzzleCompanionMessage } = load('@/utils/puzzle-companion');
+const companionContext = { correct:true,kind:'practice',finalStage:false,practiceFinished:false,replay:false,retries:0,completedCount:1,puzzleId:'example' };
+const companion = changes => getPuzzleCompanionMessage({...companionContext,...changes});
+assert.equal(companion({correct:false}).key,'retry');
+assert.equal(companion({correct:false,retries:2}).key,'retryPatient');
+assert.equal(companion({retries:1}).key,'persistence','Trying again gets effort-specific encouragement');
+assert.equal(companion({completedCount:5}).key,'milestone');
+assert.equal(companion({completedCount:5}).count,5);
+assert.equal(companion({completedCount:5,replay:true}).key,'replay','Replays cannot invent new-solve milestones');
+assert.equal(companion({practiceFinished:true}).key,'practiceComplete','Practice completion does not claim the boss was cleared');
+assert.equal(companion({kind:'boss',finalStage:false}).key,'bossStage');
+assert.equal(companion({kind:'boss',finalStage:true}).key,'bossComplete');
+assert.equal(companion({kind:'challenge'}).key,'challengeComplete');
+assert.equal(new Set([1,2,3,4].map(completedCount=>companion({completedCount}).key)).size,4,'Routine messages vary without random changes on rerender');
+const companionKeys=['retry','retryPatient','persistence','milestone','replay','practiceComplete','bossStage','bossComplete','challengeComplete',...Array.from({length:4},(_,i)=>`progress${i}`)];
+for(const locale of ['en','lv']) {
+ const messages=JSON.parse(fs.readFileSync(`locales/${locale}.json`,'utf8')).puzzleCompanion;
+ assert.ok(companionKeys.every(key=>typeof messages[key]==='string' && messages[key].length>0),'Both locales include every companion message');
+}
+const { getQuantityTaskTokens, getQuantityTaskHeight } = load('@/utils/quantity-task-scene');
+const { findPuzzleDropZone, movePatternTile, moveOrderTile } = load('@/utils/puzzle-drag');
 const dropZones=[{id:'left',x:10,y:100,width:100,height:140},{id:'right',x:130,y:100,width:100,height:140}];
 assert.equal(findPuzzleDropZone(dropZones,60,170),'left');
 assert.equal(findPuzzleDropZone(dropZones,180,170),'right');
@@ -47,12 +67,89 @@ assert.deepEqual(JSON.parse(JSON.stringify(movePatternTile([0,null],0,1))),[null
 assert.deepEqual(JSON.parse(JSON.stringify(movePatternTile([0,1],0,null))),[null,1],'Returning a tile to the bank clears its gap');
 assert.deepEqual(JSON.parse(JSON.stringify(movePatternTile([0,1],0,0))),[0,1],'Dropping on the same slot preserves the board');
 assert.deepEqual(JSON.parse(JSON.stringify(movePatternTile([0,1],0,9))),[0,1],'An invalid target preserves the board');
+const originalOrder = [1,6,8,3];
+assert.deepEqual(JSON.parse(JSON.stringify(moveOrderTile(originalOrder,3,1))),[1,3,6,8],'Dragging left inserts a number and shifts the intervening tiles');
+assert.deepEqual(JSON.parse(JSON.stringify(moveOrderTile(originalOrder,0,3))),[6,8,3,1],'Dragging right also preserves the intervening order');
+assert.deepEqual(originalOrder,[1,6,8,3],'Reordering never mutates the source');
+assert.deepEqual(JSON.parse(JSON.stringify(moveOrderTile([2,1,2],0,2))),[1,2,2],'Equal values remain separate tiles');
+for (const [from,to] of [[1,1],[-1,2],[1,4],[1,NaN],[1.5,2]]) {
+  assert.deepEqual(JSON.parse(JSON.stringify(moveOrderTile(originalOrder,from,to))),originalOrder,'Invalid and unchanged positions preserve the board');
+}
 const { LEARNING_CATALOG, getPracticeIds, getRequiredIds, getLearningProgress, getTopicProgress, getTopicLessons, getLearningTopics, getLearningLevelState, isLessonAvailable, resolveLearningSession } = curriculum;
+const { getBossSceneProgress, advanceBossOutcome } = load('@/utils/boss-story');
+const storyBosses = LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === 'boss'));
+assert.equal(storyBosses.length, 18);
+assert.equal(new Set(storyBosses.map(boss => boss.story?.sceneId)).size, 18, 'Every boss has a distinct scene');
+for (const boss of storyBosses) {
+  assert.ok(boss.story, `${boss.id}: missing story`);
+  assert.equal(boss.puzzleIds.length, 3, 'A story is exactly three saved tasks');
+  assert.equal(boss.story.stages.length, 3);
+  assert.equal(boss.story.catActions.length, 4, 'The cat participates before the mission and after all three tasks');
+  for (const locale of ['en', 'lv']) {
+    for (const line of [boss.story.intro, boss.story.outcome, ...boss.story.catActions, ...boss.story.stages.flatMap(stage => [stage.title, stage.before, stage.after])]) {
+      assert.ok(typeof line[locale] === 'string' && line[locale].trim().length > 5, `${boss.id}: incomplete ${locale} story`);
+    }
+    assert.equal(new Set(boss.story.stages.map(stage => stage.title[locale])).size, 3, 'Each task has its own role in the mission');
+  }
+  for (let phase = 0; phase < 3; phase++) {
+    assert.equal(getBossSceneProgress(phase), phase, 'Entry and resumed scenes use the saved session checkpoint');
+    assert.equal(getBossSceneProgress(phase, false), phase, 'Wrong answers do not change the scene');
+    assert.equal(getBossSceneProgress(phase, true), phase + 1, 'Only a successful task changes the scene');
+  }
+}
+assert.equal(getBossSceneProgress(0), 0, 'Replaying a cleared boss starts with an unfinished scene');
+for (const invalid of [NaN, Infinity, -3]) assert.equal(getBossSceneProgress(invalid), 0);
+let ending = { elapsed: 0, frame: 0, finished: false };
+for (let frame = 0; frame < 120; frame++) ending = advanceBossOutcome(ending.elapsed, 1000 / 60);
+assert.equal(ending.frame, 15);
+// Floating-point sums can finish one animation frame later; they never loop.
+ending = advanceBossOutcome(ending.elapsed, 17);
+assert.equal(ending.finished, true);
+assert.equal(advanceBossOutcome(ending.elapsed, 100).frame, 15);
+assert.equal(advanceBossOutcome(0, 10000).elapsed, 100, 'A stalled frame cannot skip the ending');
+let reaction = { elapsed: 0, frame: 0, finished: false };
+for (let i = 0; i < 10; i++) reaction = advanceBossOutcome(reaction.elapsed, 100, 8);
+assert.equal(reaction.elapsed, 1000, 'Task cat reactions last one second');
+assert.equal(reaction.frame, 7);
+assert.equal(reaction.finished, true);
+assert.equal(advanceBossOutcome(reaction.elapsed, 100, 8).frame, 7, 'Task reactions hold without looping');
 const { applyPuzzleAnswer, getSolvedCounts } = load('@/utils/game-operations');
 const { createDefaultGameSave, parseGameSaveFromValue } = load('@/utils/game-storage');
 const { getPuzzleCoinReward } = load('@/constants/game');
 const tiers = ['easy','medium','hard'];
 const en = tiers.flatMap(tier=>getPuzzlesByDifficulty('en',tier));
+const animatedTasks = en.filter(puzzle => puzzle.taskVisual);
+assert.ok(animatedTasks.length >= 10, 'At least ten arithmetic tasks have authored quantity models');
+for (const puzzle of animatedTasks) {
+  const model = puzzle.taskVisual;
+  const total = model.kind === 'array' ? model.rows * model.columns : model.kind === 'join' ? model.left + model.right : model.left - model.right;
+  assert.equal(Number(puzzle.choices[puzzle.correctIndex]), total, `${puzzle.id}: the task model must match the answer`);
+  assert.deepEqual(puzzle.taskVisual, tiers.flatMap(tier=>getPuzzlesByDifficulty('lv',tier)).find(other=>other.id===puzzle.id).taskVisual,'Authored quantities match across locales');
+  const before = getQuantityTaskTokens(model, 0), after = getQuantityTaskTokens(model, 1);
+  assert.deepEqual(Array.from(before,token=>token.id), Array.from(after,token=>token.id),'Counter identities survive the animation');
+  assert.equal(after.filter(token=>token.visible!==false).length, model.kind==='take_away' ? total : before.length);
+  assert.ok(after.every(token=>token.label===''), 'The animation shows quantities without writing the result');
+  for(const token of [...before,...after].filter(token=>token.visible!==false)) {
+    assert.ok(token.x>=6 && token.x<=294 && token.y>=6 && token.y<=getQuantityTaskHeight(model)-6,`${puzzle.id}: counters fit in the scene`);
+  }
+  for (const frame of [before,after]) {
+    const visible = frame.filter(token=>token.visible!==false);
+    for (let i=0;i<visible.length;i++) for(let j=i+1;j<visible.length;j++) {
+      assert.ok(Math.abs(visible[i].x-visible[j].x)>=12 || Math.abs(visible[i].y-visible[j].y)>=12,`${puzzle.id}: counters must never overlap`);
+    }
+  }
+}
+for (const puzzle of en.filter(puzzle=>puzzle.type==='fair_share')) {
+  const model={kind:'share',items:puzzle.payload.items,groups:puzzle.payload.people};
+  for(let round=0;round<=Math.floor(model.items/model.groups)+1;round++) {
+    const tokens=getQuantityTaskTokens(model,round), counters=tokens.filter(token=>token.id.startsWith('counter-'));
+    assert.equal(counters.length,model.items,'No counters are omitted or duplicated, including leftovers');
+    assert.equal(new Set(counters.map(token=>token.id)).size,model.items);
+    const dealt=counters.filter(token=>token.y>=85);
+    assert.equal(dealt.length,Math.min(round,Math.floor(model.items/model.groups))*model.groups,'Only complete equal rounds leave the pool');
+    for(let group=0;group<model.groups;group++) assert.equal(dealt.filter(token=>Number(token.id.split('-')[1])%model.groups===group).length,dealt.length/model.groups,'All plates receive the same amount');
+  }
+}
 const byId = new Map(en.map(p=>[p.id,p]));
 const canonical = value => JSON.parse(JSON.stringify(value));
 const topicIds = LEARNING_CATALOG.topics.map(topic=>topic.id);
@@ -309,6 +406,21 @@ const replay=applyPuzzleAnswer(restored,byId.get(boss.puzzleIds[0]),true,'boss-r
 assert.equal(replay.coins,getPuzzleCoinReward(bossLesson.difficulty,true));
 assert.equal(replay.save.progress.completedPuzzleIds.length,restored.progress.completedPuzzleIds.length);
 assert.equal(applyPuzzleAnswer(replay.save,byId.get(boss.puzzleIds[0]),true,'boss-replay',now).coins,0,'A delivered attempt rewards only once');
+for (const mission of storyBosses) {
+  const lesson = LEARNING_CATALOG.lessons.find(item => item.levels.includes(mission));
+  let checkpointSave = { ...start, progress: { ...start.progress, completedPuzzleIds: getPracticeIds(lesson) } };
+  for (let phase = 0; phase < 3; phase++) {
+    const resumed = resolveLearningSession(lesson.difficulty, lesson.id, mission.id, undefined, checkpointSave.progress.completedPuzzleIds);
+    assert.equal(resumed.phase, phase, `${mission.id}: resume at the first unfinished story task`);
+    assert.equal(getBossSceneProgress(resumed.phase), phase);
+    const wrong = applyPuzzleAnswer(checkpointSave, byId.get(mission.puzzleIds[phase]), false, `${mission.id}-wrong-${phase}`, now).save;
+    assert.equal(resolveLearningSession(lesson.difficulty, lesson.id, mission.id, undefined, wrong.progress.completedPuzzleIds).phase, phase);
+    checkpointSave = applyPuzzleAnswer(checkpointSave, byId.get(mission.puzzleIds[phase]), true, `${mission.id}-clear-${phase}`, now).save;
+    assert.equal(getLearningProgress(mission.puzzleIds, checkpointSave.progress.completedPuzzleIds).complete, phase === 2, 'Only the third task completes a boss');
+  }
+  const replaySession = resolveLearningSession(lesson.difficulty, lesson.id, mission.id, undefined, checkpointSave.progress.completedPuzzleIds);
+  assert.equal(replaySession.phase, 0, `${mission.id}: replay resets its story scene`);
+}
 for(const bad of ['-1','1.5','NaN','Infinity','999999999999999999999','3']) assert.equal(resolveLearningSession(bossLesson.difficulty,bossLesson.id,boss.id,bad,restored.progress.completedPuzzleIds),null);
 assert.equal(resolveLearningSession('hard',bossLesson.id,boss.id,undefined,restored.progress.completedPuzzleIds),null);
 assert.equal(resolveLearningSession('easy','missing','missing',undefined,[]),null);

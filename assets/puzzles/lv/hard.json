@@ -752,6 +752,11 @@
       "28"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 8,
+      "columns": 6
+    },
     "question": "Dārzā ir 8 rindas, katrā 6 kvadrātveida stādvietas. Cik stādvietu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
     "explanation": "8 × 6 = 48 kvadrātveida stādvietas."
@@ -837,6 +842,11 @@
       "34"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 12,
+      "columns": 5
+    },
     "question": "Dārzā ir 12 rindas, katrā 5 kvadrātveida stādvietas. Cik stādvietu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
     "explanation": "12 × 5 = 60 kvadrātveida stādvietas."
@@ -1104,9 +1114,9 @@
     ],
     "type": "fraction_build",
     "topic": "fractions",
-    "question": "Trīs ceturtdaļas ir apstādītas. Iekrāso ceturtdaļu, kas vēl ir tukša.",
+    "question": "Trīs ceturtdaļas ir ieplānotas puķēm. Iekrāso ceturtdaļu, kas atstāta takai.",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Viena no četrām vienādajām daļām vēl ir tukša.",
+    "explanation": "Viena no četrām vienādajām daļām ir atstāta takai.",
     "payload": {
       "numerator": 1,
       "denominator": 4

@@ -1,4 +1,4 @@
-/** Check one-number movement, range limits, and answer privacy before submission. */
+/** Check one-number movement, range limits, and answer privacy until success. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -31,9 +31,9 @@ for (const locale of ['en', 'lv']) {
   vm.runInNewContext(source, { module, exports: module.exports, require });
   const { NumberLineTask } = module.exports;
   const puzzle = { payload: { min: -2, max: 15, start: 12, jump: -5, correctValue: 7 } };
-  let selectedValue = null, answered = false;
+  let selectedValue = null, answered = false, isCorrect = false;
   const render = () => flatten(NumberLineTask({
-    puzzle, selectedValue, answered, isCorrect: false, onSelectValue: value => { selectedValue = value; },
+    puzzle, selectedValue, answered, isCorrect, onSelectValue: value => { selectedValue = value; },
   }));
   const button = key => render().find(node => node.type === 'Pressable' && node.props.accessibilityLabel === translate(key));
   const track = () => render().find(node => node.type === 'Track').props;
@@ -55,7 +55,12 @@ for (const locale of ['en', 'lv']) {
   assert.equal(button('puzzleTypes.numberLineMoveLeft').props.disabled, false);
   answered = true;
   assert.equal(track().disabled, true);
-  assert.equal(track().correctValue, 7, 'The answer is shown only after submission');
+  assert.equal(track().correctValue, undefined, 'An incorrect submission does not reveal the answer');
+  assert.equal(track().wrongValue, selectedValue, 'The incorrect selection retains its feedback');
   assert.equal(render().some(node => node.type === 'Pressable'), false, 'Submitted answers cannot be moved');
+  isCorrect = true;
+  selectedValue = 7;
+  assert.equal(track().correctValue, 7, 'A successful submission still highlights the answer');
+  assert.equal(track().wrongValue, undefined, 'A successful submission has no incorrect marker');
 }
 console.log('Number-line checks passed: localized one-step controls, bounds, editing, and answer privacy.');

@@ -1,20 +1,26 @@
 import { IconText as Text } from "@/components/ui/IconText";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { PetDisplay } from "@/pet-display/components/PetDisplay";
+import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
+import type { BossStory } from "@/types/curriculum";
+import type { AppLocale } from "@/types/locale";
+import { PuzzleCatCompanion } from "@/components/puzzle/PuzzleCatCompanion";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors, LIFE_BUY_COST } from "@/constants/game";
 import type { PetAnimationState, PetType } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 type ResultOverlayProps = {
   visible: boolean;
+  bossStory?: { story: BossStory; locale: AppLocale; completed: number };
   correct: boolean;
   petType: PetType;
   catSkinId?: string;
   petMood: PetAnimationState;
+  petName: string;
+  encouragement: string;
   message: string;
   detail: string;
   coinsEarned?: number;
@@ -29,10 +35,13 @@ type ResultOverlayProps = {
 
 export function ResultOverlay({
   visible,
+  bossStory,
   correct,
   petType,
   catSkinId,
   petMood,
+  petName,
+  encouragement,
   message,
   detail,
   coinsEarned = 0,
@@ -45,51 +54,85 @@ export function ResultOverlay({
   coins = 0,
 }: ResultOverlayProps) {
   const { t } = useTranslation();
+  const actionHandled = useRef(false);
+  const pendingAction = useRef<"continue" | "home" | null>(null);
+  const [closing, setClosing] = useState(false);
+  if (!visible && closing) setClosing(false);
+  useEffect(() => {
+    if (visible) {
+      actionHandled.current = false;
+      pendingAction.current = null;
+    }
+  }, [visible]);
+  const continueOnce = () => {
+    if (actionHandled.current) return;
+    actionHandled.current = true;
+    pendingAction.current = "continue";
+    setClosing(true);
+  };
+  const goHomeOnce = () => {
+    if (actionHandled.current) return;
+    actionHandled.current = true;
+    pendingAction.current = "home";
+    setClosing(true);
+  };
+  const handleDismissComplete = () => {
+    // A swipe may finish before iOS sends its presentation-change event.
+    const action = pendingAction.current ?? (!actionHandled.current && visible ? "continue" : null);
+    actionHandled.current = true;
+    pendingAction.current = null;
+    if (action === "home") onGoHome?.();
+    else if (action === "continue") onContinue();
+  };
 
   return (
-    <AppBottomSheet visible={visible} onClose={onContinue}>
-      <View style={styles.card}>
-        <View style={styles.petWrap}>
-          <ResultPet key={`${visible}-${petMood}`} petType={petType}
-            catSkinId={catSkinId} petMood={petMood} />
-        </View>
+    <AppBottomSheet visible={visible && !closing} onClose={continueOnce} onDismissComplete={handleDismissComplete} expanded>
+      {contentHeight => <View style={[styles.screen, contentHeight !== undefined && { height: contentHeight, flex: 0 }]}>
+        <ScrollView style={styles.body} nestedScrollEnabled={Platform.OS === "android"} contentContainerStyle={styles.card} showsVerticalScrollIndicator={false}>
+          {correct && bossStory ? <BossStoryScene story={bossStory.story} locale={bossStory.locale}
+            completed={bossStory.completed} outcome={bossStory.completed === 3} reaction={bossStory.completed < 3} active={visible} /> : null}
+          <PuzzleCatCompanion key={`${visible}-${petMood}-${encouragement}`} petType={petType}
+            catSkinId={catSkinId} mood={petMood} petName={petName} message={encouragement} portraitSize={bossStory && correct ? 88 : 180} />
 
-        <Text
-          style={[
-            styles.title,
-            correct ? styles.titleSuccess : styles.titleHint,
-          ]}
-        >
-          {message}
-        </Text>
-        <Text style={styles.detail}>{detail}</Text>
-
-        {correct && coinsEarned > 0 && (
-          <View
+          <Text
+            accessibilityRole="header"
             style={[
-              styles.coinRow,
-              coinType === "sparkle" && styles.sparkleCoinRow,
+              styles.title,
+              correct ? styles.titleSuccess : styles.titleHint,
             ]}
           >
-            <AppIcon name={coinType === "sparkle" ? "sparkle" : "coin"} size={moderateScale(28)} />
-            <Text
+            {message}
+          </Text>
+          <Text style={styles.detail}>{detail}</Text>
+
+          {correct && coinsEarned > 0 && (
+            <View
               style={[
-                styles.coinText,
-                coinType === "sparkle" && styles.sparkleCoinText,
+                styles.coinRow,
+                coinType === "sparkle" && styles.sparkleCoinRow,
               ]}
             >
-              +{coinsEarned}{" "}
-              {coinType === "sparkle"
-                ? t("play.sparkleCoinsLabel")
-                : t("play.coinsLabel")}
-            </Text>
-          </View>
-        )}
+              <AppIcon name={coinType === "sparkle" ? "sparkle" : "coin"} size={moderateScale(28)} />
+              <Text
+                style={[
+                  styles.coinText,
+                  coinType === "sparkle" && styles.sparkleCoinText,
+                ]}
+              >
+                +{coinsEarned}{" "}
+                {coinType === "sparkle"
+                  ? t("play.sparkleCoinsLabel")
+                  : t("play.coinsLabel")}
+              </Text>
+            </View>
+          )}
 
+        </ScrollView>
         <View style={styles.actions}>
           <Pressable
             style={styles.primaryButton}
-            onPress={onContinue}
+            onPress={continueOnce}
+            disabled={closing}
             accessibilityRole="button"
             accessibilityLabel={
               continueLabel ??
@@ -105,7 +148,8 @@ export function ResultOverlay({
           {correct && onGoHome && (
             <Pressable
               style={styles.secondaryButton}
-              onPress={onGoHome}
+              onPress={goHomeOnce}
+              disabled={closing}
               accessibilityRole="button"
               accessibilityLabel={t("play.a11yHome")}
             >
@@ -128,27 +172,21 @@ export function ResultOverlay({
             </Pressable>
           ) : null}
         </View>
-      </View>
+      </View>}
     </AppBottomSheet>
   );
 }
 
-function ResultPet({ petType, catSkinId, petMood }: Pick<ResultOverlayProps, "petType" | "catSkinId" | "petMood">) {
-  const [finished, setFinished] = useState(false);
-  return <PetDisplay petType={petType} catSkinId={catSkinId} mood={finished ? "idle" : petMood}
-    width={moderateScale(120)} onAnimationComplete={() => setFinished(true)} transparentBackground />;
-}
-
 const styles = StyleSheet.create({
+  screen: { flex: 1, width: "100%", backgroundColor: GameColors.background },
+  body: { flex: 1, minHeight: 0 },
   card: {
     width: "100%",
     paddingTop: moderateScale(20),
     paddingHorizontal: moderateScale(20),
+    paddingBottom: moderateScale(16),
     alignItems: "center",
     gap: moderateScale(10),
-  },
-  petWrap: {
-    marginBottom: moderateScale(4),
   },
   title: {
     fontSize: moderateScale(22),
@@ -191,9 +229,11 @@ const styles = StyleSheet.create({
     color: "#6B4FCF",
   },
   actions: {
+    flexShrink: 0,
     width: "100%",
     gap: moderateScale(10),
-    marginTop: moderateScale(4),
+    paddingHorizontal: moderateScale(20),
+    paddingTop: moderateScale(12),
   },
   primaryButton: {
     width: "100%",
@@ -208,6 +248,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(17),
     fontWeight: "800",
     color: "#FFFFFF",
+    textAlign: "center",
   },
   secondaryButton: {
     width: "100%",

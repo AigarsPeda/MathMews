@@ -20,8 +20,12 @@ checks.push('check-cat-tail-contact');
 checks.push('check-cat-expression');
 checks.push('check-cat-waking');
 checks.push('check-cat-fluid-motion');
+checks.push('check-cat-exploration');
+checks.push('check-cat-spine');
 checks.push('check-cat-room-flow');
 checks.push('check-curriculum');
+checks.push('check-result-dismissal');
+checks.push('check-answer-feedback');
 for (const check of checks) {
   const result = spawnSync(process.execPath, [`scripts/${check}.mjs`], { stdio: 'inherit' });
   if (result.status !== 0) process.exit(result.status ?? 1);

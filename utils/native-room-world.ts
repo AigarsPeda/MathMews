@@ -1,8 +1,7 @@
-import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { isDecorationOpen } from '@/constants/item-interactions';
 import { CAT_FURNITURE, isFurniturePerch } from '@/constants/cat-furniture';
 import { catJourneyGait, type CatGait } from '@/utils/native-cat-gaits';
-import { steerCatPath, roundCatPath, catPacedPath, catJumpPoint, catJumpAim, catJumpDuration, catWalkTiming, CAT_LANDING_WALK_PHASE, type CatMotionLeg } from '@/utils/native-cat-locomotion';
+import { steerCatPath, roundCatPath, catPacedPath, catJumpPoint, catJumpAim, catJumpDuration, catWalkTiming, CAT_LANDING_WALK_PHASE, type CatMotionLeg, type CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { catTurnDuration } from '@/utils/native-cat-turn';
 import { buildCatTraversalLinks, type CatTraversalLink } from '@/utils/native-cat-traversal';
 import { CURTAIN_FABRIC_BOUNDS, isBathroomLightDecorationId, isCurtainDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
@@ -167,7 +166,9 @@ export type NativeRoomWorld = {
   home: Vec3;
   objects: NativeRoomObject[];
 };
+export type CatBrushPass = { from: Vec3; to: Vec3; side: number; instanceId: string };
 export type NativeTravel = {
+  brushSide?: number;
   through?: boolean;
   entryMotion?: CatTravelMotion;
   arcHeight?: number;
@@ -621,6 +622,32 @@ export function isFree(point: Vec3, world: NativeRoomWorld, ignoreId?: string): 
     }
   return true;
 }
+export function findCatCrawlPass(world: NativeRoomWorld, turn: number) {
+  const links=buildCatTraversalLinks(world,point=>isFree(point,world)).filter(link=>link.leg.animation==='crawl');
+  return links[turn%links.length];
+}
+
+/** A cheek/shoulder pass along sturdy furniture, with clear space at both ends. */
+export function findCatBrushPass(world: NativeRoomWorld, turn: number): CatBrushPass | undefined {
+  const scale=world.catScale, compact={...world,radius:Math.min(world.radius,.40*scale)};
+  const candidates:CatBrushPass[]=[];
+  for(const object of world.objects) {
+    if(!object.solid || object.opened || object.movable || object.min[1]>FLOOR_Y+.2*scale
+      || object.max[1]<FLOOR_Y+scale || !/^(sofa|bedroomWardrobe|bedroomDresser|bookcase|cupboard|kitchenIsland|kitchenCounter|kitchenFridge|bedroomChest)/.test(object.modelId))continue;
+    const neighbors={...world,objects:world.objects.filter(other=>other!==object)};
+    for(const axis of [0,2])for(const side of [-1,1]) {
+      const along=axis===0?2:0,from:Vec3=[0,FLOOR_Y,0],to:Vec3=[0,FLOOR_Y,0];
+      from[axis]=to[axis]=(side<0?object.min[axis]:object.max[axis])+side*(.48*scale+.02);
+      from[along]=object.min[along]-1.2*scale;to[along]=object.max[along]+1.2*scale;
+      if(!isFree(from,world)||!isFree(to,world)||!clearLine(from,to,compact)||!clearLine(from,to,neighbors))continue;
+      const heading=Math.atan2(to[0]-from[0],to[2]-from[2]);
+      const toward=axis===0?-side*Math.cos(heading):side*Math.sin(heading);
+      candidates.push({from,to,side:toward,instanceId:object.instanceId});
+    }
+  }
+  return candidates[turn%candidates.length];
+}
+
 /** Share one floor occupancy scan across all approach repairs in a layout build.
  * This cache belongs to the build, so live physics/mutable previews cannot leave
  * stale obstacles in a later navigation query. */
@@ -860,7 +887,7 @@ function searchRoomRoute(start: Vec3, target: Vec3, world: NativeRoomWorld, link
         }
       }
       const path = legs.flatMap((leg, index) => index ? leg.path.slice(1) : leg.path);
-      return { path: path.length ? path : [start, end], legs: legs.some(leg => leg.kind === 'hop') ? legs : undefined };
+      return { path: path.length ? path : [start, end], legs: legs.some(leg => leg.kind === 'hop' || leg.animation === 'crawl') ? legs : undefined };
     }
     closed.add(current);
     const visit = (next: number, edgeCost: number) => {
@@ -1443,11 +1470,18 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   }
   // A resting/play clip stays where navigation actually arrived. Reusing the
   // old sprite target here would undo the detour and snap into the furniture.
+  const crawl = step.crawl && findCatCrawlPass(world,step.crawl.choice);
+  const crawlValid=!!crawl && crawl.leg.supportId===step.crawl?.instanceId
+    && pathLength([start,crawl.from])<.06*world.catScale;
+  const brush = step.brush && findCatBrushPass(world, step.brush.choice);
+  const brushValid = !!brush && brush.instanceId === step.brush?.instanceId
+    && pathLength([start,brush.from]) < .06*world.catScale;
   const bedCrawl = !!object?.bed && (step.bedPhase === 'crawl' || step.bedPhase === 'uncover');
-  let route = walking && !bedCrawl ? findCatRoomRoute(start, target, world) : undefined;
-  let path = jump || bedCrawl ? [start, target] : walking ? route!.path : [start];
-  if (walking && !route?.legs) path = roundCatPath(path, .6 * world.catScale, (a,b) => clearLine(a,b,world));
-  let blocked = !!walking && path.length === 1 && Math.hypot(start[0] - target[0], start[2] - target[2]) > .05;
+  let route = walking && !bedCrawl && !step.brush && !step.crawl ? findCatRoomRoute(start, target, world) : undefined;
+  if(crawlValid&&crawl)route={path:[start,crawl.to],legs:[{...crawl.leg,path:[start,crawl.to]}]};
+  let path = step.crawl ? crawlValid && crawl ? [start,crawl.to] : [start] : step.brush ? brushValid && brush ? [start,brush.to] : [start] : jump || bedCrawl ? [start, target] : walking ? route!.path : [start];
+  if (walking && !step.brush && !route?.legs) path = roundCatPath(path, .6 * world.catScale, (a,b) => clearLine(a,b,world));
+  let blocked = !!step.crawl && !crawlValid || !!step.brush && !brushValid || !!walking && path.length === 1 && Math.hypot(start[0] - target[0], start[2] - target[2]) > .05;
   if (plan.kind === 'bowlEat' && step.bowlApproach && !bowlPath) { blocked = true; path = [start]; }
   if (plan.kind === 'bowlEat' && step.animation === 'eating' && object
     && Math.abs(Math.hypot(start[0] - object.position[0], start[2] - object.position[2]) - CAT_EATING_REACH * world.catScale) > .08) blocked = true;
@@ -1475,15 +1509,19 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   if (jump && arcHeight===undefined) { blocked = true; path = [start]; }
   if (walking && !bedCrawl && !blocked) path = catPacedPath(path,world.catScale);
   const paceIntent = step.returnHome ? 'returnHome' : plan.kind;
-  const gait = catJourneyGait(paceIntent, pathLength(path), world.catScale);
+  const gait = step.brush ? 'walk' : step.gait ?? catJourneyGait(paceIntent, pathLength(path), world.catScale);
   const roomyWorld = { ...world, radius: world.radius + .16 * world.catScale };
-  const roomy = (point: Vec3) => isFree(point, roomyWorld);
+  const roomy = (point: Vec3) => !step.brush && isFree(point, roomyWorld);
   const walkingThrough=!!walking && !blocked && (!!step.leavingRoom || plan.kind==='doorTravel') && (!route?.legs?.length || route.legs.at(-1)?.kind==='walk');
   const walkTiming = walking && !bedCrawl ? catWalkTiming(path,world.catScale,gait,roomy,walkingThrough) : undefined;
+  if (step.brush && walkTiming) {
+    walkTiming.paces=walkTiming.paces.map(pace=>pace*1.8);
+    walkTiming.duration=(walkTiming.duration-walkTiming.ramp)*1.8+walkTiming.ramp;
+  }
   if (route?.legs && walking && !blocked) route = { ...route, legs: route.legs.map((leg,index,legs) => {
     if (leg.kind !== 'walk' || leg.animation) return leg;
     const path = catPacedPath(leg.path,world.catScale);
-    return { ...leg, path, ...catWalkTiming(path,world.catScale,catJourneyGait(paceIntent,pathLength(path),world.catScale),roomy,walkingThrough&&index===legs.length-1) };
+    return { ...leg, path, ...catWalkTiming(path,world.catScale,step.gait??catJourneyGait(paceIntent,pathLength(path),world.catScale),roomy,walkingThrough&&index===legs.length-1) };
   }) };
   if (route?.legs && !blocked) route = { ...route, legs: route.legs.map((leg,index,legs) => {
     const next = legs[index+1];
@@ -1519,7 +1557,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
       leaving: rockingSupport===fromSupport || step.animation === 'jumpOff' && !step.jumpFromInstanceId }
     : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking || jump ? duration * 1000 : step.durationMs, moveMs: walking || jump ? duration * 1000 : step.moveMs,
-    native: { through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
+    native: { brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
       ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
       jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, targetPosition: object?.position, objectPath, objectDuration: duration * .6,

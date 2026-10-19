@@ -34,7 +34,7 @@ export function TrueFalseTask({
       <View style={styles.row}>
         {options.map(({ label, index }) => {
           const selected = selectedIndex === index;
-          const isCorrectOption = answered && index === correctIndex;
+          const isCorrectOption = answered && isCorrect && index === correctIndex;
           const isWrongPick = answered && !isCorrect && selected;
 
           return (

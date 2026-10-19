@@ -17,3 +17,12 @@ export function movePatternTile(placements: readonly (number | null)[], tile: nu
   if (slot !== null) next[slot] = tile;
   return next;
 }
+
+/** Insert a tile at the destination position, keeping the other tiles in order. */
+export function moveOrderTile(order: readonly number[], from: number, to: number): number[] {
+  const next = [...order];
+  if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || to < 0 || from >= next.length || to >= next.length || from === to) return next;
+  const [tile] = next.splice(from, 1);
+  next.splice(to, 0, tile);
+  return next;
+}

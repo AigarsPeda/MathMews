@@ -21,7 +21,6 @@ export function PairSumTask({
 }: PairSumTaskProps) {
   const { t } = useTranslation();
   const { numbers, target } = puzzle.payload;
-  const [correctA, correctB] = puzzle.payload.correctIndices;
 
   return (
     <View style={styles.wrap}>
@@ -33,11 +32,7 @@ export function PairSumTask({
       <View style={styles.grid}>
         {numbers.map((num, index) => {
           const selected = selectedIndices.includes(index);
-          const isCorrectTile =
-            answered &&
-            (isCorrect
-              ? selected
-              : index === correctA || index === correctB);
+          const isCorrectTile = answered && isCorrect && selected;
           const isWrongTile =
             answered && !isCorrect && selected && !isCorrectTile;
 

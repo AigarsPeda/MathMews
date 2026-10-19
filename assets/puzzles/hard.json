@@ -752,6 +752,11 @@
       "28"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 8,
+      "columns": 6
+    },
     "question": "A garden has 8 rows of 6 square planting spaces. How many square spaces?",
     "hint": "Count the same number in every group.",
     "explanation": "8 × 6 = 48 square spaces."
@@ -837,6 +842,11 @@
       "34"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 12,
+      "columns": 5
+    },
     "question": "A garden has 12 rows of 5 square planting spaces. How many square spaces?",
     "hint": "Count the same number in every group.",
     "explanation": "12 × 5 = 60 square spaces."
@@ -1104,9 +1114,9 @@
     ],
     "type": "fraction_build",
     "topic": "fractions",
-    "question": "Three quarters are planted. Shade the quarter that is still empty.",
+    "question": "Three quarters are planned for flowers. Shade the quarter reserved for a path.",
     "hint": "Check the total number of equal parts first.",
-    "explanation": "One of four equal parts is still empty.",
+    "explanation": "One of four equal parts is reserved for the path.",
     "payload": {
       "numerator": 1,
       "denominator": 4

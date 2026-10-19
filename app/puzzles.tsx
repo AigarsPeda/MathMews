@@ -75,7 +75,7 @@ export default function PuzzlesScreen() {
         <DifficultyPicker selected={difficulty} onSelect={tier => {
           router.replace({ pathname: "/puzzles", params: { difficulty: tier } });
         }} />
-        <ScrollView key={`${difficulty}-${topic?.id}-${lesson?.id}`} style={styles.scroll} contentContainerStyle={styles.content}>
+        <ScrollView key={`${difficulty}-${topic?.id}-${lesson?.id}`} style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           {topic && <Text style={styles.location}>{[t(`difficulty.${difficulty}`), ...(lesson ? [topic.title[locale]] : [])].join(" / ")}</Text>}
           <Text style={styles.title} accessibilityRole="header">{title}</Text>
           <Text style={styles.description}>{description}</Text>

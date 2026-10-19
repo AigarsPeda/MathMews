@@ -40,6 +40,12 @@ export type PuzzleType =
 
 export type MathOperator = "+" | "-" | "×" | "÷";
 
+/** Quantities shown in the task itself, separate from worked picture help. */
+export type QuantityTaskModel =
+  | { kind: "join" | "take_away"; left: number; right: number }
+  | { kind: "array"; rows: number; columns: number }
+  | { kind: "share"; items: number; groups: number };
+
 export type OperationPathStep = {
   operand: number;
   operator: MathOperator;
@@ -142,6 +148,7 @@ export type FractionMatchPayload = {
 };
 
 type PuzzleBase = {
+  taskVisual?: QuantityTaskModel;
   /** Selects an independent worked example, never an answer to this task. */
   helpTemplate?: keyof typeof import("@/constants/visual-practice").VISUAL_PRACTICE;
   /** Authored quantities for worked help, shared across locales. */

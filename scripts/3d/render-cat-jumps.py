@@ -3,6 +3,8 @@ from pathlib import Path
 import bpy, math, json, struct, sys
 from mathutils import Vector, Matrix, Quaternion
 ROOT=Path(__file__).resolve().parents[2]
+refinement='--refinement' in sys.argv
+exploration=next((a.split('=',1)[1] for a in sys.argv if a.startswith('--exploration=')),None)
 expression='--expression' in sys.argv
 wake='--wake' in sys.argv
 rest='--rest' in sys.argv or wake
@@ -10,8 +12,13 @@ narrow='--narrow' in sys.argv
 nearby='--nearby' in sys.argv
 transfer=narrow or nearby or '--transfer' in sys.argv
 OUT=Path('/tmp/brainpet-expression-rest-review' if rest else '/tmp/brainpet-expression-jump-review' if expression else '/tmp/brainpet-narrow-review' if narrow else '/tmp/brainpet-nearby-review' if nearby else '/tmp/brainpet-transfer-review' if transfer else '/tmp/brainpet-landing-walk-review' if '--landing-walk' in sys.argv else '/tmp/brainpet-jump-review');OUT.mkdir(exist_ok=True)
+if refinement:
+    OUT=Path('/tmp/brainpet-movement-refinement/jump-renders');OUT.mkdir(exist_ok=True)
+if exploration:
+    OUT=Path('/tmp/brainpet-exploration-'+exploration+'-review');OUT.mkdir(exist_ok=True)
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 cat_asset=Path('/tmp/brainpet-expression-baseline/cat-orange.glb' if expression else '/tmp/brainpet-jump-baseline/cat-orange.glb') if '--before' in sys.argv else ROOT/'assets/3d/native/cat-orange.glb'
+if refinement and '--before' in sys.argv:cat_asset=Path('/tmp/brainpet-movement-refinement/before/cat-orange.glb')
 bpy.ops.import_scene.gltf(filepath=str(cat_asset))
 arm=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE')
 for obj in bpy.context.scene.objects:
@@ -52,6 +59,8 @@ version='before' if '--before' in sys.argv else 'after'
 poses=json.loads(Path('/tmp/brainpet-narrow-furniture.json' if narrow else '/tmp/brainpet-nearby-furniture.json' if nearby else '/tmp/brainpet-furniture-transfers.json' if transfer else ('/tmp/brainpet-landing-walk-' if '--landing-walk' in sys.argv else '/tmp/brainpet-jump-poses-')+version+'.json').read_text())
 if expression and version=='before':poses=json.loads(Path('/tmp/brainpet-expression-baseline/sofa-before.json').read_text())
 if rest:poses=json.loads(Path('/tmp/brainpet-cat-waking.json' if wake else '/tmp/brainpet-expression-rest.json').read_text())
+if refinement and version=='before':poses=json.loads(Path('/tmp/brainpet-movement-refinement/before/sofa.json').read_text())
+if exploration:poses=json.loads(Path('/tmp/brainpet-exploration-'+exploration+'.json').read_text())
 for track in arm.animation_data.nla_tracks:track.mute=True
 arm.animation_data.action=None
 floor.location.z=.068
@@ -71,10 +80,14 @@ p=[0,.068,0] if rest else [sum(f['position'][i] for f in furnishings)/len(furnis
 focus=conversion@Vector((p[0],p[1],p[2]+.35))
 camera.location=focus+Vector((3.5,-4.8,3.3));camera.data.ortho_scale=4.2 if transfer else 2.8
 if rest:camera.data.ortho_scale=1.6
+if exploration:camera.data.ortho_scale=3.6
+if refinement:
+    camera.location=focus+Vector((4.8,-.3,1.6));camera.data.ortho_scale=2.6
 camera.rotation_euler=(focus+Vector((0,0,.35))-camera.location).to_track_quat('-Z','Y').to_euler()
 counts={}
 for pose in poses:
-    if pose['time'] > (8.5 if rest else 7 if nearby else 3 if transfer else 1.6 if pose['action']=='sit' else 2.2 if pose['action']=='jumpOff' else 2.4 if pose['action']=='landingWalk' else 1.5):continue
+    if refinement and (pose['action']!='jumpOn' or pose['time']>1):continue
+    if pose['time'] > (12 if exploration else 8.5 if rest else 7 if nearby else 3 if transfer else 1.6 if pose['action']=='sit' else 2.2 if pose['action']=='jumpOff' else 2.4 if pose['action']=='landingWalk' else 1.5):continue
     index=counts.get(pose['action'],0);counts[pose['action']]=index+1
     if index%2:continue
     desired={name:arm.matrix_world.inverted()@conversion@Matrix([values[j::4] for j in range(4)])@corrections[name] for name,values in pose['nodes'].items() if name in corrections}

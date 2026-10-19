@@ -1,61 +1,59 @@
-import { BottomSheet, RNHostView, type SnapPoint } from "@expo/ui";
+import { RNHostView } from "@expo/ui";
 import { moderateScale } from "@/utils/scale";
+import { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { AppBottomSheetProps } from "./AppBottomSheet.types";
+import { SheetPresentation } from "./SheetPresentation";
 
 export type { AppBottomSheetProps } from "./AppBottomSheet.types";
-
-const DEFAULT_SNAP_POINTS: SnapPoint[] = ["half"];
-/**
- * Picture help needs most of the screen. On Android, fractional snap points map to
- * ~half or full only — use full height so content can scroll inside the sheet.
- */
-const EXPANDED_SNAP_POINTS: SnapPoint[] =
-  Platform.OS === "android" ? ["full"] : [{ fraction: 0.88 }];
 
 export function AppBottomSheet({
   visible,
   onClose,
+  onDismissComplete,
   children,
   expanded = false,
 }: AppBottomSheetProps) {
   const insets = useSafeAreaInsets();
-  const snapPoints = expanded ? EXPANDED_SNAP_POINTS : DEFAULT_SNAP_POINTS;
-  const bottomInset = Math.max(
-    insets.bottom,
-    Platform.OS === "android" ? moderateScale(20) : 0,
-  );
+  const [viewportHeight, setViewportHeight] = useState(0);
+  // SwiftUI already keeps the measured content above the home indicator.
+  const bottomInset = Platform.OS === "android"
+    ? Math.max(insets.bottom, moderateScale(20))
+    : 0;
 
   return (
-    <BottomSheet
-      isPresented={visible}
-      onDismiss={onClose}
-      snapPoints={snapPoints}
+    <SheetPresentation
+      visible={visible}
+      onClose={onClose}
+      onDismissComplete={onDismissComplete}
+      expanded={expanded}
     >
       {/* Native presentation owns visibility, including the closing animation. */}
-      <RNHostView style={styles.host}>
+      <RNHostView onLayout={event => {
+        const height = event.nativeEvent.layout.height;
+        if (height > 0) setViewportHeight(height);
+      }}>
         <View
           style={[
             styles.content,
             expanded && styles.contentExpanded,
-            { paddingBottom: bottomInset + moderateScale(expanded ? 24 : 16) },
+            expanded && viewportHeight > 0 && { height: viewportHeight, flex: 0 },
+            { paddingBottom: bottomInset + moderateScale(12) },
           ]}
         >
-          {children}
+          {/* Fixed result actions need the same explicit bound as the native host. */}
+          {typeof children === "function"
+            ? children(expanded && viewportHeight > 0 ? Math.max(0, viewportHeight - bottomInset - moderateScale(12)) : undefined)
+            : children}
         </View>
       </RNHostView>
-    </BottomSheet>
+    </SheetPresentation>
   );
 }
 
 const styles = StyleSheet.create({
-  host: {
-    width: "100%",
-    alignSelf: "stretch",
-    flex: 1,
-  },
   content: {
     width: "100%",
     alignSelf: "stretch",

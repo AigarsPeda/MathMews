@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-19",
+  "build": "iOS development build, native Skia and Reanimated playback",
+  "device": "iPhone 18 Pro / iOS 27 simulator",
+  "nativeCases": [
+    "all 18 unique endings load and finish",
+    "replay available after one-shot playback",
+    "continuation stays enabled during playback",
+    "leaving during replay",
+    "wrong answers retain the scene checkpoint",
+    "successful tasks show states 1 and 2",
+    "restart and resume scene presentation",
+    "Latvian ending and rapid continuation",
+    "Continue and Home fully visible above the home indicator for every boss",
+    "regular result-sheet regression: progress, retry, boss, Latvian, long hint and single continuation"
+  ],
+  "offlineChecks": [
+    "418 localized puzzles and 209 server reward registrations",
+    "all 18 real boss session checkpoint/retry/replay routes",
+    "72 distinct uncropped scene checkpoints",
+    "288 animated outcome frames and atlas borders",
+    "18 editable Blender sources",
+    "TypeScript and targeted ESLint"
+  ],
+  "preview": "all-boss-scenes.png",
+  "nativeResult": "native-test-result.json",
+  "screenshots": [
+    "native-train-outcome.png",
+    "native-garden-outcome.png",
+    "native-vault-outcome.png",
+    "native-shelves-outcome.png",
+    "native-stage-one.png",
+    "native-stage-two.png",
+    "native-latvian-outcome.png"
+  ],
+  "testFixtureWritesGameState": false,
+  "companionRegressionResult": "companion-regression-result.json",
+  "catSceneVerification": {
+    "nativeResult": "cat-native-test-result.json",
+    "blenderSourceAudit": "cat-blender-source-audit.json",
+    "sceneCount": 18,
+    "taskReactionCount": 36,
+    "endingCount": 18,
+    "checkpointCount": 72,
+    "animationFrameCount": 576,
+    "model": "assets/3d/native/cat-orange.glb",
+    "nativeChecks": [
+      "both task reactions in every boss finish once",
+      "ending and replay in every boss",
+      "Continue available during playback",
+      "fixed actions inside sheet",
+      "leaving during a replay",
+      "retry and restart",
+      "resume uses a static checkpoint",
+      "Latvian captions and rapid continuation"
+    ],
+    "screenshots": [
+      "native-cat-reaction-one.png",
+      "native-cat-reaction-two.png",
+      "native-cat-latvian.png",
+      "native-cat-train-outcome.png",
+      "native-cat-garden-outcome.png",
+      "native-cat-vault-outcome.png",
+      "native-cat-shelves-outcome.png",
+      "native-cat-kite-outcome.png"
+    ]
+  }
+}

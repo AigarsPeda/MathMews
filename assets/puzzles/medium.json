@@ -362,6 +362,11 @@
       "49"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 6,
+      "columns": 7
+    },
     "question": "Make 6 rows with 7 toy mice in each. How many mice?",
     "hint": "Count the same number in every group.",
     "explanation": "6 × 7 = 42."
@@ -445,6 +450,11 @@
       "81"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 8,
+      "columns": 9
+    },
     "question": "Make 8 rows with 9 toy mice in each. How many mice?",
     "hint": "Count the same number in every group.",
     "explanation": "8 × 9 = 72."

@@ -94,8 +94,8 @@ export function PuzzleDropArea({ id, children, style, label }: { id: string; chi
   </View>;
 }
 
-export function PuzzleDragTile({ id, label, disabled, compact, accessibilityLabel, accessibilityHint, actions }: {
-  id: string; label: string; disabled: boolean; compact?: boolean; accessibilityLabel: string; accessibilityHint: string;
+export function PuzzleDragTile({ id, label, disabled, compact, style, accessibilityLabel, accessibilityHint, actions }: {
+  id: string; label: string; disabled: boolean; compact?: boolean; style?: StyleProp<ViewStyle>; accessibilityLabel: string; accessibilityHint: string;
   actions: { id: string; label: string }[];
 }) {
   const { board, zones, source, hovered, position, begin, finish } = useDragBoard();
@@ -131,7 +131,7 @@ export function PuzzleDragTile({ id, label, disabled, compact, accessibilityLabe
     }), [begin, board, disabled, finish, hovered, id, label, origin, position, source, target, tile, zones]);
   const dragging = useAnimatedStyle(() => ({ opacity: source.get() === id ? 0.2 : 1 }));
   return <GestureDetector gesture={gesture}>
-    <Animated.View ref={tile} collapsable={false} style={[styles.tile, compact && styles.compact, dragging]} accessible
+    <Animated.View ref={tile} collapsable={false} style={[styles.tile, compact && styles.compact, style, dragging]} accessible
       accessibilityRole="button" accessibilityState={{ disabled }} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint}
       accessibilityActions={disabled ? [] : actions.map(action => ({ name: action.id, label: action.label }))}
       onAccessibilityAction={event => { if (!disabled && actions.some(action => action.id === event.nativeEvent.actionName)) finish(id, event.nativeEvent.actionName); }}>

@@ -35,6 +35,9 @@ const INITIAL_SAFE_AREA = initialWindowMetrics ?? {
   insets: { top: 0, right: 0, bottom: 0, left: 0 },
 };
 
+const GAME_LIGHT_THEME = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: GameColors.background } };
+const GAME_DARK_THEME = { ...DarkTheme, colors: { ...DarkTheme.colors, background: GameColors.background } };
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
@@ -50,11 +53,12 @@ export default function RootLayout() {
             <PetDisplayProvider>
               <ExpoUIHost>
                 <ThemeProvider
-                  value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+                  value={colorScheme === "dark" ? GAME_DARK_THEME : GAME_LIGHT_THEME}
                 >
                   <Stack
                     screenOptions={{
                       headerShown: false,
+                      contentStyle: { backgroundColor: GameColors.background },
                       // iOS's default push ignores animationDuration. simple_push
                       // keeps a native horizontal transition with a shorter duration.
                       animation: Platform.OS === "ios" ? "simple_push" : "slide_from_right",
@@ -69,7 +73,7 @@ export default function RootLayout() {
                       name="puzzles"
                       options={{ headerShown: false }}
                     />
-                    <Stack.Screen name="play" options={{ headerShown: false }} />
+                    <Stack.Screen name="play" options={{ headerShown: false, animationTypeForReplace: "push", animationDuration: 160 }} />
                     <Stack.Screen name="stats" options={{ headerShown: false }} />
                     <Stack.Screen
                       name="settings"

@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-19",
+  "renderer": "Production NativeCatDisplay / Filament DefaultLight",
+  "device": "iPhone 18 Pro, iOS 27.0",
+  "viewportPoints": {
+    "left": 105,
+    "top": 341,
+    "width": 192,
+    "height": 192
+  },
+  "pixelScale": 3,
+  "pose": "Orange skin, first idle frame, playing=false",
+  "processing": "Crop 576×576; clear only edge-connected exact #FFF5EB pixels. Cat pixels retain native colors.",
+  "sourceModelHash": "276834606d3bf4a853193ca5d86469fee57019056f0d2a740aff9867613fcf18",
+  "nativeCaptureHash": "68d6e42339490acb98486572056ced7a8d46ba3aa0cd4e414c1931ce98791a5b",
+  "temporaryScreenRemoved": true,
+  "startupSuite": "Passed"
+}

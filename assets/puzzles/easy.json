@@ -184,6 +184,11 @@
       "8"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 4,
+      "right": 3
+    },
     "question": "The cat packs 4 red ribbons and 3 blue ribbons. How many ribbons?",
     "hint": "Can you make a full ten first?",
     "explanation": "4 + 3 = 7 ribbons."
@@ -278,6 +283,11 @@
       "14"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 5
+    },
     "question": "The cat packs 8 red ribbons and 5 blue ribbons. How many ribbons?",
     "hint": "Can you make a full ten first?",
     "explanation": "8 + 5 = 13 ribbons."
@@ -372,6 +382,11 @@
       "12"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 9,
+      "right": 3
+    },
     "question": "There are 9 paper stars. Use 3 on a card. How many stay in the box?",
     "hint": "Break the amount you take away into smaller steps.",
     "explanation": "9 − 3 = 6 stay."
@@ -452,6 +467,11 @@
       "20"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 14,
+      "right": 6
+    },
     "question": "There are 14 paper stars. Use 6 on a card. How many stay in the box?",
     "hint": "Break the amount you take away into smaller steps.",
     "explanation": "14 − 6 = 8 stay."
@@ -740,6 +760,11 @@
       "16"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 3,
+      "columns": 4
+    },
     "question": "Make 3 rows with 4 toy mice in each. How many mice?",
     "hint": "Count the same number in every group.",
     "explanation": "3 × 4 = 12."
@@ -823,6 +848,11 @@
       "25"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 4,
+      "columns": 5
+    },
     "question": "Make 4 rows with 5 toy mice in each. How many mice?",
     "hint": "Count the same number in every group.",
     "explanation": "4 × 5 = 20."
@@ -1089,16 +1119,16 @@
     "topic": "equality",
     "correctIndex": 0,
     "helpTemplate": "addition",
-    "question": "Five places are ready. Complete ten places. How many more?",
+    "question": "Each of our 13 ribbons belongs to one guest. Five places are ready. How many more places do we need?",
     "hint": "Can you make a full ten first?",
-    "explanation": "5 + 5 = 10. Every place is ready.",
+    "explanation": "5 + 8 = 13. Every guest has a place.",
     "payload": {
       "leftDisplay": "5 + ?",
-      "rightValue": 10,
+      "rightValue": 13,
       "choices": [
-        "5",
-        "4",
-        "6"
+        "8",
+        "7",
+        "9"
       ]
     }
   },

@@ -34,6 +34,8 @@ for(const skin of ['orange','grey','white'])for(const fps of [30,60,120])for(con
       close(actorState().distance/(actorState().walkStride*scale)+actorState().walkOffset,incoming.phase);
       incoming.tailYaw.forEach((v,k)=>close(actorState().tailYaw[k],v));
       incoming.tailPitch.forEach((v,k)=>close(actorState().tailPitch[k],v));
+      assert.ok(incoming.spinePose,'Doorway transfer includes the flexed back');
+      for(const [key,value]of Object.entries(incoming.spinePose))close(actorState().spinePose[key],value,1e-7);
       assert.ok(animation.value.name!=='idle','The first displayed doorway pose keeps walking');
     }
     let last=[...home],minimum=Infinity,nearEnd=Infinity;

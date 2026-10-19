@@ -26,6 +26,26 @@ export function catFlightClear(from: Vec3, to: Vec3, height: number, world: Nati
   return true;
 }
 
+/** Conservative head/body clearance for a low, straight passage. */
+export function catCrawlClear(from: Vec3, to: Vec3, world: NativeRoomWorld): boolean {
+  const radius = .40 * world.catScale + .02, height = 1.42 * world.catScale;
+  const samples = Math.max(2, Math.ceil(length(from, to) / (.06 * world.catScale)));
+  for (let i = 0; i <= samples; i++) {
+    const point = from.map((v,k) => v + (to[k]-v)*i/samples) as Vec3;
+    if (Math.abs(point[0]) > 2.32-radius || Math.abs(point[2]) > 2.32-radius) return false;
+    for (const object of world.objects) {
+      if (!object.solid && !object.collidable) continue;
+      for (const box of [...(object.collisionBoxes?.length ? object.collisionBoxes : [object]), ...(object.interactionBoxes ?? [])]) {
+        if (box.max[1] <= point[1] + .025 * world.catScale || box.min[1] >= point[1] + height) continue;
+        const dx=point[0]-Math.max(box.min[0],Math.min(box.max[0],point[0]));
+        const dz=point[2]-Math.max(box.min[2],Math.min(box.max[2],point[2]));
+        if (dx*dx+dz*dz < radius*radius) return false;
+      }
+    }
+  }
+  return true;
+}
+
 function jumpLink(from: Vec3, to: Vec3, world: NativeRoomWorld, supportId: string): CatTraversalLink | undefined {
   const scale = world.catScale, distance = length(from, to);
   if (distance > 4 * scale || Math.abs(to[1] - from[1]) > 1.65 * scale) return undefined;
@@ -47,8 +67,23 @@ export function buildCatTraversalLinks(world: NativeRoomWorld, floorFree: (point
   for (const object of world.objects) {
     if (!object.solid || object.opened || object.movable) continue;
     const { min, max } = object;
-    if (/^(books|sofaPillow|bedroomBench|japaneseCartonBox|officeCartonBox|officeWhiteBox)/.test(object.modelId)
-      && max[1] - floor <= .65 * scale) {
+    // Require real separate supports and an overhead panel, never a solid box.
+    if (object.collisionBoxes?.some(box => box.min[1] >= floor+1.42*scale)
+      && /^(table|desk|living.*Table|office.*Table|japaneseTable|kitchenDiningTable|bedroomDesk|bedroomVanity|bedroomBed|bed-)/.test(object.modelId)) {
+      for (const axis of [0,2]) for (const fraction of [.3,.5,.7]) {
+        const other=axis===0?2:0;
+        const from:Vec3=[0,floor,0],to:Vec3=[0,floor,0];
+        from[other]=to[other]=min[other]+(max[other]-min[other])*fraction;
+        // Lower the head before it reaches the panel, and keep low until clear.
+        from[axis]=min[axis]-1.2*scale;to[axis]=max[axis]+1.2*scale;
+        if (!floorFree(from)||!floorFree(to)||!catCrawlClear(from,to,world)) continue;
+        const duration=length(from,to)/(1.05*scale);
+        links.push({from,to,leg:{kind:'walk',animation:'crawl',path:[from,to],duration,supportId:object.instanceId}},
+          {from:to,to:from,leg:{kind:'walk',animation:'crawl',path:[to,from],duration,supportId:object.instanceId}});
+      }
+    }
+
+    if (min[1] <= floor+.03*scale && max[1] - floor <= .65 * scale) {
       for (const axis of [0, 2]) {
         const from: Vec3 = [(min[0] + max[0]) / 2, floor, (min[2] + max[2]) / 2], to: Vec3 = [...from];
         from[axis] = min[axis] - world.radius - .08 * scale;

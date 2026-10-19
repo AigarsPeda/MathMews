@@ -1,18 +1,22 @@
 /** Run real iOS touch gestures against an installed development build. */
-import { spawn } from 'node:child_process';
-import { copyFile, mkdtemp, open, rm } from 'node:fs/promises';
+import { spawn, execFileSync } from 'node:child_process';
+import { copyFile, mkdtemp, open, readFile, writeFile, rm, access } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const sources = path.join(root, 'scripts/native/puzzle-drag');
+const bossTests = process.argv.includes('--bosses');
+const sceneTests = process.argv.includes('--scenes');
+const companionTests = process.argv.includes('--companion');
+const sources = path.join(root, bossTests ? 'scripts/native/boss-stories' : companionTests ? 'scripts/native/puzzle-companion' : sceneTests ? 'scripts/native/puzzle-scenes' : 'scripts/native/puzzle-drag');
+const route = bossTests ? 'boss-qa' : companionTests ? 'companion-qa' : sceneTests ? 'scene-qa' : 'drag-qa';
 const device = process.argv[process.argv.indexOf('--device') + 1];
 if (!process.argv.includes('--device') || !/^[0-9A-F-]{36}$/i.test(device ?? '')) {
   throw new Error('Pass --device <simulator UDID> explicitly. Use xcrun simctl list devices booted to find it.');
 }
 const work = await mkdtemp(path.join(tmpdir(), 'brainpet-native-drag-'));
-const fixture = path.join(root, 'app/drag-qa.tsx');
+const fixture = path.join(root, `app/${route}.tsx`);
 const run = (command, args, log) => new Promise((resolve, reject) => {
   const child = spawn(command, args, { cwd: root, stdio: log ? ['ignore', log.fd, log.fd] : 'inherit' });
   child.on('error', reject);
@@ -23,20 +27,37 @@ const handle = await open(fixture, 'wx');
 await handle.close();
 try {
   await copyFile(path.join(sources, 'fixture.tsx'), fixture);
+  if (bossTests) {
+    // A long visual run must not receive source refreshes from other work.
+    // Read the app container rather than the simulator's global defaults domain.
+    const container = execFileSync('xcrun', ['simctl', 'get_app_container', device, 'com.mathmews.app', 'data'], { encoding: 'utf8' }).trim();
+    const preferences = path.join(container, 'Library/Preferences/com.mathmews.app.plist');
+    let previous = true; // React Native's default when no setting has been saved.
+    if (await access(preferences).then(() => true, () => false)) {
+      const data = JSON.parse(execFileSync('plutil', ['-convert', 'json', '-o', '-', preferences], { encoding: 'utf8' }));
+      previous = data.RCTDevMenu?.hotLoadingEnabled ?? true;
+    }
+    await writeFile(fixture, (await readFile(fixture, 'utf8')).replace('const PREVIOUS_FAST_REFRESH = true;', `const PREVIOUS_FAST_REFRESH = ${!!previous};`));
+  }
   await copyFile(path.join(sources, 'NativeDragTests.swift'), path.join(work, 'NativeDragTests.swift'));
-  await run('ruby', [path.join(sources, 'create-project.rb'), work]);
-  await run('xcrun', ['simctl', 'openurl', device, 'mathmews://drag-qa']);
+  await run('ruby', [path.join(root, 'scripts/native/puzzle-drag/create-project.rb'), work]);
+  // A cold JS load includes the freshly created Expo Router route. An existing
+  // runtime can otherwise keep a cached route manifest and show Unmatched Route.
+  await run('xcrun', ['simctl', 'terminate', device, 'com.mathmews.app']).catch(() => {});
+  await run('xcrun', ['simctl', 'launch', device, 'com.mathmews.app']);
+  await run('xcrun', ['simctl', 'openurl', device, `mathmews://${route}`]);
   const log = await open(path.join(work, 'test.log'), 'w');
   try {
-    console.log(`Testing native drag on ${device}. Log and screenshots: ${work}`);
+    console.log(`Testing native ${bossTests ? 'boss stories' : companionTests ? 'cat companion' : sceneTests ? 'task scenes' : 'drag'} on ${device}. Log and screenshots: ${work}`);
     await run('xcodebuild', [
       'test', '-project', path.join(work, 'NativeDrag.xcodeproj'), '-scheme', 'NativeDragTests',
       '-destination', `platform=iOS Simulator,id=${device}`, '-parallel-testing-enabled', 'NO',
+      '-collect-test-diagnostics', 'never',
       '-derivedDataPath', path.join(work, 'build'), '-resultBundlePath', path.join(work, 'result.xcresult'),
       'CODE_SIGNING_ALLOWED=NO',
     ], log);
   } finally { await log.close(); }
-  console.log(`Native basket and pattern tests passed. Result bundle: ${path.join(work, 'result.xcresult')}`);
+  console.log(`Native ${bossTests ? 'boss-story' : companionTests ? 'cat-companion' : sceneTests ? 'task-scene' : 'basket, pattern and number-order'} tests passed. Result bundle: ${path.join(work, 'result.xcresult')}`);
 } finally {
   // Leave the game at its normal entry point before removing the temporary route.
   await run('xcrun', ['simctl', 'openurl', device, 'mathmews://']).catch(error => console.error(error.message));

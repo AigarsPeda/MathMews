@@ -113,7 +113,8 @@ export function useRoomActivity(
     setBlockedActivity(null);
     const current = running.current;
     if (current && (isCatJump(current.plan.steps[current.stepIndex].animation)
-      || current.plan.steps[current.stepIndex].native?.legs?.some(leg => leg.kind === 'hop')
+      || current.plan.steps[current.stepIndex].native?.legs?.some(leg => leg.kind === 'hop' || leg.animation === 'crawl')
+      || current.plan.steps[current.stepIndex].native?.brushSide !== undefined
       || current.plan.steps[current.stepIndex].enteringRoom && (reduceMotion || latestOptions.current.nativeStepCompletion===false))) {
       pendingCommand.current = { kind, instanceId, interactionAt, ambientPeriod };
       return;
@@ -194,7 +195,7 @@ export function useRoomActivity(
       }
       const room = latestOptions.current;
       if (liveWorld.current) {
-        step = step.native?.blocked || step.native && (reduceMotion || elapsed && (isCatJump(step.animation) || step.native.legs?.length)) ? { ...step } :
+        step = step.native?.blocked || step.native && (reduceMotion || elapsed && (isCatJump(step.animation) || step.native.legs?.length || step.native.brushSide !== undefined)) ? { ...step } :
           prepareNativeStep(plan, step, room.nativeStepCompletion && nativePosition.current
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
         step.native = { ...step.native!, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: roomVisible && room.nativeStepCompletion && !step.hold };
@@ -399,9 +400,10 @@ export function useRoomActivity(
           const meal = buildRoomActivity(options, turn.current++, 'bowlEat', target.instanceId);
           if (meal) timer = setTimeout(() => startPlan(meal), 0);
         } else {
+          const replanWalk = isCatWalk(step.animation) && !step.native?.legs?.length && step.native?.brushSide === undefined;
           const elapsed = wasHiddenActivity ? Math.max(0, (Date.now() - current.startedAt) / 1000)
-            : isCatWalk(step.animation) && !step.native?.legs?.length ? 0 : options.nativeStepCompletion ? nativeElapsed.current : Math.max(0, (Date.now() - current.startedAt) / 1000);
-          runStep(current.plan, current.stepIndex, elapsed, Boolean(isCatWalk(step.animation) && !step.native?.legs?.length));
+            : replanWalk ? 0 : options.nativeStepCompletion ? nativeElapsed.current : Math.max(0, (Date.now() - current.startedAt) / 1000);
+          runStep(current.plan, current.stepIndex, elapsed, Boolean(replanWalk));
         }
       } else if (newRequest?.kind === "stop") {
         const exit = current ? buildRoomExit(options, current.plan, current.stepIndex, position) : { kind: "returnHome" as const, steps: [] };

@@ -362,6 +362,11 @@
       "49"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 6,
+      "columns": 7
+    },
     "question": "Izveido 6 rindas, katrā pa 7 rotaļu pelēm. Cik peļu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
     "explanation": "6 × 7 = 42."
@@ -445,6 +450,11 @@
       "81"
     ],
     "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 8,
+      "columns": 9
+    },
     "question": "Izveido 8 rindas, katrā pa 9 rotaļu pelēm. Cik peļu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
     "explanation": "8 × 9 = 72."

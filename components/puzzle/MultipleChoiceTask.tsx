@@ -1,4 +1,5 @@
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
+import { QuantityTaskScene } from "@/components/puzzle/QuantityTaskScene";
 import type { MultipleChoicePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
@@ -20,6 +21,7 @@ export function MultipleChoiceTask({
 }: MultipleChoiceTaskProps) {
   return (
     <View style={styles.choices}>
+      {puzzle.taskVisual ? <QuantityTaskScene key={puzzle.id} model={puzzle.taskVisual} disabled={answered} /> : null}
       {puzzle.choices.map((choice, index) => {
         let result: "correct" | "wrong" | null = null;
         if (answered) {

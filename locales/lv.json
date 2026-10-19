@@ -1064,6 +1064,36 @@
     "estimation": "Aptuveni",
     "division": "Godīga dalīšana"
   },
+  "puzzleCompanion": {
+    "says": "{{name}} saka: {{message}}",
+    "progress0": "Pa vienam uzdevumam. Paskatīsimies, ko atklāsim tālāk!",
+    "progress1": "Es esmu tepat. Dodamies pie nākamā uzdevuma!",
+    "progress2": "Dod ķepu! Šim uzdevumam atradās risinājums.",
+    "progress3": "Vēl viens solis paveikts. Turpinām atklāt kopā!",
+    "retry": "Varam pamēģināt citādi. Es esmu tepat!",
+    "retryPatient": "Nav jāsteidzas. Aplūkosim norādes un mēģināsim pa vienam solim.",
+    "persistence": "Vēl viens mēģinājums, un risinājums ir rokā. Dod ķepu!",
+    "practiceComplete": "Treniņš pabeigts! Izvēlēsimies nākamo piedzīvojumu.",
+    "bossStage": "Vēl viens bosa posms pieveikts! Speram nākamo soli kopā!",
+    "bossComplete": "Boss pieveikts! Dod ķepu par neatlaidību!",
+    "challengeComplete": "Izpētījām kaut ko citādu. Paldies par kopīgo piedzīvojumu!",
+    "replay": "Vēl viens mēģinājums! Atkārtojot var pamanīt kaut ko jaunu.",
+    "milestone": "Atrisināti jau {{count}} uzdevumi! Prieks mācīties kopā."
+  },
+  "taskScenes": {
+    "joinReady": "Divas grupas: {{left}} un {{right}} skaitāmie aplīši. Apvieno un saskaiti.",
+    "joinDone": "Abas grupas ir apvienotas. Saskaiti aplīšus, lai atrastu kopskaitu.",
+    "take_awayReady": "Sāc ar {{left}} aplīšiem. {{right}} sarkanie aplīši ir jāatņem.",
+    "take_awayDone": "Sarkanie aplīši ir pārvietoti prom. Saskaiti atlikušos.",
+    "arrayReady": "Izveido {{rows}} rindas, katrā pa {{columns}} aplīšiem.",
+    "arrayBuilt": "Aplīši ir {{rows}} rindās, katrā pa {{columns}}. Cik kopā?",
+    "shareDescription": "Kopējā kaudzītē ir {{remaining}} aplīši. {{groups}} grupas, katrā pa {{each}} aplīšiem.",
+    "joinAction": "Apvienot aplīšus",
+    "take_awayAction": "Atņemt {{count}}",
+    "arrayAction": "Izveidot rindas",
+    "shareAction": "Sadalīt vienu apli",
+    "reset": "Sākt vēlreiz"
+  },
   "puzzleTypes": {
     "multiple_choice": "Stāsts",
     "compare": "Salīdzini",
@@ -1089,8 +1119,10 @@
     "machineIn": "Ieeja",
     "machineOut": "Izeja",
     "machineRule": "Noteikums",
-    "orderTapToSwap": "Pieskaries diviem skaitļiem, lai tos apmainītu.",
-    "orderTapAnother": "Pieskaries citam skaitlim, lai apmainītu.",
+    "orderDragToMove": "Velc skaitli uz tā vietu secībā.",
+    "orderPosition": "{{position}}. vieta",
+    "orderTile": "Skaitlis {{value}}, {{position}}. vieta",
+    "orderMoveTo": "Pārvietot uz {{position}}. vietu",
     "goal": "Mērķis",
     "make": "Uztaisi",
     "checkAnswer": "Pārbaudīt",
@@ -1198,7 +1230,7 @@
       "fraction_equivalent": "Izvēlies daļu ar tādu pašu vērtību, tad pārbaudi.",
       "pattern_next": "Atrodi likumu. Izvēlies nākamo skaitli, tad pārbaudi.",
       "function_machine": "Izvēlies likumu, kas pārveido ievadi par izvadi, tad pārbaudi.",
-      "order_numbers": "Pieskaries diviem skaitļiem, lai tos samainītu. Tad pārbaudi secību.",
+      "order_numbers": "Sakārto skaitļus, tos velkot. Kad esi gatavs, pārbaudi atbildi.",
       "fraction_match": "Savieno katru daļu ar attēlu. Nepareiza izvēle saglabā jau savienotos pārus.",
       "find_all_pairs": "Savāc visus atšķirīgos pārus, kas sasniedz mērķi, un pārbaudi kolekciju.",
       "sort_buckets": "Ievelc katru kartīti pareizajā grupā un pārbaudi grozus.",
@@ -1427,5 +1459,12 @@
     "returnHere": "Atvelc kartīti šeit, lai izņemtu to no groza.",
     "placeInGap": "Pārvietot uz {{position}}. vietu",
     "dragA11yHint": "Velc uz mērķi. Ar ekrāna lasītāju izmanto pieejamās darbības, lai izvēlētos kartītes vietu."
+  },
+  "bossStory": {
+    "scene": "Misijas aina: pabeigti {{count}} no {{total}} uzdevumiem",
+    "replay": "Noskatīties noslēgumu vēlreiz",
+    "catReacting": "Kaķis priecājas par tavu atbildi",
+    "catReady": "Gatavs nākamajam uzdevumam",
+    "missionReady": "Misija ir pabeigta"
   }
 }

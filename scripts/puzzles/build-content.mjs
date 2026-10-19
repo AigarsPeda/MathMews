@@ -1,6 +1,7 @@
 /** Authoring source. Run npm run puzzles:build after changing topics or lessons. */
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import { bossStories } from './boss-stories.mjs';
 const text = (en, lv) => ({ en, lv });
 function writeGenerated(file, value) {
   const content = JSON.stringify(value, null, 2) + '\n';
@@ -23,8 +24,8 @@ const topics = [
 ].map(([id, en, lv, descEn, descLv, icon]) => ({ id, title: text(en, lv), description: text(descEn, descLv), icon }));
 const lessons = [], puzzles = { en: { easy: [], medium: [], hard: [] }, lv: { easy: [], medium: [], hard: [] } };
 const task = (type, topic, question, payload, hint, explanation, extra = {}) => ({ type, topic, question, payload, hint, explanation, ...extra });
-function choice(topic, question, answer, wrong, hint, explanation, helpTemplate) {
-  return task('multiple_choice', topic, question, undefined, hint, explanation, { choices: [String(answer), ...wrong.map(String)], correctIndex: 0, ...(helpTemplate && { helpTemplate }) });
+function choice(topic, question, answer, wrong, hint, explanation, helpTemplate, taskVisual) {
+  return task('multiple_choice', topic, question, undefined, hint, explanation, { choices: [String(answer), ...wrong.map(String)], correctIndex: 0, ...(helpTemplate && { helpTemplate }), ...(taskVisual && { taskVisual }) });
 }
 const hint = {
   add: text('Can you make a full ten first?', 'Vai vari vispirms izveidot pilnu desmitu?'),
@@ -36,7 +37,7 @@ const hint = {
 function addSet(a, b) {
   const sum = a + b;
   return [
-    choice('addition', text(`The cat packs ${a} red ribbons and ${b} blue ribbons. How many ribbons?`, `Kaķis saliek ${a} sarkanas un ${b} zilas lentes. Cik lenšu kopā?`), sum, [sum - 1, sum + 1], hint.add, text(`${a} + ${b} = ${sum} ribbons.`, `${a} + ${b} = ${sum} lentes.`)),
+    choice('addition', text(`The cat packs ${a} red ribbons and ${b} blue ribbons. How many ribbons?`, `Kaķis saliek ${a} sarkanas un ${b} zilas lentes. Cik lenšu kopā?`), sum, [sum - 1, sum + 1], hint.add, text(`${a} + ${b} = ${sum} ribbons.`, `${a} + ${b} = ${sum} lentes.`), undefined, sum <= 20 ? { kind: "join", left: a, right: b } : undefined),
     task('balance', 'equality', text('Fill the missing part of the sum.', 'Aizpildi trūkstošo summas daļu.'), { leftDisplay: `${a} + ?`, rightValue: sum, choices: [String(b), String(b + 1), String(b + 2)] }, text(`What must join ${a} to make ${sum}?`, `Kas jāpieskaita ${a}, lai iegūtu ${sum}?`), text(`${a} + ${b} = ${sum}.`, `${a} + ${b} = ${sum}.`), { correctIndex: 0 }),
     task('pair_sum', 'mental_math', text(`Choose two tiles that make ${sum}.`, `Izvēlies divas kartītes, kuru summa ir ${sum}.`), { numbers: [a, b, 1, sum - 1, 2, sum - 2], target: sum, correctIndices: [0, 1] }, text('Choose one number and find its missing partner.', 'Izvēlies skaitli un atrodi tā trūkstošo pārinieku.'), text(`Any two different tiles adding to ${sum} work.`, `Der jebkuras divas atšķirīgas kartītes, kuru summa ir ${sum}.`)),
     task('fix_mistake', 'addition', text('Minka tried adding. Which repair is right?', 'Minka mēģināja saskaitīt. Kurš labojums ir pareizs?'), { wrongWork: [`${a} + ${b} = ${sum - 1}`], choices: [`${a} + ${b} = ${sum}`, `${a} + ${b} = ${sum + 1}`, `${a} + ${b} = ${sum + 2}`] }, hint.add, text(`The total is ${sum}, not ${sum - 1}.`, `Summa ir ${sum}, nevis ${sum - 1}.`), { correctIndex: 0 }),
@@ -45,7 +46,7 @@ function addSet(a, b) {
 function subtractSet(a, b) {
   const result = a - b;
   return [
-    choice('subtraction', text(`There are ${a} paper stars. Use ${b} on a card. How many stay in the box?`, `Ir ${a} papīra zvaigznes. ${b} pielīmē kartītei. Cik paliek kastē?`), result, [result + 1, a + b], hint.subtract, text(`${a} − ${b} = ${result} stay.`, `${a} − ${b} = ${result} paliek.`)),
+    choice('subtraction', text(`There are ${a} paper stars. Use ${b} on a card. How many stay in the box?`, `Ir ${a} papīra zvaigznes. ${b} pielīmē kartītei. Cik paliek kastē?`), result, [result + 1, a + b], hint.subtract, text(`${a} − ${b} = ${result} stay.`, `${a} − ${b} = ${result} paliek.`), undefined, a <= 20 ? { kind: "take_away", left: a, right: b } : undefined),
     task('number_line', 'subtraction', text('Move back on the number line.', 'Pārvietojies atpakaļ pa skaitļu taisni.'), { start: a, jump: -b, min: 0, max: a + 3, correctValue: result }, text('Count moves after the starting point.', 'Skaiti soļus pēc sākuma punkta.'), text(`${a} − ${b} = ${result}.`, `${a} − ${b} = ${result}.`)),
     task('true_false', 'subtraction', text('Check the cat’s subtraction.', 'Pārbaudi kaķa atņemšanu.'), { statement: `${a} − ${b} = ${result + 1}` }, hint.subtract, text(`False. ${a} − ${b} = ${result}.`, `Nepareizi. ${a} − ${b} = ${result}.`), { isTrue: false }),
     task('fix_mistake', 'subtraction', text('Which calculation repairs Minka’s work?', 'Kurš aprēķins izlabo Minkas darbu?'), { wrongWork: [`${a} − ${b} = ${result - 1}`], choices: [`${a} − ${b} = ${result}`, `${a} − ${b} = ${result + 2}`, `${a} + ${b} = ${a + b}`] }, hint.subtract, text(`Take away ${b}, leaving ${result}.`, `Atņem ${b}, paliek ${result}.`), { correctIndex: 0 }),
@@ -75,7 +76,7 @@ function patternSet(start, jump, multiplier = false) {
 function multiplySet(groups, size) {
   const total = groups * size;
   return [
-    choice('multiplication', text(`Make ${groups} rows with ${size} toy mice in each. How many mice?`, `Izveido ${groups} rindas, katrā pa ${size} rotaļu pelēm. Cik peļu kopā?`), total, [groups + size, total + size], hint.groups, text(`${groups} × ${size} = ${total}.`, `${groups} × ${size} = ${total}.`)),
+    choice('multiplication', text(`Make ${groups} rows with ${size} toy mice in each. How many mice?`, `Izveido ${groups} rindas, katrā pa ${size} rotaļu pelēm. Cik peļu kopā?`), total, [groups + size, total + size], hint.groups, text(`${groups} × ${size} = ${total}.`, `${groups} × ${size} = ${total}.`), undefined, { kind: "array", rows: groups, columns: size }),
     task('function_machine', 'multiplication', text('Which rule makes the right number of toys?', 'Kurš likums dod pareizo rotaļlietu skaitu?'), { input: groups, output: total, choices: [`×${size}`, `+${size}`, `×${size + 1}`] }, hint.groups, text(`Multiply by ${size}.`, `Reizini ar ${size}.`), { correctIndex: 0 }),
     task('true_false', 'multiplication', text('Check the equal-group claim.', 'Pārbaudi apgalvojumu par vienādām grupām.'), { statement: `${groups} × ${size} = ${total}` }, hint.groups, text(`True. ${groups} groups of ${size} make ${total}.`, `Pareizi. ${groups} grupas pa ${size} ir ${total}.`), { isTrue: true }),
     task('balance', 'equality', text('How many toys are in each equal row?', 'Cik rotaļlietu ir katrā vienādajā rindā?'), { leftDisplay: `${groups} × ?`, rightValue: total, choices: [String(size), String(size + 1), String(size + 2)] }, hint.groups, text(`${groups} × ${size} = ${total}.`, `${groups} × ${size} = ${total}.`), { correctIndex: 0, helpTemplate: 'multiplication' }),
@@ -127,7 +128,7 @@ function percentSet(price, percent) {
 function measureSet(length, width) {
   const area = length * width;
   return [
-    choice('multiplication', text(`A garden has ${length} rows of ${width} square planting spaces. How many square spaces?`, `Dārzā ir ${length} rindas, katrā ${width} kvadrātveida stādvietas. Cik stādvietu kopā?`), area, [length + width, 2 * (length + width)], hint.groups, text(`${length} × ${width} = ${area} square spaces.`, `${length} × ${width} = ${area} kvadrātveida stādvietas.`)),
+    choice('multiplication', text(`A garden has ${length} rows of ${width} square planting spaces. How many square spaces?`, `Dārzā ir ${length} rindas, katrā ${width} kvadrātveida stādvietas. Cik stādvietu kopā?`), area, [length + width, 2 * (length + width)], hint.groups, text(`${length} × ${width} = ${area} square spaces.`, `${length} × ${width} = ${area} kvadrātveida stādvietas.`), undefined, { kind: "array", rows: length, columns: width }),
     choice('operations', text(`${area} grams of clay fill ${width} equal bags. How many grams for ${width + 2} bags?`, `${area} grami māla piepilda ${width} vienādus maisiņus. Cik gramu vajag ${width+2} maisiņiem?`), length * (width + 2), [area + 2, area * 2], text('Find the amount for one bag first.', 'Vispirms atrodi daudzumu vienam maisiņam.'), text(`${area} ÷ ${width} × ${width+2} = ${length * (width+2)} grams.`, `${area} ÷ ${width} × ${width+2} = ${length * (width+2)} grami.`), 'rate'),
     task('estimate', 'estimation', text('Round each amount to the nearest ten, then add.', 'Noapaļo katru daudzumu līdz tuvākajam desmitam un saskaiti.'), { en: { expression: `${area + 1} + ${area + 2}`, choices: [`About ${Math.round((area + 1)/10)*10 + Math.round((area + 2)/10)*10}`, `About ${area*3}`, `About ${area*4}`] }, lv: { expression: `${area+1} + ${area+2}`, choices: [`Aptuveni ${Math.round((area+1)/10)*10 + Math.round((area+2)/10)*10}`, `Aptuveni ${area*3}`, `Aptuveni ${area*4}`] } }, text('Keep track of the size of the whole answer.', 'Pievērs uzmanību visas atbildes lielumam.'), text('Add the two rounded amounts.', 'Saskaiti abus noapaļotos daudzumus.'), { correctIndex: 0 }),
     task('balance', 'equality', text('Find the missing number of equal rows.', 'Atrodi trūkstošo vienādo rindu skaitu.'), { leftDisplay: `? × ${width}`, rightValue: area, choices: [String(length), String(length+1), String(length+2)] }, hint.groups, text(`${length} × ${width} = ${area}.`, `${length} × ${width} = ${area}.`), { correctIndex: 0, helpTemplate: 'multiplication' }),
@@ -197,12 +198,17 @@ lesson('hard','logic','clues',text('Check every clue','Pārbaudi katru norādi')
 const hardLogic = lesson('hard','logic','claims',text('Test a mathematical claim','Pārbaudi matemātisku apgalvojumu'),apply,logicSet(40));
 function special(lessonId, slug, kind, title, description, tasks) {
   const target = lessons.find(l => l.id === lessonId);
-  target.levels.push({ id: `${target.id}-${slug}`, kind, title, description, puzzleIds: register(target.difficulty, `${target.topicId}-${slug}`, tasks) });
+  if (kind === 'boss') {
+    assert.ok(bossStories[slug], `${slug}: author a boss story before adding its level`);
+    assert.equal(tasks.length, 3, `${slug}: a boss has three connected tasks`);
+    assert.equal(bossStories[slug].stages.length, 3);
+  }
+  target.levels.push({ id: `${target.id}-${slug}`, kind, title, description, ...(kind === 'boss' && { story: bossStories[slug] }), puzzleIds: register(target.difficulty, `${target.topicId}-${slug}`, tasks) });
 }
 const bossHint = text('Use the part you have already worked out. Finished stages stay saved.', 'Izmanto jau aprēķināto. Pabeigtie posmi tiek saglabāti.');
 special(easyAdd,'picnic','boss',text('The cat picnic','Kaķa pikniks'),text('Pack ribbons, finish the places and open the picnic. Three saved stages.', 'Saliec lentes, sagatavo vietas un atklāj pikniku. Trīs saglabājami posmi.'),[
   choice('addition',text('Pack 8 red ribbons and 5 blue ribbons for the picnic. How many ribbons?', 'Piknikam saliec 8 sarkanas un 5 zilas lentes. Cik lenšu kopā?'),13,[12,14],hint.add,text('13 ribbons are packed. The first stage is ready.', 'Saliktas 13 lentes. Pirmais posms ir gatavs.')),
-  task('balance','equality',text('Five places are ready. Complete ten places. How many more?', 'Piecas vietas ir gatavas. Sagatavo desmit vietas. Cik vēl vajag?'),{leftDisplay:'5 + ?',rightValue:10,choices:['5','4','6']},hint.add,text('5 + 5 = 10. Every place is ready.', '5 + 5 = 10. Visas vietas ir gatavas.'),{correctIndex:0,helpTemplate:'addition'}),
+  task('balance','equality',text('Each of our 13 ribbons belongs to one guest. Five places are ready. How many more places do we need?', 'Katra no 13 lentēm ir vienam viesim. Piecas vietas ir gatavas. Cik vēl vietu vajag?'),{leftDisplay:'5 + ?',rightValue:13,choices:['8','7','9']},hint.add,text('5 + 8 = 13. Every guest has a place.', '5 + 8 = 13. Katram viesim ir vieta.'),{correctIndex:0,helpTemplate:'addition'}),
   choice('addition',text('Seven flags are up. How many more make thirteen flags?', 'Septiņi karodziņi ir izlikti. Cik vēl vajag, lai būtu trīspadsmit?'),6,[5,7],bossHint,text('7 + 6 = 13. The picnic is open!', '7 + 6 = 13. Pikniks ir atklāts!')),
 ]);
 special(easyGroups,'shelves','boss',text('The toy workshop','Rotaļlietu darbnīca'),text('Fill three displays with equal rows. Finish one display at a time.', 'Piepildi trīs stendus ar vienādām rindām. Pabeidz pa vienam.'),[...[[2,5],[3,4],[4,6]].map(([a,b],i)=>choice('multiplication',text(`Display ${i+1} needs ${a} rows of ${b} toys. How many toys?`,`Stendam ${i+1} vajag ${a} rindas pa ${b} rotaļlietām. Cik rotaļlietu?`),a*b,[a+b,a*b+1],hint.groups,text(`${a} × ${b} = ${a*b}. This display is ready.`,`${a} × ${b} = ${a*b}. Šis stends ir gatavs.`)))]);
@@ -218,7 +224,7 @@ special(mediumRoutes,'lanterns','boss',text('Light the lantern trail','Iededz la
 ]);
 special(hardFractions,'garden','boss',text('The garden plan','Dārza plāns'),text('Choose the flower area, finish the border and prepare the supplies.', 'Izvēlies puķu laukumu, pabeidz apmali un sagatavo krājumus.'),[
   choice('fractions',text('The garden has 24 equal spaces. Three quarters need flowers. How many flower spaces?', 'Dārzā ir 24 vienādas vietas. Trīs ceturtdaļās vajag puķes. Cik puķu vietu?'),18,[6,20],hint.fractions,text('24 ÷ 4 × 3 = 18 flower spaces.', '24 ÷ 4 × 3 = 18 puķu vietas.'),'fraction_of_set'),
-  task('fraction_build','fractions',text('Three quarters are planted. Shade the quarter that is still empty.', 'Trīs ceturtdaļas ir apstādītas. Iekrāso ceturtdaļu, kas vēl ir tukša.'),{numerator:1,denominator:4},hint.fractions,text('One of four equal parts is still empty.', 'Viena no četrām vienādajām daļām vēl ir tukša.')),
+  task('fraction_build','fractions',text('Three quarters are planned for flowers. Shade the quarter reserved for a path.', 'Trīs ceturtdaļas ir ieplānotas puķēm. Iekrāso ceturtdaļu, kas atstāta takai.'),{numerator:1,denominator:4},hint.fractions,text('One of four equal parts is reserved for the path.', 'Viena no četrām vienādajām daļām ir atstāta takai.')),
   choice('multiplication',text('Each of the 18 flower spaces needs 3 seeds. How many seeds?', 'Katrai no 18 puķu vietām vajag 3 sēklas. Cik sēklu kopā?'),54,[21,48],hint.groups,text('18 × 3 = 54 seeds. The garden is ready!', '18 × 3 = 54 sēklas. Dārzs ir gatavs!')),
 ]);
 special(hardPercent,'shop','boss',text('Open the toy shop','Atver rotaļlietu veikalu'),text('Calculate the discount, set the price and check a customer’s change.', 'Aprēķini atlaidi, nosaki cenu un pārbaudi pircēja atlikumu.'),[

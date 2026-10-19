@@ -9,11 +9,20 @@ export type LearningTopic = {
   description: LearningText;
   icon: AppIconName;
 };
+export type BossStory = {
+  sceneId: string;
+  /** Cat participation before the mission and after its three tasks. */
+  catActions: LearningText[];
+  intro: LearningText;
+  outcome: LearningText;
+  stages: { title: LearningText; before: LearningText; after: LearningText }[];
+};
 export type LearningLevel = {
   id: string;
   kind: "practice" | "boss" | "challenge";
   title: LearningText;
   description: LearningText;
+  story?: BossStory;
   /** Boss stages are separate puzzles, saved after each successful stage. */
   puzzleIds: string[];
 };

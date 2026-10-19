@@ -309,6 +309,79 @@
             "en": "Order the platforms, choose the longest train and find the waiting carriage.",
             "lv": "Sakārto peronus, izvēlies garāko vilcienu un atrodi gaidošo vagonu."
           },
+          "story": {
+            "sceneId": "train",
+            "catActions": [
+              {
+                "en": "The cat holds the route board beside the tracks.",
+                "lv": "Kaķis tur maršruta plānu pie sliedēm."
+              },
+              {
+                "en": "The cat nods beside the platform lights.",
+                "lv": "Kaķis pamāj pie perona gaismiņām."
+              },
+              {
+                "en": "The cat waves from the platform.",
+                "lv": "Kaķis māj ar ķepu no perona."
+              },
+              {
+                "en": "The cat rides the train with its route board.",
+                "lv": "Kaķis brauc vilcienā ar maršruta plānu."
+              }
+            ],
+            "intro": {
+              "en": "The midnight train must bring everyone home. Help me prepare its route, choose a train and collect the last passenger.",
+              "lv": "Pusnakts vilcienam visi jānogādā mājās. Palīdzi sagatavot maršrutu, izvēlēties vilcienu un uzņemt pēdējo pasažieri."
+            },
+            "outcome": {
+              "en": "All aboard! The midnight train leaves with everyone safely on board.",
+              "lv": "Visi vagonos! Pusnakts vilciens dodas ceļā, un visi pasažieri ir drošībā."
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Plan the stops",
+                  "lv": "Saplāno pieturas"
+                },
+                "before": {
+                  "en": "First, put the platform stops in order.",
+                  "lv": "Vispirms sakārto peronu pieturas."
+                },
+                "after": {
+                  "en": "The route is ready. Now we need a train long enough for everyone.",
+                  "lv": "Maršruts ir gatavs. Tagad vajag vilcienu, kurā pietiek vietas visiem."
+                }
+              },
+              {
+                "title": {
+                  "en": "Choose the train",
+                  "lv": "Izvēlies vilcienu"
+                },
+                "before": {
+                  "en": "Use the longer train for our route.",
+                  "lv": "Izvēlies mūsu maršrutam garāko vilcienu."
+                },
+                "after": {
+                  "en": "Our train is at the platform. One passenger is still waiting along the route.",
+                  "lv": "Mūsu vilciens ir pie perona. Maršrutā vēl gaida viens pasažieris."
+                }
+              },
+              {
+                "title": {
+                  "en": "Collect the passenger",
+                  "lv": "Uzņem pasažieri"
+                },
+                "before": {
+                  "en": "Find the waiting passenger’s platform so we can leave together.",
+                  "lv": "Atrodi gaidošā pasažiera peronu, lai visi varam doties ceļā."
+                },
+                "after": {
+                  "en": "The last passenger has boarded. We can leave!",
+                  "lv": "Pēdējais pasažieris ir iekāpis. Varam braukt!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-easy-numbers-train-1",
             "v2-easy-numbers-train-2",
@@ -491,6 +564,79 @@
             "en": "Pack ribbons, finish the places and open the picnic. Three saved stages.",
             "lv": "Saliec lentes, sagatavo vietas un atklāj pikniku. Trīs saglabājami posmi."
           },
+          "story": {
+            "sceneId": "picnic",
+            "catActions": [
+              {
+                "en": "The cat brings a spool of picnic ribbon.",
+                "lv": "Kaķis atnes piknika lenšu spoli."
+              },
+              {
+                "en": "The cat nods beside the packed basket.",
+                "lv": "Kaķis pamāj pie sakrāmētā groza."
+              },
+              {
+                "en": "The cat raises a paw beside the prepared places.",
+                "lv": "Kaķis paceļ ķepu pie sagatavotajām vietām."
+              },
+              {
+                "en": "The cat celebrates beneath the picnic flags.",
+                "lv": "Kaķis priecājas zem piknika karodziņiem."
+              }
+            ],
+            "intro": {
+              "en": "Our friends are coming to a picnic! Each guest needs a ribbon, a place and a flag. Help me get everything ready.",
+              "lv": "Draugi nāk uz pikniku! Katram viesim vajag lenti, vietu un karodziņu. Palīdzi visu sagatavot."
+            },
+            "outcome": {
+              "en": "The picnic is open! Every guest has a place beneath the waving flags.",
+              "lv": "Pikniks ir atklāts! Katram viesim ir vieta zem plīvojošiem karodziņiem."
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Pack the ribbons",
+                  "lv": "Saliec lentes"
+                },
+                "before": {
+                  "en": "Count the ribbons to find how many guests we can welcome.",
+                  "lv": "Saskaiti lentes, lai uzzinātu, cik viesu varam uzņemt."
+                },
+                "after": {
+                  "en": "We have 13 ribbons. Let’s make a place for each guest.",
+                  "lv": "Mums ir 13 lentes. Sagatavosim vietu katram viesim."
+                }
+              },
+              {
+                "title": {
+                  "en": "Set the places",
+                  "lv": "Sagatavo vietas"
+                },
+                "before": {
+                  "en": "Use our ribbon count: we need 13 places altogether.",
+                  "lv": "Izmanto lenšu skaitu: kopā vajag 13 vietas."
+                },
+                "after": {
+                  "en": "All 13 places are ready. The flags are the last thing to finish.",
+                  "lv": "Visas 13 vietas ir gatavas. Atliek pabeigt karodziņus."
+                }
+              },
+              {
+                "title": {
+                  "en": "Raise the flags",
+                  "lv": "Pacel karodziņus"
+                },
+                "before": {
+                  "en": "Make one flag for each of our 13 guests.",
+                  "lv": "Sagatavo pa karodziņam katram no 13 viesiem."
+                },
+                "after": {
+                  "en": "The places and flags are ready for our friends!",
+                  "lv": "Vietas un karodziņi ir gatavi mūsu draugiem!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-easy-addition-picnic-1",
             "v2-easy-addition-picnic-2",
@@ -657,6 +803,79 @@
           "description": {
             "en": "Launch the boats, follow them downstream and bring the last boats home.",
             "lv": "Palaid laiviņas, seko tām lejup pa straumi un nogādā pēdējās mājās."
+          },
+          "story": {
+            "sceneId": "boats",
+            "catActions": [
+              {
+                "en": "The cat waits at the dock with a rescue flag.",
+                "lv": "Kaķis gaida piestātnē ar glābšanas karodziņu."
+              },
+              {
+                "en": "The cat checks the launch dock.",
+                "lv": "Kaķis pārbauda laiviņu piestātni."
+              },
+              {
+                "en": "The cat raises the flag for the returning boats.",
+                "lv": "Kaķis paceļ karodziņu laiviņām, kas atgriežas."
+              },
+              {
+                "en": "The cat welcomes the last boats home.",
+                "lv": "Kaķis sagaida pēdējās laiviņas mājās."
+              }
+            ],
+            "intro": {
+              "en": "Paper boats are drifting down the stream. Keep track of the boats on the bank and help the last ones reach the little dock.",
+              "lv": "Papīra laiviņas peld pa strautu. Saskaiti krastā palikušās un palīdzi pēdējām sasniegt mazo piestātni."
+            },
+            "outcome": {
+              "en": "The last boats glide into the dock. Our paper-boat rescue is complete!",
+              "lv": "Pēdējās laiviņas ieslīd piestātnē. Papīra laiviņu glābšana ir pabeigta!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Launch the boats",
+                  "lv": "Palaid laiviņas"
+                },
+                "before": {
+                  "en": "Some boats are ready to launch. Count those still waiting.",
+                  "lv": "Dažas laiviņas var laist ūdenī. Saskaiti tās, kas vēl gaida."
+                },
+                "after": {
+                  "en": "Eight boats are still on the bank. Keep an eye on them!",
+                  "lv": "Astoņas laiviņas vēl ir krastā. Uzmanīsim tās!"
+                }
+              },
+              {
+                "title": {
+                  "en": "Follow the stream",
+                  "lv": "Seko straumei"
+                },
+                "before": {
+                  "en": "Three more boats drift away from our waiting group.",
+                  "lv": "Vēl trīs laiviņas aizpeld no gaidošās grupas."
+                },
+                "after": {
+                  "en": "Five boats remain. Let’s guide them toward home.",
+                  "lv": "Paliek piecas laiviņas. Virzīsim tās uz mājām."
+                }
+              },
+              {
+                "title": {
+                  "en": "Guide them home",
+                  "lv": "Nogādā mājās"
+                },
+                "before": {
+                  "en": "Two boats have arrived. Fix the count of those still coming.",
+                  "lv": "Divas laiviņas ir ieradušās. Izlabo vēl gaidāmo skaitu."
+                },
+                "after": {
+                  "en": "We found the last three boats. The dock is ready for them!",
+                  "lv": "Atradām pēdējās trīs laiviņas. Piestātne tās gaida!"
+                }
+              }
+            ]
           },
           "puzzleIds": [
             "v2-easy-subtraction-boats-1",
@@ -840,6 +1059,79 @@
             "en": "Find the beat, repair the winding rule and finish the tune.",
             "lv": "Atrodi ritmu, salabo uzvilkšanas likumu un pabeidz melodiju."
           },
+          "story": {
+            "sceneId": "music",
+            "catActions": [
+              {
+                "en": "The cat brings the music-box key.",
+                "lv": "Kaķis atnes mūzikas lādītes atslēgu."
+              },
+              {
+                "en": "The cat nods to the restored beat.",
+                "lv": "Kaķis māj atjaunotajā ritmā."
+              },
+              {
+                "en": "The cat cheers beside the repaired gears.",
+                "lv": "Kaķis priecājas pie salabotajiem zobratiem."
+              },
+              {
+                "en": "The cat dances as the music box plays.",
+                "lv": "Kaķis dejo, kad skan mūzikas lādīte."
+              }
+            ],
+            "intro": {
+              "en": "The music box has fallen silent. Restore its beat, repair its gears and finish the tune to wake it up.",
+              "lv": "Mūzikas lādīte ir apklususi. Atjauno ritmu, salabo zobratus un pabeidz melodiju, lai to atmodinātu."
+            },
+            "outcome": {
+              "en": "The gears turn and the notes float up. Our tune is playing again!",
+              "lv": "Zobrati griežas, un notis paceļas gaisā. Mūsu melodija atkal skan!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Find the beat",
+                  "lv": "Atrodi ritmu"
+                },
+                "before": {
+                  "en": "Listen to the number pattern. Which beat comes next?",
+                  "lv": "Ieklausies skaitļu virknē. Kurš sitiens seko tālāk?"
+                },
+                "after": {
+                  "en": "The beat reaches 15. Use it to repair the winding gear.",
+                  "lv": "Ritms sasniedz 15. Izmanto to, lai salabotu uzvilkšanas zobratu."
+                }
+              },
+              {
+                "title": {
+                  "en": "Repair the gear",
+                  "lv": "Salabo zobratu"
+                },
+                "before": {
+                  "en": "Find the rule that carries our beat from 15 to 18.",
+                  "lv": "Atrodi likumu, kas pārnes ritmu no 15 uz 18."
+                },
+                "after": {
+                  "en": "The +3 gear is working. Keep that rhythm for the last part.",
+                  "lv": "Zobrats +3 darbojas. Saglabā šo ritmu pēdējai daļai."
+                }
+              },
+              {
+                "title": {
+                  "en": "Finish the tune",
+                  "lv": "Pabeidz melodiju"
+                },
+                "before": {
+                  "en": "Continue from 18 with our repaired rhythm.",
+                  "lv": "Turpini no 18 ar mūsu atjaunoto ritmu."
+                },
+                "after": {
+                  "en": "The final beat is ready. Let’s hear the whole tune!",
+                  "lv": "Pēdējais sitiens ir gatavs. Lai skan visa melodija!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-easy-patterns-music-1",
             "v2-easy-patterns-music-2",
@@ -1007,6 +1299,79 @@
             "en": "Fill three displays with equal rows. Finish one display at a time.",
             "lv": "Piepildi trīs stendus ar vienādām rindām. Pabeidz pa vienam."
           },
+          "story": {
+            "sceneId": "shelves",
+            "catActions": [
+              {
+                "en": "The cat brings a toy to the workshop.",
+                "lv": "Kaķis atnes rotaļlietu uz darbnīcu."
+              },
+              {
+                "en": "The cat checks the first stocked display.",
+                "lv": "Kaķis pārbauda pirmo piepildīto stendu."
+              },
+              {
+                "en": "The cat raises a paw beside the second display.",
+                "lv": "Kaķis paceļ ķepu pie otrā stenda."
+              },
+              {
+                "en": "The cat welcomes visitors to the stocked workshop.",
+                "lv": "Kaķis sveic apmeklētājus piepildītajā darbnīcā."
+              }
+            ],
+            "intro": {
+              "en": "The toy workshop opens today! Fill its three displays, one at a time, so every visitor can find a toy.",
+              "lv": "Šodien atveras rotaļlietu darbnīca! Piepildi trīs stendus pa vienam, lai katrs apmeklētājs atrastu rotaļlietu."
+            },
+            "outcome": {
+              "en": "All three displays are stocked. The workshop is open for our friends!",
+              "lv": "Visi trīs stendi ir piepildīti. Darbnīca ir atvērta mūsu draugiem!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Stock the first display",
+                  "lv": "Piepildi pirmo stendu"
+                },
+                "before": {
+                  "en": "Begin with the small display. Every row needs the same number of toys.",
+                  "lv": "Sāc ar mazo stendu. Katrā rindā vajag vienādu rotaļlietu skaitu."
+                },
+                "after": {
+                  "en": "The first display is stocked. Two more will complete our workshop.",
+                  "lv": "Pirmais stends ir piepildīts. Darbnīcai vajag vēl divus."
+                }
+              },
+              {
+                "title": {
+                  "en": "Fill the middle display",
+                  "lv": "Piepildi vidējo stendu"
+                },
+                "before": {
+                  "en": "Now arrange equal rows on the middle display.",
+                  "lv": "Tagad sakārto vienādas rindas vidējā stendā."
+                },
+                "after": {
+                  "en": "Two displays are ready. Only the largest one is still empty.",
+                  "lv": "Divi stendi ir gatavi. Tukšs palicis tikai lielākais."
+                }
+              },
+              {
+                "title": {
+                  "en": "Finish the workshop",
+                  "lv": "Pabeidz darbnīcu"
+                },
+                "before": {
+                  "en": "Fill the largest display so we can open the doors.",
+                  "lv": "Piepildi lielāko stendu, lai varam atvērt durvis."
+                },
+                "after": {
+                  "en": "Every display is ready for opening day!",
+                  "lv": "Katrs stends ir gatavs atklāšanas dienai!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-easy-multiplication-shelves-1",
             "v2-easy-multiplication-shelves-2",
@@ -1173,6 +1538,79 @@
           "description": {
             "en": "Color the sail, check equal patches and match the repair pieces.",
             "lv": "Iekrāso buru, pārbaudi vienādus ielāpus un savieno remonta gabalus."
+          },
+          "story": {
+            "sceneId": "kite",
+            "catActions": [
+              {
+                "en": "The cat holds the kite-string spool.",
+                "lv": "Kaķis tur pūķa auklas spoli."
+              },
+              {
+                "en": "The cat checks the patched sail.",
+                "lv": "Kaķis pārbauda salāpīto buru."
+              },
+              {
+                "en": "The cat raises a paw when the patch fits.",
+                "lv": "Kaķis paceļ ķepu, kad ielāps der."
+              },
+              {
+                "en": "The cat holds the string while the repaired kite rises.",
+                "lv": "Kaķis tur auklu, kamēr salabotais pūķis paceļas."
+              }
+            ],
+            "intro": {
+              "en": "Our festival kite has a torn sail. Plan a patch, find matching material and fit the pieces so it can fly again.",
+              "lv": "Mūsu svētku pūķim ir saplīsusi bura. Izplāno ielāpu, atrodi piemērotu materiālu un saliec gabalus, lai tas atkal lidotu."
+            },
+            "outcome": {
+              "en": "The repaired kite lifts into the breeze. Our festival can begin!",
+              "lv": "Salabotais pūķis paceļas vējā. Mūsu svētki var sākties!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Plan the patch",
+                  "lv": "Izplāno ielāpu"
+                },
+                "before": {
+                  "en": "Mark the two sail panels that need a red patch.",
+                  "lv": "Atzīmē abus buras laukumus, kuriem vajag sarkanu ielāpu."
+                },
+                "after": {
+                  "en": "The patch covers 2/6 of the sail. Find that same amount on our repair sheet.",
+                  "lv": "Ielāps pārklāj 2/6 buras. Atrodi tādu pašu daļu remonta loksnē."
+                }
+              },
+              {
+                "title": {
+                  "en": "Find matching material",
+                  "lv": "Atrodi piemērotu materiālu"
+                },
+                "before": {
+                  "en": "The repair sheet has smaller pieces. Choose an equal-sized patch.",
+                  "lv": "Remonta loksnei ir mazāki gabali. Izvēlies tikpat lielu ielāpu."
+                },
+                "after": {
+                  "en": "The matching material is ready. Now fit the patch and the rest of the sail.",
+                  "lv": "Atbilstošais materiāls ir gatavs. Tagad saliec ielāpu un pārējo buru."
+                }
+              },
+              {
+                "title": {
+                  "en": "Fit the sail",
+                  "lv": "Saliec buru"
+                },
+                "before": {
+                  "en": "Match both parts of the sail to complete the repair.",
+                  "lv": "Savieno abas buras daļas, lai pabeigtu remontu."
+                },
+                "after": {
+                  "en": "The whole sail is mended. Let’s try it in the wind!",
+                  "lv": "Visa bura ir salabota. Izmēģināsim to vējā!"
+                }
+              }
+            ]
           },
           "puzzleIds": [
             "v2-easy-fractions-kite-1",
@@ -1356,6 +1794,79 @@
             "en": "Count the guests, fill the guest list and welcome the late arrivals.",
             "lv": "Saskaiti viesus, aizpildi viesu sarakstu un sagaidi nokavējušos."
           },
+          "story": {
+            "sceneId": "tickets",
+            "catActions": [
+              {
+                "en": "The cat holds the guest list at the festival gate.",
+                "lv": "Kaķis tur viesu sarakstu pie svētku vārtiem."
+              },
+              {
+                "en": "The cat checks the arrivals beside the ticket desk.",
+                "lv": "Kaķis pārbauda ieradušos pie biļešu kases."
+              },
+              {
+                "en": "The cat waves beside the finished guest list.",
+                "lv": "Kaķis māj pie pabeigtā viesu saraksta."
+              },
+              {
+                "en": "The cat welcomes guests through the open gate.",
+                "lv": "Kaķis sveic viesus pie atvērtajiem vārtiem."
+              }
+            ],
+            "intro": {
+              "en": "The festival gate is waiting for its guests. Help me count arrivals, fill the guest list and prepare tickets for everyone.",
+              "lv": "Svētku vārti gaida viesus. Palīdzi saskaitīt ieradušos, aizpildīt viesu sarakstu un sagatavot biļetes visiem."
+            },
+            "outcome": {
+              "en": "The festival gate swings open. Every guest has a ticket to join the celebration!",
+              "lv": "Svētku vārti atveras. Katram viesim ir biļete, lai pievienotos svinībām!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Count arrivals",
+                  "lv": "Saskaiti ieradušos"
+                },
+                "before": {
+                  "en": "Combine the guests who came by bus and on foot.",
+                  "lv": "Saskaiti kopā viesus, kuri atbrauca ar autobusu un atnāca kājām."
+                },
+                "after": {
+                  "en": "There are 65 guests here. Let’s complete our guest list.",
+                  "lv": "Klāt ir 65 viesi. Pabeigsim viesu sarakstu."
+                }
+              },
+              {
+                "title": {
+                  "en": "Fill the guest list",
+                  "lv": "Aizpildi viesu sarakstu"
+                },
+                "before": {
+                  "en": "Use the 65 arrivals to find how many more will fill the list.",
+                  "lv": "Izmanto 65 ieradušos skaitu, lai atrastu, cik vēl vajag pilnam sarakstam."
+                },
+                "after": {
+                  "en": "The list now holds 100 guests. A late group is coming too!",
+                  "lv": "Sarakstā tagad ir 100 viesu. Nāk arī nokavējusies grupa!"
+                }
+              },
+              {
+                "title": {
+                  "en": "Welcome the late group",
+                  "lv": "Sagaidi vēlo grupu"
+                },
+                "before": {
+                  "en": "Add the late group to our full list and check the final ticket count.",
+                  "lv": "Pieskaiti vēlo grupu pilnajam sarakstam un pārbaudi gala biļešu skaitu."
+                },
+                "after": {
+                  "en": "All 146 tickets are ready. Open the gate!",
+                  "lv": "Visas 146 biļetes ir gatavas. Atver vārtus!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-medium-addition-tickets-1",
             "v2-medium-addition-tickets-2",
@@ -1522,6 +2033,79 @@
           "description": {
             "en": "Send supplies uphill, count the second load and check the reserve.",
             "lv": "Nosūti krājumus kalnā, saskaiti otro kravu un pārbaudi rezervi."
+          },
+          "story": {
+            "sceneId": "lift",
+            "catActions": [
+              {
+                "en": "The cat brings a flag for the mountain team.",
+                "lv": "Kaķis atnes karodziņu kalnu komandai."
+              },
+              {
+                "en": "The cat checks the supplies at the base.",
+                "lv": "Kaķis pārbauda krājumus pakājē."
+              },
+              {
+                "en": "The cat waves from the loaded lift.",
+                "lv": "Kaķis māj no piekrautā pacēlāja."
+              },
+              {
+                "en": "The cat rides the supply lift up the mountain.",
+                "lv": "Kaķis brauc ar krājumu pacēlāju kalnā."
+              }
+            ],
+            "intro": {
+              "en": "The mountain team needs supplies before nightfall. Plan two lift loads and keep a safe reserve for the rescue team.",
+              "lv": "Kalnu komandai vajag krājumus pirms tumsas. Izplāno divas pacēlāja kravas un saglabā drošu rezervi glābējiem."
+            },
+            "outcome": {
+              "en": "The supply lift reaches the mountain station. The team is stocked and the reserve is safe!",
+              "lv": "Krājumu pacēlājs sasniedz kalnu staciju. Komandai ir krājumi, un rezerve ir drošībā!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Send the first load",
+                  "lv": "Nosūti pirmo kravu"
+                },
+                "before": {
+                  "en": "Send the first supply bags uphill and count what stays at the base.",
+                  "lv": "Nosūti pirmos krājumu maisus kalnā un saskaiti pakājē palikušos."
+                },
+                "after": {
+                  "en": "There are 55 bags at the base. Plan our next load from those.",
+                  "lv": "Pakājē paliek 55 maisi. No tiem izplāno nākamo kravu."
+                }
+              },
+              {
+                "title": {
+                  "en": "Plan the second load",
+                  "lv": "Izplāno otro kravu"
+                },
+                "before": {
+                  "en": "Leave 28 bags at the base after the next trip.",
+                  "lv": "Pēc nākamā brauciena pakājē jāpaliek 28 maisiem."
+                },
+                "after": {
+                  "en": "The second load is ready. Check our remaining rescue supplies.",
+                  "lv": "Otrā krava ir gatava. Pārbaudi atlikušos glābēju krājumus."
+                }
+              },
+              {
+                "title": {
+                  "en": "Protect the reserve",
+                  "lv": "Saglabā rezervi"
+                },
+                "before": {
+                  "en": "Set aside supplies for the rescue team, then count the reserve.",
+                  "lv": "Atliec krājumus glābējiem un tad saskaiti rezervi."
+                },
+                "after": {
+                  "en": "Nine reserve bags are safe. Send the lift to the team!",
+                  "lv": "Deviņi rezerves maisi ir drošībā. Nosūti pacēlāju komandai!"
+                }
+              }
+            ]
           },
           "puzzleIds": [
             "v2-medium-subtraction-lift-1",
@@ -1705,6 +2289,79 @@
             "en": "Arrange the audience, extend the rows and prepare the final performance.",
             "lv": "Sakārto skatītāju vietas, pagarini rindas un sagatavo izrādi."
           },
+          "story": {
+            "sceneId": "theatre",
+            "catActions": [
+              {
+                "en": "The cat brings a baton for the firefly show.",
+                "lv": "Kaķis atnes diriģenta zizli jāņtārpiņu izrādei."
+              },
+              {
+                "en": "The cat checks the first rows of seats.",
+                "lv": "Kaķis pārbauda pirmās sēdvietu rindas."
+              },
+              {
+                "en": "The cat cheers beside the longer rows.",
+                "lv": "Kaķis priecājas pie pagarinātajām rindām."
+              },
+              {
+                "en": "The cat performs on stage as the curtain opens.",
+                "lv": "Kaķis uzstājas uz skatuves, kad atveras priekškars."
+              }
+            ],
+            "intro": {
+              "en": "The fireflies want to put on a show. Build their audience area, enlarge it as guests arrive and prepare the stage.",
+              "lv": "Jāņtārpiņi vēlas sarīkot izrādi. Sagatavo skatītāju vietas, paplašini tās viesiem un sagatavo skatuvi."
+            },
+            "outcome": {
+              "en": "The curtain opens and the firefly lights dance. The theatre is ready for its first show!",
+              "lv": "Priekškars atveras, un jāņtārpiņu gaismiņas dejo. Teātris ir gatavs pirmajai izrādei!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Arrange the seats",
+                  "lv": "Sakārto vietas"
+                },
+                "before": {
+                  "en": "Start with seven equal rows of seats.",
+                  "lv": "Sāc ar septiņām vienādām sēdvietu rindām."
+                },
+                "after": {
+                  "en": "There are 56 seats. More guests are coming, so each row must grow.",
+                  "lv": "Ir 56 vietas. Nāk vēl viesi, tāpēc katra rinda jāpaplašina."
+                }
+              },
+              {
+                "title": {
+                  "en": "Extend the rows",
+                  "lv": "Pagarini rindas"
+                },
+                "before": {
+                  "en": "Keep seven rows and fit 63 seats altogether.",
+                  "lv": "Saglabā septiņas rindas un izvieto kopā 63 vietas."
+                },
+                "after": {
+                  "en": "Each row holds nine. Add one last row to finish the audience area.",
+                  "lv": "Katrā rindā ir deviņas vietas. Pievieno pēdējo rindu skatītājiem."
+                }
+              },
+              {
+                "title": {
+                  "en": "Prepare the show",
+                  "lv": "Sagatavo izrādi"
+                },
+                "before": {
+                  "en": "Use the nine-seat row to find the total with eight rows.",
+                  "lv": "Izmanto deviņas vietas rindā, lai atrastu kopskaitu astoņās rindās."
+                },
+                "after": {
+                  "en": "All 72 seats are ready. Raise the curtain!",
+                  "lv": "Visas 72 vietas ir gatavas. Pacel priekškaru!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-medium-multiplication-theatre-1",
             "v2-medium-multiplication-theatre-2",
@@ -1871,6 +2528,79 @@
           "description": {
             "en": "Count the arriving parcels, load the carts and deal with a late delivery.",
             "lv": "Saskaiti pienākušos sūtījumus, piepildi ratiņus un sadali vēlo piegādi."
+          },
+          "story": {
+            "sceneId": "parcels",
+            "catActions": [
+              {
+                "en": "The cat brings a parcel to the depot.",
+                "lv": "Kaķis atnes sūtījumu uz staciju."
+              },
+              {
+                "en": "The cat checks the arriving crates.",
+                "lv": "Kaķis pārbauda pienākušās kastes."
+              },
+              {
+                "en": "The cat cheers beside the equally loaded carts.",
+                "lv": "Kaķis priecājas pie vienādi piekrautajiem ratiņiem."
+              },
+              {
+                "en": "The cat heads out with the parcel carts.",
+                "lv": "Kaķis dodas ceļā kopā ar sūtījumu ratiņiem."
+              }
+            ],
+            "intro": {
+              "en": "The delivery carts are waiting. Count the parcels, share them fairly and make a plan for the late delivery.",
+              "lv": "Piegādes ratiņi gaida. Saskaiti sūtījumus, sadali tos vienādi un izplāno vēlās piegādes sadali."
+            },
+            "outcome": {
+              "en": "The carts roll out together. The late parcels are safely waiting for the next delivery!",
+              "lv": "Ratiņi kopā dodas ceļā. Vēlie sūtījumi droši gaida nākamo piegādi!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Count the delivery",
+                  "lv": "Saskaiti piegādi"
+                },
+                "before": {
+                  "en": "Find how many parcels arrive in our four crates.",
+                  "lv": "Atrodi, cik sūtījumu pienāk četrās kastēs."
+                },
+                "after": {
+                  "en": "We have 28 parcels. Share that delivery across the carts.",
+                  "lv": "Mums ir 28 sūtījumi. Sadali šo piegādi starp ratiņiem."
+                }
+              },
+              {
+                "title": {
+                  "en": "Load equal carts",
+                  "lv": "Piepildi ratiņus vienādi"
+                },
+                "before": {
+                  "en": "Give each of the four carts the same number of parcels.",
+                  "lv": "Katrā no četriem ratiņiem ieliec vienādu sūtījumu skaitu."
+                },
+                "after": {
+                  "en": "The carts have equal loads. Three late parcels have just arrived.",
+                  "lv": "Ratiņos ir vienādas kravas. Tikko pienākuši trīs vēli sūtījumi."
+                }
+              },
+              {
+                "title": {
+                  "en": "Handle the late parcels",
+                  "lv": "Sadali vēlos sūtījumus"
+                },
+                "before": {
+                  "en": "Share the new total fairly and keep any leftovers at the station.",
+                  "lv": "Sadali jauno kopskaitu vienādi un atlikumu atstāj stacijā."
+                },
+                "after": {
+                  "en": "Every cart has seven parcels, with three safe at the station. Let’s deliver!",
+                  "lv": "Katrā ratiņā ir septiņi sūtījumi, bet trīs droši paliek stacijā. Dodamies piegādē!"
+                }
+              }
+            ]
           },
           "puzzleIds": [
             "v2-medium-division-parcels-1",
@@ -2054,6 +2784,79 @@
             "en": "Lay the blue mosaic, replace its tiles and finish the matching border.",
             "lv": "Ieklāj zilo mozaīku, nomaini flīzes un pabeidz atbilstošu apmali."
           },
+          "story": {
+            "sceneId": "fountain",
+            "catActions": [
+              {
+                "en": "The cat brings a trowel to repair the fountain.",
+                "lv": "Kaķis atnes lāpstiņu strūklakas remontam."
+              },
+              {
+                "en": "The cat checks the blue mosaic.",
+                "lv": "Kaķis pārbauda zilo mozaīku."
+              },
+              {
+                "en": "The cat raises a paw beside the replacement tiles.",
+                "lv": "Kaķis paceļ ķepu pie nomainītajām flīzēm."
+              },
+              {
+                "en": "The cat looks up as the fountain starts flowing.",
+                "lv": "Kaķis paceļ skatienu, kad sāk plūst strūklaka."
+              }
+            ],
+            "intro": {
+              "en": "The old fountain needs its mosaic restored. Plan the blue area, replace the tiles and complete the border to bring back the water.",
+              "lv": "Vecajai strūklakai jāatjauno mozaīka. Izplāno zilo laukumu, nomaini flīzes un pabeidz apmali, lai atgrieztos ūdens."
+            },
+            "outcome": {
+              "en": "Water springs from the repaired fountain and falls into the finished mosaic basin!",
+              "lv": "Ūdens izšaujas no salabotās strūklakas un krīt pabeigtajā mozaīkas baseinā!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Plan the blue mosaic",
+                  "lv": "Izplāno zilo mozaīku"
+                },
+                "before": {
+                  "en": "Mark the blue part of the fountain’s mosaic.",
+                  "lv": "Atzīmē strūklakas mozaīkas zilo daļu."
+                },
+                "after": {
+                  "en": "The blue area is 3/8. Keep that area when we use smaller tiles.",
+                  "lv": "Zilais laukums ir 3/8. Saglabā to, izmantojot mazākas flīzes."
+                }
+              },
+              {
+                "title": {
+                  "en": "Replace the tiles",
+                  "lv": "Nomaini flīzes"
+                },
+                "before": {
+                  "en": "Choose smaller tiles that cover exactly the same blue area.",
+                  "lv": "Izvēlies mazākas flīzes, kas pārklāj tieši tādu pašu zilo laukumu."
+                },
+                "after": {
+                  "en": "The replacement tiles fit. Now finish the whole mosaic.",
+                  "lv": "Jaunās flīzes der. Tagad pabeidz visu mozaīku."
+                }
+              },
+              {
+                "title": {
+                  "en": "Complete the border",
+                  "lv": "Pabeidz apmali"
+                },
+                "before": {
+                  "en": "Match the blue area and the remaining area to complete the basin.",
+                  "lv": "Savieno zilo laukumu un atlikušo laukumu, lai pabeigtu baseinu."
+                },
+                "after": {
+                  "en": "The whole basin is restored. Turn on the water!",
+                  "lv": "Viss baseins ir atjaunots. Ieslēdz ūdeni!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-medium-fractions-fountain-1",
             "v2-medium-fractions-fountain-2",
@@ -2235,6 +3038,79 @@
           "description": {
             "en": "Carry power from one lantern to the next. Each repaired route lights another part of the trail.",
             "lv": "Pārnes enerģiju no vienas laternas uz nākamo. Katrs salabotais ceļš iededz vēl vienu takas daļu."
+          },
+          "story": {
+            "sceneId": "lanterns",
+            "catActions": [
+              {
+                "en": "The cat carries a little lantern for the trail.",
+                "lv": "Kaķis nes mazu laternu takai."
+              },
+              {
+                "en": "The cat checks the first lit lantern.",
+                "lv": "Kaķis pārbauda pirmo iedegto laternu."
+              },
+              {
+                "en": "The cat cheers beside the second lantern.",
+                "lv": "Kaķis priecājas pie otrās laternas."
+              },
+              {
+                "en": "The cat follows the finished lantern trail.",
+                "lv": "Kaķis dodas pa izgaismoto laternu taku."
+              }
+            ],
+            "intro": {
+              "en": "Our friends need a lighted trail through the woods. Carry power from one lantern to the next until the whole path shines.",
+              "lv": "Mūsu draugiem vajag apgaismotu taku cauri mežam. Pārnes enerģiju no vienas laternas uz nākamo, līdz visa taka mirdz."
+            },
+            "outcome": {
+              "en": "Every lantern shines along the trail. Our friends can follow the lights home!",
+              "lv": "Katra laterna izgaismo taku. Mūsu draugi var sekot gaismiņām uz mājām!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Light the first lantern",
+                  "lv": "Iededz pirmo laternu"
+                },
+                "before": {
+                  "en": "Choose the operations that power the first lantern.",
+                  "lv": "Izvēlies darbības, kas dod enerģiju pirmajai laternai."
+                },
+                "after": {
+                  "en": "The first lantern is lit at 20. Carry that power onward.",
+                  "lv": "Pirmā laterna deg pie 20. Pārnes šo enerģiju tālāk."
+                }
+              },
+              {
+                "title": {
+                  "en": "Carry the light",
+                  "lv": "Pārnes gaismu"
+                },
+                "before": {
+                  "en": "Start from the first lantern’s 20 to power the next one.",
+                  "lv": "Sāc ar pirmās laternas 20, lai iedegtu nākamo."
+                },
+                "after": {
+                  "en": "The second lantern is lit at 13. Only the end of the trail is dark.",
+                  "lv": "Otrā laterna deg pie 13. Tumšs palicis tikai takas gals."
+                }
+              },
+              {
+                "title": {
+                  "en": "Finish the trail",
+                  "lv": "Pabeidz taku"
+                },
+                "before": {
+                  "en": "Carry the 13 forward to light the final lantern.",
+                  "lv": "Pārnes 13 tālāk, lai iedegtu pēdējo laternu."
+                },
+                "after": {
+                  "en": "The final lantern is powered. Light the way home!",
+                  "lv": "Pēdējai laternai ir enerģija. Izgaismo ceļu uz mājām!"
+                }
+              }
+            ]
           },
           "puzzleIds": [
             "v2-medium-operations-lanterns-1",
@@ -2418,6 +3294,79 @@
             "en": "Route the power, align the telescope and tune the star tracker.",
             "lv": "Novadi enerģiju, noregulē teleskopu un noskaņo zvaigžņu sekotāju."
           },
+          "story": {
+            "sceneId": "observatory",
+            "catActions": [
+              {
+                "en": "The cat brings a star chart to the observatory.",
+                "lv": "Kaķis atnes zvaigžņu karti uz observatoriju."
+              },
+              {
+                "en": "The cat checks the powered console.",
+                "lv": "Kaķis pārbauda ieslēgto vadības paneli."
+              },
+              {
+                "en": "The cat raises a paw beside the aligned telescope.",
+                "lv": "Kaķis paceļ ķepu pie noregulētā teleskopa."
+              },
+              {
+                "en": "The cat watches the comet pass above the observatory.",
+                "lv": "Kaķis vēro komētu virs observatorijas."
+              }
+            ],
+            "intro": {
+              "en": "A comet will pass tonight, but the observatory is asleep. Restore its power, align the telescope and tune the tracker before it arrives.",
+              "lv": "Šovakar garām lidos komēta, bet observatorija guļ. Atjauno enerģiju, noregulē teleskopu un noskaņo sekotāju pirms tās ierašanās."
+            },
+            "outcome": {
+              "en": "The telescope turns toward the sky as the comet streaks past. We caught it together!",
+              "lv": "Teleskops pagriežas pret debesīm, kamēr garām aiztraucas komēta. Mēs to kopā pamanījām!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Restore the power",
+                  "lv": "Atjauno enerģiju"
+                },
+                "before": {
+                  "en": "Route the starting power to the observatory’s control panel.",
+                  "lv": "Novadi sākuma enerģiju uz observatorijas vadības paneli."
+                },
+                "after": {
+                  "en": "The panel has 21. Use that result to align the telescope.",
+                  "lv": "Panelī ir 21. Izmanto šo rezultātu teleskopa noregulēšanai."
+                }
+              },
+              {
+                "title": {
+                  "en": "Align the telescope",
+                  "lv": "Noregulē teleskopu"
+                },
+                "before": {
+                  "en": "Use the power result with the other numbers to reach the alignment target.",
+                  "lv": "Izmanto enerģijas rezultātu ar pārējiem skaitļiem, lai sasniegtu noregulēšanas mērķi."
+                },
+                "after": {
+                  "en": "The alignment is 27. Pass it to the star tracker.",
+                  "lv": "Noregulējums ir 27. Nodod to zvaigžņu sekotājam."
+                }
+              },
+              {
+                "title": {
+                  "en": "Tune the tracker",
+                  "lv": "Noskaņo sekotāju"
+                },
+                "before": {
+                  "en": "Apply the tracker’s rule to our alignment result.",
+                  "lv": "Piemēro sekotāja likumu mūsu noregulēšanas rezultātam."
+                },
+                "after": {
+                  "en": "The tracker is tuned to 79. Watch the sky!",
+                  "lv": "Sekotājs ir noskaņots uz 79. Vēro debesis!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-hard-operations-observatory-1",
             "v2-hard-operations-observatory-2",
@@ -2584,6 +3533,79 @@
           "description": {
             "en": "Choose the flower area, finish the border and prepare the supplies.",
             "lv": "Izvēlies puķu laukumu, pabeidz apmali un sagatavo krājumus."
+          },
+          "story": {
+            "sceneId": "garden",
+            "catActions": [
+              {
+                "en": "The cat brings a watering can to the empty garden.",
+                "lv": "Kaķis atnes lejkannu uz tukšo dārzu."
+              },
+              {
+                "en": "The cat checks the planned flower beds.",
+                "lv": "Kaķis pārbauda ieplānotās puķu dobes."
+              },
+              {
+                "en": "The cat celebrates on the reserved garden path.",
+                "lv": "Kaķis priecājas uz atstātās dārza takas."
+              },
+              {
+                "en": "The cat waters the flowers as the garden blooms.",
+                "lv": "Kaķis laista puķes, kamēr dārzs uzzied."
+              }
+            ],
+            "intro": {
+              "en": "Let’s turn an empty plot into a flower garden. Plan the flower beds, leave room for a path and gather the seeds we need.",
+              "lv": "Pārvērtīsim tukšu laukumu puķu dārzā. Izplāno dobes, atstāj vietu takai un savāc vajadzīgās sēklas."
+            },
+            "outcome": {
+              "en": "The seeds sprout and the garden blooms around its winding path!",
+              "lv": "Sēklas sadīgst, un ap līkumoto taku uzzied dārzs!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Plan the flower beds",
+                  "lv": "Izplāno puķu dobes"
+                },
+                "before": {
+                  "en": "Work out how much of our plot will grow flowers.",
+                  "lv": "Aprēķini, cik lielā laukuma daļā augs puķes."
+                },
+                "after": {
+                  "en": "We need 18 flower spaces. Leave the rest for a path.",
+                  "lv": "Vajag 18 puķu vietas. Pārējo atstāsim takai."
+                }
+              },
+              {
+                "title": {
+                  "en": "Leave a path",
+                  "lv": "Atstāj taku"
+                },
+                "before": {
+                  "en": "Mark the quarter outside our planned flower beds.",
+                  "lv": "Atzīmē ceturtdaļu ārpus ieplānotajām puķu dobēm."
+                },
+                "after": {
+                  "en": "The path has its own quarter. Now gather seeds for the 18 flower spaces.",
+                  "lv": "Takai ir sava ceturtdaļa. Tagad savāc sēklas 18 puķu vietām."
+                }
+              },
+              {
+                "title": {
+                  "en": "Gather the seeds",
+                  "lv": "Savāc sēklas"
+                },
+                "before": {
+                  "en": "Each flower space needs three seeds. Prepare enough for our plan.",
+                  "lv": "Katrai puķu vietai vajag trīs sēklas. Sagatavo pietiekami mūsu plānam."
+                },
+                "after": {
+                  "en": "All 54 seeds are ready. Time to plant our garden!",
+                  "lv": "Visas 54 sēklas ir gatavas. Laiks stādīt mūsu dārzu!"
+                }
+              }
+            ]
           },
           "puzzleIds": [
             "v2-hard-fractions-garden-1",
@@ -2767,6 +3789,79 @@
             "en": "Decode the signal, tune the amplifier and send the final transmission.",
             "lv": "Atšifrē signālu, noskaņo pastiprinātāju un nosūti pēdējo pārraidi."
           },
+          "story": {
+            "sceneId": "signal",
+            "catActions": [
+              {
+                "en": "The cat brings a radio to the signal tower.",
+                "lv": "Kaķis atnes radio uz signālu torni."
+              },
+              {
+                "en": "The cat checks the connected signal cable.",
+                "lv": "Kaķis pārbauda pievienoto signāla vadu."
+              },
+              {
+                "en": "The cat raises a paw beside the tuned amplifier.",
+                "lv": "Kaķis paceļ ķepu pie noskaņotā pastiprinātāja."
+              },
+              {
+                "en": "The cat celebrates as the tower sends its message.",
+                "lv": "Kaķis priecājas, kad tornis nosūta ziņu."
+              }
+            ],
+            "intro": {
+              "en": "A distant friend is waiting for our message. Decode the signal, boost it and send a final pulse from the tower.",
+              "lv": "Tāls draugs gaida mūsu ziņu. Atšifrē signālu, pastiprini to un nosūti pēdējo impulsu no torņa."
+            },
+            "outcome": {
+              "en": "The signal rings travel from the tower. Our distant friend receives the message!",
+              "lv": "Signāla apļi izplatās no torņa. Mūsu tālais draugs saņem ziņu!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Decode the signal",
+                  "lv": "Atšifrē signālu"
+                },
+                "before": {
+                  "en": "Find how the incoming pulse grows.",
+                  "lv": "Atrodi, kā pieaug ienākošais impulss."
+                },
+                "after": {
+                  "en": "The next pulse is 48. Send it through the amplifier.",
+                  "lv": "Nākamais impulss ir 48. Nosūti to caur pastiprinātāju."
+                }
+              },
+              {
+                "title": {
+                  "en": "Tune the amplifier",
+                  "lv": "Noskaņo pastiprinātāju"
+                },
+                "before": {
+                  "en": "Choose the rule that boosts our decoded pulse.",
+                  "lv": "Izvēlies likumu, kas pastiprina atšifrēto impulsu."
+                },
+                "after": {
+                  "en": "The boosted pulse is 96. Keep its rule for the transmission.",
+                  "lv": "Pastiprinātais impulss ir 96. Saglabā tā likumu pārraidei."
+                }
+              },
+              {
+                "title": {
+                  "en": "Send the message",
+                  "lv": "Nosūti ziņu"
+                },
+                "before": {
+                  "en": "Continue the amplified pattern to finish our message.",
+                  "lv": "Turpini pastiprināto virkni, lai pabeigtu mūsu ziņu."
+                },
+                "after": {
+                  "en": "The final pulse is 768. Send our message!",
+                  "lv": "Pēdējais impulss ir 768. Nosūti mūsu ziņu!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-hard-patterns-signal-1",
             "v2-hard-patterns-signal-2",
@@ -2949,6 +4044,79 @@
             "en": "Calculate the discount, set the price and check a customer’s change.",
             "lv": "Aprēķini atlaidi, nosaki cenu un pārbaudi pircēja atlikumu."
           },
+          "story": {
+            "sceneId": "shop",
+            "catActions": [
+              {
+                "en": "The cat brings a toy for the shop’s first customer.",
+                "lv": "Kaķis atnes rotaļlietu veikala pirmajam pircējam."
+              },
+              {
+                "en": "The cat checks the sale tag.",
+                "lv": "Kaķis pārbauda atlaides zīmi."
+              },
+              {
+                "en": "The cat raises a paw beside the priced toys.",
+                "lv": "Kaķis paceļ ķepu pie rotaļlietām ar cenām."
+              },
+              {
+                "en": "The cat welcomes the first customer as the shop opens.",
+                "lv": "Kaķis sveic pirmo pircēju, kad veikals atveras."
+              }
+            ],
+            "intro": {
+              "en": "Our toy shop is opening for a sale. Work out the discount, update the price and help our first customer. These story prices do not spend your game coins.",
+              "lv": "Mūsu rotaļlietu veikalā būs izpārdošana. Aprēķini atlaidi, nomaini cenu un palīdzi pirmajam pircējam. Šīs stāsta cenas netērē tavas spēles monētas."
+            },
+            "outcome": {
+              "en": "The first customer has the toys and the correct change. The shop opens for the day!",
+              "lv": "Pirmajam pircējam ir rotaļlietas un pareizais atlikums. Veikala darba diena ir sākusies!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Calculate the discount",
+                  "lv": "Aprēķini atlaidi"
+                },
+                "before": {
+                  "en": "Find how much the sale takes off the original price.",
+                  "lv": "Atrodi, par cik atlaide samazina sākotnējo cenu."
+                },
+                "after": {
+                  "en": "The discount is 20. Use that amount to set our sale price.",
+                  "lv": "Atlaide ir 20. Izmanto šo summu izpārdošanas cenas noteikšanai."
+                }
+              },
+              {
+                "title": {
+                  "en": "Set the sale price",
+                  "lv": "Nosaki atlaides cenu"
+                },
+                "before": {
+                  "en": "Subtract our discount from the original price.",
+                  "lv": "Atņem mūsu atlaidi no sākotnējās cenas."
+                },
+                "after": {
+                  "en": "Each toy now costs 60. Our first customer wants two.",
+                  "lv": "Katra rotaļlieta tagad maksā 60. Pirmais pircējs vēlas divas."
+                }
+              },
+              {
+                "title": {
+                  "en": "Serve the first customer",
+                  "lv": "Apkalpo pirmo pircēju"
+                },
+                "before": {
+                  "en": "Use the new price for both toys, then check the change.",
+                  "lv": "Izmanto jauno cenu abām rotaļlietām un pārbaudi atlikumu."
+                },
+                "after": {
+                  "en": "The customer gets 30 in change. We’re ready to open!",
+                  "lv": "Pircējs saņem 30 atlikumā. Varam vērt vaļā!"
+                }
+              }
+            ]
+          },
           "puzzleIds": [
             "v2-hard-percentages-shop-1",
             "v2-hard-percentages-shop-2",
@@ -3115,6 +4283,79 @@
           "description": {
             "en": "Measure the roof, scale the delivery and estimate the spare supplies.",
             "lv": "Izmēri jumtu, pārrēķini piegādi un aptuveni novērtē rezerves krājumus."
+          },
+          "story": {
+            "sceneId": "shelter",
+            "catActions": [
+              {
+                "en": "The cat brings a building tool to the shelter.",
+                "lv": "Kaķis atnes darbarīku uz patvērumu."
+              },
+              {
+                "en": "The cat checks the measured roof.",
+                "lv": "Kaķis pārbauda izmērīto jumtu."
+              },
+              {
+                "en": "The cat cheers beside the delivered crates.",
+                "lv": "Kaķis priecājas pie piegādātajām kastēm."
+              },
+              {
+                "en": "The cat sits down to rest at the finished shelter.",
+                "lv": "Kaķis apsēžas atpūsties pie pabeigtā patvēruma."
+              }
+            ],
+            "intro": {
+              "en": "The rooftop shelter needs a tiled roof. Measure it, order enough crates and check the supply estimate so our friends can stay dry.",
+              "lv": "Jumta patvērumam vajag flīžu jumtu. Izmēri to, pasūti pietiekami kastu un pārbaudi krājumu aplēsi, lai draugi būtu sausumā."
+            },
+            "outcome": {
+              "en": "Sunshine returns to the finished rooftop shelter. Our friends have a dry place to rest!",
+              "lv": "Saule atgriežas virs pabeigtā jumta patvēruma. Mūsu draugiem ir sausa vieta atpūtai!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Measure the roof",
+                  "lv": "Izmēri jumtu"
+                },
+                "before": {
+                  "en": "Find the number of square tiles needed for the roof.",
+                  "lv": "Atrodi, cik kvadrātveida flīžu vajag jumtam."
+                },
+                "after": {
+                  "en": "The roof needs 63 tiles. Use that count to work out our crates.",
+                  "lv": "Jumtam vajag 63 flīzes. Izmanto šo skaitu, lai aprēķinātu kastes."
+                }
+              },
+              {
+                "title": {
+                  "en": "Order the crates",
+                  "lv": "Pasūti kastes"
+                },
+                "before": {
+                  "en": "Use the tiles in seven crates to find how many nine crates will bring.",
+                  "lv": "Izmanto flīžu skaitu septiņās kastēs, lai atrastu deviņu kastu kravu."
+                },
+                "after": {
+                  "en": "Nine crates bring 81 tiles. Now check the full supply estimate.",
+                  "lv": "Deviņās kastēs ir 81 flīze. Tagad pārbaudi visu krājumu aplēsi."
+                }
+              },
+              {
+                "title": {
+                  "en": "Check the supplies",
+                  "lv": "Pārbaudi krājumus"
+                },
+                "before": {
+                  "en": "Estimate our order and the extra supplies using the rounding rule.",
+                  "lv": "Aptuveni aprēķini pasūtījumu un papildu krājumus ar noapaļošanas likumu."
+                },
+                "after": {
+                  "en": "The estimate is checked. Let’s finish the shelter!",
+                  "lv": "Aplēse ir pārbaudīta. Pabeigsim patversmi!"
+                }
+              }
+            ]
           },
           "puzzleIds": [
             "v2-hard-measurement-shelter-1",
@@ -3297,6 +4538,79 @@
           "description": {
             "en": "Solve the door clues, check the drawer labels and arrange the final code.",
             "lv": "Atrisini durvju norādes, pārbaudi atvilktņu etiķetes un sakārto gala kodu."
+          },
+          "story": {
+            "sceneId": "vault",
+            "catActions": [
+              {
+                "en": "The cat brings a key to the clue vault.",
+                "lv": "Kaķis atnes atslēgu uz norāžu seifu."
+              },
+              {
+                "en": "The cat checks the solved number lock.",
+                "lv": "Kaķis pārbauda atrisināto skaitļa slēdzeni."
+              },
+              {
+                "en": "The cat raises the key after checking the clue.",
+                "lv": "Kaķis paceļ atslēgu pēc norādes pārbaudes."
+              },
+              {
+                "en": "The cat celebrates beside the star revealed in the vault.",
+                "lv": "Kaķis priecājas pie seifā atklātās zvaigznes."
+              }
+            ],
+            "intro": {
+              "en": "The clue vault holds a hidden star. Solve its number lock, verify the answer and order the key tiles to reveal it.",
+              "lv": "Norāžu seifā slēpjas zvaigzne. Atrisini skaitļa slēdzeni, pārbaudi atbildi un sakārto atslēgas kartītes, lai to atklātu."
+            },
+            "outcome": {
+              "en": "The vault door opens and the hidden star rises. Every clue led us here!",
+              "lv": "Seifa durvis atveras, un slēptā zvaigzne paceļas. Visas norādes atveda mūs šurp!"
+            },
+            "stages": [
+              {
+                "title": {
+                  "en": "Solve the number lock",
+                  "lv": "Atrisini skaitļa slēdzeni"
+                },
+                "before": {
+                  "en": "Find the single number that fits every clue.",
+                  "lv": "Atrodi vienīgo skaitli, kas atbilst visām norādēm."
+                },
+                "after": {
+                  "en": "The lock number is 42. Check its division clue next.",
+                  "lv": "Slēdzenes skaitlis ir 42. Tālāk pārbaudi tā dalīšanas norādi."
+                }
+              },
+              {
+                "title": {
+                  "en": "Verify the clue",
+                  "lv": "Pārbaudi norādi"
+                },
+                "before": {
+                  "en": "Test the claim about our lock number before turning the key.",
+                  "lv": "Pirms atslēgas pagriešanas pārbaudi apgalvojumu par slēdzenes skaitli."
+                },
+                "after": {
+                  "en": "The verified clue gives seven. Look for its multiples on the key tiles.",
+                  "lv": "Pārbaudītā norāde dod septiņi. Meklē tā daudzkārtņus atslēgas kartītēs."
+                }
+              },
+              {
+                "title": {
+                  "en": "Order the key tiles",
+                  "lv": "Sakārto atslēgas kartītes"
+                },
+                "before": {
+                  "en": "Arrange the multiples from smallest to largest to open the vault.",
+                  "lv": "Sakārto daudzkārtņus augošā secībā, lai atvērtu seifu."
+                },
+                "after": {
+                  "en": "All the key tiles fit. Let’s see what’s inside!",
+                  "lv": "Visas atslēgas kartītes der. Apskatīsimies, kas ir iekšā!"
+                }
+              }
+            ]
           },
           "puzzleIds": [
             "v2-hard-logic-vault-1",

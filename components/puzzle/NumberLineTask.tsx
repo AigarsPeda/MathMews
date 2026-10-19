@@ -36,7 +36,7 @@ export function NumberLineTask({
           value={current}
           onSelect={onSelectValue}
           disabled={answered}
-          correctValue={answered ? correctValue : undefined}
+          correctValue={answered && isCorrect ? correctValue : undefined}
           wrongValue={answered && !isCorrect && selectedValue !== null ? selectedValue : undefined}
         />
         {!answered ? (

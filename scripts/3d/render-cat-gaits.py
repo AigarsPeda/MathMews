@@ -4,7 +4,8 @@ import bpy, math, json, struct, sys
 from mathutils import Vector, Matrix, Quaternion
 ROOT=Path(__file__).resolve().parents[2]
 fluid='--fluid' in sys.argv
-OUT=Path('/tmp/brainpet-fluid-review' if fluid else '/tmp/brainpet-gait-review');OUT.mkdir(exist_ok=True)
+spine='--spine' in sys.argv
+OUT=Path('/tmp/brainpet-spine-review' if spine else '/tmp/brainpet-fluid-review' if fluid else '/tmp/brainpet-gait-review');OUT.mkdir(exist_ok=True)
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 bpy.ops.import_scene.gltf(filepath=str(ROOT/'assets/3d/native/cat-orange.glb'))
 arm=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE')
@@ -13,6 +14,7 @@ for obj in bpy.context.scene.objects:
     if obj.animation_data:obj.animation_data.action=None
 scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=8
 scene.render.resolution_x=scene.render.resolution_y=288;scene.render.resolution_percentage=100
+if spine:scene.render.resolution_x=scene.render.resolution_y=512
 scene.world.color=(.7,.7,.7);scene.view_settings.view_transform='AgX'
 for location,energy in [((3,-4,6),350),((-4,-2,3),220),((0,4,5),200)]:
     bpy.ops.object.light_add(type='AREA',location=location);light=bpy.context.object
@@ -41,8 +43,8 @@ corrections={}
 for i,n in enumerate(model['nodes']):
     if n['name'] in arm.pose.bones and n['name'] not in corrections:
         corrections[n['name']]=bind_world(i).inverted()@inverse@arm.matrix_world@arm.data.bones[n['name']].matrix_local
-if '--runtime' in sys.argv or fluid:
-    poses=json.loads(Path('/tmp/brainpet-fluid-poses.json' if fluid else '/tmp/brainpet-gait-poses.json').read_text())
+if '--runtime' in sys.argv or fluid or spine:
+    poses=json.loads(Path('/tmp/brainpet-spine-poses.json' if spine else '/tmp/brainpet-fluid-poses.json' if fluid else '/tmp/brainpet-gait-poses.json').read_text())
     for track in arm.animation_data.nla_tracks:track.mute=True
     arm.animation_data.action=None
     floor.location.z=.068
@@ -51,16 +53,21 @@ if '--runtime' in sys.argv or fluid:
     for pose in poses:
         if pose['time']>(3.8 if fluid else 6):continue
         index=counts.get(pose['gait'],0);counts[pose['gait']]=index+1
-        if index%2:continue
+        if index%2 and not spine:continue
         desired={name:arm.matrix_world.inverted()@conversion@Matrix([values[j::4] for j in range(4)])@corrections[name] for name,values in pose['nodes'].items() if name in corrections}
         for bone in arm.pose.bones:
             parent_rest=bone.parent.bone.matrix_local if bone.parent else Matrix.Identity(4)
             parent_pose=desired[bone.parent.name] if bone.parent else Matrix.Identity(4)
             bone.matrix_basis=bone.bone.matrix_local.inverted()@parent_rest@parent_pose.inverted()@desired[bone.name]
         root=conversion@Vector(pose['position']);size=pose.get('scale',.8)/.8
-        camera.data.ortho_scale=2.8*size;camera.location=root+Vector((4.8,-2.8,2.7))*size
+        camera.data.ortho_scale=2.8*size;camera.location=root+Vector((4.8,-.3,1.8) if spine and pose['gait'].startswith('run') else (4.8,-2.8,2.7))*size
+        if spine:
+            a=pose['heading'];right=Vector((math.cos(a),math.sin(a),0));forward=Vector((math.sin(a),-math.cos(a),0))
+            profile=pose['gait'].startswith(('run','jump'))
+            camera.location=root+(right*4.8+forward*(-.3 if profile else 2.8)+Vector((0,0,1.8 if profile else 3.5)))*size
+            camera.data.ortho_scale=2.2*size
         camera.rotation_euler=(root+Vector((0,0,.75))*size-camera.location).to_track_quat('-Z','Y').to_euler()
-        bpy.context.view_layer.update();scene.render.filepath=str(OUT/f"runtime-{pose['gait']}-{index//2:02d}.png")
+        bpy.context.view_layer.update();scene.render.filepath=str(OUT/f"runtime-{pose['gait']}-{index if spine else index//2:02d}.png")
         bpy.ops.render.render(write_still=True)
 else:
     for gait in ('walk','trot','run'):

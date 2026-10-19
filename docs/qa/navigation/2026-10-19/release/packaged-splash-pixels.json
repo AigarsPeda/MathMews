@@ -1,0 +1,26 @@
+[
+  {
+    "resource": "MewsLaunch.png",
+    "width": 320,
+    "height": 320,
+    "alphaMatches": true,
+    "maxPremultipliedChannelDifference": 0.9961,
+    "passed": true
+  },
+  {
+    "resource": "MewsLaunch@2x.png",
+    "width": 640,
+    "height": 640,
+    "alphaMatches": true,
+    "maxPremultipliedChannelDifference": 0.9961,
+    "passed": true
+  },
+  {
+    "resource": "MewsLaunch@3x.png",
+    "width": 960,
+    "height": 960,
+    "alphaMatches": true,
+    "maxPremultipliedChannelDifference": 0.9961,
+    "passed": true
+  }
+]

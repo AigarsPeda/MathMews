@@ -3,6 +3,8 @@ import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
+import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
+import { getBossSceneProgress } from "@/utils/boss-story";
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
@@ -23,6 +25,8 @@ import {
   buildFractionMatchCards,
   isFractionMatchPair,
 } from "@/utils/fraction-match";
+import { moveOrderTile } from "@/utils/puzzle-drag";
+import { getPuzzleCompanionMessage } from "@/utils/puzzle-companion";
 import { shufflePuzzleChoices } from "@/utils/puzzle-practice";
 import {
   asFractionMatchPuzzle,
@@ -34,8 +38,10 @@ import {
 import { moderateScale } from "@/utils/scale";
 import type { ChallengeAnswer } from "@/utils/challenge-puzzles";
 import * as Haptics from "expo-haptics";
-import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { Redirect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import type { NativeStackNavigationProp } from "expo-router/native-stack";
+import type { ParamListBase } from "expo-router/react-navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -133,6 +139,7 @@ function PlaySession({ session }: { session: LearningSession }) {
   useStoreCatalog();
   const lifeBuyCost = getStoreCoinPrice("life", "one")!;
   const router = useRouter();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { t } = useTranslation();
   const { locale } = useLocale();
   const { lesson, level, phase: sessionIndex } = session;
@@ -148,7 +155,7 @@ function PlaySession({ session }: { session: LearningSession }) {
   const puzzleNumber = level.kind === "practice" ? lesson.levels.findIndex(item => item.id === level.id) + 1 : sessionIndex + 1;
   const coinReward = getPuzzleCoinReward(difficulty, isReplay);
   const [foundPairs, setFoundPairs] = useState<[number, number][]>([]);
-  const [isDraggingChallenge, setIsDraggingChallenge] = useState(false);
+  const [isDraggingTile, setIsDraggingTile] = useState(false);
 
   const [pendingChoice, setPendingChoice] = useState<number | null>(null);
   const [pendingNumberLine, setPendingNumberLine] = useState<number | null>(
@@ -166,7 +173,6 @@ function PlaySession({ session }: { session: LearningSession }) {
   const [numberOrder, setNumberOrder] = useState<number[]>(() =>
     createInitialOrder(puzzle),
   );
-  const [orderSwapIndex, setOrderSwapIndex] = useState<number | null>(null);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [fractionMatchMatchedIds, setFractionMatchMatchedIds] = useState<
     string[]
@@ -180,6 +186,7 @@ function PlaySession({ session }: { session: LearningSession }) {
   const [fractionMatchAnswered, setFractionMatchAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
 
   const visualHelpCost = getVisualHelpCost(difficulty);
@@ -193,7 +200,20 @@ function PlaySession({ session }: { session: LearningSession }) {
     pairSubmitted ||
     orderSubmitted ||
     fractionMatchAnswered;
-  const resultMood: PetAnimationState = isCorrect ? "correct" : "incorrect";
+  const resultMood: PetAnimationState = isCorrect ? "correct" : "idle";
+  const nextPuzzleRoute = useMemo(() => {
+    if (!isCorrect) return undefined;
+    if (level.kind === "boss" && sessionIndex + 1 < puzzles.length) {
+      return { pathname: "/play" as const, params: { difficulty, lesson: lesson.id, level: level.id, phase: String(sessionIndex + 1) } };
+    }
+    const next = !isReplay && getNextPracticeLevel(lesson, level);
+    return next ? { pathname: "/play" as const, params: { difficulty, lesson: lesson.id, level: next.id } } : undefined;
+  }, [difficulty, isCorrect, isReplay, lesson, level, puzzles.length, sessionIndex]);
+
+  useEffect(() => {
+    // Prepare the destination under the result sheet; navigation still waits for dismissal.
+    if (answered && nextPuzzleRoute) router.prefetch(nextPuzzleRoute);
+  }, [answered, nextPuzzleRoute, router]);
 
   const handleOpenVisualHelp = useCallback(() => {
     if (answered || !hasVisualHelp) return;
@@ -358,31 +378,12 @@ function PlaySession({ session }: { session: LearningSession }) {
     });
   }, [answered, pairIndices, puzzle, answerPuzzle]);
 
-  const handleTapOrderIndex = useCallback(
-    (index: number) => {
+  const handleMoveOrder = useCallback(
+    (from: number, to: number) => {
       if (answered) return;
-
-      if (orderSwapIndex === null) {
-        setOrderSwapIndex(index);
-        return;
-      }
-
-      if (orderSwapIndex === index) {
-        setOrderSwapIndex(null);
-        return;
-      }
-
-      setNumberOrder((current) => {
-        const next = [...current];
-        [next[orderSwapIndex], next[index]] = [
-          next[index],
-          next[orderSwapIndex],
-        ];
-        return next;
-      });
-      setOrderSwapIndex(null);
+      setNumberOrder(current => moveOrderTile(current, from, to));
     },
-    [answered, orderSwapIndex],
+    [answered],
   );
 
   const handleCheckOrder = useCallback(() => {
@@ -465,20 +466,16 @@ function PlaySession({ session }: { session: LearningSession }) {
   );
 
   const handleContinue = useCallback(() => {
-    recordInteraction();
     if (isCorrect) {
-      if (level.kind === "boss" && sessionIndex + 1 < puzzles.length) {
-        router.replace({ pathname: "/play", params: { difficulty, lesson: lesson.id, level: level.id, phase: String(sessionIndex + 1) } });
-        return;
-      }
-      const next = !isReplay && getNextPracticeLevel(lesson, level);
-      if (next) {
-        router.replace({ pathname: "/play", params: { difficulty, lesson: lesson.id, level: next.id } });
-      } else exitToPath();
+      // Dispatch immediately after dismissal, without a game update or router queue first.
+      if (nextPuzzleRoute) navigation.replace("play", nextPuzzleRoute.params);
+      else exitToPath();
       return;
     }
 
     if (!isCorrect) {
+      recordInteraction();
+      setRetryCount(count => count + 1);
       attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       setPuzzle((current) =>
         shufflePuzzleChoices(
@@ -496,7 +493,6 @@ function PlaySession({ session }: { session: LearningSession }) {
       setNumberLineValue(null);
       setPairIndices([]);
       setNumberOrder(createInitialOrder(puzzle));
-      setOrderSwapIndex(null);
       setOrderSubmitted(false);
       setFractionMatchMatchedIds([]);
       setFractionMatchSelectedId(null);
@@ -507,16 +503,11 @@ function PlaySession({ session }: { session: LearningSession }) {
       return;
     }
   }, [
-    difficulty,
-    lesson,
-    level,
+    nextPuzzleRoute,
     exitToPath,
     isCorrect,
-    isReplay,
-    puzzles.length,
     recordInteraction,
-    router,
-    sessionIndex,
+    navigation,
     puzzle,
     setPuzzle,
   ]);
@@ -527,7 +518,16 @@ function PlaySession({ session }: { session: LearningSession }) {
   if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
 
   const canRetry = true;
-  const replayingMission = level.kind === "boss" && level.puzzleIds.every(id => entryCompleted.includes(id));
+  const companionMessage = getPuzzleCompanionMessage({
+    correct: isCorrect,
+    kind: level.kind,
+    finalStage: sessionIndex === puzzles.length - 1,
+    practiceFinished: level.kind === "practice" && !getNextPracticeLevel(lesson, level),
+    replay: isReplay,
+    retries: retryCount,
+    completedCount: new Set(entryCompleted).size + (isCorrect && !isReplay ? 1 : 0),
+    puzzleId: puzzle.id,
+  });
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
@@ -555,24 +555,28 @@ function PlaySession({ session }: { session: LearningSession }) {
         <Text style={styles.title}>{level.kind === "practice" ? lesson.title[locale] : level.title[locale]}</Text>
 
         <ScrollView
-          scrollEnabled={!isDraggingChallenge}
+          scrollEnabled={!isDraggingTile}
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           {level.kind !== "practice" && <View style={[styles.mission, level.kind === "boss" ? styles.bossMission : styles.challengeMission]}>
             <Text style={styles.missionTitle}>{t(`learning.${level.kind}`)}</Text>
-            <Text style={styles.missionDescription}>{level.description[locale]}</Text>
+            {level.story ? sessionIndex === 0 ? <Text style={styles.missionDescription}>{level.story.intro[locale]}</Text> : null
+              : <Text style={styles.missionDescription}>{level.description[locale]}</Text>}
+            {level.kind === "boss" && level.story ? <>
+              <View style={styles.missionScene}><BossStoryScene story={level.story} locale={locale} completed={getBossSceneProgress(sessionIndex)} active={!answered} /></View>
+              <Text style={styles.missionTitle}>{t("learning.stageOf", { number: sessionIndex + 1, total: puzzles.length })}{" · "}{level.story.stages[sessionIndex].title[locale]}</Text>
+              <Text style={styles.missionDescription}>{level.story.stages[sessionIndex].before[locale]}</Text>
+            </> : null}
             {level.kind === "boss" && <>
-              <Text style={styles.missionTitle}>{t("learning.stageOf", { number: sessionIndex + 1, total: puzzles.length })}</Text>
-              <View style={styles.stageRow}>{puzzles.map((stage, index) => {
-                const done = replayingMission ? index < sessionIndex || index === sessionIndex && answered && isCorrect
-                  : (progress.completedPuzzleIds ?? []).includes(stage.id);
-                return <View key={stage.id} style={[styles.stageMarker, done && styles.stageMarkerDone]}>
-                  <Text style={styles.missionDescription}>{t(done ? "learning.stageDone" : index === sessionIndex ? "learning.stageActive" : "learning.stagePending", { number: index + 1 })}</Text>
-                </View>;
+              {!level.story ? <Text style={styles.missionTitle}>{t("learning.stageOf", { number: sessionIndex + 1, total: puzzles.length })}</Text> : null}
+              <View accessible accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 3, now: getBossSceneProgress(sessionIndex, answered && isCorrect) }}
+                accessibilityLabel={t("learning.boss")} style={styles.stageRow}>{puzzles.map((stage, index) => {
+                const done = index < sessionIndex || index === sessionIndex && answered && isCorrect;
+                return <View key={stage.id} style={[styles.stageMarker, done && styles.stageMarkerDone]} />;
               })}</View>
-              <Text style={styles.missionDescription}>{t("learning.stagesSaved")}</Text>
+              <Text style={styles.missionSaved}>{t("learning.stagesSaved")}</Text>
             </>}
           </View>}
           <PuzzleCard
@@ -616,7 +620,7 @@ function PlaySession({ session }: { session: LearningSession }) {
             <PuzzleTaskView
               puzzle={puzzle}
               onSubmitChallenge={handleSubmitChallenge}
-              onChallengeDragStateChange={setIsDraggingChallenge}
+              onDragStateChange={setIsDraggingTile}
               selectedIndex={selectedIndex ?? pendingChoice}
               selectedOperators={selectedOperators}
               fractionPieces={fractionPieces}
@@ -626,7 +630,6 @@ function PlaySession({ session }: { session: LearningSession }) {
               onFoundPairsChange={setFoundPairs}
               onCheckPairs={handleCheckPairs}
               numberOrder={numberOrder}
-              orderSwapIndex={orderSwapIndex}
               orderSubmitted={orderSubmitted}
               fractionMatchMatchedIds={fractionMatchMatchedIds}
               fractionMatchSelectedId={fractionMatchSelectedId}
@@ -641,7 +644,7 @@ function PlaySession({ session }: { session: LearningSession }) {
               onCheckFraction={handleCheckFraction}
               onSelectNumberLineValue={setPendingNumberLine}
               onTogglePairIndex={handleTogglePairIndex}
-              onTapOrderIndex={handleTapOrderIndex}
+              onMoveOrder={handleMoveOrder}
               onCheckOrder={handleCheckOrder}
               onTapFractionMatchCard={handleTapFractionMatchCard}
             />
@@ -672,9 +675,14 @@ function PlaySession({ session }: { session: LearningSession }) {
           <ResultOverlay
             visible
             correct={isCorrect}
+            bossStory={level.kind === "boss" && level.story ? { story: level.story, locale, completed: getBossSceneProgress(sessionIndex, isCorrect) } : undefined}
             petType={pet.type}
             catSkinId={pet.catSkinId}
             petMood={resultMood}
+            petName={pet.name}
+            encouragement={isCorrect && level.story
+              ? sessionIndex === 2 ? level.story.outcome[locale] : level.story.stages[sessionIndex].after[locale]
+              : t(`puzzleCompanion.${companionMessage.key}`, { count: companionMessage.count })}
             message={
               isCorrect
                 ? level.kind === "boss" && sessionIndex === puzzles.length - 1
@@ -722,9 +730,11 @@ const styles = StyleSheet.create({
   challengeMission: { backgroundColor: "#F3EEFF", borderColor: "#BBA4E6" },
   missionTitle: { color: GameColors.text, fontSize: moderateScale(17), fontWeight: "800" },
   missionDescription: { color: GameColors.text, fontSize: moderateScale(15), lineHeight: moderateScale(22) },
-  stageRow: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(8) },
-  stageMarker: { padding: moderateScale(8), backgroundColor: GameColors.card, borderRadius: moderateScale(10) },
-  stageMarkerDone: { backgroundColor: "#D9EFDF" },
+  missionScene: { width: "100%", maxWidth: moderateScale(260), alignSelf: "center" },
+  missionSaved: { color: GameColors.textMuted, fontSize: moderateScale(12), lineHeight: moderateScale(18) },
+  stageRow: { flexDirection: "row", gap: moderateScale(8) },
+  stageMarker: { flex: 1, height: moderateScale(6), backgroundColor: GameColors.card, borderRadius: moderateScale(3) },
+  stageMarkerDone: { backgroundColor: GameColors.success },
   mechanicIntro: {
     color: GameColors.textMuted,
     fontSize: 15,

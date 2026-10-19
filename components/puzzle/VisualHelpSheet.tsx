@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: moderateScale(10),
     paddingTop: moderateScale(12),
-    paddingHorizontal: moderateScale(4),
+    paddingHorizontal: moderateScale(20),
   },
   title: {
     fontWeight: "800",

@@ -73,10 +73,11 @@ export type PracticeToken = {
   x: number;
   y: number;
   shape?: "tile" | "part" | "plain";
-  tone?: "primary" | "secondary" | "muted";
+  tone?: "primary" | "secondary" | "muted" | "blue";
   visible?: boolean;
   scale?: number;
   width?: number;
+  height?: number;
   /** Separate lanes keep swapping number tiles readable while they cross. */
   arc?: number;
 };

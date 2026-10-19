@@ -3,7 +3,8 @@ import jumpProfile from '@/constants/cat-jump.json';
 import type { Vec3 } from '@/utils/native-room-world';
 
 /** Transient presentation state passed through a doorway, never persisted. */
-export type CatTravelMotion = { speed: number; phase: number; gait: CatGait; tailYaw: number[]; tailPitch: number[] };
+export type CatTravelMotion = { speed: number; phase: number; gait: CatGait; tailYaw: number[]; tailPitch: number[];
+  spinePose?: ReturnType<typeof import('./native-cat-spine').catSpinePose> };
 
 /** All four paws have landed; the remaining recovery can join a first stride. */
 export const CAT_LANDING_WALK_PHASE = jumpProfile.walkReady;
@@ -42,7 +43,7 @@ export type CatMotionLeg = {
   paces?: number[];
   gait?: CatGait;
   ramp?: number;
-  animation?: 'hop' | 'jumpOn' | 'jumpOff' | 'sit';
+  animation?: 'hop' | 'jumpOn' | 'jumpOff' | 'sit' | 'crawl';
 };
 
 /** Shared by collision prediction and playback. Height is above the endpoint chord. */

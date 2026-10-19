@@ -1,3 +1,4 @@
+import type { CatGait } from '@/utils/native-cat-gaits';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { itemInteraction, isDecorationOpen } from '@/constants/item-interactions';
 import { isFurniturePerch } from '@/constants/cat-furniture';
@@ -12,7 +13,7 @@ import { isPlayablePlant } from "@/constants/plant-play";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
 import { CAT_ANIMATION_CLIPS } from "@/constants/cat-animation-clips";
 import type { NativeRoomWorld, NativeTravel, Vec3 } from "@/utils/native-room-world";
-import { catFloorPoint, catScreenPoint, findFoodBowlApproach, findFurnitureTransfer, findWindowWatchPerch } from "@/utils/native-room-world";
+import { catFloorPoint, catScreenPoint, findFoodBowlApproach, findFurnitureTransfer, findWindowWatchPerch, findCatBrushPass, findCatCrawlPass } from "@/utils/native-room-world";
 import { isHomeRoomId, isRoomDoor, roomTravelDirection, type HomeRoomId, type RoomEntry, type RoomTravelDirection } from "@/constants/home-rooms";
 import { getPlacedDecorationDragSize, getPlacedDecorationSpriteId } from "@/constants/decoration-variants";
 import { getPlacedToyDisplaySize } from "@/constants/cat-toys";
@@ -39,6 +40,9 @@ export type RoomActivityStep = {
   mood: PetAnimationState;
   animation?: CatRoomAnimation;
   animationFps?: number;
+  gait?: CatGait;
+  brush?: { choice: number; instanceId: string };
+  crawl?: { choice: number; instanceId: string };
   reverse?: boolean;
   durationMs: number;
   moveMs?: number;
@@ -538,7 +542,23 @@ export function buildRoomActivity(room: RoomActivityOptions, turn: number, comma
       const second = clampCatPoint({ x: -direction * room.width * .16, y: room.height * .22 }, room);
       candidates.push({ kind: 'wander', steps: [walkTo(home, first, room.petSize),
         { position: first, mood: 'idle', animation: 'idle', durationMs: 2000 },
-        walkTo(first, second, room.petSize), { ...walkTo(second, home, room.petSize), returnHome: true }] });
+        { ...walkTo(first, second, room.petSize), gait: turn % 3 === 1 && room.period !== 'night' ? 'run' : 'walk' }, { ...walkTo(second, home, room.petSize), returnHome: true }] });
+    }
+    if (!room.asleep && room.period !== 'night' && room.nativeWorld && room.nativeStepCompletion !== false) {
+      const crawl=findCatCrawlPass(room.nativeWorld,turn);
+      if(crawl) {
+        const from=catScreenPoint(crawl.from,room.nativeWorld),to=catScreenPoint(crawl.to,room.nativeWorld);
+        candidates.push({kind:'wander',steps:[walkTo(home,from,room.petSize),
+          {...walkTo(from,to,room.petSize),crawl:{choice:turn,instanceId:crawl.leg.supportId!}},
+          {...walkTo(to,home,room.petSize),returnHome:true}]});
+      }
+      const brush=findCatBrushPass(room.nativeWorld,turn);
+      if(brush) {
+        const from=catScreenPoint(brush.from,room.nativeWorld),to=catScreenPoint(brush.to,room.nativeWorld);
+        candidates.push({kind:'wander',steps:[walkTo(home,from,room.petSize),
+          {...walkTo(from,to,room.petSize),brush:{choice:turn,instanceId:brush.instanceId}},
+          {...walkTo(to,home,room.petSize),returnHome:true}]});
+      }
     }
     const naps = candidates.filter(plan => plan.kind === 'sofaSleep' || plan.kind === 'chairNap' || plan.kind === 'bedSleep' || plan.kind === 'bedSnuggle');
     const rests = candidates.filter(plan => plan.kind === 'sofaSit' || plan.kind === 'islandSit' || plan.kind === 'windowWatch');
