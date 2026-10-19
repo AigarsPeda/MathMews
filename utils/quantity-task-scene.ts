@@ -6,11 +6,21 @@ function counter(id: number, x: number, y: number, primary = false): PracticeTok
 }
 
 export function getQuantityTaskHeight(model: QuantityTaskModel): number {
-  return model.kind === "array" ? Math.max(140, model.rows * 16 + 24) : 140;
+  return model.kind === "array" ? Math.max(140, model.rows * (model.object ? 28 : 16) + 24) : 140;
 }
 
 /** Stable identities let counters travel between the pool and their destinations. */
 export function getQuantityTaskTokens(model: QuantityTaskModel, step: number): PracticeToken[] {
+  const tokens = buildQuantityTaskTokens(model, step);
+  if (!model.object) return tokens;
+  return tokens.map(token => token.id.startsWith("counter-") ? {
+    ...token, object: model.object,
+    width: model.kind === "share" ? 16 : model.kind === "array" ? Math.min(24, 270 / model.columns) : 24,
+    height: model.kind === "share" ? 16 : 24,
+  } : token);
+}
+
+function buildQuantityTaskTokens(model: QuantityTaskModel, step: number): PracticeToken[] {
   if (model.kind === "share") {
     const dealt = Math.min(Math.max(0, Math.floor(step)), Math.floor(model.items / model.groups)) * model.groups;
     const plates: PracticeToken[] = Array.from({ length: model.groups }, (_, group) => ({
@@ -24,7 +34,7 @@ export function getQuantityTaskTokens(model: QuantityTaskModel, step: number): P
         return counter(index, 24 + (pool % 10) * 28, 12 + Math.floor(pool / 10) * 16);
       }
       const group = index % model.groups, round = Math.floor(index / model.groups);
-      return counter(index, (group + 0.5) * 300 / model.groups + ((round % 3) - 1) * 14, 85 + Math.floor(round / 3) * 16, group % 2 === 0);
+      return counter(index, (group + 0.5) * 300 / model.groups + ((round % 3) - 1) * (model.object ? 18 : 14), 85 + Math.floor(round / 3) * (model.object ? 18 : 16), group % 2 === 0);
     })];
   }
   if (model.kind === "array") {
@@ -32,7 +42,7 @@ export function getQuantityTaskTokens(model: QuantityTaskModel, step: number): P
       const row = Math.floor(index / model.columns), column = index % model.columns;
       return step > 0
         ? counter(index, (column + 0.5) * 300 / model.columns, 15 + (row + 0.5) * (getQuantityTaskHeight(model) - 30) / model.rows, row % 2 === 0)
-        : counter(index, 24 + (index % 10) * 28, 18 + Math.floor(index / 10) * 15, row % 2 === 0);
+        : counter(index, 24 + (index % 10) * 28, 18 + Math.floor(index / 10) * (model.object ? 26 : 15), row % 2 === 0);
     });
   }
   const count = model.kind === "join" ? model.left + model.right : model.left;

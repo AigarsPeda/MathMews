@@ -7,6 +7,7 @@ import { PuzzleCatCompanion } from "@/components/puzzle/PuzzleCatCompanion";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { GameColors, LIFE_BUY_COST } from "@/constants/game";
 import type { PetAnimationState, PetType } from "@/types/game";
+import type { PuzzleCatReaction } from "@/constants/puzzle-cat-reactions";
 import { moderateScale } from "@/utils/scale";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -19,10 +20,12 @@ type ResultOverlayProps = {
   petType: PetType;
   catSkinId?: string;
   petMood: PetAnimationState;
+  catReaction?: PuzzleCatReaction;
   petName: string;
   encouragement: string;
   message: string;
   detail: string;
+  summary?: string;
   coinsEarned?: number;
   coinType?: "regular" | "sparkle";
   continueLabel?: string;
@@ -40,10 +43,12 @@ export function ResultOverlay({
   petType,
   catSkinId,
   petMood,
+  catReaction,
   petName,
   encouragement,
   message,
   detail,
+  summary,
   coinsEarned = 0,
   coinType = "regular",
   continueLabel,
@@ -91,8 +96,8 @@ export function ResultOverlay({
         <ScrollView style={styles.body} nestedScrollEnabled={Platform.OS === "android"} contentContainerStyle={styles.card} showsVerticalScrollIndicator={false}>
           {correct && bossStory ? <BossStoryScene story={bossStory.story} locale={bossStory.locale}
             completed={bossStory.completed} outcome={bossStory.completed === 3} reaction={bossStory.completed < 3} active={visible} /> : null}
-          <PuzzleCatCompanion key={`${visible}-${petMood}-${encouragement}`} petType={petType}
-            catSkinId={catSkinId} mood={petMood} petName={petName} message={encouragement} portraitSize={bossStory && correct ? 88 : 180} />
+          <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
+            catSkinId={catSkinId} mood={petMood} reaction={catReaction} petName={petName} message={encouragement} portraitSize={bossStory && correct ? 88 : 180} />
 
           <Text
             accessibilityRole="header"
@@ -104,6 +109,7 @@ export function ResultOverlay({
             {message}
           </Text>
           <Text style={styles.detail}>{detail}</Text>
+          {summary ? <Text style={styles.summary}>{summary}</Text> : null}
 
           {correct && coinsEarned > 0 && (
             <View
@@ -206,6 +212,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: moderateScale(24),
   },
+  summary: { fontSize: moderateScale(16), lineHeight: moderateScale(24), fontWeight: "700", textAlign: "center", color: GameColors.text },
   coinRow: {
     flexDirection: "row",
     alignItems: "center",

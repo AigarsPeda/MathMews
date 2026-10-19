@@ -28,9 +28,9 @@ export function TrueFalseTask({
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.statementCard}>
+      {!puzzle.payload.hideStatement || (answered && isCorrect) ? <View style={styles.statementCard}>
         <Text style={styles.statement}>{puzzle.payload.statement}</Text>
-      </View>
+      </View> : null}
       <View style={styles.row}>
         {options.map(({ label, index }) => {
           const selected = selectedIndex === index;

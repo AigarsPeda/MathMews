@@ -9,6 +9,7 @@ import { StyleSheet, View } from "react-native";
 type PuzzleCardProps = {
   puzzle: Puzzle;
   puzzleNumber: number;
+  puzzleTotal: number;
   coinReward?: number;
   levelKind?: "practice" | "boss" | "challenge";
 };
@@ -16,6 +17,7 @@ type PuzzleCardProps = {
 export function PuzzleCard({
   puzzle,
   puzzleNumber,
+  puzzleTotal,
   coinReward,
   levelKind = "practice",
 }: PuzzleCardProps) {
@@ -28,7 +30,7 @@ export function PuzzleCard({
         <View style={styles.badgeGroup}>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
-              {t(levelKind === "boss" ? "learning.stageNumber" : levelKind === "challenge" ? "learning.challenge" : "play.hardNut", { number: puzzleNumber })}
+              {t(levelKind === "boss" ? "learning.stageOf" : levelKind === "challenge" ? "learning.challenge" : "play.puzzleOf", { number: puzzleNumber, total: puzzleTotal })}
             </Text>
           </View>
           {puzzleType !== "multiple_choice" ? (
@@ -56,8 +58,8 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(20),
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
-    padding: moderateScale(16),
-    gap: moderateScale(12),
+    padding: moderateScale(12),
+    gap: moderateScale(8),
   },
   badgeRow: {
     flexDirection: "row",
@@ -112,9 +114,9 @@ const styles = StyleSheet.create({
     color: GameColors.coinText,
   },
   question: {
-    fontSize: moderateScale(20),
+    fontSize: moderateScale(19),
     fontWeight: "600",
     color: GameColors.text,
-    lineHeight: moderateScale(30),
+    lineHeight: moderateScale(27),
   },
 });

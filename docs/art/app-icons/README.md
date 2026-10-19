@@ -24,6 +24,8 @@ Both renderers accept a comma-separated `--only` list and preserve the other sav
 
 Editable sources are `../icon-study/source/starter-icons.blend` and `source/icons.blend`. Each icon has a named scene. `review.png` contains the complete family. Blender sources and review images stay outside the app bundle.
 
+The life heart uses a closed, smoothly shaded mesh with rounded front and back faces in `render_app_icons.py`. Its `heart` scene is saved in `source/icons.blend`; the render is copied to `assets/icons/heart.png` by the icon packaging step. To rebuild only the heart, run `blender --background --python scripts/3d/render_app_icons.py -- --only heart`, then `npm run assets:icons` and the verification commands above.
+
 The cat icon uses the companion's shared Blender head, including its plush coat and whiskers. To rebuild that icon while preserving the other saved scenes, run `blender --background --python scripts/3d/render_app_icons.py -- --only cat`, then `npm run assets:icons`.
 
 The verification checks transparent borders, dimensions, the 3 MiB compressed budget, translated inline images, preservation of math notation, and coverage of every illustration marker in both puzzle locales. The Blender orientation check verifies level symbol axes and all four arrow directions in the saved scenes. Native menu tests also check original-color images and disabled/destructive action behavior.

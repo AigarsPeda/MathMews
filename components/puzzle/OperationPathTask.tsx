@@ -13,7 +13,6 @@ type OperationPathTaskProps = {
   answered: boolean;
   isCorrect: boolean;
   onSelectOperator: (stepIndex: number, operator: MathOperator) => void;
-  onCheck: () => void;
 };
 
 function NumberBubble({
@@ -52,12 +51,9 @@ export function OperationPathTask({
   answered,
   isCorrect,
   onSelectOperator,
-  onCheck,
 }: OperationPathTaskProps) {
   const { t } = useTranslation();
   const { start, target, steps } = puzzle.payload;
-
-  const allSelected = steps.every((_, index) => selectedOperators[index] != null);
 
   const runningValues = useMemo(() => {
     const values: (number | null)[] = [start];
@@ -165,17 +161,6 @@ export function OperationPathTask({
         <Text style={styles.progressText}>
           {t("puzzleTypes.yourResult", { value: currentValue })}
         </Text>
-      ) : null}
-
-      {!answered && allSelected ? (
-        <Pressable
-          style={styles.checkBtn}
-          onPress={onCheck}
-          accessibilityRole="button"
-          accessibilityLabel={t("puzzleTypes.checkAnswer")}
-        >
-          <Text style={styles.checkBtnText}>{t("puzzleTypes.checkAnswer")}</Text>
-        </Pressable>
       ) : null}
 
       {answered && !isCorrect ? (
@@ -338,19 +323,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: GameColors.textMuted,
     textAlign: "center",
-  },
-  checkBtn: {
-    minHeight: moderateScale(52),
-    borderRadius: moderateScale(16),
-    backgroundColor: GameColors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: moderateScale(16),
-  },
-  checkBtnText: {
-    fontSize: moderateScale(18),
-    fontWeight: "800",
-    color: "#FFFFFF",
   },
   stepHint: {
     fontSize: moderateScale(14),

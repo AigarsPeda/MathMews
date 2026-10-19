@@ -259,6 +259,70 @@ function authoredAnswer(puzzle) {
     default:return {kind:'choice',index:puzzle.correctIndex};
   }
 }
+// Check the givens rather than wording: changing a story must not disguise the
+// same operands, and changing the first term must not disguise the same rule.
+function practiceFacts(puzzle) {
+  const p = puzzle.payload;
+  let facts;
+  switch (puzzle.type) {
+    case 'multiple_choice': facts = puzzle.question; break;
+    case 'balance': facts = p.leftDisplay.replace('?', p.choices[puzzle.correctIndex]); break;
+    case 'pair_sum': facts = p.correctIndices.map(i => p.numbers[i]); break;
+    case 'fix_mistake': facts = p.wrongWork[0].split('=')[0] + puzzle.question; break;
+    case 'function_machine': facts = `${p.input} ${p.choices[puzzle.correctIndex]}`; break;
+    case 'true_false': facts = p.statement.split(/[=>]/)[0]; break;
+    case 'number_line': facts = [p.start, p.jump]; break;
+    case 'order_numbers': facts = p.numbers; break;
+    case 'compare': facts = `${p.optionA} ${p.optionB}`; break;
+    case 'fraction_build': case 'fraction_equivalent': facts = [p.numerator, p.denominator]; break;
+    case 'fraction_match': facts = p.pairs.flatMap(pair => [pair.numerator, pair.denominator]); break;
+    case 'fair_share': facts = [p.items, p.people]; break;
+    case 'operation_path': facts = [p.start, ...p.steps.map(step => step.operand)]; break;
+    case 'target_build': facts = p.numbers; break;
+    case 'estimate': facts = p.expression; break;
+    case 'pattern_next': facts = p.sequence; break;
+    default: assert.fail(`Missing practice variety check for ${puzzle.type}`);
+  }
+  return (String(facts).match(/\d+/g) ?? []).map(Number).sort((a,b) => a-b).join(',');
+}
+function checkPatternVariety(tasks, label) {
+  const next = tasks.filter(p => p.type === 'pattern_next');
+  const rules = next.map(({payload:{sequence}}) => {
+    const difference = sequence[1]-sequence[0];
+    return sequence.slice(1).every((n,i) => n-sequence[i] === difference) ? `+${difference}` : `×${sequence[1]/sequence[0]}`;
+  });
+  const machine = tasks.find(p => p.type === 'function_machine');
+  const machineRule = machine.payload.choices[machine.correctIndex];
+  const gap = tasks.find(p => p.type === 'multiple_choice');
+  const terms = gap.question.match(/(\d+), (\d+), \?, (\d+), (\d+)\./);
+  assert.ok(terms, `${gap.id}: a readable five-term missing-number pattern`);
+  const filled = [Number(terms[1]), Number(terms[2]), Number(gap.choices[gap.correctIndex]), Number(terms[3]), Number(terms[4])];
+  const difference = filled[1]-filled[0];
+  const additive = filled.slice(1).every((n,i) => n-filled[i] === difference);
+  assert.ok(additive || filled.slice(1).every((n,i) => n/filled[i] === filled[1]/filled[0]), `${gap.id}: the answer repairs the pattern`);
+  rules.push(additive ? `+${difference}` : `×${filled[1]/filled[0]}`);
+  rules.push(machineRule.startsWith('÷') ? `×${1/Number(machineRule.slice(1))}` : machineRule.startsWith('−') ? `+-${machineRule.slice(1)}` : machineRule);
+  assert.equal(new Set(rules).size, rules.length, `${label}: the machine and next-number puzzles must use different rules`);
+  for (const puzzle of tasks) assert.ok(!/[×÷]|Every step|Katrā solī/.test(puzzle.question), `${puzzle.id}: discover the pattern without naming its rule`);
+}
+for (const lesson of LEARNING_CATALOG.lessons) {
+  const practice = getPracticeIds(lesson).map(id => byId.get(id));
+  const localized = getPuzzlesByDifficulty('lv', lesson.difficulty);
+  for (const puzzle of practice) {
+    const counterpart = localized.find(p => p.id === puzzle.id);
+    assert.equal(counterpart.type, puzzle.type);
+    assert.equal(practiceFacts(counterpart), practiceFacts(puzzle), `${puzzle.id}: both languages use the same givens`);
+  }
+  assert.equal(practice.length, 4);
+  assert.ok(new Set(practice.map(p => p.type)).size >= 3, `${lesson.id}: mix at least three task types`);
+  assert.equal(new Set(practice.map(practiceFacts)).size, 4, `${lesson.id}: use independent numbers for each activity`);
+  if (lesson.topicId === 'patterns') checkPatternVariety(practice, lesson.id);
+}
+for (const lesson of LEARNING_CATALOG.lessons) for (const level of lesson.levels.filter(l => l.kind === 'boss')) {
+  const stages = level.puzzleIds.map(id => byId.get(id));
+  assert.ok(new Set(stages.map(p => p.type)).size >= 2, `${level.id}: a mission needs different task types`);
+  if (lesson.topicId === 'patterns') checkPatternVariety(stages, level.id);
+}
 for(const locale of ['en','lv']) {
   const helpLocale=load(`@/locales/visual-help/${locale}`)[locale==='en'?'visualHelpEn':'visualHelpLv'];
   const labels=JSON.parse(fs.readFileSync(`locales/${locale}.json`));
@@ -284,7 +348,7 @@ for(const locale of ['en','lv']) {
       }
       if(puzzle.type==='estimate') {
         const [a,b] = puzzle.payload.expression.split('+').map(Number);
-        assert.equal(Number(puzzle.payload.choices[puzzle.correctIndex].replace(/[^0-9]/g,'')),Math.round(a/10)*10+Math.round(b/10)*10);
+        assert.equal(Number(puzzle.payload.choices[puzzle.correctIndex].replace(/[^0-9]/g,'')),Math.round((a+b)/10)*10);
       }
       const equation = puzzle.explanation.match(/(\d+(?:\s*[+×÷−]\s*\d+)+)\s*=\s*(\d+)/);
       if(equation) assert.equal(numeric(equation[1]),Number(equation[2]),`${puzzle.id}: explanation arithmetic`);
@@ -293,6 +357,11 @@ for(const locale of ['en','lv']) {
         assert.ok(puzzle.payload.correctValue>=puzzle.payload.min && puzzle.payload.correctValue<=puzzle.payload.max);
       }
       if(puzzle.type==='order_numbers') assert.deepEqual(canonical(puzzle.payload.correctOrder),canonical([...puzzle.payload.numbers].sort((a,b)=>a-b)),`${puzzle.id}: increasing number order`);
+      if(puzzle.type==='function_machine') {
+        const {input,output,choices}=puzzle.payload;
+        const matches=choices.map(rule => numeric(`${input}${rule}`) === output);
+        assert.deepEqual(matches,choices.map((_,i) => i === puzzle.correctIndex),`${puzzle.id}: exactly one machine rule produces the output`);
+      }
       if(puzzle.type==='pattern_next') {
         const {sequence,choices}=puzzle.payload;
         const step=sequence[1]-sequence[0],ratio=sequence[1]/sequence[0];
@@ -403,7 +472,7 @@ assert.equal(unsuccessfulStage.coins,0);
 assert.deepEqual(canonical(unsuccessfulStage.save.progress.completedPuzzleIds),canonical(restored.progress.completedPuzzleIds));
 assert.equal(resolveLearningSession(bossLesson.difficulty,bossLesson.id,boss.id,undefined,unsuccessfulStage.save.progress.completedPuzzleIds).phase,1,'A wrong stage answer does not reset earlier checkpoints');
 const replay=applyPuzzleAnswer(restored,byId.get(boss.puzzleIds[0]),true,'boss-replay',now);
-assert.equal(replay.coins,getPuzzleCoinReward(bossLesson.difficulty,true));
+assert.equal(replay.coins,getPuzzleCoinReward(bossLesson.difficulty,true,"boss"));
 assert.equal(replay.save.progress.completedPuzzleIds.length,restored.progress.completedPuzzleIds.length);
 assert.equal(applyPuzzleAnswer(replay.save,byId.get(boss.puzzleIds[0]),true,'boss-replay',now).coins,0,'A delivered attempt rewards only once');
 for (const mission of storyBosses) {
@@ -415,7 +484,14 @@ for (const mission of storyBosses) {
     assert.equal(getBossSceneProgress(resumed.phase), phase);
     const wrong = applyPuzzleAnswer(checkpointSave, byId.get(mission.puzzleIds[phase]), false, `${mission.id}-wrong-${phase}`, now).save;
     assert.equal(resolveLearningSession(lesson.difficulty, lesson.id, mission.id, undefined, wrong.progress.completedPuzzleIds).phase, phase);
-    checkpointSave = applyPuzzleAnswer(checkpointSave, byId.get(mission.puzzleIds[phase]), true, `${mission.id}-clear-${phase}`, now).save;
+    const clear = applyPuzzleAnswer(checkpointSave, byId.get(mission.puzzleIds[phase]), true, `${mission.id}-clear-${phase}`, now);
+    assert.equal(clear.coins, getPuzzleCoinReward(lesson.difficulty, false, 'boss'));
+    assert.equal(clear.coins, 2 * getPuzzleCoinReward(lesson.difficulty), 'Boss stages pay twice the regular reward');
+    assert.equal(clear.save.wallet.coins - checkpointSave.wallet.coins, clear.coins, 'The displayed boss reward is actually credited');
+    const bossReplay = applyPuzzleAnswer(clear.save, byId.get(mission.puzzleIds[phase]), true, `${mission.id}-replay-${phase}`, now);
+    assert.equal(bossReplay.coins, 2 * getPuzzleCoinReward(lesson.difficulty, true), 'Boss replays pay twice the regular replay reward');
+    assert.equal(applyPuzzleAnswer(bossReplay.save, byId.get(mission.puzzleIds[phase]), true, `${mission.id}-replay-${phase}`, now).coins, 0, 'A duplicate boss attempt never pays twice');
+    checkpointSave = clear.save;
     assert.equal(getLearningProgress(mission.puzzleIds, checkpointSave.progress.completedPuzzleIds).complete, phase === 2, 'Only the third task completes a boss');
   }
   const replaySession = resolveLearningSession(lesson.difficulty, lesson.id, mission.id, undefined, checkpointSave.progress.completedPuzzleIds);
@@ -434,5 +510,48 @@ console.log(`Verified ${en.length*2} localized puzzles, ${LEARNING_CATALOG.lesso
 
 const registration = fs.readdirSync('supabase/migrations').filter(file=>file.endsWith('.sql')).sort().map(file=>fs.readFileSync(`supabase/migrations/${file}`,'utf8')).join('\n');
 const registered = new Map([...registration.matchAll(/\('([^']+)',(\d+),(\d+)\)/g)].map(([,id,first,replay])=>[id,[Number(first),Number(replay)]]));
-for(const puzzle of en) assert.deepEqual(registered.get(puzzle.id),[getPuzzleCoinReward(puzzle.difficulty),getPuzzleCoinReward(puzzle.difficulty,true)], `${puzzle.id}: server registration matches the difficulty reward`);
+for(const puzzle of en) assert.deepEqual(registered.get(puzzle.id),[getPuzzleCoinReward(puzzle.difficulty,false,curriculum.getPuzzleLevelKind(puzzle.id)),getPuzzleCoinReward(puzzle.difficulty,true,curriculum.getPuzzleLevelKind(puzzle.id))], `${puzzle.id}: server registration matches the difficulty and level-kind reward`);
 console.log(`Verified server reward registrations for all ${en.length} current puzzles, including introductory number lines.`);
+
+const lifeRules=load('@/utils/lives');
+assert.equal(load('@/constants/game').MAX_LIVES,3);
+for (const tier of tiers) for (const kind of ['practice','boss','challenge']) {
+  const level=LEARNING_CATALOG.lessons.filter(l=>l.difficulty===tier).flatMap(l=>l.levels).find(l=>l.kind===kind);
+  const puzzle=byId.get(level.puzzleIds[0]);
+  let current=createDefaultGameSave();
+  assert.equal(current.progress.lives.current,3);
+  const balance=current.wallet.coins;
+  for(let mistake=1;mistake<=3;mistake++) {
+    const failed=applyPuzzleAnswer(current,puzzle,false,`life-${mistake}`,now+mistake);
+    assert.equal(failed.accepted,true);
+    assert.equal(failed.save.progress.lives.current,3-mistake);
+    assert.equal(failed.save.wallet.coins,balance,'A mistake costs one life and no existing coins');
+    assert.equal(failed.save.progress.lives.nextRegenAt,now+1+1800000,'Later mistakes do not postpone regeneration');
+    assert.equal(applyPuzzleAnswer(failed.save,puzzle,false,`life-${mistake}`,now+mistake).save,failed.save,'A duplicate submission cannot cost a second life');
+    current=parseGameSaveFromValue(JSON.stringify(failed.save)).save;
+    assert.equal(current.progress.lives.current,3-mistake,'Closing the puzzle preserves the remaining lives');
+  }
+  for(const correct of [false,true]) {
+    const blocked=applyPuzzleAnswer(current,puzzle,correct,'blocked',now+4);
+    assert.equal(blocked.accepted,false);
+    assert.equal(blocked.save,current,'Zero lives cannot change completion, rewards or statistics');
+    assert.equal(blocked.coins,0);
+  }
+  const deadline=current.progress.lives.nextRegenAt;
+  assert.equal(lifeRules.applyLifeRegen(current.progress.lives,deadline-1).current,0);
+  assert.equal(lifeRules.applyLifeRegen(current.progress.lives,deadline).current,1);
+  assert.equal(lifeRules.applyLifeRegen(current.progress.lives,deadline+3600000).current,3);
+  const restored={...current,progress:{...current.progress,lives:lifeRules.buyOneLife(current.progress.lives,now+4)}};
+  const clear=applyPuzzleAnswer(restored,puzzle,true,'after-refill',now+4);
+  assert.equal(clear.accepted,true);
+  assert.equal(clear.coins,getPuzzleCoinReward(tier,false,kind),'Recovered attempts retain ordinary coin rewards');
+  assert.equal(clear.save.progress.lives.current,1,'A correct answer neither uses nor refills lives');
+  assert.ok(clear.save.progress.completedPuzzleIds.includes(puzzle.id));
+  assert.equal(applyPuzzleAnswer(current,puzzle,true,'after-regen',deadline).accepted,true,'A regenerated life unlocks the game logic immediately');
+}
+const legacyLives=createDefaultGameSave();
+legacyLives.progress.lives={current:5,nextRegenAt:null};
+assert.equal(parseGameSaveFromValue(legacyLives).save.progress.lives.current,3,'Older five-life saves migrate to the new cap');
+legacyLives.progress.lives={current:-3,nextRegenAt:null};
+assert.equal(parseGameSaveFromValue(legacyLives).save.progress.lives.current,0);
+console.log('Verified three-life loss and gating for every difficulty and level kind, duplicate taps, save/reopen, regeneration, refill, full rewards and legacy migration.');

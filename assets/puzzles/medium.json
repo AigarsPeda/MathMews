@@ -29,15 +29,15 @@
     "topic": "equality",
     "correctIndex": 0,
     "question": "Fill the missing part of the sum.",
-    "hint": "What must join 27 to make 43?",
-    "explanation": "27 + 16 = 43.",
+    "hint": "What must join 38 to make 63?",
+    "explanation": "38 + 25 = 63.",
     "payload": {
-      "leftDisplay": "27 + ?",
-      "rightValue": 43,
+      "leftDisplay": "38 + ?",
+      "rightValue": 63,
       "choices": [
-        "16",
-        "17",
-        "18"
+        "25",
+        "26",
+        "27"
       ]
     }
   },
@@ -50,19 +50,19 @@
     ],
     "type": "pair_sum",
     "topic": "mental_math",
-    "question": "Choose two tiles that make 43.",
+    "question": "Choose two tiles that make 54.",
     "hint": "Choose one number and find its missing partner.",
-    "explanation": "Any two different tiles adding to 43 work.",
+    "explanation": "Any two different tiles adding to 54 work.",
     "payload": {
       "numbers": [
-        27,
-        16,
+        19,
+        35,
         1,
-        42,
+        53,
         2,
-        41
+        52
       ],
-      "target": 43,
+      "target": 54,
       "correctIndices": [
         0,
         1
@@ -81,15 +81,15 @@
     "correctIndex": 0,
     "question": "Minka tried adding. Which repair is right?",
     "hint": "Can you make a full ten first?",
-    "explanation": "The total is 43, not 42.",
+    "explanation": "The total is 74, not 73.",
     "payload": {
       "wrongWork": [
-        "27 + 16 = 42"
+        "46 + 28 = 73"
       ],
       "choices": [
-        "27 + 16 = 43",
-        "27 + 16 = 44",
-        "27 + 16 = 45"
+        "46 + 28 = 74",
+        "46 + 28 = 75",
+        "46 + 28 = 76"
       ]
     }
   },
@@ -123,15 +123,15 @@
     "topic": "equality",
     "correctIndex": 0,
     "question": "Fill the missing part of the sum.",
-    "hint": "What must join 46 to make 73?",
-    "explanation": "46 + 27 = 73.",
+    "hint": "What must join 58 to make 74?",
+    "explanation": "58 + 16 = 74.",
     "payload": {
-      "leftDisplay": "46 + ?",
-      "rightValue": 73,
+      "leftDisplay": "58 + ?",
+      "rightValue": 74,
       "choices": [
-        "27",
-        "28",
-        "29"
+        "16",
+        "17",
+        "18"
       ]
     }
   },
@@ -144,19 +144,19 @@
     ],
     "type": "pair_sum",
     "topic": "mental_math",
-    "question": "Choose two tiles that make 73.",
+    "question": "Choose two tiles that make 65.",
     "hint": "Choose one number and find its missing partner.",
-    "explanation": "Any two different tiles adding to 73 work.",
+    "explanation": "Any two different tiles adding to 65 work.",
     "payload": {
       "numbers": [
-        46,
-        27,
+        29,
+        36,
         1,
-        72,
+        64,
         2,
-        71
+        63
       ],
-      "target": 73,
+      "target": 65,
       "correctIndices": [
         0,
         1
@@ -175,15 +175,15 @@
     "correctIndex": 0,
     "question": "Minka tried adding. Which repair is right?",
     "hint": "Can you make a full ten first?",
-    "explanation": "The total is 73, not 72.",
+    "explanation": "The total is 82, not 81.",
     "payload": {
       "wrongWork": [
-        "46 + 27 = 72"
+        "47 + 35 = 81"
       ],
       "choices": [
-        "46 + 27 = 73",
-        "46 + 27 = 74",
-        "46 + 27 = 75"
+        "47 + 35 = 82",
+        "47 + 35 = 83",
+        "47 + 35 = 84"
       ]
     }
   },
@@ -217,13 +217,13 @@
     "topic": "subtraction",
     "question": "Move back on the number line.",
     "hint": "Count moves after the starting point.",
-    "explanation": "42 − 17 = 25.",
+    "explanation": "51 − 24 = 27.",
     "payload": {
-      "start": 42,
-      "jump": -17,
+      "start": 51,
+      "jump": -24,
       "min": 0,
-      "max": 45,
-      "correctValue": 25
+      "max": 54,
+      "correctValue": 27
     }
   },
   {
@@ -238,9 +238,9 @@
     "isTrue": false,
     "question": "Check the cat’s subtraction.",
     "hint": "Break the amount you take away into smaller steps.",
-    "explanation": "False. 42 − 17 = 25.",
+    "explanation": "False. 64 − 38 = 26.",
     "payload": {
-      "statement": "42 − 17 = 26"
+      "statement": "64 − 38 = 27"
     }
   },
   {
@@ -255,15 +255,15 @@
     "correctIndex": 0,
     "question": "Which calculation repairs Minka’s work?",
     "hint": "Break the amount you take away into smaller steps.",
-    "explanation": "Take away 17, leaving 25.",
+    "explanation": "Take away 45, leaving 28.",
     "payload": {
       "wrongWork": [
-        "42 − 17 = 24"
+        "73 − 45 = 27"
       ],
       "choices": [
-        "42 − 17 = 25",
-        "42 − 17 = 27",
-        "42 + 17 = 59"
+        "73 − 45 = 28",
+        "73 − 45 = 30",
+        "73 + 45 = 118"
       ]
     }
   },
@@ -297,13 +297,13 @@
     "topic": "subtraction",
     "question": "Move back on the number line.",
     "hint": "Count moves after the starting point.",
-    "explanation": "63 − 28 = 35.",
+    "explanation": "72 − 46 = 26.",
     "payload": {
-      "start": 63,
-      "jump": -28,
+      "start": 72,
+      "jump": -46,
       "min": 0,
-      "max": 66,
-      "correctValue": 35
+      "max": 75,
+      "correctValue": 26
     }
   },
   {
@@ -318,9 +318,9 @@
     "isTrue": false,
     "question": "Check the cat’s subtraction.",
     "hint": "Break the amount you take away into smaller steps.",
-    "explanation": "False. 63 − 28 = 35.",
+    "explanation": "False. 81 − 37 = 44.",
     "payload": {
-      "statement": "63 − 28 = 36"
+      "statement": "81 − 37 = 45"
     }
   },
   {
@@ -335,15 +335,15 @@
     "correctIndex": 0,
     "question": "Which calculation repairs Minka’s work?",
     "hint": "Break the amount you take away into smaller steps.",
-    "explanation": "Take away 28, leaving 35.",
+    "explanation": "Take away 58, leaving 37.",
     "payload": {
       "wrongWork": [
-        "63 − 28 = 34"
+        "95 − 58 = 36"
       ],
       "choices": [
-        "63 − 28 = 35",
-        "63 − 28 = 37",
-        "63 + 28 = 91"
+        "95 − 58 = 37",
+        "95 − 58 = 39",
+        "95 + 58 = 153"
       ]
     }
   },
@@ -365,7 +365,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 6,
-      "columns": 7
+      "columns": 7,
+      "object": "mouse"
     },
     "question": "Make 6 rows with 7 toy mice in each. How many mice?",
     "hint": "Count the same number in every group.",
@@ -383,14 +384,14 @@
     "correctIndex": 0,
     "question": "Which rule makes the right number of toys?",
     "hint": "Count the same number in every group.",
-    "explanation": "Multiply by 7.",
+    "explanation": "Multiply by 8.",
     "payload": {
-      "input": 6,
-      "output": 42,
+      "input": 4,
+      "output": 32,
       "choices": [
-        "×7",
-        "+7",
-        "×8"
+        "×8",
+        "+8",
+        "×9"
       ]
     }
   },
@@ -406,9 +407,9 @@
     "isTrue": true,
     "question": "Check the equal-group claim.",
     "hint": "Count the same number in every group.",
-    "explanation": "True. 6 groups of 7 make 42.",
+    "explanation": "True. 9 groups of 5 make 45.",
     "payload": {
-      "statement": "6 × 7 = 42"
+      "statement": "9 × 5 = 45"
     }
   },
   {
@@ -424,10 +425,10 @@
     "helpTemplate": "multiplication",
     "question": "How many toys are in each equal row?",
     "hint": "Count the same number in every group.",
-    "explanation": "6 × 7 = 42.",
+    "explanation": "7 × 7 = 49.",
     "payload": {
-      "leftDisplay": "6 × ?",
-      "rightValue": 42,
+      "leftDisplay": "7 × ?",
+      "rightValue": 49,
       "choices": [
         "7",
         "8",
@@ -453,7 +454,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 8,
-      "columns": 9
+      "columns": 9,
+      "object": "mouse"
     },
     "question": "Make 8 rows with 9 toy mice in each. How many mice?",
     "hint": "Count the same number in every group.",
@@ -471,14 +473,14 @@
     "correctIndex": 0,
     "question": "Which rule makes the right number of toys?",
     "hint": "Count the same number in every group.",
-    "explanation": "Multiply by 9.",
+    "explanation": "Multiply by 6.",
     "payload": {
-      "input": 8,
-      "output": 72,
+      "input": 7,
+      "output": 42,
       "choices": [
-        "×9",
-        "+9",
-        "×10"
+        "×6",
+        "+6",
+        "×7"
       ]
     }
   },
@@ -491,12 +493,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": true,
+    "isTrue": false,
     "question": "Check the equal-group claim.",
     "hint": "Count the same number in every group.",
-    "explanation": "True. 8 groups of 9 make 72.",
+    "explanation": "False. 8 groups of 8 make 64.",
     "payload": {
-      "statement": "8 × 9 = 72"
+      "statement": "8 × 8 = 65"
     }
   },
   {
@@ -512,14 +514,14 @@
     "helpTemplate": "multiplication",
     "question": "How many toys are in each equal row?",
     "hint": "Count the same number in every group.",
-    "explanation": "8 × 9 = 72.",
+    "explanation": "9 × 4 = 36.",
     "payload": {
-      "leftDisplay": "8 × ?",
-      "rightValue": 72,
+      "leftDisplay": "9 × ?",
+      "rightValue": 36,
       "choices": [
-        "9",
-        "10",
-        "11"
+        "4",
+        "5",
+        "6"
       ]
     }
   },
@@ -539,6 +541,7 @@
     "payload": {
       "items": 24,
       "people": 4,
+      "object": "cookie",
       "emoji": "🍪",
       "choices": [
         "6 each, 0 left",
@@ -557,14 +560,14 @@
     "type": "multiple_choice",
     "topic": "division",
     "choices": [
-      "6",
       "7",
-      "8"
+      "8",
+      "9"
     ],
     "correctIndex": 0,
-    "question": "Pack 24 bells into 4 equal boxes. How many per box?",
+    "question": "Pack 35 bells into 5 equal boxes. How many per box?",
     "hint": "Think of the matching multiplication fact.",
-    "explanation": "24 ÷ 4 = 6."
+    "explanation": "35 ÷ 5 = 7."
   },
   {
     "id": "v2-medium-division-equal-3",
@@ -578,14 +581,14 @@
     "correctIndex": 0,
     "question": "Which division rule fits?",
     "hint": "Test the number of equal groups.",
-    "explanation": "The rule is ÷4.",
+    "explanation": "The rule is ÷6.",
     "payload": {
-      "input": 24,
-      "output": 6,
+      "input": 54,
+      "output": 9,
       "choices": [
-        "÷4",
-        "÷5",
-        "−4"
+        "÷6",
+        "÷7",
+        "−6"
       ]
     }
   },
@@ -602,15 +605,15 @@
     "helpTemplate": "division",
     "question": "Repair the sharing calculation.",
     "hint": "Multiply the proposed answer by the number of groups.",
-    "explanation": "4 × 6 = 24.",
+    "explanation": "8 × 7 = 56.",
     "payload": {
       "wrongWork": [
-        "24 ÷ 4 = 7"
+        "56 ÷ 8 = 8"
       ],
       "choices": [
-        "24 ÷ 4 = 6",
-        "24 ÷ 4 = 8",
-        "24 ÷ 4 = 9"
+        "56 ÷ 8 = 7",
+        "56 ÷ 8 = 9",
+        "56 ÷ 8 = 10"
       ]
     }
   },
@@ -630,6 +633,7 @@
     "payload": {
       "items": 23,
       "people": 5,
+      "object": "cookie",
       "emoji": "🍪",
       "choices": [
         "4 each, 3 left",
@@ -648,14 +652,14 @@
     "type": "multiple_choice",
     "topic": "division",
     "choices": [
-      "4",
-      "5",
-      "6"
+      "6",
+      "7",
+      "8"
     ],
     "correctIndex": 0,
-    "question": "Pack 20 bells into 5 equal boxes. How many per box?",
+    "question": "Pack 42 bells into 7 equal boxes. How many per box?",
     "hint": "Think of the matching multiplication fact.",
-    "explanation": "20 ÷ 5 = 4."
+    "explanation": "42 ÷ 7 = 6."
   },
   {
     "id": "v2-medium-division-leftovers-3",
@@ -669,14 +673,14 @@
     "correctIndex": 0,
     "question": "Which division rule fits?",
     "hint": "Test the number of equal groups.",
-    "explanation": "The rule is ÷5.",
+    "explanation": "The rule is ÷8.",
     "payload": {
-      "input": 20,
-      "output": 4,
+      "input": 64,
+      "output": 8,
       "choices": [
-        "÷5",
-        "÷6",
-        "−5"
+        "÷8",
+        "÷9",
+        "−8"
       ]
     }
   },
@@ -693,15 +697,15 @@
     "helpTemplate": "division",
     "question": "Repair the sharing calculation.",
     "hint": "Multiply the proposed answer by the number of groups.",
-    "explanation": "5 × 4 = 20.",
+    "explanation": "9 × 9 = 81.",
     "payload": {
       "wrongWork": [
-        "20 ÷ 5 = 5"
+        "81 ÷ 9 = 10"
       ],
       "choices": [
-        "20 ÷ 5 = 4",
-        "20 ÷ 5 = 6",
-        "20 ÷ 5 = 7"
+        "81 ÷ 9 = 9",
+        "81 ÷ 9 = 11",
+        "81 ÷ 9 = 12"
       ]
     }
   },
@@ -729,14 +733,15 @@
       8,
       10
     ],
-    "type": "fraction_build",
+    "type": "compare",
     "topic": "fractions",
-    "question": "Color 3/6 of this whole.",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
     "hint": "Check the total number of equal parts first.",
-    "explanation": "Color 3 out of 6 equal parts.",
+    "explanation": "4/8 > 3/8.",
     "payload": {
-      "numerator": 3,
-      "denominator": 6
+      "optionA": "4/8",
+      "optionB": "3/8"
     }
   },
   {
@@ -755,12 +760,12 @@
       "pairs": [
         {
           "numerator": 1,
-          "denominator": 6,
+          "denominator": 5,
           "visual": "pie"
         },
         {
           "numerator": 3,
-          "denominator": 6,
+          "denominator": 5,
           "visual": "grid"
         }
       ]
@@ -778,14 +783,14 @@
     "correctIndex": 0,
     "question": "Which fraction covers the same amount of the same-size whole?",
     "hint": "Split every equal part in two.",
-    "explanation": "2/6 = 4/12.",
+    "explanation": "3/4 = 6/8.",
     "payload": {
-      "numerator": 2,
-      "denominator": 6,
+      "numerator": 3,
+      "denominator": 4,
       "choices": [
-        "4/12",
-        "2/12",
-        "3/6"
+        "6/8",
+        "3/8",
+        "4/4"
       ]
     }
   },
@@ -813,14 +818,15 @@
       8,
       10
     ],
-    "type": "fraction_build",
+    "type": "compare",
     "topic": "fractions",
-    "question": "Color 4/8 of this whole.",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
     "hint": "Check the total number of equal parts first.",
-    "explanation": "Color 4 out of 8 equal parts.",
+    "explanation": "3/7 > 2/7.",
     "payload": {
-      "numerator": 4,
-      "denominator": 8
+      "optionA": "3/7",
+      "optionB": "2/7"
     }
   },
   {
@@ -839,12 +845,12 @@
       "pairs": [
         {
           "numerator": 1,
-          "denominator": 8,
+          "denominator": 10,
           "visual": "pie"
         },
         {
           "numerator": 4,
-          "denominator": 8,
+          "denominator": 10,
           "visual": "grid"
         }
       ]
@@ -862,14 +868,14 @@
     "correctIndex": 0,
     "question": "Which fraction covers the same amount of the same-size whole?",
     "hint": "Split every equal part in two.",
-    "explanation": "3/8 = 6/16.",
+    "explanation": "4/5 = 8/10.",
     "payload": {
-      "numerator": 3,
-      "denominator": 8,
+      "numerator": 4,
+      "denominator": 5,
       "choices": [
-        "6/16",
-        "3/16",
-        "4/8"
+        "8/10",
+        "4/10",
+        "5/5"
       ]
     }
   },
@@ -911,14 +917,14 @@
     "topic": "operations",
     "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
     "hint": "Try multiplying the last two numbers first.",
-    "explanation": "4 + 3 × 6 = 22.",
+    "explanation": "6 + 4 × 7 = 34.",
     "payload": {
       "numbers": [
+        6,
         4,
-        3,
-        6
+        7
       ],
-      "target": 22,
+      "target": 34,
       "solution": [
         "+",
         "×"
@@ -937,14 +943,14 @@
     "correctIndex": 0,
     "question": "Select the rule that turns input into output.",
     "hint": "Test the whole rule, in the order shown.",
-    "explanation": "6 × 3 + 4 = 22.",
+    "explanation": "8 × 5 + 3 = 43.",
     "payload": {
-      "input": 6,
-      "output": 22,
+      "input": 8,
+      "output": 43,
       "choices": [
-        "×3+4",
-        "×3",
-        "+3"
+        "×5+3",
+        "×5",
+        "+5"
       ]
     }
   },
@@ -960,10 +966,10 @@
     "correctIndex": 1,
     "question": "Which expression has the greater value?",
     "hint": "Try a step, then check where it takes you.",
-    "explanation": "10 < 22.",
+    "explanation": "16 < 61.",
     "payload": {
-      "optionA": "18 ÷ 3 + 4",
-      "optionB": "18 + 4"
+      "optionA": "54 ÷ 6 + 7",
+      "optionB": "54 + 7"
     }
   },
   {
@@ -1004,14 +1010,14 @@
     "topic": "operations",
     "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
     "hint": "Try multiplying the last two numbers first.",
-    "explanation": "5 + 4 × 8 = 37.",
+    "explanation": "8 + 5 × 9 = 53.",
     "payload": {
       "numbers": [
+        8,
         5,
-        4,
-        8
+        9
       ],
-      "target": 37,
+      "target": 53,
       "solution": [
         "+",
         "×"
@@ -1030,14 +1036,14 @@
     "correctIndex": 0,
     "question": "Select the rule that turns input into output.",
     "hint": "Test the whole rule, in the order shown.",
-    "explanation": "8 × 4 + 5 = 37.",
+    "explanation": "8 × 7 + 6 = 62.",
     "payload": {
       "input": 8,
-      "output": 37,
+      "output": 62,
       "choices": [
-        "×4+5",
-        "×4",
-        "+4"
+        "×7+6",
+        "×7",
+        "+7"
       ]
     }
   },
@@ -1053,10 +1059,10 @@
     "correctIndex": 1,
     "question": "Which expression has the greater value?",
     "hint": "Try a step, then check where it takes you.",
-    "explanation": "13 < 37.",
+    "explanation": "11 < 67.",
     "payload": {
-      "optionA": "32 ÷ 4 + 5",
-      "optionB": "32 + 5"
+      "optionA": "63 ÷ 9 + 4",
+      "optionB": "63 + 4"
     }
   },
   {
@@ -1094,7 +1100,8 @@
     "payload": {
       "items": 28,
       "people": 4,
-      "emoji": "🍪",
+      "object": "parcel",
+      "emoji": "📦",
       "choices": [
         "7 each, 0 left",
         "8 each, none left",
@@ -1118,7 +1125,8 @@
     "payload": {
       "items": 31,
       "people": 4,
-      "emoji": "🍪",
+      "object": "parcel",
+      "emoji": "📦",
       "choices": [
         "7 each, 3 left",
         "8 each, none left",
@@ -1160,23 +1168,19 @@
       8,
       10
     ],
-    "type": "operation_path",
+    "type": "function_machine",
     "topic": "operations",
-    "question": "Carry the 20 forward. Use 2, then 3, to reach 13.",
+    "correctIndex": 0,
+    "question": "The second lantern changes 20 into 13. Which rule fits?",
     "hint": "Try a step, then check where it takes you.",
     "explanation": "20 ÷ 2 + 3 = 13. The second lantern is lit.",
     "payload": {
-      "start": 20,
-      "target": 13,
-      "steps": [
-        {
-          "operand": 2,
-          "operator": "÷"
-        },
-        {
-          "operand": 3,
-          "operator": "+"
-        }
+      "input": 20,
+      "output": 13,
+      "choices": [
+        "÷2+3",
+        "−2+3",
+        "÷2−3"
       ]
     }
   },
@@ -1187,23 +1191,21 @@
       8,
       10
     ],
-    "type": "operation_path",
+    "type": "target_build",
     "topic": "operations",
-    "question": "Start at 13. Use 2, then 4, to reach the final lantern at 30.",
+    "question": "Use 4, 13 and 2 in that order to light the final lantern at 30.",
     "hint": "Try a step, then check where it takes you.",
-    "explanation": "13 × 2 + 4 = 30. The whole trail is lit!",
+    "explanation": "4 + 13 × 2 = 30. The whole trail is lit!",
     "payload": {
-      "start": 13,
+      "numbers": [
+        4,
+        13,
+        2
+      ],
       "target": 30,
-      "steps": [
-        {
-          "operand": 2,
-          "operator": "×"
-        },
-        {
-          "operand": 4,
-          "operator": "+"
-        }
+      "solution": [
+        "+",
+        "×"
       ]
     }
   },

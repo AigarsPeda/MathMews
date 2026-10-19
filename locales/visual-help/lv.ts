@@ -7,6 +7,7 @@ export const visualHelpLv = {
   lockedHint: "Atbloķē īsu skaidrojumu, kas iemāca, kā domāt par šāda veida uzdevumu.",
   unlockPrice: "{{cost}} monētas — atbloķē uz visiem laikiem",
   unlockButton: "Atbloķēt ilustrāciju · {{cost}} 🪙",
+  compactButton: "Attēla palīdzība",
   watchButton: "Skatīt ilustrāciju",
   needCoins: "Vajag {{cost}} monētas. Tev ir {{coins}} 🪙",
   a11yOpen: "Atvērt ilustrēto palīdzību",

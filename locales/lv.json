@@ -1094,7 +1094,30 @@
     "shareAction": "Sadalīt vienu apli",
     "reset": "Sākt vēlreiz"
   },
+  "objectScenes": {
+    "joinReady": "Sarkanas lentes: {{left}}. Zilas lentes: {{right}}. Apvieno abas grupas.",
+    "joinDone": "Lentes ir apvienotas. Saskaiti tās, lai atrastu kopskaitu.",
+    "take_awayReady": "Papīra zvaigžņu skaits: {{left}}. Atņem {{right}} sarkanās zvaigznes.",
+    "take_awayDone": "Sarkanās zvaigznes ir pārvietotas prom. Saskaiti atlikušās.",
+    "arrayReady": "Izveido {{rows}} rindas, katrā pa {{columns}} priekšmetiem.",
+    "arrayBuilt": "Izveidotas {{rows}} rindas, katrā pa {{columns}} priekšmetiem. Cik kopā?",
+    "shareDescription": "Kopējā kaudzītē: {{remaining}}. Grupu skaits: {{groups}}. Katrā pa {{each}}.",
+    "joinAction": "Apvienot lentes"
+  },
+  "taskObjects": {
+    "mouse": "rotaļu peles",
+    "ribbon": "lentes",
+    "star": "papīra zvaigznes",
+    "cookie": "cepumi",
+    "parcel": "sūtījumi",
+    "planting_tile": "stādvietas",
+    "carriage": "vagoni"
+  },
   "puzzleTypes": {
+    "fractionMatchTryAgain": "Šis attēls neatbilst daļai. Mēģini vēlreiz; jau savienotie pāri ir saglabāti.",
+    "orderTapOrDrag": "Pieskaries diviem skaitļiem, lai tos samainītu, vai velc skaitli vajadzīgajā vietā.",
+    "orderPickSecond": "Pieskaries citam skaitlim, lai tos samainītu. Pieskaries izvēlētajam skaitlim vēlreiz, lai atceltu.",
+    "fractionMatchReady": "Visi pāri savienoti. Pārbaudi atbildi!",
     "multiple_choice": "Stāsts",
     "compare": "Salīdzini",
     "operation_path": "Darbību ceļš",
@@ -1147,7 +1170,7 @@
     "jumpBack": "Lēci −{{count}}",
     "tapLandingSpot": "Pieskaries vietai, kur nokļūsti!",
     "numberLinePrompt": "Sāc no {{start}}. {{jump}}.",
-    "numberLineHint": "− ved pa kreisi. + ved pa labi. Pārvieto punktu, tad pārbaudi atbildi.",
+    "numberLineHint": "− ved pa kreisi. + ved pa labi. Pieskaries skaitlim vai izmanto soļu pogas.",
     "numberLineMoveLeft": "Pārvietoties par vienu skaitli pa kreisi",
     "numberLineMoveRight": "Pārvietoties par vienu skaitli pa labi",
     "numberLineLeftButton": "← 1 solis",
@@ -1156,7 +1179,7 @@
     "pairTarget": "Uztaisi",
     "pickTwoNumbers": "Pieskaries diviem skaitļiem, kas dod summu.",
     "pickOneMore": "Pieskaries vēl vienam skaitlim.",
-    "checkingPair": "Pārbaudām tavu pāri…",
+    "checkingPair": "Pāris ir gatavs pārbaudei.",
     "minkaTried": "Minka mēģināja:",
     "shareAmong": "Sadalīt starp {{count}} draugiem",
     "find_all_pairs": "Pāru meklēšana",
@@ -1194,6 +1217,24 @@
     "a11yGotIt": "Sapratu"
   },
   "play": {
+    "puzzleOf": "Uzdevums {{number}} no {{total}}",
+    "adjustAnswer": "Vēl nav pareizi. Pielāgo atbildi un pārbaudi vēlreiz.",
+    "attemptHints": {
+      "fractionTooFew": "Iekrāsots par maz daļu. Pieskaries tukšai daļai, lai to iekrāsotu.",
+      "fractionTooMany": "Iekrāsots par daudz daļu. Pieskaries iekrāsotai daļai, lai krāsojumu noņemtu.",
+      "totalTooLow": "Tavs rezultāts ir mazāks par mērķi. Pamēģini mainīt izvēli.",
+      "totalTooHigh": "Tavs rezultāts ir lielāks par mērķi. Pamēģini mainīt izvēli.",
+      "moveRight": "Tavs punkts ir par tālu pa kreisi. Saskaiti lēcienus virzienā pa labi.",
+      "moveLeft": "Tavs punkts ir par tālu pa labi. Saskaiti lēcienus virzienā pa kreisi.",
+      "divisionWhole": "Pārbaudi dalīšanu. Katrā solī jāiegūst vesels skaitlis.",
+      "orderAscending": "Lasi no kreisās uz labo. Katram nākamajam skaitlim jābūt lielākam par iepriekšējo.",
+      "orderDescending": "Lasi no kreisās uz labo. Katram nākamajam skaitlim jābūt mazākam par iepriekšējo.",
+      "sortingRule": "Dažas daļas ir nepareizajā grupā. Pārbaudi katru pēc grupas noteikuma.",
+      "patternRule": "Apskati, kā mainās virkne, tad pielāgo skaitļus tukšajās vietās.",
+      "routeSteps": "Pārbaudi ceļa soļus un pabeidz pie izejas.",
+      "budgetTooMuch": "Tu tērē par daudz. Pamēģini lētāku kombināciju.",
+      "budgetTooLittle": "Tev paliek par daudz naudas. Pārbaudi cenas un atlaides."
+    },
     "solveFor": "Atrisini {{name}}",
     "replayNut": "Atkārtot riekstu #{{number}}",
     "hardNut": "🥜 Uzdevums #{{number}}",
@@ -1236,15 +1277,16 @@
       "sort_buckets": "Ievelc katru kartīti pareizajā grupā un pārbaudi grozus.",
       "repair_pattern": "Ievelc kartītes tukšajās vietās. Vari tās samainīt vai atgriezt pie rezervēm.",
       "route_grid": "Pieskaries blakus lauciņiem, lai veidotu ceļu. Pirms pārbaudes vari atsaukt soļus.",
-      "budget_plan": "Salīdzini cenas pēc atlaidēm un izvēlies plānu. Var derēt vairāki plāni."
+      "budget_plan": "Salīdzini cenas pēc atlaidēm un izvēlies plānu. Var derēt vairāki plāni.",
+      "target_buildHard": "Aizpildi katru atstarpi, tad pārbaudi atbildi."
     }
   },
   "lives": {
     "title": "Dzīvības",
     "count": "{{current}}/{{max}}",
     "nextFreeLife": "Nākamā bezmaksas dzīvība pēc",
-    "nextLifeIn": "Nākamā dzīvība pēc",
-    "fullLives": "Tev ir pilnas dzīvības. Ej sakalt riekstus!",
+    "nextLifeIn": "Nākamā bezmaksas dzīvība pēc {{time}}",
+    "fullLives": "Visas trīs dzīvības ir gatavas.",
     "buyLife": "Pirkt dzīvību · {{cost}} 🪙",
     "needCoinsBuy": "Vajag {{cost}} monētas dzīvībai. Tev ir {{coins}} 🪙",
     "outOfLives": "Nav dzīvību",
@@ -1253,11 +1295,15 @@
     "livesFull": "Dzīvības pilnas",
     "backToPath": "Atpakaļ uz uzdevumu taku",
     "refillsEvery": "Atjaunojas ik pēc {{minutes}} min",
-    "a11yLives": "Dzīvības {{current}} no {{max}}. Pieskaries, lai pirktu vairāk.",
+    "a11yLives": "Dzīvības {{current}} no {{max}}. Atvērt dzīvības un papildināšanu.",
     "a11yBuy": "Pirkt dzīvību par {{cost}} monētām",
     "a11yCloseMenu": "Aizvērt dzīvību izvēlni",
     "a11yTimer": "Nākamā dzīvība pēc {{time}}",
-    "a11yProgress": "{{percent}} procenti līdz nākamajai dzīvībai"
+    "a11yProgress": "{{percent}} procenti līdz nākamajai dzīvībai",
+    "mistakeCost": "Katra nepareiza atbilde izmanto 1 dzīvību.",
+    "checkPaused": "Atbilžu pārbaude ir apturēta. Ievadītās atbildes paliek savās vietās.",
+    "openRefill": "Dzīvības un papildināšana",
+    "workedExample": "Apskati atrisinātu piemēru"
   },
   "economy": {
     "coinsLabel": "Monētas",
@@ -1372,6 +1418,9 @@
     "automaticDescription": "Mainās, ritot pasaules laikam."
   },
   "learning": {
+    "collectionComplete": "Visi pāri atrasti!",
+    "lessonCompleteDetail": "Nodarbība ir pabeigta. Izvēlies citu nodarbību, lai turpinātu mācīties.",
+    "practiceCompleteDetail": "Visi {{total}} treniņa uzdevumi ir pabeigti. Atgriezies nodarbībā, lai izvēlētos nākamo soli.",
     "chooseTopic": "Izvēlies tēmu",
     "topicIntro": "Izvēlies, ko vēlies apgūt. Katrai tēmai ir savas nodarbības un progress.",
     "requiredProgress": "Pabeigti {{count}} no {{total}} uzdevumiem un misiju posmiem",
@@ -1404,7 +1453,7 @@
     "nextStage": "Turpināt misiju",
     "backToLesson": "Atpakaļ uz nodarbību",
     "bossComplete": "Misija pabeigta!",
-    "challengeComplete": "Visi pāri atrasti!",
+    "challengeComplete": "Izaicinājums pabeigts!",
     "collectPairs": "Savāc visus pārus ar summu {{target}}",
     "pairsProgress": "Savākti {{count}} no {{total}} pāriem",
     "savePair": "Pievienot šo pāri",
@@ -1448,7 +1497,7 @@
     "undoStep": "Atsaukt pēdējo soli",
     "checkRoute": "Pārbaudīt ceļu",
     "budgetGoal": "Budžets {{budget}} · Izvēlies {{count}} priekšmetus · Atstāj {{remaining}}",
-    "budgetInstructions": "Šīs ir izdomātas cenas. Aprēķini katru atlaidi un izvēlies priekšmetus. Tavas spēles monētas paliek makā.",
+    "budgetInstructions": "Šīs ir stāsta cenas. Izvēlies krājumus un pārbaudi plānu. Tavas spēles monētas paliek makā.",
     "itemsSelected": "Izvēlēti {{count}} no {{total}} priekšmetiem",
     "price": "{{price}} izdomātas monētas",
     "discount": "{{percent}}% atlaide",

@@ -29,15 +29,15 @@
     "topic": "equality",
     "correctIndex": 0,
     "question": "Aizpildi trūkstošo summas daļu.",
-    "hint": "Kas jāpieskaita 27, lai iegūtu 43?",
-    "explanation": "27 + 16 = 43.",
+    "hint": "Kas jāpieskaita 38, lai iegūtu 63?",
+    "explanation": "38 + 25 = 63.",
     "payload": {
-      "leftDisplay": "27 + ?",
-      "rightValue": 43,
+      "leftDisplay": "38 + ?",
+      "rightValue": 63,
       "choices": [
-        "16",
-        "17",
-        "18"
+        "25",
+        "26",
+        "27"
       ]
     }
   },
@@ -50,19 +50,19 @@
     ],
     "type": "pair_sum",
     "topic": "mental_math",
-    "question": "Izvēlies divas kartītes, kuru summa ir 43.",
+    "question": "Izvēlies divas kartītes, kuru summa ir 54.",
     "hint": "Izvēlies skaitli un atrodi tā trūkstošo pārinieku.",
-    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 43.",
+    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 54.",
     "payload": {
       "numbers": [
-        27,
-        16,
+        19,
+        35,
         1,
-        42,
+        53,
         2,
-        41
+        52
       ],
-      "target": 43,
+      "target": 54,
       "correctIndices": [
         0,
         1
@@ -81,15 +81,15 @@
     "correctIndex": 0,
     "question": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
-    "explanation": "Summa ir 43, nevis 42.",
+    "explanation": "Summa ir 74, nevis 73.",
     "payload": {
       "wrongWork": [
-        "27 + 16 = 42"
+        "46 + 28 = 73"
       ],
       "choices": [
-        "27 + 16 = 43",
-        "27 + 16 = 44",
-        "27 + 16 = 45"
+        "46 + 28 = 74",
+        "46 + 28 = 75",
+        "46 + 28 = 76"
       ]
     }
   },
@@ -123,15 +123,15 @@
     "topic": "equality",
     "correctIndex": 0,
     "question": "Aizpildi trūkstošo summas daļu.",
-    "hint": "Kas jāpieskaita 46, lai iegūtu 73?",
-    "explanation": "46 + 27 = 73.",
+    "hint": "Kas jāpieskaita 58, lai iegūtu 74?",
+    "explanation": "58 + 16 = 74.",
     "payload": {
-      "leftDisplay": "46 + ?",
-      "rightValue": 73,
+      "leftDisplay": "58 + ?",
+      "rightValue": 74,
       "choices": [
-        "27",
-        "28",
-        "29"
+        "16",
+        "17",
+        "18"
       ]
     }
   },
@@ -144,19 +144,19 @@
     ],
     "type": "pair_sum",
     "topic": "mental_math",
-    "question": "Izvēlies divas kartītes, kuru summa ir 73.",
+    "question": "Izvēlies divas kartītes, kuru summa ir 65.",
     "hint": "Izvēlies skaitli un atrodi tā trūkstošo pārinieku.",
-    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 73.",
+    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 65.",
     "payload": {
       "numbers": [
-        46,
-        27,
+        29,
+        36,
         1,
-        72,
+        64,
         2,
-        71
+        63
       ],
-      "target": 73,
+      "target": 65,
       "correctIndices": [
         0,
         1
@@ -175,15 +175,15 @@
     "correctIndex": 0,
     "question": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
-    "explanation": "Summa ir 73, nevis 72.",
+    "explanation": "Summa ir 82, nevis 81.",
     "payload": {
       "wrongWork": [
-        "46 + 27 = 72"
+        "47 + 35 = 81"
       ],
       "choices": [
-        "46 + 27 = 73",
-        "46 + 27 = 74",
-        "46 + 27 = 75"
+        "47 + 35 = 82",
+        "47 + 35 = 83",
+        "47 + 35 = 84"
       ]
     }
   },
@@ -217,13 +217,13 @@
     "topic": "subtraction",
     "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
     "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "42 − 17 = 25.",
+    "explanation": "51 − 24 = 27.",
     "payload": {
-      "start": 42,
-      "jump": -17,
+      "start": 51,
+      "jump": -24,
       "min": 0,
-      "max": 45,
-      "correctValue": 25
+      "max": 54,
+      "correctValue": 27
     }
   },
   {
@@ -238,9 +238,9 @@
     "isTrue": false,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 42 − 17 = 25.",
+    "explanation": "Nepareizi. 64 − 38 = 26.",
     "payload": {
-      "statement": "42 − 17 = 26"
+      "statement": "64 − 38 = 27"
     }
   },
   {
@@ -255,15 +255,15 @@
     "correctIndex": 0,
     "question": "Kurš aprēķins izlabo Minkas darbu?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 17, paliek 25.",
+    "explanation": "Atņem 45, paliek 28.",
     "payload": {
       "wrongWork": [
-        "42 − 17 = 24"
+        "73 − 45 = 27"
       ],
       "choices": [
-        "42 − 17 = 25",
-        "42 − 17 = 27",
-        "42 + 17 = 59"
+        "73 − 45 = 28",
+        "73 − 45 = 30",
+        "73 + 45 = 118"
       ]
     }
   },
@@ -297,13 +297,13 @@
     "topic": "subtraction",
     "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
     "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "63 − 28 = 35.",
+    "explanation": "72 − 46 = 26.",
     "payload": {
-      "start": 63,
-      "jump": -28,
+      "start": 72,
+      "jump": -46,
       "min": 0,
-      "max": 66,
-      "correctValue": 35
+      "max": 75,
+      "correctValue": 26
     }
   },
   {
@@ -318,9 +318,9 @@
     "isTrue": false,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 63 − 28 = 35.",
+    "explanation": "Nepareizi. 81 − 37 = 44.",
     "payload": {
-      "statement": "63 − 28 = 36"
+      "statement": "81 − 37 = 45"
     }
   },
   {
@@ -335,15 +335,15 @@
     "correctIndex": 0,
     "question": "Kurš aprēķins izlabo Minkas darbu?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 28, paliek 35.",
+    "explanation": "Atņem 58, paliek 37.",
     "payload": {
       "wrongWork": [
-        "63 − 28 = 34"
+        "95 − 58 = 36"
       ],
       "choices": [
-        "63 − 28 = 35",
-        "63 − 28 = 37",
-        "63 + 28 = 91"
+        "95 − 58 = 37",
+        "95 − 58 = 39",
+        "95 + 58 = 153"
       ]
     }
   },
@@ -365,7 +365,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 6,
-      "columns": 7
+      "columns": 7,
+      "object": "mouse"
     },
     "question": "Izveido 6 rindas, katrā pa 7 rotaļu pelēm. Cik peļu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
@@ -383,14 +384,14 @@
     "correctIndex": 0,
     "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Reizini ar 7.",
+    "explanation": "Reizini ar 8.",
     "payload": {
-      "input": 6,
-      "output": 42,
+      "input": 4,
+      "output": 32,
       "choices": [
-        "×7",
-        "+7",
-        "×8"
+        "×8",
+        "+8",
+        "×9"
       ]
     }
   },
@@ -406,9 +407,9 @@
     "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Pareizi. 6 grupas pa 7 ir 42.",
+    "explanation": "Pareizi. 9 grupas pa 5 ir 45.",
     "payload": {
-      "statement": "6 × 7 = 42"
+      "statement": "9 × 5 = 45"
     }
   },
   {
@@ -424,10 +425,10 @@
     "helpTemplate": "multiplication",
     "question": "Cik rotaļlietu ir katrā vienādajā rindā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "6 × 7 = 42.",
+    "explanation": "7 × 7 = 49.",
     "payload": {
-      "leftDisplay": "6 × ?",
-      "rightValue": 42,
+      "leftDisplay": "7 × ?",
+      "rightValue": 49,
       "choices": [
         "7",
         "8",
@@ -453,7 +454,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 8,
-      "columns": 9
+      "columns": 9,
+      "object": "mouse"
     },
     "question": "Izveido 8 rindas, katrā pa 9 rotaļu pelēm. Cik peļu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
@@ -471,14 +473,14 @@
     "correctIndex": 0,
     "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Reizini ar 9.",
+    "explanation": "Reizini ar 6.",
     "payload": {
-      "input": 8,
-      "output": 72,
+      "input": 7,
+      "output": 42,
       "choices": [
-        "×9",
-        "+9",
-        "×10"
+        "×6",
+        "+6",
+        "×7"
       ]
     }
   },
@@ -491,12 +493,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": true,
+    "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Pareizi. 8 grupas pa 9 ir 72.",
+    "explanation": "Nepareizi. 8 grupas pa 8 ir 64.",
     "payload": {
-      "statement": "8 × 9 = 72"
+      "statement": "8 × 8 = 65"
     }
   },
   {
@@ -512,14 +514,14 @@
     "helpTemplate": "multiplication",
     "question": "Cik rotaļlietu ir katrā vienādajā rindā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "8 × 9 = 72.",
+    "explanation": "9 × 4 = 36.",
     "payload": {
-      "leftDisplay": "8 × ?",
-      "rightValue": 72,
+      "leftDisplay": "9 × ?",
+      "rightValue": 36,
       "choices": [
-        "9",
-        "10",
-        "11"
+        "4",
+        "5",
+        "6"
       ]
     }
   },
@@ -539,6 +541,7 @@
     "payload": {
       "items": 24,
       "people": 4,
+      "object": "cookie",
       "emoji": "🍪",
       "choices": [
         "Katram 6, atlikums 0",
@@ -557,14 +560,14 @@
     "type": "multiple_choice",
     "topic": "division",
     "choices": [
-      "6",
       "7",
-      "8"
+      "8",
+      "9"
     ],
     "correctIndex": 0,
-    "question": "Saliec 24 zvaniņus 4 vienādās kastēs. Cik katrā?",
+    "question": "Saliec 35 zvaniņus 5 vienādās kastēs. Cik katrā?",
     "hint": "Atceries atbilstošo reizināšanas vienādību.",
-    "explanation": "24 ÷ 4 = 6."
+    "explanation": "35 ÷ 5 = 7."
   },
   {
     "id": "v2-medium-division-equal-3",
@@ -578,14 +581,14 @@
     "correctIndex": 0,
     "question": "Kurš dalīšanas likums der?",
     "hint": "Pārbaudi vienādo grupu skaitu.",
-    "explanation": "Likums ir ÷4.",
+    "explanation": "Likums ir ÷6.",
     "payload": {
-      "input": 24,
-      "output": 6,
+      "input": 54,
+      "output": 9,
       "choices": [
-        "÷4",
-        "÷5",
-        "−4"
+        "÷6",
+        "÷7",
+        "−6"
       ]
     }
   },
@@ -602,15 +605,15 @@
     "helpTemplate": "division",
     "question": "Izlabo dalīšanas aprēķinu.",
     "hint": "Reizini piedāvāto atbildi ar grupu skaitu.",
-    "explanation": "4 × 6 = 24.",
+    "explanation": "8 × 7 = 56.",
     "payload": {
       "wrongWork": [
-        "24 ÷ 4 = 7"
+        "56 ÷ 8 = 8"
       ],
       "choices": [
-        "24 ÷ 4 = 6",
-        "24 ÷ 4 = 8",
-        "24 ÷ 4 = 9"
+        "56 ÷ 8 = 7",
+        "56 ÷ 8 = 9",
+        "56 ÷ 8 = 10"
       ]
     }
   },
@@ -630,6 +633,7 @@
     "payload": {
       "items": 23,
       "people": 5,
+      "object": "cookie",
       "emoji": "🍪",
       "choices": [
         "Katram 4, atlikums 3",
@@ -648,14 +652,14 @@
     "type": "multiple_choice",
     "topic": "division",
     "choices": [
-      "4",
-      "5",
-      "6"
+      "6",
+      "7",
+      "8"
     ],
     "correctIndex": 0,
-    "question": "Saliec 20 zvaniņus 5 vienādās kastēs. Cik katrā?",
+    "question": "Saliec 42 zvaniņus 7 vienādās kastēs. Cik katrā?",
     "hint": "Atceries atbilstošo reizināšanas vienādību.",
-    "explanation": "20 ÷ 5 = 4."
+    "explanation": "42 ÷ 7 = 6."
   },
   {
     "id": "v2-medium-division-leftovers-3",
@@ -669,14 +673,14 @@
     "correctIndex": 0,
     "question": "Kurš dalīšanas likums der?",
     "hint": "Pārbaudi vienādo grupu skaitu.",
-    "explanation": "Likums ir ÷5.",
+    "explanation": "Likums ir ÷8.",
     "payload": {
-      "input": 20,
-      "output": 4,
+      "input": 64,
+      "output": 8,
       "choices": [
-        "÷5",
-        "÷6",
-        "−5"
+        "÷8",
+        "÷9",
+        "−8"
       ]
     }
   },
@@ -693,15 +697,15 @@
     "helpTemplate": "division",
     "question": "Izlabo dalīšanas aprēķinu.",
     "hint": "Reizini piedāvāto atbildi ar grupu skaitu.",
-    "explanation": "5 × 4 = 20.",
+    "explanation": "9 × 9 = 81.",
     "payload": {
       "wrongWork": [
-        "20 ÷ 5 = 5"
+        "81 ÷ 9 = 10"
       ],
       "choices": [
-        "20 ÷ 5 = 4",
-        "20 ÷ 5 = 6",
-        "20 ÷ 5 = 7"
+        "81 ÷ 9 = 9",
+        "81 ÷ 9 = 11",
+        "81 ÷ 9 = 12"
       ]
     }
   },
@@ -729,14 +733,15 @@
       8,
       10
     ],
-    "type": "fraction_build",
+    "type": "compare",
     "topic": "fractions",
-    "question": "Iekrāso 3/6 no šī veselā.",
+    "correctIndex": 0,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 3 no 6 vienādām daļām.",
+    "explanation": "4/8 > 3/8.",
     "payload": {
-      "numerator": 3,
-      "denominator": 6
+      "optionA": "4/8",
+      "optionB": "3/8"
     }
   },
   {
@@ -755,12 +760,12 @@
       "pairs": [
         {
           "numerator": 1,
-          "denominator": 6,
+          "denominator": 5,
           "visual": "pie"
         },
         {
           "numerator": 3,
-          "denominator": 6,
+          "denominator": 5,
           "visual": "grid"
         }
       ]
@@ -778,14 +783,14 @@
     "correctIndex": 0,
     "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
     "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "2/6 = 4/12.",
+    "explanation": "3/4 = 6/8.",
     "payload": {
-      "numerator": 2,
-      "denominator": 6,
+      "numerator": 3,
+      "denominator": 4,
       "choices": [
-        "4/12",
-        "2/12",
-        "3/6"
+        "6/8",
+        "3/8",
+        "4/4"
       ]
     }
   },
@@ -813,14 +818,15 @@
       8,
       10
     ],
-    "type": "fraction_build",
+    "type": "compare",
     "topic": "fractions",
-    "question": "Iekrāso 4/8 no šī veselā.",
+    "correctIndex": 0,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 4 no 8 vienādām daļām.",
+    "explanation": "3/7 > 2/7.",
     "payload": {
-      "numerator": 4,
-      "denominator": 8
+      "optionA": "3/7",
+      "optionB": "2/7"
     }
   },
   {
@@ -839,12 +845,12 @@
       "pairs": [
         {
           "numerator": 1,
-          "denominator": 8,
+          "denominator": 10,
           "visual": "pie"
         },
         {
           "numerator": 4,
-          "denominator": 8,
+          "denominator": 10,
           "visual": "grid"
         }
       ]
@@ -862,14 +868,14 @@
     "correctIndex": 0,
     "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
     "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "3/8 = 6/16.",
+    "explanation": "4/5 = 8/10.",
     "payload": {
-      "numerator": 3,
-      "denominator": 8,
+      "numerator": 4,
+      "denominator": 5,
       "choices": [
-        "6/16",
-        "3/16",
-        "4/8"
+        "8/10",
+        "4/10",
+        "5/5"
       ]
     }
   },
@@ -911,14 +917,14 @@
     "topic": "operations",
     "question": "Saglabā skaitļu secību. Reizini un dali pirms saskaitīšanas vai atņemšanas.",
     "hint": "Vispirms mēģini sareizināt pēdējos divus skaitļus.",
-    "explanation": "4 + 3 × 6 = 22.",
+    "explanation": "6 + 4 × 7 = 34.",
     "payload": {
       "numbers": [
+        6,
         4,
-        3,
-        6
+        7
       ],
-      "target": 22,
+      "target": 34,
       "solution": [
         "+",
         "×"
@@ -937,14 +943,14 @@
     "correctIndex": 0,
     "question": "Izvēlies likumu, kas ievadi pārvērš izvadē.",
     "hint": "Pārbaudi visu likumu norādītajā secībā.",
-    "explanation": "6 × 3 + 4 = 22.",
+    "explanation": "8 × 5 + 3 = 43.",
     "payload": {
-      "input": 6,
-      "output": 22,
+      "input": 8,
+      "output": 43,
       "choices": [
-        "×3+4",
-        "×3",
-        "+3"
+        "×5+3",
+        "×5",
+        "+5"
       ]
     }
   },
@@ -960,10 +966,10 @@
     "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
-    "explanation": "10 < 22.",
+    "explanation": "16 < 61.",
     "payload": {
-      "optionA": "18 ÷ 3 + 4",
-      "optionB": "18 + 4"
+      "optionA": "54 ÷ 6 + 7",
+      "optionB": "54 + 7"
     }
   },
   {
@@ -1004,14 +1010,14 @@
     "topic": "operations",
     "question": "Saglabā skaitļu secību. Reizini un dali pirms saskaitīšanas vai atņemšanas.",
     "hint": "Vispirms mēģini sareizināt pēdējos divus skaitļus.",
-    "explanation": "5 + 4 × 8 = 37.",
+    "explanation": "8 + 5 × 9 = 53.",
     "payload": {
       "numbers": [
+        8,
         5,
-        4,
-        8
+        9
       ],
-      "target": 37,
+      "target": 53,
       "solution": [
         "+",
         "×"
@@ -1030,14 +1036,14 @@
     "correctIndex": 0,
     "question": "Izvēlies likumu, kas ievadi pārvērš izvadē.",
     "hint": "Pārbaudi visu likumu norādītajā secībā.",
-    "explanation": "8 × 4 + 5 = 37.",
+    "explanation": "8 × 7 + 6 = 62.",
     "payload": {
       "input": 8,
-      "output": 37,
+      "output": 62,
       "choices": [
-        "×4+5",
-        "×4",
-        "+4"
+        "×7+6",
+        "×7",
+        "+7"
       ]
     }
   },
@@ -1053,10 +1059,10 @@
     "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
-    "explanation": "13 < 37.",
+    "explanation": "11 < 67.",
     "payload": {
-      "optionA": "32 ÷ 4 + 5",
-      "optionB": "32 + 5"
+      "optionA": "63 ÷ 9 + 4",
+      "optionB": "63 + 4"
     }
   },
   {
@@ -1094,7 +1100,8 @@
     "payload": {
       "items": 28,
       "people": 4,
-      "emoji": "🍪",
+      "object": "parcel",
+      "emoji": "📦",
       "choices": [
         "Katram 7, atlikums 0",
         "Katram 8, bez atlikuma",
@@ -1118,7 +1125,8 @@
     "payload": {
       "items": 31,
       "people": 4,
-      "emoji": "🍪",
+      "object": "parcel",
+      "emoji": "📦",
       "choices": [
         "Katram 7, atlikums 3",
         "Katram 8, bez atlikuma",
@@ -1160,23 +1168,19 @@
       8,
       10
     ],
-    "type": "operation_path",
+    "type": "function_machine",
     "topic": "operations",
-    "question": "Pārnes 20 tālāk. Izmanto 2 un tad 3, lai sasniegtu 13.",
+    "correctIndex": 0,
+    "question": "Otrā laterna pārvērš 20 par 13. Kurš likums der?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "20 ÷ 2 + 3 = 13. Otrā laterna deg.",
     "payload": {
-      "start": 20,
-      "target": 13,
-      "steps": [
-        {
-          "operand": 2,
-          "operator": "÷"
-        },
-        {
-          "operand": 3,
-          "operator": "+"
-        }
+      "input": 20,
+      "output": 13,
+      "choices": [
+        "÷2+3",
+        "−2+3",
+        "÷2−3"
       ]
     }
   },
@@ -1187,23 +1191,21 @@
       8,
       10
     ],
-    "type": "operation_path",
+    "type": "target_build",
     "topic": "operations",
-    "question": "Sāc ar 13. Izmanto 2 un tad 4, lai sasniegtu pēdējo laternu pie 30.",
+    "question": "Izmanto 4, 13 un 2 šādā secībā, lai iedegtu pēdējo laternu pie 30.",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
-    "explanation": "13 × 2 + 4 = 30. Visa taka ir izgaismota!",
+    "explanation": "4 + 13 × 2 = 30. Visa taka ir izgaismota!",
     "payload": {
-      "start": 13,
+      "numbers": [
+        4,
+        13,
+        2
+      ],
       "target": 30,
-      "steps": [
-        {
-          "operand": 2,
-          "operator": "×"
-        },
-        {
-          "operand": 4,
-          "operator": "+"
-        }
+      "solution": [
+        "+",
+        "×"
       ]
     }
   },

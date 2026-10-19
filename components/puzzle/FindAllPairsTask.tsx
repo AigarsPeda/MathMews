@@ -2,7 +2,7 @@ import { GameColors } from "@/constants/game";
 import type { FindAllPairsPuzzle } from "@/types/puzzle";
 import { getValidPairs } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -20,28 +20,38 @@ function pairColor(index: number) {
   return pairColors[index] ?? { background: `hsl(${hue}, 65%, 94%)`, ink: `hsl(${hue}, 65%, 27%)` };
 }
 
-export function FindAllPairsTask({ puzzle, pairs, answered, onChange, onCheck }: {
+export function FindAllPairsTask({ puzzle, pairs, answered, onChange, canAttempt = true, onIncorrectAttempt }: {
   puzzle: FindAllPairsPuzzle; pairs: [number, number][]; answered: boolean;
-  onChange: (pairs: [number, number][]) => void; onCheck: () => void;
+  onChange: (pairs: [number, number][]) => void;
+  canAttempt?: boolean;
+  onIncorrectAttempt?: () => boolean;
 }) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<number[]>([]);
   const [message, setMessage] = useState("");
+  const rejectedPair = useRef<string | null>(null);
   const { numbers, target } = puzzle.payload;
   const validPairs = getValidPairs(numbers, target);
   const total = validPairs.length;
   const colorIndex = (a: number, b: number) => validPairs.findIndex(([left, right]) => (left === a && right === b) || (left === b && right === a));
-  const selectedPair = selected.length === 2 ? colorIndex(selected[0], selected[1]) : -1;
   const nextPair = validPairs.findIndex(([a, b]) => !pairs.some(([left, right]) => left === a && right === b));
-  const selectionColor = pairColor(selectedPair >= 0 ? selectedPair : Math.max(0, nextPair));
+  const selectionColor = pairColor(Math.max(0, nextPair));
   function choose(index: number) {
+    if (answered || !canAttempt) return;
+    rejectedPair.current = null;
     setMessage("");
     setSelected(current => current.includes(index) ? current.filter(i => i !== index) : current.length === 2 ? [index] : [...current, index]);
   }
   function addPair() {
-    if (selected.length !== 2) return;
+    if (answered || !canAttempt || selected.length !== 2) return;
     const [a, b] = [...selected].sort((left, right) => left - right);
-    if (numbers[a] + numbers[b] !== target) { setMessage(t("learning.pairWrong", { target })); return; }
+    if (numbers[a] + numbers[b] !== target) {
+      const key = `${a}:${b}`;
+      if (rejectedPair.current === key) return;
+      rejectedPair.current = key;
+      if (onIncorrectAttempt && !onIncorrectAttempt()) return;
+      setMessage(t("learning.pairWrong", { target })); return;
+    }
     if (pairs.some(([left, right]) => left === a && right === b)) { setMessage(t("learning.pairDuplicate")); return; }
     onChange([...pairs, [a, b]]);
     setSelected([]);
@@ -53,13 +63,13 @@ export function FindAllPairsTask({ puzzle, pairs, answered, onChange, onCheck }:
     <View style={styles.tiles}>{numbers.map((number, index) => {
       const collected = pairs.find(([a, b]) => a === index || b === index);
       const color = selected.includes(index) ? selectionColor : collected ? pairColor(colorIndex(...collected)) : null;
-      return <Pressable key={index} onPress={() => choose(index)} disabled={answered}
-      accessibilityRole="button" accessibilityLabel={t("learning.numberTile", { number, position: index + 1 })} accessibilityState={{ selected: selected.includes(index), disabled: answered }}
+      return <Pressable key={index} onPress={() => choose(index)} disabled={answered || !canAttempt}
+      accessibilityRole="button" accessibilityLabel={t("learning.numberTile", { number, position: index + 1 })} accessibilityState={{ selected: selected.includes(index), disabled: answered || !canAttempt }}
       style={[styles.tile, color && { borderColor: color.ink, backgroundColor: color.background }, selected.includes(index) && styles.selected]}>
       <Text style={[styles.number, color && { color: color.ink }]}>{number}</Text>
     </Pressable>;
     })}</View>
-    {!answered && <Pressable onPress={addPair} disabled={selected.length !== 2} accessibilityRole="button" accessibilityState={{ disabled: selected.length !== 2 }} style={[styles.add, selected.length !== 2 && styles.disabled]}>
+    {!answered && <Pressable onPress={addPair} disabled={!canAttempt || selected.length !== 2} accessibilityRole="button" accessibilityState={{ disabled: !canAttempt || selected.length !== 2 }} style={[styles.add, (!canAttempt || selected.length !== 2) && styles.disabled]}>
       <Text style={styles.addText}>{t("learning.savePair")}</Text>
     </Pressable>}
     <Text style={styles.feedback} accessibilityLiveRegion="polite">{message || t("learning.pairInstructions")}</Text>
@@ -70,9 +80,7 @@ export function FindAllPairsTask({ puzzle, pairs, answered, onChange, onCheck }:
       <Text style={[styles.pairText, { color: color.ink }]}>{numbers[a]} + {numbers[b]} = {target}</Text>
     </Pressable>;
     })}</View>
-    {!answered && <Pressable onPress={onCheck} disabled={pairs.length === 0} accessibilityRole="button" accessibilityState={{ disabled: pairs.length === 0 }} style={[styles.check, pairs.length === 0 && styles.disabled]}>
-      <Text style={styles.checkText}>{t("learning.checkCollection")}</Text>
-    </Pressable>}
+
   </View>;
 }
 const styles = StyleSheet.create({
@@ -87,6 +95,4 @@ const styles = StyleSheet.create({
   disabled: { opacity: 0.5 }, feedback: { minHeight: moderateScale(44), color: GameColors.text, fontSize: moderateScale(15), lineHeight: moderateScale(22), textAlign: "center" },
   collection: { gap: moderateScale(8) }, pair: { minHeight: moderateScale(48), borderRadius: moderateScale(12), borderWidth: 2, padding: moderateScale(12) },
   pairText: { fontSize: moderateScale(18), fontWeight: "700", color: GameColors.secondaryDark, textAlign: "center" },
-  check: { minHeight: moderateScale(52), padding: moderateScale(14), borderRadius: moderateScale(16), backgroundColor: GameColors.primary, alignItems: "center", justifyContent: "center" },
-  checkText: { fontSize: moderateScale(17), fontWeight: "800", color: GameColors.card },
 });

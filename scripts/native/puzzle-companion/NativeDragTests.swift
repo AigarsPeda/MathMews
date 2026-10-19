@@ -3,7 +3,10 @@ final class NativeDragTests: XCTestCase {
  let app = XCUIApplication(bundleIdentifier: "com.mathmews.app")
  override func setUpWithError() throws {
   continueAfterFailure = false; app.activate()
-  XCTAssertTrue(app.buttons["Progress moment"].waitForExistence(timeout: 15))
+  let reset = app.buttons["Reset companion check"]
+  XCTAssertTrue(reset.waitForExistence(timeout: 15))
+  for _ in 0..<3 { if !reset.isHittable { app.swipeDown() } }
+  reset.tap()
  }
  func expect(_ text: String) {
   XCTAssertTrue(app.staticTexts[text].firstMatch.waitForExistence(timeout: 5), "Missing \(text)\n\(app.debugDescription)")
@@ -64,5 +67,24 @@ final class NativeDragTests: XCTestCase {
    XCTAssertFalse(app.buttons["Go to next puzzle"].exists, "The old result is gone before the next puzzle opens")
   }
   shot("next-puzzle-after-dismissal")
+ }
+ func testBlenderReactionPortraits() {
+  for label in ["High paw", "Proud", "Bounce", "Oops", "Think", "Recover"] {
+   let button = app.buttons["\(label) animation"]
+   if !button.isHittable { app.swipeUp() }
+   button.tap()
+   // Capture the gesture while it is playing. Waiting for XCTest's idle
+   // checks plus another second used to capture only the recovered pose.
+   Thread.sleep(forTimeInterval: 0.5)
+   shot("reaction-\(label.lowercased().replacingOccurrences(of: " ", with: "-"))")
+   let retry = ["Oops", "Think", "Recover"].contains(label)
+   let action = app.buttons[retry ? "Try again" : "Go to next puzzle"]
+   XCTAssertTrue(action.waitForExistence(timeout: 5))
+   Thread.sleep(forTimeInterval: 4.1)
+   XCTAssertTrue(action.isHittable, "The action remains usable after the reaction returns to idle")
+   action.tap()
+   XCTAssertTrue(app.staticTexts["Companion check"].waitForExistence(timeout: 5))
+  }
+  app.swipeDown(); app.swipeDown()
  }
 }

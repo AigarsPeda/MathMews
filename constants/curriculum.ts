@@ -6,6 +6,15 @@ import type { PuzzleDifficulty } from "@/types/puzzle";
 
 export const LEARNING_CATALOG = catalogData as LearningCatalog;
 
+const PUZZLE_LEVEL_KINDS = new Map(LEARNING_CATALOG.lessons.flatMap(lesson =>
+  lesson.levels.flatMap(level => level.puzzleIds.map(id => [id, level.kind] as const)),
+));
+
+/** Use the authored catalog for rewards, including answers resumed from a save. */
+export function getPuzzleLevelKind(puzzleId: string): LearningLevel["kind"] | undefined {
+  return PUZZLE_LEVEL_KINDS.get(puzzleId);
+}
+
 export function getTopicLessons(difficulty: PuzzleDifficulty, topicId: string): LearningLesson[] {
   return LEARNING_CATALOG.lessons.filter(lesson => lesson.difficulty === difficulty && lesson.topicId === topicId);
 }

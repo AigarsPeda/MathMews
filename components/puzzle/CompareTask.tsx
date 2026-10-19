@@ -1,7 +1,9 @@
 import { GameColors } from "@/constants/game";
+import { PuzzleObjectCollection } from "./PuzzleObjectImage";
 import type { ComparePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type CompareTaskProps = {
   puzzle: ComparePuzzle;
@@ -18,6 +20,9 @@ export function CompareTask({
   answered,
   onSelect,
 }: CompareTaskProps) {
+  const { t } = useTranslation();
+  const object = puzzle.payload.object;
+  const capacity = Math.max(Number(puzzle.payload.optionA), Number(puzzle.payload.optionB));
   const options = [
     { label: puzzle.payload.optionA, index: 0 as const },
     { label: puzzle.payload.optionB, index: 1 as const },
@@ -45,7 +50,9 @@ export function CompareTask({
               onPress={() => onSelect(index)}
               accessibilityRole="button"
               accessibilityState={{ disabled: answered, selected }}
+              accessibilityLabel={object ? `${label} ${t(`taskObjects.${object}`)}` : label}
             >
+              {object ? <PuzzleObjectCollection object={object} count={Number(label)} capacity={capacity} /> : null}
               <Text style={styles.optionLabel}>{label}</Text>
             </Pressable>
           </View>
@@ -66,6 +73,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   option: {
+    gap: moderateScale(10),
     minHeight: moderateScale(120),
     borderRadius: moderateScale(18),
     borderWidth: 2,

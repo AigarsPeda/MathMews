@@ -142,7 +142,7 @@ type GameContextValue = {
   worldClock: WorldClock;
   setWorldClock: (speed: number, minuteOfDay?: number) => void;
   setWorldWeather: (weather: WeatherMode) => void;
-  answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string) => number;
+  answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string) => number | null;
   feedPet: () => boolean;
   isReady: boolean;
   hasCompletedOnboarding: boolean;
@@ -218,7 +218,7 @@ type GameContextValue = {
   deleteAllUserData: () => Promise<{ ok: true } | { ok: false; pending?: boolean; requestId?: string }>;
 };
 
-const GameContext = createContext<GameContextValue | null>(null);
+export const GameContext = createContext<GameContextValue | null>(null);
 
 function normalizePetName(name: string): string {
   return name.trim().slice(0, PET_NAME_MAX_LENGTH);
@@ -277,6 +277,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string) => {
     const current = saveRef.current;
     const result = applyPuzzleAnswer(current, puzzle, correct, attemptId);
+    if (!result.accepted) return null;
     const pending = result.coins > 0 && accountRef.current ? [{ userId:accountRef.current,
       environment:getWalletEnvironment(), puzzleId:puzzle.id, attemptId, amount:result.coins, at:Date.now() }] : [];
     setSave({ ...result.save, wallet:current.wallet,

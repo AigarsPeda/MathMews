@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-19",
+  "maximumLives": 3,
+  "incorrectSubmissionCost": 1,
+  "freeRegenerationMinutes": 30,
+  "sharedAcross": [
+    "difficulty",
+    "topics",
+    "practice",
+    "bosses",
+    "challenges"
+  ],
+  "instantMistakes": [
+    "fraction matches",
+    "submitted invalid pair-hunt pairs"
+  ],
+  "preserved": [
+    "coin reward rates",
+    "saved completion",
+    "cat animations",
+    "interactive task models",
+    "free picture help"
+  ],
+  "verified": [
+    "zero-life UI and atomic operation gating",
+    "duplicate-submission protection",
+    "save and reopen",
+    "legacy five-life normalization",
+    "regeneration deadline and unlock",
+    "refill through existing wallet flow",
+    "help without lives",
+    "instant matching consumes one life",
+    "English and Latvian controls"
+  ],
+  "backend": {
+    "schemaChangeRequired": false,
+    "rewardRPCChangeRequired": false,
+    "backendTestsPassed": 36
+  },
+  "native": {
+    "productionPlayScreen": true,
+    "inMemoryProvider": true,
+    "testsPassed": 2,
+    "failed": 0
+  }
+}

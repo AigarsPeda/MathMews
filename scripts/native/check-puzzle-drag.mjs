@@ -9,8 +9,15 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const bossTests = process.argv.includes('--bosses');
 const sceneTests = process.argv.includes('--scenes');
 const companionTests = process.argv.includes('--companion');
-const sources = path.join(root, bossTests ? 'scripts/native/boss-stories' : companionTests ? 'scripts/native/puzzle-companion' : sceneTests ? 'scripts/native/puzzle-scenes' : 'scripts/native/puzzle-drag');
-const route = bossTests ? 'boss-qa' : companionTests ? 'companion-qa' : sceneTests ? 'scene-qa' : 'drag-qa';
+const numberLineTests = process.argv.includes('--number-line');
+const hardQuestionTests = process.argv.includes('--hard-questions');
+const varietyTests = process.argv.includes('--variety');
+const lifeTests = process.argv.includes('--lives');
+const homeLifeTests = process.argv.includes('--home-lives');
+const testName = process.argv.includes('--test') ? process.argv[process.argv.indexOf('--test') + 1] : undefined;
+if (testName !== undefined && !/^test\w+$/.test(testName)) throw new Error('Pass a single XCTest method name after --test.');
+const sources = path.join(root, homeLifeTests ? 'scripts/native/home-lives' : lifeTests ? 'scripts/native/lives' : varietyTests ? 'scripts/native/practice-variety' : hardQuestionTests ? 'scripts/native/hard-questions' : numberLineTests ? 'scripts/native/number-line' : bossTests ? 'scripts/native/boss-stories' : companionTests ? 'scripts/native/puzzle-companion' : sceneTests ? 'scripts/native/puzzle-scenes' : 'scripts/native/puzzle-drag');
+const route = homeLifeTests ? 'home-lives-qa' : lifeTests ? 'lives-qa' : varietyTests ? 'practice-variety-qa' : hardQuestionTests ? 'hard-questions-qa' : numberLineTests ? 'number-line-qa' : bossTests ? 'boss-qa' : companionTests ? 'companion-qa' : sceneTests ? 'scene-qa' : 'drag-qa';
 const device = process.argv[process.argv.indexOf('--device') + 1];
 if (!process.argv.includes('--device') || !/^[0-9A-F-]{36}$/i.test(device ?? '')) {
   throw new Error('Pass --device <simulator UDID> explicitly. Use xcrun simctl list devices booted to find it.');
@@ -27,7 +34,7 @@ const handle = await open(fixture, 'wx');
 await handle.close();
 try {
   await copyFile(path.join(sources, 'fixture.tsx'), fixture);
-  if (bossTests) {
+  if (bossTests || lifeTests || homeLifeTests) {
     // A long visual run must not receive source refreshes from other work.
     // Read the app container rather than the simulator's global defaults domain.
     const container = execFileSync('xcrun', ['simctl', 'get_app_container', device, 'com.mathmews.app', 'data'], { encoding: 'utf8' }).trim();
@@ -48,16 +55,17 @@ try {
   await run('xcrun', ['simctl', 'openurl', device, `mathmews://${route}`]);
   const log = await open(path.join(work, 'test.log'), 'w');
   try {
-    console.log(`Testing native ${bossTests ? 'boss stories' : companionTests ? 'cat companion' : sceneTests ? 'task scenes' : 'drag'} on ${device}. Log and screenshots: ${work}`);
+    console.log(`Testing native ${homeLifeTests ? 'home lives header' : lifeTests ? 'three-life system' : varietyTests ? 'practice variety' : hardQuestionTests ? 'Hard questions' : numberLineTests ? 'number-line selection' : bossTests ? 'boss stories' : companionTests ? 'cat companion' : sceneTests ? 'task scenes' : 'drag'} on ${device}. Log and screenshots: ${work}`);
     await run('xcodebuild', [
       'test', '-project', path.join(work, 'NativeDrag.xcodeproj'), '-scheme', 'NativeDragTests',
       '-destination', `platform=iOS Simulator,id=${device}`, '-parallel-testing-enabled', 'NO',
       '-collect-test-diagnostics', 'never',
       '-derivedDataPath', path.join(work, 'build'), '-resultBundlePath', path.join(work, 'result.xcresult'),
       'CODE_SIGNING_ALLOWED=NO',
+      ...(testName ? [`-only-testing:NativeDragTests/NativeDragTests/${testName}`] : []),
     ], log);
   } finally { await log.close(); }
-  console.log(`Native ${bossTests ? 'boss-story' : companionTests ? 'cat-companion' : sceneTests ? 'task-scene' : 'basket, pattern and number-order'} tests passed. Result bundle: ${path.join(work, 'result.xcresult')}`);
+  console.log(`Native ${homeLifeTests ? 'Home-life header' : lifeTests ? 'Three-life' : varietyTests ? 'Practice-variety' : hardQuestionTests ? 'Hard-question' : numberLineTests ? 'number-line selection' : bossTests ? 'boss-story' : companionTests ? 'cat-companion' : sceneTests ? 'task-scene' : 'basket, pattern and number-order'} tests passed. Result bundle: ${path.join(work, 'result.xcresult')}`);
 } finally {
   // Leave the game at its normal entry point before removing the temporary route.
   await run('xcrun', ['simctl', 'openurl', device, 'mathmews://']).catch(error => console.error(error.message));

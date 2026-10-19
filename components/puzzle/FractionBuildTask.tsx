@@ -13,7 +13,6 @@ type FractionBuildTaskProps = {
   isCorrect: boolean;
   onChangeShaded: (count: number) => void;
   onToggleSlice: (index: number) => void;
-  onCheck: () => void;
 };
 
 export function FractionBuildTask({
@@ -24,7 +23,6 @@ export function FractionBuildTask({
   isCorrect,
   onChangeShaded,
   onToggleSlice,
-  onCheck,
 }: FractionBuildTaskProps) {
   const { t } = useTranslation();
   const { numerator, denominator } = puzzle.payload;
@@ -33,11 +31,11 @@ export function FractionBuildTask({
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.fractionDisplay}>
+      {!puzzle.payload.hideTarget || (answered && isCorrect) ? <View style={styles.fractionDisplay}>
         <Text style={styles.numerator}>{numerator}</Text>
         <View style={styles.fractionBar} />
         <Text style={styles.denominator}>{denominator}</Text>
-      </View>
+      </View> : null}
 
       <View style={styles.chartCard}>
         <FractionPieChart
@@ -83,18 +81,6 @@ export function FractionBuildTask({
               <Text style={styles.pieceBtnLabel}>{t("puzzleTypes.piece")}</Text>
             </Pressable>
           </View>
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.checkBtn,
-              pressed && styles.checkBtnPressed,
-            ]}
-            onPress={onCheck}
-            accessibilityRole="button"
-            accessibilityLabel={t("puzzleTypes.checkAnswer")}
-          >
-            <Text style={styles.checkBtnText}>{t("puzzleTypes.checkAnswer")}</Text>
-          </Pressable>
         </View>
       ) : null}
     </View>
@@ -174,22 +160,5 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: GameColors.text,
     letterSpacing: 0.4,
-  },
-  checkBtn: {
-    width: "100%",
-    minHeight: moderateScale(56),
-    borderRadius: moderateScale(16),
-    backgroundColor: GameColors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkBtnPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  checkBtnText: {
-    fontSize: moderateScale(18),
-    fontWeight: "800",
-    color: "#FFFFFF",
   },
 });

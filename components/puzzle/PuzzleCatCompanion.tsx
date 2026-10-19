@@ -1,17 +1,16 @@
 import { GameColors } from "@/constants/game";
-import { PetDisplay } from "@/pet-display/components/PetDisplay";
+import { PuzzleCatPortrait } from "@/components/puzzle/PuzzleCatPortrait";
+import type { PuzzleCatReaction } from "@/constants/puzzle-cat-reactions";
 import type { PetAnimationState, PetType } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
 
-type Props = { petType: PetType; catSkinId?: string; petName: string; mood: PetAnimationState; message: string; portraitSize?: number };
+type Props = { petType: PetType; catSkinId?: string; petName: string; mood: PetAnimationState; reaction?: PuzzleCatReaction; message: string; portraitSize?: number };
 
-export function PuzzleCatCompanion({ petType, catSkinId, petName, mood, message, portraitSize = 180 }: Props) {
+export function PuzzleCatCompanion({ petType, catSkinId, petName, mood, reaction, message, portraitSize = 180 }: Props) {
   const { t } = useTranslation();
-  const [finished, setFinished] = useState(false);
   return <View style={styles.wrap}>
     <Animated.View entering={FadeIn.duration(160).reduceMotion(ReduceMotion.System)}
       accessible accessibilityRole="text" accessibilityLiveRegion="polite"
@@ -20,10 +19,7 @@ export function PuzzleCatCompanion({ petType, catSkinId, petName, mood, message,
       <Text style={styles.message}>{message}</Text>
       <View style={styles.tail} />
     </Animated.View>
-    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <PetDisplay petType={petType} catSkinId={catSkinId} mood={finished ? "idle" : mood}
-        width={moderateScale(portraitSize)} onAnimationComplete={() => setFinished(true)} transparentBackground />
-    </View>
+    <PuzzleCatPortrait petType={petType} catSkinId={catSkinId} mood={mood} reaction={reaction} size={portraitSize} />
   </View>;
 }
 

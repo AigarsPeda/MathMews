@@ -1,4 +1,5 @@
 import { IconText } from "@/components/ui/IconText";
+import { PuzzleObjectImage } from "./PuzzleObjectImage";
 import { GameColors } from "@/constants/game";
 import type { PracticeToken } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
@@ -6,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, { FadeIn, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSequence, withTiming } from "react-native-reanimated";
 
-type PracticeScene = { prompt: string; tokens: PracticeToken[]; result?: string; compact?: boolean; boardHeight?: number };
+type PracticeScene = { prompt?: string; tokens: PracticeToken[]; result?: string; compact?: boolean; boardHeight?: number };
 
 function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: number; delay: number }) {
   const reducedMotion = useReducedMotion();
@@ -54,19 +55,19 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
         movingStyle,
       ]}
     >
-      {token.shape && !plain ? (
+      {token.shape && !plain && !token.object ? (
         <View style={[StyleSheet.absoluteFill, styles.tokenShape, { backgroundColor: GameColors.cardBorder }]}>
           <Animated.View style={[StyleSheet.absoluteFill, styles.tokenShape, { backgroundColor: color }, fillStyle]} />
         </View>
       ) : null}
-      <Animated.View key={token.label} entering={FadeIn.duration(250).reduceMotion(ReduceMotion.System)}>
+      {token.object ? <PuzzleObjectImage object={token.object} primary={token.tone === "primary"} /> : <Animated.View key={token.label} entering={FadeIn.duration(250).reduceMotion(ReduceMotion.System)}>
         <IconText style={[
           styles.tokenText,
           { fontSize: (plain ? 21 : 25) * ratio, color: token.tone === "primary" ? GameColors.primary : GameColors.text },
         ]}>
           {token.label}
         </IconText>
-      </Animated.View>
+      </Animated.View>}
     </Animated.View>
   );
 }
@@ -76,7 +77,7 @@ export function VisualPracticeBoard({ prompt, tokens, result, compact = false, b
   const ratio = width / 300;
   return (
     <View style={styles.stage}>
-      <Text style={styles.prompt}>{prompt}</Text>
+      {prompt ? <Text style={styles.prompt}>{prompt}</Text> : null}
       <View style={[styles.board, { aspectRatio: 300 / boardHeight }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
         {width > 0 ? tokens.map((token, i) => (
           <MovingToken key={token.id} token={token} ratio={ratio} delay={Math.min(i, 5) * 55} />

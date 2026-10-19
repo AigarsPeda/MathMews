@@ -1,0 +1,16 @@
+{
+  "generator": "scripts/3d/build-puzzle-objects.py",
+  "source": "prototypes/puzzle-objects/puzzle-objects.blend",
+  "objects": [
+    "mouse",
+    "ribbon-red",
+    "ribbon-blue",
+    "star",
+    "star-red",
+    "cookie",
+    "parcel",
+    "planting-tile",
+    "carriage"
+  ],
+  "render": "transparent Blender Eevee orthographic PNG"
+}

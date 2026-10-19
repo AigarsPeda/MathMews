@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 GAITS = __import__('json').loads((ROOT/'constants/cat-gaits.json').read_text())
 JUMP = __import__('json').loads((ROOT/'constants/cat-jump.json').read_text())
 from original_cat import create_cat as create_original_cat
+from puzzle_reactions import PUZZLE_REACTIONS, pose_reaction
 
 
 def keyed(t, keys):
@@ -291,7 +292,8 @@ def pose_gait(driver, state, t):
 
 def pose(arm, driver, state, t, idle_controls):
     jumping = state in ('jumpOn', 'jumpOff', 'hop')
-    pose_controls(driver, 'idle' if jumping else 'walk' if state in ('crawl', 'trot', 'run', 'rubLeft', 'rubRight') else 'idle' if state in ('sit', 'wakeStretch') else state, 0 if jumping or state == 'wakeStretch' else t)
+    pose_controls(driver, 'idle' if jumping or state in PUZZLE_REACTIONS else 'walk' if state in ('crawl', 'trot', 'run', 'rubLeft', 'rubRight') else 'idle' if state in ('sit', 'wakeStretch') else state, 0 if jumping or state == 'wakeStretch' else t)
+    reaction = pose_reaction(driver, state, t, idle_controls) if state in PUZZLE_REACTIONS else None
     if state in ('trot', 'run'):
         pose_gait(driver, state, t)
     driver['root'].rotation_euler = (0, 0, 0)
@@ -369,11 +371,17 @@ def pose(arm, driver, state, t, idle_controls):
         fore_body = brush @ body
         hind_body = Matrix.Translation((side*.018, 0, 0)) @ body
         body = Matrix.Translation((side*.024, 0, -.012)) @ body
+    if reaction:
+        def reaction_bend(name, pitch, roll=0):
+            pivot = bones[name].head_local
+            return body @ Matrix.Translation(pivot) @ Matrix.Rotation(pitch, 4, 'X') @ Matrix.Rotation(roll, 4, 'Y') @ Matrix.Translation(-pivot)
+        fore_body = reaction_bend('chest', reaction['chest'], reaction['roll'])
+        hind_body = reaction_bend('pelvis', reaction['hips'])
     desired = {name: body @ bones[name].matrix_local for name in ('spine', 'belly')}
     desired.update(chest=fore_body @ bones['chest'].matrix_local, pelvis=hind_body @ bones['pelvis'].matrix_local)
     chest_shift = (fore_body @ bones['chest'].head_local)-bones['chest'].head_local
     head_shift = (driver['head'].location-idle_controls['head'])*.65
-    if standing and state not in ('jumpOn', 'jumpOff', 'hop'):
+    if standing and state not in ('jumpOn', 'jumpOff', 'hop') and state not in PUZZLE_REACTIONS:
         head_shift = Vector((0, 0, (.008 if state in ('trot','run') else .002)*math.cos(t*math.tau*2)-(.025 if state=='run' else 0)))
     head_rotation = driver['head'].rotation_euler.to_matrix()
     if state in ('trot','run'):
@@ -427,6 +435,8 @@ def pose(arm, driver, state, t, idle_controls):
                 target = muzzle+Vector((.17+.05*wipe, -.25, -.19+.09*wipe))
                 toe = toe.lerp(target, lift)
             desired.update(limb_pose(bones, names, shoulder, toe))
+            if reaction and not rear and side == 'R' and reaction['wrist']:
+                desired[names[2]] = joint_matrix(bones[names[2]], desired[names[2]].translation, Matrix.Rotation(reaction['wrist'], 3, 'X'))
     # The upright hooked tail follows the pelvis.
     tail_rotation = Matrix.Rotation(.10*airborne-.045*landing,3,'X') if jumping else driver['tail'].rotation_euler.to_matrix()
     if state == 'crawl':
@@ -435,6 +445,11 @@ def pose(arm, driver, state, t, idle_controls):
     tail_transform = hind_body @ Matrix.Translation(anchor) @ tail_rotation.to_4x4() @ Matrix.Translation(-anchor)
     for name in [*('tailjoint'+str(i) for i in range(4)), 'tailTip']:
         desired[name] = tail_transform @ bones[name].matrix_local
+    if reaction:
+        pivot = bones['tailjoint2'].head_local
+        follow = Matrix.Translation(pivot) @ Matrix.Rotation(reaction['tail_tip'], 4, 'Y') @ Matrix.Translation(-pivot)
+        for name in ('tailjoint2','tailjoint3','tailTip'):
+            desired[name] = tail_transform @ follow @ bones[name].matrix_local
     head_motion = desired['head'] @ bones['head'].matrix_local.inverted()
     for side in ('L', 'R'):
         name = 'ear.'+side
@@ -442,13 +457,18 @@ def pose(arm, driver, state, t, idle_controls):
         pitch = -.14*airborne if jumping else -.06*stretch if state == 'wakeStretch' else -.035*settle
         spread = (.10 if side == 'L' else -.10)*settle
         rotation = Matrix.Rotation(pitch, 3, 'X') @ Matrix.Rotation(spread, 3, 'Y')
+        if state in PUZZLE_REACTIONS:
+            rotation = driver['ears'][0 if side == 'L' else 1].rotation_euler.to_matrix()
         desired[name] = head_motion @ joint_matrix(bones[name], bones[name].head_local, rotation)
     for side, i in (('L', 0), ('R', 1)):
-        blink = max(.045, min(1, driver['eyes'][i].scale.z/.105))
+        blink = max(0 if reaction else .045, min(1.25 if reaction else 1, driver['eyes'][i].scale.z/.105))
         for suffix in ('', '.glint'):
             name = 'eye.'+side+suffix
             center = bones[name].head_local
             close = Matrix.Translation(center) @ Matrix.Diagonal((1, 1, blink, 1)) @ Matrix.Translation(-center)
+            if reaction:
+                gaze = reaction['gaze']
+                close = Matrix.Translation((gaze[0],0,gaze[1])) @ close
             desired[name] = head_motion @ close @ bones[name].matrix_local
     visibility = {'mouth.open': driver['mouth'].scale.x, 'mouth.smile': driver['smile'].scale.x,
                   'mouth.frown': driver['frown'].scale.x,
@@ -458,6 +478,12 @@ def pose(arm, driver, state, t, idle_controls):
             center = bones[name].head_local
             visible = visibility.get(name, 1)
             local = Matrix.Translation(center) @ Matrix.Diagonal((visible, visible, visible, 1)) @ Matrix.Translation(-center)
+            if state in PUZZLE_REACTIONS and name.startswith('brow.'):
+                brow = driver['brows'][0 if name.endswith('L') else 1]
+                local = Matrix.Translation((0,0,brow.location.z-.235)) @ Matrix.Translation(center) @ brow.rotation_euler.to_matrix().to_4x4() @ Matrix.Translation(-center)
+            if reaction and name.startswith('whisker.'):
+                spread = reaction['whiskers'] * (-1 if '.L.' in name else 1)
+                local = Matrix.Translation(center) @ Matrix.Rotation(spread,4,'Y') @ Matrix.Translation(-center)
             desired[name] = head_motion @ local @ bones[name].matrix_local
     return desired
 

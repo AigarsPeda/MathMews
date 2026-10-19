@@ -7,21 +7,23 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-export function QuantityTaskScene({ model, disabled }: { model: QuantityTaskModel; disabled: boolean }) {
+export function QuantityTaskScene({ model, disabled, showExpression = true }: { model: QuantityTaskModel; disabled: boolean; showExpression?: boolean }) {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const sharing = model.kind === "share";
+  const sceneKeys = model.object ? "objectScenes" : "taskScenes";
+  const objects = model.object ? t(`taskObjects.${model.object}`) : "";
   const finished = sharing ? (step + 1) * model.groups > model.items : step > 0;
   const prompt = sharing ? `${model.items} ÷ ${model.groups} = ?`
     : model.kind === "array" ? `${model.rows} × ${model.columns} = ?`
     : `${model.left} ${model.kind === "join" ? "+" : "−"} ${model.right} = ?`;
   const description = sharing
-    ? t("taskScenes.shareDescription", { remaining: model.items - step * model.groups, groups: model.groups, each: step })
-    : model.kind === "array" ? t(step ? "taskScenes.arrayBuilt" : "taskScenes.arrayReady", { rows: model.rows, columns: model.columns })
-    : t(`taskScenes.${model.kind}${step ? "Done" : "Ready"}`, { left: model.left, right: model.right });
+    ? t(`${sceneKeys}.shareDescription`, { remaining: model.items - step * model.groups, groups: model.groups, each: step, objects })
+    : model.kind === "array" ? t(`${sceneKeys}.${step ? "arrayBuilt" : "arrayReady"}`, { rows: model.rows, columns: model.columns, objects })
+    : t(`${sceneKeys}.${model.kind}${step ? "Done" : "Ready"}`, { left: model.left, right: model.right, objects });
   return <View style={styles.wrap}>
     <View accessible accessibilityRole="image" accessibilityLabel={description}>
-      <VisualPracticeBoard compact boardHeight={getQuantityTaskHeight(model)} prompt={prompt} tokens={getQuantityTaskTokens(model, step)} />
+      <VisualPracticeBoard compact boardHeight={getQuantityTaskHeight(model)} prompt={showExpression ? prompt : undefined} tokens={getQuantityTaskTokens(model, step)} />
     </View>
     <Text style={styles.caption} accessibilityLiveRegion="polite">{description}</Text>
     <View style={styles.controls}>
@@ -29,7 +31,7 @@ export function QuantityTaskScene({ model, disabled }: { model: QuantityTaskMode
         accessibilityState={{ disabled: disabled || (sharing && finished) }}
         onPress={() => setStep(current => sharing ? current + 1 : current ? 0 : 1)}
         style={({ pressed }) => [styles.button, (disabled || (sharing && finished)) && styles.disabled, pressed && styles.pressed]}>
-        <Text style={styles.buttonText}>{t(!sharing && finished ? "taskScenes.reset" : `taskScenes.${model.kind}Action`, model.kind === "take_away" ? { count: model.right } : {})}</Text>
+        <Text style={styles.buttonText}>{t(!sharing && finished ? "taskScenes.reset" : model.object && model.kind === "join" ? "objectScenes.joinAction" : `taskScenes.${model.kind}Action`, model.kind === "take_away" ? { count: model.right } : {})}</Text>
       </Pressable>
       {sharing ? <Pressable disabled={disabled || step === 0} accessibilityRole="button"
         accessibilityState={{ disabled: disabled || step === 0 }} onPress={() => setStep(0)}

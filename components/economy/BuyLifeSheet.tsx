@@ -8,7 +8,7 @@ import { GameColors, MAX_LIVES } from "@/constants/game";
 import type { LivesState } from "@/types/game";
 import { applyLifeRegen, canBuyLife, msUntilNextLife } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -16,7 +16,7 @@ type BuyLifeSheetProps = {
   visible: boolean;
   lives: LivesState;
   coins: number;
-  onBuyLife: (expectedPrice?: number) => boolean;
+  onBuyLife: (expectedPrice?: number) => boolean | Promise<boolean>;
   onClose: () => void;
 };
 
@@ -43,15 +43,20 @@ export function BuyLifeSheet({
   const lifeBuyCost = getStoreCoinPrice("life", "one")!;
   const { t } = useTranslation();
   const now = useRegenNow(visible);
+  const [buying, setBuying] = useState(false);
+  const buyInFlight = useRef(false);
 
   const synced = applyLifeRegen(lives, now);
   const regenMs = msUntilNextLife(synced, now);
   const canBuy = canBuyLife(lives, coins, now);
   const isFull = synced.current >= MAX_LIVES;
 
-  const handleBuy = () => {
-    if (!canBuy) return;
-    onBuyLife(lifeBuyCost);
+  const handleBuy = async () => {
+    if (!canBuy || buyInFlight.current) return;
+    buyInFlight.current = true;
+    setBuying(true);
+    try { if (await onBuyLife(lifeBuyCost)) onClose(); }
+    finally { buyInFlight.current = false; setBuying(false); }
   };
 
   return (
@@ -76,6 +81,8 @@ export function BuyLifeSheet({
           <Pressable
             style={styles.buyBtn}
             onPress={handleBuy}
+            disabled={buying}
+            accessibilityState={{ disabled: buying, busy: buying }}
             accessibilityRole="button"
             accessibilityLabel={t("lives.a11yBuy", { cost: lifeBuyCost })}
           >
@@ -85,7 +92,7 @@ export function BuyLifeSheet({
           </Pressable>
         ) : (
           <Text style={styles.hint}>
-            {t("lives.needCoinsBuy", { cost: coins })}
+            {t("lives.needCoinsBuy", { cost: lifeBuyCost, coins })}
           </Text>
         )}
 

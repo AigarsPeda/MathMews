@@ -36,7 +36,12 @@ export function NativeRoomEditor(props: Props) {
   // eslint-disable-next-line react-hooks/refs
   const responder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: event => (event.nativeEvent.touches?.length ?? 1) === 1,
+    // Keep RNGH's pinch possible after the first finger captures an item.
+    onShouldBlockNativeResponder: () => false,
     onPanResponderGrant: event => controller.begin({ x: event.nativeEvent.locationX, y: event.nativeEvent.locationY }),
+    onPanResponderStart: event => {
+      if (event.nativeEvent.touches.length > 1) controller.cancel();
+    },
     onPanResponderMove: (_event, gesture) => {
       if (gesture.numberActiveTouches > 1) { controller.cancel(); return; }
       controller.update(gesture.dx / Math.max(1, latest.current.zoom), gesture.dy / Math.max(1, latest.current.zoom));

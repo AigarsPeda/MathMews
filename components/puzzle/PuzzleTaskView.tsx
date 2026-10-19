@@ -41,7 +41,7 @@ import {
 
 type PuzzleTaskViewProps = {
   puzzle: Puzzle;
-  onSubmitChallenge: (answer: ChallengeAnswer) => void;
+  onChallengeAnswerChange: (answer: ChallengeAnswer | null) => void;
   onDragStateChange: (dragging: boolean) => void;
   selectedIndex: number | null;
   selectedOperators: (MathOperator | null)[];
@@ -51,31 +51,28 @@ type PuzzleTaskViewProps = {
   pairIndices: number[];
   foundPairs: [number, number][];
   onFoundPairsChange: (pairs: [number, number][]) => void;
-  onCheckPairs: () => void;
   numberOrder: number[];
-  orderSubmitted: boolean;
   fractionMatchMatchedIds: string[];
   fractionMatchSelectedId: string | null;
   fractionMatchWrongIds: string[];
-  fractionMatchAnswered: boolean;
   answered: boolean;
   isCorrect: boolean;
+  hasLives?: boolean;
+  onIncorrectAttempt?: () => boolean;
   onSelectChoice: (index: number) => void;
   onSelectOperator: (stepIndex: number, operator: MathOperator) => void;
-  onCheckOperators: () => void;
   onChangeFractionPieces: (count: number) => void;
   onToggleFractionSlice: (index: number) => void;
-  onCheckFraction: () => void;
   onSelectNumberLineValue: (value: number) => void;
   onTogglePairIndex: (index: number) => void;
   onMoveOrder: (from: number, to: number) => void;
-  onCheckOrder: () => void;
+  onSwapOrder: (from: number, to: number) => void;
   onTapFractionMatchCard: (cardId: string) => void;
 };
 
 export function PuzzleTaskView({
   puzzle,
-  onSubmitChallenge,
+  onChallengeAnswerChange,
   onDragStateChange,
   selectedIndex,
   selectedOperators,
@@ -83,33 +80,32 @@ export function PuzzleTaskView({
   fractionSelectedSlices,
   numberLineValue,
   pairIndices,
-  foundPairs, onFoundPairsChange, onCheckPairs,
+  foundPairs, onFoundPairsChange,
   numberOrder,
-  orderSubmitted,
   fractionMatchMatchedIds,
   fractionMatchSelectedId,
   fractionMatchWrongIds,
-  fractionMatchAnswered,
   answered,
   isCorrect,
+  hasLives = true,
+  onIncorrectAttempt,
   onSelectChoice,
   onSelectOperator,
-  onCheckOperators,
   onChangeFractionPieces,
   onToggleFractionSlice,
-  onCheckFraction,
   onSelectNumberLineValue,
   onTogglePairIndex,
   onMoveOrder,
-  onCheckOrder,
+  onSwapOrder,
   onTapFractionMatchCard,
 }: PuzzleTaskViewProps) {
-  if (isOptionalChallengePuzzle(puzzle)) return <ChallengeTask puzzle={puzzle} answered={answered} onSubmit={onSubmitChallenge} onDragStateChange={onDragStateChange} />;
-  if (puzzle.type === "find_all_pairs") return <FindAllPairsTask puzzle={puzzle} pairs={foundPairs} answered={answered} onChange={onFoundPairsChange} onCheck={onCheckPairs} />;
+  if (isOptionalChallengePuzzle(puzzle)) return <ChallengeTask puzzle={puzzle} answered={answered} onAnswerChange={onChallengeAnswerChange} onDragStateChange={onDragStateChange} />;
+  if (puzzle.type === "find_all_pairs") return <FindAllPairsTask puzzle={puzzle} pairs={foundPairs} answered={answered} canAttempt={hasLives} onIncorrectAttempt={onIncorrectAttempt} onChange={onFoundPairsChange} />;
   const fractionMatchPuzzle = asFractionMatchPuzzle(puzzle);
   if (fractionMatchPuzzle) {
     return (
       <FractionMatchTask
+        canAttempt={hasLives}
         puzzle={fractionMatchPuzzle}
         matchedIds={fractionMatchMatchedIds}
         selectedId={fractionMatchSelectedId}
@@ -130,8 +126,8 @@ export function PuzzleTaskView({
         answered={answered}
         isCorrect={isCorrect}
         onMove={onMoveOrder}
+        onSwap={onSwapOrder}
         onDragStateChange={onDragStateChange}
-        onCheck={onCheckOrder}
       />
     );
   }
@@ -173,7 +169,6 @@ export function PuzzleTaskView({
         isCorrect={isCorrect}
         onChangeShaded={onChangeFractionPieces}
         onToggleSlice={onToggleFractionSlice}
-        onCheck={onCheckFraction}
       />
     );
   }
@@ -304,7 +299,6 @@ export function PuzzleTaskView({
         answered={answered}
         isCorrect={isCorrect}
         onSelectOperator={onSelectOperator}
-        onCheck={onCheckOperators}
       />
     );
   }
@@ -318,7 +312,6 @@ export function PuzzleTaskView({
         answered={answered}
         isCorrect={isCorrect}
         onSelectOperator={onSelectOperator}
-        onCheck={onCheckOperators}
       />
     );
   }

@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-19",
+  "briefFidelity": {
+    "scope": "Home header lives metric beside Coins and Streak; existing inline headers preserved.",
+    "behavior": [
+      "Rounded coral Blender heart and current life count.",
+      "Next-free-life countdown appears only below three lives.",
+      "Tap opens the existing BuyLifeSheet; existing coin purchase and 30-minute regeneration rules remain.",
+      "Existing English and Latvian strings supply visible and accessibility text."
+    ],
+    "evidence": [
+      "home-production.png",
+      "home-lives-full.png",
+      "home-lives-countdown.png",
+      "home-lives-empty.png",
+      "home-lives-narrow-latvian.png"
+    ]
+  },
+  "craft": {
+    "finishReview": "Fresh finish reviewer accepted all material UI areas after inspecting supplied screenshots and source.",
+    "native": {
+      "resultFile": "native-results.json",
+      "environment": "iOS Simulator, iPhone 18 Pro, iOS 27.0",
+      "passed": 2,
+      "failed": 0,
+      "coverage": [
+        "Countdown ticks while below the cap.",
+        "Serialized save and header remount preserve the regeneration deadline.",
+        "Coin purchase refills from two to three and removes the countdown.",
+        "Zero-to-one regeneration keeps the next-life countdown.",
+        "Two-to-three regeneration removes the countdown.",
+        "A 280-point Latvian header with a seven-digit wallet keeps coin, lives, and settings controls hittable and non-overlapping."
+      ]
+    },
+    "checks": {
+      "typecheck": "Passed.",
+      "eslint": "Passed.",
+      "appIcons": "node scripts/check-app-icons.mjs passed: 78 icons, 2.90 MiB.",
+      "blenderOrientation": "Passed for 46 symbol scenes.",
+      "visualDetector": []
+    }
+  },
+  "findings": {
+    "material": [],
+    "documentation": "Corrected the stale DESIGN.md home-header description and documented the rounded heart source and rebuild command."
+  },
+  "verdict": "Accepted for the requested home-header extension; no material UI fixes identified.",
+  "verificationLimits": [
+    "Native XCTest uses the production header and BuyLifeSheet in an isolated in-memory game fixture; reopen coverage serializes and reparses the save, then remounts the header.",
+    "Finish review covers the supplied screenshots and source.",
+    "Physical devices, Android, large accessibility text, and screen-reader audio remain untested."
+  ]
+}

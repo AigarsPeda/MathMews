@@ -1,5 +1,6 @@
 /** Temporary character-moment checks. No answers, rewards or preferences are saved. */
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
+import type { PuzzleCatReaction } from "@/constants/puzzle-cat-reactions";
 import { useGame } from "@/contexts/GameProvider";
 import i18n from "@/i18n";
 import { getPuzzleCompanionMessage } from "@/utils/puzzle-companion";
@@ -15,14 +16,16 @@ function Button({ label, onPress }: { label: string; onPress: () => void }) {
 }
 export default function CompanionFixture() {
   const { puzzle = "1" } = useLocalSearchParams<{ puzzle?: string }>();
-  return <CompanionPage key={puzzle} pageNumber={Number(puzzle)} />;
+  const [run, setRun] = useState(0);
+  return <CompanionPage key={`${puzzle}-${run}`} pageNumber={Number(puzzle)} onReset={() => setRun(value => value + 1)} />;
 }
-function CompanionPage({ pageNumber }: { pageNumber: number }) {
+function CompanionPage({ pageNumber, onReset }: { pageNumber: number; onReset: () => void }) {
   const router = useRouter();
   const { pet } = useGame();
   const [english] = useState(() => i18n.cloneInstance({ lng: "en" }));
   const [latvian] = useState(() => i18n.cloneInstance({ lng: "lv" }));
   const [scenario, setScenario] = useState<Scenario>("progress");
+  const [reaction, setReaction] = useState<PuzzleCatReaction>();
   const [visible, setVisible] = useState(false);
   const [continued, setContinued] = useState(0);
   const [home, setHome] = useState(0);
@@ -38,11 +41,12 @@ function CompanionPage({ pageNumber }: { pageNumber: number }) {
   const boss = bossFinal || scenario === "stage";
   const message = getPuzzleCompanionMessage({ correct, kind: boss ? "boss" : "practice", finalStage: bossFinal,
     practiceFinished: false, replay: false, retries: correct ? 0 : 2, completedCount: 5, puzzleId: "fixture" });
-  function show(next: Scenario) { setAdvancing(false); setScenario(next); setVisible(true); }
+  function show(next: Scenario, clip?: PuzzleCatReaction) { setReaction(clip); setAdvancing(false); setScenario(next); setVisible(true); }
   return <I18nextProvider i18n={language}><SafeAreaView style={{ flex: 1, backgroundColor: "#FFF5EB" }}>
     <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
       <Text style={{ fontSize: 24, fontWeight: "800" }}>Companion check</Text>
       <Text>{`Puzzle ${puzzleNumber}`}</Text>
+      <Button label="Reset companion check" onPress={onReset} />
       <Button label="Next puzzle flow" onPress={()=>{show("progress");setAdvancing(true);}} />
       <Button label="Progress moment" onPress={()=>show("progress")} />
       <Button label="Retry moment" onPress={()=>show("retry")} />
@@ -50,11 +54,17 @@ function CompanionPage({ pageNumber }: { pageNumber: number }) {
       <Button label="Boss stage moment" onPress={()=>show("stage")} />
       <Button label="Latvian moment" onPress={()=>show("latvian")} />
       <Button label="Long hint moment" onPress={()=>show("long")} />
+      <Button label="High paw animation" onPress={()=>show("progress", "puzzleHighPaw")} />
+      <Button label="Proud animation" onPress={()=>show("progress", "puzzleProud")} />
+      <Button label="Bounce animation" onPress={()=>show("progress", "puzzleBounce")} />
+      <Button label="Oops animation" onPress={()=>show("retry", "puzzleOops")} />
+      <Button label="Think animation" onPress={()=>show("retry", "puzzleThink")} />
+      <Button label="Recover animation" onPress={()=>show("retry", "puzzleRecover")} />
       <Text>{`Continued ${continued}`}</Text><Text>{`Home ${home}`}</Text>
       <Button label="Back to game" onPress={()=>router.replace("/")} />
     </ScrollView>
     <ResultOverlay key={puzzleNumber} visible={visible} correct={correct} petType={pet.type} catSkinId={pet.catSkinId} petName="Minka"
-      petMood={correct ? "correct" : "idle"} encouragement={language.t(`puzzleCompanion.${message.key}`,{count:message.count})}
+      petMood={correct ? "correct" : "incorrect"} catReaction={reaction ?? message.reaction} encouragement={language.t(`puzzleCompanion.${message.key}`,{count:message.count})}
       message={language.t(bossFinal ? "learning.bossComplete" : correct ? "play.greatJob" : "play.goodTry")}
       detail={scenario === "long" ? "Count each group once, then put them together. ".repeat(18) + "End of the clue." : correct ? "4 + 3 = 7." : "Count each group once, then put them together."}
       continueLabel={scenario === "stage" ? language.t("learning.nextStage") : undefined}

@@ -21,6 +21,7 @@ import {
   DEFAULT_PET,
   DEFAULT_PROGRESS,
   DEFAULT_WALLET,
+  MAX_LIVES,
 } from "@/constants/game";
 import { resolveAsleepOnLoad } from "@/pet-display/engine/derive-mood";
 import type {
@@ -196,18 +197,18 @@ function normalizePetProfile(pet: Record<string, unknown>): PetProfile {
 }
 
 function normalizeLives(value: unknown): LivesState {
-  if (!isRecord(value) || typeof value.current !== "number") {
+  if (!isRecord(value) || typeof value.current !== "number" || !Number.isFinite(value.current)) {
     return createDefaultLives();
   }
 
   const nextRegenAt =
-    value.nextRegenAt === null || typeof value.nextRegenAt === "number"
+    value.nextRegenAt === null || typeof value.nextRegenAt === "number" && Number.isFinite(value.nextRegenAt)
       ? value.nextRegenAt
       : null;
 
   return applyLifeRegen(
     {
-      current: value.current,
+      current: Math.min(MAX_LIVES, Math.max(0, Math.floor(value.current))),
       nextRegenAt,
     },
     Date.now(),

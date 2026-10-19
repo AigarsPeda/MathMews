@@ -7,6 +7,7 @@ export const visualHelpEn = {
   lockedHint: "Unlock a short walkthrough that teaches how to think about this kind of problem.",
   unlockPrice: "{{cost}} coins — unlock forever",
   unlockButton: "Unlock picture help · {{cost}} 🪙",
+  compactButton: "Picture help",
   watchButton: "Watch picture help",
   needCoins: "Need {{cost}} coins. You have {{coins}} 🪙",
   a11yOpen: "Open picture help",

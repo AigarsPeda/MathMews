@@ -1,0 +1,50 @@
+[
+  {
+    "clip": "puzzleHighPaw",
+    "duration": 3.5,
+    "frames": 43,
+    "reviewFps": 12,
+    "portraitSamples": 25,
+    "source": "shipped GLB"
+  },
+  {
+    "clip": "puzzleProud",
+    "duration": 3.5,
+    "frames": 43,
+    "reviewFps": 12,
+    "portraitSamples": 25,
+    "source": "shipped GLB"
+  },
+  {
+    "clip": "puzzleBounce",
+    "duration": 3.25,
+    "frames": 40,
+    "reviewFps": 12,
+    "portraitSamples": 25,
+    "source": "shipped GLB"
+  },
+  {
+    "clip": "puzzleOops",
+    "duration": 3.5,
+    "frames": 43,
+    "reviewFps": 12,
+    "portraitSamples": 25,
+    "source": "shipped GLB"
+  },
+  {
+    "clip": "puzzleThink",
+    "duration": 4.0,
+    "frames": 49,
+    "reviewFps": 12,
+    "portraitSamples": 25,
+    "source": "shipped GLB"
+  },
+  {
+    "clip": "puzzleRecover",
+    "duration": 4.0,
+    "frames": 49,
+    "reviewFps": 12,
+    "portraitSamples": 25,
+    "source": "shipped GLB"
+  }
+]

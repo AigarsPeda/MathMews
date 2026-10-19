@@ -4,6 +4,7 @@ import { ROOM_ONE_SHOT_CLIPS } from "@/constants/cat-room-motion";
 import type { BoxPlayAnimationId } from "@/constants/cat-box-play";
 import { CAT_ANIMATION_CLIPS, type CatAnimationId } from "@/constants/cat-animation-clips";
 import type { PetAnimationState } from "@/types/game";
+import type { PuzzleCatReaction } from "@/constants/puzzle-cat-reactions";
 import type { PetMediaRegistry, PetMediaScenario, PetMediaSegment, BuiltInPetScenarioId, } from "@/pet-display/types";
 function modelSegment(animationId: CatAnimationId, options: {
   loop?: boolean;
@@ -88,6 +89,9 @@ export function createRoomActivitySegment(animationId: CatRoomAnimation, reverse
   return modelSegment(animationId, {
     loop: !ROOM_ONE_SHOT_CLIPS.includes(animationId), reverse, fps,
   });
+}
+export function createPuzzleReactionSegment(animationId: PuzzleCatReaction): PetMediaSegment {
+  return modelSegment(animationId, { loop: false });
 }
 export function createBoxPlaySegment(animationId: BoxPlayAnimationId): PetMediaSegment {
   return modelSegment(animationId, {

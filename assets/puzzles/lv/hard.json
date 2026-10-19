@@ -35,16 +35,16 @@
     ],
     "type": "target_build",
     "topic": "operations",
-    "question": "Saglabā skaitļu secību. Reizini un dali pirms saskaitīšanas vai atņemšanas.",
+    "question": "Kuras darbības ļauj iegūt mērķa skaitli? Saglabā skaitļu secību.",
     "hint": "Vispirms mēģini sareizināt pēdējos divus skaitļus.",
-    "explanation": "7 + 8 × 9 = 79.",
+    "explanation": "11 + 7 × 12 = 95.",
     "payload": {
       "numbers": [
+        11,
         7,
-        8,
-        9
+        12
       ],
-      "target": 79,
+      "target": 95,
       "solution": [
         "+",
         "×"
@@ -63,14 +63,14 @@
     "correctIndex": 0,
     "question": "Izvēlies likumu, kas ievadi pārvērš izvadē.",
     "hint": "Pārbaudi visu likumu norādītajā secībā.",
-    "explanation": "9 × 8 + 7 = 79.",
+    "explanation": "16 × 6 + 5 = 101.",
     "payload": {
-      "input": 9,
-      "output": 79,
+      "input": 16,
+      "output": 101,
       "choices": [
-        "×8+7",
-        "×8",
-        "+8"
+        "×6+5",
+        "×6",
+        "+6"
       ]
     }
   },
@@ -86,10 +86,10 @@
     "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
-    "explanation": "16 < 79.",
+    "explanation": "34 < 118.",
     "payload": {
-      "optionA": "72 ÷ 8 + 7",
-      "optionB": "72 + 7"
+      "optionA": "105 ÷ 5 + 13",
+      "optionB": "105 + 13"
     }
   },
   {
@@ -128,16 +128,16 @@
     ],
     "type": "target_build",
     "topic": "operations",
-    "question": "Saglabā skaitļu secību. Reizini un dali pirms saskaitīšanas vai atņemšanas.",
+    "question": "Kuras darbības ļauj iegūt mērķa skaitli? Saglabā skaitļu secību.",
     "hint": "Vispirms mēģini sareizināt pēdējos divus skaitļus.",
-    "explanation": "9 + 6 × 16 = 105.",
+    "explanation": "14 + 9 × 12 = 122.",
     "payload": {
       "numbers": [
+        14,
         9,
-        6,
-        16
+        12
       ],
-      "target": 105,
+      "target": 122,
       "solution": [
         "+",
         "×"
@@ -156,14 +156,14 @@
     "correctIndex": 0,
     "question": "Izvēlies likumu, kas ievadi pārvērš izvadē.",
     "hint": "Pārbaudi visu likumu norādītajā secībā.",
-    "explanation": "16 × 6 + 9 = 105.",
+    "explanation": "12 × 12 + 7 = 151.",
     "payload": {
-      "input": 16,
-      "output": 105,
+      "input": 12,
+      "output": 151,
       "choices": [
-        "×6+9",
-        "×6",
-        "+6"
+        "×12+7",
+        "×12",
+        "+12"
       ]
     }
   },
@@ -179,10 +179,10 @@
     "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
-    "explanation": "25 < 105.",
+    "explanation": "20 < 140.",
     "payload": {
-      "optionA": "96 ÷ 6 + 9",
-      "optionB": "96 + 9"
+      "optionA": "132 ÷ 11 + 8",
+      "optionB": "132 + 8"
     }
   },
   {
@@ -217,14 +217,14 @@
     "correctIndex": 0,
     "question": "Izvēlies tikpat lielu daļu.",
     "hint": "Sadali katru daļu divās vienādās mazākās daļās.",
-    "explanation": "3/5 = 6/10.",
+    "explanation": "5/6 = 10/12.",
     "payload": {
-      "numerator": 3,
-      "denominator": 5,
+      "numerator": 5,
+      "denominator": 6,
       "choices": [
-        "6/10",
-        "3/10",
-        "6/5"
+        "10/12",
+        "5/12",
+        "10/6"
       ]
     }
   },
@@ -241,10 +241,10 @@
     "helpTemplate": "fraction_equivalent",
     "question": "Lentes ir vienāda garuma. Kurš iekrāsotais daudzums ir lielāks?",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "4/5 > 3/5.",
+    "explanation": "4/7 > 3/7.",
     "payload": {
-      "optionA": "3/5",
-      "optionB": "4/5"
+      "optionA": "3/7",
+      "optionB": "4/7"
     }
   },
   {
@@ -262,13 +262,13 @@
     "payload": {
       "pairs": [
         {
-          "numerator": 3,
-          "denominator": 5,
+          "numerator": 2,
+          "denominator": 9,
           "visual": "pie"
         },
         {
-          "numerator": 4,
-          "denominator": 5,
+          "numerator": 3,
+          "denominator": 9,
           "visual": "grid"
         }
       ]
@@ -306,14 +306,14 @@
     "correctIndex": 0,
     "question": "Izvēlies tikpat lielu daļu.",
     "hint": "Sadali katru daļu divās vienādās mazākās daļās.",
-    "explanation": "5/8 = 10/16.",
+    "explanation": "4/7 = 8/14.",
     "payload": {
-      "numerator": 5,
-      "denominator": 8,
+      "numerator": 4,
+      "denominator": 7,
       "choices": [
-        "10/16",
-        "5/16",
-        "10/8"
+        "8/14",
+        "4/14",
+        "8/7"
       ]
     }
   },
@@ -330,10 +330,10 @@
     "helpTemplate": "fraction_equivalent",
     "question": "Lentes ir vienāda garuma. Kurš iekrāsotais daudzums ir lielāks?",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "6/8 > 5/8.",
+    "explanation": "6/12 > 5/12.",
     "payload": {
-      "optionA": "5/8",
-      "optionB": "6/8"
+      "optionA": "5/12",
+      "optionB": "6/12"
     }
   },
   {
@@ -351,13 +351,13 @@
     "payload": {
       "pairs": [
         {
-          "numerator": 5,
-          "denominator": 8,
+          "numerator": 3,
+          "denominator": 10,
           "visual": "pie"
         },
         {
-          "numerator": 6,
-          "denominator": 8,
+          "numerator": 4,
+          "denominator": 10,
           "visual": "grid"
         }
       ]
@@ -373,9 +373,9 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Katrā solī izmanto ×3. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 162.",
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto ×3. Trūkstošais skaitlis ir 162.",
     "payload": {
       "sequence": [
         2,
@@ -386,7 +386,7 @@
       "choices": [
         "162",
         "163",
-        "165"
+        "164"
       ]
     }
   },
@@ -402,14 +402,14 @@
     "correctIndex": 0,
     "question": "Izvēlies šai mašīnai derīgu likumu.",
     "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
-    "explanation": "Likums ir ×3.",
+    "explanation": "Likums ir ÷4.",
     "payload": {
-      "input": 3,
-      "output": 9,
+      "input": 56,
+      "output": 14,
       "choices": [
-        "×3",
-        "×4",
-        "×5"
+        "÷4",
+        "−4",
+        "÷5"
       ]
     }
   },
@@ -420,25 +420,17 @@
       10,
       12
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "27",
+      "28",
+      "29"
+    ],
     "correctIndex": 0,
-    "question": "Katrā solī izmanto ×3. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 324.",
-    "payload": {
-      "sequence": [
-        4,
-        12,
-        36,
-        108
-      ],
-      "choices": [
-        "324",
-        "325",
-        "327"
-      ]
-    }
+    "question": "Kurš skaitlis iederas tukšajā vietā? 243, 81, ?, 9, 3.",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto ÷3. Trūkstošais skaitlis ir 27."
   },
   {
     "id": "v2-hard-patterns-multiply-4",
@@ -450,20 +442,20 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Katrā solī izmanto ×3. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 486.",
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto −7. Trūkstošais skaitlis ir 37.",
     "payload": {
       "sequence": [
-        6,
-        18,
-        54,
-        162
+        65,
+        58,
+        51,
+        44
       ],
       "choices": [
-        "486",
-        "487",
-        "489"
+        "37",
+        "38",
+        "39"
       ]
     }
   },
@@ -477,9 +469,9 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Katrā solī izmanto ×4. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 768.",
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto ×4. Trūkstošais skaitlis ir 768.",
     "payload": {
       "sequence": [
         3,
@@ -490,7 +482,7 @@
       "choices": [
         "768",
         "769",
-        "772"
+        "770"
       ]
     }
   },
@@ -506,14 +498,14 @@
     "correctIndex": 0,
     "question": "Izvēlies šai mašīnai derīgu likumu.",
     "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
-    "explanation": "Likums ir ×4.",
+    "explanation": "Likums ir +8.",
     "payload": {
-      "input": 4,
-      "output": 16,
+      "input": 17,
+      "output": 25,
       "choices": [
-        "×4",
-        "×5",
-        "×6"
+        "+8",
+        "+9",
+        "+10"
       ]
     }
   },
@@ -524,25 +516,17 @@
       10,
       12
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "24",
+      "25",
+      "26"
+    ],
     "correctIndex": 0,
-    "question": "Katrā solī izmanto ×4. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 1536.",
-    "payload": {
-      "sequence": [
-        6,
-        24,
-        96,
-        384
-      ],
-      "choices": [
-        "1536",
-        "1537",
-        "1540"
-      ]
-    }
+    "question": "Kurš skaitlis iederas tukšajā vietā? 6, 12, ?, 48, 96.",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto ×2. Trūkstošais skaitlis ir 24."
   },
   {
     "id": "v2-hard-patterns-scale-4",
@@ -554,20 +538,20 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Katrā solī izmanto ×4. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 2304.",
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +9. Trūkstošais skaitlis ir 47.",
     "payload": {
       "sequence": [
-        9,
-        36,
-        144,
-        576
+        11,
+        20,
+        29,
+        38
       ],
       "choices": [
-        "2304",
-        "2305",
-        "2308"
+        "47",
+        "48",
+        "49"
       ]
     }
   },
@@ -601,15 +585,15 @@
     "type": "multiple_choice",
     "topic": "fractions",
     "choices": [
-      "60",
-      "100",
-      "61"
+      "120",
+      "180",
+      "121"
     ],
     "correctIndex": 0,
-    "helpTemplate": "percent_discount",
-    "question": "80 monētu rotaļlietai ir 25% atlaide. Kāda ir jaunā cena?",
+    "helpTemplate": "percent_fifth_discount",
+    "question": "150 monētu rotaļlietai ir 20% atlaide. Kāda ir jaunā cena?",
     "hint": "Atrodi atlaides summu un tad to atņem.",
-    "explanation": "80 − 20 = 60 monētas."
+    "explanation": "150 − 30 = 120 monētas."
   },
   {
     "id": "v2-hard-percentages-quarters-3",
@@ -621,12 +605,12 @@
     "type": "true_false",
     "topic": "fractions",
     "isTrue": true,
-    "helpTemplate": "percent_of",
+    "helpTemplate": "percent_tenth",
     "question": "Pārbaudi apgalvojumu par procentiem.",
     "hint": "Visu procentu daudzumu attēlo ar simtu.",
-    "explanation": "Pareizi. 25% no 80 ir 20.",
+    "explanation": "Pareizi. 10% no 90 ir 9.",
     "payload": {
-      "statement": "25% × 80 = 20"
+      "statement": "10% × 90 = 9"
     }
   },
   {
@@ -639,18 +623,18 @@
     "type": "fix_mistake",
     "topic": "fractions",
     "correctIndex": 0,
-    "helpTemplate": "percent_discount",
-    "question": "Minka atlaidi pieskaitīja. Izlabo cenu ar atlaidi.",
+    "helpTemplate": "percent_half_discount",
+    "question": "200 monētu rotaļlietai ir 50% atlaide. Kura cena ar atlaidi ir pareiza?",
     "hint": "Atlaide samazina sākotnējo cenu.",
-    "explanation": "80 − 20 = 60.",
+    "explanation": "200 − 100 = 100.",
     "payload": {
       "wrongWork": [
-        "80 + 20 = 100"
+        "200 + 100 = 300"
       ],
       "choices": [
-        "60",
         "100",
-        "62"
+        "300",
+        "102"
       ]
     }
   },
@@ -684,15 +668,15 @@
     "type": "multiple_choice",
     "topic": "fractions",
     "choices": [
-      "96",
-      "144",
-      "97"
+      "120",
+      "200",
+      "121"
     ],
     "correctIndex": 0,
-    "helpTemplate": "percent_fifth_discount",
-    "question": "120 monētu rotaļlietai ir 20% atlaide. Kāda ir jaunā cena?",
+    "helpTemplate": "percent_discount",
+    "question": "160 monētu rotaļlietai ir 25% atlaide. Kāda ir jaunā cena?",
     "hint": "Atrodi atlaides summu un tad to atņem.",
-    "explanation": "120 − 24 = 96 monētas."
+    "explanation": "160 − 40 = 120 monētas."
   },
   {
     "id": "v2-hard-percentages-discounts-3",
@@ -704,12 +688,12 @@
     "type": "true_false",
     "topic": "fractions",
     "isTrue": true,
-    "helpTemplate": "percent_fifth",
+    "helpTemplate": "percent_half",
     "question": "Pārbaudi apgalvojumu par procentiem.",
     "hint": "Visu procentu daudzumu attēlo ar simtu.",
-    "explanation": "Pareizi. 20% no 120 ir 24.",
+    "explanation": "Pareizi. 50% no 70 ir 35.",
     "payload": {
-      "statement": "20% × 120 = 24"
+      "statement": "50% × 70 = 35"
     }
   },
   {
@@ -722,18 +706,18 @@
     "type": "fix_mistake",
     "topic": "fractions",
     "correctIndex": 0,
-    "helpTemplate": "percent_fifth_discount",
-    "question": "Minka atlaidi pieskaitīja. Izlabo cenu ar atlaidi.",
+    "helpTemplate": "percent_tenth_discount",
+    "question": "250 monētu rotaļlietai ir 10% atlaide. Kura cena ar atlaidi ir pareiza?",
     "hint": "Atlaide samazina sākotnējo cenu.",
-    "explanation": "120 − 24 = 96.",
+    "explanation": "250 − 25 = 225.",
     "payload": {
       "wrongWork": [
-        "120 + 24 = 144"
+        "250 + 25 = 275"
       ],
       "choices": [
-        "96",
-        "144",
-        "98"
+        "225",
+        "275",
+        "227"
       ]
     }
   },
@@ -755,7 +739,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 8,
-      "columns": 6
+      "columns": 6,
+      "object": "planting_tile"
     },
     "question": "Dārzā ir 8 rindas, katrā 6 kvadrātveida stādvietas. Cik stādvietu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
@@ -771,15 +756,15 @@
     "type": "multiple_choice",
     "topic": "operations",
     "choices": [
-      "64",
-      "50",
-      "96"
+      "90",
+      "62",
+      "120"
     ],
     "correctIndex": 0,
     "helpTemplate": "rate",
-    "question": "48 grami māla piepilda 6 vienādus maisiņus. Cik gramu vajag 8 maisiņiem?",
+    "question": "60 grami māla piepilda 4 vienādus maisiņus. Cik gramu vajag 6 maisiņiem?",
     "hint": "Vispirms atrodi daudzumu vienam maisiņam.",
-    "explanation": "48 ÷ 6 × 8 = 64 grami."
+    "explanation": "60 ÷ 4 × 6 = 90 grami."
   },
   {
     "id": "v2-hard-measurement-area-3",
@@ -791,15 +776,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "Noapaļo katru daudzumu līdz tuvākajam desmitam un saskaiti.",
+    "question": "Kāda ir summa, noapaļojot līdz tuvākajam desmitam?",
     "hint": "Pievērs uzmanību visas atbildes lielumam.",
-    "explanation": "Saskaiti abus noapaļotos daudzumus.",
+    "explanation": "Summa ir 129, noapaļojot iegūst 130.",
     "payload": {
-      "expression": "49 + 50",
+      "expression": "64 + 65",
       "choices": [
-        "Aptuveni 100",
-        "Aptuveni 144",
-        "Aptuveni 192"
+        "Aptuveni 130",
+        "Aptuveni 189",
+        "Aptuveni 252"
       ]
     }
   },
@@ -816,14 +801,14 @@
     "helpTemplate": "multiplication",
     "question": "Atrodi trūkstošo vienādo rindu skaitu.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "8 × 6 = 48.",
+    "explanation": "11 × 5 = 55.",
     "payload": {
-      "leftDisplay": "? × 6",
-      "rightValue": 48,
+      "leftDisplay": "? × 5",
+      "rightValue": 55,
       "choices": [
-        "8",
-        "9",
-        "10"
+        "11",
+        "12",
+        "13"
       ]
     }
   },
@@ -845,7 +830,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 12,
-      "columns": 5
+      "columns": 5,
+      "object": "planting_tile"
     },
     "question": "Dārzā ir 12 rindas, katrā 5 kvadrātveida stādvietas. Cik stādvietu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
@@ -861,15 +847,15 @@
     "type": "multiple_choice",
     "topic": "operations",
     "choices": [
-      "84",
-      "62",
-      "120"
+      "90",
+      "56",
+      "108"
     ],
     "correctIndex": 0,
     "helpTemplate": "rate",
-    "question": "60 grami māla piepilda 5 vienādus maisiņus. Cik gramu vajag 7 maisiņiem?",
+    "question": "54 grami māla piepilda 3 vienādus maisiņus. Cik gramu vajag 5 maisiņiem?",
     "hint": "Vispirms atrodi daudzumu vienam maisiņam.",
-    "explanation": "60 ÷ 5 × 7 = 84 grami."
+    "explanation": "54 ÷ 3 × 5 = 90 grami."
   },
   {
     "id": "v2-hard-measurement-rates-3",
@@ -881,15 +867,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "Noapaļo katru daudzumu līdz tuvākajam desmitam un saskaiti.",
+    "question": "Kāda ir summa, noapaļojot līdz tuvākajam desmitam?",
     "hint": "Pievērs uzmanību visas atbildes lielumam.",
-    "explanation": "Saskaiti abus noapaļotos daudzumus.",
+    "explanation": "Summa ir 179, noapaļojot iegūst 180.",
     "payload": {
-      "expression": "61 + 62",
+      "expression": "89 + 90",
       "choices": [
-        "Aptuveni 120",
         "Aptuveni 180",
-        "Aptuveni 240"
+        "Aptuveni 264",
+        "Aptuveni 352"
       ]
     }
   },
@@ -906,14 +892,14 @@
     "helpTemplate": "multiplication",
     "question": "Atrodi trūkstošo vienādo rindu skaitu.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "12 × 5 = 60.",
+    "explanation": "9 × 7 = 63.",
     "payload": {
-      "leftDisplay": "? × 5",
-      "rightValue": 60,
+      "leftDisplay": "? × 7",
+      "rightValue": 63,
       "choices": [
-        "12",
-        "13",
-        "14"
+        "9",
+        "10",
+        "11"
       ]
     }
   },
@@ -947,11 +933,12 @@
     "type": "true_false",
     "topic": "multiplication",
     "isTrue": false,
-    "question": "Kaķis saka, ka reizināšana pozitīvu veselu skaitli vienmēr palielina. Vai tā ir?",
+    "question": "Divu pozitīvu veselu skaitļu reizinājums vienmēr ir lielāks par abiem skaitļiem. Vai tā ir?",
     "hint": "Kas notiek, reizinot ar vienu?",
     "explanation": "Nepareizi. 20 × 1 = 20, tātad tas nemainās.",
     "payload": {
-      "statement": "20 × 1 > 20"
+      "statement": "20 × 1 > 20",
+      "hideStatement": true
     }
   },
   {
@@ -965,19 +952,19 @@
     "topic": "comparison",
     "question": "Sakārto norādes no mazākās līdz lielākajai.",
     "hint": "Pirms pārvietošanas salīdzini skaitļus.",
-    "explanation": "20 < 22 < 26 < 28.",
+    "explanation": "31 < 33 < 37 < 39.",
     "payload": {
       "numbers": [
-        28,
-        22,
-        26,
-        20
+        39,
+        33,
+        37,
+        31
       ],
       "correctOrder": [
-        20,
-        22,
-        26,
-        28
+        31,
+        33,
+        37,
+        39
       ]
     }
   },
@@ -991,15 +978,15 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "21",
-      "19",
-      "18"
+      "49",
+      "47",
+      "46"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
-    "question": "Kastē ir mazāk nekā 20 bumbiņas. Kurš daudzums nav iespējams?",
+    "question": "Kastē ir mazāk nekā 48 bumbiņas. Kurš daudzums nav iespējams?",
     "hint": "Pārbaudi katru daudzumu pret nosacījumu “mazāk nekā”.",
-    "explanation": "21 ir lielāks par 20."
+    "explanation": "49 ir lielāks par 48."
   },
   {
     "id": "v2-hard-logic-claims-1",
@@ -1029,13 +1016,14 @@
       12
     ],
     "type": "true_false",
-    "topic": "multiplication",
-    "isTrue": false,
-    "question": "Kaķis saka, ka reizināšana pozitīvu veselu skaitli vienmēr palielina. Vai tā ir?",
-    "hint": "Kas notiek, reizinot ar vienu?",
-    "explanation": "Nepareizi. 40 × 1 = 40, tātad tas nemainās.",
+    "topic": "subtraction",
+    "isTrue": true,
+    "question": "Atņemot pozitīvu veselu skaitli, rezultāts vienmēr ir mazāks. Vai tā ir?",
+    "hint": "Padomā, kas mainās, atņemot pozitīvu daudzumu.",
+    "explanation": "Pareizi. Piemēram, 57 − 7 = 50, kas ir mazāks par 57.",
     "payload": {
-      "statement": "40 × 1 > 40"
+      "statement": "57 > 57 − 7",
+      "hideStatement": true
     }
   },
   {
@@ -1049,19 +1037,19 @@
     "topic": "comparison",
     "question": "Sakārto norādes no mazākās līdz lielākajai.",
     "hint": "Pirms pārvietošanas salīdzini skaitļus.",
-    "explanation": "40 < 42 < 46 < 48.",
+    "explanation": "65 < 67 < 71 < 73.",
     "payload": {
       "numbers": [
-        48,
-        42,
-        46,
-        40
+        73,
+        67,
+        71,
+        65
       ],
       "correctOrder": [
-        40,
-        42,
-        46,
-        48
+        65,
+        67,
+        71,
+        73
       ]
     }
   },
@@ -1075,15 +1063,15 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "41",
-      "39",
-      "38"
+      "84",
+      "82",
+      "81"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
-    "question": "Kastē ir mazāk nekā 40 bumbiņas. Kurš daudzums nav iespējams?",
+    "question": "Kastē ir mazāk nekā 83 bumbiņas. Kurš daudzums nav iespējams?",
     "hint": "Pārbaudi katru daudzumu pret nosacījumu “mazāk nekā”.",
-    "explanation": "41 ir lielāks par 40."
+    "explanation": "84 ir lielāks par 83."
   },
   {
     "id": "v2-hard-fractions-garden-1",
@@ -1114,12 +1102,13 @@
     ],
     "type": "fraction_build",
     "topic": "fractions",
-    "question": "Trīs ceturtdaļas ir ieplānotas puķēm. Iekrāso ceturtdaļu, kas atstāta takai.",
+    "question": "Trīs ceturtdaļas dārza paredzētas puķēm. Iekrāso takai atlikušo daļu.",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
     "explanation": "Viena no četrām vienādajām daļām ir atstāta takai.",
     "payload": {
       "numerator": 1,
-      "denominator": 4
+      "denominator": 4,
+      "hideTarget": true
     }
   },
   {
@@ -1168,17 +1157,23 @@
       10,
       12
     ],
-    "type": "multiple_choice",
+    "type": "fix_mistake",
     "topic": "subtraction",
-    "choices": [
-      "60",
-      "100",
-      "70"
-    ],
     "correctIndex": 0,
-    "question": "No 80 monētām atņem 20 monētu atlaidi. Kāda ir cena?",
+    "helpTemplate": "percent_discount",
+    "question": "Rotaļlieta maksā 80 monētas, un tai ir 20 monētu atlaide. Kura cena ar atlaidi ir pareiza?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "80 − 20 = 60 monētas."
+    "explanation": "80 − 20 = 60 monētas.",
+    "payload": {
+      "wrongWork": [
+        "80 + 20 = 100"
+      ],
+      "choices": [
+        "60",
+        "100",
+        "70"
+      ]
+    }
   },
   {
     "id": "v2-hard-percentages-shop-3",
@@ -1262,7 +1257,7 @@
     "type": "function_machine",
     "topic": "operations",
     "correctIndex": 0,
-    "question": "Sekotājs pārvērš 27 par 79. Izvēlies tā divu soļu likumu.",
+    "question": "Sekotājs pārvērš 27 par 79. Kurš likums der?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "27 × 3 − 2 = 79. Zvaigznes ir redzamas!",
     "payload": {
@@ -1312,16 +1307,16 @@
     "type": "function_machine",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Pastiprinātājs pārvērš 48 par 96. Kurš likums turpina signāla pieaugumu?",
+    "question": "Pastiprinātājs pārvērš 48 par 80. Kurš likums der?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
-    "explanation": "48 × 2 = 96. Pastiprinātājs darbojas.",
+    "explanation": "48 + 32 = 80. Pastiprinātājs darbojas.",
     "payload": {
       "input": 48,
-      "output": 96,
+      "output": 80,
       "choices": [
+        "+32",
         "×2",
-        "+2",
-        "×3"
+        "+24"
       ]
     }
   },
@@ -1332,24 +1327,17 @@
       10,
       12
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "20",
+      "30",
+      "40"
+    ],
     "correctIndex": 0,
-    "question": "Turpini to pašu signālu: 96, 192, 384. Kāds ir pēdējais impulss?",
-    "hint": "Saglabā to pašu reizinātāju.",
-    "explanation": "384 × 2 = 768. Ziņa sasniedz nākamo torni!",
-    "payload": {
-      "sequence": [
-        96,
-        192,
-        384
-      ],
-      "choices": [
-        "768",
-        "576",
-        "769"
-      ]
-    }
+    "question": "Pabeidz pārraides kodu. Kurš skaitlis trūkst? 80, 40, ?, 10, 5.",
+    "hint": "Meklē likumu, kas der visiem koda skaitļiem.",
+    "explanation": "80, 40, 20, 10, 5. Katrs skaitlis ir puse no iepriekšējā. Ziņa ir gatava!"
   },
   {
     "id": "v2-hard-measurement-shelter-1",
@@ -1400,7 +1388,7 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "Pienāk 81 flīze, tad 27 rezerves flīzes. Noapaļo katru piegādi līdz tuvākajam desmitam un aptuveni saskaiti.",
+    "question": "Pienāk 81 flīze un 27 rezerves flīzes. Kāds ir kopskaits, noapaļojot līdz tuvākajam desmitam?",
     "hint": "Pirms saskaitīšanas noapaļo katru piegādi atsevišķi.",
     "explanation": "80 + 30 = 110. Patvērumam pietiek krājumu!",
     "payload": {

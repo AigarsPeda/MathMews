@@ -10,6 +10,7 @@ const mocks = {
   'react/jsx-runtime': { jsx, jsxs: jsx },
   'react-native': { Pressable: 'Pressable', Text: 'Text', View: 'View', StyleSheet: { create: styles => styles } },
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
+  './PuzzleObjectImage': { PuzzleObjectCollection: 'PuzzleObjectCollection' },
   '@/constants/game': { GameColors: colors },
   '@/utils/scale': { moderateScale: value => value },
 };

@@ -2,6 +2,7 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { GameColors, HEADER_CHIP_SIZE } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -11,6 +12,7 @@ type CoinCounterProps = {
   streak?: number;
   compact?: boolean;
   onPress?: () => void;
+  homeAccessory?: ReactNode;
 };
 
 export function CoinCounter({
@@ -19,11 +21,12 @@ export function CoinCounter({
   streak = 0,
   compact = false,
   onPress,
+  homeAccessory,
 }: CoinCounterProps) {
   const { t } = useTranslation();
 
   if (layout === 'home') return <View style={styles.homeRow}>
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.homeMetric, styles.homeCoins, pressed && { opacity: .7 }]}
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.homeMetric, pressed && { opacity: .7 }]}
       accessibilityRole="button" accessibilityLabel={t('economy.a11yCoins', { coins })}>
       <Text style={styles.metricLabel}>{t('economy.coinsLabel')}</Text>
       <View style={styles.metricValueRow}>
@@ -39,6 +42,7 @@ export function CoinCounter({
         <Text style={[styles.streakValue, styles.homeValue]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.75}>{t('economy.streakDay', { count: streak })}</Text>
       </View>
     </View>
+    {homeAccessory ? <><View style={styles.metricDivider}/>{homeAccessory}</> : null}
   </View>;
 
   const content = (
@@ -89,8 +93,7 @@ export function CoinCounter({
 
 const styles = StyleSheet.create({
   homeRow: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center' },
-  homeMetric: { flex: 1, minWidth: 0, minHeight: 56, paddingHorizontal: moderateScale(12), paddingVertical: moderateScale(8), gap: moderateScale(3), justifyContent: 'center' },
-  homeCoins: { flex: 1.15 },
+  homeMetric: { flex: 1, minWidth: 0, minHeight: 56, paddingHorizontal: moderateScale(8), paddingVertical: moderateScale(8), gap: moderateScale(3), justifyContent: 'center' },
   metricLabel: { color: GameColors.textMuted, fontSize: moderateScale(11), fontWeight: '600' },
   metricValueRow: { flexDirection: 'row', alignItems: 'center', gap: moderateScale(5) },
   homeValue: { flexShrink: 1, minWidth: 0, fontSize: moderateScale(16) },

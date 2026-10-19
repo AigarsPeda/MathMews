@@ -33,6 +33,46 @@ def tile(label, color='teal'):
 
 
 def heart(broken=False):
+    if not broken:
+        # A continuous, inflated surface reads as a soft 3D object even at 20px.
+        # Rings meet at the silhouette, with domed front and back faces.
+        segments, rings = 96, 20
+        vertices, faces = [], []
+        for j in range(1, rings):
+            latitude = math.pi*j/rings
+            radius = math.sin(latitude)
+            for i in range(segments):
+                t = math.tau*i/segments
+                x = 16*math.sin(t)**3/22
+                z = (13*math.cos(t)-5*math.cos(2*t)-2*math.cos(3*t)-math.cos(4*t))/22
+                vertices.append((radius*x, -.29*math.cos(latitude), .87+radius*z))
+        for j in range(rings-2):
+            for i in range(segments):
+                a, b = j*segments+i, j*segments+(i+1)%segments
+                faces.append((a,b,b+segments,a+segments))
+        front, back = len(vertices), len(vertices)+1
+        vertices.extend([(0,-.29,.87),(0,.29,.87)])
+        for i in range(segments):
+            n = (i+1)%segments
+            faces.append((front,n,i))
+            a, b = (rings-2)*segments+i, (rings-2)*segments+n
+            faces.append((back,a,b))
+        mesh = bpy.data.meshes.new('Inflated heart surface')
+        mesh.from_pydata(vertices, [], faces)
+        mesh.update()
+        for polygon in mesh.polygons:
+            polygon.use_smooth = True
+        obj = bpy.data.objects.new('Soft coral life heart', mesh)
+        bpy.context.collection.objects.link(obj)
+        art.finish(obj, obj.name, 'coral')
+        # Recalculate the closed surface's normals for consistent soft lighting.
+        bpy.context.view_layer.objects.active = obj
+        obj.select_set(True)
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.normals_make_consistent(inside=False)
+        bpy.ops.object.mode_set(mode='OBJECT')
+        return
     pts=[]
     for i in range(80):
         t=math.tau*i/80

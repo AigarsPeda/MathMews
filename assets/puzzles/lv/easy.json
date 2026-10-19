@@ -38,10 +38,11 @@
     "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
-    "explanation": "8 > 3.",
+    "explanation": "10 > 5.",
     "payload": {
-      "optionA": "3",
-      "optionB": "8"
+      "optionA": "5",
+      "optionB": "10",
+      "object": "mouse"
     }
   },
   {
@@ -54,15 +55,15 @@
     "type": "multiple_choice",
     "topic": "comparison",
     "choices": [
-      "3",
-      "1",
-      "8"
+      "6",
+      "2",
+      "11"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
-    "question": "Kurš skaitlis ir starp 1 un 6?",
+    "question": "Kurš skaitlis ir starp 2 un 8?",
     "hint": "Robežskaitļi nav starp pašiem sevi.",
-    "explanation": "1 < 3 < 6."
+    "explanation": "2 < 6 < 8."
   },
   {
     "id": "v2-easy-numbers-small-4",
@@ -75,13 +76,13 @@
     "topic": "addition",
     "question": "Veic lēcienu uz priekšu.",
     "hint": "Sāc pie atzīmētā skaitļa un skaiti uz priekšu.",
-    "explanation": "1 + 3 = 4.",
+    "explanation": "3 + 4 = 7.",
     "payload": {
-      "start": 1,
-      "jump": 3,
+      "start": 3,
+      "jump": 4,
       "min": 0,
-      "max": 11,
-      "correctValue": 4
+      "max": 13,
+      "correctValue": 7
     }
   },
   {
@@ -123,10 +124,11 @@
     "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
-    "explanation": "19 > 7.",
+    "explanation": "18 > 6.",
     "payload": {
-      "optionA": "7",
-      "optionB": "19"
+      "optionA": "6",
+      "optionB": "18",
+      "object": "mouse"
     }
   },
   {
@@ -139,15 +141,15 @@
     "type": "multiple_choice",
     "topic": "comparison",
     "choices": [
-      "7",
-      "4",
-      "19"
+      "9",
+      "5",
+      "20"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
-    "question": "Kurš skaitlis ir starp 4 un 12?",
+    "question": "Kurš skaitlis ir starp 5 un 16?",
     "hint": "Robežskaitļi nav starp pašiem sevi.",
-    "explanation": "4 < 7 < 12."
+    "explanation": "5 < 9 < 16."
   },
   {
     "id": "v2-easy-numbers-tens-4",
@@ -165,7 +167,7 @@
       "start": 4,
       "jump": 7,
       "min": 0,
-      "max": 26,
+      "max": 20,
       "correctValue": 11
     }
   },
@@ -187,7 +189,8 @@
     "taskVisual": {
       "kind": "join",
       "left": 4,
-      "right": 3
+      "right": 3,
+      "object": "ribbon"
     },
     "question": "Kaķis saliek 4 sarkanas un 3 zilas lentes. Cik lenšu kopā?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
@@ -204,15 +207,15 @@
     "topic": "equality",
     "correctIndex": 0,
     "question": "Aizpildi trūkstošo summas daļu.",
-    "hint": "Kas jāpieskaita 4, lai iegūtu 7?",
-    "explanation": "4 + 3 = 7.",
+    "hint": "Kas jāpieskaita 5, lai iegūtu 11?",
+    "explanation": "5 + 6 = 11.",
     "payload": {
-      "leftDisplay": "4 + ?",
-      "rightValue": 7,
+      "leftDisplay": "5 + ?",
+      "rightValue": 11,
       "choices": [
-        "3",
-        "4",
-        "5"
+        "6",
+        "7",
+        "8"
       ]
     }
   },
@@ -225,19 +228,19 @@
     ],
     "type": "pair_sum",
     "topic": "mental_math",
-    "question": "Izvēlies divas kartītes, kuru summa ir 7.",
+    "question": "Izvēlies divas kartītes, kuru summa ir 15.",
     "hint": "Izvēlies skaitli un atrodi tā trūkstošo pārinieku.",
-    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 7.",
+    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 15.",
     "payload": {
       "numbers": [
-        4,
-        3,
-        1,
         6,
+        9,
+        1,
+        14,
         2,
-        5
+        13
       ],
-      "target": 7,
+      "target": 15,
       "correctIndices": [
         0,
         1
@@ -256,15 +259,15 @@
     "correctIndex": 0,
     "question": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
-    "explanation": "Summa ir 7, nevis 6.",
+    "explanation": "Summa ir 12, nevis 11.",
     "payload": {
       "wrongWork": [
-        "4 + 3 = 6"
+        "7 + 5 = 11"
       ],
       "choices": [
-        "4 + 3 = 7",
-        "4 + 3 = 8",
-        "4 + 3 = 9"
+        "7 + 5 = 12",
+        "7 + 5 = 13",
+        "7 + 5 = 14"
       ]
     }
   },
@@ -286,7 +289,8 @@
     "taskVisual": {
       "kind": "join",
       "left": 8,
-      "right": 5
+      "right": 5,
+      "object": "ribbon"
     },
     "question": "Kaķis saliek 8 sarkanas un 5 zilas lentes. Cik lenšu kopā?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
@@ -303,15 +307,15 @@
     "topic": "equality",
     "correctIndex": 0,
     "question": "Aizpildi trūkstošo summas daļu.",
-    "hint": "Kas jāpieskaita 8, lai iegūtu 13?",
-    "explanation": "8 + 5 = 13.",
+    "hint": "Kas jāpieskaita 9, lai iegūtu 16?",
+    "explanation": "9 + 7 = 16.",
     "payload": {
-      "leftDisplay": "8 + ?",
-      "rightValue": 13,
+      "leftDisplay": "9 + ?",
+      "rightValue": 16,
       "choices": [
-        "5",
-        "6",
-        "7"
+        "7",
+        "8",
+        "9"
       ]
     }
   },
@@ -324,19 +328,19 @@
     ],
     "type": "pair_sum",
     "topic": "mental_math",
-    "question": "Izvēlies divas kartītes, kuru summa ir 13.",
+    "question": "Izvēlies divas kartītes, kuru summa ir 18.",
     "hint": "Izvēlies skaitli un atrodi tā trūkstošo pārinieku.",
-    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 13.",
+    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 18.",
     "payload": {
       "numbers": [
-        8,
-        5,
+        7,
+        11,
         1,
-        12,
+        17,
         2,
-        11
+        16
       ],
-      "target": 13,
+      "target": 18,
       "correctIndices": [
         0,
         1
@@ -355,15 +359,15 @@
     "correctIndex": 0,
     "question": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?",
     "hint": "Vai vari vispirms izveidot pilnu desmitu?",
-    "explanation": "Summa ir 13, nevis 12.",
+    "explanation": "Summa ir 14, nevis 13.",
     "payload": {
       "wrongWork": [
-        "8 + 5 = 12"
+        "6 + 8 = 13"
       ],
       "choices": [
-        "8 + 5 = 13",
-        "8 + 5 = 14",
-        "8 + 5 = 15"
+        "6 + 8 = 14",
+        "6 + 8 = 15",
+        "6 + 8 = 16"
       ]
     }
   },
@@ -385,7 +389,8 @@
     "taskVisual": {
       "kind": "take_away",
       "left": 9,
-      "right": 3
+      "right": 3,
+      "object": "star"
     },
     "question": "Ir 9 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek kastē?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
@@ -402,13 +407,13 @@
     "topic": "subtraction",
     "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
     "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "9 − 3 = 6.",
+    "explanation": "12 − 5 = 7.",
     "payload": {
-      "start": 9,
-      "jump": -3,
+      "start": 12,
+      "jump": -5,
       "min": 0,
-      "max": 12,
-      "correctValue": 6
+      "max": 15,
+      "correctValue": 7
     }
   },
   {
@@ -423,9 +428,9 @@
     "isTrue": false,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 9 − 3 = 6.",
+    "explanation": "Nepareizi. 15 − 6 = 9.",
     "payload": {
-      "statement": "9 − 3 = 7"
+      "statement": "15 − 6 = 10"
     }
   },
   {
@@ -440,15 +445,15 @@
     "correctIndex": 0,
     "question": "Kurš aprēķins izlabo Minkas darbu?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 3, paliek 6.",
+    "explanation": "Atņem 8, paliek 10.",
     "payload": {
       "wrongWork": [
-        "9 − 3 = 5"
+        "18 − 8 = 9"
       ],
       "choices": [
-        "9 − 3 = 6",
-        "9 − 3 = 8",
-        "9 + 3 = 12"
+        "18 − 8 = 10",
+        "18 − 8 = 12",
+        "18 + 8 = 26"
       ]
     }
   },
@@ -470,7 +475,8 @@
     "taskVisual": {
       "kind": "take_away",
       "left": 14,
-      "right": 6
+      "right": 6,
+      "object": "star"
     },
     "question": "Ir 14 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
@@ -487,13 +493,13 @@
     "topic": "subtraction",
     "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
     "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "14 − 6 = 8.",
+    "explanation": "17 − 8 = 9.",
     "payload": {
-      "start": 14,
-      "jump": -6,
+      "start": 17,
+      "jump": -8,
       "min": 0,
-      "max": 17,
-      "correctValue": 8
+      "max": 20,
+      "correctValue": 9
     }
   },
   {
@@ -508,9 +514,9 @@
     "isTrue": false,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 14 − 6 = 8.",
+    "explanation": "Nepareizi. 20 − 7 = 13.",
     "payload": {
-      "statement": "14 − 6 = 9"
+      "statement": "20 − 7 = 14"
     }
   },
   {
@@ -525,15 +531,15 @@
     "correctIndex": 0,
     "question": "Kurš aprēķins izlabo Minkas darbu?",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 6, paliek 8.",
+    "explanation": "Atņem 4, paliek 12.",
     "payload": {
       "wrongWork": [
-        "14 − 6 = 7"
+        "16 − 4 = 11"
       ],
       "choices": [
-        "14 − 6 = 8",
-        "14 − 6 = 10",
-        "14 + 6 = 20"
+        "16 − 4 = 12",
+        "16 − 4 = 14",
+        "16 + 4 = 20"
       ]
     }
   },
@@ -547,9 +553,9 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Katrā solī izmanto +2. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 10.",
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +2. Trūkstošais skaitlis ir 10.",
     "payload": {
       "sequence": [
         2,
@@ -576,14 +582,14 @@
     "correctIndex": 0,
     "question": "Izvēlies šai mašīnai derīgu likumu.",
     "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
-    "explanation": "Likums ir +2.",
+    "explanation": "Likums ir +3.",
     "payload": {
-      "input": 3,
-      "output": 5,
+      "input": 7,
+      "output": 10,
       "choices": [
-        "+2",
         "+3",
-        "+4"
+        "+4",
+        "+5"
       ]
     }
   },
@@ -594,25 +600,17 @@
       6,
       8
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "12",
+      "13",
+      "14"
+    ],
     "correctIndex": 0,
-    "question": "Katrā solī izmanto +2. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 11.",
-    "payload": {
-      "sequence": [
-        3,
-        5,
-        7,
-        9
-      ],
-      "choices": [
-        "11",
-        "12",
-        "13"
-      ]
-    }
+    "question": "Kurš skaitlis iederas tukšajā vietā? 18, 15, ?, 9, 6.",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto −3. Trūkstošais skaitlis ir 12."
   },
   {
     "id": "v2-easy-patterns-jumps-4",
@@ -624,20 +622,20 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Katrā solī izmanto +2. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 12.",
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto −2. Trūkstošais skaitlis ir 7.",
     "payload": {
       "sequence": [
-        4,
-        6,
-        8,
-        10
+        15,
+        13,
+        11,
+        9
       ],
       "choices": [
-        "12",
-        "13",
-        "14"
+        "7",
+        "8",
+        "9"
       ]
     }
   },
@@ -651,9 +649,9 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Katrā solī izmanto +5. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 25.",
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +5. Trūkstošais skaitlis ir 25.",
     "payload": {
       "sequence": [
         5,
@@ -664,7 +662,7 @@
       "choices": [
         "25",
         "26",
-        "30"
+        "27"
       ]
     }
   },
@@ -680,14 +678,14 @@
     "correctIndex": 0,
     "question": "Izvēlies šai mašīnai derīgu likumu.",
     "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
-    "explanation": "Likums ir +5.",
+    "explanation": "Likums ir −4.",
     "payload": {
-      "input": 6,
-      "output": 11,
+      "input": 12,
+      "output": 8,
       "choices": [
-        "+5",
-        "+6",
-        "+7"
+        "−4",
+        "+4",
+        "−5"
       ]
     }
   },
@@ -698,25 +696,17 @@
       6,
       8
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "9",
+      "10",
+      "11"
+    ],
     "correctIndex": 0,
-    "question": "Katrā solī izmanto +5. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 26.",
-    "payload": {
-      "sequence": [
-        6,
-        11,
-        16,
-        21
-      ],
-      "choices": [
-        "26",
-        "27",
-        "31"
-      ]
-    }
+    "question": "Kurš skaitlis iederas tukšajā vietā? 1, 5, ?, 13, 17.",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +4. Trūkstošais skaitlis ir 9."
   },
   {
     "id": "v2-easy-patterns-fives-4",
@@ -728,20 +718,20 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Katrā solī izmanto +5. Kas būs tālāk?",
-    "hint": "Piemēro doto likumu pēdējam skaitlim.",
-    "explanation": "Nākamais skaitlis ir 27.",
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +3. Trūkstošais skaitlis ir 15.",
     "payload": {
       "sequence": [
-        7,
-        12,
-        17,
-        22
+        3,
+        6,
+        9,
+        12
       ],
       "choices": [
-        "27",
-        "28",
-        "32"
+        "15",
+        "16",
+        "17"
       ]
     }
   },
@@ -763,7 +753,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 3,
-      "columns": 4
+      "columns": 4,
+      "object": "mouse"
     },
     "question": "Izveido 3 rindas, katrā pa 4 rotaļu pelēm. Cik peļu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
@@ -781,14 +772,14 @@
     "correctIndex": 0,
     "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Reizini ar 4.",
+    "explanation": "Reizini ar 2.",
     "payload": {
-      "input": 3,
-      "output": 12,
+      "input": 5,
+      "output": 10,
       "choices": [
-        "×4",
-        "+4",
-        "×5"
+        "×2",
+        "+2",
+        "×3"
       ]
     }
   },
@@ -801,12 +792,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": true,
+    "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Pareizi. 3 grupas pa 4 ir 12.",
+    "explanation": "Nepareizi. 4 grupas pa 4 ir 16.",
     "payload": {
-      "statement": "3 × 4 = 12"
+      "statement": "4 × 4 = 17"
     }
   },
   {
@@ -822,14 +813,14 @@
     "helpTemplate": "multiplication",
     "question": "Cik rotaļlietu ir katrā vienādajā rindā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "3 × 4 = 12.",
+    "explanation": "2 × 7 = 14.",
     "payload": {
-      "leftDisplay": "3 × ?",
-      "rightValue": 12,
+      "leftDisplay": "2 × ?",
+      "rightValue": 14,
       "choices": [
-        "4",
-        "5",
-        "6"
+        "7",
+        "8",
+        "9"
       ]
     }
   },
@@ -851,7 +842,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 4,
-      "columns": 5
+      "columns": 5,
+      "object": "mouse"
     },
     "question": "Izveido 4 rindas, katrā pa 5 rotaļu pelēm. Cik peļu kopā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
@@ -869,14 +861,14 @@
     "correctIndex": 0,
     "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Reizini ar 5.",
+    "explanation": "Reizini ar 6.",
     "payload": {
-      "input": 4,
-      "output": 20,
+      "input": 3,
+      "output": 18,
       "choices": [
-        "×5",
-        "+5",
-        "×6"
+        "×6",
+        "+6",
+        "×7"
       ]
     }
   },
@@ -892,9 +884,9 @@
     "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Pareizi. 4 grupas pa 5 ir 20.",
+    "explanation": "Pareizi. 5 grupas pa 5 ir 25.",
     "payload": {
-      "statement": "4 × 5 = 20"
+      "statement": "5 × 5 = 25"
     }
   },
   {
@@ -910,14 +902,14 @@
     "helpTemplate": "multiplication",
     "question": "Cik rotaļlietu ir katrā vienādajā rindā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "4 × 5 = 20.",
+    "explanation": "7 × 4 = 28.",
     "payload": {
-      "leftDisplay": "4 × ?",
-      "rightValue": 20,
+      "leftDisplay": "7 × ?",
+      "rightValue": 28,
       "choices": [
+        "4",
         "5",
-        "6",
-        "7"
+        "6"
       ]
     }
   },
@@ -945,14 +937,15 @@
       6,
       8
     ],
-    "type": "fraction_build",
+    "type": "compare",
     "topic": "fractions",
-    "question": "Iekrāso 2/4 no šī veselā.",
+    "correctIndex": 0,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 2 no 4 vienādām daļām.",
+    "explanation": "2/3 > 1/3.",
     "payload": {
-      "numerator": 2,
-      "denominator": 4
+      "optionA": "2/3",
+      "optionB": "1/3"
     }
   },
   {
@@ -971,12 +964,12 @@
       "pairs": [
         {
           "numerator": 1,
-          "denominator": 4,
+          "denominator": 6,
           "visual": "pie"
         },
         {
-          "numerator": 2,
-          "denominator": 4,
+          "numerator": 3,
+          "denominator": 6,
           "visual": "grid"
         }
       ]
@@ -994,14 +987,14 @@
     "correctIndex": 0,
     "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
     "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "1/4 = 2/8.",
+    "explanation": "1/2 = 2/4.",
     "payload": {
       "numerator": 1,
-      "denominator": 4,
+      "denominator": 2,
       "choices": [
-        "2/8",
-        "1/8",
-        "2/4"
+        "2/4",
+        "1/4",
+        "2/2"
       ]
     }
   },
@@ -1029,14 +1022,15 @@
       6,
       8
     ],
-    "type": "fraction_build",
+    "type": "compare",
     "topic": "fractions",
-    "question": "Iekrāso 2/6 no šī veselā.",
+    "correctIndex": 0,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 2 no 6 vienādām daļām.",
+    "explanation": "3/5 > 2/5.",
     "payload": {
-      "numerator": 2,
-      "denominator": 6
+      "optionA": "3/5",
+      "optionB": "2/5"
     }
   },
   {
@@ -1055,12 +1049,12 @@
       "pairs": [
         {
           "numerator": 1,
-          "denominator": 6,
+          "denominator": 8,
           "visual": "pie"
         },
         {
-          "numerator": 2,
-          "denominator": 6,
+          "numerator": 4,
+          "denominator": 8,
           "visual": "grid"
         }
       ]
@@ -1078,14 +1072,14 @@
     "correctIndex": 0,
     "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
     "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "1/6 = 2/12.",
+    "explanation": "2/3 = 4/6.",
     "payload": {
-      "numerator": 1,
-      "denominator": 6,
+      "numerator": 2,
+      "denominator": 3,
       "choices": [
-        "2/12",
-        "1/12",
-        "2/6"
+        "4/6",
+        "2/6",
+        "3/3"
       ]
     }
   },
@@ -1166,9 +1160,9 @@
       "11"
     ],
     "correctIndex": 0,
-    "question": "Stendam 1 vajag 2 rindas pa 5 rotaļlietām. Cik rotaļlietu?",
+    "question": "Pirmajam stendam vajag 2 rindas pa 5 rotaļlietām. Cik rotaļlietu?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "2 × 5 = 10. Šis stends ir gatavs."
+    "explanation": "2 × 5 = 10. Pirmais stends ir gatavs."
   },
   {
     "id": "v2-easy-multiplication-shelves-2",
@@ -1177,17 +1171,22 @@
       6,
       8
     ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "12",
-      "7",
-      "13"
-    ],
+    "type": "balance",
+    "topic": "equality",
     "correctIndex": 0,
-    "question": "Stendam 2 vajag 3 rindas pa 4 rotaļlietām. Cik rotaļlietu?",
+    "helpTemplate": "multiplication",
+    "question": "Vidējā stendā ir 12 rotaļlietas 3 vienādās rindās. Cik rotaļlietu katrā rindā?",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "3 × 4 = 12. Šis stends ir gatavs."
+    "explanation": "3 × 4 = 12. Vidējais stends ir gatavs.",
+    "payload": {
+      "leftDisplay": "3 × ?",
+      "rightValue": 12,
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ]
+    }
   },
   {
     "id": "v2-easy-multiplication-shelves-3",
@@ -1196,17 +1195,23 @@
       6,
       8
     ],
-    "type": "multiple_choice",
+    "type": "fix_mistake",
     "topic": "multiplication",
-    "choices": [
-      "24",
-      "10",
-      "25"
-    ],
     "correctIndex": 0,
-    "question": "Stendam 3 vajag 4 rindas pa 6 rotaļlietām. Cik rotaļlietu?",
+    "helpTemplate": "multiplication",
+    "question": "Pēdējam stendam vajag 4 rindas pa 6 rotaļlietām. Izlabo tā etiķeti.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "4 × 6 = 24. Šis stends ir gatavs."
+    "explanation": "4 × 6 = 24. Darbnīca ir atvērta!",
+    "payload": {
+      "wrongWork": [
+        "4 × 6 = 20"
+      ],
+      "choices": [
+        "4 × 6 = 24",
+        "4 × 6 = 22",
+        "4 × 6 = 26"
+      ]
+    }
   },
   {
     "id": "v2-easy-numbers-train-1",
@@ -1250,7 +1255,8 @@
     "explanation": "18 > 12. Garākais vilciens ir gatavs.",
     "payload": {
       "optionA": "12",
-      "optionB": "18"
+      "optionB": "18",
+      "object": "carriage"
     }
   },
   {
@@ -1373,16 +1379,16 @@
     "type": "function_machine",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Nākamā uzvilkšana pārvērš 15 sitienus par 18. Izvēlies likumu.",
+    "question": "Uzvilkšanas zobrats pārvērš 15 sitienus par 20. Izvēlies tā likumu.",
     "hint": "Pārbaudi izmaiņu no ievades līdz izvadei.",
-    "explanation": "15 + 3 = 18. Zobrati atkal griežas.",
+    "explanation": "15 + 5 = 20. Zobrati atkal griežas.",
     "payload": {
       "input": 15,
-      "output": 18,
+      "output": 20,
       "choices": [
+        "+5",
         "+3",
-        "+2",
-        "×3"
+        "×2"
       ]
     }
   },
@@ -1393,25 +1399,17 @@
       6,
       8
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "16",
+      "15",
+      "17"
+    ],
     "correctIndex": 0,
-    "question": "Saglabā ritmu: 18, 21, 24, 27. Pabeidz melodiju.",
-    "hint": "Izmanto lādītes likumu vēlreiz.",
-    "explanation": "27 + 3 = 30. Melodija ir gatava!",
-    "payload": {
-      "sequence": [
-        18,
-        21,
-        24,
-        27
-      ],
-      "choices": [
-        "30",
-        "29",
-        "31"
-      ]
-    }
+    "question": "Pabeidz melodiju. Kurš sitiens trūkst? 20, 18, ?, 14, 12.",
+    "hint": "Pārbaudi, kā mainās sitieni šajā melodijas daļā.",
+    "explanation": "20, 18, 16, 14, 12. Katrā solī atņem 2. Melodija ir gatava!"
   },
   {
     "id": "v2-easy-fractions-kite-1",

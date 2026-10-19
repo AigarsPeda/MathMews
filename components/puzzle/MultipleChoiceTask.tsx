@@ -21,7 +21,7 @@ export function MultipleChoiceTask({
 }: MultipleChoiceTaskProps) {
   return (
     <View style={styles.choices}>
-      {puzzle.taskVisual ? <QuantityTaskScene key={puzzle.id} model={puzzle.taskVisual} disabled={answered} /> : null}
+      {puzzle.taskVisual ? <QuantityTaskScene key={puzzle.id} model={puzzle.taskVisual} disabled={answered} showExpression={puzzle.difficulty !== "hard"} /> : null}
       {puzzle.choices.map((choice, index) => {
         let result: "correct" | "wrong" | null = null;
         if (answered) {

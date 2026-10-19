@@ -710,10 +710,11 @@ export default function HomeScreen() {
             />
             <HeaderChip
               style={styles.settingsButton}
+              hitSlop={{ left: moderateScale(6), right: moderateScale(6) }}
               onPress={handleOpenSettings}
               accessibilityLabel={t("home.a11ySettings")}
             >
-              <AppIcon name="settings" size={moderateScale(18) * 1.2} />
+              <AppIcon name="settings" size={moderateScale(18)} />
             </HeaderChip>
           </View>
           {isNativeCatPet && <View style={styles.roomToolbar}>
@@ -833,9 +834,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: GameColors.cardBorder,
     borderRadius: moderateScale(16),
-    paddingRight: moderateScale(6),
+    paddingRight: moderateScale(4),
   },
-  settingsButton: { borderWidth: 0, backgroundColor: 'transparent' },
+  settingsButton: { width: moderateScale(32), borderWidth: 0, backgroundColor: 'transparent' },
   roomToolbar: { flexDirection: 'row', alignItems: 'stretch', gap: moderateScale(8) },
   decorationMenu: { flex: 1, minWidth: 0, minHeight: 56 },
   modeHeaderContent: { flex: 1, minHeight: 56 },

@@ -13,7 +13,6 @@ type TargetBuildTaskProps = {
   answered: boolean;
   isCorrect: boolean;
   onSelectOperator: (slotIndex: number, operator: MathOperator) => void;
-  onCheck: () => void;
 };
 
 export function TargetBuildTask({
@@ -22,7 +21,6 @@ export function TargetBuildTask({
   answered,
   isCorrect,
   onSelectOperator,
-  onCheck,
 }: TargetBuildTaskProps) {
   const { t } = useTranslation();
   const { numbers, target } = puzzle.payload;
@@ -41,7 +39,6 @@ export function TargetBuildTask({
     return evaluateExpression(numbers, filledOperators);
   }, [filledOperators, numbers, slotCount]);
 
-  const allSelected = selectedOperators.every((operator) => operator !== null);
   const activeSlot = selectedOperators.findIndex((operator) => operator === null);
 
   return (
@@ -122,12 +119,6 @@ export function TargetBuildTask({
         <Text style={styles.previewText}>
           {t("puzzleTypes.yourResult", { value: previewValue })}
         </Text>
-      ) : null}
-
-      {!answered && allSelected ? (
-        <Pressable style={styles.checkBtn} onPress={onCheck}>
-          <Text style={styles.checkBtnText}>{t("puzzleTypes.checkAnswer")}</Text>
-        </Pressable>
       ) : null}
     </View>
   );
@@ -258,17 +249,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: GameColors.textMuted,
     textAlign: "center",
-  },
-  checkBtn: {
-    minHeight: moderateScale(52),
-    borderRadius: moderateScale(16),
-    backgroundColor: GameColors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkBtnText: {
-    fontSize: moderateScale(18),
-    fontWeight: "800",
-    color: "#FFFFFF",
   },
 });

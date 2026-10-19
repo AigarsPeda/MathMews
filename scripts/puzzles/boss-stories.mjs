@@ -41,8 +41,8 @@ export const bossStories = {
     'The gears turn and the notes float up. Our tune is playing again!',
     'Zobrati griežas, un notis paceļas gaisā. Mūsu melodija atkal skan!', [
       stage('Find the beat', 'Atrodi ritmu', 'Listen to the number pattern. Which beat comes next?', 'Ieklausies skaitļu virknē. Kurš sitiens seko tālāk?', 'The beat reaches 15. Use it to repair the winding gear.', 'Ritms sasniedz 15. Izmanto to, lai salabotu uzvilkšanas zobratu.'),
-      stage('Repair the gear', 'Salabo zobratu', 'Find the rule that carries our beat from 15 to 18.', 'Atrodi likumu, kas pārnes ritmu no 15 uz 18.', 'The +3 gear is working. Keep that rhythm for the last part.', 'Zobrats +3 darbojas. Saglabā šo ritmu pēdējai daļai.'),
-      stage('Finish the tune', 'Pabeidz melodiju', 'Continue from 18 with our repaired rhythm.', 'Turpini no 18 ar mūsu atjaunoto ritmu.', 'The final beat is ready. Let’s hear the whole tune!', 'Pēdējais sitiens ir gatavs. Lai skan visa melodija!'),
+      stage('Repair the gear', 'Salabo zobratu', 'Find the rule that carries our beat from 15 to 20.', 'Atrodi likumu, kas pārnes ritmu no 15 uz 20.', 'The gear reaches 20. Find the missing beat in the last part.', 'Zobrats sasniedz 20. Atrodi trūkstošo sitienu pēdējā daļā.'),
+      stage('Finish the tune', 'Pabeidz melodiju', 'The last part starts at 20 and has a different rhythm.', 'Pēdējā daļa sākas ar 20, un tai ir cits ritms.', 'The final beat is ready. Let’s hear the whole tune!', 'Pēdējais sitiens ir gatavs. Lai skan visa melodija!'),
     ]),
   shelves: story('shelves',
     'The toy workshop opens today! Fill its three displays, one at a time, so every visitor can find a toy.',
@@ -131,7 +131,7 @@ export const bossStories = {
     'The seeds sprout and the garden blooms around its winding path!',
     'Sēklas sadīgst, un ap līkumoto taku uzzied dārzs!', [
       stage('Plan the flower beds', 'Izplāno puķu dobes', 'Work out how much of our plot will grow flowers.', 'Aprēķini, cik lielā laukuma daļā augs puķes.', 'We need 18 flower spaces. Leave the rest for a path.', 'Vajag 18 puķu vietas. Pārējo atstāsim takai.'),
-      stage('Leave a path', 'Atstāj taku', 'Mark the quarter outside our planned flower beds.', 'Atzīmē ceturtdaļu ārpus ieplānotajām puķu dobēm.', 'The path has its own quarter. Now gather seeds for the 18 flower spaces.', 'Takai ir sava ceturtdaļa. Tagad savāc sēklas 18 puķu vietām.'),
+      stage('Leave a path', 'Atstāj taku', 'Mark the area left for the path.', 'Atzīmē takai atlikušo laukumu.', 'The path has its own quarter. Now gather seeds for the 18 flower spaces.', 'Takai ir sava ceturtdaļa. Tagad savāc sēklas 18 puķu vietām.'),
       stage('Gather the seeds', 'Savāc sēklas', 'Each flower space needs three seeds. Prepare enough for our plan.', 'Katrai puķu vietai vajag trīs sēklas. Sagatavo pietiekami mūsu plānam.', 'All 54 seeds are ready. Time to plant our garden!', 'Visas 54 sēklas ir gatavas. Laiks stādīt mūsu dārzu!'),
     ]),
   signal: story('signal',
@@ -140,8 +140,8 @@ export const bossStories = {
     'The signal rings travel from the tower. Our distant friend receives the message!',
     'Signāla apļi izplatās no torņa. Mūsu tālais draugs saņem ziņu!', [
       stage('Decode the signal', 'Atšifrē signālu', 'Find how the incoming pulse grows.', 'Atrodi, kā pieaug ienākošais impulss.', 'The next pulse is 48. Send it through the amplifier.', 'Nākamais impulss ir 48. Nosūti to caur pastiprinātāju.'),
-      stage('Tune the amplifier', 'Noskaņo pastiprinātāju', 'Choose the rule that boosts our decoded pulse.', 'Izvēlies likumu, kas pastiprina atšifrēto impulsu.', 'The boosted pulse is 96. Keep its rule for the transmission.', 'Pastiprinātais impulss ir 96. Saglabā tā likumu pārraidei.'),
-      stage('Send the message', 'Nosūti ziņu', 'Continue the amplified pattern to finish our message.', 'Turpini pastiprināto virkni, lai pabeigtu mūsu ziņu.', 'The final pulse is 768. Send our message!', 'Pēdējais impulss ir 768. Nosūti mūsu ziņu!'),
+      stage('Tune the amplifier', 'Noskaņo pastiprinātāju', 'Choose the rule that boosts our decoded pulse.', 'Izvēlies likumu, kas pastiprina atšifrēto impulsu.', 'The boosted pulse is 80. Finish the transmission code.', 'Pastiprinātais impulss ir 80. Pabeidz pārraides kodu.'),
+      stage('Send the message', 'Nosūti ziņu', 'Find the missing value in the transmission code.', 'Atrodi trūkstošo skaitli pārraides kodā.', 'The missing code value is 20. Send our message!', 'Trūkstošais koda skaitlis ir 20. Nosūti mūsu ziņu!'),
     ]),
   shop: story('shop',
     'Our toy shop is opening for a sale. Work out the discount, update the price and help our first customer. These story prices do not spend your game coins.',
@@ -149,8 +149,8 @@ export const bossStories = {
     'The first customer has the toys and the correct change. The shop opens for the day!',
     'Pirmajam pircējam ir rotaļlietas un pareizais atlikums. Veikala darba diena ir sākusies!', [
       stage('Calculate the discount', 'Aprēķini atlaidi', 'Find how much the sale takes off the original price.', 'Atrodi, par cik atlaide samazina sākotnējo cenu.', 'The discount is 20. Use that amount to set our sale price.', 'Atlaide ir 20. Izmanto šo summu izpārdošanas cenas noteikšanai.'),
-      stage('Set the sale price', 'Nosaki atlaides cenu', 'Subtract our discount from the original price.', 'Atņem mūsu atlaidi no sākotnējās cenas.', 'Each toy now costs 60. Our first customer wants two.', 'Katra rotaļlieta tagad maksā 60. Pirmais pircējs vēlas divas.'),
-      stage('Serve the first customer', 'Apkalpo pirmo pircēju', 'Use the new price for both toys, then check the change.', 'Izmanto jauno cenu abām rotaļlietām un pārbaudi atlikumu.', 'The customer gets 30 in change. We’re ready to open!', 'Pircējs saņem 30 atlikumā. Varam vērt vaļā!'),
+      stage('Set the sale price', 'Nosaki atlaides cenu', 'What should the toy cost during the sale?', 'Cik rotaļlietai jāmaksā izpārdošanā?', 'Each toy now costs 60. Our first customer wants two.', 'Katra rotaļlieta tagad maksā 60. Pirmais pircējs vēlas divas.'),
+      stage('Serve the first customer', 'Apkalpo pirmo pircēju', 'How much change is due to our first customer?', 'Cik naudas jāizdod mūsu pirmajam pircējam?', 'The customer gets 30 in change. We’re ready to open!', 'Pircējs saņem 30 atlikumā. Varam vērt vaļā!'),
     ]),
   shelter: story('shelter',
     'The rooftop shelter needs a tiled roof. Measure it, order enough crates and check the supply estimate so our friends can stay dry.',
@@ -159,7 +159,7 @@ export const bossStories = {
     'Saule atgriežas virs pabeigtā jumta patvēruma. Mūsu draugiem ir sausa vieta atpūtai!', [
       stage('Measure the roof', 'Izmēri jumtu', 'Find the number of square tiles needed for the roof.', 'Atrodi, cik kvadrātveida flīžu vajag jumtam.', 'The roof needs 63 tiles. Use that count to work out our crates.', 'Jumtam vajag 63 flīzes. Izmanto šo skaitu, lai aprēķinātu kastes.'),
       stage('Order the crates', 'Pasūti kastes', 'Use the tiles in seven crates to find how many nine crates will bring.', 'Izmanto flīžu skaitu septiņās kastēs, lai atrastu deviņu kastu kravu.', 'Nine crates bring 81 tiles. Now check the full supply estimate.', 'Deviņās kastēs ir 81 flīze. Tagad pārbaudi visu krājumu aplēsi.'),
-      stage('Check the supplies', 'Pārbaudi krājumus', 'Estimate our order and the extra supplies using the rounding rule.', 'Aptuveni aprēķini pasūtījumu un papildu krājumus ar noapaļošanas likumu.', 'The estimate is checked. Let’s finish the shelter!', 'Aplēse ir pārbaudīta. Pabeigsim patversmi!'),
+      stage('Check the supplies', 'Pārbaudi krājumus', 'Estimate the total supplies for the shelter.', 'Aptuveni novērtē patvēruma krājumu kopskaitu.', 'The estimate is checked. Let’s finish the shelter!', 'Aplēse ir pārbaudīta. Pabeigsim patversmi!'),
     ]),
   vault: story('vault',
     'The clue vault holds a hidden star. Solve its number lock, verify the answer and order the key tiles to reveal it.',

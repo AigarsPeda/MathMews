@@ -1,3 +1,5 @@
+import type { PuzzleObject } from "./puzzle-object";
+
 export type PuzzleDifficulty = "easy" | "medium" | "hard";
 
 export type PuzzleTopic =
@@ -41,10 +43,10 @@ export type PuzzleType =
 export type MathOperator = "+" | "-" | "×" | "÷";
 
 /** Quantities shown in the task itself, separate from worked picture help. */
-export type QuantityTaskModel =
+export type QuantityTaskModel = { object?: PuzzleObject } & (
   | { kind: "join" | "take_away"; left: number; right: number }
   | { kind: "array"; rows: number; columns: number }
-  | { kind: "share"; items: number; groups: number };
+  | { kind: "share"; items: number; groups: number });
 
 export type OperationPathStep = {
   operand: number;
@@ -65,16 +67,21 @@ export type TargetBuildPayload = {
 };
 
 export type ComparePayload = {
+  object?: PuzzleObject;
   optionA: string;
   optionB: string;
 };
 
 export type FractionBuildPayload = {
+  /** The task asks the learner to infer the fraction rather than copy it. */
+  hideTarget?: boolean;
   numerator: number;
   denominator: number;
 };
 
 export type TrueFalsePayload = {
+  /** The question states a general claim; the example is for feedback only. */
+  hideStatement?: boolean;
   statement: string;
 };
 
@@ -109,6 +116,7 @@ export type EstimatePayload = {
 };
 
 export type FairSharePayload = {
+  object?: PuzzleObject;
   items: number;
   people: number;
   emoji: string;

@@ -35,16 +35,16 @@
     ],
     "type": "target_build",
     "topic": "operations",
-    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "question": "Which operations make the target? Keep the numbers in order.",
     "hint": "Try multiplying the last two numbers first.",
-    "explanation": "7 + 8 × 9 = 79.",
+    "explanation": "11 + 7 × 12 = 95.",
     "payload": {
       "numbers": [
+        11,
         7,
-        8,
-        9
+        12
       ],
-      "target": 79,
+      "target": 95,
       "solution": [
         "+",
         "×"
@@ -63,14 +63,14 @@
     "correctIndex": 0,
     "question": "Select the rule that turns input into output.",
     "hint": "Test the whole rule, in the order shown.",
-    "explanation": "9 × 8 + 7 = 79.",
+    "explanation": "16 × 6 + 5 = 101.",
     "payload": {
-      "input": 9,
-      "output": 79,
+      "input": 16,
+      "output": 101,
       "choices": [
-        "×8+7",
-        "×8",
-        "+8"
+        "×6+5",
+        "×6",
+        "+6"
       ]
     }
   },
@@ -86,10 +86,10 @@
     "correctIndex": 1,
     "question": "Which expression has the greater value?",
     "hint": "Try a step, then check where it takes you.",
-    "explanation": "16 < 79.",
+    "explanation": "34 < 118.",
     "payload": {
-      "optionA": "72 ÷ 8 + 7",
-      "optionB": "72 + 7"
+      "optionA": "105 ÷ 5 + 13",
+      "optionB": "105 + 13"
     }
   },
   {
@@ -128,16 +128,16 @@
     ],
     "type": "target_build",
     "topic": "operations",
-    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "question": "Which operations make the target? Keep the numbers in order.",
     "hint": "Try multiplying the last two numbers first.",
-    "explanation": "9 + 6 × 16 = 105.",
+    "explanation": "14 + 9 × 12 = 122.",
     "payload": {
       "numbers": [
+        14,
         9,
-        6,
-        16
+        12
       ],
-      "target": 105,
+      "target": 122,
       "solution": [
         "+",
         "×"
@@ -156,14 +156,14 @@
     "correctIndex": 0,
     "question": "Select the rule that turns input into output.",
     "hint": "Test the whole rule, in the order shown.",
-    "explanation": "16 × 6 + 9 = 105.",
+    "explanation": "12 × 12 + 7 = 151.",
     "payload": {
-      "input": 16,
-      "output": 105,
+      "input": 12,
+      "output": 151,
       "choices": [
-        "×6+9",
-        "×6",
-        "+6"
+        "×12+7",
+        "×12",
+        "+12"
       ]
     }
   },
@@ -179,10 +179,10 @@
     "correctIndex": 1,
     "question": "Which expression has the greater value?",
     "hint": "Try a step, then check where it takes you.",
-    "explanation": "25 < 105.",
+    "explanation": "20 < 140.",
     "payload": {
-      "optionA": "96 ÷ 6 + 9",
-      "optionB": "96 + 9"
+      "optionA": "132 ÷ 11 + 8",
+      "optionB": "132 + 8"
     }
   },
   {
@@ -217,14 +217,14 @@
     "correctIndex": 0,
     "question": "Choose the fraction with the same value.",
     "hint": "Split every part into two equal smaller parts.",
-    "explanation": "3/5 = 6/10.",
+    "explanation": "5/6 = 10/12.",
     "payload": {
-      "numerator": 3,
-      "denominator": 5,
+      "numerator": 5,
+      "denominator": 6,
       "choices": [
-        "6/10",
-        "3/10",
-        "6/5"
+        "10/12",
+        "5/12",
+        "10/6"
       ]
     }
   },
@@ -241,10 +241,10 @@
     "helpTemplate": "fraction_equivalent",
     "question": "The ribbons have the same length. Which colored amount is larger?",
     "hint": "Check the total number of equal parts first.",
-    "explanation": "4/5 > 3/5.",
+    "explanation": "4/7 > 3/7.",
     "payload": {
-      "optionA": "3/5",
-      "optionB": "4/5"
+      "optionA": "3/7",
+      "optionB": "4/7"
     }
   },
   {
@@ -262,13 +262,13 @@
     "payload": {
       "pairs": [
         {
-          "numerator": 3,
-          "denominator": 5,
+          "numerator": 2,
+          "denominator": 9,
           "visual": "pie"
         },
         {
-          "numerator": 4,
-          "denominator": 5,
+          "numerator": 3,
+          "denominator": 9,
           "visual": "grid"
         }
       ]
@@ -306,14 +306,14 @@
     "correctIndex": 0,
     "question": "Choose the fraction with the same value.",
     "hint": "Split every part into two equal smaller parts.",
-    "explanation": "5/8 = 10/16.",
+    "explanation": "4/7 = 8/14.",
     "payload": {
-      "numerator": 5,
-      "denominator": 8,
+      "numerator": 4,
+      "denominator": 7,
       "choices": [
-        "10/16",
-        "5/16",
-        "10/8"
+        "8/14",
+        "4/14",
+        "8/7"
       ]
     }
   },
@@ -330,10 +330,10 @@
     "helpTemplate": "fraction_equivalent",
     "question": "The ribbons have the same length. Which colored amount is larger?",
     "hint": "Check the total number of equal parts first.",
-    "explanation": "6/8 > 5/8.",
+    "explanation": "6/12 > 5/12.",
     "payload": {
-      "optionA": "5/8",
-      "optionB": "6/8"
+      "optionA": "5/12",
+      "optionB": "6/12"
     }
   },
   {
@@ -351,13 +351,13 @@
     "payload": {
       "pairs": [
         {
-          "numerator": 5,
-          "denominator": 8,
+          "numerator": 3,
+          "denominator": 10,
           "visual": "pie"
         },
         {
-          "numerator": 6,
-          "denominator": 8,
+          "numerator": 4,
+          "denominator": 10,
           "visual": "grid"
         }
       ]
@@ -373,9 +373,9 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Every step uses ×3. What comes next?",
-    "hint": "Apply the stated rule to the last number.",
-    "explanation": "The next number is 162.",
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×3. The missing number is 162.",
     "payload": {
       "sequence": [
         2,
@@ -386,7 +386,7 @@
       "choices": [
         "162",
         "163",
-        "165"
+        "164"
       ]
     }
   },
@@ -402,14 +402,14 @@
     "correctIndex": 0,
     "question": "Choose the rule that works for this machine.",
     "hint": "Test each offered rule on the input.",
-    "explanation": "The rule is ×3.",
+    "explanation": "The rule is ÷4.",
     "payload": {
-      "input": 3,
-      "output": 9,
+      "input": 56,
+      "output": 14,
       "choices": [
-        "×3",
-        "×4",
-        "×5"
+        "÷4",
+        "−4",
+        "÷5"
       ]
     }
   },
@@ -420,25 +420,17 @@
       10,
       12
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "27",
+      "28",
+      "29"
+    ],
     "correctIndex": 0,
-    "question": "Every step uses ×3. What comes next?",
-    "hint": "Apply the stated rule to the last number.",
-    "explanation": "The next number is 324.",
-    "payload": {
-      "sequence": [
-        4,
-        12,
-        36,
-        108
-      ],
-      "choices": [
-        "324",
-        "325",
-        "327"
-      ]
-    }
+    "question": "Which number belongs in the gap? 243, 81, ?, 9, 3.",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ÷3. The missing number is 27."
   },
   {
     "id": "v2-hard-patterns-multiply-4",
@@ -450,20 +442,20 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Every step uses ×3. What comes next?",
-    "hint": "Apply the stated rule to the last number.",
-    "explanation": "The next number is 486.",
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses −7. The missing number is 37.",
     "payload": {
       "sequence": [
-        6,
-        18,
-        54,
-        162
+        65,
+        58,
+        51,
+        44
       ],
       "choices": [
-        "486",
-        "487",
-        "489"
+        "37",
+        "38",
+        "39"
       ]
     }
   },
@@ -477,9 +469,9 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Every step uses ×4. What comes next?",
-    "hint": "Apply the stated rule to the last number.",
-    "explanation": "The next number is 768.",
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×4. The missing number is 768.",
     "payload": {
       "sequence": [
         3,
@@ -490,7 +482,7 @@
       "choices": [
         "768",
         "769",
-        "772"
+        "770"
       ]
     }
   },
@@ -506,14 +498,14 @@
     "correctIndex": 0,
     "question": "Choose the rule that works for this machine.",
     "hint": "Test each offered rule on the input.",
-    "explanation": "The rule is ×4.",
+    "explanation": "The rule is +8.",
     "payload": {
-      "input": 4,
-      "output": 16,
+      "input": 17,
+      "output": 25,
       "choices": [
-        "×4",
-        "×5",
-        "×6"
+        "+8",
+        "+9",
+        "+10"
       ]
     }
   },
@@ -524,25 +516,17 @@
       10,
       12
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "24",
+      "25",
+      "26"
+    ],
     "correctIndex": 0,
-    "question": "Every step uses ×4. What comes next?",
-    "hint": "Apply the stated rule to the last number.",
-    "explanation": "The next number is 1536.",
-    "payload": {
-      "sequence": [
-        6,
-        24,
-        96,
-        384
-      ],
-      "choices": [
-        "1536",
-        "1537",
-        "1540"
-      ]
-    }
+    "question": "Which number belongs in the gap? 6, 12, ?, 48, 96.",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×2. The missing number is 24."
   },
   {
     "id": "v2-hard-patterns-scale-4",
@@ -554,20 +538,20 @@
     "type": "pattern_next",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "Every step uses ×4. What comes next?",
-    "hint": "Apply the stated rule to the last number.",
-    "explanation": "The next number is 2304.",
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +9. The missing number is 47.",
     "payload": {
       "sequence": [
-        9,
-        36,
-        144,
-        576
+        11,
+        20,
+        29,
+        38
       ],
       "choices": [
-        "2304",
-        "2305",
-        "2308"
+        "47",
+        "48",
+        "49"
       ]
     }
   },
@@ -601,15 +585,15 @@
     "type": "multiple_choice",
     "topic": "fractions",
     "choices": [
-      "60",
-      "100",
-      "61"
+      "120",
+      "180",
+      "121"
     ],
     "correctIndex": 0,
-    "helpTemplate": "percent_discount",
-    "question": "A 80-coin toy has a 25% discount. What is the new price?",
+    "helpTemplate": "percent_fifth_discount",
+    "question": "A 150-coin toy has a 20% discount. What is the new price?",
     "hint": "Find the discount amount, then take it away.",
-    "explanation": "80 − 20 = 60 coins."
+    "explanation": "150 − 30 = 120 coins."
   },
   {
     "id": "v2-hard-percentages-quarters-3",
@@ -621,12 +605,12 @@
     "type": "true_false",
     "topic": "fractions",
     "isTrue": true,
-    "helpTemplate": "percent_of",
+    "helpTemplate": "percent_tenth",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "True. 25% of 80 is 20.",
+    "explanation": "True. 10% of 90 is 9.",
     "payload": {
-      "statement": "25% × 80 = 20"
+      "statement": "10% × 90 = 9"
     }
   },
   {
@@ -639,18 +623,18 @@
     "type": "fix_mistake",
     "topic": "fractions",
     "correctIndex": 0,
-    "helpTemplate": "percent_discount",
-    "question": "Minka added the discount. Repair the sale price.",
+    "helpTemplate": "percent_half_discount",
+    "question": "A toy costs 200 coins and has a 50% discount. Which sale price is correct?",
     "hint": "A discount reduces the original price.",
-    "explanation": "80 − 20 = 60.",
+    "explanation": "200 − 100 = 100.",
     "payload": {
       "wrongWork": [
-        "80 + 20 = 100"
+        "200 + 100 = 300"
       ],
       "choices": [
-        "60",
         "100",
-        "62"
+        "300",
+        "102"
       ]
     }
   },
@@ -684,15 +668,15 @@
     "type": "multiple_choice",
     "topic": "fractions",
     "choices": [
-      "96",
-      "144",
-      "97"
+      "120",
+      "200",
+      "121"
     ],
     "correctIndex": 0,
-    "helpTemplate": "percent_fifth_discount",
-    "question": "A 120-coin toy has a 20% discount. What is the new price?",
+    "helpTemplate": "percent_discount",
+    "question": "A 160-coin toy has a 25% discount. What is the new price?",
     "hint": "Find the discount amount, then take it away.",
-    "explanation": "120 − 24 = 96 coins."
+    "explanation": "160 − 40 = 120 coins."
   },
   {
     "id": "v2-hard-percentages-discounts-3",
@@ -704,12 +688,12 @@
     "type": "true_false",
     "topic": "fractions",
     "isTrue": true,
-    "helpTemplate": "percent_fifth",
+    "helpTemplate": "percent_half",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "True. 20% of 120 is 24.",
+    "explanation": "True. 50% of 70 is 35.",
     "payload": {
-      "statement": "20% × 120 = 24"
+      "statement": "50% × 70 = 35"
     }
   },
   {
@@ -722,18 +706,18 @@
     "type": "fix_mistake",
     "topic": "fractions",
     "correctIndex": 0,
-    "helpTemplate": "percent_fifth_discount",
-    "question": "Minka added the discount. Repair the sale price.",
+    "helpTemplate": "percent_tenth_discount",
+    "question": "A toy costs 250 coins and has a 10% discount. Which sale price is correct?",
     "hint": "A discount reduces the original price.",
-    "explanation": "120 − 24 = 96.",
+    "explanation": "250 − 25 = 225.",
     "payload": {
       "wrongWork": [
-        "120 + 24 = 144"
+        "250 + 25 = 275"
       ],
       "choices": [
-        "96",
-        "144",
-        "98"
+        "225",
+        "275",
+        "227"
       ]
     }
   },
@@ -755,7 +739,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 8,
-      "columns": 6
+      "columns": 6,
+      "object": "planting_tile"
     },
     "question": "A garden has 8 rows of 6 square planting spaces. How many square spaces?",
     "hint": "Count the same number in every group.",
@@ -771,15 +756,15 @@
     "type": "multiple_choice",
     "topic": "operations",
     "choices": [
-      "64",
-      "50",
-      "96"
+      "90",
+      "62",
+      "120"
     ],
     "correctIndex": 0,
     "helpTemplate": "rate",
-    "question": "48 grams of clay fill 6 equal bags. How many grams for 8 bags?",
+    "question": "60 grams of clay fill 4 equal bags. How many grams for 6 bags?",
     "hint": "Find the amount for one bag first.",
-    "explanation": "48 ÷ 6 × 8 = 64 grams."
+    "explanation": "60 ÷ 4 × 6 = 90 grams."
   },
   {
     "id": "v2-hard-measurement-area-3",
@@ -791,15 +776,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "Round each amount to the nearest ten, then add.",
+    "question": "What is the total to the nearest ten?",
     "hint": "Keep track of the size of the whole answer.",
-    "explanation": "Add the two rounded amounts.",
+    "explanation": "The total is 129, which rounds to 130.",
     "payload": {
-      "expression": "49 + 50",
+      "expression": "64 + 65",
       "choices": [
-        "About 100",
-        "About 144",
-        "About 192"
+        "About 130",
+        "About 189",
+        "About 252"
       ]
     }
   },
@@ -816,14 +801,14 @@
     "helpTemplate": "multiplication",
     "question": "Find the missing number of equal rows.",
     "hint": "Count the same number in every group.",
-    "explanation": "8 × 6 = 48.",
+    "explanation": "11 × 5 = 55.",
     "payload": {
-      "leftDisplay": "? × 6",
-      "rightValue": 48,
+      "leftDisplay": "? × 5",
+      "rightValue": 55,
       "choices": [
-        "8",
-        "9",
-        "10"
+        "11",
+        "12",
+        "13"
       ]
     }
   },
@@ -845,7 +830,8 @@
     "taskVisual": {
       "kind": "array",
       "rows": 12,
-      "columns": 5
+      "columns": 5,
+      "object": "planting_tile"
     },
     "question": "A garden has 12 rows of 5 square planting spaces. How many square spaces?",
     "hint": "Count the same number in every group.",
@@ -861,15 +847,15 @@
     "type": "multiple_choice",
     "topic": "operations",
     "choices": [
-      "84",
-      "62",
-      "120"
+      "90",
+      "56",
+      "108"
     ],
     "correctIndex": 0,
     "helpTemplate": "rate",
-    "question": "60 grams of clay fill 5 equal bags. How many grams for 7 bags?",
+    "question": "54 grams of clay fill 3 equal bags. How many grams for 5 bags?",
     "hint": "Find the amount for one bag first.",
-    "explanation": "60 ÷ 5 × 7 = 84 grams."
+    "explanation": "54 ÷ 3 × 5 = 90 grams."
   },
   {
     "id": "v2-hard-measurement-rates-3",
@@ -881,15 +867,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "Round each amount to the nearest ten, then add.",
+    "question": "What is the total to the nearest ten?",
     "hint": "Keep track of the size of the whole answer.",
-    "explanation": "Add the two rounded amounts.",
+    "explanation": "The total is 179, which rounds to 180.",
     "payload": {
-      "expression": "61 + 62",
+      "expression": "89 + 90",
       "choices": [
-        "About 120",
         "About 180",
-        "About 240"
+        "About 264",
+        "About 352"
       ]
     }
   },
@@ -906,14 +892,14 @@
     "helpTemplate": "multiplication",
     "question": "Find the missing number of equal rows.",
     "hint": "Count the same number in every group.",
-    "explanation": "12 × 5 = 60.",
+    "explanation": "9 × 7 = 63.",
     "payload": {
-      "leftDisplay": "? × 5",
-      "rightValue": 60,
+      "leftDisplay": "? × 7",
+      "rightValue": 63,
       "choices": [
-        "12",
-        "13",
-        "14"
+        "9",
+        "10",
+        "11"
       ]
     }
   },
@@ -947,11 +933,12 @@
     "type": "true_false",
     "topic": "multiplication",
     "isTrue": false,
-    "question": "The cat says multiplication always makes a positive whole number bigger. Is that true?",
+    "question": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?",
     "hint": "What happens when you multiply by one?",
     "explanation": "False. 20 × 1 = 20, so it stays equal.",
     "payload": {
-      "statement": "20 × 1 > 20"
+      "statement": "20 × 1 > 20",
+      "hideStatement": true
     }
   },
   {
@@ -965,19 +952,19 @@
     "topic": "comparison",
     "question": "Arrange the clues from smallest to largest.",
     "hint": "Compare the numbers before moving them.",
-    "explanation": "20 < 22 < 26 < 28.",
+    "explanation": "31 < 33 < 37 < 39.",
     "payload": {
       "numbers": [
-        28,
-        22,
-        26,
-        20
+        39,
+        33,
+        37,
+        31
       ],
       "correctOrder": [
-        20,
-        22,
-        26,
-        28
+        31,
+        33,
+        37,
+        39
       ]
     }
   },
@@ -991,15 +978,15 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "21",
-      "19",
-      "18"
+      "49",
+      "47",
+      "46"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
-    "question": "A box holds fewer than 20 balls. Which amount is impossible?",
+    "question": "A box holds fewer than 48 balls. Which amount is impossible?",
     "hint": "Test each amount against “fewer than”.",
-    "explanation": "21 is greater than 20."
+    "explanation": "49 is greater than 48."
   },
   {
     "id": "v2-hard-logic-claims-1",
@@ -1029,13 +1016,14 @@
       12
     ],
     "type": "true_false",
-    "topic": "multiplication",
-    "isTrue": false,
-    "question": "The cat says multiplication always makes a positive whole number bigger. Is that true?",
-    "hint": "What happens when you multiply by one?",
-    "explanation": "False. 40 × 1 = 40, so it stays equal.",
+    "topic": "subtraction",
+    "isTrue": true,
+    "question": "Subtracting a positive whole number always gives a smaller result. Is that true?",
+    "hint": "Consider what changes when a positive amount is taken away.",
+    "explanation": "True. For example, 57 − 7 = 50, which is smaller than 57.",
     "payload": {
-      "statement": "40 × 1 > 40"
+      "statement": "57 > 57 − 7",
+      "hideStatement": true
     }
   },
   {
@@ -1049,19 +1037,19 @@
     "topic": "comparison",
     "question": "Arrange the clues from smallest to largest.",
     "hint": "Compare the numbers before moving them.",
-    "explanation": "40 < 42 < 46 < 48.",
+    "explanation": "65 < 67 < 71 < 73.",
     "payload": {
       "numbers": [
-        48,
-        42,
-        46,
-        40
+        73,
+        67,
+        71,
+        65
       ],
       "correctOrder": [
-        40,
-        42,
-        46,
-        48
+        65,
+        67,
+        71,
+        73
       ]
     }
   },
@@ -1075,15 +1063,15 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "41",
-      "39",
-      "38"
+      "84",
+      "82",
+      "81"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
-    "question": "A box holds fewer than 40 balls. Which amount is impossible?",
+    "question": "A box holds fewer than 83 balls. Which amount is impossible?",
     "hint": "Test each amount against “fewer than”.",
-    "explanation": "41 is greater than 40."
+    "explanation": "84 is greater than 83."
   },
   {
     "id": "v2-hard-fractions-garden-1",
@@ -1114,12 +1102,13 @@
     ],
     "type": "fraction_build",
     "topic": "fractions",
-    "question": "Three quarters are planned for flowers. Shade the quarter reserved for a path.",
+    "question": "Three quarters of the garden are for flowers. Shade the part left for the path.",
     "hint": "Check the total number of equal parts first.",
     "explanation": "One of four equal parts is reserved for the path.",
     "payload": {
       "numerator": 1,
-      "denominator": 4
+      "denominator": 4,
+      "hideTarget": true
     }
   },
   {
@@ -1168,17 +1157,23 @@
       10,
       12
     ],
-    "type": "multiple_choice",
+    "type": "fix_mistake",
     "topic": "subtraction",
-    "choices": [
-      "60",
-      "100",
-      "70"
-    ],
     "correctIndex": 0,
-    "question": "Take the 20-coin discount off 80 coins. What is the sale price?",
+    "helpTemplate": "percent_discount",
+    "question": "A toy costs 80 coins and has a 20-coin discount. Which sale price is correct?",
     "hint": "Break the amount you take away into smaller steps.",
-    "explanation": "80 − 20 = 60 coins."
+    "explanation": "80 − 20 = 60 coins.",
+    "payload": {
+      "wrongWork": [
+        "80 + 20 = 100"
+      ],
+      "choices": [
+        "60",
+        "100",
+        "70"
+      ]
+    }
   },
   {
     "id": "v2-hard-percentages-shop-3",
@@ -1262,7 +1257,7 @@
     "type": "function_machine",
     "topic": "operations",
     "correctIndex": 0,
-    "question": "The tracker turns 27 into 79. Choose its two-step rule.",
+    "question": "The tracker turns 27 into 79. Which rule fits?",
     "hint": "Try a step, then check where it takes you.",
     "explanation": "27 × 3 − 2 = 79. The stars are in view!",
     "payload": {
@@ -1312,16 +1307,16 @@
     "type": "function_machine",
     "topic": "patterns",
     "correctIndex": 0,
-    "question": "The amplifier changes 48 into 96. Which rule keeps the signal growing?",
+    "question": "The amplifier changes 48 into 80. Which rule fits?",
     "hint": "Try a step, then check where it takes you.",
-    "explanation": "48 × 2 = 96. The amplifier works.",
+    "explanation": "48 + 32 = 80. The amplifier works.",
     "payload": {
       "input": 48,
-      "output": 96,
+      "output": 80,
       "choices": [
+        "+32",
         "×2",
-        "+2",
-        "×3"
+        "+24"
       ]
     }
   },
@@ -1332,24 +1327,17 @@
       10,
       12
     ],
-    "type": "pattern_next",
+    "type": "multiple_choice",
     "topic": "patterns",
+    "choices": [
+      "20",
+      "30",
+      "40"
+    ],
     "correctIndex": 0,
-    "question": "Continue the same signal: 96, 192, 384. What is the final pulse?",
-    "hint": "Keep the multiplier unchanged.",
-    "explanation": "384 × 2 = 768. The message reaches the next tower!",
-    "payload": {
-      "sequence": [
-        96,
-        192,
-        384
-      ],
-      "choices": [
-        "768",
-        "576",
-        "769"
-      ]
-    }
+    "question": "Complete the transmission code. Which value is missing? 80, 40, ?, 10, 5.",
+    "hint": "Look for a rule that fits all the code values.",
+    "explanation": "80, 40, 20, 10, 5. Each value is half the one before. The message is ready!"
   },
   {
     "id": "v2-hard-measurement-shelter-1",
@@ -1400,7 +1388,7 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "81 tiles arrive, then 27 spares. Round each delivery to the nearest ten and estimate the total.",
+    "question": "81 tiles arrive, along with 27 spares. What is the total to the nearest ten?",
     "hint": "Round each delivery separately before adding.",
     "explanation": "80 + 30 = 110. The shelter has enough supplies!",
     "payload": {

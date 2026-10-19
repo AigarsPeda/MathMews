@@ -1,4 +1,10 @@
 {
+  "puzzleHighPaw": [84, 24],
+  "puzzleProud": [84, 24],
+  "puzzleBounce": [78, 24],
+  "puzzleOops": [84, 24],
+  "puzzleThink": [96, 24],
+  "puzzleRecover": [96, 24],
   "idle": [
     96,
     24

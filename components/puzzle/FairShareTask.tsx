@@ -23,7 +23,7 @@ export function FairShareTask({
 
   return (
     <View style={styles.wrap}>
-      <QuantityTaskScene key={puzzle.id} model={{ kind: "share", items, groups: people }} disabled={answered} />
+      <QuantityTaskScene key={puzzle.id} model={{ kind: "share", items, groups: people, object: puzzle.payload.object }} disabled={answered} />
 
       <View style={styles.choices}>
         {choices.map((choice, index) => {

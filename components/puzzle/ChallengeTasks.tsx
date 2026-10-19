@@ -2,13 +2,13 @@ import { GameColors } from "@/constants/game";
 import type { BudgetPlanPuzzle, OptionalChallengePuzzle, RepairPatternPuzzle, RouteGridPuzzle, SortBucketsPuzzle } from "@/types/puzzle";
 import { getRouteValue, type ChallengeAnswer } from "@/utils/challenge-puzzles";
 import { moderateScale } from "@/utils/scale";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PuzzleDragBoard, PuzzleDragTile, PuzzleDropArea } from "@/components/puzzle/PuzzleDragBoard";
 import { movePatternTile } from "@/utils/puzzle-drag";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-type Controls = { answered: boolean; onSubmit: (answer: ChallengeAnswer) => void; onDragStateChange: (dragging: boolean) => void };
+type Controls = { answered: boolean; onAnswerChange: (answer: ChallengeAnswer | null) => void; onDragStateChange: (dragging: boolean) => void };
 
 function Action({ label, disabled, onPress }: { label: string; disabled: boolean; onPress: () => void }) {
   return <Pressable accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled} onPress={onPress} style={[styles.action, disabled && styles.disabled]}>
@@ -16,7 +16,7 @@ function Action({ label, disabled, onPress }: { label: string; disabled: boolean
   </Pressable>;
 }
 
-function SortBucketsTask({ puzzle, answered, onSubmit, onDragStateChange }: Controls & { puzzle: SortBucketsPuzzle }) {
+function SortBucketsTask({ puzzle, answered, onAnswerChange, onDragStateChange }: Controls & { puzzle: SortBucketsPuzzle }) {
   const { t } = useTranslation();
   const p = puzzle.payload;
   const labels = p.rule === "range" ? p.numbers.map(String) : p.fractions.map(([n, d]) => `${n}/${d}`);
@@ -24,6 +24,8 @@ function SortBucketsTask({ puzzle, answered, onSubmit, onDragStateChange }: Cont
     ? [t("challenges.lessThan", { number: p.boundary }), t("challenges.atLeast", { number: p.boundary })]
     : p.targets.map(([n, d]) => `${n}/${d}`);
   const [assignments, setAssignments] = useState<number[]>(() => labels.map(() => -1));
+  const answer = useMemo<ChallengeAnswer | null>(() => assignments.some(n => n < 0) ? null : { kind: "sort", buckets: assignments }, [assignments]);
+  useEffect(() => onAnswerChange(answer), [answer, onAnswerChange]);
   const tileCount = labels.length, bucketCount = buckets.length;
   const drop = useCallback((source: string, target: string) => {
     const tile = Number(source), bucket = target === "bank" ? -1 : Number(target.replace("bucket-", ""));
@@ -50,14 +52,15 @@ function SortBucketsTask({ puzzle, answered, onSubmit, onDragStateChange }: Cont
         {!assignments.includes(bucket) && <Text style={styles.groupItems}>{t("challenges.emptyGroup")}</Text>}
       </PuzzleDropArea>)}</View>
     </PuzzleDragBoard>
-    <Action label={t("challenges.checkSorting")} disabled={answered || assignments.some(n => n < 0)} onPress={() => onSubmit({ kind: "sort", buckets: assignments })} />
   </View>;
 }
 
-function RepairPatternTask({ puzzle, answered, onSubmit, onDragStateChange }: Controls & { puzzle: RepairPatternPuzzle }) {
+function RepairPatternTask({ puzzle, answered, onAnswerChange, onDragStateChange }: Controls & { puzzle: RepairPatternPuzzle }) {
   const { t } = useTranslation();
   const { sequence, tiles } = puzzle.payload;
   const [placements, setPlacements] = useState<(number | null)[]>(() => sequence.filter(n => n === null).map(() => null));
+  const answer = useMemo<ChallengeAnswer | null>(() => placements.some(n => n === null) ? null : { kind: "sequence", values: placements.map(i => tiles[i!]) }, [placements, tiles]);
+  useEffect(() => onAnswerChange(answer), [answer, onAnswerChange]);
   const tileCount = tiles.length, gapCount = placements.length;
   const drop = useCallback((source: string, target: string) => {
     const tile = Number(source), slot = target === "bank" ? null : Number(target.replace("gap-", ""));
@@ -87,16 +90,17 @@ function RepairPatternTask({ puzzle, answered, onSubmit, onDragStateChange }: Co
         <View style={styles.tiles}>{tiles.flatMap((_, i) => placements.includes(i) ? [] : [tile(i)])}</View>
       </PuzzleDropArea>
     </PuzzleDragBoard>
-    <Action label={t("challenges.checkPattern")} disabled={answered || placements.some(n => n === null)} onPress={() => onSubmit({ kind: "sequence", values: placements.map(i => tiles[i!]) })} />
   </View>;
 }
 
-function RouteGridTask({ puzzle, answered, onSubmit }: Controls & { puzzle: RouteGridPuzzle }) {
+function RouteGridTask({ puzzle, answered, onAnswerChange }: Controls & { puzzle: RouteGridPuzzle }) {
   const { t } = useTranslation();
   const { cells, columns, moves, start, target } = puzzle.payload;
   const [path, setPath] = useState<number[]>([0]);
   const value = getRouteValue(puzzle, path)!;
   const current = path.at(-1)!;
+  const answer = useMemo<ChallengeAnswer | null>(() => path.length === moves + 1 && path.at(-1) === cells.length - 1 ? { kind: "route", cells: path } : null, [path, moves, cells.length]);
+  useEffect(() => onAnswerChange(answer), [answer, onAnswerChange]);
   return <View style={styles.wrap}>
     <Text style={styles.instructions}>{t("challenges.routeInstructions")}</Text>
     <Text style={styles.goal}>{t("challenges.routeGoal", { target, moves })}</Text>
@@ -116,14 +120,15 @@ function RouteGridTask({ puzzle, answered, onSubmit }: Controls & { puzzle: Rout
       </Pressable>;
     })}</View>)}
     <Action label={t("challenges.undoStep")} disabled={answered || path.length < 2} onPress={() => setPath(path.slice(0, -1))} />
-    <Action label={t("challenges.checkRoute")} disabled={answered || path.length !== moves + 1 || current !== cells.length - 1} onPress={() => onSubmit({ kind: "route", cells: path })} />
   </View>;
 }
 
-function BudgetPlanTask({ puzzle, answered, onSubmit }: Controls & { puzzle: BudgetPlanPuzzle }) {
+function BudgetPlanTask({ puzzle, answered, onAnswerChange }: Controls & { puzzle: BudgetPlanPuzzle }) {
   const { t } = useTranslation();
   const { budget, remaining, pickCount, items } = puzzle.payload;
   const [selected, setSelected] = useState<number[]>([]);
+  const answer = useMemo<ChallengeAnswer | null>(() => selected.length === pickCount ? { kind: "budget", indices: selected } : null, [selected, pickCount]);
+  useEffect(() => onAnswerChange(answer), [answer, onAnswerChange]);
   return <View style={styles.wrap}>
     <Text style={styles.goal}>{t("challenges.budgetGoal", { budget, remaining, count: pickCount })}</Text>
     <Text style={styles.instructions}>{t("challenges.budgetInstructions")}</Text>
@@ -133,7 +138,6 @@ function BudgetPlanTask({ puzzle, answered, onSubmit }: Controls & { puzzle: Bud
       <View style={styles.itemHeading}><Text style={styles.itemTitle}>{item.label}</Text><Text style={styles.price}>{t("challenges.price", { price: item.price })}</Text></View>
       <Text style={styles.instructions}>{item.discountPercent ? t("challenges.discount", { percent: item.discountPercent }) : t("challenges.noDiscount")}</Text>
     </Pressable>)}
-    <Action label={t("challenges.checkPlan")} disabled={answered || selected.length !== pickCount} onPress={() => onSubmit({ kind: "budget", indices: selected })} />
   </View>;
 }
 

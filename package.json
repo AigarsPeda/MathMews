@@ -22,6 +22,7 @@
     "typecheck:backend": "tsc --project supabase/functions/tsconfig.json",
     "test:backend": "node --test scripts/backend/test-*.mjs",
     "test:game": "node scripts/check-game.mjs",
+    "test:puzzle-experience": "node scripts/check-puzzle-experience.mjs",
     "test:result-dismissal": "node scripts/check-result-dismissal.mjs",
     "test:cat-task-chains": "node scripts/check-cat-task-chains.mjs",
     "test:feeding-effects": "node scripts/check-native-room.mjs --feeding-effects",
@@ -43,12 +44,13 @@
     "catalog:build": "node scripts/catalog/build.mjs",
     "test:catalog": "node --test scripts/catalog/test-*.mjs scripts/backend/test-store-catalog.mjs",
     "puzzles:build": "node scripts/puzzles/build-content.mjs",
-    "test:puzzles": "node scripts/check-curriculum.mjs && node scripts/check-puzzle-drag.mjs && node scripts/check-boss-assets.mjs",
+    "test:puzzles": "node scripts/check-curriculum.mjs && node scripts/check-puzzle-drag.mjs && node scripts/check-boss-assets.mjs && node scripts/check-puzzle-objects.mjs",
     "test:puzzles:ios": "node scripts/native/check-puzzle-drag.mjs",
     "test:puzzles:scenes:ios": "node scripts/native/check-puzzle-drag.mjs --scenes",
     "test:puzzles:companion:ios": "node scripts/native/check-puzzle-drag.mjs --companion",
     "assets:bosses": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-boss-scenes.py && node scripts/3d/pack-boss-scenes.mjs",
-    "test:puzzles:bosses:ios": "node scripts/native/check-puzzle-drag.mjs --bosses"
+    "test:puzzles:bosses:ios": "node scripts/native/check-puzzle-drag.mjs --bosses",
+    "assets:puzzle-objects": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-puzzle-objects.py"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

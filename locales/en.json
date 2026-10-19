@@ -1093,7 +1093,30 @@
     "shareAction": "Share one round",
     "reset": "Start again"
   },
+  "objectScenes": {
+    "joinReady": "Red ribbons: {{left}}. Blue ribbons: {{right}}. Join the two groups.",
+    "joinDone": "The ribbons are together. Count them to find the total.",
+    "take_awayReady": "Start with {{left}} paper stars. Take away the {{right}} red stars.",
+    "take_awayDone": "The red stars moved away. Count how many stay.",
+    "arrayReady": "Build {{rows}} rows with {{columns}} {{objects}} in each.",
+    "arrayBuilt": "{{rows}} rows, {{columns}} {{objects}} in each. How many altogether?",
+    "shareDescription": "In the pool: {{remaining}} {{objects}}. {{groups}} groups, {{each}} in each.",
+    "joinAction": "Join the ribbons"
+  },
+  "taskObjects": {
+    "mouse": "toy mice",
+    "ribbon": "ribbons",
+    "star": "paper stars",
+    "cookie": "cookies",
+    "parcel": "parcels",
+    "planting_tile": "planting spaces",
+    "carriage": "train carriages"
+  },
   "puzzleTypes": {
+    "fractionMatchTryAgain": "Those pictures and fractions don’t match. Try again; your completed pairs are saved.",
+    "orderTapOrDrag": "Tap two numbers to swap them, or drag a number into place.",
+    "orderPickSecond": "Tap another number to swap. Tap the selected number to cancel.",
+    "fractionMatchReady": "All pairs matched. Check your answer!",
     "multiple_choice": "Story",
     "compare": "Compare",
     "operation_path": "Operation path",
@@ -1146,7 +1169,7 @@
     "jumpBack": "Jump −{{count}}",
     "tapLandingSpot": "Tap where you land!",
     "numberLinePrompt": "Start at {{start}}. {{jump}}.",
-    "numberLineHint": "− goes left. + goes right. Move the dot, then check your answer.",
+    "numberLineHint": "− goes left. + goes right. Tap a number or use the step buttons.",
     "numberLineMoveLeft": "Move one number to the left",
     "numberLineMoveRight": "Move one number to the right",
     "numberLineLeftButton": "← 1 step",
@@ -1155,7 +1178,7 @@
     "pairTarget": "Make",
     "pickTwoNumbers": "Tap two numbers that add up.",
     "pickOneMore": "Tap one more number.",
-    "checkingPair": "Checking your pair…",
+    "checkingPair": "Ready to check your pair.",
     "minkaTried": "Minka tried:",
     "shareAmong": "Share among {{count}} friends",
     "find_all_pairs": "Pair hunt",
@@ -1193,6 +1216,24 @@
     "a11yGotIt": "Got it"
   },
   "play": {
+    "puzzleOf": "Puzzle {{number}} of {{total}}",
+    "adjustAnswer": "Not quite. Adjust your answer and check again.",
+    "attemptHints": {
+      "fractionTooFew": "You’ve shaded too few pieces. Tap an empty slice to fill it.",
+      "fractionTooMany": "You’ve shaded too many pieces. Tap a filled slice to remove it.",
+      "totalTooLow": "Your total is below the goal. Try changing your choices.",
+      "totalTooHigh": "Your total is above the goal. Try changing your choices.",
+      "moveRight": "Your dot is too far left. Count the jumps toward the right.",
+      "moveLeft": "Your dot is too far right. Count the jumps toward the left.",
+      "divisionWhole": "Check the division. Each step needs to make a whole number.",
+      "orderAscending": "Read from left to right. Each number should be larger than the one before it.",
+      "orderDescending": "Read from left to right. Each number should be smaller than the one before it.",
+      "sortingRule": "Some tiles are in the wrong group. Check each tile against its group’s rule.",
+      "patternRule": "Look at how the pattern changes, then adjust the tiles in the gaps.",
+      "routeSteps": "Check the route’s steps and finish at the exit.",
+      "budgetTooMuch": "You’re spending too much. Try a less expensive combination.",
+      "budgetTooLittle": "You’re leaving too much money. Recheck the prices and discounts."
+    },
     "solveFor": "Solve for {{name}}",
     "replayNut": "Replay nut #{{number}}",
     "hardNut": "🥜 Puzzle #{{number}}",
@@ -1235,15 +1276,16 @@
       "sort_buckets": "Drag every tile into the right group, then check your baskets.",
       "repair_pattern": "Drag tiles into the gaps. You can swap them or return them to the tile bank.",
       "route_grid": "Tap neighboring squares to build a route. You can undo steps before checking.",
-      "budget_plan": "Compare the discounted prices and choose a plan. Several plans may work."
+      "budget_plan": "Compare the discounted prices and choose a plan. Several plans may work.",
+      "target_buildHard": "Fill each gap, then check your answer."
     }
   },
   "lives": {
     "title": "Lives",
     "count": "{{current}}/{{max}}",
     "nextFreeLife": "Next free life in",
-    "nextLifeIn": "Next life in",
-    "fullLives": "You are full on lives. Go crack some nuts!",
+    "nextLifeIn": "Next free life in {{time}}",
+    "fullLives": "All three lives are ready.",
     "buyLife": "Buy a life · {{cost}} 🪙",
     "needCoinsBuy": "Need {{cost}} coins to buy a life. You have {{coins}} 🪙",
     "outOfLives": "Out of lives",
@@ -1252,11 +1294,15 @@
     "livesFull": "Lives full",
     "backToPath": "Back to puzzle path",
     "refillsEvery": "Refills every {{minutes}} min",
-    "a11yLives": "Lives {{current}} of {{max}}. Tap to buy more.",
+    "a11yLives": "Lives {{current}} of {{max}}. Open lives and refill.",
     "a11yBuy": "Buy a life for {{cost}} coins",
     "a11yCloseMenu": "Close lives menu",
     "a11yTimer": "Next life in {{time}}",
-    "a11yProgress": "{{percent}} percent until next life"
+    "a11yProgress": "{{percent}} percent until next life",
+    "mistakeCost": "Each incorrect answer uses 1 life.",
+    "checkPaused": "Answer checking is paused. Your work stays in place.",
+    "openRefill": "Lives and refill",
+    "workedExample": "See a worked example"
   },
   "economy": {
     "coinsLabel": "Coins",
@@ -1370,6 +1416,9 @@
     "automaticDescription": "Changes as world time passes."
   },
   "learning": {
+    "collectionComplete": "Every pair found!",
+    "lessonCompleteDetail": "You’ve completed the lesson. Choose another lesson to keep learning.",
+    "practiceCompleteDetail": "All {{total}} practice puzzles are complete. Return to the lesson to choose what’s next.",
     "chooseTopic": "Choose a topic",
     "topicIntro": "Pick what you want to learn. Each topic has its own lessons and progress.",
     "requiredProgress": "{{count}} of {{total}} puzzles and boss stages complete",
@@ -1402,7 +1451,7 @@
     "nextStage": "Continue the mission",
     "backToLesson": "Back to lesson",
     "bossComplete": "Mission complete!",
-    "challengeComplete": "Every pair found!",
+    "challengeComplete": "Challenge complete!",
     "collectPairs": "Collect every pair making {{target}}",
     "pairsProgress": "{{count}} of {{total}} pairs collected",
     "savePair": "Add this pair",
@@ -1446,7 +1495,7 @@
     "undoStep": "Undo last move",
     "checkRoute": "Check my route",
     "budgetGoal": "Budget {{budget}} · Choose {{count}} items · Leave {{remaining}}",
-    "budgetInstructions": "These are pretend prices. Work out each discount, then choose your items. Your game coins stay in your wallet.",
+    "budgetInstructions": "These are pretend prices. Select your supplies, then check your plan. Your game coins stay in your wallet.",
     "itemsSelected": "{{count}} of {{total}} items selected",
     "price": "{{price}} pretend coins",
     "discount": "{{percent}}% off",

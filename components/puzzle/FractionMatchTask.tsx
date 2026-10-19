@@ -17,6 +17,7 @@ type FractionMatchTaskProps = {
   selectedId: string | null;
   wrongIds: string[];
   answered: boolean;
+  canAttempt?: boolean;
   isCorrect: boolean;
   onTapCard: (cardId: string) => void;
 };
@@ -57,6 +58,7 @@ export function FractionMatchTask({
   selectedId,
   wrongIds,
   answered,
+  canAttempt = true,
   isCorrect,
   onTapCard,
 }: FractionMatchTaskProps) {
@@ -79,7 +81,7 @@ export function FractionMatchTask({
             : undefined;
           const wrong = wrongSet.has(card.id);
           const showCorrect = answered && isCorrect && matched;
-          const showWrong = answered && !isCorrect && wrong;
+          const showWrong = !isCorrect && wrong;
 
           return (
             <Pressable
@@ -92,7 +94,7 @@ export function FractionMatchTask({
                 showWrong && styles.cardWrong,
                 answered && !matched && !showWrong && styles.cardMuted,
               ]}
-              disabled={answered || matched}
+              disabled={answered || !canAttempt || matched}
               onPress={() => onTapCard(card.id)}
               accessibilityRole="button"
             >
@@ -111,8 +113,10 @@ export function FractionMatchTask({
 
       {!answered ? (
         <Text style={styles.progress}>
-          {matchedIds.length === 0
+          {wrongIds.length > 0 ? t("puzzleTypes.fractionMatchTryAgain")
+            : matchedIds.length === 0
             ? t("puzzleTypes.fractionMatchPickFirst")
+            : matchedIds.length === cards.length ? t("puzzleTypes.fractionMatchReady")
             : t("puzzleTypes.fractionMatchPairsLeft", {
                 count: puzzle.payload.pairs.length - matchedIds.length / 2,
               })}

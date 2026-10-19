@@ -1,11 +1,14 @@
-import { getStoreCoinPrice } from "@/utils/store-catalog";
-import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
 import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
+import { getPuzzleAttemptHint, getPuzzleDraftAnswer, getPuzzlePosition } from "@/utils/puzzle-attempt";
 import { getBossSceneProgress } from "@/utils/boss-story";
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
+import { PuzzleProgress } from "@/components/puzzle/PuzzleProgress";
+import { PuzzleLives } from "@/components/puzzle/PuzzleLives";
+import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
+import { PuzzleCatPortrait } from "@/components/puzzle/PuzzleCatPortrait";
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { IconText as Text } from "@/components/ui/IconText";
@@ -13,9 +16,10 @@ import {
   GameColors,
   getPuzzleCoinReward,
   getVisualHelpCost,
+  MAX_LIVES,
 } from "@/constants/game";
 import { isPuzzleDifficulty } from "@/constants/puzzles";
-import { getLevelPuzzles, getNextPracticeLevel, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
+import { getLevelPuzzles, getNextPracticeLevel, getRequiredIds, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
 import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
@@ -29,6 +33,8 @@ import { moveOrderTile } from "@/utils/puzzle-drag";
 import { resizeFractionSelection, toggleFractionSlice } from "@/utils/fraction-pie";
 import { getPuzzleCompanionMessage } from "@/utils/puzzle-companion";
 import { shufflePuzzleChoices } from "@/utils/puzzle-practice";
+import { applyLifeRegen, formatRegenCountdown, msUntilNextLife } from "@/utils/lives";
+import { useWorldClockNow } from "@/hooks/use-world-clock-now";
 import {
   asFractionBuildPuzzle,
   asFractionMatchPuzzle,
@@ -106,13 +112,16 @@ function applyAnswerResult({
   setCoinsEarned: (value: number) => void;
   setIsCorrect: (value: boolean) => void;
 }) {
+  const coins = answerPuzzle(puzzle, correct, attemptId);
+  if (coins === null) return false;
   triggerHaptic(
     correct
       ? Haptics.ImpactFeedbackStyle.Medium
       : Haptics.ImpactFeedbackStyle.Light,
   );
   setIsCorrect(correct);
-  setCoinsEarned(answerPuzzle(puzzle, correct, attemptId));
+  setCoinsEarned(coins);
+  return true;
 }
 
 export default function PlayScreen() {
@@ -137,25 +146,28 @@ function LearningPlayGate({ difficulty, lessonId, levelId, phaseParam }: {
   return <PlaySession session={session} />;
 }
 
-function PlaySession({ session }: { session: LearningSession }) {
-  useStoreCatalog();
-  const lifeBuyCost = getStoreCoinPrice("life", "one")!;
+export function PlaySession({ session }: { session: LearningSession }) {
   const router = useRouter();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { t } = useTranslation();
   const { locale } = useLocale();
   const { lesson, level, phase: sessionIndex } = session;
   const difficulty = lesson.difficulty;
-  const { pet, answerPuzzle, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp } = useGame();
+  const { pet, answerPuzzle, buyLife, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp } = useGame();
+  const now = useWorldClockNow(1000, progress.lives.current < MAX_LIVES);
+  const lives = applyLifeRegen(progress.lives, now);
+  const nextLife = msUntilNextLife(lives, now);
+  const hasLives = lives.current > 0;
   const puzzles = getLevelPuzzles(locale, lesson, level);
   const [entryCompleted] = useState(progress.completedPuzzleIds ?? []);
   const [initialAttemptId] = useState(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`);
   const attemptId = useRef(initialAttemptId);
   const isReplay = entryCompleted.includes(puzzles[sessionIndex].id);
-  const [puzzle, setPuzzle] = useState(() => shufflePuzzleChoices(puzzles[sessionIndex],
+  const [puzzle] = useState(() => shufflePuzzleChoices(puzzles[sessionIndex],
     `${level.id}-${sessionIndex}-${progress.puzzleStreak}`));
-  const puzzleNumber = level.kind === "practice" ? lesson.levels.findIndex(item => item.id === level.id) + 1 : sessionIndex + 1;
-  const coinReward = getPuzzleCoinReward(difficulty, isReplay);
+  const position = useMemo(() => getPuzzlePosition(lesson, level, sessionIndex), [lesson, level, sessionIndex]);
+  const puzzleNumber = position.current;
+  const coinReward = getPuzzleCoinReward(difficulty, isReplay, level.kind);
   const [foundPairs, setFoundPairs] = useState<[number, number][]>([]);
   const [isDraggingTile, setIsDraggingTile] = useState(false);
 
@@ -163,20 +175,20 @@ function PlaySession({ session }: { session: LearningSession }) {
   const [pendingNumberLine, setPendingNumberLine] = useState<number | null>(
     null,
   );
-  const [pairSubmitted, setPairSubmitted] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [selectedOperators, setSelectedOperators] = useState<
     (MathOperator | null)[]
   >(() => createEmptyOperators(puzzle));
-  const [operatorSubmitted, setOperatorSubmitted] = useState(false);
+  const [answered, setAnswered] = useState(false);
+  const [lastAttempt, setLastAttempt] = useState<{ key: string; hint: string } | null>(null);
+  const submittedAnswer = useRef<string | null>(null);
+  const matchingAttempt = useRef<string | null>(null);
+  const [challengeAnswer, setChallengeAnswer] = useState<ChallengeAnswer | null>(null);
   const [fractionSelectedSlices, setFractionSelectedSlices] = useState<number[]>([]);
   const fractionPieces = fractionSelectedSlices.length;
-  const [numberLineValue, setNumberLineValue] = useState<number | null>(null);
   const [pairIndices, setPairIndices] = useState<number[]>([]);
   const [numberOrder, setNumberOrder] = useState<number[]>(() =>
     createInitialOrder(puzzle),
   );
-  const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [fractionMatchMatchedIds, setFractionMatchMatchedIds] = useState<
     string[]
   >([]);
@@ -186,24 +198,29 @@ function PlaySession({ session }: { session: LearningSession }) {
   const [fractionMatchWrongIds, setFractionMatchWrongIds] = useState<string[]>(
     [],
   );
-  const [fractionMatchAnswered, setFractionMatchAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
+  const [showLives, setShowLives] = useState(false);
 
   const visualHelpCost = getVisualHelpCost(difficulty);
   const visualHelpUnlocked = true;
   const hasVisualHelp = hasVisualExplanation(puzzle);
 
-  const answered =
-    selectedIndex !== null ||
-    operatorSubmitted ||
-    numberLineValue !== null ||
-    pairSubmitted ||
-    orderSubmitted ||
-    fractionMatchAnswered;
-  const resultMood: PetAnimationState = isCorrect ? "correct" : "idle";
+  const draftAnswer = useMemo(() => getPuzzleDraftAnswer(puzzle, {
+    choice: pendingChoice, operators: selectedOperators, shaded: fractionPieces,
+    numberLine: pendingNumberLine, pairIndices, order: numberOrder,
+    matchedCount: fractionMatchMatchedIds.length / 2, pairs: foundPairs, challenge: challengeAnswer,
+  }), [puzzle, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
+  const draftKey = JSON.stringify(draftAnswer);
+  const canCheck = hasLives && !answered && draftAnswer !== null && draftKey !== lastAttempt?.key;
+  const practiceFinished = level.kind === "practice" && !getNextPracticeLevel(lesson, level);
+  const progressSteps = level.kind === "practice"
+    ? lesson.levels.filter(item => item.kind === "practice").map(item => item.puzzleIds.every(id => entryCompleted.includes(id) || answered && id === puzzle.id))
+    : level.puzzleIds.map(id => entryCompleted.includes(id) || answered && id === puzzle.id);
+  const lessonFinished = answered && !isReplay && getRequiredIds(lesson).every(id => id === puzzle.id || entryCompleted.includes(id));
+  const resultMood: PetAnimationState = isCorrect ? "correct" : "incorrect";
   const nextPuzzleRoute = useMemo(() => {
     if (!isCorrect) return undefined;
     if (level.kind === "boss" && sessionIndex + 1 < puzzles.length) {
@@ -223,7 +240,7 @@ function PlaySession({ session }: { session: LearningSession }) {
     recordInteraction();
     triggerHaptic();
     setShowVisualHelp(true);
-  }, [answered, hasVisualHelp, recordInteraction]);
+  }, [answered, hasVisualHelp, recordInteraction, setShowVisualHelp]);
 
   const handlePurchaseVisualHelp = useCallback(() => {
     recordInteraction();
@@ -234,74 +251,47 @@ function PlaySession({ session }: { session: LearningSession }) {
     router.dismissTo({ pathname: "/puzzles", params: { difficulty, topic: lesson.topicId, lesson: lesson.id } });
   }, [difficulty, lesson.id, lesson.topicId, router]);
 
-  const handleCheckPairs = useCallback(() => {
-    if (answered) return;
-    const correct = checkPuzzleAnswer(puzzle, { kind: "pairs", pairs: foundPairs });
-    setOperatorSubmitted(true);
-    applyAnswerResult({ correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
-  }, [answered, puzzle, foundPairs, answerPuzzle]);
+  const handleCheckAnswer = useCallback(() => {
+    if (!canCheck || !draftAnswer || submittedAnswer.current === draftKey) return;
+    // Guard duplicate taps before React has painted the disabled button.
+    submittedAnswer.current = draftKey;
+    const correct = checkPuzzleAnswer(puzzle, draftAnswer);
+    if (!applyAnswerResult({ correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect })) {
+      submittedAnswer.current = null;
+      return;
+    }
+    if (correct) {
+      setAnswered(true);
+      setLastAttempt(null);
+    } else {
+      const hint = getPuzzleAttemptHint(puzzle, draftAnswer);
+      setLastAttempt({ key: draftKey, hint: hint ? t(`play.attemptHints.${hint.key}`) : puzzle.hint });
+      setRetryCount(count => count + 1);
+      attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+  }, [canCheck, draftAnswer, draftKey, puzzle, answerPuzzle, t]);
 
-  const handleSubmitChallenge = useCallback((answer: ChallengeAnswer) => {
-    if (answered) return;
-    const correct = checkPuzzleAnswer(puzzle, answer);
-    setOperatorSubmitted(true);
-    applyAnswerResult({ correct, puzzle, attemptId: attemptId.current, answerPuzzle, setCoinsEarned, setIsCorrect });
-  }, [answered, puzzle, answerPuzzle]);
+  const handleInlineMistake = useCallback(() => {
+    const accepted = applyAnswerResult({ correct: false, puzzle,
+      attemptId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      answerPuzzle, setCoinsEarned, setIsCorrect });
+    if (accepted) setRetryCount(count => count + 1);
+    return accepted;
+  }, [answerPuzzle, puzzle]);
+
+  // A changed draft permits a new attempt while preserving every placed piece.
+  useEffect(() => {
+    if (draftKey !== submittedAnswer.current) submittedAnswer.current = null;
+  }, [draftKey]);
 
   const handleExitToPath = useCallback(() => {
     exitToPath();
   }, [exitToPath]);
 
-  const handleChoice = useCallback(
-    (index: number) => {
-      if (answered) return;
-      const correct = checkPuzzleAnswer(puzzle, { kind: "choice", index });
-      setSelectedIndex(index);
-      applyAnswerResult({
-        correct: correct,
-        puzzle,
-        attemptId: attemptId.current,
-        answerPuzzle,
-        setCoinsEarned,
-        setIsCorrect,
-      });
-    },
-    [answered, puzzle, answerPuzzle],
-  );
-
-  const handleSelectOperator = useCallback(
-    (stepIndex: number, operator: MathOperator) => {
-      if (answered) return;
-      setSelectedOperators((current) => {
-        const next = [...current];
-        next[stepIndex] = operator;
-        return next;
-      });
-    },
-    [answered],
-  );
-
-  const handleCheckOperators = useCallback(() => {
+  const handleSelectOperator = useCallback((stepIndex: number, operator: MathOperator) => {
     if (answered) return;
-    const operators = selectedOperators.filter(
-      (operator): operator is MathOperator => operator !== null,
-    );
-    if (operators.length !== selectedOperators.length) return;
-
-    const correct = checkPuzzleAnswer(puzzle, {
-      kind: "operators",
-      operators,
-    });
-    setOperatorSubmitted(true);
-    applyAnswerResult({
-      correct: correct,
-      puzzle,
-      attemptId: attemptId.current,
-      answerPuzzle,
-      setCoinsEarned,
-      setIsCorrect,
-    });
-  }, [answered, puzzle, selectedOperators, answerPuzzle]);
+    setSelectedOperators(current => current.map((value, index) => index === stepIndex ? operator : value));
+  }, [answered]);
 
   const handleChangeFractionPieces = useCallback(
     (count: number) => {
@@ -317,41 +307,6 @@ function PlaySession({ session }: { session: LearningSession }) {
     if (answered || !fractionPuzzle || index < 0 || index >= fractionPuzzle.payload.denominator) return;
     setFractionSelectedSlices(selected => toggleFractionSlice(selected, index));
   }, [answered, puzzle]);
-
-  const handleCheckFraction = useCallback(() => {
-    if (answered) return;
-
-    const correct = checkPuzzleAnswer(puzzle, {
-      kind: "fraction",
-      shaded: fractionPieces,
-    });
-    setOperatorSubmitted(true);
-    applyAnswerResult({
-      correct: correct,
-      puzzle,
-      attemptId: attemptId.current,
-      answerPuzzle,
-      setCoinsEarned,
-      setIsCorrect,
-    });
-  }, [answered, fractionPieces, puzzle, answerPuzzle]);
-
-  const handleSelectNumberLineValue = useCallback(
-    (value: number) => {
-      if (answered) return;
-      const correct = checkPuzzleAnswer(puzzle, { kind: "value", value });
-      setNumberLineValue(value);
-      applyAnswerResult({
-        correct: correct,
-        puzzle,
-        attemptId: attemptId.current,
-        answerPuzzle,
-        setCoinsEarned,
-        setIsCorrect,
-      });
-    },
-    [answered, puzzle, answerPuzzle],
-  );
 
   const handleTogglePairIndex = useCallback(
     (index: number) => {
@@ -371,23 +326,6 @@ function PlaySession({ session }: { session: LearningSession }) {
     [answered, pairIndices],
   );
 
-  const handleCheckPair = useCallback(() => {
-    if (answered || pairIndices.length !== 2) return;
-    const correct = checkPuzzleAnswer(puzzle, {
-      kind: "pair",
-      indices: [pairIndices[0], pairIndices[1]],
-    });
-    setPairSubmitted(true);
-    applyAnswerResult({
-      correct,
-      puzzle,
-      attemptId: attemptId.current,
-      answerPuzzle,
-      setCoinsEarned,
-      setIsCorrect,
-    });
-  }, [answered, pairIndices, puzzle, answerPuzzle]);
-
   const handleMoveOrder = useCallback(
     (from: number, to: number) => {
       if (answered) return;
@@ -396,27 +334,9 @@ function PlaySession({ session }: { session: LearningSession }) {
     [answered],
   );
 
-  const handleCheckOrder = useCallback(() => {
-    if (answered) return;
-
-    const correct = checkPuzzleAnswer(puzzle, {
-      kind: "order",
-      numbers: numberOrder,
-    });
-    setOrderSubmitted(true);
-    applyAnswerResult({
-      correct: correct,
-      puzzle,
-      attemptId: attemptId.current,
-      answerPuzzle,
-      setCoinsEarned,
-      setIsCorrect,
-    });
-  }, [answered, numberOrder, puzzle, answerPuzzle]);
-
   const handleTapFractionMatchCard = useCallback(
     (cardId: string) => {
-      if (fractionMatchAnswered) return;
+      if (answered || !hasLives) return;
 
       const matchPuzzle = asFractionMatchPuzzle(puzzle);
       if (!matchPuzzle) return;
@@ -424,6 +344,7 @@ function PlaySession({ session }: { session: LearningSession }) {
       if (fractionMatchMatchedIds.includes(cardId)) return;
 
       if (fractionMatchSelectedId === null) {
+        matchingAttempt.current = null;
         setFractionMatchWrongIds([]);
         setFractionMatchSelectedId(cardId);
         return;
@@ -438,40 +359,29 @@ function PlaySession({ session }: { session: LearningSession }) {
       const first = cards.find((card) => card.id === fractionMatchSelectedId);
       const second = cards.find((card) => card.id === cardId);
       if (!first || !second) return;
+      const key = [first.id, second.id].sort().join(":");
+      if (matchingAttempt.current === key) return;
+      matchingAttempt.current = key;
 
       if (isFractionMatchPair(first, second)) {
         const nextMatched = [...fractionMatchMatchedIds, first.id, second.id];
         setFractionMatchMatchedIds(nextMatched);
         setFractionMatchSelectedId(null);
 
-        if (nextMatched.length === matchPuzzle.payload.pairs.length * 2) {
-          const correct = checkPuzzleAnswer(puzzle, {
-            kind: "fraction_match",
-            matchedCount: matchPuzzle.payload.pairs.length,
-          });
-          setFractionMatchAnswered(true);
-          applyAnswerResult({
-            correct: correct,
-            puzzle,
-            attemptId: attemptId.current,
-            answerPuzzle,
-            setCoinsEarned,
-            setIsCorrect,
-          });
-        }
         return;
       }
 
+      if (!handleInlineMistake()) return;
       setFractionMatchWrongIds([first.id, second.id]);
       setFractionMatchSelectedId(null);
-      triggerHaptic();
     },
     [
-      fractionMatchAnswered,
+      answered,
       fractionMatchMatchedIds,
       fractionMatchSelectedId,
       puzzle,
-      answerPuzzle,
+      hasLives,
+      handleInlineMistake,
     ],
   );
 
@@ -480,54 +390,14 @@ function PlaySession({ session }: { session: LearningSession }) {
       // Dispatch immediately after dismissal, without a game update or router queue first.
       if (nextPuzzleRoute) navigation.replace("play", nextPuzzleRoute.params);
       else exitToPath();
-      return;
     }
-
-    if (!isCorrect) {
-      recordInteraction();
-      setRetryCount(count => count + 1);
-      attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      setPuzzle((current) =>
-        shufflePuzzleChoices(
-          current,
-          `${current.id}-${Date.now()}-${Math.random()}`,
-        ),
-      );
-      setPendingChoice(null);
-      setPendingNumberLine(null);
-      setPairSubmitted(false);
-      setSelectedIndex(null);
-      setSelectedOperators(createEmptyOperators(puzzle));
-      setOperatorSubmitted(false);
-      setFractionSelectedSlices([]);
-      setNumberLineValue(null);
-      setPairIndices([]);
-      setNumberOrder(createInitialOrder(puzzle));
-      setOrderSubmitted(false);
-      setFractionMatchMatchedIds([]);
-      setFractionMatchSelectedId(null);
-      setFractionMatchWrongIds([]);
-      setFractionMatchAnswered(false);
-      setIsCorrect(false);
-      setCoinsEarned(0);
-      return;
-    }
-  }, [
-    nextPuzzleRoute,
-    exitToPath,
-    isCorrect,
-    recordInteraction,
-    navigation,
-    puzzle,
-    setPuzzle,
-  ]);
+  }, [nextPuzzleRoute, exitToPath, isCorrect, navigation]);
 
   const handleGoHome = useCallback(() => { router.dismissTo("/"); }, [router]);
 
   if (!isReady) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
   if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
 
-  const canRetry = true;
   const companionMessage = getPuzzleCompanionMessage({
     correct: isCorrect,
     kind: level.kind,
@@ -562,7 +432,13 @@ function PlaySession({ session }: { session: LearningSession }) {
           />
         </View>
 
-        <Text style={styles.title}>{level.kind === "practice" ? lesson.title[locale] : level.title[locale]}</Text>
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, { flex: 1 }]}>{level.kind === "practice" ? lesson.title[locale] : level.title[locale]}</Text>
+          <PuzzleLives lives={lives} onPress={() => { recordInteraction(); setShowLives(true); }} />
+        </View>
+
+        <PuzzleProgress steps={progressSteps} total={position.total}
+          label={t(level.kind === "boss" ? "learning.stageOf" : "play.puzzleOf", { number: position.current, total: position.total })} />
 
         <ScrollView
           scrollEnabled={!isDraggingTile}
@@ -592,9 +468,12 @@ function PlaySession({ session }: { session: LearningSession }) {
           <PuzzleCard
             puzzle={puzzle}
             puzzleNumber={puzzleNumber}
+            puzzleTotal={position.total}
             coinReward={coinReward}
             levelKind={level.kind}
           />
+          <Text style={styles.lifePolicy}>{t("lives.mistakeCost")}</Text>
+
 
           {hasVisualHelp ? (
             <Pressable
@@ -608,7 +487,7 @@ function PlaySession({ session }: { session: LearningSession }) {
               accessibilityLabel={t("visualHelp.a11yOpen")}
             >
               <Text style={styles.visualHelpBtnText}>
-                {t("visualHelp.watchButton")}
+                {t("visualHelp.compactButton")}
               </Text>
               {!visualHelpUnlocked ? (
                 <Text style={styles.visualHelpBtnHint}>
@@ -619,69 +498,84 @@ function PlaySession({ session }: { session: LearningSession }) {
           ) : null}
 
           <View style={styles.taskArea}>
-            {!(progress.completedPuzzleIds ?? []).some(
+            {puzzle.type !== "order_numbers" && !(progress.completedPuzzleIds ?? []).some(
               (id) =>
                 puzzles.find((item) => item.id === id)?.type === puzzle.type,
             ) && (
               <Text style={styles.mechanicIntro}>
-                {t(`play.mechanicIntro.${getPuzzleType(puzzle)}`)}
+                {t(difficulty === "hard" && puzzle.type === "target_build" ? "play.mechanicIntro.target_buildHard" : `play.mechanicIntro.${getPuzzleType(puzzle)}`)}
               </Text>
             )}
             <PuzzleTaskView
               puzzle={puzzle}
-              onSubmitChallenge={handleSubmitChallenge}
+              hasLives={hasLives}
+              onIncorrectAttempt={handleInlineMistake}
+              onChallengeAnswerChange={setChallengeAnswer}
               onDragStateChange={setIsDraggingTile}
-              selectedIndex={selectedIndex ?? pendingChoice}
+              selectedIndex={pendingChoice}
               selectedOperators={selectedOperators}
               fractionPieces={fractionPieces}
               fractionSelectedSlices={fractionSelectedSlices}
-              numberLineValue={numberLineValue ?? pendingNumberLine}
+              numberLineValue={pendingNumberLine}
               pairIndices={pairIndices}
               foundPairs={foundPairs}
               onFoundPairsChange={setFoundPairs}
-              onCheckPairs={handleCheckPairs}
               numberOrder={numberOrder}
-              orderSubmitted={orderSubmitted}
               fractionMatchMatchedIds={fractionMatchMatchedIds}
               fractionMatchSelectedId={fractionMatchSelectedId}
               fractionMatchWrongIds={fractionMatchWrongIds}
-              fractionMatchAnswered={fractionMatchAnswered}
               answered={answered}
               isCorrect={isCorrect}
               onSelectChoice={setPendingChoice}
               onSelectOperator={handleSelectOperator}
-              onCheckOperators={handleCheckOperators}
               onChangeFractionPieces={handleChangeFractionPieces}
               onToggleFractionSlice={handleToggleFractionSlice}
-              onCheckFraction={handleCheckFraction}
               onSelectNumberLineValue={setPendingNumberLine}
               onTogglePairIndex={handleTogglePairIndex}
               onMoveOrder={handleMoveOrder}
-              onCheckOrder={handleCheckOrder}
+              onSwapOrder={(from, to) => {
+                if (answered) return;
+                setNumberOrder(current => current.map((value, index) => index === from ? current[to] : index === to ? current[from] : value));
+              }}
               onTapFractionMatchCard={handleTapFractionMatchCard}
             />
 
-            {!answered &&
-            (pendingChoice !== null ||
-              pendingNumberLine !== null ||
-              pairIndices.length === 2) ? (
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => {
-                  if (pendingChoice !== null) handleChoice(pendingChoice);
-                  else if (pendingNumberLine !== null)
-                    handleSelectNumberLineValue(pendingNumberLine);
-                  else handleCheckPair();
-                }}
-                style={styles.checkAnswer}
-              >
-                <Text style={styles.checkAnswerText}>
-                  {t("play.checkAnswer")}
-                </Text>
-              </Pressable>
-            ) : null}
           </View>
         </ScrollView>
+
+        <View style={styles.answerDock}>
+          {!answered && lives.current === 0 ? <View style={styles.emptyLives} accessibilityLiveRegion="polite">
+            <Text style={styles.attemptTitle}>{t("lives.outOfLives")}</Text>
+            <Text style={styles.attemptHint}>{t("lives.checkPaused")}</Text>
+            {nextLife !== null ? <Text style={styles.lifePolicy}>{t("lives.nextLifeIn", { time: formatRegenCountdown(nextLife) })}</Text> : null}
+            <Pressable onPress={() => setShowLives(true)} accessibilityRole="button" style={styles.lifeAction}>
+              <Text style={styles.lifeActionText}>{t("lives.openRefill")}</Text>
+            </Pressable>
+          </View> : null}
+          {!answered && lives.current > 0 && lastAttempt && draftKey === lastAttempt.key ? (
+            <View style={styles.attemptFeedback} accessibilityLiveRegion="polite" accessible>
+              <PuzzleCatPortrait key={`${lastAttempt.key}-${retryCount}`} petType={pet.type} catSkinId={pet.catSkinId}
+                mood="incorrect" reaction={companionMessage.reaction} size={84} />
+              <View style={styles.attemptCopy}>
+                <Text style={styles.attemptTitle}>{t("play.adjustAnswer")}</Text>
+                <Text style={styles.attemptHint}>{lastAttempt.hint}</Text>
+              </View>
+            </View>
+          ) : null}
+          {!answered && (retryCount >= 2 || lives.current === 0) && hasVisualHelp ? <Pressable onPress={handleOpenVisualHelp} accessibilityRole="button" style={styles.lifeAction}>
+            <Text style={styles.lifeActionText}>{t("lives.workedExample")}</Text>
+          </Pressable> : null}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t("play.checkAnswer")}
+            accessibilityState={{ disabled: !canCheck }}
+            disabled={!canCheck}
+            onPress={handleCheckAnswer}
+            style={({ pressed }) => [styles.checkAnswer, !canCheck && styles.checkAnswerDisabled, pressed && canCheck && styles.checkAnswerPressed]}
+          >
+            <Text style={[styles.checkAnswerText, !canCheck && { color: GameColors.textMuted }]}>{t("play.checkAnswer")}</Text>
+          </Pressable>
+        </View>
 
         {answered ? (
           <ResultOverlay
@@ -691,6 +585,7 @@ function PlaySession({ session }: { session: LearningSession }) {
             petType={pet.type}
             catSkinId={pet.catSkinId}
             petMood={resultMood}
+            catReaction={companionMessage.reaction}
             petName={pet.name}
             encouragement={isCorrect && level.story
               ? sessionIndex === 2 ? level.story.outcome[locale] : level.story.stages[sessionIndex].after[locale]
@@ -699,27 +594,30 @@ function PlaySession({ session }: { session: LearningSession }) {
               isCorrect
                 ? level.kind === "boss" && sessionIndex === puzzles.length - 1
                   ? t("learning.bossComplete")
-                  : level.kind === "challenge" ? t("learning.challengeComplete")
-                  : isReplay
-                  ? t("play.crackedAgain")
+                  : level.kind === "challenge" ? t(puzzle.type === "find_all_pairs" ? "learning.collectionComplete" : "learning.challengeComplete")
+                  : isReplay ? t("play.crackedAgain")
+                  : lessonFinished ? t("learning.lessonComplete")
+                  : practiceFinished ? t("learning.practiceComplete")
                   : t("play.greatJob")
                 : t("play.goodTry")
             }
-            detail={isCorrect ? puzzle.explanation : puzzle.hint}
+            detail={puzzle.explanation}
+            summary={lessonFinished ? t("learning.lessonCompleteDetail")
+              : practiceFinished && !isReplay ? t("learning.practiceCompleteDetail", { total: position.total }) : undefined}
             coinsEarned={coinsEarned}
             coinType={isReplay ? "sparkle" : "regular"}
             continueLabel={isCorrect
               ? level.kind === "boss" && sessionIndex + 1 < puzzles.length ? t("learning.nextStage")
                 : level.kind !== "practice" || isReplay || !getNextPracticeLevel(lesson, level) ? t("learning.backToLesson") : t("play.nextPuzzle")
-              : canRetry ? t("play.tryAgain") : t("learning.backToLesson")}
+              : t("play.tryAgain")}
             onContinue={handleContinue}
             onGoHome={isCorrect && !isReplay ? handleGoHome : undefined}
             onBuyLife={undefined}
-            buyLifeCost={lifeBuyCost}
             coins={wallet.coins}
           />
         ) : null}
 
+        {showLives ? <BuyLifeSheet visible lives={lives} coins={wallet.coins} onBuyLife={buyLife} onClose={() => setShowLives(false)} /> : null}
         {showVisualHelp ? (
           <VisualHelpSheet
             visible
@@ -754,13 +652,24 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   checkAnswer: {
-    minHeight: 48,
+    minHeight: moderateScale(56),
     borderRadius: 16,
     backgroundColor: GameColors.primary,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 16,
   },
+  answerDock: { paddingTop: moderateScale(10), gap: moderateScale(8), backgroundColor: GameColors.background },
+  attemptFeedback: { flexDirection: "row", alignItems: "center", gap: moderateScale(8), paddingHorizontal: moderateScale(4) },
+  attemptCopy: { flex: 1, gap: moderateScale(3) },
+  attemptTitle: { fontSize: moderateScale(15), fontWeight: "800", color: "#875100" },
+  attemptHint: { fontSize: moderateScale(15), lineHeight: moderateScale(21), color: GameColors.text },
+  titleRow: { flexDirection: "row", alignItems: "center", gap: moderateScale(12) },
+  emptyLives: { gap: moderateScale(3) },
+  lifePolicy: { fontSize: moderateScale(12), lineHeight: moderateScale(18), color: GameColors.textMuted },
+  lifeAction: { minHeight: 44, alignItems: "center", justifyContent: "center" },
+  lifeActionText: { fontSize: moderateScale(14), fontWeight: "700", color: GameColors.secondaryDark },
+  checkAnswerDisabled: { backgroundColor: "#E6DED5" },
+  checkAnswerPressed: { opacity: 0.85 },
   checkAnswerText: { fontSize: 18, fontWeight: "700", color: "#FFFFFF" },
   loading: {
     flex: 1,
@@ -801,10 +710,10 @@ const styles = StyleSheet.create({
     color: GameColors.textMuted,
   },
   title: {
-    fontSize: moderateScale(24),
+    fontSize: moderateScale(18),
     fontWeight: "800",
     color: GameColors.text,
-    marginBottom: moderateScale(12),
+    marginBottom: moderateScale(8),
   },
   scroll: {
     flex: 1,
@@ -812,8 +721,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 0,
-    gap: moderateScale(16),
-    paddingBottom: moderateScale(24),
+    gap: moderateScale(12),
+    paddingBottom: moderateScale(16),
   },
   taskArea: {
     flexGrow: 0,
@@ -824,17 +733,19 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(16),
     borderWidth: 2,
     borderColor: "#C9B6FF",
-    paddingVertical: moderateScale(12),
-    paddingHorizontal: moderateScale(14),
+    minHeight: 44,
+    paddingVertical: moderateScale(8),
+    paddingHorizontal: moderateScale(12),
     alignItems: "center",
+    alignSelf: "flex-end",
     gap: moderateScale(2),
   },
   visualHelpBtnDisabled: {
     opacity: 0.45,
   },
   visualHelpBtnText: {
-    fontSize: moderateScale(16),
-    fontWeight: "800",
+    fontSize: moderateScale(14),
+    fontWeight: "700",
     color: "#6B4FCF",
   },
   visualHelpBtnHint: {

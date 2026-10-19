@@ -1,0 +1,2333 @@
+{
+  "date": "2026-10-19",
+  "practiceLessons": 36,
+  "practicePuzzles": 144,
+  "totalPuzzlesPerLocale": 209,
+  "locales": [
+    "en",
+    "lv"
+  ],
+  "minimumPracticeTypes": 3,
+  "minimumBossTypes": 2,
+  "preserved": [
+    "Puzzle IDs",
+    "Saved completion",
+    "Lesson progression",
+    "Rewards",
+    "Content version 2",
+    "Animated task models and Blender scenes"
+  ],
+  "lessons": [
+    {
+      "id": "easy-numbers-small",
+      "difficulty": "easy",
+      "topic": "numbers",
+      "practice": [
+        {
+          "id": "v2-easy-numbers-small-1",
+          "type": "order_numbers",
+          "question": {
+            "en": "Put the number tiles from smallest to largest.",
+            "lv": "Sakārto skaitļu kartītes no mazākā līdz lielākajam."
+          }
+        },
+        {
+          "id": "v2-easy-numbers-small-2",
+          "type": "compare",
+          "question": {
+            "en": "Which tray has more toy mice?",
+            "lv": "Kurā paplātē ir vairāk rotaļu peļu?"
+          }
+        },
+        {
+          "id": "v2-easy-numbers-small-3",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Which number is between 2 and 8?",
+            "lv": "Kurš skaitlis ir starp 2 un 8?"
+          }
+        },
+        {
+          "id": "v2-easy-numbers-small-4",
+          "type": "number_line",
+          "question": {
+            "en": "Make a forward jump.",
+            "lv": "Veic lēcienu uz priekšu."
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "easy-numbers-tens",
+      "difficulty": "easy",
+      "topic": "numbers",
+      "practice": [
+        {
+          "id": "v2-easy-numbers-tens-1",
+          "type": "order_numbers",
+          "question": {
+            "en": "Put the number tiles from smallest to largest.",
+            "lv": "Sakārto skaitļu kartītes no mazākā līdz lielākajam."
+          }
+        },
+        {
+          "id": "v2-easy-numbers-tens-2",
+          "type": "compare",
+          "question": {
+            "en": "Which tray has more toy mice?",
+            "lv": "Kurā paplātē ir vairāk rotaļu peļu?"
+          }
+        },
+        {
+          "id": "v2-easy-numbers-tens-3",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Which number is between 5 and 16?",
+            "lv": "Kurš skaitlis ir starp 5 un 16?"
+          }
+        },
+        {
+          "id": "v2-easy-numbers-tens-4",
+          "type": "number_line",
+          "question": {
+            "en": "Make a forward jump.",
+            "lv": "Veic lēcienu uz priekšu."
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "easy-numbers-tens-train",
+          "stages": [
+            {
+              "id": "v2-easy-numbers-train-1",
+              "type": "order_numbers",
+              "question": {
+                "en": "The train visits platforms in number order. Arrange its stops.",
+                "lv": "Vilciens apmeklē peronus skaitļu secībā. Sakārto pieturas."
+              }
+            },
+            {
+              "id": "v2-easy-numbers-train-2",
+              "type": "compare",
+              "question": {
+                "en": "Two trains have 12 and 18 carriages. Choose the longer train.",
+                "lv": "Diviem vilcieniem ir 12 un 18 vagoni. Izvēlies garāko vilcienu."
+              }
+            },
+            {
+              "id": "v2-easy-numbers-train-3",
+              "type": "multiple_choice",
+              "question": {
+                "en": "The last passenger waits at a platform between 9 and 18. Which platform?",
+                "lv": "Pēdējais pasažieris gaida peronā starp 9 un 18. Kurā peronā?"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-addition-join",
+      "difficulty": "easy",
+      "topic": "addition",
+      "practice": [
+        {
+          "id": "v2-easy-addition-join-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "The cat packs 4 red ribbons and 3 blue ribbons. How many ribbons?",
+            "lv": "Kaķis saliek 4 sarkanas un 3 zilas lentes. Cik lenšu kopā?"
+          }
+        },
+        {
+          "id": "v2-easy-addition-join-2",
+          "type": "balance",
+          "question": {
+            "en": "Fill the missing part of the sum.",
+            "lv": "Aizpildi trūkstošo summas daļu."
+          }
+        },
+        {
+          "id": "v2-easy-addition-join-3",
+          "type": "pair_sum",
+          "question": {
+            "en": "Choose two tiles that make 15.",
+            "lv": "Izvēlies divas kartītes, kuru summa ir 15."
+          }
+        },
+        {
+          "id": "v2-easy-addition-join-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Minka tried adding. Which repair is right?",
+            "lv": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "easy-addition-ten",
+      "difficulty": "easy",
+      "topic": "addition",
+      "practice": [
+        {
+          "id": "v2-easy-addition-ten-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "The cat packs 8 red ribbons and 5 blue ribbons. How many ribbons?",
+            "lv": "Kaķis saliek 8 sarkanas un 5 zilas lentes. Cik lenšu kopā?"
+          }
+        },
+        {
+          "id": "v2-easy-addition-ten-2",
+          "type": "balance",
+          "question": {
+            "en": "Fill the missing part of the sum.",
+            "lv": "Aizpildi trūkstošo summas daļu."
+          }
+        },
+        {
+          "id": "v2-easy-addition-ten-3",
+          "type": "pair_sum",
+          "question": {
+            "en": "Choose two tiles that make 18.",
+            "lv": "Izvēlies divas kartītes, kuru summa ir 18."
+          }
+        },
+        {
+          "id": "v2-easy-addition-ten-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Minka tried adding. Which repair is right?",
+            "lv": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "easy-addition-ten-picnic",
+          "stages": [
+            {
+              "id": "v2-easy-addition-picnic-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "Pack 8 red ribbons and 5 blue ribbons for the picnic. How many ribbons?",
+                "lv": "Piknikam saliec 8 sarkanas un 5 zilas lentes. Cik lenšu kopā?"
+              }
+            },
+            {
+              "id": "v2-easy-addition-picnic-2",
+              "type": "balance",
+              "question": {
+                "en": "Each of our 13 ribbons belongs to one guest. Five places are ready. How many more places do we need?",
+                "lv": "Katra no 13 lentēm ir vienam viesim. Piecas vietas ir gatavas. Cik vēl vietu vajag?"
+              }
+            },
+            {
+              "id": "v2-easy-addition-picnic-3",
+              "type": "multiple_choice",
+              "question": {
+                "en": "Seven flags are up. How many more make thirteen flags?",
+                "lv": "Septiņi karodziņi ir izlikti. Cik vēl vajag, lai būtu trīspadsmit?"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-subtraction-take",
+      "difficulty": "easy",
+      "topic": "subtraction",
+      "practice": [
+        {
+          "id": "v2-easy-subtraction-take-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "There are 9 paper stars. Use 3 on a card. How many stay in the box?",
+            "lv": "Ir 9 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek kastē?"
+          }
+        },
+        {
+          "id": "v2-easy-subtraction-take-2",
+          "type": "number_line",
+          "question": {
+            "en": "Move back on the number line.",
+            "lv": "Pārvietojies atpakaļ pa skaitļu taisni."
+          }
+        },
+        {
+          "id": "v2-easy-subtraction-take-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the cat’s subtraction.",
+            "lv": "Pārbaudi kaķa atņemšanu."
+          }
+        },
+        {
+          "id": "v2-easy-subtraction-take-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Which calculation repairs Minka’s work?",
+            "lv": "Kurš aprēķins izlabo Minkas darbu?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "easy-subtraction-back",
+      "difficulty": "easy",
+      "topic": "subtraction",
+      "practice": [
+        {
+          "id": "v2-easy-subtraction-back-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "There are 14 paper stars. Use 6 on a card. How many stay in the box?",
+            "lv": "Ir 14 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?"
+          }
+        },
+        {
+          "id": "v2-easy-subtraction-back-2",
+          "type": "number_line",
+          "question": {
+            "en": "Move back on the number line.",
+            "lv": "Pārvietojies atpakaļ pa skaitļu taisni."
+          }
+        },
+        {
+          "id": "v2-easy-subtraction-back-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the cat’s subtraction.",
+            "lv": "Pārbaudi kaķa atņemšanu."
+          }
+        },
+        {
+          "id": "v2-easy-subtraction-back-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Which calculation repairs Minka’s work?",
+            "lv": "Kurš aprēķins izlabo Minkas darbu?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "easy-subtraction-back-boats",
+          "stages": [
+            {
+              "id": "v2-easy-subtraction-boats-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "There are 14 paper boats. Launch 6. How many wait on the bank?",
+                "lv": "Ir 14 papīra laiviņas. Palaid 6. Cik gaida krastā?"
+              }
+            },
+            {
+              "id": "v2-easy-subtraction-boats-2",
+              "type": "number_line",
+              "question": {
+                "en": "Three of the 8 waiting boats float away. Move back to find how many remain.",
+                "lv": "Trīs no 8 gaidošajām laiviņām aizpeld. Pārvietojies atpakaļ, lai atrastu atlikumu."
+              }
+            },
+            {
+              "id": "v2-easy-subtraction-boats-3",
+              "type": "fix_mistake",
+              "question": {
+                "en": "Two of the last 5 boats reach home. Repair the count of boats still coming.",
+                "lv": "Divas no pēdējām 5 laiviņām sasniedz mājas. Izlabo vēl gaidāmo laiviņu skaitu."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-patterns-jumps",
+      "difficulty": "easy",
+      "topic": "patterns",
+      "practice": [
+        {
+          "id": "v2-easy-patterns-jumps-1",
+          "type": "pattern_next",
+          "question": {
+            "en": "What comes next?",
+            "lv": "Kas būs tālāk?"
+          },
+          "example": {
+            "sequence": [
+              2,
+              4,
+              6,
+              8
+            ],
+            "choices": [
+              "10",
+              "11",
+              "12"
+            ]
+          }
+        },
+        {
+          "id": "v2-easy-patterns-jumps-2",
+          "type": "function_machine",
+          "question": {
+            "en": "Choose the rule that works for this machine.",
+            "lv": "Izvēlies šai mašīnai derīgu likumu."
+          },
+          "example": {
+            "input": 7,
+            "output": 10,
+            "choices": [
+              "+3",
+              "+4",
+              "+5"
+            ]
+          }
+        },
+        {
+          "id": "v2-easy-patterns-jumps-3",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Which number belongs in the gap? 18, 15, ?, 9, 6.",
+            "lv": "Kurš skaitlis iederas tukšajā vietā? 18, 15, ?, 9, 6."
+          },
+          "example": [
+            "12",
+            "13",
+            "14"
+          ]
+        },
+        {
+          "id": "v2-easy-patterns-jumps-4",
+          "type": "pattern_next",
+          "question": {
+            "en": "What comes next?",
+            "lv": "Kas būs tālāk?"
+          },
+          "example": {
+            "sequence": [
+              15,
+              13,
+              11,
+              9
+            ],
+            "choices": [
+              "7",
+              "8",
+              "9"
+            ]
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "easy-patterns-fives",
+      "difficulty": "easy",
+      "topic": "patterns",
+      "practice": [
+        {
+          "id": "v2-easy-patterns-fives-1",
+          "type": "pattern_next",
+          "question": {
+            "en": "What comes next?",
+            "lv": "Kas būs tālāk?"
+          },
+          "example": {
+            "sequence": [
+              5,
+              10,
+              15,
+              20
+            ],
+            "choices": [
+              "25",
+              "26",
+              "27"
+            ]
+          }
+        },
+        {
+          "id": "v2-easy-patterns-fives-2",
+          "type": "function_machine",
+          "question": {
+            "en": "Choose the rule that works for this machine.",
+            "lv": "Izvēlies šai mašīnai derīgu likumu."
+          },
+          "example": {
+            "input": 12,
+            "output": 8,
+            "choices": [
+              "−4",
+              "+4",
+              "−5"
+            ]
+          }
+        },
+        {
+          "id": "v2-easy-patterns-fives-3",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Which number belongs in the gap? 1, 5, ?, 13, 17.",
+            "lv": "Kurš skaitlis iederas tukšajā vietā? 1, 5, ?, 13, 17."
+          },
+          "example": [
+            "9",
+            "10",
+            "11"
+          ]
+        },
+        {
+          "id": "v2-easy-patterns-fives-4",
+          "type": "pattern_next",
+          "question": {
+            "en": "What comes next?",
+            "lv": "Kas būs tālāk?"
+          },
+          "example": {
+            "sequence": [
+              3,
+              6,
+              9,
+              12
+            ],
+            "choices": [
+              "15",
+              "16",
+              "17"
+            ]
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "easy-patterns-fives-music",
+          "stages": [
+            {
+              "id": "v2-easy-patterns-music-1",
+              "type": "pattern_next",
+              "question": {
+                "en": "The music box plays 3, 6, 9, 12 beats. How many come next?",
+                "lv": "Mūzikas lādīte spēlē 3, 6, 9, 12 sitienus. Cik būs tālāk?"
+              },
+              "example": {
+                "sequence": [
+                  3,
+                  6,
+                  9,
+                  12
+                ],
+                "choices": [
+                  "15",
+                  "14",
+                  "16"
+                ]
+              }
+            },
+            {
+              "id": "v2-easy-patterns-music-2",
+              "type": "function_machine",
+              "question": {
+                "en": "The winding gear turns 15 beats into 20. Choose its rule.",
+                "lv": "Uzvilkšanas zobrats pārvērš 15 sitienus par 20. Izvēlies tā likumu."
+              },
+              "example": {
+                "input": 15,
+                "output": 20,
+                "choices": [
+                  "+5",
+                  "+3",
+                  "×2"
+                ]
+              }
+            },
+            {
+              "id": "v2-easy-patterns-music-3",
+              "type": "multiple_choice",
+              "question": {
+                "en": "Finish the tune. Which beat is missing? 20, 18, ?, 14, 12.",
+                "lv": "Pabeidz melodiju. Kurš sitiens trūkst? 20, 18, ?, 14, 12."
+              },
+              "example": [
+                "16",
+                "15",
+                "17"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-multiplication-rows",
+      "difficulty": "easy",
+      "topic": "multiplication",
+      "practice": [
+        {
+          "id": "v2-easy-multiplication-rows-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Make 3 rows with 4 toy mice in each. How many mice?",
+            "lv": "Izveido 3 rindas, katrā pa 4 rotaļu pelēm. Cik peļu kopā?"
+          }
+        },
+        {
+          "id": "v2-easy-multiplication-rows-2",
+          "type": "function_machine",
+          "question": {
+            "en": "Which rule makes the right number of toys?",
+            "lv": "Kurš likums dod pareizo rotaļlietu skaitu?"
+          },
+          "example": {
+            "input": 5,
+            "output": 10,
+            "choices": [
+              "×2",
+              "+2",
+              "×3"
+            ]
+          }
+        },
+        {
+          "id": "v2-easy-multiplication-rows-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the equal-group claim.",
+            "lv": "Pārbaudi apgalvojumu par vienādām grupām."
+          }
+        },
+        {
+          "id": "v2-easy-multiplication-rows-4",
+          "type": "balance",
+          "question": {
+            "en": "How many toys are in each equal row?",
+            "lv": "Cik rotaļlietu ir katrā vienādajā rindā?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "easy-multiplication-groups",
+      "difficulty": "easy",
+      "topic": "multiplication",
+      "practice": [
+        {
+          "id": "v2-easy-multiplication-groups-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Make 4 rows with 5 toy mice in each. How many mice?",
+            "lv": "Izveido 4 rindas, katrā pa 5 rotaļu pelēm. Cik peļu kopā?"
+          }
+        },
+        {
+          "id": "v2-easy-multiplication-groups-2",
+          "type": "function_machine",
+          "question": {
+            "en": "Which rule makes the right number of toys?",
+            "lv": "Kurš likums dod pareizo rotaļlietu skaitu?"
+          },
+          "example": {
+            "input": 3,
+            "output": 18,
+            "choices": [
+              "×6",
+              "+6",
+              "×7"
+            ]
+          }
+        },
+        {
+          "id": "v2-easy-multiplication-groups-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the equal-group claim.",
+            "lv": "Pārbaudi apgalvojumu par vienādām grupām."
+          }
+        },
+        {
+          "id": "v2-easy-multiplication-groups-4",
+          "type": "balance",
+          "question": {
+            "en": "How many toys are in each equal row?",
+            "lv": "Cik rotaļlietu ir katrā vienādajā rindā?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "easy-multiplication-groups-shelves",
+          "stages": [
+            {
+              "id": "v2-easy-multiplication-shelves-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "The first display needs 2 rows of 5 toys. How many toys?",
+                "lv": "Pirmajam stendam vajag 2 rindas pa 5 rotaļlietām. Cik rotaļlietu?"
+              }
+            },
+            {
+              "id": "v2-easy-multiplication-shelves-2",
+              "type": "balance",
+              "question": {
+                "en": "The middle display has 12 toys in 3 equal rows. How many toys in each row?",
+                "lv": "Vidējā stendā ir 12 rotaļlietas 3 vienādās rindās. Cik rotaļlietu katrā rindā?"
+              }
+            },
+            {
+              "id": "v2-easy-multiplication-shelves-3",
+              "type": "fix_mistake",
+              "question": {
+                "en": "The last display needs 4 rows of 6 toys. Repair its label.",
+                "lv": "Pēdējam stendam vajag 4 rindas pa 6 rotaļlietām. Izlabo tā etiķeti."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "easy-fractions-parts",
+      "difficulty": "easy",
+      "topic": "fractions",
+      "practice": [
+        {
+          "id": "v2-easy-fractions-parts-1",
+          "type": "fraction_build",
+          "question": {
+            "en": "Color 1/4 of this whole.",
+            "lv": "Iekrāso 1/4 no šī veselā."
+          }
+        },
+        {
+          "id": "v2-easy-fractions-parts-2",
+          "type": "compare",
+          "question": {
+            "en": "The wholes are the same size. Which fraction is larger?",
+            "lv": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?"
+          }
+        },
+        {
+          "id": "v2-easy-fractions-parts-3",
+          "type": "fraction_match",
+          "question": {
+            "en": "Match each fraction to its picture.",
+            "lv": "Savieno katru daļu ar tās attēlu."
+          }
+        },
+        {
+          "id": "v2-easy-fractions-parts-4",
+          "type": "fraction_equivalent",
+          "question": {
+            "en": "Which fraction covers the same amount of the same-size whole?",
+            "lv": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "easy-fractions-pictures",
+      "difficulty": "easy",
+      "topic": "fractions",
+      "practice": [
+        {
+          "id": "v2-easy-fractions-pictures-1",
+          "type": "fraction_build",
+          "question": {
+            "en": "Color 1/6 of this whole.",
+            "lv": "Iekrāso 1/6 no šī veselā."
+          }
+        },
+        {
+          "id": "v2-easy-fractions-pictures-2",
+          "type": "compare",
+          "question": {
+            "en": "The wholes are the same size. Which fraction is larger?",
+            "lv": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?"
+          }
+        },
+        {
+          "id": "v2-easy-fractions-pictures-3",
+          "type": "fraction_match",
+          "question": {
+            "en": "Match each fraction to its picture.",
+            "lv": "Savieno katru daļu ar tās attēlu."
+          }
+        },
+        {
+          "id": "v2-easy-fractions-pictures-4",
+          "type": "fraction_equivalent",
+          "question": {
+            "en": "Which fraction covers the same amount of the same-size whole?",
+            "lv": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "easy-fractions-pictures-kite",
+          "stages": [
+            {
+              "id": "v2-easy-fractions-kite-1",
+              "type": "fraction_build",
+              "question": {
+                "en": "The kite sail has 6 equal panels. Color 2 panels for its red patch.",
+                "lv": "Pūķa burai ir 6 vienādi laukumi. Iekrāso 2 laukumus sarkanajam ielāpam."
+              }
+            },
+            {
+              "id": "v2-easy-fractions-kite-2",
+              "type": "fraction_equivalent",
+              "question": {
+                "en": "The repair sheet has 12 equal pieces. Choose the same fraction as the 2/6 patch.",
+                "lv": "Remonta loksnei ir 12 vienādi gabali. Izvēlies tādu pašu daļu kā 2/6 ielāps."
+              }
+            },
+            {
+              "id": "v2-easy-fractions-kite-3",
+              "type": "fraction_match",
+              "question": {
+                "en": "Match the 2/6 patch and the remaining 4/6 sail to their pictures.",
+                "lv": "Savieno 2/6 ielāpu un atlikušās 4/6 buras ar attēliem."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-addition-tens",
+      "difficulty": "medium",
+      "topic": "addition",
+      "practice": [
+        {
+          "id": "v2-medium-addition-tens-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "The cat packs 27 red ribbons and 16 blue ribbons. How many ribbons?",
+            "lv": "Kaķis saliek 27 sarkanas un 16 zilas lentes. Cik lenšu kopā?"
+          }
+        },
+        {
+          "id": "v2-medium-addition-tens-2",
+          "type": "balance",
+          "question": {
+            "en": "Fill the missing part of the sum.",
+            "lv": "Aizpildi trūkstošo summas daļu."
+          }
+        },
+        {
+          "id": "v2-medium-addition-tens-3",
+          "type": "pair_sum",
+          "question": {
+            "en": "Choose two tiles that make 54.",
+            "lv": "Izvēlies divas kartītes, kuru summa ir 54."
+          }
+        },
+        {
+          "id": "v2-medium-addition-tens-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Minka tried adding. Which repair is right?",
+            "lv": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "medium-addition-regroup",
+      "difficulty": "medium",
+      "topic": "addition",
+      "practice": [
+        {
+          "id": "v2-medium-addition-regroup-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "The cat packs 46 red ribbons and 27 blue ribbons. How many ribbons?",
+            "lv": "Kaķis saliek 46 sarkanas un 27 zilas lentes. Cik lenšu kopā?"
+          }
+        },
+        {
+          "id": "v2-medium-addition-regroup-2",
+          "type": "balance",
+          "question": {
+            "en": "Fill the missing part of the sum.",
+            "lv": "Aizpildi trūkstošo summas daļu."
+          }
+        },
+        {
+          "id": "v2-medium-addition-regroup-3",
+          "type": "pair_sum",
+          "question": {
+            "en": "Choose two tiles that make 65.",
+            "lv": "Izvēlies divas kartītes, kuru summa ir 65."
+          }
+        },
+        {
+          "id": "v2-medium-addition-regroup-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Minka tried adding. Which repair is right?",
+            "lv": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "medium-addition-regroup-tickets",
+          "stages": [
+            {
+              "id": "v2-medium-addition-tickets-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "37 guests arrive by bus and 28 walk in. How many guests have arrived?",
+                "lv": "37 viesi atbrauc ar autobusu un 28 atnāk kājām. Cik viesu ieradušies?"
+              }
+            },
+            {
+              "id": "v2-medium-addition-tickets-2",
+              "type": "balance",
+              "question": {
+                "en": "65 guests are here. How many more fill the list of 100?",
+                "lv": "65 viesi ir klāt. Cik vēl vajag pilnam 100 viesu sarakstam?"
+              }
+            },
+            {
+              "id": "v2-medium-addition-tickets-3",
+              "type": "fix_mistake",
+              "question": {
+                "en": "46 extra guests join the 100. Repair the final ticket count.",
+                "lv": "100 viesiem pievienojas vēl 46. Izlabo gala biļešu skaitu."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-subtraction-parts",
+      "difficulty": "medium",
+      "topic": "subtraction",
+      "practice": [
+        {
+          "id": "v2-medium-subtraction-parts-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "There are 42 paper stars. Use 17 on a card. How many stay in the box?",
+            "lv": "Ir 42 papīra zvaigznes. 17 pielīmē kartītei. Cik paliek kastē?"
+          }
+        },
+        {
+          "id": "v2-medium-subtraction-parts-2",
+          "type": "number_line",
+          "question": {
+            "en": "Move back on the number line.",
+            "lv": "Pārvietojies atpakaļ pa skaitļu taisni."
+          }
+        },
+        {
+          "id": "v2-medium-subtraction-parts-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the cat’s subtraction.",
+            "lv": "Pārbaudi kaķa atņemšanu."
+          }
+        },
+        {
+          "id": "v2-medium-subtraction-parts-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Which calculation repairs Minka’s work?",
+            "lv": "Kurš aprēķins izlabo Minkas darbu?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "medium-subtraction-check",
+      "difficulty": "medium",
+      "topic": "subtraction",
+      "practice": [
+        {
+          "id": "v2-medium-subtraction-check-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "There are 63 paper stars. Use 28 on a card. How many stay in the box?",
+            "lv": "Ir 63 papīra zvaigznes. 28 pielīmē kartītei. Cik paliek kastē?"
+          }
+        },
+        {
+          "id": "v2-medium-subtraction-check-2",
+          "type": "number_line",
+          "question": {
+            "en": "Move back on the number line.",
+            "lv": "Pārvietojies atpakaļ pa skaitļu taisni."
+          }
+        },
+        {
+          "id": "v2-medium-subtraction-check-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the cat’s subtraction.",
+            "lv": "Pārbaudi kaķa atņemšanu."
+          }
+        },
+        {
+          "id": "v2-medium-subtraction-check-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Which calculation repairs Minka’s work?",
+            "lv": "Kurš aprēķins izlabo Minkas darbu?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "medium-subtraction-check-lift",
+          "stages": [
+            {
+              "id": "v2-medium-subtraction-lift-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "The base has 92 supply bags. Send 37 uphill. How many stay at the base?",
+                "lv": "Pakājē ir 92 krājumu maisi. Nosūti 37 kalnā. Cik paliek pakājē?"
+              }
+            },
+            {
+              "id": "v2-medium-subtraction-lift-2",
+              "type": "balance",
+              "question": {
+                "en": "After the next load, 28 of the 55 bags remain. How many went uphill?",
+                "lv": "Pēc nākamās kravas no 55 maisiem paliek 28. Cik nosūtīja kalnā?"
+              }
+            },
+            {
+              "id": "v2-medium-subtraction-lift-3",
+              "type": "fix_mistake",
+              "question": {
+                "en": "Use 19 of the last 28 bags for the rescue team. Repair the reserve count.",
+                "lv": "Glābējiem izmanto 19 no pēdējiem 28 maisiem. Izlabo rezerves skaitu."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-multiplication-arrays",
+      "difficulty": "medium",
+      "topic": "multiplication",
+      "practice": [
+        {
+          "id": "v2-medium-multiplication-arrays-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Make 6 rows with 7 toy mice in each. How many mice?",
+            "lv": "Izveido 6 rindas, katrā pa 7 rotaļu pelēm. Cik peļu kopā?"
+          }
+        },
+        {
+          "id": "v2-medium-multiplication-arrays-2",
+          "type": "function_machine",
+          "question": {
+            "en": "Which rule makes the right number of toys?",
+            "lv": "Kurš likums dod pareizo rotaļlietu skaitu?"
+          },
+          "example": {
+            "input": 4,
+            "output": 32,
+            "choices": [
+              "×8",
+              "+8",
+              "×9"
+            ]
+          }
+        },
+        {
+          "id": "v2-medium-multiplication-arrays-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the equal-group claim.",
+            "lv": "Pārbaudi apgalvojumu par vienādām grupām."
+          }
+        },
+        {
+          "id": "v2-medium-multiplication-arrays-4",
+          "type": "balance",
+          "question": {
+            "en": "How many toys are in each equal row?",
+            "lv": "Cik rotaļlietu ir katrā vienādajā rindā?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "medium-multiplication-facts",
+      "difficulty": "medium",
+      "topic": "multiplication",
+      "practice": [
+        {
+          "id": "v2-medium-multiplication-facts-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Make 8 rows with 9 toy mice in each. How many mice?",
+            "lv": "Izveido 8 rindas, katrā pa 9 rotaļu pelēm. Cik peļu kopā?"
+          }
+        },
+        {
+          "id": "v2-medium-multiplication-facts-2",
+          "type": "function_machine",
+          "question": {
+            "en": "Which rule makes the right number of toys?",
+            "lv": "Kurš likums dod pareizo rotaļlietu skaitu?"
+          },
+          "example": {
+            "input": 7,
+            "output": 42,
+            "choices": [
+              "×6",
+              "+6",
+              "×7"
+            ]
+          }
+        },
+        {
+          "id": "v2-medium-multiplication-facts-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the equal-group claim.",
+            "lv": "Pārbaudi apgalvojumu par vienādām grupām."
+          }
+        },
+        {
+          "id": "v2-medium-multiplication-facts-4",
+          "type": "balance",
+          "question": {
+            "en": "How many toys are in each equal row?",
+            "lv": "Cik rotaļlietu ir katrā vienādajā rindā?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "medium-multiplication-facts-theatre",
+          "stages": [
+            {
+              "id": "v2-medium-multiplication-theatre-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "The theatre has 7 rows of 8 seats. How many fireflies can sit?",
+                "lv": "Teātrī ir 7 rindas pa 8 vietām. Cik jāņtārpiņu var apsēsties?"
+              }
+            },
+            {
+              "id": "v2-medium-multiplication-theatre-2",
+              "type": "balance",
+              "question": {
+                "en": "Keep 7 equal rows but make 63 seats. How many seats go in each row?",
+                "lv": "Saglabā 7 vienādas rindas, bet izveido 63 vietas. Cik vietu katrā rindā?"
+              }
+            },
+            {
+              "id": "v2-medium-multiplication-theatre-3",
+              "type": "function_machine",
+              "question": {
+                "en": "Add an eighth row of 9. Which rule turns 9 into the total number of seats?",
+                "lv": "Pievieno astoto rindu ar 9 vietām. Kurš likums pārvērš 9 par visu vietu skaitu?"
+              },
+              "example": {
+                "input": 9,
+                "output": 72,
+                "choices": [
+                  "×8",
+                  "+8",
+                  "×7"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-division-equal",
+      "difficulty": "medium",
+      "topic": "division",
+      "practice": [
+        {
+          "id": "v2-medium-division-equal-1",
+          "type": "fair_share",
+          "question": {
+            "en": "Share whole cookies equally. How many each, and how many remain?",
+            "lv": "Sadali veselus cepumus vienādi. Cik katram un cik paliek pāri?"
+          }
+        },
+        {
+          "id": "v2-medium-division-equal-2",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Pack 35 bells into 5 equal boxes. How many per box?",
+            "lv": "Saliec 35 zvaniņus 5 vienādās kastēs. Cik katrā?"
+          }
+        },
+        {
+          "id": "v2-medium-division-equal-3",
+          "type": "function_machine",
+          "question": {
+            "en": "Which division rule fits?",
+            "lv": "Kurš dalīšanas likums der?"
+          },
+          "example": {
+            "input": 54,
+            "output": 9,
+            "choices": [
+              "÷6",
+              "÷7",
+              "−6"
+            ]
+          }
+        },
+        {
+          "id": "v2-medium-division-equal-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Repair the sharing calculation.",
+            "lv": "Izlabo dalīšanas aprēķinu."
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "medium-division-leftovers",
+      "difficulty": "medium",
+      "topic": "division",
+      "practice": [
+        {
+          "id": "v2-medium-division-leftovers-1",
+          "type": "fair_share",
+          "question": {
+            "en": "Share whole cookies equally. How many each, and how many remain?",
+            "lv": "Sadali veselus cepumus vienādi. Cik katram un cik paliek pāri?"
+          }
+        },
+        {
+          "id": "v2-medium-division-leftovers-2",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Pack 42 bells into 7 equal boxes. How many per box?",
+            "lv": "Saliec 42 zvaniņus 7 vienādās kastēs. Cik katrā?"
+          }
+        },
+        {
+          "id": "v2-medium-division-leftovers-3",
+          "type": "function_machine",
+          "question": {
+            "en": "Which division rule fits?",
+            "lv": "Kurš dalīšanas likums der?"
+          },
+          "example": {
+            "input": 64,
+            "output": 8,
+            "choices": [
+              "÷8",
+              "÷9",
+              "−8"
+            ]
+          }
+        },
+        {
+          "id": "v2-medium-division-leftovers-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "Repair the sharing calculation.",
+            "lv": "Izlabo dalīšanas aprēķinu."
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "medium-division-leftovers-parcels",
+          "stages": [
+            {
+              "id": "v2-medium-division-parcels-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "Four crates arrive with 7 parcels in each. How many parcels arrive?",
+                "lv": "Pienāk četras kastes, katrā 7 sūtījumi. Cik sūtījumu pienāk?"
+              }
+            },
+            {
+              "id": "v2-medium-division-parcels-2",
+              "type": "fair_share",
+              "question": {
+                "en": "Load the 28 parcels equally onto 4 carts. How many on each cart?",
+                "lv": "Saliec 28 sūtījumus vienādi 4 ratiņos. Cik katros?"
+              }
+            },
+            {
+              "id": "v2-medium-division-parcels-3",
+              "type": "fair_share",
+              "question": {
+                "en": "Three late parcels arrive. Share all 31 whole parcels among 4 carts again. How many per cart and left at the station?",
+                "lv": "Pienāk vēl trīs sūtījumi. Pārdali visus 31 veselo sūtījumu starp 4 ratiņiem. Cik katros un cik paliek stacijā?"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-fractions-value",
+      "difficulty": "medium",
+      "topic": "fractions",
+      "practice": [
+        {
+          "id": "v2-medium-fractions-value-1",
+          "type": "fraction_build",
+          "question": {
+            "en": "Color 2/6 of this whole.",
+            "lv": "Iekrāso 2/6 no šī veselā."
+          }
+        },
+        {
+          "id": "v2-medium-fractions-value-2",
+          "type": "compare",
+          "question": {
+            "en": "The wholes are the same size. Which fraction is larger?",
+            "lv": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?"
+          }
+        },
+        {
+          "id": "v2-medium-fractions-value-3",
+          "type": "fraction_match",
+          "question": {
+            "en": "Match each fraction to its picture.",
+            "lv": "Savieno katru daļu ar tās attēlu."
+          }
+        },
+        {
+          "id": "v2-medium-fractions-value-4",
+          "type": "fraction_equivalent",
+          "question": {
+            "en": "Which fraction covers the same amount of the same-size whole?",
+            "lv": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "medium-fractions-equivalent",
+      "difficulty": "medium",
+      "topic": "fractions",
+      "practice": [
+        {
+          "id": "v2-medium-fractions-equivalent-1",
+          "type": "fraction_build",
+          "question": {
+            "en": "Color 3/8 of this whole.",
+            "lv": "Iekrāso 3/8 no šī veselā."
+          }
+        },
+        {
+          "id": "v2-medium-fractions-equivalent-2",
+          "type": "compare",
+          "question": {
+            "en": "The wholes are the same size. Which fraction is larger?",
+            "lv": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?"
+          }
+        },
+        {
+          "id": "v2-medium-fractions-equivalent-3",
+          "type": "fraction_match",
+          "question": {
+            "en": "Match each fraction to its picture.",
+            "lv": "Savieno katru daļu ar tās attēlu."
+          }
+        },
+        {
+          "id": "v2-medium-fractions-equivalent-4",
+          "type": "fraction_equivalent",
+          "question": {
+            "en": "Which fraction covers the same amount of the same-size whole?",
+            "lv": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "medium-fractions-equivalent-fountain",
+          "stages": [
+            {
+              "id": "v2-medium-fractions-fountain-1",
+              "type": "fraction_build",
+              "question": {
+                "en": "The fountain has 8 equal mosaic sections. Color 3/8 blue.",
+                "lv": "Strūklakai ir 8 vienādi mozaīkas laukumi. Iekrāso 3/8 zilus."
+              }
+            },
+            {
+              "id": "v2-medium-fractions-fountain-2",
+              "type": "fraction_equivalent",
+              "question": {
+                "en": "Split every section in two. Which fraction still shows the blue 3/8?",
+                "lv": "Sadali katru laukumu divās daļās. Kura daļa joprojām attēlo zilās 3/8?"
+              }
+            },
+            {
+              "id": "v2-medium-fractions-fountain-3",
+              "type": "fraction_match",
+              "question": {
+                "en": "Match the blue 3/8 and the remaining 5/8 to their models.",
+                "lv": "Savieno zilās 3/8 un atlikušās 5/8 ar to modeļiem."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "medium-operations-routes",
+      "difficulty": "medium",
+      "topic": "operations",
+      "practice": [
+        {
+          "id": "v2-medium-operations-routes-1",
+          "type": "operation_path",
+          "question": {
+            "en": "Choose two operations to finish this delivery route.",
+            "lv": "Izvēlies divas darbības, lai pabeigtu piegādes ceļu."
+          }
+        },
+        {
+          "id": "v2-medium-operations-routes-2",
+          "type": "target_build",
+          "question": {
+            "en": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+            "lv": "Saglabā skaitļu secību. Reizini un dali pirms saskaitīšanas vai atņemšanas."
+          }
+        },
+        {
+          "id": "v2-medium-operations-routes-3",
+          "type": "function_machine",
+          "question": {
+            "en": "Select the rule that turns input into output.",
+            "lv": "Izvēlies likumu, kas ievadi pārvērš izvadē."
+          },
+          "example": {
+            "input": 8,
+            "output": 43,
+            "choices": [
+              "×5+3",
+              "×5",
+              "+5"
+            ]
+          }
+        },
+        {
+          "id": "v2-medium-operations-routes-4",
+          "type": "compare",
+          "question": {
+            "en": "Which expression has the greater value?",
+            "lv": "Kurai izteiksmei ir lielāka vērtība?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "medium-operations-order",
+      "difficulty": "medium",
+      "topic": "operations",
+      "practice": [
+        {
+          "id": "v2-medium-operations-order-1",
+          "type": "operation_path",
+          "question": {
+            "en": "Choose two operations to finish this delivery route.",
+            "lv": "Izvēlies divas darbības, lai pabeigtu piegādes ceļu."
+          }
+        },
+        {
+          "id": "v2-medium-operations-order-2",
+          "type": "target_build",
+          "question": {
+            "en": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+            "lv": "Saglabā skaitļu secību. Reizini un dali pirms saskaitīšanas vai atņemšanas."
+          }
+        },
+        {
+          "id": "v2-medium-operations-order-3",
+          "type": "function_machine",
+          "question": {
+            "en": "Select the rule that turns input into output.",
+            "lv": "Izvēlies likumu, kas ievadi pārvērš izvadē."
+          },
+          "example": {
+            "input": 8,
+            "output": 62,
+            "choices": [
+              "×7+6",
+              "×7",
+              "+7"
+            ]
+          }
+        },
+        {
+          "id": "v2-medium-operations-order-4",
+          "type": "compare",
+          "question": {
+            "en": "Which expression has the greater value?",
+            "lv": "Kurai izteiksmei ir lielāka vērtība?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "medium-operations-order-lanterns",
+          "stages": [
+            {
+              "id": "v2-medium-operations-lanterns-1",
+              "type": "operation_path",
+              "question": {
+                "en": "The first lantern starts at 12. Use 4, then 4, to reach 20.",
+                "lv": "Pirmā laterna sāk ar 12. Izmanto 4 un tad 4, lai sasniegtu 20."
+              }
+            },
+            {
+              "id": "v2-medium-operations-lanterns-2",
+              "type": "function_machine",
+              "question": {
+                "en": "The second lantern changes 20 into 13. Which rule fits?",
+                "lv": "Otrā laterna pārvērš 20 par 13. Kurš likums der?"
+              },
+              "example": {
+                "input": 20,
+                "output": 13,
+                "choices": [
+                  "÷2+3",
+                  "−2+3",
+                  "÷2−3"
+                ]
+              }
+            },
+            {
+              "id": "v2-medium-operations-lanterns-3",
+              "type": "target_build",
+              "question": {
+                "en": "Use 4, 13 and 2 in that order to light the final lantern at 30.",
+                "lv": "Izmanto 4, 13 un 2 šādā secībā, lai iedegtu pēdējo laternu pie 30."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-operations-connected",
+      "difficulty": "hard",
+      "topic": "operations",
+      "practice": [
+        {
+          "id": "v2-hard-operations-connected-1",
+          "type": "operation_path",
+          "question": {
+            "en": "Choose two operations to finish this delivery route.",
+            "lv": "Izvēlies divas darbības, lai pabeigtu piegādes ceļu."
+          }
+        },
+        {
+          "id": "v2-hard-operations-connected-2",
+          "type": "target_build",
+          "question": {
+            "en": "Which operations make the target? Keep the numbers in order.",
+            "lv": "Kuras darbības ļauj iegūt mērķa skaitli? Saglabā skaitļu secību."
+          }
+        },
+        {
+          "id": "v2-hard-operations-connected-3",
+          "type": "function_machine",
+          "question": {
+            "en": "Select the rule that turns input into output.",
+            "lv": "Izvēlies likumu, kas ievadi pārvērš izvadē."
+          },
+          "example": {
+            "input": 16,
+            "output": 101,
+            "choices": [
+              "×6+5",
+              "×6",
+              "+6"
+            ]
+          }
+        },
+        {
+          "id": "v2-hard-operations-connected-4",
+          "type": "compare",
+          "question": {
+            "en": "Which expression has the greater value?",
+            "lv": "Kurai izteiksmei ir lielāka vērtība?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "hard-operations-strategies",
+      "difficulty": "hard",
+      "topic": "operations",
+      "practice": [
+        {
+          "id": "v2-hard-operations-strategies-1",
+          "type": "operation_path",
+          "question": {
+            "en": "Choose two operations to finish this delivery route.",
+            "lv": "Izvēlies divas darbības, lai pabeigtu piegādes ceļu."
+          }
+        },
+        {
+          "id": "v2-hard-operations-strategies-2",
+          "type": "target_build",
+          "question": {
+            "en": "Which operations make the target? Keep the numbers in order.",
+            "lv": "Kuras darbības ļauj iegūt mērķa skaitli? Saglabā skaitļu secību."
+          }
+        },
+        {
+          "id": "v2-hard-operations-strategies-3",
+          "type": "function_machine",
+          "question": {
+            "en": "Select the rule that turns input into output.",
+            "lv": "Izvēlies likumu, kas ievadi pārvērš izvadē."
+          },
+          "example": {
+            "input": 12,
+            "output": 151,
+            "choices": [
+              "×12+7",
+              "×12",
+              "+12"
+            ]
+          }
+        },
+        {
+          "id": "v2-hard-operations-strategies-4",
+          "type": "compare",
+          "question": {
+            "en": "Which expression has the greater value?",
+            "lv": "Kurai izteiksmei ir lielāka vērtība?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "hard-operations-strategies-observatory",
+          "stages": [
+            {
+              "id": "v2-hard-operations-observatory-1",
+              "type": "operation_path",
+              "question": {
+                "en": "The power starts at 84. Use 7, then 9, to reach 21.",
+                "lv": "Enerģija sākas ar 84. Izmanto 7 un tad 9, lai sasniegtu 21."
+              }
+            },
+            {
+              "id": "v2-hard-operations-observatory-2",
+              "type": "target_build",
+              "question": {
+                "en": "Align the telescope at 27. Keep 21, 3, 2 in order and choose the operations.",
+                "lv": "Noregulē teleskopu pie 27. Saglabā 21, 3, 2 secību un izvēlies darbības."
+              }
+            },
+            {
+              "id": "v2-hard-operations-observatory-3",
+              "type": "function_machine",
+              "question": {
+                "en": "The tracker turns 27 into 79. Which rule fits?",
+                "lv": "Sekotājs pārvērš 27 par 79. Kurš likums der?"
+              },
+              "example": {
+                "input": 27,
+                "output": 79,
+                "choices": [
+                  "×3−2",
+                  "×3+2",
+                  "+3"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-fractions-amounts",
+      "difficulty": "hard",
+      "topic": "fractions",
+      "practice": [
+        {
+          "id": "v2-hard-fractions-amounts-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A tray has 20 seedlings. 3/5 are flowers. How many flowers?",
+            "lv": "Paplātē ir 20 stādi. 3/5 ir puķes. Cik puķu?"
+          }
+        },
+        {
+          "id": "v2-hard-fractions-amounts-2",
+          "type": "fraction_equivalent",
+          "question": {
+            "en": "Choose the fraction with the same value.",
+            "lv": "Izvēlies tikpat lielu daļu."
+          }
+        },
+        {
+          "id": "v2-hard-fractions-amounts-3",
+          "type": "compare",
+          "question": {
+            "en": "The ribbons have the same length. Which colored amount is larger?",
+            "lv": "Lentes ir vienāda garuma. Kurš iekrāsotais daudzums ir lielāks?"
+          }
+        },
+        {
+          "id": "v2-hard-fractions-amounts-4",
+          "type": "fraction_match",
+          "question": {
+            "en": "Match the fractions to equal-part models.",
+            "lv": "Savieno daļas ar vienādo daļu attēliem."
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "hard-fractions-apply",
+      "difficulty": "hard",
+      "topic": "fractions",
+      "practice": [
+        {
+          "id": "v2-hard-fractions-apply-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A tray has 32 seedlings. 5/8 are flowers. How many flowers?",
+            "lv": "Paplātē ir 32 stādi. 5/8 ir puķes. Cik puķu?"
+          }
+        },
+        {
+          "id": "v2-hard-fractions-apply-2",
+          "type": "fraction_equivalent",
+          "question": {
+            "en": "Choose the fraction with the same value.",
+            "lv": "Izvēlies tikpat lielu daļu."
+          }
+        },
+        {
+          "id": "v2-hard-fractions-apply-3",
+          "type": "compare",
+          "question": {
+            "en": "The ribbons have the same length. Which colored amount is larger?",
+            "lv": "Lentes ir vienāda garuma. Kurš iekrāsotais daudzums ir lielāks?"
+          }
+        },
+        {
+          "id": "v2-hard-fractions-apply-4",
+          "type": "fraction_match",
+          "question": {
+            "en": "Match the fractions to equal-part models.",
+            "lv": "Savieno daļas ar vienādo daļu attēliem."
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "hard-fractions-apply-garden",
+          "stages": [
+            {
+              "id": "v2-hard-fractions-garden-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "The garden has 24 equal spaces. Three quarters need flowers. How many flower spaces?",
+                "lv": "Dārzā ir 24 vienādas vietas. Trīs ceturtdaļās vajag puķes. Cik puķu vietu?"
+              }
+            },
+            {
+              "id": "v2-hard-fractions-garden-2",
+              "type": "fraction_build",
+              "question": {
+                "en": "Three quarters of the garden are for flowers. Shade the part left for the path.",
+                "lv": "Trīs ceturtdaļas dārza paredzētas puķēm. Iekrāso takai atlikušo daļu."
+              }
+            },
+            {
+              "id": "v2-hard-fractions-garden-3",
+              "type": "multiple_choice",
+              "question": {
+                "en": "Each of the 18 flower spaces needs 3 seeds. How many seeds?",
+                "lv": "Katrai no 18 puķu vietām vajag 3 sēklas. Cik sēklu kopā?"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-patterns-multiply",
+      "difficulty": "hard",
+      "topic": "patterns",
+      "practice": [
+        {
+          "id": "v2-hard-patterns-multiply-1",
+          "type": "pattern_next",
+          "question": {
+            "en": "What comes next?",
+            "lv": "Kas būs tālāk?"
+          },
+          "example": {
+            "sequence": [
+              2,
+              6,
+              18,
+              54
+            ],
+            "choices": [
+              "162",
+              "163",
+              "164"
+            ]
+          }
+        },
+        {
+          "id": "v2-hard-patterns-multiply-2",
+          "type": "function_machine",
+          "question": {
+            "en": "Choose the rule that works for this machine.",
+            "lv": "Izvēlies šai mašīnai derīgu likumu."
+          },
+          "example": {
+            "input": 56,
+            "output": 14,
+            "choices": [
+              "÷4",
+              "−4",
+              "÷5"
+            ]
+          }
+        },
+        {
+          "id": "v2-hard-patterns-multiply-3",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Which number belongs in the gap? 243, 81, ?, 9, 3.",
+            "lv": "Kurš skaitlis iederas tukšajā vietā? 243, 81, ?, 9, 3."
+          },
+          "example": [
+            "27",
+            "28",
+            "29"
+          ]
+        },
+        {
+          "id": "v2-hard-patterns-multiply-4",
+          "type": "pattern_next",
+          "question": {
+            "en": "What comes next?",
+            "lv": "Kas būs tālāk?"
+          },
+          "example": {
+            "sequence": [
+              65,
+              58,
+              51,
+              44
+            ],
+            "choices": [
+              "37",
+              "38",
+              "39"
+            ]
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "hard-patterns-scale",
+      "difficulty": "hard",
+      "topic": "patterns",
+      "practice": [
+        {
+          "id": "v2-hard-patterns-scale-1",
+          "type": "pattern_next",
+          "question": {
+            "en": "What comes next?",
+            "lv": "Kas būs tālāk?"
+          },
+          "example": {
+            "sequence": [
+              3,
+              12,
+              48,
+              192
+            ],
+            "choices": [
+              "768",
+              "769",
+              "770"
+            ]
+          }
+        },
+        {
+          "id": "v2-hard-patterns-scale-2",
+          "type": "function_machine",
+          "question": {
+            "en": "Choose the rule that works for this machine.",
+            "lv": "Izvēlies šai mašīnai derīgu likumu."
+          },
+          "example": {
+            "input": 17,
+            "output": 25,
+            "choices": [
+              "+8",
+              "+9",
+              "+10"
+            ]
+          }
+        },
+        {
+          "id": "v2-hard-patterns-scale-3",
+          "type": "multiple_choice",
+          "question": {
+            "en": "Which number belongs in the gap? 6, 12, ?, 48, 96.",
+            "lv": "Kurš skaitlis iederas tukšajā vietā? 6, 12, ?, 48, 96."
+          },
+          "example": [
+            "24",
+            "25",
+            "26"
+          ]
+        },
+        {
+          "id": "v2-hard-patterns-scale-4",
+          "type": "pattern_next",
+          "question": {
+            "en": "What comes next?",
+            "lv": "Kas būs tālāk?"
+          },
+          "example": {
+            "sequence": [
+              11,
+              20,
+              29,
+              38
+            ],
+            "choices": [
+              "47",
+              "48",
+              "49"
+            ]
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "hard-patterns-scale-signal",
+          "stages": [
+            {
+              "id": "v2-hard-patterns-signal-1",
+              "type": "pattern_next",
+              "question": {
+                "en": "The signal pulses 3, 6, 12, 24. Find the next pulse.",
+                "lv": "Signāls pulsē 3, 6, 12, 24. Atrodi nākamo impulsu."
+              },
+              "example": {
+                "sequence": [
+                  3,
+                  6,
+                  12,
+                  24
+                ],
+                "choices": [
+                  "48",
+                  "36",
+                  "25"
+                ]
+              }
+            },
+            {
+              "id": "v2-hard-patterns-signal-2",
+              "type": "function_machine",
+              "question": {
+                "en": "The amplifier changes 48 into 80. Which rule fits?",
+                "lv": "Pastiprinātājs pārvērš 48 par 80. Kurš likums der?"
+              },
+              "example": {
+                "input": 48,
+                "output": 80,
+                "choices": [
+                  "+32",
+                  "×2",
+                  "+24"
+                ]
+              }
+            },
+            {
+              "id": "v2-hard-patterns-signal-3",
+              "type": "multiple_choice",
+              "question": {
+                "en": "Complete the transmission code. Which value is missing? 80, 40, ?, 10, 5.",
+                "lv": "Pabeidz pārraides kodu. Kurš skaitlis trūkst? 80, 40, ?, 10, 5."
+              },
+              "example": [
+                "20",
+                "30",
+                "40"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-percentages-quarters",
+      "difficulty": "hard",
+      "topic": "percentages",
+      "practice": [
+        {
+          "id": "v2-hard-percentages-quarters-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "What is 25% of 80 coins?",
+            "lv": "Cik ir 25% no 80 monētām?"
+          }
+        },
+        {
+          "id": "v2-hard-percentages-quarters-2",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A 150-coin toy has a 20% discount. What is the new price?",
+            "lv": "150 monētu rotaļlietai ir 20% atlaide. Kāda ir jaunā cena?"
+          }
+        },
+        {
+          "id": "v2-hard-percentages-quarters-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the percentage claim.",
+            "lv": "Pārbaudi apgalvojumu par procentiem."
+          }
+        },
+        {
+          "id": "v2-hard-percentages-quarters-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "A toy costs 200 coins and has a 50% discount. Which sale price is correct?",
+            "lv": "200 monētu rotaļlietai ir 50% atlaide. Kura cena ar atlaidi ir pareiza?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "hard-percentages-discounts",
+      "difficulty": "hard",
+      "topic": "percentages",
+      "practice": [
+        {
+          "id": "v2-hard-percentages-discounts-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "What is 20% of 120 coins?",
+            "lv": "Cik ir 20% no 120 monētām?"
+          }
+        },
+        {
+          "id": "v2-hard-percentages-discounts-2",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A 160-coin toy has a 25% discount. What is the new price?",
+            "lv": "160 monētu rotaļlietai ir 25% atlaide. Kāda ir jaunā cena?"
+          }
+        },
+        {
+          "id": "v2-hard-percentages-discounts-3",
+          "type": "true_false",
+          "question": {
+            "en": "Check the percentage claim.",
+            "lv": "Pārbaudi apgalvojumu par procentiem."
+          }
+        },
+        {
+          "id": "v2-hard-percentages-discounts-4",
+          "type": "fix_mistake",
+          "question": {
+            "en": "A toy costs 250 coins and has a 10% discount. Which sale price is correct?",
+            "lv": "250 monētu rotaļlietai ir 10% atlaide. Kura cena ar atlaidi ir pareiza?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "hard-percentages-discounts-shop",
+          "stages": [
+            {
+              "id": "v2-hard-percentages-shop-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "A toy costs 80 coins. The discount is 25%. How many coins are taken off?",
+                "lv": "Rotaļlieta maksā 80 monētas. Atlaide ir 25%. Cik monētu atņem?"
+              }
+            },
+            {
+              "id": "v2-hard-percentages-shop-2",
+              "type": "fix_mistake",
+              "question": {
+                "en": "A toy costs 80 coins and has a 20-coin discount. Which sale price is correct?",
+                "lv": "Rotaļlieta maksā 80 monētas, un tai ir 20 monētu atlaide. Kura cena ar atlaidi ir pareiza?"
+              }
+            },
+            {
+              "id": "v2-hard-percentages-shop-3",
+              "type": "multiple_choice",
+              "question": {
+                "en": "Two toys cost 60 coins each. A customer pays 150. How much change?",
+                "lv": "Divas rotaļlietas maksā 60 monētas katra. Pircējs dod 150. Cik jāizdod?"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-measurement-area",
+      "difficulty": "hard",
+      "topic": "measurement",
+      "practice": [
+        {
+          "id": "v2-hard-measurement-area-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A garden has 8 rows of 6 square planting spaces. How many square spaces?",
+            "lv": "Dārzā ir 8 rindas, katrā 6 kvadrātveida stādvietas. Cik stādvietu kopā?"
+          }
+        },
+        {
+          "id": "v2-hard-measurement-area-2",
+          "type": "multiple_choice",
+          "question": {
+            "en": "60 grams of clay fill 4 equal bags. How many grams for 6 bags?",
+            "lv": "60 grami māla piepilda 4 vienādus maisiņus. Cik gramu vajag 6 maisiņiem?"
+          }
+        },
+        {
+          "id": "v2-hard-measurement-area-3",
+          "type": "estimate",
+          "question": {
+            "en": "What is the total to the nearest ten?",
+            "lv": "Kāda ir summa, noapaļojot līdz tuvākajam desmitam?"
+          }
+        },
+        {
+          "id": "v2-hard-measurement-area-4",
+          "type": "balance",
+          "question": {
+            "en": "Find the missing number of equal rows.",
+            "lv": "Atrodi trūkstošo vienādo rindu skaitu."
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "hard-measurement-rates",
+      "difficulty": "hard",
+      "topic": "measurement",
+      "practice": [
+        {
+          "id": "v2-hard-measurement-rates-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A garden has 12 rows of 5 square planting spaces. How many square spaces?",
+            "lv": "Dārzā ir 12 rindas, katrā 5 kvadrātveida stādvietas. Cik stādvietu kopā?"
+          }
+        },
+        {
+          "id": "v2-hard-measurement-rates-2",
+          "type": "multiple_choice",
+          "question": {
+            "en": "54 grams of clay fill 3 equal bags. How many grams for 5 bags?",
+            "lv": "54 grami māla piepilda 3 vienādus maisiņus. Cik gramu vajag 5 maisiņiem?"
+          }
+        },
+        {
+          "id": "v2-hard-measurement-rates-3",
+          "type": "estimate",
+          "question": {
+            "en": "What is the total to the nearest ten?",
+            "lv": "Kāda ir summa, noapaļojot līdz tuvākajam desmitam?"
+          }
+        },
+        {
+          "id": "v2-hard-measurement-rates-4",
+          "type": "balance",
+          "question": {
+            "en": "Find the missing number of equal rows.",
+            "lv": "Atrodi trūkstošo vienādo rindu skaitu."
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "hard-measurement-rates-shelter",
+          "stages": [
+            {
+              "id": "v2-hard-measurement-shelter-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "The shelter roof is 9 tiles long and 7 tiles wide. How many square tiles cover it?",
+                "lv": "Patvēruma jumts ir 9 flīzes garš un 7 flīzes plats. Cik kvadrātveida flīžu to nosedz?"
+              }
+            },
+            {
+              "id": "v2-hard-measurement-shelter-2",
+              "type": "multiple_choice",
+              "question": {
+                "en": "7 equal crates hold 63 tiles. How many tiles will 9 crates hold?",
+                "lv": "7 vienādās kastēs ir 63 flīzes. Cik flīžu būs 9 kastēs?"
+              }
+            },
+            {
+              "id": "v2-hard-measurement-shelter-3",
+              "type": "estimate",
+              "question": {
+                "en": "81 tiles arrive, along with 27 spares. What is the total to the nearest ten?",
+                "lv": "Pienāk 81 flīze un 27 rezerves flīzes. Kāds ir kopskaits, noapaļojot līdz tuvākajam desmitam?"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-logic-clues",
+      "difficulty": "hard",
+      "topic": "logic",
+      "practice": [
+        {
+          "id": "v2-hard-logic-clues-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A number is greater than 20, less than 24, and even. Choose the number.",
+            "lv": "Skaitlis ir lielāks par 20, mazāks par 24 un pāra. Izvēlies skaitli."
+          }
+        },
+        {
+          "id": "v2-hard-logic-clues-2",
+          "type": "true_false",
+          "question": {
+            "en": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?",
+            "lv": "Divu pozitīvu veselu skaitļu reizinājums vienmēr ir lielāks par abiem skaitļiem. Vai tā ir?"
+          }
+        },
+        {
+          "id": "v2-hard-logic-clues-3",
+          "type": "order_numbers",
+          "question": {
+            "en": "Arrange the clues from smallest to largest.",
+            "lv": "Sakārto norādes no mazākās līdz lielākajai."
+          }
+        },
+        {
+          "id": "v2-hard-logic-clues-4",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A box holds fewer than 48 balls. Which amount is impossible?",
+            "lv": "Kastē ir mazāk nekā 48 bumbiņas. Kurš daudzums nav iespējams?"
+          }
+        }
+      ],
+      "missions": []
+    },
+    {
+      "id": "hard-logic-claims",
+      "difficulty": "hard",
+      "topic": "logic",
+      "practice": [
+        {
+          "id": "v2-hard-logic-claims-1",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A number is greater than 40, less than 44, and even. Choose the number.",
+            "lv": "Skaitlis ir lielāks par 40, mazāks par 44 un pāra. Izvēlies skaitli."
+          }
+        },
+        {
+          "id": "v2-hard-logic-claims-2",
+          "type": "true_false",
+          "question": {
+            "en": "Subtracting a positive whole number always gives a smaller result. Is that true?",
+            "lv": "Atņemot pozitīvu veselu skaitli, rezultāts vienmēr ir mazāks. Vai tā ir?"
+          }
+        },
+        {
+          "id": "v2-hard-logic-claims-3",
+          "type": "order_numbers",
+          "question": {
+            "en": "Arrange the clues from smallest to largest.",
+            "lv": "Sakārto norādes no mazākās līdz lielākajai."
+          }
+        },
+        {
+          "id": "v2-hard-logic-claims-4",
+          "type": "multiple_choice",
+          "question": {
+            "en": "A box holds fewer than 83 balls. Which amount is impossible?",
+            "lv": "Kastē ir mazāk nekā 83 bumbiņas. Kurš daudzums nav iespējams?"
+          }
+        }
+      ],
+      "missions": [
+        {
+          "id": "hard-logic-claims-vault",
+          "stages": [
+            {
+              "id": "v2-hard-logic-vault-1",
+              "type": "multiple_choice",
+              "question": {
+                "en": "The door number is even, greater than 40, less than 46 and divisible by 3. Which is it?",
+                "lv": "Durvju numurs ir pāra, lielāks par 40, mazāks par 46 un dalās ar 3. Kurš tas ir?"
+              }
+            },
+            {
+              "id": "v2-hard-logic-vault-2",
+              "type": "true_false",
+              "question": {
+                "en": "There are 42 records in 6 equal drawers. Check the claim of 7 records per drawer.",
+                "lv": "42 ieraksti sadalīti 6 vienādās atvilktnēs. Pārbaudi apgalvojumu par 7 ierakstiem katrā."
+              }
+            },
+            {
+              "id": "v2-hard-logic-vault-3",
+              "type": "order_numbers",
+              "question": {
+                "en": "The final code uses increasing multiples of 7. Arrange the code tiles.",
+                "lv": "Gala kods izmanto augošus skaitļa 7 daudzkārtņus. Sakārto koda kartītes."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

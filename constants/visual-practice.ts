@@ -59,6 +59,17 @@ function numbers(values: string[], positions?: number[], tones?: PracticeToken["
 
 // Every token has a stable identity across steps. Moving the same object shows
 // joining, taking away, dealing, sorting and calculating instead of swapping slides.
+// Separate examples for halves and tenths, using the same animated board as
+// the existing quarter and fifth examples. No active puzzle data is read here.
+function percentExample(key: string, percent: number, whole: number, groups: number, discount = false) {
+  const part = whole / groups;
+  return frames(key, [0, 1, 2].map(step => board(`${discount ? `${whole} − ` : ""}${percent}% × ${whole} = ?`,
+    Array.from({ length: groups }, (_, i) => tile(`percent-part-${i}`, step === 0 ? "?" : String(part),
+      groups === 2 ? 90 + i * 120 : 30 + (i % 5) * 60, groups === 2 ? 60 : 35 + Math.floor(i / 5) * 65,
+      { width: 44, height: 44, tone: i === 0 && step > 0 ? "primary" : "secondary", visible: !discount || i !== 0 || step < 2 })),
+    step === 2 ? (discount ? `${whole} − ${part} = ${whole-part}` : `${percent}% × ${whole} = ${part}`) : step === 1 ? `${whole} ÷ ${groups} = ${part}` : undefined)));
+}
+
 export const VISUAL_PRACTICE = {
   sort_buckets: frames("sort_buckets", [0, 1, 2].map(step => board("< 7     |     ≥ 7", [
     tile("small", "4", step ? 75 : 110, 60, { tone: step ? "primary" : "secondary" }),
@@ -86,6 +97,10 @@ export const VISUAL_PRACTICE = {
   fraction_of_set: frames("fraction_of_set", [0, 1, 2].map(step => board("3/4 × 12 = ?", [
     ...counters(12, "●", i => [42 + (i % 4) * 72, 26 + Math.floor(i / 4) * 36], i => ({ tone: step > 0 && i % 4 < 3 ? "primary" : "secondary", scale: step === 2 && i % 4 < 3 ? 1.15 : 1 })),
   ], step === 2 ? "3 × 3 = 9" : step === 1 ? "12 ÷ 4 = 3" : undefined))),
+  percent_half: percentExample("percent_half", 50, 40, 2),
+  percent_tenth: percentExample("percent_tenth", 10, 30, 10),
+  percent_half_discount: percentExample("percent_half_discount", 50, 40, 2, true),
+  percent_tenth_discount: percentExample("percent_tenth_discount", 10, 30, 10, true),
   percent_of: frames("percent_of", [0, 1, 2].map(step => board("25% × 20 = ?", [
     ...Array.from({ length: 4 }, (_, i) => tile(`quarter-${i}`, step === 0 ? "?" : "5", 42 + i * 72, 55, { tone: step > 0 && i === 0 ? "primary" : "secondary", scale: step === 2 && i === 0 ? 1.15 : 1 })),
   ], step === 2 ? "25% × 20 = 5" : step === 1 ? "20 ÷ 4 = 5" : undefined))),

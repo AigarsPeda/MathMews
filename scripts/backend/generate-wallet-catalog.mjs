@@ -8,10 +8,12 @@ const history = fs.readdirSync('supabase/migrations').filter(file => file.endsWi
   .map(file => fs.readFileSync(`supabase/migrations/${file}`,'utf8')).join('\n');
 const known = new Set([...history.matchAll(/\('([^']+)',\d+,\d+\)/g)].map(match => match[1]));
 const rewards = { easy:[4,2],medium:[7,3],hard:[9,4] };
+const curriculum = JSON.parse(fs.readFileSync('data/puzzle-curriculum.json','utf8'));
+const bossIds = new Set(curriculum.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === 'boss').flatMap(level => level.puzzleIds)));
 const rows = [];
 for (const tier of Object.keys(rewards)) for (const puzzle of JSON.parse(fs.readFileSync(`assets/puzzles/${tier}.json`,'utf8'))) {
   if (known.has(puzzle.id)) continue;
-  const [first,replay] = rewards[tier];
+  const [first,replay] = rewards[tier].map(amount => amount * (bossIds.has(puzzle.id) ? 2 : 1));
   rows.push(`('${puzzle.id.replaceAll("'","''")}',${first},${replay})`);
 }
 if (rows.length) {

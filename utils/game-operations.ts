@@ -1,11 +1,13 @@
 import { FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
 import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES, PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
+import { getPuzzleLevelKind } from "@/constants/curriculum";
 import type { Progress, PuzzleProgress } from "@/types/game";
 import type { Puzzle } from "@/types/puzzle";
 import type { GameSave } from "@/types/save";
 import { withCoinDelta } from "@/utils/coin-ledger";
 import { boostStat, canFeedForEffect, withPetCareUpdate } from "@/utils/pet-care";
 import { recordTopicAttempt } from "@/utils/topic-stats";
+import { applyLifeRegen, loseLife } from "@/utils/lives";
 
 function puzzleDay(date: Date): string {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
@@ -34,10 +36,12 @@ export function getSolvedCounts(ids: readonly string[]): PuzzleProgress {
 
 /** One committed answer owns its reward and completion. Repeated delivery is harmless. */
 export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boolean, attemptId: string, now = Date.now()) {
-  if (save.progress.processedAttemptIds?.includes(attemptId)) return { save, coins: 0 };
+  if (save.progress.processedAttemptIds?.includes(attemptId)) return { save, coins: 0, accepted: false };
+  const lives = applyLifeRegen(save.progress.lives, now);
+  if (lives.current <= 0) return { save, coins: 0, accepted: false };
   const completed = getCompletedPuzzleIds(save.progress);
   const replay = completed.includes(puzzle.id);
-  const coins = correct ? getPuzzleCoinReward(puzzle.difficulty, replay) : 0;
+  const coins = correct ? getPuzzleCoinReward(puzzle.difficulty, replay, getPuzzleLevelKind(puzzle.id)) : 0;
   const ids = correct && !replay ? [...completed, puzzle.id] : completed;
   const date = new Date(now);
   const day = puzzleDay(date);
@@ -50,6 +54,7 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
     ...save,
     progress: { ...save.progress, puzzleContentVersion: PUZZLE_CONTENT_VERSION, completedPuzzleIds: ids, puzzlesSolved: getSolvedCounts(ids),
       processedAttemptIds: [...(save.progress.processedAttemptIds ?? []), attemptId].slice(-200),
+      lives: correct ? lives : loseLife(lives, now),
       topicStats: recordTopicAttempt(save.progress.topicStats, puzzle.topic, correct),
       topicStatsByDifficulty: { ...save.progress.topicStatsByDifficulty,
         [puzzle.difficulty]: recordTopicAttempt(save.progress.topicStatsByDifficulty?.[puzzle.difficulty], puzzle.topic, correct) },
@@ -60,7 +65,7 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
       level: 1 + Math.floor(ids.length / 10) }), now), lastInteractionAt: now },
   };
   if (coins) next = withCoinDelta(next, coins, { kind: "puzzle_reward", itemId: puzzle.id }, now)!;
-  return { save: next, coins };
+  return { save: next, coins, accepted: true };
 }
 
 export function applyFeed(save: GameSave, now = Date.now()): GameSave | null {

@@ -890,8 +890,8 @@
       "difficulty": "easy",
       "topicId": "patterns",
       "title": {
-        "en": "Same jump each time",
-        "lv": "Vienāds solis katru reizi"
+        "en": "Discover different patterns",
+        "lv": "Atklāj dažādas virknes"
       },
       "description": {
         "en": "Start with a model, then try the idea in different ways.",
@@ -965,8 +965,8 @@
       "difficulty": "easy",
       "topicId": "patterns",
       "title": {
-        "en": "Count in fives",
-        "lv": "Skaiti pa pieci"
+        "en": "Patterns in both directions",
+        "lv": "Virknes abos virzienos"
       },
       "description": {
         "en": "Use what you learned with a new goal and different numbers.",
@@ -1108,12 +1108,12 @@
                   "lv": "Salabo zobratu"
                 },
                 "before": {
-                  "en": "Find the rule that carries our beat from 15 to 18.",
-                  "lv": "Atrodi likumu, kas pārnes ritmu no 15 uz 18."
+                  "en": "Find the rule that carries our beat from 15 to 20.",
+                  "lv": "Atrodi likumu, kas pārnes ritmu no 15 uz 20."
                 },
                 "after": {
-                  "en": "The +3 gear is working. Keep that rhythm for the last part.",
-                  "lv": "Zobrats +3 darbojas. Saglabā šo ritmu pēdējai daļai."
+                  "en": "The gear reaches 20. Find the missing beat in the last part.",
+                  "lv": "Zobrats sasniedz 20. Atrodi trūkstošo sitienu pēdējā daļā."
                 }
               },
               {
@@ -1122,8 +1122,8 @@
                   "lv": "Pabeidz melodiju"
                 },
                 "before": {
-                  "en": "Continue from 18 with our repaired rhythm.",
-                  "lv": "Turpini no 18 ar mūsu atjaunoto ritmu."
+                  "en": "The last part starts at 20 and has a different rhythm.",
+                  "lv": "Pēdējā daļa sākas ar 20, un tai ir cits ritms."
                 },
                 "after": {
                   "en": "The final beat is ready. Let’s hear the whole tune!",
@@ -3276,8 +3276,8 @@
             "lv": "Enerģijas režģa līkums"
           },
           "description": {
-            "en": "A direct route will not work. Plan a six-move detour without reusing squares.",
-            "lv": "Tiešais ceļš nederēs. Izplāno sešu soļu līkumu, neatkārtojot lauciņus."
+            "en": "Find a six-move route through the power grid without reusing squares.",
+            "lv": "Atrodi sešu soļu ceļu pa enerģijas režģi, neatkārtojot lauciņus."
           },
           "puzzleIds": [
             "v2-hard-operations-power-detour-1"
@@ -3583,8 +3583,8 @@
                   "lv": "Atstāj taku"
                 },
                 "before": {
-                  "en": "Mark the quarter outside our planned flower beds.",
-                  "lv": "Atzīmē ceturtdaļu ārpus ieplānotajām puķu dobēm."
+                  "en": "Mark the area left for the path.",
+                  "lv": "Atzīmē takai atlikušo laukumu."
                 },
                 "after": {
                   "en": "The path has its own quarter. Now gather seeds for the 18 flower spaces.",
@@ -3620,8 +3620,8 @@
       "difficulty": "hard",
       "topicId": "patterns",
       "title": {
-        "en": "Multiplicative patterns",
-        "lv": "Reizināšanas virknes"
+        "en": "Mixed number patterns",
+        "lv": "Dažādas skaitļu virknes"
       },
       "description": {
         "en": "Start with a model, then try the idea in different ways.",
@@ -3695,8 +3695,8 @@
       "difficulty": "hard",
       "topicId": "patterns",
       "title": {
-        "en": "Scaling the pattern",
-        "lv": "Virknes mērogošana"
+        "en": "More pattern discoveries",
+        "lv": "Jauni atklājumi virknēs"
       },
       "description": {
         "en": "Use what you learned with a new goal and different numbers.",
@@ -3771,8 +3771,8 @@
             "lv": "Pārrautā signālu virkne"
           },
           "description": {
-            "en": "Two signals are missing. Restore a multiplying pattern and ignore the decoys.",
-            "lv": "Trūkst divu signālu. Atjauno reizināšanas virkni un ignorē mānekļus."
+            "en": "Two signals are missing. Restore the pattern and ignore the decoys.",
+            "lv": "Trūkst divu signālu. Atjauno virkni un ignorē mānekļus."
           },
           "puzzleIds": [
             "v2-hard-patterns-signal-gaps-1"
@@ -3842,8 +3842,8 @@
                   "lv": "Izvēlies likumu, kas pastiprina atšifrēto impulsu."
                 },
                 "after": {
-                  "en": "The boosted pulse is 96. Keep its rule for the transmission.",
-                  "lv": "Pastiprinātais impulss ir 96. Saglabā tā likumu pārraidei."
+                  "en": "The boosted pulse is 80. Finish the transmission code.",
+                  "lv": "Pastiprinātais impulss ir 80. Pabeidz pārraides kodu."
                 }
               },
               {
@@ -3852,12 +3852,12 @@
                   "lv": "Nosūti ziņu"
                 },
                 "before": {
-                  "en": "Continue the amplified pattern to finish our message.",
-                  "lv": "Turpini pastiprināto virkni, lai pabeigtu mūsu ziņu."
+                  "en": "Find the missing value in the transmission code.",
+                  "lv": "Atrodi trūkstošo skaitli pārraides kodā."
                 },
                 "after": {
-                  "en": "The final pulse is 768. Send our message!",
-                  "lv": "Pēdējais impulss ir 768. Nosūti mūsu ziņu!"
+                  "en": "The missing code value is 20. Send our message!",
+                  "lv": "Trūkstošais koda skaitlis ir 20. Nosūti mūsu ziņu!"
                 }
               }
             ]
@@ -3875,8 +3875,8 @@
       "difficulty": "hard",
       "topicId": "percentages",
       "title": {
-        "en": "A quarter as a percentage",
-        "lv": "Ceturtdaļa procentos"
+        "en": "Percentages of quantities",
+        "lv": "Procenti no daudzumiem"
       },
       "description": {
         "en": "Start with a model, then try the idea in different ways.",
@@ -4093,8 +4093,8 @@
                   "lv": "Nosaki atlaides cenu"
                 },
                 "before": {
-                  "en": "Subtract our discount from the original price.",
-                  "lv": "Atņem mūsu atlaidi no sākotnējās cenas."
+                  "en": "What should the toy cost during the sale?",
+                  "lv": "Cik rotaļlietai jāmaksā izpārdošanā?"
                 },
                 "after": {
                   "en": "Each toy now costs 60. Our first customer wants two.",
@@ -4107,8 +4107,8 @@
                   "lv": "Apkalpo pirmo pircēju"
                 },
                 "before": {
-                  "en": "Use the new price for both toys, then check the change.",
-                  "lv": "Izmanto jauno cenu abām rotaļlietām un pārbaudi atlikumu."
+                  "en": "How much change is due to our first customer?",
+                  "lv": "Cik naudas jāizdod mūsu pirmajam pircējam?"
                 },
                 "after": {
                   "en": "The customer gets 30 in change. We’re ready to open!",
@@ -4347,8 +4347,8 @@
                   "lv": "Pārbaudi krājumus"
                 },
                 "before": {
-                  "en": "Estimate our order and the extra supplies using the rounding rule.",
-                  "lv": "Aptuveni aprēķini pasūtījumu un papildu krājumus ar noapaļošanas likumu."
+                  "en": "Estimate the total supplies for the shelter.",
+                  "lv": "Aptuveni novērtē patvēruma krājumu kopskaitu."
                 },
                 "after": {
                   "en": "The estimate is checked. Let’s finish the shelter!",

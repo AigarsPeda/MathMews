@@ -1,5 +1,7 @@
 # Math Mews puzzle progression and hint design research
 
+Implementation note, 19 October 2026: the later [three-life system](puzzle-curriculum.md#three-shared-lives) replaces the unlimited-retry behavior described in this historical review.
+
 Research snapshot before implementation. The user subsequently chose to replace the old puzzles and start learning progress fresh. See [the implemented curriculum](puzzle-curriculum.md) for the current catalog, navigation, reset behavior and authoring instructions.
 
 Reviewed 19 October 2026. Proposal for the children's game. The existing game plan names ages 7 to 12; the puzzle files span ages 6 to 12. Use demonstrated skills to place children, with age only as a starting guide. Adult mode is outside this proposal.

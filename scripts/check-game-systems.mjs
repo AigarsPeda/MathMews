@@ -159,7 +159,8 @@ assert.equal(applyPuzzleAnswer(persisted, puzzle, true, 'reopened', now).coins, 
 const wrong = applyPuzzleAnswer({ ...start, pet: { ...start.pet, lastCareAt: now }, progress: { ...start.progress, lives: { current: 0, nextRegenAt: null } } }, puzzle, false, 'wrong', now).save;
 assert.equal(wrong.wallet.coins, start.wallet.coins); assert.equal(wrong.pet.stats.happiness, start.pet.stats.happiness);
 assert.equal(wrong.pet.stats.hunger, start.pet.stats.hunger); assert.equal(wrong.progress.lives.current, 0);
-assert.equal(applyPuzzleAnswer(wrong, puzzle, true, 'retry', now).coins, 4, 'Zero lives cannot block learning');
+assert.equal(applyPuzzleAnswer(wrong, puzzle, true, 'retry', now).accepted, false, 'Zero lives pause answer checking');
+assert.equal(applyPuzzleAnswer(wrong, puzzle, true, 'retry', now).save, wrong, 'Blocked answers cannot earn rewards or complete tasks');
 const day2 = applyPuzzleAnswer(first.save, puzzle, true, 'day2', now + 86400000).save;
 assert.equal(day2.progress.streak, 2); assert.equal(applyPuzzleAnswer(day2, puzzle, true, 'same-day', now + 86400100).save.progress.streak, 2);
 const localDay = date => `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
@@ -394,7 +395,7 @@ console.log('Verified named rooms, independent furniture/backgrounds, door-free 
 assert.deepEqual(JSON.parse(JSON.stringify(getSolvedCounts([puzzle.id]))), { easy: 1, medium: 0, hard: 0 });
 await Promise.all([saveGameSave(start), saveGameSave(first.save), clearGameSave()]);
 assert.equal(await loadGameSave(), null, 'Clearing cannot race an older queued save');
-console.log(`Verified ${count} localized puzzles, matching help, atomic/idempotent rewards, replay after interruption, zero-life practice, streaks, decay, feed, legacy saves, and per-room layouts.`);
+console.log(`Verified ${count} localized puzzles, matching help, atomic/idempotent rewards, replay after interruption, three-life gating, streaks, decay, feed, legacy saves, and per-room layouts.`);
 
 // Browsing leaves the cat in place; an explicit journey also follows the cat.
 const restingCat = { ...withDoor, homeRoomId: 'livingRoom', isAsleep: true, lastInteractionAt: 123 };

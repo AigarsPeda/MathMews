@@ -1,4 +1,3 @@
-import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
 import { LearningLevelCard } from "@/components/puzzle/LearningLevelCard";
 import { PuzzlePathItem } from "@/components/puzzle/PuzzlePathItem";
@@ -27,7 +26,7 @@ export default function PuzzlesScreen() {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const params = useLocalSearchParams<{ difficulty?: string; topic?: string; lesson?: string }>();
-  const { isReady, hasCompletedOnboarding, wallet, progress } = useGame();
+  const { isReady, hasCompletedOnboarding, progress } = useGame();
   const difficulty: PuzzleDifficulty = isPuzzleDifficulty(params.difficulty ?? "") ? params.difficulty as PuzzleDifficulty : "easy";
   const topics = getLearningTopics(difficulty);
   const topic = topics.find(item => item.id === params.topic);
@@ -70,7 +69,6 @@ export default function PuzzlesScreen() {
           <Pressable onPress={back} style={styles.back} accessibilityRole="button" accessibilityLabel={t("puzzlePath.a11yBack")}>
             <BackButtonLabel style={styles.backText} />
           </Pressable>
-          <GameHeaderStats coins={wallet.coins} streak={progress.streak} lives={progress.lives} />
         </View>
         <DifficultyPicker selected={difficulty} onSelect={tier => {
           router.replace({ pathname: "/puzzles", params: { difficulty: tier } });

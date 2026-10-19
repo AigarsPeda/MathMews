@@ -30,10 +30,9 @@ final class NativeDragTests: XCTestCase {
   drag("12, not placed", to: app.staticTexts["Native drag check"].firstMatch); expect("12, not placed")
   for number in [3, 8, 6] { drag("\(number), not placed", to: left); expect("\(number), Below 10") }
   for number in [12, 10, 19] { drag("\(number), not placed", to: right); expect("\(number), 10 or more") }
-  XCTAssertTrue(app.buttons["Check my baskets"].isEnabled)
-  app.buttons["Check my baskets"].tap()
+  app.buttons["Check sorting"].tap()
   XCTAssertTrue(app.staticTexts["Correct"].firstMatch.waitForExistence(timeout: 3))
-  XCTAssertFalse(app.buttons["Check my baskets"].isEnabled)
+  XCTAssertFalse(app.buttons["3, Below 10"].isEnabled)
   shot("sorting-correct")
   app.swipeUp()
   app.buttons["Retry"].tap()
@@ -48,10 +47,12 @@ final class NativeDragTests: XCTestCase {
   drag("Number 3, position 4", to: app.buttons["Number 6, position 2"])
   expect("Number 1, position 1"); expect("Number 3, position 2")
   expect("Number 6, position 3"); expect("Number 8, position 4")
+  XCTAssertTrue(app.staticTexts["Moves 1. Move 3 to 1"].exists)
   shot("order-drag-left")
   drag("Number 1, position 1", to: app.buttons["Number 8, position 4"])
   expect("Number 3, position 1"); expect("Number 6, position 2")
   expect("Number 8, position 3"); expect("Number 1, position 4")
+  XCTAssertTrue(app.staticTexts["Moves 2. Move 0 to 3"].exists)
   shot("order-drag-right")
   drag("Number 1, position 4", to: app.staticTexts["Native drag check"].firstMatch)
   expect("Number 1, position 4")
@@ -84,12 +85,26 @@ final class NativeDragTests: XCTestCase {
   expect("Position 2, 12"); expect("Number 10")
   drag("Position 2, 12", to: app.buttons["Number 30"])
   expect("Number 12"); expect("Position 4, 20")
-  XCTAssertFalse(app.buttons["Check the whole pattern"].isEnabled)
   drag("Number 10", to: app.staticTexts["?"].firstMatch); expect("Position 2, 10")
   drag("Position 4, 20", to: app.staticTexts["Native drag check"].firstMatch); expect("Position 4, 20")
-  app.buttons["Check the whole pattern"].tap()
+  app.buttons["Check pattern"].tap()
   XCTAssertTrue(app.staticTexts["Correct"].firstMatch.waitForExistence(timeout: 3))
-  XCTAssertFalse(app.buttons["Check the whole pattern"].isEnabled)
+  XCTAssertFalse(app.buttons["Position 2, 10"].isEnabled)
   shot("pattern-correct")
+ }
+ func testZZProgressFillsAndTapSwaps() {
+  app.swipeDown()
+  app.buttons["Order"].tap(); app.buttons["Reset board"].tap()
+  app.buttons["Number 1, position 1"].tap(); app.buttons["Number 3, position 4"].tap()
+  expect("Number 3, position 1"); expect("Number 1, position 4")
+  shot("order-tap-swap")
+  app.swipeUp()
+  for count in 1...4 {
+   app.buttons["Fill progress"].tap()
+   XCTAssertTrue(app.staticTexts["Completed \(count) of 4"].waitForExistence(timeout: 3))
+  }
+  app.swipeDown()
+  XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Puzzle progress")).firstMatch.exists)
+  shot("puzzle-progress-complete")
  }
 }

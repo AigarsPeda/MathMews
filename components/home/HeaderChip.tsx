@@ -7,6 +7,7 @@ import {
   View,
   type StyleProp,
   type ViewStyle,
+  type PressableProps,
 } from "react-native";
 
 type HeaderChipProps = {
@@ -16,6 +17,7 @@ type HeaderChipProps = {
   shape?: "square" | "pill";
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
+  hitSlop?: PressableProps['hitSlop'];
 };
 
 const chipHeight = moderateScale(HEADER_CHIP_SIZE);
@@ -27,6 +29,7 @@ export function HeaderChip({
   shape = "square",
   style,
   accessibilityLabel,
+  hitSlop,
 }: HeaderChipProps) {
   const chipStyle = [
     styles.chip,
@@ -39,6 +42,7 @@ export function HeaderChip({
     return (
       <Pressable
         onPress={onPress}
+        hitSlop={hitSlop}
         style={({ pressed }) => [chipStyle, pressed && styles.pressed]}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}

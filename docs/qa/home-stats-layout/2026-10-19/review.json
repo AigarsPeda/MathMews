@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-19",
+  "scope": "Equal home stat columns and compact settings",
+  "result": "Passed",
+  "checks": [
+    "Typecheck and targeted ESLint passed.",
+    "Native XCTest 2/2 passed, including equal metric widths within 1 point and settings width under 36 points.",
+    "Countdown, regeneration, reopening and refill still pass.",
+    "Batched visual review of production home and narrow Latvian header: no overlap.",
+    "Visual detector returned no findings."
+  ],
+  "settings": {
+    "layoutWidth": 32,
+    "horizontalHitSlop": 6,
+    "iconSize": 18
+  },
+  "limits": [
+    "iOS Simulator verification; physical device, Android and large accessibility text not tested."
+  ]
+}

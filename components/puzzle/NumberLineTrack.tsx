@@ -4,7 +4,7 @@ import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 
 type NumberLineTrackProps = {
   min: number;
@@ -32,6 +32,7 @@ export function NumberLineTrack({
 }: NumberLineTrackProps) {
   const { t } = useTranslation();
   const scroll = useRef<ScrollView>(null);
+  const scrolling = useRef(false);
   const [viewport, setViewport] = useState(0);
   const [contentWidth, setContentWidth] = useState(0);
   const centered = useRef(false);
@@ -47,22 +48,26 @@ export function NumberLineTrack({
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    const oneStep = Math.abs(value - previousValue.current) === 1;
+    const distance = Math.abs(value - previousValue.current);
     previousValue.current = value;
-    if (reducedMotion || !oneStep) {
+    if (reducedMotion || distance === 0) {
       position.value = targetX;
-      bounce.value = 1;
-    } else {
       bounce.value = 0;
-      bounce.value = withTiming(1, { duration: 600 });
-      position.value = withTiming(targetX, { duration: 600 });
+    } else {
+      const steps = Math.max(1, Math.round(Math.abs(targetX - position.value) / spacing));
+      const duration = steps === 1 ? 600 : Math.min(1800, steps * 400);
+      const timing = steps === 1 ? { duration } : { duration, easing: Easing.linear };
+      // Preserve the visible height if another number is tapped mid-hop.
+      bounce.value %= 1;
+      bounce.value = withTiming(steps, timing);
+      position.value = withTiming(targetX, timing);
     }
-  }, [value, targetX, position, bounce, reducedMotion]);
+  }, [value, targetX, spacing, position, bounce, reducedMotion]);
 
   const markerStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: position.value },
-      { translateY: -Math.sin(bounce.value * Math.PI) * BOUNCE_HEIGHT },
+      { translateY: -Math.abs(Math.sin(bounce.value * Math.PI)) * BOUNCE_HEIGHT },
     ],
   }));
 
@@ -101,10 +106,13 @@ export function NumberLineTrack({
 
   return (
     <ScrollView
+      testID="number-line-track"
       ref={scroll}
       horizontal
       scrollEnabled={!fit}
       showsHorizontalScrollIndicator={!fit}
+      onTouchStart={() => { scrolling.current = false; }}
+      onScrollBeginDrag={() => { scrolling.current = true; }}
       onLayout={(event) => setViewport(event.nativeEvent.layout.width)}
       onContentSizeChange={(nextWidth) => setContentWidth(nextWidth)}
       style={styles.viewport}
@@ -138,8 +146,8 @@ export function NumberLineTrack({
                 accessible={Boolean(onSelect)}
                 accessibilityRole="button"
                 accessibilityLabel={t("puzzleTypes.numberLineTickA11y", { value: number })}
-                accessibilityState={{ selected: isCurrent }}
-                onPress={() => onSelect?.(number)}
+                accessibilityState={{ selected: isCurrent, disabled: disabled || !onSelect }}
+                onPress={() => { if (!scrolling.current) onSelect?.(number); }}
                 style={[styles.numberTarget, { width: spacing }]}
               >
                 <Text style={[
@@ -171,8 +179,8 @@ const styles = StyleSheet.create({
     position: "absolute", top: moderateScale(18), width: moderateScale(24),
     textAlign: "center", fontSize: moderateScale(18), fontWeight: "800", color: GameColors.primary,
   },
-  numbers: { position: "absolute", top: LINE_Y + moderateScale(12), flexDirection: "row" },
-  numberTarget: { minHeight: moderateScale(54), alignItems: "center", justifyContent: "flex-start" },
+  numbers: { position: "absolute", top: 0, bottom: 0, flexDirection: "row" },
+  numberTarget: { height: "100%", paddingTop: LINE_Y + moderateScale(12), alignItems: "center", justifyContent: "flex-start" },
   number: { fontSize: moderateScale(19), lineHeight: moderateScale(28), fontWeight: "700", color: GameColors.text },
   currentNumber: { color: GameColors.primary, backgroundColor: GameColors.background, borderRadius: moderateScale(8), paddingHorizontal: moderateScale(6) },
   correctNumber: { color: GameColors.success },

@@ -1,0 +1,45 @@
+{
+  "project_ref": "jcfppquntstgxubtlvqo",
+  "verified_at": "2026-10-19T16:32:28.756607Z",
+  "deployment_method": "Authenticated Supabase SQL editor as postgres",
+  "migration": {
+    "file": "20261019162832_boss_coin_rewards.sql",
+    "sha256": "ad53a5105761f836901478aacb8fbd5948dcabef32e7b1e9141a0090c6c33545"
+  },
+  "catalog": {
+    "boss_stages": 54,
+    "correct_rewards": 54,
+    "non_boss_rewards_unchanged": true
+  },
+  "boss_rewards": {
+    "easy": {
+      "first_clear": 8,
+      "replay": 4
+    },
+    "medium": {
+      "first_clear": 14,
+      "replay": 6
+    },
+    "hard": {
+      "first_clear": 18,
+      "replay": 8
+    }
+  },
+  "acceptance": {
+    "environments": [
+      "sandbox",
+      "production"
+    ],
+    "checked_stage_environments": 108,
+    "claim_calls": 432,
+    "first_clears": true,
+    "replays": true,
+    "duplicate_attempts": true,
+    "test_accounts_per_difficulty": 1,
+    "test_accounts_rolled_back": true,
+    "daily_limit_unchanged": 1000,
+    "rollback_trial_verified_at": "2026-10-19T16:30:33.308796Z"
+  },
+  "migration_history_table_present": false,
+  "sql_editor_query": "https://supabase.com/dashboard/project/jcfppquntstgxubtlvqo/sql/9a551ae9-83d8-4dd0-b38a-40d06c5ce86a"
+}

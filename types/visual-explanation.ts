@@ -1,3 +1,5 @@
+import type { PuzzleObject } from "./puzzle-object";
+
 export type VisualScene =
   | { kind: "practice"; prompt: string; tokens: PracticeToken[]; result?: string }
   | { kind: "fraction"; numerator: number; denominator: number }
@@ -68,6 +70,7 @@ export type VisualExplanation = {
 
 /** Positions on the practice board, in a 300 × 140 coordinate space. */
 export type PracticeToken = {
+  object?: PuzzleObject;
   id: string;
   label: string;
   x: number;

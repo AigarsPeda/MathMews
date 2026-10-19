@@ -1,0 +1,673 @@
+{
+  "date": "2026-10-19",
+  "languages": [
+    "en",
+    "lv"
+  ],
+  "reviewed": 70,
+  "revisedQuestions": 12,
+  "revisedTasksOrGuidance": 19,
+  "policy": "State the goal, necessary givens and legal interactions. Leave the mathematical rule, strategy and unknown answer to the learner. Optional Picture help and post-attempt feedback remain available.",
+  "validation": {
+    "easyAndMediumContentUnchanged": true,
+    "allHardAnswerDefinitionsUnchanged": true
+  },
+  "tasks": [
+    {
+      "id": "v2-hard-operations-connected-1",
+      "type": "operation_path",
+      "status": "retained",
+      "review": "Start, target, operand order and empty operator slots define the problem without supplying the operations.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-operations-connected-2",
+      "type": "target_build",
+      "status": "revised",
+      "review": "The numeric target and fixed number order are required constraints; operation-order coaching is removed on Hard.",
+      "changes": [
+        "question rewritten in English and Latvian",
+        "neutral Hard operator instruction"
+      ],
+      "question": {
+        "en": {
+          "before": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+          "after": "Which operations make the target? Keep the numbers in order."
+        },
+        "lv": {
+          "before": "Saglabā skaitļu secību. Reizini un dali pirms saskaitīšanas vai atņemšanas.",
+          "after": "Kuras darbības ļauj iegūt mērķa skaitli? Saglabā skaitļu secību."
+        }
+      }
+    },
+    {
+      "id": "v2-hard-operations-connected-3",
+      "type": "function_machine",
+      "status": "retained",
+      "review": "The input and output are givens; the learner chooses the unknown rule.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-operations-connected-4",
+      "type": "compare",
+      "status": "retained",
+      "review": "The expressions or fractions are the values being compared, rather than worked solutions.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-operations-strategies-1",
+      "type": "operation_path",
+      "status": "retained",
+      "review": "Start, target, operand order and empty operator slots define the problem without supplying the operations.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-operations-strategies-2",
+      "type": "target_build",
+      "status": "revised",
+      "review": "The numeric target and fixed number order are required constraints; operation-order coaching is removed on Hard.",
+      "changes": [
+        "question rewritten in English and Latvian",
+        "neutral Hard operator instruction"
+      ],
+      "question": {
+        "en": {
+          "before": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+          "after": "Which operations make the target? Keep the numbers in order."
+        },
+        "lv": {
+          "before": "Saglabā skaitļu secību. Reizini un dali pirms saskaitīšanas vai atņemšanas.",
+          "after": "Kuras darbības ļauj iegūt mērķa skaitli? Saglabā skaitļu secību."
+        }
+      }
+    },
+    {
+      "id": "v2-hard-operations-strategies-3",
+      "type": "function_machine",
+      "status": "retained",
+      "review": "The input and output are givens; the learner chooses the unknown rule.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-operations-strategies-4",
+      "type": "compare",
+      "status": "retained",
+      "review": "The expressions or fractions are the values being compared, rather than worked solutions.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-amounts-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-amounts-2",
+      "type": "fraction_equivalent",
+      "status": "retained",
+      "review": "The supplied fraction is the comparison value, not the unknown equivalent choice.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-amounts-3",
+      "type": "compare",
+      "status": "retained",
+      "review": "The expressions or fractions are the values being compared, rather than worked solutions.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-amounts-4",
+      "type": "fraction_match",
+      "status": "retained",
+      "review": "The fractions and pictures are the two sets the learner must match.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-apply-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-apply-2",
+      "type": "fraction_equivalent",
+      "status": "retained",
+      "review": "The supplied fraction is the comparison value, not the unknown equivalent choice.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-apply-3",
+      "type": "compare",
+      "status": "retained",
+      "review": "The expressions or fractions are the values being compared, rather than worked solutions.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-apply-4",
+      "type": "fraction_match",
+      "status": "retained",
+      "review": "The fractions and pictures are the two sets the learner must match.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-multiply-1",
+      "type": "pattern_next",
+      "status": "retained",
+      "review": "The sequence is given; the question does not state its multiplier.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-multiply-2",
+      "type": "function_machine",
+      "status": "retained",
+      "review": "The input and output are givens; the learner chooses the unknown rule.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-multiply-3",
+      "type": "pattern_next",
+      "status": "retained",
+      "review": "The sequence is given; the question does not state its multiplier.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-multiply-4",
+      "type": "pattern_next",
+      "status": "retained",
+      "review": "The sequence is given; the question does not state its multiplier.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-scale-1",
+      "type": "pattern_next",
+      "status": "retained",
+      "review": "The sequence is given; the question does not state its multiplier.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-scale-2",
+      "type": "function_machine",
+      "status": "retained",
+      "review": "The input and output are givens; the learner chooses the unknown rule.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-scale-3",
+      "type": "pattern_next",
+      "status": "retained",
+      "review": "The sequence is given; the question does not state its multiplier.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-scale-4",
+      "type": "pattern_next",
+      "status": "retained",
+      "review": "The sequence is given; the question does not state its multiplier.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-quarters-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-quarters-2",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-quarters-3",
+      "type": "true_false",
+      "status": "retained",
+      "review": "The claim is the problem. A counterexample to a general claim stays hidden until success.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-quarters-4",
+      "type": "fix_mistake",
+      "status": "revised",
+      "review": "The learner receives the discount facts and attempted work, without being told which operation was wrong.",
+      "changes": [
+        "question rewritten in English and Latvian"
+      ],
+      "question": {
+        "en": {
+          "before": "Minka added the discount. Repair the sale price.",
+          "after": "A toy costs 80 coins and has a 25% discount. Which sale price is correct?"
+        },
+        "lv": {
+          "before": "Minka atlaidi pieskaitīja. Izlabo cenu ar atlaidi.",
+          "after": "80 monētu rotaļlietai ir 25% atlaide. Kura cena ar atlaidi ir pareiza?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-percentages-discounts-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-discounts-2",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-discounts-3",
+      "type": "true_false",
+      "status": "retained",
+      "review": "The claim is the problem. A counterexample to a general claim stays hidden until success.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-discounts-4",
+      "type": "fix_mistake",
+      "status": "revised",
+      "review": "The learner receives the discount facts and attempted work, without being told which operation was wrong.",
+      "changes": [
+        "question rewritten in English and Latvian"
+      ],
+      "question": {
+        "en": {
+          "before": "Minka added the discount. Repair the sale price.",
+          "after": "A toy costs 120 coins and has a 20% discount. Which sale price is correct?"
+        },
+        "lv": {
+          "before": "Minka atlaidi pieskaitīja. Izlabo cenu ar atlaidi.",
+          "after": "120 monētu rotaļlietai ir 20% atlaide. Kura cena ar atlaidi ir pareiza?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-measurement-area-1",
+      "type": "multiple_choice",
+      "status": "revised",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": [
+        "equation omitted from the illustrated story model"
+      ]
+    },
+    {
+      "id": "v2-hard-measurement-area-2",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-measurement-area-3",
+      "type": "estimate",
+      "status": "revised",
+      "review": "The precision remains specified, but the question does not prescribe rounding each amount and then adding.",
+      "changes": [
+        "question rewritten in English and Latvian"
+      ],
+      "question": {
+        "en": {
+          "before": "Round each amount to the nearest ten, then add.",
+          "after": "What is the total to the nearest ten?"
+        },
+        "lv": {
+          "before": "Noapaļo katru daudzumu līdz tuvākajam desmitam un saskaiti.",
+          "after": "Kāda ir summa, noapaļojot līdz tuvākajam desmitam?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-measurement-area-4",
+      "type": "balance",
+      "status": "retained",
+      "review": "The equation defines the missing value; no missing number is supplied.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-measurement-rates-1",
+      "type": "multiple_choice",
+      "status": "revised",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": [
+        "equation omitted from the illustrated story model"
+      ]
+    },
+    {
+      "id": "v2-hard-measurement-rates-2",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-measurement-rates-3",
+      "type": "estimate",
+      "status": "revised",
+      "review": "The precision remains specified, but the question does not prescribe rounding each amount and then adding.",
+      "changes": [
+        "question rewritten in English and Latvian"
+      ],
+      "question": {
+        "en": {
+          "before": "Round each amount to the nearest ten, then add.",
+          "after": "What is the total to the nearest ten?"
+        },
+        "lv": {
+          "before": "Noapaļo katru daudzumu līdz tuvākajam desmitam un saskaiti.",
+          "after": "Kāda ir summa, noapaļojot līdz tuvākajam desmitam?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-measurement-rates-4",
+      "type": "balance",
+      "status": "retained",
+      "review": "The equation defines the missing value; no missing number is supplied.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-clues-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-clues-2",
+      "type": "true_false",
+      "status": "revised",
+      "review": "The claim is the problem. A counterexample to a general claim stays hidden until success.",
+      "changes": [
+        "question rewritten in English and Latvian",
+        "counterexample hidden before success"
+      ],
+      "question": {
+        "en": {
+          "before": "The cat says multiplication always makes a positive whole number bigger. Is that true?",
+          "after": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?"
+        },
+        "lv": {
+          "before": "Kaķis saka, ka reizināšana pozitīvu veselu skaitli vienmēr palielina. Vai tā ir?",
+          "after": "Divu pozitīvu veselu skaitļu reizinājums vienmēr ir lielāks par abiem skaitļiem. Vai tā ir?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-logic-clues-3",
+      "type": "order_numbers",
+      "status": "retained",
+      "review": "The required ordering is a task constraint, not the completed ordering.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-clues-4",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-claims-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-claims-2",
+      "type": "true_false",
+      "status": "revised",
+      "review": "The claim is the problem. A counterexample to a general claim stays hidden until success.",
+      "changes": [
+        "question rewritten in English and Latvian",
+        "counterexample hidden before success"
+      ],
+      "question": {
+        "en": {
+          "before": "The cat says multiplication always makes a positive whole number bigger. Is that true?",
+          "after": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?"
+        },
+        "lv": {
+          "before": "Kaķis saka, ka reizināšana pozitīvu veselu skaitli vienmēr palielina. Vai tā ir?",
+          "after": "Divu pozitīvu veselu skaitļu reizinājums vienmēr ir lielāks par abiem skaitļiem. Vai tā ir?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-logic-claims-3",
+      "type": "order_numbers",
+      "status": "retained",
+      "review": "The required ordering is a task constraint, not the completed ordering.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-claims-4",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-garden-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-fractions-garden-2",
+      "type": "fraction_build",
+      "status": "revised",
+      "review": "The flower fraction is a given; the complementary path fraction must be inferred and is not printed before success.",
+      "changes": [
+        "question rewritten in English and Latvian",
+        "boss-stage introduction no longer names the unknown fraction",
+        "unknown fraction target hidden before success"
+      ],
+      "question": {
+        "en": {
+          "before": "Three quarters are planned for flowers. Shade the quarter reserved for a path.",
+          "after": "Three quarters of the garden are for flowers. Shade the part left for the path."
+        },
+        "lv": {
+          "before": "Trīs ceturtdaļas ir ieplānotas puķēm. Iekrāso ceturtdaļu, kas atstāta takai.",
+          "after": "Trīs ceturtdaļas dārza paredzētas puķēm. Iekrāso takai atlikušo daļu."
+        }
+      }
+    },
+    {
+      "id": "v2-hard-fractions-garden-3",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-shop-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-percentages-shop-2",
+      "type": "multiple_choice",
+      "status": "revised",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": [
+        "question rewritten in English and Latvian",
+        "boss-stage introduction asks for a price without naming subtraction"
+      ],
+      "question": {
+        "en": {
+          "before": "Take the 20-coin discount off 80 coins. What is the sale price?",
+          "after": "A toy costs 80 coins and has a 20-coin discount. What is the sale price?"
+        },
+        "lv": {
+          "before": "No 80 monētām atņem 20 monētu atlaidi. Kāda ir cena?",
+          "after": "Rotaļlieta maksā 80 monētas, un tai ir 20 monētu atlaide. Kāda ir cena ar atlaidi?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-percentages-shop-3",
+      "type": "multiple_choice",
+      "status": "revised",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": [
+        "boss-stage introduction asks for change without giving the calculation sequence"
+      ]
+    },
+    {
+      "id": "v2-hard-operations-observatory-1",
+      "type": "operation_path",
+      "status": "retained",
+      "review": "Start, target, operand order and empty operator slots define the problem without supplying the operations.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-operations-observatory-2",
+      "type": "target_build",
+      "status": "revised",
+      "review": "The numeric target and fixed number order are required constraints; operation-order coaching is removed on Hard.",
+      "changes": [
+        "neutral Hard operator instruction"
+      ]
+    },
+    {
+      "id": "v2-hard-operations-observatory-3",
+      "type": "function_machine",
+      "status": "revised",
+      "review": "The input and output are givens; the learner chooses the unknown rule.",
+      "changes": [
+        "question rewritten in English and Latvian"
+      ],
+      "question": {
+        "en": {
+          "before": "The tracker turns 27 into 79. Choose its two-step rule.",
+          "after": "The tracker turns 27 into 79. Which rule fits?"
+        },
+        "lv": {
+          "before": "Sekotājs pārvērš 27 par 79. Izvēlies tā divu soļu likumu.",
+          "after": "Sekotājs pārvērš 27 par 79. Kurš likums der?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-patterns-signal-1",
+      "type": "pattern_next",
+      "status": "retained",
+      "review": "The sequence is given; the question does not state its multiplier.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-signal-2",
+      "type": "function_machine",
+      "status": "retained",
+      "review": "The input and output are givens; the learner chooses the unknown rule.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-signal-3",
+      "type": "pattern_next",
+      "status": "retained",
+      "review": "The sequence is given; the question does not state its multiplier.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-measurement-shelter-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-measurement-shelter-2",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-measurement-shelter-3",
+      "type": "estimate",
+      "status": "revised",
+      "review": "The precision remains specified, but the question does not prescribe rounding each amount and then adding.",
+      "changes": [
+        "question rewritten in English and Latvian",
+        "boss-stage introduction states the estimation goal"
+      ],
+      "question": {
+        "en": {
+          "before": "81 tiles arrive, then 27 spares. Round each delivery to the nearest ten and estimate the total.",
+          "after": "81 tiles arrive, along with 27 spares. What is the total to the nearest ten?"
+        },
+        "lv": {
+          "before": "Pienāk 81 flīze, tad 27 rezerves flīzes. Noapaļo katru piegādi līdz tuvākajam desmitam un aptuveni saskaiti.",
+          "after": "Pienāk 81 flīze un 27 rezerves flīzes. Kāds ir kopskaits, noapaļojot līdz tuvākajam desmitam?"
+        }
+      }
+    },
+    {
+      "id": "v2-hard-logic-vault-1",
+      "type": "multiple_choice",
+      "status": "retained",
+      "review": "Quantities, prices, dimensions and logical clues are the givens needed to determine an answer.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-vault-2",
+      "type": "true_false",
+      "status": "retained",
+      "review": "The claim is the problem. A counterexample to a general claim stays hidden until success.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-vault-3",
+      "type": "order_numbers",
+      "status": "retained",
+      "review": "The required ordering is a task constraint, not the completed ordering.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-logic-pair-hunt-1",
+      "type": "find_all_pairs",
+      "status": "retained",
+      "review": "The target and reuse rules define which pairs count; no valid pair is named.",
+      "changes": []
+    },
+    {
+      "id": "v2-hard-patterns-signal-gaps-1",
+      "type": "repair_pattern",
+      "status": "revised",
+      "review": "The given sequence and tile-use constraints remain, without naming the pattern operation.",
+      "changes": [
+        "challenge introduction no longer names multiplication"
+      ]
+    },
+    {
+      "id": "v2-hard-operations-power-detour-1",
+      "type": "route_grid",
+      "status": "revised",
+      "review": "Start, exit, move limit and legal moves remain; the introductory route suggestion is removed.",
+      "changes": [
+        "challenge introduction gives constraints without a route suggestion"
+      ]
+    },
+    {
+      "id": "v2-hard-percentages-camp-budget-1",
+      "type": "budget_plan",
+      "status": "revised",
+      "review": "Budget, item count, remaining amount and discounts are the constraints; pre-answer UI no longer prescribes a calculation sequence.",
+      "changes": [
+        "neutral selection instructions replace the calculation sequence"
+      ]
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import { DEFAULT_CAT_ROOM_ID } from "@/constants/cat-rooms";
 import { DEFAULT_CAT_SKIN_ID } from "@/constants/cat-skins";
 import type { PetAnimationState, PetMood, TopicStatsMap } from "@/types/game";
 import type { PuzzleDifficulty } from "@/types/puzzle";
+import type { LearningLevel } from "@/types/curriculum";
 
 export const GameColors = {
   background: "#FFF5EB",
@@ -47,12 +48,13 @@ export const DEFAULT_PET = {
 };
 
 export const DEFAULT_WALLET = { coins: 42 };
+export const MAX_LIVES = 3;
 export const DEFAULT_PROGRESS = {
   puzzleContentVersion: PUZZLE_CONTENT_VERSION,
   streak: 0,
   puzzleStreak: 0,
   puzzlesSolved: { easy: 0, medium: 0, hard: 0 },
-  lives: { current: 5, nextRegenAt: null },
+  lives: { current: MAX_LIVES, nextRegenAt: null },
   visualHelpsUnlocked: [] as string[],
   roomsUnlocked: [DEFAULT_CAT_ROOM_ID] as string[],
   bedsUnlocked: [] as string[],
@@ -64,7 +66,6 @@ export const DEFAULT_PROGRESS = {
   topicStats: {} as TopicStatsMap,
 };
 
-export const MAX_LIVES = 5;
 /** Minutes until one life regenerates. */
 export const LIFE_REGEN_MINUTES = 30;
 export const LIFE_BUY_COST = 7;
@@ -83,6 +84,8 @@ export const PUZZLE_COIN_REWARDS = {
   medium: 7,
   hard: 9,
 } as const;
+
+export const BOSS_COIN_REWARD_MULTIPLIER = 2;
 
 /** Worked help is part of learning and is always free. */
 export function getVisualHelpCost(_difficulty: PuzzleDifficulty): number {
@@ -115,10 +118,12 @@ export const LOW_HUNGER_THRESHOLD = 50;
 export function getPuzzleCoinReward(
   difficulty: PuzzleDifficulty,
   replay = false,
+  levelKind: LearningLevel["kind"] = "practice",
 ): number {
-  return replay
+  const base = replay
     ? PUZZLE_REPLAY_COIN_REWARDS[difficulty]
     : PUZZLE_COIN_REWARDS[difficulty];
+  return base * (levelKind === "boss" ? BOSS_COIN_REWARD_MULTIPLIER : 1);
 }
 
 export type MoodAnimationConfig = {
