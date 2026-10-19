@@ -106,6 +106,7 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   assert.equal(tree.some(node => node.type === 'ActivitiesMenuButton'), false, 'The footer activity control is removed');
   assert.equal(tree.some(node => node.props.accessibilityLabel === 'home.a11yFeed'), false, 'The footer feed control is removed');
   return { interactions: () => interactions, decorationRequests,
+    navigate: label => tree.find(node => node.props.accessibilityLabel === label).props.onPress(),
     decorationMenu: tree.find(node => node.type === 'RoomActionMenu').props,
     menu: { disabled: busy, onSelect: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props.onPlay }, commands, debits,
     stage: tree.find(node => node.type === 'PetStage' && node.props.roomVisible).props,
@@ -138,16 +139,26 @@ console.log('Verified immediate shop navigation while the cat is active and no d
   assert.equal(test.interactions(), 0, 'The menu does not dispatch a game-state update before shop navigation');
 }
 console.log('Verified the Decorate dropdown, safe decoration entry and immediate Shop navigation.');
+for (const [label, route] of [['home.a11ySolve', '/puzzles'], ['home.a11ySettings', '/settings']]) {
+  const test = home(); test.navigate(label);
+  assert.deepEqual(routes, [route], 'Home navigation dispatches directly');
+  assert.equal(test.interactions(), 0, 'Navigation does not rerender the game and retained rooms or persist a save');
+}
+{
+  const test = home(); test.stage.onOpenMathStats();
+  assert.deepEqual(routes, ['/stats']);
+  assert.equal(test.interactions(), 0, 'Stats navigation also avoids a game-state write');
+}
 {
   home();
-  assert.equal(prefetched.length,0,'Shop preparation does not run during the initial home render');
-  assert.equal(idleTasks.size,1,'The shop is prepared in idle time');
-  idleTasks.get(1)();assert.deepEqual(prefetched,['/store'],'Idle preparation preloads the actual shop route');
+  assert.equal(prefetched.length,0,'Route preparation does not run during the initial home render');
+  assert.equal(idleTasks.size,1,'Main destinations are prepared in idle time');
+  idleTasks.get(1)();assert.deepEqual(prefetched,['/puzzles','/store'],'Idle preparation preloads the actual puzzle and shop routes');
   focusCleanups[0]();assert.equal(idleTasks.size,0,'Leaving home cancels pending preparation');
   home();idleTasks.get(1)();
-  assert.deepEqual(prefetched,['/store','/store'],'Returning home prepares the next shop visit too');
+  assert.deepEqual(prefetched,['/puzzles','/store','/puzzles','/store'],'Returning home prepares the next visits too');
 }
-console.log('Verified idle shop preloading on each home focus, cancellation and navigation without a synchronous game-state update.');
+console.log('Verified idle puzzle/shop preloading on each home focus, cancellation and navigation without a synchronous game-state update.');
 
 for (const activity of activities) {
   for (const happiness of [40, 100]) for (const coins of [0, 100]) {

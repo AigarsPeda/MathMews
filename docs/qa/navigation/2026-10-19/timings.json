@@ -1,0 +1,332 @@
+{
+  "date": "2026-10-19",
+  "platform": "iOS Simulator",
+  "device": "iPhone 18 Pro",
+  "osVersion": "27.0",
+  "build": "Development build served by Metro",
+  "baselineCommit": "58b985941adde63fdc520e48ebeae28465277383",
+  "method": "Three rounds of Home \u2192 topics \u2192 Numbers and order \u2192 first lesson \u2192 first puzzle, then Back through the same hierarchy. No answers submitted. Elapsed time starts before the native tap and ends when the target accessibility element exists and is hittable. Source lookup is excluded.",
+  "limitations": [
+    "Includes XCTest tap and accessibility snapshot overhead; these are automation measurements, not paint times or release-device benchmarks.",
+    "Both simulators remained booted; no app restart or save reset between runs.",
+    "First open after hot reload remained variable, including a slower first sample after the change. No claim that all cold-start delay has been eliminated."
+  ],
+  "changes": [
+    "Navigation does not call recordInteraction, avoiding game-provider updates, serialization and cloud-save scheduling on each menu tap.",
+    "Home prefetches the puzzle menu and shop during idle time.",
+    "Native iOS stack uses simple_push at 220 ms. The prior slide_from_right resolves to the default iOS transition, whose duration cannot be customized."
+  ],
+  "results": {
+    "before": {
+      "samples": [
+        {
+          "round": 0,
+          "route": "home-topics",
+          "elapsedMs": 3721.31
+        },
+        {
+          "round": 0,
+          "route": "topics-lessons",
+          "elapsedMs": 1744.1
+        },
+        {
+          "round": 0,
+          "route": "lessons-levels",
+          "elapsedMs": 5849.87
+        },
+        {
+          "round": 0,
+          "route": "levels-play",
+          "elapsedMs": 1869.89
+        },
+        {
+          "round": 0,
+          "route": "play-levels",
+          "elapsedMs": 2185.94
+        },
+        {
+          "round": 0,
+          "route": "levels-lessons",
+          "elapsedMs": 1435.78
+        },
+        {
+          "round": 0,
+          "route": "lessons-topics",
+          "elapsedMs": 1436.7
+        },
+        {
+          "round": 0,
+          "route": "topics-home",
+          "elapsedMs": 3131.21
+        },
+        {
+          "round": 1,
+          "route": "home-topics",
+          "elapsedMs": 3648.1
+        },
+        {
+          "round": 1,
+          "route": "topics-lessons",
+          "elapsedMs": 2320.16
+        },
+        {
+          "round": 1,
+          "route": "lessons-levels",
+          "elapsedMs": 1482.2
+        },
+        {
+          "round": 1,
+          "route": "levels-play",
+          "elapsedMs": 1515.42
+        },
+        {
+          "round": 1,
+          "route": "play-levels",
+          "elapsedMs": 8518.36
+        },
+        {
+          "round": 1,
+          "route": "levels-lessons",
+          "elapsedMs": 1967.79
+        },
+        {
+          "round": 1,
+          "route": "lessons-topics",
+          "elapsedMs": 2339.36
+        },
+        {
+          "round": 1,
+          "route": "topics-home",
+          "elapsedMs": 2127.53
+        },
+        {
+          "round": 2,
+          "route": "home-topics",
+          "elapsedMs": 2860.21
+        },
+        {
+          "round": 2,
+          "route": "topics-lessons",
+          "elapsedMs": 2784.93
+        },
+        {
+          "round": 2,
+          "route": "lessons-levels",
+          "elapsedMs": 2409.36
+        },
+        {
+          "round": 2,
+          "route": "levels-play",
+          "elapsedMs": 2343.43
+        },
+        {
+          "round": 2,
+          "route": "play-levels",
+          "elapsedMs": 1372.46
+        },
+        {
+          "round": 2,
+          "route": "levels-lessons",
+          "elapsedMs": 1435.38
+        },
+        {
+          "round": 2,
+          "route": "lessons-topics",
+          "elapsedMs": 6628.74
+        },
+        {
+          "round": 2,
+          "route": "topics-home",
+          "elapsedMs": 2468.48
+        }
+      ],
+      "medianMs": 2329.76,
+      "passed": true
+    },
+    "after": {
+      "samples": [
+        {
+          "round": 0,
+          "route": "home-topics",
+          "elapsedMs": 5869.4
+        },
+        {
+          "round": 0,
+          "route": "topics-lessons",
+          "elapsedMs": 1049.3
+        },
+        {
+          "round": 0,
+          "route": "lessons-levels",
+          "elapsedMs": 581.27
+        },
+        {
+          "round": 0,
+          "route": "levels-play",
+          "elapsedMs": 1035.57
+        },
+        {
+          "round": 0,
+          "route": "play-levels",
+          "elapsedMs": 610.03
+        },
+        {
+          "round": 0,
+          "route": "levels-lessons",
+          "elapsedMs": 530.46
+        },
+        {
+          "round": 0,
+          "route": "lessons-topics",
+          "elapsedMs": 589.63
+        },
+        {
+          "round": 0,
+          "route": "topics-home",
+          "elapsedMs": 1423.02
+        },
+        {
+          "round": 1,
+          "route": "home-topics",
+          "elapsedMs": 1143.69
+        },
+        {
+          "round": 1,
+          "route": "topics-lessons",
+          "elapsedMs": 795.29
+        },
+        {
+          "round": 1,
+          "route": "lessons-levels",
+          "elapsedMs": 653.34
+        },
+        {
+          "round": 1,
+          "route": "levels-play",
+          "elapsedMs": 3575.69
+        },
+        {
+          "round": 1,
+          "route": "play-levels",
+          "elapsedMs": 720.61
+        },
+        {
+          "round": 1,
+          "route": "levels-lessons",
+          "elapsedMs": 548.01
+        },
+        {
+          "round": 1,
+          "route": "lessons-topics",
+          "elapsedMs": 557.57
+        },
+        {
+          "round": 1,
+          "route": "topics-home",
+          "elapsedMs": 1336.56
+        },
+        {
+          "round": 2,
+          "route": "home-topics",
+          "elapsedMs": 2047.12
+        },
+        {
+          "round": 2,
+          "route": "topics-lessons",
+          "elapsedMs": 762.02
+        },
+        {
+          "round": 2,
+          "route": "lessons-levels",
+          "elapsedMs": 1462.49
+        },
+        {
+          "round": 2,
+          "route": "levels-play",
+          "elapsedMs": 616.03
+        },
+        {
+          "round": 2,
+          "route": "play-levels",
+          "elapsedMs": 536.49
+        },
+        {
+          "round": 2,
+          "route": "levels-lessons",
+          "elapsedMs": 542.76
+        },
+        {
+          "round": 2,
+          "route": "lessons-topics",
+          "elapsedMs": 556.79
+        },
+        {
+          "round": 2,
+          "route": "topics-home",
+          "elapsedMs": 4031.07
+        }
+      ],
+      "medianMs": 741.32,
+      "passed": true
+    }
+  },
+  "routeMedians": {
+    "home-topics": {
+      "before": 3648.1,
+      "after": 2047.12
+    },
+    "topics-lessons": {
+      "before": 2320.16,
+      "after": 795.29
+    },
+    "lessons-levels": {
+      "before": 2409.36,
+      "after": 653.34
+    },
+    "levels-play": {
+      "before": 1869.89,
+      "after": 1035.57
+    },
+    "play-levels": {
+      "before": 2185.94,
+      "after": 610.03
+    },
+    "levels-lessons": {
+      "before": 1435.78,
+      "after": 542.76
+    },
+    "lessons-topics": {
+      "before": 2339.36,
+      "after": 557.57
+    },
+    "topics-home": {
+      "before": 2468.48,
+      "after": 1423.02
+    }
+  },
+  "additionalNativeChecks": {
+    "difficultySwitching": [
+      "Medium",
+      "Hard",
+      "Easy"
+    ],
+    "edgeSwipeBackToHome": "Passed",
+    "result": "gesture-test-result.json"
+  },
+  "validation": {
+    "typecheck": "Passed",
+    "targetedLint": "Passed",
+    "homeNavigationAndPrefetchHandlers": "Passed",
+    "curriculumAndDragRegressionChecks": "Passed",
+    "gameSystems": "Passed",
+    "nativeLaunch": "Passed",
+    "startupLoading": "Passed",
+    "statusBarsAndTransitionOptions": "Passed on iOS/Android mocks",
+    "nativeNavigation": "Passed 24 actions",
+    "nativeDifficultyAndBackSwipe": "Passed",
+    "splashContinuity": {
+      "status": "Existing failure, also present in HEAD",
+      "reason": "scripts/3d/branding-source.json records cat-orange.glb hash 0dd865e852f4b432117d2924b49d5ec411a194707aca87696a09d97428597282; the committed GLB hash is 276834606d3bf4a853193ca5d86469fee57019056f0d2a740aff9867613fcf18. No branding assets changed for navigation."
+    }
+  }
+}

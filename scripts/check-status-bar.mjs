@@ -19,6 +19,7 @@ if (fs.existsSync(nativePlist)) {
 }
 
 let colorScheme = 'light';
+const platform = { OS: 'ios' };
 const module = { exports: {} };
 const code = ts.transpileModule(fs.readFileSync('app/_layout.tsx', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
@@ -29,6 +30,7 @@ vm.runInNewContext(code, { module, exports: module.exports, require: id => {
   };
   if (id === 'react-native') return {
     View: 'View', useColorScheme: () => colorScheme,
+    Platform: platform,
     Dimensions: { get: () => ({ width: 390, height: 844 }) },
   };
   if (id === 'react-native-safe-area-context') return { SafeAreaProvider: 'SafeAreaProvider', initialWindowMetrics: null };
@@ -42,10 +44,15 @@ function nodes(node) {
   if (Array.isArray(node)) return node.flatMap(nodes);
   return node?.props ? [node, ...nodes(node.props.children)] : [];
 }
-for (const [theme, expectedStyle] of [['light', 'dark'], ['dark', 'light'], [null, 'dark']]) {
+for (const os of ['ios', 'android']) for (const [theme, expectedStyle] of [['light', 'dark'], ['dark', 'light'], [null, 'dark']]) {
+  platform.OS = os;
   colorScheme = theme;
   const stack = nodes(module.exports.default()).find(node => node.type?.Screen === 'Screen');
   assert.equal(stack.props.screenOptions.statusBarStyle, expectedStyle,
     'Native-stack status-bar text must follow the system theme');
+  assert.equal(stack.props.screenOptions.animation, os === 'ios' ? 'simple_push' : 'slide_from_right',
+    'iOS must use a transition that supports a custom duration');
+  assert.equal(stack.props.screenOptions.animationDuration, 220);
+  assert.equal(stack.props.screenOptions.gestureEnabled, true, 'Faster transitions retain native back gestures');
 }
-console.log('Verified generated/native status-bar settings and native-stack theme changes without legacy global control.');
+console.log('Verified generated/native status bars, theme changes and native transition settings on iOS and Android.');

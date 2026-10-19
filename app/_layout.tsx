@@ -24,7 +24,7 @@ import {
   Stack,
   ThemeProvider,
 } from "expo-router";
-import { Dimensions, View, useColorScheme } from "react-native";
+import { Dimensions, Platform, View, useColorScheme } from "react-native";
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context";
 import "react-native-reanimated";
 
@@ -55,7 +55,10 @@ export default function RootLayout() {
                   <Stack
                     screenOptions={{
                       headerShown: false,
-                      animation: "slide_from_right",
+                      // iOS's default push ignores animationDuration. simple_push
+                      // keeps a native horizontal transition with a shorter duration.
+                      animation: Platform.OS === "ios" ? "simple_push" : "slide_from_right",
+                      animationDuration: 220,
                       gestureEnabled: true,
                       gestureDirection: "horizontal",
                       statusBarStyle: colorScheme === "dark" ? "light" : "dark",

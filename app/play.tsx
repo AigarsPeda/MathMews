@@ -208,9 +208,8 @@ function PlaySession({ session }: { session: LearningSession }) {
   }, [purchaseVisualHelp, puzzle.id, recordInteraction, visualHelpCost]);
 
   const exitToPath = useCallback(() => {
-    recordInteraction();
     router.dismissTo({ pathname: "/puzzles", params: { difficulty, topic: lesson.topicId, lesson: lesson.id } });
-  }, [difficulty, lesson.id, lesson.topicId, recordInteraction, router]);
+  }, [difficulty, lesson.id, lesson.topicId, router]);
 
   const handleCheckPairs = useCallback(() => {
     if (answered) return;

@@ -121,8 +121,11 @@ export default function HomeScreen() {
   } = useGame();
   useFocusEffect(useCallback(() => {
     if (!isReady || !hasCompletedOnboarding) return;
-    // Prepare the next visit in idle time, including after popping the shop.
-    const task = requestIdleCallback(() => router.prefetch("/store"), { timeout: 1500 });
+    // Prepare the main destinations while idle, including after returning home.
+    const task = requestIdleCallback(() => {
+      router.prefetch("/puzzles");
+      router.prefetch("/store");
+    }, { timeout: 1500 });
     return () => cancelIdleCallback(task);
   }, [isReady, hasCompletedOnboarding, router]));
   const roomEditor = useRoomEditor(pet, setPet, progress);
@@ -353,10 +356,9 @@ export default function HomeScreen() {
   );
 
   const handleOpenSettings = useCallback(() => {
-    recordInteraction();
     triggerHaptic();
     router.push("/settings");
-  }, [recordInteraction, router]);
+  }, [router]);
 
   const handleOpenStore = useCallback(() => {
     setRoomFailure(null);
@@ -365,10 +367,9 @@ export default function HomeScreen() {
   }, [router]);
 
   const handleOpenMathStats = useCallback(() => {
-    recordInteraction();
     triggerHaptic();
     router.push("/stats");
-  }, [recordInteraction, router]);
+  }, [router]);
 
   const handleMoveRoomLayerItem = useCallback(
     (item: RoomLayerItem, direction: "up" | "down") => {
@@ -550,10 +551,9 @@ export default function HomeScreen() {
   );
 
   const handlePlayPuzzle = useCallback(() => {
-    recordInteraction();
     triggerHaptic();
     router.push("/puzzles");
-  }, [recordInteraction, router]);
+  }, [router]);
 
   const handleAnimationComplete = useCallback(() => {
     const completedMood =

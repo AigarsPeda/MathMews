@@ -27,7 +27,7 @@ export default function PuzzlesScreen() {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const params = useLocalSearchParams<{ difficulty?: string; topic?: string; lesson?: string }>();
-  const { isReady, hasCompletedOnboarding, wallet, progress, recordInteraction } = useGame();
+  const { isReady, hasCompletedOnboarding, wallet, progress } = useGame();
   const difficulty: PuzzleDifficulty = isPuzzleDifficulty(params.difficulty ?? "") ? params.difficulty as PuzzleDifficulty : "easy";
   const topics = getLearningTopics(difficulty);
   const topic = topics.find(item => item.id === params.topic);
@@ -44,11 +44,9 @@ export default function PuzzlesScreen() {
     ?? availableLevels?.find(level => level.kind === "boss") ?? availableLevels?.[0];
 
   function navigate(topicId?: string, lessonId?: string, tier = difficulty) {
-    recordInteraction();
     router.push({ pathname: "/puzzles", params: { difficulty: tier, ...(topicId && { topic: topicId }), ...(lessonId && { lesson: lessonId }) } });
   }
   function back() {
-    recordInteraction();
     if (router.canGoBack()) { router.back(); return; }
     if (lesson && topic) router.replace({ pathname: "/puzzles", params: { difficulty, topic: topic.id } });
     else if (topic) router.replace({ pathname: "/puzzles", params: { difficulty } });
@@ -56,7 +54,6 @@ export default function PuzzlesScreen() {
   }
   function play(level: LearningLevel) {
     if (!lesson || getLearningLevelState(lesson, level, completed) === "locked") return;
-    recordInteraction();
     router.push({ pathname: "/play", params: { difficulty, lesson: lesson.id, level: level.id } });
   }
 
@@ -76,7 +73,6 @@ export default function PuzzlesScreen() {
           <GameHeaderStats coins={wallet.coins} streak={progress.streak} lives={progress.lives} />
         </View>
         <DifficultyPicker selected={difficulty} onSelect={tier => {
-          recordInteraction();
           router.replace({ pathname: "/puzzles", params: { difficulty: tier } });
         }} />
         <ScrollView key={`${difficulty}-${topic?.id}-${lesson?.id}`} style={styles.scroll} contentContainerStyle={styles.content}>
