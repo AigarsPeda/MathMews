@@ -26,9 +26,11 @@ import {
   isFractionMatchPair,
 } from "@/utils/fraction-match";
 import { moveOrderTile } from "@/utils/puzzle-drag";
+import { resizeFractionSelection, toggleFractionSlice } from "@/utils/fraction-pie";
 import { getPuzzleCompanionMessage } from "@/utils/puzzle-companion";
 import { shufflePuzzleChoices } from "@/utils/puzzle-practice";
 import {
+  asFractionBuildPuzzle,
   asFractionMatchPuzzle,
   asOrderNumbersPuzzle,
   checkPuzzleAnswer,
@@ -167,7 +169,8 @@ function PlaySession({ session }: { session: LearningSession }) {
     (MathOperator | null)[]
   >(() => createEmptyOperators(puzzle));
   const [operatorSubmitted, setOperatorSubmitted] = useState(false);
-  const [fractionPieces, setFractionPieces] = useState(0);
+  const [fractionSelectedSlices, setFractionSelectedSlices] = useState<number[]>([]);
+  const fractionPieces = fractionSelectedSlices.length;
   const [numberLineValue, setNumberLineValue] = useState<number | null>(null);
   const [pairIndices, setPairIndices] = useState<number[]>([]);
   const [numberOrder, setNumberOrder] = useState<number[]>(() =>
@@ -302,11 +305,18 @@ function PlaySession({ session }: { session: LearningSession }) {
 
   const handleChangeFractionPieces = useCallback(
     (count: number) => {
-      if (answered) return;
-      setFractionPieces(count);
+      const fractionPuzzle = asFractionBuildPuzzle(puzzle);
+      if (answered || !fractionPuzzle) return;
+      setFractionSelectedSlices(selected => resizeFractionSelection(selected, count, fractionPuzzle.payload.denominator));
     },
-    [answered],
+    [answered, puzzle],
   );
+
+  const handleToggleFractionSlice = useCallback((index: number) => {
+    const fractionPuzzle = asFractionBuildPuzzle(puzzle);
+    if (answered || !fractionPuzzle || index < 0 || index >= fractionPuzzle.payload.denominator) return;
+    setFractionSelectedSlices(selected => toggleFractionSlice(selected, index));
+  }, [answered, puzzle]);
 
   const handleCheckFraction = useCallback(() => {
     if (answered) return;
@@ -489,7 +499,7 @@ function PlaySession({ session }: { session: LearningSession }) {
       setSelectedIndex(null);
       setSelectedOperators(createEmptyOperators(puzzle));
       setOperatorSubmitted(false);
-      setFractionPieces(0);
+      setFractionSelectedSlices([]);
       setNumberLineValue(null);
       setPairIndices([]);
       setNumberOrder(createInitialOrder(puzzle));
@@ -624,6 +634,7 @@ function PlaySession({ session }: { session: LearningSession }) {
               selectedIndex={selectedIndex ?? pendingChoice}
               selectedOperators={selectedOperators}
               fractionPieces={fractionPieces}
+              fractionSelectedSlices={fractionSelectedSlices}
               numberLineValue={numberLineValue ?? pendingNumberLine}
               pairIndices={pairIndices}
               foundPairs={foundPairs}
@@ -641,6 +652,7 @@ function PlaySession({ session }: { session: LearningSession }) {
               onSelectOperator={handleSelectOperator}
               onCheckOperators={handleCheckOperators}
               onChangeFractionPieces={handleChangeFractionPieces}
+              onToggleFractionSlice={handleToggleFractionSlice}
               onCheckFraction={handleCheckFraction}
               onSelectNumberLineValue={setPendingNumberLine}
               onTogglePairIndex={handleTogglePairIndex}

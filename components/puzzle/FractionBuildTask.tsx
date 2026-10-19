@@ -8,18 +8,22 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 type FractionBuildTaskProps = {
   puzzle: FractionBuildPuzzle;
   shadedPieces: number;
+  selectedSlices: readonly number[];
   answered: boolean;
   isCorrect: boolean;
   onChangeShaded: (count: number) => void;
+  onToggleSlice: (index: number) => void;
   onCheck: () => void;
 };
 
 export function FractionBuildTask({
   puzzle,
   shadedPieces,
+  selectedSlices,
   answered,
   isCorrect,
   onChangeShaded,
+  onToggleSlice,
   onCheck,
 }: FractionBuildTaskProps) {
   const { t } = useTranslation();
@@ -39,6 +43,8 @@ export function FractionBuildTask({
         <FractionPieChart
           denominator={denominator}
           shaded={shadedPieces}
+          selectedSlices={selectedSlices}
+          onToggleSlice={onToggleSlice}
           size={moderateScale(156)}
           showResult={answered}
           isCorrect={isCorrect}

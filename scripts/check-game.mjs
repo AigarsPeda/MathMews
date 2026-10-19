@@ -26,6 +26,7 @@ checks.push('check-cat-room-flow');
 checks.push('check-curriculum');
 checks.push('check-result-dismissal');
 checks.push('check-answer-feedback');
+checks.push('check-fraction-animation');
 for (const check of checks) {
   const result = spawnSync(process.execPath, [`scripts/${check}.mjs`], { stdio: 'inherit' });
   if (result.status !== 0) process.exit(result.status ?? 1);

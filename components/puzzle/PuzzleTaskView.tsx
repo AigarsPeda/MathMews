@@ -46,6 +46,7 @@ type PuzzleTaskViewProps = {
   selectedIndex: number | null;
   selectedOperators: (MathOperator | null)[];
   fractionPieces: number;
+  fractionSelectedSlices: readonly number[];
   numberLineValue: number | null;
   pairIndices: number[];
   foundPairs: [number, number][];
@@ -63,6 +64,7 @@ type PuzzleTaskViewProps = {
   onSelectOperator: (stepIndex: number, operator: MathOperator) => void;
   onCheckOperators: () => void;
   onChangeFractionPieces: (count: number) => void;
+  onToggleFractionSlice: (index: number) => void;
   onCheckFraction: () => void;
   onSelectNumberLineValue: (value: number) => void;
   onTogglePairIndex: (index: number) => void;
@@ -78,6 +80,7 @@ export function PuzzleTaskView({
   selectedIndex,
   selectedOperators,
   fractionPieces,
+  fractionSelectedSlices,
   numberLineValue,
   pairIndices,
   foundPairs, onFoundPairsChange, onCheckPairs,
@@ -93,6 +96,7 @@ export function PuzzleTaskView({
   onSelectOperator,
   onCheckOperators,
   onChangeFractionPieces,
+  onToggleFractionSlice,
   onCheckFraction,
   onSelectNumberLineValue,
   onTogglePairIndex,
@@ -164,9 +168,11 @@ export function PuzzleTaskView({
       <FractionBuildTask
         puzzle={fractionPuzzle}
         shadedPieces={fractionPieces}
+        selectedSlices={fractionSelectedSlices}
         answered={answered}
         isCorrect={isCorrect}
         onChangeShaded={onChangeFractionPieces}
+        onToggleSlice={onToggleFractionSlice}
         onCheck={onCheckFraction}
       />
     );
