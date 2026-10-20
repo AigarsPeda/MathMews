@@ -1,4 +1,3 @@
-import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
 import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
@@ -7,6 +6,7 @@ import { getBossSceneProgress } from "@/utils/boss-story";
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
 import { PuzzleProgress } from "@/components/puzzle/PuzzleProgress";
 import { PuzzleLives } from "@/components/puzzle/PuzzleLives";
+import { ChallengeClock, TimedChallengeActions, TimedChallengeIntro } from "@/components/puzzle/TimedChallenge";
 import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
 import { PuzzleCatPortrait } from "@/components/puzzle/PuzzleCatPortrait";
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
@@ -19,7 +19,8 @@ import {
   MAX_LIVES,
 } from "@/constants/game";
 import { isPuzzleDifficulty } from "@/constants/puzzles";
-import { getLevelPuzzles, getNextPracticeLevel, getRequiredIds, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
+import { getLearningLevelLocation, getLevelPuzzles, getNextPracticeLevel, getRequiredIds, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
+import { isChallengeOpen } from "@/utils/timed-challenge";
 import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
@@ -153,8 +154,10 @@ export function PlaySession({ session }: { session: LearningSession }) {
   const { locale } = useLocale();
   const { lesson, level, phase: sessionIndex } = session;
   const difficulty = lesson.difficulty;
-  const { pet, answerPuzzle, buyLife, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp } = useGame();
-  const now = useWorldClockNow(1000, progress.lives.current < MAX_LIVES);
+  const { pet, answerPuzzle, buyLife, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp, beginChallenge, expireChallenge } = useGame();
+  const run = progress.challengeAttempt;
+  const timed = level.kind === "challenge" && !!level.timeLimitSeconds;
+  const now = useWorldClockNow(1000, progress.lives.current < MAX_LIVES || run?.status === "active");
   const lives = applyLifeRegen(progress.lives, now);
   const nextLife = msUntilNextLife(lives, now);
   const hasLives = lives.current > 0;
@@ -203,6 +206,28 @@ export function PlaySession({ session }: { session: LearningSession }) {
   const [retryCount, setRetryCount] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
   const [showLives, setShowLives] = useState(false);
+  const challengePlayable = !timed || answered || isChallengeOpen(run, puzzle.id, now);
+  const otherActive = run?.status === "active" && run.puzzleId !== puzzle.id && now < run.deadlineAt;
+  const expired = run?.puzzleId === puzzle.id && (run.status === "expired" || run.status === "active" && now >= run.deadlineAt);
+
+  useEffect(() => {
+    if (run?.status === "active" && now >= run.deadlineAt) expireChallenge(run.id);
+  }, [run, now, expireChallenge]);
+
+  const handleBeginChallenge = useCallback(() => {
+    if (!beginChallenge(level.id)) return;
+    recordInteraction();
+    setPendingChoice(null); setPendingNumberLine(null); setSelectedOperators(createEmptyOperators(puzzle));
+    setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
+    setNumberOrder(createInitialOrder(puzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
+    setLastAttempt(null); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
+    submittedAnswer.current = null; matchingAttempt.current = null;
+    attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }, [beginChallenge, level.id, puzzle, recordInteraction]);
+  const handleResumeChallenge = useCallback(() => {
+    const location = run && getLearningLevelLocation(run.levelId);
+    if (location) router.replace({ pathname: "/play", params: { difficulty: location.lesson.difficulty, lesson: location.lesson.id, level: location.level.id } });
+  }, [run, router]);
 
   const visualHelpCost = getVisualHelpCost(difficulty);
   const visualHelpUnlocked = true;
@@ -214,7 +239,7 @@ export function PlaySession({ session }: { session: LearningSession }) {
     matchedCount: fractionMatchMatchedIds.length / 2, pairs: foundPairs, challenge: challengeAnswer,
   }), [puzzle, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
   const draftKey = JSON.stringify(draftAnswer);
-  const canCheck = hasLives && !answered && draftAnswer !== null && draftKey !== lastAttempt?.key;
+  const canCheck = hasLives && challengePlayable && !answered && draftAnswer !== null && draftKey !== lastAttempt?.key;
   const practiceFinished = level.kind === "practice" && !getNextPracticeLevel(lesson, level);
   const progressSteps = level.kind === "practice"
     ? lesson.levels.filter(item => item.kind === "practice").map(item => item.puzzleIds.every(id => entryCompleted.includes(id) || answered && id === puzzle.id))
@@ -408,6 +433,9 @@ export function PlaySession({ session }: { session: LearningSession }) {
     completedCount: new Set(entryCompleted).size + (isCorrect && !isReplay ? 1 : 0),
     puzzleId: puzzle.id,
   });
+  const challengeIntroProps = { level, expired: !!expired, lifeLost: !!run?.lifeLost, hasLives, otherActive,
+    onStart: handleBeginChallenge, onResume: handleResumeChallenge, onRefill: () => setShowLives(true),
+    onHelp: hasVisualHelp ? handleOpenVisualHelp : undefined };
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
@@ -425,11 +453,6 @@ export function PlaySession({ session }: { session: LearningSession }) {
               style={[styles.backText, answered && styles.backTextDisabled]}
             />
           </Pressable>
-          <GameHeaderStats
-            coins={wallet.coins}
-            streak={progress.streak}
-            lives={progress.lives}
-          />
         </View>
 
         <View style={styles.titleRow}>
@@ -439,6 +462,7 @@ export function PlaySession({ session }: { session: LearningSession }) {
 
         <PuzzleProgress steps={progressSteps} total={position.total}
           label={t(level.kind === "boss" ? "learning.stageOf" : "play.puzzleOf", { number: position.current, total: position.total })} />
+        {timed && challengePlayable && !answered && run ? <ChallengeClock milliseconds={run.deadlineAt - now} /> : null}
 
         <ScrollView
           scrollEnabled={!isDraggingTile}
@@ -446,8 +470,10 @@ export function PlaySession({ session }: { session: LearningSession }) {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+          {!challengePlayable ? <TimedChallengeIntro {...challengeIntroProps} /> : <>
           {level.kind !== "practice" && <View style={[styles.mission, level.kind === "boss" ? styles.bossMission : styles.challengeMission]}>
             <Text style={styles.missionTitle}>{t(`learning.${level.kind}`)}</Text>
+            {level.story?.backstory && sessionIndex === 0 ? <Text style={styles.missionDescription}>{level.story.backstory[locale]}</Text> : null}
             {level.story ? sessionIndex === 0 ? <Text style={styles.missionDescription}>{level.story.intro[locale]}</Text> : null
               : <Text style={styles.missionDescription}>{level.description[locale]}</Text>}
             {level.kind === "boss" && level.story ? <>
@@ -508,7 +534,7 @@ export function PlaySession({ session }: { session: LearningSession }) {
             )}
             <PuzzleTaskView
               puzzle={puzzle}
-              hasLives={hasLives}
+              hasLives={hasLives && challengePlayable}
               onIncorrectAttempt={handleInlineMistake}
               onChallengeAnswerChange={setChallengeAnswer}
               onDragStateChange={setIsDraggingTile}
@@ -541,9 +567,10 @@ export function PlaySession({ session }: { session: LearningSession }) {
             />
 
           </View>
+          </>}
         </ScrollView>
 
-        <View style={styles.answerDock}>
+        {challengePlayable ? <View style={styles.answerDock}>
           {!answered && lives.current === 0 ? <View style={styles.emptyLives} accessibilityLiveRegion="polite">
             <Text style={styles.attemptTitle}>{t("lives.outOfLives")}</Text>
             <Text style={styles.attemptHint}>{t("lives.checkPaused")}</Text>
@@ -575,7 +602,7 @@ export function PlaySession({ session }: { session: LearningSession }) {
           >
             <Text style={[styles.checkAnswerText, !canCheck && { color: GameColors.textMuted }]}>{t("play.checkAnswer")}</Text>
           </Pressable>
-        </View>
+        </View> : <View style={styles.answerDock}><TimedChallengeActions {...challengeIntroProps} /></View>}
 
         {answered ? (
           <ResultOverlay
@@ -602,7 +629,7 @@ export function PlaySession({ session }: { session: LearningSession }) {
                 : t("play.goodTry")
             }
             detail={puzzle.explanation}
-            summary={lessonFinished ? t("learning.lessonCompleteDetail")
+            summary={isCorrect && !isReplay && level.kind === "boss" && sessionIndex === puzzles.length - 1 ? t("achievements.unlocked") : lessonFinished ? t("learning.lessonCompleteDetail")
               : practiceFinished && !isReplay ? t("learning.practiceCompleteDetail", { total: position.total }) : undefined}
             coinsEarned={coinsEarned}
             coinType={isReplay ? "sparkle" : "regular"}
@@ -611,7 +638,9 @@ export function PlaySession({ session }: { session: LearningSession }) {
                 : level.kind !== "practice" || isReplay || !getNextPracticeLevel(lesson, level) ? t("learning.backToLesson") : t("play.nextPuzzle")
               : t("play.tryAgain")}
             onContinue={handleContinue}
-            onGoHome={isCorrect && !isReplay ? handleGoHome : undefined}
+            onGoHome={isCorrect && !isReplay ? level.kind === "boss" && sessionIndex === puzzles.length - 1
+              ? () => router.replace({ pathname: "/achievements", params: { boss: level.id } }) : handleGoHome : undefined}
+            secondaryLabel={level.kind === "boss" && sessionIndex === puzzles.length - 1 ? t("achievements.view") : undefined}
             onBuyLife={undefined}
             coins={wallet.coins}
           />

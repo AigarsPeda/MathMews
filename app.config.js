@@ -9,6 +9,7 @@ module.exports = ({ config }) => {
   }
   return ({
   ...config,
+  plugins: [...(config.plugins ?? []), 'expo-sharing', 'expo-asset'],
   android: {
     ...config.android,
     // The game uses bundled media and app-private storage. Keep development

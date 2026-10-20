@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-20",
+  "result": "Passed",
+  "bosses": 180,
+  "retainedOriginalFinales": 18,
+  "individualNewBlenderScenes": 162,
+  "differentAnimatedEndings": 180,
+  "checkpointStills": 720,
+  "taskReactionClips": 360,
+  "puzzles": 1440,
+  "localizedPuzzleChecks": 2880,
+  "preserved": "All existing puzzle IDs, tasks, reward policies and saved boss completion IDs. The 162 added boss stories and artwork now have individual content.",
+  "achievements": {
+    "unlock": "All three stable saved boss stage IDs",
+    "legacy": "Existing completed boss IDs automatically collect the ending",
+    "partial": "One or two stages remain locked",
+    "replay": "Read-only, no lives or reward operation",
+    "entries": [
+      "Home account metric before Lives",
+      "Topic chooser",
+      "Settings",
+      "Final boss result View achievement"
+    ],
+    "home": "Unlocked of total, dark bold 16-point primary count; same-sized muted regular total. Four metrics with a compact fixed-width Lives control and Settings at end."
+  },
+  "native": {
+    "device": "iPhone 18 Pro, iOS 27.0 Simulator",
+    "galleryBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-kIENQ3/result.xcresult",
+    "nineEndingsBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-51ESAW/result.xcresult",
+    "coverage": [
+      "Zero and partial collection",
+      "Third-stage unlock and serialized reopen",
+      "Previously completed endings",
+      "Native free replay and leaving during playback",
+      "Latvian collection",
+      "Native WebP playback for all nine new character/mechanism families",
+      "Gallery scrolling to offscreen collected endings",
+      "Home count updates from0 to2of180",
+      "Earned count survives save/reopen",
+      "Counter navigates to actual collection and Back",
+      "Smaller Lives and wider Achievements, retained countdown/refill",
+      "Final16point primary/total typography and narrow Latvian header",
+      "Full localized total remains visible without a line cap at narrow width"
+    ],
+    "isolation": "Real production screens in in-memory game and locale providers. No fixture answers or wallet changes saved.",
+    "passed": 4,
+    "failed": 0,
+    "homeHeaderBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-Fi4HvG/result.xcresult",
+    "cleanup": "Temporary fixture routes removed and app returned to normal home. One simulator service stall required rebooting the dedicated QA simulator without erasing data; final run passed.",
+    "narrowWrapBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-eebZQS/result.xcresult"
+  },
+  "checks": [
+    "npm run test:puzzles",
+    "node scripts/check-puzzle-experience.mjs",
+    "npm run typecheck",
+    "Targeted ESLint",
+    "node scripts/puzzles/build-content.mjs --check",
+    "git diff --check"
+  ],
+  "blender": {
+    "generator": "scripts/3d/build-lesson-bosses.py",
+    "packer": "scripts/3d/pack-lesson-bosses.mjs",
+    "manifest": "data/lesson-boss-scenes.json",
+    "editableSources": "prototypes/boss-scenes/lessons",
+    "sourceHashes": "blender-sources.json",
+    "families": 9,
+    "places": 18,
+    "frameRate": 8,
+    "reactionFrames": 8,
+    "endingFrames": 16,
+    "runtimeMiB": 78.2
+  },
+  "supabase": "No database migration or hosted reward edits needed. Stable puzzle and completion IDs are unchanged.",
+  "sharing": "Feasibility discussed. Native sharing/export controls are not implemented in this change.",
+  "limitations": [
+    "Native UI verified in development simulator, not on a physical device.",
+    "All180 assets checked offline; nine new character/mechanism families exercised in native playback.",
+    "The162 new missions use nine character/mechanism families across eighteen settings, with individual story, staging and motion."
+  ],
+  "finishReview": {
+    "disposition": "ship",
+    "verdict": "finish-verdict.md",
+    "openMaterialFindings": 0
+  }
+}

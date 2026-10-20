@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-20",
+  "feature": "Simplified clock controls",
+  "result": "pass",
+  "changes": [
+    "Removed elapsed world-day numbers from the home tile, sheet and accessible clock name.",
+    "Home shows the current period, its existing Blender icon and time.",
+    "Four time-of-day choices and three speed choices use short labels, icons and selected checkmarks.",
+    "Removed long speed-duration descriptions and numerical multipliers. Preserved the existing clock speeds and time presets.",
+    "English and Latvian labels are complete."
+  ],
+  "verification": {
+    "clockAndWeatherModel": "pass: scripts/check-weather-control.mjs, including period selection, selected groups, speed continuity, weather preservation, translations and no polling save writes",
+    "typescript": "pass: tsc --noEmit",
+    "eslint": "pass: WorldClockControl and changed verification script",
+    "whitespace": "pass: git diff --check",
+    "nativeInspection": "pass: production Home tile and expanded Clock sheet in iPhone 18 Pro simulator, iOS 27; all options and Close visible with no clipping",
+    "screenshot": "clock-menu.png"
+  },
+  "limits": [
+    "Latvian labels are covered by the model checks; narrow native Latvian layout was not recaptured.",
+    "No Android or large accessibility text inspection in this pass.",
+    "Native inspection opened the menu without changing the user's clock settings."
+  ],
+  "morningEveningIcons": {
+    "renderer": "Blender 5.2.2 LTS",
+    "source": "docs/art/app-icons/source/icons.blend",
+    "scenes": [
+      "Icon weather-sunrise",
+      "Icon weather-sunset"
+    ],
+    "runtimeSize": "256x256 RGBA PNG",
+    "iconFamilyCheck": "84 transparent unclipped icons, 2.97 MiB total",
+    "orientationCheck": "52 upright symbols and all four arrow directions passed",
+    "integration": "Distinct icons used by Morning and Evening choices, the expanded reading and the home clock tile",
+    "preview": "morning-evening-icons.png",
+    "nativeInspection": "Passed: both distinct icons visible together at their actual 28-point choice size in the production iOS clock menu; captured in clock-menu.png."
+  },
+  "clockSpeedIcons": {
+    "renderer": "Blender 5.2.2 LTS",
+    "source": "docs/art/app-icons/source/icons.blend",
+    "scenes": [
+      "Icon clock-real-time",
+      "Icon clock-fast",
+      "Icon clock-very-fast"
+    ],
+    "choices": {
+      "Real time": "Teal standing clock",
+      "Fast": "Teal speedometer with a coral needle",
+      "Very fast": "Coral rocket"
+    },
+    "preview": "clock-speed-icons.png",
+    "runtimeSize": "256x256 transparent PNG",
+    "assetCheck": "87 icons, 3144738 bytes, within 3 MiB budget",
+    "orientationCheck": "55 upright symbols and all four arrow directions passed",
+    "modelCheck": "Clock/weather, selected groups, translations and speed continuity passed",
+    "nativeInspection": "Passed: all three distinct icons visible at their actual 36-point size in the production iOS clock menu; selected Fast checkmark, all time choices and Close remain visible. Captured in clock-menu.png.",
+    "typescript": "pass",
+    "eslint": "pass",
+    "rabbitRefinement": {
+      "source": "clock_fast in scripts/3d/render_app_icons.py",
+      "changes": "Continuous sculpted anatomy, rounded paws, swept-back ears, smaller muzzle and no motion bars",
+      "preview": "rabbit-fast-refined.png",
+      "assetAndOrientationChecks": "passed",
+      "nativeInspection": "Passed at the actual 36-point menu size in the iOS simulator; clock-menu.png updated.",
+      "superseded": true
+    },
+    "referenceRebuild": {
+      "reference": "https://www.ucl.ac.uk/human-evolution/sites/human_evolution/files/Leaping_Rabbit.jpg",
+      "referenceNotes": "rabbit-reference.md",
+      "preview": "rabbit-fast-reference.png",
+      "changes": "Photo-based proportions and running pose, tapered head, narrow ears, long trailing hind feet, forward-reaching forelegs, natural brown/cream coat",
+      "assetAndOrientationChecks": "passed",
+      "display": "48-point transparent rabbit canvas centered in the existing 44x36 icon slot, balancing its long silhouette without changing row heights",
+      "nativeInspection": "Passed: natural rabbit visible without clipping in its enlarged canvas; icon slot and all option rows stay aligned. Captured in clock-menu.png.",
+      "typescript": "pass",
+      "eslint": "pass",
+      "superseded": true
+    },
+    "currentFastIcon": "speedometer",
+    "speedometerReplacement": {
+      "renderer": "Blender 5.2.2 LTS",
+      "source": "Icon clock-fast in docs/art/app-icons/source/icons.blend",
+      "preview": "fast-speedometer.png",
+      "display": "36-point icon in the shared 44x36 slot",
+      "assetChecks": "passed",
+      "orientation": "55 upright symbols passed",
+      "typescript": "passed",
+      "eslint": "passed",
+      "nativeInspection": "Passed at 36 points in the production iOS clock menu; selected Fast state, aligned rows and Close remain visible. Captured in clock-menu.png."
+    }
+  }
+}

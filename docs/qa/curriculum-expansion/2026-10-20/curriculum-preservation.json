@@ -1,0 +1,28 @@
+{
+  "existingLevelsPreserved": 173,
+  "existingPuzzleIdsPreserved": 209,
+  "totalLessons": 180,
+  "totalPuzzles": 821,
+  "timedChallenges": 47,
+  "bossesWithBackstories": 18,
+  "lessonsPerTopic": {
+    "easy/addition": 10,
+    "easy/fractions": 10,
+    "easy/multiplication": 10,
+    "easy/numbers": 10,
+    "easy/patterns": 10,
+    "easy/subtraction": 10,
+    "hard/fractions": 10,
+    "hard/logic": 10,
+    "hard/measurement": 10,
+    "hard/operations": 10,
+    "hard/patterns": 10,
+    "hard/percentages": 10,
+    "medium/addition": 10,
+    "medium/division": 10,
+    "medium/fractions": 10,
+    "medium/multiplication": 10,
+    "medium/operations": 10,
+    "medium/subtraction": 10
+  }
+}

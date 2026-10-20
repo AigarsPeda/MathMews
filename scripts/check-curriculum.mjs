@@ -78,15 +78,19 @@ for (const [from,to] of [[1,1],[-1,2],[1,4],[1,NaN],[1.5,2]]) {
 const { LEARNING_CATALOG, getPracticeIds, getRequiredIds, getLearningProgress, getTopicProgress, getTopicLessons, getLearningTopics, getLearningLevelState, isLessonAvailable, resolveLearningSession } = curriculum;
 const { getBossSceneProgress, advanceBossOutcome } = load('@/utils/boss-story');
 const storyBosses = LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === 'boss'));
-assert.equal(storyBosses.length, 18);
-assert.equal(new Set(storyBosses.map(boss => boss.story?.sceneId)).size, 18, 'Every boss has a distinct scene');
+assert.equal(storyBosses.length, LEARNING_CATALOG.lessons.length, 'Every lesson has its own boss');
+assert.equal(new Set(storyBosses.map(boss => boss.story?.sceneId)).size, storyBosses.length, 'Every lesson has its own animation scene');
+for(const locale of ['en','lv']) {
+  assert.equal(new Set(storyBosses.map(boss=>boss.story.backstory[locale])).size,storyBosses.length,'Every boss has an individual backstory');
+  assert.equal(new Set(storyBosses.map(boss=>boss.story.outcome[locale])).size,storyBosses.length,'Every boss has an individual ending');
+}
 for (const boss of storyBosses) {
   assert.ok(boss.story, `${boss.id}: missing story`);
   assert.equal(boss.puzzleIds.length, 3, 'A story is exactly three saved tasks');
   assert.equal(boss.story.stages.length, 3);
   assert.equal(boss.story.catActions.length, 4, 'The cat participates before the mission and after all three tasks');
   for (const locale of ['en', 'lv']) {
-    for (const line of [boss.story.intro, boss.story.outcome, ...boss.story.catActions, ...boss.story.stages.flatMap(stage => [stage.title, stage.before, stage.after])]) {
+    for (const line of [boss.story.backstory, boss.story.intro, boss.story.outcome, ...boss.story.catActions, ...boss.story.stages.flatMap(stage => [stage.title, stage.before, stage.after])]) {
       assert.ok(typeof line[locale] === 'string' && line[locale].trim().length > 5, `${boss.id}: incomplete ${locale} story`);
     }
     assert.equal(new Set(boss.story.stages.map(stage => stage.title[locale])).size, 3, 'Each task has its own role in the mission');
@@ -161,6 +165,9 @@ for(const lesson of LEARNING_CATALOG.lessons) {
   assert.ok(topicIds.includes(lesson.topicId));
   assert.ok(tiers.includes(lesson.difficulty));
   assert.ok(getPracticeIds(lesson).length>0);
+  assert.equal(lesson.levels.filter(level=>level.kind==='challenge').length,1,`${lesson.id}: one timed challenge`);
+  assert.equal(lesson.levels.filter(level=>level.kind==='boss').length,1,`${lesson.id}: one boss mission`);
+  assert.equal(lesson.levels.at(-1).kind,'boss','The boss ends its lesson');
   const first=lesson.levels[0];
   for(const level of lesson.levels) {
     assert.ok(level.puzzleIds.length>0);
@@ -193,13 +200,17 @@ for(const tier of tiers) assert.ok(getLearningTopics(tier).length > 0);
 const bossTitles={en:new Set(),lv:new Set()};
 for(const tier of tiers) for(const topic of getLearningTopics(tier)) {
   const lessons=getTopicLessons(tier,topic.id);
+  assert.ok(lessons.length>=10,`${tier}/${topic.id}: at least ten lessons`);
+  assert.ok(lessons.some(lesson=>lesson.levels.some(level=>level.kind==='challenge' && level.timeLimitSeconds>=60)),`${tier}/${topic.id}: timed challenges are present`);
   const topicBosses=lessons.flatMap(lesson=>lesson.levels.filter(level=>level.kind==='boss'));
-  assert.equal(topicBosses.length,1,`${tier}/${topic.id} must have exactly one boss`);
-  const boss=topicBosses[0],last=lessons.at(-1);
+  assert.equal(topicBosses.length,lessons.length,`${tier}/${topic.id} must have a boss in every lesson`);
+  const boards=lessons.map(lesson=>byId.get(lesson.levels.find(level=>level.kind==='challenge').puzzleIds[0]));
+  assert.equal(new Set(boards.map(puzzle=>JSON.stringify(puzzle.payload))).size,lessons.length,`${tier}/${topic.id}: challenge boards vary between lessons`);
+  const boss=topicBosses.at(-1),last=lessons.at(-1);
   assert.equal(last.levels.at(-1).id,boss.id,'The boss is the final level of the final lesson');
-  for(const locale of ['en','lv']) {
-    assert.ok(!bossTitles[locale].has(boss.title[locale]),'Every topic has a uniquely named mission');
-    bossTitles[locale].add(boss.title[locale]);
+  for(const topicBoss of topicBosses) for(const locale of ['en','lv']) {
+    assert.ok(!bossTitles[locale].has(topicBoss.title[locale]),'Every lesson has a uniquely named mission');
+    bossTitles[locale].add(topicBoss.title[locale]);
   }
   const practice=lessons.flatMap(getPracticeIds);
   const bossStages=lessons.flatMap(lesson=>lesson.levels.filter(level=>level.kind==='boss').flatMap(level=>level.puzzleIds));
@@ -321,6 +332,7 @@ for (const lesson of LEARNING_CATALOG.lessons) {
 for (const lesson of LEARNING_CATALOG.lessons) for (const level of lesson.levels.filter(l => l.kind === 'boss')) {
   const stages = level.puzzleIds.map(id => byId.get(id));
   assert.ok(new Set(stages.map(p => p.type)).size >= 2, `${level.id}: a mission needs different task types`);
+  if (/lesson-\d+-boss$/.test(level.id)) assert.equal(new Set(stages.map(practiceFacts)).size,3,`${level.id}: new boss stages use independent examples`);
   if (lesson.topicId === 'patterns') checkPatternVariety(stages, level.id);
 }
 for(const locale of ['en','lv']) {
@@ -475,6 +487,21 @@ const replay=applyPuzzleAnswer(restored,byId.get(boss.puzzleIds[0]),true,'boss-r
 assert.equal(replay.coins,getPuzzleCoinReward(bossLesson.difficulty,true,"boss"));
 assert.equal(replay.save.progress.completedPuzzleIds.length,restored.progress.completedPuzzleIds.length);
 assert.equal(applyPuzzleAnswer(replay.save,byId.get(boss.puzzleIds[0]),true,'boss-replay',now).coins,0,'A delivered attempt rewards only once');
+const { getBossAchievements, getShareableBossAchievement } = load('@/utils/boss-achievements');
+const achievementOrder = getBossAchievements();
+assert.equal(new Set(achievementOrder.map(item => item.id)).size, 180);
+assert.equal(getShareableBossAchievement('missing-boss', []), null);
+for (const difficulty of ['easy','medium','hard']) for (const topic of LEARNING_CATALOG.topics) {
+  if (!LEARNING_CATALOG.lessons.some(lesson => lesson.difficulty === difficulty && lesson.topicId === topic.id)) continue;
+  assert.deepEqual(achievementOrder.filter(item => item.lesson.difficulty === difficulty && item.topic.id === topic.id).map(item => item.lessonNumber), [1,2,3,4,5,6,7,8,9,10], 'Achievements stay in lesson order within each topic and difficulty');
+}
+for (const item of achievementOrder) {
+  assert.equal(getShareableBossAchievement(item.id, []), null, 'Locked awards cannot be shared');
+  assert.equal(getShareableBossAchievement(item.id, item.level.puzzleIds.slice(0,2)), null, 'A partial boss cannot be shared');
+  assert.equal(getShareableBossAchievement(item.id, item.level.puzzleIds)?.id, item.id, 'Completing all stages enables sharing');
+}
+assert.equal(getBossAchievements().filter(item=>item.collected).length,0,'New players have no collected endings');
+assert.equal(getBossAchievements(storyBosses.filter(boss=>!/-lesson-\d+-boss$/.test(boss.id)).flatMap(boss=>boss.puzzleIds)).filter(item=>item.collected).length,18,'Previously completed finales automatically become achievements');
 for (const mission of storyBosses) {
   const lesson = LEARNING_CATALOG.lessons.find(item => item.levels.includes(mission));
   let checkpointSave = { ...start, progress: { ...start.progress, completedPuzzleIds: getPracticeIds(lesson) } };
@@ -483,6 +510,7 @@ for (const mission of storyBosses) {
     assert.equal(resumed.phase, phase, `${mission.id}: resume at the first unfinished story task`);
     assert.equal(getBossSceneProgress(resumed.phase), phase);
     const wrong = applyPuzzleAnswer(checkpointSave, byId.get(mission.puzzleIds[phase]), false, `${mission.id}-wrong-${phase}`, now).save;
+    assert.equal(getBossAchievements(wrong.progress.completedPuzzleIds).find(item=>item.id===mission.id).collected,false,'Wrong answers and partial checkpoints do not unlock the ending');
     assert.equal(resolveLearningSession(lesson.difficulty, lesson.id, mission.id, undefined, wrong.progress.completedPuzzleIds).phase, phase);
     const clear = applyPuzzleAnswer(checkpointSave, byId.get(mission.puzzleIds[phase]), true, `${mission.id}-clear-${phase}`, now);
     assert.equal(clear.coins, getPuzzleCoinReward(lesson.difficulty, false, 'boss'));
@@ -492,10 +520,15 @@ for (const mission of storyBosses) {
     assert.equal(bossReplay.coins, 2 * getPuzzleCoinReward(lesson.difficulty, true), 'Boss replays pay twice the regular replay reward');
     assert.equal(applyPuzzleAnswer(bossReplay.save, byId.get(mission.puzzleIds[phase]), true, `${mission.id}-replay-${phase}`, now).coins, 0, 'A duplicate boss attempt never pays twice');
     checkpointSave = clear.save;
+    const reopened = parseGameSaveFromValue(JSON.stringify(checkpointSave)).save;
+    assert.equal(getBossAchievements(reopened.progress.completedPuzzleIds).find(item=>item.id===mission.id).collected,phase===2,'The third checkpoint unlocks its achievement and survives save/reopen');
     assert.equal(getLearningProgress(mission.puzzleIds, checkpointSave.progress.completedPuzzleIds).complete, phase === 2, 'Only the third task completes a boss');
   }
   const replaySession = resolveLearningSession(lesson.difficulty, lesson.id, mission.id, undefined, checkpointSave.progress.completedPuzzleIds);
   assert.equal(replaySession.phase, 0, `${mission.id}: replay resets its story scene`);
+  const savedBefore=JSON.stringify(checkpointSave);
+  for(let n=0;n<3;n++) assert.equal(getBossAchievements(checkpointSave.progress.completedPuzzleIds).filter(item=>item.collected).length,1,'Replays do not duplicate the collected boss');
+  assert.equal(JSON.stringify(checkpointSave),savedBefore,'Browsing and replaying an achievement do not alter rewards, lives or progress');
 }
 for(const bad of ['-1','1.5','NaN','Infinity','999999999999999999999','3']) assert.equal(resolveLearningSession(bossLesson.difficulty,bossLesson.id,boss.id,bad,restored.progress.completedPuzzleIds),null);
 assert.equal(resolveLearningSession('hard',bossLesson.id,boss.id,undefined,restored.progress.completedPuzzleIds),null);
@@ -506,7 +539,7 @@ const prerequisitePractice=getTopicLessons(bossLesson.difficulty,bossLesson.topi
 assert.equal(isLessonAvailable(addedLesson,prerequisitePractice),true,'A future lesson opens without requiring bosses or challenges');
 LEARNING_CATALOG.lessons.pop();
 assert.deepEqual(canonical(getSolvedCounts(save.progress.completedPuzzleIds)),canonical(save.progress.puzzlesSolved));
-console.log(`Verified ${en.length*2} localized puzzles, ${LEARNING_CATALOG.lessons.length} lessons, ${bosses} unique topic finales, ${challenges} optional challenges, completion, checkpoints, reset isolation and route guards.`);
+console.log(`Verified ${en.length*2} localized puzzles, ${LEARNING_CATALOG.lessons.length} lessons, ${bosses} lesson bosses, ${challenges} optional challenges, completion, checkpoints, reset isolation and route guards.`);
 
 const registration = fs.readdirSync('supabase/migrations').filter(file=>file.endsWith('.sql')).sort().map(file=>fs.readFileSync(`supabase/migrations/${file}`,'utf8')).join('\n');
 const registered = new Map([...registration.matchAll(/\('([^']+)',(\d+),(\d+)\)/g)].map(([,id,first,replay])=>[id,[Number(first),Number(replay)]]));
@@ -514,11 +547,13 @@ for(const puzzle of en) assert.deepEqual(registered.get(puzzle.id),[getPuzzleCoi
 console.log(`Verified server reward registrations for all ${en.length} current puzzles, including introductory number lines.`);
 
 const lifeRules=load('@/utils/lives');
+const timedRules=load('@/utils/timed-challenge');
 assert.equal(load('@/constants/game').MAX_LIVES,3);
 for (const tier of tiers) for (const kind of ['practice','boss','challenge']) {
   const level=LEARNING_CATALOG.lessons.filter(l=>l.difficulty===tier).flatMap(l=>l.levels).find(l=>l.kind===kind);
   const puzzle=byId.get(level.puzzleIds[0]);
   let current=createDefaultGameSave();
+  if(kind==='challenge') current.progress=timedRules.beginTimedChallenge(current.progress,level,'life-run',now);
   assert.equal(current.progress.lives.current,3);
   const balance=current.wallet.coins;
   for(let mistake=1;mistake<=3;mistake++) {
@@ -547,7 +582,10 @@ for (const tier of tiers) for (const kind of ['practice','boss','challenge']) {
   assert.equal(clear.coins,getPuzzleCoinReward(tier,false,kind),'Recovered attempts retain ordinary coin rewards');
   assert.equal(clear.save.progress.lives.current,1,'A correct answer neither uses nor refills lives');
   assert.ok(clear.save.progress.completedPuzzleIds.includes(puzzle.id));
-  assert.equal(applyPuzzleAnswer(current,puzzle,true,'after-regen',deadline).accepted,true,'A regenerated life unlocks the game logic immediately');
+  let regenerated={...current,progress:timedRules.settleChallengeTimeout(current.progress,deadline)};
+  regenerated={...regenerated,progress:{...regenerated.progress,lives:lifeRules.applyLifeRegen(regenerated.progress.lives,deadline)}};
+  if(kind==='challenge') regenerated.progress=timedRules.beginTimedChallenge(regenerated.progress,level,'regenerated-run',deadline);
+  assert.equal(applyPuzzleAnswer(regenerated,puzzle,true,'after-regen',deadline).accepted,true,'A regenerated life permits a new timed run or an ordinary answer');
 }
 const legacyLives=createDefaultGameSave();
 legacyLives.progress.lives={current:5,nextRegenAt:null};
@@ -555,3 +593,85 @@ assert.equal(parseGameSaveFromValue(legacyLives).save.progress.lives.current,3,'
 legacyLives.progress.lives={current:-3,nextRegenAt:null};
 assert.equal(parseGameSaveFromValue(legacyLives).save.progress.lives.current,0);
 console.log('Verified three-life loss and gating for every difficulty and level kind, duplicate taps, save/reopen, regeneration, refill, full rewards and legacy migration.');
+
+const timedLevels=LEARNING_CATALOG.lessons.flatMap(lesson=>lesson.levels.filter(level=>level.kind==='challenge'));
+for(const level of timedLevels) {
+  const clock=Date.now(), puzzle=byId.get(level.puzzleIds[0]), original=createDefaultGameSave();
+  assert.ok(level.timeLimitSeconds>=60 && level.timeLimitSeconds<=600);
+  assert.equal(level.puzzleIds.length,1);
+  assert.equal(applyPuzzleAnswer(original,puzzle,true,'before-start',clock).accepted,false,'Previewing a challenge cannot earn completion');
+  const active={...original,progress:timedRules.beginTimedChallenge(original.progress,level,`${level.id}-run`,clock)};
+  const run=active.progress.challengeAttempt, deadline=run.deadlineAt;
+  const resume=timedRules.beginTimedChallenge(active.progress,level,'replacement',clock+1000);
+  assert.equal(resume.challengeAttempt.id,run.id,'Reopening resumes the same attempt');
+  assert.equal(resume.challengeAttempt.deadlineAt,deadline,'Reopening cannot restart the timer');
+  const other=timedLevels.find(candidate=>candidate.id!==level.id);
+  assert.equal(timedRules.beginTimedChallenge(active.progress,other,'other',clock+1000),null,'Another challenge cannot silently replace the running one');
+  const beforeDeadline=applyPuzzleAnswer(active,puzzle,true,'on-time',deadline-1);
+  assert.equal(beforeDeadline.accepted,true); assert.equal(beforeDeadline.save.progress.challengeAttempt.status,'completed');
+  assert.equal(beforeDeadline.save.progress.lives.current,3);
+  assert.equal(timedRules.settleChallengeTimeout(beforeDeadline.save.progress,deadline+1),beforeDeadline.save.progress,'A completed challenge cannot expire later');
+  const late=applyPuzzleAnswer(active,puzzle,true,'late',deadline);
+  assert.equal(late.accepted,false,'The exact deadline rejects even a correct pending submission');
+  assert.equal(late.coins,0); assert.equal(late.save.progress.lives.current,2);
+  assert.equal(late.save.progress.challengeAttempt.status,'expired');
+  assert.equal(late.save.progress.challengeAttempt.lifeLost,true);
+  assert.ok(!late.save.progress.completedPuzzleIds.includes(puzzle.id));
+  assert.equal(late.save.progress.lives.nextRegenAt,deadline+1800000,'Regeneration starts at the original expiry, including offline expiry');
+  assert.equal(timedRules.settleChallengeTimeout(late.save.progress,deadline+1),late.save.progress,'Expiry charges exactly one life');
+  const retry=timedRules.beginTimedChallenge(late.save.progress,level,'retry',deadline+1);
+  assert.equal(retry.lives.current,2); assert.equal(retry.challengeAttempt.startedAt,deadline+1);
+  assert.equal(timedRules.settleChallengeTimeout(retry,retry.challengeAttempt.deadlineAt,run.id),retry,'An old expiry callback cannot charge a newer run');
+  assert.equal(timedRules.normalizeChallengeAttempt({...run,deadlineAt:deadline+1}),undefined,'A modified saved deadline is rejected');
+
+  // No lives were available at expiry. A later offline regeneration must not be
+  // spent retroactively when loading the save.
+  const awayStart=clock-45*60000;
+  const away=timedRules.beginTimedChallenge(original.progress,level,'offline',awayStart);
+  away.lives={current:0,nextRegenAt:clock-15*60000};
+  const loaded=parseGameSaveFromValue({...original,progress:away}).save;
+  assert.equal(loaded.progress.challengeAttempt.status,'expired');
+  assert.equal(loaded.progress.challengeAttempt.lifeLost,false);
+  assert.equal(loaded.progress.lives.current,1,'Offline regeneration happens after settling the old timeout');
+  assert.equal(parseGameSaveFromValue(JSON.stringify(loaded)).save.progress.lives.current,1,'Repeated reload cannot charge the timeout again');
+}
+for(const lesson of LEARNING_CATALOG.lessons) for(const level of lesson.levels.filter(level=>level.kind!=='challenge')) assert.equal(level.timeLimitSeconds,undefined,'Only optional challenges are timed');
+console.log(`Verified ${timedLevels.length} durable timed challenges: ready/resume/retry, exact deadlines, one-life expiry, race guards, offline settlement and reward gating.`);
+
+// List states must distinguish optional work without changing unlocks or completion.
+{
+ const {getLessonProgress}=load('@/utils/lesson-progress');
+ for(const lesson of curriculum.LEARNING_CATALOG.lessons) {
+  const track=curriculum.getTopicLessons(lesson.difficulty,lesson.topicId);
+  const previous=track.slice(0,track.findIndex(item=>item.id===lesson.id)).flatMap(curriculum.getPracticeIds);
+  const practice=curriculum.getPracticeIds(lesson), boss=lesson.levels.find(level=>level.kind==='boss'), challenge=lesson.levels.find(level=>level.kind==='challenge');
+  const state=(ids,attempted=[])=>getLessonProgress(lesson,{completedPuzzleIds:[...previous,...ids],attemptedPuzzleIds:attempted});
+  assert.equal(state([]).status,'notStarted');
+  assert.equal(state([], [practice[0]]).status,'started','A first mistake counts as started, not completed');
+  assert.equal(state(practice.slice(0,2)).status,'started');
+  assert.equal(state(practice).status,'bossLeft');
+  assert.equal(state([...practice,...challenge.puzzleIds]).status,'bossLeft','Optional completion cannot conceal the unfinished boss');
+  assert.equal(state([...practice,boss.puzzleIds[0]]).parts[2].solved,1);
+  const optional=state([...practice,...boss.puzzleIds]);
+  assert.equal(optional.status,'challengeLeft');assert.ok(optional.requiredComplete,'Optional challenges never revoke core completion');
+  assert.equal(state([...practice,...boss.puzzleIds,...challenge.puzzleIds]).status,'complete');
+ }
+ const lesson=curriculum.getTopicLessons('easy','addition')[0], first=curriculum.getLevelPuzzles('en',lesson,lesson.levels[0])[0];
+ const wrong=applyPuzzleAnswer(createDefaultGameSave(),first,false,'list-first-mistake').save;
+ const restored=parseGameSaveFromValue(JSON.stringify(wrong)).save;
+ assert.ok(restored.progress.attemptedPuzzleIds.includes(first.id));
+ assert.equal(getLessonProgress(lesson,restored.progress).status,'started');
+ assert.ok(!restored.progress.completedPuzzleIds.includes(first.id));
+ const malformed={...wrong,progress:{...wrong.progress,attemptedPuzzleIds:[first.id,first.id,'unknown-puzzle',17]}};
+ assert.deepEqual(JSON.parse(JSON.stringify(parseGameSaveFromValue(malformed).save.progress.attemptedPuzzleIds)),[first.id],'Attempt history keeps only distinct known puzzle IDs');
+ malformed.progress.puzzleContentVersion=0;
+ assert.equal(parseGameSaveFromValue(malformed).save.progress.attemptedPuzzleIds.length,0,'A curriculum reset also resets started markers');
+ const {beginTimedChallenge,settleChallengeTimeout}=load('@/utils/timed-challenge');
+ const challenges=curriculum.LEARNING_CATALOG.lessons.slice(0,2).map(item=>item.levels.find(level=>level.kind==='challenge'));
+ const started=beginTimedChallenge(createDefaultGameSave().progress,challenges[0],'progress-start-one');
+ const expired=settleChallengeTimeout(started,started.challengeAttempt.deadlineAt);
+ const second=beginTimedChallenge(expired,challenges[1],'progress-start-two',started.challengeAttempt.deadlineAt+1);
+ assert.ok(second.attemptedPuzzleIds.includes(challenges[0].puzzleIds[0]) && second.attemptedPuzzleIds.includes(challenges[1].puzzleIds[0]),'Starting another timed challenge retains the earlier started marker');
+ assert.equal(getLessonProgress(curriculum.getTopicLessons('easy','addition')[1],createDefaultGameSave().progress).status,'locked');
+ console.log('Verified visual practice/challenge/boss states for all180 lessons, optional completion, first mistakes and saved attempt history.');
+}

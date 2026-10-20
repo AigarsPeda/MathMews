@@ -161,12 +161,26 @@ export type TopicStatsMap = Partial<
   >
 >;
 
+export type ChallengeAttempt = {
+  id: string;
+  levelId: string;
+  puzzleId: string;
+  startedAt: number;
+  deadlineAt: number;
+  status: "active" | "expired" | "completed";
+  lifeLost?: boolean;
+};
+
 export type Progress = {
+  /** A single durable timed run; leaving or refreshing cannot reset its deadline. */
+  challengeAttempt?: ChallengeAttempt;
   /** Separate from the save format: replacing the curriculum resets learning only. */
   puzzleContentVersion?: number;
   topicStatsByDifficulty?: Partial<Record<import("@/types/puzzle").PuzzleDifficulty, TopicStatsMap>>;
   storeGoal?: { kind: "room" | "bed" | "toy" | "decoration" | "skin"; id: string };
   completedPuzzleIds?: string[];
+  /** Accepted answers, including mistakes, distinguish started work from untouched tasks. */
+  attemptedPuzzleIds?: string[];
   processedAttemptIds?: string[];
   lastPuzzleDay?: string;
   streak: number;

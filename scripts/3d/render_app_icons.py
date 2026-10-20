@@ -83,6 +83,48 @@ def heart(broken=False):
         crack.location.y=-.13
 
 
+def challenge_timer():
+    art.cylinder('Lavender stopwatch case',(0,0,.85),.67,.26,'purple',rotation=(math.pi/2,0,0))
+    art.cylinder('Warm clock face',(0,-.145,.85),.55,.035,'cream',rotation=(math.pi/2,0,0))
+    art.torus('Raised lavender rim',(0,-.17,.85),.58,.055,'lilac',rotation=(math.pi/2,0,0))
+    art.box('Stopwatch crown',(0,0,1.61),(.28,.22,.16),'gold',.05)
+    art.box('Side timer button',(.48,0,1.39),(.22,.18,.12),'gold',.04)
+    for i in range(12):
+        t=math.tau*i/12
+        art.sphere('Clock hour mark',(.45*math.sin(t),-.18,.85+.45*math.cos(t)),(.025,.018,.025),'purple')
+    art.curve('Minute hand',[(0,-.20,.85),(0,-.20,1.22)],.035,'purple')
+    art.curve('Hour hand',[(0,-.21,.85),(.25,-.21,.72)],.04,'coral')
+    art.sphere('Clock spindle',(0,-.23,.85),(.065,.04,.065),'gold')
+
+
+def boss_badge():
+    study.extruded_shape('Golden mission shield',[(-.62,1.35),(0,1.51),(.62,1.35),(.55,.70),(.33,.34),(0,.14),(-.33,.34),(-.55,.70)],'gold',.28)
+    study.extruded_shape('Teal shield inset',[(-.48,1.24),(0,1.36),(.48,1.24),(.40,.72),(.24,.44),(0,.29),(-.24,.44),(-.40,.72)],'teal',.08,(0,-.18,0))
+    art.sphere('Mission paw pad',(0,-.28,.72),(.22,.08,.18),'cream')
+    for x,z in [(-.24,1.00),(0,1.10),(.24,1.00)]:
+        art.sphere('Mission paw toe',(x,-.28,z),(.10,.06,.12),'cream')
+    study.extruded_shape('Small mission crown',[(-.40,1.48),(-.45,1.81),(-.19,1.66),(0,1.94),(.19,1.66),(.45,1.81),(.40,1.48)],'gold',.20)
+    art.sphere('Crown coral jewel',(0,-.14,1.65),(.065,.035,.075),'coral')
+
+
+def practice_book():
+    art.box('Rounded workbook cover',(0,.04,.83),(1.30,.28,1.30),'teal',.13)
+    art.box('Cream workbook pages',(.07,-.13,.85),(1.08,.12,1.10),'cream',.075)
+    art.box('Golden book spine',(-.48,-.22,.84),(.10,.07,1.06),'gold',.025)
+    for x,z,color in [(-.14,1.12,'teal'),(.30,1.12,'coral'),(-.14,.65,'gold'),(.30,.65,'lilac')]:
+        art.box('Practice tile',(x,-.24,z),(.31,.09,.31),color,.055)
+    for z in [.39,.46]:
+        art.curve('Page edge',[(.1,-.21,z),(.48,-.21,z)],.012,'wood')
+
+
+def lesson_medal():
+    study.extruded_shape('Left award ribbon',[(-.48,.61),(-.56,.05),(-.29,.19),(-.09,.04),(-.05,.61)],'teal',.15)
+    study.extruded_shape('Right award ribbon',[(.05,.61),(.09,.04),(.29,.19),(.56,.05),(.48,.61)],'teal',.15)
+    art.cylinder('Gold lesson medal',(0,-.02,1.01),.62,.24,'gold',rotation=(math.pi/2,0,0))
+    art.cylinder('Cream medal face',(0,-.16,1.01),.49,.05,'cream',rotation=(math.pi/2,0,0))
+    study.extruded_shape('Completed lesson check',[(-.35,1.00),(-.22,1.13),(-.07,.96),(.27,1.31),(.40,1.17),(-.07,.68)],'teal',.08,(0,-.23,0))
+
+
 def coin():
     art.cylinder('Golden coin',(0,0,.8),.7,.19,'gold',rotation=(math.pi/2,0,0))
     art.torus('Coin raised rim',(0,-.105,.8),.59,.04,'orange',rotation=(math.pi/2,0,0))
@@ -477,6 +519,98 @@ def weather_auto():
     weather_cloud()
 
 
+def clock_real_time():
+    art.box('Teal clock foot', (0, .02, .13), (.76, .28, .17), 'teal', .07)
+    art.cylinder('Round teal clock case', (0, 0, .89), .65, .26, 'teal', rotation=(math.pi/2, 0, 0))
+    art.cylinder('Cream clock face', (0, -.145, .89), .54, .035, 'cream', rotation=(math.pi/2, 0, 0))
+    art.torus('Gold clock bezel', (0, -.17, .89), .56, .035, 'gold', rotation=(math.pi/2, 0, 0))
+    for angle in [0, math.pi/2, math.pi, math.pi*1.5]:
+        art.curve('Raised hour marker', [(math.sin(angle)*r, -.18, .89+math.cos(angle)*r)
+                                       for r in (.41, .47)], .025, 'wood')
+    art.curve('Clock hour hand', [(0, -.20, .89), (-.23, -.20, 1.04)], .04, 'purple')
+    art.curve('Clock minute hand', [(0, -.21, .89), (.22, -.21, 1.22)], .032, 'purple')
+    art.sphere('Gold clock spindle', (0, -.23, .89), (.065, .035, .065), 'gold')
+
+
+def clock_fast():
+    # A broad dashboard gauge reads as speed without an animal silhouette.
+    def dial(radius, bottom):
+        arc = [(radius*math.cos(math.pi*i/48), .55+radius*math.sin(math.pi*i/48))
+               for i in range(49)]
+        return [(radius,bottom)] + arc + [(-radius,bottom)]
+
+    study.extruded_shape('Rounded teal speedometer housing', dial(.82,.29), 'teal', .28)
+    study.extruded_shape('Warm cream gauge face', dial(.68,.39), 'cream', .05, (0,-.17,0))
+    art.curve('Raised golden gauge rim', [(.75*math.cos(math.pi*i/48),-.20,.55+.75*math.sin(math.pi*i/48))
+                                        for i in range(49)], .035, 'gold')
+    for degrees in [160,125,90,55,20]:
+        angle = math.radians(degrees)
+        art.curve('Speed graduation', [(math.cos(angle)*r,-.205,.55+math.sin(angle)*r)
+                                      for r in (.53,.62)], .027, 'coral' if degrees <= 55 else 'wood')
+    # A short coral high-speed sector and a single bold needle stay legible at 36pt.
+    art.curve('Coral fast sector', [(.61*math.cos(math.radians(12+i*27/12)),-.21,
+                                   .55+.61*math.sin(math.radians(12+i*27/12)))
+                                  for i in range(13)], .045, 'coral')
+    study.extruded_shape('Coral speed needle', [(-.065,.58),(.43,1.065),(.065,.52)], 'coral', .07, (0,-.255,0))
+    art.sphere('Gold needle hub', (0,-.305,.55), (.095,.045,.095), 'gold')
+    art.box('Soft teal gauge base', (0,-.03,.31), (1.67,.37,.19), 'teal', .08)
+    for x in [-.48,.48]:
+        art.box('Small gauge foot', (x,.01,.19), (.31,.25,.12), 'teal', .05)
+
+
+def clock_very_fast():
+    before = set(bpy.context.scene.objects)
+    art.sphere('Cream rocket body', (0, 0, .86), (.32, .24, .62), 'cream')
+    bpy.ops.mesh.primitive_cone_add(vertices=48, radius1=.30, radius2=.025, depth=.48, location=(0,0,1.43))
+    nose = art.finish(bpy.context.object, 'Coral rocket nose', 'coral')
+    for polygon in nose.data.polygons:
+        polygon.use_smooth = True
+    bevel = nose.modifiers.new('Rounded nose edge', 'BEVEL')
+    bevel.width, bevel.segments = .035, 3
+    for side in [-1,1]:
+        study.extruded_shape('Coral rocket fin', [(side*.24,.70),(side*.56,.27),(side*.17,.39)], 'coral', .18)
+    art.cylinder('Gold window rim', (0,-.24,1.00), .19, .07, 'gold', rotation=(math.pi/2,0,0))
+    art.cylinder('Blue rocket window', (0,-.285,1.00), .135, .035, 'blue', rotation=(math.pi/2,0,0))
+    art.sphere('Window highlight', (-.04,-.31,1.05), (.035,.015,.045), 'white')
+    art.cylinder('Lavender rocket engine', (0,0,.30), .20, .20, 'purple')
+    study.extruded_shape('Golden rocket flame', [(-.17,.23),(-.22,.02),(0,-.38),(.22,.02),(.17,.23)], 'gold', .16)
+    study.extruded_shape('Orange flame core', [(-.08,.20),(-.11,.03),(0,-.20),(.11,.03),(.08,.20)], 'orange', .05, (0,-.11,0))
+    parts = set(bpy.context.scene.objects)-before
+    root = art.empty('Rocket launch angle')
+    for part in parts:
+        part.parent = root
+    root.rotation_euler.y = math.radians(30)
+
+
+def horizon_sun(rising=True):
+    """A rounded sun and directional arrow distinguish dawn/dusk without color alone."""
+    name = 'Sunrise' if rising else 'Sunset'
+    sun = art.sphere(name+' half sun', (0, .02, .78), (.52, .20, .54 if rising else .38),
+                     'gold' if rising else 'orange')
+    # Keep the upper hemisphere and cap its cut, retaining the soft spherical face.
+    mesh = art.bmesh.new()
+    mesh.from_mesh(sun.data)
+    cut = art.bmesh.ops.bisect_plane(mesh, geom=list(mesh.verts)+list(mesh.edges)+list(mesh.faces),
+                                   plane_co=(0, 0, 0), plane_no=(0, 0, 1),
+                                   clear_inner=True, dist=.00001)
+    boundary = [edge for edge in cut['geom_cut'] if isinstance(edge, art.bmesh.types.BMEdge) and edge.is_boundary]
+    art.bmesh.ops.holes_fill(mesh, edges=boundary)
+    art.bmesh.ops.recalc_face_normals(mesh, faces=list(mesh.faces))
+    mesh.to_mesh(sun.data)
+    mesh.free()
+    for degrees in ([0, 45, 90, 135, 180] if rising else [20, 160]):
+        angle = math.radians(degrees)
+        art.curve(name+' rounded ray', [(math.cos(angle)*r, .02, .78+math.sin(angle)*r)
+                                       for r in (.70, .88)], .045, 'orange' if rising else 'coral')
+    art.curve(name+' horizon', [(-.88, -.20, .73), (.88, -.20, .73)], .065,
+              'teal' if rising else 'purple')
+    arrow = [(-.08,.08),(.08,.08),(.08,.33),(.25,.33),(0,.59),(-.25,.33),(-.08,.33)]
+    if not rising:
+        arrow = [(x, .67-z) for x,z in arrow]
+    study.extruded_shape(name+(' upward arrow' if rising else ' downward arrow'), arrow,
+                         'teal' if rising else 'purple', .18, (0,-.10,0))
+
+
 extra=[('heart',heart),('broken-heart',lambda:heart(True)),('coin',coin),('sparkle',sparkle),
        ('flame',flame),('brain',brain),('lightbulb',lightbulb),('ball',ball),('feather',feather),('box',box),('mouse',mouse),
        ('cat',cat),('nut',peanut),('film',film),('parent',parent),('lock',lock),('trash',trash),
@@ -494,8 +628,11 @@ extra += [(name,lambda label=label,color=color:tile(label,color)) for name,label
     ('addition','+','teal'),('subtraction','−','coral'),('multiplication','×','gold'),
     ('division','÷','lilac'),('equality','=','teal'),('patterns','123','lilac'),
     ('fractions','½','coral'),('operations','±','gold')]]
+extra += [('challenge-timer',challenge_timer),('boss-badge',boss_badge),('practice-book',practice_book),('lesson-medal',lesson_medal)]
 extra += [('weather-sun',weather_sun),('weather-moon',weather_moon),('weather-rain',weather_rain),
           ('weather-snow',weather_snow),('weather-leaves',weather_leaves),('weather-auto',weather_auto)]
+extra += [('weather-sunrise',lambda:horizon_sun(True)),('weather-sunset',lambda:horizon_sun(False))]
+extra += [('clock-real-time',clock_real_time),('clock-fast',clock_fast),('clock-very-fast',clock_very_fast)]
 # The starter family has its own editable library and rebuild command.
 extra = study.select_builders(extra, study.OUT, 'icons.blend')
 study.render_set(extra, study.OUT, 256)

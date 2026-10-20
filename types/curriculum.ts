@@ -11,6 +11,7 @@ export type LearningTopic = {
 };
 export type BossStory = {
   sceneId: string;
+  backstory?: LearningText;
   /** Cat participation before the mission and after its three tasks. */
   catActions: LearningText[];
   intro: LearningText;
@@ -23,6 +24,8 @@ export type LearningLevel = {
   title: LearningText;
   description: LearningText;
   story?: BossStory;
+  /** Only challenges have a deadline; practice and story bosses remain untimed. */
+  timeLimitSeconds?: number;
   /** Boss stages are separate puzzles, saved after each successful stage. */
   puzzleIds: string[];
 };

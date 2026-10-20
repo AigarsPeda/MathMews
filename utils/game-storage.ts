@@ -7,6 +7,7 @@ import { DEFAULT_HOME_ROOM_ID, isHomeRoomId, isRoomDoor } from "@/constants/home
 import { captureHomeRoom, removeRoomNavigationDoors, type HomeRoomState } from "@/utils/home-rooms";
 import { captureRoomLayout } from "@/utils/room-layout";
 import { getCompletedPuzzleIds, getSolvedCounts } from "@/utils/game-operations";
+import { normalizeChallengeAttempt, settleChallengeTimeout } from "@/utils/timed-challenge";
 import { DEFAULT_CAT_ROOM_ID, resolveCatRoomId } from "@/constants/cat-rooms";
 import { resolveCatSkinId } from "@/constants/cat-skins";
 import { DEFAULT_BED_SCALE, resolveCatBedId, canFlipBed, clampBedScale } from "@/constants/cat-beds";
@@ -206,13 +207,7 @@ function normalizeLives(value: unknown): LivesState {
       ? value.nextRegenAt
       : null;
 
-  return applyLifeRegen(
-    {
-      current: Math.min(MAX_LIVES, Math.max(0, Math.floor(value.current))),
-      nextRegenAt,
-    },
-    Date.now(),
-  );
+  return { current: Math.min(MAX_LIVES, Math.max(0, Math.floor(value.current))), nextRegenAt };
 }
 
 function parseGameSave(
@@ -238,7 +233,9 @@ function parseGameSave(
       : [];
     const puzzlesSolved = getSolvedCounts(completedPuzzleIds);
     const difficultyStats = currentCurriculum && isRecord(parsed.progress.topicStatsByDifficulty) ? parsed.progress.topicStatsByDifficulty : {};
-    const lives = normalizeLives(parsed.progress.lives);
+    const timed = settleChallengeTimeout({ lives: normalizeLives(parsed.progress.lives),
+      challengeAttempt: currentCurriculum ? normalizeChallengeAttempt(parsed.progress.challengeAttempt) : undefined });
+    const lives = applyLifeRegen(timed.lives);
     const visualHelpsUnlocked = Array.isArray(
       parsed.progress.visualHelpsUnlocked,
     )
@@ -360,7 +357,9 @@ function parseGameSave(
               : 0,
           puzzlesSolved,
         completedPuzzleIds,
+        attemptedPuzzleIds: currentCurriculum ? getCompletedPuzzleIds({ completedPuzzleIds: [...completedPuzzleIds, ...(Array.isArray(parsed.progress.attemptedPuzzleIds) ? parsed.progress.attemptedPuzzleIds.filter((id): id is string => typeof id === "string") : [])] }) : [],
         processedAttemptIds: currentCurriculum && Array.isArray(parsed.progress.processedAttemptIds) ? parsed.progress.processedAttemptIds.filter((id): id is string => typeof id === "string").slice(-200) : [],
+        challengeAttempt: timed.challengeAttempt,
         lastPuzzleDay: currentCurriculum && typeof parsed.progress.lastPuzzleDay === "string" ? parsed.progress.lastPuzzleDay : undefined,
           lives,
           visualHelpsUnlocked: currentCurriculum ? visualHelpsUnlocked : [],

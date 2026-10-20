@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-20",
+  "feature": "Ordered achievement collection and native GIF sharing",
+  "result": "pass",
+  "checks": {
+    "typescript": "pass: tsc --noEmit",
+    "eslint": "pass: changed achievement screen, utilities, fixture and native runner",
+    "diffWhitespace": "pass: git diff --check",
+    "curriculum": "pass: 180 unique boss records, difficulty/topic/lesson order, completed-stage eligibility and existing curriculum checks",
+    "media": "pass: 180 grayscale previews and 180 transparent animated GIFs; 384x240, two-second loops, retained motion, each below 1 MiB; GIF collection 40.88 MiB",
+    "iosBuild": "pass: rebuilt and installed with Expo Sharing",
+    "nativeGallery": "pass: ordered gallery without tabs, locked cards disabled, earned preview and replay, restored progress, narrow Latvian layout and all-locked state",
+    "nativeSharing": "pass: named GIF recognized by iOS share UI; cancel returns to enabled controls; coins, lives and completed IDs unchanged",
+    "licenses": "pass: generated dependency attribution"
+  },
+  "nativeEvidence": {
+    "device": "85A0697F-2C5B-43EC-91BC-77CC3DBCE9D5",
+    "platform": "iPhone 18 Pro simulator, iOS 27",
+    "galleryResultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-wgJykJ/result.xcresult",
+    "sharingResultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-nNeOTh/result.xcresult",
+    "screenshots": [
+      "achievement-sequence.png",
+      "achievement-preview.png",
+      "achievement-narrow-latvian.png",
+      "achievement-preview-latvian.png",
+      "achievement-all-locked.png",
+      "achievement-native-gif-share.png"
+    ],
+    "saveIsolation": "Fixture uses isolated in-memory saves. No recipient selected or external post created.",
+    "harness": "Waits for Home readiness before opening the fixture; native share cancellation targets the on-screen popover dismissal region. Earlier startup and selector failures were resolved before the final passing runs."
+  },
+  "designReview": {
+    "detectorRuns": 1,
+    "grayPaletteAdvisories": "Intentional locked-state surface and border colors documented in DESIGN.md."
+  },
+  "limits": [
+    "Android and physical-device sharing were not exercised in this run.",
+    "Web reports local GIF sharing unavailable.",
+    "Receiving apps determine GIF playback and sticker behavior.",
+    "The complete unrelated gameplay test suite was not rerun."
+  ]
+}

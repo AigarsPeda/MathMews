@@ -5,6 +5,7 @@ import { getLearningProgress } from "@/constants/curriculum";
 import { useLocale } from "@/contexts/LocaleProvider";
 import type { LearningLevel } from "@/types/curriculum";
 import { moderateScale } from "@/utils/scale";
+import { formatChallengeTime } from "@/utils/timed-challenge";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -18,12 +19,13 @@ export function LearningLevelCard({ level, state, completedIds, onPress }: {
   return <Pressable onPress={onPress} disabled={state === "locked"} accessibilityRole="button" accessibilityState={{ disabled: state === "locked" }}
     style={[styles.card, boss ? styles.boss : styles.challenge, state === "locked" && styles.locked]}>
     <View style={styles.heading}>
-      <AppIcon name={boss ? "paw" : "brain"} size={moderateScale(36)} />
+      <AppIcon name={boss ? "boss-badge" : "challenge-timer"} size={moderateScale(36)} />
       <Text style={[styles.kind, boss ? styles.bossText : styles.challengeText]}>{t(boss ? "learning.topicBoss" : "learning.optionalChallenge")}</Text>
       <AppIcon name={state === "locked" ? "lock" : state === "completed" ? "check" : "chevron-right"} size={moderateScale(24)} />
     </View>
     <Text style={styles.title}>{level.title[locale]}</Text>
-    <Text style={styles.description}>{level.description[locale]}</Text>
+    <Text style={styles.description}>{level.story?.backstory?.[locale] ?? level.description[locale]}</Text>
+    {!boss && level.timeLimitSeconds ? <Text style={[styles.kind, styles.challengeText]}>{t("timedChallenge.limit", { time: formatChallengeTime(level.timeLimitSeconds * 1000) })}</Text> : null}
     {boss && <View style={styles.stages}>{level.puzzleIds.map((id, index) => <View key={id} style={[styles.stage, completedIds.includes(id) && styles.stageDone]} accessible accessibilityLabel={t(completedIds.includes(id) ? "learning.stageDone" : "learning.stagePending", { number: index + 1 })}>
       <Text style={styles.stageText}>{completedIds.includes(id) ? t("learning.finished") : t("learning.stageNumber", { number: index + 1 })}</Text>
     </View>)}</View>}

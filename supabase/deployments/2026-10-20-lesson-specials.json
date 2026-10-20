@@ -1,0 +1,18 @@
+{
+  "project": "jcfppquntstgxubtlvqo",
+  "appliedAt": "2026-10-20T09:01:44.113149Z",
+  "migration": "supabase/migrations/20261020085218_puzzle_catalog.sql",
+  "sha256": "bbe6a00757a2ec60fe314daee8bf728daa84edce42f666086f43190528a57e67",
+  "addedRegistrations": 619,
+  "activePuzzles": 1440,
+  "registeredPuzzles": 1440,
+  "matchingFirstAndReplayRewards": 1440,
+  "preservedCatalogRows": 1563,
+  "previousCatalogRows": 944,
+  "savedQuery": {
+    "name": "Puzzles - Challenge and Boss in Every Lesson",
+    "url": "https://supabase.com/dashboard/project/jcfppquntstgxubtlvqo/sql/3157a79c-4ed1-4edf-a3e8-0e4f92449803"
+  },
+  "method": "Authenticated SQL Editor; additive INSERT ON CONFLICT DO NOTHING",
+  "evidence": "docs/qa/lesson-specials/2026-10-20/hosted-rewards.png"
+}

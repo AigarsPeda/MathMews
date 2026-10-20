@@ -1,11 +1,12 @@
 /** One shared goal, three visible changes, and a distinct ending per topic boss. */
 import { bossCatActions } from './boss-cat-actions.mjs';
+import { bossBackstories } from './boss-backstories.mjs';
 const text = (en, lv) => ({ en, lv });
 const stage = (en, lv, beforeEn, beforeLv, afterEn, afterLv) => ({
   title: text(en, lv), before: text(beforeEn, beforeLv), after: text(afterEn, afterLv),
 });
 const story = (sceneId, en, lv, endEn, endLv, stages) => ({
-  sceneId, catActions: bossCatActions[sceneId], intro: text(en, lv), outcome: text(endEn, endLv), stages,
+  sceneId, backstory: bossBackstories[sceneId], catActions: bossCatActions[sceneId], intro: text(en, lv), outcome: text(endEn, endLv), stages,
 });
 export const bossStories = {
   train: story('train',

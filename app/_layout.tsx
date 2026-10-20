@@ -3,6 +3,7 @@ import "@/lib/init-error-reporting";
 import "@/lib/init-game-asset-prefetch";
 import "@/components/branding/AnimatedSplashCat";
 import { useEffect } from "react";
+import { addEventListener, clearInitialURL } from "expo-linking";
 import { RecoveryBoundary } from "@/components/recovery/RecoveryBoundary";
 import { AppRecoveryScreen } from "@/components/recovery/AppRecoveryScreen";
 import { reportAppError } from "@/lib/app-diagnostics";
@@ -41,6 +42,14 @@ const GAME_DARK_THEME = { ...DarkTheme, colors: { ...DarkTheme.colors, backgroun
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
+  useEffect(() => {
+    if (Platform.OS !== "ios") return;
+    // Router has consumed the launch link. Do not replay it on a JS reload.
+    clearInitialURL();
+    const subscription = addEventListener("url", clearInitialURL);
+    return () => subscription.remove();
+  }, []);
+
   return (
     <View style={{ flex: 1, backgroundColor: GameColors.background }}>
       <SafeAreaProvider initialMetrics={INITIAL_SAFE_AREA}>
@@ -75,6 +84,7 @@ export default function RootLayout() {
                     />
                     <Stack.Screen name="play" options={{ headerShown: false, animationTypeForReplace: "push", animationDuration: 160 }} />
                     <Stack.Screen name="stats" options={{ headerShown: false }} />
+                    <Stack.Screen name="achievements" options={{ headerShown: false }} />
                     <Stack.Screen
                       name="settings"
                       options={{ headerShown: false }}

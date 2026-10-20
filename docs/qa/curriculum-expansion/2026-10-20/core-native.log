@@ -1,0 +1,735 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test -project /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj -scheme NativeDragTests -destination "platform=iOS Simulator,id=85A0697F-2C5B-43EC-91BC-77CC3DBCE9D5" -parallel-testing-enabled NO -collect-test-diagnostics never -derivedDataPath /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build -resultBundlePath /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/result.xcresult CODE_SIGNING_ALLOWED=NO
+
+Build settings from command line:
+    CODE_SIGNING_ALLOWED = NO
+
+Writing result bundle at path:
+	/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/result.xcresult
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'NativeDragTests' in project 'NativeDrag' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 8888f28c356613ca192d5e042a242725
+Build description path: /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/XCBuildData/8888f28c356613ca192d5e042a242725.xcbuilddata
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/CompilationCache.noindex
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/CompilationCache.noindex
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKStatCaches.noindex/iphonesimulator27.0-24A430-8dc58220667be655e1bcc261a7455254.sdkstatcache
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -o /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKStatCaches.noindex/iphonesimulator27.0-24A430-8dc58220667be655e1bcc261a7455254.sdkstatcache
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/PrecompiledHeaders
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/PrecompiledHeaders
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDrag-b16dba1dcfe6cdbcf609d843ab79d246-VFS-iphonesimulator/all-product-headers.yaml
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDrag-b16dba1dcfe6cdbcf609d843ab79d246-VFS-iphonesimulator/all-product-headers.yaml
+
+CreateBuildDirectory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDrag.xcodeproj
+    builtin-create-build-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.hmap (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.hmap
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/empty-NativeDragTests.plist (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/empty-NativeDragTests.plist
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/ProductTypeInfoPlistAdditions.plist (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/ProductTypeInfoPlistAdditions.plist
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.DependencyStaticMetadataFileList (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.LinkFileList (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.LinkFileList
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-OutputFileMap.json (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-OutputFileMap.json
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftConstValuesFileList (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftFileList (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftFileList
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests_const_extract_protocols.json (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests_const_extract_protocols.json
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-project-headers.hmap (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-project-headers.hmap
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.DependencyMetadataFileList (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.DependencyMetadataFileList
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-own-target-headers.hmap (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-own-target-headers.hmap
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-generated-files.hmap (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-generated-files.hmap
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-all-target-headers.hmap (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-all-target-headers.hmap
+
+WriteAuxiliaryFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-all-non-framework-target-headers.hmap (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    write-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-all-non-framework-target-headers.hmap
+
+MkDir /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    /bin/mkdir -p /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest
+
+ProcessInfoPlistFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Info.plist /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/empty-NativeDragTests.plist (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-infoPlistUtility /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/empty-NativeDragTests.plist -producttype com.apple.product-type.bundle.ui-testing -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/ProductTypeInfoPlistAdditions.plist -o /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Info.plist
+
+SwiftDriver NativeDragTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NativeDragTests -Onone @/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -target arm64-apple-ios18.0-simulator -g -module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk/Developer/Library/Frameworks -parse-as-library -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKStatCaches.noindex/iphonesimulator27.0-24A430-8dc58220667be655e1bcc261a7455254.sdkstatcache -output-file-map /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex -sdk-module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests_const_extract_protocols.json -Xcc -iquote -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-generated-files.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-own-target-headers.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-all-target-headers.hmap -Xcc -iquote -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-project-headers.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/include -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources-normal/arm64 -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources/arm64 -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-Swift.h -working-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW -experimental-emit-module-separately -disable-cmo
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_float-AMFX3NOWE74XKHPHB4J2YFG33.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_SwiftConcurrencyShims-1Q1XF4B1ND0T875CMCQK9I6JX.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_AvailabilityInternal-3O679SSIQZW8W9ZFEG7Y18S8E.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_stdarg-4NI5MHZF5R92U8IU5HVJKJVZ2.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_stdbool-E9FBXKESFTWH93CVC8J04VFTN.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/SwiftShims-BYITEAC3LBCVZWOJA71EF8R9A.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/DeveloperToolsSupport-3EA5EZVXH7EV2OHXJJ36ABTH7.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/ptrcheck-A2EQR9N6U9FFD00N7EBB82WT4.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_stddef-494M0SL8A2815RU49Y4532GKV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/ptrauth-AFGAHA1C5D8YMMCOREGYA1H51.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_DarwinFoundation1-1PS3JITR8260YWW2W049F76VB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_DarwinFoundation2-49V2KJIH2M6YAW57XAOER9M42.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_limits-7XGUG04QMYZLEP12Q5GRX3U4X.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/sys_types-5TP3XSN6T0J508UA1ERKW5TIG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_tgmath-61BXFDW8UW9EFMTKMNZGWQ82.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/string_h-7RIWRLPJXIEB5AHBBBHOFNIXE.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_stdint-DNZDGT2WJDWNU0RQ86VFDGRVL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_DarwinFoundation3-97G73I6N5WLO6FS7CSF0N8GVB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_intrinsics-2UJM3G0XC33MUZFNGFWXXRWLX.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_stdatomic-OK06J8DOC5AHILZDAK5J8RRP.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_Builtin_inttypes-CQH9ZQQ5CGJ4BVW99MKBQX7CM.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/Darwin-75HNN2Q8CQSTOPBQN1032QOL3.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/simd-AUCSIASINJNIQM6MQZIU1190Y.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/MachO-ESZPXX8DN34GYMHRDT373NUDD.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/ObjectiveC-9NL1PHWZP5I6S7Z0H1CURMU4U.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/os_object-CXMRWX983FUKXWVP9QN9L5CLL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/os_workgroup-97ZSKZU124OEW4VAYXP4VQ5LJ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/Spatial-4J9RIBW198WRW9KKYGETD6YQ0.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/Dispatch-336KRVPRNUM91TKIKAOU1A02D.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/XPC-52OKWTS0UBLAREY02DL02FV25.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CoreFoundation-8MXDEV6UG7F33B8CWUMTSTK4K.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/os-58Y72FASXWULHFO3DA7SLFS14.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/Security-73VGOBF43AR6J9HCBMKWIHC11.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CoreGraphics-3J04YJN8NTQDN67A8KVYUTJ7W.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CFNetwork-2W595U4GX21THTFP74I7CM3XL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/Foundation-AT4F0783I9YKT2VHSV308U8JG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/ImageIO-91LJGGVSCU71EIDR1B73FTJPX.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CoreText-1K8TSJPQ37ZOFX5AGP78P1LX0.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CoreTransferable-F3QHUDTVEXCI3ME8MSOA2EUEW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/UIUtilities-E5ELDAPF9MYKL1RVWPGOVD237.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/Accessibility-626R0HZDXHR1SF6JR8S70QGH0.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/IOSurface-7V49RJIE8GIINBWYSV6UFRSWK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/OSLog-BGZY16MAYH9NXXX2I3JD7Q7NV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/OpenGLES-CP2D084FFVYQZRIUHM0OU35PV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/UniformTypeIdentifiers-77LCGUGZDZ10MG8RL4WQXRM7H.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/UserNotifications-71WJ56T06FX5TAD10R1GNK4C7.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/DataDetection-WVUWTLKP6OPP6HA0YW382CYV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/Symbols-FW4D3THRJ8Q7TFU6P8EMM0X8.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/FileProvider-CDP9H7NHAFF5B666005FDUZPJ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/_LocationEssentials-EFVOOUIK96P4TJQ0EILY4S8XF.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/Metal-D0XTKH9865UNTVKJLWTI342SC.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CoreLocation-5FDWNEKK3UAXL1VFPUKHRDIJS.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CoreMotion-6CE6ULNHZM7AOBLOAY0CLL0FM.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CoreVideo-2AIEDC73OK8919I7BGGM3RCUZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/CoreImage-1W2PCAMCEI8QMNEC8KWERG3I7.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/QuartzCore-BW8HKHOYPHG8Z0IPGSOS6RB9B.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/SwiftUICore-ADOND1F64IHIYD80N1UHEQFCY.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules/UIKit-66WI6HM81XG6KCY7T6IU39ZAY.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCUIAutomation-BD0WXPEBH19G7E3S3LLHXCBZK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCTest-FVVWKMUS6BUG0HFFM9I4XB17.pcm
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCUIAutomation-1C0CRWNAAEAAT.swiftmodule
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCTest-1PGCAF1LLHPF3.swiftmodule
+
+SwiftCompile normal arm64 Compiling\ NativeDragTests.swift /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDragTests.swift (in target 'NativeDragTests' from project 'NativeDrag')
+
+SwiftCompile normal arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDragTests.swift (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-SwiftPerFileCompile NativeDragTests.swift
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ NativeDragTests (in target 'NativeDragTests' from project 'NativeDrag')
+
+SwiftCompile normal arm64 (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for NativeDragTests (in target 'NativeDragTests' from project 'NativeDrag')
+
+SwiftDriver\ Compilation\ Requirements NativeDragTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NativeDragTests -Onone @/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -target arm64-apple-ios18.0-simulator -g -module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk/Developer/Library/Frameworks -parse-as-library -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKStatCaches.noindex/iphonesimulator27.0-24A430-8dc58220667be655e1bcc261a7455254.sdkstatcache -output-file-map /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex -sdk-module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests_const_extract_protocols.json -Xcc -iquote -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-generated-files.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-own-target-headers.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-all-target-headers.hmap -Xcc -iquote -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-project-headers.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/include -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources-normal/arm64 -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources/arm64 -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-Swift.h -working-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW -experimental-emit-module-separately -disable-cmo
+
+Copy /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests.swiftmodule/arm64-apple-ios-simulator.abi.json /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.abi.json (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.abi.json /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+Copy /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftmodule (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftmodule /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests.swiftmodule/arm64-apple-ios-simulator.swiftmodule
+
+Copy /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftdoc (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftdoc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests.swiftmodule/arm64-apple-ios-simulator.swiftdoc
+
+SwiftMergeGeneratedHeaders /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources/NativeDragTests-Swift.h /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-Swift.h (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-swiftHeaderTool -arch arm64 /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-Swift.h -o /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources/NativeDragTests-Swift.h
+
+Copy /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftsourceinfo (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftsourceinfo /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
+
+SwiftDriverJobDiscovery normal arm64 Compiling NativeDragTests.swift (in target 'NativeDragTests' from project 'NativeDrag')
+
+SwiftDriver\ Compilation NativeDragTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NativeDragTests -Onone @/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -target arm64-apple-ios18.0-simulator -g -module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk/Developer/Library/Frameworks -parse-as-library -c -j10 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKStatCaches.noindex/iphonesimulator27.0-24A430-8dc58220667be655e1bcc261a7455254.sdkstatcache -output-file-map /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex -sdk-module-cache-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests_const_extract_protocols.json -Xcc -iquote -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-generated-files.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-own-target-headers.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-all-target-headers.hmap -Xcc -iquote -Xcc /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests-project-headers.hmap -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/include -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources-normal/arm64 -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources/arm64 -Xcc -I/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests-Swift.h -working-directory /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW -experimental-emit-module-separately -disable-cmo
+
+Ld /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/NativeDragTests normal (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios18.0-simulator -bundle -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator -iframework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -iframework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk/Developer/Library/Frameworks -filelist /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.LinkFileList -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.swiftmodule -Xlinker -needed_framework -Xlinker XCTest -framework XCTest -Xlinker -needed-lXCTestSwiftSupport -lXCTestSwiftSupport -framework Foundation -o /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/NativeDragTests
+
+CopySwiftLibs /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/NativeDragTests --scan-folder /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Frameworks --scan-folder /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/PlugIns --scan-folder /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/SystemExtensions --scan-folder /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Extensions --scan-folder /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework --platform iphonesimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+Ignoring --strip-bitcode because --sign was not passed
+
+ExtractAppIntentsMetadata (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name NativeDragTests --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk --xcode-version 27A266a --platform-family iOS --deployment-target 18.0 --bundle-identifier com.mathmews.NativeDragTests --output /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest --target-triple arm64-apple-ios18.0-simulator --binary-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/NativeDragTests --dependency-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests_dependency_info.dat --stringsdata-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftFileList --metadata-file-list /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.DependencyMetadataFileList --static-metadata-file-list /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.DependencyStaticMetadataFileList --swift-const-vals-list /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/Objects-normal/arm64/NativeDragTests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --no-app-shortcuts-localization
+2026-10-20 11:25:03.826 appintentsmetadataprocessor[75694:16786625] Starting appintentsmetadataprocessor export
+2026-10-20 11:25:03.828 appintentsmetadataprocessor[75694:16786625] warning: Metadata extraction skipped, no AppIntents.framework dependency found
+
+AppIntentsSSUTraining (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Info.plist --temp-dir-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/ssu --bundle-id com.mathmews.NativeDragTests --product-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest --extracted-metadata-path /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Metadata.appintents --metadata-file-list /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/NativeDrag.build/Debug-iphonesimulator/NativeDragTests.build/NativeDragTests.DependencyMetadataFileList --source-file /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Info.plist --archive-ssu-assets
+2026-10-20 11:25:03.854 appintentsnltrainingprocessor[75695:16786626] Parsing options for appintentsnltrainingprocessor
+2026-10-20 11:25:03.854 appintentsnltrainingprocessor[75695:16786626] Starting AppIntents SSU YAML Generation
+2026-10-20 11:25:03.855 appintentsnltrainingprocessor[75695:16786626] No AppShortcuts found - Skipping.
+
+MkDir /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    /bin/mkdir -p /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app
+
+CopyPlistFile /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/Info.plist /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-copyPlist --validate --convert xml1 --macro-expansion WRAPPEDPRODUCTNAME NativeDragTests-Runner --macro-expansion WRAPPEDPRODUCTBUNDLEIDENTIFIER com.mathmews.NativeDragTests.xctrunner --macro-expansion TESTPRODUCTNAME NativeDragTests --macro-expansion TESTPRODUCTBUNDLEIDENTIFIER com.mathmews.NativeDragTests --copy-value UIDeviceFamily /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest/Info.plist --outdir /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app -- /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist
+
+CopyAndPreserveArchs /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/NativeDragTests-Runner (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/XCTRunner -output /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/NativeDragTests-Runner -extract arm64
+
+Copy /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PkgInfo /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app
+
+RegisterExecutionPolicyException /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    builtin-RegisterExecutionPolicyException /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest
+
+Touch /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest (in target 'NativeDragTests' from project 'NativeDrag')
+    cd /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW
+    /usr/bin/touch -c /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Products/Debug-iphonesimulator/NativeDragTests-Runner.app/PlugIns/NativeDragTests.xctest
+
+PruneExplicitPrecompiledModules /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/SDKExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/build/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+2026-10-20 11:25:05.262023+0300 NativeDragTests-Runner[75698:16786776] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'All tests' started at 2026-10-20 11:25:07.953.
+Test Suite 'NativeDragTests.xctest' started at 2026-10-20 11:25:07.954.
+Test Suite 'NativeDragTests' started at 2026-10-20 11:25:07.954.
+Test Case '-[NativeDragTests.NativeDragTests testLastLifeLatvianAndSingleActiveRun]' started.
+    t =     0.00s Start Test at 2026-10-20 11:25:07.959
+    t =     0.03s Set Up
+    t =     0.03s     Open com.mathmews.app
+    t =     0.03s         Activate com.mathmews.app
+    t =     0.04s             Wait for com.mathmews.app to idle
+    t =     0.08s     Waiting 15.0s for "Reset" Button to exist
+objc[75698]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_24A434/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x105694398) and /Library/Developer/CoreSimulator/Volumes/iOS_24A434/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x105788310). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     1.16s         Checking `Expect predicate `existsNoRetry == 1` for object "Reset" Button`
+    t =     1.16s             Checking existence of `"Reset" Button`
+    t =     1.24s     Tap "Reset" Button
+    t =     1.25s         Wait for com.mathmews.app to idle
+    t =     1.25s         Find the "Reset" Button
+    t =     1.27s         Check for interrupting elements affecting "Reset" Button
+    t =     1.29s         Synthesize event
+    t =     1.63s         Wait for com.mathmews.app to idle
+    t =     1.63s Tap "LV" Button
+    t =     1.63s     Wait for com.mathmews.app to idle
+    t =     1.64s     Find the "LV" Button
+    t =     1.66s     Check for interrupting elements affecting "LV" Button
+    t =     1.69s     Synthesize event
+    t =     1.98s     Wait for com.mathmews.app to idle
+    t =     1.99s Waiting 5.0s for "Sākt izaicinājumu" Button to exist
+    t =     3.06s     Checking `Expect predicate `existsNoRetry == 1` for object "Sākt izaicinājumu" Button`
+    t =     3.06s         Checking existence of `"Sākt izaicinājumu" Button`
+    t =     3.10s Find the Application 'com.mathmews.app'
+    t =     3.22s Added attachment named 'challenge-latvian-ready'
+    t =     3.22s Tap "Reset" Button
+    t =     3.22s     Wait for com.mathmews.app to idle
+    t =     3.23s     Find the "Reset" Button
+    t =     3.25s     Check for interrupting elements affecting "Reset" Button
+    t =     3.28s     Synthesize event
+    t =     3.57s     Wait for com.mathmews.app to idle
+    t =     3.58s Tap "Start challenge" Button
+    t =     3.58s     Wait for com.mathmews.app to idle
+    t =     3.58s     Find the "Start challenge" Button
+    t =     3.61s     Check for interrupting elements affecting "Start challenge" Button
+    t =     3.64s     Synthesize event
+    t =     3.93s     Wait for com.mathmews.app to idle
+    t =     3.94s Tap "Other" Button
+    t =     3.94s     Wait for com.mathmews.app to idle
+    t =     3.95s     Find the "Other" Button
+    t =     3.99s     Check for interrupting elements affecting "Other" Button
+    t =     4.02s     Synthesize event
+    t =     4.31s     Wait for com.mathmews.app to idle
+    t =     4.32s Waiting 5.0s for "Resume active challenge" Button to exist
+    t =     5.40s     Checking `Expect predicate `existsNoRetry == 1` for object "Resume active challenge" Button`
+    t =     5.41s         Checking existence of `"Resume active challenge" Button`
+    t =     5.45s Checking existence of `"Start challenge" Button`
+    t =     5.47s Tap "Reset" Button
+    t =     5.47s     Wait for com.mathmews.app to idle
+    t =     5.47s     Find the "Reset" Button
+    t =     5.51s     Check for interrupting elements affecting "Reset" Button
+    t =     5.54s     Synthesize event
+    t =     5.83s     Wait for com.mathmews.app to idle
+    t =     5.84s Tap "Start challenge" Button
+    t =     5.84s     Wait for com.mathmews.app to idle
+    t =     5.84s     Find the "Start challenge" Button
+    t =     5.87s     Check for interrupting elements affecting "Start challenge" Button
+    t =     5.89s     Synthesize event
+    t =     6.19s     Wait for com.mathmews.app to idle
+    t =     6.19s Tap "LastLife" Button
+    t =     6.19s     Wait for com.mathmews.app to idle
+    t =     6.20s     Find the "LastLife" Button
+    t =     6.24s     Check for interrupting elements affecting "LastLife" Button
+    t =     6.27s     Synthesize event
+    t =     6.56s     Wait for com.mathmews.app to idle
+    t =     6.57s Tap "Fast" Button
+    t =     6.57s     Wait for com.mathmews.app to idle
+    t =     6.58s     Find the "Fast" Button
+    t =     6.62s     Check for interrupting elements affecting "Fast" Button
+    t =     6.65s     Synthesize event
+    t =     6.95s     Wait for com.mathmews.app to idle
+    t =     6.95s Waiting 10.0s for "Time’s up" StaticText to exist
+    t =     8.03s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =     8.03s         Checking existence of `"Time’s up" StaticText`
+    t =     8.07s         Capturing element debug description
+    t =     9.04s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =     9.04s         Checking existence of `"Time’s up" StaticText`
+    t =     9.09s         Capturing element debug description
+    t =    10.04s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =    10.05s         Checking existence of `"Time’s up" StaticText`
+    t =    10.07s         Capturing element debug description
+    t =    11.04s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =    11.05s         Checking existence of `"Time’s up" StaticText`
+    t =    11.09s         Capturing element debug description
+    t =    11.96s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =    11.96s         Checking existence of `"Time’s up" StaticText`
+    t =    12.01s         Capturing element debug description
+    t =    12.98s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =    12.98s         Checking existence of `"Time’s up" StaticText`
+    t =    13.01s Waiting 8.0s for "Lives 0 of 3. Open lives and refill." Button to exist
+    t =    14.10s     Checking `Expect predicate `existsNoRetry == 1` for object "Lives 0 of 3. Open lives and refill." Button`
+    t =    14.10s         Checking existence of `"Lives 0 of 3. Open lives and refill." Button`
+    t =    14.14s Checking existence of `"Lives and refill" Button`
+    t =    14.16s Checking existence of `"Try again" Button`
+    t =    14.18s Find the Application 'com.mathmews.app'
+    t =    14.30s Added attachment named 'challenge-zero-lives'
+    t =    14.30s Tear Down
+Test Case '-[NativeDragTests.NativeDragTests testLastLifeLatvianAndSingleActiveRun]' passed (14.316 seconds).
+Test Case '-[NativeDragTests.NativeDragTests testTenLessonsAndDistinctSpecialCardsAcrossDifficulties]' started.
+    t =     0.00s Start Test at 2026-10-20 11:25:22.275
+    t =     0.02s Set Up
+    t =     0.02s     Open com.mathmews.app
+    t =     0.02s         Activate com.mathmews.app
+    t =     0.03s             Wait for com.mathmews.app to idle
+    t =     0.03s     Waiting 15.0s for "Reset" Button to exist
+    t =     1.10s         Checking `Expect predicate `existsNoRetry == 1` for object "Reset" Button`
+    t =     1.10s             Checking existence of `"Reset" Button`
+    t =     1.14s     Tap "Reset" Button
+    t =     1.14s         Wait for com.mathmews.app to idle
+    t =     1.15s         Find the "Reset" Button
+    t =     1.17s         Check for interrupting elements affecting "Reset" Button
+    t =     1.20s         Synthesize event
+    t =     1.49s         Wait for com.mathmews.app to idle
+    t =     1.50s Tap "Catalog" Button
+    t =     1.50s     Wait for com.mathmews.app to idle
+    t =     1.51s     Find the "Catalog" Button
+    t =     1.54s     Check for interrupting elements affecting "Catalog" Button
+    t =     1.56s     Synthesize event
+    t =     1.86s     Wait for com.mathmews.app to idle
+    t =     1.86s Tap "Easy" Button
+    t =     1.86s     Wait for com.mathmews.app to idle
+    t =     1.86s     Find the "Easy" Button
+    t =     1.89s     Check for interrupting elements affecting "Easy" Button
+    t =     1.91s     Synthesize event
+    t =     2.22s     Wait for com.mathmews.app to idle
+    t =     2.23s Waiting 5.0s for "10 lessons" StaticText to exist
+    t =     3.31s     Checking `Expect predicate `existsNoRetry == 1` for object "10 lessons" StaticText`
+    t =     3.32s         Checking existence of `"10 lessons" StaticText`
+    t =     3.36s         Capturing element debug description
+    t =     4.23s     Checking `Expect predicate `existsNoRetry == 1` for object "10 lessons" StaticText`
+    t =     4.24s         Checking existence of `"10 lessons" StaticText`
+    t =     4.28s         Capturing element debug description
+    t =     5.26s     Checking `Expect predicate `existsNoRetry == 1` for object "10 lessons" StaticText`
+    t =     5.26s         Checking existence of `"10 lessons" StaticText`
+    t =     5.31s         Capturing element debug description
+    t =     6.28s     Checking `Expect predicate `existsNoRetry == 1` for object "10 lessons" StaticText`
+    t =     6.28s         Checking existence of `"10 lessons" StaticText`
+    t =     6.32s         Capturing element debug description
+    t =     7.24s     Checking `Expect predicate `existsNoRetry == 1` for object "10 lessons" StaticText`
+    t =     7.24s         Checking existence of `"10 lessons" StaticText`
+    t =     7.28s         Capturing element debug description
+    t =     7.29s     Checking existence of `"10 lessons" StaticText`
+    t =     7.32s Collecting debug information to assist test failure triage
+    t =     7.32s     Requesting snapshot of accessibility hierarchy for app with pid 75556
+/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/NativeDragTests.swift:40: error: -[NativeDragTests.NativeDragTests testTenLessonsAndDistinctSpecialCardsAcrossDifficulties] : XCTAssertTrue failed
+    t =     7.39s Tear Down
+Test Case '-[NativeDragTests.NativeDragTests testTenLessonsAndDistinctSpecialCardsAcrossDifficulties]' failed (7.430 seconds).
+Test Case '-[NativeDragTests.NativeDragTests testTimeoutReopenRetryAndCorrectCompletion]' started.
+    t =     0.00s Start Test at 2026-10-20 11:25:29.705
+    t =     0.02s Set Up
+    t =     0.02s     Open com.mathmews.app
+    t =     0.03s         Activate com.mathmews.app
+    t =     0.03s             Wait for com.mathmews.app to idle
+    t =     0.04s     Waiting 15.0s for "Reset" Button to exist
+    t =     1.13s         Checking `Expect predicate `existsNoRetry == 1` for object "Reset" Button`
+    t =     1.13s             Checking existence of `"Reset" Button`
+    t =     1.16s     Tap "Reset" Button
+    t =     1.16s         Wait for com.mathmews.app to idle
+    t =     1.16s         Find the "Reset" Button
+    t =     1.19s         Check for interrupting elements affecting "Reset" Button
+    t =     1.21s         Synthesize event
+    t =     1.50s         Wait for com.mathmews.app to idle
+    t =     1.51s Waiting 8.0s for "Lives 3 of 3. Open lives and refill." Button to exist
+    t =     2.58s     Checking `Expect predicate `existsNoRetry == 1` for object "Lives 3 of 3. Open lives and refill." Button`
+    t =     2.59s         Checking existence of `"Lives 3 of 3. Open lives and refill." Button`
+    t =     2.62s Checking existence of `"Check answer" Button`
+    t =     2.64s Find the Application 'com.mathmews.app'
+    t =     2.76s Added attachment named 'challenge-ready'
+    t =     2.76s Tap "Start challenge" Button
+    t =     2.76s     Wait for com.mathmews.app to idle
+    t =     2.76s     Find the "Start challenge" Button
+    t =     2.79s     Check for interrupting elements affecting "Start challenge" Button
+    t =     2.82s     Synthesize event
+    t =     3.11s     Wait for com.mathmews.app to idle
+    t =     3.12s Waiting 5.0s for "Check answer" Button to exist
+    t =     4.19s     Checking `Expect predicate `existsNoRetry == 1` for object "Check answer" Button`
+    t =     4.20s         Checking existence of `"Check answer" Button`
+    t =     4.24s Find the Application 'com.mathmews.app'
+    t =     4.37s Added attachment named 'challenge-running'
+    t =     4.37s Tap "Fast" Button
+    t =     4.37s     Wait for com.mathmews.app to idle
+    t =     4.38s     Find the "Fast" Button
+    t =     4.41s     Check for interrupting elements affecting "Fast" Button
+    t =     4.44s     Synthesize event
+    t =     4.74s     Wait for com.mathmews.app to idle
+    t =     4.74s Tap "Reopen" Button
+    t =     4.74s     Wait for com.mathmews.app to idle
+    t =     4.75s     Find the "Reopen" Button
+    t =     4.79s     Check for interrupting elements affecting "Reopen" Button
+    t =     4.82s     Synthesize event
+    t =     5.12s     Wait for com.mathmews.app to idle
+    t =     5.13s Waiting 10.0s for "Time’s up" StaticText to exist
+    t =     6.20s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =     6.21s         Checking existence of `"Time’s up" StaticText`
+    t =     6.25s         Capturing element debug description
+    t =     7.13s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =     7.13s         Checking existence of `"Time’s up" StaticText`
+    t =     7.17s         Capturing element debug description
+    t =     8.14s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =     8.14s         Checking existence of `"Time’s up" StaticText`
+    t =     8.17s         Capturing element debug description
+    t =     9.14s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =     9.14s         Checking existence of `"Time’s up" StaticText`
+    t =     9.18s         Capturing element debug description
+    t =    10.14s     Checking `Expect predicate `existsNoRetry == 1` for object "Time’s up" StaticText`
+    t =    10.14s         Checking existence of `"Time’s up" StaticText`
+    t =    10.17s Waiting 8.0s for "Lives 2 of 3. Open lives and refill." Button to exist
+    t =    11.24s     Checking `Expect predicate `existsNoRetry == 1` for object "Lives 2 of 3. Open lives and refill." Button`
+    t =    11.24s         Checking existence of `"Lives 2 of 3. Open lives and refill." Button`
+    t =    11.27s Checking existence of `"Check answer" Button`
+    t =    11.29s Checking existence of `"QA coins 42" StaticText`
+    t =    11.31s Find the Application 'com.mathmews.app'
+    t =    11.43s Added attachment named 'challenge-expired'
+    t =    11.43s Tap "Reopen" Button
+    t =    11.43s     Wait for com.mathmews.app to idle
+    t =    11.44s     Find the "Reopen" Button
+    t =    11.46s     Check for interrupting elements affecting "Reopen" Button
+    t =    11.49s     Synthesize event
+    t =    11.79s     Wait for com.mathmews.app to idle
+    t =    11.79s Waiting 8.0s for "Lives 2 of 3. Open lives and refill." Button to exist
+    t =    12.83s     Checking `Expect predicate `existsNoRetry == 1` for object "Lives 2 of 3. Open lives and refill." Button`
+    t =    12.83s         Checking existence of `"Lives 2 of 3. Open lives and refill." Button`
+    t =    12.86s Tap "Try again" Button
+    t =    12.86s     Wait for com.mathmews.app to idle
+    t =    12.87s     Find the "Try again" Button
+    t =    12.89s     Check for interrupting elements affecting "Try again" Button
+    t =    12.92s     Synthesize event
+    t =    13.21s     Wait for com.mathmews.app to idle
+    t =    13.22s Waiting 5.0s for "Check answer" Button to exist
+    t =    14.27s     Checking `Expect predicate `existsNoRetry == 1` for object "Check answer" Button`
+    t =    14.28s         Checking existence of `"Check answer" Button`
+    t =    14.32s Swipe up Application 'com.mathmews.app'
+    t =    14.32s     Wait for com.mathmews.app to idle
+    t =    14.33s     Find the Application 'com.mathmews.app'
+    t =    14.35s     Check for interrupting elements affecting "Math Mews" Application
+    t =    14.38s     Synthesize event
+    t =    14.81s     Wait for com.mathmews.app to idle
+    t =    15.44s Waiting 3.0s for "Number 1, tile 1" Button to exist
+    t =    16.52s     Checking `Expect predicate `existsNoRetry == 1` for object "Number 1, tile 1" Button`
+    t =    16.52s         Checking existence of `"Number 1, tile 1" Button`
+    t =    16.57s Find the "Number 1, tile 1" Button
+    t =    16.61s Tap "Number 1, tile 1" Button
+    t =    16.61s     Wait for com.mathmews.app to idle
+    t =    16.61s     Find the "Number 1, tile 1" Button
+    t =    16.64s     Check for interrupting elements affecting "Number 1, tile 1" Button
+    t =    16.67s     Synthesize event
+    t =    16.98s     Wait for com.mathmews.app to idle
+    t =    16.99s Waiting 3.0s for "Number 9, tile 6" Button to exist
+    t =    18.09s     Checking `Expect predicate `existsNoRetry == 1` for object "Number 9, tile 6" Button`
+    t =    18.09s         Checking existence of `"Number 9, tile 6" Button`
+    t =    18.14s Find the "Number 9, tile 6" Button
+    t =    18.18s Tap "Number 9, tile 6" Button
+    t =    18.18s     Wait for com.mathmews.app to idle
+    t =    18.18s     Find the "Number 9, tile 6" Button
+    t =    18.21s     Check for interrupting elements affecting "Number 9, tile 6" Button
+    t =    18.24s     Synthesize event
+    t =    18.54s     Wait for com.mathmews.app to idle
+    t =    18.54s Find the "Add this pair" Button
+    t =    18.60s Tap "Add this pair" Button
+    t =    18.60s     Wait for com.mathmews.app to idle
+    t =    18.60s     Find the "Add this pair" Button
+    t =    18.64s     Check for interrupting elements affecting "Add this pair" Button
+    t =    18.67s     Synthesize event
+    t =    18.97s     Wait for com.mathmews.app to idle
+    t =    18.97s Waiting 3.0s for "Number 2, tile 2" Button to exist
+    t =    20.04s     Checking `Expect predicate `existsNoRetry == 1` for object "Number 2, tile 2" Button`
+    t =    20.04s         Checking existence of `"Number 2, tile 2" Button`
+    t =    20.08s Find the "Number 2, tile 2" Button
+    t =    20.13s Tap "Number 2, tile 2" Button
+    t =    20.13s     Wait for com.mathmews.app to idle
+    t =    20.13s     Find the "Number 2, tile 2" Button
+    t =    20.16s     Check for interrupting elements affecting "Number 2, tile 2" Button
+    t =    20.19s     Synthesize event
+    t =    20.49s     Wait for com.mathmews.app to idle
+    t =    20.50s Waiting 3.0s for "Number 8, tile 5" Button to exist
+    t =    21.58s     Checking `Expect predicate `existsNoRetry == 1` for object "Number 8, tile 5" Button`
+    t =    21.58s         Checking existence of `"Number 8, tile 5" Button`
+    t =    21.62s Find the "Number 8, tile 5" Button
+    t =    21.66s Tap "Number 8, tile 5" Button
+    t =    21.66s     Wait for com.mathmews.app to idle
+    t =    21.66s     Find the "Number 8, tile 5" Button
+    t =    21.69s     Check for interrupting elements affecting "Number 8, tile 5" Button
+    t =    21.72s     Synthesize event
+    t =    22.01s     Wait for com.mathmews.app to idle
+    t =    22.02s Find the "Add this pair" Button
+    t =    22.05s Tap "Add this pair" Button
+    t =    22.05s     Wait for com.mathmews.app to idle
+    t =    22.06s     Find the "Add this pair" Button
+    t =    22.09s     Check for interrupting elements affecting "Add this pair" Button
+    t =    22.12s     Synthesize event
+    t =    22.42s     Wait for com.mathmews.app to idle
+    t =    22.42s Waiting 3.0s for "Number 3, tile 3" Button to exist
+    t =    23.47s     Checking `Expect predicate `existsNoRetry == 1` for object "Number 3, tile 3" Button`
+    t =    23.48s         Checking existence of `"Number 3, tile 3" Button`
+    t =    23.51s Find the "Number 3, tile 3" Button
+    t =    23.55s Tap "Number 3, tile 3" Button
+    t =    23.55s     Wait for com.mathmews.app to idle
+    t =    23.55s     Find the "Number 3, tile 3" Button
+    t =    23.59s     Check for interrupting elements affecting "Number 3, tile 3" Button
+    t =    23.61s     Synthesize event
+    t =    23.91s     Wait for com.mathmews.app to idle
+    t =    23.92s Waiting 3.0s for "Number 7, tile 4" Button to exist
+    t =    24.95s     Checking `Expect predicate `existsNoRetry == 1` for object "Number 7, tile 4" Button`
+    t =    24.95s         Checking existence of `"Number 7, tile 4" Button`
+    t =    25.00s Find the "Number 7, tile 4" Button
+    t =    25.04s Tap "Number 7, tile 4" Button
+    t =    25.05s     Wait for com.mathmews.app to idle
+    t =    25.05s     Find the "Number 7, tile 4" Button
+    t =    25.08s     Check for interrupting elements affecting "Number 7, tile 4" Button
+    t =    25.12s     Synthesize event
+    t =    25.42s     Wait for com.mathmews.app to idle
+    t =    25.43s Find the "Add this pair" Button
+    t =    25.47s Tap "Add this pair" Button
+    t =    25.47s     Wait for com.mathmews.app to idle
+    t =    25.47s     Find the "Add this pair" Button
+    t =    25.51s     Check for interrupting elements affecting "Add this pair" Button
+    t =    25.54s     Synthesize event
+    t =    25.84s     Wait for com.mathmews.app to idle
+    t =    25.85s Find the "Check answer" Button
+    t =    25.88s Tap "Check answer" Button
+    t =    25.88s     Wait for com.mathmews.app to idle
+    t =    25.89s     Find the "Check answer" Button
+    t =    25.92s     Check for interrupting elements affecting "Check answer" Button
+    t =    25.95s     Synthesize event
+    t =    26.25s     Wait for com.mathmews.app to idle
+    t =    26.28s Waiting 5.0s for "Every pair found!" StaticText to exist
+    t =    27.35s     Checking `Expect predicate `existsNoRetry == 1` for object "Every pair found!" StaticText`
+    t =    27.35s         Checking existence of `"Every pair found!" StaticText`
+    t =    27.39s Checking existence of `"QA coins 46" StaticText`
+    t =    27.43s Find the Application 'com.mathmews.app'
+    t =    27.57s Added attachment named 'challenge-correct-reward'
+    t =    27.57s Tear Down
+Test Case '-[NativeDragTests.NativeDragTests testTimeoutReopenRetryAndCorrectCompletion]' passed (27.820 seconds).
+Test Suite 'NativeDragTests' failed at 2026-10-20 11:25:57.525.
+	 Executed 3 tests, with 1 failure (0 unexpected) in 49.566 (49.571) seconds
+Test Suite 'NativeDragTests.xctest' failed at 2026-10-20 11:25:57.526.
+	 Executed 3 tests, with 1 failure (0 unexpected) in 49.566 (49.572) seconds
+Test Suite 'All tests' failed at 2026-10-20 11:25:57.526.
+	 Executed 3 tests, with 1 failure (0 unexpected) in 49.566 (49.573) seconds
+2026-10-20 11:25:57.847 xcodebuild[75614:16786220] [MT] IDETestOperationsObserverDebug: 53.965 elapsed -- Testing started completed.
+2026-10-20 11:25:57.847 xcodebuild[75614:16786220] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-20 11:25:57.848 xcodebuild[75614:16786220] [MT] IDETestOperationsObserverDebug: 53.965 sec, +53.965 sec -- end
+
+Test session results, code coverage, and logs:
+	/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/result.xcresult
+
+Failing tests:
+	NativeDragTests.testTenLessonsAndDistinctSpecialCardsAcrossDifficulties()
+
+** TEST FAILED **
+
+Testing started

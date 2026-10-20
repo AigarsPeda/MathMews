@@ -6,6 +6,13 @@ import type { PuzzleDifficulty } from "@/types/puzzle";
 
 export const LEARNING_CATALOG = catalogData as LearningCatalog;
 
+const LEVEL_LOCATIONS = new Map(LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.map(level => [level.id, { lesson, level }] as const)));
+const TIMED_PUZZLES = new Map(LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels
+  .filter(level => level.kind === "challenge" && level.timeLimitSeconds)
+  .flatMap(level => level.puzzleIds.map(id => [id, level] as const))));
+export function getLearningLevelLocation(id: string) { return LEVEL_LOCATIONS.get(id); }
+export function getTimedChallengeLevel(puzzleId: string) { return TIMED_PUZZLES.get(puzzleId); }
+
 const PUZZLE_LEVEL_KINDS = new Map(LEARNING_CATALOG.lessons.flatMap(lesson =>
   lesson.levels.flatMap(level => level.puzzleIds.map(id => [id, level.kind] as const)),
 ));

@@ -41,11 +41,10 @@ const { OperationPathTask } = load('@/components/puzzle/OperationPathTask');
 const puzzle = { id: 'editable-path', payload: {
   start: 10, target: 14, steps: [{ operand: 2, operator: '-' }, { operand: 6, operator: '+' }],
 } };
-let selectedOperators = [null, null], answered = false, submissions = 0;
+let selectedOperators = [null, null], answered = false;
 const render = () => flatten(OperationPathTask({
   puzzle, selectedOperators, answered, isCorrect: false,
   onSelectOperator: (index, operator) => { selectedOperators[index] = operator; },
-  onCheck: () => { submissions++; answered = true; },
 }));
 const button = label => render().find(node => node?.type === 'Pressable' && node.props.accessibilityLabel === label);
 const stepValues = index => {
@@ -70,13 +69,13 @@ button('Pick × for step 1').props.onPress();
 assert.deepEqual(stepValues(1), [20, '+', 6, '=', 26], 'Changing an earlier operator recalculates later equations');
 button('Pick - for step 2').props.onPress();
 assert.deepEqual(stepValues(1), [20, '-', 6, '=', 14], 'All filled steps remain editable');
-assert.equal(submissions, 0, 'Choosing operators never submits the answer');
+assert.equal(answered, false, 'Choosing operators never submits the answer');
 button('Pick ÷ for step 2').props.onPress();
 assert.deepEqual(stepValues(1), [20, '÷', 6, '=', '?'], 'Invalid division must not show a stale result');
 assert.equal(render().some(node => typeof node === 'string' && node.startsWith('Your result:')), false);
 button('Pick - for step 2').props.onPress();
-button('Check answer').props.onPress();
-assert.equal(submissions, 1);
+assert.equal(button('Check answer'), undefined, 'The parent play screen owns the shared Check action');
+answered = true; // The parent commits a checked answer.
 assert.equal(render().filter(node => node?.type === 'Pressable').length, 0, 'Submitted paths cannot be edited');
 assert.ok(render().includes('Step 2 of 2'), 'Submitted equations remain visible');
 answered = false;

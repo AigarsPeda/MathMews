@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-20",
+  "result": "Passed",
+  "lessons": 180,
+  "practicePuzzles": 720,
+  "timedChallenges": 180,
+  "threeStageBosses": 180,
+  "puzzles": 1440,
+  "localizedPuzzleChecks": 2880,
+  "preservedPreviousLevelRecords": 785,
+  "preservedPreviousPuzzles": 821,
+  "preservation": "All existing level records and puzzle payloads unchanged, including IDs and stories",
+  "newChallenges": 133,
+  "newBosses": 162,
+  "addedRewardRegistrations": 619,
+  "native": {
+    "passed": 4,
+    "failed": 0,
+    "device": "iPhone 18 Pro, iOS 27.0 Simulator",
+    "bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-nzjd1x/result.xcresult",
+    "coverage": [
+      "Lesson 3 challenge/boss cards at all difficulties",
+      "Actual correct boss answer, saved checkpoint, continuation and serialized reopen",
+      "Per-lesson list labels",
+      "Timed expiry, one life, save/reopen, retry, successful completion",
+      "Latvian title and controls",
+      "Single active challenge and zero-life recovery"
+    ],
+    "isolation": "Real UI under in-memory game and locale contexts, local continuation; no player answers or wallet changes persisted",
+    "cleanup": "Temporary route removed, app returned to normal entry point"
+  },
+  "checks": [
+    "npm run test:puzzles",
+    "node scripts/check-puzzle-experience.mjs",
+    "npm run typecheck",
+    "Targeted ESLint",
+    "node --test scripts/backend/test-puzzle-rewards.mjs",
+    "node scripts/puzzles/build-content.mjs --check",
+    "git diff --check"
+  ],
+  "hostedRewards": {
+    "expected": 1440,
+    "registered": 1440,
+    "matchingRewards": 1440,
+    "preservedCatalogRows": 1563
+  },
+  "limitations": [
+    "Native UI verified in development simulator, not a physical handset",
+    "The 162 added episode bosses reuse the eighteen existing animated Blender worlds"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-20",
+  "passed": [
+    "npm run typecheck",
+    "npm run test:puzzles",
+    "node scripts/check-puzzle-experience.mjs",
+    "node scripts/check-game-systems.mjs",
+    "node scripts/check-answer-feedback.mjs",
+    "node scripts/check-function-machine.mjs",
+    "node scripts/check-number-line.mjs",
+    "node scripts/check-operation-path.mjs",
+    "node --test scripts/backend/test-puzzle-rewards.mjs",
+    "node --test scripts/backend/test-wallet-client.mjs",
+    "node scripts/check-app-icons.mjs",
+    "Blender scripts/3d/check-icon-orientation.py",
+    "ESLint of changed implementation and native fixture",
+    "git diff --check"
+  ],
+  "coverage": {
+    "localizedPuzzles": 1642,
+    "uniquePuzzles": 821,
+    "lessons": 180,
+    "timedChallengeModelCases": 47,
+    "bossScenes": 18,
+    "walletClientTests": 35,
+    "runtimeIcons": 80,
+    "iconBundleMiB": 2.93,
+    "uprightBlenderSymbols": 48
+  },
+  "hostedRegistration": "All 821 active first/replay reward tuples matched; 944 historical+active catalog rows retained"
+}

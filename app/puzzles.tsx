@@ -1,5 +1,6 @@
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
 import { LearningLevelCard } from "@/components/puzzle/LearningLevelCard";
+import { LessonListItem } from "@/components/puzzle/LessonListItem";
 import { PuzzlePathItem } from "@/components/puzzle/PuzzlePathItem";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
@@ -13,6 +14,7 @@ import { GameColors } from "@/constants/game";
 import { isPuzzleDifficulty } from "@/constants/puzzles";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
+import { AchievementsLink } from "@/components/puzzle/AchievementsLink";
 import type { LearningLevel } from "@/types/curriculum";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
@@ -69,24 +71,26 @@ export default function PuzzlesScreen() {
           <Pressable onPress={back} style={styles.back} accessibilityRole="button" accessibilityLabel={t("puzzlePath.a11yBack")}>
             <BackButtonLabel style={styles.backText} />
           </Pressable>
+          {!topic && <AchievementsLink />}
         </View>
-        <DifficultyPicker selected={difficulty} onSelect={tier => {
+        {!topic && <DifficultyPicker selected={difficulty} onSelect={tier => {
           router.replace({ pathname: "/puzzles", params: { difficulty: tier } });
-        }} />
+        }} />}
         <ScrollView key={`${difficulty}-${topic?.id}-${lesson?.id}`} style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           {topic && <Text style={styles.location}>{[t(`difficulty.${difficulty}`), ...(lesson ? [topic.title[locale]] : [])].join(" / ")}</Text>}
           <Text style={styles.title} accessibilityRole="header">{title}</Text>
           <Text style={styles.description}>{description}</Text>
           {scopeProgress && <View style={styles.scopeProgress} accessible accessibilityLabel={t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}>
-            <Text style={styles.progressText}>{t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}</Text>
-            <ProgressBar progress={scopeProgress.total ? scopeProgress.solved / scopeProgress.total : 0} fillColor={GameColors.success} />
+            {lesson ? <Text style={styles.progressText}>{t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}</Text>
+              : <View style={styles.row}><Text style={styles.progressText}>{t("lessonProgress.requiredTasks")}</Text><Text style={styles.progressText}>{scopeProgress.solved}/{scopeProgress.total}</Text></View>}
+            <ProgressBar progress={scopeProgress.total ? scopeProgress.solved / scopeProgress.total : 0} fillColor={GameColors.success} trackColor={GameColors.cardBorder} />
           </View>}
 
           {!topic && topics.map(item => {
             const status = getTopicProgress(difficulty, item.id, completed);
             const topicLessons = getTopicLessons(difficulty, item.id);
             return <Pressable key={item.id} onPress={() => navigate(item.id)} style={styles.topic} accessibilityRole="button"
-              accessibilityLabel={`${item.title[locale]}. ${t("learning.requiredProgress", { count: status.solved, total: status.total })}`}>
+              accessibilityLabel={`${item.title[locale]}. ${t("learning.lessonsCount", { count: topicLessons.length })}. ${t("learning.requiredProgress", { count: status.solved, total: status.total })}`}>
               <View style={styles.topicHeading}>
                 <AppIcon name={item.icon} size={moderateScale(38)} />
                 <Text style={styles.topicTitle}>{item.title[locale]}</Text>
@@ -101,23 +105,8 @@ export default function PuzzlesScreen() {
             </Pressable>;
           })}
 
-          {topic && !lesson && lessons.map((item, index) => {
-            const status = getLearningProgress(getRequiredIds(item), completed);
-            const available = isLessonAvailable(item, completed);
-            const specials = item.levels.filter(level => level.kind !== "practice");
-            return <Pressable key={item.id} disabled={!available} onPress={() => navigate(topic.id, item.id)}
-              style={[styles.lesson, !available && styles.locked]} accessibilityRole="button" accessibilityState={{ disabled: !available }}>
-              <Text style={styles.progressText}>{t("learning.lessonNumber", { number: index + 1 })}</Text>
-              <View style={styles.row}>
-                <Text style={styles.lessonTitle}>{item.title[locale]}</Text>
-                <AppIcon name={!available ? "lock" : status.complete ? "check" : "chevron-right"} size={moderateScale(24)} />
-              </View>
-              <Text style={styles.description}>{item.description[locale]}</Text>
-              <Text style={styles.progressText}>{t("learning.requiredProgress", { count: status.solved, total: status.total })}</Text>
-              {specials.length > 0 && <Text style={styles.specials}>{specials.map(level => `${t(`learning.${level.kind}`)}${getLearningProgress(level.puzzleIds, completed).complete ? ` · ${t("learning.finished")}` : ""}`).join("  /  ")}</Text>}
-              {!available && <Text style={styles.description}>{t("learning.lessonLocked")}</Text>}
-            </Pressable>;
-          })}
+          {topic && !lesson && lessons.map((item, index) => <LessonListItem key={item.id} lesson={item} number={index + 1}
+            progress={progress} onPress={() => navigate(topic.id, item.id)} />)}
 
           {lesson && lesson.levels.map((level, index) => {
             const state = getLearningLevelState(lesson, level, completed);
@@ -160,10 +149,7 @@ const styles = StyleSheet.create({
   topicHeading: { flexDirection: "row", gap: moderateScale(12), alignItems: "center" },
   topicTitle: { flex: 1, fontSize: moderateScale(20), fontWeight: "800", color: GameColors.text },
   row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: moderateScale(12) },
-  lesson: { padding: moderateScale(16), gap: moderateScale(10), borderBottomWidth: 2, borderColor: GameColors.cardBorder },
   lessonTitle: { flexShrink: 1, fontSize: moderateScale(19), fontWeight: "800", color: GameColors.text },
-  locked: { opacity: 0.65 },
-  specials: { color: GameColors.secondaryDark, fontSize: moderateScale(14), fontWeight: "700" },
   completion: { alignItems: "center", padding: moderateScale(20), gap: moderateScale(12), backgroundColor: "#E8FAF8", borderRadius: moderateScale(16) },
   primary: { minHeight: moderateScale(54), alignItems: "center", justifyContent: "center", backgroundColor: GameColors.primary, borderRadius: moderateScale(16), padding: moderateScale(14) },
   primaryText: { fontSize: moderateScale(17), fontWeight: "800", color: GameColors.card, textAlign: "center" },

@@ -122,6 +122,8 @@ import {
   saveGameSave,
 } from "@/utils/game-storage";
 import { applyLifeRegen, canBuyLife } from "@/utils/lives";
+import { getLearningLevelLocation } from "@/constants/curriculum";
+import { beginTimedChallenge, settleChallengeTimeout } from "@/utils/timed-challenge";
 import { applyPetTimeDecay } from "@/utils/pet-care";
 import {
   createContext,
@@ -143,6 +145,8 @@ type GameContextValue = {
   setWorldClock: (speed: number, minuteOfDay?: number) => void;
   setWorldWeather: (weather: WeatherMode) => void;
   answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string) => number | null;
+  beginChallenge: (levelId: string) => boolean;
+  expireChallenge: (attemptId: string) => void;
   feedPet: () => boolean;
   isReady: boolean;
   hasCompletedOnboarding: boolean;
@@ -277,12 +281,30 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string) => {
     const current = saveRef.current;
     const result = applyPuzzleAnswer(current, puzzle, correct, attemptId);
-    if (!result.accepted) return null;
+    if (!result.accepted) {
+      if (result.save !== current) setSave(result.save);
+      return null;
+    }
     const pending = result.coins > 0 && accountRef.current ? [{ userId:accountRef.current,
       environment:getWalletEnvironment(), puzzleId:puzzle.id, attemptId, amount:result.coins, at:Date.now() }] : [];
     setSave({ ...result.save, wallet:current.wallet,
       pendingCoinRewards:[...(current.pendingCoinRewards ?? []),...pending] });
     return result.coins;
+  }, [setSave]);
+  const beginChallenge = useCallback((levelId: string) => {
+    const current = saveRef.current;
+    const level = getLearningLevelLocation(levelId)?.level;
+    if (!level) return false;
+    const synced = settleChallengeTimeout(current.progress);
+    const next = beginTimedChallenge(synced, level, `challenge-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    if (next || synced !== current.progress) setSave({ ...current, progress: next ?? synced });
+    return next !== null;
+  }, [setSave]);
+  const expireChallenge = useCallback((id: string) => {
+    setSave(current => {
+      const progress = settleChallengeTimeout(current.progress, Date.now(), id);
+      return progress === current.progress ? current : { ...current, progress };
+    });
   }, [setSave]);
   const feedPet = useCallback(() => {
     const next = applyFeed(saveRef.current);
@@ -375,6 +397,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const tickGameTime = useCallback((resolveSleep = false) => {
     const now = Date.now();
     setSave((current) => {
+      const progress = settleChallengeTimeout(current.progress, now);
       const awayMs = Math.max(0, now - current.pet.lastCareAt);
       const decayedPet = applyPetTimeDecay(current.pet, now);
       return {
@@ -383,8 +406,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
           ? resolveAsleepOnLoad(decayedPet, awayMs, now)
           : decayedPet,
         progress: {
-          ...current.progress,
-          lives: applyLifeRegen(current.progress.lives, now),
+          ...progress,
+          lives: applyLifeRegen(progress.lives, now),
         },
       };
     });
@@ -1208,6 +1231,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setWorldClock,
       setWorldWeather,
       answerPuzzle,
+      beginChallenge,
+      expireChallenge,
       feedPet,
       isReady: isReady && isAuthReady && (!userId || save.accountOwnerId === userId),
       hasCompletedOnboarding: save.hasCompletedOnboarding,
@@ -1290,6 +1315,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       save.hasCompletedOnboarding,
       save.pet,
       answerPuzzle,
+      beginChallenge,
+      expireChallenge,
       feedPet,
       save.coinTransactions,
       save.pendingWalletPurchases,

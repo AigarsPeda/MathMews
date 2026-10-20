@@ -1,0 +1,19 @@
+{
+  "project": "jcfppquntstgxubtlvqo",
+  "appliedAt": "2026-10-20T08:26:26.330037Z",
+  "migration": "supabase/migrations/20261020080901_puzzle_catalog.sql",
+  "sha256": "f7b69d679e7a77ccb5111d58b7e0d12c3403f26fd4767f42a861813a35cb4225",
+  "addedRegistrations": 612,
+  "expectedActivePuzzles": 821,
+  "registeredActivePuzzles": 821,
+  "matchingFirstAndReplayRewards": 821,
+  "totalHistoricalAndActiveCatalogRows": 944,
+  "previousCatalogRows": 332,
+  "preservedHistoricalRows": 123,
+  "method": "Authenticated Supabase SQL Editor; additive transaction using ON CONFLICT DO NOTHING",
+  "savedQuery": {
+    "name": "Puzzles - 10 Lessons per Topic and Reward Verification",
+    "url": "https://supabase.com/dashboard/project/jcfppquntstgxubtlvqo/sql/9ca46591-4a23-45ab-b8c1-09d56ea81c2f"
+  },
+  "evidence": "docs/qa/curriculum-expansion/2026-10-20/hosted-reward-verification.png"
+}

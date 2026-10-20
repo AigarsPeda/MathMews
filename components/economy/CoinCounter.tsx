@@ -3,6 +3,7 @@ import { HeaderChip } from "@/components/home/HeaderChip";
 import { GameColors, HEADER_CHIP_SIZE } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -12,7 +13,7 @@ type CoinCounterProps = {
   streak?: number;
   compact?: boolean;
   onPress?: () => void;
-  homeAccessory?: ReactNode;
+  homeAccessory?: (stacked: boolean) => ReactNode;
 };
 
 export function CoinCounter({
@@ -24,25 +25,27 @@ export function CoinCounter({
   homeAccessory,
 }: CoinCounterProps) {
   const { t } = useTranslation();
+  const [stacked, setStacked] = useState(false);
 
-  if (layout === 'home') return <View style={styles.homeRow}>
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.homeMetric, pressed && { opacity: .7 }]}
+  if (layout === 'home') return <View style={[styles.homeRow, stacked && styles.stackedRow]}
+    onLayout={event => setStacked(event.nativeEvent.layout.width < moderateScale(352))}>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.homeMetric, stacked && styles.stackedMetric, pressed && { opacity: .7 }]}
       accessibilityRole="button" accessibilityLabel={t('economy.a11yCoins', { coins })}>
       <Text style={styles.metricLabel}>{t('economy.coinsLabel')}</Text>
       <View style={styles.metricValueRow}>
-        <AppIcon name="coin" size={moderateScale(19)} />
-        <Text style={[styles.coinValue, styles.homeValue]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.75}>{coins}</Text>
+        <AppIcon name="coin" size={moderateScale(16)} />
+        <Text style={[styles.coinValue, styles.homeValue]}>{coins}</Text>
       </View>
     </Pressable>
-    <View style={styles.metricDivider}/>
-    <View style={styles.homeMetric} accessible accessibilityLabel={`${t('economy.streakLabel')}: ${t('economy.streakDay', { count: streak })}`}>
+    {!stacked ? <View style={styles.metricDivider}/> : null}
+    <View style={[styles.homeMetric, stacked && styles.stackedMetric]} accessible accessibilityLabel={`${t('economy.streakLabel')}: ${t('economy.streakDay', { count: streak })}`}>
       <Text style={styles.metricLabel}>{t('economy.streakLabel')}</Text>
       <View style={styles.metricValueRow}>
-        <AppIcon name="flame" size={moderateScale(19)} />
-        <Text style={[styles.streakValue, styles.homeValue]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.75}>{t('economy.streakDay', { count: streak })}</Text>
+        <AppIcon name="flame" size={moderateScale(16)} />
+        <Text style={[styles.streakValue, styles.homeValue]}>{t('economy.streakDay', { count: streak })}</Text>
       </View>
     </View>
-    {homeAccessory ? <><View style={styles.metricDivider}/>{homeAccessory}</> : null}
+    {homeAccessory ? <>{!stacked ? <View style={styles.metricDivider}/> : null}{homeAccessory(stacked)}</> : null}
   </View>;
 
   const content = (
@@ -93,10 +96,12 @@ export function CoinCounter({
 
 const styles = StyleSheet.create({
   homeRow: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center' },
-  homeMetric: { flex: 1, minWidth: 0, minHeight: 56, paddingHorizontal: moderateScale(8), paddingVertical: moderateScale(8), gap: moderateScale(3), justifyContent: 'center' },
-  metricLabel: { color: GameColors.textMuted, fontSize: moderateScale(11), fontWeight: '600' },
-  metricValueRow: { flexDirection: 'row', alignItems: 'center', gap: moderateScale(5) },
-  homeValue: { flexShrink: 1, minWidth: 0, fontSize: moderateScale(16) },
+  homeMetric: { flex: 1, minWidth: 0, minHeight: 56, paddingHorizontal: moderateScale(4), paddingVertical: moderateScale(8), gap: moderateScale(3), justifyContent: 'center' },
+  stackedRow: { flexWrap: 'wrap', alignItems: 'stretch' },
+  stackedMetric: { flex: 0, width: '50%' },
+  metricLabel: { color: GameColors.textMuted, fontSize: moderateScale(11), lineHeight: moderateScale(14), fontWeight: '600', textAlign: 'center' },
+  metricValueRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: moderateScale(2) },
+  homeValue: { flexShrink: 1, minWidth: 0, fontSize: moderateScale(16), lineHeight: moderateScale(20) },
   metricDivider: { width: 1, height: moderateScale(28), backgroundColor: GameColors.cardBorder },
   headerChip: { borderRadius: moderateScale(12) },
   row: {

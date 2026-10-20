@@ -12,7 +12,7 @@ import { I18nextProvider } from "react-i18next";
 import { TurboModuleRegistry, Pressable, ScrollView, Text, View, type TurboModule } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const bosses = LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === "boss"));
+const bosses = [...new Map(LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === "boss")).map(boss => [boss.story!.sceneId, boss])).values()];
 // The runner substitutes the simulator's saved setting, preserving developer preferences.
 const PREVIOUS_FAST_REFRESH = true;
 function Button({ label, onPress }: { label: string; onPress: () => void }) {

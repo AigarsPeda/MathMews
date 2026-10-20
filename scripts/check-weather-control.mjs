@@ -107,10 +107,18 @@ assert.ok(tree.some(node=>node.type===WorldWeatherControl),'The weather control 
 tree.find(node=>node.props.accessibilityRole==='button').props.onPress();
 cursor=0;tree=nodes(WorldClockControl());
 assert.equal(sheet(tree).props.visible,true,'The clock still opens independently');
-const presets=tree.filter(node=>node.props.accessibilityRole==='button' && node.props.children[0]?.props?.children[0]==='Night');
+const presets=tree.filter(node=>node.props.accessibilityRole==='radio' && node.props.accessibilityLabel==='Night');
 presets[0].props.onPress();
 assert.equal(clock.worldClockReading(game.worldClock,now).time,'23:00');
 assert.equal(game.worldClock.weather,'leaves','Clock presets preserve the chosen weather');
+for(const speed of clock.WORLD_CLOCK_SPEEDS) {
+  cursor=0;tree=nodes(WorldClockControl());
+  const before=clock.worldClockReading(game.worldClock,now);
+  tree.find(node=>node.props.accessibilityRole==='radio' && node.props.accessibilityLabel===t(`worldClock.speed${speed}`)).props.onPress();
+  assert.equal(game.worldClock.speed,speed);
+  assert.equal(clock.worldClockReading(game.worldClock,now).time,before.time,'Speed choices preserve the current time');
+  assert.equal(game.worldClock.weather,'leaves');
+}
 const row=tree.find(node=>node.props.pointerEvents==='box-none').props.style;
 for(const width of [300,320,351,390,430]) {
   const badgeWidth=(width-row.left-row.right-row.gap)/2;
@@ -119,11 +127,15 @@ for(const width of [300,320,351,390,430]) {
 }
 console.log('Verified the real weather report and chooser, all saved weather modes, Celsius temperatures, day/night icons, clock independence, speed continuity, translations, compact layout and no polling saves.');
 
-// The shared Home toolbar keeps the same settings behavior and exposes its day.
+// The shared Home toolbar shows the current period and time, without a day count.
 for (const language of ['en','lv']) {
   locale=language;states.length=0;cursor=0;
   const inline=nodes(WorldClockControl({inline:true}));
-  assert.ok(inline.some(n=>n.type==='Text' && n.props.children.includes(t('worldClock.dayNumber',{day:clock.worldClockReading(game.worldClock,now).day}))), 'The current game day is visible alongside the time');
+  assert.ok(inline.some(n=>n.type==='Text' && n.props.children.includes(t(`worldClock.${clock.worldClockReading(game.worldClock,now).period}`))), 'The current period replaces the day count');
+  assert.ok(!inline.some(n=>n.type==='Text' && n.props.children.some(value=>typeof value==='string' && /Day \d|\d+\. diena/.test(value))), 'Day counters are absent from the toolbar and clock sheet');
+  assert.equal(inline.filter(n=>n.props.accessibilityRole==='radiogroup').length,2);
+  assert.equal(inline.filter(n=>n.props.accessibilityRole==='radio').length,7);
+  assert.equal(inline.filter(n=>n.props.accessibilityRole==='radio' && n.props.accessibilityState.selected).length,2,'Each group has one selected choice');
   const control=inline.find(n=>n.props.accessibilityRole==='button');control.props.onPress();
   cursor=0;assert.equal(sheet(nodes(WorldClockControl({inline:true}))).props.visible,true, 'Inline clock still opens settings');
   states.length=0;cursor=0;
@@ -132,4 +144,4 @@ for (const language of ['en','lv']) {
   report.find(n=>n.props.accessibilityRole==='button').props.onPress();
   cursor=0;assert.equal(sheet(nodes(WorldWeatherControl({toolbar:true}))).props.visible,true, 'Toolbar weather still opens its chooser');
 }
-console.log('Verified visible day/time, translated toolbar weather and both shared header settings sheets.');
+console.log('Verified period/time without day counts, icon choices, both selected groups, translated toolbar weather and both settings sheets.');

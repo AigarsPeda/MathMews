@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { backendFetch } from '@/lib/backend-fetch';
 
 type SupabaseExtra = {
   supabaseUrl?: string;
@@ -46,6 +47,7 @@ if (__DEV__) {
 
 export const supabase: SupabaseClient | null = isSupabaseConfigured()
   ? createClient(supabaseUrl, supabaseAnonKey, {
+      global: { fetch: backendFetch },
       auth: {
         storage: AsyncStorage,
         autoRefreshToken: true,

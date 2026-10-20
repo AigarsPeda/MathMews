@@ -19,6 +19,7 @@ import render_assets as art
 
 # UI symbols need level axes and a readable face at small sizes.
 FRONT_ICONS = {
+    'challenge-timer', 'boss-badge', 'practice-book', 'lesson-medal',
     'paw', 'settings', 'sleep', 'puzzles', 'heart', 'broken-heart', 'brain', 'lightbulb',
     'coin', 'flame', 'sparkle', 'film', 'lock', 'search', 'zoom-in', 'zoom-out',
     'check', 'warning', 'rotate', 'undo', 'restore', 'save', 'pause', 'video-play',
@@ -27,6 +28,8 @@ FRONT_ICONS = {
     'arrow-up', 'arrow-down', 'arrow-left', 'arrow-right',
     'chevron-up', 'chevron-down', 'chevron-right',
     'weather-sun', 'weather-moon', 'weather-rain', 'weather-snow', 'weather-leaves', 'weather-auto',
+    'weather-sunrise', 'weather-sunset',
+    'clock-real-time', 'clock-fast', 'clock-very-fast',
 }
 
 

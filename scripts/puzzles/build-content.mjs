@@ -2,6 +2,9 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { bossStories } from './boss-stories.mjs';
+import { expandLessons } from './expanded-lessons.mjs';
+import { completeLessonSpecials } from './lesson-specials.mjs';
+import { lessonBossScenes } from './lesson-boss-stories.mjs';
 const text = (en, lv) => ({ en, lv });
 function writeGenerated(file, value) {
   const content = JSON.stringify(value, null, 2) + '\n';
@@ -91,7 +94,7 @@ function multiplySet(groups, size, claimCorrect = true) {
   const total = groups * size;
   return [
     choice('multiplication', text(`Make ${groups} rows with ${size} toy mice in each. How many mice?`, `Izveido ${groups} rindas, katrā pa ${size} rotaļu pelēm. Cik peļu kopā?`), total, [groups + size, total + size], hint.groups, text(`${groups} × ${size} = ${total}.`, `${groups} × ${size} = ${total}.`), undefined, { kind: "array", rows: groups, columns: size, object: "mouse" }),
-    task('function_machine', 'multiplication', text('Which rule makes the right number of toys?', 'Kurš likums dod pareizo rotaļlietu skaitu?'), { input: groups, output: total, choices: [`×${size}`, `+${size}`, `×${size + 1}`] }, hint.groups, text(`Multiply by ${size}.`, `Reizini ar ${size}.`), { correctIndex: 0 }),
+    task('function_machine', 'multiplication', text('Which rule makes the right number of toys?', 'Kurš likums dod pareizo rotaļlietu skaitu?'), { input: groups, output: total, choices: [`×${size}`, `+${groups+size===total?size+1:size}`, `×${size + 1}`] }, hint.groups, text(`Multiply by ${size}.`, `Reizini ar ${size}.`), { correctIndex: 0 }),
     task('true_false', 'multiplication', text('Check the equal-group claim.', 'Pārbaudi apgalvojumu par vienādām grupām.'), { statement: `${groups} × ${size} = ${total + (claimCorrect ? 0 : 1)}` }, hint.groups, text(`${claimCorrect ? "True" : "False"}. ${groups} groups of ${size} make ${total}.`, `${claimCorrect ? "Pareizi" : "Nepareizi"}. ${groups} grupas pa ${size} ir ${total}.`), { isTrue: claimCorrect }),
     task('balance', 'equality', text('How many toys are in each equal row?', 'Cik rotaļlietu ir katrā vienādajā rindā?'), { leftDisplay: `${groups} × ?`, rightValue: total, choices: [String(size), String(size + 1), String(size + 2)] }, hint.groups, text(`${groups} × ${size} = ${total}.`, `${groups} × ${size} = ${total}.`), { correctIndex: 0, helpTemplate: 'multiplication' }),
   ];
@@ -108,7 +111,7 @@ function divideSet(total, people, object = "cookie") {
 }
 function fractionSet(n, d, advanced = false) {
   if (advanced) return [
-    choice('fractions', text(`A tray has ${d * 4} seedlings. ${n}/${d} are flowers. How many flowers?`, `Paplātē ir ${d * 4} stādi. ${n}/${d} ir puķes. Cik puķu?`), n * 4, [n * 4 + 1, d * 4 - n], hint.fractions, text(`One part is 4 seedlings. ${n} parts make ${n * 4}.`, `Viena daļa ir 4 stādi. ${n} daļas ir ${n * 4}.`), 'fraction_of_set'),
+    choice('fractions', text(`A tray has ${d * 4} seedlings. ${n}/${d} are flowers. How many flowers?`, `Paplātē ir ${d * 4} stādi. ${n}/${d} ir puķes. Cik puķu?`), n * 4, [n * 4 + 1, d * 4 - n === n * 4 ? n * 4 - 1 : d * 4 - n], hint.fractions, text(`One part is 4 seedlings. ${n} parts make ${n * 4}.`, `Viena daļa ir 4 stādi. ${n} daļas ir ${n * 4}.`), 'fraction_of_set'),
     task('fraction_equivalent', 'fractions', text('Choose the fraction with the same value.', 'Izvēlies tikpat lielu daļu.'), { numerator: n, denominator: d, choices: [`${n * 2}/${d * 2}`, `${n}/${d * 2}`, `${n * 2}/${d}`] }, text('Split every part into two equal smaller parts.', 'Sadali katru daļu divās vienādās mazākās daļās.'), text(`${n}/${d} = ${2*n}/${2*d}.`, `${n}/${d} = ${2*n}/${2*d}.`), { correctIndex: 0 }),
     task('compare', 'fractions', text('The ribbons have the same length. Which colored amount is larger?', 'Lentes ir vienāda garuma. Kurš iekrāsotais daudzums ir lielāks?'), { optionA: `${n}/${d}`, optionB: `${n + 1}/${d}` }, hint.fractions, text(`${n+1}/${d} > ${n}/${d}.`, `${n+1}/${d} > ${n}/${d}.`), { correctIndex: 1, helpTemplate: 'fraction_equivalent' }),
     task('fraction_match', 'fractions', text('Match the fractions to equal-part models.', 'Savieno daļas ar vienādo daļu attēliem.'), { pairs: [{numerator:n,denominator:d,visual:'pie'},{numerator:n+1,denominator:d,visual:'grid'}] }, hint.fractions, text('The shaded count is the numerator; all equal parts give the denominator.', 'Iekrāsoto daļu skaits ir skaitītājs, visu vienādo daļu skaits ir saucējs.')),
@@ -129,14 +132,14 @@ function operationSet(start, divisor, extra, guided = true) {
     task('compare', 'comparison', text('Which expression has the greater value?', 'Kurai izteiksmei ir lielāka vērtība?'), { optionA: `${start} ÷ ${divisor} + ${extra}`, optionB: `${start} + ${extra}` }, hint.route, text(`${target} < ${start + extra}.`, `${target} < ${start + extra}.`), { correctIndex: 1 }),
   ];
 }
-function percentSet(price, percent) {
+function percentSet(price, percent, claimCorrect = true) {
   const discount = price * percent / 100, sale = price - discount;
   const amountHelp = { 10: "percent_tenth", 20: "percent_fifth", 25: "percent_of", 50: "percent_half" }[percent];
   const discountHelp = { 10: "percent_tenth_discount", 20: "percent_fifth_discount", 25: "percent_discount", 50: "percent_half_discount" }[percent];
   return [
-    choice('fractions', text(`What is ${percent}% of ${price} coins?`, `Cik ir ${percent}% no ${price} monētām?`), discount, [discount + 5, price - discount], text('Find the fraction represented by the percent.', 'Atrodi procentiem atbilstošo daļu.'), text(`${price} × ${percent}/100 = ${discount}.`, `${price} × ${percent}/100 = ${discount}.`), amountHelp),
+    choice('fractions', text(`What is ${percent}% of ${price} coins?`, `Cik ir ${percent}% no ${price} monētām?`), discount, [discount + 5, price - discount === discount ? discount - 5 : price - discount], text('Find the fraction represented by the percent.', 'Atrodi procentiem atbilstošo daļu.'), text(`${price} × ${percent}/100 = ${discount}.`, `${price} × ${percent}/100 = ${discount}.`), amountHelp),
     choice('fractions', text(`A ${price}-coin toy has a ${percent}% discount. What is the new price?`, `${price} monētu rotaļlietai ir ${percent}% atlaide. Kāda ir jaunā cena?`), sale, [price + discount, sale + 1], text('Find the discount amount, then take it away.', 'Atrodi atlaides summu un tad to atņem.'), text(`${price} − ${discount} = ${sale} coins.`, `${price} − ${discount} = ${sale} monētas.`), discountHelp),
-    task('true_false', 'fractions', text('Check the percentage claim.', 'Pārbaudi apgalvojumu par procentiem.'), { statement: `${percent}% × ${price} = ${discount}` }, text('Use one hundred as the whole percentage.', 'Visu procentu daudzumu attēlo ar simtu.'), text(`True. ${percent}% of ${price} is ${discount}.`, `Pareizi. ${percent}% no ${price} ir ${discount}.`), { isTrue: true, helpTemplate: amountHelp }),
+    task('true_false', 'fractions', text('Check the percentage claim.', 'Pārbaudi apgalvojumu par procentiem.'), { statement: `${percent}% × ${price} = ${discount+(claimCorrect?0:1)}` }, text('Use one hundred as the whole percentage.', 'Visu procentu daudzumu attēlo ar simtu.'), text(`${claimCorrect?'True':'False'}. ${percent}% of ${price} is ${discount}.`, `${claimCorrect?'Pareizi':'Nepareizi'}. ${percent}% no ${price} ir ${discount}.`), { isTrue: claimCorrect, helpTemplate: amountHelp }),
     task('fix_mistake', 'fractions', text(`A toy costs ${price} coins and has a ${percent}% discount. Which sale price is correct?`, `${price} monētu rotaļlietai ir ${percent}% atlaide. Kura cena ar atlaidi ir pareiza?`), { wrongWork: [`${price} + ${discount} = ${price + discount}`], choices: [String(sale), String(price + discount), String(sale + 2)] }, text('A discount reduces the original price.', 'Atlaide samazina sākotnējo cenu.'), text(`${price} − ${discount} = ${sale}.`, `${price} − ${discount} = ${sale}.`), { correctIndex: 0, helpTemplate: discountHelp }),
   ];
 }
@@ -212,14 +215,14 @@ lesson('hard','measurement','area',text('Area and equal units','Laukums un vien�
 lesson('hard','measurement','rates',text('Find one, then scale','Atrodi vienu un mērogo'),apply,practiceSet(measureSet, [[12,5], [18,3], [8,11], [9,7]]));
 lesson('hard','logic','clues',text('Check every clue','Pārbaudi katru norādi'),intro,practiceSet(logicSet, [[20], [20], [31], [48]]));
 const hardLogic = lesson('hard','logic','claims',text('Test a mathematical claim','Pārbaudi matemātisku apgalvojumu'),apply,practiceSet(logicSet, [[40], [57,'subtract'], [65], [83]]));
-function special(lessonId, slug, kind, title, description, tasks) {
+function special(lessonId, slug, kind, title, description, tasks, authoredStory = bossStories[slug]) {
   const target = lessons.find(l => l.id === lessonId);
   if (kind === 'boss') {
-    assert.ok(bossStories[slug], `${slug}: author a boss story before adding its level`);
+    assert.ok(authoredStory, `${slug}: author a boss story before adding its level`);
     assert.equal(tasks.length, 3, `${slug}: a boss has three connected tasks`);
-    assert.equal(bossStories[slug].stages.length, 3);
+    assert.equal(authoredStory.stages.length, 3);
   }
-  target.levels.push({ id: `${target.id}-${slug}`, kind, title, description, ...(kind === 'boss' && { story: bossStories[slug] }), puzzleIds: register(target.difficulty, `${target.topicId}-${slug}`, tasks) });
+  target.levels.push({ id: `${target.id}-${slug}`, kind, title, description, ...(kind === 'boss' && { story: authoredStory }), puzzleIds: register(target.difficulty, `${target.topicId}-${slug}`, tasks) });
 }
 const bossHint = text('Use the part you have already worked out. Finished stages stay saved.', 'Izmanto jau aprēķināto. Pabeigtie posmi tiek saglabāti.');
 special(easyAdd,'picnic','boss',text('The cat picnic','Kaķa pikniks'),text('Pack ribbons, finish the places and open the picnic. Three saved stages.', 'Saliec lentes, sagatavo vietas un atklāj pikniku. Trīs saglabājami posmi.'),[
@@ -345,15 +348,21 @@ challenge('hard','operations','power-detour',text('The power-grid detour','Ener�
 challenge('hard','percentages','camp-budget',text('Plan the camp supplies','Izplāno nometnes krājumus'),text('Compare discounts and choose a shopping plan. More than one plan can work.', 'Salīdzini atlaides un izvēlies iepirkumu plānu. Var derēt vairāki plāni.'),
   task('budget_plan','fractions',text('Use a pretend budget of 100. Choose exactly two supplies and leave 20 after discounts.', 'Izmanto izdomātu 100 monētu budžetu. Izvēlies tieši divus krājumus un pēc atlaidēm atstāj 20.'),{en:{budget:100,remaining:20,pickCount:2,items:[{label:'Lantern',price:40,discountPercent:25},{label:'Blanket',price:50,discountPercent:0},{label:'Tent',price:80,discountPercent:25},{label:'Rope',price:25,discountPercent:20}]},lv:{budget:100,remaining:20,pickCount:2,items:[{label:'Laterna',price:40,discountPercent:25},{label:'Sega',price:50,discountPercent:0},{label:'Telts',price:80,discountPercent:25},{label:'Virve',price:25,discountPercent:20}]}},text('Find each discounted price first. Your two items must cost 80 together.', 'Vispirms atrodi katru cenu pēc atlaides. Abiem priekšmetiem kopā jāmaksā 80.'),text('The lantern costs 30 and the blanket 50. The tent costs 60 and the rope 20. Either pair leaves 20.', 'Laterna maksā 30 un sega 50. Telts maksā 60 un virve 20. Abi pāri atstāj 20.')));
 // Optional side activities come before the finale, which always ends the topic.
+expandLessons({ lessons, lesson, special, text, task, choice, practiceSet, addSet, subtractSet, numberSet, patternSet, multiplySet, divideSet, fractionSet, operationSet, percentSet, measureSet, logicSet });
 for (const difficulty of ['easy','medium','hard']) for (const topic of topics) {
   const topicLessons = lessons.filter(l => l.difficulty === difficulty && l.topicId === topic.id);
   if (!topicLessons.length) continue;
   const bosses = topicLessons.flatMap(l => l.levels.filter(level => level.kind === 'boss'));
   assert.equal(bosses.length, 1, `${difficulty}/${topic.id} needs one unique boss`);
   const last = topicLessons.at(-1);
-  assert.ok(last.levels.includes(bosses[0]), `${difficulty}/${topic.id} boss must be in its final lesson`);
-  last.levels = [...last.levels.filter(level => level.kind !== 'boss'), bosses[0]];
+  assert.equal(topicLessons.length, 10, `${difficulty}/${topic.id} needs ten lessons`);
+  for (const entry of topicLessons) {
+    entry.levels = entry.levels.filter(level => level.kind !== 'boss');
+    for (const level of entry.levels) if (level.kind === 'challenge') level.timeLimitSeconds = {easy:180,medium:240,hard:300}[difficulty];
+  }
+  last.levels.push(bosses[0]);
 }
+completeLessonSpecials({ lessons, special, text, task, addSet, subtractSet, numberSet, patternSet, multiplySet, divideSet, fractionSet, operationSet, percentSet, measureSet, logicSet });
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
 for (const locale of ['en','lv']) for (const difficulty of ['easy','medium','hard']) {
   const list=puzzles[locale][difficulty];
@@ -361,4 +370,5 @@ for (const locale of ['en','lv']) for (const difficulty of ['easy','medium','har
   writeGenerated(file, list);
 }
 writeGenerated('data/puzzle-curriculum.json', {version:2,topics,lessons});
+writeGenerated('data/lesson-boss-scenes.json', lessonBossScenes);
 console.log(`${process.argv.includes('--check') ? 'Verified generated' : 'Authored'} ${lessons.length} lessons and ${Object.values(puzzles.en).flat().length} puzzles per language.`);

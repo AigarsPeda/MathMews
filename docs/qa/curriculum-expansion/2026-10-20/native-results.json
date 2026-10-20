@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-20",
+  "device": "iPhone 18 Pro / iOS 27.0 Simulator",
+  "isolation": "Production screens and model under in-memory GameContext; no player progress, wallet or locale changes persisted",
+  "passedScenarios": [
+    "testTimeoutReopenRetryAndCorrectCompletion",
+    "testLastLifeLatvianAndSingleActiveRun",
+    "testTenLessonsAndDistinctSpecialCardsAcrossDifficulties"
+  ],
+  "runs": [
+    {
+      "resultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-ugYZGW/result.xcresult",
+      "passed": 2,
+      "failed": 1,
+      "note": "Core scenarios passed. Catalog assertion incorrectly searched for child text inside grouped accessible topic buttons."
+    },
+    {
+      "resultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-N1qTIW/result.xcresult",
+      "passed": 1,
+      "failed": 0,
+      "note": "Targeted catalog/cards rerun passed after querying accessible buttons. Topic card accessibility now includes its visible lesson count."
+    },
+    {
+      "resultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-yFMOup/result.xcresult",
+      "passed": 3,
+      "failed": 0,
+      "note": "Complete suite passes together after fully isolating both locale and translation contexts. Latvian title and controls both asserted."
+    }
+  ],
+  "coverage": [
+    "Start gate and countdown",
+    "Reopen retains deadline",
+    "Timeout costs exactly one life, no reward",
+    "Second reopen does not charge again",
+    "Retry starts fresh and can earn ordinary reward",
+    "Latvian intro",
+    "Only one active timed attempt",
+    "Last-life timeout shows refill and blocks retry",
+    "All difficulties show ten lessons",
+    "Distinct stopwatch and crowned paw-shield icons",
+    "Boss backstories in all difficulty tracks"
+  ],
+  "limitations": [
+    "Native visual checks used a development simulator build, not a physical device"
+  ],
+  "cleanup": "Temporary fixture route removed; simulator returned to normal app entry point",
+  "result": "Passed"
+}

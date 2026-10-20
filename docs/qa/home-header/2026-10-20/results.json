@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-20",
+  "scope": "Compact Awards label and more padding within four equal, centered home metric sections",
+  "native": {
+    "passed": 2,
+    "failed": 0,
+    "bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-nuEPSV/result.xcresult",
+    "device": "iPhone 18 Pro, iOS 27 Simulator",
+    "isolation": "In-memory save and cloned locale. No player wallet or progress writes."
+  },
+  "typography": {
+    "labels": "11-point size, 14-point line height, weight 600",
+    "values": "16-point size, 20-point line height, weight 700",
+    "achievementTotal": "Same value size, regular weight, muted color",
+    "fitting": "No independent font shrinking for labels or primary values; two rows below 352 scaled points of available stat width."
+  },
+  "settings": "18-point icon and 44-point target float at the upper right. On the tested phone, the icon and card move 24 scaled points up compared with the separate toolbar row. Card starts below the target.",
+  "checks": {
+    "typecheck": "passed",
+    "targetedESLint": "passed",
+    "statusBar": "passed",
+    "diffWhitespace": "passed",
+    "typeDetector": "No findings",
+    "layoutDetector": "No findings"
+  },
+  "coverage": [
+    "Settings above stats and reachable",
+    "Full and empty lives",
+    "Countdown, reopen and refill",
+    "Achievement collection and navigation",
+    "Two-day streak",
+    "Narrow Latvian with seven-digit coins",
+    "Equal widths for all four metrics",
+    "Floating Settings target above the card",
+    "Centered full, countdown and narrow Latvian header captures",
+    "Short Awards/Balvas label and increased horizontal padding"
+  ],
+  "limitations": [
+    "Development iOS simulator only; physical devices, Android and large accessibility text not certified."
+  ],
+  "layout": "Four equal-width, centered sections with 4-point horizontal insets and consistent 16-point icons. The header uses Awards in English and Balvas in Latvian; the collection keeps its full title. Existing 11-point labels and 16-point values are unchanged."
+}

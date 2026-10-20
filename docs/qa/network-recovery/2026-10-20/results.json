@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-20",
+  "feature": "Automatic wallet and cloud-save reconnection",
+  "result": "pass",
+  "behavior": [
+    "Reconnect listeners wake sync after offline-to-online transitions and network-type changes.",
+    "Returning to the foreground checks current connectivity, including recovery missed while backgrounded.",
+    "Failed cloud uploads remain pending and retry the latest local snapshot every 15 seconds while active. Healthy idle saves do not upload on this timer.",
+    "The wallet retains its existing 10-second fallback and single-flight queue with persisted request identities.",
+    "Supabase requests have a 15-second deadline and retain caller cancellation. The transport does not automatically replay requests.",
+    "Failed initial cloud uploads stay in initial recovery rather than reporting successful synchronization."
+  ],
+  "checks": {
+    "focusedRecoveryTests": "50 passed across network-reconnect, wallet-client and account-recovery tests",
+    "backendSuite": "92 passed, zero failures",
+    "typescript": "pass: tsc --noEmit",
+    "eslint": "pass: changed hooks, backend transport and test files",
+    "iosBuild": "pass: ExpoNetwork 57.0.2 compiled, linked and installed in the simulator development app",
+    "licenses": "pass: generated attribution includes Expo Network",
+    "whitespace": "pass: git diff --check"
+  },
+  "coveredCases": [
+    "Offline rewards and purchases drain without remounting, preserving request IDs and avoiding duplicate charges.",
+    "A failed cloud upload retries the newest local progress on reconnect and on fallback without another save change.",
+    "Repeated online events do not continuously trigger reconnection.",
+    "Background recovery waits for foreground; stale asynchronous state queries cannot overwrite newer events.",
+    "Subscriptions and retry intervals clean up on disposal.",
+    "A stalled request is aborted and a subsequent request can complete without replaying a write.",
+    "Caller abort signals and deadline cleanup are preserved.",
+    "Existing account ownership, interrupted transactions and offline outbox regression tests pass."
+  ],
+  "limits": [
+    "Network loss and restoration were injected in deterministic tests; physical Wi-Fi and cellular switching were not exercised.",
+    "Android native behavior was not exercised in this run.",
+    "An OS-level network outage still requires the operating system to restore a usable route."
+  ],
+  "references": [
+    "https://docs.expo.dev/versions/v57.0.0/sdk/network/",
+    "node_modules/expo-network/build/Network.d.ts"
+  ]
+}

@@ -1,0 +1,13 @@
+[
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "/Users/aigarspeda/Desktop/BrainPet/app/puzzles.tsx",
+    "line": 153,
+    "snippet": "Undocumented color #E8FAF8 is outside DESIGN.md colors",
+    "ignoreValue": "#E8FAF8"
+  }
+]

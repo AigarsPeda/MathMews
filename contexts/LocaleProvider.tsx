@@ -17,7 +17,7 @@ type LocaleContextValue = {
   setLocale: (locale: AppLocale) => Promise<void>;
 };
 
-const LocaleContext = createContext<LocaleContextValue | null>(null);
+export const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<AppLocale>(getDeviceLocale());

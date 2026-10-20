@@ -25,6 +25,7 @@ const code = ts.transpileModule(fs.readFileSync('app/_layout.tsx', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
 }).outputText;
 vm.runInNewContext(code, { module, exports: module.exports, require: id => {
+  if (id === 'react') return { useEffect() {} };
   if (id === 'react/jsx-runtime') return {
     jsx: (type, props) => ({ type, props }), jsxs: (type, props) => ({ type, props }),
   };

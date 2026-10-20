@@ -31,6 +31,7 @@ type ResultOverlayProps = {
   continueLabel?: string;
   onContinue: () => void;
   onGoHome?: () => void;
+  secondaryLabel?: string;
   onBuyLife?: () => void;
   buyLifeCost?: number;
   coins?: number;
@@ -54,6 +55,7 @@ export function ResultOverlay({
   continueLabel,
   onContinue,
   onGoHome,
+  secondaryLabel,
   onBuyLife,
   buyLifeCost = LIFE_BUY_COST,
   coins = 0,
@@ -157,10 +159,10 @@ export function ResultOverlay({
               onPress={goHomeOnce}
               disabled={closing}
               accessibilityRole="button"
-              accessibilityLabel={t("play.a11yHome")}
+              accessibilityLabel={secondaryLabel ?? t("play.a11yHome")}
             >
               <Text style={styles.secondaryButtonText}>
-                {t("play.backToHome")}
+                {secondaryLabel ?? t("play.backToHome")}
               </Text>
             </Pressable>
           )}

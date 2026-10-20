@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-19",
+  "cause": "Expo Linking retained an already handled lesson URL in the iOS process and Expo Router read it again on JS reload.",
+  "fix": "Clear the consumed iOS launch URL after root mount and after live URL events; preserve incoming event URLs and unsubscribe on unmount.",
+  "checks": [
+    "Typecheck and targeted ESLint passed.",
+    "npm run test:startup passed, including new launch-link lifecycle regression checks.",
+    "Result-dismissal and transition checks passed.",
+    "iOS Simulator: an initial lesson link renders the lesson, then a Metro reload opens Home.",
+    "iOS Simulator: a fresh lesson link still navigates correctly.",
+    "iOS Simulator: refreshing after a warm lesson link also opens Home."
+  ],
+  "limits": [
+    "Android and web handling remains unchanged.",
+    "Physical-device verification not performed."
+  ]
+}

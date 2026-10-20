@@ -1,0 +1,1627 @@
+{
+  "generator": "scripts/3d/build-lesson-bosses.py",
+  "retainedOriginalFinales": 18,
+  "individualLessonScenes": 162,
+  "scenes": [
+    {
+      "scene": "train-bridge",
+      "name": "Alder",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/train-bridge.blend",
+      "sourceBytes": 3661217,
+      "sourceSha256": "2f410070066c1aaa8ad3c7dcae4592d98ba3c911cab47705a7ca0eb1d3061208",
+      "runtimeBytes": 290086,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "train-book",
+      "name": "Ada",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/train-book.blend",
+      "sourceBytes": 3639357,
+      "sourceSha256": "1b5ba373dc019900756b8a0a669e4f85e67e34c81893666c339efee876f33681",
+      "runtimeBytes": 278162,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "train-loom",
+      "name": "Arlo",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/train-loom.blend",
+      "sourceBytes": 3642156,
+      "sourceSha256": "bc734217b2b23d16ba2fe820021026d607dcb622f4f891d269aa8e20d0bddbd1",
+      "runtimeBytes": 306222,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "train-clock",
+      "name": "Aster",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/train-clock.blend",
+      "sourceBytes": 3670834,
+      "sourceSha256": "8367c14adeb4796a871441b1708d8b9d0e33fbe179d21b29a678f0643c546721",
+      "runtimeBytes": 280816,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "train-balloon",
+      "name": "Alba",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/train-balloon.blend",
+      "sourceBytes": 3643109,
+      "sourceSha256": "f4833ce1262dcbe21b3beef1ca1ae3cf052cbc204f5c24ea783eca561fa8325d",
+      "runtimeBytes": 290768,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "train-sorter",
+      "name": "Acorn",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/train-sorter.blend",
+      "sourceBytes": 3681268,
+      "sourceSha256": "7c3383242bc1e09af89299b541ef0550e2b45970163d4435f8ebfb78d2ef794b",
+      "runtimeBytes": 276362,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "train-boat",
+      "name": "Amble",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/train-boat.blend",
+      "sourceBytes": 3643242,
+      "sourceSha256": "5f21105ede23ab4ee511fc87af4906e9bd0d497ac79519c5a740d4f811ce832d",
+      "runtimeBytes": 265850,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "train-fountain",
+      "name": "Anise",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/train-fountain.blend",
+      "sourceBytes": 3659346,
+      "sourceSha256": "e46cb8dbf1ba6c3de1d7f7ee912e0b866e38581ca5ce4337592049bfd3f05b0d",
+      "runtimeBytes": 273390,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "train-beacon",
+      "name": "Axo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/train-beacon.blend",
+      "sourceBytes": 3633496,
+      "sourceSha256": "619e2f1aed0af7e1c264b53ef0d066e0cec2d46479fd77b82797645baae37754",
+      "runtimeBytes": 267614,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-bridge",
+      "name": "Bramble",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/picnic-bridge.blend",
+      "sourceBytes": 3661722,
+      "sourceSha256": "9febb7cf2b94f3e1341780c7e04202bfd04edb95c5a1cea6364be174058219c8",
+      "runtimeBytes": 262964,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-book",
+      "name": "Bea",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/picnic-book.blend",
+      "sourceBytes": 3639718,
+      "sourceSha256": "cf9e5382a76ae5221efa1160e1725a845ab794dac5c3fb46bc84b9391d17fa7b",
+      "runtimeBytes": 249564,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-loom",
+      "name": "Basil",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/picnic-loom.blend",
+      "sourceBytes": 3640296,
+      "sourceSha256": "975ae8673ec034e37fa1020aa490ad9563d9d5c4cd839f300c3a09a442349ea2",
+      "runtimeBytes": 274456,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-clock",
+      "name": "Bix",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/picnic-clock.blend",
+      "sourceBytes": 3674434,
+      "sourceSha256": "b6474cba2655f337f0d99ff9806a7c8573857fc590ddcd8177b893ecc509ab3e",
+      "runtimeBytes": 254498,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-balloon",
+      "name": "Boba",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/picnic-balloon.blend",
+      "sourceBytes": 3644095,
+      "sourceSha256": "9b6258b5eee5f48bd9113a34c7b280800c1df72ce27b2cb50bdab8a97102d68f",
+      "runtimeBytes": 271590,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-sorter",
+      "name": "Burr",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/picnic-sorter.blend",
+      "sourceBytes": 3676969,
+      "sourceSha256": "d354c462bc9cad0215784540c38a289e51dcb0a8ee3036aac2999e6129b8c9a8",
+      "runtimeBytes": 245402,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-boat",
+      "name": "Brook",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/picnic-boat.blend",
+      "sourceBytes": 3650357,
+      "sourceSha256": "2d8b4b79b720ad2f6bde1b8f727883c1dab67e725b9e108acda47099b3a86f63",
+      "runtimeBytes": 241024,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-fountain",
+      "name": "Breeze",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/picnic-fountain.blend",
+      "sourceBytes": 3659189,
+      "sourceSha256": "10b901ff37dce2b55894d4f4ccc8f53d504a9920be56ba2eb54c3cfa23bd65a6",
+      "runtimeBytes": 250634,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "picnic-beacon",
+      "name": "Bepo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/picnic-beacon.blend",
+      "sourceBytes": 3635230,
+      "sourceSha256": "2c4d573fc7f4e82d9fceb01bac241bc66828fe4ca0ef5f923456a072ee25e2ed",
+      "runtimeBytes": 242778,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-bridge",
+      "name": "Cedar",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/boats-bridge.blend",
+      "sourceBytes": 3664192,
+      "sourceSha256": "819823e78ee583aedd5d10ab75d570683cbe2003389ebae86028212353662b41",
+      "runtimeBytes": 290970,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-book",
+      "name": "Cleo",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/boats-book.blend",
+      "sourceBytes": 3640146,
+      "sourceSha256": "36832023c07193079bcd954f5b5f5f40bdfc2a6dfed3eea2d9166d0e6c0a5302",
+      "runtimeBytes": 282968,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-loom",
+      "name": "Cosmo",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/boats-loom.blend",
+      "sourceBytes": 3642332,
+      "sourceSha256": "e42ad1730c98cd535c5e7345175f7734cf22b2ed2c6c86ca14e3dabf0632ce7f",
+      "runtimeBytes": 300080,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-clock",
+      "name": "Cricket",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/boats-clock.blend",
+      "sourceBytes": 3675113,
+      "sourceSha256": "69fcefc6172759b28994a520f0e5bcdc6b03005e0d75eae7015a6aabcbc18f7f",
+      "runtimeBytes": 285222,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-balloon",
+      "name": "Coco",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/boats-balloon.blend",
+      "sourceBytes": 3647933,
+      "sourceSha256": "e99054998abf0fc5a3787583b148eb971c15a06a024743a713e9c41c1765d655",
+      "runtimeBytes": 295724,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-sorter",
+      "name": "Chestnut",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/boats-sorter.blend",
+      "sourceBytes": 3684731,
+      "sourceSha256": "5f96273ce84653b899ecdd750cc97660e0150f8539426ece1b76478757279c16",
+      "runtimeBytes": 281850,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-boat",
+      "name": "Coral",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/boats-boat.blend",
+      "sourceBytes": 3653645,
+      "sourceSha256": "9f95a8e6ae8cd69a3a21111392891d2fdc2829e61e58b9cf53f5be9511947112",
+      "runtimeBytes": 269480,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-fountain",
+      "name": "Cloverleaf",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/boats-fountain.blend",
+      "sourceBytes": 3661781,
+      "sourceSha256": "54d046783d328518363492be904cba6917c78bcae9f9a4f1cba72ea6198d3592",
+      "runtimeBytes": 283746,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "boats-beacon",
+      "name": "Coda",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/boats-beacon.blend",
+      "sourceBytes": 3637760,
+      "sourceSha256": "f76f1158f6312c64562589e2cf5069897dbd2fab406425012f3d68c8b47783ee",
+      "runtimeBytes": 273890,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-bridge",
+      "name": "Drift",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/music-bridge.blend",
+      "sourceBytes": 3665566,
+      "sourceSha256": "41b9b458fdf1d4f9a5f512bd53792c57700dcd1da6d1023d0cc9c09fb25dde88",
+      "runtimeBytes": 271070,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-book",
+      "name": "Dora",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/music-book.blend",
+      "sourceBytes": 3644772,
+      "sourceSha256": "18b1e7daf32b677501433383fbdc22a9aeb0fccb454a9cb52c628ac782b97480",
+      "runtimeBytes": 270156,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-loom",
+      "name": "Dax",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/music-loom.blend",
+      "sourceBytes": 3657551,
+      "sourceSha256": "d8e9fab974190f3d74283d5c5b13b3ceb30bc1d07c481fb177e1cf2f649c9f6a",
+      "runtimeBytes": 287114,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-clock",
+      "name": "Doodle",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/music-clock.blend",
+      "sourceBytes": 3667729,
+      "sourceSha256": "ae459191d289bed18dd492422cf0a8b45efee299b3723cfe47fe0bf25010993c",
+      "runtimeBytes": 246700,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-balloon",
+      "name": "Daisy",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/music-balloon.blend",
+      "sourceBytes": 3645366,
+      "sourceSha256": "ee2ac9d8c98d703d54987ee80b54537c7a41bb15bf02da9c09c36ae0727e1709",
+      "runtimeBytes": 273962,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-sorter",
+      "name": "Dimple",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/music-sorter.blend",
+      "sourceBytes": 3686689,
+      "sourceSha256": "3f8012f4ca0eb093c5a587b886db6a5ee934a617608c09812efe206dfaa5df7e",
+      "runtimeBytes": 268712,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-boat",
+      "name": "Delta",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/music-boat.blend",
+      "sourceBytes": 3655242,
+      "sourceSha256": "7f99061f6d9017a970b0295bb0331087931dc5287ca07bd3bb26ac1083287f16",
+      "runtimeBytes": 262904,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-fountain",
+      "name": "Dew",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/music-fountain.blend",
+      "sourceBytes": 3674282,
+      "sourceSha256": "42e805abb730fcd15ef47b8d9a1ae28a9ad3cd7e0100d12ac4931222dcc7ed5f",
+      "runtimeBytes": 267982,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "music-beacon",
+      "name": "Dito",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/music-beacon.blend",
+      "sourceBytes": 3640727,
+      "sourceSha256": "705a8f55b30894dbd44729a1814418b42ae58be863b2345ddc33e6ac255b51f1",
+      "runtimeBytes": 257078,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-bridge",
+      "name": "Elmo",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/shelves-bridge.blend",
+      "sourceBytes": 3674809,
+      "sourceSha256": "5702cd931ed497442c9f666736f2e351585ecd530c98a676ea0751f1b418da4e",
+      "runtimeBytes": 283168,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-book",
+      "name": "Etta",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/shelves-book.blend",
+      "sourceBytes": 3654521,
+      "sourceSha256": "eb783f451aaf309003138566f7ceae5eba85e7bc4a5d335998dd3bd00d521670",
+      "runtimeBytes": 279838,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-loom",
+      "name": "Enzo",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/shelves-loom.blend",
+      "sourceBytes": 3653085,
+      "sourceSha256": "c7bab0e2483bb75666521910d592dc531034b97e6700aaf62a469465473e11ee",
+      "runtimeBytes": 291886,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-clock",
+      "name": "Echo",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/shelves-clock.blend",
+      "sourceBytes": 3676166,
+      "sourceSha256": "cc416234a5a4a56b347539393a10b53a219df41076c5ec207d0a13f4bbae9533",
+      "runtimeBytes": 268622,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-balloon",
+      "name": "Elsa",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/shelves-balloon.blend",
+      "sourceBytes": 3647952,
+      "sourceSha256": "857936adcb5a5dd1f1c0fdbe6c780a3e24791374cd443fbd4bed37bec672d914",
+      "runtimeBytes": 280908,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-sorter",
+      "name": "Elder",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/shelves-sorter.blend",
+      "sourceBytes": 3685565,
+      "sourceSha256": "ec0c9f9bdae9fdbbd1ca49931314e643ef4122bf27abe1095036a988f6b0e51a",
+      "runtimeBytes": 281434,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-boat",
+      "name": "Estuary",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/shelves-boat.blend",
+      "sourceBytes": 3655338,
+      "sourceSha256": "deb774692628bc2a142573ee8269b6c6b7078a4d11bf11a87271c6e9c8823624",
+      "runtimeBytes": 265434,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-fountain",
+      "name": "Eddy",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/shelves-fountain.blend",
+      "sourceBytes": 3676348,
+      "sourceSha256": "8bbbbf63fbbcd86bbbe47a7e7a9c7465338f06f6e76008272eb375e85479c6cf",
+      "runtimeBytes": 272720,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelves-beacon",
+      "name": "Evo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/shelves-beacon.blend",
+      "sourceBytes": 3640009,
+      "sourceSha256": "e5ce79b2e2e63bf034188abb08370bfb387388d5c36518e91958bd22760f56ad",
+      "runtimeBytes": 264974,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-bridge",
+      "name": "Fennel",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/kite-bridge.blend",
+      "sourceBytes": 3679085,
+      "sourceSha256": "65789cd30fc2ddbbaa6b77fbe01790ee15a0c0efdcb0e2435eb9186998f38d0d",
+      "runtimeBytes": 293066,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-book",
+      "name": "Faye",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/kite-book.blend",
+      "sourceBytes": 3654504,
+      "sourceSha256": "f26cdb048694bf2847f0657df0d9b07bd304977f3dce2fc17ce795c2cc22a1ce",
+      "runtimeBytes": 276396,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-loom",
+      "name": "Flint",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/kite-loom.blend",
+      "sourceBytes": 3656403,
+      "sourceSha256": "d5cc0937e76081a08acf6514b35a063080a40beabad1296ff8b4dfe181482489",
+      "runtimeBytes": 307234,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-clock",
+      "name": "Fizz",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/kite-clock.blend",
+      "sourceBytes": 3675959,
+      "sourceSha256": "7b92edbc2dccc9d39fe1683ccba92d407ea4707311691999ca7bad20c0ffec73",
+      "runtimeBytes": 287236,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-balloon",
+      "name": "Flora",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/kite-balloon.blend",
+      "sourceBytes": 3646402,
+      "sourceSha256": "58be6e33174750be4638c961809372e301e549c4da93a84f6254d84d9b6c28ee",
+      "runtimeBytes": 298372,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-sorter",
+      "name": "Fig",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/kite-sorter.blend",
+      "sourceBytes": 3688003,
+      "sourceSha256": "947747481772818cf1eea61e2c966d1a73cb52e77f6a02d5d288b20d0bb59c06",
+      "runtimeBytes": 278324,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-boat",
+      "name": "Foam",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/kite-boat.blend",
+      "sourceBytes": 3658064,
+      "sourceSha256": "041e637168358f7e35934024617df1de04fd4e17bd2c717ec58d8f00e9fe854a",
+      "runtimeBytes": 268932,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-fountain",
+      "name": "Fern",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/kite-fountain.blend",
+      "sourceBytes": 3673620,
+      "sourceSha256": "7cc61bf91bd97d2cef9f2631a40a40f4cea26e3f3e182feebacf82600d2fed6b",
+      "runtimeBytes": 285072,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "kite-beacon",
+      "name": "Faro",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/kite-beacon.blend",
+      "sourceBytes": 3637606,
+      "sourceSha256": "6c1c20cecfd5369b59e2b8eac80eb08150aa34bbd34cc24b7c83369009e047ee",
+      "runtimeBytes": 275986,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-bridge",
+      "name": "Grove",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/tickets-bridge.blend",
+      "sourceBytes": 3676618,
+      "sourceSha256": "26ab99f6f9425300272a8eef58a1ea05e4a0fcfedc80fea915c0b4d971128e92",
+      "runtimeBytes": 295950,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-book",
+      "name": "Greta",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/tickets-book.blend",
+      "sourceBytes": 3654553,
+      "sourceSha256": "f1366a5e56d3b6b0fcb399c2552611dfb09099e9fc30565f0429646b6e731f9a",
+      "runtimeBytes": 283058,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-loom",
+      "name": "Gizmo",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/tickets-loom.blend",
+      "sourceBytes": 3661758,
+      "sourceSha256": "b298e1d122fd1dc6800343ff6fd722ae4956dc339fc1d417bbcf11e4d95108db",
+      "runtimeBytes": 302280,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-clock",
+      "name": "Glim",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/tickets-clock.blend",
+      "sourceBytes": 3673927,
+      "sourceSha256": "ee1990d5fa59a33fe55a3382eb4737b61b6e20f614d9656cb98a1dc8c84a85d2",
+      "runtimeBytes": 288498,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-balloon",
+      "name": "Gala",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/tickets-balloon.blend",
+      "sourceBytes": 3657601,
+      "sourceSha256": "cb083340ddeaec40d2b03a1081b767ccc660b95bb62e4882bda34a2a6cb349a0",
+      "runtimeBytes": 288648,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-sorter",
+      "name": "Gooseberry",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/tickets-sorter.blend",
+      "sourceBytes": 3688314,
+      "sourceSha256": "0a8ec51927c9fbc4acd3d2ad0203bb6a13e65816b35e423e275a03066fe415cc",
+      "runtimeBytes": 282130,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-boat",
+      "name": "Gully",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/tickets-boat.blend",
+      "sourceBytes": 3659417,
+      "sourceSha256": "f306a978b991322cb001c8baf0d19ebe154c127edecab4567ccb5c244a458fd4",
+      "runtimeBytes": 272880,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-fountain",
+      "name": "Ginger",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/tickets-fountain.blend",
+      "sourceBytes": 3676161,
+      "sourceSha256": "4d1fb3f3cff85c9735d301c9b4232478a8e2d4128523968ba6557e897bbf3e7d",
+      "runtimeBytes": 280560,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "tickets-beacon",
+      "name": "Garo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/tickets-beacon.blend",
+      "sourceBytes": 3638342,
+      "sourceSha256": "b550a96aa38c0eadaa62c806e1c6889d59b5b00292308a56daa647ac5473fc4a",
+      "runtimeBytes": 272298,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-bridge",
+      "name": "Huckle",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/lift-bridge.blend",
+      "sourceBytes": 3679510,
+      "sourceSha256": "c854f7b84b807a493d3a834d5c57d38b6ac89167704a0e34bfbc1adc78c0e8bf",
+      "runtimeBytes": 284042,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-book",
+      "name": "Hera",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/lift-book.blend",
+      "sourceBytes": 3657059,
+      "sourceSha256": "3adb8dea77db95e8c214c60ed4e98b7a141c71ab948a08815bc528df3cebf863",
+      "runtimeBytes": 266952,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-loom",
+      "name": "Hugo",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/lift-loom.blend",
+      "sourceBytes": 3669330,
+      "sourceSha256": "118e19d41a643b30f25862c2d042fe95462f6467ac6c3d13bf31f2e6d83af499",
+      "runtimeBytes": 301748,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-clock",
+      "name": "Hiccup",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/lift-clock.blend",
+      "sourceBytes": 3672633,
+      "sourceSha256": "629aeb6d07a9e8575952f9809702c6dc848b71cecde9004a8a3ca25557fecb9a",
+      "runtimeBytes": 275932,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-balloon",
+      "name": "Honey",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/lift-balloon.blend",
+      "sourceBytes": 3656121,
+      "sourceSha256": "85ba38b21ee0e8aa672b6cb16b9db9bc9e10bad57e1f833576ccc7a0e4c0f0b2",
+      "runtimeBytes": 282982,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-sorter",
+      "name": "Hazelwood",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/lift-sorter.blend",
+      "sourceBytes": 3691724,
+      "sourceSha256": "22f7ccf088a710596dcea35cc053a51d4fb70c161dc0c1f16f1d96bce8f73176",
+      "runtimeBytes": 273404,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-boat",
+      "name": "Harbor",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/lift-boat.blend",
+      "sourceBytes": 3670005,
+      "sourceSha256": "e812cea8c83a535494dbe16fc1b0de604e34c21dad916095f47527d187568530",
+      "runtimeBytes": 255996,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-fountain",
+      "name": "Heather",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/lift-fountain.blend",
+      "sourceBytes": 3675989,
+      "sourceSha256": "8bc741b487b0b219c7257c8cb3a89e0ce694c190519fd2469a9942507ca83612",
+      "runtimeBytes": 274624,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lift-beacon",
+      "name": "Hexo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/lift-beacon.blend",
+      "sourceBytes": 3642616,
+      "sourceSha256": "114625c17e8d9ede3ac0316c209a5081411f7cc058d601c43a1ac35acc6bf46d",
+      "runtimeBytes": 263438,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-bridge",
+      "name": "Ivo",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/theatre-bridge.blend",
+      "sourceBytes": 3677075,
+      "sourceSha256": "70397cb6836476ba6bde36d2c8cf4179fae7a03dfe1193a78bf342673c88002d",
+      "runtimeBytes": 291568,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-book",
+      "name": "Iris",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/theatre-book.blend",
+      "sourceBytes": 3656096,
+      "sourceSha256": "069c408068ac6014c29e758cc31d3b082ed5a1350c8c2ed87b3124f72124ecf5",
+      "runtimeBytes": 292356,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-loom",
+      "name": "Indie",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/theatre-loom.blend",
+      "sourceBytes": 3657526,
+      "sourceSha256": "b3854ad8cd6e7664f53f5559485421dd6d4732b8da1bb48dc78d5ba76e9e0bf2",
+      "runtimeBytes": 316856,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-clock",
+      "name": "Inka",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/theatre-clock.blend",
+      "sourceBytes": 3691918,
+      "sourceSha256": "c16031dbfc6e718e53ea4d069401dec98f6709f71d27ff76f2cb96c6ae82d2a0",
+      "runtimeBytes": 293758,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-balloon",
+      "name": "Isla",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/theatre-balloon.blend",
+      "sourceBytes": 3651982,
+      "sourceSha256": "21a54d64bbb7483545597e852aa2c8cedc717255e5349c090ab39487f318b404",
+      "runtimeBytes": 296984,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-sorter",
+      "name": "Inkberry",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/theatre-sorter.blend",
+      "sourceBytes": 3686016,
+      "sourceSha256": "eb268db52a1394735560ec471f310d6323af57d66fb7f907e213de96bddc4bff",
+      "runtimeBytes": 291474,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-boat",
+      "name": "Inlet",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/theatre-boat.blend",
+      "sourceBytes": 3658080,
+      "sourceSha256": "e0abecd3d4203a22cf0fabc22829e7838bf2ba9b34095535722d2d267d94463d",
+      "runtimeBytes": 285930,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-fountain",
+      "name": "Ivory",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/theatre-fountain.blend",
+      "sourceBytes": 3676488,
+      "sourceSha256": "cdee0f6c8f8c2e8ac376a44796fc928db69c2abc874ed7f5e6476bee7a3ea9ae",
+      "runtimeBytes": 289196,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "theatre-beacon",
+      "name": "Iota",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/theatre-beacon.blend",
+      "sourceBytes": 3639645,
+      "sourceSha256": "9c7551f930317f61d6d78e1a275e5ecef1628d414e0763b258858899cf1a99ad",
+      "runtimeBytes": 282786,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-bridge",
+      "name": "Junco",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/parcels-bridge.blend",
+      "sourceBytes": 3681277,
+      "sourceSha256": "db595a766f2154a8d268e4ee0f390acbad405075fb7f5d5cedbf79e20c6af969",
+      "runtimeBytes": 300056,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-book",
+      "name": "Juno",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/parcels-book.blend",
+      "sourceBytes": 3657183,
+      "sourceSha256": "37f3df24aa6421fbb5d349bcb3a7c5e577a4183c681690eaa4337fa0e3d81f84",
+      "runtimeBytes": 287698,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-loom",
+      "name": "Jasper",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/parcels-loom.blend",
+      "sourceBytes": 3661702,
+      "sourceSha256": "3f9e28a3c6bb4e94473095c99efd0ad9c052cf316de678692d6aa73882c59d4e",
+      "runtimeBytes": 309494,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-clock",
+      "name": "Jolt",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/parcels-clock.blend",
+      "sourceBytes": 3681332,
+      "sourceSha256": "3ddb236328d2b082bb4fe3eefd9bfc108a3b33a098b75cd34c08751b40e27acd",
+      "runtimeBytes": 287274,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-balloon",
+      "name": "Jelly",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/parcels-balloon.blend",
+      "sourceBytes": 3664541,
+      "sourceSha256": "339b0ca2fa24b521b388e2240a1fe8df4f48ecb527f2e663da77b8daa4c52a9f",
+      "runtimeBytes": 303556,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-sorter",
+      "name": "Jujube",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/parcels-sorter.blend",
+      "sourceBytes": 3698121,
+      "sourceSha256": "8bd08b446510d6cf725bd662c453044f7cc4d5ac51bb5f161c11cf71e7d05551",
+      "runtimeBytes": 289124,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-boat",
+      "name": "Jetty",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/parcels-boat.blend",
+      "sourceBytes": 3664007,
+      "sourceSha256": "8e88e53018ba6096d26469c2486e2439ee841947b99e0bcb359ec50a444fc8e5",
+      "runtimeBytes": 280770,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-fountain",
+      "name": "Jade",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/parcels-fountain.blend",
+      "sourceBytes": 3680040,
+      "sourceSha256": "0004bfd479583243740564bac3184043e05a2da8aff523b41ec586f6c0e0ce99",
+      "runtimeBytes": 294910,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "parcels-beacon",
+      "name": "Jiro",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/parcels-beacon.blend",
+      "sourceBytes": 3639792,
+      "sourceSha256": "f4d7be16479542933226209a3973b0dd03213408850de431b4386bc6bbf9a621",
+      "runtimeBytes": 282776,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-bridge",
+      "name": "Koa",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/fountain-bridge.blend",
+      "sourceBytes": 3682306,
+      "sourceSha256": "5334e8819d944a8f114eb458bc7c5006657ba7c08491e6f769f33607f5a7e7ad",
+      "runtimeBytes": 285262,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-book",
+      "name": "Kiki",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/fountain-book.blend",
+      "sourceBytes": 3664038,
+      "sourceSha256": "ef87eb233911d1317f004d202a35be4e43a411fc52d9b6131f0b35e6c9a78a9b",
+      "runtimeBytes": 274202,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-loom",
+      "name": "Kiro",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/fountain-loom.blend",
+      "sourceBytes": 3664792,
+      "sourceSha256": "2e16297f121117848a3869ade85eb66c1f69774845093dbaf35a07dc74c91e26",
+      "runtimeBytes": 300838,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-clock",
+      "name": "Knot",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/fountain-clock.blend",
+      "sourceBytes": 3681530,
+      "sourceSha256": "c2ec00eb2ddf8a8500b7fb564c107b9953a2f80d9e834aac88d81c3e44e5a5ff",
+      "runtimeBytes": 274586,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-balloon",
+      "name": "Klara",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/fountain-balloon.blend",
+      "sourceBytes": 3664397,
+      "sourceSha256": "63d399c644e3d4dce8de860be88b7efd1bc55128ac9cb189ff40744961f808e7",
+      "runtimeBytes": 287560,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-sorter",
+      "name": "Kiwi",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/fountain-sorter.blend",
+      "sourceBytes": 3693050,
+      "sourceSha256": "4489c2c01d6e1a5b4e5b51e505c4fe502acec90f1e75ac40f6674951cc4fc9a4",
+      "runtimeBytes": 270278,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-boat",
+      "name": "Kelpie",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/fountain-boat.blend",
+      "sourceBytes": 3664379,
+      "sourceSha256": "f35cba4d4d6dcfee3fa4160501775e0d5add760479ab45ee939af56a3bb92e36",
+      "runtimeBytes": 257470,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-fountain",
+      "name": "Kelp",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/fountain-fountain.blend",
+      "sourceBytes": 3676022,
+      "sourceSha256": "408af49adb43605659f494dcfbdcda57de1ede209891e2979e3758773d479cce",
+      "runtimeBytes": 270982,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "fountain-beacon",
+      "name": "Kubo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/fountain-beacon.blend",
+      "sourceBytes": 3643326,
+      "sourceSha256": "fedb77e7a46895f6850437860df9dd20be26a714f5fcdcc799ca8aadb84e109c",
+      "runtimeBytes": 264562,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-bridge",
+      "name": "Larch",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/lanterns-bridge.blend",
+      "sourceBytes": 3690374,
+      "sourceSha256": "b9f62ee71c37c403326f9b44ba16aac6de54974c630481db33c17f73d5579b8b",
+      "runtimeBytes": 294316,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-book",
+      "name": "Luma",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/lanterns-book.blend",
+      "sourceBytes": 3683148,
+      "sourceSha256": "59bd37f6ec123eb40f244e7bab2d3c37cb9244c67c3a0a906b086c8f9258db9e",
+      "runtimeBytes": 278846,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-loom",
+      "name": "Loki",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/lanterns-loom.blend",
+      "sourceBytes": 3660306,
+      "sourceSha256": "23e6b909b479191c2a92f169d56dbc1d133993163348d0e4282122976e2590e7",
+      "runtimeBytes": 299190,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-clock",
+      "name": "Lint",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/lanterns-clock.blend",
+      "sourceBytes": 3680412,
+      "sourceSha256": "0989adb0826c756670540ef7c56b83da76c0c659f40bb6f238590242e1c24d6f",
+      "runtimeBytes": 287346,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-balloon",
+      "name": "Lily",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/lanterns-balloon.blend",
+      "sourceBytes": 3664271,
+      "sourceSha256": "83b7cc621f9f1172a20b956ed6d3a0afcfaddfa6e34e28090ca3edbb888fc122",
+      "runtimeBytes": 295070,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-sorter",
+      "name": "Lychee",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/lanterns-sorter.blend",
+      "sourceBytes": 3686516,
+      "sourceSha256": "f5166836478d3827303b75246cbf07050968eb742da73b4ee57082dac66f2092",
+      "runtimeBytes": 280598,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-boat",
+      "name": "Lagoon",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/lanterns-boat.blend",
+      "sourceBytes": 3663121,
+      "sourceSha256": "0836f9bc6c08d6e094b5593732cfbe24c0d732e3f817b4e5348042ee6c41b6c4",
+      "runtimeBytes": 272390,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-fountain",
+      "name": "Lotus",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/lanterns-fountain.blend",
+      "sourceBytes": 3682201,
+      "sourceSha256": "266a2657a00961d971d961f105c7d43ce1d91f883520ae0900f8553c4d75f52f",
+      "runtimeBytes": 288900,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "lanterns-beacon",
+      "name": "Leto",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/lanterns-beacon.blend",
+      "sourceBytes": 3660405,
+      "sourceSha256": "0ede812b13da224590adfd999e6705182191f0c550bf4caf8a04e49984d56e34",
+      "runtimeBytes": 282344,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-bridge",
+      "name": "Marlow",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/observatory-bridge.blend",
+      "sourceBytes": 3677978,
+      "sourceSha256": "2578bbbc7269885293b145a43a7bad015ac94a549ed3c2ccdf43163e1efc9240",
+      "runtimeBytes": 274582,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-book",
+      "name": "Mira",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/observatory-book.blend",
+      "sourceBytes": 3665667,
+      "sourceSha256": "28c63af29b898651a83fd59478c2e4342a91157f1027acd6affdb90b3c4fb70c",
+      "runtimeBytes": 263264,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-loom",
+      "name": "Milo",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/observatory-loom.blend",
+      "sourceBytes": 3661195,
+      "sourceSha256": "f39a757ab84fc8698696b957ae4c6350ce3a6bf8a8f939c7de7b01792a3202c2",
+      "runtimeBytes": 289318,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-clock",
+      "name": "Midge",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/observatory-clock.blend",
+      "sourceBytes": 3678574,
+      "sourceSha256": "f76bad79cbc89685d362fcf2cd800c7d2d15e8a4f9d017a7e9a26e03adf01ac8",
+      "runtimeBytes": 267050,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-balloon",
+      "name": "Momo",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/observatory-balloon.blend",
+      "sourceBytes": 3667663,
+      "sourceSha256": "6ae93c75daea4d907578bea460ed1ff83dccfa67413304c067c1cbb413bfd7ea",
+      "runtimeBytes": 278694,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-sorter",
+      "name": "Mulberry",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/observatory-sorter.blend",
+      "sourceBytes": 3692489,
+      "sourceSha256": "7e93e8391762b63bbe887ff7a23646abf41d2e7f8c33d8d9e82a60ec01f251ec",
+      "runtimeBytes": 257474,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-boat",
+      "name": "Marina",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/observatory-boat.blend",
+      "sourceBytes": 3663346,
+      "sourceSha256": "303dfb61deca8adb2ea4cf549ad7a4f7951fc9406c808e92b01d58d6bb4b357b",
+      "runtimeBytes": 245270,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-fountain",
+      "name": "Mint",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/observatory-fountain.blend",
+      "sourceBytes": 3680490,
+      "sourceSha256": "e7880a1c6f12871e0d0b7196e70d6e8c582d56e9ab2a85924b983093a522d8be",
+      "runtimeBytes": 259810,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "observatory-beacon",
+      "name": "Mako",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/observatory-beacon.blend",
+      "sourceBytes": 3658224,
+      "sourceSha256": "bebfd3ee0e371ce85d7145a8bc9c8c068cf9259f5298a2db64a3ff41b61fc171",
+      "runtimeBytes": 255906,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-bridge",
+      "name": "Nori",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/garden-bridge.blend",
+      "sourceBytes": 3682839,
+      "sourceSha256": "bf51047ccc0b2c463abda1a69d926130ab82b81bce753ed7fee080b3d5072024",
+      "runtimeBytes": 263290,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-book",
+      "name": "Nala",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/garden-book.blend",
+      "sourceBytes": 3666246,
+      "sourceSha256": "6d11514addf97a7dad93fc9aa5a916390de5be6028cdab76423ad5f046235770",
+      "runtimeBytes": 250748,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-loom",
+      "name": "Nico",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/garden-loom.blend",
+      "sourceBytes": 3663289,
+      "sourceSha256": "224f4b5862c88fa96acaa18c9cfebec582205c06a9956be513ad6bfc1e1bc898",
+      "runtimeBytes": 280380,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-clock",
+      "name": "Nim",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/garden-clock.blend",
+      "sourceBytes": 3685115,
+      "sourceSha256": "57d05517ce53ea55db7ea7ee289bbab81e5e0dbe8318ddde50e697f452de147c",
+      "runtimeBytes": 251756,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-balloon",
+      "name": "Nina",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/garden-balloon.blend",
+      "sourceBytes": 3666535,
+      "sourceSha256": "21e67fa98eef3441f57e12eb2aa8ffbd7aea0c3fefd518bfa9026de919a8dc5a",
+      "runtimeBytes": 268524,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-sorter",
+      "name": "Nutmeg",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/garden-sorter.blend",
+      "sourceBytes": 3692147,
+      "sourceSha256": "e52e6363b40c325becf32be3eeea7e53cbc16f814330c432c88a87f95e2a4f73",
+      "runtimeBytes": 250610,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-boat",
+      "name": "Nacre",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/garden-boat.blend",
+      "sourceBytes": 3666149,
+      "sourceSha256": "6e9f462f4e1a01d941b5d23192c61e962e01bd20ee66cc76a9f981af9b6f94ab",
+      "runtimeBytes": 243724,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-fountain",
+      "name": "Nettle",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/garden-fountain.blend",
+      "sourceBytes": 3685404,
+      "sourceSha256": "42bb6fb4689b664124e1f5353ccdfda170e3e9cc36e1360f36690be0f92a7c1a",
+      "runtimeBytes": 253624,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "garden-beacon",
+      "name": "Nexo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/garden-beacon.blend",
+      "sourceBytes": 3659939,
+      "sourceSha256": "36fbc4ada363c12e71162974dea98a00d208cdc2ddf2723d124cc8abd383115c",
+      "runtimeBytes": 243334,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-bridge",
+      "name": "Oakley",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/signal-bridge.blend",
+      "sourceBytes": 3684772,
+      "sourceSha256": "f3830c11d1ddb404bfa126f84e99a7406f7f25d0d8333c2ac65cf358c461ab54",
+      "runtimeBytes": 287978,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-book",
+      "name": "Opal",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/signal-book.blend",
+      "sourceBytes": 3672100,
+      "sourceSha256": "88f1f449c280487d92d6650d0d532d819382b5a46a022c9800b821b27348888b",
+      "runtimeBytes": 277976,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-loom",
+      "name": "Orion",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/signal-loom.blend",
+      "sourceBytes": 3662334,
+      "sourceSha256": "933b99ab8049b178539bfc8e778975cafb7fc315270951baa949e13ca0742400",
+      "runtimeBytes": 302120,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-clock",
+      "name": "Odo",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/signal-clock.blend",
+      "sourceBytes": 3682456,
+      "sourceSha256": "5387760b1e75e8a51e204c168e735550d6f7d104c34d847d11f90c1530b92bc8",
+      "runtimeBytes": 274438,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-balloon",
+      "name": "Oona",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/signal-balloon.blend",
+      "sourceBytes": 3670304,
+      "sourceSha256": "6fd306c65a745a9b8b506eb0b1c87ad3cf642badb32ae0703e998fe303054173",
+      "runtimeBytes": 279210,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-sorter",
+      "name": "Olive",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/signal-sorter.blend",
+      "sourceBytes": 3697680,
+      "sourceSha256": "55ebcdc4372e75c3cc7282ff53185e0c3883d6f2279d52f2765473d540ebf3e3",
+      "runtimeBytes": 278940,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-boat",
+      "name": "Ocean",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/signal-boat.blend",
+      "sourceBytes": 3670644,
+      "sourceSha256": "35aa49c2762e18027a4875e59753c8ba1904239efc7f1def1f7be9addc8b1eed",
+      "runtimeBytes": 267972,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-fountain",
+      "name": "Oregano",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/signal-fountain.blend",
+      "sourceBytes": 3686051,
+      "sourceSha256": "c49d37c45eff823f2f89d811f2d2355d24a45fe89c25ae68b6df4fc5717044de",
+      "runtimeBytes": 276472,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "signal-beacon",
+      "name": "Oki",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/signal-beacon.blend",
+      "sourceBytes": 3652756,
+      "sourceSha256": "b227495d54b55af28b7834d9aaee34b2e5d4935fd1e210910ca119e2af87438e",
+      "runtimeBytes": 271094,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-bridge",
+      "name": "Pebble",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/shop-bridge.blend",
+      "sourceBytes": 3685257,
+      "sourceSha256": "b6e786f3ad2f0ce5883ec237d9474e791f005bf8469797c2175bc1e4881700b9",
+      "runtimeBytes": 310074,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-book",
+      "name": "Pia",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/shop-book.blend",
+      "sourceBytes": 3667748,
+      "sourceSha256": "b54889ebb76e4ca3756f70fa1a75726c980b77b25e8bf07155fa73ea66b23119",
+      "runtimeBytes": 305592,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-loom",
+      "name": "Pico",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/shop-loom.blend",
+      "sourceBytes": 3665234,
+      "sourceSha256": "6ab2e04f5e3aadc89af08dd2d97e56489d95bb9528bb19331133047d2f1147aa",
+      "runtimeBytes": 319024,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-clock",
+      "name": "Pipkin",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/shop-clock.blend",
+      "sourceBytes": 3674413,
+      "sourceSha256": "589342f39e904e019d6acfa5676e489810fd8bd79dc77f6e5df59775749fdb2c",
+      "runtimeBytes": 300550,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-balloon",
+      "name": "Poppy",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/shop-balloon.blend",
+      "sourceBytes": 3672203,
+      "sourceSha256": "0c95d55507bc91d65ea7071df36af16da0040307086b050ed29c12baf5baa73f",
+      "runtimeBytes": 293916,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-sorter",
+      "name": "Prune",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/shop-sorter.blend",
+      "sourceBytes": 3693890,
+      "sourceSha256": "7971e249039a8790260d4bc25d0043d85ff856b51727ba8f7f2f09d362e2a2b4",
+      "runtimeBytes": 306208,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-boat",
+      "name": "Puddle",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/shop-boat.blend",
+      "sourceBytes": 3671930,
+      "sourceSha256": "aa24e5edeaabc01bf4b6632238c08929137f0b2609ffb167588b7d86e1ca3602",
+      "runtimeBytes": 298616,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-fountain",
+      "name": "Petal",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/shop-fountain.blend",
+      "sourceBytes": 3686856,
+      "sourceSha256": "df04b233464622365618cc33c391dc51e1303e57fed0c562974d756ce328f745",
+      "runtimeBytes": 305776,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shop-beacon",
+      "name": "Polo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/shop-beacon.blend",
+      "sourceBytes": 3658305,
+      "sourceSha256": "f0678522ce78c246cddedc3c994f9f5f7614ad05e25cbc68e99d54f0a65fd8d9",
+      "runtimeBytes": 298166,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-bridge",
+      "name": "Quill",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/shelter-bridge.blend",
+      "sourceBytes": 3685665,
+      "sourceSha256": "e7df6adef02cd75831fbd48817de868d5689ef5e2ebf3c64e63388db217434be",
+      "runtimeBytes": 304004,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-book",
+      "name": "Rhea",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/shelter-book.blend",
+      "sourceBytes": 3667379,
+      "sourceSha256": "4ef88c45564a586e0d6575c440aba2ab4e5f2e3f2b248bcf505f5dcb438b259d",
+      "runtimeBytes": 290346,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-loom",
+      "name": "Rolo",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/shelter-loom.blend",
+      "sourceBytes": 3663720,
+      "sourceSha256": "d976c42f9630ac232c4769bd5e07682cb71728e67667699db3187169cc443d9e",
+      "runtimeBytes": 316636,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-clock",
+      "name": "Rivet",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/shelter-clock.blend",
+      "sourceBytes": 3686061,
+      "sourceSha256": "550629487303cef2f34c421e648e0e88416af1b068af3c4a557a0b005d745d05",
+      "runtimeBytes": 293104,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-balloon",
+      "name": "Queenie",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/shelter-balloon.blend",
+      "sourceBytes": 3664860,
+      "sourceSha256": "d7eae01aa18b47edd31fead3c119b064e9a38f93b369f9379af66267a5dba28b",
+      "runtimeBytes": 304084,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-sorter",
+      "name": "Quince",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/shelter-sorter.blend",
+      "sourceBytes": 3691730,
+      "sourceSha256": "10cac0297a2f3e142b494461e0e662919de47dfe6366aaca0c1b207bf7f7ef53",
+      "runtimeBytes": 288142,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-boat",
+      "name": "Ripple",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/shelter-boat.blend",
+      "sourceBytes": 3664509,
+      "sourceSha256": "2a69c97f5dd4e4fbc47facc45611e90336324be39c0bc88c0c25505c38a44681",
+      "runtimeBytes": 284040,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-fountain",
+      "name": "Rain",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/shelter-fountain.blend",
+      "sourceBytes": 3680673,
+      "sourceSha256": "7057060c4de8a4c8c3a4aa548144a0c58ed4c80fc6f7ffffd1706be3ab7daf2a",
+      "runtimeBytes": 291316,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "shelter-beacon",
+      "name": "Qino",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/shelter-beacon.blend",
+      "sourceBytes": 3660240,
+      "sourceSha256": "fa3687e12ec3aed466c8623e8f6af142272bb22b735cc771e20e196777515ab7",
+      "runtimeBytes": 283128,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-bridge",
+      "name": "Reed",
+      "animal": "beaver",
+      "source": "prototypes/boss-scenes/lessons/vault-bridge.blend",
+      "sourceBytes": 3690217,
+      "sourceSha256": "b9a2d188031f3bb0016e02e94d0123bfc747f51e76ba8e482a113d46336489f4",
+      "runtimeBytes": 297094,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-book",
+      "name": "Sora",
+      "animal": "owl",
+      "source": "prototypes/boss-scenes/lessons/vault-book.blend",
+      "sourceBytes": 3669713,
+      "sourceSha256": "484aa30862dfd68c0df6b3053fcd7bb412d25323c4c03c12c57fa3c96e2ecc82",
+      "runtimeBytes": 287620,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-loom",
+      "name": "Sage",
+      "animal": "fox",
+      "source": "prototypes/boss-scenes/lessons/vault-loom.blend",
+      "sourceBytes": 3672988,
+      "sourceSha256": "94e5a055653131fad9b6c462752cd990006f03b624295ceda15b13a3f019da3f",
+      "runtimeBytes": 306824,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-clock",
+      "name": "Speck",
+      "animal": "mouse",
+      "source": "prototypes/boss-scenes/lessons/vault-clock.blend",
+      "sourceBytes": 3686727,
+      "sourceSha256": "3d73beef18ba306f407aa2eca250ab4fce660866189ac8e10a1d697206c69732",
+      "runtimeBytes": 290452,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-balloon",
+      "name": "Rosa",
+      "animal": "rabbit",
+      "source": "prototypes/boss-scenes/lessons/vault-balloon.blend",
+      "sourceBytes": 3675789,
+      "sourceSha256": "cbbe470e5263e7050aea2f25a32b66e87985dc0f57db64eddb5cc01722f47ca2",
+      "runtimeBytes": 293700,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-sorter",
+      "name": "Rosehip",
+      "animal": "hedgehog",
+      "source": "prototypes/boss-scenes/lessons/vault-sorter.blend",
+      "sourceBytes": 3701509,
+      "sourceSha256": "ec41914db7247a183c42bf9495179e8153f146a3250b18af5f48f3a2db94d946",
+      "runtimeBytes": 288768,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-boat",
+      "name": "Shoal",
+      "animal": "turtle",
+      "source": "prototypes/boss-scenes/lessons/vault-boat.blend",
+      "sourceBytes": 3679138,
+      "sourceSha256": "2b4a1c7247110d5a2b1935ca36fa94a7fbda7be6995b4af64eb3da2c6c54706c",
+      "runtimeBytes": 278588,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-fountain",
+      "name": "Sprout",
+      "animal": "otter",
+      "source": "prototypes/boss-scenes/lessons/vault-fountain.blend",
+      "sourceBytes": 3692650,
+      "sourceSha256": "dfbec1f777428705ea6e7fcd855a76551c717bc269c616c81847cc23076e1436",
+      "runtimeBytes": 291140,
+      "runtimeFiles": 7
+    },
+    {
+      "scene": "vault-beacon",
+      "name": "Rumo",
+      "animal": "robot",
+      "source": "prototypes/boss-scenes/lessons/vault-beacon.blend",
+      "sourceBytes": 3662755,
+      "sourceSha256": "931249aec9b2a3d507d45832280da44034da1edd173ba9b6fe5c991ea4b3bc54",
+      "runtimeBytes": 284820,
+      "runtimeFiles": 7
+    }
+  ]
+}

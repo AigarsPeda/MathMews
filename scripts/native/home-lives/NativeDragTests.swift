@@ -12,11 +12,16 @@ final class NativeDragTests: XCTestCase {
  func testHomeCountdownAndRefill() {
   XCTAssertTrue(heart(3).waitForExistence(timeout: 5))
   let coins = app.buttons["You have 42 coins. Tap to get more coins."]
-  let streak = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Streak: 1 day")).firstMatch
+  let streak = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Streak: 2 days")).firstMatch
   XCTAssertTrue(streak.exists)
-  XCTAssertEqual(coins.frame.width, streak.frame.width, accuracy: 1)
-  XCTAssertEqual(coins.frame.width, heart(3).frame.width, accuracy: 1)
-  XCTAssertLessThan(app.buttons["Settings"].frame.width, 36)
+  XCTAssertEqual(streak.frame.width, coins.frame.width, accuracy: 1)
+  XCTAssertEqual(heart(3).frame.width, coins.frame.width, accuracy: 1)
+  XCTAssertGreaterThanOrEqual(app.buttons["Settings"].frame.width, 44)
+  XCTAssertLessThanOrEqual(app.buttons["Settings"].frame.maxY, heart(3).frame.minY)
+  let achievements=app.buttons["Open boss achievements. 0 of 180 bosses collected"]
+  XCTAssertTrue(achievements.isHittable)
+  XCTAssertEqual(achievements.frame.width, coins.frame.width, accuracy: 1)
+  XCTAssertLessThanOrEqual(achievements.frame.maxX, heart(3).frame.minX)
   XCTAssertFalse(heart(3).label.contains("Next life")); shot("home-lives-full")
   app.buttons["Lose"].tap(); XCTAssertTrue(heart(2).waitForExistence(timeout: 5))
   let initial = heart(2).label
@@ -29,6 +34,12 @@ final class NativeDragTests: XCTestCase {
   let buy = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Buy a life for")).firstMatch
   XCTAssertTrue(buy.waitForExistence(timeout: 5)); buy.tap()
   XCTAssertTrue(heart(3).waitForExistence(timeout: 5)); XCTAssertFalse(heart(3).label.contains("Next life"))
+  app.buttons["Earn"].tap()
+  let earned=app.buttons["Open boss achievements. 2 of 180 bosses collected"]
+  XCTAssertTrue(earned.waitForExistence(timeout:5))
+  app.buttons["Reopen"].tap(); XCTAssertTrue(earned.waitForExistence(timeout:5)); shot("home-achievements-earned")
+  earned.tap(); XCTAssertTrue(app.staticTexts["Achievements"].waitForExistence(timeout:5))
+  app.buttons["Back"].tap(); XCTAssertTrue(app.buttons["Reset"].waitForExistence(timeout:5))
  }
  func testRegenerationAndNarrowLatvianHeader() {
   app.buttons["Empty"].tap(); XCTAssertTrue(heart(0).waitForExistence(timeout: 5)); shot("home-lives-empty")
@@ -41,8 +52,11 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(lives.waitForExistence(timeout: 5)); XCTAssertTrue(lives.label.contains("Nākamā dzīvība pēc"))
   XCTAssertTrue(lives.isHittable); XCTAssertTrue(app.buttons["Settings"].isHittable)
   let coins = app.buttons["Tev ir 1234567 monētas. Pieskaries, lai iegūtu vairāk."]
-  XCTAssertTrue(coins.isHittable); XCTAssertLessThan(coins.frame.maxX, lives.frame.minX)
-  XCTAssertLessThanOrEqual(lives.frame.maxX, app.buttons["Settings"].frame.minX + 1)
+  XCTAssertTrue(coins.isHittable)
+  let wrapped = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in coins.frame.minY < lives.frame.minY }, object: nil)
+  let layoutResult = XCTWaiter.wait(for: [wrapped], timeout: 3)
   shot("home-lives-narrow-latvian")
+  XCTAssertEqual(layoutResult, .completed)
+  XCTAssertLessThanOrEqual(lives.frame.maxX, app.buttons["Settings"].frame.maxX + 1)
  }
 }

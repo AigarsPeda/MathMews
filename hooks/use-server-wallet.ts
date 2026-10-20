@@ -17,6 +17,7 @@ import { refreshStoreCatalog } from '@/services/store-catalog';
 import { reportAppError } from '@/lib/app-diagnostics';
 import { MAX_LIVES } from '@/constants/game';
 import { applyLifeRegen } from '@/utils/lives';
+import { useNetworkReconnect } from '@/hooks/use-network-reconnect';
 
 export type ServerWallet = { user_id:string; environment:string; balance:number; revision:number };
 type LegacyOrder = { id:string; saveId:string; kind:string; itemId:string; expectedPrice?:number };
@@ -187,6 +188,8 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
     running.current=work;
     try { await work; } finally { if(running.current===work) running.current=null; }
   },[enabled,userId,scope,legacyKey,environment,authorityRef,setSave,getSave,activeSaveIdRef,syncRef]);
+
+  useNetworkReconnect(run, enabled && !!userId);
 
   useEffect(()=>{
     void run();

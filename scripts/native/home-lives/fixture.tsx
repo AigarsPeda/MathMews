@@ -12,14 +12,19 @@ import i18n from '@/i18n';
 import { Redirect } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { Pressable, Text, TurboModuleRegistry, View, type TurboModule } from 'react-native';
+import { Pressable, Text, TurboModuleRegistry, View, useWindowDimensions, type TurboModule } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { GameSave } from '@/types/save';
+import { LEARNING_CATALOG } from '@/constants/curriculum';
 
 const PREVIOUS_FAST_REFRESH = true;
-const actionNames = ['Reset', 'Lose', 'Empty', 'Quick', 'FullSoon', 'Reopen', 'Narrow', 'LV'];
+const actionNames = ['Reset', 'Lose', 'Empty', 'Quick', 'FullSoon', 'Reopen', 'Narrow', 'LV', 'Earn'];
 export default function HomeLivesFixture() {
   const realGame = useGame(), insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const paddingTop = insets.top + moderateScale(4);
+  const settingsTop = Math.max(moderateScale(24), paddingTop - moderateScale(24));
+  const settingsClearance = settingsTop + moderateScale(44) - paddingTop;
   const [save, setSave] = useState(createDefaultGameSave), [revision, setRevision] = useState(0);
   const [narrow, setNarrow] = useState(false);
   const [language] = useState(() => i18n.cloneInstance({ lng: 'en' }));
@@ -51,18 +56,21 @@ export default function HomeLivesFixture() {
     Reopen: () => { commit(parseGameSaveFromValue(JSON.stringify(current.current))!.save); setRevision(n => n + 1); },
     Narrow: () => { setNarrow(true); commit({ ...current.current, wallet: { coins: 1234567 } }); },
     LV: () => { void language.changeLanguage('lv'); },
+    Earn: () => commit({ ...current.current, progress: { ...current.current.progress, completedPuzzleIds: LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === 'boss')).slice(0,2).flatMap(level => level.puzzleIds) } }),
   };
   return <I18nextProvider i18n={language}><GameContext.Provider value={game}>
-    <View style={{ flex: 1, paddingTop: insets.top + 20, paddingHorizontal: 20, backgroundColor: GameColors.background }}>
-      <View style={{ width: narrow ? 280 : '100%', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', backgroundColor: GameColors.card, borderWidth: 1, borderColor: GameColors.cardBorder, borderRadius: moderateScale(16), paddingRight: moderateScale(4) }}>
-        <GameHeaderStats key={revision} layout="home" coins={save.wallet.coins} streak={1} lives={save.progress.lives} />
-        <HeaderChip style={{ width: moderateScale(32), borderWidth: 0, backgroundColor: 'transparent' }} hitSlop={{ left: moderateScale(6), right: moderateScale(6) }} onPress={() => {}} accessibilityLabel="Settings">
-          <AppIcon name="settings" size={moderateScale(18)} />
-        </HeaderChip>
+    <View style={{ flex: 1, paddingTop, paddingHorizontal: moderateScale(16), backgroundColor: GameColors.background }}>
+      <View style={{ width: narrow ? 280 : '100%', alignSelf: 'center', paddingTop: settingsClearance }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: GameColors.card, borderWidth: 1, borderColor: GameColors.cardBorder, borderRadius: moderateScale(16), paddingHorizontal: moderateScale(4) }}>
+          <GameHeaderStats key={revision} layout="home" coins={save.wallet.coins} streak={2} lives={save.progress.lives} />
+        </View>
       </View>
       <View style={{ marginTop: 40, flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
         {actionNames.map(label => <Pressable key={label} accessibilityRole="button" onPress={() => actions[label]()} style={{ padding: 12, backgroundColor: 'white' }}><Text>{label}</Text></Pressable>)}
       </View>
+      <HeaderChip style={{ position: 'absolute', top: settingsTop, right: narrow ? (width - 280) / 2 : moderateScale(16), width: moderateScale(44), borderWidth: 0, backgroundColor: 'transparent' }} onPress={() => {}} accessibilityLabel="Settings">
+        <AppIcon name="settings" size={moderateScale(18)} />
+      </HeaderChip>
     </View>
   </GameContext.Provider></I18nextProvider>;
 }

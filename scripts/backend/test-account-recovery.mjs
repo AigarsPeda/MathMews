@@ -8,6 +8,7 @@ import ts from 'typescript';
 function harness({ platform='ios', enabled=true, environment='sandbox' }={}) {
   const cache=new Map(), stored=new Map(), calls=[], effects=[], timers=new Map();
   let browser={type:'cancel'}, apple={ok:false,cancelled:true}, authError=null, readError=null, rows=[], currentAccount='guest';
+  let reconnect, writeError=null;
   const storage={getItem:async key=>stored.get(key)??null, setItem:async(key,value)=>stored.set(key,value),
     removeItem:async key=>stored.delete(key),multiRemove:async keys=>keys.forEach(key=>stored.delete(key)),
     multiSet:async pairs=>pairs.forEach(([key,value])=>stored.set(key,value))};
@@ -19,14 +20,15 @@ function harness({ platform='ios', enabled=true, environment='sandbox' }={}) {
   const db={auth,from:()=>{
     const q={select:()=>q,eq:()=>q,order:async()=>({data:rows,error:readError}),
       maybeSingle:async()=>({data:rows[0]??null,error:readError}),
-      upsert:async value=>{calls.push(['write',value]);return {error:null};}};return q;
+      upsert:async value=>{calls.push(['write',value]);return {error:writeError};}};return q;
   }};
   const react={useEffect:fn=>effects.push(fn),useCallback:fn=>fn,useRef:value=>({current:value}),useState:value=>[value,()=>{}]};
   function load(id,base=process.cwd()) {
     if(id==='react')return react;
+    if(id==='@/hooks/use-network-reconnect')return {useNetworkReconnect:callback=>{reconnect=callback;}};
     if(id==='@/hooks/use-world-clock-now')return {useWorldClockNow:()=>Date.now()};
     if(id==='@react-native-async-storage/async-storage')return storage;
-    if(id==='react-native')return {Platform:{OS:platform},AppState:{addEventListener:()=>({remove(){}})},Dimensions:{get:()=>({width:390,height:844})},PixelRatio:{roundToNearestPixel:n=>n}};
+    if(id==='react-native')return {Platform:{OS:platform},AppState:{currentState:'active',addEventListener:()=>({remove(){}})},Dimensions:{get:()=>({width:390,height:844})},PixelRatio:{roundToNearestPixel:n=>n}};
     if(id==='@/lib/supabase')return {supabase:db,isSupabaseConfigured:()=>true};
     if(id==='@/services/auth/apple-native')return {getNativeAppleIdToken:async()=>{calls.push('apple');return apple;},signInWithAppleIdToken:async()=>{calls.push('appleSignIn');if(!authError)currentAccount='restored';return authError?{ok:false,error:'unavailable'}:{ok:true};}};
     if(id==='expo-auth-session')return {makeRedirectUri:()=> 'mathmews://auth/callback'};
@@ -42,11 +44,13 @@ function harness({ platform='ios', enabled=true, environment='sandbox' }={}) {
     vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText,
       {module,exports:module.exports,require:child=>load(child,path.dirname(file)),URL,Date,Math,Set,Map,Promise,console:{log(){},warn(){}},__DEV__:false,
         process:{env:{EXPO_PUBLIC_APP_ENVIRONMENT:environment,EXPO_PUBLIC_APPLE_AUTH_ENABLED:String(enabled),EXPO_PUBLIC_GOOGLE_AUTH_ENABLED:String(enabled)}},
-        setTimeout:(fn,delay)=>{timers.set(delay,fn);return delay;},clearTimeout:id=>timers.delete(id)});
+        setTimeout:(fn,delay)=>{timers.set(delay,fn);return delay;},clearTimeout:id=>timers.delete(id),
+        setInterval:(fn,delay)=>{timers.set(`interval:${delay}`,fn);return `interval:${delay}`;},clearInterval:id=>timers.delete(id)});
     return module.exports;
   }
   return {load,stored,calls,effects,timers,get currentAccount(){return currentAccount;},
     browser:value=>{browser=value;},apple:value=>{apple=value;},failAuth:()=>{authError={message:'provider unavailable'};},
+    reconnect:()=>reconnect(),failWrite:()=>{writeError={message:'offline'};},recover:()=>{readError=null;writeError=null;},
     remote:value=>{rows=value;},failRead:()=>{readError={message:'offline'};}};
 }
 
@@ -159,6 +163,31 @@ test('a failed initial cloud read enables offline play without authorizing uploa
   await cloudSyncRef.current();
   assert.ok(!h.calls.some(call=>call[0]==='write'));
   cleanups.forEach(fn=>fn?.());assert.ok(!h.timers.has(15000));
+});
+
+test('failed cloud uploads retry the latest local save on reconnect and on the fallback timer',async()=>{
+  const h=harness();
+  let save={...h.load('@/utils/game-storage').createDefaultGameSave(),accountOwnerId:'a',hasCompletedOnboarding:true};
+  const cloudSyncRef={current:null};
+  h.load('@/hooks/use-cloud-save-sync').useCloudSaveSync({isGameReady:true,isAuthReady:true,userId:'a',save,
+    getSave:()=>save,setSave:next=>{save=next;},skipNextPersist:{current:false},activeSaveIdRef:{current:'save-a'},cloudSyncRef});
+  const cleanups=h.effects.map(fn=>fn());
+  const settle=()=>new Promise(resolve=>setImmediate(resolve));
+  await settle();
+  h.failWrite();
+  save={...save,pet:{...save.pet,name:'Offline progress'}};
+  await assert.rejects(()=>cloudSyncRef.current(),/upload unavailable/);
+  save={...save,pet:{...save.pet,name:'Latest offline progress'}};
+  h.recover();h.reconnect();await settle();
+  assert.equal(h.calls.filter(call=>call[0]==='write').at(-1)[1].save.pet.name,'Latest offline progress');
+  const count=()=>h.calls.filter(call=>call[0]==='write').length;
+  const afterReconnect=count();
+  h.timers.get('interval:15000')();await settle();
+  assert.equal(count(),afterReconnect,'A healthy idle sync must not upload repeatedly');
+  h.failWrite();await assert.rejects(()=>cloudSyncRef.current());
+  h.recover();h.timers.get('interval:15000')();await settle();
+  assert.equal(count(),afterReconnect+2,'A pending failure retries even without a network event or save change');
+  cleanups.forEach(fn=>fn?.());assert.ok(!h.timers.has('interval:15000'));
 });
 
 test('the Settings recovery action stays behind the parent gate and saves before changing identity',async()=>{

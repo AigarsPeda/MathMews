@@ -12,6 +12,7 @@ function harness({dev=true,environment='production'}={}) {
   const cache=new Map(),stored=new Map(),calls=[],entries=[],orders=[];
   let save,coinBalance=500,revision=1,failAfterDebit=false,queueUnavailable=false,authUser='account-a',storePrice=null,offline=false,forcedRejection=null,walletGate=null,failSettlementSave=false;
   const rewarded=new Set();
+  let reconnect;
   const react={useCallback:fn=>fn,useEffect:()=>{},useLayoutEffect:fn=>fn(),useMemo:fn=>fn(),useRef:value=>({current:value}),useState:value=>[value,()=>{}]};
   const storage={getItem:async key=>stored.get(key)??null,setItem:async(key,value)=>{if(failSettlementSave && key.includes('game-save') && !JSON.parse(value).pendingWalletPurchases?.length){failSettlementSave=false;throw new Error('Disk interrupted');}stored.set(key,value);},removeItem:async key=>stored.delete(key),
     multiSet:async values=>values.forEach(([key,value])=>stored.set(key,value))};
@@ -41,6 +42,7 @@ function harness({dev=true,environment='production'}={}) {
   },from:()=>{const query={select:()=>query,eq:()=>query,order:()=>query,limit:async()=>({data:[...entries].reverse()})};return query;}};
   function load(id,base=process.cwd()) {
     if(id==='react') return react;
+    if(id==='@/hooks/use-network-reconnect') return {useNetworkReconnect:callback=>{reconnect=callback;}};
     if(id==='@/hooks/use-world-clock-now') return {useWorldClockNow:()=>Date.now()};
     if(id==='react-native') return {Platform:{OS:'ios'},AppState:{currentState:'active',addEventListener:()=>({remove(){}})},Dimensions:{get:()=>({width:390,height:844})},PixelRatio:{roundToNearestPixel:n=>n}};
     if(id==='@react-native-async-storage/async-storage') return storage;
@@ -63,7 +65,7 @@ function harness({dev=true,environment='production'}={}) {
   const mount=()=>useServerWallet({userId:authUser,enabled:true,activeSaveIdRef,getSave:()=>save,setSave:fn=>{save=typeof fn==='function'?fn(save):fn;},authorityRef,syncRef:{current:async()=>{}}});
   let api=mount();
   return {get api(){return api;},restoreOldSave(){save=load('@/utils/game-storage').createDefaultGameSave();},restart(){const raw=stored.get(load('@/types/save').GAME_SAVE_STORAGE_KEY); save=raw?JSON.parse(raw):load('@/utils/game-storage').createDefaultGameSave(); authorityRef.current=null;api=mount();},load,calls,stored,orders,activeSaveIdRef,authorityRef,get save(){return save;},get balance(){return coinBalance;},
-    setSave(next){save=next;},setOffline(value=true){offline=value;},rejectWith(error){forcedRejection=error;},failSettlementSave(){failSettlementSave=true;},pauseWallet(){let release;walletGate=new Promise(resolve=>{release=resolve;});return release;},
+    reconnect:()=>reconnect(),setSave(next){save=next;},setOffline(value=true){offline=value;},rejectWith(error){forcedRejection=error;},failSettlementSave(){failSettlementSave=true;},pauseWallet(){let release;walletGate=new Promise(resolve=>{release=resolve;});return release;},
     disconnectAfterDebit(){failAfterDebit=true;},disableRecoveryQueue(){queueUnavailable=true;},adjust(amount){coinBalance=amount;revision++;},setAuthUser(id){authUser=id;},setStorePrice(price){storePrice=price;}};
 }
 
@@ -567,4 +569,22 @@ test('concurrent queued life purchases cannot charge beyond the life limit',asyn
   assert.deepEqual(results,['queued','already_owned']);
   assert.equal(h.save.progress.lives.current,max);assert.equal(h.save.pendingWalletPurchases.length,1);
   assert.equal(h.save.wallet.coins,490);
+});
+
+test('restored connectivity drains queued rewards and purchases without remounting',async()=>{
+  const h=harness();
+  h.setOffline();
+  h.setSave({...h.save,pendingCoinRewards:[{userId:'account-a',environment:'sandbox',puzzleId:'puzzle-1',attemptId:'reconnect-reward',amount:25,at:1}]});
+  assert.equal(await h.api.spend('toy','blueBall',12),'queued');
+  const requestId=h.save.pendingWalletPurchases[0].id;
+  h.setOffline(false);
+  await h.reconnect();
+  assert.equal(h.save.pendingCoinRewards.length,0);
+  assert.equal(h.save.pendingWalletPurchases.length,0);
+  assert.equal(h.balance,513);
+  assert.equal(h.save.progress.toyQuantities.blueBall,1);
+  assert.equal(h.orders[0].requestId,requestId);
+  await h.reconnect();
+  assert.equal(h.balance,513);
+  assert.equal(h.orders.length,1);
 });

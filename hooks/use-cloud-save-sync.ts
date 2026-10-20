@@ -15,6 +15,7 @@ import type { GameSave } from "@/types/save";
 import { getLocalSaveUpdatedAt, restoreGameSaveSnapshot, saveGameSave } from "@/utils/game-storage";
 import { clearActiveSaveId, createSaveId, getActiveSaveId, setActiveSaveId } from "@/utils/save-id";
 import { prepareAccountGame } from '@/services/cloud-save/account-game';
+import { useNetworkReconnect } from '@/hooks/use-network-reconnect';
 import {
   useCallback,
   useEffect,
@@ -27,6 +28,7 @@ import {
 import { AppState } from "react-native";
 
 const PUSH_DEBOUNCE_MS = 3_000;
+const PUSH_RETRY_MS = 15_000;
 
 type UseCloudSaveSyncOptions = {
   isGameReady: boolean;
@@ -62,6 +64,8 @@ export function useCloudSaveSync({
   const saveRef = useRef(save);
   const lastSyncedUserId = useRef<string | null>(null);
   const [syncAttempt, setSyncAttempt] = useState(0);
+  const pendingPush = useRef(false);
+  const pushRevision = useRef(0);
 
   useEffect(() => {
     saveRef.current = save;
@@ -70,6 +74,8 @@ export function useCloudSaveSync({
   useEffect(() => {
     if (userId !== lastSyncedUserId.current) {
       initialSyncDone.current = false;
+      pendingPush.current = false;
+      pushRevision.current++;
       lastSyncedUserId.current = userId;
     }
   }, [userId]);
@@ -88,12 +94,31 @@ export function useCloudSaveSync({
     }
 
     const snapshot = getSave?.() ?? saveRef.current;
+    const revision = ++pushRevision.current;
+    pendingPush.current = true;
     const clientUpdatedAt = await saveGameSave(snapshot);
-    await pushRemoteSave(userId, saveId, {
+    if (lastSyncedUserId.current !== userId || activeSaveIdRef.current !== saveId) return;
+    const uploaded = await pushRemoteSave(userId, saveId, {
       save: snapshot,
       clientUpdatedAt: clientUpdatedAt || Date.now(),
     });
+    if (!uploaded) throw new Error('Cloud save upload unavailable');
+    if (lastSyncedUserId.current === userId && revision === pushRevision.current) pendingPush.current = false;
   }, [activeSaveIdRef, blockCloudPushRef, getSave, userId]);
+
+  const reconnect = useCallback(() => {
+    if (initialSyncDone.current) void flushPush().catch(() => undefined);
+    else setSyncAttempt(value => value + 1);
+  }, [flushPush]);
+  useNetworkReconnect(reconnect, isGameReady && isAuthReady && !!userId && isCloudSaveAvailable());
+
+  useEffect(() => {
+    if (!isGameReady || !isAuthReady || !userId || !isCloudSaveAvailable()) return;
+    const timer = setInterval(() => {
+      if (pendingPush.current && AppState.currentState === 'active') void flushPush().catch(() => undefined);
+    }, PUSH_RETRY_MS);
+    return () => clearInterval(timer);
+  }, [flushPush, isAuthReady, isGameReady, userId]);
 
   useEffect(() => {
     if (!cloudSyncRef) return;
@@ -173,10 +198,11 @@ export function useCloudSaveSync({
       }
 
       if (shouldUpload) {
-        await pushRemoteSave(userId, saveId, {
+        const uploaded = await pushRemoteSave(userId, saveId, {
           save: merged,
           clientUpdatedAt: (await getLocalSaveUpdatedAt()) || Date.now(),
         });
+        if (!uploaded) throw new Error('Initial cloud save upload unavailable');
       }
 
       complete();

@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-20",
+  "result": "Scoped feature checks passed",
+  "lessons": 180,
+  "puzzlesPerLanguage": 1440,
+  "localizedPuzzles": 2880,
+  "states": [
+    "Not started",
+    "In progress, including a first incorrect answer with 0 completed",
+    "Boss left",
+    "Challenge left, optional",
+    "All done",
+    "Locked"
+  ],
+  "ui": {
+    "container": "White card, 2-point peach outline, 16-point radius and inset, 14-point cream gutter",
+    "activities": [
+      "Practice",
+      "Challenge",
+      "Boss"
+    ],
+    "encoding": "Labeled Blender icons, exact counts, filled/outlined segments, check/lock shapes",
+    "narrow": "Stacked activity headers, single-line labels fit down to 85 percent with fixed 17-point line height",
+    "completion": "Practice and boss completion unchanged; challenge optional"
+  },
+  "icons": {
+    "new": [
+      "practice-book",
+      "lesson-medal"
+    ],
+    "renderer": "Blender",
+    "editableSource": "docs/art/app-icons/source/icons.blend",
+    "totalIcons": 82,
+    "bundleMiB": 2.96,
+    "orientationChecks": 50
+  },
+  "persistence": {
+    "field": "attemptedPuzzleIds",
+    "records": "Accepted answers including mistakes, plus timed starts",
+    "normalization": "Distinct known IDs, legacy completed IDs, reset with curriculum version",
+    "effects": "No added completions, rewards, life charges or lesson unlocks",
+    "limitation": "Historic wrong answers without puzzle IDs cannot be reconstructed."
+  },
+  "native": {
+    "device": "iPhone 18 Pro, iOS 27.0 Simulator",
+    "passed": 3,
+    "failed": 0,
+    "fullBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-Ehz0NP/result.xcresult",
+    "finalResponsiveBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-Oa9E5g/result.xcresult",
+    "coverage": [
+      "Mixed states",
+      "Boss and challenge left",
+      "Not started and locked",
+      "Incorrect first answer, save and reopen",
+      "All difficulties",
+      "Narrow Latvian",
+      "Card boundaries"
+    ],
+    "isolation": "Production list in in-memory game and cloned locale providers; no player answers or wallet writes",
+    "cleanup": "Temporary route removed; actual topic list opened afterward and captured after loading.",
+    "productionScreenshot": "lesson-cards-production.png"
+  },
+  "checks": {
+    "curriculum": "passed",
+    "puzzleExperience": "passed",
+    "typecheck": "passed",
+    "targetedESLint": "passed",
+    "iconIntegrityAndBudget": "passed",
+    "BlenderOrientation": "passed",
+    "diffWhitespace": "passed",
+    "detector": "One inherited mint color advisory, no new palette drift"
+  },
+  "broaderGameSuite": {
+    "result": "failed at existing replay-navigation assertion",
+    "file": "scripts/check-pet-stat-animation.mjs:189",
+    "message": "Replay retains puzzle-path navigation",
+    "expected": "path",
+    "actual": "dismissTo",
+    "scope": "The current lesson-list work does not edit app/play.tsx or replay navigation."
+  },
+  "research": [
+    "https://www.nngroup.com/articles/icon-usability/",
+    "https://www.nngroup.com/articles/indicators-validations-notifications/"
+  ],
+  "limitations": [
+    "Native UI verified in a development simulator, not a physical device.",
+    "Android and large accessibility text rendering not certified."
+  ],
+  "finishReview": "ship"
+}

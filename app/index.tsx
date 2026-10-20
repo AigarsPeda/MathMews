@@ -693,6 +693,8 @@ export default function HomeScreen() {
 
   const viewRoom = pet.homeRoomId ?? "livingRoom";
   const editingCurrentRoom = isNativeCatPet && decoratingRoom === viewRoom;
+  const settingsTop = Math.max(moderateScale(24), screenInsets.paddingTop - moderateScale(24));
+  const settingsClearance = settingsTop + moderateScale(44) - screenInsets.paddingTop;
   const stageRooms = Array.from(new Map([
     ...(isNativeCatPet ? preloadedRooms : [pet]), ...(transition ? [transition.outgoing] : []),
   ].map(room => [room.homeRoomId ?? "livingRoom", room])).values());
@@ -700,7 +702,7 @@ export default function HomeScreen() {
   return (
     <View style={[styles.safe, screenInsets]}>
       <View style={styles.screen}>
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: settingsClearance }]}>
           <View style={styles.accountRow}>
             <GameHeaderStats
               layout="home"
@@ -708,14 +710,6 @@ export default function HomeScreen() {
               streak={progress.streak}
               lives={progress.lives}
             />
-            <HeaderChip
-              style={styles.settingsButton}
-              hitSlop={{ left: moderateScale(6), right: moderateScale(6) }}
-              onPress={handleOpenSettings}
-              accessibilityLabel={t("home.a11ySettings")}
-            >
-              <AppIcon name="settings" size={moderateScale(18)} />
-            </HeaderChip>
           </View>
           {isNativeCatPet && <View style={styles.roomToolbar}>
             <RoomActionMenu style={styles.decorationMenu} blocked={!!transition}
@@ -799,6 +793,13 @@ export default function HomeScreen() {
           </RoomControlsTransition>
         </View>
       </View>
+      <HeaderChip
+        style={[styles.settingsButton, { top: settingsTop, right: screenInsets.paddingRight }]}
+        onPress={handleOpenSettings}
+        accessibilityLabel={t("home.a11ySettings")}
+      >
+        <AppIcon name="settings" size={moderateScale(18)} />
+      </HeaderChip>
     </View>
   );
 }
@@ -834,9 +835,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: GameColors.cardBorder,
     borderRadius: moderateScale(16),
-    paddingRight: moderateScale(4),
+    paddingHorizontal: moderateScale(4),
   },
-  settingsButton: { width: moderateScale(32), borderWidth: 0, backgroundColor: 'transparent' },
+  settingsButton: { position: 'absolute', zIndex: 1, width: moderateScale(44), borderWidth: 0, backgroundColor: 'transparent' },
   roomToolbar: { flexDirection: 'row', alignItems: 'stretch', gap: moderateScale(8) },
   decorationMenu: { flex: 1, minWidth: 0, minHeight: 56 },
   modeHeaderContent: { flex: 1, minHeight: 56 },

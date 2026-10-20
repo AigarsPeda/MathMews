@@ -1,0 +1,2918 @@
+[
+  {
+    "id": "train-bridge",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Alder",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Alder and a footbridge to the far platform",
+      "lv": "Alder: tiltiņu uz tālo peronu"
+    },
+    "goal": {
+      "en": "a footbridge to the far platform",
+      "lv": "tiltiņu uz tālo peronu"
+    }
+  },
+  {
+    "id": "train-book",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Ada",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Ada and the rain-soaked timetable",
+      "lv": "Ada: lietus samērcēto sarakstu"
+    },
+    "goal": {
+      "en": "the rain-soaked timetable",
+      "lv": "lietus samērcēto sarakstu"
+    }
+  },
+  {
+    "id": "train-loom",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Arlo",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Arlo and new ribbons for the platform signs",
+      "lv": "Arlo: jaunas lentes peronu zīmēm"
+    },
+    "goal": {
+      "en": "new ribbons for the platform signs",
+      "lv": "jaunas lentes peronu zīmēm"
+    }
+  },
+  {
+    "id": "train-clock",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Aster",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Aster and the station clock before the last departure",
+      "lv": "Aster: stacijas pulksteni pirms pēdējā reisa"
+    },
+    "goal": {
+      "en": "the station clock before the last departure",
+      "lv": "stacijas pulksteni pirms pēdējā reisa"
+    }
+  },
+  {
+    "id": "train-balloon",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Alba",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Alba and a stranded suitcase above the tracks",
+      "lv": "Alba: iestrēgušu koferi virs sliedēm"
+    },
+    "goal": {
+      "en": "a stranded suitcase above the tracks",
+      "lv": "iestrēgušu koferi virs sliedēm"
+    }
+  },
+  {
+    "id": "train-sorter",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Acorn",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Acorn and luggage for the correct carriage",
+      "lv": "Acorn: bagāžu pareizajam vagonam"
+    },
+    "goal": {
+      "en": "luggage for the correct carriage",
+      "lv": "bagāžu pareizajam vagonam"
+    }
+  },
+  {
+    "id": "train-boat",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Amble",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Amble and a ferry across the station canal",
+      "lv": "Amble: prāmi pāri stacijas kanālam"
+    },
+    "goal": {
+      "en": "a ferry across the station canal",
+      "lv": "prāmi pāri stacijas kanālam"
+    }
+  },
+  {
+    "id": "train-fountain",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Anise",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Anise and water for the thirsty engine",
+      "lv": "Anise: ūdeni izslāpušajai lokomotīvei"
+    },
+    "goal": {
+      "en": "water for the thirsty engine",
+      "lv": "ūdeni izslāpušajai lokomotīvei"
+    }
+  },
+  {
+    "id": "train-beacon",
+    "world": "train",
+    "worldIndex": 0,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Axo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Axo and the signal that guides the train home",
+      "lv": "Axo: signālu vilciena mājupceļam"
+    },
+    "goal": {
+      "en": "the signal that guides the train home",
+      "lv": "signālu vilciena mājupceļam"
+    }
+  },
+  {
+    "id": "picnic-bridge",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Bramble",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Bramble and a dry crossing for the picnic baskets",
+      "lv": "Bramble: sausu pāreju piknika groziem"
+    },
+    "goal": {
+      "en": "a dry crossing for the picnic baskets",
+      "lv": "sausu pāreju piknika groziem"
+    }
+  },
+  {
+    "id": "picnic-book",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Bea",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Bea and Grandma’s scattered recipe pages",
+      "lv": "Bea: vecmāmiņas izkaisītās recepšu lapas"
+    },
+    "goal": {
+      "en": "Grandma’s scattered recipe pages",
+      "lv": "vecmāmiņas izkaisītās recepšu lapas"
+    }
+  },
+  {
+    "id": "picnic-loom",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Basil",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Basil and the torn picnic blanket",
+      "lv": "Basil: saplēsto piknika segu"
+    },
+    "goal": {
+      "en": "the torn picnic blanket",
+      "lv": "saplēsto piknika segu"
+    }
+  },
+  {
+    "id": "picnic-clock",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Bix",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Bix and the tea-brewing timer",
+      "lv": "Bix: tējas gatavošanas taimeri"
+    },
+    "goal": {
+      "en": "the tea-brewing timer",
+      "lv": "tējas gatavošanas taimeri"
+    }
+  },
+  {
+    "id": "picnic-balloon",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Boba",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Boba and a lunch basket caught in the branches",
+      "lv": "Boba: zaros iestrēgušu pusdienu grozu"
+    },
+    "goal": {
+      "en": "a lunch basket caught in the branches",
+      "lv": "zaros iestrēgušu pusdienu grozu"
+    }
+  },
+  {
+    "id": "picnic-sorter",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Burr",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Burr and the mixed-up picnic deliveries",
+      "lv": "Burr: sajauktās piknika piegādes"
+    },
+    "goal": {
+      "en": "the mixed-up picnic deliveries",
+      "lv": "sajauktās piknika piegādes"
+    }
+  },
+  {
+    "id": "picnic-boat",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Brook",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Brook and a little boat for friends across the pond",
+      "lv": "Brook: laiviņu draugiem dīķa otrā krastā"
+    },
+    "goal": {
+      "en": "a little boat for friends across the pond",
+      "lv": "laiviņu draugiem dīķa otrā krastā"
+    }
+  },
+  {
+    "id": "picnic-fountain",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Breeze",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Breeze and drinking water for the arriving guests",
+      "lv": "Breeze: dzeramo ūdeni viesiem"
+    },
+    "goal": {
+      "en": "drinking water for the arriving guests",
+      "lv": "dzeramo ūdeni viesiem"
+    }
+  },
+  {
+    "id": "picnic-beacon",
+    "world": "picnic",
+    "worldIndex": 1,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Bepo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Bepo and a lantern for the walk home",
+      "lv": "Bepo: laternu mājupceļam"
+    },
+    "goal": {
+      "en": "a lantern for the walk home",
+      "lv": "laternu mājupceļam"
+    }
+  },
+  {
+    "id": "boats-bridge",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Cedar",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Cedar and the harbor’s broken boarding ramp",
+      "lv": "Cedar: ostas salūzušo iekāpšanas laipu"
+    },
+    "goal": {
+      "en": "the harbor’s broken boarding ramp",
+      "lv": "ostas salūzušo iekāpšanas laipu"
+    }
+  },
+  {
+    "id": "boats-book",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Cleo",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Cleo and the captain’s missing tide notes",
+      "lv": "Cleo: kapteiņa pazudušās paisuma piezīmes"
+    },
+    "goal": {
+      "en": "the captain’s missing tide notes",
+      "lv": "kapteiņa pazudušās paisuma piezīmes"
+    }
+  },
+  {
+    "id": "boats-loom",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Cosmo",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Cosmo and a sail for the rescue boat",
+      "lv": "Cosmo: buru glābšanas laivai"
+    },
+    "goal": {
+      "en": "a sail for the rescue boat",
+      "lv": "buru glābšanas laivai"
+    }
+  },
+  {
+    "id": "boats-clock",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Cricket",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Cricket and the harbor bell’s stuck mechanism",
+      "lv": "Cricket: ostas zvana iestrēgušo mehānismu"
+    },
+    "goal": {
+      "en": "the harbor bell’s stuck mechanism",
+      "lv": "ostas zvana iestrēgušo mehānismu"
+    }
+  },
+  {
+    "id": "boats-balloon",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Coco",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Coco and a rescue parcel for the far bank",
+      "lv": "Coco: glābšanas sūtījumu tālajam krastam"
+    },
+    "goal": {
+      "en": "a rescue parcel for the far bank",
+      "lv": "glābšanas sūtījumu tālajam krastam"
+    }
+  },
+  {
+    "id": "boats-sorter",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Chestnut",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Chestnut and dry supplies for the waiting crews",
+      "lv": "Chestnut: sausus krājumus gaidošajām komandām"
+    },
+    "goal": {
+      "en": "dry supplies for the waiting crews",
+      "lv": "sausus krājumus gaidošajām komandām"
+    }
+  },
+  {
+    "id": "boats-boat",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Coral",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Coral and the paper flotilla’s last journey",
+      "lv": "Coral: papīra flotiles pēdējo braucienu"
+    },
+    "goal": {
+      "en": "the paper flotilla’s last journey",
+      "lv": "papīra flotiles pēdējo braucienu"
+    }
+  },
+  {
+    "id": "boats-fountain",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Cloverleaf",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Cloverleaf and the pump that empties a flooded dock",
+      "lv": "Cloverleaf: sūkni applūdušās piestātnes nosusināšanai"
+    },
+    "goal": {
+      "en": "the pump that empties a flooded dock",
+      "lv": "sūkni applūdušās piestātnes nosusināšanai"
+    }
+  },
+  {
+    "id": "boats-beacon",
+    "world": "boats",
+    "worldIndex": 2,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Coda",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Coda and a lighthouse in the evening fog",
+      "lv": "Coda: bāku vakara miglā"
+    },
+    "goal": {
+      "en": "a lighthouse in the evening fog",
+      "lv": "bāku vakara miglā"
+    }
+  },
+  {
+    "id": "music-bridge",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Drift",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Drift and a bridge to the outdoor bandstand",
+      "lv": "Drift: tiltiņu uz āra estrādi"
+    },
+    "goal": {
+      "en": "a bridge to the outdoor bandstand",
+      "lv": "tiltiņu uz āra estrādi"
+    }
+  },
+  {
+    "id": "music-book",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Dora",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Dora and the windblown concert score",
+      "lv": "Dora: vēja izpūstās koncerta notis"
+    },
+    "goal": {
+      "en": "the windblown concert score",
+      "lv": "vēja izpūstās koncerta notis"
+    }
+  },
+  {
+    "id": "music-loom",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Dax",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Dax and a ribbon curtain for the small stage",
+      "lv": "Dax: lenšu priekškaru mazajai skatuvei"
+    },
+    "goal": {
+      "en": "a ribbon curtain for the small stage",
+      "lv": "lenšu priekškaru mazajai skatuvei"
+    }
+  },
+  {
+    "id": "music-clock",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Doodle",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Doodle and the music box’s silent clockwork",
+      "lv": "Doodle: mūzikas lādītes apklusušo mehānismu"
+    },
+    "goal": {
+      "en": "the music box’s silent clockwork",
+      "lv": "mūzikas lādītes apklusušo mehānismu"
+    }
+  },
+  {
+    "id": "music-balloon",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Daisy",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Daisy and the conductor’s floating music stand",
+      "lv": "Daisy: diriģenta lidojošo nošu statīvu"
+    },
+    "goal": {
+      "en": "the conductor’s floating music stand",
+      "lv": "diriģenta lidojošo nošu statīvu"
+    }
+  },
+  {
+    "id": "music-sorter",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Dimple",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Dimple and the instruments for the right performers",
+      "lv": "Dimple: instrumentus pareizajiem izpildītājiem"
+    },
+    "goal": {
+      "en": "the instruments for the right performers",
+      "lv": "instrumentus pareizajiem izpildītājiem"
+    }
+  },
+  {
+    "id": "music-boat",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Delta",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Delta and a musical boat for the canal parade",
+      "lv": "Delta: muzikālu laivu kanāla parādei"
+    },
+    "goal": {
+      "en": "a musical boat for the canal parade",
+      "lv": "muzikālu laivu kanāla parādei"
+    }
+  },
+  {
+    "id": "music-fountain",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Dew",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Dew and the water chimes’ missing flow",
+      "lv": "Dew: trūkstošo ūdens plūsmu ūdens zvaniņiem"
+    },
+    "goal": {
+      "en": "the water chimes’ missing flow",
+      "lv": "trūkstošo ūdens plūsmu ūdens zvaniņiem"
+    }
+  },
+  {
+    "id": "music-beacon",
+    "world": "music",
+    "worldIndex": 3,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Dito",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Dito and the lights for the evening solo",
+      "lv": "Dito: gaismas vakara solo"
+    },
+    "goal": {
+      "en": "the lights for the evening solo",
+      "lv": "gaismas vakara solo"
+    }
+  },
+  {
+    "id": "shelves-bridge",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Elmo",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Elmo and a ramp to the high toy shelf",
+      "lv": "Elmo: laipu uz augsto rotaļlietu plauktu"
+    },
+    "goal": {
+      "en": "a ramp to the high toy shelf",
+      "lv": "laipu uz augsto rotaļlietu plauktu"
+    }
+  },
+  {
+    "id": "shelves-book",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Etta",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Etta and the lost toy-making instructions",
+      "lv": "Etta: pazudušo rotaļlietu izgatavošanas pamācību"
+    },
+    "goal": {
+      "en": "the lost toy-making instructions",
+      "lv": "pazudušo rotaļlietu izgatavošanas pamācību"
+    }
+  },
+  {
+    "id": "shelves-loom",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Enzo",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Enzo and a soft hammock for the stuffed toys",
+      "lv": "Enzo: mīkstu šūpuļtīklu plīša rotaļlietām"
+    },
+    "goal": {
+      "en": "a soft hammock for the stuffed toys",
+      "lv": "mīkstu šūpuļtīklu plīša rotaļlietām"
+    }
+  },
+  {
+    "id": "shelves-clock",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Echo",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Echo and the wooden robot’s jammed gears",
+      "lv": "Echo: koka robota iestrēgušos zobratus"
+    },
+    "goal": {
+      "en": "the wooden robot’s jammed gears",
+      "lv": "koka robota iestrēgušos zobratus"
+    }
+  },
+  {
+    "id": "shelves-balloon",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Elsa",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Elsa and a toy airship’s first safe flight",
+      "lv": "Elsa: rotaļu dirižabļa pirmo drošo lidojumu"
+    },
+    "goal": {
+      "en": "a toy airship’s first safe flight",
+      "lv": "rotaļu dirižabļa pirmo drošo lidojumu"
+    }
+  },
+  {
+    "id": "shelves-sorter",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Elder",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Elder and the toy orders before collection time",
+      "lv": "Elder: rotaļlietu pasūtījumus pirms saņemšanas"
+    },
+    "goal": {
+      "en": "the toy orders before collection time",
+      "lv": "rotaļlietu pasūtījumus pirms saņemšanas"
+    }
+  },
+  {
+    "id": "shelves-boat",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Estuary",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Estuary and a model boat for the playroom pool",
+      "lv": "Estuary: modelīti rotaļu istabas baseinam"
+    },
+    "goal": {
+      "en": "a model boat for the playroom pool",
+      "lv": "modelīti rotaļu istabas baseinam"
+    }
+  },
+  {
+    "id": "shelves-fountain",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Eddy",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Eddy and the workshop’s paint-washing pump",
+      "lv": "Eddy: darbnīcas otu mazgāšanas sūkni"
+    },
+    "goal": {
+      "en": "the workshop’s paint-washing pump",
+      "lv": "darbnīcas otu mazgāšanas sūkni"
+    }
+  },
+  {
+    "id": "shelves-beacon",
+    "world": "shelves",
+    "worldIndex": 4,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Evo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Evo and a night-light for the playroom",
+      "lv": "Evo: naktslampiņu rotaļu istabai"
+    },
+    "goal": {
+      "en": "a night-light for the playroom",
+      "lv": "naktslampiņu rotaļu istabai"
+    }
+  },
+  {
+    "id": "kite-bridge",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Fennel",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Fennel and a crossing to the windy launch hill",
+      "lv": "Fennel: pāreju uz vējaino palaišanas kalnu"
+    },
+    "goal": {
+      "en": "a crossing to the windy launch hill",
+      "lv": "pāreju uz vējaino palaišanas kalnu"
+    }
+  },
+  {
+    "id": "kite-book",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Faye",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Faye and the flying club’s weather journal",
+      "lv": "Faye: lidotāju kluba laikapstākļu žurnālu"
+    },
+    "goal": {
+      "en": "the flying club’s weather journal",
+      "lv": "lidotāju kluba laikapstākļu žurnālu"
+    }
+  },
+  {
+    "id": "kite-loom",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Flint",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Flint and a patchwork tail for the festival kite",
+      "lv": "Flint: raibu asti svētku pūķim"
+    },
+    "goal": {
+      "en": "a patchwork tail for the festival kite",
+      "lv": "raibu asti svētku pūķim"
+    }
+  },
+  {
+    "id": "kite-clock",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Fizz",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Fizz and the kite reel’s tangled gears",
+      "lv": "Fizz: pūķa spoles sapinušos zobratus"
+    },
+    "goal": {
+      "en": "the kite reel’s tangled gears",
+      "lv": "pūķa spoles sapinušos zobratus"
+    }
+  },
+  {
+    "id": "kite-balloon",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Flora",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Flora and a weather balloon for the flying club",
+      "lv": "Flora: laikapstākļu balonu lidotāju klubam"
+    },
+    "goal": {
+      "en": "a weather balloon for the flying club",
+      "lv": "laikapstākļu balonu lidotāju klubam"
+    }
+  },
+  {
+    "id": "kite-sorter",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Fig",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Fig and the repair kits for each kite team",
+      "lv": "Fig: remonta komplektus katrai komandai"
+    },
+    "goal": {
+      "en": "the repair kits for each kite team",
+      "lv": "remonta komplektus katrai komandai"
+    }
+  },
+  {
+    "id": "kite-boat",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Foam",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Foam and a recovery boat for a water-landed kite",
+      "lv": "Foam: glābšanas laivu ūdenī nolaistam pūķim"
+    },
+    "goal": {
+      "en": "a recovery boat for a water-landed kite",
+      "lv": "glābšanas laivu ūdenī nolaistam pūķim"
+    }
+  },
+  {
+    "id": "kite-fountain",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Fern",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Fern and water for the meadow’s new seedlings",
+      "lv": "Fern: ūdeni pļavas jaunajiem stādiem"
+    },
+    "goal": {
+      "en": "water for the meadow’s new seedlings",
+      "lv": "ūdeni pļavas jaunajiem stādiem"
+    }
+  },
+  {
+    "id": "kite-beacon",
+    "world": "kite",
+    "worldIndex": 5,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Faro",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Faro and a landing beacon before dusk",
+      "lv": "Faro: nosēšanās signālu pirms krēslas"
+    },
+    "goal": {
+      "en": "a landing beacon before dusk",
+      "lv": "nosēšanās signālu pirms krēslas"
+    }
+  },
+  {
+    "id": "tickets-bridge",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Grove",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Grove and a footbridge beside the crowded entrance",
+      "lv": "Grove: tiltiņu pie pārpildītās ieejas"
+    },
+    "goal": {
+      "en": "a footbridge beside the crowded entrance",
+      "lv": "tiltiņu pie pārpildītās ieejas"
+    }
+  },
+  {
+    "id": "tickets-book",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Greta",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Greta and the festival’s muddled guest book",
+      "lv": "Greta: sajaukto svētku viesu grāmatu"
+    },
+    "goal": {
+      "en": "the festival’s muddled guest book",
+      "lv": "sajaukto svētku viesu grāmatu"
+    }
+  },
+  {
+    "id": "tickets-loom",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Gizmo",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Gizmo and a welcome banner for the gate",
+      "lv": "Gizmo: sagaidīšanas karogu vārtiem"
+    },
+    "goal": {
+      "en": "a welcome banner for the gate",
+      "lv": "sagaidīšanas karogu vārtiem"
+    }
+  },
+  {
+    "id": "tickets-clock",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Glim",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Glim and the ticket stamper’s stopped wheels",
+      "lv": "Glim: biļešu spiedoga apstājušos riteņus"
+    },
+    "goal": {
+      "en": "the ticket stamper’s stopped wheels",
+      "lv": "biļešu spiedoga apstājušos riteņus"
+    }
+  },
+  {
+    "id": "tickets-balloon",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Gala",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Gala and a floating sign above the ticket queue",
+      "lv": "Gala: lidojošu zīmi virs biļešu rindas"
+    },
+    "goal": {
+      "en": "a floating sign above the ticket queue",
+      "lv": "lidojošu zīmi virs biļešu rindas"
+    }
+  },
+  {
+    "id": "tickets-sorter",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Gooseberry",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Gooseberry and the envelopes for the right visitors",
+      "lv": "Gooseberry: aploksnes pareizajiem viesiem"
+    },
+    "goal": {
+      "en": "the envelopes for the right visitors",
+      "lv": "aploksnes pareizajiem viesiem"
+    }
+  },
+  {
+    "id": "tickets-boat",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Gully",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Gully and a canal shuttle for the late guests",
+      "lv": "Gully: kanāla laivu nokavējušajiem viesiem"
+    },
+    "goal": {
+      "en": "a canal shuttle for the late guests",
+      "lv": "kanāla laivu nokavējušajiem viesiem"
+    }
+  },
+  {
+    "id": "tickets-fountain",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Ginger",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Ginger and a drinking fountain beside the queue",
+      "lv": "Ginger: dzeramā ūdens strūklaku pie rindas"
+    },
+    "goal": {
+      "en": "a drinking fountain beside the queue",
+      "lv": "dzeramā ūdens strūklaku pie rindas"
+    }
+  },
+  {
+    "id": "tickets-beacon",
+    "world": "tickets",
+    "worldIndex": 6,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Garo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Garo and the final lantern above the entrance",
+      "lv": "Garo: pēdējo laternu virs ieejas"
+    },
+    "goal": {
+      "en": "the final lantern above the entrance",
+      "lv": "pēdējo laternu virs ieejas"
+    }
+  },
+  {
+    "id": "lift-bridge",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Huckle",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Huckle and a crossing over the snowmelt stream",
+      "lv": "Huckle: pāreju pār atkušņa strautu"
+    },
+    "goal": {
+      "en": "a crossing over the snowmelt stream",
+      "lv": "pāreju pār atkušņa strautu"
+    }
+  },
+  {
+    "id": "lift-book",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Hera",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Hera and the rescue team’s damaged supply log",
+      "lv": "Hera: glābēju bojāto krājumu žurnālu"
+    },
+    "goal": {
+      "en": "the rescue team’s damaged supply log",
+      "lv": "glābēju bojāto krājumu žurnālu"
+    }
+  },
+  {
+    "id": "lift-loom",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Hugo",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Hugo and a warm cover for the supply basket",
+      "lv": "Hugo: siltu pārsegu krājumu grozam"
+    },
+    "goal": {
+      "en": "a warm cover for the supply basket",
+      "lv": "siltu pārsegu krājumu grozam"
+    }
+  },
+  {
+    "id": "lift-clock",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Hiccup",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Hiccup and the lift winch’s stubborn gears",
+      "lv": "Hiccup: pacēlāja vinčas spītīgos zobratus"
+    },
+    "goal": {
+      "en": "the lift winch’s stubborn gears",
+      "lv": "pacēlāja vinčas spītīgos zobratus"
+    }
+  },
+  {
+    "id": "lift-balloon",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Honey",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Honey and an emergency balloon for the upper camp",
+      "lv": "Honey: ārkārtas balonu augšējai nometnei"
+    },
+    "goal": {
+      "en": "an emergency balloon for the upper camp",
+      "lv": "ārkārtas balonu augšējai nometnei"
+    }
+  },
+  {
+    "id": "lift-sorter",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Hazelwood",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Hazelwood and the packs for each mountain shelter",
+      "lv": "Hazelwood: somas katram kalnu patvērumam"
+    },
+    "goal": {
+      "en": "the packs for each mountain shelter",
+      "lv": "somas katram kalnu patvērumam"
+    }
+  },
+  {
+    "id": "lift-boat",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Harbor",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Harbor and a supply raft across the glacier lake",
+      "lv": "Harbor: krājumu plostu pāri ledāja ezeram"
+    },
+    "goal": {
+      "en": "a supply raft across the glacier lake",
+      "lv": "krājumu plostu pāri ledāja ezeram"
+    }
+  },
+  {
+    "id": "lift-fountain",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Heather",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Heather and the thaw-water pump at base camp",
+      "lv": "Heather: atkušņa ūdens sūkni nometnē"
+    },
+    "goal": {
+      "en": "the thaw-water pump at base camp",
+      "lv": "atkušņa ūdens sūkni nometnē"
+    }
+  },
+  {
+    "id": "lift-beacon",
+    "world": "lift",
+    "worldIndex": 7,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Hexo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Hexo and a beacon for travelers in the snow",
+      "lv": "Hexo: signālu ceļiniekiem sniegā"
+    },
+    "goal": {
+      "en": "a beacon for travelers in the snow",
+      "lv": "signālu ceļiniekiem sniegā"
+    }
+  },
+  {
+    "id": "theatre-bridge",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Ivo",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Ivo and a walkway to the little orchestra pit",
+      "lv": "Ivo: laipu uz mazo orķestra bedri"
+    },
+    "goal": {
+      "en": "a walkway to the little orchestra pit",
+      "lv": "laipu uz mazo orķestra bedri"
+    }
+  },
+  {
+    "id": "theatre-book",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Iris",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Iris and the actor’s scrambled script",
+      "lv": "Iris: aktiera sajaukto scenāriju"
+    },
+    "goal": {
+      "en": "the actor’s scrambled script",
+      "lv": "aktiera sajaukto scenāriju"
+    }
+  },
+  {
+    "id": "theatre-loom",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Indie",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Indie and the velvet curtain’s missing ribbon",
+      "lv": "Indie: samta priekškara trūkstošo lenti"
+    },
+    "goal": {
+      "en": "the velvet curtain’s missing ribbon",
+      "lv": "samta priekškara trūkstošo lenti"
+    }
+  },
+  {
+    "id": "theatre-clock",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Inka",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Inka and the scenery turntable’s clockwork",
+      "lv": "Inka: dekorāciju grozāmās grīdas mehānismu"
+    },
+    "goal": {
+      "en": "the scenery turntable’s clockwork",
+      "lv": "dekorāciju grozāmās grīdas mehānismu"
+    }
+  },
+  {
+    "id": "theatre-balloon",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Isla",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Isla and a moon balloon for the opening scene",
+      "lv": "Isla: mēness balonu atklāšanas ainai"
+    },
+    "goal": {
+      "en": "a moon balloon for the opening scene",
+      "lv": "mēness balonu atklāšanas ainai"
+    }
+  },
+  {
+    "id": "theatre-sorter",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Inkberry",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Inkberry and the props for the right stage doors",
+      "lv": "Inkberry: rekvizītus pareizajām skatuves durvīm"
+    },
+    "goal": {
+      "en": "the props for the right stage doors",
+      "lv": "rekvizītus pareizajām skatuves durvīm"
+    }
+  },
+  {
+    "id": "theatre-boat",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Inlet",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Inlet and a storybook ship for the stage canal",
+      "lv": "Inlet: pasaku kuģi skatuves kanālam"
+    },
+    "goal": {
+      "en": "a storybook ship for the stage canal",
+      "lv": "pasaku kuģi skatuves kanālam"
+    }
+  },
+  {
+    "id": "theatre-fountain",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Ivory",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Ivory and the rain effect’s dry water pump",
+      "lv": "Ivory: lietus efekta izžuvušo sūkni"
+    },
+    "goal": {
+      "en": "the rain effect’s dry water pump",
+      "lv": "lietus efekta izžuvušo sūkni"
+    }
+  },
+  {
+    "id": "theatre-beacon",
+    "world": "theatre",
+    "worldIndex": 8,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Iota",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Iota and a spotlight for the shy performer",
+      "lv": "Iota: prožektoru kautrīgajam māksliniekam"
+    },
+    "goal": {
+      "en": "a spotlight for the shy performer",
+      "lv": "prožektoru kautrīgajam māksliniekam"
+    }
+  },
+  {
+    "id": "parcels-bridge",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Junco",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Junco and a loading bridge for the delivery carts",
+      "lv": "Junco: iekraušanas laipu piegādes ratiņiem"
+    },
+    "goal": {
+      "en": "a loading bridge for the delivery carts",
+      "lv": "iekraušanas laipu piegādes ratiņiem"
+    }
+  },
+  {
+    "id": "parcels-book",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Juno",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Juno and the courier’s smudged address book",
+      "lv": "Juno: kurjera izsmērēto adrešu grāmatu"
+    },
+    "goal": {
+      "en": "the courier’s smudged address book",
+      "lv": "kurjera izsmērēto adrešu grāmatu"
+    }
+  },
+  {
+    "id": "parcels-loom",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Jasper",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Jasper and secure straps for the fragile parcels",
+      "lv": "Jasper: drošas saites trauslajiem sūtījumiem"
+    },
+    "goal": {
+      "en": "secure straps for the fragile parcels",
+      "lv": "drošas saites trauslajiem sūtījumiem"
+    }
+  },
+  {
+    "id": "parcels-clock",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Jolt",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Jolt and the sorting belt’s missing gear",
+      "lv": "Jolt: šķirošanas lentes trūkstošo zobratu"
+    },
+    "goal": {
+      "en": "the sorting belt’s missing gear",
+      "lv": "šķirošanas lentes trūkstošo zobratu"
+    }
+  },
+  {
+    "id": "parcels-balloon",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Jelly",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Jelly and a balloon delivery across a washed-out road",
+      "lv": "Jelly: balona piegādi pāri izskalotam ceļam"
+    },
+    "goal": {
+      "en": "a balloon delivery across a washed-out road",
+      "lv": "balona piegādi pāri izskalotam ceļam"
+    }
+  },
+  {
+    "id": "parcels-sorter",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Jujube",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Jujube and the parcels for the correct routes",
+      "lv": "Jujube: sūtījumus pareizajiem maršrutiem"
+    },
+    "goal": {
+      "en": "the parcels for the correct routes",
+      "lv": "sūtījumus pareizajiem maršrutiem"
+    }
+  },
+  {
+    "id": "parcels-boat",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Jetty",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Jetty and a mail boat for the island families",
+      "lv": "Jetty: pasta laivu salu ģimenēm"
+    },
+    "goal": {
+      "en": "a mail boat for the island families",
+      "lv": "pasta laivu salu ģimenēm"
+    }
+  },
+  {
+    "id": "parcels-fountain",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Jade",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Jade and the depot’s blocked cleaning pump",
+      "lv": "Jade: stacijas aizsērējušo tīrīšanas sūkni"
+    },
+    "goal": {
+      "en": "the depot’s blocked cleaning pump",
+      "lv": "stacijas aizsērējušo tīrīšanas sūkni"
+    }
+  },
+  {
+    "id": "parcels-beacon",
+    "world": "parcels",
+    "worldIndex": 9,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Jiro",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Jiro and a loading light for the last delivery",
+      "lv": "Jiro: iekraušanas gaismu pēdējai piegādei"
+    },
+    "goal": {
+      "en": "a loading light for the last delivery",
+      "lv": "iekraušanas gaismu pēdējai piegādei"
+    }
+  },
+  {
+    "id": "fountain-bridge",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Koa",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Koa and a safe crossing over the fountain channel",
+      "lv": "Koa: drošu pāreju pār strūklakas kanālu"
+    },
+    "goal": {
+      "en": "a safe crossing over the fountain channel",
+      "lv": "drošu pāreju pār strūklakas kanālu"
+    }
+  },
+  {
+    "id": "fountain-book",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Kiki",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Kiki and the mosaic maker’s faded pattern book",
+      "lv": "Kiki: mozaīkas meistara izbalējušo rakstu grāmatu"
+    },
+    "goal": {
+      "en": "the mosaic maker’s faded pattern book",
+      "lv": "mozaīkas meistara izbalējušo rakstu grāmatu"
+    }
+  },
+  {
+    "id": "fountain-loom",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Kiro",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Kiro and a woven canopy for the tile workers",
+      "lv": "Kiro: austu nojumi flīžu meistariem"
+    },
+    "goal": {
+      "en": "a woven canopy for the tile workers",
+      "lv": "austu nojumi flīžu meistariem"
+    }
+  },
+  {
+    "id": "fountain-clock",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Knot",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Knot and the fountain clock’s missing rhythm",
+      "lv": "Knot: strūklakas pulksteņa trūkstošo ritmu"
+    },
+    "goal": {
+      "en": "the fountain clock’s missing rhythm",
+      "lv": "strūklakas pulksteņa trūkstošo ritmu"
+    }
+  },
+  {
+    "id": "fountain-balloon",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Klara",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Klara and a lifting balloon for a heavy mosaic panel",
+      "lv": "Klara: celšanas balonu smagam mozaīkas panelim"
+    },
+    "goal": {
+      "en": "a lifting balloon for a heavy mosaic panel",
+      "lv": "celšanas balonu smagam mozaīkas panelim"
+    }
+  },
+  {
+    "id": "fountain-sorter",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Kiwi",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Kiwi and the tiles for each part of the fountain",
+      "lv": "Kiwi: flīzes katrai strūklakas daļai"
+    },
+    "goal": {
+      "en": "the tiles for each part of the fountain",
+      "lv": "flīzes katrai strūklakas daļai"
+    }
+  },
+  {
+    "id": "fountain-boat",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Kelpie",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Kelpie and a floating tray for the island planter",
+      "lv": "Kelpie: peldošu paplāti salas stādu kastei"
+    },
+    "goal": {
+      "en": "a floating tray for the island planter",
+      "lv": "peldošu paplāti salas stādu kastei"
+    }
+  },
+  {
+    "id": "fountain-fountain",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Kelp",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Kelp and the dry fountain’s returning water",
+      "lv": "Kelp: ūdeni izžuvušajai strūklakai"
+    },
+    "goal": {
+      "en": "the dry fountain’s returning water",
+      "lv": "ūdeni izžuvušajai strūklakai"
+    }
+  },
+  {
+    "id": "fountain-beacon",
+    "world": "fountain",
+    "worldIndex": 10,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Kubo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Kubo and a colored light for the restored mosaic",
+      "lv": "Kubo: krāsainu gaismu atjaunotajai mozaīkai"
+    },
+    "goal": {
+      "en": "a colored light for the restored mosaic",
+      "lv": "krāsainu gaismu atjaunotajai mozaīkai"
+    }
+  },
+  {
+    "id": "lanterns-bridge",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Larch",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Larch and a bridge above the muddy woodland path",
+      "lv": "Larch: tiltiņu pār dubļaino meža taku"
+    },
+    "goal": {
+      "en": "a bridge above the muddy woodland path",
+      "lv": "tiltiņu pār dubļaino meža taku"
+    }
+  },
+  {
+    "id": "lanterns-book",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Luma",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Luma and the ranger’s rain-damaged trail guide",
+      "lv": "Luma: mežsarga lietū bojāto taku ceļvedi"
+    },
+    "goal": {
+      "en": "the ranger’s rain-damaged trail guide",
+      "lv": "mežsarga lietū bojāto taku ceļvedi"
+    }
+  },
+  {
+    "id": "lanterns-loom",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Loki",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Loki and reflective ribbons for the dark turns",
+      "lv": "Loki: atstarojošas lentes tumšajiem pagriezieniem"
+    },
+    "goal": {
+      "en": "reflective ribbons for the dark turns",
+      "lv": "atstarojošas lentes tumšajiem pagriezieniem"
+    }
+  },
+  {
+    "id": "lanterns-clock",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Lint",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Lint and the trail gate’s stopped clockwork",
+      "lv": "Lint: takas vārtu apstājušos mehānismu"
+    },
+    "goal": {
+      "en": "the trail gate’s stopped clockwork",
+      "lv": "takas vārtu apstājušos mehānismu"
+    }
+  },
+  {
+    "id": "lanterns-balloon",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Lily",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Lily and a supply balloon above the tangled branches",
+      "lv": "Lily: krājumu balonu virs sapinušiem zariem"
+    },
+    "goal": {
+      "en": "a supply balloon above the tangled branches",
+      "lv": "krājumu balonu virs sapinušiem zariem"
+    }
+  },
+  {
+    "id": "lanterns-sorter",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Lychee",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Lychee and the lantern batteries for each shelter",
+      "lv": "Lychee: laternu baterijas katram patvērumam"
+    },
+    "goal": {
+      "en": "the lantern batteries for each shelter",
+      "lv": "laternu baterijas katram patvērumam"
+    }
+  },
+  {
+    "id": "lanterns-boat",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Lagoon",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Lagoon and a little ferry for the marsh crossing",
+      "lv": "Lagoon: prāmi purva pārejai"
+    },
+    "goal": {
+      "en": "a little ferry for the marsh crossing",
+      "lv": "prāmi purva pārejai"
+    }
+  },
+  {
+    "id": "lanterns-fountain",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Lotus",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Lotus and fresh water at the forest rest stop",
+      "lv": "Lotus: svaigu ūdeni meža atpūtas vietai"
+    },
+    "goal": {
+      "en": "fresh water at the forest rest stop",
+      "lv": "svaigu ūdeni meža atpūtas vietai"
+    }
+  },
+  {
+    "id": "lanterns-beacon",
+    "world": "lanterns",
+    "worldIndex": 11,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Leto",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Leto and the farthest lantern on the trail",
+      "lv": "Leto: tālāko laternu uz takas"
+    },
+    "goal": {
+      "en": "the farthest lantern on the trail",
+      "lv": "tālāko laternu uz takas"
+    }
+  },
+  {
+    "id": "observatory-bridge",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Marlow",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Marlow and a walkway to the telescope balcony",
+      "lv": "Marlow: laipu uz teleskopa balkonu"
+    },
+    "goal": {
+      "en": "a walkway to the telescope balcony",
+      "lv": "laipu uz teleskopa balkonu"
+    }
+  },
+  {
+    "id": "observatory-book",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Mira",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Mira and the astronomer’s scattered star atlas",
+      "lv": "Mira: astronoma izkaisīto zvaigžņu atlantu"
+    },
+    "goal": {
+      "en": "the astronomer’s scattered star atlas",
+      "lv": "astronoma izkaisīto zvaigžņu atlantu"
+    }
+  },
+  {
+    "id": "observatory-loom",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Milo",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Milo and a protective wrap for the telescope lens",
+      "lv": "Milo: aizsargpārsegu teleskopa lēcai"
+    },
+    "goal": {
+      "en": "a protective wrap for the telescope lens",
+      "lv": "aizsargpārsegu teleskopa lēcai"
+    }
+  },
+  {
+    "id": "observatory-clock",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Midge",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Midge and the star tracker’s slipping gears",
+      "lv": "Midge: zvaigžņu sekotāja slīdošos zobratus"
+    },
+    "goal": {
+      "en": "the star tracker’s slipping gears",
+      "lv": "zvaigžņu sekotāja slīdošos zobratus"
+    }
+  },
+  {
+    "id": "observatory-balloon",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Momo",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Momo and a weather balloon before the comet arrives",
+      "lv": "Momo: laikapstākļu balonu pirms komētas"
+    },
+    "goal": {
+      "en": "a weather balloon before the comet arrives",
+      "lv": "laikapstākļu balonu pirms komētas"
+    }
+  },
+  {
+    "id": "observatory-sorter",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Mulberry",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Mulberry and the lenses for the right instruments",
+      "lv": "Mulberry: lēcas pareizajām ierīcēm"
+    },
+    "goal": {
+      "en": "the lenses for the right instruments",
+      "lv": "lēcas pareizajām ierīcēm"
+    }
+  },
+  {
+    "id": "observatory-boat",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Marina",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Marina and a solar-sail model for the planetarium",
+      "lv": "Marina: saules buras modeli planetārijam"
+    },
+    "goal": {
+      "en": "a solar-sail model for the planetarium",
+      "lv": "saules buras modeli planetārijam"
+    }
+  },
+  {
+    "id": "observatory-fountain",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Mint",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Mint and cooling water for the tracking motor",
+      "lv": "Mint: dzesēšanas ūdeni sekošanas motoram"
+    },
+    "goal": {
+      "en": "cooling water for the tracking motor",
+      "lv": "dzesēšanas ūdeni sekošanas motoram"
+    }
+  },
+  {
+    "id": "observatory-beacon",
+    "world": "observatory",
+    "worldIndex": 12,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Mako",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Mako and the observatory’s missing guide star",
+      "lv": "Mako: observatorijas trūkstošo ceļa zvaigzni"
+    },
+    "goal": {
+      "en": "the observatory’s missing guide star",
+      "lv": "observatorijas trūkstošo ceļa zvaigzni"
+    }
+  },
+  {
+    "id": "garden-bridge",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Nori",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Nori and a path between the raised beds",
+      "lv": "Nori: taku starp augstajām dobēm"
+    },
+    "goal": {
+      "en": "a path between the raised beds",
+      "lv": "taku starp augstajām dobēm"
+    }
+  },
+  {
+    "id": "garden-book",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Nala",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Nala and the gardener’s missing planting diary",
+      "lv": "Nala: dārznieka pazudušo stādīšanas dienasgrāmatu"
+    },
+    "goal": {
+      "en": "the gardener’s missing planting diary",
+      "lv": "dārznieka pazudušo stādīšanas dienasgrāmatu"
+    }
+  },
+  {
+    "id": "garden-loom",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Nico",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Nico and a shade cloth for the thirsty seedlings",
+      "lv": "Nico: ēnas audumu izslāpušajiem stādiem"
+    },
+    "goal": {
+      "en": "a shade cloth for the thirsty seedlings",
+      "lv": "ēnas audumu izslāpušajiem stādiem"
+    }
+  },
+  {
+    "id": "garden-clock",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Nim",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Nim and the greenhouse vent’s jammed wheel",
+      "lv": "Nim: siltumnīcas lūkas iestrēgušo riteni"
+    },
+    "goal": {
+      "en": "the greenhouse vent’s jammed wheel",
+      "lv": "siltumnīcas lūkas iestrēgušo riteni"
+    }
+  },
+  {
+    "id": "garden-balloon",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Nina",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Nina and a seed basket for the neighboring roof",
+      "lv": "Nina: sēklu grozu blakus jumtam"
+    },
+    "goal": {
+      "en": "a seed basket for the neighboring roof",
+      "lv": "sēklu grozu blakus jumtam"
+    }
+  },
+  {
+    "id": "garden-sorter",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Nutmeg",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Nutmeg and the seed packets for the correct beds",
+      "lv": "Nutmeg: sēklu paciņas pareizajām dobēm"
+    },
+    "goal": {
+      "en": "the seed packets for the correct beds",
+      "lv": "sēklu paciņas pareizajām dobēm"
+    }
+  },
+  {
+    "id": "garden-boat",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Nacre",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Nacre and a floating planter for the garden pond",
+      "lv": "Nacre: peldošu stādu kasti dārza dīķim"
+    },
+    "goal": {
+      "en": "a floating planter for the garden pond",
+      "lv": "peldošu stādu kasti dārza dīķim"
+    }
+  },
+  {
+    "id": "garden-fountain",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Nettle",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Nettle and the garden’s dry irrigation line",
+      "lv": "Nettle: dārza sauso laistīšanas līniju"
+    },
+    "goal": {
+      "en": "the garden’s dry irrigation line",
+      "lv": "dārza sauso laistīšanas līniju"
+    }
+  },
+  {
+    "id": "garden-beacon",
+    "world": "garden",
+    "worldIndex": 13,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Nexo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Nexo and a warm light for the late seedlings",
+      "lv": "Nexo: siltu gaismu vēlajiem stādiem"
+    },
+    "goal": {
+      "en": "a warm light for the late seedlings",
+      "lv": "siltu gaismu vēlajiem stādiem"
+    }
+  },
+  {
+    "id": "signal-bridge",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Oakley",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Oakley and a maintenance bridge to the tower",
+      "lv": "Oakley: apkopes tiltiņu uz torni"
+    },
+    "goal": {
+      "en": "a maintenance bridge to the tower",
+      "lv": "apkopes tiltiņu uz torni"
+    }
+  },
+  {
+    "id": "signal-book",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Opal",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Opal and the operator’s incomplete message book",
+      "lv": "Opal: operatora nepabeigto ziņu grāmatu"
+    },
+    "goal": {
+      "en": "the operator’s incomplete message book",
+      "lv": "operatora nepabeigto ziņu grāmatu"
+    }
+  },
+  {
+    "id": "signal-loom",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Orion",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Orion and a new flag for the silent semaphore",
+      "lv": "Orion: jaunu karogu klusajam semaforam"
+    },
+    "goal": {
+      "en": "a new flag for the silent semaphore",
+      "lv": "jaunu karogu klusajam semaforam"
+    }
+  },
+  {
+    "id": "signal-clock",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Odo",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Odo and the signal drum’s uneven gears",
+      "lv": "Odo: signālu cilindra nevienmērīgos zobratus"
+    },
+    "goal": {
+      "en": "the signal drum’s uneven gears",
+      "lv": "signālu cilindra nevienmērīgos zobratus"
+    }
+  },
+  {
+    "id": "signal-balloon",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Oona",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Oona and a replacement radio above the steep valley",
+      "lv": "Oona: maiņas radio virs stāvās ielejas"
+    },
+    "goal": {
+      "en": "a replacement radio above the steep valley",
+      "lv": "maiņas radio virs stāvās ielejas"
+    }
+  },
+  {
+    "id": "signal-sorter",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Olive",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Olive and the message capsules for the correct villages",
+      "lv": "Olive: ziņu kapsulas pareizajiem ciemiem"
+    },
+    "goal": {
+      "en": "the message capsules for the correct villages",
+      "lv": "ziņu kapsulas pareizajiem ciemiem"
+    }
+  },
+  {
+    "id": "signal-boat",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Ocean",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Ocean and a radio boat for the river settlement",
+      "lv": "Ocean: radio laivu upes apmetnei"
+    },
+    "goal": {
+      "en": "a radio boat for the river settlement",
+      "lv": "radio laivu upes apmetnei"
+    }
+  },
+  {
+    "id": "signal-fountain",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Oregano",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Oregano and cooling water for the transmitter",
+      "lv": "Oregano: dzesēšanas ūdeni raidītājam"
+    },
+    "goal": {
+      "en": "cooling water for the transmitter",
+      "lv": "dzesēšanas ūdeni raidītājam"
+    }
+  },
+  {
+    "id": "signal-beacon",
+    "world": "signal",
+    "worldIndex": 14,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Oki",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Oki and the first clear signal after the storm",
+      "lv": "Oki: pirmo skaidro signālu pēc vētras"
+    },
+    "goal": {
+      "en": "the first clear signal after the storm",
+      "lv": "pirmo skaidro signālu pēc vētras"
+    }
+  },
+  {
+    "id": "shop-bridge",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Pebble",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Pebble and an entrance ramp for the toy carts",
+      "lv": "Pebble: ieejas laipu rotaļlietu ratiņiem"
+    },
+    "goal": {
+      "en": "an entrance ramp for the toy carts",
+      "lv": "ieejas laipu rotaļlietu ratiņiem"
+    }
+  },
+  {
+    "id": "shop-book",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Pia",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Pia and the shopkeeper’s untidy order book",
+      "lv": "Pia: veikalnieka nesakārtoto pasūtījumu grāmatu"
+    },
+    "goal": {
+      "en": "the shopkeeper’s untidy order book",
+      "lv": "veikalnieka nesakārtoto pasūtījumu grāmatu"
+    }
+  },
+  {
+    "id": "shop-loom",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Pico",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Pico and gift ribbons for the surprise boxes",
+      "lv": "Pico: dāvanu lentes pārsteigumu kastēm"
+    },
+    "goal": {
+      "en": "gift ribbons for the surprise boxes",
+      "lv": "dāvanu lentes pārsteigumu kastēm"
+    }
+  },
+  {
+    "id": "shop-clock",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Pipkin",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Pipkin and the toy carousel’s missing drive",
+      "lv": "Pipkin: rotaļu karuseļa trūkstošo piedziņu"
+    },
+    "goal": {
+      "en": "the toy carousel’s missing drive",
+      "lv": "rotaļu karuseļa trūkstošo piedziņu"
+    }
+  },
+  {
+    "id": "shop-balloon",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Poppy",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Poppy and a floating display above the storefront",
+      "lv": "Poppy: peldošu izstādi virs skatloga"
+    },
+    "goal": {
+      "en": "a floating display above the storefront",
+      "lv": "peldošu izstādi virs skatloga"
+    }
+  },
+  {
+    "id": "shop-sorter",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Prune",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Prune and the orders for the right customers",
+      "lv": "Prune: pasūtījumus pareizajiem pircējiem"
+    },
+    "goal": {
+      "en": "the orders for the right customers",
+      "lv": "pasūtījumus pareizajiem pircējiem"
+    }
+  },
+  {
+    "id": "shop-boat",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Puddle",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Puddle and a toy sailboat for the window display",
+      "lv": "Puddle: rotaļu buru laivu skatlogam"
+    },
+    "goal": {
+      "en": "a toy sailboat for the window display",
+      "lv": "rotaļu buru laivu skatlogam"
+    }
+  },
+  {
+    "id": "shop-fountain",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Petal",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Petal and the window fountain’s empty pipes",
+      "lv": "Petal: skatloga strūklakas tukšās caurules"
+    },
+    "goal": {
+      "en": "the window fountain’s empty pipes",
+      "lv": "skatloga strūklakas tukšās caurules"
+    }
+  },
+  {
+    "id": "shop-beacon",
+    "world": "shop",
+    "worldIndex": 15,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Polo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Polo and the shop’s first illuminated sign",
+      "lv": "Polo: veikala pirmo izgaismoto izkārtni"
+    },
+    "goal": {
+      "en": "the shop’s first illuminated sign",
+      "lv": "veikala pirmo izgaismoto izkārtni"
+    }
+  },
+  {
+    "id": "shelter-bridge",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Quill",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Quill and a safe walkway between the rooftops",
+      "lv": "Quill: drošu laipu starp jumtiem"
+    },
+    "goal": {
+      "en": "a safe walkway between the rooftops",
+      "lv": "drošu laipu starp jumtiem"
+    }
+  },
+  {
+    "id": "shelter-book",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Rhea",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Rhea and the rescue leader’s damaged shelter plan",
+      "lv": "Rhea: glābēju vadītāja bojāto patvēruma plānu"
+    },
+    "goal": {
+      "en": "the rescue leader’s damaged shelter plan",
+      "lv": "glābēju vadītāja bojāto patvēruma plānu"
+    }
+  },
+  {
+    "id": "shelter-loom",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Rolo",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Rolo and warm bedding for the rescued birds",
+      "lv": "Rolo: siltu guļvietu izglābtajiem putniem"
+    },
+    "goal": {
+      "en": "warm bedding for the rescued birds",
+      "lv": "siltu guļvietu izglābtajiem putniem"
+    }
+  },
+  {
+    "id": "shelter-clock",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Rivet",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Rivet and the shelter shutter’s stuck handle",
+      "lv": "Rivet: patvēruma slēģa iestrēgušo rokturi"
+    },
+    "goal": {
+      "en": "the shelter shutter’s stuck handle",
+      "lv": "patvēruma slēģa iestrēgušo rokturi"
+    }
+  },
+  {
+    "id": "shelter-balloon",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Queenie",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Queenie and a rescue basket for a nearby balcony",
+      "lv": "Queenie: glābšanas grozu tuvākajam balkonam"
+    },
+    "goal": {
+      "en": "a rescue basket for a nearby balcony",
+      "lv": "glābšanas grozu tuvākajam balkonam"
+    }
+  },
+  {
+    "id": "shelter-sorter",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Quince",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Quince and the supplies for each resting place",
+      "lv": "Quince: krājumus katrai atpūtas vietai"
+    },
+    "goal": {
+      "en": "the supplies for each resting place",
+      "lv": "krājumus katrai atpūtas vietai"
+    }
+  },
+  {
+    "id": "shelter-boat",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Ripple",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Ripple and a rescue raft for the flooded courtyard",
+      "lv": "Ripple: glābšanas plostu applūdušajam pagalmam"
+    },
+    "goal": {
+      "en": "a rescue raft for the flooded courtyard",
+      "lv": "glābšanas plostu applūdušajam pagalmam"
+    }
+  },
+  {
+    "id": "shelter-fountain",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Rain",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Rain and drinking water for the recovering birds",
+      "lv": "Rain: dzeramo ūdeni atlabstošajiem putniem"
+    },
+    "goal": {
+      "en": "drinking water for the recovering birds",
+      "lv": "dzeramo ūdeni atlabstošajiem putniem"
+    }
+  },
+  {
+    "id": "shelter-beacon",
+    "world": "shelter",
+    "worldIndex": 16,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Qino",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Qino and a rooftop light for the rescue crew",
+      "lv": "Qino: jumta gaismu glābēju komandai"
+    },
+    "goal": {
+      "en": "a rooftop light for the rescue crew",
+      "lv": "jumta gaismu glābēju komandai"
+    }
+  },
+  {
+    "id": "vault-bridge",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "bridge",
+    "animal": "beaver",
+    "name": "Reed",
+    "tool": "trowel",
+    "ending": "walk",
+    "title": {
+      "en": "Reed and a rolling walkway to the high shelves",
+      "lv": "Reed: ripojošu laipu uz augstajiem plauktiem"
+    },
+    "goal": {
+      "en": "a rolling walkway to the high shelves",
+      "lv": "ripojošu laipu uz augstajiem plauktiem"
+    }
+  },
+  {
+    "id": "vault-book",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "book",
+    "animal": "owl",
+    "name": "Sora",
+    "tool": "chart",
+    "ending": "surprised",
+    "title": {
+      "en": "Sora and the archive’s scrambled memory album",
+      "lv": "Sora: arhīva sajaukto atmiņu albumu"
+    },
+    "goal": {
+      "en": "the archive’s scrambled memory album",
+      "lv": "arhīva sajaukto atmiņu albumu"
+    }
+  },
+  {
+    "id": "vault-loom",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "loom",
+    "animal": "fox",
+    "name": "Sage",
+    "tool": "spool",
+    "ending": "dance",
+    "title": {
+      "en": "Sage and a cloth cover for the oldest book",
+      "lv": "Sage: auduma pārsegu vecākajai grāmatai"
+    },
+    "goal": {
+      "en": "a cloth cover for the oldest book",
+      "lv": "auduma pārsegu vecākajai grāmatai"
+    }
+  },
+  {
+    "id": "vault-clock",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "clock",
+    "animal": "mouse",
+    "name": "Speck",
+    "tool": "key",
+    "ending": "correct",
+    "title": {
+      "en": "Speck and the archive door’s locked gear train",
+      "lv": "Speck: arhīva durvju nobloķētos zobratus"
+    },
+    "goal": {
+      "en": "the archive door’s locked gear train",
+      "lv": "arhīva durvju nobloķētos zobratus"
+    }
+  },
+  {
+    "id": "vault-balloon",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "balloon",
+    "animal": "rabbit",
+    "name": "Rosa",
+    "tool": "flag",
+    "ending": "excited",
+    "title": {
+      "en": "Rosa and a lifting balloon for a fragile globe",
+      "lv": "Rosa: celšanas balonu trauslam globusam"
+    },
+    "goal": {
+      "en": "a lifting balloon for a fragile globe",
+      "lv": "celšanas balonu trauslam globusam"
+    }
+  },
+  {
+    "id": "vault-sorter",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "sorter",
+    "animal": "hedgehog",
+    "name": "Rosehip",
+    "tool": "parcel",
+    "ending": "walk",
+    "title": {
+      "en": "Rosehip and the keepsakes for the right drawers",
+      "lv": "Rosehip: piemiņas lietas pareizajām atvilktnēm"
+    },
+    "goal": {
+      "en": "the keepsakes for the right drawers",
+      "lv": "piemiņas lietas pareizajām atvilktnēm"
+    }
+  },
+  {
+    "id": "vault-boat",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "boat",
+    "animal": "turtle",
+    "name": "Shoal",
+    "tool": "flag",
+    "ending": "correct",
+    "title": {
+      "en": "Shoal and a model ship for the village history exhibit",
+      "lv": "Shoal: kuģa modeli ciema vēstures izstādei"
+    },
+    "goal": {
+      "en": "a model ship for the village history exhibit",
+      "lv": "kuģa modeli ciema vēstures izstādei"
+    }
+  },
+  {
+    "id": "vault-fountain",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "fountain",
+    "animal": "otter",
+    "name": "Sprout",
+    "tool": "watering",
+    "ending": "excited",
+    "title": {
+      "en": "Sprout and the archive garden’s silent water feature",
+      "lv": "Sprout: arhīva dārza kluso ūdens rotājumu"
+    },
+    "goal": {
+      "en": "the archive garden’s silent water feature",
+      "lv": "arhīva dārza kluso ūdens rotājumu"
+    }
+  },
+  {
+    "id": "vault-beacon",
+    "world": "vault",
+    "worldIndex": 17,
+    "mechanism": "beacon",
+    "animal": "robot",
+    "name": "Rumo",
+    "tool": "radio",
+    "ending": "surprised",
+    "title": {
+      "en": "Rumo and a reading light for the recovered diary",
+      "lv": "Rumo: lasīšanas gaismu atgūtajai dienasgrāmatai"
+    },
+    "goal": {
+      "en": "a reading light for the recovered diary",
+      "lv": "lasīšanas gaismu atgūtajai dienasgrāmatai"
+    }
+  }
+]
