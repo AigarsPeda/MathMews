@@ -5,7 +5,8 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*', '.expo/**'],
+    // QA captures are archived browser-console snippets, not project source.
+    ignores: ['dist/*', '.expo/**', 'docs/qa/**'],
   },
   {
     files: ['constants/native-model-sources.ts'],

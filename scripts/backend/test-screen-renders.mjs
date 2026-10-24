@@ -90,11 +90,16 @@ async function harness(screen = 'store', compiled = false) {
       const room = `stageRenders:${options.homeRoomId}`; counts.set(room, (counts.get(room) ?? 0) + 1);
       return stageActivity;
     } },
-    'react-native-filament': { useBoxShape: (...size) => React.useMemo(() => size, size),
+    'react-native-filament': {
+      // Mirror the native hook's variable-length dependency list.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      useBoxShape: (...size) => React.useMemo(() => size, size),
       useRigidBody: body => {
         counts.set('rigidBody', (counts.get('rigidBody') ?? 0) + 1); props.set(`body:${body.id}`, body);
         React.useEffect(() => { calls.push(['addBody', body.id, body.world]);
           return () => { calls.push(['removeBody', body.id, body.world]); };
+        // The mocked native shape origin has a variable number of coordinates.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [body.id, body.world, body.shape, ...body.origin]);
       } },
     'react-native-worklets-core': { useSharedValue: value => React.useState(() => shared(value))[0] },
@@ -147,13 +152,20 @@ async function harness(screen = 'store', compiled = false) {
       useModel: () => { counts.set('modelHooks', (counts.get('modelHooks') ?? 0) + 1); return { state: 'loaded', asset, rootEntity: entity }; },
       useLightEntity: (_manager, config) => {
         counts.set('lightHooks', (counts.get('lightHooks') ?? 0) + 1);
+        // Keep the mock entity stable when only its pose changes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         return React.useMemo(() => ({ config }), [config.intensity, config.castShadows]);
       },
       useEntityInScene() {},
+      // Match the native worklet hook's mount-only effect.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       useWorkletEffect: fn => React.useEffect(fn, []),
       RenderCallbackContext: { useRenderCallback: (fn, deps) => {
         const key = React.useRef({});
-        React.useEffect(() => { drawFrames.set(key.current, fn); return () => drawFrames.delete(key.current); }, deps);
+        const token = key.current;
+        // The native callback controls when its dependencies change.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        React.useEffect(() => { drawFrames.set(token, fn); return () => drawFrames.delete(token); }, deps);
       } },
     });
   }

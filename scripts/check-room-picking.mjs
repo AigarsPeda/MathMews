@@ -88,6 +88,8 @@ const React = {
     if (!old || deps.some((value, j) => !Object.is(value, old.deps[j]))) slots[i] = { value: fn(), deps };
     return slots[i].value;
   },
+  // This dispatcher intentionally forwards the caller's dependency list.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useCallback: (fn, deps) => React.useMemo(() => fn, deps),
   useLayoutEffect: fn => layouts.push(fn), useEffect: fn => effects.push(fn),
 };
@@ -103,7 +105,7 @@ const { NativeRoomEditor } = compile('components/pet/NativeRoomEditor.tsx', {
   react: React, 'react/jsx-runtime': { jsx: (type, props) => ({ type, props }) },
   'react-native': { View: 'View', AppState: { addEventListener: (_event, fn) => { background = fn; return { remove() {} }; } }, StyleSheet: { absoluteFill: {} } },
   'react-native-gesture-handler': { Gesture, GestureDetector: 'GestureDetector' },
-  'react-native-reanimated': { useSharedValue: value => React.useMemo(() => shared(value), []) },
+  'react-native-reanimated': { useSharedValue: value => React.useState(() => shared(value))[0] },
   'react-native-worklets': { scheduleOnRN: (fn, ...args) => rn.push(() => fn(...args)) },
   '@/lib/app-diagnostics': { reportAppError: (_tag, error) => errors.push(error) },
   '@/utils/room-drag-controller': { createRoomDragController },
