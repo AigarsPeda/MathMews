@@ -1,0 +1,120 @@
+{
+  "environment": "iOS 27 simulator, Expo development build, React Compiler. Short native pointer drags; not a release-device FPS benchmark.",
+  "baseCommit": "34db422e74b9e52567997cf9850163b1f40f1ec9",
+  "before": {
+    "durationMs": 17218.346333026886,
+    "commits": [
+      {
+        "atMs": 8507.2208340168,
+        "stageInclusiveMs": [
+          51.779
+        ],
+        "stageChanges": [
+          {
+            "context": false,
+            "didHooksChange": true,
+            "hooks": [
+              34,
+              35,
+              36
+            ],
+            "isFirstMount": false,
+            "props": [],
+            "state": null
+          }
+        ],
+        "draggableRenders": 16,
+        "nativeSceneRenders": 0
+      },
+      {
+        "atMs": 12464.875959038734,
+        "stageInclusiveMs": [
+          27.603
+        ],
+        "stageChanges": [
+          {
+            "context": false,
+            "didHooksChange": true,
+            "hooks": [
+              34,
+              35,
+              36
+            ],
+            "isFirstMount": false,
+            "props": [],
+            "state": null
+          }
+        ],
+        "draggableRenders": 16,
+        "nativeSceneRenders": 0
+      }
+    ]
+  },
+  "after": {
+    "durationMs": 22487.99037504196,
+    "commits": [
+      {
+        "atMs": 3834.748582959175,
+        "stageInclusiveMs": [
+          36.628
+        ],
+        "stageChanges": [
+          {
+            "context": false,
+            "didHooksChange": true,
+            "hooks": [
+              34,
+              36
+            ],
+            "isFirstMount": false,
+            "props": [],
+            "state": null
+          }
+        ],
+        "draggableRenders": 1,
+        "nativeSceneRenders": 0
+      },
+      {
+        "atMs": 13414.004040956497,
+        "stageInclusiveMs": [
+          11.935
+        ],
+        "stageChanges": [
+          {
+            "context": false,
+            "didHooksChange": true,
+            "hooks": [
+              34
+            ],
+            "isFirstMount": false,
+            "props": [],
+            "state": null
+          }
+        ],
+        "draggableRenders": 1,
+        "nativeSceneRenders": 0
+      },
+      {
+        "atMs": 18147.452499985695,
+        "stageInclusiveMs": [
+          12.175
+        ],
+        "stageChanges": [
+          {
+            "context": false,
+            "didHooksChange": true,
+            "hooks": [
+              34,
+              36
+            ],
+            "isFirstMount": false,
+            "props": [],
+            "state": null
+          }
+        ],
+        "draggableRenders": 1,
+        "nativeSceneRenders": 0
+      }
+    ]
+  }
+}

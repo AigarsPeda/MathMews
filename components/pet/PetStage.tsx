@@ -95,7 +95,7 @@ import {
 } from "@/utils/room-layer-order";
 import { moderateScale } from "@/utils/scale";
 import { getRoomObjectDepthAnchor, isRoomBackgroundDecoration } from "@/utils/room-depth";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Animated, { useAnimatedStyle, useDerivedValue, useReducedMotion, useSharedValue } from "react-native-reanimated";
 import {
@@ -1245,6 +1245,8 @@ export function PetStage({
 
   };
 
+  // Editing options live in the selected-item dock, not on each hit target.
+  const roomItemMenuActions = decorating ? undefined : buildRoomItemMenuActions;
   const roomItemDragProps = useCallback(
     (item: RoomLayerItem, layerZIndex: number) => {
       const manageable = canManageRoomItem(item);
@@ -1259,10 +1261,10 @@ export function PetStage({
         onPetTap: decorating ? () => { setPlacementFeedback(undefined); setRotationPreview(null); setSpotlightPreview(null); setSelectedMoveItem(item); } : undefined,
         onDragStart: decorating ? () => { setPlacementFeedback(undefined); setRotationPreview(null); setSpotlightPreview(null); setSelectedMoveItem(item); } : undefined,
         onDragEnd: (point: { x: number; y: number }) => finishPlacement(item.kind === 'bed' ? 'bed' : item.instanceId, point),
-        menuActions: manageable ? buildRoomItemMenuActions(item) : undefined,
+        menuActions: manageable ? roomItemMenuActions?.(item) : undefined,
       };
     },
-    [canManageRoomItem, buildRoomItemMenuActions, decorating, zoom, snap, itemLabel, movingItem, setSelectedMoveItem, finishPlacement, setPlacementFeedback, setRotationPreview, setSpotlightPreview],
+    [canManageRoomItem, roomItemMenuActions, decorating, zoom, snap, itemLabel, movingItem, setSelectedMoveItem, finishPlacement, setPlacementFeedback, setRotationPreview, setSpotlightPreview],
   );
 
   const pickEditingItem = async (point: { x: number; y: number }) => {
@@ -1478,8 +1480,9 @@ export function PetStage({
     roomPetOffset, onRoomPetOffsetChange, clearLivePosition, handlePetPositionChange, livePosition,
     catCommandActions, activityScale, catDepthY, simpleGraphics, petCluster]);
 
-  // Editing anchors remain live on every render; play-mode furniture can be reused.
-  const editingDragAnchor = decorating ? nativeDragAnchor : undefined;
+  // Stationary hit targets keep their saved anchors while a selected item moves.
+  const editingAnchors = useMemo(() => decorating ? Object.fromEntries(nativeWorld.objects.map(object =>
+    [object.instanceId, roomItemAnchor(object, viewport.width)])) : undefined, [decorating, nativeWorld, viewport.width]);
   // Menu factories return gesture handlers; they do not read their captured refs while rendering.
   // eslint-disable-next-line react-hooks/refs
   const roomItemLayers = useMemo(() => layerOrder.map((item, layerIndex) => {
@@ -1490,7 +1493,7 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
-          externalPosition={editingDragAnchor?.("bed")}
+          externalPosition={editingAnchors?.bed}
           testID="room-object:bed"
           key="bed"
           depthAnchor={getRoomObjectDepthAnchor(`bed-${bedId}`)}
@@ -1517,7 +1520,7 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
-          externalPosition={editingDragAnchor ? editingDragAnchor(item.instanceId) : nativeHitPositions[item.instanceId]}
+          externalPosition={editingAnchors ? editingAnchors[item.instanceId] : nativeHitPositions[item.instanceId]}
           testID={`room-object:${item.instanceId}`}
           key={`decoration:${item.instanceId}`}
           depthAnchor={isRoomBackgroundDecoration(spriteId) ? undefined : getRoomObjectDepthAnchor(spriteId)}
@@ -1549,7 +1552,7 @@ export function PetStage({
         testID={`room-object:${item.instanceId}`}
         key={`toy:${item.instanceId}`}
         depthAnchor={getRoomObjectDepthAnchor(`toy-${toyId}`)}
-        externalPosition={editingDragAnchor ? editingDragAnchor(item.instanceId) : nativeHitPositions[item.instanceId]}
+        externalPosition={editingAnchors ? editingAnchors[item.instanceId] : nativeHitPositions[item.instanceId]}
         petSize={toySize}
         initialOffset={placed.offset}
         onOffsetChange={(offset) =>
@@ -1561,10 +1564,18 @@ export function PetStage({
         {simpleGraphics ? <ToySpriteImage toyId={toyId} size={toySize} still/> : <View style={{ width: toySize, height: toySize }} />}
       </DraggableRoomPet>
     );
-  }), [layerOrder, compact, usesNativeCat, bedSource, editingDragAnchor, bedId, bedSize, roomBedOffset,
+  }), [layerOrder, compact, usesNativeCat, bedSource, editingAnchors, bedId, bedSize, roomBedOffset,
     onCommitRoomEdit, onRoomBedOffsetChange, clearLivePosition, livePosition, roomItemDragProps,
     simpleGraphics, roomPlacedDecorations, nativeHitPositions, nativeWorld, onPlacedDecorationOffsetChange,
     roomPlacedToys, onPlacedToyOffsetChange]);
+
+  // Only the selected target needs a fresh preview anchor. Reuse the other JSX
+  // nodes so drag feedback does not rebuild every item's gestures and children.
+  const visibleRoomItemLayers = decorating && movingItem ? roomItemLayers.map((layer, index) => {
+    const id = movingItem.kind === 'bed' ? 'bed' : movingItem.instanceId;
+    return layer && isSameRoomLayerItem(layerOrder[index], movingItem)
+      ? cloneElement(layer, { externalPosition: nativeDragAnchor(id) }) : layer;
+  }) : roomItemLayers;
 
   // The lamp targets depend on furniture and available actions, not numeric stats.
   // eslint-disable-next-line react-hooks/refs
@@ -1625,7 +1636,7 @@ export function PetStage({
               onPosition={handleNativePetPosition}
               onContactPosition={updateNativeHeight}
               onAnimationComplete={roomActivity ? undefined : onAnimationComplete} onStepComplete={roomActivity ? undefined : onStepComplete} /></Pressable> : null}
-            {roomItemLayers}
+            {visibleRoomItemLayers}
             {compact ? roomPetLayer : petCluster}
             {activeFeedback && <RoomPlacementOverlay world={nativeWorld} feedback={activeFeedback} isNew={!!placementDraft}/>}
             {usesNativeCat && compact && nativeRendering && nativeSceneMounted && decorating && roomVisible &&

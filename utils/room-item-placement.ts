@@ -153,7 +153,8 @@ export function roomItemAtPoint(object: NativeRoomObject, point: RoomPoint, widt
     collisionBoxes: object.collisionBoxes?.map(box => ({ min: move(box.min), max: move(box.max) })) };
 }
 
-function boxes(object: NativeRoomObject): Box[] {
+type PlacementShape = Pick<NativeRoomObject, 'modelId' | 'collidable' | 'heading' | 'scale' | 'position'>;
+function boxes(object: PlacementShape): Box[] {
   if (object.collidable === false) return [];
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   return (meta.placementBoxes ?? meta.collisionBoxes ?? [{ min: meta.min, max: meta.max }]).map(box => {
@@ -187,7 +188,7 @@ function magnetBoxes(object: NativeRoomObject): Box[] {
 }
 
 /** Actual mesh silhouette on the floor, rather than rotated bounding-box corners. */
-export function roomItemFootprint(object: NativeRoomObject): Vec3[] {
+export function roomItemFootprint(object: Pick<NativeRoomObject, 'modelId' | 'heading' | 'scale' | 'position' | 'min'>): Vec3[] {
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const hull = meta.placementHull ?? [[meta.min[0],meta.min[2]], [meta.max[0],meta.min[2]],
     [meta.max[0],meta.max[2]], [meta.min[0],meta.max[2]]];
@@ -205,7 +206,7 @@ function boxCorners(box: Box): Vec3[] {
 }
 
 /** Release-only outline of the attempted furniture's structural parts. */
-export function roomItemPlacementOutline(object: NativeRoomObject): Vec3[][] {
+export function roomItemPlacementOutline(object: PlacementShape): Vec3[][] {
   return boxes(object).map(boxCorners);
 }
 

@@ -46,6 +46,10 @@ async function harness(screen = 'store', compiled = false) {
     if (!components.has(name)) components.set(name, function Probe(p) {
       props.set(name, p); counts.set(name, (counts.get(name) ?? 0) + 1);
       if (p.testID) { props.set(p.testID, p); counts.set(p.testID, (counts.get(p.testID) ?? 0) + 1); }
+      if (name === 'Group') {
+        const first = React.Children.toArray(p.children)[0];
+        props.set(`Group:${first?.props?.strokeWidth ?? 'fill'}`, p);
+      }
       if (p.onLayout) props.set(`${name}:onLayout`, p.onLayout);
       if (name === 'PetStage') props.set(`PetStage:${p.homeRoomId}`, p);
       // Strings need no host renderer; keep component children and fragments.
@@ -74,6 +78,8 @@ async function harness(screen = 'store', compiled = false) {
   const stageActivity = { activity: null, scale: shared(1), facing: shared(1), objectX: shared(0), objectY: shared(0),
     clearBlockedActivity() {}, startActivity() {}, returnHome() {}, stopActivity() {} };
   const mocks = {
+    '@shopify/react-native-skia': { Canvas: view('Canvas'), Path: view('Path'), Group: view('Group'), DashPathEffect: view('DashPathEffect'),
+      Skia: { Path: { Make() { const points = []; return { points, moveTo(x, y) { points.push([x, y]); }, lineTo(x, y) { points.push([x, y]); }, close() {} }; } } } },
     '@/lib/graphics-mode': { useGraphicsMode: () => '3d' },
     '@/hooks/use-room-camera': { useRoomCamera: () => stageCamera },
     '@/hooks/use-room-activity': { useRoomActivity: options => {
@@ -117,7 +123,7 @@ async function harness(screen = 'store', compiled = false) {
   if (screen === 'home') delete mocks['@/hooks/use-cat-bedtime'];
   function load(id, base = process.cwd()) {
     if (id in mocks) return mocks[id];
-    if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !((screen === 'stage' || screen === 'home-stage') && id.endsWith('/PetStage'))) {
+    if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !(screen === 'overlay' && id.endsWith('/RoomPlacementOverlay')) && !((screen === 'stage' || screen === 'home-stage') && id.endsWith('/PetStage'))) {
       const name = id.split('/').at(-1);
       return new Proxy({ [name]: view(name) }, { get: (target, key) => key === 'ROOM_NAVIGATION_HEIGHT' ? 52 : target[key] ?? view(key) });
     }
@@ -153,6 +159,12 @@ async function harness(screen = 'store', compiled = false) {
   const save = load('@/utils/game-storage').createDefaultGameSave();
   let game = { ...save, ...actions, isReady: true, hasCompletedOnboarding: true, pendingPurchaseCount: 0, wallet: { coins: 100 } };
   let stageProps = { roomVisible: true, catHomeRoomId: 'livingRoom', roomToolbar: { decorating: false, onDecoratingChange() {} } };
+  if (screen === 'overlay') {
+    const world = load('@/utils/native-room-world').buildNativeRoomWorld({ width: 390, height: 420, petSize: 100, sizeScale: 1,
+      decorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: 0, y: 0 } }], toys: [] });
+    stageProps = { world, feedback: { candidate: world.objects[0], blockers: [], boundaries: [] } };
+  }
+  function OverlayProbe() { return React.createElement(load('@/components/pet/RoomPlacementOverlay').RoomPlacementOverlay, stageProps); }
   const playback = { kind: 'segment', mood: 'idle' };
   function StageProbe() {
     return React.createElement(load('@/components/pet/PetStage').PetStage, {
@@ -161,7 +173,7 @@ async function harness(screen = 'store', compiled = false) {
     });
   }
   function MoodProbe() { props.set('mood', load('@/pet-display/hooks/use-pet-base-mood').usePetBaseMood(game.pet, game.worldClock)); counts.set('mood', (counts.get('mood') ?? 0) + 1); return null; }
-  const Screen = screen === 'stage' ? StageProbe : screen === 'mood' ? MoodProbe : screen === 'store' ? load('@/app/store').default : screen === 'home' || screen === 'home-stage' ? load('@/app/index').default : load('@/components/economy/GameHeaderStats').GameHeaderStats;
+  const Screen = screen === 'overlay' ? OverlayProbe : screen === 'stage' ? StageProbe : screen === 'mood' ? MoodProbe : screen === 'store' ? load('@/app/store').default : screen === 'home' || screen === 'home-stage' ? load('@/app/index').default : load('@/components/economy/GameHeaderStats').GameHeaderStats;
   const errors = [], onError = error => errors.push(error);
   const root = renderer.createContainer({}, 1, null, false, null, '', onError, onError, onError, null);
   async function update(fn) { await act(async () => { await fn(); }); if (errors.length) throw errors[0]; }
@@ -190,6 +202,77 @@ async function harness(screen = 'store', compiled = false) {
 
 for (const compiled of [false, true]) {
 const mode = compiled ? 'with React Compiler' : 'without React Compiler';
+
+test(`placement outlines reuse geometry during translation and refresh for changed shape (${mode})`, async () => {
+  const h = await harness('overlay', compiled);
+  try {
+    const group = () => h.props('Group:fill');
+    const shape = () => React.Children.toArray(group().children)[0].props.path;
+    const initial = shape(), parts = React.Children.toArray(h.props('Group:1.2').children)[0].props.path;
+    const world = h.load('@/utils/native-room-world');
+    const layout = world.buildNativeRoomWorld({ width: 390, height: 420, petSize: 100, sizeScale: 1,
+      decorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: 0, y: 0 } }], toys: [] });
+    const original = layout.objects[0];
+    let candidate;
+    for (const position of [[.2, .3, -.4], [-.5, 1.2, .7]]) {
+      candidate = h.load('@/utils/room-support').transformRoomObject(original, position, original.heading, original.scale);
+      await h.setStage({ feedback: { candidate, blockers: [], boundaries: [], access: 'clear' } });
+      assert.equal(shape(), initial, 'Translation must reuse the footprint path');
+      assert.equal(React.Children.toArray(h.props('Group:1.2').children)[0].props.path, parts, 'Translation must reuse structural paths');
+      const expected = h.load('@/utils/room-item-placement').roomItemFootprint(candidate).map(point => world.projectWorld(point, 390));
+      for (let i = 0; i < expected.length; i++) {
+        assert.ok(Math.abs(initial.points[i][0] + group().transform[0].translateX - expected[i].x - 195) < 1e-8);
+        assert.ok(Math.abs(initial.points[i][1] + group().transform[1].translateY - expected[i].y - 210) < 1e-8);
+      }
+      const expectedParts = h.load('@/utils/room-item-placement').roomItemPlacementOutline(candidate);
+      const point = world.projectWorld(expectedParts[0][0], 390), transform = h.props('Group:1.2').transform;
+      assert.ok(Math.abs(parts.points[0][0] + transform[0].translateX - point.x - 195) < 1e-8);
+      assert.ok(Math.abs(parts.points[0][1] + transform[1].translateY - point.y - 210) < 1e-8);
+    }
+    for (const change of [{ heading: 1 }, { scale: original.scale * 1.2 }, { modelId: 'lampFloorArc' }]) {
+      const before = shape();
+      candidate = { ...candidate, ...change };
+      await h.setStage({ feedback: { candidate, blockers: [], boundaries: ['frontEdge'] } });
+      assert.notEqual(shape(), before, 'Rotation, scale and model changes rebuild the outline');
+    }
+  } finally { await h.close(); }
+});
+
+test(`decoration dragging reuses stationary targets and keeps preview validation current (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const commits = [];
+    await h.setStage({ roomToolbar: { decorating: true, onDecoratingChange() {} }, bedId: 'bed1',
+      onCommitRoomEdit: (...args) => { commits.push(args); return false; },
+      placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: .4, y: .3 } },
+        { decorationId: 'lampFloorArc', instanceId: 'lamp', offset: { x: -.4, y: -.3 } }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = () => h.props('NativeRoomEditor');
+    await h.update(() => editor().select('bowl'));
+    const start = editor().anchor('bowl');
+    assert.ok(start);
+    const stationary = h.count('room-object:lamp'), scenes = h.count('NativeRoomScene');
+    await h.update(() => editor().move('bowl', { x: start.x + 2, y: start.y + 2 }));
+    const before = h.props('room-object:bowl').externalPosition;
+    for (let i = 1; i <= 12; i++) {
+      await h.update(() => editor().move('bowl', { x: start.x + i * 2, y: start.y + i }));
+    }
+    assert.equal(h.count('room-object:lamp'), stationary, 'Dragging one object must not rerender the other furniture targets');
+    assert.equal(h.count('NativeRoomScene'), scenes, 'Drag preview must not rebuild the native scene');
+    assert.notDeepEqual(h.props('room-object:bowl').externalPosition, before, 'The selected target follows the live anchor');
+    assert.equal(commits.length, 0, 'Preview frames must not save layouts');
+    await h.update(() => editor().commit('bowl', { x: 10000, y: 10000 }));
+    assert.equal(commits.length, 0, 'An invalid drop must not commit');
+    assert.equal(h.props('RoomItemMoveControls').placementAllowed, false);
+    await h.update(() => editor().discard('bowl'));
+    assert.equal(h.props('NativeRoomScene').editingObject.value, undefined);
+    assert.deepEqual(h.props('room-object:bowl').externalPosition, start, 'Cancellation restores the saved anchor');
+    assert.equal(h.count('room-object:lamp'), stationary, 'Drag start, rejection and cancellation also keep stationary targets cached');
+    await h.update(() => editor().select('lamp'));
+    assert.equal(h.props('room-object:lamp').selected, true);
+    assert.equal(h.props('room-object:bowl').selected, false);
+  } finally { await h.close(); }
+});
 
 test(`Home care updates preserve room adapters and scene callbacks (${mode})`, async () => {
   const h = await harness('home', compiled);

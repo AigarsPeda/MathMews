@@ -1,0 +1,4 @@
+207ecd4078a1af32ee5b7b111bb04b718b89c9cc93fa38f6e58775980ac89742  components/pet/PetStage.tsx
+d0bcbfbdf5e24d39f869164a40f2d5eef69c7c52ff1011e8e7e70567f5b94f37  components/pet/RoomPlacementOverlay.tsx
+988cab8aa2111eb001ceaf4c503898388dfb815edebd6be294d946e1cb237248  utils/room-item-placement.ts
+4d68519d9794ec3f017d5326750ff3789d234fdfcb027f840f6c8d40337d3b90  scripts/backend/test-screen-renders.mjs
