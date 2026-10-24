@@ -76,109 +76,123 @@ assert.equal(commits.length, saves, 'Unmount invalidates delayed native results'
 controller.begin({ x: 4, y: 5 }); queries.at(-1).reject(new Error('picker unavailable')); await drain();
 assert.equal(errors.length, 1); assert.equal(commits.length, saves);
 
-// Mount the actual component: rerenders replace callbacks without losing capture.
-const slots = [], layouts = [], effects = [];
-let cursor = 0;
+// Mount the real UI-thread gesture adapter with a controllable RN queue.
+const slots = [], layouts = [], effects = [], rn = [];
+let cursor = 0, now = 1000, background;
+const shared = value => ({ value, get() { return this.value; }, set(next) { this.value = typeof next === 'function' ? next(this.value) : next; } });
 const React = {
   useRef: value => slots[cursor++] ??= { current: value },
-  useMemo: (fn,deps=[]) => {
-    const index=cursor++,old=slots[index];
-    if(!old || deps.some((value,i)=>!Object.is(value,old.deps[i]))) slots[index]={value:fn(),deps};
-    return slots[index].value;
+  useState: init => { const i = cursor++; slots[i] ??= { value: typeof init === 'function' ? init() : init }; return [slots[i].value, value => { slots[i].value = value; }]; },
+  useMemo: (fn, deps = []) => {
+    const i = cursor++, old = slots[i];
+    if (!old || deps.some((value, j) => !Object.is(value, old.deps[j]))) slots[i] = { value: fn(), deps };
+    return slots[i].value;
   },
+  useCallback: (fn, deps) => React.useMemo(() => fn, deps),
   useLayoutEffect: fn => layouts.push(fn), useEffect: fn => effects.push(fn),
 };
+const Gesture = { Pan() {
+  const result = {};
+  result.simultaneousWithExternalGesture = (...gestures) => { result.cameraGestures = gestures; return result; };
+  for (const key of ['minDistance', 'maxPointers', 'onTouchesDown', 'onTouchesMove', 'onTouchesUp', 'onFinalize']) {
+    result[key] = value => { result[key + 'Value'] = value; return result; };
+  }
+  return result;
+} };
 const { NativeRoomEditor } = compile('components/pet/NativeRoomEditor.tsx', {
   react: React, 'react/jsx-runtime': { jsx: (type, props) => ({ type, props }) },
-  'react-native': { View: 'View', PanResponder: { create: panHandlers => ({ panHandlers }) }, StyleSheet: { absoluteFill: {} } },
+  'react-native': { View: 'View', AppState: { addEventListener: (_event, fn) => { background = fn; return { remove() {} }; } }, StyleSheet: { absoluteFill: {} } },
+  'react-native-gesture-handler': { Gesture, GestureDetector: 'GestureDetector' },
+  'react-native-reanimated': { useSharedValue: value => React.useMemo(() => shared(value), []) },
+  'react-native-worklets': { scheduleOnRN: (fn, ...args) => rn.push(() => fn(...args)) },
   '@/lib/app-diagnostics': { reportAppError: (_tag, error) => errors.push(error) },
   '@/utils/room-drag-controller': { createRoomDragController },
   '@/utils/room-layer-order': { ROOM_MENU_OPEN_Z_INDEX: 600100 },
-}, { requestAnimationFrame: options.schedule, cancelAnimationFrame: options.cancel });
-function render(props) {
+}, { requestAnimationFrame: options.schedule, cancelAnimationFrame: options.cancel, Date: { now: () => now } });
+const motion = shared({ session: 0, sequence: 0, x: 0, y: 0, active: false }), measure = shared(true), prepared = [];
+const base = shared(undefined);
+let stops = 0, latestSaves = 0;
+const cameraPinch = {}, cameraPan = {};
+const props = { ...options, cameraGesture: { toGestureArray: () => [cameraPinch, cameraPan] }, motion, base, measure, zoom: 2, prepare: (...args) => { prepared.push(args); base.set({ session: args[2].session }); }, stop: () => stops++ };
+function render(next = props) {
   cursor = 0; layouts.length = 0;
-  const node = NativeRoomEditor(props); layouts.forEach(fn => fn()); return node.props;
+  const node = NativeRoomEditor(next); layouts.forEach(fn => fn()); return node.props.gesture;
 }
-let handlers = render({ ...options, zoom: 2 });
-const cleanup = effects[0]();
-handlers.onPanResponderGrant({ nativeEvent: { locationX: 123, locationY: 234 } });
-assert.deepEqual(JSON.parse(JSON.stringify(queries.at(-1).point)), { x: 123, y: 234 }, 'Pick coordinates stay in local DP; Filament handles density/Y conversion');
+const flushRN = () => { while (rn.length) rn.shift()(); };
+let handlers = render();
+assert.deepEqual(handlers.cameraGestures, [cameraPinch, cameraPan], 'Native dragging must not cancel the parent camera pinch recognizer');
+const cleanup = effects[0](); effects[1]();
+handlers.onTouchesDownValue({ numberOfTouches: 1, allTouches: [{ x: 123, y: 234, absoluteX: 0, absoluteY: 0 }] }, {}); flushRN();
+assert.deepEqual(JSON.parse(JSON.stringify(queries.at(-1).point)), { x: 123, y: 234 });
 queries.at(-1).resolve('ball'); await drain();
-let latestSaves = 0;
-handlers = render({ ...options, zoom: 1.5, commit: () => latestSaves++ });
-handlers.onPanResponderMove({}, { dx: 30, dy: 60 }); frame();
-assert.equal(moves.at(-1).point.x, 30); assert.equal(moves.at(-1).point.y, 60);
-handlers.onPanResponderTerminate();
-assert.equal(latestSaves, 0, 'Termination discards the uncommitted preview');
-handlers = render({ ...options, zoom: .65, commit: () => latestSaves++ });
-handlers.onPanResponderGrant({ nativeEvent: { locationX: 123, locationY: 234 } });
-queries.at(-1).resolve('ball'); await drain();
-handlers.onPanResponderMove({}, { dx: 13, dy: 26, numberActiveTouches: 1 }); frame();
-assert.equal(moves.at(-1).point.x, 30); assert.equal(moves.at(-1).point.y, 60);
-handlers.onPanResponderTerminate();
-handlers = render({ ...options, zoom: 1.5, commit: () => latestSaves++ });
-assert.equal(handlers.onStartShouldSetPanResponder({nativeEvent:{touches:[{},{}]}}),false,'A pinch must not start an object drag');
-assert.equal(handlers.onShouldBlockNativeResponder?.(),false,'Claiming the first finger must leave the native pinch recognizer available for the second');
-assert.equal(handlers.onPanResponderTerminationRequest({}, {numberActiveTouches:2}),true,'Multi-touch may yield to the camera pinch');
-handlers.onPanResponderGrant({ nativeEvent: { locationX: 1, locationY: 2 } });
-const pendingPinchPick = queries.at(-1), selectionsBeforePinch = selections.length;
-handlers.onPanResponderStart({nativeEvent:{touches:[{},{}]}});
-handlers.onPanResponderTerminate();
-pendingPinchPick.resolve('ball'); await drain();
-assert.equal(selections.length,selectionsBeforePinch,'Adding a second finger invalidates a pending object pick before any pinch movement');
-assert.equal(latestSaves,0,'Yielding to a pinch cannot commit a delayed object pick');
-handlers.onPanResponderGrant({ nativeEvent: { locationX: 1, locationY: 2 } });
-queries.at(-1).resolve('ball'); await drain();
-handlers.onPanResponderMove({}, {dx:30,dy:60,numberActiveTouches:1});frame();
-const movedBeforePinch=moves.length;
-handlers.onPanResponderMove({}, {dx:300,dy:600,numberActiveTouches:2});
-handlers.onPanResponderRelease();frame();
-assert.equal(moves.length,movedBeforePinch,'A second finger cancels object movement');
-assert.equal(latestSaves,0,'Pinching does not save a stray object move');
-handlers.onPanResponderGrant({ nativeEvent: { locationX: 1, locationY: 2 } });
-cleanup(); queries.at(-1).resolve('ball'); await drain();
-assert.equal(latestSaves, 0, 'Component cleanup prevents late gesture effects');
-console.log('Verified geometry gesture capture, delayed picks, frame coalescing, final saves, cleanup, zoom and rerender continuity.');
+assert.equal(prepared.at(-1)[0], 'ball');
+const beforeMoves = moves.length;
+for (let i = 1; i <= 120; i++) { now++; handlers.onTouchesMoveValue({ numberOfTouches: 1, allTouches: [{ absoluteX: i, absoluteY: i * 2 }] }); }
+assert.equal(motion.get().x, 60, 'Pointer advances on UI while the RN queue is stalled');
+assert.equal(motion.get().y, 120);
+assert.equal(moves.length, beforeMoves, 'Movement does not wait for JS collision feedback');
+assert.equal(rn.length, 2, '120 UI updates only enqueue two feedback requests');
+flushRN(); frame();
+assert.equal(moves.length, beforeMoves + 1, 'Feedback coalesces to the newest available sample');
+handlers = render({ ...props, commit: () => latestSaves++ });
+handlers.onTouchesUpValue({ changedTouches: [{ absoluteX: 150, absoluteY: 300 }] }); flushRN();
+assert.equal(moves.at(-1).point.y, 170, 'Release validates its final pointer even between feedback samples');
+assert.equal(latestSaves, 1, 'The latest commit callback is used once');
 
-// Run the actual sprite/accessibility drag component's release path as well.
-slots.length=0;cursor=0;layouts.length=0;effects.length=0;
-React.useCallback=fn=>fn;
-React.useState=initial=>{
-  const index=cursor++;
-  const state=slots[index]??={value:typeof initial==='function'?initial():initial};
-  return [state.value,next=>{state.value=typeof next==='function'?next(state.value):next;}];
-};
-const shared=initial=>{let value=initial;return {get:()=>value,set:next=>{value=next;}};};
-const jsx=(type,props)=>({type,props});
-const {DraggableRoomPet}=compile('components/pet/DraggableRoomPet.tsx',{
-  react:React,'react/jsx-runtime':{jsx,jsxs:jsx},
-  'react-i18next':{useTranslation:()=>({t:key=>key})},
-  'react-native':{View:'View',PanResponder:{create:panHandlers=>({panHandlers})},StyleSheet:{create:value=>value,absoluteFill:{}}},
-  'react-native-reanimated':{default:{View:'AnimatedView'},useSharedValue:value=>React.useState(()=>shared(value))[0],useAnimatedStyle:read=>({read})},
-  '@/utils/scale':{moderateScale:value=>value},
-  '@/utils/room-depth':{getRoomDepthZIndex:y=>y},
-  '@/utils/room-layer-order':{ROOM_MENU_OPEN_Z_INDEX:600100},
-  '@/components/pet/RoomActionMenu':{RoomActionMenu:'RoomActionMenu'},
-});
-let previews=0,validations=0,savedOffset;
-const dragProps={petSize:60,initialOffset:{x:0,y:0},children:null,
-  onDragPositionChange:point=>{previews++;return point;},
-  onDragEnd:()=>{validations++;return {x:0,y:0};},
-  onOffsetChange:offset=>{savedOffset=offset;}};
-function renderSprite(){cursor=0;layouts.length=0;const node=DraggableRoomPet(dragProps);layouts.forEach(fn=>fn());return node;}
-let sprite=renderSprite();
-sprite.props.onLayout({nativeEvent:{layout:{width:400,height:400}}});
-sprite=renderSprite();sprite=renderSprite();
-function flatten(node){return node?.props?[node,...[node.props.children].flat(Infinity).flatMap(flatten)]:[];}
-const spriteHandlers=flatten(sprite).find(node=>node.props.onPanResponderGrant).props;
-spriteHandlers.onPanResponderGrant();
-spriteHandlers.onPanResponderMove({}, {dx:50,dy:40});
-spriteHandlers.onPanResponderMove({}, {dx:70,dy:50});
-assert.equal(previews,2);assert.equal(validations,0,'Sprite previews do no release validation');
-spriteHandlers.onPanResponderRelease();
-assert.equal(validations,1,'The sprite validates once when released');
-assert.equal(savedOffset.x,0);assert.equal(savedOffset.y,0,'The rejected position cannot be saved');
-const liveStyle=flatten(sprite).flatMap(node=>[node.props.style].flat(Infinity)).find(style=>style?.read?.().transform);
-assert.equal(liveStyle.read().transform[0].translateX,0);
-assert.equal(liveStyle.read().transform[1].translateY,0,'The visible sprite returns immediately to the accepted anchor');
-console.log('Verified real sprite drag previews, release-only validation and immediate visual restoration after rejection.');
+handlers = render(props);
+const quickSaves = commits.length;
+handlers.onTouchesDownValue({ numberOfTouches: 1, allTouches: [{ x: 123, y: 234, absoluteX: 100, absoluteY: 200 }] }, {}); flushRN();
+const quickPick = queries.at(-1);
+// A short simulator/native gesture can deliver no intermediate movement event.
+handlers.onTouchesUpValue({ changedTouches: [{ absoluteX: 130, absoluteY: 240 }] });
+handlers.onFinalizeValue({}, false); flushRN();
+quickPick.resolve('ball'); await drain();
+assert.equal(commits.length, quickSaves + 1, 'A release-only drag survives recognizer finalization and delayed picking');
+assert.equal(commits.at(-1).point.y, 40, 'Raw release coordinates retain short-drag displacement');
+
+let taps = 0;
+handlers = render({ ...props, tap: () => taps++ });
+handlers.onTouchesDownValue({ numberOfTouches: 1, allTouches: [{ x: 1, y: 2, absoluteX: 100, absoluteY: 200 }] }, {}); flushRN();
+handlers.onTouchesUpValue({ changedTouches: [{ absoluteX: 100, absoluteY: 200 }] });
+handlers.onFinalizeValue({}, false); flushRN();
+queries.at(-1).resolve('ball'); await drain();
+assert.equal(taps, 1, 'An unmoved touch remains a tap after a delayed pick');
+assert.equal(commits.length, quickSaves + 1, 'Taps never save furniture');
+
+handlers.onTouchesDownValue({ numberOfTouches: 1, allTouches: [{ x: 1, y: 2, absoluteX: 0, absoluteY: 0 }] }, {}); flushRN();
+const returningPick = queries.at(-1);
+handlers.onTouchesMoveValue({ numberOfTouches: 1, allTouches: [{ absoluteX: 1, absoluteY: 1 }] });
+now++;
+handlers.onTouchesMoveValue({ numberOfTouches: 1, allTouches: [{ absoluteX: 50, absoluteY: 50 }] });
+handlers.onTouchesUpValue({ changedTouches: [{ absoluteX: 0, absoluteY: 0 }] }); flushRN();
+returningPick.resolve('ball'); await drain();
+assert.equal(commits.length, quickSaves + 2, 'Returning to the start remains a drag even when JS only receives the last point');
+assert.equal(taps, 1);
+
+handlers = render({ ...props, zoom: .65 });
+handlers.onTouchesDownValue({ numberOfTouches: 1, allTouches: [{ x: 123, y: 234, absoluteX: 0, absoluteY: 0 }] }, {}); flushRN(); queries.at(-1).resolve('ball'); await drain();
+now += 100; handlers.onTouchesMoveValue({ numberOfTouches: 1, allTouches: [{ absoluteX: 13, absoluteY: 26 }] });
+assert.equal(motion.get().x, 20); assert.equal(motion.get().y, 40);
+let failed = false;
+handlers.onTouchesDownValue({ numberOfTouches: 2 }, { fail() { failed = true; } });
+assert.equal(failed, true, 'A second finger yields the drag to pinch');
+handlers.onFinalizeValue({}, false); flushRN();
+assert.equal(motion.get().active, false); assert.equal(discards.at(-1), 'ball');
+
+handlers.onTouchesDownValue({ numberOfTouches: 1, allTouches: [{ x: 1, y: 2, absoluteX: 0, absoluteY: 0 }] }, {}); flushRN();
+queries.at(-1).resolve(undefined); await drain(); base.set(undefined);
+for (let i = 1; i <= 32; i++) { now++; handlers.onTouchesMoveValue({ numberOfTouches: 1, allTouches: [{ absoluteX: i, absoluteY: i }] }); }
+assert.equal(rn.length, 2, 'Empty-space panning retains frame-rate feedback instead of the furniture throttle');
+handlers.onFinalizeValue({}, false); flushRN();
+
+
+handlers.onTouchesDownValue({ numberOfTouches: 1, allTouches: [{ x: 1, y: 2, absoluteX: 0, absoluteY: 0 }] }, {}); flushRN();
+const pending = queries.at(-1), selectionCountAfterStart = selections.length;
+handlers.onFinalizeValue({}, false); flushRN(); pending.resolve('lamp'); await drain();
+assert.equal(selections.length, selectionCountAfterStart, 'Cancelled pending picks cannot select or prepare a model');
+handlers.onTouchesDownValue({ numberOfTouches: 1, allTouches: [{ x: 1, y: 2, absoluteX: 0, absoluteY: 0 }] }, {}); flushRN(); queries.at(-1).resolve('ball'); await drain();
+const savesBeforeBackground = commits.length; background('background');
+assert.equal(motion.get().active, false); assert.equal(commits.length, savesBeforeBackground);
+assert.ok(stops > 0, 'Cancelled/tapped gestures clear native preview ownership');
+cleanup();
+console.log('Verified UI pointer updates without RN work, feedback coalescing, exact release, latest callbacks, pending-pick cancellation, pinch handoff and background cleanup.');

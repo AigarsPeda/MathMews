@@ -1,0 +1,4 @@
+b141efa0273b8d015dbc4d92f8e5e323a17bc5f41e78d74002058c3c39b8a260  components/pet/PetStage.tsx
+3a66f247ac683e4450067d7b077c7b1fc79a2b6e1e132e352398fc42a18ae606  utils/room-drag-placement.ts
+e2f8c6d11fd76432f4d674c0c34071476a07b89b872e72584a79e6c30e1cd603  scripts/backend/test-room-drag-surface.mjs
+7058f7420ce2f9eca92a134106975567587397ac10617fb9ef83bba221d4b4d4  scripts/backend/test-screen-renders.mjs

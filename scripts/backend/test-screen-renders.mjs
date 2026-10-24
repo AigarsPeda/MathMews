@@ -87,7 +87,7 @@ async function harness(screen = 'store', compiled = false) {
       return stageActivity;
     } },
     'react-native-worklets-core': { useSharedValue: value => React.useState(() => shared(value))[0] },
-    'react-native-reanimated': { __esModule: true, default: { View: view('AnimatedView') }, useReducedMotion: () => false,
+    'react-native-reanimated': { __esModule: true, default: { View: view('AnimatedView'), Text: view('AnimatedText') }, useReducedMotion: () => false,
       useSharedValue: value => React.useState(() => shared(value))[0],
       useAnimatedStyle: useWorkletValue,
       useDerivedValue: useWorkletValue },
@@ -221,11 +221,11 @@ test(`placement outlines reuse geometry during translation and refresh for chang
       assert.equal(React.Children.toArray(h.props('Group:1.2').children)[0].props.path, parts, 'Translation must reuse structural paths');
       const expected = h.load('@/utils/room-item-placement').roomItemFootprint(candidate).map(point => world.projectWorld(point, 390));
       for (let i = 0; i < expected.length; i++) {
-        assert.ok(Math.abs(initial.points[i][0] + group().transform[0].translateX - expected[i].x - 195) < 1e-8);
-        assert.ok(Math.abs(initial.points[i][1] + group().transform[1].translateY - expected[i].y - 210) < 1e-8);
+        assert.ok(Math.abs(initial.points[i][0] + group().transform.get()[0].translateX - expected[i].x - 195) < 1e-8);
+        assert.ok(Math.abs(initial.points[i][1] + group().transform.get()[1].translateY - expected[i].y - 210) < 1e-8);
       }
       const expectedParts = h.load('@/utils/room-item-placement').roomItemPlacementOutline(candidate);
-      const point = world.projectWorld(expectedParts[0][0], 390), transform = h.props('Group:1.2').transform;
+      const point = world.projectWorld(expectedParts[0][0], 390), transform = h.props('Group:1.2').transform.get();
       assert.ok(Math.abs(parts.points[0][0] + transform[0].translateX - point.x - 195) < 1e-8);
       assert.ok(Math.abs(parts.points[0][1] + transform[1].translateY - point.y - 210) < 1e-8);
     }
@@ -235,6 +235,134 @@ test(`placement outlines reuse geometry during translation and refresh for chang
       await h.setStage({ feedback: { candidate, blockers: [], boundaries: ['frontEdge'] } });
       assert.notEqual(shape(), before, 'Rotation, scale and model changes rebuild the outline');
     }
+  } finally { await h.close(); }
+});
+
+test(`native drag motion updates independently of React diagnostics (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const commits = [];
+    await h.setStage({ roomToolbar: { decorating: true, onDecoratingChange() {} },
+      onCommitRoomEdit: (...args) => { commits.push(args); return true; },
+      placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: 0, y: 0 } }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = () => h.props('NativeRoomEditor');
+    await h.update(() => editor().select('bowl'));
+    assert.equal(h.props('RoomPlacementOverlay').visible, false, 'Selection prepares outline geometry before the first drag');
+    const start = editor().anchor('bowl');
+    let motion = { session: 1, sequence: 0, x: 0, y: 0, active: true, moved: false, at: 1, measure: false };
+    editor().motion.set(motion);
+    await h.update(() => editor().prepare('bowl', start, motion));
+    const move = async x => {
+      motion = { ...motion, x, y: 1000, moved: true, sequence: motion.sequence + 1 };
+      editor().motion.set(motion);
+      await h.update(() => editor().move('bowl', { x: start.x + x, y: start.y + 1000 }, motion));
+    };
+    await move(1000);
+    const renders = h.count('stageRenders'), menus = h.count('RoomItemMoveControls');
+    const scene = h.props('NativeRoomScene'), first = scene.dragBase.get().object.position;
+    for (let i = 1; i <= 12; i++) await move(1000 + i * 2);
+    assert.equal(h.count('stageRenders'), renders, 'Unchanged diagnostics must not rerender PetStage');
+    assert.equal(h.count('RoomItemMoveControls'), menus, 'Position-only samples must not rebuild controls');
+    assert.notDeepEqual(scene.dragBase.get().object.position, first, 'The native preview base still advances');
+    const target = h.props('room-object:bowl').animatedPosition;
+    const before = target.x.get();
+    editor().motion.set({ ...motion, x: motion.x + 20, sequence: motion.sequence + 1 });
+    assert.equal(target.x.get(), before + 20, 'UI position follows input without invoking any JS feedback callback');
+    assert.equal(commits.length, 0);
+    await h.update(() => editor().commit('bowl', { x: 1500, y: 1400 }));
+    assert.equal(commits.length, 0, 'Release still rejects the exact out-of-bounds drop');
+    assert.equal(scene.dragBase.get(), undefined, 'Release relinquishes native preview ownership');
+    assert.ok(scene.editingObject.value, 'Rejected final pose is kept for the placement controls');
+    await h.update(() => editor().discard('bowl'));
+    assert.equal(scene.editingObject.value, undefined);
+  } finally { await h.close(); }
+});
+
+test(`bed drag through fireplace collisions keeps the pointer anchor (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const commits = [];
+    await h.setStage({ catPresent: false, bedId: 'green', roomBedOffset: { x: .3, y: .3 },
+      roomToolbar: { decorating: true, onDecoratingChange() {} },
+      onCommitRoomEdit: (...args) => { commits.push(args); return true; },
+      placedDecorations: [{ decorationId: 'livingFireplaceCream', instanceId: 'fireplace', offset: { x: -.3, y: -.2 } }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = () => h.props('NativeRoomEditor');
+    await h.update(() => editor().select('bed'));
+    const scene = h.props('NativeRoomScene'), world = scene.world;
+    const bed = world.objects.find(x => x.instanceId === 'bed'), fireplace = world.objects.find(x => x.instanceId === 'fireplace');
+    const { transformRoomObject } = h.load('@/utils/room-support');
+    const { roomItemAnchor } = h.load('@/utils/room-item-placement');
+    const target = roomItemAnchor(transformRoomObject(bed, [fireplace.position[0], bed.position[1], fireplace.position[2]]), world.width);
+    const start = editor().anchor('bed');
+    let motion = { session: 12, sequence: 0, x: 0, y: 0, active: true, moved: false, at: 1, measure: false };
+    editor().motion.set(motion); await h.update(() => editor().prepare('bed', start, motion));
+    for (let i = 12; i >= 0; i--) {
+      const point = { x: target.x + i * 3, y: target.y };
+      motion = { ...motion, sequence: motion.sequence + 1, moved: true, x: point.x - start.x, y: point.y - start.y };
+      editor().motion.set(motion); await h.update(() => editor().move('bed', point, motion));
+      const object = scene.dragBase.get().object, anchor = roomItemAnchor(object, world.width);
+      assert.ok(Math.hypot(anchor.x - point.x, anchor.y - point.y) < 1e-7, 'Collision feedback must not pull the bed away from the finger');
+      assert.equal(object.supportId, undefined);
+    }
+    assert.ok(h.props('RoomPlacementOverlay').feedback.blockers.some(hit => hit.instanceId === 'fireplace'));
+    await h.update(() => editor().commit('bed', target, motion));
+    assert.equal(commits.length, 0, 'The fireplace collision remains invalid on release');
+    const final = roomItemAnchor(scene.editingObject.value, world.width);
+    assert.ok(Math.hypot(final.x - target.x, final.y - target.y) < 1e-7);
+    await h.update(() => editor().discard('bed'));
+  } finally { await h.close(); }
+});
+
+test(`surface drag keeps its grab anchor and validates the held board on release (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const commits = [];
+    await h.setStage({ catPresent: false, roomToolbar: { decorating: true, onDecoratingChange() {} },
+      onCommitRoomEdit: (...args) => { commits.push(args); return true; },
+      placedDecorations: [
+        { decorationId: 'kitchenModernIslandNavy', instanceId: 'table', offset: { x: 0, y: 0 } },
+        { decorationId: 'lampTableMushroom', instanceId: 'lamp', offset: { x: .4, y: .4 }, scale: .6 },
+      ] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = () => h.props('NativeRoomEditor');
+    await h.update(() => editor().select('lamp'));
+    const { NATIVE_MODEL_CATALOG } = h.load('@/utils/native-room-world');
+    const { transformRoomObject } = h.load('@/utils/room-support');
+    const { roomItemAnchor } = h.load('@/utils/room-item-placement');
+    const scene = h.props('NativeRoomScene'), world = scene.world;
+    const lamp = world.objects.find(x => x.instanceId === 'lamp'), table = world.objects.find(x => x.instanceId === 'table');
+    const meta = NATIVE_MODEL_CATALOG[lamp.modelId], top = NATIVE_MODEL_CATALOG[table.modelId].supportSurfaces[0];
+    const resting = transformRoomObject(lamp, [table.position[0], table.position[1] + top.max[1] * table.scale + .002 - meta.min[1] * lamp.scale, table.position[2]]);
+    const point = object => roomItemAnchor(object, world.width), center = point(resting), start = editor().anchor('lamp');
+    let motion = { session: 9, sequence: 0, x: 0, y: 0, active: true, moved: false, at: 1, measure: false };
+    editor().motion.set(motion);
+    await h.update(() => editor().prepare('lamp', start, motion));
+    const move = async target => {
+      motion = { ...motion, sequence: motion.sequence + 1, moved: true, x: target.x - start.x, y: target.y - start.y };
+      editor().motion.set(motion);
+      await h.update(() => editor().move('lamp', target, motion));
+      const base = scene.dragBase.get(), actual = point(base.object);
+      assert.ok(Math.hypot(actual.x - target.x, actual.y - target.y) < 1e-7, 'Feedback cannot move the grabbed point');
+      assert.equal(base.object.supportId, 'table');
+    };
+    await move(center);
+    const renders = h.count('stageRenders');
+    for (let i = 1; i <= 12; i++) await move({ x: center.x + i * .1, y: center.y });
+    assert.equal(h.count('stageRenders'), renders, 'Motion on the same surface does not publish position-only React feedback');
+    const edgeX = table.position[0] + top.max[0] * table.scale - Math.max(...meta.baseHull.map(([x]) => x * lamp.scale));
+    const overhang = point(transformRoomObject(resting, [edgeX + .02, resting.position[1], resting.position[2]]));
+    await move(overhang);
+    assert.equal(h.props('RoomPlacementOverlay').feedback.unsupportedSurfaceId, 'table');
+    await h.update(() => editor().commit('lamp', overhang, motion));
+    assert.equal(commits.length, 0, 'The retention margin never makes an unsupported drop legal');
+    assert.equal(scene.editingObject.value.supportId, 'table');
+    const final = point(scene.editingObject.value);
+    assert.ok(Math.hypot(final.x - overhang.x, final.y - overhang.y) < 1e-7, 'Release retains the displayed preview');
+    assert.equal(scene.dragBase.get(), undefined);
+    await h.update(() => editor().discard('lamp'));
+    assert.equal(scene.editingObject.value, undefined);
   } finally { await h.close(); }
 });
 

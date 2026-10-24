@@ -1,0 +1,783 @@
+{
+  "runtime": "iOS 27 simulator, Expo development build, React Compiler enabled",
+  "latency": {
+    "move": {
+      "count": 5,
+      "min": 13,
+      "median": 15,
+      "max": 15,
+      "values": [
+        13,
+        14,
+        15,
+        15,
+        15
+      ]
+    },
+    "release": {
+      "count": 5,
+      "min": 62,
+      "median": 98,
+      "max": 98,
+      "values": [
+        62,
+        65,
+        98,
+        98,
+        98
+      ]
+    }
+  },
+  "measurement": "UI touch callback to native model transform; five automated short drags, final pointer sample only. Excludes hardware event delivery and display scanout. move identifies native pointer preview; release identifies validated drop pose.",
+  "nativeSceneRenders": 1,
+  "stages": [
+    {
+      "time": 3093.654375076294,
+      "commitMs": 15.109,
+      "stage": [
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 15.109
+        }
+      ],
+      "targetEntries": 1,
+      "overlayMs": [
+        1.55
+      ]
+    },
+    {
+      "time": 6346.575125098228,
+      "commitMs": 5.558,
+      "stage": [
+        {
+          "id": 350,
+          "name": "Forget(PetStage)",
+          "ms": 5.558
+        }
+      ],
+      "targetEntries": 0,
+      "overlayMs": []
+    },
+    {
+      "time": 9091.976125001907,
+      "commitMs": 13.366,
+      "stage": [
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 13.366
+        }
+      ],
+      "targetEntries": 1,
+      "overlayMs": [
+        0.12
+      ]
+    },
+    {
+      "time": 9424.823541998863,
+      "commitMs": 240.02,
+      "stage": [
+        {
+          "id": 350,
+          "name": "Forget(PetStage)",
+          "ms": 29.48
+        },
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 83.361
+        },
+        {
+          "id": 1476,
+          "name": "Forget(PetStage)",
+          "ms": 63.039
+        },
+        {
+          "id": 2212,
+          "name": "Forget(PetStage)",
+          "ms": 35.594
+        }
+      ],
+      "targetEntries": 51,
+      "overlayMs": [
+        1.121
+      ]
+    },
+    {
+      "time": 9656.510500073433,
+      "commitMs": 30.033,
+      "stage": [
+        {
+          "id": 350,
+          "name": "Forget(PetStage)",
+          "ms": 5.352
+        },
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 12.66
+        },
+        {
+          "id": 1476,
+          "name": "Forget(PetStage)",
+          "ms": 5.524
+        },
+        {
+          "id": 2212,
+          "name": "Forget(PetStage)",
+          "ms": 5.244
+        }
+      ],
+      "targetEntries": 36,
+      "overlayMs": [
+        0.098
+      ]
+    },
+    {
+      "time": 15057.95237505436,
+      "commitMs": 12.924,
+      "stage": [
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 12.924
+        }
+      ],
+      "targetEntries": 1,
+      "overlayMs": [
+        0.124
+      ]
+    },
+    {
+      "time": 15161.027542114258,
+      "commitMs": 13.914,
+      "stage": [
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 13.914
+        }
+      ],
+      "targetEntries": 1,
+      "overlayMs": [
+        1.034
+      ]
+    },
+    {
+      "time": 17224.419292092323,
+      "commitMs": 45.645,
+      "stage": [
+        {
+          "id": 350,
+          "name": "Forget(PetStage)",
+          "ms": 6.227
+        },
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 12.947
+        },
+        {
+          "id": 1476,
+          "name": "Forget(PetStage)",
+          "ms": 5.899
+        },
+        {
+          "id": 2212,
+          "name": "Forget(PetStage)",
+          "ms": 5.609
+        }
+      ],
+      "targetEntries": 36,
+      "overlayMs": [
+        0.086
+      ]
+    },
+    {
+      "time": 19588.70512509346,
+      "commitMs": 11.835,
+      "stage": [
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 11.835
+        }
+      ],
+      "targetEntries": 1,
+      "overlayMs": [
+        0.123
+      ]
+    },
+    {
+      "time": 19695.141542077065,
+      "commitMs": 10.99,
+      "stage": [
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 10.99
+        }
+      ],
+      "targetEntries": 1,
+      "overlayMs": [
+        0.339
+      ]
+    },
+    {
+      "time": 24173.265750050545,
+      "commitMs": 11.518,
+      "stage": [
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 11.518
+        }
+      ],
+      "targetEntries": 1,
+      "overlayMs": [
+        0.095
+      ]
+    },
+    {
+      "time": 24268.240708112717,
+      "commitMs": 11.366,
+      "stage": [
+        {
+          "id": 808,
+          "name": "Forget(PetStage)",
+          "ms": 11.366
+        }
+      ],
+      "targetEntries": 1,
+      "overlayMs": [
+        0.415
+      ]
+    }
+  ],
+  "continuous": {
+    "pointerSamples": 686,
+    "nativeTransformRecords": 691,
+    "durationMs": 12133,
+    "minMs": 1,
+    "medianMs": 18,
+    "p95Ms": 18,
+    "maxMs": 21,
+    "releaseMs": [
+      51
+    ],
+    "measurement": "First native transform per unique session/sequence, excluding repeated corrections for the same pointer input. Starts after capture/picking, excludes hardware event delivery and display scanout.",
+    "react": {
+      "captureDurationMs": 49074.113083958626,
+      "maxCommitMs": 232.299,
+      "maxStageMs": 81.865,
+      "overlayRenders": 48,
+      "commits": [
+        {
+          "at": 27545.84108400345,
+          "ms": 14.304,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 14.304
+            }
+          ]
+        },
+        {
+          "at": 27711.02674996853,
+          "ms": 12.357,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.357
+            }
+          ]
+        },
+        {
+          "at": 27884.242749929428,
+          "ms": 11.187,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 11.187
+            }
+          ]
+        },
+        {
+          "at": 28053.10462498665,
+          "ms": 12.751,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.751
+            }
+          ]
+        },
+        {
+          "at": 28532.601666927338,
+          "ms": 11.095,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 11.095
+            }
+          ]
+        },
+        {
+          "at": 28611.850124955177,
+          "ms": 14.357,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 14.357
+            }
+          ]
+        },
+        {
+          "at": 28750.51241695881,
+          "ms": 10.965,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 10.965
+            }
+          ]
+        },
+        {
+          "at": 28925.070666909218,
+          "ms": 13.634,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.634
+            }
+          ]
+        },
+        {
+          "at": 29274.535666942596,
+          "ms": 10.634,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 10.634
+            }
+          ]
+        },
+        {
+          "at": 30117.953291893005,
+          "ms": 11.739,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 11.739
+            }
+          ]
+        },
+        {
+          "at": 30390.641791939735,
+          "ms": 14.378,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 14.378
+            }
+          ]
+        },
+        {
+          "at": 30456.54787492752,
+          "ms": 12.661,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.661
+            }
+          ]
+        },
+        {
+          "at": 30551.324291944504,
+          "ms": 13.968,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.968
+            }
+          ]
+        },
+        {
+          "at": 30624.876624941826,
+          "ms": 13.625,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.625
+            }
+          ]
+        },
+        {
+          "at": 31135.588624954224,
+          "ms": 12.791,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.791
+            }
+          ]
+        },
+        {
+          "at": 31495.101749897003,
+          "ms": 12.641,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.641
+            }
+          ]
+        },
+        {
+          "at": 31926.341208934784,
+          "ms": 10.881,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 10.881
+            }
+          ]
+        },
+        {
+          "at": 32398.476958990097,
+          "ms": 13.216,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.216
+            }
+          ]
+        },
+        {
+          "at": 33003.154708981514,
+          "ms": 12.418,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.418
+            }
+          ]
+        },
+        {
+          "at": 33067.39320898056,
+          "ms": 12.475,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.475
+            }
+          ]
+        },
+        {
+          "at": 33270.97249996662,
+          "ms": 10.247,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 10.247
+            }
+          ]
+        },
+        {
+          "at": 33336.19862496853,
+          "ms": 10.624,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 10.624
+            }
+          ]
+        },
+        {
+          "at": 33589.73391699791,
+          "ms": 11.139,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 11.139
+            }
+          ]
+        },
+        {
+          "at": 33727.8118339777,
+          "ms": 11.348,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 11.348
+            }
+          ]
+        },
+        {
+          "at": 33861.078291893005,
+          "ms": 13.194,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.194
+            }
+          ]
+        },
+        {
+          "at": 33936.64387500286,
+          "ms": 12.931,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.931
+            }
+          ]
+        },
+        {
+          "at": 34015.91670894623,
+          "ms": 14.392,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 14.392
+            }
+          ]
+        },
+        {
+          "at": 34213.96024990082,
+          "ms": 12.12,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.12
+            }
+          ]
+        },
+        {
+          "at": 34311.3977919817,
+          "ms": 12.498,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.498
+            }
+          ]
+        },
+        {
+          "at": 34482.34333395958,
+          "ms": 12.733,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.733
+            }
+          ]
+        },
+        {
+          "at": 34597.63966691494,
+          "ms": 12.156,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.156
+            }
+          ]
+        },
+        {
+          "at": 34719.04208397865,
+          "ms": 12.989,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.989
+            }
+          ]
+        },
+        {
+          "at": 34800.06354188919,
+          "ms": 13.163,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.163
+            }
+          ]
+        },
+        {
+          "at": 34887.09299993515,
+          "ms": 13.987,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.987
+            }
+          ]
+        },
+        {
+          "at": 35009.16787493229,
+          "ms": 13.796,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.796
+            }
+          ]
+        },
+        {
+          "at": 35136.483999967575,
+          "ms": 11.328,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 11.328
+            }
+          ]
+        },
+        {
+          "at": 36030.41274988651,
+          "ms": 12.975,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.975
+            }
+          ]
+        },
+        {
+          "at": 36079.33904194832,
+          "ms": 13.03,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.03
+            }
+          ]
+        },
+        {
+          "at": 36283.35695898533,
+          "ms": 13.109,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.109
+            }
+          ]
+        },
+        {
+          "at": 36537.54570889473,
+          "ms": 13.57,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.57
+            }
+          ]
+        },
+        {
+          "at": 36746.574000000954,
+          "ms": 13.194,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.194
+            }
+          ]
+        },
+        {
+          "at": 36873.52829194069,
+          "ms": 10.76,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 10.76
+            }
+          ]
+        },
+        {
+          "at": 38329.19054198265,
+          "ms": 10.774,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 10.774
+            }
+          ]
+        },
+        {
+          "at": 38487.95116698742,
+          "ms": 13.267,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 13.267
+            }
+          ]
+        },
+        {
+          "at": 38913.84808397293,
+          "ms": 11.855,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 11.855
+            }
+          ]
+        },
+        {
+          "at": 39554.79862499237,
+          "ms": 12.459,
+          "stages": [
+            {
+              "id": 808,
+              "ms": 12.459
+            }
+          ]
+        },
+        {
+          "at": 40054.18291699886,
+          "ms": 232.299,
+          "stages": [
+            {
+              "id": 350,
+              "ms": 25.075
+            },
+            {
+              "id": 808,
+              "ms": 81.865
+            },
+            {
+              "id": 1476,
+              "ms": 61.724
+            },
+            {
+              "id": 2212,
+              "ms": 37.019
+            }
+          ]
+        },
+        {
+          "at": 40289.93708395958,
+          "ms": 42.115,
+          "stages": [
+            {
+              "id": 350,
+              "ms": 5.429
+            },
+            {
+              "id": 808,
+              "ms": 23.008
+            },
+            {
+              "id": 1476,
+              "ms": 7.286
+            },
+            {
+              "id": 2212,
+              "ms": 5.119
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "runtime": "iOS 27 simulator, Expo development build with React Compiler",
+  "bedFireplace": {
+    "durationMs": 11184,
+    "feedbackSamples": 121,
+    "maxAnchorErrorPoints": 2.847716647714797e-14,
+    "models": [
+      "bed-green"
+    ],
+    "firstNativeResponseMs": {
+      "count": 573,
+      "min": 1,
+      "median": 18,
+      "p95": 18,
+      "max": 20
+    },
+    "allNativeUpdatesMs": {
+      "count": 584,
+      "min": 1,
+      "median": 18,
+      "p95": 19,
+      "max": 51
+    }
+  },
+  "tests": 166,
+  "navigationUnchanged": true,
+  "limitations": [
+    "Software callback-to-transform timing excludes input hardware, GPU completion and display scanout.",
+    "Surface resolver samples measure projected anchor corrections, not a camera recording of the display.",
+    "Post-drop save and access-check stalls are outside this change."
+  ]
+}

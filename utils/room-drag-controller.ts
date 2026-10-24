@@ -4,6 +4,7 @@ import type { RoomPoint } from '@/utils/room-activities';
 export function createRoomDragController(options: {
   pick: (point: RoomPoint) => Promise<string | undefined>;
   anchor: (id: string) => RoomPoint | undefined;
+  prepare?: (id: string, anchor: RoomPoint) => void;
   select: (id: string | undefined) => void;
   move: (id: string, point: RoomPoint) => RoomPoint;
   commit: (id: string, point: RoomPoint) => void;
@@ -45,15 +46,16 @@ export function createRoomDragController(options: {
         if (current !== drag) return;
         drag.picked = true; drag.id = id; drag.anchor = id ? options.anchor(id) : undefined;
         options.select(id);
+        if (id && drag.anchor) options.prepare?.(id, drag.anchor);
         if (drag.released) finish(drag);
         else if (drag.moved) flush(drag);
       }).catch(error => { if (current === drag) { current = undefined; options.onError(error); } });
     },
-    update(dx: number, dy: number) {
+    update(dx: number, dy: number, moved = false) {
       const drag = current;
       if (!drag || drag.released) return;
       drag.dx = dx; drag.dy = dy;
-      drag.moved ||= Math.hypot(dx, dy) > 6;
+      drag.moved ||= moved || Math.hypot(dx, dy) > 6;
       if (!drag.moved || !drag.picked || frame !== undefined) return;
       frame = options.schedule(() => { frame = undefined; flush(drag); });
     },

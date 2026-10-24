@@ -1,6 +1,8 @@
+import { roomDragDelta, type RoomDragBase, type RoomDragMotion } from '@/utils/room-drag-motion';
+import Animated, { useAnimatedStyle, useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { Canvas, DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { moderateScale } from '@/utils/scale';
 import { GameColors } from '@/constants/game';
@@ -23,7 +25,10 @@ function outline(path: ReturnType<typeof Skia.Path.Make>, corners: Vec3[], width
 }
 
 /** Live placement diagnostics stay visible outside the finger's contact area. */
-export function RoomPlacementOverlay({ world, feedback, isNew = false }: { world: NativeRoomWorld; feedback: RoomPlacementFeedback; isNew?: boolean }) {
+export function RoomPlacementOverlay({ world, feedback, isNew = false, visible = true, dragMotion, dragBase }: {
+  world: NativeRoomWorld; feedback: RoomPlacementFeedback; isNew?: boolean; visible?: boolean;
+  dragMotion?: SharedValue<RoomDragMotion>; dragBase?: SharedValue<RoomDragBase | undefined>;
+}) {
   const { t } = useTranslation();
   const { modelId, heading, scale, collidable } = feedback.candidate;
   // Translation does not change the mesh outline. Keep the expensive Skia paths
@@ -64,24 +69,34 @@ export function RoomPlacementOverlay({ world, feedback, isNew = false }: { world
         }
       }
     }
-    const object = feedback.candidate;
-    const center = [(object.min[0]+object.max[0])/2,object.max[1]+.08,(object.min[2]+object.max[2])/2] as Vec3;
-    const label = projectWorld(center,world.width);
-    return {blockers,edges,label};
+    return {blockers,edges};
   },[world.width,world.height,feedback]);
-  const projectedOrigin = projectWorld([0, 0, 0], world.width);
-  const translation = (point: Vec3) => {
-    const projected = projectWorld(point, world.width);
-    return [{ translateX: projected.x - projectedOrigin.x }, { translateY: projected.y - projectedOrigin.y }];
-  };
-  const position = feedback.candidate.position;
-  const footprintTransform = translation([position[0], feedback.candidate.min[1], position[2]]);
-  const partsTransform = translation(position);
+  const candidate = feedback.candidate;
+  const width = world.width, height = world.height;
+  const pose = useDerivedValue(() => {
+    const base = dragBase?.get(), motion = dragMotion?.get();
+    const live = base && motion?.active && motion.moved && base.session === motion.session;
+    const object = live ? base.object : candidate;
+    const delta = live ? roomDragDelta(motion.x - base.x, motion.y - base.y, width, object.wallAxis) : [0, 0, 0];
+    const position: Vec3 = [object.position[0] + delta[0], object.position[1] + delta[1], object.position[2] + delta[2]];
+    const zero = projectWorld([0, 0, 0], width);
+    const part = projectWorld(position, width);
+    const foot = projectWorld([position[0], object.min[1] + delta[1], position[2]], width);
+    const label = projectWorld([(object.min[0] + object.max[0]) / 2 + delta[0], object.max[1] + .08 + delta[1],
+      (object.min[2] + object.max[2]) / 2 + delta[2]], width);
+    return { partX: part.x - zero.x, partY: part.y - zero.y, footX: foot.x - zero.x, footY: foot.y - zero.y, label };
+  });
+  const footprintTransform = useDerivedValue(() => [{ translateX: pose.get().footX }, { translateY: pose.get().footY }]);
+  const partsTransform = useDerivedValue(() => [{ translateX: pose.get().partX }, { translateY: pose.get().partY }]);
   const labelWidth = moderateScale(128);
+  const labelPosition = useAnimatedStyle(() => ({
+    left: Math.max(4, Math.min(width - labelWidth - 4, pose.get().label.x + width / 2 - labelWidth / 2)),
+    top: Math.max(4, Math.min(height - 32, pose.get().label.y + height / 2 - 24)),
+  }));
   const status = roomPlacementStatus(feedback);
   const valid = status === 'ready';
   const color = valid ? GameColors.secondaryDark : status === 'checking' ? GameColors.textMuted : GameColors.hunger;
-  return <View pointerEvents="none" style={[StyleSheet.absoluteFill,{zIndex:ROOM_MENU_OPEN_Z_INDEX}]}>
+  return <View pointerEvents="none" style={[StyleSheet.absoluteFill,{zIndex:ROOM_MENU_OPEN_Z_INDEX, opacity: visible ? 1 : 0}]}>
     <Canvas style={StyleSheet.absoluteFill}>
     <Path path={origin} color={GameColors.textMuted} style="stroke" strokeWidth={1} opacity={.4}/>
     <Group transform={footprintTransform}>
@@ -94,10 +109,7 @@ export function RoomPlacementOverlay({ world, feedback, isNew = false }: { world
     <Path path={paths.blockers} color={GameColors.primary} style="stroke" strokeWidth={2}/>
     <Path path={paths.edges} color={GameColors.primary} style="stroke" strokeWidth={4}/>
     </Canvas>
-    <Text style={[styles.label,{width:labelWidth, color, borderColor: color,
-      left:Math.max(4,Math.min(world.width-labelWidth-4,paths.label.x+world.width/2-labelWidth/2)),
-      top:Math.max(4,Math.min(world.height-32,paths.label.y+world.height/2-24)),
-    }]}>{valid ? '✓ ' : status === 'checking' ? '… ' : '× '}{t(valid ? feedback.snapped ? 'home.placementAligned' : 'home.placementReady' : status === 'checking' ? 'home.placementChecking' : 'home.notPlaced')}</Text>
+    <Animated.Text style={[styles.label,{width:labelWidth, color, borderColor: color},labelPosition]}>{valid ? '✓ ' : status === 'checking' ? '… ' : '× '}{t(valid ? feedback.snapped ? 'home.placementAligned' : 'home.placementReady' : status === 'checking' ? 'home.placementChecking' : 'home.notPlaced')}</Animated.Text>
   </View>;
 }
 
