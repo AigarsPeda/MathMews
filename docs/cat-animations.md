@@ -284,3 +284,25 @@ The earlier back overlay counter-transformed each upper leg and the neck, leavin
 Walking adds restrained support compression; the chest leads turns and the hips follow with slower damping. Toy swats now load the support side and round the back before the reaching paw arrives. Rest poses settle, and crawl/bed/bath exclusions and Reduce Motion remain. Captured turn/launch heights exclude the previous overlay so it cannot be applied twice. Landing-to-walk recovery suppresses downward gait arch until the supported first stride finishes.
 
 Actual-rig comparisons, native simulator footage, research references and validation are in [the spine refinement review](qa/cat-spine-refinement/2026-10-24/README.md). The native review used the existing BrainPet Puzzle QA simulator and Metro 8081. The expanded spine test checks shoulder displacement as well as retained contacts; focused turn, jump, landing, room and object-contact checks passed.
+
+## Alternating walking shoulders, 24 October 2026
+
+The walking refinement adds alternating chest roll and forward shoulder travel, followed by a delayed pelvis twist. Stronger middle-back flex and support compression follow the stride. The legs retain their original pad positions and sole orientations through IK, while the neck counter-rotates to retain the gaze. The added walking alternation fades as running speed increases and settles at rest.
+
+Blender skin weights now concentrate spine influence in the middle of the torso. Chest and pelvis influence increases toward the ends, making the back curve more visible. All three native coats and the editable orange source were rebuilt with unchanged skeletal animation channels. Generated branding assets were refreshed by the canonical export pipeline.
+
+The final model was reviewed in the existing BrainPet Puzzle QA simulator with ordinary room commands. The [walking review](qa/cat-walking-shoulders/2026-10-24/README.md) includes a comparison with the previous implementation, native footage and validation results. The expanded spine check covers alternating shoulder loading, paw retention and full head orientation. All 795 sampled authored poses and 30 additional runtime walking poses passed mesh deformation checks.
+
+## Head and tail follow-through, 24 October 2026
+
+The neck now keeps a small delayed response to chest pitch, yaw and roll after stabilizing the gaze. The tail base follows hip yaw and back flex; the distal joints respond later. These offsets follow the rendered back pose, settle after movement, and transfer with the spine state between rooms. Existing attention and airborne expressions remain in use. Crawl, bed and bathroom motion exclude the added response, and Reduce Motion suppresses it.
+
+The [head and tail review](qa/cat-head-tail/2026-10-24/README.md) records the comparison and focused checks. The spine check now requires head response and tail-tip delay while bounding amplitude and frame-to-frame changes. Paw paths, tail collision handling, room handoffs and pause/resume remain covered by the actor checks.
+
+### Walking to rest
+
+The head and tail retain their connection to the relaxing torso after the last stride. The head settles before the distal tail joints, and idle tilts and flicks blend in instead of appearing immediately. The stopping check covers normal arrival, interrupted strides and pause/resume on all three coats at 30/60/120 FPS. See the [existing simulator recording and QA notes](qa/cat-stopping/2026-10-24/README.md).
+
+### Standing to walking
+
+Ordinary floor departures capture the standing paws and release them into the first stride. The support pose follows those paw targets, the idle clip eases into walking over 0.22 seconds, and head/tail follow-through builds during the first step. Scripted routes and moving handoffs retain their existing contact handling. See the [first-step checks and simulator recording](qa/cat-starting/2026-10-24/README.md).

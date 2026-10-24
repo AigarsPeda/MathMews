@@ -1,0 +1,102 @@
+[
+  {
+    "kind": "bridge",
+    "frames": 48,
+    "bounds": [
+      73,
+      27,
+      450,
+      405
+    ]
+  },
+  {
+    "kind": "book",
+    "frames": 48,
+    "bounds": [
+      70,
+      118,
+      374,
+      404
+    ]
+  },
+  {
+    "kind": "loom",
+    "frames": 48,
+    "bounds": [
+      82,
+      133,
+      426,
+      397
+    ]
+  },
+  {
+    "kind": "clock",
+    "frames": 48,
+    "bounds": [
+      73,
+      104,
+      341,
+      397
+    ]
+  },
+  {
+    "kind": "balloon",
+    "frames": 48,
+    "bounds": [
+      134,
+      51,
+      397,
+      396
+    ]
+  },
+  {
+    "kind": "sorter",
+    "frames": 48,
+    "bounds": [
+      119,
+      33,
+      440,
+      405
+    ]
+  },
+  {
+    "kind": "boat",
+    "frames": 48,
+    "bounds": [
+      45,
+      93,
+      410,
+      413
+    ]
+  },
+  {
+    "kind": "fountain",
+    "frames": 48,
+    "bounds": [
+      85,
+      89,
+      420,
+      412
+    ]
+  },
+  {
+    "kind": "beacon",
+    "frames": 48,
+    "bounds": [
+      104,
+      45,
+      417,
+      397
+    ]
+  },
+  {
+    "kind": "trophy",
+    "frames": 48,
+    "bounds": [
+      25,
+      14,
+      430,
+      400
+    ]
+  }
+]

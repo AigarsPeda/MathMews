@@ -4,7 +4,7 @@ import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { reportAppError } from "@/lib/app-diagnostics";
 import { moderateScale } from "@/utils/scale";
 import { Image } from "expo-image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -16,13 +16,20 @@ export function AchievementMovie({ sceneId, label, active }: { sceneId: string; 
   const [paused, setPaused] = useState(false), [replay, setReplay] = useState(0);
   const media = ACHIEVEMENT_MEDIA[sceneId];
   const playing = active && foreground && !reduceMotion && !paused;
-  useEffect(() => {
-    const action = playing ? image.current?.startAnimating() : image.current?.stopAnimating();
+  const playingRef = useRef(playing);
+  const syncPlayback = useCallback(() => {
+    const action = playingRef.current ? image.current?.startAnimating() : image.current?.stopAnimating();
     void action?.catch(error => reportAppError("achievement-playback", error));
-  }, [playing, replay]);
+  }, []);
+  useEffect(() => {
+    playingRef.current = playing;
+    syncPlayback();
+  }, [playing, replay, syncPlayback]);
   return <View>
-    <Image key={replay} ref={image} source={reduceMotion ? media.poster : media.gif} autoplay={playing}
-      onLoad={() => { if (!playing) void image.current?.stopAnimating().catch(error => reportAppError("achievement-playback", error)); }}
+    {/* Changing autoplay reloads the native image and resets its frame. Keep the
+        prop stable and use the playback API after loading and on state changes. */}
+    <Image key={replay} ref={image} testID="achievement-movie" source={reduceMotion ? media.poster : media.gif} autoplay={false}
+      onLoad={syncPlayback}
       accessible accessibilityRole="image" accessibilityLabel={label} contentFit="contain" style={styles.movie} />
     {!reduceMotion ? <View style={styles.controls}>
       <Pressable accessibilityRole="button" onPress={() => setPaused(value => !value)} style={styles.control}>

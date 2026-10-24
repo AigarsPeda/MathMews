@@ -1,0 +1,368 @@
+{
+  "samples": 60,
+  "threshold": 2,
+  "maxMeanAbsoluteRGBError": 0.7222755068824405,
+  "passed": true,
+  "rows": [
+    {
+      "kind": "bridge",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.4098728724888393
+    },
+    {
+      "kind": "bridge",
+      "sourceFrame": 12,
+      "gifPage": 4,
+      "meanAbsoluteRGBError": 0.41653006417410715
+    },
+    {
+      "kind": "bridge",
+      "sourceFrame": 18,
+      "gifPage": 10,
+      "meanAbsoluteRGBError": 0.4301176525297619
+    },
+    {
+      "kind": "bridge",
+      "sourceFrame": 25,
+      "gifPage": 17,
+      "meanAbsoluteRGBError": 0.4333001999627976
+    },
+    {
+      "kind": "bridge",
+      "sourceFrame": 36,
+      "gifPage": 28,
+      "meanAbsoluteRGBError": 0.47604515438988093
+    },
+    {
+      "kind": "bridge",
+      "sourceFrame": 47,
+      "gifPage": 38,
+      "meanAbsoluteRGBError": 0.4303705124627976
+    },
+    {
+      "kind": "book",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.4055059523809524
+    },
+    {
+      "kind": "book",
+      "sourceFrame": 12,
+      "gifPage": 6,
+      "meanAbsoluteRGBError": 0.44837007068452384
+    },
+    {
+      "kind": "book",
+      "sourceFrame": 18,
+      "gifPage": 12,
+      "meanAbsoluteRGBError": 0.4823942638578869
+    },
+    {
+      "kind": "book",
+      "sourceFrame": 25,
+      "gifPage": 19,
+      "meanAbsoluteRGBError": 0.5015665690104166
+    },
+    {
+      "kind": "book",
+      "sourceFrame": 36,
+      "gifPage": 30,
+      "meanAbsoluteRGBError": 0.44811430431547616
+    },
+    {
+      "kind": "book",
+      "sourceFrame": 47,
+      "gifPage": 40,
+      "meanAbsoluteRGBError": 0.46586826869419645
+    },
+    {
+      "kind": "loom",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.3690592447916667
+    },
+    {
+      "kind": "loom",
+      "sourceFrame": 12,
+      "gifPage": 11,
+      "meanAbsoluteRGBError": 0.35872686476934523
+    },
+    {
+      "kind": "loom",
+      "sourceFrame": 18,
+      "gifPage": 17,
+      "meanAbsoluteRGBError": 0.3603413899739583
+    },
+    {
+      "kind": "loom",
+      "sourceFrame": 25,
+      "gifPage": 24,
+      "meanAbsoluteRGBError": 0.41213843936011907
+    },
+    {
+      "kind": "loom",
+      "sourceFrame": 36,
+      "gifPage": 35,
+      "meanAbsoluteRGBError": 0.4127110072544643
+    },
+    {
+      "kind": "loom",
+      "sourceFrame": 47,
+      "gifPage": 44,
+      "meanAbsoluteRGBError": 0.40918404715401785
+    },
+    {
+      "kind": "clock",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.47637358165922616
+    },
+    {
+      "kind": "clock",
+      "sourceFrame": 12,
+      "gifPage": 3,
+      "meanAbsoluteRGBError": 0.48099336170014884
+    },
+    {
+      "kind": "clock",
+      "sourceFrame": 18,
+      "gifPage": 9,
+      "meanAbsoluteRGBError": 0.4828462146577381
+    },
+    {
+      "kind": "clock",
+      "sourceFrame": 25,
+      "gifPage": 16,
+      "meanAbsoluteRGBError": 0.5054132370721727
+    },
+    {
+      "kind": "clock",
+      "sourceFrame": 36,
+      "gifPage": 27,
+      "meanAbsoluteRGBError": 0.4646882556733631
+    },
+    {
+      "kind": "clock",
+      "sourceFrame": 47,
+      "gifPage": 36,
+      "meanAbsoluteRGBError": 0.4646824428013393
+    },
+    {
+      "kind": "balloon",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.5022800990513393
+    },
+    {
+      "kind": "balloon",
+      "sourceFrame": 12,
+      "gifPage": 1,
+      "meanAbsoluteRGBError": 0.5018107096354166
+    },
+    {
+      "kind": "balloon",
+      "sourceFrame": 18,
+      "gifPage": 7,
+      "meanAbsoluteRGBError": 0.5174662272135416
+    },
+    {
+      "kind": "balloon",
+      "sourceFrame": 25,
+      "gifPage": 14,
+      "meanAbsoluteRGBError": 0.5264543805803571
+    },
+    {
+      "kind": "balloon",
+      "sourceFrame": 36,
+      "gifPage": 25,
+      "meanAbsoluteRGBError": 0.5301441010974702
+    },
+    {
+      "kind": "balloon",
+      "sourceFrame": 47,
+      "gifPage": 34,
+      "meanAbsoluteRGBError": 0.5300452822730655
+    },
+    {
+      "kind": "sorter",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.4707859584263393
+    },
+    {
+      "kind": "sorter",
+      "sourceFrame": 12,
+      "gifPage": 6,
+      "meanAbsoluteRGBError": 0.49817475818452384
+    },
+    {
+      "kind": "sorter",
+      "sourceFrame": 18,
+      "gifPage": 12,
+      "meanAbsoluteRGBError": 0.49734933035714285
+    },
+    {
+      "kind": "sorter",
+      "sourceFrame": 25,
+      "gifPage": 19,
+      "meanAbsoluteRGBError": 0.4826747349330357
+    },
+    {
+      "kind": "sorter",
+      "sourceFrame": 36,
+      "gifPage": 30,
+      "meanAbsoluteRGBError": 0.39617919921875
+    },
+    {
+      "kind": "sorter",
+      "sourceFrame": 47,
+      "gifPage": 39,
+      "meanAbsoluteRGBError": 0.3838297526041667
+    },
+    {
+      "kind": "boat",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.47820899600074407
+    },
+    {
+      "kind": "boat",
+      "sourceFrame": 12,
+      "gifPage": 1,
+      "meanAbsoluteRGBError": 0.47822498139880953
+    },
+    {
+      "kind": "boat",
+      "sourceFrame": 18,
+      "gifPage": 7,
+      "meanAbsoluteRGBError": 0.4877537318638393
+    },
+    {
+      "kind": "boat",
+      "sourceFrame": 25,
+      "gifPage": 14,
+      "meanAbsoluteRGBError": 0.46887061709449407
+    },
+    {
+      "kind": "boat",
+      "sourceFrame": 36,
+      "gifPage": 25,
+      "meanAbsoluteRGBError": 0.4402494884672619
+    },
+    {
+      "kind": "boat",
+      "sourceFrame": 47,
+      "gifPage": 34,
+      "meanAbsoluteRGBError": 0.42004249209449407
+    },
+    {
+      "kind": "fountain",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.5000581287202381
+    },
+    {
+      "kind": "fountain",
+      "sourceFrame": 12,
+      "gifPage": 7,
+      "meanAbsoluteRGBError": 0.5225059872581845
+    },
+    {
+      "kind": "fountain",
+      "sourceFrame": 18,
+      "gifPage": 13,
+      "meanAbsoluteRGBError": 0.5605425153459821
+    },
+    {
+      "kind": "fountain",
+      "sourceFrame": 25,
+      "gifPage": 20,
+      "meanAbsoluteRGBError": 0.71307373046875
+    },
+    {
+      "kind": "fountain",
+      "sourceFrame": 36,
+      "gifPage": 31,
+      "meanAbsoluteRGBError": 0.7222755068824405
+    },
+    {
+      "kind": "fountain",
+      "sourceFrame": 47,
+      "gifPage": 41,
+      "meanAbsoluteRGBError": 0.6897219703311012
+    },
+    {
+      "kind": "beacon",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.44626581101190477
+    },
+    {
+      "kind": "beacon",
+      "sourceFrame": 12,
+      "gifPage": 12,
+      "meanAbsoluteRGBError": 0.5108628045944941
+    },
+    {
+      "kind": "beacon",
+      "sourceFrame": 18,
+      "gifPage": 18,
+      "meanAbsoluteRGBError": 0.5277433849516369
+    },
+    {
+      "kind": "beacon",
+      "sourceFrame": 25,
+      "gifPage": 25,
+      "meanAbsoluteRGBError": 0.5288434709821429
+    },
+    {
+      "kind": "beacon",
+      "sourceFrame": 36,
+      "gifPage": 36,
+      "meanAbsoluteRGBError": 0.5704243977864584
+    },
+    {
+      "kind": "beacon",
+      "sourceFrame": 47,
+      "gifPage": 47,
+      "meanAbsoluteRGBError": 0.5646507626488095
+    },
+    {
+      "kind": "trophy",
+      "sourceFrame": 0,
+      "gifPage": 0,
+      "meanAbsoluteRGBError": 0.5910688127790179
+    },
+    {
+      "kind": "trophy",
+      "sourceFrame": 12,
+      "gifPage": 6,
+      "meanAbsoluteRGBError": 0.6106451125372023
+    },
+    {
+      "kind": "trophy",
+      "sourceFrame": 18,
+      "gifPage": 12,
+      "meanAbsoluteRGBError": 0.6037670317150298
+    },
+    {
+      "kind": "trophy",
+      "sourceFrame": 25,
+      "gifPage": 19,
+      "meanAbsoluteRGBError": 0.5897957938058036
+    },
+    {
+      "kind": "trophy",
+      "sourceFrame": 36,
+      "gifPage": 30,
+      "meanAbsoluteRGBError": 0.5357491629464286
+    },
+    {
+      "kind": "trophy",
+      "sourceFrame": 47,
+      "gifPage": 39,
+      "meanAbsoluteRGBError": 0.5133507138206845
+    }
+  ]
+}

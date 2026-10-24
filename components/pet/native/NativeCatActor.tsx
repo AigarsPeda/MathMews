@@ -159,10 +159,10 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     turnSoles: [] as number[][], turnHead: 0, turnSpineHeight: 0, turnCrouch: 0,
     turnInitialSoles: [] as number[][],
     turnOverlap: 0, launchStarted: false, launchFeet: [] as Vec3[], launchSoles: [] as number[][],
-    landingPending: false, launchFromLanding: false, launchDistance: 0, launchStride: .8, launchPhase: 0, launchHeight: 0, walkStride: .8, walkOffset: 0,
+    landingPending: false, launchFromLanding: false, standingPending: false, launchFromStanding: false, launchDistance: 0, launchStride: .8, launchPhase: 0, launchHeight: 0, walkStride: .8, walkOffset: 0,
     gait: 'walk' as CatGait, gaitSpeed: 0, gaitContacts: [] as (Vec3 | null)[],
     gaitSwings: [] as ({ from: Vec3; elapsed: number } | null)[],
-    spinePose: catSpinePose(0,0,0),
+    spinePose: catSpinePose(0,0,0), restExpressionWeight: 0,
     tailYaw: [0,0,0,0], tailPitch: [0,0,0,0], travelHead: 0, tailTurnRate: 0, earYaw: 0, earPitch: [0,0], supportLift: 0, expressionTime: 0, lookCycle: -1, lookTarget: undefined as Vec3 | undefined, attentionYaw: 0, attentionPitch: 0,
     tailContact: { angle: 0, axis: [0, 1, 0], blocked: false } as TailContact });
   useEffect(() => {
@@ -225,7 +225,11 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     if(!Number.isFinite(frameState.travelHead)) {frameState.travelHead=0;frameState.tailTurnRate=0;frameState.tailYaw=[0,0,0,0];frameState.tailPitch=[0,0,0,0];}
     if(!Number.isFinite(frameState.earYaw)) {frameState.earYaw=0;frameState.earPitch=[0,0];frameState.travelHead=0;frameState.tailTurnRate=0;frameState.tailYaw=[0,0,0,0];frameState.tailPitch=[0,0,0,0];}
     if(!frameState.spinePose)frameState.spinePose=catSpinePose(0,0,0);
+    frameState.restExpressionWeight ??= 0;
+    frameState.standingPending ??= false;frameState.launchFromStanding ??= false;
     frameState.spinePose.chestLift ??= 0;frameState.spinePose.hipLift ??= 0;
+    frameState.spinePose.chestRoll ??= 0;frameState.spinePose.hipRoll ??= 0;frameState.spinePose.scapula ??= 0;
+    for(const key of ['headPitch','headYaw','headRoll','tailFollowYaw','tailFollowPitch','tailTipYaw','tailTipPitch'] as const)frameState.spinePose[key] ??= 0;
     if (frameState.id !== request.id) {
       const renderedElapsed = frameState.elapsed;
       frameState.id = request.id;
@@ -236,6 +240,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       frameState.roomComplete = false;
       if (!request.travel?.path.length) {
         frameState.landingPending = false;
+        frameState.standingPending = false;frameState.launchFromStanding = false;
         frameState.launchFromLanding = false;
         frameState.turnElapsed = 0;
         frameState.turnDuration = 0;
@@ -272,6 +277,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
           frameState.turnOverlap = 0;
           frameState.launchStarted = false;
           frameState.launchFromLanding = false;
+          frameState.standingPending = false;frameState.launchFromStanding = false;
           if (journey.jump || !request.segments[0]?.name.startsWith('walk')) frameState.landingPending = false;
           const phase = frameState.distance / (frameState.walkStride * (request.world?.catScale ?? 1)) + frameState.walkOffset;
           frameState.walkStride = .8;
@@ -335,6 +341,9 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
             frameState.routeStartRate=cost>1e-5?incoming.speed*(request.world?.catScale??1)*(route.paces[0]??1)/cost:0;
             if(floorLeg)frameState.routeLegs=frameState.routeLegs.map((leg,index)=>index?leg:{...leg,initialRate:frameState.routeStartRate});
           }
+          frameState.standingPending=rebase && !journey.legs?.length && !incoming && !frameState.landingPending
+            && !journey.bed && !journey.bathroom && frameState.gaitSpeed<.15
+            && request.segments[0]?.name==='walk';
           frameState.routeCost=cost;
           frameState.routeEndRate=journey.through?catWalkExitRate(frameState.routeDuration,frameState.routeRamp,frameState.routeStartRate):0;
           if(journey.through && frameState.routeLegs.length) {
@@ -356,7 +365,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
               const angle = Math.atan2(Math.sin(facing - frameState.heading), Math.cos(facing - frameState.heading));
               if (!frameState.ready || incoming) frameState.heading = facing;
               else if (Math.abs(angle) > .35 && !request.steering) {
-                frameState.landingPending = false;
+                frameState.landingPending = false;frameState.standingPending = false;
                 frameState.turnFrom = frameState.heading;
                 frameState.turnAngle = angle;
                 frameState.turnDuration = catTurnDuration(angle);
@@ -517,8 +526,10 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     }
     if (hopPhase !== undefined) frameState.landingPending = hopPhase >= CAT_JUMP_TOUCHDOWN;
     const landingCapture = walking && frameState.landingPending && !turning && !steppingTurn && !frameState.launchStarted && !request.reduceMotion;
-    if (walking && (frameState.turnOverlap > 0 || landingCapture) && !frameState.launchStarted && turningRig) {
-      if (landingCapture) {
+    const standingCapture=walking && frameState.standingPending && !crawling && !turning && !steppingTurn && !frameState.launchStarted && !request.reduceMotion;
+    const supportCapture=landingCapture || standingCapture;
+    if (walking && (frameState.turnOverlap > 0 || supportCapture) && !frameState.launchStarted && turningRig) {
+      if (supportCapture) {
         frameState.turnFrom = frameState.heading;
         frameState.turnAngle = 0;
         frameState.turnFeet = [];
@@ -527,6 +538,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         frameState.walkStride = Math.min(.8,Math.max(.05,Math.hypot(...end.map((v,k)=>v-frameState.position[k]))/(scale*1.1)));
       }
       frameState.launchFromLanding = landingCapture;
+      frameState.launchFromStanding = standingCapture;frameState.standingPending = false;
       frameState.landingPending = false;
       frameState.launchStarted = true;
       frameState.launchFeet = turningRig.legs.map(leg => {
@@ -580,6 +592,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     if (arrivedWalk) time = journey.through ? ((frameState.distance/(frameState.walkStride*scale)+frameState.walkOffset)%1+1)%1*clip.duration : journey.bed ? frameState.clipTime : (frameState.elapsed - frameState.routeDuration) % clip.duration;
     const resting=hopPhase===undefined && !walking && !posingFeet && !journey?.bed && !journey?.bathroom
       && !journey?.treePlay && ['idle','idle2','blinkIdle','blinkSit','sit','waiting'].includes(segment.name);
+    const settling=resting || arrivedWalk && !journey.through && !journey.bed && !journey.bathroom;
     // Held commands retain their scheduler semantics while the awake cat
     // continues breathing, blinking and shifting its gaze after the clip ends.
     if(resting)time=frameState.elapsed%clip.duration;
@@ -595,7 +608,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       frameState.previousDuration = frameState.clipDuration;
       frameState.clip = clip.index;
       frameState.blend = frameState.preparedJump && hopPhase!==undefined ? 1 : 0;
-      frameState.blendSeconds = frameState.previous === clips.wakeStretch?.index ? .22 : walking && [clips.walk?.index,clips.trot?.index,clips.run?.index].includes(frameState.previous) ? .22 : .12;
+      frameState.blendSeconds = launching && frameState.launchFromStanding ? .22 : frameState.previous === clips.wakeStretch?.index ? .22 : walking && [clips.walk?.index,clips.trot?.index,clips.run?.index].includes(frameState.previous) ? .22 : .12;
     }
     frameState.clipTime = time;
     frameState.clipLoop = (!steppingTurn || walking) && (arrivedWalk ? !journey.bed : walking || hopPhase === undefined && segment.loop);
@@ -603,7 +616,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     if (animationTimeValue)
       animationTimeValue.value = { name: clipName, time };
     frameState.blend = Math.min(1, frameState.blend + deltaSeconds / frameState.blendSeconds);
-    if ((steppingTurn || landingCapture) && turningRig && !frameState.turnFeet.length) {
+    if ((steppingTurn || supportCapture) && turningRig && !frameState.turnFeet.length) {
       // Retain the visible contacts, including an interrupted walk or turn.
       const head = transformManager.getWorldTransform(turningRig.head).data;
       const headYaw = Math.atan2(head[8], head[10]) - frameState.turnFrom;
@@ -623,7 +636,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     }
     // The turn starts from standing, then uses the distance-driven walk while
     // IK carries the actual foot contacts through the first forward steps.
-    if (landingCapture && turningRig && clips.idle) {
+    if (supportCapture && turningRig && clips.idle) {
       // First-step targets need the standing stance, not a sampled mid-stride
       // foot position. Otherwise a lifted paw overshoots and snaps at touchdown.
       animator.applyAnimation(clips.idle.index,0);
@@ -645,7 +658,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     }
     animator.applyAnimation(clip.index, time);
     // The waking bow must blend out even while first-step IK places the paws.
-    if ((!posingFeet || arrivedWalk || frameState.launchFromLanding && launching || frameState.previous === clips.wakeStretch?.index) && frameState.previous >= 0 && frameState.blend < 1) {
+    if ((!posingFeet || arrivedWalk || launching && (frameState.launchFromLanding || frameState.launchFromStanding) || frameState.previous === clips.wakeStretch?.index) && frameState.previous >= 0 && frameState.blend < 1) {
       // Keep the outgoing pose moving while blending instead of freezing a paw mid-stride.
       if (frameState.previousLoop) {
         const previousGait = frameState.previous === clips.run?.index ? 'run' : frameState.previous === clips.trot?.index ? 'trot' : frameState.previous === clips.walk?.index ? 'walk' : undefined;
@@ -655,7 +668,8 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       else if (frameState.launchFromLanding && launching) {
         frameState.previousTime = Math.min(frameState.previousDuration,frameState.previousTime+deltaSeconds*frameState.previousDuration/Math.max(.1,frameState.jumpDuration));
       }
-      animator.applyCrossFade(frameState.previous, frameState.previousTime, frameState.blend);
+      const blend=launching && frameState.launchFromStanding?frameState.blend*frameState.blend*(3-2*frameState.blend):frameState.blend;
+      animator.applyCrossFade(frameState.previous, frameState.previousTime, blend);
     }
     if(frameState.preparation>0 && journey?.prepareJump && !request.reduceMotion) {
       const preparationClip=clips[journey.prepareJump.light?'jumpOnLight':'jumpOn']??clips.jumpOn;
@@ -759,26 +773,30 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       const turnPose = catTurnPose(frameState.turnAngle, turnPhase ?? 1, frameState.turnHead, frameState.turnCrouch);
       const spineLocal = transformManager.getTransform(turningRig.spine);
       const walkHeight = (transformManager.getWorldTransform(turningRig.spine).translation[1] - frameState.position[1]) / scale;
-      const spineShift = launching ? catLaunchSpine(frameState.launchHeight, walkHeight, launchProgress, frameState.walkStride, frameState.launchFromLanding)
+      const spineShift = launching ? catLaunchSpine(frameState.launchHeight, walkHeight, launchProgress, frameState.walkStride, frameState.launchFromLanding || frameState.launchFromStanding)
         : walking ? 0 : -turnPose.crouch;
       transformManager.setTransform(turningRig.spine, spineLocal.translate([0, spineShift, 0]));
-      if(launching && frameState.launchFromLanding) {
-        // Keep recovering shoulders/hips within reach of feet that have not
-        // lifted yet. A tiny contact correction avoids pulling those pads
-        // along the floor as the independent impact poses blend into a walk.
+      if(launching && (frameState.launchFromLanding || frameState.launchFromStanding)) {
+        // Keep the shoulders and hips within reach of the first-step feet.
+        // For a standing start, follow the lifting targets too so the
+        // support adjustment releases smoothly through lift-off.
         let drop=0;
         for(let i=0;i<turningRig.legs.length;i++) {
-          if(catLaunchStep(frameState.launchPhase,launchProgress,i).progress>0)continue;
+          const step=catLaunchStep(frameState.launchPhase,launchProgress,i);
+          if(frameState.launchFromStanding?step.done:step.progress>0)continue;
           const leg=turningRig.legs[i],a=transformManager.getWorldTransform(leg.upper).translation;
           const b=transformManager.getWorldTransform(leg.lower).translation,p=transformManager.getWorldTransform(leg.paw).translation;
-          const target=frameState.launchFeet[i],length=Math.hypot(...a.map((v,k)=>v-b[k]))+Math.hypot(...b.map((v,k)=>v-p[k]))-.001;
+          const target=frameState.launchFromStanding
+            ? catLaunchPaw(frameState.launchFeet[i],frameState.turnNeutral[i],walkPaws[i],frameState.position,frameState.heading,scale,frameState.walkStride,frameState.launchPhase,launchProgress,i)
+            : frameState.launchFeet[i];
+          const length=Math.hypot(...a.map((v,k)=>v-b[k]))+Math.hypot(...b.map((v,k)=>v-p[k]))-.001;
           const vertical=Math.sqrt(Math.max(0,length*length-(a[0]-target[0])**2-(a[2]-target[2])**2));
           drop=Math.max(drop,a[1]-target[1]-vertical);
         }
-        if(drop>0)transformManager.setTransform(turningRig.spine,transformManager.getTransform(turningRig.spine).translate([0,-Math.min(.01,drop/scale),0]));
+        if(drop>0)transformManager.setTransform(turningRig.spine,transformManager.getTransform(turningRig.spine).translate([0,-Math.min(frameState.launchFromStanding?.10:.01,drop/scale),0]));
       }
       const headRecovery=Math.max(0,Math.min(1,launchProgress/.55));
-      const headAngle = launching && frameState.launchFromLanding
+      const headAngle = launching && (frameState.launchFromLanding || frameState.launchFromStanding)
         ? frameState.turnHead*(1-headRecovery*headRecovery*(3-2*headRecovery)) : turnPose.head;
       const headLocal = transformManager.getTransform(turningRig.head), headOrigin = headLocal.translation;
       transformManager.setTransform(turningRig.head, headLocal.translate(headOrigin.map(v => -v) as Vec3)
@@ -897,53 +915,82 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       // The landing already supplies compression. Let it recover through the
       // first supported stride before allowing the gait's downward back flex.
       if(launching && frameState.launchFromLanding)target.arch=Math.max(0,target.arch);
-      for(const key of ['arch','side','chestPitch','hipPitch','chestYaw','hipYaw','chestLift','hipLift'] as const) {
+      for(const key of ['arch','side','chestPitch','hipPitch','chestYaw','hipYaw','chestLift','hipLift','chestRoll','hipRoll','scapula'] as const) {
         // The hips follow the chest through a turn; changing commands must
         // not yank the middle back to the opposite side in a single frame.
-        const rate=key==='side'?8:key==='chestYaw'?10:key==='hipYaw'?7:22;
+        const rate=settling?8:key==='side'?8:key==='chestYaw'?10:key==='hipYaw'?7:22;
         const blend=request.reduceMotion?1:1-Math.exp(-deltaSeconds*rate);
         frameState.spinePose[key]+=(target[key]-frameState.spinePose[key])*blend;
       }
       const flex=frameState.spinePose;
+      const firstStep=launching && !frameState.launchFromLanding;
+      const follow=enabled && (walking || settling) && (!posingFeet || firstStep) && !frameState.preparation;
+      const start=Math.max(0,Math.min(1,launchProgress/.6));
+      const followWeight=firstStep?start*start*(3-2*start):1;
+      // A restrained neck response follows chest loading. The tail base
+      // follows the hips, then passes that response down to the tip.
+      // Keep that chain connected while the torso releases after the last step.
+      for(const [key,value,rate] of [
+        ['headPitch',follow?flex.chestPitch*.50*followWeight:0,settling?6:9],
+        ['headYaw',follow?flex.chestYaw*.40*followWeight:0,settling?6:9],
+        ['headRoll',follow?flex.chestRoll*.25*followWeight:0,settling?6:9],
+        ['tailFollowYaw',follow?flex.hipYaw*1.4*followWeight:0,settling?6:8],
+        ['tailFollowPitch',follow?(flex.hipPitch*1.1-flex.arch*.50)*followWeight:0,settling?6:8],
+        ['tailTipYaw',follow?flex.tailFollowYaw:0,settling?4:6],
+        ['tailTipPitch',follow?flex.tailFollowPitch:0,settling?4:6],
+      ] as const) {
+        const blend=enabled?1-Math.exp(-deltaSeconds*rate):1;
+        flex[key]+=(value-flex[key])*blend;
+      }
       if(Object.values(flex).some(value=>Math.abs(value)>1e-6)) {
         // Keep the authored paw trajectories and soles while the weighted
         // middle back, shoulders and hips bend independently above them.
         const neckTarget=transformManager.getWorldTransform(turningRig.neck).translation;
         const feet=turningRig.legs.map(leg=>transformManager.getWorldTransform(leg.paw).data);
         const side:Vec3=[Math.cos(frameState.heading),0,-Math.sin(frameState.heading)];
+        const forward:Vec3=[Math.sin(frameState.heading),0,Math.cos(frameState.heading)];
         const spine=transformManager.getTransform(turningRig.spine);
         const shift:Vec3=[flex.side,flex.arch,0];
         transformManager.setTransform(turningRig.spine,spine.translate(shift));
         const parent=transformManager.getWorldTransform(turningRig.spine).data;
         // Anchor both ends of the curve; translating the root alone just bobs
         // a rigid cat. The middle skin rises between the anchored endpoints.
-        const up=tailParentAxis([0,1,0],parent),lateral=tailParentAxis(side,parent);
+        const up=tailParentAxis([0,1,0],parent),lateral=tailParentAxis(side,parent),longitudinal=tailParentAxis(forward,parent);
         const counter=up.map((v,k)=>-v*flex.arch-lateral[k]*flex.side) as Vec3;
-        for(const [joint,pitch,yaw,lift] of [
-          [turningRig.legs[0].parent,flex.chestPitch,flex.chestYaw,flex.chestLift],
-          [turningRig.legs[2].parent,flex.hipPitch,flex.hipYaw,flex.hipLift],
+        for(const [joint,pitch,yaw,lift,roll] of [
+          [turningRig.legs[0].parent,flex.chestPitch,flex.chestYaw,flex.chestLift,flex.chestRoll],
+          [turningRig.legs[2].parent,flex.hipPitch,flex.hipYaw,flex.hipLift,flex.hipRoll],
         ] as const) {
           const local=transformManager.getTransform(joint),origin=local.translation;
           transformManager.setTransform(joint,local.translate(origin.map(v=>-v) as Vec3)
-            .rotate(pitch,lateral).rotate(yaw,up).translate(origin).translate(counter).translate(up.map(v=>v*lift) as Vec3));
+            .rotate(pitch,lateral).rotate(yaw,up).rotate(roll,longitudinal).translate(origin).translate(counter).translate(up.map(v=>v*lift) as Vec3));
         }
         if(tail) {
           const local=transformManager.getTransform(tail.joints[0]);
           transformManager.setTransform(tail.joints[0],local.translate(counter));
         }
-        // Keep gaze rotation quiet while the neck follows part of the chest
-        // displacement. Let shoulders and hips move over planted
-        // feet. Canceling every upper-leg transform made the torso feel rigid.
+        // Stabilize the gaze, then allow a small delayed response to the
+        // chest. The neck still follows part of its translation.
         const neck=turningRig.neck,neckParent=transformManager.getWorldTransform(turningRig.legs[0].parent).data;
         const neckLocal=transformManager.getTransform(neck),neckOrigin=neckLocal.translation;
         const neckWorld=transformManager.getWorldTransform(neck).translation;
         const neckDelta=neckTarget.map((v,k)=>(v-neckWorld[k])*.65) as Vec3,neckDistance=Math.hypot(...neckDelta);
         const neckCorrection=neckDistance>1e-9?tailParentAxis(neckDelta,neckParent).map(v=>v*neckDistance/scale) as Vec3:[0,0,0] as Vec3;
         transformManager.setTransform(neck,neckLocal.translate(neckOrigin.map(v=>-v) as Vec3)
+          .rotate(-flex.chestRoll,tailParentAxis(forward,neckParent))
           .rotate(-flex.chestYaw,tailParentAxis([0,1,0],neckParent))
-          .rotate(-flex.chestPitch,tailParentAxis(side,neckParent)).translate(neckOrigin).translate(neckCorrection));
+          .rotate(-flex.chestPitch,tailParentAxis(side,neckParent))
+          .rotate(flex.headPitch,tailParentAxis(side,neckParent))
+          .rotate(flex.headYaw,tailParentAxis([0,1,0],neckParent))
+          .rotate(flex.headRoll,tailParentAxis(forward,neckParent)).translate(neckOrigin).translate(neckCorrection));
         for(let i=0;i<turningRig.legs.length;i++) {
           const leg=turningRig.legs[i],sole=feet[i],reach=sole.slice(12,15) as Vec3;
+          if(!leg.rear) {
+            const parent=transformManager.getWorldTransform(leg.parent).data;
+            const slide=flex.scapula*(i===0?1:-1);
+            transformManager.setTransform(leg.upper,transformManager.getTransform(leg.upper)
+              .translate(tailParentAxis(forward,parent).map(v=>v*slide) as Vec3));
+          }
           let shoulder=transformManager.getWorldTransform(leg.upper).translation;
           const elbow=transformManager.getWorldTransform(leg.lower).translation,paw=transformManager.getWorldTransform(leg.paw).translation;
           const length=Math.hypot(...elbow.map((v,k)=>v-shoulder[k]))+Math.hypot(...paw.map((v,k)=>v-elbow[k]));
@@ -1023,7 +1070,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     }
     if (pawPositions) pawPositions.value = !request.reduceMotion
       ? frontLegs.map(leg => transformManager.getWorldTransform(leg.paw).translation) : [];
-    if(request.reduceMotion){frameState.attentionYaw=0;frameState.attentionPitch=0;frameState.earYaw=0;frameState.earPitch=[0,0];frameState.travelHead=0;frameState.tailTurnRate=0;frameState.tailYaw=[0,0,0,0];frameState.tailPitch=[0,0,0,0];}
+    if(request.reduceMotion){frameState.restExpressionWeight=0;frameState.attentionYaw=0;frameState.attentionPitch=0;frameState.earYaw=0;frameState.earPitch=[0,0];frameState.travelHead=0;frameState.tailTurnRate=0;frameState.tailYaw=[0,0,0,0];frameState.tailPitch=[0,0,0,0];}
     if(!request.reduceMotion && turningRig) {
       const travelBlend=1-Math.exp(-deltaSeconds*10);
       const travelGaze=walking&&!posingFeet&&!crawling&&gazeAhead
@@ -1031,7 +1078,10 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       frameState.travelHead+=(travelGaze-frameState.travelHead)*travelBlend;
       const headingRate=deltaSeconds>0?Math.atan2(Math.sin(frameState.heading-previousHeading),Math.cos(frameState.heading-previousHeading))/deltaSeconds:frameState.tailTurnRate;
       frameState.tailTurnRate+=(Math.max(-4,Math.min(4,headingRate))-frameState.tailTurnRate)*travelBlend;
+      // Let the final stride settle before idle gestures take over.
+      frameState.restExpressionWeight+=((resting?1:0)-frameState.restExpressionWeight)*(1-Math.exp(-deltaSeconds*6));
       const rest=catRestExpression(frameState.expressionTime,frameState.elapsed);
+      const idleExpressionWeight=resting||walking&&(!posingFeet||launching&&!frameState.launchFromLanding)&&!crawling?frameState.restExpressionWeight:0;
       const cycle=Math.floor(frameState.expressionTime/7.3);
       if(resting && cycle!==frameState.lookCycle) {
         frameState.lookCycle=cycle;
@@ -1065,7 +1115,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       // Applying the attention yaw again would double that first pose.
       for(const [angle,axis]of [[posingFeet?0:frameState.attentionYaw+frameState.travelHead,[0,1,0]],
         [frameState.attentionPitch+(jump?.headPitch??0),side],
-        [resting?rest.tilt:0,[Math.sin(frameState.heading),0,Math.cos(frameState.heading)]]] as [number,Vec3][]) {
+        [rest.tilt*idleExpressionWeight,[Math.sin(frameState.heading),0,Math.cos(frameState.heading)]]] as [number,Vec3][]) {
         if(Math.abs(angle)<1e-5)continue;
         const local=transformManager.getTransform(turningRig.head),origin=local.translation;
         transformManager.setTransform(turningRig.head,local.translate(origin.map(v=>-v) as Vec3)
@@ -1089,13 +1139,20 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       const tailMotion=catTravelTail(frameState.distance/(frameState.walkStride*scale)+frameState.walkOffset,
         walking&&!crawling?frameState.gaitSpeed:0,walking?frameState.tailTurnRate:0);
       for(let i=0;i<4;i++) {
-        frameState.tailYaw[i]+=(tailMotion.yaw[i]-frameState.tailYaw[i])*travelBlend;
-        frameState.tailPitch[i]+=(tailMotion.pitch[i]-frameState.tailPitch[i])*travelBlend;
+        const tailBlend=1-Math.exp(-deltaSeconds*(settling?6-i:10));
+        frameState.tailYaw[i]+=(tailMotion.yaw[i]-frameState.tailYaw[i])*tailBlend;
+        frameState.tailPitch[i]+=(tailMotion.pitch[i]-frameState.tailPitch[i])*tailBlend;
       }
       if(tail)for(const [index,angle,axis]of [
         ...frameState.tailYaw.map((angle,index)=>[index,angle,[0,1,0]]),
         ...frameState.tailPitch.map((angle,index)=>[index,angle,side]),
-        [0,jump?.tailBase??0,side],[2,jump?.tailTip??(resting?rest.tailTip:0),jump?side:[0,1,0]],
+        [0,frameState.spinePose.tailFollowYaw,[0,1,0]],
+        [0,frameState.spinePose.tailFollowPitch,side],
+        [2,frameState.spinePose.tailTipYaw*.65,[0,1,0]],
+        [3,frameState.spinePose.tailTipYaw*.35,[0,1,0]],
+        [2,frameState.spinePose.tailTipPitch*.65,side],
+        [3,frameState.spinePose.tailTipPitch*.35,side],
+        [0,jump?.tailBase??0,side],[2,jump?.tailTip??(rest.tailTip*idleExpressionWeight),jump?side:[0,1,0]],
         [3,jump?.tailCurl??0,side],
       ] as [number,number,Vec3][]) {
         if(Math.abs(angle)<1e-5)continue;

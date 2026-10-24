@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-24",
+  "scope": "Full reward-film contact review, acting corrections and native pause fix",
+  "films": 10,
+  "rewardAssets": 180,
+  "sourceFramesPerFilm": 48,
+  "durationMs": 6000,
+  "changes": [
+    "Position the cat after sampling its pose; do not overwrite scene offsets.",
+    "Keep a constant cat scale; lift above container rims before lateral movement and descent.",
+    "Reveal the scarf along an external path with tail clearance; keep its ball on the stage.",
+    "Catch the fish on both paws below the face, with a clear approach path.",
+    "Use paw surfaces and IK for the balloon ribbon, watering can and star prize.",
+    "Give the duck an open seat; ground resting props and add contact shadows.",
+    "Show pollen before the sneeze; settle feathers and petals onto the stage.",
+    "Use flush stage inlays and check static stages as well as actor framing.",
+    "Keep the native autoplay prop stable; start and stop via the playback API without reloading the GIF."
+  ],
+  "checks": {
+    "contact": {
+      "passed": true,
+      "sampledPoses": 950,
+      "toleranceWorldUnits": 0.018,
+      "evidence": "contact-check.json",
+      "assertions": [
+        "bidirectional evaluated-mesh penetration with ray parity",
+        "positive and negative geometry controls",
+        "constant actor scale",
+        "stage clearance",
+        "resting-prop support",
+        "fish touches both paws",
+        "watering-can and star handles touch their paws"
+      ]
+    },
+    "framing": {
+      "passed": true,
+      "actorFrames": 480,
+      "stages": 18,
+      "safetyMarginPixels": 4
+    },
+    "media": {
+      "passed": true,
+      "count": 180
+    },
+    "compression": 0.7222755068824405,
+    "typescript": "passed",
+    "eslint": "passed",
+    "diffWhitespace": "passed",
+    "native": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "durationSeconds": 65.774,
+      "device": "BrainPet Reward Contact QA",
+      "udid": "66F7AF87-9A43-4BD2-AEC0-0242E902E215",
+      "resultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-XpYXdk/result.xcresult",
+      "coverage": [
+        "fish and scarf held endings",
+        "pixel-identical movie frame before and after Pause",
+        "collection ordering and earned/locked states",
+        "replay and resume",
+        "native GIF sharing/cancel",
+        "320-point Latvian",
+        "empty collection and locked guidance",
+        "wallet and progress unchanged by viewing/sharing"
+      ],
+      "setup": "A fresh isolated simulator required dismissing the Expo developer introduction and menu; onboarding was not completed. Simulator shut down after the run."
+    }
+  },
+  "storage": {
+    "totalBytes": 89273481,
+    "totalMiB": 85.13782596588135,
+    "largest": {
+      "id": "train-beacon",
+      "bytes": 672597
+    },
+    "minFrames": 35,
+    "maxFrames": 48,
+    "previousMiB": 108.66432666778564
+  },
+  "provenance": {
+    "cat": "1257c4505ccf327bffb1163cb204b0f5e32a4ca35636811e3584ccb76e7af5db",
+    "renderer": "e99d4300e0d99b03679753c1b6983f8354896705b32c267e73355fd83aa0ba4d",
+    "contactChecker": "11ae569f4915b8202214839d854586b9e0ab8e4ebf0f2110692a8862457e573c",
+    "gifCollection": "0002e33504efb2bad7bca60b186d73324ddba7c288704a71210144d864080caa"
+  },
+  "limitations": [
+    "Authored animation, not a rigid-body or cloth simulation.",
+    "Sampled vertex penetration checks do not prove exhaustive continuous triangle/self-collision correctness.",
+    "Ten plots are reused across the reward collection.",
+    "No child playtesting, Android verification or physical-device performance measurements."
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-24",
+  "scope": "Achievement reward films and locked-card teasers",
+  "design": {
+    "films": 10,
+    "worldStages": 18,
+    "rewards": 180,
+    "durationMs": 6000,
+    "sourceFrames": 48,
+    "pixels": [
+      512,
+      448
+    ],
+    "humor": "Physical comedy and playful celebration, with one deadpan clock film"
+  },
+  "iterations": [
+    "Replaced distant machinery scenes with the shipped cat and close-up physical props.",
+    "Fixed box and trophy containment, added articulated jump poses, and replaced snapping prop paths with arcs.",
+    "Replaced repeated head-hat endings with a fish catch, a duck ride and a flower sneeze.",
+    "Increased safe camera framing after checking every pose, then verified all 480 frames.",
+    "Kept the unspooling yarn attached to the rolling ball; repeated source-frame, compression and asset checks after the correction."
+  ],
+  "checks": {
+    "renderFrames": {
+      "passed": true,
+      "count": 480,
+      "safetyMarginPixels": 4,
+      "evidence": "framing-check.json"
+    },
+    "media": {
+      "passed": true,
+      "count": 180,
+      "assertions": [
+        "registration",
+        "grayscale locked previews",
+        "color posters",
+        "512x448 dimensions",
+        "six-second loop",
+        "24 or more distinct decoded frames",
+        "transparency",
+        "individual GIF below 1 MiB",
+        "collection below 120 MiB"
+      ]
+    },
+    "compression": {
+      "passed": true,
+      "sampledFrames": 60,
+      "maximumMeanAbsoluteRGBError": 0.8693426223028273,
+      "channelRange": [
+        0,
+        255
+      ],
+      "evidence": "compression-check.json"
+    },
+    "typescript": "passed",
+    "focusedEslint": "passed",
+    "diffWhitespace": "passed",
+    "curriculum": "passed: 2880 localized puzzles, 180 lessons/bosses/challenges, save and reward guards",
+    "native": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "durationSeconds": 42.961,
+      "device": "BrainPet Achievements QA",
+      "udid": "A000DA32-8BD8-4232-BB52-992117FF5E59",
+      "resultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-w6GlPo/result.xcresult",
+      "coverage": [
+        "collection order",
+        "earned and locked states",
+        "pause/play",
+        "replay",
+        "held punchline screenshot",
+        "reopen",
+        "320-point Latvian layout",
+        "locked lesson guidance",
+        "empty collection",
+        "native GIF share/cancel",
+        "777 coins, 1 life and 7 completion IDs unchanged"
+      ],
+      "setupCorrection": "The initial run stopped at first-run onboarding. The harness now accepts that stable starting screen and opens the isolated fixture without creating a cloud save."
+    }
+  },
+  "storage": {
+    "count": 180,
+    "totalBytes": 113942805,
+    "totalMiB": 108.66432666778564,
+    "largest": {
+      "id": "picnic-balloon",
+      "bytes": 803726
+    },
+    "minFrames": 33,
+    "maxFrames": 48,
+    "previousGifMiB": 89.3649,
+    "deltaMiB": 19.29942666778564
+  },
+  "limitations": [
+    "Ten plots repeat across 18 world stages. These are not 180 unique stories.",
+    "No observation with children yet; comprehension, voluntary replay and sharing preference remain unvalidated.",
+    "Android and physical-device memory/performance were not tested.",
+    "Silent GIFs have no sound design."
+  ],
+  "followUp": "User screenshots exposed contact errors this pass had missed. Superseded by contact-review/results.json; framing checks alone did not establish physical contact."
+}

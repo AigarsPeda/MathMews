@@ -1,0 +1,86 @@
+[
+  {
+    "skin": "orange",
+    "stop": 1.35,
+    "maxSpeed": 0.1911396900028175,
+    "maxStep": 0.020087595375195114,
+    "tailAtQuarter": 0.023002171378688045
+  },
+  {
+    "skin": "orange",
+    "stop": 1.6,
+    "maxSpeed": 0.1636125482531389,
+    "maxStep": 0.01645842218816013,
+    "tailAtQuarter": 0.02245265671363041
+  },
+  {
+    "skin": "orange",
+    "stop": 1.85,
+    "maxSpeed": 0.18091273943617037,
+    "maxStep": 0.012794762226024025,
+    "tailAtQuarter": 0.01930187188898784
+  },
+  {
+    "skin": "orange",
+    "stop": "arrival",
+    "maxSpeed": 0.10022585144385712,
+    "maxStep": 0.017064695145129906,
+    "tailAtQuarter": 0.02516835829730032
+  },
+  {
+    "skin": "grey",
+    "stop": 1.35,
+    "maxSpeed": 0.1911396900028175,
+    "maxStep": 0.020087595375195114,
+    "tailAtQuarter": 0.023002171378688045
+  },
+  {
+    "skin": "grey",
+    "stop": 1.6,
+    "maxSpeed": 0.1636125482531389,
+    "maxStep": 0.01645842218816013,
+    "tailAtQuarter": 0.02245265671363041
+  },
+  {
+    "skin": "grey",
+    "stop": 1.85,
+    "maxSpeed": 0.18091273943617037,
+    "maxStep": 0.012794762226024025,
+    "tailAtQuarter": 0.01930187188898784
+  },
+  {
+    "skin": "grey",
+    "stop": "arrival",
+    "maxSpeed": 0.10022585144385712,
+    "maxStep": 0.017064695145129906,
+    "tailAtQuarter": 0.02516835829730032
+  },
+  {
+    "skin": "white",
+    "stop": 1.35,
+    "maxSpeed": 0.1911396900028175,
+    "maxStep": 0.020087595375195114,
+    "tailAtQuarter": 0.023002171378688045
+  },
+  {
+    "skin": "white",
+    "stop": 1.6,
+    "maxSpeed": 0.1636125482531389,
+    "maxStep": 0.01645842218816013,
+    "tailAtQuarter": 0.02245265671363041
+  },
+  {
+    "skin": "white",
+    "stop": 1.85,
+    "maxSpeed": 0.18091273943617037,
+    "maxStep": 0.012794762226024025,
+    "tailAtQuarter": 0.01930187188898784
+  },
+  {
+    "skin": "white",
+    "stop": "arrival",
+    "maxSpeed": 0.10022585144385712,
+    "maxStep": 0.017064695145129906,
+    "tailAtQuarter": 0.02516835829730032
+  }
+]

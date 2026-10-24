@@ -24,15 +24,15 @@ for (const id of catalog.scenes) {
   const gif = path.join('assets/achievements', `${id}.gif`);
   const metadata = await sharp(gif, { animated: true }).metadata();
   assert.equal(metadata.width, 512); assert.equal(metadata.pageHeight, 448);
-  assert.ok(metadata.pages >= 8 && metadata.pages <= 24, `${id}: animated ending`);
-  assert.equal(metadata.loop, 0); assert.equal(metadata.delay.reduce((a, b) => a + b, 0), 5000);
+  assert.ok(metadata.pages >= 24 && metadata.pages <= 48, `${id}: animated ending`);
+  assert.equal(metadata.loop, 0); assert.equal(metadata.delay.reduce((a, b) => a + b, 0), 6000);
   assert.equal(metadata.hasAlpha, true, `${id}: sticker transparency`);
   const { data, info } = await sharp(gif, { animated: true }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const stride = info.width * metadata.pageHeight * 4;
   const frames = new Set(Array.from({ length: metadata.pages }, (_, i) => createHash('sha256').update(data.subarray(i * stride, (i + 1) * stride)).digest('hex')));
-  assert.ok(frames.size >= 8, `${id}: GIF must retain motion`);
+  assert.ok(frames.size >= 24, `${id}: GIF must retain motion`);
   const bytes = (await fs.stat(gif)).size;
   assert.ok(bytes < 1024 * 1024, `${id}: share file stays below 1 MiB`); total += bytes;
 }
-assert.ok(total < 100 * 1024 * 1024, 'The complete offline share collection stays below 100 MiB');
+assert.ok(total < 120 * 1024 * 1024, 'The complete offline share collection stays below 120 MiB');
 console.log(`Verified 180 gray previews and animated transparent GIFs, ${(total / 1024 / 1024).toFixed(2)} MiB.`);

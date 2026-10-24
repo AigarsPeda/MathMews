@@ -1,0 +1,156 @@
+{
+  "samplesPerFilm": 95,
+  "toleranceWorldUnits": 0.018,
+  "method": "Bidirectional signed mesh penetration with ray-parity confirmation; evaluated skin and visible props",
+  "controlsPassed": true,
+  "films": [
+    {
+      "kind": "bridge",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "Velvet cushion rests on stage",
+          "gap": 0.005
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "book",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "Book cover rests on stage",
+          "gap": 0.005
+        },
+        {
+          "contact": "L paw touches Fish body",
+          "gap": 0.00638
+        },
+        {
+          "contact": "R paw touches Fish body",
+          "gap": 0.00534
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "loom",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "Yarn core rests on stage",
+          "gap": 0.005
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "clock",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "Clock foot rests on stage",
+          "gap": 0.005
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "balloon",
+      "samples": 95,
+      "violations": {},
+      "contacts": [],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "sorter",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "Box bottom rests on stage",
+          "gap": 0.005
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "boat",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "Duck float ring rests on stage",
+          "gap": 0.01283
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "fountain",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "Terracotta pot rests on stage",
+          "gap": 0.005
+        },
+        {
+          "contact": "L paw touches Can handle",
+          "gap": 0.00307
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "beacon",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "R paw touches Star handle",
+          "gap": 0.00157
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    },
+    {
+      "kind": "trophy",
+      "samples": 95,
+      "violations": {},
+      "contacts": [
+        {
+          "contact": "Cup foot rests on stage",
+          "gap": 0.005
+        }
+      ],
+      "constantScale": true,
+      "aboveStage": true,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

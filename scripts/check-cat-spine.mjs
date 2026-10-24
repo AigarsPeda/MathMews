@@ -28,7 +28,7 @@ function record(skin,fps,kind,active) {
     drawCat(1/fps);
     const bones=actorBones(),state=actorState();
     assert.ok(Object.values(bones).every(matrix=>matrix.every(Number.isFinite)),'No invalid torso/limb matrices');
-    records.push({nodes:bones,position:[...state.position],heading:state.heading,scale,time:frame/fps,gait:kind,contacts:state.gaitContacts.map(p=>p&&[...p])});
+    records.push({nodes:bones,position:[...state.position],heading:state.heading,scale,time:frame/fps,gait:kind,contacts:state.gaitContacts.map(p=>p&&[...p]),follow:{...state.spinePose}});
     if(frame===Math.floor(fps*.7)) {
       render({...props,active:false});drawCat(.4);
       for(const name of Object.keys(bones))assert.ok(distance(actorBones()[name],bones[name])<1e-7,'Pause holds the whole flexed pose');
@@ -37,18 +37,31 @@ function record(skin,fps,kind,active) {
     }
   }
   render({...base,playback:idle,activityKey:'rest'});
-  for(let frame=0;frame<fps*2;frame++)drawCat(1/fps);
-  assert.ok(Object.values(actorState().spinePose).every(value=>Math.abs(value)<1e-6),'Back flex settles after movement stops');
+  for(let frame=0;frame<fps*3;frame++)drawCat(1/fps);
+  assert.ok(Object.values(actorState().spinePose).every(value=>Math.abs(value)<1e-5),'Back and delayed tail flex settle after movement stops');
   return records;
 }
 for(const skin of ['orange','grey','white'])for(const fps of [30,60,120])for(const kind of ['walk','run','turn','jump','play']) {
   const before=record(skin,fps,kind,false),after=record(skin,fps,kind,true);
-  let maximum=0,slip=0,head=0,bend=0,shoulder=0,peak=0,slipDetail;
+  let maximum=0,slip=0,head=0,bend=0,shoulder=0,rollMin=0,rollMax=0,tail=0,lag=0,peak=0,slipDetail;
   for(let i=0;i<before.length;i++) {
     const a=before[i],b=after[i];
     assert.ok(distance(a.position,b.position)<1e-8,'Back flex cannot move the navigation root');
     for(const name of paws){const d=distance(a.nodes[name].slice(12,15),b.nodes[name].slice(12,15))/scale;if(d>slip){slip=d;slipDetail={frame:i,name,a:a.nodes[name].slice(12,15),b:b.nodes[name].slice(12,15),contacts:[a.contacts,b.contacts]};}}
     shoulder=Math.max(shoulder,distance(a.nodes['L.forelegjoint0'].slice(12,15),b.nodes['L.forelegjoint0'].slice(12,15))/scale);
+    tail=Math.max(tail,distance(a.nodes.tailTip.slice(12,15),b.nodes.tailTip.slice(12,15))/scale);
+    lag=Math.max(lag,Math.abs(b.follow.tailFollowYaw-b.follow.tailTipYaw));
+    for(const key of ['headPitch','headYaw','headRoll','tailFollowYaw','tailFollowPitch','tailTipYaw','tailTipPitch']) {
+      assert.ok(Math.abs(b.follow[key])<.12,'Follow-through stays restrained');
+      if(i)assert.ok(Math.abs(b.follow[key]-after[i-1].follow[key])*fps<.8,'Follow-through cannot snap on command changes');
+    }
+    const roll=((b.nodes['L.forelegjoint0'][13]-a.nodes['L.forelegjoint0'][13])-(b.nodes['R.forelegjoint0'][13]-a.nodes['R.forelegjoint0'][13]))/scale;
+    rollMin=Math.min(rollMin,roll);rollMax=Math.max(rollMax,roll);
+    for(const column of [0,4,8]) {
+      const av=a.nodes.head.slice(column,column+3),bv=b.nodes.head.slice(column,column+3);
+      const dot=av.reduce((sum,v,k)=>sum+v*bv[k],0)/(Math.hypot(...av)*Math.hypot(...bv));
+      head=Math.max(head,Math.acos(Math.max(-1,Math.min(1,dot))));
+    }
     const delta=distance(a.nodes.spine.slice(12,15),b.nodes.spine.slice(12,15))/scale;
     if(delta>maximum){maximum=delta;peak=i;}
     const yaw=m=>Math.atan2(m[8],m[10]);
@@ -59,12 +72,17 @@ for(const skin of ['orange','grey','white'])for(const fps of [30,60,120])for(con
   assert.ok(maximum>(['walk','turn'].includes(kind)?.003:.012),`${skin}/${fps}/${kind}: visible middle-back deformation (${maximum})`);
   if(kind==='turn')assert.ok(bend>.05,`${skin}/${fps}: shoulders and hips form a curve into the turn (${bend})`);
   if(kind==='walk'||kind==='play')assert.ok(shoulder>.015,`${skin}/${fps}/${kind}: shoulders move over their supported paws (${shoulder})`);
+  if(kind==='walk') {
+    assert.ok(maximum>.035 && shoulder>.04,`${skin}/${fps}: walking bends the back and advances the shoulders (${maximum}, ${shoulder})`);
+    assert.ok(rollMin<-.008 && rollMax>.008,`${skin}/${fps}: left and right shoulders alternate loading (${rollMin}, ${rollMax})`);
+    assert.ok(head>.006 && tail>.015 && lag>.004,`${skin}/${fps}: head responds and tail tip trails the base (${head}, ${tail}, ${lag})`);
+  }
   assert.ok(slip<.008,`${skin}/${fps}/${kind}: torso changes preserve paw paths (${slip}, ${JSON.stringify(slipDetail)})`);
-  assert.ok(head<.02,`${skin}/${fps}/${kind}: the gaze remains stable (${head})`);
+  assert.ok(head<.06,`${skin}/${fps}/${kind}: head follow stays below 3.5 degrees (${head})`);
   if(skin==='orange'&&fps===60) {
     const indices=kind==='run'?[Math.max(0,peak-4),peak,Math.min(after.length-1,peak+5)]:[peak];
     for(const index of indices)for(const [version,records] of [['before',before],['after',after]])poses.push({...records[index],gait:`${kind}-${version}`});
-    metrics.push({kind,maximum,slip,head,bend,shoulder});
+    metrics.push({kind,maximum,slip,head,bend,shoulder,rollMin,rollMax,tail,lag});
   }
 }
 // A low passage and Reduce Motion must keep their authored envelopes/poses.

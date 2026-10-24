@@ -49,13 +49,15 @@
     "test:puzzles:ios": "node scripts/native/check-puzzle-drag.mjs",
     "test:puzzles:scenes:ios": "node scripts/native/check-puzzle-drag.mjs --scenes",
     "test:puzzles:companion:ios": "node scripts/native/check-puzzle-drag.mjs --companion",
-    "assets:achievement-scenes": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/render-achievement-comedy.py",
+    "assets:achievement-scenes": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/render-achievement-comedy.py --",
     "assets:achievements": "node scripts/3d/pack-achievement-media.mjs",
+    "test:achievement-contact": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/check-achievement-contact.py --",
     "test:achievements": "node scripts/check-achievement-media.mjs",
     "assets:bosses": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-boss-scenes.py && node scripts/3d/pack-boss-scenes.mjs",
     "assets:lesson-bosses": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-lesson-bosses.py && node scripts/3d/pack-lesson-bosses.mjs",
     "test:puzzles:bosses:ios": "node scripts/native/check-puzzle-drag.mjs --bosses",
-    "assets:puzzle-objects": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-puzzle-objects.py"
+    "assets:puzzle-objects": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-puzzle-objects.py",
+    "assets:achievement-stages": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/render-achievement-comedy.py -- --backgrounds"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

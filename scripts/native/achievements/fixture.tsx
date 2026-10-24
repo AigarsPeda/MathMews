@@ -43,6 +43,7 @@ export default function AchievementsFixture() {
           <Pressable accessibilityRole="button" style={{ padding: 8 }} onPress={() => setSave(parseGameSaveFromValue(JSON.stringify(save))!.save)}><Text>Reopen</Text></Pressable>
           <Pressable accessibilityRole="button" style={{ padding: 8 }} onPress={() => setSave(createDefaultGameSave())}><Text>Empty</Text></Pressable>
           <Pressable accessibilityRole="button" style={{ padding: 8 }} onPress={() => { setNarrow(true); void changeLocale('lv'); }}><Text>LV narrow</Text></Pressable>
+          <Pressable accessibilityRole="button" style={{ padding: 8 }} onPress={() => setSave(current => ({ ...current, progress: { ...current.progress, completedPuzzleIds: bosses.slice(0, 3).flatMap(boss => boss.level.puzzleIds) } }))}><Text>Contact review</Text></Pressable>
           <Text testID="achievement-save">{`${save.wallet.coins}/${save.progress.lives.current}/${save.progress.completedPuzzleIds?.length ?? 0}`}</Text>
         </View>
       </View>

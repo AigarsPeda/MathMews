@@ -30,7 +30,7 @@ const AchievementCard = memo(function AchievementCard({ item, onOpen }: { item: 
       {source ? <Image source={source} style={styles.thumbnail} contentFit="contain" recyclingKey={item.id} /> : <View style={styles.thumbnail}><AppIcon name="boss-badge" size={moderateScale(60)} /></View>}
     </View>
     <View style={styles.cardContent}>
-      <Text style={styles.movieDescription}>{movie.description}</Text>
+      <Text style={styles.movieDescription}>{item.collected ? movie.description : movie.teaser}</Text>
       <Text style={styles.context}>{item.topic.title[locale]} · {t(`difficulty.${item.lesson.difficulty}`)} · {t("learning.lessonNumber", { number: item.lessonNumber })}</Text>
       <View style={styles.cardFooter}>
         <AppIcon name={item.collected ? "check" : "lock"} size={moderateScale(22)} />

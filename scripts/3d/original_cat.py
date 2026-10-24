@@ -172,7 +172,11 @@ def bind(mesh, arm):
             body = max(0, 1-head-neck-tail-leg)
             weights = {'head': head, 'neck': neck}
             rear = ramp(-.25, .35, p.y)
-            weights.update({'chest': body*(1-rear)*.65, 'pelvis': body*rear*.65, 'spine': body*.35})
+            # Give the middle back its own bend. Uniform spine weight along
+            # the torso flattened the curve between chest and pelvis offsets.
+            middle = ramp(-.34, -.02, p.y)*(1-ramp(.10, .42, p.y))
+            spine = .18+.60*middle
+            weights.update({'chest': body*(1-rear)*(1-spine), 'pelvis': body*rear*(1-spine), 'spine': body*spine})
             side = 'L' if p.x < 0 else 'R'
             label = 'foreleg' if p.y < 0 else 'hindleg'
             paw = side+('.front.paw' if p.y < 0 else '.rear.paw')

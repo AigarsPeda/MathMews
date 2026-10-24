@@ -2,8 +2,24 @@ import XCTest
 final class NativeLaunchTests: XCTestCase {
  func testHomeReady() {
   let app = XCUIApplication(bundleIdentifier: "com.mathmews.app"); app.activate()
+  let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+  if springboard.buttons["Open"].waitForExistence(timeout: 2) { springboard.buttons["Open"].tap() }
+  if app.buttons["Open"].exists { app.buttons["Open"].tap() }
+  let developerIntro = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'This is the developer menu'")).firstMatch
+  if developerIntro.waitForExistence(timeout: 3), app.buttons["Continue"].exists { app.buttons["Continue"].tap() }
+  let reload = app.buttons["Reload"]
+  if reload.exists {
+   let window = app.windows.firstMatch.frame
+   let close = app.buttons.allElementsBoundByIndex.first { $0.isHittable && $0.frame.midX > window.width * 0.8 && $0.frame.maxY <= reload.frame.minY && $0.frame.minY > window.height * 0.25 }
+   XCTAssertNotNil(close); close?.tap()
+  }
   let settings = app.buttons.matching(NSPredicate(format: "label == 'Open settings' OR label == 'Atvērt iestatījumus'")).firstMatch
-  let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in settings.exists && settings.isHittable }, object: nil)
+  // The isolated reward fixture supplies onboarding and progress itself.
+  // A fresh simulator may stop at onboarding; never create a cloud save for QA.
+  let onboarding = app.textFields.firstMatch
+  let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+   (settings.exists && settings.isHittable) || (onboarding.exists && onboarding.isHittable)
+  }, object: nil)
   XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 60), .completed)
  }
 }
@@ -35,6 +51,8 @@ final class NativeDragTests: XCTestCase {
   app.buttons["Pause"].tap(); XCTAssertTrue(app.buttons["Play"].exists)
   app.buttons["Play"].tap(); XCTAssertTrue(app.buttons["Pause"].exists)
   shot("achievement-preview")
+  Thread.sleep(forTimeInterval: 4.5)
+  shot("achievement-punchline")
   XCTAssertLessThan(app.buttons["Share GIF"].frame.maxY, app.windows.firstMatch.frame.maxY - 20)
   app.buttons["Close"].tap(); XCTAssertTrue(app.buttons["Reopen"].waitForExistence(timeout: 5)); app.buttons["Reopen"].tap()
   XCTAssertTrue(app.buttons[first].waitForExistence(timeout: 5)); XCTAssertTrue(app.buttons[first].isEnabled)
@@ -53,6 +71,27 @@ final class NativeDragTests: XCTestCase {
   app.buttons["Aizvērt"].tap()
   tab("Iegūtie").tap()
   XCTAssertTrue(app.staticTexts["Tava pirmā filmiņa tevi gaida"].waitForExistence(timeout: 5))
+ }
+ func testFishAndScarfContactEndings() {
+  app.buttons["Contact review"].tap()
+  for (id, name) in [(second, "achievement-fish-contact"), (third, "achievement-scarf-contact")] {
+   for _ in 0..<5 {
+    if app.buttons[id].isHittable { break }
+    app.swipeUp()
+   }
+   XCTAssertTrue(app.buttons[id].isHittable); app.buttons[id].tap()
+   XCTAssertTrue(app.buttons["Watch the ending again"].waitForExistence(timeout: 6))
+   app.buttons["Watch the ending again"].tap()
+   Thread.sleep(forTimeInterval: 4.6)
+   let movie = app.images["achievement-movie"]
+   XCTAssertTrue(movie.exists)
+   let heldFrame = movie.screenshot().pngRepresentation
+   app.buttons["Pause"].tap()
+   XCTAssertEqual(heldFrame, movie.screenshot().pngRepresentation, "Pause must preserve the displayed frame")
+   shot(name)
+   XCTAssertTrue(app.buttons["Share GIF"].isHittable)
+   app.buttons["Close"].tap()
+  }
  }
  func testNativeGifShareAndCancel() {
   app.buttons[first].tap(); XCTAssertTrue(app.buttons["Share GIF"].waitForExistence(timeout: 6))
