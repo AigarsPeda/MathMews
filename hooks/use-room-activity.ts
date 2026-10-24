@@ -199,6 +199,13 @@ export function useRoomActivity(
           prepareNativeStep(plan, step, room.nativeStepCompletion && nativePosition.current
             ? catScreenPoint(nativePosition.current, liveWorld.current) : { x: petX.get(), y: petY.get() }, liveWorld.current, nativeHeight.current, { x: objectX.get(), y: objectY.get() });
         step.native = { ...step.native!, elapsed, replanned, walkAfterLanding: !!step.native?.jump && isCatWalk(plan.steps[stepIndex+1]?.animation), awaitCompletion: roomVisible && room.nativeStepCompletion && !step.hold };
+        const nextStep=plan.steps[stepIndex+1];
+        if(step.native.walkAfterLanding && nextStep && !reduceMotion) {
+          const landing=step.native.path[step.native.path.length-1];
+          const next=prepareNativeStep(plan,nextStep,catScreenPoint(landing,liveWorld.current),liveWorld.current,landing[1]);
+          if(!next.native.blocked)step.native.landingLook=next.native.path.find(point=>
+            Math.hypot(point[0]-landing[0],point[2]-landing[2])>.25*liveWorld.current!.catScale);
+        }
         nativeElapsed.current = elapsed;
         if(step.enteringRoom && !step.entryFromCurrent && !elapsed && !reduceMotion) {
           nativePosition.current=step.native.path[0];nativeHeight.current=nativePosition.current[1];

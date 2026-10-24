@@ -118,6 +118,8 @@
   "jumpOn": [24, 24],
   "jumpOff": [24, 24],
   "hop": [24, 24],
+  "jumpOnLight": [24, 24],
+  "jumpOffLight": [24, 24],
   "turn": [24, 24],
   "curlUp": [
     24,

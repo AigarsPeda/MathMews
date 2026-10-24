@@ -112,7 +112,7 @@ for(const skin of ['orange','grey','white']) {
       draw({timeSinceLastFrame:1/fps});
       const t=frame/fps/duration,body=catTurnPose(angle,t);
       assert.ok(distance(rootTransform.translation,room.home)<1e-7,'Turning keeps the root in place');
-      let grounded=0;
+      const grounded=[];
       for(let i=0;i<4;i++) {
         const p=catTurnPaw(neutral[i],neutral[i],angle,t,i),c=Math.cos(startHeading),s=Math.sin(startHeading);
         const expected=[(p[0]*c+p[2]*s)*scale,FLOOR_Y+p[1]*scale,(p[2]*c-p[0]*s)*scale];
@@ -122,9 +122,10 @@ for(const skin of ['orange','grey','white']) {
           const x=soles[i][column],y=soles[i][column+1],z=soles[i][column+2],c=Math.cos(orientation.heading),s=Math.sin(orientation.heading);
           assert.ok(distance(basis.slice(column,column+3),[x*c+z*s,y,z*c-x*s])<.002*scale,`${degrees} frame=${frame} paw=${i} axis=${column} sole error=${distance(basis.slice(column,column+3),[x*c+z*s,y,z*c-x*s])/scale}`);
         }
-        if(Math.abs(p[1]-neutral[i][1])<1e-6)grounded++;
+        if(Math.abs(p[1]-neutral[i][1])<1e-6)grounded.push(i);
       }
-      assert.ok(grounded>=3,'Three feet support every step');
+      assert.ok(grounded.length>=2,'A diagonal pair supports every step');
+      if(grounded.length===2)assert.equal(grounded[0]+grounded[1],3,'Both supports span opposite corners');
       const head=transforms.getWorldTransform(asset.getFirstEntityByName('head')).data;
       const headYaw=Math.atan2(head[8],head[10]);
       const error=Math.atan2(Math.sin(headYaw-startHeading-body.heading-body.head),Math.cos(headYaw-startHeading-body.heading-body.head));
@@ -136,7 +137,7 @@ for(const skin of ['orange','grey','white']) {
         render(props);
       }
       if(skin==='orange'&&fps===60&&scale===.8&&[-90,90,180].includes(degrees)&&frame%6===0)poses.push({degrees,progress:t,
-        nodes:Object.fromEntries(model.nodes.map((n,i)=>[n.name,world(i).data]))});
+        nodes:actorBones()});
     }
   }
   for(const fps of [30,60,120])for(const degrees of [-135,-90,-45,45,90,135,179])for(const length of [.08,.5,1.5]) {
@@ -194,7 +195,7 @@ for(const skin of ['orange','grey','white']) {
       if(skin==='orange'&&fps===60&&length===1.5&&[-90,90,179].includes(degrees)&&frame%3===0
         &&frame/fps>turningDuration*.65&&frame/fps<turningDuration+.45) {
         launchPoses.push({degrees:degrees===179?180:degrees,progress:frame/fps,
-          nodes:Object.fromEntries(model.nodes.map((n,i)=>[n.name,world(i).data]))});
+          nodes:actorBones()});
       }
       previousRoot=rootTransform.translation;previousFeet=feet;previousProgress=progress;
     }
@@ -297,7 +298,7 @@ for(const skin of ['orange','grey','white']) {
     }
     assert.ok(samples>fps*.5&&resumed,'The real route exercised and resumed a complete pre-hop turn');
   }
-  console.log(`Verified ${skin}: left/right 23–180 degree turns, exact paw contacts and level soles, three supports, head anticipation, interruption and mid-turn pause at 30/60/120 FPS and two sizes.`);
+  console.log(`Verified ${skin}: left/right 23–180 degree turns, exact paw contacts and level soles, diagonal support, head anticipation, interruption and mid-turn pause at 30/60/120 FPS and two sizes.`);
 }
 // The foot trajectory itself has no slip while planted and zero lift at contact.
 for(const angle of [-Math.PI,Math.PI/2])for(let i=0;i<4;i++) {

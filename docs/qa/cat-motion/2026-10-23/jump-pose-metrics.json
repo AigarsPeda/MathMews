@@ -1,0 +1,74 @@
+[
+  {
+    "skin": "orange",
+    "clip": "jumpOn",
+    "sourceHindContactMaxError": 0.002411087303881404,
+    "forepawGatherHeight": 0.3668532642015011,
+    "hindpawGatherHeight": 0.4377741926147194,
+    "tailTipTrailingDistance": 0.7151029245085097
+  },
+  {
+    "skin": "orange",
+    "clip": "jumpOff",
+    "sourceHindContactMaxError": 0.0026034662835835347,
+    "forepawGatherHeight": 0.3564001082593263,
+    "hindpawGatherHeight": 0.43782988255059857,
+    "tailTipTrailingDistance": 0.4932892088784786
+  },
+  {
+    "skin": "orange",
+    "clip": "hop",
+    "sourceHindContactMaxError": 0.002411087303881404,
+    "forepawGatherHeight": 0.3668532642015011,
+    "hindpawGatherHeight": 0.4377741926147194,
+    "tailTipTrailingDistance": 0.7151029245085097
+  },
+  {
+    "skin": "grey",
+    "clip": "jumpOn",
+    "sourceHindContactMaxError": 0.002411087303881404,
+    "forepawGatherHeight": 0.3668532642015011,
+    "hindpawGatherHeight": 0.4377741926147194,
+    "tailTipTrailingDistance": 0.7151029245085097
+  },
+  {
+    "skin": "grey",
+    "clip": "jumpOff",
+    "sourceHindContactMaxError": 0.0026034662835835347,
+    "forepawGatherHeight": 0.3564001082593263,
+    "hindpawGatherHeight": 0.43782988255059857,
+    "tailTipTrailingDistance": 0.4932892088784786
+  },
+  {
+    "skin": "grey",
+    "clip": "hop",
+    "sourceHindContactMaxError": 0.002411087303881404,
+    "forepawGatherHeight": 0.3668532642015011,
+    "hindpawGatherHeight": 0.4377741926147194,
+    "tailTipTrailingDistance": 0.7151029245085097
+  },
+  {
+    "skin": "white",
+    "clip": "jumpOn",
+    "sourceHindContactMaxError": 0.002411087303881404,
+    "forepawGatherHeight": 0.3668532642015011,
+    "hindpawGatherHeight": 0.4377741926147194,
+    "tailTipTrailingDistance": 0.7151029245085097
+  },
+  {
+    "skin": "white",
+    "clip": "jumpOff",
+    "sourceHindContactMaxError": 0.0026034662835835347,
+    "forepawGatherHeight": 0.3564001082593263,
+    "hindpawGatherHeight": 0.43782988255059857,
+    "tailTipTrailingDistance": 0.4932892088784786
+  },
+  {
+    "skin": "white",
+    "clip": "hop",
+    "sourceHindContactMaxError": 0.002411087303881404,
+    "forepawGatherHeight": 0.3668532642015011,
+    "hindpawGatherHeight": 0.4377741926147194,
+    "tailTipTrailingDistance": 0.7151029245085097
+  }
+]

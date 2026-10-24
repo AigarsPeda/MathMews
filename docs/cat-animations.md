@@ -1,5 +1,7 @@
 # Adding cat animations and room interactions
 
+See the [23 October movement study](art/cat-motion-study.md) for the latest source review, predictive speed control, smoother starts/stops, route-leading gaze and validation.
+
 The exporter and app both read `scripts/3d/clips.json`. Each entry is `[frameCount, fps]`. A new key automatically becomes a `CatAnimationId` and can be used by a room activity step. All three cat skins must contain the same clips.
 
 1. Add the clip's frame count and rate to `scripts/3d/clips.json`.
@@ -240,3 +242,21 @@ Most happy beats retain open eyes. Closed crescents belong to particular smiles 
 Rebuild with `npm run assets:native`. Run `node scripts/check-puzzle-reactions.mjs` for selection, distinct poses, planted support paws, recovery, one-shot completion and Reduce Motion on every coat at 30/60/120 FPS. `scripts/3d/check-cat-skin-deformation.py` checks all 51 clips per coat. The notification iOS suite includes all six reactions, localized messages and repeated dismissal/navigation. All three native tests passed on the iOS 27 simulator. A comparison with the previous GLB found identical values in all 5,940 skeletal channels of the 45 existing clips.
 
 For the visual review, run `scripts/3d/review-puzzle-reactions.py` in Blender with `-- --motion`, then `node scripts/3d/pack-puzzle-reaction-review.mjs`. Add `--authored` to inspect revised controls on the saved weighted rig before rebuilding GLBs. The review checks the portrait bounds at 25 times per clip and writes temporary rendered frames under `/tmp`. The animated comparison plays at 12 FPS with the actual clip durations, followed by a short rest, so anticipation and recovery remain visible. The compact animation, comparison image and native screenshots are in `docs/qa/puzzle-reactions/2026-10-19/`. The startup native still was also recaptured from the rebuilt orange model using paused production `NativeCatDisplay` playback, and the branding assets were regenerated from it.
+
+## Jump silhouette refinement — 23 October 2026
+
+`game_cat.py` now gives the upward push a deeper haunch load and a stronger nose-up extension. In flight, the forepaws retract while the hind paws gather higher beneath the belly; wrists and hocks fold, then flatten before contact. The tail trails the launch and its tip follows with a delay, returning during recovery. Jump-down retains its shallower preparation and downward reach. These changes are baked into all three native coats and the editable orange Blender source.
+
+The root arc, flight duration, takeoff/contact phases and landing-to-walk handoff stay synchronized with the existing collision-checked routes. Review both sofa ascent and departure in the existing iOS simulator, and use `check-cat-jump-anatomy.mjs` plus the jump/landing/command regression suites to check support contacts and transitions.
+
+## Connected movement refinement — 23 October 2026
+
+Furniture approaches now try a collision-checked arrival curve that faces the takeoff. During the final 180 ms, a suitably aligned approach blends into the authored jump preparation and holds that pose across scheduler delay. The next jump continues at phase 0.08, preserving the loaded paws instead of restarting preparation. Blocked or short approaches retain supported alignment.
+
+Queued floor movement can depart a landing through a safe curve. A short forward recovery step precedes the bend so the remaining planted paws stay within reach. The head anticipates the next route during landing and carries that gaze into the first stride. Tight or obstructed departures retain the supported turn.
+
+The three native coats include `jumpOnLight` and `jumpOffLight`. Low-effort jumps select these separately baked poses, with less crouch, tuck and tail excursion; their requested duration is 10% shorter before the existing duration bounds. Height, distance, cat scale and required clearance determine effort. High jumps retain the full pose and every jump retains its validated arc and contact phases.
+
+Supported turns now scale duration continuously with angle. A 45-degree adjustment takes 0.40 seconds, while 90/180-degree turns remain 0.64/1.12 seconds. Short placements lift less and use less body lowering. Minimum head/loading times preserve continuity when commands interrupt a small turn.
+
+`check-cat-motion-flow.mjs` covers complete approaches, delayed prepared handoffs, light-clip support contacts and selection, curved landing departures, head continuity and exact completion on all three coats at 30/60/120 FPS. It is included in `test:game`. Native recordings and measurements are in `docs/qa/cat-motion/2026-10-23/`.

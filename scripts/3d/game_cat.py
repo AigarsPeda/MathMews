@@ -26,7 +26,7 @@ def keyed(t, keys):
     return keys[-1][1]
 
 
-def jump_pose(state, t):
+def jump_pose(state, t, effort=1):
     """Hind-driven launch, gathered flight, fore-first impact and recovery.
 
     Upward jumps reach up; a downward jump looks and reaches down instead of
@@ -45,18 +45,18 @@ def jump_pose(state, t):
               if t <= .775 else keyed(t, [(.775, 1), (1, 0)]))
     # Negative pitch raises the nose in Blender's -Y forward convention.
     pitch = keyed(t, [(0, 0), (.12, .02 if off else -.035),
-                      (.24, 0 if off else -.20), (.42, .10 if off else -.10),
+                      (.24, 0 if off else -.28), (.42, .12 if off else -.13),
                       (.62, .16 if off else .025), (.80, .055), (1, 0)])
-    fore_lift = keyed(t, [(0, 0), (.09, 0), (takeoff, .17 if off else .21),
-                          (.40, .19), (.58, -.035 if off else .045), (contact, 0), (1, 0)])
-    fore_reach = keyed(t, [(0, 0), (.10, 0), (.25, -.11), (.44, -.035),
+    fore_lift = keyed(t, [(0, 0), (.09, 0), (takeoff, .19 if off else .29),
+                          (.40, .30), (.58, -.035 if off else .045), (contact, 0), (1, 0)])
+    fore_reach = keyed(t, [(0, 0), (.10, 0), (.25, -.07), (.44, .065),
                            (.58, -.13 if off else -.17), (contact, 0), (1, 0)])
-    rear_lift = keyed(t, [(0, 0), (takeoff, 0), (.28, .055), (.43, .25),
+    rear_lift = keyed(t, [(0, 0), (takeoff, 0), (.28, .065), (.43, .34),
                           (.62, .18), (hind_contact, 0), (1, 0)])
-    rear_reach = keyed(t, [(0, 0), (takeoff, 0), (.28, .12 if off else .16), (.46, -.14),
+    rear_reach = keyed(t, [(0, 0), (takeoff, 0), (.28, .12 if off else .16), (.46, -.21),
                            (.63, -.09), (hind_contact, 0), (1, 0)])
     gather = keyed(t, [(0, 0), (.27, 0), (.44, 1), (.67, 0), (1, 0)])
-    return crouch, impact, pitch, fore_lift, fore_reach, rear_lift, rear_reach, gather
+    return tuple(value*effort for value in (crouch, impact, pitch, fore_lift, fore_reach, rear_lift, rear_reach, gather))
 
 
 def load_cat(skin):
@@ -291,6 +291,10 @@ def pose_gait(driver, state, t):
 
 
 def pose(arm, driver, state, t, idle_controls):
+    # Small drops/hops use a separately solved contact pose. Blending a strong
+    # jump with idle rotations would slide planted pads as the knees unfold.
+    effort = .58 if state.endswith('Light') else 1
+    state = state.removesuffix('Light')
     jumping = state in ('jumpOn', 'jumpOff', 'hop')
     pose_controls(driver, 'idle' if jumping or state in PUZZLE_REACTIONS else 'walk' if state in ('crawl', 'trot', 'run', 'rubLeft', 'rubRight') else 'idle' if state in ('sit', 'wakeStretch') else state, 0 if jumping or state == 'wakeStretch' else t)
     reaction = pose_reaction(driver, state, t, idle_controls) if state in PUZZLE_REACTIONS else None
@@ -310,14 +314,14 @@ def pose(arm, driver, state, t, idle_controls):
     origin = bones['pelvis'].head_local if state == 'eating' else (bones['L.forelegjoint0'].head_local+bones['R.forelegjoint0'].head_local)/2
     lean = .045 if state == 'trot' else .075+.025*math.sin(t*math.tau) if state == 'run' else 0
     if jumping:
-        crouch, landing, lean, fore_lift, fore_reach, rear_lift, rear_reach, gather = jump_pose(state, t)
+        crouch, landing, lean, fore_lift, fore_reach, rear_lift, rear_reach, gather = jump_pose(state, t, effort)
         airborne = smooth_window(t,JUMP['takeoff'],JUMP['touchdown'],.10)
     rotation = Matrix.Rotation(-.52*seated+.24*eating_lean+lean, 3, 'X')
     baseline_body = idle_controls['standing_height'] if driver_standing else idle_controls['body_height']
     shift = Vector((driver['body'].location.x, 0, driver['body'].location.z-baseline_body))*.6
     shift.z -= .24*settle
     if jumping:
-        shift.z += -(.065 if state == 'jumpOff' else .10)*crouch
+        shift.z += -(.055 if state == 'jumpOff' else .13)*crouch
     if state.startswith('walk') or state in ('crawl', 'turn', 'trot', 'run', 'rubLeft', 'rubRight'):
         shift.z -= .07
     if state in ('trot','run'):
@@ -350,12 +354,12 @@ def pose(arm, driver, state, t, idle_controls):
                        math.sin(min(1,(t-JUMP['hindTouchdown'])/.07)*math.pi/2)
                        if t <= .89 else keyed(t, [(.89, 1), (1, 0)]))
         extension = keyed(t, [(0, 0), (.11, 0), (.23, 1), (.30, .65), (.42, 0), (1, 0)])
-        hip_push = (0 if state == 'jumpOff' else .155)*extension
+        hip_push = (0 if state == 'jumpOff' else .155)*extension*effort
         fore_body = Matrix.Translation((0, -.045*landing, -.18*landing)) @ bend_jump('chest', .055*gather+.045*landing)
-        hind_body = Matrix.Translation((0, 0, hip_push-.085*crouch-.02*landing-.085*hind_impact)) @ bend_jump('pelvis', -.09*gather-.04*crouch)
+        hind_body = Matrix.Translation((0, 0, hip_push-.10*crouch-.02*landing-.085*hind_impact*effort)) @ bend_jump('pelvis', -.09*gather-.04*crouch)
         # Blend the spine through the shoulder/hip absorption, keeping the
         # contact legs independent and the head quieter than the torso.
-        body = Matrix.Translation((0, 0, hip_push*.4-.075*landing-.045*hind_impact)) @ body
+        body = Matrix.Translation((0, 0, hip_push*.4-.075*landing-.045*hind_impact*effort)) @ body
     stretch = keyed(t, [(0, 0), (.16, .12), (.40, 1), (.61, 1), (.84, .18), (1, 0)]) if state == 'wakeStretch' else 0
     if state == 'wakeStretch':
         # A compact waking bow: chest lowers below the hips, pads stay planted.
@@ -435,16 +439,31 @@ def pose(arm, driver, state, t, idle_controls):
                 target = muzzle+Vector((.17+.05*wipe, -.25, -.19+.09*wipe))
                 toe = toe.lerp(target, lift)
             desired.update(limb_pose(bones, names, shoulder, toe))
+            if jumping:
+                # Fold the wrists/hocks with the gathered legs. Unfold before
+                # reaching so the pads are level for their existing contacts.
+                fold = keyed(t, [(0, 0), (.24, 0), (.43, 1), (.62, 0), (1, 0)])
+                desired[names[2]] = joint_matrix(bones[names[2]], desired[names[2]].translation,
+                    Matrix.Rotation((.32 if rear else .46)*fold*effort, 3, 'X'))
             if reaction and not rear and side == 'R' and reaction['wrist']:
                 desired[names[2]] = joint_matrix(bones[names[2]], desired[names[2]].translation, Matrix.Rotation(reaction['wrist'], 3, 'X'))
     # The upright hooked tail follows the pelvis.
-    tail_rotation = Matrix.Rotation(.10*airborne-.045*landing,3,'X') if jumping else driver['tail'].rotation_euler.to_matrix()
+    # Let the tail trail the launch, then recover after the shoulders. Its
+    # distal curl follows later, avoiding a rigid upright silhouette in flight.
+    tail_trail = keyed(t, [(0, 0), (.12, -.08), (.35, -.52), (.62, -.38), (.82, -.17), (1, 0)]) if jumping else 0
+    tail_rotation = Matrix.Rotation(tail_trail*effort, 3, 'X') if jumping else driver['tail'].rotation_euler.to_matrix()
     if state == 'crawl':
         tail_rotation = Matrix.Rotation(-1.0, 3, 'X') @ tail_rotation
     anchor = bones['tailjoint0'].head_local
     tail_transform = hind_body @ Matrix.Translation(anchor) @ tail_rotation.to_4x4() @ Matrix.Translation(-anchor)
     for name in [*('tailjoint'+str(i) for i in range(4)), 'tailTip']:
         desired[name] = tail_transform @ bones[name].matrix_local
+    if jumping:
+        tip_follow = keyed(t, [(0, 0), (.22, 0), (.48, -.18), (.72, -.12), (.90, .06), (1, 0)])
+        pivot = bones['tailjoint2'].head_local
+        follow = Matrix.Translation(pivot) @ Matrix.Rotation(tip_follow*effort, 4, 'X') @ Matrix.Translation(-pivot)
+        for name in ('tailjoint2', 'tailjoint3', 'tailTip'):
+            desired[name] = tail_transform @ follow @ bones[name].matrix_local
     if reaction:
         pivot = bones['tailjoint2'].head_local
         follow = Matrix.Translation(pivot) @ Matrix.Rotation(reaction['tail_tip'], 4, 'Y') @ Matrix.Translation(-pivot)

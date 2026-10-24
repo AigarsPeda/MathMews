@@ -80,7 +80,7 @@ def bind_world(i):
     return binds[i]
 corrections = {}
 for i, node in enumerate(model['nodes']):
-    if node['name'] in arm.pose.bones:
+    if node['name'] in arm.pose.bones and node['name'] not in corrections:
         bone = arm.data.bones[node['name']]
         corrections[bone.name] = bind_world(i).inverted() @ inverse @ arm.matrix_world @ bone.matrix_local
 for degrees in (-90, 90, 180):

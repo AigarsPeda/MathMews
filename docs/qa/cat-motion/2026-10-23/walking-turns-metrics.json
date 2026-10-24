@@ -1,0 +1,542 @@
+[
+  {
+    "skin": "orange",
+    "fps": 30,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 6.794968001034761e-7,
+    "largestYawStep": 0.08911664306630875,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 7.68091578614395e-7,
+    "largestYawStep": 0.08911664306630875,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 9.625372578256018e-7,
+    "largestYawStep": 0.13687256706264606,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 7.981834658337487e-7,
+    "largestYawStep": 0.11325258688945992,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 0.00000104751562167856,
+    "largestYawStep": 0.11325258688945992,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 8.543204217914137e-7,
+    "largestYawStep": 0.13462643141837558,
+    "duration": 4.869928742938446
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 0.0000012149631157293934,
+    "largestYawStep": 0.04477351021838738,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 5.453090690502921e-7,
+    "largestYawStep": 0.04477351021838738,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 7.229246259535619e-7,
+    "largestYawStep": 0.06867768222444814,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 6.40563272239841e-7,
+    "largestYawStep": 0.053757123488653275,
+    "duration": 2.977528579315738
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 6.260567001198959e-7,
+    "largestYawStep": 0.053757123488653275,
+    "duration": 2.977528579315738
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 6.298976795932833e-7,
+    "largestYawStep": 0.06963542169577465,
+    "duration": 4.869928742938443
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0.008333333333333333,
+    "slip": 6.317444522328753e-7,
+    "largestYawStep": 0.022638341735933598,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0.008333333333333333,
+    "slip": 6.686080487390657e-7,
+    "largestYawStep": 0.022638341735933598,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 5.351031709083398e-7,
+    "largestYawStep": 0.03481294122740363,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 5.491202989363705e-7,
+    "largestYawStep": 0.02700484062928823,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 5.116761738408119e-7,
+    "largestYawStep": 0.02700484062928823,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 4.5208862414471516e-7,
+    "largestYawStep": 0.03480272057639322,
+    "duration": 4.869928742938446
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 6.794968001034761e-7,
+    "largestYawStep": 0.08911664306630875,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 7.68091578614395e-7,
+    "largestYawStep": 0.08911664306630875,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 9.625372578256018e-7,
+    "largestYawStep": 0.13687256706264606,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 7.981834658337487e-7,
+    "largestYawStep": 0.11325258688945992,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 0.00000104751562167856,
+    "largestYawStep": 0.11325258688945992,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 8.543204217914137e-7,
+    "largestYawStep": 0.13462643141837558,
+    "duration": 4.869928742938446
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 0.0000012149631157293934,
+    "largestYawStep": 0.04477351021838738,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 5.453090690502921e-7,
+    "largestYawStep": 0.04477351021838738,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 7.229246259535619e-7,
+    "largestYawStep": 0.06867768222444814,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 6.40563272239841e-7,
+    "largestYawStep": 0.053757123488653275,
+    "duration": 2.977528579315738
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 6.260567001198959e-7,
+    "largestYawStep": 0.053757123488653275,
+    "duration": 2.977528579315738
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 6.298976795932833e-7,
+    "largestYawStep": 0.06963542169577465,
+    "duration": 4.869928742938443
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0.008333333333333333,
+    "slip": 6.317444522328753e-7,
+    "largestYawStep": 0.022638341735933598,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0.008333333333333333,
+    "slip": 6.686080487390657e-7,
+    "largestYawStep": 0.022638341735933598,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 5.351031709083398e-7,
+    "largestYawStep": 0.03481294122740363,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 5.491202989363705e-7,
+    "largestYawStep": 0.02700484062928823,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 5.116761738408119e-7,
+    "largestYawStep": 0.02700484062928823,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 4.5208862414471516e-7,
+    "largestYawStep": 0.03480272057639322,
+    "duration": 4.869928742938446
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 6.794968001034761e-7,
+    "largestYawStep": 0.08911664306630875,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 7.68091578614395e-7,
+    "largestYawStep": 0.08911664306630875,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 9.625372578256018e-7,
+    "largestYawStep": 0.13687256706264606,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 7.981834658337487e-7,
+    "largestYawStep": 0.11325258688945992,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 0.00000104751562167856,
+    "largestYawStep": 0.11325258688945992,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 8.543204217914137e-7,
+    "largestYawStep": 0.13462643141837558,
+    "duration": 4.869928742938446
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 0.0000012149631157293934,
+    "largestYawStep": 0.04477351021838738,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 5.453090690502921e-7,
+    "largestYawStep": 0.04477351021838738,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 7.229246259535619e-7,
+    "largestYawStep": 0.06867768222444814,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 6.40563272239841e-7,
+    "largestYawStep": 0.053757123488653275,
+    "duration": 2.977528579315738
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 6.260567001198959e-7,
+    "largestYawStep": 0.053757123488653275,
+    "duration": 2.977528579315738
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 6.298976795932833e-7,
+    "largestYawStep": 0.06963542169577465,
+    "duration": 4.869928742938443
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "moving": false,
+    "degrees": -90,
+    "firstMotion": 0.008333333333333333,
+    "slip": 6.317444522328753e-7,
+    "largestYawStep": 0.022638341735933598,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "moving": false,
+    "degrees": 90,
+    "firstMotion": 0.008333333333333333,
+    "slip": 6.686080487390657e-7,
+    "largestYawStep": 0.022638341735933598,
+    "duration": 2.977528579315747
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "moving": false,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 5.351031709083398e-7,
+    "largestYawStep": 0.03481294122740363,
+    "duration": 4.869928742938447
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "moving": true,
+    "degrees": -90,
+    "firstMotion": 0,
+    "slip": 5.491202989363705e-7,
+    "largestYawStep": 0.02700484062928823,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "moving": true,
+    "degrees": 90,
+    "firstMotion": 0,
+    "slip": 5.116761738408119e-7,
+    "largestYawStep": 0.02700484062928823,
+    "duration": 2.977528579315744
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "moving": true,
+    "degrees": 180,
+    "firstMotion": 0,
+    "slip": 4.5208862414471516e-7,
+    "largestYawStep": 0.03480272057639322,
+    "duration": 4.869928742938446
+  }
+]

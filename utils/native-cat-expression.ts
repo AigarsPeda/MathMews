@@ -6,6 +6,16 @@ function smooth(start: number, end: number, time: number) {
   return t*t*(3-2*t);
 }
 
+/** Look farther along the validated route than the body's steering target.
+ * Ease out near arrival so tiny target offsets cannot whip the head sideways. */
+export function catTravelGaze(position: Vec3, heading: number, target: Vec3, scale: number) {
+  'worklet';
+  const dx=target[0]-position[0], dz=target[2]-position[2];
+  const angle=Math.atan2(dx,dz)-heading;
+  return Math.max(-.38,Math.min(.38,Math.atan2(Math.sin(angle),Math.cos(angle))))
+    *smooth(.08,.45,Math.hypot(dx,dz)/scale);
+}
+
 /** Secondary movement stays away from the root and all four contact legs. */
 export function catJumpExpression(phase: number, from: Vec3, to: Vec3, scale: number) {
   'worklet';

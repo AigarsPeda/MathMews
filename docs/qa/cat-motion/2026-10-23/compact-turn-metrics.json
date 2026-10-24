@@ -1,0 +1,27 @@
+[
+  {
+    "degrees": -180,
+    "duration": 1.1199999999999999,
+    "placements": 8
+  },
+  {
+    "degrees": -90,
+    "duration": 0.64,
+    "placements": 4
+  },
+  {
+    "degrees": 45,
+    "duration": 0.4,
+    "placements": 4
+  },
+  {
+    "degrees": 90,
+    "duration": 0.64,
+    "placements": 4
+  },
+  {
+    "degrees": 180,
+    "duration": 1.1199999999999999,
+    "placements": 8
+  }
+]

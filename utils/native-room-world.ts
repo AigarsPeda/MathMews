@@ -1,7 +1,7 @@
 import { isDecorationOpen } from '@/constants/item-interactions';
 import { CAT_FURNITURE, isFurniturePerch } from '@/constants/cat-furniture';
 import { catJourneyGait, type CatGait } from '@/utils/native-cat-gaits';
-import { steerCatPath, roundCatPath, catPacedPath, catJumpPoint, catJumpAim, catJumpDuration, catWalkTiming, CAT_LANDING_WALK_PHASE, type CatMotionLeg, type CatTravelMotion } from '@/utils/native-cat-locomotion';
+import { steerCatPath, roundCatPath, catPacedPath, catJumpPoint, catJumpAim, catJumpDuration, catJumpEffort, catWalkTiming, CAT_LANDING_WALK_PHASE, type CatMotionLeg, type CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { catTurnDuration } from '@/utils/native-cat-turn';
 import { buildCatTraversalLinks, type CatTraversalLink } from '@/utils/native-cat-traversal';
 import { CURTAIN_FABRIC_BOUNDS, isBathroomLightDecorationId, isCurtainDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
@@ -179,6 +179,9 @@ export type NativeTravel = {
   launchStanceWidth?: number;
   landingHeading?: number;
   walkAfterLanding?: boolean;
+  landingLook?: Vec3;
+  /** The final walking step can load the haunches for this supported jump. */
+  prepareJump?: { target: Vec3; light: boolean };
   gait?: CatGait;
   ramp?: number;
   legs?: CatMotionLeg[];
@@ -741,17 +744,37 @@ function clearLine(a: Vec3, b: Vec3, world: NativeRoomWorld): boolean {
   }
   return true;
 }
-/** Keep moving across a revised floor command when a curved departure fits.
+/** Walk into a revised floor command or standing departure when a curve fits.
  * Runs once on the JS thread; drawing uses only these validated samples. */
-export function movingCatRoute(travel: NativeTravel | undefined, position: Vec3, heading: number, speed: number, world?: NativeRoomWorld) {
+export function movingCatRoute(travel: NativeTravel | undefined, position: Vec3, heading: number, speed: number, world?: NativeRoomWorld, fromRest = false, fromLanding = false) {
   if(!world || !travel || travel.jump || travel.legs?.length || travel.bed || travel.bathroom || travel.blocked
-    || travel.elapsed || travel.path.length<2 || Math.abs(position[1]-FLOOR_Y)>.04 || speed<.5*world.catScale)return undefined;
-  const curve=steerCatPath(travel.path,position,heading,world.catScale,(a,b)=>clearLine(a,b,world));
+    || travel.elapsed || travel.path.length<2 || Math.abs(position[1]-FLOOR_Y)>.04 || !fromRest&&speed<.5*world.catScale)return undefined;
+  // Shared-value arrays can expose indices without Array prototype methods.
+  // Materialize the route before passing it to the JS-side steering helpers.
+  const source: Vec3[] = [];
+  for(let i=0;i<travel.path.length;i++)source.push([travel.path[i][0],travel.path[i][1],travel.path[i][2]]);
+  // A tiny reposition should not become a wide detour. Contact passes keep
+  // their authored approach; ordinary standing departures can begin walking.
+  if(fromRest && (pathLength(source)<(fromLanding?1.5:2.5)*world.catScale || travel.brushSide!==undefined))return undefined;
+  // The landing's remaining support feet need one short forward step before
+  // the shoulders turn across them. Starting curvature immediately can pull
+  // those planted paws beyond leg reach during impact recovery.
+  const start:Vec3=fromLanding ? [position[0]+Math.sin(heading)*.6*world.catScale,position[1],position[2]+Math.cos(heading)*.6*world.catScale] : position;
+  if(fromLanding && !clearLine(position,start,world))return undefined;
+  let continuation=source;
+  if(fromLanding) {
+    // Paced samples behind the forward recovery step are not new waypoints.
+    // Join a point ahead; the curve still validates every replacement chord.
+    const ahead=source.findIndex(point=>(point[0]-start[0])*Math.sin(heading)+(point[2]-start[2])*Math.cos(heading)>.10*world.catScale);
+    continuation=[start,...source.slice(ahead<0?source.length-1:Math.max(1,ahead))];
+  }
+  const curve=steerCatPath(continuation,start,heading,world.catScale,(a,b)=>clearLine(a,b,world),true);
   if(!curve)return undefined;
+  if(fromLanding)curve.unshift(position);
   const path=catPacedPath(curve,world.catScale);
   const roomyWorld={...world,radius:world.radius+.16*world.catScale};
   const timing=catWalkTiming(path,world.catScale,travel.gait??'walk',p=>isFree(p,roomyWorld),travel.through);
-  return {path,...timing,startSpeed:speed};
+  return {path,...timing,startSpeed:fromRest?0:speed};
 }
 
 /** Navigation runs when a command/layout changes, never on the render thread. */
@@ -1481,6 +1504,15 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   if(crawlValid&&crawl)route={path:[start,crawl.to],legs:[{...crawl.leg,path:[start,crawl.to]}]};
   let path = step.crawl ? crawlValid && crawl ? [start,crawl.to] : [start] : step.brush ? brushValid && brush ? [start,brush.to] : [start] : jump || bedCrawl ? [start, target] : walking ? route!.path : [start];
   if (walking && !step.brush && !route?.legs) path = roundCatPath(path, .6 * world.catScale, (a,b) => clearLine(a,b,world));
+  // Finish the approach facing the jump. Reversing a validated departure
+  // curve gives an arrival tangent, with the same whole-route clearance.
+  if(walking && step.approachingSeat && object?.seat && !object.bed && !route?.legs && !step.brush) {
+    const reverse: Vec3[] = [];
+    for(let i=path.length-1;i>=0;i--)reverse.push(path[i]);
+    const heading=Math.atan2(target[0]-object.seat[0],target[2]-object.seat[2]);
+    const arrival=steerCatPath(reverse,target,heading,world.catScale,(a,b)=>clearLine(a,b,world));
+    if(arrival)path=arrival.reverse();
+  }
   let blocked = !!step.crawl && !crawlValid || !!step.brush && !brushValid || !!walking && path.length === 1 && Math.hypot(start[0] - target[0], start[2] - target[2]) > .05;
   if (plan.kind === 'bowlEat' && step.bowlApproach && !bowlPath) { blocked = true; path = [start]; }
   if (plan.kind === 'bowlEat' && step.animation === 'eating' && object
@@ -1556,8 +1588,12 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
       axis: [Math.cos(rockingSupport.heading), 0, -Math.sin(rockingSupport.heading)], seat: rockingSupport.seat!, scale: rockingSupport.scale,
       leaving: rockingSupport===fromSupport || step.animation === 'jumpOff' && !step.jumpFromInstanceId }
     : undefined;
+  const preparationArc=walking && step.approachingSeat && object?.seat && !object.bed && !blocked && !route?.legs
+    ? nativeJumpArc(target,object.seat,world,object.instanceId) : undefined;
+  const prepareJump=preparationArc!==undefined && object?.seat
+    ? {target:object.seat,light:catJumpEffort(target,object.seat,world.catScale,preparationArc)<.8} : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking || jump ? duration * 1000 : step.durationMs, moveMs: walking || jump ? duration * 1000 : step.moveMs,
-    native: { brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
+    native: { prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
       ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
       jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, targetPosition: object?.position, objectPath, objectDuration: duration * .6,

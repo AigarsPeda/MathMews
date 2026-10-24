@@ -1,0 +1,182 @@
+[
+  {
+    "scale": 0.3,
+    "gait": "walk",
+    "peakBrake": 0,
+    "peakAcceleration": 0
+  },
+  {
+    "scale": 0.3,
+    "gait": "trot",
+    "peakBrake": 5.999909641086081,
+    "peakAcceleration": 4.999851846247853
+  },
+  {
+    "scale": 0.3,
+    "gait": "run",
+    "peakBrake": 5.999970018957307,
+    "peakAcceleration": 4.999976272861961
+  },
+  {
+    "scale": 0.8,
+    "gait": "walk",
+    "peakBrake": 0,
+    "peakAcceleration": 0
+  },
+  {
+    "scale": 0.8,
+    "gait": "trot",
+    "peakBrake": 5.9997633153432535,
+    "peakAcceleration": 4.99987364256093
+  },
+  {
+    "scale": 0.8,
+    "gait": "run",
+    "peakBrake": 5.999992209496645,
+    "peakAcceleration": 4.9999865999928135
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "linked": false,
+    "lead": 0.0990108650592281,
+    "slip": 0.0000014150367330937631,
+    "maxHeadStep": 0.02361687992593492
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "linked": true,
+    "lead": 0.0990108650592281,
+    "slip": 0.0000014150367330937631,
+    "maxHeadStep": 0.02361687992593492
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "linked": false,
+    "lead": 0.10658706822443728,
+    "slip": 0.0000014156028900283376,
+    "maxHeadStep": 0.01273907286554235
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "linked": true,
+    "lead": 0.10658706822443728,
+    "slip": 0.0000014156028900283376,
+    "maxHeadStep": 0.01273907286554235
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "linked": false,
+    "lead": 0.11028581449925903,
+    "slip": 9.93740823773771e-7,
+    "maxHeadStep": 0.00646558554556817
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "linked": true,
+    "lead": 0.11028581449925903,
+    "slip": 9.93740823773771e-7,
+    "maxHeadStep": 0.00646558554556817
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "linked": false,
+    "lead": 0.0990108650592281,
+    "slip": 0.0000014150367330937631,
+    "maxHeadStep": 0.02361687992593492
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "linked": true,
+    "lead": 0.0990108650592281,
+    "slip": 0.0000014150367330937631,
+    "maxHeadStep": 0.02361687992593492
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "linked": false,
+    "lead": 0.10658706822443728,
+    "slip": 0.0000014156028900283376,
+    "maxHeadStep": 0.01273907286554235
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "linked": true,
+    "lead": 0.10658706822443728,
+    "slip": 0.0000014156028900283376,
+    "maxHeadStep": 0.01273907286554235
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "linked": false,
+    "lead": 0.11028581449925903,
+    "slip": 9.93740823773771e-7,
+    "maxHeadStep": 0.00646558554556817
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "linked": true,
+    "lead": 0.11028581449925903,
+    "slip": 9.93740823773771e-7,
+    "maxHeadStep": 0.00646558554556817
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "linked": false,
+    "lead": 0.0990108650592281,
+    "slip": 0.0000014150367330937631,
+    "maxHeadStep": 0.02361687992593492
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "linked": true,
+    "lead": 0.0990108650592281,
+    "slip": 0.0000014150367330937631,
+    "maxHeadStep": 0.02361687992593492
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "linked": false,
+    "lead": 0.10658706822443728,
+    "slip": 0.0000014156028900283376,
+    "maxHeadStep": 0.01273907286554235
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "linked": true,
+    "lead": 0.10658706822443728,
+    "slip": 0.0000014156028900283376,
+    "maxHeadStep": 0.01273907286554235
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "linked": false,
+    "lead": 0.11028581449925903,
+    "slip": 9.93740823773771e-7,
+    "maxHeadStep": 0.00646558554556817
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "linked": true,
+    "lead": 0.11028581449925903,
+    "slip": 9.93740823773771e-7,
+    "maxHeadStep": 0.00646558554556817
+  }
+]

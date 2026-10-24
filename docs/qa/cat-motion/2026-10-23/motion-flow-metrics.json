@@ -1,0 +1,128 @@
+[
+  {
+    "skin": "orange",
+    "fps": 30,
+    "offset": -0.7,
+    "preparedFrames": 7,
+    "handoff": 9.920152897893071e-10
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "offset": 0.7,
+    "preparedFrames": 7,
+    "handoff": 3.796812298022802e-9
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "offset": -0.7,
+    "preparedFrames": 12,
+    "handoff": 2.724297696475693e-10
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "offset": 0.7,
+    "preparedFrames": 12,
+    "handoff": 5.140279580377064e-9
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "offset": -0.7,
+    "preparedFrames": 23,
+    "handoff": 1.0393819508079495e-10
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "offset": 0.7,
+    "preparedFrames": 23,
+    "handoff": 2.6856971580783007e-9
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "offset": -0.7,
+    "preparedFrames": 7,
+    "handoff": 9.920152897893071e-10
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "offset": 0.7,
+    "preparedFrames": 7,
+    "handoff": 3.796812298022802e-9
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "offset": -0.7,
+    "preparedFrames": 12,
+    "handoff": 2.724297696475693e-10
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "offset": 0.7,
+    "preparedFrames": 12,
+    "handoff": 5.140279580377064e-9
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "offset": -0.7,
+    "preparedFrames": 23,
+    "handoff": 1.0393819508079495e-10
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "offset": 0.7,
+    "preparedFrames": 23,
+    "handoff": 2.6856971580783007e-9
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "offset": -0.7,
+    "preparedFrames": 7,
+    "handoff": 9.920152897893071e-10
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "offset": 0.7,
+    "preparedFrames": 7,
+    "handoff": 3.796812298022802e-9
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "offset": -0.7,
+    "preparedFrames": 12,
+    "handoff": 2.724297696475693e-10
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "offset": 0.7,
+    "preparedFrames": 12,
+    "handoff": 5.140279580377064e-9
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "offset": -0.7,
+    "preparedFrames": 23,
+    "handoff": 1.0393819508079495e-10
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "offset": 0.7,
+    "preparedFrames": 23,
+    "handoff": 2.6856971580783007e-9
+  }
+]

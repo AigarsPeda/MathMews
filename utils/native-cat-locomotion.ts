@@ -9,6 +9,7 @@ export type CatTravelMotion = { speed: number; phase: number; gait: CatGait; tai
 /** All four paws have landed; the remaining recovery can join a first stride. */
 export const CAT_LANDING_WALK_PHASE = jumpProfile.walkReady;
 export const CAT_JUMP_TAKEOFF = jumpProfile.takeoff;
+export const CAT_JUMP_PREPARE = .08;
 export const CAT_JUMP_TOUCHDOWN = jumpProfile.touchdown;
 
 /** A planned, small landing adjustment starts after takeoff. The head leads
@@ -21,13 +22,22 @@ export function catJumpAim(from: Vec3, to: Vec3, progress: number, landingHeadin
   return { heading:heading+delta*blend*blend*(3-2*blend),headTurn:Math.max(-.12,Math.min(.12,delta*.25))*Math.sin(Math.PI*t) };
 }
 
+/** Relative effort controls the pose, independently of the safe root arc. */
+export function catJumpEffort(from: Vec3, to: Vec3, scale: number, height = .35*scale) {
+  'worklet';
+  const distance=Math.hypot(to[0]-from[0],to[2]-from[2])/scale;
+  const rise=(to[1]-from[1])/scale;
+  return Math.min(1,.55+.30*Math.max(0,rise)+.08*Math.max(0,-rise)+.12*distance
+    +.4*Math.max(0,height/scale-.35));
+}
+
 /** Scale the flight clock with the validated arc, rather than floating through
  * every jump for the same time. Units are relative to the cat's own size. */
 export function catJumpDuration(from: Vec3, to: Vec3, height: number, scale: number): number {
   const flight = Math.max(Math.sqrt(8 * height / (jumpProfile.gravity * scale)),
     Math.hypot(to[0] - from[0], to[2] - from[2]) / (7 * scale));
   return Math.max(jumpProfile.minDuration, Math.min(jumpProfile.maxDuration,
-    flight / (CAT_JUMP_TOUCHDOWN - CAT_JUMP_TAKEOFF)));
+    flight / (CAT_JUMP_TOUCHDOWN - CAT_JUMP_TAKEOFF) * (catJumpEffort(from,to,scale,height)<.8 ? .9 : 1)));
 }
 
 export type CatMotionLeg = {
@@ -58,20 +68,25 @@ export function catJumpPoint(from: Vec3, to: Vec3, progress: number, height: num
     from[2] + (to[2] - from[2]) * travel];
 }
 
-/** A short acceleration/braking ramp, with constant speed through intermediate points. */
+/** Integrate smooth velocity ramps, preserving exact arrival and carried speed. */
 export function catTravelProgress(elapsed: number, duration: number, acceleration = .18, initialRate = 0, finalRate = 0): number {
   'worklet';
   if (duration <= 0 || elapsed >= duration) return 1;
   const t = Math.max(0, elapsed), ramp = Math.min(acceleration, duration * .22);
-  // Integrate a linear acceleration/cruise/braking profile. Doorways can
-  // finish at cruising speed; interaction targets retain zero terminal speed.
+  if (ramp <= 0) return t / duration;
+  // Cubic velocity has zero acceleration at each ramp boundary. Its integral
+  // still covers half the ramp, so doorway rates and route durations agree.
   const first=Math.max(0,Math.min(.9/Math.max(.001,ramp),initialRate));
   const last=Math.max(0,Math.min(.9/Math.max(.001,ramp),finalRate));
   const cruise=(1-(first+last)*ramp/2)/(duration-ramp);
-  if(t<ramp)return first*t+(cruise-first)*t*t/(2*ramp);
+  if(t<ramp) {
+    const u=t/ramp;
+    return first*t+(cruise-first)*ramp*(u*u*u-.5*u*u*u*u);
+  }
   if(t>duration-ramp) {
     const remaining=duration-t;
-    return 1-last*remaining-(cruise-last)*remaining*remaining/(2*ramp);
+    const u=remaining/ramp;
+    return 1-last*remaining-(cruise-last)*ramp*(u*u*u-.5*u*u*u*u);
   }
   return first*ramp/2+cruise*(t-ramp/2);
 }
@@ -163,6 +178,30 @@ export function catWalkTiming(path: Vec3[], scale: number, gait: CatGait = 'walk
     const pace = Math.max(1, Math.min(5, speed / Math.sqrt(1.8*scale/Math.max(.001,curvature))));
     paces[i] = Math.max(paces[i],pace); paces[i+1] = Math.max(paces[i+1],pace);
   }
+  // Carry each local speed restriction backward for braking and forward for
+  // acceleration. A short corner sample must not absorb an entire run's speed.
+  // Pace is linear between vertices; bound its steepest acceleration, which
+  // occurs at the faster endpoint: |a| = speed² * |dp/ds| / pace³.
+  const limitPace = (fast: number, slow: number, distance: number, acceleration: number) => {
+    if (fast >= slow) return fast;
+    if (distance < 1e-8) return slow;
+    if (speed*speed*(slow-fast) <= acceleration*distance*fast*fast*fast) return fast;
+    let low=fast, high=slow;
+    for(let iteration=0;iteration<16;iteration++) {
+      const pace=(low+high)/2;
+      if(speed*speed*(slow-pace)>acceleration*distance*pace*pace*pace)low=pace;
+      else high=pace;
+    }
+    return high;
+  };
+  for(let i=path.length-2;i>=0;i--) {
+    const distance=Math.hypot(...path[i+1].map((v,k)=>v-path[i][k]));
+    paces[i]=limitPace(paces[i],paces[i+1],distance,6*scale);
+  }
+  for(let i=1;i<path.length;i++) {
+    const distance=Math.hypot(...path[i].map((v,k)=>v-path[i-1][k]));
+    paces[i]=limitPace(paces[i],paces[i-1],distance,5*scale);
+  }
   let distance = 0;
   for (let i = 1; i < path.length; i++) distance += Math.hypot(...path[i].map((v,k)=>v-path[i-1][k])) * (paces[i-1]+paces[i]) / 2;
   return { paces, gait, ramp, duration: Math.max(.18, distance/speed+ramp) };
@@ -206,14 +245,16 @@ export function catMotionSample(legs: readonly CatMotionLeg[], elapsed: number) 
     : catPathPoint(leg.path, catTravelProgress(remaining, leg.duration, leg.ramp, leg.initialRate??0, leg.through?catWalkExitRate(leg.duration,leg.ramp,leg.initialRate):0), leg.paces);
   const ahead = leg.kind === 'hop' ? leg.path[leg.path.length - 1]
     : catPathPoint(leg.path, catTravelProgress(remaining + .10, leg.duration, leg.ramp, leg.initialRate??0, leg.through?catWalkExitRate(leg.duration,leg.ramp,leg.initialRate):0), leg.paces);
-  return { position, ahead, kind: turning ? 'turn' as const : leg.kind, progress: turning ? remaining / leg.turnDuration! : actionProgress, index, animation: leg.animation, gait: leg.gait, actionDuration,
+  const gaze = leg.kind === 'hop' ? ahead
+    : catPathPoint(leg.path, catTravelProgress(remaining + .35, leg.duration, leg.ramp, leg.initialRate??0, leg.through?catWalkExitRate(leg.duration,leg.ramp,leg.initialRate):0), leg.paces);
+  return { position, ahead, gaze, kind: turning ? 'turn' as const : leg.kind, progress: turning ? remaining / leg.turnDuration! : actionProgress, index, animation: leg.animation, gait: leg.gait, actionDuration,
     heading: leg.kind === 'hop' ? Math.atan2(leg.path[leg.path.length-1][0]-leg.path[0][0],leg.path[leg.path.length-1][2]-leg.path[0][2]) : undefined };
 }
 
-/** A tangent-continuous handoff for an already moving cat. Every new chord
+/** A tangent-continuous departure or handoff. Every new chord
  * must clear the same body envelope as navigation, including the route join. */
 export function steerCatPath(path: Vec3[], position: Vec3, heading: number, scale: number,
-  clear: (from: Vec3, to: Vec3) => boolean): Vec3[] | undefined {
+  clear: (from: Vec3, to: Vec3) => boolean, allowReversal = false): Vec3[] | undefined {
   const route=catPathFromPosition(path,position).path;
   let total=0;
   for(let i=1;i<route.length;i++)total+=Math.hypot(...route[i].map((v,k)=>v-route[i-1][k]));
@@ -222,7 +263,8 @@ export function steerCatPath(path: Vec3[], position: Vec3, heading: number, scal
   if(!first)return undefined;
   const delta=Math.atan2(Math.sin(Math.atan2(first[0]-position[0],first[2]-position[2])-heading),
     Math.cos(Math.atan2(first[0]-position[0],first[2]-position[2])-heading));
-  if(Math.abs(delta)>Math.PI*.57)return undefined;
+  const reversing=Math.abs(delta)>Math.PI*.57;
+  if(reversing && (!allowReversal || total<3.5*scale))return undefined;
   const cut=Math.min(total*.65,(1.2+Math.abs(delta)*.65)*scale);
   let left=cut,index=1;
   for(;index<route.length;index++) {
@@ -236,6 +278,31 @@ export function steerCatPath(path: Vec3[], position: Vec3, heading: number, scal
   const lead=Math.min(.7*scale,cut*.45);
   const control:Vec3=[position[0]+Math.sin(heading)*lead,position[1],position[2]+Math.cos(heading)*lead];
   const incoming=end.map((v,k)=>v-(b[k]-a[k])*lead/length) as Vec3;
+  if(reversing) {
+    // A single cubic folds back on itself for a destination directly behind.
+    // Two joined curves make a walking U-turn, with a shared sideways tangent.
+    // Try the other side if furniture blocks the preferred shoulder.
+    for(const sign of [Math.sign(delta),-Math.sign(delta)]) {
+      const side:Vec3=[Math.cos(heading)*sign,0,-Math.sin(heading)*sign];
+      const middle:Vec3=[position[0]+side[0]*scale+Math.sin(heading)*.8*scale,position[1],
+        position[2]+side[2]*scale+Math.cos(heading)*.8*scale];
+      const before=middle.map((v,k)=>v-side[k]*lead) as Vec3;
+      const after=middle.map((v,k)=>v+side[k]*lead) as Vec3;
+      const result=[position];
+      let valid=true;
+      for(let i=1;i<=48;i++) {
+        const second=i>24,t=(second?i-24:i)/24,u=1-t;
+        const p0=second?middle:position,p1=second?after:control,p2=second?incoming:before,p3=second?end:middle;
+        const point=p0.map((v,k)=>u*u*u*v+3*u*u*t*p1[k]+3*u*t*t*p2[k]+t*t*t*p3[k]) as Vec3;
+        if(!clear(result[result.length-1],point)){valid=false;break;}
+        result.push(point);
+      }
+      if(!valid || !clear(end,b))continue;
+      for(let i=index;i<route.length;i++)result.push(route[i]);
+      return result;
+    }
+    return undefined;
+  }
   const result=[position];
   for(let i=1;i<=24;i++) {
     const t=i/24,u=1-t;

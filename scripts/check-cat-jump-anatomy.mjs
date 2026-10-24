@@ -28,6 +28,18 @@ for(const skin of ['orange','grey','white']) {
     assert.ok(Math.abs(contact['L.front.paw'][13]-.10)<.004&&contact['L.rear.paw'][13]>.17,'Forefeet contact before the hind feet');
     assert.ok(compression.chest[13]<contact.chest[13]-.07,'Shoulders absorb the impact after contact');
     assert.ok(sampleCatClip(clip,.72).chest[13]<contact.chest[13]-.015,'The torso continues into compression immediately, without stopping before its landing dip');
+    assert.ok(gather['L.front.paw'][13]>idle['L.front.paw'][13]+.25
+      && gather['L.front.paw'][14]<idle['L.front.paw'][14]-.025,
+      'Flight folds the forepaws up and back under the chest instead of keeping a standing silhouette');
+    assert.ok(gather['L.rear.paw'][13]>idle['L.rear.paw'][13]+.30,
+      'The hind paws visibly gather higher beneath the belly');
+    for(const paw of ['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw']) {
+      const upDot=(a,b)=>a.slice(4,7).reduce((sum,v,i)=>sum+v*b[i+4],0);
+      assert.ok(upDot(gather[paw],idle[paw])<.98,'Airborne wrists/hocks fold with their legs');
+      for(const phase of [0,paw.includes('front')?jump.touchdown:jump.hindTouchdown,1])
+        assert.ok(upDot(sampleCatClip(clip,phase)[paw],idle[paw])>.999,'Pads flatten before their support contact');
+    }
+    assert.ok(gather.tailTip[14]<idle.tailTip[14]-.30,'The tail trails behind the gathered flight pose');
     const firstImpact=sampleCatClip(clip,.76);
     const shoulderDrop=contact.chest[13]-firstImpact.chest[13],hipDrop=contact.pelvis[13]-firstImpact.pelvis[13];
     assert.ok(shoulderDrop>.10 && shoulderDrop>Math.max(0,hipDrop)*2.5,'The shoulders visibly absorb the initial load before the hips follow');

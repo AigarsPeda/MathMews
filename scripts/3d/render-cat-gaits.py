@@ -5,7 +5,9 @@ from mathutils import Vector, Matrix, Quaternion
 ROOT=Path(__file__).resolve().parents[2]
 fluid='--fluid' in sys.argv
 spine='--spine' in sys.argv
-OUT=Path('/tmp/brainpet-spine-review' if spine else '/tmp/brainpet-fluid-review' if fluid else '/tmp/brainpet-gait-review');OUT.mkdir(exist_ok=True)
+anticipation='--anticipation' in sys.argv
+walking_turns='--walking-turns' in sys.argv
+OUT=Path('/tmp/brainpet-walking-turns-review' if walking_turns else '/tmp/brainpet-anticipation-review' if anticipation else '/tmp/brainpet-spine-review' if spine else '/tmp/brainpet-fluid-review' if fluid else '/tmp/brainpet-gait-review');OUT.mkdir(exist_ok=True)
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 bpy.ops.import_scene.gltf(filepath=str(ROOT/'assets/3d/native/cat-orange.glb'))
 arm=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE')
@@ -43,8 +45,8 @@ corrections={}
 for i,n in enumerate(model['nodes']):
     if n['name'] in arm.pose.bones and n['name'] not in corrections:
         corrections[n['name']]=bind_world(i).inverted()@inverse@arm.matrix_world@arm.data.bones[n['name']].matrix_local
-if '--runtime' in sys.argv or fluid or spine:
-    poses=json.loads(Path('/tmp/brainpet-spine-poses.json' if spine else '/tmp/brainpet-fluid-poses.json' if fluid else '/tmp/brainpet-gait-poses.json').read_text())
+if '--runtime' in sys.argv or fluid or spine or anticipation or walking_turns:
+    poses=json.loads(Path('/tmp/brainpet-walking-turns-poses.json' if walking_turns else '/tmp/brainpet-anticipation-poses.json' if anticipation else '/tmp/brainpet-spine-poses.json' if spine else '/tmp/brainpet-fluid-poses.json' if fluid else '/tmp/brainpet-gait-poses.json').read_text())
     for track in arm.animation_data.nla_tracks:track.mute=True
     arm.animation_data.action=None
     floor.location.z=.068
