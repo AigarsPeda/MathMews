@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAnimationActivity } from '@/hooks/use-animation-activity';
 import { worldClockReading, type WorldClock } from '@/utils/world-clock';
 
@@ -10,20 +10,19 @@ function readPeriod(clock: WorldClock | undefined, running: boolean) {
 export function useWorldPeriod(clock?: WorldClock, enabled = true) {
   const { active } = useAnimationActivity();
   const running = active && enabled && !!clock;
-  const [reading, setReading] = useState(() => readPeriod(clock, running));
-  // Refresh before commit on activation or a clock preset/speed change.
-  if (reading.clock !== clock || reading.running !== running) {
-    setReading(() => readPeriod(clock, running));
-  }
+  // Read activation/preset changes in this render, without restarting PetStage.
+  const source = useMemo(() => readPeriod(clock, running), [clock, running]);
+  const [reading, setReading] = useState(() => ({ source, period: source.period }));
   useEffect(() => {
     if (!running) return;
     const update = () => setReading(previous => {
       const next = readPeriod(clock, running);
-      return previous.period === next.period ? previous : next;
+      const current = previous.source === source ? previous.period : source.period;
+      return current === next.period ? previous : { source, period: next.period };
     });
     const frame = requestAnimationFrame(update);
     const timer = setInterval(update, 5000);
     return () => { cancelAnimationFrame(frame); clearInterval(timer); };
-  }, [clock, running]);
-  return reading.period;
+  }, [clock, running, source]);
+  return reading.source === source ? reading.period : source.period;
 }

@@ -1,0 +1,4 @@
+Verified instant preloaded room changes, cold-scene readiness, repeated input, abandoned loads, stale callbacks, covered screens and independent cat location.
+Verified Home never exposes the incoming empty buffer while native transform updates are pending.
+Verified mode fades/slides, rapid reversals, fixed layout, immediate tap/accessibility guards and instant Reduce Motion/inactive behavior.
+Verified Size/Turn/Back panel identities, nested animation guards and Reduce Motion for tools and dock resizing.

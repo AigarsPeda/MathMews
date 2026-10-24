@@ -1,0 +1,98 @@
+TAP version 13
+# Subtest: period activation reads current time without replaying room renders (without React Compiler)
+not ok 1 - period activation reads current time without replaying room renders (without React Compiler)
+  ---
+  duration_ms: 461.743542
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:914:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Hiding the room should not replay its render
+    
+    5 !== 4
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 4
+  actual: 5
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:921:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: lighting clock activation avoids render replay and next-frame duplicates (without React Compiler)
+not ok 2 - lighting clock activation avoids render replay and next-frame duplicates (without React Compiler)
+  ---
+  duration_ms: 227.171875
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:942:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The initial render already sampled the clock
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:946:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: period activation reads current time without replaying room renders (with React Compiler)
+not ok 3 - period activation reads current time without replaying room renders (with React Compiler)
+  ---
+  duration_ms: 405.091083
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:914:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Hiding the room should not replay its render
+    
+    5 !== 4
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 4
+  actual: 5
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:921:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: lighting clock activation avoids render replay and next-frame duplicates (with React Compiler)
+not ok 4 - lighting clock activation avoids render replay and next-frame duplicates (with React Compiler)
+  ---
+  duration_ms: 261.148166
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:942:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The initial render already sampled the clock
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:946:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 0
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1753.699125

@@ -154,10 +154,10 @@ export function roomItemAtPoint(object: NativeRoomObject, point: RoomPoint, widt
 }
 
 type PlacementShape = Pick<NativeRoomObject, 'modelId' | 'collidable' | 'heading' | 'scale' | 'position'>;
-function boxes(object: PlacementShape): Box[] {
+function boxes(object: PlacementShape, parts?: { min: number[]; max: number[]; footprint?: number[][] }[]): Box[] {
   if (object.collidable === false) return [];
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
-  return (meta.placementBoxes ?? meta.collisionBoxes ?? [{ min: meta.min, max: meta.max }]).map(box => {
+  return (parts ?? meta.placementBoxes ?? meta.collisionBoxes ?? [{ min: meta.min, max: meta.max }]).map(box => {
     const center = rotate(box.min.map((v, i) => (v + box.max[i]) / 2), object.heading);
     const half = box.min.map((v, i) => (box.max[i] - v) * object.scale / 2) as Vec3;
     const cos = Math.cos(object.heading), sin = Math.sin(object.heading);
@@ -322,6 +322,9 @@ function visitPlacementCells(box: Box, visit: (key: string) => void) {
 
 function indexPlacementShape(object: NativeRoomObject) {
   const parts = boxes(object), grid = new Map<string, Set<Box>>(), fallback = new Set<Box>();
+  // Beds need space in front of the firebox even where the grate mesh is open.
+  const hearth = object.modelId === 'livingFireplaceCream'
+    ? boxes(object, [{ min: [-.78, 0, .32], max: [.78, .42, .85] }])[0] : undefined;
   for (const box of parts) {
     if (!visitPlacementCells(box, key => {
       let cell = grid.get(key);
@@ -329,7 +332,7 @@ function indexPlacementShape(object: NativeRoomObject) {
       cell.add(box);
     })) fallback.add(box);
   }
-  return { boxes: parts, magnets: magnetUnits.has(object.modelId) ? magnetBoxes(object) : parts, grid, fallback };
+  return { boxes: parts, hearth, magnets: magnetUnits.has(object.modelId) ? magnetBoxes(object) : parts, grid, fallback };
 }
 
 type PlacementIndexCache = Map<string, { key: string; index: ReturnType<typeof indexPlacementShape> }>;
@@ -366,8 +369,9 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
     }
     if (obstacle.fallback.size) unindexed.add(obstacle);
   }
-  const nearby = (own: Box[]) => {
+  const nearby = (own: Box[], bed = false) => {
     const result = new Set(unindexed);
+    if (bed) for (const obstacle of obstacles) if (obstacle.hearth) result.add(obstacle);
     for (const box of own) {
       const indexed = visitPlacementCells(box, key => {
         for (const obstacle of cells.get(key) ?? []) result.add(obstacle);
@@ -376,12 +380,12 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
     }
     return result;
   };
-  const nearbyBoxes = (box: Box, obstacle: typeof obstacles[number], reach: number) => {
+  const nearbyBoxes = (box: Box, obstacle: typeof obstacles[number], reach: number, bed = false) => {
     const found = new Set(obstacle.fallback);
     if (!visitPlacementCells({ ...box, extentX: box.extentX + reach, extentZ: box.extentZ + reach }, key => {
       for (const candidate of obstacle.grid.get(key) ?? []) found.add(candidate);
-    })) return obstacle.boxes;
-    return [...found];
+    })) return bed && obstacle.hearth ? [...obstacle.boxes, obstacle.hearth] : obstacle.boxes;
+    return bed && obstacle.hearth ? [...found, obstacle.hearth] : [...found];
   };
   const templates = new Map<string, { object: NativeRoomObject; boxes: Box[] }>();
   const movingBoxes = (object: NativeRoomObject) => {
@@ -396,8 +400,10 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
   };
   const collisions = (object: NativeRoomObject, tolerance = .005) => {
     const own = movingBoxes(object);
+    const bed = object.modelId.startsWith('bed-');
     return obstacles.filter(other => other.id !== object.instanceId).map(other => ({ id: other.id,
-      depth: own.reduce((sum, a) => sum + other.boxes.reduce((total, b) => total + penetration(a, b, tolerance), 0), 0) }));
+      depth: own.reduce((sum, a) => sum + [...other.boxes, ...(bed && other.hearth ? [other.hearth] : [])]
+        .reduce((total, b) => total + penetration(a, b, tolerance), 0), 0) }));
   };
   const boundaryExcess = (object: NativeRoomObject): { edge: RoomPlacementEdge; depth: number }[] => {
     // Curtains may extend beyond the wall edges or cover other wall fixtures.
@@ -423,9 +429,10 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
   const canPlace = (object: NativeRoomObject, tolerance = .005) => {
     if (outsideRoom(object) > .00001) return false;
     const own = movingBoxes(object);
-    for (const other of nearby(own)) {
+    const bed = object.modelId.startsWith('bed-');
+    for (const other of nearby(own, bed)) {
       if (other.id === object.instanceId) continue;
-      for (const a of own) for (const b of nearbyBoxes(a, other, 0)) if (penetration(a, b, tolerance) > 0) return false;
+      for (const a of own) for (const b of nearbyBoxes(a, other, 0, bed)) if (penetration(a, b, tolerance) > 0) return false;
     }
     return true;
   };
@@ -527,13 +534,14 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
   };
   const feedback = (candidate: NativeRoomObject): RoomPlacementFeedback => {
     const own = movingBoxes(candidate);
+    const bed = candidate.modelId.startsWith('bed-');
     return { candidate, boundaries: boundaryExcess(candidate).filter(edge => edge.depth > .00001).map(edge => edge.edge),
-      blockers: [...nearby(own)].filter(other => other.id !== candidate.instanceId).flatMap(other => {
+      blockers: [...nearby(own, bed)].filter(other => other.id !== candidate.instanceId).flatMap(other => {
         const hitSet = new Set<Box>();
-        for (const a of own) for (const b of nearbyBoxes(a, other, 0)) {
+        for (const a of own) for (const b of nearbyBoxes(a, other, 0, bed)) {
           if (!hitSet.has(b) && penetration(a, b) > 0) hitSet.add(b);
         }
-        const hits = other.boxes.filter(box => hitSet.has(box));
+        const hits = [...other.boxes, ...(bed && other.hearth ? [other.hearth] : [])].filter(box => hitSet.has(box));
         return hits.length ? [{instanceId:other.id,boxes:hits.map(boxCorners)}] : [];
       }) };
   };

@@ -20,6 +20,7 @@ function load(id) {
 }
 const { buildNativeRoomWorld, placeObjectOnRugs, projectWorld, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN, FLOOR_Y } = load('@/utils/native-room-world');
 const { roomItemAnchor, roomItemAtPoint, roomItemFootprint, ROOM_PLACEMENT_MIN, ROOM_PLACEMENT_MAX, createRoomPlacementResolver } = load('@/utils/room-item-placement');
+const { transformRoomObject } = load('@/utils/room-support');
 const { updatePlacedDecorationOffsetByInstance, updatePlacedDecorationWallFlipByInstance, normalizePlacedDecorations } = load('@/utils/room-placement');
 function at(object, x, z, width) {
   const centerY = (object.min[1] + object.max[1]) / 2;
@@ -316,6 +317,29 @@ for(const width of [354,390,768]) {
   assert.equal(createRoomPlacementResolver({...world,objects:[clearLamp,raisedPlant]}).canPlace(clearLamp),false,'The bulb/shade still reject a real obstruction above the floor');
 }
 console.log('Verified clear arc-lamp bases beside the reported planter/fireplace, preview/drop/save agreement, and rejection of actual base and shade collisions.');
+
+// The bed can clear the grate's physical mesh but still cover the fireplace opening.
+for (const degrees of [0, 90]) {
+  const width = 390;
+  const world = buildNativeRoomWorld({ width, height: 420, petSize: 80, sizeScale: 1.15,
+    bedId: 'green', bedOffset: { x: .5, y: .5 }, toys: [], decorations: [
+      { decorationId: 'livingFireplaceCream', instanceId: 'fireplace', offset: { x: 0, y: 0 }, rotationDegrees: degrees },
+    ] });
+  const bed = world.objects.find(item => item.instanceId === 'bed');
+  const fireplace = world.objects.find(item => item.instanceId === 'fireplace');
+  const front = .45 * fireplace.scale + (degrees ? .972 : .81) * bed.scale + .02;
+  const candidate = transformRoomObject(bed, [fireplace.position[0] + Math.sin(fireplace.heading) * front,
+    bed.position[1], fireplace.position[2] + Math.cos(fireplace.heading) * front]);
+  const resolver = createRoomPlacementResolver(world, ['bed']);
+  assert.equal(resolver.canPlace(candidate), false, 'A cat bed cannot sit in the fireplace hearth clearance');
+  assert.ok(resolver.feedback(candidate).blockers.some(hit => hit.instanceId === 'fireplace'));
+  assert.equal(resolver.drop('bed', roomItemAnchor(candidate, width), { zoom: 100 }).accepted, false);
+  const side = .895 * fireplace.scale + (degrees ? .81 : .972) * bed.scale + .05;
+  const beside = transformRoomObject(bed, [fireplace.position[0] + Math.cos(fireplace.heading) * side,
+    bed.position[1], fireplace.position[2] - Math.sin(fireplace.heading) * side]);
+  assert.equal(resolver.canPlace(beside), true, 'The cat bed can still sit beside the fireplace');
+}
+console.log('Verified the fireplace keeps cat beds out of its hearth on both orientations.');
 
 // Lamps rest on a rotated/scaled tabletop, and the screen anchor survives saves.
 const { placeObjectOnSurface } = load('@/utils/native-room-world');

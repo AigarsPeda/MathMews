@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: period activation reads current time without replaying room renders (without React Compiler)
+ok 1 - period activation reads current time without replaying room renders (without React Compiler)
+  ---
+  duration_ms: 464.082208
+  type: 'test'
+  ...
+# Subtest: lighting clock activation avoids render replay and next-frame duplicates (without React Compiler)
+ok 2 - lighting clock activation avoids render replay and next-frame duplicates (without React Compiler)
+  ---
+  duration_ms: 211.18625
+  type: 'test'
+  ...
+# Subtest: room stages skip unchanged clock ticks and deliver period transitions (without React Compiler)
+ok 3 - room stages skip unchanged clock ticks and deliver period transitions (without React Compiler)
+  ---
+  duration_ms: 590.292417
+  type: 'test'
+  ...
+# Subtest: room period pauses when inactive and refreshes on visibility, editing and clock changes (without React Compiler)
+ok 4 - room period pauses when inactive and refreshes on visibility, editing and clock changes (without React Compiler)
+  ---
+  duration_ms: 467.331541
+  type: 'test'
+  ...
+# Subtest: period activation reads current time without replaying room renders (with React Compiler)
+ok 5 - period activation reads current time without replaying room renders (with React Compiler)
+  ---
+  duration_ms: 323.422625
+  type: 'test'
+  ...
+# Subtest: lighting clock activation avoids render replay and next-frame duplicates (with React Compiler)
+ok 6 - lighting clock activation avoids render replay and next-frame duplicates (with React Compiler)
+  ---
+  duration_ms: 202.109542
+  type: 'test'
+  ...
+# Subtest: room stages skip unchanged clock ticks and deliver period transitions (with React Compiler)
+ok 7 - room stages skip unchanged clock ticks and deliver period transitions (with React Compiler)
+  ---
+  duration_ms: 828.443417
+  type: 'test'
+  ...
+# Subtest: room period pauses when inactive and refreshes on visibility, editing and clock changes (with React Compiler)
+ok 8 - room period pauses when inactive and refreshes on visibility, editing and clock changes (with React Compiler)
+  ---
+  duration_ms: 676.533083
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4231.968

@@ -1,0 +1,3 @@
+Verified automatic day/night forecasts, persistent choices, clock changes, all 18 glass outlines, bounded particle counts, native rain/snow/leaves at 30/60/120 FPS, transitions, placement, hidden-room pause and Reduce Motion.
+Verified weather follows shared window movement without a React update.
+Verified real native lightning callbacks at 30/60/120 FPS and every clock speed, occasional bounded pulses, hidden-room pause, rain-only flashes, Reduce Motion and no idle brightness writes.

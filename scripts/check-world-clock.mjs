@@ -396,26 +396,4 @@ for (const hour of [13, 23]) {
 }
 console.log('Verified native lightning sky, frame/sill and room illumination in day/night rain, cool tint, light reuse, normal-light restoration and no idle/hidden native writes.');
 
-// Read the real clock hook with a cached daytime polling state, before effects.
-const mockedClockHook = mocks['@/hooks/use-world-clock-now'];
-delete mocks['@/hooks/use-world-clock-now'];
-mocks['@/hooks/use-animation-activity'] = { useAnimationActivity: () => ({ active: true }) };
-const { useWorldClockNow } = load('@/hooks/use-world-clock-now');
-const storedNow = now;
-let clockReading = { running: false, now: storedNow };
-react.useState = () => [clockReading, next => { clockReading = typeof next === 'function' ? next(clockReading) : next; }];
-function renderClock(enabled) {
-  const previous = clockReading;
-  // Exercise the hook through the test's state dispatcher.
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const value = useWorldClockNow(5000, enabled);
-  // React retries render-time state adjustments before committing children.
-  return previous === clockReading ? value : renderClock(enabled);
-}
-collectEffects = false;
-now += 10_000;
-assert.equal(renderClock(false), storedNow, 'Hidden clocks retain their polling state');
-assert.equal(renderClock(true), now, 'A newly visible room reads current time before any timer/effect runs');
-react.useState = originalUseState;
-mocks['@/hooks/use-world-clock-now'] = mockedClockHook;
-console.log('Verified fresh time on room activation without waiting for the clock poll.');
+// Clock subscription lifecycle is covered with real React in test-screen-renders.mjs.

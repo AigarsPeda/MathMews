@@ -27,7 +27,8 @@ async function harness(screen = 'store', compiled = false) {
   const cache = new Map(), components = new Map(), props = new Map(), counts = new Map();
   const gameContext = React.createContext(null), clockContext = React.createContext(Date.now());
   const calls = [], timers = new Map();
-  let clock = Date.now(), timerId = 0;
+  let clock = Date.now(), timerId = 0, frameId = 0;
+  const frames = new Map();
   class ClockDate extends Date { static now() { return clock; } }
   let activity = { active: true, reduceMotion: false };
   const activityContext = React.createContext(activity);
@@ -177,7 +178,7 @@ async function harness(screen = 'store', compiled = false) {
       'NativeLampGlow', 'NativeContactShadows', 'NativeCurtain', 'NativeItemInteraction', 'NativeFridge',
       'NativeLightning', 'NativeWorldLighting', 'NativeWindowPane', 'NativeWindowWeather']) mocks[`./${name}`] = { [name]: view(name) };
   }
-  if (screen === 'mood' || screen === 'home' || screen === 'stage' || screen === 'home-stage') delete mocks['@/hooks/use-world-clock-now'];
+  if (screen === 'clock-hook' || screen === 'mood' || screen === 'home' || screen === 'stage' || screen === 'home-stage') delete mocks['@/hooks/use-world-clock-now'];
   if (screen === 'home') delete mocks['@/hooks/use-cat-bedtime'];
   if (screen === 'room-editor') delete mocks['@/hooks/use-room-editor'];
   function load(id, base = process.cwd()) {
@@ -194,7 +195,7 @@ async function harness(screen = 'store', compiled = false) {
     const module = { exports: {} }; cache.set(file, module);
     if (file.endsWith('.json')) { module.exports = JSON.parse(fs.readFileSync(file, 'utf8')); return module.exports; }
     let source = fs.readFileSync(file, 'utf8');
-    if (compiled && (file.endsWith('.tsx') || file.endsWith('/use-pet-base-mood.ts') || file.endsWith('/use-world-period.ts') || file.endsWith('/use-room-editor.ts'))) {
+    if (compiled && (file.endsWith('.tsx') || file.endsWith('/use-pet-base-mood.ts') || file.endsWith('/use-world-period.ts') || file.endsWith('/use-world-clock-now.ts') || file.endsWith('/use-room-editor.ts'))) {
       source = transformSync(source, { filename: file, configFile: false, babelrc: false,
         parserOpts: { plugins: ['typescript', 'jsx'] }, plugins: [['babel-plugin-react-compiler', { target: '19' }]],
       }).code;
@@ -202,7 +203,7 @@ async function harness(screen = 'store', compiled = false) {
     vm.runInNewContext(ts.transpileModule(source, { compilerOptions: {
       module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,
     } }).outputText, { module, exports: module.exports, require: child => load(child, path.dirname(file)),
-      Date: ClockDate, Math, Map, Set, Promise, console, requestAnimationFrame: () => 1, cancelAnimationFrame() {}, requestIdleCallback: () => 1, cancelIdleCallback() {}, __DEV__: false, process: { env: {} },
+      Date: ClockDate, Math, Map, Set, Promise, console, requestAnimationFrame: fn => { const id = ++frameId; frames.set(id, fn); return id; }, cancelAnimationFrame: id => frames.delete(id), requestIdleCallback: () => 1, cancelIdleCallback() {}, __DEV__: false, process: { env: {} },
       setInterval: fn => { const id = ++timerId; timers.set(id, fn); return id; }, clearInterval: id => timers.delete(id),
       setTimeout: fn => { const id = ++timerId; timers.set(id, fn); return id; }, clearTimeout: id => timers.delete(id),
     });
@@ -254,7 +255,13 @@ async function harness(screen = 'store', compiled = false) {
     width: 390, height: 420, petSize: 100, sizeScale: 1, toys: [], decorations: [] }) : undefined;
   function NativeSceneProbe() { return React.createElement(load('@/components/pet/native/NativeRoomScene').NativeRoomSurface,
     { world: nativeProbeWorld, catPresent: false, ...stageProps }); }
-  const Screen = screen === 'native-scene' ? NativeSceneProbe : ['contact-shadows', 'lamp-light'].includes(screen) ? NativeEffectsProbe : screen === 'colliders' ? ColliderProbe : screen === 'puzzles' ? load('@/app/puzzles').default : screen === 'home-adapter' ? HomeAdapterProbe : screen === 'drag-target' ? DragTargetProbe : screen === 'room-editor' ? RoomEditorProbe : screen === 'overlay' ? OverlayProbe : screen === 'stage' ? StageProbe : screen === 'mood' ? MoodProbe : screen === 'store' ? load('@/app/store').default : screen === 'home' || screen === 'home-stage' ? load('@/app/index').default : load('@/components/economy/GameHeaderStats').GameHeaderStats;
+  function ClockHookProbe() {
+    counts.set('clockRenders', (counts.get('clockRenders') ?? 0) + 1);
+    const value = screen === 'period-hook' ? load('@/hooks/use-world-period').useWorldPeriod(game.worldClock, stageProps.enabled)
+      : load('@/hooks/use-world-clock-now').useWorldClockNow(stageProps.intervalMs ?? 5000, stageProps.enabled);
+    props.set('clockReading', value); return null;
+  }
+  const Screen = screen === 'period-hook' || screen === 'clock-hook' ? ClockHookProbe : screen === 'native-scene' ? NativeSceneProbe : ['contact-shadows', 'lamp-light'].includes(screen) ? NativeEffectsProbe : screen === 'colliders' ? ColliderProbe : screen === 'puzzles' ? load('@/app/puzzles').default : screen === 'home-adapter' ? HomeAdapterProbe : screen === 'drag-target' ? DragTargetProbe : screen === 'room-editor' ? RoomEditorProbe : screen === 'overlay' ? OverlayProbe : screen === 'stage' ? StageProbe : screen === 'mood' ? MoodProbe : screen === 'store' ? load('@/app/store').default : screen === 'home' || screen === 'home-stage' ? load('@/app/index').default : load('@/components/economy/GameHeaderStats').GameHeaderStats;
   const errors = [], onError = error => errors.push(error);
   const root = renderer.createContainer({}, 1, null, false, null, '', onError, onError, onError, null);
   async function update(fn) { await act(async () => { await fn(); }); if (errors.length) throw errors[0]; }
@@ -271,6 +278,8 @@ async function harness(screen = 'store', compiled = false) {
   return { drawFrames, props: name => props.get(name), count: name => counts.get(name) ?? 0, calls, load, update,
     get now() { return clock; },
     get timerCount() { return timers.size; },
+    get frameCount() { return frames.size; },
+    async flushFrames() { await update(() => { const pending = [...frames.values()]; frames.clear(); pending.forEach(fn => fn()); }); },
     async setRoomActivity(next) { stageActivity = { ...stageActivity, ...next }; await render(); },
     async setStage(next) { stageProps = { ...stageProps, ...next }; await render(); },
     async setActive(active) { activity = { ...activity, active }; await render(); },
@@ -900,6 +909,68 @@ test(`sleep completion stays stable across stat updates and checks the latest pe
     await h.update(complete);
     assert.notEqual(h.props('mood').mood, 'sleeping', 'An old completion cannot sleep a now-hungry pet');
   } finally { await h.close(); }
+});
+
+test(`period activation reads current time without replaying room renders (${mode})`, async () => {
+  const h = await harness('period-hook', compiled);
+  try {
+    await h.setGame({ worldClock: { worldMs: 21 * 3600000 - 60000, realMs: h.now, speed: 60 } });
+    assert.equal(h.props('clockReading'), 'evening');
+    let count = h.count('clockRenders');
+    await h.setStage({ enabled: false });
+    assert.equal(h.count('clockRenders'), count + 1, 'Hiding the room should not replay its render');
+    assert.equal(h.timerCount, 0);
+    await h.advance(5000);
+    count = h.count('clockRenders');
+    await h.setStage({ enabled: true });
+    assert.equal(h.count('clockRenders'), count + 1);
+    assert.equal(h.props('clockReading'), 'night', 'First resumed render already sees the boundary');
+    count = h.count('clockRenders');
+    await h.flushFrames(); await h.advance(5000);
+    assert.equal(h.count('clockRenders'), count, 'Same-period activation and polls do no extra work');
+    await h.setActive(false); await h.advance(12 * 60000); await h.setActive(true);
+    assert.equal(h.props('clockReading'), 'morning', 'Repeated activation must not reuse an earlier night sample');
+    count = h.count('clockRenders');
+    await h.setGame({ worldClock: { worldMs: 12 * 3600000, realMs: h.now, speed: 300 } });
+    assert.equal(h.count('clockRenders'), count + 1);
+    assert.equal(h.props('clockReading'), 'day');
+    await h.setGame({ worldClock: undefined });
+    assert.equal(h.props('clockReading'), undefined); assert.equal(h.timerCount, 0);
+  } finally { await h.close(); }
+});
+
+test(`lighting clock caches render snapshots and refreshes on activation (${mode})`, async () => {
+  const h = await harness('clock-hook', compiled);
+  try {
+    assert.equal(h.props('clockReading'), h.now);
+    assert.equal(h.frameCount, 0, 'Clock sampling does not schedule animation-frame work');
+    const initial = h.props('clockReading');
+    await h.tick();
+    assert.equal(h.props('clockReading'), initial, 'Unrelated renders read the cached snapshot without sampling time');
+    await h.advance(5000); assert.equal(h.props('clockReading'), h.now);
+    for (let i = 0; i < 3; i++) {
+      let count = h.count('clockRenders');
+      await h.setStage({ enabled: false });
+      assert.equal(h.count('clockRenders'), count + 1);
+      assert.equal(h.timerCount, 0);
+      const paused = h.props('clockReading');
+      await h.advance(15000); assert.equal(h.props('clockReading'), paused);
+      count = h.count('clockRenders');
+      await h.setStage({ enabled: true });
+      assert.equal(h.count('clockRenders'), count + 2, 'Activation commits then catches up once through the subscription');
+      assert.equal(h.props('clockReading'), h.now, 'Every activation catches up without waiting for a timer');
+      assert.equal(h.frameCount, 0); await h.flushFrames();
+      assert.equal(h.count('clockRenders'), count + 2);
+      count = h.count('clockRenders');
+      await h.advance(0);
+      assert.equal(h.count('clockRenders'), count, 'An unchanged timestamp does not rerender subscribers');
+    }
+    await h.setActive(false); await h.advance(20000); await h.setActive(true);
+    assert.equal(h.props('clockReading'), h.now);
+    await h.setStage({ intervalMs: 1000 }); assert.equal(h.timerCount, 1);
+    await h.advance(1000); assert.equal(h.props('clockReading'), h.now);
+  } finally { await h.close(); }
+  assert.equal(h.timerCount, 0, 'Unmount cleans up the remaining poll');
 });
 
 test(`room stages skip unchanged clock ticks and deliver period transitions (${mode})`, async () => {

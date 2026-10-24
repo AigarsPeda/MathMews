@@ -1,0 +1,11 @@
+Verified accelerated days, midnight rollover, offline advancement, speed continuity, time presets, malformed clocks and clock-hand angles.
+Verified legacy save migration, save/reload continuity and independent real-time care decay.
+Verified night rest, completed lying transitions, interaction priority, hunger priority and preserved sleep.
+Verified night sleep transitions, daytime wakefulness, saved sleep at dawn, interaction/hunger priority and dawn at every clock speed.
+Verified actual night lying/sleep completion, temporary sleep, dawn wake, next-night phase reset and stale completion guards.
+Verified actual native lighting callbacks, smooth day/night changes, cool moonlight, stable light entities, retained environment texture and hidden-room pause.
+Verified every window type, both walls, arbitrary rotations, resizing, filtered glass, illuminated pane/frame/sill, native moonlight/daylight, stable frame updates, repositioning and hidden-room pause.
+Verified Blender sky materials and actual day/night material callbacks for all 18 windows, one continuous area-light bake, matching cold frame/floor tint, steady-frame updates and hidden-room pause.
+Verified persistent game weather choices, smooth cloud lighting, matching frame attenuation and no repeated native updates after weather settles.
+Verified native lightning sky, frame/sill and room illumination in day/night rain, cool tint, light reuse, normal-light restoration and no idle/hidden native writes.
+Verified fresh time on room activation without waiting for the clock poll.

@@ -1,0 +1,16 @@
+Verified four-room action chains, exact targets, one cat, unchanged furnishings, native/timer completion and Reduce Motion.
+Verified rapid departure retargeting, cancelled destinations, actual meal completion and no duplicate rewards.
+Verified latest-command priority during jumps, bedroom quilt exits and immediate travel to the next task.
+Verified entry-time command replacement, safe entry completion and no stale tasks in skipped rooms.
+Verified rapid chained journeys while cold room scenes are loading and delayed readiness arrives out of order.
+Verified plain room travel prepares entry behind the outgoing frame without a task request or readiness deadlock.
+Verified pause/resume during departure, entry, jumps and meals, followed immediately by a task in another room.
+Verified replacement of queued commands while the app is paused.
+Verified offscreen task completion while browsing elsewhere and subsequent travel to another task.
+Verified missing destination targets fail without stale activity or rewards and allow the next journey.
+Verified cupboard/drawer hiding, safe exits and replacement of the next room command while jumping out.
+Verified an unreachable destination ends without a held pose or false completion and accepts the next room task.
+Verified readable item-specific failure notices, dismiss/retry, new-command cleanup and silent automatic activity failures.
+Verified direct entry-to-task routing, renderer gait transfer through Home, mid-entry destination replacement without home detours and physical door travel.
+Verified the placed-door menu sends the cat to its assigned room.
+Verified immediate queued-command acknowledgment, unchanged airborne steps, latest-tap priority and Reduce Motion.
