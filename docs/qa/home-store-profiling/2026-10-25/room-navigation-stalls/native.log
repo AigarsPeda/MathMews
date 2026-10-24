@@ -1,0 +1,37 @@
+orange: connected body and sealed ear inserts, 32168 vertices, safe normalized four-joint weights and anatomical hierarchy.
+grey: connected body and sealed ear inserts, 32168 vertices, safe normalized four-joint weights and anatomical hierarchy.
+white: connected body and sealed ear inserts, 32168 vertices, safe normalized four-joint weights and anatomical hierarchy.
+Verified arbitrary native rotation and collider bounds for all 395 placeable items.
+Verified saved living-room food routes, muzzle arrival checks and alternate reachable bowl selection.
+Verified reported sofa routes, rotated lamp clearance, chair-to-sofa commands, supported sleep and unreachable seating.
+Verified lying-to-eating native transitions on both sofa variants and mirrored orientations.
+Verified 81 tail contact corrections across sofa variants, mirroring, scales and actual sit/sleep samples.
+Consecutive tail frames: 1200 blocked: 0 max tip step: 0.0034 ms/frame: 0.384
+Verified atomic native commands with delayed shared reads and a fresh movement clock.
+Verified actual renderer arrival and eating completion, slow frames, pause, exact endpoints and Reduce Motion.
+Verified actual walk/turn/hop playback, no teleports, pause/resume, final arrival once and Reduce Motion at 30/60/120 FPS.
+Verified eight-second native eating, extended synchronized crumb playback and no early completion.
+Verified render-position continuity during world updates, rerouting, cancelled travel and explicit cat repositioning.
+Verified 425 native assets, all 62 actions in three coats, saved placement projection, collision detours, sofa support, native gait at 30/60/120 FPS, scenario callbacks, pause and Reduce Motion.
+Verified placed-bowl animation hides and restores its embedded bowl independently of the room object.
+Verified muzzle-contact spills, floor landing, cleanup, selected-bowl transforms, synchronized playback and pauses.
+Verified five distinct eating effects: muzzle timing, splashes and smears, dispenser outlet, three tray spots, floor landings and cleanup.
+Verified spill lifecycle in the rendered room scene, including cancellation and Reduce Motion.
+Verified native first-frame handoff, retained hidden surfaces, paused GPU clocks and new-cat readiness in cached rooms.
+Verified left/right departures, opposite-side entries, furniture detours and the living room between bedroom and kitchen.
+Verified real animated toe pads on round, rotated and resized rugs, edge transitions, floor return, arrival, standing and Reduce Motion.
+Verified native scene clock wiring and actual shipped wall-clock hand transforms at 03:00.
+Verified actual cat and toy render callbacks, fast swats, longer cords and contact without an activity flag in open space, larger toys and all corners at 30/60/120 FPS.
+Verified real plant menu plans, paw contact, falling leaves, pause/resume, independent slow regrowth, dark materials, and open/corner navigation at 30/60/120 FPS.
+Verified visible leaf-tip sway, fixed stem attachments, scaled/rotated AC airflow, power-off, distance, pause and Reduce Motion at 30/60/120 FPS.
+Verified landed balls stay put after play, save/reload at the same floor position, and recover locally at boundaries at 30/60/120 FPS.
+Verified real floor-toy approaches and paw-triggered impulses, no proximity kicks and no repeated stationary contacts at 30/60/120 FPS.
+Verified native chair drag previews retain 20 degrees across 120 frames with no model reloads or physics body recreation.
+Verified actual native entity registration, geometry picker coordinates, removal, cat selection and unmount safety.
+Verified real rocking-chair cushion alignment, approach/jumps, shared chair/cat rocking, settling, pauses and Reduce Motion at 30/60/120 FPS.
+Verified hidden-room isolation, display-only viewport corrections, asynchronous draft suggestions and cancellation.
+Verified all bathroom anchors and rotated/resized journeys, safe wash interruptions, real paw washing, running water, toilet lid opening/closing, pause and Reduce Motion at 30/60/120 FPS.
+Verified bath, shower and toilet journeys in the reported bathroom layout at three viewport sizes.
+Verified native lamp mounting, independent power, numeric light properties and retained hidden-room lights.
+Verified shade emission, isolated Blender materials, independent lamps and repeated on/off switching for every registered lamp, including the ghost lantern.
+Verified transparent lava bottles, round wax volumes, slow seamless motion and containment for both lamp variants.

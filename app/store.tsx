@@ -27,6 +27,7 @@ import { CAT_BED_IDS, type CatBedId } from "@/constants/cat-beds";
 import { CAT_TOY_IDS, type CatToyId } from "@/constants/cat-toys";
 import { CAT_SKIN_IDS, type CatSkinId } from "@/constants/cat-skins";
 import { GameColors } from "@/constants/game";
+import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import { useGame } from "@/contexts/GameProvider";
 import type {
   BedPurchaseResult,
@@ -70,7 +71,7 @@ import {
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -99,6 +100,12 @@ type StoreFeedback = {
 };
 
 export default function StoreScreen() {
+  const game = useGame();
+  const { active } = useAnimationActivity();
+  return <StoreContent game={game} active={active} />;
+}
+
+const StoreContent = memo(function StoreContent({ game }: { game: ReturnType<typeof useGame>; active: boolean }) {
   const catalogRevision = useStoreCatalog();
   const router = useRouter();
   const { t } = useTranslation();
@@ -127,7 +134,7 @@ export default function StoreScreen() {
     equipSkin,
     recordInteraction,
     requestRoomDecoration,
-  } = useGame();
+  } = game;
 
   const unlockedRooms = progress.roomsUnlocked as CatRoomId[];
   const unlockedBeds = progress.bedsUnlocked as CatBedId[];
@@ -878,7 +885,12 @@ export default function StoreScreen() {
       }} />
     </SafeAreaView>
   );
-}
+}, (previous, next) => {
+  if (previous.active !== next.active || previous.game.isReady !== next.game.isReady ||
+      previous.game.hasCompletedOnboarding !== next.game.hasCompletedOnboarding) return false;
+  // Retain the Store UI while Home changes rooms; refresh it when Store resumes.
+  return !next.active || previous.game === next.game;
+});
 
 const styles = StyleSheet.create({
   filters: { flexDirection: "row", justifyContent: "space-between", gap: 8 },

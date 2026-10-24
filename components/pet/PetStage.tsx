@@ -329,7 +329,6 @@ export function PetStage({
     const next = { ...current }; delete next[id]; return next;
   }), []);
   const [viewport, setViewport] = useState({ width: 0, height: 0 });
-  const handleSceneReady = useCallback(() => { if (placementDraft && roomVisible) markDecorationTiming('scenePainted'); onSceneReady?.(homeRoomId); }, [homeRoomId, onSceneReady, placementDraft, roomVisible]);
   const reduceMotion = useReducedMotion();
   const bedScaleMultiplier = getEquippedBedScale(bedScale);
   const bedSize = moderateScale(getBedDisplaySize(bedId) * bedScaleMultiplier * ROOM_OBJECT_SCALE);
@@ -362,6 +361,9 @@ export function PetStage({
   );
   const [localDecorating, setLocalDecorating] = useState(false);
   const decorating = roomToolbar?.decorating ?? localDecorating;
+  const sceneStatus = useRef({ roomVisible, decorating });
+  useLayoutEffect(() => { sceneStatus.current = { roomVisible, decorating }; }, [roomVisible, decorating]);
+  const handleSceneReady = useCallback(() => { if (placementDraft && sceneStatus.current.roomVisible) markDecorationTiming('scenePainted'); onSceneReady?.(homeRoomId); }, [homeRoomId, onSceneReady, placementDraft]);
   const onDecoratingChange = roomToolbar?.onDecoratingChange;
   const setDecorating = useCallback((active: boolean) => {
     if (onDecoratingChange) onDecoratingChange(homeRoomId, active);
@@ -675,6 +677,12 @@ export function PetStage({
       }
     }, onFeed, onSendCatToRoom, roomVisible, decorating, handleReadyToDecorate, onRoomActivityCompleted,
     failure => blockedActivityHandler.current?.(failure));
+  // Activity actions capture the current visibility/travel guards. Menus only
+  // need their latest implementation when pressed, not a rebuild on navigation.
+  const menuActivity = useRef({ startActivity, returnHome });
+  useLayoutEffect(() => { menuActivity.current = { startActivity, returnHome }; }, [startActivity, returnHome]);
+  const startMenuActivity = useCallback<typeof startActivity>((...args) => menuActivity.current.startActivity(...args), []);
+  const returnFromMenuActivity = useCallback(() => menuActivity.current.returnHome(), []);
   const sofaApproach = roomActivity?.plan.steps[roomActivity.stepIndex]?.sofaApproach;
   const handledRoomCommand = useRef(0);
   useEffect(() => {
@@ -728,9 +736,10 @@ export function PetStage({
   const playingId = roomActivity?.plan.targetInstanceId;
   const handleNativeObjectPosition = useCallback((id: string, point: { x: number; y: number }, center?: Vec3, settled?: boolean) => {
     if (center) updateObjectPosition?.(id, center);
-    setNativeHitPositions(current => ({ ...current, [id]: point }));
+    setNativeHitPositions(current => current[id]?.x === point.x && current[id]?.y === point.y
+      ? current : { ...current, [id]: point });
     if (id === playingId) { objectX.set(point.x); objectY.set(point.y); }
-    if (settled && center && roomVisible && !decorating) {
+    if (settled && center && sceneStatus.current.roomVisible && !sceneStatus.current.decorating) {
       const object = nativeWorld.objects.find(entry => entry.instanceId === id);
       const toy = roomPlacedToys.find(entry => entry.instanceId === id);
       const decoration = roomPlacedDecorations.find(entry => entry.instanceId === id);
@@ -743,7 +752,7 @@ export function PetStage({
         }
       }
     }
-  }, [decorating, nativeWorld, objectX, objectY, onPlacedDecorationOffsetChange, onPlacedToyOffsetChange, playingId, roomPlacedDecorations, roomPlacedToys, roomVisible, updateObjectPosition]);
+  }, [nativeWorld, objectX, objectY, onPlacedDecorationOffsetChange, onPlacedToyOffsetChange, playingId, roomPlacedDecorations, roomPlacedToys, updateObjectPosition]);
   const handleNativePetPosition = useCallback((point: { x: number; y: number }) => {
     petSceneX.set(point.x); petSceneY.set(point.y);
   }, [petSceneX, petSceneY]);
@@ -876,9 +885,9 @@ export function PetStage({
     if (placed && isDecorationOpen(placed) && roomActivity?.plan.targetInstanceId === instanceId
       && (roomActivity.plan.kind === 'drawerHide' || roomActivity.plan.kind === 'cupboardHide' || roomActivity.plan.kind === 'returnHome')) {
       setPendingCloseId(instanceId);
-      returnHome();
+      returnFromMenuActivity();
     } else onTogglePlacedDecorationOpen?.(instanceId);
-  }, [roomPlacedDecorations, roomActivity, returnHome, onTogglePlacedDecorationOpen]);
+  }, [roomPlacedDecorations, roomActivity, returnFromMenuActivity, onTogglePlacedDecorationOpen]);
 
   const startRoomCommand = useCallback((kind: RoomActivityKind, instanceId?: string) => {
     clearBlockedActivity();
@@ -901,8 +910,8 @@ export function PetStage({
     }
     const interactionAt = onRoomInteraction?.();
     if (onRequestRoomCommand) onRequestRoomCommand(homeRoomId, kind, instanceId, interactionAt ?? undefined);
-    else startActivity(kind, instanceId, interactionAt ?? undefined);
-  }, [clearBlockedActivity, homeRoomId, onRequestRoomCommand, roomPlacedDecorations, onTogglePlacedFridge, onTogglePlacedDecorationOpen, onRoomInteraction, startActivity]);
+    else startMenuActivity(kind, instanceId, interactionAt ?? undefined);
+  }, [clearBlockedActivity, homeRoomId, onRequestRoomCommand, roomPlacedDecorations, onTogglePlacedFridge, onTogglePlacedDecorationOpen, onRoomInteraction, startMenuActivity]);
 
   const buildRoomItemMenuActions = useCallback(
     (item: RoomLayerItem) => {
@@ -1277,6 +1286,12 @@ export function PetStage({
 
   // Editing options live in the selected-item dock, not on each hit target.
   const roomItemMenuActions = decorating ? undefined : buildRoomItemMenuActions;
+  // Physics reports change hit positions when a room resumes. Keep menu actions
+  // cached independently so moving one toy does not rebuild every native menu.
+  // eslint-disable-next-line react-hooks/refs
+  const roomItemMenus = useMemo(() => new Map(layerOrder.map(item =>
+    [item, canManageRoomItem(item) ? roomItemMenuActions?.(item) : undefined])),
+  [layerOrder, canManageRoomItem, roomItemMenuActions]);
   const roomItemDragProps = useCallback(
     (item: RoomLayerItem, layerZIndex: number) => {
       const manageable = canManageRoomItem(item);
@@ -1291,10 +1306,10 @@ export function PetStage({
         onPetTap: decorating ? () => { setPlacementFeedback(undefined); setRotationPreview(null); setSpotlightPreview(null); setSelectedMoveItem(item); } : undefined,
         onDragStart: decorating ? () => { setPlacementFeedback(undefined); setRotationPreview(null); setSpotlightPreview(null); setSelectedMoveItem(item); } : undefined,
         onDragEnd: (point: { x: number; y: number }) => finishPlacement(item.kind === 'bed' ? 'bed' : item.instanceId, point),
-        menuActions: manageable ? roomItemMenuActions?.(item) : undefined,
+        menuActions: roomItemMenus.get(item),
       };
     },
-    [canManageRoomItem, roomItemMenuActions, decorating, zoom, snap, itemLabel, movingItem, setSelectedMoveItem, finishPlacement, setPlacementFeedback, setRotationPreview, setSpotlightPreview],
+    [canManageRoomItem, roomItemMenus, decorating, zoom, snap, itemLabel, movingItem, setSelectedMoveItem, finishPlacement, setPlacementFeedback, setRotationPreview, setSpotlightPreview],
   );
 
   const pickEditingItem = async (point: { x: number; y: number }) => {
@@ -1501,6 +1516,8 @@ export function PetStage({
     if (roomActivity) actions.push({
       label: t("home.catCommands.returnHome"), icon: "home", section: travel, onPress: handleRoomTouch,
     });
+    // Menu construction stores event handlers without invoking their refs.
+    // eslint-disable-next-line react-hooks/refs
     for (const command of ROOM_COMMANDS.filter(command => command.section === play)) addRoomAction(command.kind, command.section);
     if (onPlay) actions.push(...CAT_PLAY_ACTIVITIES.map(activity => ({
       label: t(`home.playStyle.${activity.id}`), icon: activity.icon,
@@ -1545,8 +1562,6 @@ export function PetStage({
   // Stationary hit targets keep their saved anchors while a selected item moves.
   const editingAnchors = useMemo(() => decorating ? Object.fromEntries(nativeWorld.objects.map(object =>
     [object.instanceId, roomItemAnchor(object, viewport.width)])) : undefined, [decorating, nativeWorld, viewport.width]);
-  // Menu factories return gesture handlers; they do not read their captured refs while rendering.
-  // eslint-disable-next-line react-hooks/refs
   const roomItemLayers = useMemo(() => layerOrder.map((item, layerIndex) => {
     const layerZIndex = layerIndex + 1;
 

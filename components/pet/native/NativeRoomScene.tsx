@@ -1,3 +1,4 @@
+import { NativeRoomColliders } from '@/components/pet/native/NativeRoomColliders';
 import { recordRoomDragFrame } from '@/utils/room-drag-latency';
 import { IDLE_ROOM_DRAG, roomDragPreview, type RoomDragBase, type RoomDragMotion, type RoomDragPreview } from '@/utils/room-drag-motion';
 import { useSharedValue as useUISharedValue, type SharedValue } from 'react-native-reanimated';
@@ -97,17 +98,7 @@ function RoomModel({ id, onReady }: { id: string; onReady?: () => void }) {
   useEffect(() => { if (model.state === 'loaded') onReady?.(); }, [model.state, onReady]);
   return null;
 }
-function BoxCollider({ world, id, size, position }: {
-  world: DiscreteDynamicWorld;
-  id: string;
-  size: Float3;
-  position: Float3;
-}) {
-  const shape = useBoxShape(...size);
-  useRigidBody({ id, mass: 0, shape, origin: position, world, friction: .7 });
-  return null;
-}
-function RoomObject({ object, curtainProgress, lightning, windows, world, worldClock, editingObject, spotlightPose, catPosition, rockingMotion, hangingBall, floorToy, plantLeaf, pawPositions, playingId, playContact, catPresent, active, lightingActive, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady, registerPickEntities }: {
+const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning, windows, world, worldClock, editingObject, spotlightPose, catPosition, rockingMotion, hangingBall, floorToy, plantLeaf, pawPositions, playingId, playContact, catPresent, active, lightingActive, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady, registerPickEntities }: {
   registerPickEntities?: (id: string, entities: { id: number }[]) => () => void;
   lightning: ISharedValue<number>;
   spotlightPose?: ISharedValue<SpotlightAim | undefined>;
@@ -126,8 +117,8 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
   pawPositions: ISharedValue<Vec3[]>;
   playingId?: string;
   playContact?: boolean;
-  active: boolean;
-  lightingActive?: boolean;
+  active: ISharedValue<boolean>;
+  lightingActive: boolean;
   reduceMotion: boolean;
   catPresent: boolean;
   airflow: AirflowSource[];
@@ -241,11 +232,14 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
   const reportDragFrame = useMemo(() => Worklets.createRunOnJS(recordRoomDragFrame), []);
   const objectAnimationOn = !itemInteraction(object.modelId)?.open && (!isPoweredDecorationId(object.modelId) || object.poweredOn === true);
   const lampAnimationOn = !isLampDecorationId(object.modelId) || object.poweredOn === true;
+  // A room pause should not serialize and reinstall every furniture worklet.
+  const motionActive = active;
   const render = useCallback(({ timeSinceLastFrame }: {
     timeSinceLastFrame: number;
   }) => {
     'worklet';
     if (!entity) return;
+    const active = motionActive.value;
     const preview = nativeRoomPreview(editingObject?.value, object.instanceId);
     if (preview) {
       const prior = appliedPreview.value;
@@ -470,23 +464,31 @@ function RoomObject({ object, curtainProgress, lightning, windows, world, worldC
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [reportDragFrame, active, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, objectAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, floorToy, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [reportDragFrame, motionActive, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, objectAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, floorToy, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   const interaction = asset && (modelMetadata.interactionParts?.length || itemInteraction(object.modelId)?.power)
-    ? <NativeItemInteraction asset={asset} object={object} active={lightingActive ?? active} reduceMotion={reduceMotion}/> : null;
+    ? <NativeItemInteraction asset={asset} object={object} active={lightingActive} reduceMotion={reduceMotion}/> : null;
   if (asset && object.modelId === 'livingFireplaceCream')
-    return <NativeFireplace asset={asset} object={object} editingObject={editingObject} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
+    return <NativeFireplace asset={asset} object={object} editingObject={editingObject} active={lightingActive} reduceMotion={reduceMotion}/>;
   if (asset && isFridgeDecorationId(object.modelId))
-    return <NativeFridge asset={asset} object={object} editingObject={editingObject} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
+    return <NativeFridge asset={asset} object={object} editingObject={editingObject} active={lightingActive} reduceMotion={reduceMotion}/>;
   if (asset && isCurtainDecorationId(object.modelId))
-    return <NativeCurtain asset={asset} object={object} windows={windows} clock={worldClock} progress={curtainProgress} lightning={lightning} active={lightingActive ?? active} reduceMotion={reduceMotion}/>;
+    return <NativeCurtain asset={asset} object={object} windows={windows} clock={worldClock} progress={curtainProgress} lightning={lightning} active={lightingActive} reduceMotion={reduceMotion}/>;
   if (asset && isWallSpotlightDecorationId(object.modelId))
     return <><NativeSpotlightHead asset={asset} instanceId={object.instanceId} angle={object.spotlightAngle} swivel={object.spotlightSwivel} pose={spotlightPose}/><NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/></>;
   if (asset && isLampDecorationId(object.modelId))
     return <>{interaction}<NativeLampGlow asset={asset} modelId={object.modelId} poweredOn={object.poweredOn === true}/></>;
   return asset && worldClock && isWindowLightSource(object.modelId)
-    ? <>{interaction}<NativeWindowPane asset={asset} clock={worldClock} lightning={lightning} active={lightingActive ?? active}/>
-      <NativeWindowWeather object={object} editingObject={editingObject} clock={worldClock} active={lightingActive ?? active} reduceMotion={reduceMotion}/></> : interaction;
+    ? <>{interaction}<NativeWindowPane asset={asset} clock={worldClock} lightning={lightning} active={lightingActive}/>
+      <NativeWindowWeather object={object} editingObject={editingObject} clock={worldClock} active={lightingActive} reduceMotion={reduceMotion}/></> : interaction;
+});
+
+// Only these model children consume room lighting activity. Static furniture
+// reads its shared motion flag without rerunning native model hooks.
+function hasLightingUpdates(object: NativeRoomObject) {
+  return object.modelId === 'livingFireplaceCream' || isFridgeDecorationId(object.modelId)
+    || isCurtainDecorationId(object.modelId) || isWindowLightSource(object.modelId)
+    || !!NATIVE_MODEL_CATALOG[object.modelId].interactionParts?.length || !!itemInteraction(object.modelId)?.power;
 }
 function Scene(props: Props) {
   'use no memo';
@@ -573,6 +575,8 @@ function Scene(props: Props) {
   // Keep lighting current while preparing/sliding rooms, with motion paused.
   const lightingActive = active && (!props.paused || props.transitioning === true || !painted);
   const editing = props.editing === true;
+  const objectMotion = useSharedValue(visible && !reduceMotion && !editing);
+  useEffect(() => { objectMotion.value = visible && !reduceMotion && !editing; }, [objectMotion, visible, reduceMotion, editing]);
   const drawing = useSharedValue({ ready, visualKey, visible, reduceMotion, editing, chair: props.travel?.rockingChair });
   useEffect(() => { drawing.value = { ready, visualKey, visible, reduceMotion, editing, chair: props.travel?.rockingChair }; }, [drawing, ready, visualKey, visible, reduceMotion, editing, props.travel?.rockingChair]);
   useEffect(() => {
@@ -630,15 +634,8 @@ function Scene(props: Props) {
     <NativeLampLight key={`lamp:${object.instanceId}`} castShadows={shadowLamps.has(object.instanceId)} object={object} editingObject={props.editingObject} spotlightPose={spotlightPose} active={lightingActive}/>)}
   <RoomModel id={props.roomId ?? 'room1'} onReady={handleRoomReady}/>
   <NativeContactShadows world={props.world} editingObject={props.editingObject} active={visible}/>
-  {([-1, 1] as const).flatMap(side => [
-      <BoxCollider key={'x' + side} id={'wall-x' + side} world={world} size={[.05, 1.5, 2.5]} position={[side * 2.45, 1.5, 0]}/>,
-      <BoxCollider key={'z' + side} id={'wall-z' + side} world={world} size={[2.5, 1.5, .05]} position={[0, 1.5, side * 2.45]}/>,
-    ])}
-  {props.world.objects.flatMap(object => (object.collisionBoxes ?? []).map((box, index) =>
-    <BoxCollider key={object.instanceId + ':part:' + index} id={object.instanceId + ':part:' + index} world={world}
-      size={box.max.map((v, i) => Math.max(.01, (v - box.min[i]) / 2)) as Float3}
-      position={box.max.map((v, i) => (v + box.min[i]) / 2) as Float3}/>))}
-  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} spotlightPose={spotlightPose} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={visible && !reduceMotion && !editing} lightingActive={lightingActive} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
+  <NativeRoomColliders world={world} objects={props.world.objects}/>
+  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} spotlightPose={spotlightPose} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={objectMotion} lightingActive={lightingActive && hasLightingUpdates(object)} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
   {props.world.objects.filter(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn).map(o => <NativeAirflow key={o.instanceId} object={o} editingObject={props.editingObject} active={visible && !reduceMotion}/>)}
   {eatingFeeder && !reduceMotion && <NativeFoodSpill key={`${props.activityKey}:${eatingFeeder.instanceId}:${eatingFeeder.modelId}`} object={eatingFeeder} active={visible} animationTime={catAnimationTime}/>}
   {renderCat && <NativeCatActor model={catModel} registerPickEntities={registerPickEntities} key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} commandAttention={props.commandAttention} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}

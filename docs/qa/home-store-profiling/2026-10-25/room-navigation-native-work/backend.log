@@ -1,0 +1,1220 @@
+
+> math-mews@1.0.0 test:backend
+> node --test scripts/backend/test-*.mjs
+
+TAP version 13
+# Subtest: deletion validates authentication and request before touching any account
+ok 1 - deletion validates authentication and request before touching any account
+  ---
+  duration_ms: 36.026125
+  type: 'test'
+  ...
+# Subtest: the caller cannot select a different deletion target, and success follows provider cleanup
+ok 2 - the caller cannot select a different deletion target, and success follows provider cleanup
+  ---
+  duration_ms: 1.1275
+  type: 'test'
+  ...
+# Subtest: provider outage retains the pending request and never claims success or removes auth
+ok 3 - provider outage retains the pending request and never claims success or removes auth
+  ---
+  duration_ms: 0.320417
+  type: 'test'
+  ...
+# Subtest: Apple authorization is bound to the stored identity and completed steps survive retry
+ok 4 - Apple authorization is bound to the stored identity and completed steps survive retry
+  ---
+  duration_ms: 1.154125
+  type: 'test'
+  ...
+# Subtest: missing database configuration fails without revealing internal errors
+ok 5 - missing database configuration fails without revealing internal errors
+  ---
+  duration_ms: 9.085875
+  type: 'test'
+  ...
+# Subtest: RevenueCat deletion requires a private key and tolerates an already removed customer
+ok 6 - RevenueCat deletion requires a private key and tolerates an already removed customer
+  ---
+  duration_ms: 1.048375
+  type: 'test'
+  ...
+# Subtest: V2 customer deletion waits for asynchronous removal and retries without resubmitting
+ok 7 - V2 customer deletion waits for asynchronous removal and retries without resubmitting
+  ---
+  duration_ms: 0.989
+  type: 'test'
+  ...
+# Subtest: native Apple code exchange checks account ownership before token revocation
+ok 8 - native Apple code exchange checks account ownership before token revocation
+  ---
+  duration_ms: 61.520959
+  type: 'test'
+  ...
+# Subtest: a completed receipt is checked without an expired Auth session
+ok 9 - a completed receipt is checked without an expired Auth session
+  ---
+  duration_ms: 84.312792
+  type: 'test'
+  ...
+# Subtest: manual deletion retries require a server credential verified by the backend
+ok 10 - manual deletion retries require a server credential verified by the backend
+  ---
+  duration_ms: 45.148583
+  type: 'test'
+  ...
+# Subtest: cancelled and failed Apple/Google recovery retain the existing guest session
+ok 11 - cancelled and failed Apple/Google recovery retain the existing guest session
+  ---
+  duration_ms: 433.882
+  type: 'test'
+  ...
+# Subtest: unconfigured recovery fails before opening either provider
+ok 12 - unconfigured recovery fails before opening either provider
+  ---
+  duration_ms: 50.088792
+  type: 'test'
+  ...
+# Subtest: OAuth accepts only a PKCE code on the application callback
+ok 13 - OAuth accepts only a PKCE code on the application callback
+  ---
+  duration_ms: 12.8885
+  type: 'test'
+  ...
+# Subtest: switching accounts archives each game and restores its original save identity and timestamp
+ok 14 - switching accounts archives each game and restores its original save identity and timestamp
+  ---
+  duration_ms: 744.400667
+  type: 'test'
+  ...
+# Subtest: legacy wallet ownership is respected, corrupt archives fail closed, and deletion clears both environments
+ok 15 - legacy wallet ownership is respected, corrupt archives fail closed, and deletion clears both environments
+  ---
+  duration_ms: 504.537583
+  type: 'test'
+  ...
+# Subtest: cloud writes cannot cross accounts or run during authentication; read errors stay errors
+ok 16 - cloud writes cannot cross accounts or run during authentication; read errors stay errors
+  ---
+  duration_ms: 434.109375
+  type: 'test'
+  ...
+# Subtest: authentication and checkout cannot overlap and a duplicate release cannot unlock another operation
+ok 17 - authentication and checkout cannot overlap and a duplicate release cannot unlock another operation
+  ---
+  duration_ms: 2.543375
+  type: 'test'
+  ...
+# Subtest: a failed initial cloud read enables offline play without authorizing uploads
+ok 18 - a failed initial cloud read enables offline play without authorizing uploads
+  ---
+  duration_ms: 429.245792
+  type: 'test'
+  ...
+# Subtest: failed cloud uploads retry the latest local save on reconnect and on the fallback timer
+ok 19 - failed cloud uploads retry the latest local save on reconnect and on the fallback timer
+  ---
+  duration_ms: 340.780917
+  type: 'test'
+  ...
+# Subtest: the Settings recovery action stays behind the parent gate and saves before changing identity
+ok 20 - the Settings recovery action stays behind the parent gate and saves before changing identity
+  ---
+  duration_ms: 11.841584
+  type: 'test'
+  ...
+# Subtest: a delayed initial cloud read preserves and uploads gameplay made while it was pending
+ok 21 - a delayed initial cloud read preserves and uploads gameplay made while it was pending
+  ---
+  duration_ms: 654.627125
+  type: 'test'
+  ...
+# Subtest: a newer remote still restores when no gameplay occurred during the read
+ok 22 - a newer remote still restores when no gameplay occurred during the read
+  ---
+  duration_ms: 277.31175
+  type: 'test'
+  ...
+# Subtest: overlapping cloud flushes serialize writes and finish with the newest snapshot
+ok 23 - overlapping cloud flushes serialize writes and finish with the newest snapshot
+  ---
+  duration_ms: 250.1125
+  type: 'test'
+  ...
+# Subtest: gameplay during the initial upload is flushed after initialization completes
+ok 24 - gameplay during the initial upload is flushed after initialization completes
+  ---
+  duration_ms: 240.173875
+  type: 'test'
+  ...
+# Subtest: a queued cloud write rechecks account deletion and a failed write does not block the queue
+ok 25 - a queued cloud write rechecks account deletion and a failed write does not block the queue
+  ---
+  duration_ms: 225.054875
+  type: 'test'
+  ...
+# Subtest: first-launch sign-in recovers on reconnect without restarting or creating duplicate guests
+ok 26 - first-launch sign-in recovers on reconnect without restarting or creating duplicate guests
+  ---
+  duration_ms: 98.287084
+  type: 'test'
+  ...
+# Subtest: the foreground timer retries sign-in when no network event arrives
+ok 27 - the foreground timer retries sign-in when no network event arrives
+  ---
+  duration_ms: 48.608084
+  type: 'test'
+  ...
+# Subtest: retries preserve an existing session and never create a guest for a deleting account
+ok 28 - retries preserve an existing session and never create a guest for a deleting account
+  ---
+  duration_ms: 148.876334
+  type: 'test'
+  ...
+# Subtest: an auth or purchase operation blocks retries, and unmount cancels a pending retry
+ok 29 - an auth or purchase operation blocks retries, and unmount cancels a pending retry
+  ---
+  duration_ms: 46.031583
+  type: 'test'
+  ...
+# Subtest: no-op game actions retain the save and do not render or persist
+ok 30 - no-op game actions retain the save and do not render or persist
+  ---
+  duration_ms: 1177.734958
+  type: 'test'
+  ...
+# Subtest: pet and progress edits preserve other branches and do not rerender action consumers
+ok 31 - pet and progress edits preserve other branches and do not rerender action consumers
+  ---
+  duration_ms: 641.373292
+  type: 'test'
+  ...
+# Subtest: no-op updates still apply new wallet authority and preserve authority references when equivalent
+ok 32 - no-op updates still apply new wallet authority and preserve authority references when equivalent
+  ---
+  duration_ms: 545.616875
+  type: 'test'
+  ...
+# Subtest: nested stat and life copies retain references, but real changes persist
+ok 33 - nested stat and life copies retain references, but real changes persist
+  ---
+  duration_ms: 393.9305
+  type: 'test'
+  ...
+# Subtest: account changes still mask the prior wallet and refresh account-bound actions
+ok 34 - account changes still mask the prior wallet and refresh account-bound actions
+  ---
+  duration_ms: 365.074166
+  type: 'test'
+  ...
+# Subtest: internal save metadata persists without notifying unchanged game consumers
+ok 35 - internal save metadata persists without notifying unchanged game consumers
+  ---
+  duration_ms: 376.291042
+  type: 'test'
+  ...
+# Subtest: queued rewards update the projected wallet without changing pet or progress references
+ok 36 - queued rewards update the projected wallet without changing pet or progress references
+  ---
+  duration_ms: 361.016833
+  type: 'test'
+  ...
+# Subtest: network recovery and Wi-Fi/cellular switches wake sync once, repeated online events do not
+ok 37 - network recovery and Wi-Fi/cellular switches wake sync once, repeated online events do not
+  ---
+  duration_ms: 95.154459
+  type: 'test'
+  ...
+# Subtest: recovery in background waits for resume and stale state queries cannot hide a newer event
+ok 38 - recovery in background waits for resume and stale state queries cannot hide a newer event
+  ---
+  duration_ms: 13.354875
+  type: 'test'
+  ...
+# Subtest: backend deadlines abort a stuck request and allow a new request without replaying a write
+ok 39 - backend deadlines abort a stuck request and allow a new request without replaying a write
+  ---
+  duration_ms: 5.7915
+  type: 'test'
+  ...
+# Subtest: backend fetch preserves caller cancellation and releases its deadline after a response
+ok 40 - backend fetch preserves caller cancellation and releases its deadline after a response
+  ---
+  duration_ms: 3.902542
+  type: 'test'
+  ...
+# Subtest: all four pages have complete, separate English and Latvian content
+ok 41 - all four pages have complete, separate English and Latvian content
+  ---
+  duration_ms: 693.710917
+  type: 'test'
+  ...
+# Subtest: language switches preserve the page, and every local link and asset resolves
+ok 42 - language switches preserve the page, and every local link and asset resolves
+  ---
+  duration_ms: 663.776416
+  type: 'test'
+  ...
+# Subtest: publisher/contact values are escaped; missing email never creates a fake request button
+ok 43 - publisher/contact values are escaped; missing email never creates a fake request button
+  ---
+  duration_ms: 1118.400083
+  type: 'test'
+  ...
+# Subtest: the real Pages staging step includes both languages and the cat, excluding development notes
+ok 44 - the real Pages staging step includes both languages and the cat, excluding development notes
+  ---
+  duration_ms: 672.597125
+  type: 'test'
+  ...
+# Subtest: new boss stages receive double rewards; practice and challenges retain regular rates; rerunning is idempotent
+ok 45 - new boss stages receive double rewards; practice and challenges retain regular rates; rerunning is idempotent
+  ---
+  duration_ms: 87.978125
+  type: 'test'
+  ...
+# Subtest: reconciliation requires the exact service credential and fails closed before claiming jobs
+ok 46 - reconciliation requires the exact service credential and fails closed before claiming jobs
+  ---
+  duration_ms: 64.885791
+  type: 'test'
+  ...
+# Subtest: purchase recovery maps internal product IDs to store SKUs and never uses prices or client coin counts
+ok 47 - purchase recovery maps internal product IDs to store SKUs and never uses prices or client coin counts
+  ---
+  duration_ms: 2.311667
+  type: 'test'
+  ...
+# Subtest: wrong ownership and multi-quantity purchases require review without financial changes
+ok 48 - wrong ownership and multi-quantity purchases require review without financial changes
+  ---
+  duration_ms: 2.113084
+  type: 'test'
+  ...
+# Subtest: an environment mismatch fails the page and never turns test money into production coins
+ok 49 - an environment mismatch fails the page and never turns test money into production coins
+  ---
+  duration_ms: 1.684208
+  type: 'test'
+  ...
+# Subtest: event history preserves causal timestamps and strips subscriber attributes
+ok 50 - event history preserves causal timestamps and strips subscriber attributes
+  ---
+  duration_ms: 0.728583
+  type: 'test'
+  ...
+# Subtest: incomplete or identity-mismatched history is recorded for review, never guessed
+ok 51 - incomplete or identity-mismatched history is recorded for review, never guessed
+  ---
+  duration_ms: 1.812125
+  type: 'test'
+  ...
+# Subtest: partial page failure repeats deterministic event IDs from the original cursor
+ok 52 - partial page failure repeats deterministic event IDs from the original cursor
+  ---
+  duration_ms: 1.254958
+  type: 'test'
+  ...
+# Subtest: pagination is constrained to the same project/customer endpoint and uses only the cursor
+ok 53 - pagination is constrained to the same project/customer endpoint and uses only the cursor
+  ---
+  duration_ms: 4.570666
+  type: 'test'
+  ...
+# Subtest: rate limits, bad provider responses and missing configuration do not advance a cursor
+ok 54 - rate limits, bad provider responses and missing configuration do not advance a cursor
+  ---
+  duration_ms: 1.3565
+  type: 'test'
+  ...
+# Subtest: a bad continuation is rejected before applying any purchase from its page
+ok 55 - a bad continuation is rejected before applying any purchase from its page
+  ---
+  duration_ms: 2.347
+  type: 'test'
+  ...
+# Subtest: alternate service credentials require verified database authorization before any job is claimed
+ok 56 - alternate service credentials require verified database authorization before any job is claimed
+  ---
+  duration_ms: 11.590292
+  type: 'test'
+  ...
+# Subtest: recapturing a native preview detaches every nested reference before crossing runtimes
+ok 57 - recapturing a native preview detaches every nested reference before crossing runtimes
+  ---
+  duration_ms: 0.584209
+  type: 'test'
+  ...
+# Subtest: native drag deltas preserve projected finger movement on floor and both walls
+ok 58 - native drag deltas preserve projected finger movement on floor and both walls
+  ---
+  duration_ms: 0.323166
+  type: 'test'
+  ...
+# Subtest: native previews preserve groups, reject stale sessions and continue when returning across the threshold
+ok 59 - native previews preserve groups, reject stale sessions and continue when returning across the threshold
+  ---
+  duration_ms: 0.495291
+  type: 'test'
+  ...
+# Subtest: React drag feedback ignores translation but detects changed validity, support, shape and blocking parts
+ok 60 - React drag feedback ignores translation but detects changed validity, support, shape and blocking parts
+  ---
+  duration_ms: 0.248959
+  type: 'test'
+  ...
+# Subtest: surface entry, motion and exit preserve the captured grab point without magnetic pullback
+ok 61 - surface entry, motion and exit preserve the captured grab point without magnetic pullback
+  ---
+  duration_ms: 25.65875
+  type: 'test'
+  ...
+# Subtest: surface edge retention prevents flicker but keeps overhanging drops invalid
+ok 62 - surface edge retention prevents flicker but keeps overhanging drops invalid
+  ---
+  duration_ms: 1.209167
+  type: 'test'
+  ...
+# Subtest: rotated and resized items retain their anchors on rotated supports at different zooms
+ok 63 - rotated and resized items retain their anchors on rotated supports at different zooms
+  ---
+  duration_ms: 10.23825
+  type: 'test'
+  ...
+# Subtest: an existing lower support wins over overlapping higher furniture until deliberately left
+ok 64 - an existing lower support wins over overlapping higher furniture until deliberately left
+  ---
+  duration_ms: 1.18175
+  type: 'test'
+  ...
+# Subtest: a bed crosses fireplace collision edges without snapping away from the finger
+ok 65 - a bed crosses fireplace collision edges without snapping away from the finger
+  ---
+  duration_ms: 2456.686416
+  type: 'test'
+  ...
+# Subtest: Undo availability only rerenders the room being decorated (without React Compiler)
+ok 66 - Undo availability only rerenders the room being decorated (without React Compiler)
+  ---
+  duration_ms: 1035.866958
+  type: 'test'
+  ...
+# Subtest: room navigation adapters keep current callbacks without rebuilding unchanged stages (without React Compiler)
+ok 67 - room navigation adapters keep current callbacks without rebuilding unchanged stages (without React Compiler)
+  ---
+  duration_ms: 458.461375
+  type: 'test'
+  ...
+# Subtest: furniture menus retain their actions across visibility changes but call current activity guards (without React Compiler)
+ok 68 - furniture menus retain their actions across visibility changes but call current activity guards (without React Compiler)
+  ---
+  duration_ms: 1043.134458
+  type: 'test'
+  ...
+# Subtest: browsing rooms and returning after a save leaves hidden stages and furniture menus cached (without React Compiler)
+ok 69 - browsing rooms and returning after a save leaves hidden stages and furniture menus cached (without React Compiler)
+  ---
+  duration_ms: 887.030209
+  type: 'test'
+  ...
+# Subtest: unchanged drag targets retain their views but use the latest drop handlers (without React Compiler)
+ok 70 - unchanged drag targets retain their views but use the latest drop handlers (without React Compiler)
+  ---
+  duration_ms: 246.756208
+  type: 'test'
+  ...
+# Subtest: Undo controls stay stable across saves and restore the latest layout (without React Compiler)
+ok 71 - Undo controls stay stable across saves and restore the latest layout (without React Compiler)
+  ---
+  duration_ms: 205.707667
+  type: 'test'
+  ...
+# Subtest: saving a bed preserves other rooms' furniture callbacks and native scenes (without React Compiler)
+ok 72 - saving a bed preserves other rooms' furniture callbacks and native scenes (without React Compiler)
+  ---
+  duration_ms: 236.236667
+  type: 'test'
+  ...
+# Subtest: placement outlines reuse geometry during translation and refresh for changed shape (without React Compiler)
+ok 73 - placement outlines reuse geometry during translation and refresh for changed shape (without React Compiler)
+  ---
+  duration_ms: 379.415125
+  type: 'test'
+  ...
+# Subtest: native drag motion updates independently of React diagnostics (without React Compiler)
+ok 74 - native drag motion updates independently of React diagnostics (without React Compiler)
+  ---
+  duration_ms: 515.263834
+  type: 'test'
+  ...
+# Subtest: bed drag through fireplace collisions keeps the pointer anchor (without React Compiler)
+ok 75 - bed drag through fireplace collisions keeps the pointer anchor (without React Compiler)
+  ---
+  duration_ms: 600.896625
+  type: 'test'
+  ...
+# Subtest: surface drag keeps its grab anchor and validates the held board on release (without React Compiler)
+ok 76 - surface drag keeps its grab anchor and validates the held board on release (without React Compiler)
+  ---
+  duration_ms: 493.3865
+  type: 'test'
+  ...
+# Subtest: decoration dragging reuses stationary targets and keeps preview validation current (without React Compiler)
+ok 77 - decoration dragging reuses stationary targets and keeps preview validation current (without React Compiler)
+  ---
+  duration_ms: 520.031708
+  type: 'test'
+  ...
+# Subtest: Home care updates preserve room adapters and scene callbacks (without React Compiler)
+ok 78 - Home care updates preserve room adapters and scene callbacks (without React Compiler)
+  ---
+  duration_ms: 239.001417
+  type: 'test'
+  ...
+# Subtest: Home care updates do not invalidate native scenes (without React Compiler)
+ok 79 - Home care updates do not invalidate native scenes (without React Compiler)
+  ---
+  duration_ms: 543.563084
+  type: 'test'
+  ...
+# Subtest: room pauses skip unchanged furniture model hooks while geometry changes remain live (without React Compiler)
+ok 80 - room pauses skip unchanged furniture model hooks while geometry changes remain live (without React Compiler)
+  ---
+  duration_ms: 414.986958
+  type: 'test'
+  ...
+# Subtest: native scene callbacks keep identity and enforce current save guards (without React Compiler)
+ok 81 - native scene callbacks keep identity and enforce current save guards (without React Compiler)
+  ---
+  duration_ms: 494.509417
+  type: 'test'
+  ...
+# Subtest: shadow models stay mounted across visibility changes and resume live previews (without React Compiler)
+ok 82 - shadow models stay mounted across visibility changes and resume live previews (without React Compiler)
+  ---
+  duration_ms: 325.951583
+  type: 'test'
+  ...
+# Subtest: lamp lights retain native hooks and callbacks across navigation (without React Compiler)
+ok 83 - lamp lights retain native hooks and callbacks across navigation (without React Compiler)
+  ---
+  duration_ms: 304.496083
+  type: 'test'
+  ...
+# Subtest: native position reports preserve furniture menus and duplicate reports preserve targets (without React Compiler)
+ok 84 - native position reports preserve furniture menus and duplicate reports preserve targets (without React Compiler)
+  ---
+  duration_ms: 449.649708
+  type: 'test'
+  ...
+# Subtest: room furniture stays cached for ordinary stat decay but feeding and commands stay current (without React Compiler)
+ok 85 - room furniture stays cached for ordinary stat decay but feeding and commands stay current (without React Compiler)
+  ---
+  duration_ms: 442.871416
+  type: 'test'
+  ...
+# Subtest: room edit adapters use the current version and replacement callbacks (without React Compiler)
+ok 86 - room edit adapters use the current version and replacement callbacks (without React Compiler)
+  ---
+  duration_ms: 209.431083
+  type: 'test'
+  ...
+# Subtest: sleep completion stays stable across stat updates and checks the latest pet (without React Compiler)
+ok 87 - sleep completion stays stable across stat updates and checks the latest pet (without React Compiler)
+  ---
+  duration_ms: 163.813791
+  type: 'test'
+  ...
+# Subtest: room stages skip unchanged clock ticks and deliver period transitions (without React Compiler)
+ok 88 - room stages skip unchanged clock ticks and deliver period transitions (without React Compiler)
+  ---
+  duration_ms: 434.402834
+  type: 'test'
+  ...
+# Subtest: room period pauses when inactive and refreshes on visibility, editing and clock changes (without React Compiler)
+ok 89 - room period pauses when inactive and refreshes on visibility, editing and clock changes (without React Compiler)
+  ---
+  duration_ms: 433.903
+  type: 'test'
+  ...
+# Subtest: hidden Store skips room changes and catches up on focus without hiding account resets (without React Compiler)
+ok 90 - hidden Store skips room changes and catches up on focus without hiding account resets (without React Compiler)
+  ---
+  duration_ms: 210.252167
+  type: 'test'
+  ...
+# Subtest: Puzzles skips furniture navigation updates but refreshes learning progress and readiness (without React Compiler)
+ok 91 - Puzzles skips furniture navigation updates but refreshes learning progress and readiness (without React Compiler)
+  ---
+  duration_ms: 228.420666
+  type: 'test'
+  ...
+# Subtest: static room colliders survive navigation and refresh geometry, removals and physics worlds (without React Compiler)
+ok 92 - static room colliders survive navigation and refresh geometry, removals and physics worlds (without React Compiler)
+  ---
+  duration_ms: 159.895375
+  type: 'test'
+  ...
+# Subtest: Store preview, feedback, pet stats, and life updates do not rerender product rows (without React Compiler)
+ok 93 - Store preview, feedback, pet stats, and life updates do not rerender product rows (without React Compiler)
+  ---
+  duration_ms: 203.39225
+  type: 'test'
+  ...
+# Subtest: Store refreshes affordability, ownership, placements, catalog prices, and translated callbacks (without React Compiler)
+ok 94 - Store refreshes affordability, ownership, placements, catalog prices, and translated callbacks (without React Compiler)
+  ---
+  duration_ms: 181.163
+  type: 'test'
+  ...
+# Subtest: Home header ignores unrelated pet updates while wallet, achievements, lives, and local sheets stay live (without React Compiler)
+ok 95 - Home header ignores unrelated pet updates while wallet, achievements, lives, and local sheets stay live (without React Compiler)
+  ---
+  duration_ms: 160.042709
+  type: 'test'
+  ...
+# Subtest: Home computes wisdom once across its preloaded rooms and reuses it for pet changes (without React Compiler)
+ok 96 - Home computes wisdom once across its preloaded rooms and reuses it for pet changes (without React Compiler)
+  ---
+  duration_ms: 204.536834
+  type: 'test'
+  ...
+# Subtest: Home bedtime clock ticks do not rerender the rooms (without React Compiler)
+ok 97 - Home bedtime clock ticks do not rerender the rooms (without React Compiler)
+  ---
+  duration_ms: 195.520791
+  type: 'test'
+  ...
+# Subtest: covered Home defers game updates and receives the latest state on return (without React Compiler)
+ok 98 - covered Home defers game updates and receives the latest state on return (without React Compiler)
+  ---
+  duration_ms: 207.932709
+  type: 'test'
+  ...
+# Subtest: catalog updates refresh the Home saving hint without rendering rooms (without React Compiler)
+ok 99 - catalog updates refresh the Home saving hint without rendering rooms (without React Compiler)
+  ---
+  duration_ms: 187.394875
+  type: 'test'
+  ...
+# Subtest: mood clock skips unchanged ticks, pauses when covered, and catches up on focus (without React Compiler)
+ok 100 - mood clock skips unchanged ticks, pauses when covered, and catches up on focus (without React Compiler)
+  ---
+  duration_ms: 146.815917
+  type: 'test'
+  ...
+# Subtest: dog mood still enters sleep and resets after interaction (without React Compiler)
+ok 101 - dog mood still enters sleep and resets after interaction (without React Compiler)
+  ---
+  duration_ms: 143.859125
+  type: 'test'
+  ...
+# Subtest: Undo availability only rerenders the room being decorated (with React Compiler)
+ok 102 - Undo availability only rerenders the room being decorated (with React Compiler)
+  ---
+  duration_ms: 388.038333
+  type: 'test'
+  ...
+# Subtest: room navigation adapters keep current callbacks without rebuilding unchanged stages (with React Compiler)
+ok 103 - room navigation adapters keep current callbacks without rebuilding unchanged stages (with React Compiler)
+  ---
+  duration_ms: 240.527459
+  type: 'test'
+  ...
+# Subtest: furniture menus retain their actions across visibility changes but call current activity guards (with React Compiler)
+ok 104 - furniture menus retain their actions across visibility changes but call current activity guards (with React Compiler)
+  ---
+  duration_ms: 729.567666
+  type: 'test'
+  ...
+# Subtest: browsing rooms and returning after a save leaves hidden stages and furniture menus cached (with React Compiler)
+ok 105 - browsing rooms and returning after a save leaves hidden stages and furniture menus cached (with React Compiler)
+  ---
+  duration_ms: 1282.918709
+  type: 'test'
+  ...
+# Subtest: unchanged drag targets retain their views but use the latest drop handlers (with React Compiler)
+ok 106 - unchanged drag targets retain their views but use the latest drop handlers (with React Compiler)
+  ---
+  duration_ms: 319.080542
+  type: 'test'
+  ...
+# Subtest: Undo controls stay stable across saves and restore the latest layout (with React Compiler)
+ok 107 - Undo controls stay stable across saves and restore the latest layout (with React Compiler)
+  ---
+  duration_ms: 186.388167
+  type: 'test'
+  ...
+# Subtest: saving a bed preserves other rooms' furniture callbacks and native scenes (with React Compiler)
+ok 108 - saving a bed preserves other rooms' furniture callbacks and native scenes (with React Compiler)
+  ---
+  duration_ms: 729.400125
+  type: 'test'
+  ...
+# Subtest: placement outlines reuse geometry during translation and refresh for changed shape (with React Compiler)
+ok 109 - placement outlines reuse geometry during translation and refresh for changed shape (with React Compiler)
+  ---
+  duration_ms: 498.6315
+  type: 'test'
+  ...
+# Subtest: native drag motion updates independently of React diagnostics (with React Compiler)
+ok 110 - native drag motion updates independently of React diagnostics (with React Compiler)
+  ---
+  duration_ms: 749.675542
+  type: 'test'
+  ...
+# Subtest: bed drag through fireplace collisions keeps the pointer anchor (with React Compiler)
+ok 111 - bed drag through fireplace collisions keeps the pointer anchor (with React Compiler)
+  ---
+  duration_ms: 850.245875
+  type: 'test'
+  ...
+# Subtest: surface drag keeps its grab anchor and validates the held board on release (with React Compiler)
+ok 112 - surface drag keeps its grab anchor and validates the held board on release (with React Compiler)
+  ---
+  duration_ms: 755.758292
+  type: 'test'
+  ...
+# Subtest: decoration dragging reuses stationary targets and keeps preview validation current (with React Compiler)
+ok 113 - decoration dragging reuses stationary targets and keeps preview validation current (with React Compiler)
+  ---
+  duration_ms: 676.928125
+  type: 'test'
+  ...
+# Subtest: Home care updates preserve room adapters and scene callbacks (with React Compiler)
+ok 114 - Home care updates preserve room adapters and scene callbacks (with React Compiler)
+  ---
+  duration_ms: 601.849083
+  type: 'test'
+  ...
+# Subtest: Home care updates do not invalidate native scenes (with React Compiler)
+ok 115 - Home care updates do not invalidate native scenes (with React Compiler)
+  ---
+  duration_ms: 1206.912375
+  type: 'test'
+  ...
+# Subtest: room pauses skip unchanged furniture model hooks while geometry changes remain live (with React Compiler)
+ok 116 - room pauses skip unchanged furniture model hooks while geometry changes remain live (with React Compiler)
+  ---
+  duration_ms: 1141.306959
+  type: 'test'
+  ...
+# Subtest: native scene callbacks keep identity and enforce current save guards (with React Compiler)
+ok 117 - native scene callbacks keep identity and enforce current save guards (with React Compiler)
+  ---
+  duration_ms: 808.021208
+  type: 'test'
+  ...
+# Subtest: shadow models stay mounted across visibility changes and resume live previews (with React Compiler)
+ok 118 - shadow models stay mounted across visibility changes and resume live previews (with React Compiler)
+  ---
+  duration_ms: 444.811292
+  type: 'test'
+  ...
+# Subtest: lamp lights retain native hooks and callbacks across navigation (with React Compiler)
+ok 119 - lamp lights retain native hooks and callbacks across navigation (with React Compiler)
+  ---
+  duration_ms: 369.674084
+  type: 'test'
+  ...
+# Subtest: native position reports preserve furniture menus and duplicate reports preserve targets (with React Compiler)
+ok 120 - native position reports preserve furniture menus and duplicate reports preserve targets (with React Compiler)
+  ---
+  duration_ms: 727.044458
+  type: 'test'
+  ...
+# Subtest: room furniture stays cached for ordinary stat decay but feeding and commands stay current (with React Compiler)
+ok 121 - room furniture stays cached for ordinary stat decay but feeding and commands stay current (with React Compiler)
+  ---
+  duration_ms: 677.919292
+  type: 'test'
+  ...
+# Subtest: room edit adapters use the current version and replacement callbacks (with React Compiler)
+ok 122 - room edit adapters use the current version and replacement callbacks (with React Compiler)
+  ---
+  duration_ms: 678.595375
+  type: 'test'
+  ...
+# Subtest: sleep completion stays stable across stat updates and checks the latest pet (with React Compiler)
+ok 123 - sleep completion stays stable across stat updates and checks the latest pet (with React Compiler)
+  ---
+  duration_ms: 177.2875
+  type: 'test'
+  ...
+# Subtest: room stages skip unchanged clock ticks and deliver period transitions (with React Compiler)
+ok 124 - room stages skip unchanged clock ticks and deliver period transitions (with React Compiler)
+  ---
+  duration_ms: 646.644375
+  type: 'test'
+  ...
+# Subtest: room period pauses when inactive and refreshes on visibility, editing and clock changes (with React Compiler)
+ok 125 - room period pauses when inactive and refreshes on visibility, editing and clock changes (with React Compiler)
+  ---
+  duration_ms: 666.965458
+  type: 'test'
+  ...
+# Subtest: hidden Store skips room changes and catches up on focus without hiding account resets (with React Compiler)
+ok 126 - hidden Store skips room changes and catches up on focus without hiding account resets (with React Compiler)
+  ---
+  duration_ms: 610.658416
+  type: 'test'
+  ...
+# Subtest: Puzzles skips furniture navigation updates but refreshes learning progress and readiness (with React Compiler)
+ok 127 - Puzzles skips furniture navigation updates but refreshes learning progress and readiness (with React Compiler)
+  ---
+  duration_ms: 424.02225
+  type: 'test'
+  ...
+# Subtest: static room colliders survive navigation and refresh geometry, removals and physics worlds (with React Compiler)
+ok 128 - static room colliders survive navigation and refresh geometry, removals and physics worlds (with React Compiler)
+  ---
+  duration_ms: 200.869167
+  type: 'test'
+  ...
+# Subtest: Store preview, feedback, pet stats, and life updates do not rerender product rows (with React Compiler)
+ok 129 - Store preview, feedback, pet stats, and life updates do not rerender product rows (with React Compiler)
+  ---
+  duration_ms: 554.689167
+  type: 'test'
+  ...
+# Subtest: Store refreshes affordability, ownership, placements, catalog prices, and translated callbacks (with React Compiler)
+ok 130 - Store refreshes affordability, ownership, placements, catalog prices, and translated callbacks (with React Compiler)
+  ---
+  duration_ms: 548.936583
+  type: 'test'
+  ...
+# Subtest: Home header ignores unrelated pet updates while wallet, achievements, lives, and local sheets stay live (with React Compiler)
+ok 131 - Home header ignores unrelated pet updates while wallet, achievements, lives, and local sheets stay live (with React Compiler)
+  ---
+  duration_ms: 224.094833
+  type: 'test'
+  ...
+# Subtest: Home computes wisdom once across its preloaded rooms and reuses it for pet changes (with React Compiler)
+ok 132 - Home computes wisdom once across its preloaded rooms and reuses it for pet changes (with React Compiler)
+  ---
+  duration_ms: 651.270625
+  type: 'test'
+  ...
+# Subtest: Home bedtime clock ticks do not rerender the rooms (with React Compiler)
+ok 133 - Home bedtime clock ticks do not rerender the rooms (with React Compiler)
+  ---
+  duration_ms: 635.072958
+  type: 'test'
+  ...
+# Subtest: covered Home defers game updates and receives the latest state on return (with React Compiler)
+ok 134 - covered Home defers game updates and receives the latest state on return (with React Compiler)
+  ---
+  duration_ms: 663.222584
+  type: 'test'
+  ...
+# Subtest: catalog updates refresh the Home saving hint without rendering rooms (with React Compiler)
+ok 135 - catalog updates refresh the Home saving hint without rendering rooms (with React Compiler)
+  ---
+  duration_ms: 636.622792
+  type: 'test'
+  ...
+# Subtest: mood clock skips unchanged ticks, pauses when covered, and catches up on focus (with React Compiler)
+ok 136 - mood clock skips unchanged ticks, pauses when covered, and catches up on focus (with React Compiler)
+  ---
+  duration_ms: 212.439292
+  type: 'test'
+  ...
+# Subtest: dog mood still enters sleep and resets after interaction (with React Compiler)
+ok 137 - dog mood still enters sleep and resets after interaction (with React Compiler)
+  ---
+  duration_ms: 192.808417
+  type: 'test'
+  ...
+# Subtest: server prices replace bundled amounts for every kind and saved goals
+ok 138 - server prices replace bundled amounts for every kind and saved goals
+  ---
+  duration_ms: 1849.346625
+  type: 'test'
+  ...
+# Subtest: timed sale starts inclusively, expires exclusively and respects server time over phone clock
+ok 139 - timed sale starts inclusively, expires exclusively and respects server time over phone clock
+  ---
+  duration_ms: 1243.588458
+  type: 'test'
+  ...
+# Subtest: active promotions expose original price, allow zero coins and return to normal
+ok 140 - active promotions expose original price, allow zero coins and return to normal
+  ---
+  duration_ms: 949.804208
+  type: 'test'
+  ...
+# Subtest: malformed and duplicate responses retain the last usable catalog
+ok 141 - malformed and duplicate responses retain the last usable catalog
+  ---
+  duration_ms: 865.985875
+  type: 'test'
+  ...
+# Subtest: network failure preserves prices and concurrent readers share one request
+ok 142 - network failure preserves prices and concurrent readers share one request
+  ---
+  duration_ms: 853.512041
+  type: 'test'
+  ...
+# Subtest: discount percentages reflect the actual coin saving without rounding up
+ok 143 - discount percentages reflect the actual coin saving without rounding up
+  ---
+  duration_ms: 846.427875
+  type: 'test'
+  ...
+# Subtest: sale countdowns share the pricing clock and hide at expiry even with stale price props
+ok 144 - sale countdowns share the pricing clock and hide at expiry even with stale price props
+  ---
+  duration_ms: 860.704
+  type: 'test'
+  ...
+# Subtest: countdowns cover days, hours, minutes and the last fractional second
+ok 145 - countdowns cover days, hours, minutes and the last fractional second
+  ---
+  duration_ms: 866.047
+  type: 'test'
+  ...
+# Subtest: promotion UI renders localized badges, labels and live countdowns without repeated screen-reader announcements
+ok 146 - promotion UI renders localized badges, labels and live countdowns without repeated screen-reader announcements
+  ---
+  duration_ms: 876.212792
+  type: 'test'
+  ...
+# Subtest: store-wide discovery advertises only active, supported discounts and separates campaign deadlines
+ok 147 - store-wide discovery advertises only active, supported discounts and separates campaign deadlines
+  ---
+  duration_ms: 824.355458
+  type: 'test'
+  ...
+# Subtest: sale discovery UI is visible from other categories, routes on tap, and labels only discounted tabs
+ok 148 - sale discovery UI is visible from other categories, routes on tap, and labels only discounted tabs
+  ---
+  duration_ms: 855.3695
+  type: 'test'
+  ...
+# [MathMews wallet] Sync unavailable Connection interrupted
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Connection interrupted
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Wrong wallet
+# [MathMews wallet] Sync unavailable Connection interrupted
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# Subtest: ambiguous purchase is retried with the persisted ID and delivers once after restart/refresh
+ok 149 - ambiguous purchase is retried with the persisted ID and delivers once after restart/refresh
+  ---
+  duration_ms: 1023.211541
+  type: 'test'
+  ...
+# Subtest: receipts for another save are not applied to the selected pet
+ok 150 - receipts for another save are not applied to the selected pet
+  ---
+  duration_ms: 471.820458
+  type: 'test'
+  ...
+# Subtest: a missing reconciliation deployment does not interrupt authoritative wallet spending
+ok 151 - a missing reconciliation deployment does not interrupt authoritative wallet spending
+  ---
+  duration_ms: 399.258
+  type: 'test'
+  ...
+# Subtest: responses for a different authenticated account never replace the wallet
+ok 152 - responses for a different authenticated account never replace the wallet
+  ---
+  duration_ms: 330.307083
+  type: 'test'
+  ...
+# Subtest: dev, store sandbox and production isolate phone storage and wallet environment
+ok 153 - dev, store sandbox and production isolate phone storage and wallet environment
+  ---
+  duration_ms: 879.157333
+  type: 'test'
+  ...
+# Subtest: store builds reject empty, placeholder and Test Store billing keys
+ok 154 - store builds reject empty, placeholder and Test Store billing keys
+  ---
+  duration_ms: 0.96275
+  type: 'test'
+  ...
+# Subtest: store configuration excludes development/storage permissions and private backend credentials
+ok 155 - store configuration excludes development/storage permissions and private backend credentials
+  ---
+  duration_ms: 3.123083
+  type: 'test'
+  ...
+# Subtest: RevenueCat identity changes wait until the previous purchase completes
+ok 156 - RevenueCat identity changes wait until the previous purchase completes
+  ---
+  duration_ms: 6.832583
+  type: 'test'
+  ...
+# Subtest: the parent gate and coin catalog share one native sheet
+ok 157 - the parent gate and coin catalog share one native sheet
+  ---
+  duration_ms: 13.768292
+  type: 'test'
+  ...
+# Subtest: only a delivered purchase closes the coin sheet
+ok 158 - only a delivered purchase closes the coin sheet
+  ---
+  duration_ms: 25.680417
+  type: 'test'
+  ...
+# Subtest: coin celebrations wait for verified delivery and never cross accounts
+ok 159 - coin celebrations wait for verified delivery and never cross accounts
+  ---
+  duration_ms: 24.689542
+  type: 'test'
+  ...
+# Subtest: a closed or unavailable server wallet prevents the native checkout
+ok 160 - a closed or unavailable server wallet prevents the native checkout
+  ---
+  duration_ms: 21.041209
+  type: 'test'
+  ...
+# Subtest: pending or failed deletion never clears the phone or starts a new guest
+ok 161 - pending or failed deletion never clears the phone or starts a new guest
+  ---
+  duration_ms: 14.132
+  type: 'test'
+  ...
+# Subtest: Restore keeps the checked wallet available and reports whether recovery actually queued
+ok 162 - Restore keeps the checked wallet available and reports whether recovery actually queued
+  ---
+  duration_ms: 9.111
+  type: 'test'
+  ...
+# Subtest: the purchase dance waits for Home, supports reduced motion, and cleans up on navigation
+ok 163 - the purchase dance waits for Home, supports reduced motion, and cleans up on navigation
+  ---
+  duration_ms: 49.527208
+  type: 'test'
+  ...
+# Subtest: production checkout requires a linked account while sandbox guests remain usable
+ok 164 - production checkout requires a linked account while sandbox guests remain usable
+  ---
+  duration_ms: 43.332041
+  type: 'test'
+  ...
+# Subtest: loading a legacy game retains its owner before a different session clears the cached wallet
+ok 165 - loading a legacy game retains its owner before a different session clears the cached wallet
+  ---
+  duration_ms: 270.622583
+  type: 'test'
+  ...
+# Subtest: deletion cannot overlap checkout, and a receipt clears the deleted account archives after its session expires
+ok 166 - deletion cannot overlap checkout, and a receipt clears the deleted account archives after its session expires
+  ---
+  duration_ms: 15.100875
+  type: 'test'
+  ...
+# Subtest: a changed price causes no debit, refreshes the shop and requires a fresh purchase
+ok 167 - a changed price causes no debit, refreshes the shop and requires a fresh purchase
+  ---
+  duration_ms: 217.941333
+  type: 'test'
+  ...
+# Subtest: an ambiguous successful purchase retains its expected price and receipt across a promotion change
+ok 168 - an ambiguous successful purchase retains its expected price and receipt across a promotion change
+  ---
+  duration_ms: 212.4425
+  type: 'test'
+  ...
+# Subtest: checkout keeps the rendered price even if the local catalog refreshes before the tap
+ok 169 - checkout keeps the rendered price even if the local catalog refreshes before the tap
+  ---
+  duration_ms: 219.00925
+  type: 'test'
+  ...
+# Subtest: offline purchases reserve funds durably, survive restart, and replay in order
+ok 170 - offline purchases reserve funds durably, survive restart, and replay in order
+  ---
+  duration_ms: 206.653709
+  type: 'test'
+  ...
+# Subtest: a rejected queue removes provisional copies while preserving confirmed items
+ok 171 - a rejected queue removes provisional copies while preserving confirmed items
+  ---
+  duration_ms: 205.618542
+  type: 'test'
+  ...
+# Subtest: rollback cleans every room and saved layout, including moved or recreated furniture copies
+ok 172 - rollback cleans every room and saved layout, including moved or recreated furniture copies
+  ---
+  duration_ms: 195.194667
+  type: 'test'
+  ...
+# Subtest: cancelled room finishes and beds fall back to owned choices in all named rooms
+ok 173 - cancelled room finishes and beds fall back to owned choices in all named rooms
+  ---
+  duration_ms: 208.380083
+  type: 'test'
+  ...
+# Subtest: rejected requests cannot reappear when an older provisional cloud snapshot is restored
+ok 174 - rejected requests cannot reappear when an older provisional cloud snapshot is restored
+  ---
+  duration_ms: 183.281
+  type: 'test'
+  ...
+# Subtest: a crash after recording confirmation releases the reserve without delivering twice
+ok 175 - a crash after recording confirmation releases the reserve without delivering twice
+  ---
+  duration_ms: 184.687333
+  type: 'test'
+  ...
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Save unavailable
+# [MathMews wallet] Sync unavailable Save unavailable
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Offline
+# [MathMews wallet] Sync unavailable Disk unavailable
+# Subtest: a tap during background wallet polling is queued rather than silently dropped
+ok 176 - a tap during background wallet polling is queued rather than silently dropped
+  ---
+  duration_ms: 211.56875
+  type: 'test'
+  ...
+# Subtest: room purchases return with durable ownership before the server responds
+ok 177 - room purchases return with durable ownership before the server responds
+  ---
+  duration_ms: 605.255334
+  type: 'test'
+  ...
+# Subtest: background decoration confirmation still rolls back a rejection and reports it
+ok 178 - background decoration confirmation still rolls back a rejection and reports it
+  ---
+  duration_ms: 182.848125
+  type: 'test'
+  ...
+# Subtest: offline puzzle rewards replay before the purchases they fund
+ok 179 - offline puzzle rewards replay before the purchases they fund
+  ---
+  duration_ms: 192.177583
+  type: 'test'
+  ...
+# Subtest: an account without a synced wallet cannot manufacture an offline balance
+ok 180 - an account without a synced wallet cannot manufacture an offline balance
+  ---
+  duration_ms: 182.179709
+  type: 'test'
+  ...
+# Subtest: room editor Undo cannot restore a cancelled placement
+ok 181 - room editor Undo cannot restore a cancelled placement
+  ---
+  duration_ms: 202.112208
+  type: 'test'
+  ...
+# Subtest: permission or authentication interruptions keep purchases queued for retry
+ok 182 - permission or authentication interruptions keep purchases queued for retry
+  ---
+  duration_ms: 180.268583
+  type: 'test'
+  ...
+# Subtest: a crash while saving a cancellation still removes its item after restart
+ok 183 - a crash while saving a cancellation still removes its item after restart
+  ---
+  duration_ms: 178.64975
+  type: 'test'
+  ...
+# Subtest: a persisted intent recovers if the app closes before its local grant is saved
+ok 184 - a persisted intent recovers if the app closes before its local grant is saved
+  ---
+  duration_ms: 198.037291
+  type: 'test'
+  ...
+# Subtest: concurrent queued life purchases cannot charge beyond the life limit
+ok 185 - concurrent queued life purchases cannot charge beyond the life limit
+  ---
+  duration_ms: 195.538458
+  type: 'test'
+  ...
+# Subtest: restored connectivity drains queued rewards and purchases without remounting
+ok 186 - restored connectivity drains queued rewards and purchases without remounting
+  ---
+  duration_ms: 179.797333
+  type: 'test'
+  ...
+# Subtest: rejection removes a draft placed during server confirmation across named rooms
+ok 187 - rejection removes a draft placed during server confirmation across named rooms
+  ---
+  duration_ms: 176.466541
+  type: 'test'
+  ...
+# Subtest: unchanged wallet polling preserves the save while changed balances still apply
+ok 188 - unchanged wallet polling preserves the save while changed balances still apply
+  ---
+  duration_ms: 177.965083
+  type: 'test'
+  ...
+# Subtest: wallet changes retry a failed disk write even when the next poll is unchanged
+ok 189 - wallet changes retry a failed disk write even when the next poll is unchanged
+  ---
+  duration_ms: 196.92825
+  type: 'test'
+  ...
+# Subtest: settled rejection tombstones do not cause writes or uploads on later wallet polls
+ok 190 - settled rejection tombstones do not cause writes or uploads on later wallet polls
+  ---
+  duration_ms: 184.270167
+  type: 'test'
+  ...
+# Subtest: a failed wallet cloud upload retries without rewriting the unchanged local save
+ok 191 - a failed wallet cloud upload retries without rewriting the unchanged local save
+  ---
+  duration_ms: 183.340083
+  type: 'test'
+  ...
+# Subtest: authenticates before accepting events and fails closed on missing configuration
+ok 192 - authenticates before accepting events and fails closed on missing configuration
+  ---
+  duration_ms: 43.411292
+  type: 'test'
+  ...
+# Subtest: rejects malformed and oversized events without calling the database
+ok 193 - rejects malformed and oversized events without calling the database
+  ---
+  duration_ms: 8.42975
+  type: 'test'
+  ...
+# Subtest: persists only required purchase fields, not subscriber personal data
+ok 194 - persists only required purchase fields, not subscriber personal data
+  ---
+  duration_ms: 7.022167
+  type: 'test'
+  ...
+# Subtest: acknowledges quarantine only after persistence and makes database failures retryable
+ok 195 - acknowledges quarantine only after persistence and makes database failures retryable
+  ---
+  duration_ms: 8.776541
+  type: 'test'
+  ...
+# Subtest: accepts the same strong credential with optional Bearer scheme and surrounding whitespace
+ok 196 - accepts the same strong credential with optional Bearer scheme and surrounding whitespace
+  ---
+  duration_ms: 6.852417
+  type: 'test'
+  ...
+1..196
+# tests 196
+# suites 0
+# pass 196
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 36019.977875

@@ -1,0 +1,503 @@
+{
+  "date": "2026-10-25",
+  "timezone": "Europe/Riga",
+  "sourceRevision": "6c87754cd1956c7077ee65a528b2bd64653dab68",
+  "scope": "Running-simulator navigation testing only. No application or navigation code edited.",
+  "environment": "iOS 27 simulator in Device Hub, Expo/Hermes development build, React Compiler enabled.",
+  "results": {
+    "ordinaryNavigation": "Living room → Bedroom → Living room → Kitchen → Bathroom. Correct room artwork and boundary controls observed.",
+    "rapidNavigation": "11 requested clicks in 2413 ms, then four rapid reversals. Seven distinct room changes recorded across the capture; settled on Living room without a persistent blank room or stuck transition. Repeated taps did not each produce a separately rendered destination.",
+    "afterFurnitureSave": "Moved Green Bed using its Right accessibility action. Verified autosave, then navigated to Kitchen and Bathroom, followed by rapid reversals back to Living room.",
+    "savedLayoutRetainedExactly": true,
+    "newRuntimeDiagnostics": [],
+    "persistentNavigationFailureObserved": false
+  },
+  "captures": {
+    "normal": {
+      "durationMs": 58122.23987495899,
+      "reactCommitCount": 120,
+      "maxReactCommitMs": 287.291,
+      "largestCommitUpdaters": [
+        "Forget(GameProvider)"
+      ],
+      "roomStageDurations": [
+        {
+          "fiberId": 350,
+          "ms": 48.07
+        },
+        {
+          "fiberId": 808,
+          "ms": 78.834
+        },
+        {
+          "fiberId": 1485,
+          "ms": 83.916
+        },
+        {
+          "fiberId": 2233,
+          "ms": 44.4
+        }
+      ],
+      "largestCommitStagePropChanges": [
+        {
+          "fiberId": 350,
+          "props": [
+            "roomVisible",
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onRoomActivityChange",
+            "onPlay",
+            "onPetPress",
+            "onBedRemove",
+            "onAnimationComplete"
+          ]
+        },
+        {
+          "fiberId": 808,
+          "props": [
+            "roomVisible",
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onRoomActivityChange",
+            "onPlay",
+            "onPetPress",
+            "onBedRemove",
+            "onAnimationComplete"
+          ]
+        },
+        {
+          "fiberId": 1485,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onPlay",
+            "onPetPress",
+            "onBedRemove",
+            "onAnimationComplete"
+          ]
+        },
+        {
+          "fiberId": 2233,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onPlay",
+            "onPetPress",
+            "onBedRemove",
+            "onAnimationComplete"
+          ]
+        }
+      ],
+      "roomActionMenuUpdatesInLargestCommit": 64,
+      "visibleRoomSequence": [
+        {
+          "atMs": 5.065417051315308,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 3392.815999984741,
+          "rooms": [
+            "bedroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 12433.868584036827,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 30665.654417037964,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 37833.39487504959,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        }
+      ],
+      "layoutsUnchangedDuringCapture": true,
+      "maxJsFrameGapMs": 823.8525420427322,
+      "jsFrameGapsOver50Ms": 8
+    },
+    "rapid": {
+      "durationMs": 26497.51862502098,
+      "reactCommitCount": 57,
+      "maxReactCommitMs": 423.842,
+      "largestCommitUpdaters": [
+        "Forget(HomeContent)",
+        "Forget(GameProvider)"
+      ],
+      "roomStageDurations": [
+        {
+          "fiberId": 350,
+          "ms": 74.153
+        },
+        {
+          "fiberId": 808,
+          "ms": 130.359
+        },
+        {
+          "fiberId": 1485,
+          "ms": 108.843
+        },
+        {
+          "fiberId": 2233,
+          "ms": 64.027
+        }
+      ],
+      "largestCommitStagePropChanges": [
+        {
+          "fiberId": 350,
+          "props": [
+            "roomVisible",
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onRoomActivityChange",
+            "onBedRemove"
+          ]
+        },
+        {
+          "fiberId": 808,
+          "props": [
+            "roomVisible",
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onRoomActivityChange",
+            "onBedRemove"
+          ]
+        },
+        {
+          "fiberId": 1485,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onBedRemove"
+          ]
+        },
+        {
+          "fiberId": 2233,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onBedRemove"
+          ]
+        }
+      ],
+      "roomActionMenuUpdatesInLargestCommit": 64,
+      "visibleRoomSequence": [
+        {
+          "atMs": 4.055167078971863,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 5922.693624973297,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 6490.593834042549,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 7228.886167049408,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 8027.5096670389175,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 16163.258375048637,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 16744.31400001049,
+          "rooms": [
+            "bedroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 17378.698167085648,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        }
+      ],
+      "layoutsUnchangedDuringCapture": true,
+      "maxJsFrameGapMs": 2114.1775830984116,
+      "jsFrameGapsOver50Ms": 7
+    },
+    "save": {
+      "durationMs": 12314.85954105854,
+      "reactCommitCount": 24,
+      "maxReactCommitMs": 69.204,
+      "largestCommitUpdaters": [
+        "Memo(DraggableRoomPetView)",
+        "Forget(Memo(PetStage))",
+        "Forget(GameProvider)"
+      ],
+      "roomStageDurations": [
+        {
+          "fiberId": 350,
+          "ms": 5.315
+        },
+        {
+          "fiberId": 808,
+          "ms": 33.956
+        },
+        {
+          "fiberId": 1485,
+          "ms": 8.217
+        },
+        {
+          "fiberId": 2233,
+          "ms": 5.675
+        }
+      ],
+      "largestCommitStagePropChanges": [
+        {
+          "fiberId": 350,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems"
+          ]
+        },
+        {
+          "fiberId": 808,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "roomBedOffset",
+            "bedRotationDegrees",
+            "bedScale",
+            "onCommitRoomEdit"
+          ]
+        },
+        {
+          "fiberId": 1485,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems"
+          ]
+        },
+        {
+          "fiberId": 2233,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems"
+          ]
+        }
+      ],
+      "roomActionMenuUpdatesInLargestCommit": 1,
+      "visibleRoomSequence": [
+        {
+          "atMs": 4.368625044822693,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        }
+      ],
+      "layoutsUnchangedDuringCapture": false,
+      "maxJsFrameGapMs": 313.8214579820633,
+      "jsFrameGapsOver50Ms": 1
+    },
+    "after-save": {
+      "durationMs": 21007.351750016212,
+      "reactCommitCount": 47,
+      "maxReactCommitMs": 257.642,
+      "largestCommitUpdaters": [
+        "Forget(GameProvider)"
+      ],
+      "roomStageDurations": [
+        {
+          "fiberId": 350,
+          "ms": 25.865
+        },
+        {
+          "fiberId": 808,
+          "ms": 73.461
+        },
+        {
+          "fiberId": 1485,
+          "ms": 90.703
+        },
+        {
+          "fiberId": 2233,
+          "ms": 35.04
+        }
+      ],
+      "largestCommitStagePropChanges": [
+        {
+          "fiberId": 350,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onBedRemove"
+          ]
+        },
+        {
+          "fiberId": 808,
+          "props": [
+            "roomVisible",
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onRoomActivityChange",
+            "onBedRemove"
+          ]
+        },
+        {
+          "fiberId": 1485,
+          "props": [
+            "roomVisible",
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onRoomActivityChange",
+            "onBedRemove"
+          ]
+        },
+        {
+          "fiberId": 2233,
+          "props": [
+            "onVisitHomeRoom",
+            "onSendCatToRoom",
+            "storedItems",
+            "onBedRemove"
+          ]
+        }
+      ],
+      "roomActionMenuUpdatesInLargestCommit": 63,
+      "visibleRoomSequence": [
+        {
+          "atMs": 4.673249959945679,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 3415.0890420675278,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 9173.337959051132,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 14284.449542045593,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 15092.151250004768,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 15591.834792017937,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        }
+      ],
+      "layoutsUnchangedDuringCapture": true,
+      "maxJsFrameGapMs": 1002.1860829591751,
+      "jsFrameGapsOver50Ms": 4
+    }
+  },
+  "frameOnly": {
+    "description": "Eight alternating arrow taps in 2527 ms, after furniture save; CPU and React profiling off, requestAnimationFrame sampling only.",
+    "durationMs": 14290.755332946777,
+    "samples": 728,
+    "medianGapMs": 16.66779100894928,
+    "p95GapMs": 16.787500023841858,
+    "maxGapMs": 1293.13858294487,
+    "gapsOver50Ms": 4
+  },
+  "findings": [
+    "Navigation functions, but remaining stalls are reproducible in the development simulator.",
+    "Ordinary navigation reached 287 ms of React work. Rapid navigation with CPU profiling reached 424 ms. Navigation after a furniture save reached 258 ms with React profiling only.",
+    "The lightweight rapid-navigation run still had a 1293 ms JS animation-frame gap, so the observed stalls are not solely caused by the CPU/React profiler. This is not a direct native display-frame or finger-to-screen measurement.",
+    "In the largest post-save navigation commit, all four PetStage components updated and room-action menus rebuilt. Hidden stages received changed onVisitHomeRoom, onSendCatToRoom, storedItems and onBedRemove props despite unchanged furniture. This is a concrete follow-up target; no fix attempted in this testing-only task."
+  ],
+  "cleanup": {
+    "navCaptureActive": false,
+    "frameCaptureActive": false,
+    "finalRoom": "livingRoom",
+    "decorating": false,
+    "testBedMoveReturnedNearOriginal": true,
+    "originalBedOffset": {
+      "x": -0.618530720897675,
+      "y": 0.16972149664823222
+    },
+    "finalBedOffset": {
+      "x": -0.6227540667989893,
+      "y": 0.17204747237260998
+    },
+    "otherFurnitureUnchanged": true,
+    "note": "Room navigation clears Undo history. Reverse accessibility nudge was rejected against the fireplace; cancelled it, then dragged the bed back. The normalized offset differs by x=-0.00422335,y=0.00232598, about one screenshot pixel or less. No neighboring furniture was removed."
+  },
+  "limitations": [
+    "Existing preloaded rooms were tested. A fresh process launch, cold-scene loading and physical-device release performance were not part of this run.",
+    "CPU sampling and React DevTools increase overhead, so those peak timings are diagnostic rather than production estimates.",
+    "Rapid input was delivered by native UI automation. Some clicks were coalesced or arrived before the displayed destination updated; not every requested click was independently acknowledged.",
+    "Visual checks and captured visibility states confirm settled destinations; they do not rule out a brief visual artifact between observations."
+  ],
+  "applicationChanges": []
+}

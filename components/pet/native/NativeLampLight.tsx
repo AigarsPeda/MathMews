@@ -1,7 +1,7 @@
 import type { SpotlightAim } from '@/utils/native-spotlight-aim';
 /* Native positions are updated on Filament's drawing thread. */
 /* eslint-disable react-hooks/immutability */
-import { useEffect } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { RenderCallbackContext, useEntityInScene, useFilamentContext, useLightEntity, type Float3 } from 'react-native-filament';
 import { useSharedValue, type ISharedValue } from 'react-native-worklets-core';
 import { lampLightConfig, lampLightPose } from '@/utils/native-lamp-light';
@@ -16,20 +16,29 @@ const LINEAR_LAMP_DIFFUSERS: Record<string, { width: number; count: number }> = 
 };
 export function NativeLampLight({ object, active, editingObject, spotlightPose, castShadows }: Props) {
   // Numeric properties avoid sending native light handles through shared-value listeners.
-  const light = lampLightConfig(object);
-  if (light && LINEAR_LAMP_DIFFUSERS[object.modelId]) {
-    const { width, count } = LINEAR_LAMP_DIFFUSERS[object.modelId];
-    return <>{Array.from({ length: count }, (_, index) => {
+  const light = useMemo(() => lampLightConfig(object), [object]);
+  const drawing = useSharedValue(active);
+  useEffect(() => { drawing.value = active; }, [drawing, active]);
+  const segments = useMemo(() => {
+    const diffuser = LINEAR_LAMP_DIFFUSERS[object.modelId];
+    if (!light || !diffuser) return undefined;
+    const { width, count } = diffuser;
+    return Array.from({ length: count }, (_, index) => {
       const offsetX = ((index + .5) / count - .5) * width;
       const config = { ...light, position: lampLightPose(object, offsetX).position, intensity: light.intensity / count };
-      return <MovingLampLight key={index} object={object} active={active} editingObject={editingObject}
+      return { offsetX, config };
+    });
+  }, [light, object]);
+  if (segments) {
+    return <>{segments.map(({ offsetX, config }, index) => {
+      return <MovingLampLight key={index} object={object} active={drawing} editingObject={editingObject}
         config={config} offsetX={offsetX}/>;
     })}</>;
   }
-  return light ? <MovingLampLight object={object} castShadows={castShadows} active={active} editingObject={editingObject} spotlightPose={spotlightPose} config={light}/> : null;
+  return light ? <MovingLampLight object={object} castShadows={castShadows} active={drawing} editingObject={editingObject} spotlightPose={spotlightPose} config={light}/> : null;
 }
 
-function MovingLampLight({ object, active, editingObject, config, spotlightPose, castShadows = false, offsetX = 0 }: Props & { config: NonNullable<ReturnType<typeof lampLightConfig>>; offsetX?: number }) {
+const MovingLampLight = memo(function MovingLampLight({ object, active, editingObject, config, spotlightPose, castShadows = false, offsetX = 0 }: Omit<Props, 'active'> & { active: ISharedValue<boolean>; config: NonNullable<ReturnType<typeof lampLightConfig>>; offsetX?: number }) {
   'use no memo';
   const { lightManager, scene } = useFilamentContext();
   // Pose changes update the same light handle, including slider previews.
@@ -44,7 +53,7 @@ function MovingLampLight({ object, active, editingObject, config, spotlightPose,
   const dx = config.direction[0], dy = config.direction[1], dz = config.direction[2];
   RenderCallbackContext.useRenderCallback(() => {
     'worklet';
-    if (!active) return;
+    if (!active.value) return;
     const preview = nativeRoomPreview(editingObject?.value, object.instanceId);
     const aim = spotlightPose?.value;
     const aimed = aim?.instanceId === object.instanceId;
@@ -60,4 +69,4 @@ function MovingLampLight({ object, active, editingObject, config, spotlightPose,
     if (object.modelId.startsWith('wallSpot')) lightManager.setDirection(light, direction as unknown as Float3[]);
   }, [active, px, py, pz, dx, dy, dz, offsetX, editingObject, spotlightPose, object, applied, lightManager, light]);
   return null;
-}
+});

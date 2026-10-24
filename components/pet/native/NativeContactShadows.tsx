@@ -1,6 +1,6 @@
 /* Worklets shared values cache transforms on Filament's drawing thread. */
 /* eslint-disable react-hooks/immutability */
-import { useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { RenderCallbackContext, useFilamentContext, useModel, useWorkletEffect } from 'react-native-filament';
 import { useSharedValue, type ISharedValue } from 'react-native-worklets-core';
 import source from '@/assets/3d/native/room-contact-shadow.glb';
@@ -13,12 +13,14 @@ type Props = { world: NativeRoomWorld; active: boolean; editingObject?: ISharedV
 /** Cheap ground contact, including the simulator where shadow maps can fail. */
 export function NativeContactShadows({ world, active, editingObject }: Props) {
   const rugs = useMemo(() => buildRugSurfaces(world), [world]);
+  const drawing = useSharedValue(active);
+  useEffect(() => { drawing.value = active; }, [drawing, active]);
   return <>{world.objects.filter(hasContactShadow).map(object =>
-    <ContactShadow key={object.instanceId} object={object} rugs={rugs} active={active} editingObject={editingObject}/>)}</>;
+    <ContactShadow key={object.instanceId} object={object} rugs={rugs} active={drawing} editingObject={editingObject}/>)}</>;
 }
 
-function ContactShadow({ object, rugs, active, editingObject }: Omit<Props, 'world'> & {
-  object: NativeRoomObject; rugs: ReturnType<typeof buildRugSurfaces>;
+const ContactShadow = memo(function ContactShadow({ object, rugs, active, editingObject }: Omit<Props, 'world' | 'active'> & {
+  object: NativeRoomObject; rugs: ReturnType<typeof buildRugSurfaces>; active: ISharedValue<boolean>;
 }) {
   'use no memo';
   const { transformManager, renderableManager, scene } = useFilamentContext();
@@ -47,7 +49,7 @@ function ContactShadow({ object, rugs, active, editingObject }: Omit<Props, 'wor
   });
   RenderCallbackContext.useRenderCallback(() => {
     'worklet';
-    if (!active || !entity) return;
+    if (!active.value || !entity) return;
     const live = nativeRoomPreview(editingObject?.value, object.instanceId) ?? object;
     const pose = contactShadowPose(live, shape, rugs);
     const key = [...pose.position, ...pose.scale, pose.heading];
@@ -56,4 +58,4 @@ function ContactShadow({ object, rugs, active, editingObject }: Omit<Props, 'wor
     applied.value = key;
   }, [active, entity, editingObject, object, shape, rugs, identity, applied, transformManager]);
   return null;
-}
+});

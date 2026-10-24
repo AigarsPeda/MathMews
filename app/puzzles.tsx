@@ -20,17 +20,22 @@ import type { LearningLevel } from "@/types/curriculum";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { useLayoutEffect, useRef, useState } from "react";
+import { memo, useLayoutEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PuzzlesScreen() {
+  const { isReady, hasCompletedOnboarding, progress } = useGame();
+  return <PuzzlesContent isReady={isReady} hasCompletedOnboarding={hasCompletedOnboarding} progress={progress} />;
+}
+
+const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboarding, progress }:
+  Pick<ReturnType<typeof useGame>, 'isReady' | 'hasCompletedOnboarding' | 'progress'>) {
   const router = useRouter();
   const { t } = useTranslation();
   const { locale } = useLocale();
   const params = useLocalSearchParams<{ difficulty?: string; topic?: string; lesson?: string }>();
-  const { isReady, hasCompletedOnboarding, progress } = useGame();
   const difficulty: PuzzleDifficulty = isPuzzleDifficulty(params.difficulty ?? "") ? params.difficulty as PuzzleDifficulty : "easy";
   const topics = getLearningTopics(difficulty);
   const topic = topics.find(item => item.id === params.topic);
@@ -176,7 +181,7 @@ export default function PuzzlesScreen() {
       </View>
     </SafeAreaView>
   );
-}
+});
 
 const styles = StyleSheet.create({
   learn: { flexDirection: "row", alignItems: "center", gap: 12, minHeight: 64, padding: 14, borderRadius: 16, backgroundColor: "#E8FAF8" },

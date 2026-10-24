@@ -51,6 +51,7 @@ async function harness(screen = 'store', compiled = false) {
         props.set(`Group:${first?.props?.strokeWidth ?? 'fill'}`, p);
       }
       if (p.onLayout) props.set(`${name}:onLayout`, p.onLayout);
+      if (name === 'RoomActionMenu' && p.size) counts.set('furnitureMenus', (counts.get('furnitureMenus') ?? 0) + 1);
       if (name === 'PetStage') props.set(`PetStage:${p.homeRoomId}`, p);
       // Strings need no host renderer; keep component children and fragments.
       const children = React.Children.toArray(p.children).filter(React.isValidElement);
@@ -74,8 +75,9 @@ async function harness(screen = 'store', compiled = false) {
     React.useLayoutEffect(() => { latest.current = read; }, [read]);
     return React.useMemo(() => ({ read: () => latest.current(), get: () => latest.current() }), []);
   }
+  const searchParams = {};
   const stageCamera = { x: shared(0), y: shared(0), scale: shared(1), zoom: 1, gesture: {} };
-  const stageActivity = { activity: null, scale: shared(1), facing: shared(1), objectX: shared(0), objectY: shared(0),
+  let stageActivity = { activity: null, scale: shared(1), facing: shared(1), objectX: shared(0), objectY: shared(0),
     clearBlockedActivity() {}, startActivity() {}, returnHome() {}, stopActivity() {} };
   const mocks = {
     '@shopify/react-native-skia': { Canvas: view('Canvas'), Path: view('Path'), Group: view('Group'), DashPathEffect: view('DashPathEffect'),
@@ -84,8 +86,16 @@ async function harness(screen = 'store', compiled = false) {
     '@/hooks/use-room-camera': { useRoomCamera: () => stageCamera },
     '@/hooks/use-room-activity': { useRoomActivity: options => {
       props.set('activityOptions', options); counts.set('stageRenders', (counts.get('stageRenders') ?? 0) + 1);
+      const room = `stageRenders:${options.homeRoomId}`; counts.set(room, (counts.get(room) ?? 0) + 1);
       return stageActivity;
     } },
+    'react-native-filament': { useBoxShape: (...size) => React.useMemo(() => size, size),
+      useRigidBody: body => {
+        counts.set('rigidBody', (counts.get('rigidBody') ?? 0) + 1); props.set(`body:${body.id}`, body);
+        React.useEffect(() => { calls.push(['addBody', body.id, body.world]);
+          return () => { calls.push(['removeBody', body.id, body.world]); };
+        }, [body.id, body.world, body.shape, ...body.origin]);
+      } },
     'react-native-worklets-core': { useSharedValue: value => React.useState(() => shared(value))[0] },
     'react-native-reanimated': { __esModule: true, default: { View: view('AnimatedView'), Text: view('AnimatedText') }, useReducedMotion: () => false,
       useSharedValue: value => React.useState(() => shared(value))[0],
@@ -109,7 +119,7 @@ async function harness(screen = 'store', compiled = false) {
       StyleSheet: { create: x => x }, PanResponder: { create: handlers => ({ panHandlers: handlers }) }, useWindowDimensions: () => dimensions,
       Dimensions: { get: () => dimensions }, PixelRatio: { roundToNearestPixel: x => x } },
     'react-native-safe-area-context': { SafeAreaView: view('SafeAreaView'), useSafeAreaInsets: () => insets },
-    'expo-router': { useRouter: () => router, Redirect: view('Redirect'), useFocusEffect: fn => React.useEffect(fn, [fn]) },
+    'expo-router': { useRouter: () => router, useLocalSearchParams: () => searchParams, Redirect: view('Redirect'), useFocusEffect: fn => { const { active } = React.useContext(activityContext); React.useEffect(() => active ? fn() : undefined, [active, fn]); } },
     'expo-haptics': { ImpactFeedbackStyle: { Light: 'light' } },
     'react-i18next': { useTranslation: () => ({ t: React.useContext(translationContext) }) },
     '@/contexts/GameProvider': { useGame: () => { counts.set('gameReads', (counts.get('gameReads') ?? 0) + 1); return React.useContext(gameContext); }, useGameActions: () => actions },
@@ -119,12 +129,60 @@ async function harness(screen = 'store', compiled = false) {
     '@/lib/app-diagnostics': { reportAppError() {} },
     '@react-native-async-storage/async-storage': {},
   };
+  const drawFrames = new Map();
+  if (screen === 'contact-shadows' || screen === 'lamp-light') {
+    const matrix = (pose = {}) => ({ pose,
+      scaling: scale => matrix({ ...pose, scale }), rotate: heading => matrix({ ...pose, heading }),
+      translate: position => matrix({ ...pose, position }) });
+    const entity = {}, asset = { getRenderableEntities: () => [entity] };
+    const nativeContext = {
+      transformManager: { createIdentityMatrix: () => matrix(), setTransform: (_entity, value) => calls.push(['shadowPose', value.pose]) },
+      renderableManager: { setCastShadow() {}, setReceiveShadow() {} },
+      scene: { addEntities: () => calls.push(['addShadow']), removeEntities: () => calls.push(['removeShadow']) },
+      lightManager: { shadowMapsSupported: true, setPosition: (_light, position) => calls.push(['lightPosition', position]), setDirection() {} },
+    };
+    Object.assign(mocks['react-native-filament'], {
+      useFilamentContext: () => nativeContext,
+      useModel: () => { counts.set('modelHooks', (counts.get('modelHooks') ?? 0) + 1); return { state: 'loaded', asset, rootEntity: entity }; },
+      useLightEntity: (_manager, config) => {
+        counts.set('lightHooks', (counts.get('lightHooks') ?? 0) + 1);
+        return React.useMemo(() => ({ config }), [config.intensity, config.castShadows]);
+      },
+      useEntityInScene() {},
+      useWorkletEffect: fn => React.useEffect(fn, []),
+      RenderCallbackContext: { useRenderCallback: (fn, deps) => {
+        const key = React.useRef({});
+        React.useEffect(() => { drawFrames.set(key.current, fn); return () => drawFrames.delete(key.current); }, deps);
+      } },
+    });
+  }
+  if (screen === 'native-scene') {
+    mocks['react-native'].StyleSheet.flatten = value => value;
+    const matrix = () => { const value = { scaling: () => value, rotate: () => value, translate: () => value }; return value; };
+    const nativeContext = { camera: {}, view: {}, engine: {}, workletContext: {},
+      choreographer: { start() {}, stop() {} }, transformManager: { createIdentityMatrix: matrix }, renderableManager: {} };
+    const world = {};
+    Object.assign(mocks['react-native-filament'], {
+      FilamentScene: view('FilamentScene'), FilamentView: view('FilamentView'), DefaultLight: view('DefaultLight'),
+      useFilamentContext: () => nativeContext, useSyncSharedValue: value => value,
+      useWorld: () => world, useStaticPlaneShape() {}, useSphereShape() {}, useAnimator() {}, useWorkletEffect() {},
+      useModel: source => { counts.set(`model:${source}`, (counts.get(`model:${source}`) ?? 0) + 1); return { state: 'loading' }; },
+      RenderCallbackContext: { useRenderCallback() {} },
+    });
+    mocks['react-native-worklets-core'].Worklets = { createRunOnJS: fn => fn };
+    mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady() {} };
+    mocks['./NativeCatActor'] = { useCatModel: () => ({ state: 'loading' }), NativeCatActor: view('NativeCatActor') };
+    mocks['./use-model-shadows'] = { useModelShadows() {} };
+    for (const name of ['NativeFoodSpill', 'NativeAirflow', 'NativeFireplace', 'NativeLampLight', 'NativeSpotlightHead',
+      'NativeLampGlow', 'NativeContactShadows', 'NativeCurtain', 'NativeItemInteraction', 'NativeFridge',
+      'NativeLightning', 'NativeWorldLighting', 'NativeWindowPane', 'NativeWindowWeather']) mocks[`./${name}`] = { [name]: view(name) };
+  }
   if (screen === 'mood' || screen === 'home' || screen === 'stage' || screen === 'home-stage') delete mocks['@/hooks/use-world-clock-now'];
   if (screen === 'home') delete mocks['@/hooks/use-cat-bedtime'];
   if (screen === 'room-editor') delete mocks['@/hooks/use-room-editor'];
   function load(id, base = process.cwd()) {
     if (id in mocks) return mocks[id];
-    if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !(screen === 'drag-target' && id.endsWith('/DraggableRoomPet')) && !(screen === 'overlay' && id.endsWith('/RoomPlacementOverlay')) && !((screen === 'stage' || screen === 'home-stage') && id.endsWith('/PetStage'))) {
+    if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !(screen === 'native-scene' && id.endsWith('/NativeRoomScene')) && !(['contact-shadows', 'lamp-light'].includes(screen) && /\/Native(ContactShadows|LampLight)$/.test(id)) && !(screen === 'colliders' && id.endsWith('/NativeRoomColliders')) && !(screen === 'drag-target' && id.endsWith('/DraggableRoomPet')) && !(screen === 'overlay' && id.endsWith('/RoomPlacementOverlay')) && !((screen === 'stage' || screen === 'home-stage') && id.endsWith('/PetStage'))) {
       const name = id.split('/').at(-1);
       return new Proxy({ [name]: view(name) }, { get: (target, key) => key === 'ROOM_NAVIGATION_HEIGHT' ? 52 : target[key] ?? view(key) });
     }
@@ -148,6 +206,10 @@ async function harness(screen = 'store', compiled = false) {
       setInterval: fn => { const id = ++timerId; timers.set(id, fn); return id; }, clearInterval: id => timers.delete(id),
       setTimeout: fn => { const id = ++timerId; timers.set(id, fn); return id; }, clearTimeout: id => timers.delete(id),
     });
+    if (file.endsWith('/utils/learning-recommendations.ts')) {
+      const recommend = module.exports.getLearningRecommendation;
+      module.exports.getLearningRecommendation = (...args) => { counts.set('recommendation', (counts.get('recommendation') ?? 0) + 1); return recommend(...args); };
+    }
     if (file.endsWith('/constants/puzzles.ts')) {
       const compute = module.exports.computePetWisdom;
       module.exports.computePetWisdom = (...args) => {
@@ -177,9 +239,22 @@ async function harness(screen = 'store', compiled = false) {
   function DragTargetProbe() { return React.createElement(load('@/components/pet/DraggableRoomPet').DraggableRoomPet,
     { testID: 'target', petSize: 60, accessibilityLabel: 'Bed', ...stageProps }); }
   function RoomEditorProbe() { props.set('editor', load('@/hooks/use-room-editor').useRoomEditor(game.pet, actions.setPet, game.progress)); return null; }
+  const colliderWorld = {}, emptyObjects = [];
+  function ColliderProbe() { return React.createElement(load('@/components/pet/native/NativeRoomColliders').NativeRoomColliders,
+    { world: stageProps.world ?? colliderWorld, objects: stageProps.objects ?? emptyObjects }); }
   function HomeAdapterProbe() { return React.createElement(load('@/components/home/HomeRoomStage').HomeRoomStage,
     { savedRoom: game.pet, homeRoomId: 'livingRoom', commitRoomEdit: actions.setPet, completeRoomActivity: actions.recordInteraction, ...stageProps }); }
-  const Screen = screen === 'home-adapter' ? HomeAdapterProbe : screen === 'drag-target' ? DragTargetProbe : screen === 'room-editor' ? RoomEditorProbe : screen === 'overlay' ? OverlayProbe : screen === 'stage' ? StageProbe : screen === 'mood' ? MoodProbe : screen === 'store' ? load('@/app/store').default : screen === 'home' || screen === 'home-stage' ? load('@/app/index').default : load('@/components/economy/GameHeaderStats').GameHeaderStats;
+  const emptyNativeWorld = { objects: [] };
+  function NativeEffectsProbe() {
+    return screen === 'contact-shadows'
+      ? React.createElement(load('@/components/pet/native/NativeContactShadows').NativeContactShadows, { world: emptyNativeWorld, active: true, ...stageProps })
+      : stageProps.object ? React.createElement(load('@/components/pet/native/NativeLampLight').NativeLampLight, { active: true, ...stageProps }) : null;
+  }
+  const nativeProbeWorld = screen === 'native-scene' ? load('@/utils/native-room-world').buildNativeRoomWorld({
+    width: 390, height: 420, petSize: 100, sizeScale: 1, toys: [], decorations: [] }) : undefined;
+  function NativeSceneProbe() { return React.createElement(load('@/components/pet/native/NativeRoomScene').NativeRoomSurface,
+    { world: nativeProbeWorld, catPresent: false, ...stageProps }); }
+  const Screen = screen === 'native-scene' ? NativeSceneProbe : ['contact-shadows', 'lamp-light'].includes(screen) ? NativeEffectsProbe : screen === 'colliders' ? ColliderProbe : screen === 'puzzles' ? load('@/app/puzzles').default : screen === 'home-adapter' ? HomeAdapterProbe : screen === 'drag-target' ? DragTargetProbe : screen === 'room-editor' ? RoomEditorProbe : screen === 'overlay' ? OverlayProbe : screen === 'stage' ? StageProbe : screen === 'mood' ? MoodProbe : screen === 'store' ? load('@/app/store').default : screen === 'home' || screen === 'home-stage' ? load('@/app/index').default : load('@/components/economy/GameHeaderStats').GameHeaderStats;
   const errors = [], onError = error => errors.push(error);
   const root = renderer.createContainer({}, 1, null, false, null, '', onError, onError, onError, null);
   async function update(fn) { await act(async () => { await fn(); }); if (errors.length) throw errors[0]; }
@@ -193,9 +268,10 @@ async function harness(screen = 'store', compiled = false) {
             lives: game.progress.lives, completedPuzzleIds: game.progress.completedPuzzleIds,
           }))))), root, null, null));
   await render();
-  return { props: name => props.get(name), count: name => counts.get(name) ?? 0, calls, load, update,
+  return { drawFrames, props: name => props.get(name), count: name => counts.get(name) ?? 0, calls, load, update,
     get now() { return clock; },
     get timerCount() { return timers.size; },
+    async setRoomActivity(next) { stageActivity = { ...stageActivity, ...next }; await render(); },
     async setStage(next) { stageProps = { ...stageProps, ...next }; await render(); },
     async setActive(active) { activity = { ...activity, active }; await render(); },
     async advance(ms) { clock += ms; await update(() => { for (const callback of [...timers.values()]) callback(); }); },
@@ -222,6 +298,114 @@ test(`Undo availability only rerenders the room being decorated (${mode})`, asyn
     assert.equal(h.props('PetStage').roomEditor.canUndo, true);
     await h.setStage({ roomEditor: controls });
     assert.equal(h.props('PetStage').roomEditor.canUndo, false);
+  } finally { await h.close(); }
+});
+
+test(`room navigation adapters keep current callbacks without rebuilding unchanged stages (${mode})`, async () => {
+  const h = await harness('home-adapter', compiled);
+  try {
+    const events = [];
+    const handlers = label => ({
+      onVisitHomeRoom: (...args) => events.push([label, 'visit', ...args]),
+      onSendCatToRoom: (...args) => events.push([label, 'cat', ...args]),
+      onBedRemove: () => events.push([label, 'remove']),
+    });
+    await h.setStage({ ...handlers('old'), storedItems: [] });
+    const before = h.props('PetStage'), count = h.count('PetStage');
+    const storage = [{ target: { kind: 'bed', id: 'brown' }, count: 1 }];
+    await h.setStage({ ...handlers('latest'), storedItems: storage });
+    assert.equal(h.count('PetStage'), count, 'Navigation closures and hidden storage must not invalidate the stage');
+    const motion = { speed: .4, phase: .2, gait: 'walk', tailYaw: [0], tailPitch: [0] };
+    before.onVisitHomeRoom('kitchen', true);
+    before.onSendCatToRoom('bedroom', 'night', motion);
+    before.onBedRemove();
+    assert.deepEqual(events, [['latest', 'visit', 'kitchen', true], ['latest', 'cat', 'bedroom', 'night', motion], ['latest', 'remove']]);
+
+    const sceneSlide = { progress: {}, direction: 1, outgoing: true }, roomEntry = { id: 2, direction: -1 };
+    const ready = () => events.push(['ready']);
+    await h.setStage({ roomVisible: false, sceneSlide, roomEntry, onSceneReady: ready });
+    assert.ok(h.count('PetStage') > count, 'Visibility and readiness changes still reach the stage');
+    assert.equal(h.props('PetStage').roomVisible, false);
+    assert.equal(h.props('PetStage').sceneSlide, sceneSlide);
+    assert.equal(h.props('PetStage').roomEntry, roomEntry);
+    assert.equal(h.props('PetStage').onSceneReady, ready);
+
+    await h.setStage({ onVisitHomeRoom: undefined, onSendCatToRoom: undefined, onBedRemove: undefined });
+    for (const key of ['onVisitHomeRoom', 'onSendCatToRoom', 'onBedRemove']) assert.equal(h.props('PetStage')[key], undefined);
+    const length = events.length;
+    before.onVisitHomeRoom('bathroom'); before.onSendCatToRoom('bathroom'); before.onBedRemove();
+    assert.equal(events.length, length, 'Previously retained handlers cannot invoke removed callbacks');
+
+    await h.setStage({ roomToolbar: { decorating: true, onDecoratingChange() {} } });
+    assert.equal(h.props('PetStage').storedItems, storage, 'Entering decoration mode receives current inventory');
+    const updated = [...storage, { target: { kind: 'toy', id: 'orangeBall' }, count: 1 }];
+    await h.setStage({ storedItems: updated });
+    assert.equal(h.props('PetStage').storedItems, updated, 'Inventory changes remain live while decorating');
+    await h.setStage({ roomToolbar: undefined });
+    assert.equal(h.props('PetStage').storedItems, updated, 'Stages with local decoration controls retain inventory');
+  } finally { await h.close(); }
+});
+
+test(`furniture menus retain their actions across visibility changes but call current activity guards (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const events = [];
+    await h.setRoomActivity({ startActivity: (...args) => events.push(['old-start', ...args]), returnHome: () => events.push(['old-return']) });
+    await h.setStage({ onFeed() {}, onTogglePlacedDecorationOpen() {}, onRoomInteraction: () => 123,
+      placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: 0, y: 0 } },
+        { decorationId: 'japaneseCloset', instanceId: 'closet', offset: { x: -.5, y: 0 }, opened: true }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const menu = h.props('room-object:bowl').menuActions;
+    await h.setRoomActivity({ startActivity: (...args) => events.push(['latest-start', ...args]), returnHome: () => events.push(['latest-return']) });
+    await h.setStage({ roomVisible: false });
+    assert.equal(h.props('room-object:bowl').menuActions, menu, 'Visibility-dependent handlers must not rebuild furniture actions');
+    await h.update(() => menu.find(item => item.label === 'home.catCommands.bowlEat').onPress());
+    assert.deepEqual(events.at(-1), ['latest-start', 'bowlEat', 'bowl', 123]);
+
+    await h.setRoomActivity({ activity: { plan: { kind: 'cupboardHide', targetInstanceId: 'closet', steps: [{ mood: 'idle' }] }, stepIndex: 0 } });
+    await h.setStage({ roomVisible: true });
+    const closet = h.props('room-object:closet').menuActions;
+    await h.setRoomActivity({ returnHome: () => events.push(['current-return']) });
+    await h.setStage({ roomVisible: false });
+    assert.equal(h.props('room-object:closet').menuActions, closet);
+    await h.update(() => closet.find(item => item.label.startsWith('home.closeItem')).onPress());
+    assert.deepEqual(events.at(-1), ['current-return'], 'Closing occupied furniture still uses the latest safe-exit handler');
+    await h.setStage({ roomActivityBlocked: true });
+    assert.equal(h.props('room-object:bowl').menuActions, undefined, 'Blocked interaction state must still update the menus');
+  } finally { await h.close(); }
+});
+
+test(`browsing rooms and returning after a save leaves hidden stages and furniture menus cached (${mode})`, async () => {
+  const h = await harness('home-stage', compiled);
+  try {
+    const { switchHomeRoom } = h.load('@/utils/home-rooms');
+    const { syncPetLayerOrder } = h.load('@/utils/room-layer-order');
+    await h.setGame({ pet: syncPetLayerOrder({ ...h.game.pet, homeRoomId: 'livingRoom', roomId: 'room1', catHomeRoomId: 'bedroom',
+      placedDecorations: [{ decorationId: 'lampFloorArc', instanceId: 'living-lamp', offset: { x: -.3, y: 0 } }],
+      homeRooms: { ...h.game.pet.homeRooms, kitchen: syncPetLayerOrder({ ...h.load('@/utils/room-layout').captureRoomLayout({}), roomId: 'room1',
+        placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'kitchen-bowl', offset: { x: 0, y: 0 } }] }) } }) });
+    for (const destination of ['kitchen', 'bathroom', 'kitchen', 'livingRoom']) {
+      const source = h.game.pet.homeRoomId ?? 'livingRoom';
+      const hidden = ['bedroom', 'livingRoom', 'kitchen', 'bathroom'].filter(id => id !== source && id !== destination);
+      const counts = hidden.map(id => h.count(`stageRenders:${id}`));
+      const menus = h.count('furnitureMenus'), lamp = h.count('room-object:living-lamp'), bowl = h.count('room-object:kitchen-bowl');
+      await h.setGame({ pet: switchHomeRoom(h.game.pet, destination) });
+      assert.deepEqual(hidden.map(id => h.count(`stageRenders:${id}`)), counts, 'Unaffected hidden rooms must skip navigation updates');
+      assert.equal(h.count('furnitureMenus'), menus, `Browsing ${source} to ${destination} must not rebuild furniture menus`);
+      assert.equal(h.count('room-object:living-lamp'), lamp);
+      assert.equal(h.count('room-object:kitchen-bowl'), bowl);
+      assert.equal(h.game.pet.catHomeRoomId, 'bedroom');
+    }
+    const saved = { ...h.game.pet.placedDecorations[0], offset: { x: -.2, y: .1 } };
+    const hidden = ['bedroom', 'kitchen', 'bathroom'].map(id => h.count(`stageRenders:${id}`));
+    await h.setGame({ pet: { ...h.game.pet, placedDecorations: [saved] } });
+    assert.deepEqual(['bedroom', 'kitchen', 'bathroom'].map(id => h.count(`stageRenders:${id}`)), hidden, 'Saving one room must not update the others');
+    const menus = h.count('furnitureMenus');
+    for (const destination of ['kitchen', 'bathroom', 'kitchen', 'livingRoom']) {
+      await h.setGame({ pet: switchHomeRoom(h.game.pet, destination) });
+    }
+    assert.equal(h.count('furnitureMenus'), menus, 'Navigation after saving must retain furniture menus');
+    assert.equal(h.game.pet.placedDecorations[0], saved, 'Navigation retains the saved furniture');
   } finally { await h.close(); }
 });
 
@@ -533,6 +717,130 @@ test(`Home care updates do not invalidate native scenes (${mode})`, async () => 
   } finally { await h.close(); }
 });
 
+test(`room pauses skip unchanged furniture model hooks while geometry changes remain live (${mode})`, async () => {
+  const h = await harness('native-scene', compiled);
+  try {
+    const w = h.load('@/utils/native-room-world'), sources = h.load('@/constants/native-model-sources').NATIVE_MODEL_SOURCES;
+    const world = w.buildNativeRoomWorld({ width: 390, height: 420, petSize: 100, sizeScale: 1,
+      decorations: [{ decorationId: 'sofaA', instanceId: 'sofa', offset: { x: 0, y: 0 } }], toys: [] });
+    await h.setStage({ world });
+    const key = `model:${sources.sofaA}`, before = h.count(key);
+    assert.ok(before > 0);
+    await h.setStage({ paused: true });
+    await h.setStage({ paused: false });
+    await h.setStage({ editing: true });
+    await h.setStage({ editing: false });
+    assert.equal(h.count(key), before, 'Room visibility and editing only change the shared motion flag');
+    await h.setStage({ world: { ...world, objects: [{ ...world.objects[0], heading: .5 }] } });
+    assert.equal(h.count(key), before + 1, 'A saved furniture rotation refreshes its native model hooks');
+  } finally { await h.close(); }
+});
+
+test(`native scene callbacks keep identity and enforce current save guards (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const saves = [], ready = [];
+    await h.setStage({ onSceneReady: room => ready.push(room), onPlacedToyOffsetChange: (...args) => saves.push(args),
+      placedToys: [{ toyId: 'orangeBall', instanceId: 'ball', offset: { x: .5, y: .4 } }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const position = h.props('NativeRoomScene').onObjectPosition, painted = h.props('NativeRoomScene').onSceneReady;
+    await h.setStage({ roomVisible: false });
+    assert.equal(h.props('NativeRoomScene').onObjectPosition, position);
+    assert.equal(h.props('NativeRoomScene').onSceneReady, painted);
+    await h.update(() => position('ball', { x: 40, y: 50 }, [1, .1, 1], true));
+    assert.equal(saves.length, 0, 'A callback queued before hiding must not save hidden-room physics');
+    await h.setStage({ roomVisible: true, roomToolbar: { decorating: true, onDecoratingChange() {} } });
+    await h.update(() => position('ball', { x: 40, y: 50 }, [1, .1, 1], true));
+    assert.equal(saves.length, 0, 'Decoration must suppress delayed physics saves');
+    await h.setStage({ roomToolbar: { decorating: false, onDecoratingChange() {} } });
+    await h.update(() => { position('ball', { x: 40, y: 50 }, [1, .1, 1], true); painted(); });
+    assert.equal(saves.length, 1, 'The same callback resumes saving when the room is visible');
+    assert.equal(ready.length, 1, 'The retained callback still reports scene readiness');
+  } finally { await h.close(); }
+});
+
+test(`shadow models stay mounted across visibility changes and resume live previews (${mode})`, async () => {
+  const h = await harness('contact-shadows', compiled);
+  try {
+    const world = h.load('@/utils/native-room-world').buildNativeRoomWorld({ width: 390, height: 420, petSize: 100, sizeScale: 1,
+      decorations: [{ decorationId: 'sofaA', instanceId: 'sofa', offset: { x: 0, y: 0 } }], toys: [] });
+    const editingObject = { value: undefined };
+    await h.setStage({ world, editingObject });
+    const modelHooks = h.count('modelHooks'), frame = [...h.drawFrames.values()][0];
+    frame(); const writes = h.calls.filter(c => c[0] === 'shadowPose').length;
+    await h.setStage({ active: false });
+    assert.equal(h.count('modelHooks'), modelHooks);
+    assert.equal([...h.drawFrames.values()][0], frame);
+    editingObject.value = { ...world.objects[0], position: [1, .1, 1] }; frame();
+    assert.equal(h.calls.filter(c => c[0] === 'shadowPose').length, writes);
+    await h.setStage({ active: true }); frame();
+    assert.equal(h.count('modelHooks'), modelHooks);
+    assert.equal(h.calls.filter(c => c[0] === 'shadowPose').length, writes + 1, 'Resume applies the latest preview without a model render');
+    assert.equal(h.calls.filter(c => c[0] === 'removeShadow').length, 0);
+    const moved = { ...world.objects[0], heading: .7 };
+    await h.setStage({ world: { ...world, objects: [moved] } });
+    assert.ok(h.count('modelHooks') > modelHooks, 'Saved geometry changes still reach the shadow');
+    editingObject.value = undefined; [...h.drawFrames.values()][0]();
+    assert.equal(h.calls.filter(c => c[0] === 'shadowPose').at(-1)[1].heading, .7);
+    await h.setStage({ world: { ...world, objects: [] } });
+    assert.equal(h.calls.filter(c => c[0] === 'removeShadow').length, 1, 'Removing furniture detaches its shadow');
+  } finally { await h.close(); }
+});
+
+test(`lamp lights retain native hooks and callbacks across navigation (${mode})`, async () => {
+  const h = await harness('lamp-light', compiled);
+  try {
+    for (const decorationId of ['lampFloorArc', 'bathroomLightStrip']) {
+      const world = h.load('@/utils/native-room-world').buildNativeRoomWorld({ width: 390, height: 420, petSize: 100, sizeScale: 1,
+        decorations: [{ decorationId, instanceId: 'lamp', offset: { x: 0, y: 0 }, poweredOn: true }], toys: [] });
+      const object = world.objects[0], editingObject = { value: undefined };
+      await h.setStage({ object, editingObject, active: true });
+      const hooks = h.count('lightHooks'), frames = [...h.drawFrames.values()];
+      frames.forEach(fn => fn()); const writes = h.calls.filter(c => c[0] === 'lightPosition').length;
+      await h.setStage({ active: false });
+      assert.equal(h.count('lightHooks'), hooks, 'Including segmented bathroom lights');
+      assert.deepEqual([...h.drawFrames.values()], frames);
+      editingObject.value = { ...object, position: object.position.map((v, i) => v + (i === 0 ? .1 : 0)) };
+      frames.forEach(fn => fn()); assert.equal(h.calls.filter(c => c[0] === 'lightPosition').length, writes);
+      await h.setStage({ active: true }); frames.forEach(fn => fn());
+      assert.equal(h.count('lightHooks'), hooks);
+      assert.equal(h.calls.filter(c => c[0] === 'lightPosition').length, writes + frames.length);
+      await h.setStage({ object: { ...object, poweredOn: false } });
+      assert.equal(h.drawFrames.size, 0, 'Power-off still removes every light callback');
+    }
+  } finally { await h.close(); }
+});
+
+test(`native position reports preserve furniture menus and duplicate reports preserve targets (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const positions = [], saved = [];
+    await h.setRoomActivity({ updateObjectPosition: (...args) => positions.push(args) });
+    await h.setStage({ onFeed() {}, onTogglePlacedDecorationPower() {},
+      onPlacedToyOffsetChange: (...args) => saved.push(args),
+      placedToys: [{ toyId: 'orangeBall', instanceId: 'ball', offset: { x: .5, y: .4 } }],
+      placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: 0, y: 0 } },
+        { decorationId: 'lampFloorArc', instanceId: 'lamp', offset: { x: -.3, y: 0 } }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const ballMenu = h.props('room-object:ball').menuActions, bowlMenu = h.props('room-object:bowl').menuActions;
+    const update = h.props('NativeRoomScene').onObjectPosition;
+    const point = { x: 40, y: 50 }, center = [1, .1, 1];
+    await h.update(() => update('ball', point, center));
+    assert.equal(h.props('room-object:ball').externalPosition, point, 'Physics still updates the moved target');
+    assert.equal(h.props('room-object:ball').menuActions, ballMenu);
+    assert.equal(h.props('room-object:bowl').menuActions, bowlMenu, 'Physics reports must not rebuild unrelated menus');
+    const targetCount = h.count('room-object:ball');
+    for (let i = 0; i < 3; i++) await h.update(() => update('ball', { ...point }, center));
+    assert.equal(h.count('room-object:ball'), targetCount, 'Duplicate coordinates do not update hit targets');
+    await h.update(() => update('ball', { ...point }, center, true));
+    assert.equal(positions.length, 5, 'Duplicate screen points still update physical navigation positions');
+    assert.equal(saved.length, 1, 'A settled report still saves the toy even if its screen point is unchanged');
+    await h.setGame({ pet: { ...h.game.pet, stats: { ...h.game.pet.stats, hunger: 100 } } });
+    assert.notEqual(h.props('room-object:bowl').menuActions, bowlMenu, 'Availability changes still refresh menus');
+    assert.equal(h.props('room-object:bowl').menuActions.find(action => action.label === 'home.catCommands.bowlEat').disabled, true);
+  } finally { await h.close(); }
+});
+
 test(`room furniture stays cached for ordinary stat decay but feeding and commands stay current (${mode})`, async () => {
   const h = await harness('stage', compiled);
   try {
@@ -641,6 +949,77 @@ test(`room period pauses when inactive and refreshes on visibility, editing and 
     await h.setGame({ worldClock: undefined });
     assert.equal(h.props('activityOptions').period, undefined);
     assert.equal(h.timerCount, 0);
+  } finally { await h.close(); }
+});
+
+test(`hidden Store skips room changes and catches up on focus without hiding account resets (${mode})`, async () => {
+  const h = await harness('store', compiled);
+  try {
+    await h.setActive(false);
+    const rows = h.count('DecorationStoreCard'), lists = h.count('FlatList');
+    const { switchHomeRoom } = h.load('@/utils/home-rooms');
+    for (const room of ['kitchen', 'bathroom', 'bedroom', 'livingRoom']) {
+      await h.setGame({ pet: switchHomeRoom(h.game.pet, room) });
+    }
+    await h.setGame({ wallet: { coins: 0 }, pet: { ...h.game.pet, homeRoomId: 'kitchen' } });
+    assert.equal(h.count('DecorationStoreCard'), rows, 'Hidden Store rows must skip navigation and wallet updates');
+    assert.equal(h.count('FlatList'), lists);
+    await h.setActive(true);
+    assert.equal(h.props('StoreTabBar').active, 'kitchen', 'Reopening Store selects the latest room');
+    assert.equal(h.props('DecorationStoreCard').canAfford, false, 'Latest wallet is visible immediately');
+    await h.setGame({ wallet: { coins: 100000 } });
+    assert.equal(h.props('DecorationStoreCard').canAfford, true, 'Visible Store remains live');
+    await h.setActive(false);
+    await h.setGame({ isReady: false });
+    assert.ok(h.count('ActivityIndicator') > 0);
+    await h.setGame({ isReady: true, hasCompletedOnboarding: false });
+    assert.equal(h.props('Redirect').href, '/onboarding/name-pet');
+  } finally { await h.close(); }
+});
+
+test(`Puzzles skips furniture navigation updates but refreshes learning progress and readiness (${mode})`, async () => {
+  const h = await harness('puzzles', compiled);
+  try {
+    const before = h.count('recommendation'), picker = h.count('DifficultyPicker');
+    assert.ok(before > 0);
+    const { switchHomeRoom } = h.load('@/utils/home-rooms');
+    for (const room of ['kitchen', 'bathroom', 'livingRoom']) await h.setGame({ pet: switchHomeRoom(h.game.pet, room) });
+    await h.setGame({ pet: { ...h.game.pet, roomBedOffset: { x: .2, y: .1 } } });
+    assert.equal(h.count('recommendation'), before, 'Room updates must not recompute the learning path');
+    assert.equal(h.count('DifficultyPicker'), picker);
+    await h.setGame({ progress: { ...h.game.progress, completedPuzzleIds: [...h.game.progress.completedPuzzleIds, 'new-result'] } });
+    assert.ok(h.count('recommendation') > before, 'New progress still refreshes recommendations');
+    await h.setGame({ isReady: false });
+    assert.ok(h.count('ActivityIndicator') > 0);
+    await h.setGame({ isReady: true, hasCompletedOnboarding: false });
+    assert.equal(h.props('Redirect').href, '/onboarding/name-pet');
+  } finally { await h.close(); }
+});
+
+test(`static room colliders survive navigation and refresh geometry, removals and physics worlds (${mode})`, async () => {
+  const h = await harness('colliders', compiled);
+  try {
+    const object = { instanceId: 'furniture', collisionBoxes: [{ min: [0, 0, 0], max: [2, 4, 6] }] };
+    await h.setStage({ objects: [object] });
+    const before = h.count('rigidBody'), changes = h.calls.length;
+    for (const roomVisible of [false, true, false, true]) await h.setStage({ roomVisible });
+    assert.equal(h.count('rigidBody'), before, 'Unchanged collision geometry must skip room visibility renders');
+    assert.equal(h.calls.length, changes, 'Browsing must not detach collision bodies');
+    const body = h.props('body:furniture:part:0');
+    assert.deepEqual(Array.from(body.shape), [1, 2, 3]);
+    assert.deepEqual(Array.from(body.origin), [1, 2, 3]);
+    assert.equal(body.mass, 0); assert.equal(body.friction, .7);
+    assert.deepEqual(Array.from(h.props('body:wall-x-1').origin), [-2.45, 1.5, 0]);
+    const next = { ...object, collisionBoxes: [{ min: [2, 0, 0], max: [6, 2, 4] }] };
+    await h.setStage({ objects: [next] });
+    assert.deepEqual(Array.from(h.props('body:furniture:part:0').shape), [2, 1, 2]);
+    assert.deepEqual(Array.from(h.props('body:furniture:part:0').origin), [4, 1, 2]);
+    const world = {};
+    await h.setStage({ world });
+    assert.equal(h.props('body:furniture:part:0').world, world);
+    const removed = h.calls.length;
+    await h.setStage({ objects: [] });
+    assert.deepEqual(h.calls.slice(removed), [['removeBody', 'furniture:part:0', world]], 'Removing furniture removes its collision body');
   } finally { await h.close(); }
 });
 

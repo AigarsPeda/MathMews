@@ -1,0 +1,1 @@
+{"diagnostics":[{"at":"2026-10-24T16:55:57.798Z","message":"The 3D scene did not become ready within 20 seconds","scope":"room:room11"},{"at":"2026-10-24T20:21:51.462Z","message":"Exception in HostFunction: Object is not a HostObject of desired type","scope":"room-picking"}],"frameCaptureActive":false,"navCaptureActive":false}

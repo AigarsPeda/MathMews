@@ -1071,7 +1071,7 @@ const cachedProps = { ...sceneMeal, paused: true, catPresent: false, onSceneRead
 preparedCat.state='loading';
 let cached = renderCachedScene(cachedProps);
 assert.equal(cached.find(child => child.type === 'WorldLighting').props.active, true, 'Night lighting runs during hidden scene warmup');
-assert.ok(cached.filter(child => child.type.name === 'RoomObject').every(child => child.props.lightingActive), 'Window materials initialize before scene readiness');
+assert.ok(cached.filter(child => child.type.name === 'RoomObject').every(child => !child.props.lightingActive), 'Plain bowl geometry does not subscribe to lighting changes');
 cached.find(child => child.type.name === 'RoomModel').props.onReady();
 renderCachedScene(cachedProps);
 paintFrame(); paintFrame(); renderCachedScene(cachedProps);
@@ -1095,7 +1095,7 @@ cached = renderCachedScene({ ...cachedProps, transitioning: true });
 assert.equal(sceneClock.at(-1), 'start', 'A cached destination draws during the slide');
 assert.equal(cached.find(child => child.type === 'WorldLighting').props.active, true, 'Night lighting stays active throughout room travel');
 assert.equal(cached.find(child => child.type === 'Cat'), undefined);
-assert.ok(cached.filter(child => child.type.name === 'RoomObject').every(child => !child.props.active), 'Furniture motion remains paused during room travel');
+assert.ok(cached.filter(child => child.type.name === 'RoomObject').every(child => !child.props.active.value), 'Furniture motion remains paused during room travel');
 cached = renderCachedScene(cachedProps);
 assert.equal(cached.find(child => child.type === 'WorldLighting').props.active, false, 'Settled hidden rooms pause their lighting');
 assert.equal(sceneClock.at(-1), 'stop');
@@ -1137,7 +1137,7 @@ mocks['react-native-filament'].useWorld = () => ({ stepSimulation() { editorPhys
 cached = renderCachedScene({ ...cachedProps, paused: false, editing: true });
 paintFrame();
 assert.equal(editorPhysicsSteps, 0, 'Physics cannot push a manually dragged ball away while decorating');
-assert.equal(cached.find(child => child.type.name === 'RoomObject').props.active, false, 'Physics reports cannot overwrite editor placement');
+assert.equal(cached.find(child => child.type.name === 'RoomObject').props.active.value, false, 'Physics reports cannot overwrite editor placement');
 renderCachedScene({ ...cachedProps, paused: false, editing: false }); paintFrame();
 assert.equal(editorPhysicsSteps, 1, 'Normal ball physics resumes after decorating');
 
@@ -1291,9 +1291,10 @@ Object.assign(transformManager, {
   getWorldTransform: e => e.toy ? nativeMatrix(e.name === '__root' ? toyRoot : toyWorldMatrix(e.name)) : catGetWorld(e),
   setTransform(e, m) { if (!e.toy) catSet(e, m); else if (e.name === '__root') toyRoot = m.data; else toyLocals.set(e.name, m.data); },
 });
+const furnitureAnimator = { getAnimationCount: () => 0 };
 Object.assign(mocks['react-native-filament'], {
   useModel: () => ({ state: 'loaded', asset: toyAsset, rootEntity: toyEntity }),
-  useAnimator: () => ({ getAnimationCount: () => 0 }),
+  useAnimator: () => furnitureAnimator,
   useFilamentContext: () => context,
   useSphereShape() {}, useWorkletEffect: fn => fn(),
 });
@@ -1539,8 +1540,13 @@ for(const fps of [30,60,120]) {
     `The slow gust produces visible ongoing motion after the initial bend: ${fps} FPS, ${Math.max(...high.map((value,k)=>value-low[k]))}`);
   assert.deepEqual(toyRoot,root,'Airflow leaves the pot and plant root fixed');
   const beforePause=draftMeta.leaves.map(leaf=>toyWorldMatrix(leaf.node));
-  frame=paint({active:false});for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+  // Navigation updates the shared flag without rerendering this furniture model.
+  child.props.active.value=false;
+  for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
   assert.deepEqual(draftMeta.leaves.map(leaf=>toyWorldMatrix(leaf.node)),beforePause,'Hidden or paused rooms freeze the leaf motion');
+  child.props.active.value=true;
+  for(let i=0;i<fps;i++)frame({timeSinceLastFrame:1/fps});
+  assert.notDeepEqual(draftMeta.leaves.map(leaf=>toyWorldMatrix(leaf.node)),beforePause,'Visible rooms resume leaf motion');
   const off=air.roomAirflowSources(draftRoom.objects.map(o=>({...o,poweredOn:false})));
   frame=paint({airflow:off});
   frame({timeSinceLastFrame:1/fps});
@@ -1555,7 +1561,7 @@ for(const fps of [30,60,120]) {
     'Moving the AC away stops the plant reacting');
 }
 sceneReduced=true;
-assert.equal(sceneChildren({world:draftRoom,catPresent:false}).find(c=>c.type.name==='RoomObject').props.active,false,
+assert.equal(sceneChildren({world:draftRoom,catPresent:false}).find(c=>c.type.name==='RoomObject').props.active.value,false,
   'Reduce Motion disables airflow response in the actual scene');
 sceneReduced=false;
 console.log('Verified visible leaf-tip sway, fixed stem attachments, scaled/rotated AC airflow, power-off, distance, pause and Reduce Motion at 30/60/120 FPS.');
@@ -1988,7 +1994,14 @@ const lampRoom = w.buildNativeRoomWorld({ ...base, decorations: [
 const lampsInScene = sceneChildren({ ...sceneMeal, world: lampRoom }).filter(child => child.type === 'LampLight');
 assert.equal(lampsInScene.length, 2);
 const lampPreview = { value: undefined };
-const lampNode = NativeLampLight({...lampsInScene[0].props, editingObject:lampPreview});
+let lampWrapperSlots = [];
+function renderLampWrapper(props) {
+  const previousSlots = slots; slots = lampWrapperSlots; cursor=0; effects=[];
+  const node = NativeLampLight(props); effects.forEach(fn=>fn());
+  lampWrapperSlots=slots; slots=previousSlots;
+  return node;
+}
+const lampNode = renderLampWrapper({...lampsInScene[0].props, editingObject:lampPreview});
 assert.equal(typeof lampNode.props.config.intensity, 'number', 'Light updates avoid native handle listeners');
 let lampCreates = 0, lampPositions = [];
 mocks['react-native-filament'].useLightEntity = (_manager, config) => { lampCreates++; return {config}; };
@@ -2005,15 +2018,15 @@ assert.ok(Math.abs(lampPositions.at(-1)[0]-lampNode.props.config.position[0]-.11
 const settledLampUpdates=lampPositions.length;
 for(let i=0;i<60;i++)renderFrame({timeSinceLastFrame:1/60});
 assert.equal(lampPositions.length,settledLampUpdates,'An unmoving lamp does not repeat native writes');
-assert.equal(NativeLampLight(lampsInScene[1].props), null, 'An off lamp emits no light');
-const hiddenLampNode = NativeLampLight({ ...lampsInScene[0].props, active: false });
+assert.equal(renderLampWrapper(lampsInScene[1].props), null, 'An off lamp emits no light');
+const hiddenLampNode = renderLampWrapper({ ...lampsInScene[0].props, active: false });
 assert.equal(hiddenLampNode.type, lampNode.type, 'Pausing a room retains its powered lamp component');
 assert.equal(hiddenLampNode.props.config.intensity, lampNode.props.config.intensity, 'Room visibility cannot switch lamp power off');
 cursor=0;effects=[];hiddenLampNode.type(hiddenLampNode.props);effects.forEach(fn=>fn());
 const hiddenLampUpdates=lampPositions.length;
 renderFrame({timeSinceLastFrame:1/60});
 assert.equal(lampPositions.length,hiddenLampUpdates,'Hidden lamps retain their light without native pose updates');
-assert.equal(NativeLampLight({ ...lampsInScene[0].props, object: { ...lampRoom.objects[0], poweredOn: false } }), null);
+assert.equal(renderLampWrapper({ ...lampsInScene[0].props, object: { ...lampRoom.objects[0], poweredOn: false } }), null);
 console.log('Verified native lamp mounting, independent power, numeric light properties and retained hidden-room lights.');
 
 const glowParts = load('@/constants/lamp-glow-parts.json');

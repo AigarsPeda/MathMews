@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: room navigation adapters keep current callbacks without rebuilding unchanged stages (without React Compiler)
+ok 1 - room navigation adapters keep current callbacks without rebuilding unchanged stages (without React Compiler)
+  ---
+  duration_ms: 362.126125
+  type: 'test'
+  ...
+# Subtest: furniture menus retain their actions across visibility changes but call current activity guards (without React Compiler)
+ok 2 - furniture menus retain their actions across visibility changes but call current activity guards (without React Compiler)
+  ---
+  duration_ms: 569.499542
+  type: 'test'
+  ...
+# Subtest: browsing rooms and returning after a save leaves hidden stages and furniture menus cached (without React Compiler)
+ok 3 - browsing rooms and returning after a save leaves hidden stages and furniture menus cached (without React Compiler)
+  ---
+  duration_ms: 597.796042
+  type: 'test'
+  ...
+# Subtest: room navigation adapters keep current callbacks without rebuilding unchanged stages (with React Compiler)
+ok 4 - room navigation adapters keep current callbacks without rebuilding unchanged stages (with React Compiler)
+  ---
+  duration_ms: 397.722333
+  type: 'test'
+  ...
+# Subtest: furniture menus retain their actions across visibility changes but call current activity guards (with React Compiler)
+ok 5 - furniture menus retain their actions across visibility changes but call current activity guards (with React Compiler)
+  ---
+  duration_ms: 806.8715
+  type: 'test'
+  ...
+# Subtest: browsing rooms and returning after a save leaves hidden stages and furniture menus cached (with React Compiler)
+ok 6 - browsing rooms and returning after a save leaves hidden stages and furniture menus cached (with React Compiler)
+  ---
+  duration_ms: 1280.132958
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4470.767333

@@ -27,12 +27,23 @@ export function HomeRoomStage({ savedRoom, commitRoomEdit, completeRoomActivity,
     ? { decorating, onDecoratingChange } : undefined, [decorating, onDecoratingChange]);
   // Moving one item refreshes Home's removal lookup. Existing room menus should
   // keep their handlers while still consulting that latest lookup when pressed.
-  const { onPlacedToyRemove, onPlacedDecorationRemove } = props;
-  const removals = useRef({ onPlacedToyRemove, onPlacedDecorationRemove });
-  useLayoutEffect(() => { removals.current = { onPlacedToyRemove, onPlacedDecorationRemove }; },
-    [onPlacedToyRemove, onPlacedDecorationRemove]);
+  const { onPlacedToyRemove, onPlacedDecorationRemove, onBedRemove } = props;
+  const removals = useRef({ onPlacedToyRemove, onPlacedDecorationRemove, onBedRemove });
+  useLayoutEffect(() => { removals.current = { onPlacedToyRemove, onPlacedDecorationRemove, onBedRemove }; },
+    [onPlacedToyRemove, onPlacedDecorationRemove, onBedRemove]);
   const removeToy = useCallback((id: string) => removals.current.onPlacedToyRemove?.(id), []);
   const removeDecoration = useCallback((id: string) => removals.current.onPlacedDecorationRemove?.(id), []);
+  const removeBed = useCallback(() => removals.current.onBedRemove?.(), []);
+  // Home's navigation closures follow the current room and pending transition.
+  // Keep their latest behavior without invalidating every hidden room's menus.
+  const { onVisitHomeRoom, onSendCatToRoom } = props;
+  const navigation = useRef({ onVisitHomeRoom, onSendCatToRoom });
+  useLayoutEffect(() => { navigation.current = { onVisitHomeRoom, onSendCatToRoom }; },
+    [onVisitHomeRoom, onSendCatToRoom]);
+  const visitRoom = useCallback<NonNullable<typeof onVisitHomeRoom>>(
+    (...args) => navigation.current.onVisitHomeRoom?.(...args), []);
+  const sendCat = useCallback<NonNullable<typeof onSendCatToRoom>>(
+    (...args) => navigation.current.onSendCatToRoom?.(...args), []);
   const onCommitRoomEdit = useCallback<NonNullable<ComponentProps<typeof PetStage>['onCommitRoomEdit']>>(
     (edits, remove) => commitRoomEdit(homeRoomId ?? 'livingRoom', edits, remove, version),
     [commitRoomEdit, homeRoomId, version]);
@@ -41,6 +52,10 @@ export function HomeRoomStage({ savedRoom, commitRoomEdit, completeRoomActivity,
       ?? stagedDecorations?.find(item => item.instanceId === id)?.decorationId),
   [completeRoomActivity, stagedToys, stagedDecorations]);
   return <MemoPetStage {...props} roomToolbar={roomToolbar} roomEditor={decorating === false ? undefined : props.roomEditor}
+    storedItems={decorating === false ? undefined : props.storedItems}
+    onVisitHomeRoom={onVisitHomeRoom ? visitRoom : undefined}
+    onSendCatToRoom={onSendCatToRoom ? sendCat : undefined}
+    onBedRemove={onBedRemove ? removeBed : undefined}
     onPlacedToyRemove={onPlacedToyRemove ? removeToy : undefined}
     onPlacedDecorationRemove={onPlacedDecorationRemove ? removeDecoration : undefined}
     onCommitRoomEdit={onCommitRoomEdit} onRoomActivityCompleted={onRoomActivityCompleted} />;

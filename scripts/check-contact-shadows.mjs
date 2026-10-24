@@ -16,7 +16,7 @@ const matrix = (data = {}) => ({
 const entity = { id: 123 }, parts = [{ id: 124 }];
 const asset = { getRenderableEntities: () => parts };
 const mocks = {
-  react: { useMemo: fn => fn() },
+  react: { memo: fn => fn, useMemo: fn => fn(), useEffect: fn => fn() },
   'react/jsx-runtime': { jsx: (type, props) => ({ type, props }), jsxs: (type, props) => ({ type, props }), Fragment: 'Fragment' },
   'react-native-worklets-core': { useSharedValue: value => ({ value }) },
   'react-native-filament': {
@@ -102,7 +102,7 @@ frame();
 assert.deepEqual(poses.at(-1).position, Array.from(shadows.contactShadowPose(chair,shape,rugs).position),
   'Incomplete drag previews restore finite saved shadow coordinates');
 cleanup(); assert.equal(scene.size, 0, 'Unmount removes the shadow before its asset is released');
-node.type({ ...node.props, active: false });
+node.props.active.value = false;
 const pausedWrites = poses.length;
 for (let i=0;i<60;i++) frame();
 assert.equal(poses.length, pausedWrites, 'Hidden rooms stop shadow callbacks');

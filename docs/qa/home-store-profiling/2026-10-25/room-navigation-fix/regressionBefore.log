@@ -1,0 +1,158 @@
+TAP version 13
+# Subtest: room navigation adapters keep current callbacks without rebuilding unchanged stages (without React Compiler)
+not ok 1 - room navigation adapters keep current callbacks without rebuilding unchanged stages (without React Compiler)
+  ---
+  duration_ms: 371.147208
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:231:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Navigation closures and hidden storage must not invalidate the stage
+    
+    3 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 3
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:244:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: furniture menus retain their actions across visibility changes but call current activity guards (without React Compiler)
+not ok 2 - furniture menus retain their actions across visibility changes but call current activity guards (without React Compiler)
+  ---
+  duration_ms: 565.726375
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:276:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Visibility-dependent handlers must not rebuild furniture actions
+    
+    [
+      {
+        disabled: false,
+        icon: 'feed',
+        label: 'home.catCommands.bowlEat',
+        onPress: [Function: onPress]
+      }
+    ]
+    
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: browsing rooms and returning after a save leaves hidden stages and furniture menus cached (without React Compiler)
+not ok 3 - browsing rooms and returning after a save leaves hidden stages and furniture menus cached (without React Compiler)
+  ---
+  duration_ms: 536.548709
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:305:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Unaffected hidden rooms must skip navigation updates
+    + actual - expected
+    
+      [
+    +   4,
+        3,
+    -   2
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 3
+    1: 2
+  actual:
+    0: 4
+    1: 3
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:320:14)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: room navigation adapters keep current callbacks without rebuilding unchanged stages (with React Compiler)
+not ok 4 - room navigation adapters keep current callbacks without rebuilding unchanged stages (with React Compiler)
+  ---
+  duration_ms: 381.371
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:231:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Navigation closures and hidden storage must not invalidate the stage
+    
+    3 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 3
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:244:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: furniture menus retain their actions across visibility changes but call current activity guards (with React Compiler)
+not ok 5 - furniture menus retain their actions across visibility changes but call current activity guards (with React Compiler)
+  ---
+  duration_ms: 820.694833
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:276:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Visibility-dependent handlers must not rebuild furniture actions
+    
+    [
+      {
+        disabled: false,
+        icon: 'feed',
+        label: 'home.catCommands.bowlEat',
+        onPress: [Function: onPress]
+      }
+    ]
+    
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: browsing rooms and returning after a save leaves hidden stages and furniture menus cached (with React Compiler)
+not ok 6 - browsing rooms and returning after a save leaves hidden stages and furniture menus cached (with React Compiler)
+  ---
+  duration_ms: 1248.97225
+  type: 'test'
+  location: '/Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:305:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Unaffected hidden rooms must skip navigation updates
+    + actual - expected
+    
+      [
+    +   4,
+        3,
+    -   2
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 3
+    1: 2
+  actual:
+    0: 4
+    1: 3
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/aigarspeda/Desktop/BrainPet/scripts/backend/test-screen-renders.mjs:320:14)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 0
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4428.002709

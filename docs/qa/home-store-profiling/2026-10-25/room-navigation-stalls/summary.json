@@ -1,0 +1,790 @@
+{
+  "date": "2026-10-25",
+  "environment": "iOS 27 simulator in Device Hub, Expo/Hermes development build, React Compiler enabled, preloaded rooms.",
+  "changes": [
+    "Memoize static room colliders without detaching physics bodies on navigation.",
+    "Keep furniture render worklets installed and communicate pause/resume through a shared flag.",
+    "Freeze hidden Store game-prop updates until focus; keep account readiness transitions live. Narrow Puzzles subscriptions to progress/readiness.",
+    "Cache furniture menu actions separately from physics hit positions; ignore duplicate screen positions while retaining physical updates and settled saves."
+  ],
+  "navigationBehavior": "Protected navigation files match previous baseline hashes byte-for-byte. Existing room readiness, rapid input handling and cat location behavior remain unchanged.",
+  "comparison": {
+    "baseline": "../room-navigation-fix/summary.json",
+    "rapidPeakReactMs": {
+      "before": 89.898,
+      "after": 41.112
+    },
+    "afterSavePeakReactMs": {
+      "before": 83.245,
+      "after": 48.178
+    },
+    "frameOnlyWorstGapMs": {
+      "before": 274.705667,
+      "afterRuns": [
+        130.98204100131989,
+        107.4409589767456
+      ]
+    }
+  },
+  "captures": {
+    "rapid": {
+      "reactCommitCount": 67,
+      "peakCommit": {
+        "reactMs": 41.112,
+        "stages": [
+          {
+            "fiberId": 350,
+            "ms": 21.204,
+            "changedProps": [
+              "roomVisible",
+              "onRoomActivityChange"
+            ]
+          },
+          {
+            "fiberId": 808,
+            "ms": 15.944,
+            "changedProps": [
+              "roomVisible",
+              "onRoomActivityChange"
+            ]
+          }
+        ],
+        "roomActionMenuUpdates": 1
+      },
+      "navigationCommits": [
+        {
+          "reactMs": 35.935,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 15.561,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 16.722,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 40.403,
+          "stages": [
+            {
+              "fiberId": 350,
+              "ms": 20.534,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 808,
+              "ms": 15.99,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 1
+        },
+        {
+          "reactMs": 41.112,
+          "stages": [
+            {
+              "fiberId": 350,
+              "ms": 21.204,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 808,
+              "ms": 15.944,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 1
+        },
+        {
+          "reactMs": 38.6,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 14.56,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 18.848,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 34.469,
+          "stages": [
+            {
+              "fiberId": 1485,
+              "ms": 16.026,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 2233,
+              "ms": 14.927,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 33.91,
+          "stages": [
+            {
+              "fiberId": 1485,
+              "ms": 15.904,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 2233,
+              "ms": 14.293,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 34.54,
+          "stages": [
+            {
+              "fiberId": 1485,
+              "ms": 15.791,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 2233,
+              "ms": 15.256,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 34.921,
+          "stages": [
+            {
+              "fiberId": 1485,
+              "ms": 15.92,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 2233,
+              "ms": 15.489,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 39.184,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 15.703,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 17.298,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 34.808,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 14.636,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 16.612,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 36.34,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 15.608,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 17.078,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 34.066,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 14.905,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 15.449,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 35.705,
+          "stages": [
+            {
+              "fiberId": 1485,
+              "ms": 16.16,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 2233,
+              "ms": 15.728,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        }
+      ],
+      "frames": {
+        "durationMs": 16222.457458019257,
+        "samples": 887,
+        "medianGapMs": 16.66795802116394,
+        "p95GapMs": 17.12150001525879,
+        "maxGapMs": 163.08695900440216,
+        "gapsOver50Ms": 13
+      },
+      "visibleRoomSequence": [
+        {
+          "atMs": 7.0867919921875,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 2889.5587080717087,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 3058.072375059128,
+          "rooms": [
+            "bedroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 3496.6244579553604,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 3645.1747920513153,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 3803.7023750543594,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 4171.414708018303,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 4538.301333069801,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 4907.487375020981,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 5094.262708067894,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 10638.7941249609,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 11059.506124973297,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 11405.601791977882,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 11788.692250013351,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        }
+      ],
+      "layoutsUnchangedDuringCapture": true,
+      "avoidableNavigationRenderCounts": {
+        "BoxCollider": 0,
+        "NativeRoomColliders": 0,
+        "StoreContent": 0,
+        "PuzzlesContent": 0
+      }
+    },
+    "after-save": {
+      "reactCommitCount": 54,
+      "peakCommit": {
+        "reactMs": 48.178,
+        "stages": [
+          {
+            "fiberId": 350,
+            "ms": 23.569,
+            "changedProps": [
+              "roomVisible",
+              "onRoomActivityChange"
+            ]
+          },
+          {
+            "fiberId": 808,
+            "ms": 18.356,
+            "changedProps": [
+              "roomVisible",
+              "onRoomActivityChange"
+            ]
+          }
+        ],
+        "roomActionMenuUpdates": 1
+      },
+      "navigationCommits": [
+        {
+          "reactMs": 35.045,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 15.339,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 15.997,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 33.722,
+          "stages": [
+            {
+              "fiberId": 1485,
+              "ms": 15.167,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 2233,
+              "ms": 14.906,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 36.808,
+          "stages": [
+            {
+              "fiberId": 1485,
+              "ms": 16.526,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 2233,
+              "ms": 14.273,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 37.214,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 16.251,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 16.964,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 35.049,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 15.231,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 16.107,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 37.013,
+          "stages": [
+            {
+              "fiberId": 808,
+              "ms": 16.738,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 16.257,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 0
+        },
+        {
+          "reactMs": 48.178,
+          "stages": [
+            {
+              "fiberId": 350,
+              "ms": 23.569,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 808,
+              "ms": 18.356,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 1
+        },
+        {
+          "reactMs": 47.226,
+          "stages": [
+            {
+              "fiberId": 350,
+              "ms": 22.752,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            },
+            {
+              "fiberId": 1485,
+              "ms": 18.815,
+              "changedProps": [
+                "roomVisible",
+                "onRoomActivityChange"
+              ]
+            }
+          ],
+          "roomActionMenuUpdates": 1
+        }
+      ],
+      "frames": {
+        "durationMs": 17982.602666020393,
+        "samples": 1024,
+        "medianGapMs": 16.668500065803528,
+        "p95GapMs": 16.857874989509583,
+        "maxGapMs": 168.14575004577637,
+        "gapsOver50Ms": 8
+      },
+      "visibleRoomSequence": [
+        {
+          "atMs": 6.508625030517578,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 2623.7774579524994,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 10474.646291017532,
+          "rooms": [
+            "bathroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 10880.390416026115,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 11266.066332936287,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 11662.961707949638,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 12066.18520796299,
+          "rooms": [
+            "livingRoom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 12611.079582929611,
+          "rooms": [
+            "bedroom"
+          ],
+          "pendingTransition": false
+        },
+        {
+          "atMs": 12812.886500000954,
+          "rooms": [
+            "kitchen"
+          ],
+          "pendingTransition": false
+        }
+      ],
+      "layoutsUnchangedDuringCapture": true,
+      "avoidableNavigationRenderCounts": {
+        "BoxCollider": 0,
+        "NativeRoomColliders": 0,
+        "StoreContent": 0,
+        "PuzzlesContent": 0
+      }
+    }
+  },
+  "frameOnlyRuns": [
+    {
+      "durationMs": 9855.446582913399,
+      "samples": 545,
+      "medianGapMs": 16.669999957084656,
+      "p95GapMs": 17.24637496471405,
+      "maxGapMs": 130.98204100131989,
+      "gapsOver50Ms": 8
+    },
+    {
+      "durationMs": 10542.641750097275,
+      "samples": 587,
+      "medianGapMs": 16.66949999332428,
+      "p95GapMs": 17.26104199886322,
+      "maxGapMs": 107.4409589767456,
+      "gapsOver50Ms": 8
+    }
+  ],
+  "verification": {
+    "rapidInput": "11 rapid click requests plus four reversals; 13 visible room changes recorded. Clicks may coalesce.",
+    "afterSave": "Dragged Green Bed 15 screenshot pixels right and 5 down, exited decoration mode, visited Kitchen/Bathroom and reversed through Living room/Bedroom.",
+    "savedLayoutsRetainedExactly": true,
+    "fixtureRestored": "Bed offset restored exactly through reverse UI drag. Normal save materialized existing default bed scale 1.3 and rotation 0. Other layout values unchanged.",
+    "tests": "188 backend tests passed, including eight new compiler-on/off cases; full native-room suite passed with worklet pause/resume identity checks at 30/60/120 FPS.",
+    "checks": [
+      "TypeScript",
+      "ESLint",
+      "room transitions",
+      "room controls transitions",
+      "cat task chains",
+      "git diff --check"
+    ],
+    "newRuntimeDiagnostics": [],
+    "finalRoom": "livingRoom",
+    "captureHooksStopped": true
+  },
+  "limits": [
+    "Development simulator measurements, not release-device or finger-to-pixel latency.",
+    "Worst JS frame gaps remain 107\u2013131 ms in final frame-only runs; this does not establish stall-free navigation.",
+    "React captures include profiler overhead. Frame-only runs disable React and CPU profiling.",
+    "Rapid batches may coalesce input; captures contain the actual observed room sequence."
+  ],
+  "protectedSourceHashes": {
+    "app/index.tsx": "8b6af33511ec6f260f8a3e26d48b49d134fe09b495f1bc6ea2f41b8c240bd639",
+    "hooks/use-room-transition.ts": "d03e9f0e8f89b2a34e8e68a100351a8c9d81f6a72f24fea2c353afbbe60701d5",
+    "hooks/use-room-activity.ts": "152a1468ad0cfd6bf065e203a43e95f62b80eb0cd216df7dcc1abc6dff9b66f9",
+    "components/pet/RoomNavigation.tsx": "1e46043a6559cdea600cedf7074a054eb94d54ecef7364b8652b9b97b3ce31b4"
+  }
+}

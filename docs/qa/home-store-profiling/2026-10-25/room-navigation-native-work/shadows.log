@@ -1,0 +1,2 @@
+Verified soft floor/rug shadows, 20-degree drag previews, bounded edges, no idle writes, no reloads, finite transforms and native cleanup.
+Verified compiled native worklets keep other shadow transforms and scene membership unchanged throughout chair rotation.
