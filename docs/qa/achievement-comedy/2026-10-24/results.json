@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-24",
+  "scope": "Achievement collection and reward-only comedy movies",
+  "plotFamilies": 10,
+  "worldVariants": 180,
+  "media": {
+    "width": 512,
+    "height": 448,
+    "durationMs": 5000,
+    "gifTotalMiB": 89.36493682861328,
+    "previousGifTotalMiB": 40.88423538208008,
+    "largestGifKiB": 771.2314453125,
+    "offlinePosters": 180,
+    "grayscaleLockedPreviews": 180,
+    "validation": "passed"
+  },
+  "checks": {
+    "typescript": "passed",
+    "eslintChangedSources": "passed",
+    "curriculumAndCompletionGuards": "passed",
+    "pythonSyntax": "passed",
+    "diffWhitespace": "passed",
+    "nativeGifShareAndCancel": "passed",
+    "collectionPlaybackAndLocalizedStates": "passed"
+  },
+  "native": {
+    "device": "iPhone 18 Pro simulator, iOS 27.0",
+    "tests": 2,
+    "failures": 0,
+    "durationSeconds": 39.195,
+    "resultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-AKf3T4/result.xcresult",
+    "coverage": ["English collection", "320-point Latvian collection", "localized preview", "pause and replay", "share GIF and cancel", "locked guidance without share", "empty Collected filter", "unchanged wallet, lives and completions"],
+    "earlierAttempts": "The shared simulator was interrupted by another task. On the dedicated simulator, an initial deep-link confirmation and a home 3D scene timeout during concurrent rendering prevented test setup. The final run after rendering completed passed both tests."
+  },
+  "visualReview": "Reviewed the nine mechanism storyboards, English viewer and collection, narrow Latvian collection and locked instructions. No clipping or unreachable fixed actions in the final screenshots.",
+  "limitations": ["Ten shared plot families, not 180 independently authored plots", "Physical-device memory and performance not measured", "Android and large accessibility font sizes not runtime-tested", "Reduce Motion poster path implemented but not toggled in native automated tests"]
+}

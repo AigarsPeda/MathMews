@@ -41,11 +41,12 @@ For in-app purchases, use an [EAS development build](https://docs.expo.dev/devel
 ## Puzzle learning
 
 Choose a difficulty, topic, lesson and puzzle. Each topic has independent progress.
-The replacement catalog has 36 lessons and 209 puzzles per language, including
-18 checkpointed boss missions, one at the end of every topic, and eleven optional
-challenges across five interactions. Bosses count toward completion but never block learning
-another topic. Existing learning
-progress starts fresh; the wallet, cat, rooms and owned items remain available.
+The catalog has 180 lessons and 1,440 puzzles per language, including 180
+checkpointed boss missions and 180 optional timed challenges. Bosses count toward
+lesson completion but never block the next lesson or another topic. Three shared
+lives limit scored mistakes. Learn with the cat remains available at zero lives,
+with free supported exercises and no currency or completion rewards. The current
+content revisions preserve existing puzzle IDs and earned progress.
 See [curriculum authoring and verification](docs/puzzle-curriculum.md) for adding
 content and applying the new puzzle reward registration migration.
 

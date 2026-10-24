@@ -18,7 +18,7 @@ function record(skin,fps,kind,active) {
   render({...base,playback:idle});drawCat(0);
   let travel=make([home,[1,floor,1]],kind==='run'?'run':'walk');
   if(kind==='jump')travel={path:[home,[-.65,floor+.25,-.2]],duration:1,distance:.9,jump:true,arcHeight:.30};
-  const props={...base,activityKey:'spine',travel};render(props);
+  const props={...base,activityKey:'spine',travel,...(kind==='play'?{playback:{kind:'segment',segment:{assetKey:'batToy',loop:true}},travel:{path:[home],heading:0,duration:2,distance:0,jump:false}}:{})};render(props);
   const records=[];
   for(let frame=0;frame<fps*4;frame++) {
     if(kind==='turn'&&frame===fps) {
@@ -37,17 +37,18 @@ function record(skin,fps,kind,active) {
     }
   }
   render({...base,playback:idle,activityKey:'rest'});
-  for(let frame=0;frame<fps;frame++)drawCat(1/fps);
+  for(let frame=0;frame<fps*2;frame++)drawCat(1/fps);
   assert.ok(Object.values(actorState().spinePose).every(value=>Math.abs(value)<1e-6),'Back flex settles after movement stops');
   return records;
 }
-for(const skin of ['orange','grey','white'])for(const fps of [30,60,120])for(const kind of ['walk','run','turn','jump']) {
+for(const skin of ['orange','grey','white'])for(const fps of [30,60,120])for(const kind of ['walk','run','turn','jump','play']) {
   const before=record(skin,fps,kind,false),after=record(skin,fps,kind,true);
-  let maximum=0,slip=0,head=0,bend=0,peak=0,slipDetail;
+  let maximum=0,slip=0,head=0,bend=0,shoulder=0,peak=0,slipDetail;
   for(let i=0;i<before.length;i++) {
     const a=before[i],b=after[i];
     assert.ok(distance(a.position,b.position)<1e-8,'Back flex cannot move the navigation root');
     for(const name of paws){const d=distance(a.nodes[name].slice(12,15),b.nodes[name].slice(12,15))/scale;if(d>slip){slip=d;slipDetail={frame:i,name,a:a.nodes[name].slice(12,15),b:b.nodes[name].slice(12,15),contacts:[a.contacts,b.contacts]};}}
+    shoulder=Math.max(shoulder,distance(a.nodes['L.forelegjoint0'].slice(12,15),b.nodes['L.forelegjoint0'].slice(12,15))/scale);
     const delta=distance(a.nodes.spine.slice(12,15),b.nodes.spine.slice(12,15))/scale;
     if(delta>maximum){maximum=delta;peak=i;}
     const yaw=m=>Math.atan2(m[8],m[10]);
@@ -57,12 +58,13 @@ for(const skin of ['orange','grey','white'])for(const fps of [30,60,120])for(con
   }
   assert.ok(maximum>(['walk','turn'].includes(kind)?.003:.012),`${skin}/${fps}/${kind}: visible middle-back deformation (${maximum})`);
   if(kind==='turn')assert.ok(bend>.05,`${skin}/${fps}: shoulders and hips form a curve into the turn (${bend})`);
+  if(kind==='walk'||kind==='play')assert.ok(shoulder>.015,`${skin}/${fps}/${kind}: shoulders move over their supported paws (${shoulder})`);
   assert.ok(slip<.008,`${skin}/${fps}/${kind}: torso changes preserve paw paths (${slip}, ${JSON.stringify(slipDetail)})`);
   assert.ok(head<.02,`${skin}/${fps}/${kind}: the gaze remains stable (${head})`);
   if(skin==='orange'&&fps===60) {
     const indices=kind==='run'?[Math.max(0,peak-4),peak,Math.min(after.length-1,peak+5)]:[peak];
     for(const index of indices)for(const [version,records] of [['before',before],['after',after]])poses.push({...records[index],gait:`${kind}-${version}`});
-    metrics.push({kind,maximum,slip,head,bend});
+    metrics.push({kind,maximum,slip,head,bend,shoulder});
   }
 }
 // A low passage and Reduce Motion must keep their authored envelopes/poses.

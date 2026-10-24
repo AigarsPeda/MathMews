@@ -201,6 +201,8 @@ export type NativeTravel = {
   targetPosition?: Vec3;
   treePlay?: boolean;
   plantPlay?: boolean;
+  playTargetId?: string;
+  pawTargetRadius?: number;
   rockingChair?: RockingChair;
   bed?: { instanceId: string; phase: BedPhase };
   bathroom?: { instanceId: string; kind: BathroomFixtureKind; phase: BathroomPhase };
@@ -1458,6 +1460,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const treeApproach = tree ? walking && !step.returnHome ? findHangingToyApproach(start, object, world)
     : step.treeApproach ?? previousApproach ?? object.approach : undefined;
   const plantApproach = plant && walking && !step.returnHome ? findPlantApproach(start, object, world) : undefined;
+  let looseToyApproach: Vec3 | undefined;
   let target = plantApproach ?? catFloorPoint(step.position, world);
   const kitchenFloor = !step.returnHome && walking && (plan.kind === 'fridgeInvestigate' || plan.kind === 'windowWatch' && !step.approachingSeat)
     ? object && findKitchenFloorApproach(start, object, world, plan.kind === 'fridgeInvestigate') : undefined;
@@ -1489,7 +1492,12 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     const centerY = FLOOR_Y + (meta.max[1] + meta.min[1]) / 2 * object.scale;
     const screen = plan.kind === 'mouseChase' ? step.objectPosition : undefined;
     const p = screen ? unprojectFloor(screen, centerY, world.width) : object.position;
-    target = [p[0] - world.catScale * .20, FLOOR_Y, p[2] + world.radius + .15];
+    const center=object.min.map((v,i)=>(v+object.max[i])/2) as Vec3;
+    const radius=Math.max(object.max[0]-object.min[0],object.max[2]-object.min[2])/2;
+    if(plan.kind==='toyPlay' && object.movable)looseToyApproach=findPawApproach(start,[center],radius,world);
+    target = plan.kind==='toyPlay' && object.movable
+      ? looseToyApproach ?? start
+      : [p[0] - world.catScale * .20, FLOOR_Y, p[2] + world.radius + .15];
   }
   // A resting/play clip stays where navigation actually arrived. Reusing the
   // old sprite target here would undo the detour and snap into the furniture.
@@ -1528,6 +1536,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   if (object?.bathroom && ['wash', 'use'].includes(step.bathroomPhase ?? '')
     && !hasNativeArrived(start, object.bathroom.contact)) blocked = true;
   if ((tree && !treeApproach || plant && !plantApproach) && walking && !step.returnHome) { blocked = true; path = [start]; }
+  if(plan.kind==='toyPlay' && object?.movable && walking && !step.returnHome && !looseToyApproach){blocked=true;path=[start];}
   if (!object && !step.returnHome && (step.approachingSeat || step.sofaApproach || step.bowlApproach || plan.kind === 'doorTravel' || plan.kind === 'toyPlay' || plan.kind === 'mouseChase' || plan.kind === 'bowlEat' || plan.kind === 'plantPlay')) {
     blocked = true;
     path = [start];
@@ -1596,7 +1605,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     native: { prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
       ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
-      jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, targetPosition: object?.position, objectPath, objectDuration: duration * .6,
+      jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, playTargetId: plan.kind==='toyPlay'?object?.instanceId:undefined, pawTargetRadius: tree && object ? .1*object.scale : 0, targetPosition: object?.position, objectPath, objectDuration: duration * .6,
       heading: object?.bed && (step.bedPhase === 'crawl' || step.bedPhase === 'covered') ? object.heading + Math.PI
         : object?.bathroom && step.bathroomPhase ? object.heading : object?.seat && onSeat ? object.seatHeading : targetHeading } };
 }

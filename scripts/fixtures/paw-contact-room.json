@@ -1,0 +1,169 @@
+{
+  "roomPetOffset": {
+    "x": -0.20941377016154553,
+    "y": 0.15509496474570314
+  },
+  "placedDecorations": [
+    {
+      "decorationId": "livingAirCon",
+      "instanceId": "pi-mus8q0fz-vg38g3",
+      "offset": {
+        "x": 0.1215433270899238,
+        "y": -0.644514594888823
+      },
+      "poweredOn": true
+    },
+    {
+      "decorationId": "plantB",
+      "instanceId": "pi-musiq6st-73lw1r",
+      "offset": {
+        "x": -0.09405185324228767,
+        "y": -0.322725393257792
+      },
+      "scale": 1.7
+    },
+    {
+      "decorationId": "sofaA",
+      "instanceId": "pi-musiqad7-nvkmma",
+      "offset": {
+        "x": 0.5244358249589163,
+        "y": -0.0693268595422453
+      },
+      "rotationIndex": 1,
+      "rotationDegrees": 270,
+      "scale": 1.4
+    },
+    {
+      "decorationId": "portraitCat",
+      "instanceId": "pi-musli0fz-t4kv30",
+      "offset": {
+        "x": -0.7117336782635532,
+        "y": -0.4078948018614169
+      },
+      "wallFlipped": true,
+      "scale": 2.2
+    },
+    {
+      "decorationId": "bowlBlue",
+      "instanceId": "starter-bowl",
+      "offset": {
+        "x": 0.5711760143054244,
+        "y": 0.3267134663062861
+      },
+      "scale": 1.2
+    },
+    {
+      "decorationId": "windowOakWide",
+      "instanceId": "pi-muyhgd6n-dovt4z",
+      "offset": {
+        "x": 0.6863000072190298,
+        "y": -0.4706359865071423
+      },
+      "opened": false,
+      "scale": 1.6
+    },
+    {
+      "decorationId": "chairRockingOak",
+      "instanceId": "pi-muzur8rl-yqgl88",
+      "offset": {
+        "x": 0.897213399570056,
+        "y": 0.11478081743088564
+      },
+      "wallFlipped": true,
+      "rotationDegrees": 243.4
+    },
+    {
+      "decorationId": "lampFloorArc",
+      "instanceId": "pi-muzwvb66-oifj3u",
+      "offset": {
+        "x": -0.14408440017989146,
+        "y": -0.5216254006403184
+      },
+      "poweredOn": true,
+      "rotationDegrees": 53,
+      "scale": 1.8
+    },
+    {
+      "decorationId": "carpetRound",
+      "instanceId": "pi-mv10wtus-jhjiu7",
+      "offset": {
+        "x": -0.22627693579028477,
+        "y": 0.5234023676402442
+      },
+      "scale": 4.2
+    },
+    {
+      "decorationId": "curtainRoseTieback",
+      "instanceId": "pi-mv1479yl-qtbyxk",
+      "offset": {
+        "x": 0.8431061806656097,
+        "y": -0.4706024339693923
+      },
+      "scale": 1.8
+    },
+    {
+      "decorationId": "lavaLampAni",
+      "instanceId": "pi-mv158tj7-fd7b6b",
+      "offset": {
+        "x": 0.0012662372588307352,
+        "y": 0.5150128823398636
+      },
+      "poweredOn": true
+    },
+    {
+      "decorationId": "wallSpotBellBrass",
+      "instanceId": "pi-mv1d2zas-y8zv86",
+      "offset": {
+        "x": -0.6119104125431112,
+        "y": -0.5045467719204749
+      },
+      "wallFlipped": true,
+      "poweredOn": true,
+      "spotlightAngle": 13,
+      "spotlightSwivel": 0
+    },
+    {
+      "decorationId": "wallSpotBarChrome",
+      "instanceId": "pi-mv28haj8-yuc95m",
+      "offset": {
+        "x": 0.9212583425911096,
+        "y": -0.15852299897391808
+      },
+      "poweredOn": true,
+      "spotlightAngle": -29,
+      "spotlightSwivel": -39,
+      "rotationDegrees": 3.1
+    },
+    {
+      "decorationId": "livingFireplaceCream",
+      "instanceId": "pi-mvdwab9m-v5zhu6",
+      "offset": {
+        "x": -0.6878426887379766,
+        "y": -0.056746550942773304
+      },
+      "poweredOn": true,
+      "rotationDegrees": 90
+    }
+  ],
+  "placedToys": [
+    {
+      "toyId": "scratchPostGreen",
+      "instanceId": "pi-muyfh0yy-kpiecg",
+      "offset": {
+        "x": -1,
+        "y": 0.06992302687164947
+      },
+      "rotationIndex": 3,
+      "rotationDegrees": 90
+    },
+    {
+      "toyId": "blueBall",
+      "instanceId": "pi-muygjqun-uplsh1",
+      "offset": {
+        "x": 0.2983352237278965,
+        "y": 0.41777401991892443
+      },
+      "rotationIndex": 1
+    }
+  ]
+}

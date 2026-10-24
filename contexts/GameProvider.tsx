@@ -1,3 +1,5 @@
+import { applyLearningReview, applyGuidedLearning } from "@/utils/learning-review";
+import type { LearningAttemptContext } from "@/types/learning";
 import { isOpenableDecorationId } from '@/constants/item-interactions';
 import { projectedWalletCoins, type WalletNotice } from "@/services/wallet/offline-orders";
 import { useServerWallet, type ServerWallet } from "@/hooks/use-server-wallet";
@@ -144,7 +146,10 @@ type GameContextValue = {
   worldClock: WorldClock;
   setWorldClock: (speed: number, minuteOfDay?: number) => void;
   setWorldWeather: (weather: WeatherMode) => void;
-  answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string) => number | null;
+  answerLearningReview: (lessonId: string, day: number, selected: number) => boolean | null;
+  recordLearningHelp: (puzzleId: string) => void;
+  finishGuidedLearning: (lessonId: string, attemptId: string) => void;
+  answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string, context?: LearningAttemptContext) => number | null;
   beginChallenge: (levelId: string) => boolean;
   expireChallenge: (attemptId: string) => void;
   feedPet: () => boolean;
@@ -278,9 +283,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
       ...normalizeWorldClock(current.worldClock ?? initialWorldClock), weather: normalizeWeather(weather),
     } }));
   }, [initialWorldClock, setSave]);
-  const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string) => {
+  const answerLearningReview = useCallback((lessonId: string, day: number, selected: number) => {
+    const result = applyLearningReview(saveRef.current, lessonId, day, selected);
+    if (result.save !== saveRef.current) setSave(result.save);
+    return result.accepted ? result.correct : null;
+  }, [setSave]);
+  const recordLearningHelp = useCallback((puzzleId: string) => {
+    setSave(current => current.progress.learningSupportIds?.includes(puzzleId) ? current : { ...current, progress: { ...current.progress, learningSupportIds: [...(current.progress.learningSupportIds ?? []), puzzleId] } });
+  }, [setSave]);
+  const finishGuidedLearning = useCallback((lessonId: string, attemptId: string) => {
+    setSave(current => applyGuidedLearning(current, lessonId, attemptId));
+  }, [setSave]);
+  const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string, context: LearningAttemptContext = {}) => {
     const current = saveRef.current;
-    const result = applyPuzzleAnswer(current, puzzle, correct, attemptId);
+    const result = applyPuzzleAnswer(current, puzzle, correct, attemptId, Date.now(), context);
     if (!result.accepted) {
       if (result.save !== current) setSave(result.save);
       return null;
@@ -1231,6 +1247,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setWorldClock,
       setWorldWeather,
       answerPuzzle,
+      recordLearningHelp,
+      answerLearningReview,
+      finishGuidedLearning,
       beginChallenge,
       expireChallenge,
       feedPet,
@@ -1315,6 +1334,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       save.hasCompletedOnboarding,
       save.pet,
       answerPuzzle,
+      recordLearningHelp,
+      answerLearningReview,
+      finishGuidedLearning,
       beginChallenge,
       expireChallenge,
       feedPet,

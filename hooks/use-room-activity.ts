@@ -1,3 +1,4 @@
+import type { CatCommandAttention } from '@/utils/native-cat-expression';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import type { WorldPeriod } from '@/utils/world-clock';
 import type { HomeRoomId } from "@/constants/home-rooms";
@@ -84,6 +85,8 @@ export function useRoomActivity(
       && (current.plan.targetInstanceId === id || updated.objects.find(o => o.instanceId === id)?.solid))
       setNavigationVersion(value => value + 1);
   }, []);
+  const [commandAttention, setCommandAttention] = useState<CatCommandAttention | undefined>(undefined);
+  const attentionSequence = useRef(0);
   const pendingCommand = useRef<Omit<ActivityRequest, "id"> | null>(null);
   const doorArrival = useRef(onDoorArrival);
   const stopComplete = useRef(onStopped);
@@ -111,6 +114,10 @@ export function useRoomActivity(
   const activity = enabled ? state : null;
   const requestActivity = useCallback((kind: ActivityRequest["kind"], instanceId?: string, interactionAt?: number, ambientPeriod?: WorldPeriod) => {
     setBlockedActivity(null);
+    const target=instanceId && liveWorld.current?.objects.find(object=>object.instanceId===instanceId);
+    if(target && !ambientPeriod && roomVisible && enabled && screenActive && !reduceMotion && kind!=='stop' && kind!=='returnHome') {
+      setCommandAttention({id:++attentionSequence.current,target:[...(target.seat??target.position)],issuedAt:Date.now()});
+    } else setCommandAttention(undefined);
     const current = running.current;
     if (current && (isCatJump(current.plan.steps[current.stepIndex].animation)
       || current.plan.steps[current.stepIndex].native?.legs?.some(leg => leg.kind === 'hop' || leg.animation === 'crawl')
@@ -120,7 +127,7 @@ export function useRoomActivity(
       return;
     }
     setRequest(current => ({ id: (current?.id ?? 0) + 1, kind, instanceId, interactionAt, ambientPeriod }));
-  }, [reduceMotion]);
+  }, [enabled, reduceMotion, roomVisible, screenActive]);
   const startActivity = useCallback((kind: RoomActivityKind, instanceId?: string, interactionAt?: number, ambientPeriod?: WorldPeriod) => requestActivity(kind, instanceId, interactionAt, ambientPeriod), [requestActivity]);
   const stopActivity = useCallback(() => requestActivity("stop"), [requestActivity]);
   useEffect(() => {
@@ -440,5 +447,5 @@ export function useRoomActivity(
       for (const value of [petX, petY, scale, objectX, objectY, objectRotation]) cancelAnimation(value);
     };
   }, [screenActive, enabled, facing, navigationVersion, objectRotation, objectX, objectY, options, petX, petY, preservePositionWhenDisabled, reduceMotion, request, roomVisible, scale]);
-  return { activity, blockedActivity, clearBlockedActivity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
+  return { activity, commandAttention, blockedActivity, clearBlockedActivity, scale, facing, objectX, objectY, objectRotation, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep };
 }

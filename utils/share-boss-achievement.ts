@@ -16,7 +16,7 @@ export async function shareBossAchievement(id: string, completedPuzzleIds: reado
   if (!asset.localUri?.startsWith("file://")) throw new Error("Animation is not available locally");
   const directory = new Directory(Paths.cache, "achievement-shares", achievement.id);
   directory.create({ idempotent: true, intermediates: true });
-  const file = new File(directory, `${title.replace(/[\\/:]/g, "-").slice(0, 80)}.gif`);
+  const file = new File(directory, `${title.replace(/[\\/:*?"<>|]/g, "-").slice(0, 80)}.gif`);
   if (file.exists) file.delete();
   new File(asset.localUri).copy(file);
   await Sharing.shareAsync(file.uri, { mimeType: "image/gif", UTI: "com.compuserve.gif", dialogTitle: title });

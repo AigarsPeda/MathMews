@@ -1,0 +1,398 @@
+{
+  "date": "2026-10-24",
+  "scope": "Static current repository catalog and selected code. No child observations or competitor play-testing.",
+  "counts": {
+    "lessons": 180,
+    "puzzlesPerLanguage": 1440,
+    "interactionTypes": 22,
+    "puzzlesByRole": {
+      "practice": 720,
+      "challenge": 180,
+      "boss": 540
+    },
+    "practiceInteractionCounts": {
+      "3": 50,
+      "4": 130
+    }
+  },
+  "localeIdOrderMatches": true,
+  "numericChoices": {
+    "selection": "English practice puzzles with correctIndex and all choices matching /^-?\\d+(\\.\\d+)?$/. Includes top-level or payload choices; excludes fractions, expressions and textual options.",
+    "count": 270,
+    "correctIsSmallest": 194,
+    "matchingPuzzleIds": [
+      "v2-easy-addition-join-2",
+      "v2-easy-addition-ten-2",
+      "v2-easy-subtraction-take-1",
+      "v2-easy-subtraction-back-1",
+      "v2-easy-patterns-jumps-1",
+      "v2-easy-patterns-jumps-3",
+      "v2-easy-patterns-jumps-4",
+      "v2-easy-patterns-fives-1",
+      "v2-easy-patterns-fives-3",
+      "v2-easy-patterns-fives-4",
+      "v2-easy-multiplication-rows-4",
+      "v2-easy-multiplication-groups-4",
+      "v2-medium-addition-tens-2",
+      "v2-medium-addition-regroup-2",
+      "v2-medium-subtraction-parts-1",
+      "v2-medium-subtraction-check-1",
+      "v2-medium-multiplication-arrays-4",
+      "v2-medium-multiplication-facts-4",
+      "v2-medium-division-equal-2",
+      "v2-medium-division-leftovers-2",
+      "v2-hard-fractions-amounts-1",
+      "v2-hard-fractions-apply-1",
+      "v2-hard-patterns-multiply-1",
+      "v2-hard-patterns-multiply-3",
+      "v2-hard-patterns-multiply-4",
+      "v2-hard-patterns-scale-1",
+      "v2-hard-patterns-scale-3",
+      "v2-hard-patterns-scale-4",
+      "v2-hard-percentages-quarters-1",
+      "v2-hard-percentages-quarters-2",
+      "v2-hard-percentages-quarters-4",
+      "v2-hard-percentages-discounts-1",
+      "v2-hard-percentages-discounts-2",
+      "v2-hard-percentages-discounts-4",
+      "v2-hard-measurement-area-4",
+      "v2-hard-measurement-rates-4",
+      "v2-easy-addition-explore-3-1",
+      "v2-easy-addition-explore-3-2",
+      "v2-easy-addition-explore-4-1",
+      "v2-easy-addition-explore-4-2",
+      "v2-easy-addition-explore-5-1",
+      "v2-easy-addition-explore-5-2",
+      "v2-easy-addition-explore-6-1",
+      "v2-easy-addition-explore-6-2",
+      "v2-easy-addition-explore-7-1",
+      "v2-easy-addition-explore-7-2",
+      "v2-easy-addition-explore-8-1",
+      "v2-easy-addition-explore-8-2",
+      "v2-easy-addition-explore-9-1",
+      "v2-easy-addition-explore-9-2",
+      "v2-easy-addition-explore-10-1",
+      "v2-easy-addition-explore-10-2",
+      "v2-easy-subtraction-explore-3-1",
+      "v2-easy-subtraction-explore-4-1",
+      "v2-easy-subtraction-explore-5-1",
+      "v2-easy-subtraction-explore-6-1",
+      "v2-easy-subtraction-explore-7-1",
+      "v2-easy-subtraction-explore-8-1",
+      "v2-easy-subtraction-explore-9-1",
+      "v2-easy-subtraction-explore-10-1",
+      "v2-easy-patterns-explore-3-1",
+      "v2-easy-patterns-explore-3-3",
+      "v2-easy-patterns-explore-3-4",
+      "v2-easy-patterns-explore-4-1",
+      "v2-easy-patterns-explore-4-3",
+      "v2-easy-patterns-explore-4-4",
+      "v2-easy-patterns-explore-5-1",
+      "v2-easy-patterns-explore-5-3",
+      "v2-easy-patterns-explore-5-4",
+      "v2-easy-patterns-explore-6-1",
+      "v2-easy-patterns-explore-6-3",
+      "v2-easy-patterns-explore-6-4",
+      "v2-easy-patterns-explore-7-1",
+      "v2-easy-patterns-explore-7-3",
+      "v2-easy-patterns-explore-7-4",
+      "v2-easy-patterns-explore-8-1",
+      "v2-easy-patterns-explore-8-3",
+      "v2-easy-patterns-explore-8-4",
+      "v2-easy-patterns-explore-9-1",
+      "v2-easy-patterns-explore-9-3",
+      "v2-easy-patterns-explore-9-4",
+      "v2-easy-patterns-explore-10-1",
+      "v2-easy-patterns-explore-10-3",
+      "v2-easy-patterns-explore-10-4",
+      "v2-easy-multiplication-explore-3-4",
+      "v2-easy-multiplication-explore-4-4",
+      "v2-easy-multiplication-explore-5-4",
+      "v2-easy-multiplication-explore-6-4",
+      "v2-easy-multiplication-explore-7-4",
+      "v2-easy-multiplication-explore-8-4",
+      "v2-easy-multiplication-explore-9-4",
+      "v2-easy-multiplication-explore-10-4",
+      "v2-medium-addition-explore-3-1",
+      "v2-medium-addition-explore-3-2",
+      "v2-medium-addition-explore-4-1",
+      "v2-medium-addition-explore-4-2",
+      "v2-medium-addition-explore-5-1",
+      "v2-medium-addition-explore-5-2",
+      "v2-medium-addition-explore-6-1",
+      "v2-medium-addition-explore-6-2",
+      "v2-medium-addition-explore-7-1",
+      "v2-medium-addition-explore-7-2",
+      "v2-medium-addition-explore-8-1",
+      "v2-medium-addition-explore-8-2",
+      "v2-medium-addition-explore-9-1",
+      "v2-medium-addition-explore-9-2",
+      "v2-medium-addition-explore-10-1",
+      "v2-medium-addition-explore-10-2",
+      "v2-medium-subtraction-explore-3-1",
+      "v2-medium-subtraction-explore-4-1",
+      "v2-medium-subtraction-explore-5-1",
+      "v2-medium-subtraction-explore-6-1",
+      "v2-medium-subtraction-explore-7-1",
+      "v2-medium-subtraction-explore-8-1",
+      "v2-medium-subtraction-explore-9-1",
+      "v2-medium-subtraction-explore-10-1",
+      "v2-medium-multiplication-explore-3-4",
+      "v2-medium-multiplication-explore-4-4",
+      "v2-medium-multiplication-explore-5-4",
+      "v2-medium-multiplication-explore-6-4",
+      "v2-medium-multiplication-explore-7-4",
+      "v2-medium-multiplication-explore-8-4",
+      "v2-medium-multiplication-explore-9-4",
+      "v2-medium-multiplication-explore-10-4",
+      "v2-medium-division-explore-3-2",
+      "v2-medium-division-explore-4-2",
+      "v2-medium-division-explore-5-2",
+      "v2-medium-division-explore-6-2",
+      "v2-medium-division-explore-7-2",
+      "v2-medium-division-explore-8-2",
+      "v2-medium-division-explore-9-2",
+      "v2-medium-division-explore-10-2",
+      "v2-hard-fractions-explore-3-1",
+      "v2-hard-fractions-explore-4-1",
+      "v2-hard-fractions-explore-5-1",
+      "v2-hard-fractions-explore-6-1",
+      "v2-hard-fractions-explore-7-1",
+      "v2-hard-fractions-explore-8-1",
+      "v2-hard-fractions-explore-9-1",
+      "v2-hard-fractions-explore-10-1",
+      "v2-hard-patterns-explore-3-1",
+      "v2-hard-patterns-explore-3-3",
+      "v2-hard-patterns-explore-3-4",
+      "v2-hard-patterns-explore-4-1",
+      "v2-hard-patterns-explore-4-3",
+      "v2-hard-patterns-explore-4-4",
+      "v2-hard-patterns-explore-5-1",
+      "v2-hard-patterns-explore-5-3",
+      "v2-hard-patterns-explore-5-4",
+      "v2-hard-patterns-explore-6-1",
+      "v2-hard-patterns-explore-6-3",
+      "v2-hard-patterns-explore-6-4",
+      "v2-hard-patterns-explore-7-1",
+      "v2-hard-patterns-explore-7-3",
+      "v2-hard-patterns-explore-7-4",
+      "v2-hard-patterns-explore-8-1",
+      "v2-hard-patterns-explore-8-3",
+      "v2-hard-patterns-explore-8-4",
+      "v2-hard-patterns-explore-9-1",
+      "v2-hard-patterns-explore-9-3",
+      "v2-hard-patterns-explore-9-4",
+      "v2-hard-patterns-explore-10-1",
+      "v2-hard-patterns-explore-10-3",
+      "v2-hard-patterns-explore-10-4",
+      "v2-hard-percentages-explore-3-1",
+      "v2-hard-percentages-explore-3-2",
+      "v2-hard-percentages-explore-3-4",
+      "v2-hard-percentages-explore-4-1",
+      "v2-hard-percentages-explore-4-2",
+      "v2-hard-percentages-explore-4-4",
+      "v2-hard-percentages-explore-5-1",
+      "v2-hard-percentages-explore-5-2",
+      "v2-hard-percentages-explore-5-4",
+      "v2-hard-percentages-explore-6-2",
+      "v2-hard-percentages-explore-6-4",
+      "v2-hard-percentages-explore-7-1",
+      "v2-hard-percentages-explore-7-2",
+      "v2-hard-percentages-explore-7-4",
+      "v2-hard-percentages-explore-8-1",
+      "v2-hard-percentages-explore-8-2",
+      "v2-hard-percentages-explore-8-4",
+      "v2-hard-percentages-explore-9-1",
+      "v2-hard-percentages-explore-9-2",
+      "v2-hard-percentages-explore-9-4",
+      "v2-hard-percentages-explore-10-2",
+      "v2-hard-percentages-explore-10-4",
+      "v2-hard-measurement-explore-3-4",
+      "v2-hard-measurement-explore-4-4",
+      "v2-hard-measurement-explore-5-4",
+      "v2-hard-measurement-explore-6-4",
+      "v2-hard-measurement-explore-7-4",
+      "v2-hard-measurement-explore-8-4",
+      "v2-hard-measurement-explore-9-4",
+      "v2-hard-measurement-explore-10-4"
+    ]
+  },
+  "hardComparisons": {
+    "count": 20,
+    "rightIsCorrect": 20,
+    "puzzleIds": [
+      "v2-hard-operations-connected-4",
+      "v2-hard-operations-strategies-4",
+      "v2-hard-fractions-amounts-3",
+      "v2-hard-fractions-apply-3",
+      "v2-hard-operations-explore-3-4",
+      "v2-hard-operations-explore-4-4",
+      "v2-hard-operations-explore-5-4",
+      "v2-hard-operations-explore-6-4",
+      "v2-hard-operations-explore-7-4",
+      "v2-hard-operations-explore-8-4",
+      "v2-hard-operations-explore-9-4",
+      "v2-hard-operations-explore-10-4",
+      "v2-hard-fractions-explore-3-3",
+      "v2-hard-fractions-explore-4-3",
+      "v2-hard-fractions-explore-5-3",
+      "v2-hard-fractions-explore-6-3",
+      "v2-hard-fractions-explore-7-3",
+      "v2-hard-fractions-explore-8-3",
+      "v2-hard-fractions-explore-9-3",
+      "v2-hard-fractions-explore-10-3"
+    ]
+  },
+  "sampledSequences": {
+    "easyAdditionPairs": [
+      {
+        "lessonId": "easy-addition-join",
+        "targets": [
+          15
+        ]
+      },
+      {
+        "lessonId": "easy-addition-ten",
+        "targets": [
+          18
+        ]
+      },
+      {
+        "lessonId": "easy-addition-explore-3",
+        "targets": [
+          12
+        ]
+      },
+      {
+        "lessonId": "easy-addition-explore-4",
+        "targets": [
+          15
+        ]
+      },
+      {
+        "lessonId": "easy-addition-explore-5",
+        "targets": [
+          18
+        ]
+      },
+      {
+        "lessonId": "easy-addition-explore-6",
+        "targets": [
+          21
+        ]
+      },
+      {
+        "lessonId": "easy-addition-explore-7",
+        "targets": [
+          5
+        ]
+      },
+      {
+        "lessonId": "easy-addition-explore-8",
+        "targets": [
+          8
+        ]
+      },
+      {
+        "lessonId": "easy-addition-explore-9",
+        "targets": [
+          11
+        ]
+      },
+      {
+        "lessonId": "easy-addition-explore-10",
+        "targets": [
+          14
+        ]
+      }
+    ],
+    "openingAddition": [
+      {
+        "id": "v2-easy-addition-join-1",
+        "type": "multiple_choice",
+        "question": "The cat packs 4 red ribbons and 3 blue ribbons. How many ribbons?",
+        "hint": "Can you make a full ten first?",
+        "choices": [
+          "7",
+          "6",
+          "8"
+        ]
+      },
+      {
+        "id": "v2-easy-addition-join-2",
+        "type": "balance",
+        "question": "Fill the missing part of the sum.",
+        "hint": "What must join 5 to make 11?",
+        "payload": {
+          "leftDisplay": "5 + ?",
+          "rightValue": 11,
+          "choices": [
+            "6",
+            "7",
+            "8"
+          ]
+        }
+      },
+      {
+        "id": "v2-easy-addition-join-3",
+        "type": "pair_sum",
+        "question": "Choose two tiles that make 15.",
+        "hint": "Choose one number and find its missing partner.",
+        "payload": {
+          "numbers": [
+            6,
+            9,
+            1,
+            14,
+            2,
+            13
+          ],
+          "target": 15,
+          "correctIndices": [
+            0,
+            1
+          ]
+        }
+      },
+      {
+        "id": "v2-easy-addition-join-4",
+        "type": "fix_mistake",
+        "question": "Minka tried adding. Which repair is right?",
+        "hint": "Can you make a full ten first?",
+        "payload": {
+          "wrongWork": [
+            "7 + 5 = 11"
+          ],
+          "choices": [
+            "7 + 5 = 12",
+            "7 + 5 = 13",
+            "7 + 5 = 14"
+          ]
+        }
+      }
+    ],
+    "earlyEquivalence": {
+      "id": "v2-easy-fractions-parts-4",
+      "difficulty": "easy",
+      "ageRange": [
+        6,
+        8
+      ],
+      "type": "fraction_equivalent",
+      "topic": "fractions",
+      "correctIndex": 0,
+      "question": "Which fraction covers the same amount of the same-size whole?",
+      "hint": "Split every equal part in two.",
+      "explanation": "1/2 = 2/4.",
+      "payload": {
+        "numerator": 1,
+        "denominator": 2,
+        "choices": [
+          "2/4",
+          "1/4",
+          "2/2"
+        ]
+      }
+    }
+  }
+}

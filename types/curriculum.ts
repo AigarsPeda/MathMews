@@ -30,6 +30,9 @@ export type LearningLevel = {
   puzzleIds: string[];
 };
 export type LearningLesson = {
+  skillId?: string;
+  prerequisiteSkillIds?: string[];
+  review?: boolean;
   id: string;
   difficulty: PuzzleDifficulty;
   topicId: string;

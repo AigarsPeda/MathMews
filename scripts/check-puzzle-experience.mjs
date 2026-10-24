@@ -135,8 +135,8 @@ function screen(puzzle, { final = false, hasBoss = false, replay = false, kind =
   if (hasBoss) lesson.levels.push({ id: 'boss', kind: 'boss', puzzleIds: ['boss-puzzle'] });
   const attempts = [], routes = [];
   const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { completedPuzzleIds: replay ? [puzzle.id] : [], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
-    answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, purchaseVisualHelp() {} };
-  const router = { prefetch: route => routes.push(['prefetch', route]), dismissTo: route => routes.push(['path', route]) };
+    answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
+  const router = { push: route => routes.push(['push',route]), prefetch: route => routes.push(['prefetch', route]), dismissTo: route => routes.push(['path', route]) };
   const render = renderHarness('app/play.tsx', 'PlaySession', {
     '@/contexts/GameProvider': { useGame: () => game },
     '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
@@ -389,6 +389,14 @@ const workedExample=nodes(threeLives.tree()).find(n=>n.type==='Pressable'&&nodes
 assert.ok(workedExample,'Help remains available without lives');workedExample.props.onPress();threeLives.refresh();
 assert.ok(nodes(threeLives.tree()).some(n=>n.type==='VisualHelpSheet'));
 assert.equal(threeLives.game.progress.lives.current,0,'Opening help costs no life');
+const learnLink=nodes(threeLives.tree()).find(n=>n.type==='Pressable'&&nodes(n).some(child=>child.props.children===en.guided.title));
+assert.ok(learnLink,'Guided learning is reachable from the depleted play screen');
+learnLink.props.onPress();
+assert.equal(threeLives.routes.at(-1)[1].pathname,'/learn');
+assert.equal(threeLives.routes.at(-1)[1].params.source,base.id);
+assert.ok(threeLives.game.progress.learningSupportIds.includes(base.id),'Entering guided learning records help for the source puzzle');
+assert.equal(threeLives.game.progress.lives.current,0);
+
 const reopenedNoLives=screen({...base,type:'multiple_choice',choices:['4','5'],correctIndex:0},{lifeCount:0});
 reopenedNoLives.task().onSelectChoice(0);reopenedNoLives.refresh();
 assert.equal(reopenedNoLives.check().disabled,true,'Reopening cannot bypass the life gate');
@@ -433,3 +441,31 @@ assert.equal(huntButton(en.learning.savePair).props.disabled,true);
 const lockedMatch=matchingTask({...matchingProps,canAttempt:false});
 assert.ok(nodes(lockedMatch).filter(n=>n.type==='Pressable').every(n=>n.props.disabled),'Instant matching checks pause at zero lives');
 console.log('Instant pair checks charge mistakes once, preserve correct collections, and pause without lives.');
+
+// Render the real review screen with an isolated save and real submission operation.
+const { applyLearningReview } = loadPure('@/utils/learning-review');
+const { getLearningReview } = loadPure('@/constants/learning-review');
+const reviewLesson = catalog.lessons[0], reviewDay = Math.floor(Date.now()/86400000);
+const reviewQuestion = getLearningReview(reviewLesson, reviewDay);
+let reviewSave = {progress:{lives:{current:3,nextRegenAt:null},completedPuzzleIds:[],reviewAttemptKeys:[]},wallet:{coins:42}};
+const reviewRoutes=[];
+const reviewGame={isReady:true,hasCompletedOnboarding:true,progress:reviewSave.progress,
+  answerLearningReview(lessonId,day,selected){const result=applyLearningReview(reviewSave,lessonId,day,selected);reviewSave=result.save;reviewGame.progress=reviewSave.progress;return result.accepted?result.correct:null;}};
+const renderReview=renderHarness('app/review.tsx','ReviewScreen',{
+  '@/contexts/GameProvider':{useGame:()=>reviewGame},
+  '@/contexts/LocaleProvider':{useLocale:()=>({locale:'en'})},
+  'expo-router':{useLocalSearchParams:()=>({lesson:reviewLesson.id}),useRouter:()=>({canGoBack:()=>false,replace:route=>reviewRoutes.push(route),push:route=>reviewRoutes.push(route)})},
+  'react-native-safe-area-context':{SafeAreaView:'SafeAreaView'},
+});
+let reviewTree=renderReview({});
+const reviewButton=label=>nodes(reviewTree).find(n=>n.type==='Pressable'&&nodes(n).some(child=>child.props.children===label));
+assert.equal(reviewButton(en.play.checkAnswer).props.disabled,true,'Review requires a selected answer');
+reviewButton(reviewQuestion.choices[(reviewQuestion.correctIndex+1)%3]).props.onPress();reviewTree=renderReview({});
+assert.equal(reviewButton(en.play.checkAnswer).props.disabled,false);
+reviewButton(en.play.checkAnswer).props.onPress();reviewTree=renderReview({});
+assert.equal(reviewSave.progress.lives.current,2,'The real review screen charges one life for a mistake');
+assert.equal(reviewSave.wallet.coins,42);
+assert.equal(reviewButton(en.play.checkAnswer),undefined,'A submitted review cannot be checked again');
+reviewButton(en.guided.title).props.onPress();
+assert.equal(reviewRoutes.at(-1).pathname,'/learn','Review feedback leads to free learning');
+console.log('Review screen requires selection, submits once, charges one life on error and offers guided support.');

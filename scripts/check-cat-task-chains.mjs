@@ -376,3 +376,24 @@ console.log('Verified direct entry-to-task routing, renderer gait transfer throu
   assert.deepEqual(calls,[['doorTravel','passage']],'The real item menu dispatches physical-door travel');
 }
 console.log('Verified the placed-door menu sends the cat to its assigned room.');
+
+// A queued user command acknowledges immediately without replacing the airborne step.
+for(const reduced of [false,true]) {
+  const h=harness({reduced});h.request('livingRoom');
+  if(reduced){assert.equal(h.current().api.commandAttention,undefined,'Reduce Motion suppresses acknowledgment');continue;}
+  h.until(()=>h.state()?.step.animation==='jumpOn');h.partial();
+  const key=h.stepKey(h.current().api.activity),travel=h.state().step.native;
+  const first=h.current().api.commandAttention;
+  h.current().api.startActivity('sofaSleep','livingRoom-target');h.flush();
+  const notice=h.current().api.commandAttention;
+  assert.equal(h.stepKey(h.current().api.activity),key,'Acknowledgment leaves the active jump revision intact');
+  assert.equal(h.state().step.native,travel,'Acknowledgment does not rebuild the airborne route');
+  assert.ok(notice.id>first.id,'A queued request publishes its own acknowledgment immediately');
+  const target=h.current().options.nativeWorld.objects.find(object=>object.instanceId==='livingRoom-target');
+  assert.ok(Math.hypot(...notice.target.map((v,i)=>v-(target.seat??target.position)[i]))<1e-8);
+  h.current().api.startActivity('sofaSit','livingRoom-target');h.flush();
+  assert.ok(h.current().api.commandAttention.id>notice.id,'The latest queued tap replaces the previous acknowledgment');
+  h.until(()=>h.state()?.step.hold);
+  assert.equal(h.state().plan.kind,'sofaSit','The latest queued command runs after landing');
+}
+console.log('Verified immediate queued-command acknowledgment, unchanged airborne steps, latest-tap priority and Reduce Motion.');

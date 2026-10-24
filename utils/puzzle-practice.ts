@@ -2,12 +2,16 @@ import type { Puzzle } from "@/types/puzzle";
 
 /** Shuffle displayed choices without changing their meaning or the accepted answer. */
 export function shufflePuzzleChoices(puzzle: Puzzle, seed: string): Puzzle {
-  if (puzzle.type === "compare" || puzzle.type === "true_false" || !("correctIndex" in puzzle)) return puzzle;
+  let state = 2166136261;
+  for (const character of seed) state = Math.imul(state ^ character.charCodeAt(0), 16777619) >>> 0;
+  if (puzzle.type === "compare") return state % 2 === 0 ? puzzle : { ...puzzle,
+    payload: { ...puzzle.payload, optionA: puzzle.payload.optionB, optionB: puzzle.payload.optionA },
+    correctIndex: (puzzle.correctIndex === 0 ? 1 : 0) as 0 | 1,
+  };
+  if (puzzle.type === "true_false" || !("correctIndex" in puzzle)) return puzzle;
   const choices = "choices" in puzzle ? puzzle.choices : "payload" in puzzle && "choices" in puzzle.payload ? puzzle.payload.choices : null;
   if (!choices) return puzzle;
   const indices = choices.map((_, index) => index);
-  let state = 2166136261;
-  for (const character of seed) state = Math.imul(state ^ character.charCodeAt(0), 16777619) >>> 0;
   for (let i = indices.length - 1; i > 0; i--) {
     state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
     const j = state % (i + 1);

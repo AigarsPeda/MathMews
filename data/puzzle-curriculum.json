@@ -318,7 +318,9 @@
             "v2-easy-numbers-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.numbers.small",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "easy-numbers-tens",
@@ -503,6 +505,10 @@
             "v2-easy-numbers-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.tens",
+      "prerequisiteSkillIds": [
+        "easy.numbers.small"
       ]
     },
     {
@@ -510,12 +516,12 @@
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Put quantities together",
-        "lv": "Apvieno daudzumus"
+        "en": "Join small groups",
+        "lv": "Apvieno mazas grupas"
       },
       "description": {
-        "en": "Start with a model, then try the idea in different ways.",
-        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+        "en": "Learn to join small groups. Ask the cat for a guided example at any time.",
+        "lv": "Apvieno mazas grupas. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -688,19 +694,22 @@
             "v2-easy-addition-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.join",
+      "prerequisiteSkillIds": [],
+      "review": false
     },
     {
       "id": "easy-addition-ten",
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Make ten and keep going",
-        "lv": "Izveido desmitu un turpini"
+        "en": "Pictures and sums",
+        "lv": "Attēli un summas"
       },
       "description": {
-        "en": "Use what you learned with a new goal and different numbers.",
-        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+        "en": "Learn to pictures and sums. Ask the cat for a guided example at any time.",
+        "lv": "Attēli un summas. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -873,7 +882,12 @@
             "v2-easy-addition-lesson-2-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.symbols",
+      "prerequisiteSkillIds": [
+        "easy.addition.join"
+      ],
+      "review": false
     },
     {
       "id": "easy-subtraction-take",
@@ -1058,7 +1072,9 @@
             "v2-easy-subtraction-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.subtraction.take",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "easy-subtraction-back",
@@ -1243,6 +1259,10 @@
             "v2-easy-subtraction-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.back",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.take"
       ]
     },
     {
@@ -1428,7 +1448,9 @@
             "v2-easy-patterns-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.patterns.jumps",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "easy-patterns-fives",
@@ -1613,6 +1635,10 @@
             "v2-easy-patterns-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.fives",
+      "prerequisiteSkillIds": [
+        "easy.patterns.jumps"
       ]
     },
     {
@@ -1798,7 +1824,9 @@
             "v2-easy-multiplication-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.multiplication.rows",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "easy-multiplication-groups",
@@ -1983,6 +2011,10 @@
             "v2-easy-multiplication-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.groups",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.rows"
       ]
     },
     {
@@ -1990,12 +2022,12 @@
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Equal pieces of one whole",
-        "lv": "Viena veselā vienādās daļas"
+        "en": "Equal parts and halves",
+        "lv": "Vienādas daļas un puses"
       },
       "description": {
-        "en": "Start with a model, then try the idea in different ways.",
-        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+        "en": "Learn to equal parts and halves. Ask the cat for a guided example at any time.",
+        "lv": "Vienādas daļas un puses. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -2168,19 +2200,22 @@
             "v2-easy-fractions-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.equal-parts",
+      "prerequisiteSkillIds": [],
+      "review": false
     },
     {
       "id": "easy-fractions-pictures",
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Read fraction pictures",
-        "lv": "Nolasi daļu attēlus"
+        "en": "Halves and quarters",
+        "lv": "Puses un ceturtdaļas"
       },
       "description": {
-        "en": "Use what you learned with a new goal and different numbers.",
-        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+        "en": "Learn to halves and quarters. Ask the cat for a guided example at any time.",
+        "lv": "Puses un ceturtdaļas. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -2353,7 +2388,12 @@
             "v2-easy-fractions-lesson-2-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.quarters",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equal-parts"
+      ],
+      "review": false
     },
     {
       "id": "medium-addition-tens",
@@ -2538,7 +2578,9 @@
             "v2-medium-addition-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "medium.addition.tens",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "medium-addition-regroup",
@@ -2723,6 +2765,10 @@
             "v2-medium-addition-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.regroup",
+      "prerequisiteSkillIds": [
+        "medium.addition.tens"
       ]
     },
     {
@@ -2908,7 +2954,9 @@
             "v2-medium-subtraction-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "medium.subtraction.parts",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "medium-subtraction-check",
@@ -3093,6 +3141,10 @@
             "v2-medium-subtraction-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.check",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.parts"
       ]
     },
     {
@@ -3278,7 +3330,9 @@
             "v2-medium-multiplication-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "medium.multiplication.arrays",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "medium-multiplication-facts",
@@ -3463,6 +3517,10 @@
             "v2-medium-multiplication-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.facts",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.arrays"
       ]
     },
     {
@@ -3648,7 +3706,9 @@
             "v2-medium-division-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "medium.division.equal",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "medium-division-leftovers",
@@ -3833,6 +3893,10 @@
             "v2-medium-division-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.division.leftovers",
+      "prerequisiteSkillIds": [
+        "medium.division.equal"
       ]
     },
     {
@@ -4018,7 +4082,9 @@
             "v2-medium-fractions-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "medium.fractions.value",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "medium-fractions-equivalent",
@@ -4203,6 +4269,10 @@
             "v2-medium-fractions-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.equivalent",
+      "prerequisiteSkillIds": [
+        "medium.fractions.value"
       ]
     },
     {
@@ -4388,7 +4458,9 @@
             "v2-medium-operations-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "medium.operations.routes",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "medium-operations-order",
@@ -4573,6 +4645,10 @@
             "v2-medium-operations-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.order",
+      "prerequisiteSkillIds": [
+        "medium.operations.routes"
       ]
     },
     {
@@ -4758,7 +4834,9 @@
             "v2-hard-operations-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "hard.operations.connected",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "hard-operations-strategies",
@@ -4943,6 +5021,10 @@
             "v2-hard-operations-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.strategies",
+      "prerequisiteSkillIds": [
+        "hard.operations.connected"
       ]
     },
     {
@@ -5128,7 +5210,9 @@
             "v2-hard-fractions-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "hard.fractions.amounts",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "hard-fractions-apply",
@@ -5313,6 +5397,10 @@
             "v2-hard-fractions-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.apply",
+      "prerequisiteSkillIds": [
+        "hard.fractions.amounts"
       ]
     },
     {
@@ -5498,7 +5586,9 @@
             "v2-hard-patterns-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "hard.patterns.multiply",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "hard-patterns-scale",
@@ -5683,6 +5773,10 @@
             "v2-hard-patterns-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.scale",
+      "prerequisiteSkillIds": [
+        "hard.patterns.multiply"
       ]
     },
     {
@@ -5868,7 +5962,9 @@
             "v2-hard-percentages-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "hard.percentages.quarters",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "hard-percentages-discounts",
@@ -6053,6 +6149,10 @@
             "v2-hard-percentages-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.discounts",
+      "prerequisiteSkillIds": [
+        "hard.percentages.quarters"
       ]
     },
     {
@@ -6238,7 +6338,9 @@
             "v2-hard-measurement-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "hard.measurement.area",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "hard-measurement-rates",
@@ -6423,6 +6525,10 @@
             "v2-hard-measurement-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.rates",
+      "prerequisiteSkillIds": [
+        "hard.measurement.area"
       ]
     },
     {
@@ -6608,7 +6714,9 @@
             "v2-hard-logic-lesson-1-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "hard.logic.clues",
+      "prerequisiteSkillIds": []
     },
     {
       "id": "hard-logic-claims",
@@ -6793,6 +6901,10 @@
             "v2-hard-logic-lesson-2-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.claims",
+      "prerequisiteSkillIds": [
+        "hard.logic.clues"
       ]
     },
     {
@@ -6978,6 +7090,10 @@
             "v2-easy-numbers-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.numbers.tens"
       ]
     },
     {
@@ -7163,6 +7279,10 @@
             "v2-easy-numbers-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-3"
       ]
     },
     {
@@ -7348,6 +7468,10 @@
             "v2-easy-numbers-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-4"
       ]
     },
     {
@@ -7533,6 +7657,10 @@
             "v2-easy-numbers-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-5"
       ]
     },
     {
@@ -7718,6 +7846,10 @@
             "v2-easy-numbers-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-6"
       ]
     },
     {
@@ -7903,6 +8035,10 @@
             "v2-easy-numbers-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-7"
       ]
     },
     {
@@ -8088,6 +8224,10 @@
             "v2-easy-numbers-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-8"
       ]
     },
     {
@@ -8273,6 +8413,10 @@
             "v2-easy-numbers-train-3"
           ]
         }
+      ],
+      "skillId": "easy.numbers.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-9"
       ]
     },
     {
@@ -8280,12 +8424,12 @@
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "More ways to make a total",
-        "lv": "Vairāk veidu, kā iegūt summu"
+        "en": "Count on from a known amount",
+        "lv": "Skaiti tālāk no zināma daudzuma"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to count on from a known amount. Ask the cat for a guided example at any time.",
+        "lv": "Skaiti tālāk no zināma daudzuma. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -8458,19 +8602,24 @@
             "v2-easy-addition-lesson-3-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.count-on",
+      "prerequisiteSkillIds": [
+        "easy.addition.symbols"
+      ],
+      "review": false
     },
     {
       "id": "easy-addition-explore-4",
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Across the next ten",
-        "lv": "Pāri nākamajam desmitam"
+        "en": "Make ten, then add the rest",
+        "lv": "Izveido desmitu un pieskaiti pārējo"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to make ten, then add the rest. Ask the cat for a guided example at any time.",
+        "lv": "Izveido desmitu un pieskaiti pārējo. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -8643,19 +8792,24 @@
             "v2-easy-addition-lesson-4-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.make-ten",
+      "prerequisiteSkillIds": [
+        "easy.addition.count-on"
+      ],
+      "review": false
     },
     {
       "id": "easy-addition-explore-5",
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Missing addends",
-        "lv": "Trūkstošie saskaitāmie"
+        "en": "Find the missing part",
+        "lv": "Atrodi trūkstošo daļu"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to find the missing part. Ask the cat for a guided example at any time.",
+        "lv": "Atrodi trūkstošo daļu. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -8828,19 +8982,24 @@
             "v2-easy-addition-lesson-5-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.missing-part",
+      "prerequisiteSkillIds": [
+        "easy.addition.make-ten"
+      ],
+      "review": false
     },
     {
       "id": "easy-addition-explore-6",
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Pairs and totals",
-        "lv": "Pāri un summas"
+        "en": "Find pairs with the same total",
+        "lv": "Atrodi pārus ar vienādu summu"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to find pairs with the same total. Ask the cat for a guided example at any time.",
+        "lv": "Atrodi pārus ar vienādu summu. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -9013,19 +9172,24 @@
             "v2-easy-addition-lesson-6-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.pairs",
+      "prerequisiteSkillIds": [
+        "easy.addition.missing-part"
+      ],
+      "review": false
     },
     {
       "id": "easy-addition-explore-7",
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Check the packing list",
-        "lv": "Pārbaudi sarakstu"
+        "en": "Check a sum with a model",
+        "lv": "Pārbaudi summu ar modeli"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to check a sum with a model. Ask the cat for a guided example at any time.",
+        "lv": "Pārbaudi summu ar modeli. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -9198,19 +9362,24 @@
             "v2-easy-addition-lesson-7-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.explain",
+      "prerequisiteSkillIds": [
+        "easy.addition.pairs"
+      ],
+      "review": false
     },
     {
       "id": "easy-addition-explore-8",
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Repair a sum",
-        "lv": "Izlabo summu"
+        "en": "Repair an addition mistake",
+        "lv": "Izlabo saskaitīšanas kļūdu"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to repair an addition mistake. Ask the cat for a guided example at any time.",
+        "lv": "Izlabo saskaitīšanas kļūdu. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -9383,19 +9552,24 @@
             "v2-easy-addition-lesson-8-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.repair",
+      "prerequisiteSkillIds": [
+        "easy.addition.explain"
+      ],
+      "review": false
     },
     {
       "id": "easy-addition-explore-9",
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Numbers in a story",
-        "lv": "Skaitļi stāstā"
+        "en": "Use addition in a story",
+        "lv": "Izmanto saskaitīšanu stāstā"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to use addition in a story. Ask the cat for a guided example at any time.",
+        "lv": "Izmanto saskaitīšanu stāstā. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -9568,19 +9742,24 @@
             "v2-easy-addition-lesson-9-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.apply",
+      "prerequisiteSkillIds": [
+        "easy.addition.repair"
+      ],
+      "review": false
     },
     {
       "id": "easy-addition-explore-10",
       "difficulty": "easy",
       "topicId": "addition",
       "title": {
-        "en": "Addition explorer",
-        "lv": "Saskaitīšanas pētnieks"
+        "en": "Revisit addition strategies",
+        "lv": "Atkārto saskaitīšanas paņēmienus"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Revisit earlier strategies with new examples.",
+        "lv": "Atkārto iepriekšējos paņēmienus jaunos piemēros."
       },
       "levels": [
         {
@@ -9753,7 +9932,12 @@
             "v2-easy-addition-picnic-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.addition.review",
+      "prerequisiteSkillIds": [
+        "easy.addition.apply"
+      ],
+      "review": true
     },
     {
       "id": "easy-subtraction-explore-3",
@@ -9938,6 +10122,10 @@
             "v2-easy-subtraction-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.back"
       ]
     },
     {
@@ -10123,6 +10311,10 @@
             "v2-easy-subtraction-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-3"
       ]
     },
     {
@@ -10308,6 +10500,10 @@
             "v2-easy-subtraction-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-4"
       ]
     },
     {
@@ -10493,6 +10689,10 @@
             "v2-easy-subtraction-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-5"
       ]
     },
     {
@@ -10678,6 +10878,10 @@
             "v2-easy-subtraction-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-6"
       ]
     },
     {
@@ -10863,6 +11067,10 @@
             "v2-easy-subtraction-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-7"
       ]
     },
     {
@@ -11048,6 +11256,10 @@
             "v2-easy-subtraction-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-8"
       ]
     },
     {
@@ -11233,6 +11445,10 @@
             "v2-easy-subtraction-boats-3"
           ]
         }
+      ],
+      "skillId": "easy.subtraction.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-9"
       ]
     },
     {
@@ -11418,6 +11634,10 @@
             "v2-easy-patterns-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.patterns.fives"
       ]
     },
     {
@@ -11603,6 +11823,10 @@
             "v2-easy-patterns-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-3"
       ]
     },
     {
@@ -11788,6 +12012,10 @@
             "v2-easy-patterns-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-4"
       ]
     },
     {
@@ -11973,6 +12201,10 @@
             "v2-easy-patterns-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-5"
       ]
     },
     {
@@ -12158,6 +12390,10 @@
             "v2-easy-patterns-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-6"
       ]
     },
     {
@@ -12343,6 +12579,10 @@
             "v2-easy-patterns-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-7"
       ]
     },
     {
@@ -12528,6 +12768,10 @@
             "v2-easy-patterns-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-8"
       ]
     },
     {
@@ -12713,6 +12957,10 @@
             "v2-easy-patterns-music-3"
           ]
         }
+      ],
+      "skillId": "easy.patterns.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-9"
       ]
     },
     {
@@ -12898,6 +13146,10 @@
             "v2-easy-multiplication-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.groups"
       ]
     },
     {
@@ -13083,6 +13335,10 @@
             "v2-easy-multiplication-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-3"
       ]
     },
     {
@@ -13268,6 +13524,10 @@
             "v2-easy-multiplication-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-4"
       ]
     },
     {
@@ -13453,6 +13713,10 @@
             "v2-easy-multiplication-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-5"
       ]
     },
     {
@@ -13638,6 +13902,10 @@
             "v2-easy-multiplication-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-6"
       ]
     },
     {
@@ -13823,6 +14091,10 @@
             "v2-easy-multiplication-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-7"
       ]
     },
     {
@@ -14008,6 +14280,10 @@
             "v2-easy-multiplication-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-8"
       ]
     },
     {
@@ -14193,6 +14469,10 @@
             "v2-easy-multiplication-shelves-3"
           ]
         }
+      ],
+      "skillId": "easy.multiplication.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-9"
       ]
     },
     {
@@ -14200,12 +14480,12 @@
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Read the same whole",
-        "lv": "Nolasi to pašu veselo"
+        "en": "One part of a whole",
+        "lv": "Viena veselā daļa"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to one part of a whole. Ask the cat for a guided example at any time.",
+        "lv": "Viena veselā daļa. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -14378,19 +14658,24 @@
             "v2-easy-fractions-lesson-3-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.unit",
+      "prerequisiteSkillIds": [
+        "easy.fractions.quarters"
+      ],
+      "review": false
     },
     {
       "id": "easy-fractions-explore-4",
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Parts in different pictures",
-        "lv": "Daļas dažādos attēlos"
+        "en": "Compare parts of the same whole",
+        "lv": "Salīdzini viena veselā daļas"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to compare parts of the same whole. Ask the cat for a guided example at any time.",
+        "lv": "Salīdzini viena veselā daļas. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -14563,7 +14848,12 @@
             "v2-easy-fractions-lesson-4-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.magnitude",
+      "prerequisiteSkillIds": [
+        "easy.fractions.unit"
+      ],
+      "review": false
     },
     {
       "id": "easy-fractions-explore-5",
@@ -14574,8 +14864,8 @@
         "lv": "Salīdzini iekrāsotos daudzumus"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to compare colored amounts. Ask the cat for a guided example at any time.",
+        "lv": "Salīdzini iekrāsotos daudzumus. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -14748,19 +15038,24 @@
             "v2-easy-fractions-lesson-5-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.compare",
+      "prerequisiteSkillIds": [
+        "easy.fractions.magnitude"
+      ],
+      "review": false
     },
     {
       "id": "easy-fractions-explore-6",
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Smaller pieces, same value",
-        "lv": "Sīkākas daļas, tā pati vērtība"
+        "en": "Split pieces without changing the amount",
+        "lv": "Sadali sīkāk, saglabājot daudzumu"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to split pieces without changing the amount. Ask the cat for a guided example at any time.",
+        "lv": "Sadali sīkāk, saglabājot daudzumu. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -14933,19 +15228,24 @@
             "v2-easy-fractions-lesson-6-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.equivalence",
+      "prerequisiteSkillIds": [
+        "easy.fractions.compare"
+      ],
+      "review": false
     },
     {
       "id": "easy-fractions-explore-7",
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Match another model",
-        "lv": "Savieno citu modeli"
+        "en": "Read different fraction pictures",
+        "lv": "Nolasi dažādus daļu attēlus"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to read different fraction pictures. Ask the cat for a guided example at any time.",
+        "lv": "Nolasi dažādus daļu attēlus. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -15118,19 +15418,24 @@
             "v2-easy-fractions-lesson-7-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.models",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalence"
+      ],
+      "review": false
     },
     {
       "id": "easy-fractions-explore-8",
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Choose equivalent parts",
+        "en": "Choose equivalent fractions",
         "lv": "Izvēlies vienādas daļas"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to choose equivalent fractions. Ask the cat for a guided example at any time.",
+        "lv": "Izvēlies vienādas daļas. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -15303,7 +15608,12 @@
             "v2-easy-fractions-lesson-8-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.equivalent",
+      "prerequisiteSkillIds": [
+        "easy.fractions.models"
+      ],
+      "review": false
     },
     {
       "id": "easy-fractions-explore-9",
@@ -15314,8 +15624,8 @@
         "lv": "Daļas kolekcijā"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Learn to fractions in a collection. Ask the cat for a guided example at any time.",
+        "lv": "Daļas kolekcijā. Jebkurā brīdī vari mācīties kopā ar kaķi."
       },
       "levels": [
         {
@@ -15488,19 +15798,24 @@
             "v2-easy-fractions-lesson-9-boss-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.apply",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalent"
+      ],
+      "review": false
     },
     {
       "id": "easy-fractions-explore-10",
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Fraction explorer",
-        "lv": "Daļu pētnieks"
+        "en": "Revisit fraction ideas",
+        "lv": "Atkārto daļu jēdzienus"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Revisit earlier strategies with new examples.",
+        "lv": "Atkārto iepriekšējos paņēmienus jaunos piemēros."
       },
       "levels": [
         {
@@ -15673,7 +15988,12 @@
             "v2-easy-fractions-kite-3"
           ]
         }
-      ]
+      ],
+      "skillId": "easy.fractions.review",
+      "prerequisiteSkillIds": [
+        "easy.fractions.apply"
+      ],
+      "review": true
     },
     {
       "id": "medium-addition-explore-3",
@@ -15858,6 +16178,10 @@
             "v2-medium-addition-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.addition.regroup"
       ]
     },
     {
@@ -16043,6 +16367,10 @@
             "v2-medium-addition-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-3"
       ]
     },
     {
@@ -16228,6 +16556,10 @@
             "v2-medium-addition-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-4"
       ]
     },
     {
@@ -16413,6 +16745,10 @@
             "v2-medium-addition-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-5"
       ]
     },
     {
@@ -16598,6 +16934,10 @@
             "v2-medium-addition-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-6"
       ]
     },
     {
@@ -16783,6 +17123,10 @@
             "v2-medium-addition-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-7"
       ]
     },
     {
@@ -16968,6 +17312,10 @@
             "v2-medium-addition-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-8"
       ]
     },
     {
@@ -17153,6 +17501,10 @@
             "v2-medium-addition-tickets-3"
           ]
         }
+      ],
+      "skillId": "medium.addition.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-9"
       ]
     },
     {
@@ -17338,6 +17690,10 @@
             "v2-medium-subtraction-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.check"
       ]
     },
     {
@@ -17523,6 +17879,10 @@
             "v2-medium-subtraction-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-3"
       ]
     },
     {
@@ -17708,6 +18068,10 @@
             "v2-medium-subtraction-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-4"
       ]
     },
     {
@@ -17893,6 +18257,10 @@
             "v2-medium-subtraction-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-5"
       ]
     },
     {
@@ -18078,6 +18446,10 @@
             "v2-medium-subtraction-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-6"
       ]
     },
     {
@@ -18263,6 +18635,10 @@
             "v2-medium-subtraction-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-7"
       ]
     },
     {
@@ -18448,6 +18824,10 @@
             "v2-medium-subtraction-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-8"
       ]
     },
     {
@@ -18633,6 +19013,10 @@
             "v2-medium-subtraction-lift-3"
           ]
         }
+      ],
+      "skillId": "medium.subtraction.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-9"
       ]
     },
     {
@@ -18818,6 +19202,10 @@
             "v2-medium-multiplication-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.facts"
       ]
     },
     {
@@ -19003,6 +19391,10 @@
             "v2-medium-multiplication-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-3"
       ]
     },
     {
@@ -19188,6 +19580,10 @@
             "v2-medium-multiplication-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-4"
       ]
     },
     {
@@ -19373,6 +19769,10 @@
             "v2-medium-multiplication-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-5"
       ]
     },
     {
@@ -19558,6 +19958,10 @@
             "v2-medium-multiplication-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-6"
       ]
     },
     {
@@ -19743,6 +20147,10 @@
             "v2-medium-multiplication-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-7"
       ]
     },
     {
@@ -19928,6 +20336,10 @@
             "v2-medium-multiplication-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-8"
       ]
     },
     {
@@ -20113,6 +20525,10 @@
             "v2-medium-multiplication-theatre-3"
           ]
         }
+      ],
+      "skillId": "medium.multiplication.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-9"
       ]
     },
     {
@@ -20298,6 +20714,10 @@
             "v2-medium-division-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.division.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.division.leftovers"
       ]
     },
     {
@@ -20483,6 +20903,10 @@
             "v2-medium-division-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.division.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-3"
       ]
     },
     {
@@ -20668,6 +21092,10 @@
             "v2-medium-division-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.division.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-4"
       ]
     },
     {
@@ -20853,6 +21281,10 @@
             "v2-medium-division-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.division.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-5"
       ]
     },
     {
@@ -21038,6 +21470,10 @@
             "v2-medium-division-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.division.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-6"
       ]
     },
     {
@@ -21223,6 +21659,10 @@
             "v2-medium-division-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.division.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-7"
       ]
     },
     {
@@ -21408,6 +21848,10 @@
             "v2-medium-division-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.division.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-8"
       ]
     },
     {
@@ -21593,6 +22037,10 @@
             "v2-medium-division-parcels-3"
           ]
         }
+      ],
+      "skillId": "medium.division.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-9"
       ]
     },
     {
@@ -21778,6 +22226,10 @@
             "v2-medium-fractions-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.fractions.equivalent"
       ]
     },
     {
@@ -21963,6 +22415,10 @@
             "v2-medium-fractions-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-3"
       ]
     },
     {
@@ -22148,6 +22604,10 @@
             "v2-medium-fractions-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-4"
       ]
     },
     {
@@ -22333,6 +22793,10 @@
             "v2-medium-fractions-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-5"
       ]
     },
     {
@@ -22518,6 +22982,10 @@
             "v2-medium-fractions-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-6"
       ]
     },
     {
@@ -22703,6 +23171,10 @@
             "v2-medium-fractions-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-7"
       ]
     },
     {
@@ -22888,6 +23360,10 @@
             "v2-medium-fractions-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-8"
       ]
     },
     {
@@ -23073,6 +23549,10 @@
             "v2-medium-fractions-fountain-3"
           ]
         }
+      ],
+      "skillId": "medium.fractions.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-9"
       ]
     },
     {
@@ -23258,6 +23738,10 @@
             "v2-medium-operations-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.operations.order"
       ]
     },
     {
@@ -23443,6 +23927,10 @@
             "v2-medium-operations-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-3"
       ]
     },
     {
@@ -23628,6 +24116,10 @@
             "v2-medium-operations-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-4"
       ]
     },
     {
@@ -23813,6 +24305,10 @@
             "v2-medium-operations-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-5"
       ]
     },
     {
@@ -23998,6 +24494,10 @@
             "v2-medium-operations-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-6"
       ]
     },
     {
@@ -24183,6 +24683,10 @@
             "v2-medium-operations-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-7"
       ]
     },
     {
@@ -24368,6 +24872,10 @@
             "v2-medium-operations-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-8"
       ]
     },
     {
@@ -24553,6 +25061,10 @@
             "v2-medium-operations-lanterns-3"
           ]
         }
+      ],
+      "skillId": "medium.operations.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-9"
       ]
     },
     {
@@ -24738,6 +25250,10 @@
             "v2-hard-operations-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.operations.strategies"
       ]
     },
     {
@@ -24923,6 +25439,10 @@
             "v2-hard-operations-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-3"
       ]
     },
     {
@@ -25108,6 +25628,10 @@
             "v2-hard-operations-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-4"
       ]
     },
     {
@@ -25293,6 +25817,10 @@
             "v2-hard-operations-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-5"
       ]
     },
     {
@@ -25478,6 +26006,10 @@
             "v2-hard-operations-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-6"
       ]
     },
     {
@@ -25663,6 +26195,10 @@
             "v2-hard-operations-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-7"
       ]
     },
     {
@@ -25848,6 +26384,10 @@
             "v2-hard-operations-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-8"
       ]
     },
     {
@@ -26033,6 +26573,10 @@
             "v2-hard-operations-observatory-3"
           ]
         }
+      ],
+      "skillId": "hard.operations.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-9"
       ]
     },
     {
@@ -26218,6 +26762,10 @@
             "v2-hard-fractions-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.fractions.apply"
       ]
     },
     {
@@ -26403,6 +26951,10 @@
             "v2-hard-fractions-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-3"
       ]
     },
     {
@@ -26588,6 +27140,10 @@
             "v2-hard-fractions-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-4"
       ]
     },
     {
@@ -26773,6 +27329,10 @@
             "v2-hard-fractions-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-5"
       ]
     },
     {
@@ -26958,6 +27518,10 @@
             "v2-hard-fractions-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-6"
       ]
     },
     {
@@ -27143,6 +27707,10 @@
             "v2-hard-fractions-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-7"
       ]
     },
     {
@@ -27328,6 +27896,10 @@
             "v2-hard-fractions-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-8"
       ]
     },
     {
@@ -27513,6 +28085,10 @@
             "v2-hard-fractions-garden-3"
           ]
         }
+      ],
+      "skillId": "hard.fractions.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-9"
       ]
     },
     {
@@ -27698,6 +28274,10 @@
             "v2-hard-patterns-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.patterns.scale"
       ]
     },
     {
@@ -27883,6 +28463,10 @@
             "v2-hard-patterns-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-3"
       ]
     },
     {
@@ -28068,6 +28652,10 @@
             "v2-hard-patterns-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-4"
       ]
     },
     {
@@ -28253,6 +28841,10 @@
             "v2-hard-patterns-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-5"
       ]
     },
     {
@@ -28438,6 +29030,10 @@
             "v2-hard-patterns-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-6"
       ]
     },
     {
@@ -28623,6 +29219,10 @@
             "v2-hard-patterns-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-7"
       ]
     },
     {
@@ -28808,6 +29408,10 @@
             "v2-hard-patterns-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-8"
       ]
     },
     {
@@ -28993,6 +29597,10 @@
             "v2-hard-patterns-signal-3"
           ]
         }
+      ],
+      "skillId": "hard.patterns.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-9"
       ]
     },
     {
@@ -29178,6 +29786,10 @@
             "v2-hard-percentages-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.percentages.discounts"
       ]
     },
     {
@@ -29363,6 +29975,10 @@
             "v2-hard-percentages-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-3"
       ]
     },
     {
@@ -29548,6 +30164,10 @@
             "v2-hard-percentages-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-4"
       ]
     },
     {
@@ -29733,6 +30353,10 @@
             "v2-hard-percentages-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-5"
       ]
     },
     {
@@ -29918,6 +30542,10 @@
             "v2-hard-percentages-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-6"
       ]
     },
     {
@@ -30103,6 +30731,10 @@
             "v2-hard-percentages-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-7"
       ]
     },
     {
@@ -30288,6 +30920,10 @@
             "v2-hard-percentages-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-8"
       ]
     },
     {
@@ -30473,6 +31109,10 @@
             "v2-hard-percentages-shop-3"
           ]
         }
+      ],
+      "skillId": "hard.percentages.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-9"
       ]
     },
     {
@@ -30658,6 +31298,10 @@
             "v2-hard-measurement-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.measurement.rates"
       ]
     },
     {
@@ -30843,6 +31487,10 @@
             "v2-hard-measurement-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-3"
       ]
     },
     {
@@ -31028,6 +31676,10 @@
             "v2-hard-measurement-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-4"
       ]
     },
     {
@@ -31213,6 +31865,10 @@
             "v2-hard-measurement-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-5"
       ]
     },
     {
@@ -31398,6 +32054,10 @@
             "v2-hard-measurement-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-6"
       ]
     },
     {
@@ -31583,6 +32243,10 @@
             "v2-hard-measurement-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-7"
       ]
     },
     {
@@ -31768,6 +32432,10 @@
             "v2-hard-measurement-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-8"
       ]
     },
     {
@@ -31953,6 +32621,10 @@
             "v2-hard-measurement-shelter-3"
           ]
         }
+      ],
+      "skillId": "hard.measurement.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-9"
       ]
     },
     {
@@ -32138,6 +32810,10 @@
             "v2-hard-logic-lesson-3-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.logic.claims"
       ]
     },
     {
@@ -32323,6 +32999,10 @@
             "v2-hard-logic-lesson-4-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-3"
       ]
     },
     {
@@ -32508,6 +33188,10 @@
             "v2-hard-logic-lesson-5-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-4"
       ]
     },
     {
@@ -32693,6 +33377,10 @@
             "v2-hard-logic-lesson-6-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-5"
       ]
     },
     {
@@ -32878,6 +33566,10 @@
             "v2-hard-logic-lesson-7-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-6"
       ]
     },
     {
@@ -33063,6 +33755,10 @@
             "v2-hard-logic-lesson-8-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-7"
       ]
     },
     {
@@ -33248,6 +33944,10 @@
             "v2-hard-logic-lesson-9-boss-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-8"
       ]
     },
     {
@@ -33433,6 +34133,10 @@
             "v2-hard-logic-vault-3"
           ]
         }
+      ],
+      "skillId": "hard.logic.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-9"
       ]
     }
   ]

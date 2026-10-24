@@ -36,6 +36,12 @@ int main() {
     world.setGravity(btVector3(0,-9.81,0));
     auto floorShape=std::make_shared<btStaticPlaneShape>(btVector3(0,1,0),0);
     auto floor=makeBody(0,floorShape,btVector3(0,.068,0)); floor->setFriction(.7); world.addRigidBody(floor.get());
+    // The physical torso must not pre-empt a paw reaching from the closest
+    // planned approach. Navigation clearance is deliberately much larger.
+    float catScale=.5f;
+    auto torsoShape=std::make_shared<btSphereShape>(.40f*catScale);
+    auto torso=makeBody(0,torsoShape,btVector3(-(.6f*catScale+radius),.068f+.55f*catScale,0));
+    world.addRigidBody(torso.get());
     auto ballShape=std::make_shared<btSphereShape>(radius);
     auto ball=makeBody(.22,ballShape,btVector3(0,.068+radius,0));
     ball->setFriction(.5); ball->setDamping(.35,.45); world.addRigidBody(ball.get());
@@ -43,6 +49,8 @@ int main() {
     auto object=makeBody(0,objectShape,btVector3(obstacle==1?.34:.59,.568,0)); object->setFriction(.5);
     if(obstacle)world.addRigidBody(object.get());
     for(int i=0;i<fps;i++)world.stepSimulation(1.f/fps,4,1.f/60);
+    if(btFabs(ball->getWorldTransform().getOrigin().x())>.001f)failures++;
+    world.removeRigidBody(torso.get());
     ball->activate(true); ball->applyCentralImpulse(btVector3(.12,.025,0));
     float maxX=0,minVelocity=0;
     for(int i=0;i<fps*8;i++) {

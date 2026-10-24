@@ -19,6 +19,8 @@ checks.push('check-catalog-furniture-jumps');
 checks.push('check-close-furniture-jumps');
 checks.push('check-cat-tail-contact');
 checks.push('check-cat-expression');
+checks.push('check-cat-command-attention');
+checks.push('check-cat-paw-contact');
 checks.push('check-cat-waking');
 checks.push('check-cat-fluid-motion');
 checks.push('check-cat-anticipation');

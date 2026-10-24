@@ -1,3 +1,5 @@
+import { normalizeLearningEvidence } from "@/utils/learning-evidence";
+import { LEARNING_CATALOG } from "@/constants/curriculum";
 import { PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
 import { normalizePendingWalletPurchases } from "@/services/wallet/offline-orders";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
@@ -370,6 +372,10 @@ function parseGameSave(
           decorationsUnlocked,
           decorationQuantities,
           skinsUnlocked,
+          learningEvidence: normalizeLearningEvidence(currentCurriculum ? parsed.progress.learningEvidence : {}, new Map(LEARNING_CATALOG.lessons.filter(l => l.skillId).map(l => [l.skillId!, new Set(l.levels.flatMap(v => v.puzzleIds))]))),
+          learningSupportIds: currentCurriculum && Array.isArray(parsed.progress.learningSupportIds) ? getCompletedPuzzleIds({ completedPuzzleIds: parsed.progress.learningSupportIds.filter((id): id is string => typeof id === "string") }) : [],
+          reviewAttemptKeys: currentCurriculum && Array.isArray(parsed.progress.reviewAttemptKeys) ? parsed.progress.reviewAttemptKeys.filter((id): id is string => typeof id === "string").slice(-200) : [],
+          guidedAttemptIds: currentCurriculum && Array.isArray(parsed.progress.guidedAttemptIds) ? parsed.progress.guidedAttemptIds.filter((id): id is string => typeof id === "string").slice(-200) : [],
           topicStats: normalizeTopicStats(currentCurriculum ? parsed.progress.topicStats : {}),
           topicStatsByDifficulty: Object.fromEntries((["easy", "medium", "hard"] as const).map(tier => [tier, normalizeTopicStats(difficultyStats[tier])])),
         },

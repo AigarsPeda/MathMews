@@ -536,7 +536,7 @@ export function PetStage({
     setDecorating(true);
   }, [setWaitingToDecorate, setDecorating]);
   const blockedActivityHandler = useRef<((failure: BlockedRoomActivity) => void) | null>(null);
-  const { activity: roomActivity, blockedActivity, clearBlockedActivity, scale: activityScale, facing: activityFacing,
+  const { activity: roomActivity, commandAttention, blockedActivity, clearBlockedActivity, scale: activityScale, facing: activityFacing,
     objectX, objectY, startActivity, returnHome, stopActivity, updateNativeHeight, updateObjectPosition, completeNativeStep } = useRoomActivity(activityOptions,
     compact && usesNativeCat && graphicsMode !== "loading" && catPresent && !decorating && !roomActivityBlocked,
     lastInteractionAt, petSceneX, petSceneY, (instanceId, motion) => {
@@ -1451,7 +1451,7 @@ export function PetStage({
               <Text pointerEvents="none" style={styles.graphicsHint}>{t('recovery.graphicsHint')}</Text>
             </> : null}
             {usesNativeCat && compact && nativeRendering && nativeSceneMounted ? <Pressable style={StyleSheet.absoluteFill} onPress={handleRoomTouch} accessible={false}><NativeRoomScene homeRoomId={homeRoomId} pickerRef={nativePicker} worldClock={worldClock} editingObject={editingObject} spotlightAim={spotlightAim} entryId={roomEntry?.id} initialCatPosition={entryPosition} onSceneReady={handleSceneReady} world={nativeWorld} roomId={roomId} skinId={catSkinId} catPresent={catPresent} paused={!roomVisible} transitioning={!!sceneSlide} editing={decorating}
-              playback={activityPlayback ?? playback} travel={roomActivity?.plan.steps[roomActivity.stepIndex].native}
+              commandAttention={roomVisible && catPresent ? commandAttention : undefined} playback={activityPlayback ?? playback} travel={roomActivity?.plan.steps[roomActivity.stepIndex].native}
               activityKey={roomActivity ? roomActivityStepKey(roomActivity) : undefined}
               onRoomStepComplete={completeNativeStep}
               playingId={roomActivity?.plan.targetInstanceId} playContact={roomActivity?.plan.steps[roomActivity.stepIndex].animation === "batToy"}

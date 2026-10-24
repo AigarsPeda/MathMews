@@ -50,7 +50,7 @@ export function expandLessons(api) {
     if(topic==='patterns') {
       const a=2+r%4,b=a+1;
       tasks=patternSet(d==='hard'
-        ? [[2+r,'×',2+r%3],[13+r,'+',7+r],[Math.pow(2+r%3,4)*(1+r%3),'÷',2+r%3],[(r+3)*5+r,'−',r+3]]
+        ? [[2+r,'×',2+r%3],[13+r,'+',7+r],[Math.pow(2+r%3,4)*(r+2),'÷',2+r%3],[(r+3)*5+r,'−',r+3]]
         : [[1+r,'+',a],[8+r,'+',b],[a*6+r,'−',a],[b*6+r,'−',b]]);
     } else tasks=practiceSet(factories[topic],args);
     if(topic==='logic') tasks[1]=logicClaim(r,args[1][0],text,task);

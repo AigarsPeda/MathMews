@@ -1,5 +1,8 @@
 import type { Vec3 } from '@/utils/native-room-world';
 
+/** A user tap is independent of the movement command, including queued taps. */
+export type CatCommandAttention = { id: number; target: Vec3; issuedAt: number };
+
 function smooth(start: number, end: number, time: number) {
   'worklet';
   const t=Math.max(0,Math.min(1,(time-start)/(end-start)));
@@ -70,4 +73,14 @@ export function catTravelTail(phase: number, speed: number, turnRate: number) {
     yaw:[0,1,2,3].map(i=>amount*(.045+i*.025)*Math.sin(wave-i*.7)+counter*(1-i*.14)),
     pitch:[0,1,2,3].map(i=>running*(-.10/(i+1)+.035*Math.sin(wave-i*.65))),
   };
+}
+
+/** Ears respond first; the brief look releases back to the current activity. */
+export function catCommandResponse(elapsed: number, yaw: number, pitch: number) {
+  'worklet';
+  const look=smooth(.03,.18,elapsed)*(1-smooth(.65,1.25,elapsed));
+  const listen=smooth(0,.07,elapsed)*(1-smooth(.4,.9,elapsed));
+  return {look, yaw:Math.max(-.42,Math.min(.42,yaw))*look,
+    pitch:Math.max(-.10,Math.min(.10,pitch))*look,
+    earYaw:Math.max(-.28,Math.min(.28,yaw))*listen, earLift:.16*listen};
 }

@@ -260,3 +260,27 @@ The three native coats include `jumpOnLight` and `jumpOffLight`. Low-effort jump
 Supported turns now scale duration continuously with angle. A 45-degree adjustment takes 0.40 seconds, while 90/180-degree turns remain 0.64/1.12 seconds. Short placements lift less and use less body lowering. Minimum head/loading times preserve continuity when commands interrupt a small turn.
 
 `check-cat-motion-flow.mjs` covers complete approaches, delayed prepared handoffs, light-clip support contacts and selection, curved landing departures, head continuity and exact completion on all three coats at 30/60/120 FPS. It is included in `test:game`. Native recordings and measurements are in `docs/qa/cat-motion/2026-10-23/`.
+
+## Command acknowledgment — 24 October 2026
+
+Explicit furniture commands now publish a brief directional acknowledgment independently of the movement scheduler. The ears perk and turn first, followed by a small head glance when the current pose permits it. Commands queued during a jump receive the ear response immediately; the head keeps its landing aim. Supported turns, crawling and contact performances retain their own head poses. A newer tap blends toward its target without restarting the travel clock or moving the support paws.
+
+The cue fades after about 1.25 seconds. Pausing freezes it, stale cues do not replay on room mount, and Reduce Motion suppresses it. Ambient routines do not trigger the gesture. The existing jump completion and latest-command queue behavior remain in use. This is a runtime overlay on the existing rigs and does not rebuild the GLBs.
+
+`node scripts/check-cat-command-attention.mjs` compares acknowledged and baseline native actor poses for all three coats at 30/60/120 FPS. Its 36 cases cover idle, walking, jumping and Reduce Motion, with rapid retargeting, unchanged root/paw matrices and activity clocks, completion, pause/resume and stale cues. Task-chain checks also exercise acknowledgment while a command waits for landing. Native review used the existing BrainPet Puzzle QA simulator, ordinary Home controls and Metro on port 8081. Captures and measurements are in `docs/qa/cat-attention/2026-10-24/`.
+
+## Paw contact refinement, 24 October 2026
+
+Object reaches now ease into a short contact and withdraw smoothly. Each forepaw aims at the object's near surface with a small pad clearance and elbow bend. The wrist retains its authored orientation. A swat commits to one point, so rolling balls and falling leaves can escape the paw instead of pulling the arm along. Losing the last leaf still allows the current reach to finish. Supported turns retain their planted paws.
+
+Floor toys publish their current physical center to the cat. Approaches use reachable, collision-checked pawing positions. Ball impulses now require a moving paw to cross the contact surface; body proximity and periodic timers no longer launch them. The physical cat collider covers the torso, while navigation retains its larger head/tail clearance. Hanging toys receive directional impulses transformed into their own rotated frame. Stationary, retreating and teleported paws cannot repeatedly kick an object.
+
+`check-cat-paw-contact.mjs` exercises the actual actor and all three shipped coats at 30/60/120 FPS. It compares complete support-paw matrices and wrist orientations against unmodified playback, bounds reach speed, verifies surface contact, committed swats, lost-leaf recovery, pause/resume and Reduce Motion. `check-native-room.mjs` couples the real cat and object callbacks to verify floor-ball hits and rejects proximity-only or stationary kicks; it also covers hanging toys, plant leaves, rotated/scaled objects and corners. The Bullet check tests that the torso leaves a nearby ball still before the paw impulse, then verifies rolling, rebounds and settling.
+
+## Shoulder-supported back motion, 24 October 2026
+
+The earlier back overlay counter-transformed each upper leg and the neck, leaving the shoulder line almost fixed. The revised pass runs after gait/turn foot placement and re-solves the legs to retain the original pad positions and sole orientations while allowing the chest and hips to move. The neck follows part of that translation while preserving gaze rotation. The existing weighted rig and all three GLBs remain in use.
+
+Walking adds restrained support compression; the chest leads turns and the hips follow with slower damping. Toy swats now load the support side and round the back before the reaching paw arrives. Rest poses settle, and crawl/bed/bath exclusions and Reduce Motion remain. Captured turn/launch heights exclude the previous overlay so it cannot be applied twice. Landing-to-walk recovery suppresses downward gait arch until the supported first stride finishes.
+
+Actual-rig comparisons, native simulator footage, research references and validation are in [the spine refinement review](qa/cat-spine-refinement/2026-10-24/README.md). The native review used the existing BrainPet Puzzle QA simulator and Metro 8081. The expanded spine test checks shoulder displacement as well as retained contacts; focused turn, jump, landing, room and object-contact checks passed.

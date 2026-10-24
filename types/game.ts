@@ -172,6 +172,10 @@ export type ChallengeAttempt = {
 };
 
 export type Progress = {
+  learningEvidence?: import("./learning").LearningEvidence;
+  learningSupportIds?: string[];
+  guidedAttemptIds?: string[];
+  reviewAttemptKeys?: string[];
   /** A single durable timed run; leaving or refreshing cannot reset its deadline. */
   challengeAttempt?: ChallengeAttempt;
   /** Separate from the save format: replacing the curriculum resets learning only. */

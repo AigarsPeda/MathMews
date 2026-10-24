@@ -1,3 +1,5 @@
+import { recordLearningAttempt } from "@/utils/learning-evidence";
+import type { LearningAttemptContext } from "@/types/learning";
 import { FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
 import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES, PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
 import { getPuzzleLevelKind, getTimedChallengeLevel } from "@/constants/curriculum";
@@ -36,7 +38,7 @@ export function getSolvedCounts(ids: readonly string[]): PuzzleProgress {
 }
 
 /** One committed answer owns its reward and completion. Repeated delivery is harmless. */
-export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boolean, attemptId: string, now = Date.now()) {
+export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boolean, attemptId: string, now = Date.now(), context: LearningAttemptContext = {}) {
   if (save.progress.processedAttemptIds?.includes(attemptId)) return { save, coins: 0, accepted: false };
   const synced = settleChallengeTimeout(save.progress, now);
   if (synced !== save.progress) save = { ...save, progress: synced };
@@ -62,6 +64,7 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
       lives: correct ? lives : loseLife(lives, now),
       challengeAttempt: correct && getTimedChallengeLevel(puzzle.id) && save.progress.challengeAttempt
         ? { ...save.progress.challengeAttempt, status: "completed" } : save.progress.challengeAttempt,
+      learningEvidence: recordLearningAttempt(save.progress.learningEvidence, puzzle, correct, !context.helpUsed && !save.progress.learningSupportIds?.includes(puzzle.id) && !save.progress.attemptedPuzzleIds?.includes(puzzle.id) && !replay, now),
       topicStats: recordTopicAttempt(save.progress.topicStats, puzzle.topic, correct),
       topicStatsByDifficulty: { ...save.progress.topicStatsByDifficulty,
         [puzzle.difficulty]: recordTopicAttempt(save.progress.topicStatsByDifficulty?.[puzzle.difficulty], puzzle.topic, correct) },

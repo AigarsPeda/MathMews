@@ -19,14 +19,14 @@ const AUTHORED_PUZZLES: Record<
   Record<PuzzleDifficulty, Puzzle[]>
 > = {
   en: {
-    easy: easyEn as Puzzle[],
-    medium: mediumEn as Puzzle[],
-    hard: hardEn as Puzzle[],
+    easy: easyEn as unknown as Puzzle[],
+    medium: mediumEn as unknown as Puzzle[],
+    hard: hardEn as unknown as Puzzle[],
   },
   lv: {
-    easy: easyLv as Puzzle[],
-    medium: mediumLv as Puzzle[],
-    hard: hardLv as Puzzle[],
+    easy: easyLv as unknown as Puzzle[],
+    medium: mediumLv as unknown as Puzzle[],
+    hard: hardLv as unknown as Puzzle[],
   },
 };
 

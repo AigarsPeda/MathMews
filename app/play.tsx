@@ -154,7 +154,7 @@ export function PlaySession({ session }: { session: LearningSession }) {
   const { locale } = useLocale();
   const { lesson, level, phase: sessionIndex } = session;
   const difficulty = lesson.difficulty;
-  const { pet, answerPuzzle, buyLife, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp, beginChallenge, expireChallenge } = useGame();
+  const { pet, recordLearningHelp, answerPuzzle, buyLife, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp, beginChallenge, expireChallenge } = useGame();
   const run = progress.challengeAttempt;
   const timed = level.kind === "challenge" && !!level.timeLimitSeconds;
   const now = useWorldClockNow(1000, progress.lives.current < MAX_LIVES || run?.status === "active");
@@ -264,8 +264,9 @@ export function PlaySession({ session }: { session: LearningSession }) {
     if (answered || !hasVisualHelp) return;
     recordInteraction();
     triggerHaptic();
+    recordLearningHelp(puzzle.id);
     setShowVisualHelp(true);
-  }, [answered, hasVisualHelp, recordInteraction, setShowVisualHelp]);
+  }, [answered, hasVisualHelp, recordInteraction, recordLearningHelp, puzzle.id, setShowVisualHelp]);
 
   const handlePurchaseVisualHelp = useCallback(() => {
     recordInteraction();
@@ -462,6 +463,10 @@ export function PlaySession({ session }: { session: LearningSession }) {
 
         <PuzzleProgress steps={progressSteps} total={position.total}
           label={t(level.kind === "boss" ? "learning.stageOf" : "play.puzzleOf", { number: position.current, total: position.total })} />
+        {!answered ? <Pressable accessibilityRole="button" style={styles.lifeAction} onPress={() => { recordLearningHelp(puzzle.id); router.push({ pathname: "/learn", params: { lesson: lesson.id, source: puzzle.id } }); }}>
+          <Text style={styles.lifeActionText}>{t("guided.title")}</Text>
+          {timed && run?.status === "active" ? <Text style={styles.lifePolicy}>{t("guided.timerContinues")}</Text> : null}
+        </Pressable> : null}
         {timed && challengePlayable && !answered && run ? <ChallengeClock milliseconds={run.deadlineAt - now} /> : null}
 
         <ScrollView
@@ -499,6 +504,7 @@ export function PlaySession({ session }: { session: LearningSession }) {
             levelKind={level.kind}
           />
           <Text style={styles.lifePolicy}>{t("lives.mistakeCost")}</Text>
+
 
 
           {hasVisualHelp ? (

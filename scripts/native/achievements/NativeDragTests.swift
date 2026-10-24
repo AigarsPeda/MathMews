@@ -14,30 +14,45 @@ final class NativeDragTests: XCTestCase {
  let third = "achievement-easy-addition-explore-3-lesson-3-boss"
  override func setUpWithError() throws {
   continueAfterFailure = false; app.activate()
+  let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+  if springboard.buttons["Open"].waitForExistence(timeout: 2) { springboard.buttons["Open"].tap() }
+  if app.buttons["Open"].exists { app.buttons["Open"].tap() }
   XCTAssertTrue(app.buttons["Reset"].waitForExistence(timeout: 20)); app.buttons["Reset"].tap()
+ }
+ func tab(_ label: String) -> XCUIElement {
+  app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
  }
  func shot(_ name: String) { let a = XCTAttachment(screenshot: app.screenshot()); a.name = name; a.lifetime = .keepAlways; add(a) }
  func testOrderedGrayAndColoredCollection() {
   XCTAssertTrue(app.buttons[first].waitForExistence(timeout: 8))
-  XCTAssertTrue(app.buttons[first].isEnabled); XCTAssertFalse(app.buttons[second].isEnabled)
-  XCTAssertFalse(app.buttons["Collected"].exists); XCTAssertFalse(app.buttons["All bosses"].exists)
-  XCTAssertLessThan(app.buttons[first].frame.minX, app.buttons[second].frame.minX)
-  XCTAssertLessThan(app.buttons[first].frame.minY, app.buttons[third].frame.minY)
+  XCTAssertTrue(app.buttons[first].isEnabled); XCTAssertTrue(app.buttons[second].isEnabled)
+  XCTAssertTrue(tab("Collected").exists); XCTAssertTrue(tab("All rewards").exists)
+  XCTAssertGreaterThan(app.buttons[first].frame.width, 280)
+  XCTAssertLessThan(app.buttons[first].frame.minY, app.buttons[second].frame.minY)
   shot("achievement-sequence")
   app.buttons[first].tap(); XCTAssertTrue(app.buttons["Share GIF"].waitForExistence(timeout: 6))
   XCTAssertTrue(app.buttons["Watch the ending again"].waitForExistence(timeout: 6)); app.buttons["Watch the ending again"].tap()
+  app.buttons["Pause"].tap(); XCTAssertTrue(app.buttons["Play"].exists)
+  app.buttons["Play"].tap(); XCTAssertTrue(app.buttons["Pause"].exists)
   shot("achievement-preview")
   XCTAssertLessThan(app.buttons["Share GIF"].frame.maxY, app.windows.firstMatch.frame.maxY - 20)
   app.buttons["Close"].tap(); XCTAssertTrue(app.buttons["Reopen"].waitForExistence(timeout: 5)); app.buttons["Reopen"].tap()
   XCTAssertTrue(app.buttons[first].waitForExistence(timeout: 5)); XCTAssertTrue(app.buttons[first].isEnabled)
-  XCTAssertFalse(app.buttons[second].isEnabled)
+  XCTAssertTrue(app.buttons[second].isEnabled)
   app.buttons["LV narrow"].tap(); XCTAssertTrue(app.staticTexts["Sasniegumi"].waitForExistence(timeout: 5))
   shot("achievement-narrow-latvian")
   app.buttons[first].tap(); XCTAssertTrue(app.buttons["Kopīgot GIF"].waitForExistence(timeout: 5))
   XCTAssertTrue(app.buttons["Aizvērt"].isHittable); shot("achievement-preview-latvian")
   app.buttons["Aizvērt"].tap(); app.buttons["Empty"].tap()
-  XCTAssertTrue(app.buttons[first].waitForExistence(timeout: 5)); XCTAssertFalse(app.buttons[first].isEnabled)
-  XCTAssertFalse(app.buttons[third].isEnabled); shot("achievement-all-locked")
+  XCTAssertTrue(app.buttons[first].waitForExistence(timeout: 5)); XCTAssertTrue(app.buttons[first].isEnabled)
+  XCTAssertTrue(app.buttons[third].isEnabled); shot("achievement-all-locked")
+  app.buttons[first].tap()
+  XCTAssertTrue(app.buttons["Atvērt nodarbību"].waitForExistence(timeout: 5))
+  XCTAssertFalse(app.buttons["Kopīgot GIF"].exists)
+  shot("achievement-unlock-instructions")
+  app.buttons["Aizvērt"].tap()
+  tab("Iegūtie").tap()
+  XCTAssertTrue(app.staticTexts["Tava pirmā filmiņa tevi gaida"].waitForExistence(timeout: 5))
  }
  func testNativeGifShareAndCancel() {
   app.buttons[first].tap(); XCTAssertTrue(app.buttons["Share GIF"].waitForExistence(timeout: 6))
@@ -55,6 +70,6 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(app.buttons["Share GIF"].waitForExistence(timeout: 5)); XCTAssertTrue(app.buttons["Share GIF"].isEnabled)
   app.buttons["Close"].tap()
   XCTAssertTrue(app.staticTexts["777/1/7"].waitForExistence(timeout: 5))
-  XCTAssertTrue(app.buttons[first].isEnabled); XCTAssertFalse(app.buttons[second].isEnabled)
+  XCTAssertTrue(app.buttons[first].isEnabled); XCTAssertTrue(app.buttons[second].isEnabled)
  }
 }

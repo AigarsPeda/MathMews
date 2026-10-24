@@ -1,0 +1,218 @@
+[
+  {
+    "skin": "orange",
+    "fps": 30,
+    "kind": "floor",
+    "nearest": 0.14551142915418055,
+    "peakSpeed": 1.4886572993827771,
+    "hits": 2
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "kind": "hanging",
+    "nearest": 0.11196156263132727,
+    "peakSpeed": 2.050585715509976,
+    "hits": 2
+  },
+  {
+    "skin": "orange",
+    "fps": 30,
+    "kind": "leaf",
+    "nearest": 0.032498402569313176,
+    "peakSpeed": 2.191098812309501,
+    "hits": 2
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "kind": "floor",
+    "nearest": 0.1450950202447753,
+    "peakSpeed": 1.5021366324879162,
+    "hits": 2
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "kind": "hanging",
+    "nearest": 0.1119615626313274,
+    "peakSpeed": 2.0643342671549316,
+    "hits": 2
+  },
+  {
+    "skin": "orange",
+    "fps": 60,
+    "kind": "leaf",
+    "nearest": 0.03249834501357415,
+    "peakSpeed": 2.206231353108487,
+    "hits": 2
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "kind": "floor",
+    "nearest": 0.1450624572744556,
+    "peakSpeed": 1.525796466561627,
+    "hits": 2
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "kind": "hanging",
+    "nearest": 0.11194222211396042,
+    "peakSpeed": 2.0811424509848497,
+    "hits": 2
+  },
+  {
+    "skin": "orange",
+    "fps": 120,
+    "kind": "leaf",
+    "nearest": 0.03249833402147976,
+    "peakSpeed": 2.2275636152289016,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "kind": "floor",
+    "nearest": 0.14551142915418055,
+    "peakSpeed": 1.4886572993827771,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "kind": "hanging",
+    "nearest": 0.11196156263132727,
+    "peakSpeed": 2.050585715509976,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 30,
+    "kind": "leaf",
+    "nearest": 0.032498402569313176,
+    "peakSpeed": 2.191098812309501,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "kind": "floor",
+    "nearest": 0.1450950202447753,
+    "peakSpeed": 1.5021366324879162,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "kind": "hanging",
+    "nearest": 0.1119615626313274,
+    "peakSpeed": 2.0643342671549316,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 60,
+    "kind": "leaf",
+    "nearest": 0.03249834501357415,
+    "peakSpeed": 2.206231353108487,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "kind": "floor",
+    "nearest": 0.1450624572744556,
+    "peakSpeed": 1.525796466561627,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "kind": "hanging",
+    "nearest": 0.11194222211396042,
+    "peakSpeed": 2.0811424509848497,
+    "hits": 2
+  },
+  {
+    "skin": "grey",
+    "fps": 120,
+    "kind": "leaf",
+    "nearest": 0.03249833402147976,
+    "peakSpeed": 2.2275636152289016,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "kind": "floor",
+    "nearest": 0.14551142915418055,
+    "peakSpeed": 1.4886572993827771,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "kind": "hanging",
+    "nearest": 0.11196156263132727,
+    "peakSpeed": 2.050585715509976,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 30,
+    "kind": "leaf",
+    "nearest": 0.032498402569313176,
+    "peakSpeed": 2.191098812309501,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "kind": "floor",
+    "nearest": 0.1450950202447753,
+    "peakSpeed": 1.5021366324879162,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "kind": "hanging",
+    "nearest": 0.1119615626313274,
+    "peakSpeed": 2.0643342671549316,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 60,
+    "kind": "leaf",
+    "nearest": 0.03249834501357415,
+    "peakSpeed": 2.206231353108487,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "kind": "floor",
+    "nearest": 0.1450624572744556,
+    "peakSpeed": 1.525796466561627,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "kind": "hanging",
+    "nearest": 0.11194222211396042,
+    "peakSpeed": 2.0811424509848497,
+    "hits": 2
+  },
+  {
+    "skin": "white",
+    "fps": 120,
+    "kind": "leaf",
+    "nearest": 0.03249833402147976,
+    "peakSpeed": 2.2275636152289016,
+    "hits": 2
+  }
+]

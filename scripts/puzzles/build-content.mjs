@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { bossStories } from './boss-stories.mjs';
+import { applyResearchRevisions } from './research-revisions.mjs';
 import { expandLessons } from './expanded-lessons.mjs';
 import { completeLessonSpecials } from './lesson-specials.mjs';
 import { lessonBossScenes } from './lesson-boss-stories.mjs';
@@ -39,11 +40,12 @@ const hint = {
 };
 function addSet(a, b) {
   const sum = a + b;
+  const addHint = text(`Start with ${a} and count on ${b}, or split the added amount into useful parts.`, `Sāc ar ${a} un skaiti vēl ${b} vai sadali pieskaitāmo ērtās daļās.`);
   return [
-    choice('addition', text(`The cat packs ${a} red ribbons and ${b} blue ribbons. How many ribbons?`, `Kaķis saliek ${a} sarkanas un ${b} zilas lentes. Cik lenšu kopā?`), sum, [sum - 1, sum + 1], hint.add, text(`${a} + ${b} = ${sum} ribbons.`, `${a} + ${b} = ${sum} lentes.`), undefined, sum <= 20 ? { kind: "join", left: a, right: b, object: "ribbon" } : undefined),
+    choice('addition', text(`The cat packs ${a} red ribbons and ${b} blue ribbons. How many ribbons?`, `Kaķis saliek ${a} sarkanas un ${b} zilas lentes. Cik lenšu kopā?`), sum, [sum - 1, sum + 1], text(`Start with ${a} and count on ${b}.`, `Sāc ar ${a} un skaiti vēl ${b}.`), text(`${a} + ${b} = ${sum} ribbons.`, `${a} + ${b} = ${sum} lentes.`), undefined, sum <= 20 ? { kind: "join", left: a, right: b, object: "ribbon" } : undefined),
     task('balance', 'equality', text('Fill the missing part of the sum.', 'Aizpildi trūkstošo summas daļu.'), { leftDisplay: `${a} + ?`, rightValue: sum, choices: [String(b), String(b + 1), String(b + 2)] }, text(`What must join ${a} to make ${sum}?`, `Kas jāpieskaita ${a}, lai iegūtu ${sum}?`), text(`${a} + ${b} = ${sum}.`, `${a} + ${b} = ${sum}.`), { correctIndex: 0 }),
     task('pair_sum', 'mental_math', text(`Choose two tiles that make ${sum}.`, `Izvēlies divas kartītes, kuru summa ir ${sum}.`), { numbers: [a, b, 1, sum - 1, 2, sum - 2], target: sum, correctIndices: [0, 1] }, text('Choose one number and find its missing partner.', 'Izvēlies skaitli un atrodi tā trūkstošo pārinieku.'), text(`Any two different tiles adding to ${sum} work.`, `Der jebkuras divas atšķirīgas kartītes, kuru summa ir ${sum}.`)),
-    task('fix_mistake', 'addition', text('Minka tried adding. Which repair is right?', 'Minka mēģināja saskaitīt. Kurš labojums ir pareizs?'), { wrongWork: [`${a} + ${b} = ${sum - 1}`], choices: [`${a} + ${b} = ${sum}`, `${a} + ${b} = ${sum + 1}`, `${a} + ${b} = ${sum + 2}`] }, hint.add, text(`The total is ${sum}, not ${sum - 1}.`, `Summa ir ${sum}, nevis ${sum - 1}.`), { correctIndex: 0 }),
+    task('fix_mistake', 'addition', text('Minka tried adding. Which repair is right?', 'Minka mēģināja saskaitīt. Kurš labojums ir pareizs?'), { wrongWork: [`${a} + ${b} = ${sum - 1}`], choices: [`${a} + ${b} = ${sum}`, `${a} + ${b} = ${sum + 1}`, `${a} + ${b} = ${sum + 2}`] }, addHint, text(`The total is ${sum}, not ${sum - 1}.`, `Summa ir ${sum}, nevis ${sum - 1}.`), { correctIndex: 0 }),
   ];
 }
 function subtractSet(a, b) {
@@ -363,6 +365,7 @@ for (const difficulty of ['easy','medium','hard']) for (const topic of topics) {
   last.levels.push(bosses[0]);
 }
 completeLessonSpecials({ lessons, special, text, task, addSet, subtractSet, numberSet, patternSet, multiplySet, divideSet, fractionSet, operationSet, percentSet, measureSet, logicSet });
+applyResearchRevisions({ puzzles, lessons });
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
 for (const locale of ['en','lv']) for (const difficulty of ['easy','medium','hard']) {
   const list=puzzles[locale][difficulty];

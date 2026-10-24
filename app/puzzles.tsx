@@ -1,3 +1,4 @@
+import { getLearningRecommendation } from "@/utils/learning-recommendations";
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
 import { LearningLevelCard } from "@/components/puzzle/LearningLevelCard";
 import { LessonListItem } from "@/components/puzzle/LessonListItem";
@@ -19,6 +20,7 @@ import type { LearningLevel } from "@/types/curriculum";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { useLayoutEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -41,8 +43,32 @@ export default function PuzzlesScreen() {
   const title = lesson?.title[locale] ?? topic?.title[locale] ?? t("learning.chooseTopic");
   const description = lesson?.description[locale] ?? topic?.description[locale] ?? t("learning.topicIntro");
   const availableLevels = lesson?.levels.filter(level => getLearningLevelState(lesson, level, completed) === "current");
+  const recommendation = getLearningRecommendation(progress, difficulty, topic?.id);
   const firstAvailable = availableLevels?.find(level => level.kind === "practice")
     ?? availableLevels?.find(level => level.kind === "boss") ?? availableLevels?.[0];
+  const nextLesson = !lesson ? lessons.find(item => isLessonAvailable(item, completed)
+    && !getLearningProgress(getRequiredIds(item), completed).complete) : undefined;
+  const scrollKey = `${difficulty}-${topic?.id}-${lesson?.id}`;
+  const nextItemId = lesson ? firstAvailable?.id : nextLesson?.id;
+  const targetKey = nextItemId ? `${scrollKey}-${nextItemId}` : undefined;
+  const scrollRef = useRef<ScrollView>(null);
+  const positionedTarget = useRef<string | undefined>(undefined);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const [targetLayout, setTargetLayout] = useState({ key: "", y: 0 });
+  const [contentLayout, setContentLayout] = useState({ key: "", height: 0 });
+  const [scrollContent, setScrollContent] = useState({ key: "", height: 0 });
+  const targetReady = targetKey !== undefined && targetLayout.key === targetKey && contentLayout.key === scrollKey;
+  // Enough trailing space lets even the final card sit just below the Back button.
+  const trailingSpace = targetReady ? Math.max(0, targetLayout.y + viewportHeight - contentLayout.height) : 0;
+
+  useLayoutEffect(() => { positionedTarget.current = undefined; }, [scrollKey]);
+
+  useLayoutEffect(() => {
+    if (!targetReady || !viewportHeight || scrollContent.key !== scrollKey
+      || scrollContent.height + 1 < targetLayout.y + viewportHeight || positionedTarget.current === targetKey) return;
+    scrollRef.current?.scrollTo({ y: targetLayout.y, animated: false });
+    positionedTarget.current = targetKey;
+  }, [targetReady, viewportHeight, scrollContent, scrollKey, targetLayout, targetKey]);
 
   function navigate(topicId?: string, lessonId?: string, tier = difficulty) {
     router.push({ pathname: "/puzzles", params: { difficulty: tier, ...(topicId && { topic: topicId }), ...(lessonId && { lesson: lessonId }) } });
@@ -76,15 +102,27 @@ export default function PuzzlesScreen() {
         {!topic && <DifficultyPicker selected={difficulty} onSelect={tier => {
           router.replace({ pathname: "/puzzles", params: { difficulty: tier } });
         }} />}
-        <ScrollView key={`${difficulty}-${topic?.id}-${lesson?.id}`} style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView key={scrollKey} ref={scrollRef} style={styles.scroll}
+          contentContainerStyle={{ paddingBottom: trailingSpace }} showsVerticalScrollIndicator={false}
+          onLayout={event => setViewportHeight(event.nativeEvent.layout.height)}
+          onContentSizeChange={(_, height) => setScrollContent({ key: scrollKey, height })}>
+          <View style={styles.content} onLayout={event => setContentLayout({ key: scrollKey, height: event.nativeEvent.layout.height })}>
           {topic && <Text style={styles.location}>{[t(`difficulty.${difficulty}`), ...(lesson ? [topic.title[locale]] : [])].join(" / ")}</Text>}
           <Text style={styles.title} accessibilityRole="header">{title}</Text>
           <Text style={styles.description}>{description}</Text>
+          <Pressable style={styles.learn} accessibilityRole="button" onPress={() => router.push({ pathname: "/learn", params: { lesson: lesson?.id ?? lessons[0]?.id ?? getTopicLessons(difficulty, topics[0].id)[0].id } })}>
+            <AppIcon name="paw" size={28} /><View style={{ flex: 1 }}><Text style={styles.backText}>{t("guided.title")}</Text><Text style={styles.description}>{t("guided.promise")}</Text></View>
+          </Pressable>
           {scopeProgress && <View style={styles.scopeProgress} accessible accessibilityLabel={t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}>
             {lesson ? <Text style={styles.progressText}>{t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}</Text>
               : <View style={styles.row}><Text style={styles.progressText}>{t("lessonProgress.requiredTasks")}</Text><Text style={styles.progressText}>{scopeProgress.solved}/{scopeProgress.total}</Text></View>}
             <ProgressBar progress={scopeProgress.total ? scopeProgress.solved / scopeProgress.total : 0} fillColor={GameColors.success} trackColor={GameColors.cardBorder} />
           </View>}
+
+          {!lesson && recommendation ? <Pressable accessibilityRole="button" style={styles.topic} onPress={() => {
+            if (recommendation.kind === "ready") navigate(recommendation.lesson.topicId, recommendation.lesson.id);
+            else router.push({ pathname: recommendation.kind === "review" ? "/review" : "/learn", params: { lesson: recommendation.lesson.id } });
+          }}><Text style={styles.lessonTitle}>{t(`guided.${recommendation.kind === "ready" ? "recommended" : recommendation.kind}`)}</Text><Text style={styles.backText}>{recommendation.lesson.title[locale]}</Text><Text style={styles.description}>{t(`guided.${recommendation.kind === "ready" ? "ready" : recommendation.kind === "review" ? "reviewReason" : "supportReason"}`)}</Text></Pressable> : null}
 
           {!topic && topics.map(item => {
             const status = getTopicProgress(difficulty, item.id, completed);
@@ -105,14 +143,21 @@ export default function PuzzlesScreen() {
             </Pressable>;
           })}
 
-          {topic && !lesson && lessons.map((item, index) => <LessonListItem key={item.id} lesson={item} number={index + 1}
-            progress={progress} onPress={() => navigate(topic.id, item.id)} />)}
+          {topic && !lesson && lessons.map((item, index) => <View key={`${item.id}-${item.id === nextLesson?.id}`}
+            onLayout={item.id === nextLesson?.id ? event => setTargetLayout({ key: targetKey!, y: event.nativeEvent.layout.y }) : undefined}>
+            <LessonListItem lesson={item} number={index + 1} progress={progress} onPress={() => navigate(topic.id, item.id)} />
+          </View>)}
 
           {lesson && lesson.levels.map((level, index) => {
             const state = getLearningLevelState(lesson, level, completed);
-            if (level.kind !== "practice") return <LearningLevelCard key={level.id} level={level} state={state} completedIds={completed} onPress={() => play(level)} />;
-            return <PuzzlePathItem key={level.id} puzzle={getLevelPuzzles(locale, lesson, level)[0]} puzzleNumber={index + 1}
-              state={state} lockedMessage={t("learning.puzzleLocked")} onPress={() => play(level)} />;
+            const isNext = level.id === firstAvailable?.id;
+            return <View key={`${level.id}-${isNext}`}
+              onLayout={isNext ? event => setTargetLayout({ key: targetKey!, y: event.nativeEvent.layout.y }) : undefined}>
+              {level.kind !== "practice"
+                ? <LearningLevelCard level={level} state={state} completedIds={completed} onPress={() => play(level)} />
+                : <PuzzlePathItem puzzle={getLevelPuzzles(locale, lesson, level)[0]} puzzleNumber={index + 1}
+                  state={state} lockedMessage={t("learning.puzzleLocked")} onPress={() => play(level)} />}
+            </View>;
           })}
           {lesson && practiceComplete && <View style={styles.completion}>
             <AppIcon name={scopeProgress?.complete ? "check" : "paw"} size={moderateScale(30)} />
@@ -123,6 +168,7 @@ export default function PuzzlesScreen() {
             </Pressable>
           </View>}
           {!topic && <Pressable onPress={() => router.push("/stats")} style={styles.secondary} accessibilityRole="button"><Text style={styles.backText}>{t("stats.title")}</Text></Pressable>}
+          </View>
         </ScrollView>
         {lesson && firstAvailable && <Pressable onPress={() => play(firstAvailable)} style={styles.primary} accessibilityRole="button">
           <Text style={styles.primaryText}>{firstAvailable.kind === "practice" ? t("learning.continueLesson") : t(`learning.start_${firstAvailable.kind}`)}</Text>
@@ -133,6 +179,7 @@ export default function PuzzlesScreen() {
 }
 
 const styles = StyleSheet.create({
+  learn: { flexDirection: "row", alignItems: "center", gap: 12, minHeight: 64, padding: 14, borderRadius: 16, backgroundColor: "#E8FAF8" },
   safe: { flex: 1, backgroundColor: GameColors.background },
   loading: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: GameColors.background },
   screen: { flex: 1, paddingHorizontal: moderateScale(16), gap: moderateScale(12), paddingBottom: moderateScale(8) },

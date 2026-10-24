@@ -217,7 +217,7 @@ for(const skin of ['orange','grey','white']) {
     const after=transforms.getWorldTransform(asset.getFirstEntityByName('head')).data;
     const change=Math.atan2(Math.sin(Math.atan2(after[8],after[10])-yaw),Math.cos(Math.atan2(after[8],after[10])-yaw));
     assert.ok(Math.abs(change)<.04,`Changing commands carries the head pose into the new anticipation: ${change} at ${phase}`);
-    assert.ok(distance(spine,point('spine'))<.003,'Changing commands preserves the current body crouch');
+    assert.ok(distance(spine,point('spine'))<.003,`Changing commands preserves the current body crouch: ${distance(spine,point('spine'))} at ${phase}: ${spine} -> ${point('spine')}`);
   }
   console.log(`Verified ${skin}: turn-to-walk overlap, short strides, fixed first contacts, continuous touchdowns, mid-handoff pause and interruptions at 30/60/120 FPS.`);
   slots=[];rootTransform=new Transform();

@@ -980,7 +980,7 @@ const startupVisualReadiness = [];
 mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { startupVisualReadiness.push(ready); } };
 let sceneReduced = false;
 mocks['@/hooks/use-animation-activity'] = { useAnimationActivity: () => ({ active: true, reduceMotion: sceneReduced }) };
-Object.assign(mocks['react-native-filament'], { FilamentScene: 'FilamentScene', FilamentView: 'FilamentView', DefaultLight: 'Light', useWorld: () => ({}), useStaticPlaneShape() {}, useBoxShape() {}, useRigidBody() {} });
+Object.assign(mocks['react-native-filament'], { FilamentScene: 'FilamentScene', FilamentView: 'FilamentView', DefaultLight: 'Light', useWorld: () => ({}), useStaticPlaneShape() {}, useBoxShape() {}, useSphereShape() {}, useRigidBody() {} });
 mocks['@/components/recovery/RecoveryBoundary'] = { RecoveryBoundary: 'RecoveryBoundary' };
 mocks['@/components/recovery/SceneLoadGuard'] = { SceneLoadGuard: 'SceneLoadGuard' };
 mocks['@/lib/graphics-mode'] = { enableSimpleGraphicsForSession() {} };
@@ -1593,6 +1593,39 @@ for (const fps of [30, 60, 120]) {
   assert.equal(body.position[1], w.FLOOR_Y + radius);
 }
 console.log('Verified landed balls stay put after play, save/reload at the same floor position, and recover locally at boundaries at 30/60/120 FPS.');
+
+// Couple the production floor-toy callback to the actual cat rig.
+for(const fps of [30,60,120]) {
+  const room=w.buildNativeRoomWorld({...base,petSize:80,toys:[{toyId:'blueBall',instanceId:'touch-ball',offset:{x:0,y:.3}}]});
+  const object=room.objects[0],radius=Math.max(object.max[0]-object.min[0],object.max[2]-object.min[2])/2;
+  const center=object.min.map((v,i)=>(v+object.max[i])/2),impulses=[];
+  const body={position:center,setPosition(...p){this.position=p},setKinematic(){},applyCentralImpulse(...p){impulses.push(p)}};
+  mocks['react-native-filament'].useRigidBody=()=>body;
+  transformManager.updateTransformByRigidBody=()=>{toyRoot=matrix(body.position)};
+  const plan={kind:'toyPlay',targetInstanceId:object.instanceId,steps:[]};
+  const walk=w.prepareNativeStep(plan,{position:{x:0,y:0},animation:'walk',durationMs:1000},w.catScreenPoint(room.home,room),room,w.FLOOR_Y);
+  const approach=walk.native.path.at(-1);
+  const bat=w.prepareNativeStep(plan,{position:w.catScreenPoint(approach,room),animation:'batToy',durationMs:2000},w.catScreenPoint(approach,room),room,w.FLOOR_Y);
+  const floorToy={value:undefined},paws={value:[]},catPosition={value:approach};
+  slots=[];catRoot=matrix();liveLocals=posedTail('idle',0,[0,0,0],0,1,[],true);
+  render({playback:{kind:'segment',segment:{assetKey:'batToy',loop:true}},active:true,
+    world:room,travel:bat.native,floorToy,pawPositions:paws,positionValue:catPosition,initialPosition:approach});
+  const catFrame=renderFrame;
+  const child=sceneChildren({world:room,catPresent:true,playingId:object.instanceId}).find(c=>c.type.name==='RoomObject');
+  toyRoot=matrix();toyNodes=new Map();slots=[];cursor=0;effects=[];
+  child.type({...child.props,floorToy,pawPositions:paws,catPosition,playContact:true});effects.forEach(fn=>fn());
+  const objectFrame=renderFrame;
+  for(let i=0;i<fps*2;i++)objectFrame({timeSinceLastFrame:1/fps});
+  assert.equal(impulses.length,0,'Standing beside a ball without paw contact cannot kick it');
+  for(let i=0;i<fps*2;i++){catFrame({timeSinceLastFrame:1/fps});objectFrame({timeSinceLastFrame:1/fps});}
+  assert.ok(impulses.length>0,`Real floor-toy approach and swats must make physical contact at ${fps} FPS`);
+  assert.ok(impulses.length<=2,'Each swat produces one impulse, without repeated pushing during the hold');
+  const count=impulses.length;
+  for(let i=0;i<fps;i++)objectFrame({timeSinceLastFrame:1/fps});
+  assert.equal(impulses.length,count,'A frozen paw cannot keep kicking the ball');
+  assert.ok(impulses.every(p=>Math.hypot(p[0],p[2])<=.120001),'Paw speed produces bounded toy impulses');
+}
+console.log('Verified real floor-toy approaches and paw-triggered impulses, no proximity kicks and no repeated stationary contacts at 30/60/120 FPS.');
 
 // Move the real chair root entirely through its drawing-thread shared preview.
 {
