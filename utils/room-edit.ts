@@ -58,21 +58,37 @@ export function applyRoomObjectEdits(pet: PetProfile, edits: RoomObjectEdit[], r
   const room = withRoomPlacementDraft(pet, draft);
   const removed = new Set(remove), byId = new Map(edits.map(edit => [edit.instanceId, edit]));
   const bed = byId.get('bed');
-  return syncPetLayerOrder({ ...room,
-    roomPetOffset: byId.get('cat')?.offset ?? room.roomPetOffset,
+  const updateItems = <T extends PlacedToy | PlacedDecoration>(items: T[] | undefined): T[] | undefined => {
+    if (!items) return items;
+    const next = items.filter(item => !removed.has(item.instanceId)).map(item => {
+      const edit = byId.get(item.instanceId);
+      if (!edit) return removed.has(item.support?.parentId ?? '') ? { ...item, support: undefined } : item;
+      const updated = { ...item, ...edit,
+        offset: reuseOffset(item.offset, edit.offset),
+        support: 'support' in edit ? reuseSupport(item.support, edit.support) : item.support };
+      return Object.keys(updated).every(key => Object.is(updated[key as keyof T], item[key as keyof T])) ? item : updated;
+    });
+    return next.length === items.length && next.every((item, index) => item === items[index]) ? items : next;
+  };
+  const next = { ...room,
+    roomPetOffset: reuseOffset(room.roomPetOffset, byId.get('cat')?.offset ?? room.roomPetOffset),
     bedId: removed.has('bed') ? undefined : room.bedId,
-    roomBedOffset: bed?.offset ?? room.roomBedOffset,
+    roomBedOffset: reuseOffset(room.roomBedOffset, bed?.offset ?? room.roomBedOffset),
     bedRotationDegrees: bed?.rotationDegrees ?? room.bedRotationDegrees,
     bedScale: bed?.scale ?? room.bedScale,
-    placedToys: room.placedToys?.filter(item => !removed.has(item.instanceId)).map(item => {
-      const edit = byId.get(item.instanceId);
-      return edit ? { ...item, ...edit } : removed.has(item.support?.parentId ?? '') ? { ...item, support: undefined } : item;
-    }),
-    placedDecorations: room.placedDecorations?.filter(item => !removed.has(item.instanceId)).map(item => {
-      const edit = byId.get(item.instanceId);
-      return edit ? { ...item, ...edit } : removed.has(item.support?.parentId ?? '') ? { ...item, support: undefined } : item;
-    }),
-  });
+    placedToys: updateItems(room.placedToys),
+    placedDecorations: updateItems(room.placedDecorations),
+  };
+  return syncPetLayerOrder(Object.keys(next).every(key => Object.is(next[key as keyof PetProfile], room[key as keyof PetProfile])) ? room : next);
+}
+
+function reuseOffset(previous: RoomObjectEdit['offset'] | undefined, next: RoomObjectEdit['offset'] | undefined) {
+  return previous?.x === next?.x && previous?.y === next?.y ? previous : next;
+}
+
+function reuseSupport(previous: RoomItemSupport | undefined, next: RoomItemSupport | undefined) {
+  return previous && next && previous.parentId === next.parentId && previous.heading === next.heading
+    && previous.position.every((value, index) => value === next.position[index]) ? previous : next;
 }
 
 /** A saved layout cannot allocate copies that are now used in another named room. */

@@ -1,0 +1,205 @@
+{
+  "task": "Furniture drop/save stalls",
+  "baseline": "81f6543e7c7de84cf65ec19639a2e9f34859aab7",
+  "capturedAcrossLocalDates": [
+    "2026-10-24",
+    "2026-10-25"
+  ],
+  "environment": "iOS 27 simulator in Device Hub, Hermes, Expo development build, React Compiler, React DevTools profiling",
+  "procedure": [
+    "Baseline: select Green Bed in the furnished living room; drag from (307,833) to (322,838), release, capture successful autosave with an initially empty Undo stack.",
+    "Final: reload updated app; repeat the same selected-bed drag and successful autosave from the original layout.",
+    "Repeat: after the first successful save, move the bed using its Right accessibility action; verify autosave with existing Undo history. This is a repeated-save check, not a second continuous-drag sample.",
+    "Undo all test changes; verify Undo disabled and original layout restored. Temporary profiler wrappers removed and drag measurement disabled."
+  ],
+  "captures": {
+    "before": {
+      "durationMs": 11906.695291996002,
+      "saveCommitMs": 240.08,
+      "roomStageRenderMs": [
+        {
+          "fiberId": 350,
+          "ms": 27.695
+        },
+        {
+          "fiberId": 808,
+          "ms": 83.993
+        },
+        {
+          "fiberId": 1476,
+          "ms": 61.818
+        },
+        {
+          "fiberId": 2212,
+          "ms": 39.07
+        }
+      ],
+      "largeCommits": [
+        {
+          "ms": 240.08,
+          "updaters": [
+            "Forget(PetStage)",
+            "Forget(GameProvider)"
+          ]
+        },
+        {
+          "ms": 33.606,
+          "updaters": [
+            "Forget(HomeContent)"
+          ]
+        }
+      ],
+      "raf": {
+        "samples": 679,
+        "maximumGapMs": 570.7682919502258
+      }
+    },
+    "after": {
+      "durationMs": 10108.772082924843,
+      "saveCommitMs": 68.067,
+      "roomStageRenderMs": [
+        {
+          "fiberId": 350,
+          "ms": 5.279
+        },
+        {
+          "fiberId": 808,
+          "ms": 33.54
+        },
+        {
+          "fiberId": 1485,
+          "ms": 7.668
+        },
+        {
+          "fiberId": 2233,
+          "ms": 5.157
+        }
+      ],
+      "largeCommits": [
+        {
+          "ms": 11.509,
+          "updaters": [
+            "Forget(Memo(PetStage))"
+          ]
+        },
+        {
+          "ms": 68.067,
+          "updaters": [
+            "Forget(Memo(PetStage))",
+            "Forget(GameProvider)"
+          ]
+        },
+        {
+          "ms": 11.023,
+          "updaters": [
+            "BoxCollider",
+            "BoxCollider",
+            "BoxCollider",
+            "Forget(RoomObject)",
+            "Forget(HomeContent)"
+          ]
+        }
+      ],
+      "raf": {
+        "samples": 590,
+        "maximumGapMs": 278.5950839519501
+      }
+    },
+    "after-repeat": {
+      "durationMs": 8605.863165974617,
+      "saveCommitMs": 68.766,
+      "roomStageRenderMs": [
+        {
+          "fiberId": 350,
+          "ms": 6.023
+        },
+        {
+          "fiberId": 808,
+          "ms": 34.952
+        },
+        {
+          "fiberId": 1485,
+          "ms": 5.427
+        },
+        {
+          "fiberId": 2233,
+          "ms": 7.433
+        }
+      ],
+      "largeCommits": [
+        {
+          "ms": 68.766,
+          "updaters": [
+            "Memo(DraggableRoomPetView)",
+            "Forget(Memo(PetStage))",
+            "Forget(GameProvider)"
+          ]
+        }
+      ],
+      "raf": {
+        "samples": 501,
+        "maximumGapMs": 265.91337502002716
+      }
+    }
+  },
+  "findings": [
+    "Save validation and applying edits each stayed below 1 ms.",
+    "Baseline unnecessarily replaced both furniture arrays on bed movement, invalidating removal menus in all rooms.",
+    "Latest callback bridges keep stationary native targets cached, without using stale drop validation or removal lookups.",
+    "Collision resolver rebuilt stationary geometry indexes after each drop; an intermediate capture measured 33.649 ms in resolver creation. Per-room caches now reuse exact shape inputs and discard removed objects.",
+    "Undo history no longer replaces its controls for each added entry. On first save, only the edited room rerenders for availability."
+  ],
+  "limitations": [
+    "These are development-build React render/commit measurements, not physical finger-to-display or production-device latency.",
+    "Only one paired baseline/final successful drag was captured; the repeated sample uses accessibility movement.",
+    "The maximum sampled JS animation-frame gap fell from about 571 ms to 279 ms; measurable gaps remain, including devtools/native work outside React render duration. This does not establish frame-perfect drop latency.",
+    "The world clock advanced naturally from daytime to nighttime between captures. Furniture layout and tested bed movement were restored between runs."
+  ],
+  "navigation": [
+    {
+      "file": "app/index.tsx",
+      "unchanged": true
+    },
+    {
+      "file": "hooks/use-room-transition.ts",
+      "unchanged": true
+    },
+    {
+      "file": "hooks/use-room-activity.ts",
+      "unchanged": true
+    },
+    {
+      "file": "components/pet/RoomNavigation.tsx",
+      "unchanged": true
+    }
+  ],
+  "tests": {
+    "backend": "174/174 passed",
+    "typecheck": "passed",
+    "lint": "passed",
+    "roomEditing": "passed, including reference preservation, cached/fresh collision parity and support invalidation",
+    "roomPicking": "passed",
+    "catTaskChains": "passed",
+    "roomPerformance": "passed",
+    "nativeRoom": "passed; harness updated for existing UI shared values, Filament shared-value sync and __DEV__"
+  },
+  "sourceFiles": [
+    "components/home/HomeRoomStage.tsx",
+    "components/pet/DraggableRoomPet.tsx",
+    "components/pet/PetStage.tsx",
+    "hooks/use-room-editor.ts",
+    "scripts/backend/test-screen-renders.mjs",
+    "scripts/backend/test-wallet-client.mjs",
+    "scripts/check-native-room.mjs",
+    "scripts/check-room-editing.mjs",
+    "utils/room-edit.ts",
+    "utils/room-item-placement.ts"
+  ],
+  "cleanup": {
+    "ownTestPlacementsUndone": true,
+    "undoDisabledAfterRestoration": true,
+    "profilerWrappersRestored": true,
+    "dragMeasurementEnabled": false,
+    "noNewPickingErrors": true
+  }
+}

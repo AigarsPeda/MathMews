@@ -309,59 +309,77 @@ function closestBoxDirection(a: Box, b: Box): Vec3 | undefined {
   return nearest && distance > .00000001 ? nearest.map(v => v / Math.sqrt(distance)) as Vec3 : undefined;
 }
 
+const PLACEMENT_CELL_SIZE = .5;
+function visitPlacementCells(box: Box, visit: (key: string) => void) {
+  const minX = Math.floor((box.center[0] - box.extentX) / PLACEMENT_CELL_SIZE), maxX = Math.floor((box.center[0] + box.extentX) / PLACEMENT_CELL_SIZE);
+  const minZ = Math.floor((box.center[2] - box.extentZ) / PLACEMENT_CELL_SIZE), maxZ = Math.floor((box.center[2] + box.extentZ) / PLACEMENT_CELL_SIZE);
+  // Before layout, screen-sized models can be enormous. Bound grid allocation.
+  const count = (maxX - minX + 1) * (maxZ - minZ + 1);
+  if (!Number.isFinite(count) || count > 256) return false;
+  for (let x = minX; x <= maxX; x++) for (let z = minZ; z <= maxZ; z++) visit(`${x}:${z}`);
+  return true;
+}
+
+function indexPlacementShape(object: NativeRoomObject) {
+  const parts = boxes(object), grid = new Map<string, Set<Box>>(), fallback = new Set<Box>();
+  for (const box of parts) {
+    if (!visitPlacementCells(box, key => {
+      let cell = grid.get(key);
+      if (!cell) { cell = new Set(); grid.set(key, cell); }
+      cell.add(box);
+    })) fallback.add(box);
+  }
+  return { boxes: parts, magnets: magnetUnits.has(object.modelId) ? magnetBoxes(object) : parts, grid, fallback };
+}
+
+type PlacementIndexCache = Map<string, { key: string; index: ReturnType<typeof indexPlacementShape> }>;
+
+/** Own one cache per room, retaining only the latest geometry of its live items. */
+export function createRoomPlacementResolverCache() {
+  const cache: PlacementIndexCache = new Map();
+  return (world: NativeRoomWorld, ignoredIds: string[] = []) => createRoomPlacementResolver(world, ignoredIds, cache);
+}
+
 /** Cache fixed obstacles once per layout, rather than rebuild the room while dragging. */
-export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: string[] = []) {
+export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: string[] = [], cache?: PlacementIndexCache) {
   const ignored = new Set(ignoredIds);
-  const obstacles = world.objects.filter(object => !ignored.has(object.instanceId)).map(object => ({ id: object.instanceId, object, boxes: boxes(object), magnets: magnetBoxes(object) }));
-  // Index structural boxes, not their enclosing mesh bounds. Open chair frames
-  // and rotated models still use the exact separating-axis test below.
-  const cellSize = .5;
+  if (cache) {
+    const retained = new Set(world.objects.map(object => object.instanceId));
+    for (const id of cache.keys()) if (!retained.has(id)) cache.delete(id);
+  }
+  const obstacles = world.objects.filter(object => !ignored.has(object.instanceId)).map(object => {
+    // These are exactly the inputs read by boxes/magnetBoxes. Keep the current
+    // object separately so support, wall and other placement rules never go stale.
+    const key = JSON.stringify([object.modelId, object.collidable, object.heading, object.scale, object.position]);
+    const previous = cache?.get(object.instanceId);
+    const index = previous?.key === key ? previous.index : indexPlacementShape(object);
+    cache?.set(object.instanceId, { key, index });
+    return { id: object.instanceId, object, ...index };
+  });
   const cells = new Map<string, Set<typeof obstacles[number]>>();
   const unindexed = new Set<typeof obstacles[number]>();
-  const visitCells = (box: Box, visit: (key: string) => void) => {
-    const minX = Math.floor((box.center[0] - box.extentX) / cellSize), maxX = Math.floor((box.center[0] + box.extentX) / cellSize);
-    const minZ = Math.floor((box.center[2] - box.extentZ) / cellSize), maxZ = Math.floor((box.center[2] + box.extentZ) / cellSize);
-    // Before layout, screen-sized models are temporarily enormous in world units.
-    // A large or malformed saved object must never allocate an unbounded grid.
-    const count = (maxX - minX + 1) * (maxZ - minZ + 1);
-    if (!Number.isFinite(count) || count > 256) return false;
-    for (let x = minX; x <= maxX; x++) for (let z = minZ; z <= maxZ; z++) visit(`${x}:${z}`);
-    return true;
-  };
-  for (const obstacle of obstacles) for (const box of obstacle.boxes) {
-    const indexed = visitCells(box, key => {
+  for (const obstacle of obstacles) {
+    for (const key of obstacle.grid.keys()) {
       let cell = cells.get(key);
       if (!cell) { cell = new Set(); cells.set(key, cell); }
       cell.add(obstacle);
-    });
-    if (!indexed) unindexed.add(obstacle);
+    }
+    if (obstacle.fallback.size) unindexed.add(obstacle);
   }
   const nearby = (own: Box[]) => {
     const result = new Set(unindexed);
     for (const box of own) {
-      const indexed = visitCells(box, key => {
+      const indexed = visitPlacementCells(box, key => {
         for (const obstacle of cells.get(key) ?? []) result.add(obstacle);
       });
       if (!indexed) return new Set(obstacles);
     }
     return result;
   };
-  const boxIndexes = new Map(obstacles.map(obstacle => {
-    const grid = new Map<string, Set<Box>>(), fallback = new Set<Box>();
-    for (const box of obstacle.boxes) {
-      if (!visitCells(box, key => {
-        let cell = grid.get(key);
-        if (!cell) { cell = new Set(); grid.set(key, cell); }
-        cell.add(box);
-      })) fallback.add(box);
-    }
-    return [obstacle, { grid, fallback }];
-  }));
   const nearbyBoxes = (box: Box, obstacle: typeof obstacles[number], reach: number) => {
-    const index = boxIndexes.get(obstacle)!;
-    const found = new Set(index.fallback);
-    if (!visitCells({ ...box, extentX: box.extentX + reach, extentZ: box.extentZ + reach }, key => {
-      for (const candidate of index.grid.get(key) ?? []) found.add(candidate);
+    const found = new Set(obstacle.fallback);
+    if (!visitPlacementCells({ ...box, extentX: box.extentX + reach, extentZ: box.extentZ + reach }, key => {
+      for (const candidate of obstacle.grid.get(key) ?? []) found.add(candidate);
     })) return obstacle.boxes;
     return [...found];
   };

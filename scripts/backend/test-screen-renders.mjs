@@ -34,7 +34,7 @@ async function harness(screen = 'store', compiled = false) {
   const actions = Object.fromEntries(['setProgress', 'purchaseRoom', 'equipRoom', 'purchaseBed', 'equipBed',
     'removeBedFromRoom', 'purchaseToy', 'placeToyInRoom', 'removeToyFromRoom', 'purchaseDecoration',
     'placeDecorationInRoom', 'removeDecorationFromRoom', 'purchaseSkin', 'equipSkin', 'recordInteraction',
-    'requestRoomDecoration', 'buyLife'].map(name => [name, (...args) => {
+    'requestRoomDecoration', 'setPet', 'buyLife'].map(name => [name, (...args) => {
       calls.push([name, ...args]);
       return name.startsWith('purchase') ? Promise.resolve('unavailable') : false;
     }]));
@@ -106,7 +106,7 @@ async function harness(screen = 'store', compiled = false) {
     'react/compiler-runtime': await import('react/compiler-runtime'),
     'react-native': { View: view('View'), Image: view('Image'), Pressable: view('Pressable'), Text: view('Text'), ScrollView: view('ScrollView'),
       ActivityIndicator: view('ActivityIndicator'), FlatList, Platform: { OS: 'web' },
-      StyleSheet: { create: x => x }, useWindowDimensions: () => dimensions,
+      StyleSheet: { create: x => x }, PanResponder: { create: handlers => ({ panHandlers: handlers }) }, useWindowDimensions: () => dimensions,
       Dimensions: { get: () => dimensions }, PixelRatio: { roundToNearestPixel: x => x } },
     'react-native-safe-area-context': { SafeAreaView: view('SafeAreaView'), useSafeAreaInsets: () => insets },
     'expo-router': { useRouter: () => router, Redirect: view('Redirect'), useFocusEffect: fn => React.useEffect(fn, [fn]) },
@@ -121,9 +121,10 @@ async function harness(screen = 'store', compiled = false) {
   };
   if (screen === 'mood' || screen === 'home' || screen === 'stage' || screen === 'home-stage') delete mocks['@/hooks/use-world-clock-now'];
   if (screen === 'home') delete mocks['@/hooks/use-cat-bedtime'];
+  if (screen === 'room-editor') delete mocks['@/hooks/use-room-editor'];
   function load(id, base = process.cwd()) {
     if (id in mocks) return mocks[id];
-    if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !(screen === 'overlay' && id.endsWith('/RoomPlacementOverlay')) && !((screen === 'stage' || screen === 'home-stage') && id.endsWith('/PetStage'))) {
+    if ((id.startsWith('@/components/') || id.startsWith('@/pet-display/components/')) && !id.endsWith('/GameHeaderStats') && !id.endsWith('/HomePuzzleHint') && !id.endsWith('/HomeRoomStage') && !(screen === 'drag-target' && id.endsWith('/DraggableRoomPet')) && !(screen === 'overlay' && id.endsWith('/RoomPlacementOverlay')) && !((screen === 'stage' || screen === 'home-stage') && id.endsWith('/PetStage'))) {
       const name = id.split('/').at(-1);
       return new Proxy({ [name]: view(name) }, { get: (target, key) => key === 'ROOM_NAVIGATION_HEIGHT' ? 52 : target[key] ?? view(key) });
     }
@@ -135,7 +136,7 @@ async function harness(screen = 'store', compiled = false) {
     const module = { exports: {} }; cache.set(file, module);
     if (file.endsWith('.json')) { module.exports = JSON.parse(fs.readFileSync(file, 'utf8')); return module.exports; }
     let source = fs.readFileSync(file, 'utf8');
-    if (compiled && (file.endsWith('.tsx') || file.endsWith('/use-pet-base-mood.ts') || file.endsWith('/use-world-period.ts'))) {
+    if (compiled && (file.endsWith('.tsx') || file.endsWith('/use-pet-base-mood.ts') || file.endsWith('/use-world-period.ts') || file.endsWith('/use-room-editor.ts'))) {
       source = transformSync(source, { filename: file, configFile: false, babelrc: false,
         parserOpts: { plugins: ['typescript', 'jsx'] }, plugins: [['babel-plugin-react-compiler', { target: '19' }]],
       }).code;
@@ -173,7 +174,12 @@ async function harness(screen = 'store', compiled = false) {
     });
   }
   function MoodProbe() { props.set('mood', load('@/pet-display/hooks/use-pet-base-mood').usePetBaseMood(game.pet, game.worldClock)); counts.set('mood', (counts.get('mood') ?? 0) + 1); return null; }
-  const Screen = screen === 'overlay' ? OverlayProbe : screen === 'stage' ? StageProbe : screen === 'mood' ? MoodProbe : screen === 'store' ? load('@/app/store').default : screen === 'home' || screen === 'home-stage' ? load('@/app/index').default : load('@/components/economy/GameHeaderStats').GameHeaderStats;
+  function DragTargetProbe() { return React.createElement(load('@/components/pet/DraggableRoomPet').DraggableRoomPet,
+    { testID: 'target', petSize: 60, accessibilityLabel: 'Bed', ...stageProps }); }
+  function RoomEditorProbe() { props.set('editor', load('@/hooks/use-room-editor').useRoomEditor(game.pet, actions.setPet, game.progress)); return null; }
+  function HomeAdapterProbe() { return React.createElement(load('@/components/home/HomeRoomStage').HomeRoomStage,
+    { savedRoom: game.pet, homeRoomId: 'livingRoom', commitRoomEdit: actions.setPet, completeRoomActivity: actions.recordInteraction, ...stageProps }); }
+  const Screen = screen === 'home-adapter' ? HomeAdapterProbe : screen === 'drag-target' ? DragTargetProbe : screen === 'room-editor' ? RoomEditorProbe : screen === 'overlay' ? OverlayProbe : screen === 'stage' ? StageProbe : screen === 'mood' ? MoodProbe : screen === 'store' ? load('@/app/store').default : screen === 'home' || screen === 'home-stage' ? load('@/app/index').default : load('@/components/economy/GameHeaderStats').GameHeaderStats;
   const errors = [], onError = error => errors.push(error);
   const root = renderer.createContainer({}, 1, null, false, null, '', onError, onError, onError, null);
   async function update(fn) { await act(async () => { await fn(); }); if (errors.length) throw errors[0]; }
@@ -202,6 +208,107 @@ async function harness(screen = 'store', compiled = false) {
 
 for (const compiled of [false, true]) {
 const mode = compiled ? 'with React Compiler' : 'without React Compiler';
+
+test(`Undo availability only rerenders the room being decorated (${mode})`, async () => {
+  const h = await harness('home-adapter', compiled);
+  try {
+    const controls = { undo() {}, saveLayout() {}, restoreLayout() {}, canUndo: false, canRestore: false };
+    await h.setStage({ roomEditor: controls });
+    const count = h.count('PetStage');
+    await h.setStage({ roomEditor: { ...controls, canUndo: true } });
+    assert.equal(h.count('PetStage'), count, 'Other rooms do not rerender for Undo history');
+    await h.setStage({ roomToolbar: { decorating: true, onDecoratingChange() {} } });
+    assert.ok(h.count('PetStage') > count);
+    assert.equal(h.props('PetStage').roomEditor.canUndo, true);
+    await h.setStage({ roomEditor: controls });
+    assert.equal(h.props('PetStage').roomEditor.canUndo, false);
+  } finally { await h.close(); }
+});
+
+test(`unchanged drag targets retain their views but use the latest drop handlers (${mode})`, async () => {
+  const h = await harness('drag-target', compiled);
+  try {
+    const events = [];
+    const handlers = label => ({ onPetTap: () => events.push([label, 'tap']),
+      onDragStart: () => events.push([label, 'start']),
+      onDragPositionChange: point => { events.push([label, 'move']); return point; },
+      onDragEnd: point => { events.push([label, 'end']); return point; },
+      onOffsetChange: point => events.push([label, 'save', point]) });
+    await h.setStage({ ...handlers('old'), externalPosition: { x: 10, y: 20 }, initialOffset: { x: .1, y: .2 } });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const count = h.count('target');
+    await h.setStage({ ...handlers('latest'), externalPosition: { x: 10, y: 20 }, initialOffset: { x: .1, y: .2 } });
+    assert.equal(h.count('target'), count, 'Equivalent placement and fresh callbacks must not rebuild animated hit targets');
+    await h.update(() => h.props('target').onAccessibilityTap());
+    await h.update(() => {
+      const target = h.props('target');
+      target.onPanResponderGrant();
+      target.onPanResponderMove({}, { dx: 20, dy: 10 });
+      target.onPanResponderRelease();
+    });
+    assert.deepEqual(events.map(event => event.slice(0, 2)), ['tap', 'start', 'move', 'end', 'save'].map(event => ['latest', event]));
+    const movedCount = h.count('target');
+    await h.setStage({ externalPosition: { x: 30, y: 25 }, selected: true });
+    assert.ok(h.count('target') > movedCount, 'Moved targets and selection must still update');
+    assert.equal(h.props('target').accessibilityState.selected, true);
+    await h.setStage({ onPetTap: undefined, onDragEnd: undefined, onOffsetChange: undefined, allowDrag: false });
+    const length = events.length;
+    await h.update(() => h.props('target').onAccessibilityTap());
+    assert.equal(events.length, length, 'Removed handlers cannot remain callable');
+  } finally { await h.close(); }
+});
+
+test(`Undo controls stay stable across saves and restore the latest layout (${mode})`, async () => {
+  const h = await harness('room-editor', compiled);
+  try {
+    const initial = h.game.pet;
+    const move = async x => h.setGame({ pet: { ...h.game.pet, roomBedOffset: { x, y: .3 } } });
+    await move(.1);
+    const first = h.props('editor');
+    assert.equal(first.canUndo, true);
+    await move(.2);
+    assert.equal(h.props('editor'), first, 'Another history entry does not change the toolbar');
+    await h.update(first.undo);
+    await h.setGame({ pet: h.calls.at(-1)[1](h.game.pet) });
+    assert.equal(h.game.pet.roomBedOffset.x, .1);
+    assert.equal(h.props('editor').canUndo, true);
+    await h.update(first.undo);
+    await h.setGame({ pet: h.calls.at(-1)[1](h.game.pet) });
+    assert.equal(h.game.pet.roomBedOffset, initial.roomBedOffset);
+    assert.equal(h.props('editor').canUndo, false);
+    await move(.4);
+    await h.setGame({ progress: { ...h.game.progress, toyQuantities: { ...h.game.progress.toyQuantities } } });
+    assert.equal(h.props('editor').canUndo, false, 'Ownership reconciliation invalidates old layouts');
+    const calls = h.calls.length;
+    await h.update(first.undo);
+    assert.equal(h.calls.length, calls, 'A previously captured Undo cannot restore revoked inventory');
+    await move(.5);
+    await h.setGame({ pet: { ...h.game.pet, homeRoomId: 'kitchen' } });
+    assert.equal(h.props('editor').canUndo, false, 'Room changes clear history');
+  } finally { await h.close(); }
+});
+
+test(`saving a bed preserves other rooms' furniture callbacks and native scenes (${mode})`, async () => {
+  const h = await harness('home', compiled);
+  try {
+    await h.setGame({ pet: h.load('@/utils/room-edit').applyRoomObjectEdits(h.game.pet, []) });
+    const before = h.props('PetStage:kitchen');
+    await h.setGame({ pet: h.load('@/utils/room-edit').applyRoomObjectEdits(h.game.pet,
+      [{ instanceId: 'bed', offset: { x: .2, y: .3 } }]) });
+    const after = h.props('PetStage:kitchen');
+    for (const key of ['placedToys', 'placedDecorations', 'roomToolbar', 'onCommitRoomEdit', 'onPlacedToyRemove', 'onPlacedDecorationRemove']) {
+      assert.equal(after[key], before[key], key);
+    }
+    assert.equal(h.game.pet.roomBedOffset.x, .2);
+    const removed = [];
+    await h.setGame({ pet: { ...h.game.pet, placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'new-bowl', offset: { x: .1, y: .2 } }] },
+      removeDecorationFromRoom: (...args) => { removed.push(args); return false; } });
+    const current = h.props('PetStage:kitchen');
+    assert.equal(current.onPlacedDecorationRemove, before.onPlacedDecorationRemove, 'Stationary room menus keep their callbacks after a decoration edit');
+    await h.update(() => before.onPlacedDecorationRemove('new-bowl'));
+    assert.deepEqual(removed, [['bowlBlue', 'new-bowl']], 'The retained menu callback resolves the latest item and action');
+  } finally { await h.close(); }
+});
 
 test(`placement outlines reuse geometry during translation and refresh for changed shape (${mode})`, async () => {
   const h = await harness('overlay', compiled);

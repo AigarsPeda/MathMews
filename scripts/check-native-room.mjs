@@ -18,7 +18,7 @@ function load(id) {
   const module = { exports: {} };cache.set(resolved, module);
   if (resolved.endsWith('.json')) { module.exports = JSON.parse(fs.readFileSync(resolved, 'utf8')); return module.exports; }
   const code = ts.transpileModule(fs.readFileSync(resolved, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } }).outputText;
-  vm.runInNewContext(code, { module, exports: module.exports, require: load, Math, Map, Set, performance, setTimeout, clearTimeout,
+  vm.runInNewContext(code, { module, exports: module.exports, require: load, Math, Map, Set, performance, setTimeout, clearTimeout, __DEV__: false,
     requestAnimationFrame: fn => { const id = ++frameRequest; frameRequests.set(id, fn); return id; },
     cancelAnimationFrame: id => frameRequests.delete(id) });return module.exports;
 }
@@ -963,6 +963,7 @@ React.memo = fn => fn;
 React.useState = value => [memo(() => value, []), () => {}];
 mocks['react/jsx-runtime'] = { jsx: (type, props, key) => ({ type, props, key }), jsxs: (type, props, key) => ({ type, props, key }) };
 mocks['react-native'] = { View: 'View', ActivityIndicator: 'ActivityIndicator', StyleSheet: { absoluteFill: {}, flatten: v => v, create: v => v } };
+mocks['react-native-reanimated'] = { useSharedValue: value => memo(() => ({ value, get() { return this.value; }, set(next) { this.value = next; } }), []) };
 mocks['./NativeFoodSpill'] = { NativeFoodSpill: 'FoodSpill' };
 mocks['./NativeAirflow'] = { NativeAirflow: 'Airflow' };
 mocks['./NativeFireplace'] = { NativeFireplace: 'Fireplace' };
@@ -984,7 +985,7 @@ const startupVisualReadiness = [];
 mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { startupVisualReadiness.push(ready); } };
 let sceneReduced = false;
 mocks['@/hooks/use-animation-activity'] = { useAnimationActivity: () => ({ active: true, reduceMotion: sceneReduced }) };
-Object.assign(mocks['react-native-filament'], { FilamentScene: 'FilamentScene', FilamentView: 'FilamentView', DefaultLight: 'Light', useWorld: () => ({}), useStaticPlaneShape() {}, useBoxShape() {}, useSphereShape() {}, useRigidBody() {} });
+Object.assign(mocks['react-native-filament'], { useSyncSharedValue: value => value, FilamentScene: 'FilamentScene', FilamentView: 'FilamentView', DefaultLight: 'Light', useWorld: () => ({}), useStaticPlaneShape() {}, useBoxShape() {}, useSphereShape() {}, useRigidBody() {} });
 mocks['@/components/recovery/RecoveryBoundary'] = { RecoveryBoundary: 'RecoveryBoundary' };
 mocks['@/components/recovery/SceneLoadGuard'] = { SceneLoadGuard: 'SceneLoadGuard' };
 mocks['@/lib/graphics-mode'] = { enableSimpleGraphicsForSession() {} };

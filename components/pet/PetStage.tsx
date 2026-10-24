@@ -27,7 +27,7 @@ import { attachRoomObject, transformRoomObject, moveRoomSupportGroup, roomSuppor
 import { RoomActivityNotice } from '@/components/pet/RoomActivityNotice';
 import { NativeRoomEditor } from "@/components/pet/NativeRoomEditor";
 import { catFloorPoint, catScreenPoint, placeObjectOnSurface, buildNativeRoomWorld, nativeObjectPlacementOffset, nativeRoomEdge, projectWorld, ROOM_SPAN, NATIVE_MODEL_CATALOG, type NativeRoomObject, type Vec3 } from "@/utils/native-room-world";
-import { createRoomPlacementResolver, roomPlacementStatus, roomItemAnchor, type RoomPlacementFeedback } from '@/utils/room-item-placement';
+import { createRoomPlacementResolver, createRoomPlacementResolverCache, roomPlacementStatus, roomItemAnchor, type RoomPlacementFeedback } from '@/utils/room-item-placement';
 import { useSharedValue as useDrawingSharedValue } from 'react-native-worklets-core';
 import { lampSwitchPosition } from '@/utils/native-lamp-light';
 import { fireplaceLightPosition } from '@/utils/native-fireplace';
@@ -471,7 +471,8 @@ export function PetStage({
   const editingIds = useMemo(() => roomSupportGroup(nativeWorld.objects, [
     ...(selectedMoveItem ? [selectedMoveItem.kind === 'bed' ? 'bed' : selectedMoveItem.instanceId] : []), ...groupIds,
   ]).map(object => object.instanceId), [nativeWorld, selectedMoveItem, groupIds]);
-  const placement = useMemo(() => createRoomPlacementResolver(nativeWorld, editingIds), [nativeWorld, editingIds]);
+  const resolvePlacement = useMemo(() => createRoomPlacementResolverCache(), []);
+  const placement = useMemo(() => resolvePlacement(nativeWorld, editingIds), [resolvePlacement, nativeWorld, editingIds]);
   const suggestionStarted = useRef<RoomPlacementDraft | undefined>(undefined);
   const suggestionAbort = useRef<AbortController | undefined>(undefined);
   useEffect(() => {
@@ -1564,7 +1565,7 @@ export function PetStage({
           onDragPositionChange={point => livePosition("bed", point)}
           {...roomItemDragProps(item, layerZIndex)}
         >
-          {simpleGraphics ? <Image source={bedSource} style={{ width: bedSize, height: bedSize }} resizeMode="contain"/> : <View style={{ width: bedSize, height: bedSize }} />}
+          {simpleGraphics ? <Image source={bedSource} style={{ width: bedSize, height: bedSize }} resizeMode="contain"/> : undefined}
         </DraggableRoomPet>
       );
     }
@@ -1595,7 +1596,7 @@ export function PetStage({
           onDragPositionChange={point => livePosition(item.instanceId, point)}
           {...roomItemDragProps(item, layerZIndex)}
         >
-          {simpleGraphics ? <DecorationSpriteImage decorationId={spriteId} size={decorationSize} still flipHorizontal={getPlacedDecorationWallFlipped(placed)}/> : <View style={{ width: decorationSize, height: decorationSize }} />}
+          {simpleGraphics ? <DecorationSpriteImage decorationId={spriteId} size={decorationSize} still flipHorizontal={getPlacedDecorationWallFlipped(placed)}/> : undefined}
         </DraggableRoomPet>
       );
     }
@@ -1622,7 +1623,7 @@ export function PetStage({
         onDragPositionChange={point => livePosition(item.instanceId, point)}
         {...roomItemDragProps(item, layerZIndex)}
       >
-        {simpleGraphics ? <ToySpriteImage toyId={toyId} size={toySize} still/> : <View style={{ width: toySize, height: toySize }} />}
+        {simpleGraphics ? <ToySpriteImage toyId={toyId} size={toySize} still/> : undefined}
       </DraggableRoomPet>
     );
   }), [layerOrder, compact, usesNativeCat, bedSource, editingAnchors, bedId, bedSize, roomBedOffset,

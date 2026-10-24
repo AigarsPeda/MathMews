@@ -40,6 +40,27 @@ const bedDraft=createRoomPlacementDraft({kind:'bed',id:'green'});
 assert.equal(withRoomPlacementDraft(pet,bedDraft).bedId,'green');assert.equal(pet.bedId,'brown','Cancel keeps the existing bed');
 assert.equal(applyRoomObjectEdits(pet,[{instanceId:'bed',offset:{x:.1,y:.2}}],[],bedDraft).bedId,'green');
 
+const normalizedPet=applyRoomObjectEdits(pet,[]);
+const bedMoved=applyRoomObjectEdits(normalizedPet,[{instanceId:'bed',offset:{x:.2,y:.3}}]);
+assert.equal(bedMoved.placedToys,normalizedPet.placedToys,'Moving the bed preserves the toy collection');
+assert.equal(bedMoved.placedDecorations,normalizedPet.placedDecorations,'Moving the bed preserves the decoration collection');
+assert.equal(bedMoved.roomLayerOrder,normalizedPet.roomLayerOrder,'Movement preserves stacking order');
+assert.equal(applyRoomObjectEdits(bedMoved,[{instanceId:'bed',offset:{...bedMoved.roomBedOffset}}]),bedMoved,'An unchanged drop preserves the room');
+const plantMoved=applyRoomObjectEdits(normalizedPet,[{instanceId:'plant',offset:{x:.2,y:.3}}]);
+assert.equal(plantMoved.placedToys,normalizedPet.placedToys,'Moving a decoration preserves toys');
+assert.notEqual(plantMoved.placedDecorations,normalizedPet.placedDecorations);
+assert.equal(applyRoomObjectEdits(plantMoved,[{instanceId:'plant',offset:{x:.2,y:.3}}]),plantMoved,'Unchanged item edits preserve the collection');
+const supportedPet=applyRoomObjectEdits({...pet,placedDecorations:[plant,{...plant,instanceId:'child',support:{parentId:'plant',position:[0,1,0],heading:0}}]},[]);
+const supportedAgain=applyRoomObjectEdits(supportedPet,[{instanceId:'child',offset:{x:0,y:0},support:{parentId:'plant',position:[0,1,0],heading:0}}]);
+assert.equal(supportedAgain,supportedPet,'An equivalent support link preserves the item');
+const movedChild=applyRoomObjectEdits(supportedPet,[{instanceId:'child',offset:{x:.1,y:.2},support:undefined}]);
+assert.equal(movedChild.placedDecorations[0],supportedPet.placedDecorations[0],'Unedited items keep their references in a changed collection');
+assert.equal(movedChild.placedDecorations[1].support,undefined,'Picking up a child still clears its saved support');
+const detachedChild=applyRoomObjectEdits(supportedPet,[],['plant']);
+assert.equal(detachedChild.placedDecorations.length,1);
+assert.equal(detachedChild.placedDecorations[0].support,undefined,'Removing a parent still detaches its child');
+assert.equal(detachedChild.placedToys,supportedPet.placedToys);
+
 const input={width:390,height:420,petSize:80,sizeScale:1.15,toys:[],decorations:[
  {decorationId:'kitchenIslandOpenCart',instanceId:'island',offset:{x:0,y:0}},
  {decorationId:'lampShade',instanceId:'lamp',offset:{x:.4,y:.4},scale:.6}]};
@@ -66,6 +87,39 @@ const detached=applyRoomObjectEdits({...pet,placedDecorations:[{...plant,support
 assert.equal(detached.placedDecorations[0].support,undefined,'Removing a missing parent cannot leave a dangling saved link');
 const cycles=restoreRoomSupports(before.objects,new Map([['island',{parentId:'lamp',position:[0,0,0],heading:0}],['lamp',support]]));
 assert.equal(cycles.length,2,'Malformed cyclic saves cannot recurse forever');
+// A drop changes the moving item, not every stationary collision mesh.
+const cachedResolver=load('@/utils/room-item-placement').createRoomPlacementResolverCache();
+cachedResolver(world,['lamp']);
+const meta=NATIVE_MODEL_CATALOG[parent.modelId], descriptor=Object.getOwnPropertyDescriptor(meta,'placementBoxes');
+let geometryReads=0;
+Object.defineProperty(meta,'placementBoxes',{configurable:true,get(){geometryReads++;return descriptor?.value;}});
+try {
+  cachedResolver({...world,objects:world.objects.map(object=>({...object,position:[...object.position]}))},['lamp']);
+  assert.equal(geometryReads,0,'Unchanged obstacles reuse their indexed geometry across new world objects');
+  cachedResolver({...world,objects:[transformRoomObject(parent,[parent.position[0]+.1,parent.position[1],parent.position[2]]),child]},['lamp']);
+  assert.ok(geometryReads>0,'Moving an obstacle rebuilds its geometry');
+} finally {
+  if(descriptor)Object.defineProperty(meta,'placementBoxes',descriptor);else delete meta.placementBoxes;
+}
+const variants=[world.objects,
+  [transformRoomObject(parent,[parent.position[0]+.3,parent.position[1],parent.position[2]]),child],
+  [transformRoomObject(parent,parent.position,parent.heading+.4),child],
+  [transformRoomObject(parent,parent.position,parent.heading,parent.scale*.8),child],
+  [{...parent,collidable:false},child],
+  [{...parent,supportId:'other',wallAxis:0},child],
+  [{...parent,modelId:child.modelId},child],
+  [child],world.objects];
+for(const objects of variants){
+  const changed={...world,objects},cached=cachedResolver(changed,['lamp']),fresh=createRoomPlacementResolver(changed,['lamp']);
+  for(const x of [-1,0,1])for(const z of [-1,0,1]){
+    const candidate=transformRoomObject(child,[x,child.position[1],z]);
+    assert.equal(cached.canPlace(candidate),fresh.canPlace(candidate),'Cached collision legality matches a fresh resolver after edits');
+    assert.equal(JSON.stringify(cached.feedback(candidate)),JSON.stringify(fresh.feedback(candidate)),'Cached blockers and boundaries stay current');
+  }
+}
+const ignoreParent=cachedResolver(world,['island']);
+assert.equal(JSON.stringify(ignoreParent.feedback(parent)),JSON.stringify(createRoomPlacementResolver(world,['island']).feedback(parent)),'Changing the selected item updates ignored obstacles');
+
 const resolver=createRoomPlacementResolver(world,['lamp']);
 const blocked=resolver.preview('lamp',roomItemAnchor(parent,390));
 assert.ok(blocked);

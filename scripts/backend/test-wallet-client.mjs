@@ -573,7 +573,7 @@ test('an account without a synced wallet cannot manufacture an offline balance',
 test('room editor Undo cannot restore a cancelled placement',()=>{
   const h=harness(),module={exports:{}},slots=[],effects=[];
   let cursor=0;
-  const react={useCallback:fn=>fn,useRef:value=>{const i=cursor++;return slots[i]??(slots[i]={current:value});},
+  const react={useCallback:fn=>fn,useMemo:fn=>fn(),useRef:value=>{const i=cursor++;return slots[i]??(slots[i]={current:value});},
     useState:value=>{const i=cursor++;if(!(i in slots))slots[i]=value;return [slots[i],update=>{slots[i]=typeof update==='function'?update(slots[i]):update;}];},
     useEffect:(callback,deps)=>{const i=cursor++;if(!slots[i]||deps.some((value,index)=>value!==slots[i][index])){slots[i]=deps;effects.push(callback);}}};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync('hooks/use-room-editor.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,

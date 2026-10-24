@@ -3,6 +3,7 @@ import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from "re
 import { moderateScale } from "@/utils/scale";
 import {
   type ReactNode,
+  memo,
   useCallback,
   useLayoutEffect,
   useMemo,
@@ -23,7 +24,8 @@ const DEFAULT_OFFSET: RoomPetOffset = { x: 0, y: 0.12 };
 const DRAG_THRESHOLD = moderateScale(6);
 
 type DraggableRoomPetProps = {
-  children: ReactNode;
+  /** Omit for a native 3D item: its hit target only needs an empty placeholder. */
+  children?: ReactNode;
   testID?: string;
   accessibilityLabel?: string;
   selected?: boolean;
@@ -102,7 +104,32 @@ function clampPosition(
   };
 }
 
-export function DraggableRoomPet({
+// Saving a neighbor refreshes placement closures but does not move this target.
+// Forward events through the latest committed props so its animated views and
+// gesture state can remain cached without retaining stale validation callbacks.
+export function DraggableRoomPet(props: DraggableRoomPetProps) {
+  const latest = useRef(props);
+  useLayoutEffect(() => { latest.current = props; }, [props]);
+  const onOffsetChange = useCallback((point: RoomPetOffset) => latest.current.onOffsetChange?.(point), []);
+  const onDragPositionChange = useCallback((point: RoomPetOffset) => latest.current.onDragPositionChange?.(point), []);
+  const onDragEnd = useCallback((point: RoomPetOffset) => latest.current.onDragEnd?.(point) ?? point, []);
+  const onDragStart = useCallback(() => latest.current.onDragStart?.(), []);
+  const onPetTap = useCallback(() => latest.current.onPetTap?.(), []);
+  const x = props.externalPosition?.x, y = props.externalPosition?.y;
+  const externalPosition = useMemo(() => x !== undefined && y !== undefined ? { x, y } : undefined, [x, y]);
+  const offsetX = props.initialOffset?.x, offsetY = props.initialOffset?.y;
+  const initialOffset = useMemo(() => offsetX !== undefined && offsetY !== undefined ? { x: offsetX, y: offsetY } : undefined, [offsetX, offsetY]);
+  return <MemoDraggableRoomPet {...props} externalPosition={externalPosition} initialOffset={initialOffset}
+    onOffsetChange={props.onOffsetChange ? onOffsetChange : undefined}
+    onDragPositionChange={props.onDragPositionChange ? onDragPositionChange : undefined}
+    onDragEnd={props.onDragEnd ? onDragEnd : undefined}
+    onDragStart={props.onDragStart ? onDragStart : undefined}
+    onPetTap={props.onPetTap ? onPetTap : undefined} />;
+}
+
+const MemoDraggableRoomPet = memo(DraggableRoomPetView);
+
+function DraggableRoomPetView({
   children,
   testID,
   accessibilityLabel,
@@ -297,7 +324,7 @@ export function DraggableRoomPet({
         pointerEvents="box-none"
       >
         <View pointerEvents="none" style={styles.visualSlot}>
-          {children}
+          {children ?? <View style={{ width: petSize, height: petSize }} />}
         </View>
         <View
           style={[
