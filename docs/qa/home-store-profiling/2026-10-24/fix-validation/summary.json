@@ -1,0 +1,1496 @@
+{
+  "home": {
+    "reactCapture": {
+      "commits": 211,
+      "maxCommitMs": 257.195,
+      "frames": {
+        "durationMs": 63765.95220899582,
+        "callbacks": 3467,
+        "medianMs": 16.67,
+        "p95Ms": 16.82,
+        "p99Ms": 30.76,
+        "maxMs": 1553.97,
+        "over100ms": 19
+      },
+      "wisdomCalls": 0,
+      "components": {
+        "Forget(Memo(NativeRoomSurface))": {
+          "renders": 11,
+          "inclusiveMs": 151.888,
+          "maxInclusiveMs": 31.535
+        },
+        "Forget(Memo(NativeRoomScene))": {
+          "renders": 7,
+          "inclusiveMs": 83.05099999999999,
+          "maxInclusiveMs": 19.114
+        },
+        "Forget(PetStage)": {
+          "renders": 32,
+          "inclusiveMs": 2254.3759999999997,
+          "maxInclusiveMs": 106.747
+        },
+        "Forget(Memo(HomeBedtimeRoutine))": {
+          "renders": 13,
+          "inclusiveMs": 1.0239999999999998,
+          "maxInclusiveMs": 0.125
+        },
+        "Forget(DecorationStoreCard)": {
+          "renders": 16,
+          "inclusiveMs": 24.587999999999997,
+          "maxInclusiveMs": 3.381
+        },
+        "FlatList": {
+          "renders": 2,
+          "inclusiveMs": 30.331,
+          "maxInclusiveMs": 17.683
+        },
+        "Forget(StoreScreen(./store.tsx))": {
+          "renders": 3,
+          "inclusiveMs": 31.876,
+          "maxInclusiveMs": 18.463
+        },
+        "Forget(HomeContent)": {
+          "renders": 1,
+          "inclusiveMs": 245.076,
+          "maxInclusiveMs": 245.076
+        },
+        "Memo(HomeContent)": {
+          "renders": 1,
+          "inclusiveMs": 245.26,
+          "maxInclusiveMs": 245.26
+        },
+        "Forget(HomeScreen(./index.tsx))": {
+          "renders": 1,
+          "inclusiveMs": 245.34,
+          "maxInclusiveMs": 245.34
+        }
+      },
+      "events": [
+        {
+          "atMs": 4996.6447920799255,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.077,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 10013.910583019257,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.082,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 15026.162042021751,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.125,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 20043.328750014305,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.073,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 21226.184916973114,
+          "targets": [
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.656,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.571,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 2.476,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.604,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.61,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.451,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.979,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.487,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "FlatList",
+              "inclusiveMs": 17.683,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "isFirstMount": false,
+                "props": [
+                  "extraData"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 18.463,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 25063.73991703987,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.08,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 30080.608749985695,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.088,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 35093.54916703701,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.073,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 40110.07837498188,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.082,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 45129.376582980156,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.075,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 50121.893458008766,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.076,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 51445.49849998951,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.041,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "pet"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(HomeContent)",
+              "inclusiveMs": 245.076,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  65
+                ],
+                "isFirstMount": false,
+                "props": [
+                  "game"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Memo(HomeContent)",
+              "inclusiveMs": 245.26,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "game"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(HomeScreen(./index.tsx))",
+              "inclusiveMs": 245.34,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.294,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 51596.94599997997,
+          "targets": [
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.181,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.013,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 3.381,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 0.95,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 0.896,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 0.903,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.387,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.043,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "FlatList",
+              "inclusiveMs": 12.648,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "isFirstMount": false,
+                "props": [
+                  "extraData"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 13.119,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 55141.672792077065,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.077,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 60169.439833045006,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.075,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        }
+      ],
+      "marks": []
+    },
+    "cpuCapture": {
+      "durationMs": 44999.748,
+      "samples": 3728,
+      "topSelfSamples": [
+        {
+          "name": "[root]",
+          "sampledMs": 41363,
+          "percent": 91.9
+        },
+        {
+          "name": "[Host Function] createTask",
+          "sampledMs": 1531,
+          "percent": 3.4
+        },
+        {
+          "name": "[GC Young Gen]",
+          "sampledMs": 265,
+          "percent": 0.6
+        },
+        {
+          "name": "structuredCloneInternal",
+          "sampledMs": 160,
+          "percent": 0.4
+        },
+        {
+          "name": "[Host Function] completeRoot",
+          "sampledMs": 137,
+          "percent": 0.3
+        },
+        {
+          "name": "addObjectDiffToProperties",
+          "sampledMs": 90,
+          "percent": 0.2
+        },
+        {
+          "name": "ReactElement",
+          "sampledMs": 88,
+          "percent": 0.2
+        },
+        {
+          "name": "[Host Function] reportMeasure",
+          "sampledMs": 58,
+          "percent": 0.1
+        },
+        {
+          "name": "[Host Function] run",
+          "sampledMs": 51,
+          "percent": 0.1
+        },
+        {
+          "name": "updateVirtualChildrenRecursively",
+          "sampledMs": 49,
+          "percent": 0.1
+        },
+        {
+          "name": "updateFiberRecursively",
+          "sampledMs": 38,
+          "percent": 0.1
+        },
+        {
+          "name": "completeUnitOfWork",
+          "sampledMs": 36,
+          "percent": 0.1
+        },
+        {
+          "name": "[Native] ErrorConstructor",
+          "sampledMs": 35,
+          "percent": 0.1
+        },
+        {
+          "name": "[Native] regExpPrototypeTest",
+          "sampledMs": 34,
+          "percent": 0.1
+        },
+        {
+          "name": "propagateParentContextChanges",
+          "sampledMs": 33,
+          "percent": 0.1
+        }
+      ]
+    },
+    "idleWithoutProfilers": {
+      "durationMs": 15013.68449997902,
+      "callbacks": 876,
+      "medianMs": 16.67,
+      "p95Ms": 16.77,
+      "p99Ms": 26.03,
+      "maxMs": 94.29,
+      "over100ms": 0
+    }
+  },
+  "store": {
+    "reactCapture": {
+      "commits": 193,
+      "maxCommitMs": 55.664,
+      "frames": {
+        "durationMs": 65860.64266705513,
+        "callbacks": 3567,
+        "medianMs": 16.67,
+        "p95Ms": 17.27,
+        "p99Ms": 24.46,
+        "maxMs": 1177.69,
+        "over100ms": 8
+      },
+      "wisdomCalls": 0,
+      "components": {
+        "Forget(HomeScreen(./index.tsx))": {
+          "renders": 2,
+          "inclusiveMs": 1.285,
+          "maxInclusiveMs": 0.688
+        },
+        "Forget(StoreScreen(./store.tsx))": {
+          "renders": 11,
+          "inclusiveMs": 104.13799999999999,
+          "maxInclusiveMs": 19.675
+        },
+        "Forget(DecorationStoreCard)": {
+          "renders": 18,
+          "inclusiveMs": 34.69,
+          "maxInclusiveMs": 4.021
+        },
+        "FlatList": {
+          "renders": 3,
+          "inclusiveMs": 45.736,
+          "maxInclusiveMs": 18.444
+        }
+      },
+      "events": [
+        {
+          "atMs": 2093.075833082199,
+          "targets": [
+            {
+              "name": "Forget(HomeScreen(./index.tsx))",
+              "inclusiveMs": 0.688,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.513,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 2270.9967910051346,
+          "targets": [
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 3.135,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.751,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 4.021,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 2.551,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.879,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.789,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "FlatList",
+              "inclusiveMs": 18.444,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "isFirstMount": false,
+                "props": [
+                  "extraData"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 19.287,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 4175.234665989876,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 19.675,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  21
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 7215.0715000629425,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.55,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  21
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 11367.539750099182,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 15.724,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  21
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 14335.648583054543,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.596,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  21
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 18704.912458062172,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 18.455,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  21
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 21660.880874991417,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.626,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  21
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 32249.771833062172,
+          "targets": [
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 4.011,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.675,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 2.401,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.675,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.649,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.501,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "FlatList",
+              "inclusiveMs": 15.608,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "isFirstMount": false,
+                "props": [
+                  "extraData"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 16.269,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 62086.10145807266,
+          "targets": [
+            {
+              "name": "Forget(HomeScreen(./index.tsx))",
+              "inclusiveMs": 0.597,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.335,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 62845.606250047684,
+          "targets": [
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.024,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 0.939,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.663,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.003,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 1.068,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(DecorationStoreCard)",
+              "inclusiveMs": 0.955,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onPreview",
+                  "onBuy",
+                  "onPlace",
+                  "onRemove"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "FlatList",
+              "inclusiveMs": 11.684,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "isFirstMount": false,
+                "props": [
+                  "extraData"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 12.108,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        }
+      ],
+      "marks": []
+    },
+    "cpuCapture": {
+      "durationMs": 44991.115,
+      "samples": 3670,
+      "topSelfSamples": [
+        {
+          "name": "[root]",
+          "sampledMs": 38480,
+          "percent": 85.5
+        },
+        {
+          "name": "[Host Function] createTask",
+          "sampledMs": 1560,
+          "percent": 3.5
+        },
+        {
+          "name": "",
+          "sampledMs": 482,
+          "percent": 1.1
+        },
+        {
+          "name": "[GC Young Gen]",
+          "sampledMs": 467,
+          "percent": 1
+        },
+        {
+          "name": "[Host Function] requestAnimationFrame",
+          "sampledMs": 336,
+          "percent": 0.7
+        },
+        {
+          "name": "addObjectDiffToProperties",
+          "sampledMs": 210,
+          "percent": 0.5
+        },
+        {
+          "name": "structuredCloneInternal",
+          "sampledMs": 178,
+          "percent": 0.4
+        },
+        {
+          "name": "[Native] mapPrototypeSet",
+          "sampledMs": 120,
+          "percent": 0.3
+        },
+        {
+          "name": "updateWorkInProgressHook",
+          "sampledMs": 114,
+          "percent": 0.3
+        },
+        {
+          "name": "[Host Function] run",
+          "sampledMs": 108,
+          "percent": 0.2
+        },
+        {
+          "name": "propagateParentContextChanges",
+          "sampledMs": 106,
+          "percent": 0.2
+        },
+        {
+          "name": "[Host Function] RN$rafFn",
+          "sampledMs": 91,
+          "percent": 0.2
+        },
+        {
+          "name": "[Native] functionPrototypeBind",
+          "sampledMs": 87,
+          "percent": 0.2
+        },
+        {
+          "name": "fiber_renderer_arrayLikeToArray",
+          "sampledMs": 82,
+          "percent": 0.2
+        },
+        {
+          "name": "recordProfilingDurations",
+          "sampledMs": 80,
+          "percent": 0.2
+        }
+      ]
+    }
+  }
+}

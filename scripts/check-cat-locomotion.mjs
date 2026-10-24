@@ -122,3 +122,56 @@ assert.ok(!traversal.catCrawlClear([-1,floor,0],[1,floor,0],{...crawlWorld,objec
 const plainLow={...barrier,modelId:'lowBench',instanceId:'low-unknown'};
 assert.ok(traversal.buildCatTraversalLinks({...world,objects:[plainLow]},p=>w.isFree(p,{...world,objects:[plainLow]})).some(link=>link.leg.kind==='hop'),'Low safe obstacles do not need a model-name exception');
 console.log('Verified low passages, full-body clearance, lowered ceilings, open doors, ordinary low obstacles and crawl sampling at 30/60/120 FPS.');
+
+// A raised fridge door can be crossed only when the authored crouch fits.
+const fridgeMotion = load('@/utils/native-fridge');
+for (const hinge of ['left', 'right']) for (const heading of [0, Math.PI / 2, Math.PI, 3 * Math.PI / 2]) {
+  const rotate = ([x, y, z]) => [Math.cos(heading) * x + Math.sin(heading) * z, y, -Math.sin(heading) * x + Math.cos(heading) * z];
+  const corners = [-.62, .62].flatMap(x => [-.54, .58].map(z => rotate([x, floor, z])));
+  const fridge = { instanceId: 'raised-fridge', modelId: 'kitchenModernFridgeNavy', scale: 1, heading,
+    position: [0, floor, 0], solid: true, collidable: true, movable: false, fridgeOpen: true, fridgeHingeSide: hinge,
+    min: [Math.min(...corners.map(p => p[0])), floor, Math.min(...corners.map(p => p[2]))],
+    max: [Math.max(...corners.map(p => p[0])), floor + 2.64, Math.max(...corners.map(p => p[2]))] };
+  const room = { ...world, fridgeDoorClearance: fridge.instanceId, objects: [fridge] };
+  const passes = traversal.buildCatTraversalLinks(room, point => w.isFree(point, room)).filter(link => link.leg.animation === 'crawl');
+  assert.ok(passes.length, `Raised fridge door exposes a crouching passage for ${hinge}/${heading}`);
+  for (const pass of passes) {
+    assert.ok(w.isFree(pass.from, room) && w.isFree(pass.to, room), 'Lower and raise the head outside the door swing');
+    const midpoint = pass.from.map((v, i) => (v + pass.to[i]) / 2);
+    assert.ok(!w.isFree(midpoint, room), 'Standing navigation cannot cut through the reserved door swing');
+    assert.ok(traversal.catCrawlClear(pass.from, pass.to, room));
+    const tooTall = { ...room, catScale: .6 };
+    assert.ok(!traversal.catCrawlClear(pass.from, pass.to, tooTall), 'A cat whose crouched head is too tall cannot pass under the door');
+    assert.ok(!traversal.catFlightClear(pass.from, pass.to, .2, room), 'A jump cannot bypass the door clearance');
+    assert.ok(fridgeMotion.fridgeDoorGeometry(fridge).bottom > 1.45 * room.catScale);
+  }
+  const corridorWalls = [[-3, .6], [1.7, 3]].map(([near, far], index) => {
+    const points = [-3, 3].flatMap(x => [near, far].map(z => rotate([x, floor, z])));
+    return { ...barrier, instanceId: `corridor-${index}`, modelId: 'wall',
+      min: [Math.min(...points.map(p => p[0])), floor, Math.min(...points.map(p => p[2]))],
+      max: [Math.max(...points.map(p => p[0])), floor + 3, Math.max(...points.map(p => p[2]))] };
+  });
+  const corridor = { ...room, objects: [fridge, ...corridorWalls] }, pass = passes[0];
+  assert.equal(w.findRoomPath(pass.from, pass.to, corridor).length, 1, 'The door closes the standing route through this corridor');
+  const result = w.findCatRoomRoute(pass.from, pass.to, corridor);
+  assert.ok(result.legs?.some(leg => leg.animation === 'crawl'), 'Route search discovers a valid passage beneath the raised door');
+  assert.ok(w.pathLength([result.path.at(-1), pass.to]) < .001);
+  assert.ok(!traversal.buildCatTraversalLinks({ ...room, catScale: .6 }, p => w.isFree(p, { ...room, catScale: .6 })).some(link => link.leg.animation === 'crawl'));
+  const retro = { ...fridge, modelId: 'kitchenFridge' };
+  assert.ok(!traversal.buildCatTraversalLinks({ ...room, objects: [retro] }, p => w.isFree(p, room)).some(link => link.leg.animation === 'crawl'), 'The floor-level retro door has no crawl passage');
+}
+console.log('Verified raised fridge crawl choices, both hinges and four headings, headroom rejection and no jumping through doors.');
+
+const farFridge = { instanceId: 'far-fridge', modelId: 'kitchenModernFridgeNavy', scale: .5, heading: 0,
+  position: [1.1, floor, -1], min: [.79, floor, -1.27], max: [1.41, floor + 1.32, -.71],
+  solid: true, collidable: true, movable: false, fridgeOpen: true, fridgeHingeSide: 'left' };
+const kitchenPassage = { ...crawlWorld, objects: [table, farFridge] };
+const fridgePlan = { kind: 'fridgeInvestigate', targetInstanceId: farFridge.instanceId,
+  steps: [{ animation: 'walk', position: { x: 0, y: 0 }, durationMs: 1000 }] };
+const fridgeStep = w.prepareNativeStep(fridgePlan, fridgePlan.steps[0], w.catScreenPoint(world.home, kitchenPassage), kitchenPassage, floor);
+assert.equal(fridgeStep.native.blocked, false, 'A kitchen approach accepts a destination reachable only beneath furniture');
+assert.ok(fridgeStep.native.legs?.some(leg => leg.animation === 'crawl'), 'The accepted fridge command executes the crawl it found');
+const lowKitchen = { ...kitchenPassage, objects: [lowered.objects[0], farFridge] };
+assert.ok(w.prepareNativeStep(fridgePlan, fridgePlan.steps[0], w.catScreenPoint(world.home, lowKitchen), lowKitchen, floor).native.blocked,
+  'Lowering the only passage rejects the command instead of walking through it');
+console.log('Verified fridge approach discovery through furniture and rejection when that gap is too low.');

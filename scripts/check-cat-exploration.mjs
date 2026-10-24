@@ -104,6 +104,33 @@ for(const skin of ['orange','grey','white']) {
   }
   console.log(`Verified ${skin}: walk/crawl/stand, headroom, pause, one completion and cheek/shoulder brushing at 30/60/120 FPS.`);
 }
+const fridgeMotion=load('@/utils/native-fridge'),traversal=load('@/utils/native-cat-traversal');
+const raisedFridge={instanceId:'raised-fridge',modelId:'kitchenModernFridgeNavy',scale:1,heading:0,
+  position:[0,floor,0],min:[-.62,floor,-.54],max:[.62,floor+2.64,.58],solid:true,collidable:true,
+  movable:false,fridgeOpen:true,fridgeHingeSide:'left'};
+const fridgeWorld={...world,objects:[raisedFridge],fridgeDoorClearance:raisedFridge.instanceId};
+const fridgePasses=traversal.buildCatTraversalLinks(fridgeWorld,p=>w.isFree(p,fridgeWorld)).filter(link=>link.leg.animation==='crawl');
+for(const skin of ['orange','grey','white'])for(const pass of fridgePasses.slice(0,2)) {
+  openSkin(skin);resetCatActor();
+  render({active:true,world:{...fridgeWorld,home:pass.from},playback:idle});drawCat(0);
+  const travel={path:[pass.from,pass.to],legs:[pass.leg],duration:pass.leg.duration,distance:distance(pass.from,pass.to),jump:false};
+  render({active:true,world:fridgeWorld,playback:walking,travel,activityKey:'under-fridge-door'});
+  let beneathFrames=0;
+  for(let frame=0;frame<Math.ceil((travel.duration+2)*60);frame++) {
+    drawCat(1/60);
+    if(fridgeMotion.fridgeDoorSweepDistance(actorState().position,raisedFridge)<.4*scale) {
+      beneathFrames++;
+      const bones=actorBones(),underside=floor+fridgeMotion.fridgeDoorGeometry(raisedFridge).bottom;
+      assert.ok(bones.head[13]+.38*scale<underside,`${skin}: the rendered head clears the raised door`);
+      for(const name of ['chest','tailjoint0','tailjoint1','tailjoint2','tailjoint3','tailTip'])
+        assert.ok(bones[name][13]+.10*scale<underside,`${skin}/${name}: the rendered body stays below the raised door`);
+    }
+  }
+  assert.ok(beneathFrames>30,'The actor actually crosses beneath the door');
+  assert.ok(distance(actorState().position,pass.to)<1e-6);
+}
+console.log('Verified rendered head, back and tail clearance beneath raised fridge doors in both directions on all three coats.');
+
 if(process.argv.includes('--preview')) {
   openSkin('orange');
   for(const action of ['brush','crawl']) {

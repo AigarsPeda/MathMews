@@ -12,10 +12,10 @@ function harness({dev=true,environment='production'}={}) {
   const cache=new Map(),stored=new Map(),calls=[],entries=[],orders=[];
   let save,coinBalance=500,revision=1,failAfterDebit=false,queueUnavailable=false,authUser='account-a',storePrice=null,offline=false,forcedRejection=null,walletGate=null,failSettlementSave=false;
   const rewarded=new Set();
-  let reconnect;
+  let reconnect, saveWrites=0, cloudSyncs=0, failNextSave=false, failNextCloudSync=false;
   const react={useCallback:fn=>fn,useEffect:()=>{},useLayoutEffect:fn=>fn(),useMemo:fn=>fn(),useRef:value=>({current:value}),useState:value=>[value,()=>{}]};
   const storage={getItem:async key=>stored.get(key)??null,setItem:async(key,value)=>{if(failSettlementSave && key.includes('game-save') && !JSON.parse(value).pendingWalletPurchases?.length){failSettlementSave=false;throw new Error('Disk interrupted');}stored.set(key,value);},removeItem:async key=>stored.delete(key),
-    multiSet:async values=>values.forEach(([key,value])=>stored.set(key,value))};
+    multiSet:async values=>{saveWrites++;if(failNextSave){failNextSave=false;throw new Error('Disk unavailable');}values.forEach(([key,value])=>stored.set(key,value));}};
   const wallet=()=>({user_id:authUser,environment:dev?'sandbox':environment,balance:coinBalance,revision});
   const db={rpc:async(name,args)=>{
     calls.push({name,args});
@@ -62,9 +62,9 @@ function harness({dev=true,environment='production'}={}) {
   const {useServerWallet}=load('@/hooks/use-server-wallet');
   save={...load('@/utils/game-storage').createDefaultGameSave(),accountOwnerId:authUser,walletAuthority:wallet(),wallet:{coins:coinBalance}};
   const authorityRef={current:null},activeSaveIdRef={current:'save-a'};
-  const mount=()=>useServerWallet({userId:authUser,enabled:true,activeSaveIdRef,getSave:()=>save,setSave:fn=>{save=typeof fn==='function'?fn(save):fn;},authorityRef,syncRef:{current:async()=>{}}});
+  const mount=()=>useServerWallet({userId:authUser,enabled:true,activeSaveIdRef,getSave:()=>save,setSave:fn=>{save=typeof fn==='function'?fn(save):fn;},authorityRef,syncRef:{current:async()=>{cloudSyncs++;if(failNextCloudSync){failNextCloudSync=false;throw new Error('Cloud unavailable');}}}});
   let api=mount();
-  return {get api(){return api;},restoreOldSave(){save=load('@/utils/game-storage').createDefaultGameSave();},restart(){const raw=stored.get(load('@/types/save').GAME_SAVE_STORAGE_KEY); save=raw?JSON.parse(raw):load('@/utils/game-storage').createDefaultGameSave(); authorityRef.current=null;api=mount();},load,calls,stored,orders,activeSaveIdRef,authorityRef,get save(){return save;},get balance(){return coinBalance;},
+  return {get saveWrites(){return saveWrites;},get cloudSyncs(){return cloudSyncs;},failNextSave(){failNextSave=true;},failNextCloudSync(){failNextCloudSync=true;},get api(){return api;},restoreOldSave(){save=load('@/utils/game-storage').createDefaultGameSave();},restart(){const raw=stored.get(load('@/types/save').GAME_SAVE_STORAGE_KEY); save=raw?JSON.parse(raw):load('@/utils/game-storage').createDefaultGameSave(); authorityRef.current=null;api=mount();},load,calls,stored,orders,activeSaveIdRef,authorityRef,get save(){return save;},get balance(){return coinBalance;},
     reconnect:()=>reconnect(),setSave(next){save=next;},setOffline(value=true){offline=value;},rejectWith(error){forcedRejection=error;},failSettlementSave(){failSettlementSave=true;},pauseWallet(){let release;walletGate=new Promise(resolve=>{release=resolve;});return release;},
     disconnectAfterDebit(){failAfterDebit=true;},disableRecoveryQueue(){queueUnavailable=true;},adjust(amount){coinBalance=amount;revision++;},setAuthUser(id){authUser=id;},setStorePrice(price){storePrice=price;}};
 }
@@ -353,8 +353,10 @@ test('production checkout requires a linked account while sandbox guests remain 
 test('loading a legacy game retains its owner before a different session clears the cached wallet',()=>{
   const load=sourceCallback('contexts/GameProvider.tsx',node=>ts.isVariableDeclaration(node)&&node.name.getText()==='setSave');
   const clock={};let next;
-  const saveRef={current:{worldClock:clock}};
+  const h=harness();
+  const saveRef={current:{...h.save,worldClock:clock}};
   const setSave=load({saveRef,walletAuthorityRef:{current:null},accountRef:{current:'account-b'},
+    reuseShallowEqual:h.load('@/utils/reuse-shallow-equal').reuseShallowEqual,
     removeRoomNavigationDoors:pet=>pet,currentPuzzleStreak:()=>0,getWalletEnvironment:()=> 'sandbox',
     setSaveState:value=>{next=value;}});
   setSave({worldClock:clock,pet:{name:'Account A'},progress:{streak:0},wallet:{coins:3200},
@@ -655,9 +657,38 @@ test('rejection removes a draft placed during server confirmation across named r
 
 test('unchanged wallet polling preserves the save while changed balances still apply',async()=>{
   const h=harness();await h.api.refresh();
-  const before=h.save;
-  await h.api.refresh();
+  const before=h.save,writes=h.saveWrites,syncs=h.cloudSyncs;
+  for(let i=0;i<6;i++)await h.api.refresh();
   assert.equal(h.save,before,'Idle polling must not repaint preloaded rooms');
+  assert.equal(h.saveWrites,writes,'Idle polling must not rewrite local storage');
+  assert.equal(h.cloudSyncs,syncs,'Idle polling must not upload unchanged saves');
   h.adjust(640);await h.api.refresh();
   assert.notEqual(h.save,before);assert.equal(h.save.wallet.coins,640);
+  assert.equal(h.saveWrites,writes+1);assert.equal(h.cloudSyncs,syncs+1);
+});
+
+test('wallet changes retry a failed disk write even when the next poll is unchanged',async()=>{
+  const h=harness();await h.api.refresh();const syncs=h.cloudSyncs;
+  h.adjust(700);h.failNextSave();await h.api.refresh();
+  assert.equal(h.save.wallet.coins,700);assert.equal(h.cloudSyncs,syncs);
+  const writes=h.saveWrites;
+  await h.api.refresh();
+  assert.equal(h.saveWrites,writes+1);assert.equal(h.cloudSyncs,syncs+1);
+  assert.equal((await h.load('@/utils/game-storage').loadGameSave()).save.wallet.coins,700);
+  await h.api.refresh();assert.equal(h.saveWrites,writes+1);assert.equal(h.cloudSyncs,syncs+1);
+});
+
+test('settled rejection tombstones do not cause writes or uploads on later wallet polls',async()=>{
+  const h=harness();await h.api.refresh();h.rejectWith({code:'P0001',message:'Item unavailable'});
+  assert.equal(await h.api.spend('toy','blueBall',12),'not_for_sale');
+  const writes=h.saveWrites,syncs=h.cloudSyncs;
+  await h.api.refresh();await h.api.refresh();
+  assert.equal(h.saveWrites,writes);assert.equal(h.cloudSyncs,syncs);
+});
+
+test('a failed wallet cloud upload retries without rewriting the unchanged local save',async()=>{
+  const h=harness();await h.api.refresh();h.adjust(750);h.failNextCloudSync();await h.api.refresh();
+  const writes=h.saveWrites,syncs=h.cloudSyncs;
+  await h.api.refresh();assert.equal(h.saveWrites,writes);assert.equal(h.cloudSyncs,syncs+1);
+  await h.api.refresh();assert.equal(h.saveWrites,writes);assert.equal(h.cloudSyncs,syncs+1);
 });

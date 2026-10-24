@@ -49,6 +49,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
   const scopeRef = useRef(scope);
   useLayoutEffect(()=>{scopeRef.current=scope;},[scope]);
   const running = useRef<Promise<void>|null>(null);
+  const dirtySave = useRef<{scope:string;saveId:string|null;persisted:boolean}|null>(null);
   const enqueueing = useRef<Promise<unknown>>(Promise.resolve());
   const results = useRef(new Map<string,StorePurchaseResult>());
   const initializedScope = useRef<string|null>(null);
@@ -72,7 +73,18 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
     // Polling an unchanged wallet must not repaint every preloaded room.
     const updateSave = (update: (save: GameSave) => GameSave) => {
       const before = getSave(), after = update(before);
-      if (after !== before) setSave(after);
+      if (after !== before) {
+        setSave(after);
+        dirtySave.current = {scope,saveId:activeSaveIdRef.current,persisted:false};
+      }
+    };
+    // Keep failed writes dirty across polls, even if the next server result is
+    // identical. Receipt settlement still waits for durable local delivery.
+    const persistChanges = async () => {
+      const dirty = dirtySave.current;
+      if (!dirty || dirty.persisted || dirty.scope !== scope || dirty.saveId !== activeSaveIdRef.current || !current()) return;
+      await saveGameSave(getSave());
+      if (dirtySave.current === dirty) dirtySave.current = {...dirty,persisted:true};
     };
     const accept = (wallet:ServerWallet) => {
       const previous = authorityRef.current;
@@ -97,7 +109,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
       updateSave(save=>purchase.status==='confirmed'
         ? confirmProvisionalPurchase({...save,walletAuthority:authorityRef.current ?? purchase.confirmedWallet},purchase,purchase.receiptId!)
         : rejectProvisionalPurchase(save,purchase,purchase.rejection!));
-      await saveGameSave(getSave());
+      await persistChanges();
       // Keep rejection tombstones so restoring an older snapshot cannot retry
       // a cancelled purchase or bring its room placement back.
       if (purchase.status==='confirmed') await updateWalletOutbox(scope,orders=>orders.filter(p=>p.id!==purchase.id));
@@ -124,7 +136,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
             await updateWalletOutbox(scope,orders=>orders.map(p=>p.id===purchase.id && p.status==='pending'?restored:p));
           }
         }
-        if (own.length) await saveGameSave(getSave());
+        await persistChanges();
         if (!enabled) return;
         const wallet:ServerWallet=await rpc(initializedScope.current===scope?'get_my_coin_wallet':'initialize_my_game_wallet',{p_environment:environment});
         initializedScope.current=scope; accept(wallet);
@@ -144,7 +156,9 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
           } catch(error) { if(rejection(error)) await AsyncStorage.removeItem(legacyKey); else throw error; }
         }
         // Sync the save before debiting. Failure leaves every queued action intact.
-        if (own.length || getSave().pendingWalletPurchases?.length) await withSyncDeadline(syncRef.current?.() ?? Promise.resolve());
+        if (getSave().pendingWalletPurchases?.some(p=>p.userId===userId && p.environment===environment && p.saveId===saveId && p.status==='pending')) {
+          await withSyncDeadline(syncRef.current?.() ?? Promise.resolve());
+        }
         while (current() && activeSaveIdRef.current===saveId) {
           const reward=(getSave().pendingCoinRewards??[]).filter(r=>r.userId===userId && r.environment===environment)
             .sort((a,b)=>(a.at??0)-(b.at??0))[0];
@@ -154,7 +168,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
           if (reward && (!purchase || (reward.at??0)<=purchase.at)) {
             const rewarded:ServerWallet=await rpc('claim_puzzle_coins',{p_environment:environment,p_puzzle_id:reward.puzzleId,p_attempt_id:reward.attemptId});
             updateSave(save=>({...save,pendingCoinRewards:(save.pendingCoinRewards??[]).filter(r=>r.attemptId!==reward.attemptId)}));
-            accept(rewarded); await saveGameSave(getSave()); continue;
+            accept(rewarded); await persistChanges(); continue;
           }
           try {
             const receipt=await rpc('spend_game_coins',{p_environment:environment,p_save_id:purchase!.saveId,p_kind:purchase!.kind,p_item_id:purchase!.itemId,
@@ -186,8 +200,15 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
           const coinTransactions=[...history,...(save.coinTransactions??[]).filter(tx=>tx.syncStatus==='pending'||tx.syncStatus==='rejected')].sort((a,b)=>a.at-b.at).slice(-150);
           return JSON.stringify(coinTransactions)===JSON.stringify(save.coinTransactions??[]) ? save : {...save,coinTransactions};
         });
-        await saveGameSave(getSave()); setReadyScope(scope);
-        void syncRef.current?.().catch(error=>reportAppError('wallet-save-sync',error));
+        await persistChanges();
+        if (!current() || activeSaveIdRef.current!==saveId) return;
+        setReadyScope(scope);
+        const dirty = dirtySave.current;
+        if (dirty?.scope===scope && dirty.saveId===saveId && syncRef.current) {
+          void syncRef.current().then(()=>{
+            if (dirtySave.current===dirty) dirtySave.current=null;
+          }).catch(error=>reportAppError('wallet-save-sync',error));
+        }
       } catch(error) {
         if (current()) setReadyScope(null);
         reportAppError('wallet-sync',error);

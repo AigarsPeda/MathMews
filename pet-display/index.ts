@@ -1,5 +1,6 @@
 export { PetDisplay } from "./components/PetDisplay";
 export { PetDisplayProvider } from "./PetDisplayProvider";
+export { usePetBaseMood } from "./hooks/use-pet-base-mood";
 export { usePetDisplay } from "./hooks/use-pet-display";
 
 export { usePetDisplayEngine } from "./engine/use-pet-display-engine";
@@ -11,7 +12,6 @@ export {
   isPetSleepy,
   resolveAsleepOnLoad,
   shouldPetSleep,
-  usePetBaseMood,
 } from "./engine/derive-mood";
 
 export {

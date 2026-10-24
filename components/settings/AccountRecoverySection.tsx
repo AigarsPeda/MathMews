@@ -3,7 +3,7 @@ import { AppBottomSheet } from '@/components/ui/AppBottomSheet';
 import { GameColors } from '@/constants/game';
 import { getPlatformRestoreProviderLabel, isPlatformAuthEnabled } from '@/constants/platform-auth';
 import { useAuth } from '@/contexts/AuthProvider';
-import { useGame } from '@/contexts/GameProvider';
+import { useGameActions } from '@/contexts/GameProvider';
 import { moderateScale } from '@/utils/scale';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ export function AccountRecoverySection() {
   const { t } = useTranslation();
   const { userId, isAuthReady, isAccountChanging, isPlatformAccountLinked, linkedPlatformProvider,
     platformRestoreProvider, platformRestoreLabel, protectProgress, restoreProgress } = useAuth();
-  const { syncToCloud } = useGame();
+  const { syncToCloud } = useGameActions();
   const [action, setAction] = useState<'protect' | 'restore' | null>(null);
   const [parentPassed, setParentPassed] = useState(false);
   const [working, setWorking] = useState(false);

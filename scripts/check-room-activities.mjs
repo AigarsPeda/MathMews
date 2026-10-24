@@ -1172,6 +1172,48 @@ for(const modelId of ['kitchenFridge',...['White','Sage','Navy','Charcoal'].map(
     checkPoint(position);
   }
 }
+// This saved kitchen leaves room around the island, but all six original
+// fridge approach points overlap the island or tucked dining chairs.
+for (const height of [365, 380, 395]) {
+  const fixture = JSON.parse(fs.readFileSync('scripts/fixtures/crowded-kitchen.json', 'utf8'));
+  const options = { ...kitchenBase, ...fixture, width: 370, height,
+    homeOffset: { x: 0, y: .12 },
+    petSize: 81 + 1 / 3, sizeScale: (101 + 2 / 3) / 100 * 1.15,
+    decorations: fixture.decorations.map(item => item.instanceId === 'kitchen-6' ? { ...item, fridgeOpen: true } : item) };
+  const world = nativeRoom.buildNativeRoomWorld(options);
+  options.nativeWorld = world;
+  let plan = buildRoomActivity(options, 0, 'fridgeInvestigate', 'kitchen-6');
+  let position = world.home;
+  const island = world.objects.find(object => object.instanceId === 'kitchen-7');
+  const clearanceWorld = { ...world, radius: .55 * world.catScale, kitchenNavigation: true, fridgeDoorClearance: 'kitchen-6' };
+  const checkTravel = step => {
+    assert.equal(step.native.blocked, false, `The fridge is reachable around the island at viewport height ${height}`);
+    assert.ok(!step.native.legs?.some(leg => leg.kind === 'hop'), 'The detour stays on the floor');
+    for (let i = 1; i < step.native.path.length; i++) {
+      const a = step.native.path[i - 1], b = step.native.path[i];
+      const samples = Math.max(1, Math.ceil(nativeRoom.pathLength([a, b]) / .01));
+      for (let j = 0; j <= samples; j++) {
+        const point = a.map((value, axis) => value + (b[axis] - value) * j / samples);
+        assert.ok(nativeRoom.isFree(point, clearanceWorld), 'The entire detour clears furniture and the moving door');
+      }
+    }
+  };
+  for (let i = 0; i < 2; i++) {
+    const step = nativeRoom.prepareNativeStep(plan, plan.steps[i], nativeRoom.catScreenPoint(position, world), world, position[1]);
+    checkTravel(step);
+    if (i === 0) {
+      assert.ok(nativeRoom.pathLength([step.native.path[0], position]) < .001, 'The detour never relocates the cat');
+      assert.ok(step.native.path.some(point => point[2] > island.max[2] + clearanceWorld.radius), 'Walk around the far end of the island');
+      assert.ok(step.native.path.at(-1)[0] < island.min[0] - clearanceWorld.radius, 'Reach the hinge-side approach');
+    }
+    position = step.native.path.at(-1);
+    plan = { ...plan, steps: plan.steps.map((value, index) => index === i ? step : value) };
+  }
+  const exit = buildRoomReturn(options, plan, 1, nativeRoom.catScreenPoint(position, world));
+  checkTravel(nativeRoom.prepareNativeStep(exit, exit.steps[0], nativeRoom.catScreenPoint(position, world), world, position[1]));
+}
+console.log('Verified the saved kitchen fridge detour around the island, held investigation and return with full door-swing clearance.');
+
 // Move fixture meshes together to make a countertop beneath either wall's window.
 function moveFixture(object,position) {
   const shift=position.map((v,i)=>v-object.position[i]),move=p=>p.map((v,i)=>v+shift[i]);

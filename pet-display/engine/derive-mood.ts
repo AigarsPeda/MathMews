@@ -1,9 +1,6 @@
 import { MOOD_ANIMATION } from "@/constants/game";
-import { worldClockReading, type WorldClock } from '@/utils/world-clock';
-import { useWorldClockNow } from '@/hooks/use-world-clock-now';
 import type { PetAnimationState, PetMood, PetProfile } from "@/types/game";
 import { isPetHungry } from "@/utils/pet-care";
-import { useCallback, useMemo, useState } from "react";
 
 const LOW_STAT_THRESHOLD = 30;
 export const IDLE_REST_MS = 3 * 60 * 1000;
@@ -94,31 +91,4 @@ export function derivePetVideoMood(
   }
 
   return "fallingAsleep";
-}
-
-export function usePetBaseMood(pet: PetProfile, clock?: WorldClock) {
-  const now = useWorldClockNow(clock ? 5000 : 30_000);
-  const night = clock ? worldClockReading(clock, now).period === 'night' : undefined;
-  const interactionAt = getLastInteractionAt(pet);
-  const asleep = pet.isAsleep === true && (pet.type !== 'cat' || night !== false);
-  const [phase, setPhase] = useState(() => ({
-    interactionAt, asleep, night, lieDownDone: asleep, fallAsleepDone: asleep,
-  }));
-  // Reset transitions for a new interaction, rather than every stat-decay tick.
-  if (phase.interactionAt !== interactionAt || phase.asleep !== asleep || phase.night !== night) {
-    setPhase({ interactionAt, asleep, night, lieDownDone: asleep, fallAsleepDone: asleep });
-  }
-  const mood = useMemo(
-    () => derivePetVideoMood(pet, phase.fallAsleepDone, now, phase.lieDownDone, night),
-    [pet, phase.fallAsleepDone, phase.lieDownDone, now, night],
-  );
-  const onFallAsleepComplete = useCallback(() => {
-    if (shouldPetSleep(pet, Date.now(), night)) setPhase(current => current.interactionAt === interactionAt
-      ? { ...current, fallAsleepDone: true } : current);
-  }, [pet, interactionAt, night]);
-  const onLieDownComplete = useCallback(() => {
-    setPhase(current => current.interactionAt === interactionAt
-      ? { ...current, lieDownDone: true } : current);
-  }, [interactionAt]);
-  return { mood, onFallAsleepComplete, onLieDownComplete };
 }

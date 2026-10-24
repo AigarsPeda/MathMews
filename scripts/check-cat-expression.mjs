@@ -1,7 +1,7 @@
 /** Exercise secondary movement on the real rig without changing root/foot contacts. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {load,openSkin,resetCatActor,render,drawCat,actorState,actorBones,point,idle,enableActorCrossfade} from './check-cat-turning.mjs';
+import {load,openSkin,resetCatActor,render,drawCat,actorState,actorBones,enableActorCrossfade} from './check-cat-turning.mjs';
 const {catJumpExpression}=load('@/utils/native-cat-expression');
 const floor=load('@/utils/native-room-world').FLOOR_Y;
 const preview=process.argv.includes('--preview'),coats=preview?['orange']:['orange','grey','white'],rates=preview?[60]:[30,60,120];

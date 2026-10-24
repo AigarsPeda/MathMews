@@ -27,7 +27,7 @@ let editingReady, stoppedForEditing = 0;
 let roomActivityForTest = null, requestedActivity, requestedInstanceId, returnedHome = 0, roomActivityEnabled, activityOptionsForTest;
 const objectX = shared(), objectY = shared(), objectRotation = shared();
 const mocks = {
-  '@/hooks/use-world-clock-now': { useWorldClockNow: () => Date.now() },
+  '@/hooks/use-world-period': { useWorldPeriod: clock => clock ? load(path.join(root, 'utils/world-clock.ts')).worldClockReading(clock).period : undefined },
   'react-native-worklets-core': { useSharedValue: value => drawingValues[drawingIndex++] ??= { value } },
   "@/lib/graphics-mode": { useGraphicsMode: () => "3d" },
   '@/components/pet/RoomNavigation': { RoomNavigation: 'RoomNavigation', ROOM_NAVIGATION_HEIGHT: 52 },

@@ -8,6 +8,8 @@ import {
   saveBackedUpSession,
 } from "@/lib/auth-session-backup";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { subscribeToNetworkReconnect } from "@/hooks/use-network-reconnect";
+import { AppState } from "react-native";
 import { loadDeletionReceipt } from '@/services/cloud-save/deletion-receipt';
 import {
   getLinkedPlatformProvider,
@@ -151,70 +153,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     let active = true;
+    let running = false;
+    let complete = false;
+    const client = supabase;
 
-    (async () => {
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
+    const initialize = async () => {
+      if (!active || running || complete) return;
+      // Reconnect and timer retries must not overlap checkout/account recovery
+      // or each other. Always reread the session before creating a guest.
+      const release = acquireAccountOperation('auth');
+      if (!release) return;
+      running = true;
+      try {
+        const { data: sessionData, error: sessionError } = await client.auth.getSession();
+        if (!active) return;
+        if (sessionError) throw sessionError;
 
-      if (!active) return;
-
-      if (sessionError && __DEV__) {
-        console.warn("[MathMews auth] getSession failed", sessionError.message);
-      }
-
-      let session = sessionData.session;
-
-      if (!session) {
-        session = await restoreSessionFromSecureBackup();
-        if (__DEV__ && session) {
-          console.log(
-            "[MathMews auth] restored session from secure storage:",
-            session.user.id,
-          );
+        const session = sessionData.session ?? await restoreSessionFromSecureBackup();
+        if (!active) return;
+        if (session?.user.id) {
+          setUserId(session.user.id);
+          setIsPlatformAccountLinked(hasPlatformAccountLinked(session.user));
+          setLinkedPlatformProvider(getLinkedPlatformProvider(session.user));
+          complete = true;
+          setIsAuthReady(true);
+          return;
         }
-      }
 
-      if (session?.user.id) {
-        setUserId(session.user.id);
-        setIsPlatformAccountLinked(hasPlatformAccountLinked(session.user));
-        setLinkedPlatformProvider(getLinkedPlatformProvider(session.user));
+        // An expired deleting account must never be replaced by a new guest.
+        const deletion = await loadDeletionReceipt();
+        if (!active) return;
+        if (deletion) { complete = true; setIsAuthReady(true); return; }
+        const { data, error } = await client.auth.signInAnonymously();
+        if (!active) return;
+        if (error) throw error;
+        if (!data.user) throw new Error('Anonymous sign-in returned no user');
+
+        setUserId(data.user.id);
+        setIsPlatformAccountLinked(hasPlatformAccountLinked(data.user));
+        setLinkedPlatformProvider(getLinkedPlatformProvider(data.user));
+        complete = true;
         setIsAuthReady(true);
-        return;
+      } catch (error) {
+        if (__DEV__) console.warn("[MathMews auth] initialization unavailable", error);
+        // Let local UI open while recovery waits for connectivity.
+        if (active) setIsAuthReady(true);
+      } finally {
+        running = false;
+        release();
       }
+    };
 
-      // Never attach a deleting account's local game to a new guest when its
-      // old session expires. Settings can check the saved completion receipt.
-      if (await loadDeletionReceipt()) { setIsAuthReady(true); return; }
-      const { data, error } = await supabase.auth.signInAnonymously();
-      if (!active) return;
-
-      if (error) {
-        if (__DEV__) {
-          console.warn("[MathMews auth] anonymous sign-in failed", error.message);
-        }
-        setIsAuthReady(true);
-        return;
-      }
-
-      const nextUserId = data.user?.id ?? null;
-      if (__DEV__ && nextUserId) {
-        console.log("[MathMews auth] signed in anonymously:", nextUserId);
-      }
-
-      setUserId(nextUserId);
-      await refreshLinkedState();
-      setIsAuthReady(true);
-    })().catch((error) => {
-      if (__DEV__) {
-        console.warn("[MathMews auth] unexpected error", error);
-      }
-      if (active) setIsAuthReady(true);
-    });
-
+    const unsubscribe = subscribeToNetworkReconnect(() => { void initialize(); });
+    const retry = setInterval(() => {
+      if (AppState.currentState === 'active') void initialize();
+    }, 15_000);
+    void initialize();
     return () => {
       active = false;
+      unsubscribe();
+      clearInterval(retry);
     };
-  }, [refreshLinkedState]);
+  }, []);
 
   const runAuthAction = useCallback(async (action: () => Promise<ProgressAuthResult>): Promise<ProgressAuthResult> => {
     const release = acquireAccountOperation('auth');

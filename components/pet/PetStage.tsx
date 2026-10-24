@@ -46,8 +46,8 @@ import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isW
 import { DecorationSpriteImage } from "@/components/pet/DecorationSpriteImage";
 import { SimpleLampLight } from '@/components/pet/SimpleLampLight';
 import { WorldRoomTint } from '@/components/pet/WorldRoomTint';
-import { worldClockReading, type WorldClock, type WorldPeriod } from '@/utils/world-clock';
-import { useWorldClockNow } from '@/hooks/use-world-clock-now';
+import type { WorldClock, WorldPeriod } from '@/utils/world-clock';
+import { useWorldPeriod } from '@/hooks/use-world-period';
 import { DraggableRoomPet } from "@/components/pet/DraggableRoomPet";
 import { PetSpeechBubble } from "@/components/pet/PetSpeechBubble";
 import type { RoomItemMenuAction } from "@/components/pet/RoomActionMenu";
@@ -394,8 +394,9 @@ export function PetStage({
   const speechHeight = useSharedValue(0);
   const hungry = stats.hunger < 30;
   const asleep = playback.kind === "segment" && playback.mood === "sleeping";
-  const clockNow = useWorldClockNow(5000, !!worldClock && (roomVisible || catPresent) && !decorating);
-  const period = worldClock ? worldClockReading(worldClock, clockNow).period : undefined;
+  const canFeed = canFeedForEffect(stats, asleep);
+  const canSendCatToRoom = !!onSendCatToRoom;
+  const period = useWorldPeriod(worldClock, (roomVisible || catPresent) && !decorating);
   const nativeWorldOptions = useMemo(() => ({
       width: viewport.width, height: viewport.height, petSize: displayWidth, sizeScale: moderateScale(100) / 100 * ROOM_OBJECT_SCALE,
       homeOffset: roomPetOffset, bedId, bedOffset: roomBedOffset, bedFlipped, bedScale,
@@ -777,7 +778,7 @@ export function PetStage({
       if (!decorating) {
         if (roomActivityBlocked) return false;
         if (item.kind === "decoration" && isOpenableDecorationId(item.decorationId) && onTogglePlacedDecorationOpen) return true;
-        if (item.kind === "decoration" && isRoomDoor(item.decorationId)) return Boolean(onSendCatToRoom && roomPlacedDecorations.find(placed=>placed.instanceId===item.instanceId)?.doorDestination);
+        if (item.kind === "decoration" && isRoomDoor(item.decorationId)) return Boolean(canSendCatToRoom && roomPlacedDecorations.find(placed=>placed.instanceId===item.instanceId)?.doorDestination);
         if (item.kind === "decoration" && isFridgeDecorationId(item.decorationId)) return Boolean(onTogglePlacedFridge);
         if (item.kind === "decoration" && isCurtainDecorationId(item.decorationId)) return Boolean(onTogglePlacedCurtain);
         if (item.kind === "decoration" && isPoweredDecorationId(item.decorationId)) return Boolean(onTogglePlacedDecorationPower);
@@ -806,7 +807,7 @@ export function PetStage({
       bedId,
       decorating,
       catPresent,
-      onSendCatToRoom, roomPlacedDecorations,
+      canSendCatToRoom, roomPlacedDecorations,
       onRequestRoomCommand,
       roomActivityBlocked,
       viewport.width, viewport.height, displayWidth,
@@ -880,12 +881,12 @@ export function PetStage({
         for (const { kind, icon } of getRoomCommands(item, bedId)) {
           const labelKind = roomCommandLabel(kind,item.kind === 'decoration' ? item.decorationId : undefined);
           actions.push({ label: t(`home.catCommands.${labelKind}`), icon,
-            disabled: roomActivityBlocked || (kind === 'cupboardHide' && !nativeWorld.objects.find(object => object.instanceId === (item.kind === 'bed' ? 'bed' : item.instanceId))?.cupboardFits) || ((kind === 'drawerHide' || kind === 'cupboardHide') && !onTogglePlacedDecorationOpen) || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!onFeed || !canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
+            disabled: roomActivityBlocked || (kind === 'cupboardHide' && !nativeWorld.objects.find(object => object.instanceId === (item.kind === 'bed' ? 'bed' : item.instanceId))?.cupboardFits) || ((kind === 'drawerHide' || kind === 'cupboardHide') && !onTogglePlacedDecorationOpen) || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!onFeed || !canFeed || roomActivity?.plan.kind === "bowlEat")),
             onPress: () => startRoomCommand(kind, item.kind === "bed" ? "bed" : item.instanceId),
           });
         }
       }
-      if(!decorating && item.kind==='decoration' && isRoomDoor(item.decorationId) && onSendCatToRoom && (catPresent || onRequestRoomCommand)) {
+      if(!decorating && item.kind==='decoration' && isRoomDoor(item.decorationId) && canSendCatToRoom && (catPresent || onRequestRoomCommand)) {
         const door=roomPlacedDecorations.find(placed=>placed.instanceId===item.instanceId);
         if(door?.doorDestination)actions.push({
           label:t('home.goToRoom',{room:t(`home.rooms.${door.doorDestination}`)}),icon:HOME_ROOM_ICONS[door.doorDestination],
@@ -1135,13 +1136,12 @@ export function PetStage({
       bedScale,
       decorating,
       catPresent,
-      onSendCatToRoom,
+      canSendCatToRoom,
       onRequestRoomCommand,
       roomActivityBlocked,
       viewport.width, viewport.height, displayWidth,
       onFeed,
-      stats,
-      asleep,
+      canFeed,
       roomActivity,
       startRoomCommand,
       changeLookLabel,
@@ -1377,7 +1377,7 @@ export function PetStage({
   // This creates event handlers; it does not invoke their preview/ref reads.
   // eslint-disable-next-line react-hooks/refs
   const selectedItemActions = movingItem ? buildRoomItemMenuActions(movingItem).map(action => action.id === 'put-away' ? { ...action, onPress: putAwaySelection } : action) : [];
-  const petCluster = (
+  const petCluster = useMemo(() => (
     <View
       style={[
         compact ? styles.petCenterSlot : styles.avatarCluster,
@@ -1403,7 +1403,8 @@ export function PetStage({
         />
       </Animated.View>
     </View>
-  );
+  ), [compact, petDisplayWidth, visibleSpeech, usesNativeCat, catActivityStyle, petType, catSkinId,
+    activityPlayback, playback, roomActivity, displayWidth, onPetPress, onAnimationComplete, onStepComplete]);
 
   useEffect(() => {
     if (simpleGraphics && nativeSceneMounted && viewport.width > 0) handleSceneReady();
@@ -1423,11 +1424,11 @@ export function PetStage({
       const labelKind = roomCommandLabel(kind,target.kind === 'decoration' ? target.decorationId : undefined);
       actions.push({
         label: t(`home.catCommands.${labelKind}`), section, icon: command.icon,
-        disabled: roomActivityBlocked || (kind === 'cupboardHide' && !nativeWorld.objects.find(object => object.instanceId === (target.kind === 'bed' ? 'bed' : target.instanceId))?.cupboardFits) || ((kind === 'drawerHide' || kind === 'cupboardHide') && !onTogglePlacedDecorationOpen) || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!canFeedForEffect(stats, asleep) || roomActivity?.plan.kind === "bowlEat")),
+        disabled: roomActivityBlocked || (kind === 'cupboardHide' && !nativeWorld.objects.find(object => object.instanceId === (target.kind === 'bed' ? 'bed' : target.instanceId))?.cupboardFits) || ((kind === 'drawerHide' || kind === 'cupboardHide') && !onTogglePlacedDecorationOpen) || (kind === 'fridgeInvestigate' && !onTogglePlacedFridge) || (kind === "bowlEat" && (!canFeed || roomActivity?.plan.kind === "bowlEat")),
         onPress: () => startRoomCommand(kind, (kind === 'fridgeInvestigate' || kind === 'drawerHide' || kind === 'cupboardHide' || kind === 'investigate') && target.kind === 'decoration' ? target.instanceId : undefined),
       });
     }
-    if (onSendCatToRoom) actions.push(...HOME_ROOM_IDS.filter(id => id !== catHomeRoomId).map(id => ({
+    if (canSendCatToRoom) actions.push(...HOME_ROOM_IDS.filter(id => id !== catHomeRoomId).map(id => ({
       label: t("home.goToRoom", { room: t(`home.rooms.${id}`) }), icon: HOME_ROOM_ICONS[id],
       section: travel,
       disabled: roomActivityBlocked || roomActivity?.plan.kind === "roomTravel",
@@ -1444,11 +1445,11 @@ export function PetStage({
       onPress: () => onPlay(activity),
     })));
     return actions;
-  }, [nativeWorld, bedId, viewport.width, viewport.height, displayWidth, asleep, compact, catPresent, catHomeRoomId, onSendCatToRoom, decorating, handleCatTap, handleRoomTouch, onFeed, onPetPress, onPlay,
+  }, [nativeWorld, bedId, viewport.width, viewport.height, displayWidth, compact, catPresent, catHomeRoomId, canSendCatToRoom, decorating, handleCatTap, handleRoomTouch, onFeed, onPetPress, onPlay,
     onTogglePlacedFridge,
-  onTogglePlacedDecorationOpen, roomActivity, roomActivityBlocked, layerOrder, startRoomCommand, stats, t, usesNativeCat]);
+  onTogglePlacedDecorationOpen, roomActivity, roomActivityBlocked, layerOrder, startRoomCommand, canFeed, t, usesNativeCat]);
 
-  const roomPetLayer =
+  const roomPetLayer = useMemo(() =>
     compact && usesNativeCat && !catPresent ? null : compact && usesNativeCat ? (
       <DraggableRoomPet
         testID="room-cat"
@@ -1473,11 +1474,15 @@ export function PetStage({
       </DraggableRoomPet>
     ) : (
       <View style={styles.petStack}>{petCluster}</View>
-    );
+    ), [compact, usesNativeCat, catPresent, t, snap, decorating, zoom, petSceneX, petSceneY, displayWidth,
+    roomPetOffset, onRoomPetOffsetChange, clearLivePosition, handlePetPositionChange, livePosition,
+    catCommandActions, activityScale, catDepthY, simpleGraphics, petCluster]);
 
+  // Editing anchors remain live on every render; play-mode furniture can be reused.
+  const editingDragAnchor = decorating ? nativeDragAnchor : undefined;
   // Menu factories return gesture handlers; they do not read their captured refs while rendering.
   // eslint-disable-next-line react-hooks/refs
-  const roomItemLayers = layerOrder.map((item, layerIndex) => {
+  const roomItemLayers = useMemo(() => layerOrder.map((item, layerIndex) => {
     const layerZIndex = layerIndex + 1;
 
     if (item.kind === "bed") {
@@ -1485,7 +1490,7 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
-          externalPosition={decorating ? nativeDragAnchor("bed") : undefined}
+          externalPosition={editingDragAnchor?.("bed")}
           testID="room-object:bed"
           key="bed"
           depthAnchor={getRoomObjectDepthAnchor(`bed-${bedId}`)}
@@ -1512,7 +1517,7 @@ export function PetStage({
 
       return (
         <DraggableRoomPet
-          externalPosition={decorating ? nativeDragAnchor(item.instanceId) : decorating ? undefined : nativeHitPositions[item.instanceId]}
+          externalPosition={editingDragAnchor ? editingDragAnchor(item.instanceId) : nativeHitPositions[item.instanceId]}
           testID={`room-object:${item.instanceId}`}
           key={`decoration:${item.instanceId}`}
           depthAnchor={isRoomBackgroundDecoration(spriteId) ? undefined : getRoomObjectDepthAnchor(spriteId)}
@@ -1544,7 +1549,7 @@ export function PetStage({
         testID={`room-object:${item.instanceId}`}
         key={`toy:${item.instanceId}`}
         depthAnchor={getRoomObjectDepthAnchor(`toy-${toyId}`)}
-        externalPosition={decorating ? nativeDragAnchor(item.instanceId) : decorating ? undefined : nativeHitPositions[item.instanceId]}
+        externalPosition={editingDragAnchor ? editingDragAnchor(item.instanceId) : nativeHitPositions[item.instanceId]}
         petSize={toySize}
         initialOffset={placed.offset}
         onOffsetChange={(offset) =>
@@ -1556,7 +1561,26 @@ export function PetStage({
         {simpleGraphics ? <ToySpriteImage toyId={toyId} size={toySize} still/> : <View style={{ width: toySize, height: toySize }} />}
       </DraggableRoomPet>
     );
-  });
+  }), [layerOrder, compact, usesNativeCat, bedSource, editingDragAnchor, bedId, bedSize, roomBedOffset,
+    onCommitRoomEdit, onRoomBedOffsetChange, clearLivePosition, livePosition, roomItemDragProps,
+    simpleGraphics, roomPlacedDecorations, nativeHitPositions, nativeWorld, onPlacedDecorationOffsetChange,
+    roomPlacedToys, onPlacedToyOffsetChange]);
+
+  // The lamp targets depend on furniture and available actions, not numeric stats.
+  // eslint-disable-next-line react-hooks/refs
+  const lampSwitches = useMemo(() => !compact || !nativeRendering || decorating || !onTogglePlacedDecorationPower ? null : nativeWorld.objects.map(object => {
+    const fireplace = object.modelId === 'livingFireplaceCream';
+    const position = fireplace ? fireplaceLightPosition(object) : lampSwitchPosition(object);
+    const item = layerOrder.find(entry => entry.kind === "decoration" && entry.instanceId === object.instanceId);
+    if (!position || !item || !canManageRoomItem(item)) return null;
+    const point = projectWorld(position, viewport.width);
+    const size = Math.max(32, Math.min(56, viewport.width * .07 * object.scale));
+    return <RoomActionMenu key={`lamp-switch:${object.instanceId}`} label={fireplace ? itemLabel(item) : t('home.lampSwitch', { name: itemLabel(item) })}
+      actions={buildRoomItemMenuActions(item)} size={{ width: size, height: size }}
+      style={{ position: 'absolute', left: viewport.width / 2 + point.x - size / 2, top: viewport.height / 2 + point.y - size / 2 }}>
+      <View pointerEvents="none" style={{ width: size, height: size }}/>
+    </RoomActionMenu>;
+  }), [compact, nativeRendering, decorating, onTogglePlacedDecorationPower, nativeWorld, layerOrder, canManageRoomItem, viewport.width, viewport.height, itemLabel, t, buildRoomItemMenuActions]);
 
   return (
     <View style={[styles.stage, compact && styles.stageCompact, sceneSlide && styles.transparentScene]}>
@@ -1623,22 +1647,7 @@ export function PetStage({
                   sceneX.set(camera.x * editingFrame.scale); sceneY.set(camera.y * editingFrame.scale);
                 }}/>}
             {compact && nativeRendering && !decorating && onTogglePlacedDecorationPower && <View pointerEvents="box-none" style={[StyleSheet.absoluteFill, { zIndex: ROOM_MENU_OPEN_Z_INDEX }]}>
-              {
-              // Event handlers returned by the menu factory only read refs when pressed.
-              // eslint-disable-next-line react-hooks/refs
-              nativeWorld.objects.map(object => {
-                const fireplace = object.modelId === 'livingFireplaceCream';
-                const position = fireplace ? fireplaceLightPosition(object) : lampSwitchPosition(object);
-                const item = layerOrder.find(entry => entry.kind === "decoration" && entry.instanceId === object.instanceId);
-                if (!position || !item || !canManageRoomItem(item)) return null;
-                const point = projectWorld(position, viewport.width);
-                const size = Math.max(32, Math.min(56, viewport.width * .07 * object.scale));
-                return <RoomActionMenu key={`lamp-switch:${object.instanceId}`} label={fireplace ? itemLabel(item) : t('home.lampSwitch', { name: itemLabel(item) })}
-                  actions={buildRoomItemMenuActions(item)} size={{ width: size, height: size }}
-                  style={{ position: 'absolute', left: viewport.width / 2 + point.x - size / 2, top: viewport.height / 2 + point.y - size / 2 }}>
-                  <View pointerEvents="none" style={{ width: size, height: size }}/>
-                </RoomActionMenu>;
-              })}
+              {lampSwitches}
             </View>}
             </Animated.View>
             </View>

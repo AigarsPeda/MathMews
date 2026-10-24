@@ -1,0 +1,1948 @@
+{
+  "before": {
+    "react": {
+      "commits": 101,
+      "frames": {
+        "durationMs": 60204.05649995804,
+        "callbacks": 3438,
+        "medianMs": 16.67,
+        "p95Ms": 16.73,
+        "p99Ms": 17.15,
+        "maxMs": 428.24,
+        "over100ms": 13
+      },
+      "wisdomCalls": 0,
+      "components": {
+        "Forget(Memo(HomeBedtimeRoutine))": {
+          "renders": 13,
+          "inclusiveMs": 0.9099999999999999,
+          "maxInclusiveMs": 0.087
+        },
+        "Forget(PetStage)": {
+          "renders": 28,
+          "inclusiveMs": 1785.5990000000002,
+          "maxInclusiveMs": 103.739
+        },
+        "Forget(StoreScreen(./store.tsx))": {
+          "renders": 3,
+          "inclusiveMs": 29.359,
+          "maxInclusiveMs": 17.762
+        },
+        "Forget(Memo(NativeRoomSurface))": {
+          "renders": 4,
+          "inclusiveMs": 55.036,
+          "maxInclusiveMs": 22.979
+        },
+        "Forget(Memo(NativeRoomScene))": {
+          "renders": 4,
+          "inclusiveMs": 55.687999999999995,
+          "maxInclusiveMs": 23.15
+        },
+        "Forget(HomeContent)": {
+          "renders": 1,
+          "inclusiveMs": 252.661,
+          "maxInclusiveMs": 252.661
+        },
+        "Memo(HomeContent)": {
+          "renders": 1,
+          "inclusiveMs": 252.668,
+          "maxInclusiveMs": 252.668
+        },
+        "Forget(HomeScreen(./index.tsx))": {
+          "renders": 1,
+          "inclusiveMs": 252.763,
+          "maxInclusiveMs": 252.763
+        }
+      },
+      "events": [
+        {
+          "atMs": 1913.7372080087662,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.072,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 59.78,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 102.114,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 6920.936540961266,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.079,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 54.747,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 102.541,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 11272.98512494564,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 17.762,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 11944.357499957085,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.068,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 55.447,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 101.349,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 16958.395290970802,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.071,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 57.274,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 101.308,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 21970.554790973663,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.068,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 57.011,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 99.508,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 26989.48208296299,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.072,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 55.062,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 103.739,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 31940.46566593647,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.069,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 31.932,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 61.579,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 36968.826499938965,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.077,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 33.878,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 70.983,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 40887.263499975204,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.037,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "pet"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomSurface))",
+              "inclusiveMs": 8.71,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomScene))",
+              "inclusiveMs": 8.88,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 45.081,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onVisitHomeRoom",
+                  "onSendCatToRoom",
+                  "roomToolbar",
+                  "onCommitRoomEdit",
+                  "storedItems",
+                  "roomEditor",
+                  "stats",
+                  "onRoomActivityCompleted",
+                  "onPlay",
+                  "onPetPress",
+                  "onRoomPetOffsetChange",
+                  "onRoomBedOffsetChange",
+                  "onPlacedToyOffsetChange",
+                  "onPlacedDecorationOffsetChange",
+                  "onAimPlacedSpotlight",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomSurface))",
+              "inclusiveMs": 12.466,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomScene))",
+              "inclusiveMs": 12.633,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 70.788,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onVisitHomeRoom",
+                  "onSendCatToRoom",
+                  "roomToolbar",
+                  "onCommitRoomEdit",
+                  "storedItems",
+                  "roomEditor",
+                  "stats",
+                  "onRoomActivityCompleted",
+                  "onPlay",
+                  "onPetPress",
+                  "onRoomPetOffsetChange",
+                  "onRoomBedOffsetChange",
+                  "onPlacedToyOffsetChange",
+                  "onPlacedDecorationOffsetChange",
+                  "onAimPlacedSpotlight",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomSurface))",
+              "inclusiveMs": 22.979,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomScene))",
+              "inclusiveMs": 23.15,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 86.363,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onVisitHomeRoom",
+                  "onSendCatToRoom",
+                  "roomToolbar",
+                  "onCommitRoomEdit",
+                  "storedItems",
+                  "roomEditor",
+                  "stats",
+                  "onRoomActivityCompleted",
+                  "onPlay",
+                  "onPetPress",
+                  "onRoomPetOffsetChange",
+                  "onRoomBedOffsetChange",
+                  "onPlacedToyOffsetChange",
+                  "onPlacedDecorationOffsetChange",
+                  "onAimPlacedSpotlight",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomSurface))",
+              "inclusiveMs": 10.881,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomScene))",
+              "inclusiveMs": 11.025,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 46.488,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onVisitHomeRoom",
+                  "onSendCatToRoom",
+                  "roomToolbar",
+                  "onCommitRoomEdit",
+                  "storedItems",
+                  "roomEditor",
+                  "stats",
+                  "onRoomActivityCompleted",
+                  "onPlay",
+                  "onPetPress",
+                  "onRoomPetOffsetChange",
+                  "onRoomBedOffsetChange",
+                  "onPlacedToyOffsetChange",
+                  "onPlacedDecorationOffsetChange",
+                  "onAimPlacedSpotlight",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(HomeContent)",
+              "inclusiveMs": 252.661,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  65
+                ],
+                "isFirstMount": false,
+                "props": [
+                  "game"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Memo(HomeContent)",
+              "inclusiveMs": 252.668,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "game"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(HomeScreen(./index.tsx))",
+              "inclusiveMs": 252.763,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.239,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 41281.40995800495,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 11.358,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 41981.186874985695,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.071,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 35.538,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 62.807,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 46995.76254093647,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.071,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 34.778,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 61.996,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 52010.54387497902,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.068,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 34.281,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 62.914,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 57026.889958024025,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.087,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 35.362,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 60.951,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  71
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "cpu": {
+      "durationMs": 29995.549,
+      "samples": 2451,
+      "topSelfSamples": [
+        {
+          "name": "[root]",
+          "sampledMs": 28249
+        },
+        {
+          "name": "[Host Function] createTask",
+          "sampledMs": 690
+        },
+        {
+          "name": "structuredCloneInternal",
+          "sampledMs": 118
+        },
+        {
+          "name": "[GC Young Gen]",
+          "sampledMs": 89
+        },
+        {
+          "name": "diffProperties",
+          "sampledMs": 35
+        },
+        {
+          "name": "runWithFiberInDEV",
+          "sampledMs": 31
+        },
+        {
+          "name": "addObjectDiffToProperties",
+          "sampledMs": 29
+        },
+        {
+          "name": "getOwner",
+          "sampledMs": 29
+        },
+        {
+          "name": "[Host Function] unstable_now",
+          "sampledMs": 29
+        },
+        {
+          "name": "updateFiberRecursively",
+          "sampledMs": 27
+        },
+        {
+          "name": "reconcileChildren",
+          "sampledMs": 23
+        },
+        {
+          "name": "pushHostContext",
+          "sampledMs": 23
+        },
+        {
+          "name": "commitPassiveMountOnFiber",
+          "sampledMs": 22
+        },
+        {
+          "name": "getDisplayNameForFiber",
+          "sampledMs": 22
+        },
+        {
+          "name": "validateChildKeys",
+          "sampledMs": 21
+        }
+      ]
+    }
+  },
+  "after": {
+    "react": {
+      "commits": 125,
+      "frames": {
+        "durationMs": 74161.52770793438,
+        "callbacks": 4398,
+        "medianMs": 16.67,
+        "p95Ms": 16.71,
+        "p99Ms": 16.86,
+        "maxMs": 795.37,
+        "over100ms": 1
+      },
+      "wisdomCalls": 0,
+      "components": {
+        "Forget(Memo(HomeBedtimeRoutine))": {
+          "renders": 16,
+          "inclusiveMs": 1.2309999999999999,
+          "maxInclusiveMs": 0.089
+        },
+        "Forget(StoreScreen(./store.tsx))": {
+          "renders": 3,
+          "inclusiveMs": 30.128,
+          "maxInclusiveMs": 19.107
+        },
+        "Forget(Memo(NativeRoomSurface))": {
+          "renders": 4,
+          "inclusiveMs": 49.894,
+          "maxInclusiveMs": 20.705
+        },
+        "Forget(Memo(NativeRoomScene))": {
+          "renders": 4,
+          "inclusiveMs": 50.58,
+          "maxInclusiveMs": 20.875
+        },
+        "Forget(PetStage)": {
+          "renders": 4,
+          "inclusiveMs": 245.149,
+          "maxInclusiveMs": 81.505
+        },
+        "Forget(HomeContent)": {
+          "renders": 1,
+          "inclusiveMs": 249.048,
+          "maxInclusiveMs": 249.048
+        },
+        "Memo(HomeContent)": {
+          "renders": 1,
+          "inclusiveMs": 249.054,
+          "maxInclusiveMs": 249.054
+        },
+        "Forget(HomeScreen(./index.tsx))": {
+          "renders": 1,
+          "inclusiveMs": 249.13,
+          "maxInclusiveMs": 249.13
+        }
+      },
+      "events": [
+        {
+          "atMs": 321.370707988739,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.072,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 5338.061542034149,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.077,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 10354.98483300209,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.082,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 15371.332208037376,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.071,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 20388.06025004387,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.069,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 21614.27162504196,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 19.107,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 25404.995125055313,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.079,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 30404.916542053223,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.089,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 35421.49520802498,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.075,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 40421.500583052635,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.07,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 45438.199958086014,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.079,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 50454.90904200077,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.078,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 51681.908167004585,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.068,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "pet"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomSurface))",
+              "inclusiveMs": 7.354,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomScene))",
+              "inclusiveMs": 7.532,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 47.225,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onVisitHomeRoom",
+                  "onSendCatToRoom",
+                  "roomToolbar",
+                  "onCommitRoomEdit",
+                  "storedItems",
+                  "roomEditor",
+                  "stats",
+                  "onRoomActivityCompleted",
+                  "onPlay",
+                  "onPetPress",
+                  "onRoomPetOffsetChange",
+                  "onRoomBedOffsetChange",
+                  "onPlacedToyOffsetChange",
+                  "onPlacedDecorationOffsetChange",
+                  "onAimPlacedSpotlight",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomSurface))",
+              "inclusiveMs": 11.704,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomScene))",
+              "inclusiveMs": 11.864,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 69.038,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onVisitHomeRoom",
+                  "onSendCatToRoom",
+                  "roomToolbar",
+                  "onCommitRoomEdit",
+                  "storedItems",
+                  "roomEditor",
+                  "stats",
+                  "onRoomActivityCompleted",
+                  "onPlay",
+                  "onPetPress",
+                  "onRoomPetOffsetChange",
+                  "onRoomBedOffsetChange",
+                  "onPlacedToyOffsetChange",
+                  "onPlacedDecorationOffsetChange",
+                  "onAimPlacedSpotlight",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomSurface))",
+              "inclusiveMs": 20.705,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomScene))",
+              "inclusiveMs": 20.875,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 81.505,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onVisitHomeRoom",
+                  "onSendCatToRoom",
+                  "roomToolbar",
+                  "onCommitRoomEdit",
+                  "storedItems",
+                  "roomEditor",
+                  "stats",
+                  "onRoomActivityCompleted",
+                  "onPlay",
+                  "onPetPress",
+                  "onRoomPetOffsetChange",
+                  "onRoomBedOffsetChange",
+                  "onPlacedToyOffsetChange",
+                  "onPlacedDecorationOffsetChange",
+                  "onAimPlacedSpotlight",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomSurface))",
+              "inclusiveMs": 10.131,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(Memo(NativeRoomScene))",
+              "inclusiveMs": 10.309,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "onObjectPosition",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(PetStage)",
+              "inclusiveMs": 47.381,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [
+                  "onVisitHomeRoom",
+                  "onSendCatToRoom",
+                  "roomToolbar",
+                  "onCommitRoomEdit",
+                  "storedItems",
+                  "roomEditor",
+                  "stats",
+                  "onRoomActivityCompleted",
+                  "onPlay",
+                  "onPetPress",
+                  "onRoomPetOffsetChange",
+                  "onRoomBedOffsetChange",
+                  "onPlacedToyOffsetChange",
+                  "onPlacedDecorationOffsetChange",
+                  "onAimPlacedSpotlight",
+                  "onAnimationComplete"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(HomeContent)",
+              "inclusiveMs": 249.048,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  65
+                ],
+                "isFirstMount": false,
+                "props": [
+                  "game"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Memo(HomeContent)",
+              "inclusiveMs": 249.054,
+              "change": {
+                "context": false,
+                "didHooksChange": false,
+                "hooks": null,
+                "isFirstMount": false,
+                "props": [
+                  "game"
+                ],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(HomeScreen(./index.tsx))",
+              "inclusiveMs": 249.13,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.255,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 52191.90058302879,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 10.766,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 55455.04120802879,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.076,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 60471.659583091736,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.085,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 65472.03937506676,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.08,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 70488.2939170599,
+          "targets": [
+            {
+              "name": "Forget(Memo(HomeBedtimeRoutine))",
+              "inclusiveMs": 0.081,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  5
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "cpu": {
+      "durationMs": 29988.349,
+      "samples": 2449,
+      "topSelfSamples": [
+        {
+          "name": "[root]",
+          "sampledMs": 29696
+        },
+        {
+          "name": "[Host Function] createTask",
+          "sampledMs": 70
+        },
+        {
+          "name": "propagateParentContextChanges",
+          "sampledMs": 21
+        },
+        {
+          "name": "createWorkInProgress",
+          "sampledMs": 21
+        },
+        {
+          "name": "performUnitOfWork",
+          "sampledMs": 20
+        },
+        {
+          "name": "[Host Function] cloneNodeWithNewChildren",
+          "sampledMs": 19
+        },
+        {
+          "name": "[Host Function] completeRoot",
+          "sampledMs": 17
+        },
+        {
+          "name": "pushComponentEffectErrors",
+          "sampledMs": 14
+        },
+        {
+          "name": "recursivelyTraversePassiveUnmountEffects",
+          "sampledMs": 14
+        },
+        {
+          "name": "[Host Function] run",
+          "sampledMs": 14
+        },
+        {
+          "name": "s",
+          "sampledMs": 14
+        },
+        {
+          "name": "popComponentEffectDuration",
+          "sampledMs": 12
+        },
+        {
+          "name": "pushHostContainer",
+          "sampledMs": 11
+        },
+        {
+          "name": "areHookInputsEqual",
+          "sampledMs": 10
+        },
+        {
+          "name": "[Host Function] RN$rafFn",
+          "sampledMs": 9
+        }
+      ]
+    },
+    "idleWithoutProfilers": {
+      "durationMs": 15015.948291897774,
+      "callbacks": 900,
+      "medianMs": 16.67,
+      "p95Ms": 16.72,
+      "p99Ms": 16.86,
+      "maxMs": 24.96,
+      "over100ms": 0
+    }
+  },
+  "covered": {
+    "react": {
+      "commits": 9,
+      "frames": {
+        "durationMs": 74153.6467911005,
+        "callbacks": 4444,
+        "medianMs": 16.67,
+        "p95Ms": 16.95,
+        "p99Ms": 17.23,
+        "maxMs": 41.3,
+        "over100ms": 0
+      },
+      "wisdomCalls": 0,
+      "components": {
+        "Forget(HomeScreen(./index.tsx))": {
+          "renders": 2,
+          "inclusiveMs": 2.341,
+          "maxInclusiveMs": 1.476
+        },
+        "Forget(StoreScreen(./store.tsx))": {
+          "renders": 5,
+          "inclusiveMs": 37.900000000000006,
+          "maxInclusiveMs": 15.648
+        }
+      },
+      "events": [
+        {
+          "atMs": 13967.853374958038,
+          "targets": [
+            {
+              "name": "Forget(HomeScreen(./index.tsx))",
+              "inclusiveMs": 1.476,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.777,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 13994.754709005356,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 10.636,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 44111.70770895481,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 15.648,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 73986.35500001907,
+          "targets": [
+            {
+              "name": "Forget(HomeScreen(./index.tsx))",
+              "inclusiveMs": 0.865,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            },
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 0.475,
+              "change": {
+                "context": true,
+                "didHooksChange": false,
+                "hooks": [],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        },
+        {
+          "atMs": 74013.38558399677,
+          "targets": [
+            {
+              "name": "Forget(StoreScreen(./store.tsx))",
+              "inclusiveMs": 10.364,
+              "change": {
+                "context": false,
+                "didHooksChange": true,
+                "hooks": [
+                  0
+                ],
+                "isFirstMount": false,
+                "props": [],
+                "state": null
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

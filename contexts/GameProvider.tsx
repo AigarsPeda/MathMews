@@ -126,6 +126,7 @@ import { applyLifeRegen, canBuyLife } from "@/utils/lives";
 import { getLearningLevelLocation } from "@/constants/curriculum";
 import { beginTimedChallenge, settleChallengeTimeout } from "@/utils/timed-challenge";
 import { applyPetTimeDecay } from "@/utils/pet-care";
+import { reuseShallowEqual } from "@/utils/reuse-shallow-equal";
 import {
   createContext,
   useCallback,
@@ -230,6 +231,13 @@ type GameContextValue = {
 };
 
 export const GameContext = createContext<GameContextValue | null>(null);
+type GameActions = {
+  [K in keyof GameContextValue as GameContextValue[K] extends (...args: never[]) => unknown ? K : never]: GameContextValue[K];
+};
+const GameActionsContext = createContext<GameActions | null>(null);
+const EMPTY_COIN_TRANSACTIONS: CoinTransaction[] = [];
+const EMPTY_WALLET_NOTICES: WalletNotice[] = [];
+const EMPTY_PURCHASE_IDS: string[] = [];
 
 function normalizePetName(name: string): string {
   return name.trim().slice(0, PET_NAME_MAX_LENGTH);
@@ -274,17 +282,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const clearDecorationEntry = useCallback(() => setDecorationEntry(null), []);
   // Commands read and commit the latest snapshot before React renders it.
   const setSave = useCallback((update: GameSave | ((current: GameSave) => GameSave)) => {
-    const candidate = typeof update === "function" ? update(saveRef.current) : update;
-    const pet = removeRoomNavigationDoors(candidate.pet);
-    const clock = candidate.worldClock && candidate.worldClock === saveRef.current.worldClock
+    const current = saveRef.current;
+    const candidate = typeof update === "function" ? update(current) : update;
+    const normalizedPet = removeRoomNavigationDoors(candidate.pet);
+    const stats = reuseShallowEqual(current.pet.stats, normalizedPet.stats);
+    const pet = reuseShallowEqual(current.pet, stats === normalizedPet.stats ? normalizedPet : { ...normalizedPet, stats });
+    const clock = candidate.worldClock && candidate.worldClock === current.worldClock
       ? candidate.worldClock : normalizeWorldClock(candidate.worldClock ?? initialWorldClock);
     const streak = currentPuzzleStreak(candidate.progress);
-    const progress = streak === candidate.progress.streak ? candidate.progress : { ...candidate.progress, streak };
+    const lives = reuseShallowEqual(current.progress.lives, candidate.progress.lives);
+    const progress = reuseShallowEqual(current.progress,
+      streak === candidate.progress.streak && lives === candidate.progress.lives
+        ? candidate.progress : { ...candidate.progress, streak, lives });
     const authority = walletAuthorityRef.current;
     const cached = candidate.walletAuthority;
     const scoped = authority ?? ((accountRef.current === null || cached?.user_id === accountRef.current) && cached?.environment === getWalletEnvironment() ? cached : null);
-    const next = { ...candidate, accountOwnerId: candidate.accountOwnerId ?? cached?.user_id, pet, progress, worldClock: clock,
-      wallet: { coins: scoped ? projectedWalletCoins({...candidate,walletAuthority:scoped},scoped.user_id,scoped.environment) : cached ? 0 : candidate.wallet.coins }, walletAuthority: scoped ?? undefined };
+    const next = reuseShallowEqual(current, { ...candidate, accountOwnerId: candidate.accountOwnerId ?? cached?.user_id,
+      pet, progress, worldClock: reuseShallowEqual(current.worldClock, clock),
+      wallet: reuseShallowEqual(current.wallet, { coins: scoped ? projectedWalletCoins({...candidate,walletAuthority:scoped},scoped.user_id,scoped.environment) : cached ? 0 : candidate.wallet.coins }),
+      walletAuthority: reuseShallowEqual(current.walletAuthority, scoped ?? undefined) });
+    if (next === current) return;
     saveRef.current = next;
     setSaveState(next);
   }, [initialWorldClock]);
@@ -1244,11 +1261,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [userId, setSave],
   );
 
-  const dismissWalletNotice = useCallback((id:string)=>{setSave(save=>({...save,walletNotices:(save.walletNotices??[]).filter(notice=>notice.id!==id)}));},[setSave]);
+  const dismissWalletNotice = useCallback((id:string)=>{
+    setSave(save=>save.walletNotices?.some(notice=>notice.id===id)
+      ? {...save,walletNotices:save.walletNotices.filter(notice=>notice.id!==id)} : save);
+  },[setSave]);
 
-  const value = useMemo<GameContextValue>(
+  const actions = useMemo<GameActions>(
     () => ({
-      worldClock: save.worldClock ?? initialWorldClock,
       setWorldClock,
       setWorldWeather,
       answerPuzzle,
@@ -1258,18 +1277,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       beginChallenge,
       expireChallenge,
       feedPet,
-      isReady: isReady && isAuthReady && (!userId || save.accountOwnerId === userId),
-      hasCompletedOnboarding: save.hasCompletedOnboarding,
-      pet: save.pet,
-      wallet: { coins: save.walletAuthority?.user_id===userId && save.walletAuthority.environment===getWalletEnvironment() ? save.wallet.coins : 0 },
       refreshWallet,
-      isWalletReady,
-      progress: save.progress,
-      coinTransactions: save.coinTransactions ?? [],
-      pendingPurchaseCount: (save.pendingWalletPurchases??[]).filter(p=>p.userId===userId && p.environment===getWalletEnvironment() && p.status==='pending').length,
-      walletNotices: save.walletNotices ?? [],
       dismissWalletNotice,
-      creditedPurchaseIds: save.creditedPurchaseIds ?? [],
       setPet,
       syncToCloud,
       reloadProgressFromCloud,
@@ -1280,10 +1289,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       visitHomeRoom,
       sendCatToRoom,
-      placementDraft,
       cancelPlacementDraft,
       commitRoomEdit,
-      decorationEntry,
       requestRoomDecoration,
       clearDecorationEntry,
       purchaseBed,
@@ -1314,9 +1321,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipSkin,
       completeOnboarding,
       recordInteraction,
-      cloudRestoreCandidates,
-      cloudRestoreCheckComplete,
-      cloudRestorePromptDismissed,
       acceptCloudRestore,
       declineCloudRestore,
       showCloudRestorePrompt,
@@ -1325,22 +1329,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       deleteAllUserData,
     }),
     [
-      acceptCloudRestore,
-      cloudRestoreCandidates,
-      cloudRestoreCheckComplete,
-      cloudRestorePromptDismissed,
-      completeOnboarding,
-      declineCloudRestore,
-      fetchSwitchableCloudSaves,
-      showCloudRestorePrompt,
-      switchToCloudSave,
-      deleteAllUserData,
-      isReady,
-      isAuthReady,
-      save.accountOwnerId,
-      recordInteraction,
-      save.hasCompletedOnboarding,
-      save.pet,
+      setWorldClock,
+      setWorldWeather,
       answerPuzzle,
       recordLearningHelp,
       answerLearningReview,
@@ -1348,24 +1338,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
       beginChallenge,
       expireChallenge,
       feedPet,
-      save.coinTransactions,
-      save.pendingWalletPurchases,
-      save.walletNotices,
-      dismissWalletNotice,
-      save.creditedPurchaseIds,
-      save.progress,
-      save.wallet,
-      save.walletAuthority,
-      userId,
       refreshWallet,
-      isWalletReady,
-      save.worldClock,
-      initialWorldClock,
-      setWorldClock,
-      setWorldWeather,
-      reloadProgressFromCloud,
+      dismissWalletNotice,
       setPet,
       syncToCloud,
+      reloadProgressFromCloud,
       setProgress,
       buyLife,
       purchaseVisualHelp,
@@ -1373,10 +1350,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       visitHomeRoom,
       sendCatToRoom,
-      placementDraft,
       cancelPlacementDraft,
       commitRoomEdit,
-      decorationEntry,
       requestRoomDecoration,
       clearDecorationEntry,
       purchaseBed,
@@ -1405,10 +1380,48 @@ export function GameProvider({ children }: { children: ReactNode }) {
       moveRoomLayerItem,
       purchaseSkin,
       equipSkin,
+      completeOnboarding,
+      recordInteraction,
+      acceptCloudRestore,
+      declineCloudRestore,
+      showCloudRestorePrompt,
+      fetchSwitchableCloudSaves,
+      switchToCloudSave,
+      deleteAllUserData,
     ],
   );
 
-  return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
+  const visibleCoins = save.walletAuthority?.user_id===userId && save.walletAuthority.environment===getWalletEnvironment() ? save.wallet.coins : 0;
+  const wallet = useMemo<Wallet>(() => ({ coins: visibleCoins }), [visibleCoins]);
+  const value = useMemo<GameContextValue>(
+    () => ({
+      ...actions,
+      worldClock: save.worldClock ?? initialWorldClock,
+      isReady: isReady && isAuthReady && (!userId || save.accountOwnerId === userId),
+      hasCompletedOnboarding: save.hasCompletedOnboarding,
+      pet: save.pet,
+      wallet,
+      isWalletReady,
+      progress: save.progress,
+      coinTransactions: save.coinTransactions ?? EMPTY_COIN_TRANSACTIONS,
+      pendingPurchaseCount: (save.pendingWalletPurchases??[]).filter(p=>p.userId===userId && p.environment===getWalletEnvironment() && p.status==='pending').length,
+      walletNotices: save.walletNotices ?? EMPTY_WALLET_NOTICES,
+      creditedPurchaseIds: save.creditedPurchaseIds ?? EMPTY_PURCHASE_IDS,
+      placementDraft,
+      decorationEntry,
+      cloudRestoreCandidates,
+      cloudRestoreCheckComplete,
+      cloudRestorePromptDismissed,
+    }),
+    [actions, save.worldClock, save.accountOwnerId, save.hasCompletedOnboarding, save.pet, save.progress,
+      save.coinTransactions, save.pendingWalletPurchases, save.walletNotices, save.creditedPurchaseIds,
+      initialWorldClock, isReady, isAuthReady, userId, wallet, isWalletReady,
+      placementDraft, decorationEntry, cloudRestoreCandidates, cloudRestoreCheckComplete, cloudRestorePromptDismissed],
+  );
+
+  return <GameActionsContext.Provider value={actions}>
+    <GameContext.Provider value={value}>{children}</GameContext.Provider>
+  </GameActionsContext.Provider>;
 }
 
 export function useGame(): GameContextValue {
@@ -1416,5 +1429,12 @@ export function useGame(): GameContextValue {
   if (!context) {
     throw new Error("useGame must be used within a GameProvider");
   }
+  return context;
+}
+
+/** Subscribe to commands without repainting when pet, progress or wallet data changes. */
+export function useGameActions(): GameActions {
+  const context = useContext(GameActionsContext);
+  if (!context) throw new Error("useGameActions must be used within a GameProvider");
   return context;
 }

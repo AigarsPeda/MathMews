@@ -162,6 +162,9 @@ export function useCloudSaveSync({
       activeSaveIdRef.current = saveId;
       skipNextPersist.current = true;
       setSave(prepared.save);
+      // setSave may normalize the snapshot. Compare with that committed value,
+      // not the unnormalized input, when the network request finishes.
+      const baseline = getSave?.() ?? prepared.save;
       await restoreGameSaveSnapshot(prepared.save, prepared.clientUpdatedAt);
       if (!active) return;
 
@@ -186,26 +189,33 @@ export function useCloudSaveSync({
       activeSaveIdRef.current = saveId;
 
       const remote = await pullRemoteSave(userId, saveId);
-      if (!active) return;
+      if (!active || activeSaveIdRef.current !== saveId) return;
 
-      const merged = pickNewerSave(local, remote);
-      const shouldUpload = shouldUploadLocal(local, remote);
+      const current = getSave?.() ?? saveRef.current;
+      const editedDuringRead = current !== baseline;
+      const merged = editedDuringRead ? current : pickNewerSave(local, remote);
+      const shouldUpload = editedDuringRead || shouldUploadLocal(local, remote);
 
-      if (merged !== saveRef.current) {
+      if (merged !== current) {
         skipNextPersist.current = false;
         setSave(merged);
-        await saveGameSave(getSave?.() ?? merged);
       }
 
+      const snapshot = getSave?.() ?? merged;
+      const clientUpdatedAt = await saveGameSave(snapshot);
+      if (!active || activeSaveIdRef.current !== saveId) return;
       if (shouldUpload) {
         const uploaded = await pushRemoteSave(userId, saveId, {
-          save: merged,
-          clientUpdatedAt: (await getLocalSaveUpdatedAt()) || Date.now(),
+          save: snapshot,
+          clientUpdatedAt,
         });
         if (!uploaded) throw new Error('Initial cloud save upload unavailable');
       }
 
       complete();
+      // The debounce effect may have run while initial sync was still blocked.
+      // Do not strand edits made during persistence or the initial upload.
+      if ((getSave?.() ?? saveRef.current) !== snapshot) void flushPush().catch(() => undefined);
     })().catch(() => {
       // Storage or ownership errors must not enable uploads of another account's game.
       if (!active) return;
@@ -219,6 +229,7 @@ export function useCloudSaveSync({
     };
   }, [
     activeSaveIdRef,
+    flushPush,
     getSave,
     isAuthReady,
     isGameReady,

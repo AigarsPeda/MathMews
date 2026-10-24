@@ -1,6 +1,7 @@
 import type { NativeRoomObject, NativeRoomWorld, Vec3 } from '@/utils/native-room-world';
 import { catJumpPoint, catJumpDuration, type CatMotionLeg } from '@/utils/native-cat-locomotion';
 import { CAT_FURNITURE } from '@/constants/cat-furniture';
+import { fridgeDoorGeometry, fridgeDoorSweepDistance } from '@/utils/native-fridge';
 
 export type CatTraversalLink = { from: Vec3; to: Vec3; leg: CatMotionLeg };
 const length = (a: Vec3, b: Vec3) => Math.hypot(...a.map((v, i) => v - b[i]));
@@ -15,6 +16,12 @@ export function catFlightClear(from: Vec3, to: Vec3, height: number, world: Nati
     if (Math.abs(p[0]) > edge || Math.abs(p[2]) > edge || p[1] < .06) return false;
     for (const object of world.objects) {
       if (!object.solid && !object.collidable) continue;
+      if (object.instanceId === world.fridgeDoorClearance) {
+        const door = fridgeDoorGeometry(object);
+        if (p[1] + bodyHeight > object.position[1] + door.bottom * object.scale
+          && p[1] < object.position[1] + door.top * object.scale
+          && fridgeDoorSweepDistance(p, object) < radius) return false;
+      }
       for (const box of [...(object.collisionBoxes?.length ? object.collisionBoxes : [object]), ...(object.interactionBoxes ?? [])]) {
         if (box.max[1] <= p[1] + .025 * world.catScale || box.min[1] >= p[1] + bodyHeight) continue;
         const dx = p[0] - Math.max(box.min[0], Math.min(box.max[0], p[0]));
@@ -35,6 +42,11 @@ export function catCrawlClear(from: Vec3, to: Vec3, world: NativeRoomWorld): boo
     if (Math.abs(point[0]) > 2.32-radius || Math.abs(point[2]) > 2.32-radius) return false;
     for (const object of world.objects) {
       if (!object.solid && !object.collidable) continue;
+      if (object.instanceId === world.fridgeDoorClearance) {
+        const underside = object.position[1] + fridgeDoorGeometry(object).bottom * object.scale;
+        if (point[1] + height + .03 * world.catScale > underside
+          && fridgeDoorSweepDistance(point, object) < radius) return false;
+      }
       for (const box of [...(object.collisionBoxes?.length ? object.collisionBoxes : [object]), ...(object.interactionBoxes ?? [])]) {
         if (box.max[1] <= point[1] + .025 * world.catScale || box.min[1] >= point[1] + height) continue;
         const dx=point[0]-Math.max(box.min[0],Math.min(box.max[0],point[0]));
@@ -67,6 +79,26 @@ export function buildCatTraversalLinks(world: NativeRoomWorld, floorFree: (point
   for (const object of world.objects) {
     if (!object.solid || object.opened || object.movable) continue;
     const { min, max } = object;
+    if (object.instanceId === world.fridgeDoorClearance && object.fridgeOpen) {
+      const door = fridgeDoorGeometry(object);
+      if (object.position[1] + door.bottom * object.scale >= floor + 1.45 * scale) {
+        const margin = 1.2 * scale + .06 * object.scale;
+        const point = (x: number, z: number): Vec3 => [
+          object.position[0] + Math.cos(object.heading) * x + Math.sin(object.heading) * z,
+          floor,
+          object.position[2] - Math.sin(object.heading) * x + Math.cos(object.heading) * z,
+        ];
+        for (const fraction of [.45, .7, .9]) {
+          const z = (door.front + door.width * fraction) * object.scale;
+          const from = point(door.hingeX * object.scale - door.latch * margin, z);
+          const to = point((door.hingeX + door.latch * door.width) * object.scale + door.latch * margin, z);
+          if (!floorFree(from) || !floorFree(to) || !catCrawlClear(from, to, world)) continue;
+          const duration = length(from, to) / (1.05 * scale);
+          links.push({ from, to, leg: { kind: 'walk', animation: 'crawl', path: [from, to], duration, supportId: object.instanceId } },
+            { from: to, to: from, leg: { kind: 'walk', animation: 'crawl', path: [to, from], duration, supportId: object.instanceId } });
+        }
+      }
+    }
     // Require real separate supports and an overhead panel, never a solid box.
     if (object.collisionBoxes?.some(box => box.min[1] >= floor+1.42*scale)
       && /^(table|desk|living.*Table|office.*Table|japaneseTable|kitchenDiningTable|bedroomDesk|bedroomVanity|bedroomBed|bed-)/.test(object.modelId)) {

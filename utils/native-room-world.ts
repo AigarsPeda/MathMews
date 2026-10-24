@@ -1066,8 +1066,9 @@ export function placeNativePreview(world: NativeRoomWorld, id: string): void {
  * refreshes which must preserve the original airborne trajectory. */
 function nativeJumpArc(start: Vec3, target: Vec3, world: NativeRoomWorld, ignoreId?: string, fromSupportId?: string, landingHeading?: number): number | undefined {
   const furniture = world.objects.find(object=>object.instanceId===ignoreId && isFurniturePerch(object.modelId) && !object.opened);
+  const kitchenChair = world.objects.find(object=>object.instanceId===ignoreId && isKitchenChairDecorationId(object.modelId));
   if (furniture && Math.hypot(start[0]-target[0],start[2]-target[2])>4*world.catScale) return undefined;
-  for (const rise of furniture || fromSupportId ? [.35,.5,.7,.9,1.15,1.4] : [.35]) {
+  for (const rise of furniture || kitchenChair || fromSupportId ? [.35,.5,.7,.9,1.15,1.4] : [.35]) {
     // Meet the destination while descending, including high seats.
     const height=Math.max(rise*world.catScale,Math.abs(target[1]-start[1])*.25+.06*world.catScale);
     if (isNativeJumpAtHeightClear(start,target,world,ignoreId,height,fromSupportId,landingHeading)) return height;
@@ -1081,6 +1082,9 @@ function isNativeJumpAtHeightClear(start: Vec3, target: Vec3, world: NativeRoomW
   // A tucked jumping cat has the same body clearance on every furnishing.
   // Floor approaches still reserve their normal walking footprint.
   const radius = Math.min(world.radius,.55 * world.catScale);
+  const kitchenChair = world.objects.find(object=>object.instanceId===ignoreId && isKitchenChairDecorationId(object.modelId));
+  const gatheredRadius = kitchenChair ? Math.min(radius, world.catScale * (.08 + Math.hypot(
+    .43 * catSupportStance(kitchenChair,world), .215 * catSupportWidth(kitchenChair,world)))) : radius;
   const furniture = !!fromSupportId || world.objects.some(object=>object.instanceId===ignoreId && isFurniturePerch(object.modelId) && !object.opened);
   const samples = furniture ? Math.max(100,Math.ceil((pathLength([start,target])+2*height)/(4*world.catScale))*100) : 40;
   for (let i = 0; i <= samples; i++) {
@@ -1094,7 +1098,13 @@ function isNativeJumpAtHeightClear(start: Vec3, target: Vec3, world: NativeRoomW
       || Math.abs(p[2]+forwardZ*.70*world.catScale)+.32*world.catScale>2.35)) return false;
     if (world.objects.some(o => (o.solid || isFurniturePerch(o.modelId) && o.collidable) && (o.instanceId !== ignoreId || isFurniturePerch(o.modelId) && !o.opened || fromSupportId)
       && [...(o.collisionBoxes?.length ? o.collisionBoxes : [o]),...(o.interactionBoxes ?? [])].some((box, index) => {
-        const own = o.instanceId === ignoreId || o.instanceId === fromSupportId, clearance = own ? .285*world.catScale : radius;
+        const own = o.instanceId === ignoreId || o.instanceId === fromSupportId;
+        // At a small dining seat the paws gather beneath the torso. A nearby
+        // tabletop below the belly must clear those gathered legs, rather than
+        // the full walking envelope used while approaching on the floor.
+        const gatheredLegs = kitchenChair?.seat && p[1] >= kitchenChair.seat[1] - .02 * world.catScale
+          && box.max[1] <= kitchenChair.seat[1] + .45 * world.catScale;
+        const clearance = own ? .285*world.catScale : gatheredLegs ? gatheredRadius : radius;
         // A support is contact only when the paws have risen above it. Lift
         // over the seat/table edge instead of passing through its front board.
         if (own && box.max[1]<=p[1]+.025*world.catScale) return false;
@@ -1214,6 +1224,20 @@ function findKitchenIslandPerch(start: Vec3, object: NativeRoomObject, world: Na
   return undefined;
 }
 
+/** A round dining cushion has usable space beside its centre. Keep every pad
+ * supported while looking for a landing clear of the adjacent table edge. */
+function findKitchenChairPerch(start: Vec3, object: NativeRoomObject, world: NativeRoomWorld): { seat: Vec3; approach: Vec3 } | undefined {
+  if (!object.seat) return undefined;
+  for (const z of [0,.04,.08,-.04]) for (const x of [0,-.04,.04,-.08,.08]) {
+    const shift=rotate([x*object.scale,0,z*object.scale],object.heading);
+    const seat=object.seat.map((value,i)=>value+shift[i]) as Vec3;
+    if (!catTransferPawsFit(seat,object.seatHeading ?? object.heading,object,world)) continue;
+    const approach=findSeatApproach(start,{...object,seat},world);
+    if (approach) return {seat,approach};
+  }
+  return undefined;
+}
+
 /** Fit paws on an authored seat/top, then exclude backs, arms and placed props.
  * Try exposed parts of a table instead of requiring its exact center. */
 export function findFurniturePerch(start: Vec3, object: NativeRoomObject, world: NativeRoomWorld,
@@ -1297,7 +1321,7 @@ function catSupportStance(object: NativeRoomObject, world: NativeRoomWorld): num
   if (!surfaces.length) return 1;
   const span=(axis:number)=>(Math.max(...surfaces.map(s=>s.max[axis]))-Math.min(...surfaces.map(s=>s.min[axis])))*object.scale/world.catScale;
   const size=Math.min(span(0),span(2));
-  return Math.max(.65,Math.min(1,(Math.sqrt(Math.max(0,size*size-.59*.59))-.16)/.86));
+  return Math.max(isKitchenChairDecorationId(object.modelId) ? .35 : .65,Math.min(1,(Math.sqrt(Math.max(0,size*size-.59*.59))-.16)/.86));
 }
 
 /** Adduct the legs on a narrow support without shrinking the cat or its pads. */
@@ -1305,6 +1329,7 @@ function catSupportWidth(object: NativeRoomObject, world: NativeRoomWorld): numb
   const surfaces=catSupportSurfaces(object);
   if (!surfaces.length) return 1;
   const size=Math.min(...[0,2].map(axis=>(Math.max(...surfaces.map(s=>s.max[axis]))-Math.min(...surfaces.map(s=>s.min[axis])))*object.scale/world.catScale));
+  if (isKitchenChairDecorationId(object.modelId)) return Math.max(.45,Math.min(1,(size-.16)/.95));
   return Math.max(.45,Math.min(1,(size-.18)/.43));
 }
 
@@ -1378,16 +1403,30 @@ export function findWindowWatchPerch(start: Vec3, window: NativeRoomObject, worl
 function findKitchenFloorApproach(start: Vec3, object: NativeRoomObject, world: NativeRoomWorld, fridge = false): Vec3 | undefined {
   const door = fridgeDoorGeometry(object);
   const reach = door.width * object.scale + world.radius + .12 + .06 * object.scale;
-  const points: Vec3[] = fridge ? [45, 60, 75, 25, 85, 0].map(degrees => {
+  // Keep the usual front approaches, then try beyond the open door's tip.
+  // An island can occupy every front point while leaving a route around its
+  // far end to the hinge side. All candidates still clear the full door swing.
+  const points: Vec3[] = fridge ? [45, 60, 75, 25, 85, 0, 90, 95, 100, 105, 110, 115].map(degrees => {
     const angle = degrees * Math.PI / 180;
     return [door.hingeX * object.scale + door.latch * Math.cos(angle) * reach, 0, door.front * object.scale + Math.sin(angle) * reach];
   }) : [0, -.25, .25, -.5, .5].map(x => [x * object.scale, 0, world.radius + .15]);
+  const candidates: Vec3[] = [];
   for (const local of points) {
     const point = rotate(local, object.heading).map((v,i) => v + object.position[i]) as Vec3;
     point[1] = FLOOR_Y;
     if (!isFree(point, world)) continue;
+    candidates.push(point);
     const path = findRoomPath(start, point, world);
     if (hasNativeArrived(path.at(-1)!, point)) return point;
+  }
+  // A free destination may only connect through a low furniture passage.
+  // Use the same crawl/step connections as the journey that will execute it.
+  if (candidates.length) {
+    const links = buildCatTraversalLinks(world, point => isFree(point, world));
+    if (links.length) for (const point of candidates) {
+      const route = searchRoomRoute(start, point, world, links);
+      if (hasNativeArrived(route.path.at(-1)!, point)) return point;
+    }
   }
   return undefined;
 }
@@ -1440,10 +1479,14 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   native: NativeTravel;
 } {
   const sourceObject = world.objects.find(o => o.instanceId === (step.targetInstanceId ?? plan.targetInstanceId));
+  // A chained command begins with the previous support's wake/exit steps.
+  // Those still belong to the chair, even when the next destination is a fridge.
+  const fridgeInvestigation = plan.kind === 'fridgeInvestigate'
+    && (step.targetInstanceId ?? plan.targetInstanceId) === plan.targetInstanceId;
   if (step.kitchenNavigation || plan.kind === 'cupboardHide' || plan.kind === 'drawerHide' && sourceObject && isKitchenPerchDecorationId(sourceObject.modelId) || ['chairNap', 'islandSit', 'windowWatch', 'fridgeInvestigate'].includes(plan.kind)
     || plan.kind === 'returnHome' && sourceObject && (isKitchenChairDecorationId(sourceObject.modelId) || isKitchenPerchDecorationId(sourceObject.modelId) || sourceObject.cupboard))
     world = kitchenNavigationWorld(world);
-  if (sourceObject && (plan.kind === 'fridgeInvestigate' || plan.kind === 'returnHome' && sourceObject.fridgeOpen))
+  if (sourceObject && (fridgeInvestigation || plan.kind === 'returnHome' && sourceObject.fridgeOpen))
     world = { ...world, fridgeDoorClearance: sourceObject.instanceId };
   const jump = step.animation === 'jumpOn' || step.animation === 'jumpOff';
   const onSeat = !!step.sofaApproach && (step.animation !== 'jumpOff' || !!step.jumpFromInstanceId);
@@ -1451,9 +1494,11 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const walking = step.animation?.startsWith('walk');
   const previousSeatPosition = plan.steps.find(s => s.seatPosition && (s.targetInstanceId ?? plan.targetInstanceId) === sourceObject?.instanceId)?.seatPosition;
   const kitchenPerch = sourceObject && isKitchenIslandDecorationId(sourceObject.modelId) && plan.kind === 'islandSit';
+  const kitchenChair = sourceObject && isKitchenChairDecorationId(sourceObject.modelId);
   const furniturePerch = sourceObject && isFurniturePerch(sourceObject.modelId);
   const kitchenArrival = !step.seatPosition && !previousSeatPosition && sourceObject
-    ? furniturePerch ? findFurniturePerch(start,sourceObject,world) : kitchenPerch ? findKitchenIslandPerch(start,sourceObject,world) : undefined : undefined;
+    ? furniturePerch ? findFurniturePerch(start,sourceObject,world) : kitchenPerch ? findKitchenIslandPerch(start,sourceObject,world)
+      : kitchenChair ? findKitchenChairPerch(start,sourceObject,world) : undefined : undefined;
   // Returning from a cupboard TOP is different from leaving its interior.
   const cupboardSeat = plan.kind === 'cupboardHide' || plan.kind === 'returnHome' && previousSeatPosition && sourceObject?.cupboard
     && Math.abs(previousSeatPosition[1]-sourceObject.cupboard[1])<.1*world.catScale;
@@ -1548,8 +1593,8 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
     || plan.kind === 'cupboardHide' && (!object?.cupboard || !object.cupboardFits || !object.opened)
     || plan.kind === 'drawerHide' && (!object?.drawer || !object.opened)) { blocked = true; path = [start]; }
   if (seating && !seatApproach) { blocked = true; path = [start]; }
-  if ((kitchenPerch || furniturePerch && seating) && !seatPosition || !step.returnHome && walking && (plan.kind === 'fridgeInvestigate' || plan.kind === 'windowWatch' && !step.approachingSeat) && !kitchenFloor
-    || plan.kind === 'fridgeInvestigate' && !step.returnHome && !object?.fridgeOpen) { blocked = true; path = [start]; }
+  if ((kitchenPerch || (furniturePerch || kitchenChair) && seating) && !seatPosition || !step.returnHome && walking && (plan.kind === 'fridgeInvestigate' || plan.kind === 'windowWatch' && !step.approachingSeat) && !kitchenFloor
+    || fridgeInvestigation && !step.returnHome && !object?.fridgeOpen) { blocked = true; path = [start]; }
   if (onSeat && !jump && !bedCrawl && object?.seat && !hasNativeArrived(start, object.seat)) blocked = true;
   if (object?.bathroom && ['wash', 'use'].includes(step.bathroomPhase ?? '')
     && !hasNativeArrived(start, object.bathroom.contact)) blocked = true;

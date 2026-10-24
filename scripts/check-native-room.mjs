@@ -632,11 +632,15 @@ let actorAsset = asset;
 const catModelLoads = [];
 mocks['react-native-filament'] = { useModel: (source,options) => {catModelLoads.push({source,options});return { state: 'loaded', asset: actorAsset, rootEntity: entity };}, useAnimator: () => animator, useFilamentContext: () => context, RenderCallbackContext: { useRenderCallback: fn => { renderFrame = fn; } } };
 const { NativeCatActor, useCatModel } = load('@/components/pet/native/NativeCatActor');
+// Probe the mocked model hook without mounting a React component.
+// eslint-disable-next-line react-hooks/rules-of-hooks
 useCatModel('grey',false);
 assert.equal(catModelLoads.at(-1).options.addToScene,false,'A standby cat model loads without placing another cat in the room');
 assert.equal(catModelLoads.at(-1).options.shouldReleaseSourceData,false,'The prepared skeleton retains its animation bindings');
 const registry = load('@/pet-display/registry/cat-model-registry').catModelRegistry;
 assert.equal(registry.mediaKind, 'model');
+// This test harness invokes a component with mocked React hooks.
+// eslint-disable-next-line react-hooks/rules-of-hooks
 function render(props) { cursor = 0;effects = [];NativeCatActor({model:useCatModel(props.skinId),...props});effects.forEach(fn => fn()); }
 for (const fps of [30, 60, 120]) {
   slots = [];applies = [];let complete = 0, steps = [];
@@ -1597,7 +1601,7 @@ console.log('Verified landed balls stay put after play, save/reload at the same 
 // Couple the production floor-toy callback to the actual cat rig.
 for(const fps of [30,60,120]) {
   const room=w.buildNativeRoomWorld({...base,petSize:80,toys:[{toyId:'blueBall',instanceId:'touch-ball',offset:{x:0,y:.3}}]});
-  const object=room.objects[0],radius=Math.max(object.max[0]-object.min[0],object.max[2]-object.min[2])/2;
+  const object=room.objects[0];
   const center=object.min.map((v,i)=>(v+object.max[i])/2),impulses=[];
   const body={position:center,setPosition(...p){this.position=p},setKinematic(){},applyCentralImpulse(...p){impulses.push(p)}};
   mocks['react-native-filament'].useRigidBody=()=>body;

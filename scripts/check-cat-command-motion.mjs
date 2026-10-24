@@ -44,6 +44,8 @@ const { NativeCatActor, useCatModel } = load('@/components/pet/native/NativeCatA
 const { FLOOR_Y, pathLength } = load('@/utils/native-room-world');
 const world = { width: 390, height: 420, catScale: .5, radius: .3, home: [0, FLOOR_Y, 0], objects: [] };
 const playback = { kind: 'segment', segment: { assetKey: 'walk', loop: true } };
+// This test harness invokes a component with mocked React hooks.
+// eslint-disable-next-line react-hooks/rules-of-hooks
 function render(props) { cursor = 0; effects = []; NativeCatActor({model:useCatModel(props.skinId),...props}); effects.forEach(fn => fn()); }
 function tick(seconds, fps = currentFps) { for (let i = 0; i < Math.round(seconds * fps); i++) frame({ timeSinceLastFrame: 1 / fps }); }
 const walk = (start, end, extra = {}) => ({ path: [start, end], distance: pathLength([start, end]), duration: 2, jump: false, ...extra });

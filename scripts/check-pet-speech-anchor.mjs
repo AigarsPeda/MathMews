@@ -20,7 +20,7 @@ const React = {
 };
 const shared = () => ({ get: () => 0, set() {} });
 const mocks = {
-  '@/hooks/use-world-clock-now': { useWorldClockNow: () => Date.now() },
+  '@/hooks/use-world-period': { useWorldPeriod: () => undefined },
   'react-native-worklets-core': { useSharedValue: value => ({ value }) },
   '@/utils/room-item-placement': { createRoomPlacementResolver: () => ({}) },
   "@/constants/room-commands": { ROOM_COMMANDS: [], getRoomCommands: () => [] },

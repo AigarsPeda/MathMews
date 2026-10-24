@@ -1,0 +1,646 @@
+{
+  "note": "Development simulator; inclusive parent/child durations overlap. Care commits exclude navigation/activity/layout changes; aggregate trace timings are not a controlled comparison.",
+  "before": {
+    "durationMs": 119682.2824999094,
+    "careCommits": [
+      {
+        "commitIndex": 76,
+        "timestampMs": 53609.457792043686,
+        "homeInclusiveMs": 251.778,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ],
+        "components": {
+          "Forget(Memo(NativeRoomSurface))": {
+            "renders": 4,
+            "inclusiveMs": 48.231
+          },
+          "Forget(Memo(NativeRoomScene))": {
+            "renders": 4,
+            "inclusiveMs": 48.881
+          },
+          "Forget(RoomActionMenu)": {
+            "renders": 63,
+            "inclusiveMs": 111.09600000000002
+          },
+          "DraggableRoomPet": {
+            "renders": 51,
+            "inclusiveMs": 131.305
+          },
+          "Forget(PetStatsPanel)": {
+            "renders": 4,
+            "inclusiveMs": 0.493
+          },
+          "Forget(PetStage)": {
+            "renders": 4,
+            "inclusiveMs": 249.69400000000002
+          }
+        }
+      },
+      {
+        "commitIndex": 215,
+        "timestampMs": 113603.8604170084,
+        "homeInclusiveMs": 250.132,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ],
+        "components": {
+          "Forget(Memo(NativeRoomSurface))": {
+            "renders": 4,
+            "inclusiveMs": 44.994
+          },
+          "Forget(Memo(NativeRoomScene))": {
+            "renders": 4,
+            "inclusiveMs": 45.677
+          },
+          "Forget(RoomActionMenu)": {
+            "renders": 64,
+            "inclusiveMs": 112.51199999999997
+          },
+          "DraggableRoomPet": {
+            "renders": 52,
+            "inclusiveMs": 137.54
+          },
+          "Forget(PetStatsPanel)": {
+            "renders": 4,
+            "inclusiveMs": 0.345
+          },
+          "Forget(PetStage)": {
+            "renders": 4,
+            "inclusiveMs": 246.25
+          }
+        }
+      }
+    ],
+    "allHomeCommits": [
+      {
+        "commitIndex": 76,
+        "timestampMs": 53609.457792043686,
+        "homeInclusiveMs": 251.778,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 101,
+        "timestampMs": 67696.48895907402,
+        "homeInclusiveMs": 255.24,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedDecorationRemove",
+          "onPlacedToyOffsetChange",
+          "onPlacedToyRemove",
+          "onPlay",
+          "onRoomActivityChange",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "roomVisible",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 102,
+        "timestampMs": 68118.80687499046,
+        "homeInclusiveMs": 199.924,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onCommitRoomEdit",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomPetOffsetChange",
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 107,
+        "timestampMs": 70344.11291706562,
+        "homeInclusiveMs": 249.363,
+        "stageProps": [
+          "lastInteractionAt",
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomCommandAccepted",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 112,
+        "timestampMs": 72429.99087500572,
+        "homeInclusiveMs": 234.707,
+        "stageProps": [
+          "catHomeRoomId",
+          "lastInteractionAt",
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomCommand",
+          "roomEditor",
+          "roomEntry",
+          "roomToolbar",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 113,
+        "timestampMs": 72863.72912502289,
+        "homeInclusiveMs": 216.772,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onCommitRoomEdit",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomCommandAccepted",
+          "onRoomPetOffsetChange",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 134,
+        "timestampMs": 80937.19774997234,
+        "homeInclusiveMs": 258.89,
+        "stageProps": [
+          "lastInteractionAt",
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomCommandAccepted",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 135,
+        "timestampMs": 81314.30120897293,
+        "homeInclusiveMs": 217.987,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomCommandAccepted",
+          "onRoomPetOffsetChange",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 174,
+        "timestampMs": 96138.15737497807,
+        "homeInclusiveMs": 257.525,
+        "stageProps": [
+          "lastInteractionAt",
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomCommandAccepted",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 175,
+        "timestampMs": 96505.38775002956,
+        "homeInclusiveMs": 214.006,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomCommandAccepted",
+          "onRoomPetOffsetChange",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 215,
+        "timestampMs": 113603.8604170084,
+        "homeInclusiveMs": 250.132,
+        "stageProps": [
+          "onAimPlacedSpotlight",
+          "onAnimationComplete",
+          "onCommitRoomEdit",
+          "onPetPress",
+          "onPlacedDecorationOffsetChange",
+          "onPlacedToyOffsetChange",
+          "onPlay",
+          "onRoomActivityCompleted",
+          "onRoomBedOffsetChange",
+          "onRoomPetOffsetChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ]
+      }
+    ],
+    "frameIntervals": {
+      "count": 6737,
+      "p95Ms": 16.732541918754578,
+      "maxMs": 964.914332985878,
+      "over100Ms": 25
+    },
+    "cpuWindow": {
+      "startTime": 1036913710340,
+      "endTime": 1036943710325,
+      "durationMs": 29999.985,
+      "samples": 2476
+    }
+  },
+  "after": {
+    "durationMs": 191315.84608399868,
+    "careCommits": [
+      {
+        "commitIndex": 81,
+        "timestampMs": 44802.05495893955,
+        "homeInclusiveMs": 27.912,
+        "stageProps": [
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ],
+        "components": {
+          "DraggableRoomPet": {
+            "renders": 6,
+            "inclusiveMs": 15.442000000000002
+          },
+          "Forget(PetStatsPanel)": {
+            "renders": 4,
+            "inclusiveMs": 0.397
+          },
+          "Forget(PetStage)": {
+            "renders": 4,
+            "inclusiveMs": 25.508000000000003
+          }
+        }
+      },
+      {
+        "commitIndex": 209,
+        "timestampMs": 104799.39570891857,
+        "homeInclusiveMs": 28.277,
+        "stageProps": [
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ],
+        "components": {
+          "DraggableRoomPet": {
+            "renders": 6,
+            "inclusiveMs": 23.892
+          },
+          "Forget(PetStatsPanel)": {
+            "renders": 4,
+            "inclusiveMs": 0.42800000000000005
+          },
+          "Forget(PetStage)": {
+            "renders": 4,
+            "inclusiveMs": 25.784
+          }
+        }
+      },
+      {
+        "commitIndex": 334,
+        "timestampMs": 164800.47708392143,
+        "homeInclusiveMs": 28.426,
+        "stageProps": [
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ],
+        "components": {
+          "DraggableRoomPet": {
+            "renders": 51,
+            "inclusiveMs": 122.23900000000005
+          },
+          "Forget(PetStatsPanel)": {
+            "renders": 4,
+            "inclusiveMs": 0.40700000000000003
+          },
+          "Forget(PetStage)": {
+            "renders": 4,
+            "inclusiveMs": 25.912000000000003
+          }
+        }
+      }
+    ],
+    "allHomeCommits": [
+      {
+        "commitIndex": 81,
+        "timestampMs": 44802.05495893955,
+        "homeInclusiveMs": 27.912,
+        "stageProps": [
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 139,
+        "timestampMs": 75040.89199995995,
+        "homeInclusiveMs": 118.45,
+        "stageProps": [
+          "onAnimationComplete",
+          "onPetPress",
+          "onPlay",
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 209,
+        "timestampMs": 104799.39570891857,
+        "homeInclusiveMs": 28.277,
+        "stageProps": [
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 212,
+        "timestampMs": 105348.82241690159,
+        "homeInclusiveMs": 227.852,
+        "stageProps": [
+          "onPlacedDecorationRemove",
+          "onPlacedToyRemove",
+          "onRoomActivityChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "roomVisible",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 213,
+        "timestampMs": 105574.62129199505,
+        "homeInclusiveMs": 23.285,
+        "stageProps": [
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 216,
+        "timestampMs": 106670.05954194069,
+        "homeInclusiveMs": 225.762,
+        "stageProps": [
+          "onBedRemove",
+          "onPlacedDecorationRemove",
+          "onPlacedToyRemove",
+          "onRoomActivityChange",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "roomVisible",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 217,
+        "timestampMs": 106895.72891700268,
+        "homeInclusiveMs": 23.986,
+        "stageProps": [
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 224,
+        "timestampMs": 109037.13441693783,
+        "homeInclusiveMs": 90.348,
+        "stageProps": [
+          "lastInteractionAt",
+          "onAnimationComplete",
+          "onPetPress",
+          "onPlay",
+          "onRoomCommandAccepted",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 225,
+        "timestampMs": 109192.56429195404,
+        "homeInclusiveMs": 88.382,
+        "stageProps": [
+          "onAnimationComplete",
+          "onPetPress",
+          "onPlay",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 229,
+        "timestampMs": 110949.87137496471,
+        "homeInclusiveMs": 163.816,
+        "stageProps": [
+          "catHomeRoomId",
+          "lastInteractionAt",
+          "onAnimationComplete",
+          "onPetPress",
+          "onPlay",
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomCommand",
+          "roomEditor",
+          "roomEntry",
+          "roomToolbar",
+          "storedItems"
+        ]
+      },
+      {
+        "commitIndex": 230,
+        "timestampMs": 111203.20208394527,
+        "homeInclusiveMs": 101.159,
+        "stageProps": [
+          "onRoomCommandAccepted",
+          "roomCommand",
+          "roomEditor",
+          "roomToolbar"
+        ]
+      },
+      {
+        "commitIndex": 334,
+        "timestampMs": 164800.47708392143,
+        "homeInclusiveMs": 28.426,
+        "stageProps": [
+          "onSendCatToRoom",
+          "onVisitHomeRoom",
+          "roomEditor",
+          "roomToolbar",
+          "stats",
+          "storedItems"
+        ]
+      }
+    ],
+    "frameIntervals": {
+      "count": 11220,
+      "p95Ms": 16.735249996185303,
+      "maxMs": 678.9732909202576,
+      "over100Ms": 17
+    },
+    "cpuWindow": {
+      "startTime": 1037574326385,
+      "endTime": 1037604313674,
+      "durationMs": 29987.289,
+      "samples": 2463
+    }
+  },
+  "afterIdle": {
+    "durationMs": 15001.375166893005,
+    "count": 899,
+    "p95Ms": 16.732249975204468,
+    "maxMs": 33.805999994277954,
+    "over100Ms": 0
+  },
+  "preservation": {
+    "otherInitiallyDirtyTrackedFilesUnchanged": 32,
+    "intentionallyModifiedInitiallyDirtyFiles": [
+      "app/index.tsx",
+      "components/pet/PetStage.tsx"
+    ]
+  }
+}

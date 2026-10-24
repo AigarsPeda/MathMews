@@ -1,7 +1,7 @@
 import { AppBottomSheet } from '@/components/ui/AppBottomSheet';
 import { ParentGateSheet } from '@/components/economy/ParentGateSheet';
 import { GameColors } from "@/constants/game";
-import { useGame } from "@/contexts/GameProvider";
+import { useGameActions } from "@/contexts/GameProvider";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
@@ -26,7 +26,7 @@ function triggerHaptic() {
 export function DataManagementSection() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { deleteAllUserData } = useGame();
+  const { deleteAllUserData } = useGameActions();
   const [showConfirm, setShowConfirm] = useState(false);
   const [parentPassed, setParentPassed] = useState(false);
   useEffect(() => {

@@ -1,8 +1,9 @@
-import { roomFurnitureVersion, storedRoomItems, withRoomPlacementDraft } from '@/utils/room-edit';
+import { storedRoomItems, withRoomPlacementDraft } from '@/utils/room-edit';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { useCatBedtime } from '@/hooks/use-cat-bedtime';
 import type { WorldPeriod } from '@/utils/world-clock';
-import { useStoreCatalog } from "@/hooks/use-store-catalog";
+import { HomeRoomStage } from "@/components/home/HomeRoomStage";
+import { HomePuzzleHint } from "@/components/home/HomePuzzleHint";
 import { shouldMountNativeRoom } from "@/utils/native-scene-cache";
 import { getCatHomeRoomId, previewHomeRoom } from "@/utils/home-rooms";
 import { HOME_ROOM_IDS, roomTravelDirection, type HomeRoomId, type RoomEntry } from "@/constants/home-rooms";
@@ -10,7 +11,7 @@ import { useRoomTransition } from "@/hooks/use-room-transition";
 import { GameHeaderStats } from "@/components/economy/GameHeaderStats";
 import { HeaderChip } from "@/components/home/HeaderChip";
 import { RoomControlsTransition } from "@/components/pet/RoomControlsTransition";
-import { PetStage, type RoomActivityFailureNotice } from "@/components/pet/PetStage";
+import type { RoomActivityFailureNotice } from "@/components/pet/PetStage";
 import { RoomActivityNotice } from '@/components/pet/RoomActivityNotice';
 import { RoomActionMenu } from "@/components/pet/RoomActionMenu";
 import { AppIcon } from "@/components/ui/AppIcon";
@@ -52,10 +53,9 @@ import {
 } from "@/utils/room-placement";
 import { moderateScale } from "@/utils/scale";
 import { WorldClockControl } from '@/components/pet/WorldClockControl';
-import { getStoreGoalDetails } from "@/utils/store-goal";
 import * as Haptics from "expo-haptics";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -71,11 +71,22 @@ function triggerHaptic() {
   }
 }
 
+type HomeContentProps = {
+  game: ReturnType<typeof useGame>;
+  homeActive: boolean;
+  reduceMotion: boolean;
+};
+
+// Keep the mounted rooms, but deliver covered game updates when Home resumes.
 export default function HomeScreen() {
-  useStoreCatalog();
+  const game = useGame();
+  const { active: homeActive, reduceMotion } = useAnimationActivity();
+  return <HomeContent game={game} homeActive={homeActive} reduceMotion={reduceMotion} />;
+}
+
+const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }: HomeContentProps) {
   const router = useRouter();
   const { pendingCoinCelebration, clearCoinCelebration } = useIAP();
-  const { active: homeActive, reduceMotion } = useAnimationActivity();
   const roomActivityRef = useRef<{
     active: boolean;
     returnHome: () => void;
@@ -120,7 +131,7 @@ export default function HomeScreen() {
     decorationEntry,
     requestRoomDecoration,
     clearDecorationEntry,
-  } = useGame();
+  } = game;
   useFocusEffect(useCallback(() => {
     if (!isReady || !hasCompletedOnboarding) return;
     // Prepare the main destinations while idle, including after returning home.
@@ -132,6 +143,8 @@ export default function HomeScreen() {
   }, [isReady, hasCompletedOnboarding, router]));
   const roomEditor = useRoomEditor(pet, setPet, progress);
   const storedItems = useMemo(() => storedRoomItems(pet, progress), [pet, progress]);
+  const wisdom = useMemo(() => computePetWisdom(progress.puzzlesSolved, progress.completedPuzzleIds),
+    [progress.puzzlesSolved, progress.completedPuzzleIds]);
   const [roomFailure, setRoomFailure] = useState<RoomActivityFailureNotice | null>(null);
   const [decoratingRoom, setDecoratingRoom] = useState<HomeRoomId | null>(null);
   const handleDecoratingChange = useCallback((roomId: HomeRoomId, active: boolean) => {
@@ -201,9 +214,6 @@ export default function HomeScreen() {
   const handleMorning = useCallback(() => {
     setRequestedRoomCommand(current => current?.command.ambientPeriod === 'night' ? null : current);
   }, []);
-  useCatBedtime({ pet, clock: worldClock, enabled: homeActive && isReady && hasCompletedOnboarding,
-    busy: isCareBlocked || isCareAnimationPlaying || !!decoratingRoom || !!decorationEntry || !!transition,
-    hasCommand: !!requestedRoomCommand, onBedtime: handleBedtime, onMorning: handleMorning });
 
   useEffect(() => {
     if (!isCareBlocked && !isCareAnimationPlaying)
@@ -579,6 +589,18 @@ export default function HomeScreen() {
     }
   }, [baseVideoMood, playback, sendPetCommand, setPet, pet.type]);
 
+  const handleRoomPetOffsetChange = useCallback((offset: { x: number; y: number }) =>
+    setPet(current => ({ ...current, roomPetOffset: offset })), [setPet]);
+  const handleRoomBedOffsetChange = useCallback((offset: { x: number; y: number }) =>
+    setPet(current => ({ ...current, roomBedOffset: offset })), [setPet]);
+  const handlePlacedToyOffsetChange = useCallback((instanceId: string, offset: { x: number; y: number }) =>
+    setPet(current => ({ ...current, placedToys: updatePlacedToyOffsetByInstance(current.placedToys, instanceId, offset) })), [setPet]);
+  const handlePlacedDecorationOffsetChange = useCallback((instanceId: string, offset: { x: number; y: number }) =>
+    setPet(current => ({ ...current, placedDecorations: updatePlacedDecorationOffsetByInstance(current.placedDecorations, instanceId, offset) })), [setPet]);
+  const handleAimSpotlight = useCallback((id: string, angle: number, swivel?: number) => {
+    if (aimPlacedSpotlight(id, angle, swivel)) recordInteraction();
+  }, [aimPlacedSpotlight, recordInteraction]);
+
   if (!isReady) {
     return (
       <View style={styles.loading}>
@@ -591,7 +613,6 @@ export default function HomeScreen() {
     return <Redirect href="/onboarding/name-pet" />;
   }
 
-  const savingGoal = getStoreGoalDetails(progress.storeGoal, wallet.coins, t);
   const isNativeCatPet = pet.type === "cat";
   const petAnimating = isCareAnimationPlaying;
 
@@ -599,7 +620,7 @@ export default function HomeScreen() {
     const draft = placementDraft && placementDraft.roomId === savedRoomPet.homeRoomId ? placementDraft.draft : undefined;
     const roomPet = stagedRooms.get(savedRoomPet) ?? savedRoomPet;
     return (
-    <PetStage
+    <HomeRoomStage
       key={`${roomPet.homeRoomId ?? "livingRoom"}:${roomPet.roomId ?? "room1"}`}
       worldClock={worldClock}
       nativeSceneMounted={shouldMountNativeRoom(roomPet.homeRoomId ?? "livingRoom")}
@@ -625,7 +646,8 @@ export default function HomeScreen() {
       onDecorationEntryConsumed={clearDecorationEntry}
       placementDraft={draft}
       onCancelPlacementDraft={cancelPlacementDraft}
-      onCommitRoomEdit={(edits, remove) => commitRoomEdit(roomPet.homeRoomId ?? 'livingRoom', edits, remove, roomFurnitureVersion(savedRoomPet))}
+      savedRoom={savedRoomPet}
+      commitRoomEdit={commitRoomEdit}
       storedItems={storedItems}
       onPlaceStoredItem={requestRoomDecoration}
       roomEditor={roomEditor}
@@ -634,7 +656,7 @@ export default function HomeScreen() {
       petType={pet.type}
       catSkinId={pet.catSkinId}
       stats={pet.stats}
-      wisdom={computePetWisdom(progress.puzzlesSolved, progress.completedPuzzleIds)}
+      wisdom={wisdom}
       roomId={roomPet.roomId}
       roomPetOffset={roomPet.roomPetOffset}
       bedId={roomPet.bedId}
@@ -651,39 +673,15 @@ export default function HomeScreen() {
       onRoomInteraction={recordInteraction}
       onRoomActivityChange={visible ? handleRoomActivityChange : undefined}
       onFeed={handleFeed}
-      onRoomActivityCompleted={(kind, id) => handleRoomActivityCompleted(kind,
-        roomPet.placedToys?.find(item => item.instanceId === id)?.toyId
-        ?? roomPet.placedDecorations?.find(item => item.instanceId === id)?.decorationId)}
+      completeRoomActivity={handleRoomActivityCompleted}
       onPlay={handlePlay}
       speechMessage={speechMessage}
       playback={playback}
       onPetPress={petAnimating ? undefined : handlePetTap}
-      onRoomPetOffsetChange={(offset) =>
-        setPet((current) => ({ ...current, roomPetOffset: offset }))
-      }
-      onRoomBedOffsetChange={(offset) =>
-        setPet((current) => ({ ...current, roomBedOffset: offset }))
-      }
-      onPlacedToyOffsetChange={(instanceId, offset) =>
-        setPet((current) => ({
-          ...current,
-          placedToys: updatePlacedToyOffsetByInstance(
-            current.placedToys,
-            instanceId,
-            offset,
-          ),
-        }))
-      }
-      onPlacedDecorationOffsetChange={(instanceId, offset) =>
-        setPet((current) => ({
-          ...current,
-          placedDecorations: updatePlacedDecorationOffsetByInstance(
-            current.placedDecorations,
-            instanceId,
-            offset,
-          ),
-        }))
-      }
+      onRoomPetOffsetChange={handleRoomPetOffsetChange}
+      onRoomBedOffsetChange={handleRoomBedOffsetChange}
+      onPlacedToyOffsetChange={handlePlacedToyOffsetChange}
+      onPlacedDecorationOffsetChange={handlePlacedDecorationOffsetChange}
       onPlacedDecorationRemove={handleRemoveDecoration}
       onRotatePlacedDecoration={handleRotatePlacedDecoration}
       onFlipPlacedDecorationWall={handleFlipPlacedDecorationWall}
@@ -692,7 +690,7 @@ export default function HomeScreen() {
       onTogglePlacedFridge={handleTogglePlacedFridge}
       onTogglePlacedDecorationOpen={handleTogglePlacedDecorationOpen}
       onFlipPlacedFridgeHinge={handleFlipPlacedFridgeHinge}
-      onAimPlacedSpotlight={(id, angle, swivel) => { if (aimPlacedSpotlight(id, angle, swivel)) recordInteraction(); }}
+      onAimPlacedSpotlight={handleAimSpotlight}
       onScalePlacedDecoration={handleScalePlacedDecoration}
       onMoveRoomLayerItem={handleMoveRoomLayerItem}
       onBedRemove={handleRemoveBed}
@@ -718,6 +716,9 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.safe, screenInsets]}>
+      <HomeBedtimeRoutine pet={pet} clock={worldClock} enabled={homeActive}
+        busy={isCareBlocked || isCareAnimationPlaying || !!decoratingRoom || !!decorationEntry || !!transition}
+        hasCommand={!!requestedRoomCommand} onBedtime={handleBedtime} onMorning={handleMorning} />
       <View style={styles.screen}>
         <View style={[styles.header, { paddingTop: settingsClearance }]}>
           <View style={styles.accountRow}>
@@ -726,6 +727,7 @@ export default function HomeScreen() {
               coins={wallet.coins}
               streak={progress.streak}
               lives={progress.lives}
+              completedPuzzleIds={progress.completedPuzzleIds}
             />
           </View>
           {isNativeCatPet && <View style={styles.roomToolbar}>
@@ -791,10 +793,8 @@ export default function HomeScreen() {
                 <AppIcon name="puzzles" size={moderateScale(28)} />
                 <Text style={styles.primaryBtnText}>{t("home.solvePuzzle")}</Text>
               </View>
-              <Text style={styles.primaryBtnHint}>
-                {savingGoal ? t("store.goalProgress", { name: savingGoal.name, remaining: savingGoal.remaining })
-                  : t("home.solvePuzzleHint", { name: pet.name })}
-              </Text>
+              <HomePuzzleHint goal={progress.storeGoal} coins={wallet.coins} petName={pet.name}
+                style={styles.primaryBtnHint} />
             </Pressable>
           </RoomControlsTransition>
           <RoomControlsTransition visible={editingCurrentRoom} instant={reduceMotion || !homeActive} offsetY={6} style={StyleSheet.absoluteFill}>
@@ -819,7 +819,19 @@ export default function HomeScreen() {
       </HeaderChip>
     </View>
   );
-}
+}, (previous, next) => {
+  if (previous.homeActive !== next.homeActive || previous.reduceMotion !== next.reduceMotion) return false;
+  // Account/loading transitions must still remove a previous game's room tree.
+  if (previous.game.isReady !== next.game.isReady ||
+      previous.game.hasCompletedOnboarding !== next.game.hasCompletedOnboarding) return false;
+  return !next.homeActive || previous.game === next.game;
+});
+
+/** Keep routine clock ticks out of the retained room tree's render. */
+const HomeBedtimeRoutine = memo(function HomeBedtimeRoutine(props: Parameters<typeof useCatBedtime>[0]) {
+  useCatBedtime(props);
+  return null;
+});
 
 const styles = StyleSheet.create({
   loading: {

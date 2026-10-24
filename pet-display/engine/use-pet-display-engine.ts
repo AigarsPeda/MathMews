@@ -1,7 +1,7 @@
 import { PET_CARE_COOLDOWN_MS } from "@/constants/game";
 import type { WorldClock } from '@/utils/world-clock';
 import { buildBoxPlaySequence } from "@/constants/cat-box-play";
-import { usePetBaseMood } from "@/pet-display/engine/derive-mood";
+import { usePetBaseMood } from "@/pet-display/hooks/use-pet-base-mood";
 import { createBoxPlayScenario } from "@/pet-display/registry/cat-model-registry";
 import { getPetMediaRegistry } from "@/pet-display/registry/media-registry";
 import type {

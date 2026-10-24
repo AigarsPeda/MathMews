@@ -365,7 +365,7 @@ console.log('Verified direct entry-to-task routing, renderer gait transfer throu
   const node=find(stageSource,n=>ts.isVariableDeclaration(n)&&n.name.getText(stageSource)==='buildRoomItemMenuActions');
   const calls=[],door={instanceId:'passage',decorationId:'japaneseDoorAni',doorDestination:'kitchen'};
   const menu=vm.runInNewContext(compile(`(${node.initializer.arguments[0].getText(stageSource)})`),{
-    decorating:false,catPresent:true,bedId:'basic',onRequestRoomCommand:undefined,onSendCatToRoom:()=>{},viewport:{width:390,height:420},displayWidth:80,
+    decorating:false,catPresent:true,bedId:'basic',onRequestRoomCommand:undefined,onSendCatToRoom:()=>{},canSendCatToRoom:true,viewport:{width:390,height:420},displayWidth:80,
     roomPlacedDecorations:[door],roomActivityBlocked:false,HOME_ROOM_ICONS:{kitchen:'cooking-pot'},
     getRoomCommands:()=>[],isRoomDoor:id=>id==='japaneseDoorAni',isOpenableDecorationId:()=>false,
     isFridgeDecorationId:()=>false,isCurtainDecorationId:()=>false,isPoweredDecorationId:()=>false,

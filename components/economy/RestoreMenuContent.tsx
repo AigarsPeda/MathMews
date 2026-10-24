@@ -2,7 +2,7 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { CloudSaveList } from "@/components/cloud-save/CloudSaveList";
 import { GameColors } from "@/constants/game";
-import { useGame } from "@/contexts/GameProvider";
+import { useGameActions } from "@/contexts/GameProvider";
 import { useIAP } from "@/contexts/IAPProvider";
 import { isCloudSaveAvailable } from "@/services/cloud-save/cloud-save";
 import type { CloudSaveSummary } from "@/services/cloud-save/merge-game-save";
@@ -37,7 +37,7 @@ export function RestoreMenuContent({
   onClose,
 }: RestoreMenuContentProps) {
   const { t } = useTranslation();
-  const { fetchSwitchableCloudSaves, switchToCloudSave } = useGame();
+  const { fetchSwitchableCloudSaves, switchToCloudSave } = useGameActions();
   const { isSupported, restorePurchases } = useIAP();
   const [saves, setSaves] = useState<CloudSaveSummary[]>([]);
   const [isLoadingSaves, setIsLoadingSaves] = useState(true);

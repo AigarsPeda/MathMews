@@ -7,7 +7,8 @@ export function fridgeDoorGeometry(object: Pick<NativeRoomObject, 'modelId' | 'f
   const side = object.fridgeHingeSide ?? (retro ? 'right' : 'left');
   const latch = side === 'left' ? 1 : -1;
   return { latch, hingeX: -latch * (retro ? .51 : .585), front: retro ? .46 : .55,
-    width: retro ? 1.02 : 1.17, angle: 85 * Math.PI / 180 };
+    width: retro ? 1.02 : 1.17, bottom: retro ? .075 : .755,
+    top: retro ? 1.365 : 2.305, angle: 85 * Math.PI / 180 };
 }
 
 /** Distance to the area swept by the door, including intermediate opening poses. */

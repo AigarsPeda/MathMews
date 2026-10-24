@@ -2,7 +2,7 @@ import { CoinPackSheet } from "@/components/economy/CoinPackSheet";
 import { CoinCounter } from "@/components/economy/CoinCounter";
 import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { useGame } from "@/contexts/GameProvider";
+import { useGameActions } from "@/contexts/GameProvider";
 import { GameColors, HEADER_CHIP_SIZE, MAX_LIVES } from "@/constants/game";
 import { useWorldClockNow } from "@/hooks/use-world-clock-now";
 import type { LivesState } from "@/types/game";
@@ -11,7 +11,7 @@ import { moderateScale } from "@/utils/scale";
 import { getBossAchievements } from "@/utils/boss-achievements";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import { useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -20,12 +20,13 @@ type GameHeaderStatsProps = {
   coins: number;
   streak?: number;
   lives: LivesState;
+  completedPuzzleIds?: readonly string[];
 };
 
-function HomeAchievementsStat({ stacked }: { stacked: boolean }) {
+function HomeAchievementsStat({ stacked, completedPuzzleIds }: { stacked: boolean; completedPuzzleIds?: readonly string[] }) {
   const { t } = useTranslation(), router = useRouter();
-  const { progress, recordInteraction } = useGame();
-  const achievements = useMemo(() => getBossAchievements(progress.completedPuzzleIds), [progress.completedPuzzleIds]);
+  const { recordInteraction } = useGameActions();
+  const achievements = useMemo(() => getBossAchievements(completedPuzzleIds), [completedPuzzleIds]);
   const count = achievements.filter(item => item.collected).length;
   return <Pressable style={[styles.livesMetric, stacked && styles.stackedMetric]} accessibilityRole="button"
     accessibilityLabel={`${t('achievements.open')}. ${t('achievements.count', { count, total: achievements.length })}`}
@@ -48,7 +49,7 @@ function triggerHaptic(
 
 function HomeLivesStat({ lives, coins, stacked }: { lives: LivesState; coins: number; stacked: boolean }) {
   const { t } = useTranslation();
-  const { recordInteraction, buyLife } = useGame();
+  const { recordInteraction, buyLife } = useGameActions();
   const [showLives, setShowLives] = useState(false);
   const now = useWorldClockNow(1000, lives.current < MAX_LIVES);
   const synced = applyLifeRegen(lives, now);
@@ -73,13 +74,14 @@ function HomeLivesStat({ lives, coins, stacked }: { lives: LivesState; coins: nu
   </>;
 }
 
-export function GameHeaderStats({
+export const GameHeaderStats = memo(function GameHeaderStats({
   layout = 'inline',
   coins,
   streak = 0,
   lives,
+  completedPuzzleIds,
 }: GameHeaderStatsProps) {
-  const { recordInteraction } = useGame();
+  const { recordInteraction } = useGameActions();
   const [showCoinSheet, setShowCoinSheet] = useState(false);
 
   const handleOpenCoinSheet = useCallback(() => {
@@ -97,7 +99,7 @@ export function GameHeaderStats({
         compact
         layout={layout}
         onPress={handleOpenCoinSheet}
-        homeAccessory={layout === 'home' ? stacked => <><HomeAchievementsStat stacked={stacked} />{!stacked ? <View style={styles.metricDivider} /> : null}<HomeLivesStat lives={lives} coins={coins} stacked={stacked} /></> : undefined}
+        homeAccessory={layout === 'home' ? stacked => <><HomeAchievementsStat stacked={stacked} completedPuzzleIds={completedPuzzleIds} />{!stacked ? <View style={styles.metricDivider} /> : null}<HomeLivesStat lives={lives} coins={coins} stacked={stacked} /></> : undefined}
       />
       <CoinPackSheet
         visible={showCoinSheet}
@@ -105,7 +107,7 @@ export function GameHeaderStats({
       />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   livesMetric: { flex: 1, minWidth: 0, minHeight: 56, paddingHorizontal: moderateScale(4), paddingVertical: moderateScale(8), gap: moderateScale(3), justifyContent: 'center' },

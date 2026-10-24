@@ -123,11 +123,29 @@ export async function listRemoteSaveSnapshots(
     .filter((snapshot): snapshot is RemoteSaveSnapshot => snapshot !== null);
 }
 
+// All writers (onboarding, restores, wallet sync and lifecycle flushes) share
+// this queue. A later snapshot cannot reach the server before an earlier one.
+const uploadQueues = new Map<string, Promise<boolean>>();
+
 export async function pushRemoteSave(
   userId: string,
   saveId: string,
   snapshot: SaveSnapshot,
 ): Promise<boolean> {
+  const environment = getWalletEnvironment();
+  const key = `${userId}:${environment}:${saveId}`;
+  const previous = uploadQueues.get(key) ?? Promise.resolve(true);
+  const upload = previous.catch(() => false).then(() => uploadRemoteSave(userId, saveId, environment, snapshot));
+  uploadQueues.set(key, upload);
+  try {
+    return await upload;
+  } finally {
+    if (uploadQueues.get(key) === upload) uploadQueues.delete(key);
+  }
+}
+
+async function uploadRemoteSave(userId: string, saveId: string, environment: string, snapshot: SaveSnapshot): Promise<boolean> {
+  // Recheck when the queued operation starts, including deletion/auth changes.
   if (!supabase || isAccountTransitionActive() || gameAccountOwner(snapshot.save) !== userId
     || pausedAccounts.has(userId) || await loadDeletionReceipt()) return false;
 
@@ -135,7 +153,7 @@ export async function pushRemoteSave(
     {
       id: saveId,
       user_id: userId,
-      environment: getWalletEnvironment(),
+      environment,
       save: snapshot.save,
       client_updated_at: snapshot.clientUpdatedAt,
       updated_at: new Date().toISOString(),

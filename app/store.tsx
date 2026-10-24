@@ -91,6 +91,7 @@ function triggerHaptic() {
 }
 
 const FEEDBACK_VISIBLE_MS = 2800;
+const storeItemKey = (id: string) => id;
 
 type StoreFeedback = {
   icon: AppIconName;
@@ -98,7 +99,7 @@ type StoreFeedback = {
 };
 
 export default function StoreScreen() {
-  useStoreCatalog();
+  const catalogRevision = useStoreCatalog();
   const router = useRouter();
   const { t } = useTranslation();
   const { height } = useWindowDimensions();
@@ -136,7 +137,8 @@ export default function StoreScreen() {
   const equippedRoomId = pet.roomId as CatRoomId | undefined;
   const equippedBedId = pet.bedId as CatBedId | undefined;
   const equippedSkinId = pet.catSkinId as CatSkinId | undefined;
-  const placedToys = pet.placedToys ?? [];
+  const placedToys = useMemo(() => pet.placedToys ?? [], [pet.placedToys]);
+  const { toyQuantities, decorationQuantities } = progress;
   const placedDecorations = useMemo(() => pet.placedDecorations ?? [], [pet.placedDecorations]);
   const [activeTab, setActiveTab] = useState<StoreTab>(() => ({ livingRoom: "living", bedroom: "bedroom", bathroom: "bathroom", kitchen: "kitchen" } as const)[pet.homeRoomId ?? "livingRoom"]);
   const [ownedOnly, setOwnedOnly] = useState(false);
@@ -644,7 +646,7 @@ export default function StoreScreen() {
       ? DECORATION_IDS_BY_STORE_TAB[activeTab].filter(id => !ownedOnly || unlockedDecorations.includes(id)) : [];
   }, [activeTab, ownedOnly, unlockedRooms, unlockedSkins, unlockedBeds, unlockedToys, unlockedDecorations]);
 
-  const renderStoreCard = ({ item: id }: { item: string }) => {
+  const renderStoreCard = useCallback(({ item: id }: { item: string }) => {
     if (activeTab === "rooms") {
       const roomId = id as CatRoomId;
       const price = getRoomStorePrice(roomId);
@@ -719,7 +721,7 @@ export default function StoreScreen() {
           toyId={toyId}
           isOwned={owned}
           placedCount={countPlacedToys(toyId, placedToys)}
-          ownedCount={getToyOwnedCount(toyId, progress)}
+          ownedCount={getToyOwnedCount(toyId, { toysUnlocked: unlockedToys, toyQuantities })}
           canAfford={canAfford}
           onPreview={() => setPreview({ kind: "toy", id: toyId, name: t(`store.toyName.${toyId}`), owned, onBuy: expectedPrice => handleBuyToy(toyId, expectedPrice) })}
           onBuy={() => handleBuyToy(toyId, price.kind === "coins" ? price.amount : 0)}
@@ -743,7 +745,7 @@ export default function StoreScreen() {
           decorationId,
           placedDecorations,
         )}
-        ownedCount={getDecorationOwnedCount(decorationId, progress)}
+        ownedCount={getDecorationOwnedCount(decorationId, { decorationsUnlocked: unlockedDecorations, decorationQuantities })}
         canAfford={canAfford}
         onPreview={() => setPreview({ kind: "decoration", id: decorationId, name: t(`store.decorationName.${decorationId}`), owned, onBuy: expectedPrice => handleBuyDecoration(decorationId, expectedPrice) })}
         onBuy={() => handleBuyDecoration(decorationId, price.kind === "coins" ? price.amount : 0)}
@@ -751,7 +753,11 @@ export default function StoreScreen() {
         onRemove={() => handleRemoveDecoration(decorationId)}
       />
     );
-  };
+  }, [activeTab, wallet.coins, unlockedRooms, unlockedSkins, unlockedBeds, unlockedToys,
+    unlockedDecorations, equippedRoomId, equippedSkinId, equippedBedId, placedToys, placedDecorations,
+    toyQuantities, decorationQuantities, t, handleBuy, handleEquip, handleBuySkin, handleEquipSkin,
+    handleBuyBed, handleEquipBed, handleRemoveBed, handleBuyToy, handlePlaceToy, handleRemoveToy,
+    handleBuyDecoration, handlePlaceDecoration, handleRemoveDecoration]);
 
   if (!isReady) {
     return (
@@ -781,6 +787,7 @@ export default function StoreScreen() {
             coins={wallet.coins}
             streak={progress.streak}
             lives={progress.lives}
+            completedPuzzleIds={progress.completedPuzzleIds}
           />
         </View>
 
@@ -822,7 +829,8 @@ export default function StoreScreen() {
           <FlatList<string>
             key={activeTab}
             data={storeItems}
-            keyExtractor={id => id}
+            keyExtractor={storeItemKey}
+            extraData={catalogRevision}
             renderItem={renderStoreCard}
             numColumns={2}
             initialNumToRender={2}

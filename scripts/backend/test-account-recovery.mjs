@@ -8,7 +8,8 @@ import ts from 'typescript';
 function harness({ platform='ios', enabled=true, environment='sandbox' }={}) {
   const cache=new Map(), stored=new Map(), calls=[], effects=[], timers=new Map();
   let browser={type:'cancel'}, apple={ok:false,cancelled:true}, authError=null, readError=null, rows=[], currentAccount='guest';
-  let reconnect, writeError=null;
+  let reconnect, writeError=null, readGate=null, holdWrites=false, serverRow=null;
+  const pendingWrites=[];
   const storage={getItem:async key=>stored.get(key)??null, setItem:async(key,value)=>stored.set(key,value),
     removeItem:async key=>stored.delete(key),multiRemove:async keys=>keys.forEach(key=>stored.delete(key)),
     multiSet:async pairs=>pairs.forEach(([key,value])=>stored.set(key,value))};
@@ -19,8 +20,13 @@ function harness({ platform='ios', enabled=true, environment='sandbox' }={}) {
     signInWithOtp:async()=>{calls.push('email');return {error:authError};}};
   const db={auth,from:()=>{
     const q={select:()=>q,eq:()=>q,order:async()=>({data:rows,error:readError}),
-      maybeSingle:async()=>({data:rows[0]??null,error:readError}),
-      upsert:async value=>{calls.push(['write',value]);return {error:writeError};}};return q;
+      maybeSingle:async()=>{if(readGate)await readGate;return {data:rows[0]??null,error:readError};},
+      upsert:async value=>{
+        calls.push(['write',value]);
+        if(holdWrites)await new Promise(resolve=>pendingWrites.push(resolve));
+        if(!writeError)serverRow=value;
+        return {error:writeError};
+      }};return q;
   }};
   const react={useEffect:fn=>effects.push(fn),useCallback:fn=>fn,useRef:value=>({current:value}),useState:value=>[value,()=>{}]};
   function load(id,base=process.cwd()) {
@@ -48,7 +54,9 @@ function harness({ platform='ios', enabled=true, environment='sandbox' }={}) {
         setInterval:(fn,delay)=>{timers.set(`interval:${delay}`,fn);return `interval:${delay}`;},clearInterval:id=>timers.delete(id)});
     return module.exports;
   }
-  return {load,stored,calls,effects,timers,get currentAccount(){return currentAccount;},
+  return {load,stored,calls,effects,timers,pendingWrites,get serverRow(){return serverRow;},get currentAccount(){return currentAccount;},
+    pauseRead(){let release;readGate=new Promise(resolve=>{release=resolve;});return release;},
+    holdWrites(){holdWrites=true;},
     browser:value=>{browser=value;},apple:value=>{apple=value;},failAuth:()=>{authError={message:'provider unavailable'};},
     reconnect:()=>reconnect(),failWrite:()=>{writeError={message:'offline'};},recover:()=>{readError=null;writeError=null;},
     remote:value=>{rows=value;},failRead:()=>{readError={message:'offline'};}};
@@ -204,7 +212,7 @@ test('the Settings recovery action stays behind the parent gate and saves before
     if(id==='@/constants/platform-auth')return {isPlatformAuthEnabled:()=>true,getPlatformRestoreProviderLabel:()=> 'Apple'};
     if(id==='@/contexts/AuthProvider')return {useAuth:()=>({userId:'a',isAuthReady:true,isAccountChanging:false,isPlatformAccountLinked:false,
       platformRestoreProvider:'apple',platformRestoreLabel:'Apple',restoreProgress:async()=>{events.push('restore');return {ok:false,cancelled:true};}})};
-    if(id==='@/contexts/GameProvider')return {useGame:()=>({syncToCloud:async()=>events.push('save')})};
+    if(id==='@/contexts/GameProvider')return {useGameActions:()=>({syncToCloud:async()=>events.push('save')})};
     if(id==='@/constants/game')return {GameColors:{}};
     if(id==='@/utils/scale')return {moderateScale:n=>n};
     if(id.startsWith('@/components/')){const name=path.basename(id);return {[name]:name};}
@@ -220,4 +228,93 @@ test('the Settings recovery action stays behind the parent gate and saves before
   await new Promise(resolve=>setImmediate(resolve));
   assert.deepEqual(events,['save','restore']);
   assert.ok(!render().props.children.some(node=>node?.type==='AppBottomSheet'),'Cancellation closes the sheet without an error');
+});
+
+const settleSync = () => new Promise(resolve => setImmediate(resolve));
+function mountCloudSync(h) {
+  let save = { ...h.load('@/utils/game-storage').createDefaultGameSave(), accountOwnerId: 'a', hasCompletedOnboarding: true };
+  const cloudSyncRef = { current: null }, activeSaveIdRef = { current: 'save-a' };
+  h.load('@/hooks/use-cloud-save-sync').useCloudSaveSync({
+    isGameReady: true, isAuthReady: true, userId: 'a', save,
+    getSave: () => save, setSave: next => { save = next; },
+    skipNextPersist: { current: false }, activeSaveIdRef, cloudSyncRef,
+  });
+  const cleanups = h.effects.map(fn => fn());
+  return {
+    cloudSyncRef, activeSaveIdRef, get save() { return save; },
+    rename(name) { save = { ...save, pet: { ...save.pet, name } }; },
+    cleanup() { cleanups.forEach(fn => fn?.()); },
+  };
+}
+
+test('a delayed initial cloud read preserves and uploads gameplay made while it was pending', async () => {
+  for (const hasRemote of [false, true]) {
+    const h = harness(), release = h.pauseRead();
+    if (hasRemote) h.remote([{ id: 'save-a', save: {
+      ...h.load('@/utils/game-storage').createDefaultGameSave(), accountOwnerId: 'a', hasCompletedOnboarding: true,
+    }, client_updated_at: Date.now(), updated_at: new Date().toISOString() }]);
+    const m = mountCloudSync(h);
+    await settleSync();
+    m.rename('Played during recovery');
+    release(); await settleSync();
+    assert.equal(m.save.pet.name, 'Played during recovery');
+    assert.equal(h.serverRow.save.pet.name, 'Played during recovery');
+    const disk = await h.load('@/utils/game-storage').loadGameSave();
+    assert.equal(disk.save.pet.name, 'Played during recovery');
+    m.cleanup();
+  }
+});
+
+test('a newer remote still restores when no gameplay occurred during the read', async () => {
+  const h = harness(), release = h.pauseRead(), storage = h.load('@/utils/game-storage');
+  const remote = { ...storage.createDefaultGameSave(), accountOwnerId: 'a', hasCompletedOnboarding: true };
+  remote.pet = { ...remote.pet, name: 'Newer cloud progress' };
+  h.remote([{ id: 'save-a', save: remote, client_updated_at: Date.now(), updated_at: new Date().toISOString() }]);
+  const m = mountCloudSync(h); await settleSync(); release(); await settleSync();
+  assert.equal(m.save.pet.name, remote.pet.name);
+  m.cleanup();
+});
+
+test('overlapping cloud flushes serialize writes and finish with the newest snapshot', async () => {
+  const h = harness(), m = mountCloudSync(h); await settleSync(); h.holdWrites();
+  m.rename('Older'); const older = m.cloudSyncRef.current(); await settleSync();
+  m.rename('Newer'); const newer = m.cloudSyncRef.current(); await settleSync();
+  assert.equal(h.pendingWrites.length, 1, 'The newer request must wait for the older server write');
+  h.pendingWrites.shift()(); await older; await settleSync();
+  assert.equal(h.pendingWrites.length, 1);
+  h.pendingWrites.shift()(); await newer;
+  assert.equal(h.serverRow.save.pet.name, 'Newer');
+  const count = h.calls.length;
+  h.timers.get('interval:15000')(); await settleSync();
+  assert.equal(h.calls.length, count, 'A completed queue does not keep retrying');
+  m.cleanup();
+});
+
+test('gameplay during the initial upload is flushed after initialization completes', async () => {
+  const h = harness(); h.holdWrites(); const m = mountCloudSync(h); await settleSync();
+  assert.equal(h.pendingWrites.length, 1);
+  m.rename('Played during upload'); h.pendingWrites.shift()(); await settleSync();
+  assert.equal(h.pendingWrites.length, 1, 'The latest edit must not wait for an unrelated future edit');
+  h.pendingWrites.shift()(); await settleSync();
+  assert.equal(h.serverRow.save.pet.name, 'Played during upload');
+  m.cleanup();
+});
+
+test('a queued cloud write rechecks account deletion and a failed write does not block the queue', async () => {
+  const h = harness(), api = h.load('@/services/cloud-save/cloud-save');
+  const save = { ...h.load('@/utils/game-storage').createDefaultGameSave(), accountOwnerId: 'a' };
+  h.holdWrites();
+  const first = api.pushRemoteSave('a', 'save-a', { save, clientUpdatedAt: 1 }); await settleSync();
+  const second = api.pushRemoteSave('a', 'save-a', { save, clientUpdatedAt: 2 }); await settleSync();
+  api.pauseAccountCloudWrites('a', true);
+  h.pendingWrites.shift()(); await first;
+  assert.equal(await second, false);
+  assert.equal(h.pendingWrites.length, 0);
+  api.pauseAccountCloudWrites('a', false);
+  h.failWrite();
+  const failed = api.pushRemoteSave('a', 'save-a', { save, clientUpdatedAt: 3 }); await settleSync();
+  h.pendingWrites.shift()(); assert.equal(await failed, false);
+  h.recover();
+  const recovered = api.pushRemoteSave('a', 'save-a', { save, clientUpdatedAt: 4 }); await settleSync();
+  h.pendingWrites.shift()(); assert.equal(await recovered, true);
 });

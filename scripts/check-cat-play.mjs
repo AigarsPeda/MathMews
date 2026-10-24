@@ -12,6 +12,7 @@ const routes = []; let focusCleanups = [];
 const prefetched = [], idleTasks = new Map();
 class TestDate extends Date { static now() { return Date.now() + clockOffset; } }
 const react = {
+  memo: component => component,
   useSyncExternalStore: (_subscribe, getSnapshot) => getSnapshot(),
   useState: initial => {
     const i = stateIndex++;
@@ -42,10 +43,11 @@ const mocks = {
   '@/hooks/use-room-transition': { useRoomTransition: (_, visit) => ({ transition: null, visit, ready() {} }) },
   '@/utils/scale': { moderateScale: n => n },
   '@/pet-display/hooks/use-pet-display': { usePetDisplay: () => display },
-  '@/pet-display/engine/derive-mood': { usePetBaseMood: () => ({ mood: display.baseMood, onFallAsleepComplete: () => {}, onLieDownComplete: () => {} }) },
+  '@/pet-display/hooks/use-pet-base-mood': { usePetBaseMood: () => ({ mood: display.baseMood, onFallAsleepComplete: () => {}, onLieDownComplete: () => {} }) },
   '@/constants/puzzles': { computePetWisdom: () => 0, hasIncompletePuzzles: () => false },
 };
 for (const [file, name] of [
+  ['components/home/HomePuzzleHint', 'HomePuzzleHint'],
   ['components/ui/AppIcon', 'AppIcon'], ['components/ui/IconText', 'IconText'],
   ['components/economy/GameHeaderStats', 'GameHeaderStats'], ['components/home/HeaderChip', 'HeaderChip'],
   ['components/pet/PetStage', 'PetStage'],
@@ -78,6 +80,7 @@ function load(file) {
   return module.exports;
 }
 function nodes(node) {
+  if (typeof node?.type === 'function') return nodes(node.type(node.props));
   if (node?.type === 'RoomControlsTransition' && !node.props.visible) return [];
   if (Array.isArray(node)) return node.flatMap(nodes);
   return node?.props ? [node, ...nodes(node.props.children)] : [];
@@ -92,10 +95,10 @@ function home({ coins = 100, happiness = 100, asleep = false, busy = false } = {
   let interactions=0;
   const decorationRequests = [];
   game = {
-    isReady: true, hasCompletedOnboarding: true,
+    isReady: true, hasCompletedOnboarding: true, cancelPlacementDraft() {},
     pet: { name: 'Test cat', type: 'cat', catSkinId: 'orange', isAsleep: asleep, lastCareAt: now, lastInteractionAt: now,
       stats: { hunger: 100, happiness, cleanliness: 100, level: 1 }, placedToys: [], placedDecorations: [] },
-    wallet: { coins }, progress: { puzzlesSolved: {}, puzzleStreak: 0, streak: 0, lives: 5 },
+    wallet: { coins }, progress: { bedsUnlocked: [], toysUnlocked: [], decorationsUnlocked: [], puzzlesSolved: {}, puzzleStreak: 0, streak: 0, lives: 5 },
     setPet: update => { game.pet = update(game.pet); },
     setWallet: update => { game.wallet = update(game.wallet); debits.push(game.wallet.coins); },
     recordInteraction: () => { interactions++; },

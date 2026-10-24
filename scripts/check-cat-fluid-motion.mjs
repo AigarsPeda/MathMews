@@ -9,7 +9,6 @@ const preview=process.argv.includes('--preview'),skins=preview?['orange']:['oran
 const recordings=[],metrics=[];
 const scale=.4,home=[0,FLOOR_Y,-1.6],world={width:390,height:420,catScale:scale,radius:.16,home,objects:[]};
 const make=(path,gait='trot')=>{const samples=catPacedPath(path,scale);return {path:samples,...catWalkTiming(samples,scale,gait),distance:path.reduce((n,p,i)=>n+(i?distance(p,path[i-1]):0),0),jump:false};};
-const straight=make([home,[0,FLOOR_Y,1.6]]);
 // The rate integral retains ordinary acceleration and exactly matches a
 // nonzero incoming velocity, including above-cruise speed when slowing down.
 for(const rate of [0,.3,1,2]) {

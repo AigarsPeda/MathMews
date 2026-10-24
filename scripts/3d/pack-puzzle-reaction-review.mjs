@@ -1,6 +1,7 @@
 /** Pack Blender --motion review frames into a compact comparison and animation. */
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { Buffer } from 'node:buffer';
 import sharp from 'sharp';
 
 const frames = '/tmp/brainpet-puzzle-reactions-frames';

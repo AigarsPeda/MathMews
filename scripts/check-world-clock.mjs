@@ -15,6 +15,7 @@ const react = {
 };
 const mocks = {
   react,
+  '@/hooks/use-animation-activity': { useAnimationActivity: () => ({ active: true }) },
   './NativeWindowLight': { NativeWindowLight: 'WindowLight' },
   '@react-native-async-storage/async-storage': {},
   '@/hooks/use-world-clock-now': { useWorldClockNow: () => now },
@@ -100,6 +101,7 @@ assert.deepEqual(JSON.parse(JSON.stringify(restored.pet.stats)), JSON.parse(JSON
 console.log('Verified legacy save migration, save/reload continuity and independent real-time care decay.');
 
 const mood = load('@/pet-display/engine/derive-mood');
+const moodHooks = load('@/pet-display/hooks/use-pet-base-mood');
 const pet = { ...save.pet, type: 'cat', stats: { hunger: 90, happiness: 90, cleanliness: 90, level: 1 }, lastInteractionAt: now - 45_000, isAsleep: false };
 assert.equal(mood.derivePetMood(pet, now, false), 'idle');
 assert.equal(mood.derivePetMood(pet, now, true), 'resting');
@@ -140,7 +142,7 @@ react.useState = initial => {
 function renderMood(pet, worldClock) {
   moodCursor = 0;
   // The VM executes the real hook with a state dispatcher and controlled clock.
-  return mood.usePetBaseMood(pet, worldClock);
+  return moodHooks.usePetBaseMood(pet, worldClock);
 }
 const nightRoutine = at(23), dayRoutine = at(13);
 let routine = renderMood(undisturbed, nightRoutine);
