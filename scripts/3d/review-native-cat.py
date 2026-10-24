@@ -16,6 +16,9 @@ arm=next(o for o in scene.objects if o.type=='ARMATURE')
 # Sample every exported action, including extreme care/play poses. This catches
 # spikes and disconnected joint weighting after glTF conversion.
 body = next(o for o in scene.objects if o.name.startswith('Game cat skin'))
+tail_vertices = [v.index for v in body.data.vertices
+                 if (body.matrix_world @ v.co).z > 1.25 and (body.matrix_world @ v.co).y > .30]
+arm.animation_data.action = None
 for track in arm.animation_data.nla_tracks:
     clip = track.name
     for other in arm.animation_data.nla_tracks: other.mute = other != track
@@ -29,6 +32,13 @@ for track in arm.animation_data.nla_tracks:
         edges = np.array([edge.vertices[:] for edge in mesh.edges], dtype=np.int32)
         longest = np.linalg.norm(points[edges[:, 0]]-points[edges[:, 1]], axis=1).max()
         assert longest < .35, clip+' contains a stretched skin edge: '+str(longest)
+        if clip.startswith(('restLoaf', 'restCrescent', 'restSide')):
+            lowest = min((body.matrix_world @ v.co).z for v in mesh.vertices)
+            assert lowest > -.02, clip+' sinks through its support: '+str(lowest)
+        if clip == 'curlSleep':
+            assert tail_vertices, 'Sleeping tail mesh must be sampled'
+            tail_height = max((body.matrix_world @ mesh.vertices[i].co).z for i in tail_vertices)
+            assert tail_height < 1.0, 'Sleeping tail skin stays upright or stretches above its resting bones'
         evaluated.to_mesh_clear()
 print('POSE_CHECK', len(arm.animation_data.nla_tracks), 'clips, five samples each', flush=True)
 scene.camera.data.ortho_scale=2.7

@@ -59,6 +59,7 @@ function AchievementsCollection({ initialBoss }: { initialBoss?: string }) {
   const [filter, setFilter] = useState<"all" | "collected">("all");
   const [sharing, setSharing] = useState(false), [shareError, setShareError] = useState<string | null>(null);
   const shareInFlight = useRef(false);
+  const [footerHeight, setFooterHeight] = useState(moderateScale(64));
   const collected = useMemo(() => all.filter(item => item.collected), [all]);
   const handleOpen = useCallback((item: BossAchievement) => { setSelectedId(item.id); setShareError(null); setOpen(true); }, []);
   const renderItem = useCallback(({ item }: { item: BossAchievement }) => <AchievementCard item={item} onOpen={handleOpen} />, [handleOpen]);
@@ -95,8 +96,10 @@ function AchievementsCollection({ initialBoss }: { initialBoss?: string }) {
         contentContainerStyle={styles.list} initialNumToRender={3} maxToRenderPerBatch={3} windowSize={5} />
     </View>
     <AppBottomSheet visible={open && !!selected} onClose={() => { if (!shareInFlight.current) setOpen(false); }} onDismissComplete={() => setSelectedId(null)} expanded>
-      {height => <View style={[styles.preview, height !== undefined && { height }]}>
-        <ScrollView contentContainerStyle={styles.previewContent}>
+      {height => <View style={[styles.preview, height !== undefined && { height, flex: 0 }]}>
+        {/* Bound the scrolling body explicitly inside the native host so long
+            captions cannot push the fixed actions below the sheet. */}
+        <ScrollView style={height !== undefined ? { height: Math.max(0, height - footerHeight), flexGrow: 0 } : styles.preview} contentContainerStyle={styles.previewContent}>
           {selected ? <>
             <Text style={styles.previewTitle} accessibilityRole="header">{selectedMovie?.title}</Text>
             <Text style={styles.context}>{selected.topic.title[locale]} · {t(`difficulty.${selected.lesson.difficulty}`)}</Text>
@@ -108,17 +111,19 @@ function AchievementsCollection({ initialBoss }: { initialBoss?: string }) {
             <Text style={styles.description}>{t(selected.collected ? "achievements.shareHint" : "achievements.unlockHint")}</Text>
           </> : null}
         </ScrollView>
-        {shareError ? <Text accessibilityRole="alert" style={styles.shareError}>{shareError}</Text> : null}
-        <View style={styles.actions}>
-          {selected?.collected ? <Pressable accessibilityRole="button" disabled={sharing} accessibilityState={{ disabled: sharing, busy: sharing }} onPress={share} style={[styles.share, sharing && styles.sharing]}>
-            {sharing ? <ActivityIndicator color={GameColors.card} /> : null}
-            <Text style={styles.shareText}>{t(sharing ? "achievements.preparingShare" : "achievements.share")}</Text>
-          </Pressable> : <Pressable accessibilityRole="button" style={styles.share} onPress={() => {
-            if (!selected) return;
-            setOpen(false);
-            router.push({ pathname: "/puzzles", params: { difficulty: selected.lesson.difficulty, topic: selected.topic.id, lesson: selected.lesson.id } });
-          }}><Text style={styles.shareText}>{t("achievements.goToLesson")}</Text></Pressable>}
-          <Pressable accessibilityRole="button" disabled={sharing} accessibilityState={{ disabled: sharing }} onPress={() => setOpen(false)} style={styles.close}><Text style={styles.closeText}>{t("common.close")}</Text></Pressable>
+        <View onLayout={event => setFooterHeight(event.nativeEvent.layout.height)} style={styles.footer}>
+          {shareError ? <Text accessibilityRole="alert" style={styles.shareError}>{shareError}</Text> : null}
+          <View style={styles.actions}>
+            {selected?.collected ? <Pressable accessibilityRole="button" disabled={sharing} accessibilityState={{ disabled: sharing, busy: sharing }} onPress={share} style={[styles.share, sharing && styles.sharing]}>
+              {sharing ? <ActivityIndicator color={GameColors.card} /> : null}
+              <Text style={styles.shareText}>{t(sharing ? "achievements.preparingShare" : "achievements.share")}</Text>
+            </Pressable> : <Pressable accessibilityRole="button" style={styles.share} onPress={() => {
+              if (!selected) return;
+              setOpen(false);
+              router.push({ pathname: "/puzzles", params: { difficulty: selected.lesson.difficulty, topic: selected.topic.id, lesson: selected.lesson.id } });
+            }}><Text style={styles.shareText}>{t("achievements.goToLesson")}</Text></Pressable>}
+            <Pressable accessibilityRole="button" disabled={sharing} accessibilityState={{ disabled: sharing }} onPress={() => setOpen(false)} style={styles.close}><Text style={styles.closeText}>{t("common.close")}</Text></Pressable>
+          </View>
         </View>
       </View>}
     </AppBottomSheet>
@@ -153,6 +158,7 @@ const styles = StyleSheet.create({
   stageTrack: { flexDirection: "row", gap: moderateScale(6) }, stageSegment: { flex: 1, height: moderateScale(5), borderRadius: 3, backgroundColor: "#D5D9DA" }, stageComplete: { backgroundColor: GameColors.secondaryDark },
   rewardTitle: { color: GameColors.success, fontSize: moderateScale(22), fontWeight: "800" },
   preview: { flex: 1 }, previewContent: { padding: moderateScale(20), gap: moderateScale(16) }, previewTitle: { color: GameColors.text, fontSize: moderateScale(24), fontWeight: "800" }, outcome: { color: GameColors.text, fontSize: moderateScale(17), lineHeight: moderateScale(25) },
+  footer: { flexShrink: 0 },
   actions: { flexDirection: "row", gap: moderateScale(10), paddingHorizontal: moderateScale(20), paddingTop: moderateScale(12) },
   share: { flex: 1, minHeight: moderateScale(52), flexDirection: "row", gap: moderateScale(8), alignItems: "center", justifyContent: "center", padding: moderateScale(10), borderRadius: moderateScale(16), backgroundColor: GameColors.primary },
   shareText: { flexShrink: 1, textAlign: "center", color: GameColors.card, fontSize: moderateScale(16), fontWeight: "800" }, sharing: { opacity: .7 },

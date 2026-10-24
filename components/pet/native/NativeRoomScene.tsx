@@ -81,7 +81,7 @@ type Props = {
     x: number;
     y: number;
   }) => void;
-  onContactPosition?: (position: Vec3, elapsed?: number) => void;
+  onContactPosition?: (position: Vec3, elapsed?: number, activityKey?: string) => void;
   onRoomStepComplete?: (key: string, position: Vec3, motion?: CatTravelMotion) => void;
   onAnimationComplete?: () => void;
   onStepComplete?: (index: number) => void;

@@ -1,5 +1,7 @@
 # Cat motion validation, 23 October 2026
 
+Historical QA notes. Demonstration images and recordings were deleted at the user’s request; referenced media below is no longer retained.
+
 The [movement study](../../../art/cat-motion-study.md) explains the references, audit and implementation decisions.
 
 ## Automated checks
@@ -34,12 +36,12 @@ Existing regressions cover scaled/rotated furniture, source and destination supp
 
 ## Visual review
 
-[Turn sequence](turn-sequence.png): Blender renders of production actor matrices and the shipped orange skin. Frames run from 1.2 to 4.0 seconds, left to right, top to bottom. The head begins looking into the bend before the body follows; foot support and the existing spine/tail response remain visible. Reproduce with `check-cat-anticipation.mjs` and `render-cat-gaits.py -- --anticipation`.
+Turn sequence (preview removed): Blender renders of production actor matrices and the shipped orange skin. Frames run from 1.2 to 4.0 seconds, left to right, top to bottom. The head begins looking into the bend before the body follows; foot support and the existing spine/tail response remain visible. Reproduce with `check-cat-anticipation.mjs` and `render-cat-gaits.py -- --anticipation`.
 
 Native review used the existing **BrainPet Puzzle QA**, an iPhone 18 Pro simulator running iOS 27.0, with the normal Home screen and the workspace's Metro server. No temporary screen or save fixture was added to the repository. A separate simulator initially created for isolation was removed at the user's request before the completed native review.
 
-- [Sofa approach and arrival](native-sofa-sequence.png): the real Sofa menu's Sit action walked from the fireplace side, approached the sofa, jumped onto the cushion and reached the seated pose. Frames are at 27 through 34 seconds in the recording.
-- [Sofa departure and floor movement](native-departure-sequence.png): the Blue Ball menu's Play action caused the cat to leave the cushion, land, and continue toward the toy. Frames are at 6, 6.5, 7, 7.5, 8, 9, 10 and 12 seconds in the recording.
+- Sofa approach and arrival (preview removed): the real Sofa menu's Sit action walked from the fireplace side, approached the sofa, jumped onto the cushion and reached the seated pose. Frames are at 27 through 34 seconds in the recording.
+- Sofa departure and floor movement (preview removed): the Blue Ball menu's Play action caused the cat to leave the cushion, land, and continue toward the toy. Frames are at 6, 6.5, 7, 7.5, 8, 9, 10 and 12 seconds in the recording.
 
 Frame review showed continuous approach, supported seating and departure into floor movement, without an error screen or visible teleport in these sequences. The raw recordings are `/tmp/brainpet-cat-polish-native.mp4` and `/tmp/brainpet-cat-polish-departure.mp4`. The image grids crop only the room from those recordings.
 
@@ -55,9 +57,9 @@ The check also verifies blocked-side reversal fallback, complete blockage, short
 
 After this follow-up, walking-turn, locomotion, fluid-motion, command-motion, anticipation, supported-turn, landing-to-walk, room-flow and task-chain checks all passed, along with type checking, lint and `git diff --check`.
 
-[Walking turn poses](walking-turns-sequence.png) show the shipped orange rig: a quarter-turn at 0/0.6/1.2/1.8 seconds in the first row, then a half-turn at 0 through 4.2 seconds in 0.6-second increments. The camera follows the root, so use the grid and paw poses to judge support. Reproduce with `node scripts/check-cat-walking-turns.mjs` and `render-cat-gaits.py -- --walking-turns`.
+Walking turn poses (preview removed) show the shipped orange rig: a quarter-turn at 0/0.6/1.2/1.8 seconds in the first row, then a half-turn at 0 through 4.2 seconds in 0.6-second increments. The camera follows the root, so use the grid and paw poses to judge support. Reproduce with `node scripts/check-cat-walking-turns.mjs` and `render-cat-gaits.py -- --walking-turns`.
 
-[Native departure](native-walking-turn-sequence.png) shows the existing BrainPet Puzzle QA simulator running the normal Blue Ball → Play with a toy interaction. Frames run from 4 to 7.5 seconds in half-second intervals, covering the response, direction change and movement toward the toy. The source recording is `/tmp/brainpet-walking-turn-native.mp4`. No simulator, app fixture or Metro instance was created for this follow-up.
+Native departure (preview removed) shows the existing BrainPet Puzzle QA simulator running the normal Blue Ball → Play with a toy interaction. Frames run from 4 to 7.5 seconds in half-second intervals, covering the response, direction change and movement toward the toy. The source recording is `/tmp/brainpet-walking-turn-native.mp4`. No simulator, app fixture or Metro instance was created for this follow-up.
 
 ## Supported pivot revision
 
@@ -68,7 +70,7 @@ The walking-curve change above left stationary footwork untouched. The subsequen
 | 90 degrees | 8 / 1.04 s | 4 / 0.64 s |
 | 180 degrees | 16 / 1.84 s | 8 / 1.12 s |
 
-The [native comparison](pivot-before-after.gif) is a three-second loop at 20 FPS. Left is the old supported pivot; right is the final revision. The recordings use the same existing BrainPet Puzzle QA simulator and normal Home renderer. A temporary repeated-heading fixture and visible BEFORE/AFTER label confirmed which code was loaded. Both were removed after capture, and the app was restarted into normal gameplay. Early unlabelled captures were discarded because they did not reliably show the edited build. Daytime lighting was selected through the existing room clock for the final recording.
+The native comparison (preview removed) is a three-second loop at 20 FPS. Left is the old supported pivot; right is the final revision. The recordings use the same existing BrainPet Puzzle QA simulator and normal Home renderer. A temporary repeated-heading fixture and visible BEFORE/AFTER label confirmed which code was loaded. Both were removed after capture, and the app was restarted into normal gameplay. Early unlabelled captures were discarded because they did not reliably show the edited build. Daytime lighting was selected through the existing room clock for the final recording.
 
 The comparison takes frames 65–124 from `/tmp/brainpet-pivot-before-confirmed.mp4` and 60–119 from `/tmp/brainpet-pivot-final-confirmed.mp4`, sampled at 20 FPS. Both crops include a short rest before anticipation, aligned within one sampled frame. Playback speed is unchanged. The crop is enlarged equally on both sides; it does not move with the cat.
 
@@ -76,7 +78,7 @@ The final settling adjustment passed `check-cat-turning.mjs` on orange/grey/whit
 
 Landing-to-walk, command-motion, type checking, lint and whitespace checks passed after the final adjustment. Jump anatomy and walking-curve regressions also passed during this revision. Blender review used the actual production matrices and shipped skin; the preview now preserves the first skeletal entity when eye meshes share bone names, matching the native actor.
 
-After the clean restart, the normal Sofa → Sit interaction completed from the toy area: direction change, walking approach, cushion jump and seated arrival. [Approach frames](pivot-sofa-approach.png) are at 13, 13.5, 14, 14.5, 15, 16, 17 and 18 seconds in `/tmp/brainpet-pivot-normal-final.mp4`; the seated arrival is visible by 20 seconds and remains stable through the end of the recording. The app is left in normal gameplay with the final implementation loaded. [Final rig poses](pivot-rig-sequence.png) provide a closer view of the revised quarter- and half-turns.
+After the clean restart, the normal Sofa → Sit interaction completed from the toy area: direction change, walking approach, cushion jump and seated arrival. Approach frames (preview removed) are at 13, 13.5, 14, 14.5, 15, 16, 17 and 18 seconds in `/tmp/brainpet-pivot-normal-final.mp4`; the seated arrival is visible by 20 seconds and remains stable through the end of the recording. The app is left in normal gameplay with the final implementation loaded. Final rig poses (preview removed) provide a closer view of the revised quarter- and half-turns.
 
 ## Jump pose refinement
 
@@ -105,6 +107,6 @@ This pass connects the actions and adjusts their effort:
 
 `check-cat-motion-flow.mjs` is registered in `test:game`. It covers complete prepared approaches, dispatch delays, exact jump arrival/completion, light-clip contacts/selection, curved landing departures and the first-frame head handoff for orange/grey/white at 30/60/120 FPS. The final flow, landing-to-walk, walking-turn, supported-turn, pivot-rhythm, command-motion, jump, jump-anatomy, task-chain, furniture-perch, furniture-transfer, close-jump and rocking-chair checks passed. `animations:check`, native asset verification, TypeScript, lint and whitespace checks passed as well.
 
-Native review used the same **BrainPet Puzzle QA** simulator and Metro on port 8081. Normal Sofa → Sit, Blue Ball → Play, and Oak rocking chair → Sit interactions exercised complete approaches, jumps, supported turns and departures. No simulator or review screen was created. The final [six-second native loop](connected-movement.gif) and [quarter-second frames](connected-movement-sequence.png) show floor recovery, reorientation, the next takeoff and supported cushion arrival. They use 23.5–29.5 seconds from `/tmp/brainpet-motion-flow/final-sofa.mp4`, at 20 FPS with a fixed 2× crop and unchanged playback speed. These are current-build footage, not a before/after comparison.
+Native review used the same **BrainPet Puzzle QA** simulator and Metro on port 8081. Normal Sofa → Sit, Blue Ball → Play, and Oak rocking chair → Sit interactions exercised complete approaches, jumps, supported turns and departures. No simulator or review screen was created. The final six-second native loop (preview removed) and quarter-second frames (preview removed) show floor recovery, reorientation, the next takeoff and supported cushion arrival. They use 23.5–29.5 seconds from `/tmp/brainpet-motion-flow/final-sofa.mp4`, at 20 FPS with a fixed 2× crop and unchanged playback speed. These are current-build footage, not a before/after comparison.
 
 Other raw review recordings are `/tmp/brainpet-motion-flow/up-native.mp4`, `down-native.mp4` and `chair-down-final.mp4`. The chair recording preceded the final head-carry adjustment; the final sofa loop includes it. The review found readable crouch/push/gather/reach poses and supported turns without repeated microsteps. Tight paths still use deliberate supported alignment where a curve cannot fit.

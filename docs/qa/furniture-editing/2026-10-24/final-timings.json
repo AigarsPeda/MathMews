@@ -1,0 +1,17 @@
+[
+  {
+    "events": {
+      "buy": 0,
+      "initialPreviewReady": 2505.524083018303,
+      "localDurable": 642.3327080011368,
+      "localGrant": 404.47033298015594,
+      "navigationRequested": 643.0049579143524,
+      "roomMounted": 1465.2781249284744,
+      "scenePainted": 2085.9732909202576,
+      "suggestionReady": 2508.7817080020905
+    },
+    "id": 1,
+    "item": "blueBall",
+    "started": 1024251569.291375
+  }
+]

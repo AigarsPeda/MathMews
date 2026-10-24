@@ -15,6 +15,7 @@ GAITS = __import__('json').loads((ROOT/'constants/cat-gaits.json').read_text())
 JUMP = __import__('json').loads((ROOT/'constants/cat-jump.json').read_text())
 from original_cat import create_cat as create_original_cat
 from puzzle_reactions import PUZZLE_REACTIONS, pose_reaction
+from sleep_poses import SLEEP_POSES, sleep_pose
 
 
 def keyed(t, keys):
@@ -291,6 +292,8 @@ def pose_gait(driver, state, t):
 
 
 def pose(arm, driver, state, t, idle_controls):
+    if any(state == 'rest'+name+phase for name in SLEEP_POSES for phase in ('Enter', 'Sleep', 'Wake')):
+        return sleep_pose(arm, state, t, pose(arm, driver, 'idle', 0, idle_controls), joint_matrix, limb_pose)
     # Small drops/hops use a separately solved contact pose. Blending a strong
     # jump with idle rotations would slide planted pads as the knees unfold.
     effort = .58 if state.endswith('Light') else 1
@@ -396,8 +399,10 @@ def pose(arm, driver, state, t, idle_controls):
         # body's pitch, keeping the gaze toward the destination.
         head_rotation = Matrix.Rotation(lean*.35,3,'X')
     if state == 'wakeStretch':
-        head_shift = Vector((0, -.035*stretch, -.10*stretch))
-        head_rotation = Matrix.Rotation(.20*stretch, 3, 'X')
+        # Let the chin follow the shoulder bow and recover slightly later.
+        head_stretch = keyed(t, [(0, 0), (.22, .06), (.46, 1), (.64, 1), (.90, .12), (1, 0)])
+        head_shift = Vector((0, -.035*head_stretch, -.10*head_stretch))
+        head_rotation = Matrix.Rotation(.20*head_stretch, 3, 'X')
     if state == 'crawl':
         head_shift.z -= .16
         head_rotation = Matrix.Rotation(.12, 3, 'X')
@@ -452,8 +457,14 @@ def pose(arm, driver, state, t, idle_controls):
     # distal curl follows later, avoiding a rigid upright silhouette in flight.
     tail_trail = keyed(t, [(0, 0), (.12, -.08), (.35, -.52), (.62, -.38), (.82, -.17), (1, 0)]) if jumping else 0
     tail_rotation = Matrix.Rotation(tail_trail*effort, 3, 'X') if jumping else driver['tail'].rotation_euler.to_matrix()
+    if state in ('curlUp', 'curlSleep'):
+        # Fold the upright tail forward alongside the resting body. The driver
+        # curls a curve, but this exported rig needs the same motion in bones.
+        tail_rotation = Matrix.Rotation(-.65*settle, 3, 'Z') @ Matrix.Rotation(1.60*settle, 3, 'X') @ tail_rotation
     if state == 'crawl':
         tail_rotation = Matrix.Rotation(-1.0, 3, 'X') @ tail_rotation
+    if state == 'wakeStretch':
+        tail_rotation = Matrix.Rotation(-.12*stretch, 3, 'X') @ tail_rotation
     anchor = bones['tailjoint0'].head_local
     tail_transform = hind_body @ Matrix.Translation(anchor) @ tail_rotation.to_4x4() @ Matrix.Translation(-anchor)
     for name in [*('tailjoint'+str(i) for i in range(4)), 'tailTip']:

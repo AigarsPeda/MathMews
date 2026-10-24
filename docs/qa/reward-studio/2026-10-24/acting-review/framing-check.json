@@ -1,0 +1,122 @@
+[
+  {
+    "kind": "bridge",
+    "frames": 48,
+    "bounds": [
+      126,
+      144,
+      683,
+      623
+    ],
+    "smallestCatMargin": 11.143127597356402,
+    "finalMagnification": 1.6516129032258065
+  },
+  {
+    "kind": "book",
+    "frames": 48,
+    "bounds": [
+      70,
+      301,
+      610,
+      608
+    ],
+    "smallestCatMargin": 33.463998134007696,
+    "finalMagnification": 1.8506024096385543
+  },
+  {
+    "kind": "loom",
+    "frames": 48,
+    "bounds": [
+      170,
+      302,
+      618,
+      647
+    ],
+    "smallestCatMargin": 34.18085721057467,
+    "finalMagnification": 1.7494305239179955
+  },
+  {
+    "kind": "clock",
+    "frames": 48,
+    "bounds": [
+      109,
+      176,
+      605,
+      601
+    ],
+    "smallestCatMargin": 19.649217917568784,
+    "finalMagnification": 1.6516129032258065
+  },
+  {
+    "kind": "balloon",
+    "frames": 48,
+    "bounds": [
+      208,
+      78,
+      611,
+      589
+    ],
+    "smallestCatMargin": 13.923953106866778,
+    "finalMagnification": 1.2190476190476192
+  },
+  {
+    "kind": "sorter",
+    "frames": 48,
+    "bounds": [
+      87,
+      119,
+      681,
+      611
+    ],
+    "smallestCatMargin": 23.538718297454484,
+    "finalMagnification": 1.7985948477751756
+  },
+  {
+    "kind": "boat",
+    "frames": 48,
+    "bounds": [
+      145,
+      193,
+      668,
+      635
+    ],
+    "smallestCatMargin": 20.853843425830707,
+    "finalMagnification": 1.6516129032258065
+  },
+  {
+    "kind": "fountain",
+    "frames": 48,
+    "bounds": [
+      92,
+      245,
+      609,
+      621
+    ],
+    "smallestCatMargin": 44.72729312818467,
+    "finalMagnification": 1.4490566037735848
+  },
+  {
+    "kind": "beacon",
+    "frames": 48,
+    "bounds": [
+      128,
+      68,
+      634,
+      599
+    ],
+    "smallestCatMargin": 13.698282872467072,
+    "finalMagnification": 1.4195933456561922
+  },
+  {
+    "kind": "trophy",
+    "frames": 48,
+    "bounds": [
+      69,
+      131,
+      684,
+      595
+    ],
+    "smallestCatMargin": 19.18282450313004,
+    "finalMagnification": 1.8506024096385543
+  }
+]

@@ -18,7 +18,14 @@ import {
 } from "@/constants/decoration-variants";
 import type { CatToyId } from "@/constants/cat-toys";
 import { getDefaultToyScale, getPlacedToyRotationIndex, isCatToyId, resolveCatToyId } from "@/constants/cat-toys";
-import type { PlacedDecoration, PlacedToy, RoomItemOffset } from "@/types/game";
+import type { PlacedDecoration, PlacedToy, RoomItemOffset, RoomItemSupport } from "@/types/game";
+
+function normalizeSupport(value: unknown): RoomItemSupport | undefined {
+  const support = value as RoomItemSupport | undefined;
+  return support && typeof support.parentId === 'string' && support.parentId.length > 0
+    && Array.isArray(support.position) && support.position.length === 3 && support.position.every(Number.isFinite)
+    && Number.isFinite(support.heading) ? { parentId: support.parentId, position: [...support.position], heading: support.heading } : undefined;
+}
 
 function clampOffsetAxis(value: number) {
   return Math.max(-1, Math.min(1, value));
@@ -87,6 +94,7 @@ export function normalizePlacedToys(value: unknown): PlacedToy[] {
       const rotationIndex = getPlacedToyRotationIndex({ rotationIndex: typeof record.rotationIndex === "number" ? record.rotationIndex : undefined });
       placed.push({
         toyId,
+        support: normalizeSupport(record.support),
         instanceId: resolvePlacementInstanceId(record, toyId, index),
         offset,
         scale: scale !== getDefaultToyScale(toyId) ? scale : undefined,
@@ -124,6 +132,7 @@ export function normalizePlacedDecorations(value: unknown): PlacedDecoration[] {
 
       placed.push({
         decorationId: placement.decorationId,
+        support: normalizeSupport(record.support),
         doorDestination: isRoomDoor(placement.decorationId) && isHomeRoomId(record.doorDestination) ? record.doorDestination : undefined,
         instanceId: resolvePlacementInstanceId(
           record,

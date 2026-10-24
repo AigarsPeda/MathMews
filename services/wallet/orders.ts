@@ -1,7 +1,5 @@
 import type { GameSave } from '@/types/save';
 import { switchRoomLayout } from '@/utils/room-layout';
-import { syncPetLayerOrder } from '@/utils/room-layer-order';
-import { appendPlacedDecoration, appendPlacedToy } from '@/utils/room-placement';
 import { getToyOwnedCount } from '@/utils/toy-store';
 import { getDecorationOwnedCount } from '@/utils/decoration-store';
 import { buyOneLife } from '@/utils/lives';
@@ -26,17 +24,16 @@ export function applyWalletOrder(save: GameSave, order: WalletOrder): GameSave {
     case 'room': progress.roomsUnlocked = add(progress.roomsUnlocked); pet = switchRoomLayout(pet,id as CatRoomId); break;
     case 'bed':
       progress.bedsUnlocked = add(progress.bedsUnlocked);
-      pet = syncPetLayerOrder({ ...pet, bedId:id, roomBedOffset:pet.roomBedOffset ?? {x:-0.15,y:0.3},
-        bedFlipped:undefined, bedRotationDegrees:undefined, bedScale:undefined }); break;
+      break;
     case 'skin': progress.skinsUnlocked = add(progress.skinsUnlocked); pet = { ...pet,catSkinId:id }; break;
     case 'toy':
       progress.toysUnlocked = add(progress.toysUnlocked);
       progress.toyQuantities = { ...progress.toyQuantities, [id]:getToyOwnedCount(id as CatToyId,save.progress)+1 };
-      pet = syncPetLayerOrder({ ...pet,placedToys:appendPlacedToy(pet.placedToys,id as CatToyId) }); break;
+      break;
     case 'decoration':
       progress.decorationsUnlocked = add(progress.decorationsUnlocked);
       progress.decorationQuantities = { ...progress.decorationQuantities,[id]:getDecorationOwnedCount(id as CatDecorationId,save.progress)+1 };
-      pet = syncPetLayerOrder({ ...pet,placedDecorations:appendPlacedDecoration(pet.placedDecorations,id as CatDecorationId) }); break;
+      break;
     case 'life': progress.lives = buyOneLife(progress.lives); break;
     default: throw new Error('Unknown wallet order');
   }

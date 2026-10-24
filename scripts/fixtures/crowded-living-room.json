@@ -1,0 +1,164 @@
+{
+  "bedId": "green",
+  "bedOffset": {
+    "x": -0.9084575738014146,
+    "y": 0.25234675592589634
+  },
+  "width": 390,
+  "height": 420,
+  "petSize": 100,
+  "sizeScale": 0.7,
+  "decorations": [
+    {
+      "decorationId": "livingAirCon",
+      "instanceId": "living-0",
+      "offset": {
+        "x": 0.1215433270899238,
+        "y": -0.644514594888823
+      },
+      "poweredOn": true
+    },
+    {
+      "decorationId": "plantB",
+      "instanceId": "living-1",
+      "offset": {
+        "x": -0.06857830943166897,
+        "y": -0.35683234231035227
+      },
+      "scale": 1.7
+    },
+    {
+      "decorationId": "sofaA",
+      "instanceId": "living-2",
+      "offset": {
+        "x": 0.5244358249589163,
+        "y": -0.0693268595422453
+      },
+      "rotationIndex": 1,
+      "rotationDegrees": 270,
+      "scale": 1.4
+    },
+    {
+      "decorationId": "portraitCat",
+      "instanceId": "living-3",
+      "offset": {
+        "x": -0.7117336782635532,
+        "y": -0.4078948018614169
+      },
+      "wallFlipped": true,
+      "scale": 2.2
+    },
+    {
+      "decorationId": "bowlBlue",
+      "instanceId": "living-4",
+      "offset": {
+        "x": 0.4140034218072297,
+        "y": 0.41728198962768104
+      },
+      "scale": 1.2
+    },
+    {
+      "decorationId": "windowOakWide",
+      "instanceId": "living-5",
+      "offset": {
+        "x": 0.6863000072190298,
+        "y": -0.4706359865071423
+      },
+      "opened": false,
+      "scale": 1.6
+    },
+    {
+      "decorationId": "chairRockingOak",
+      "instanceId": "living-6",
+      "offset": {
+        "x": 0.897213399570056,
+        "y": 0.11478081743088564
+      },
+      "wallFlipped": true,
+      "rotationDegrees": 243.4
+    },
+    {
+      "decorationId": "lampFloorArc",
+      "instanceId": "living-7",
+      "offset": {
+        "x": -0.14408440017989146,
+        "y": -0.5216254006403184
+      },
+      "poweredOn": true,
+      "rotationDegrees": 53,
+      "scale": 1.8
+    },
+    {
+      "decorationId": "carpetRound",
+      "instanceId": "living-8",
+      "offset": {
+        "x": -0.22627693579028477,
+        "y": 0.5234023676402442
+      },
+      "scale": 4.2
+    },
+    {
+      "decorationId": "curtainRoseTieback",
+      "instanceId": "living-9",
+      "offset": {
+        "x": 0.8431061806656097,
+        "y": -0.4706024339693923
+      },
+      "scale": 1.8
+    },
+    {
+      "decorationId": "lavaLampAni",
+      "instanceId": "living-10",
+      "offset": {
+        "x": 0.0012662372588307352,
+        "y": 0.5150128823398636
+      },
+      "poweredOn": true
+    },
+    {
+      "decorationId": "wallSpotBellBrass",
+      "instanceId": "living-11",
+      "offset": {
+        "x": -0.6119104125431112,
+        "y": -0.5045467719204749
+      },
+      "wallFlipped": true,
+      "poweredOn": true,
+      "spotlightAngle": 13,
+      "spotlightSwivel": 0
+    },
+    {
+      "decorationId": "wallSpotBarChrome",
+      "instanceId": "living-12",
+      "offset": {
+        "x": 0.9212583425911096,
+        "y": -0.15852299897391808
+      },
+      "poweredOn": true,
+      "spotlightAngle": -29,
+      "spotlightSwivel": -39,
+      "rotationDegrees": 3.1
+    },
+    {
+      "decorationId": "livingFireplaceCream",
+      "instanceId": "living-13",
+      "offset": {
+        "x": -0.6878426887379766,
+        "y": -0.056746550942773304
+      },
+      "poweredOn": true,
+      "rotationDegrees": 90
+    }
+  ],
+  "toys": [
+    {
+      "toyId": "blueBall",
+      "instanceId": "living-14",
+      "offset": {
+        "x": 0.6148199246454886,
+        "y": 0.3129950111995064
+      },
+      "rotationIndex": 1
+    }
+  ]
+}

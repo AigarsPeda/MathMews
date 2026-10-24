@@ -221,7 +221,7 @@ export function DraggableRoomPet({
             onDragStartRef.current?.();
           }
           if (roomSize.width <= 0 || roomSize.height <= 0) return;
-          const scale = Math.max(1, dragScale);
+          const scale = Math.max(.1, dragScale);
           const raw = { x: dragStartRef.current.x + gesture.dx / scale, y: dragStartRef.current.y + gesture.dy / scale };
           const proposed = constrainToRoom ? clampPosition(raw.x, raw.y, roomSize.width, roomSize.height, petSize) : raw;
           const next = onDragPositionChangeRef.current?.(proposed) ?? proposed;

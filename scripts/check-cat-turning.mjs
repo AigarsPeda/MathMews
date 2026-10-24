@@ -24,6 +24,7 @@ class Transform {
 let slots=[],cursor=0,effects=[],draw,asset,animator,rootTransform=new Transform(),locals,parents,model,read;
 const rootEntity={root:true};
 let crossfadeEnabled=false, animatedNodes;
+let deferredNotifications=null;
 function world(i) { return new Transform(multiply(parents.has(i)?world(parents.get(i)).data:rootTransform.data,locals[i].data)); }
 const transforms={createIdentityMatrix:()=>new Transform(),
   getWorldTransform:e=>e.root?rootTransform:world(e.i), getTransform:e=>e.root?rootTransform:locals[e.i],
@@ -32,7 +33,9 @@ function memo(fn,deps) { const i=cursor++,old=slots[i];if(!old||deps.some((v,k)=
 const mocks={
   react:{useMemo:memo,useCallback:(fn,deps)=>memo(()=>fn,deps),useRef:v=>memo(()=>({current:v}),[]),
     useEffect(fn,deps) { const i=cursor++,old=slots[i];if(!old||deps.some((v,k)=>!Object.is(v,old.deps[k]))){slots[i]={deps};effects.push(fn);} }},
-  'react-native-worklets-core':{useSharedValue:v=>memo(()=>({value:v}),[]),Worklets:{createRunOnJS:fn=>fn}},
+  'react-native-worklets-core':{useSharedValue:v=>memo(()=>({value:v}),[]),Worklets:{createRunOnJS:fn=>(...args)=>{
+    if(deferredNotifications)deferredNotifications.push(()=>fn(...args));else fn(...args);
+  }}},
   'react-native-filament':{useModel:()=>({state:'loaded',asset,rootEntity}),useAnimator:()=>animator,
     useFilamentContext:()=>({transformManager:transforms}),RenderCallbackContext:{useRenderCallback:fn=>{draw=fn;}}},
   './use-model-shadows':{useModelShadows(){}},
@@ -91,6 +94,8 @@ const {catLaunchStep,catLaunchPaw}=load('@/utils/native-cat-walk-launch');
 const {FLOOR_Y}=load('@/utils/native-room-world');
 const idle={kind:'segment',segment:{assetKey:'idle',loop:true}},walking={kind:'segment',segment:{assetKey:'walk',loop:true}};
 const pawNames=['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'];
+// The harness supplies the hook dispatcher and effects for this render.
+// eslint-disable-next-line react-hooks/rules-of-hooks
 function render(props) { cursor=0;effects=[];NativeCatActor({model:useCatModel(props.skinId),...props});effects.forEach(fn=>fn()); }
 function point(name) { return world(asset.getFirstEntityByName(name).i).translation; }
 const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
@@ -335,6 +340,11 @@ export function actorBones() {
 }
 
 export function enableActorCrossfade(value=true) { crossfadeEnabled=value; }
+export function deferCatNotifications() { deferredNotifications=[]; }
+export function flushCatNotifications() {
+  const pending=deferredNotifications??[];deferredNotifications=null;
+  pending.forEach(deliver=>deliver());
+}
 export function sampleCatClip(name,time) {
   rootTransform=new Transform();animator.applyAnimation(model.animations.findIndex(a=>a.name===name),time);
   return actorBones();

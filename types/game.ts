@@ -29,7 +29,10 @@ export type RoomItemOffset = {
   y: number;
 };
 
+export type RoomItemSupport = { parentId: string; position: [number, number, number]; heading: number };
+
 export type PlacedToy = {
+  support?: RoomItemSupport;
   toyId: string;
   /** Unique id per placed instance (supports multiple of the same toy). */
   instanceId: string;
@@ -43,6 +46,7 @@ export type PlacedToy = {
 };
 
 export type PlacedDecoration = {
+  support?: RoomItemSupport;
   /** A doorway connects named spaces, independently of their background. */
   doorDestination?: import("@/constants/home-rooms").HomeRoomId;
   decorationId: string;

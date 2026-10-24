@@ -39,31 +39,39 @@ function load(id) {
 }
 const StoreScreen = load('app/store.tsx').default;
 const { roomDecorationEntry } = load('@/utils/room-decoration-entry');
+const { createRoomPlacementDraft } = load('@/utils/room-edit');
 function flatten(node) { return !node || typeof node !== 'object' ? [] : Array.isArray(node) ? node.flatMap(flatten) : [node,...flatten(node.props?.children)]; }
 function render() { index=0; return flatten(StoreScreen()); }
 function setup() {
   states=[]; events=[]; purchaseResult='purchased';
   game={ isReady:true,hasCompletedOnboarding:true,pet:{homeRoomId:'kitchen',placedDecorations:[{decorationId:'kitchenModernFloorShelfNavy',instanceId:'old-copy'}]},wallet:{coins:1000},progress:{roomsUnlocked:[],bedsUnlocked:[],toysUnlocked:[],decorationsUnlocked:[],skinsUnlocked:[]},recordInteraction() {},
-    requestRoomDecoration:target=>events.push(['entry',roomDecorationEntry(game.pet,target)]) };
+    requestRoomDecoration:target=>events.push(['entry',target ? {roomId:game.pet.homeRoomId,item:createRoomPlacementDraft(target,game.pet).item} : roomDecorationEntry(game.pet)]) };
   for(const [kind,verb] of [['decoration','place'],['toy','place'],['bed','equip']]) {
     const name=kind[0].toUpperCase()+kind.slice(1);
-    const commit=id=>{ if(kind==='bed') game.pet.bedId=id;
-      else { const key=kind==='toy'?'placedToys':'placedDecorations'; game.pet[key]=[...(game.pet[key]??[]),{[`${kind}Id`]:id,instanceId:'new-copy'}]; } };
-    game[`purchase${name}`]=async id=>{events.push(['buy',kind]);if(purchaseResult==='purchased')commit(id);return purchaseResult;};
-    game[`${verb}${name}${kind==='bed'?'':'InRoom'}`]=id=>{commit(id);return true;};
+    const commit=id=>{ const key=kind==='bed'?'bedsUnlocked':kind==='toy'?'toysUnlocked':'decorationsUnlocked';
+      if(!game.progress[key].includes(id))game.progress[key].push(id);
+      if(kind!=='bed'){const quantities=kind==='toy'?'toyQuantities':'decorationQuantities';game.progress[quantities]??={};game.progress[quantities][id]=(game.progress[quantities][id]??0)+1;}
+    };
+    game[`purchase${name}`]=async id=>{events.push(['buy',kind]);if(purchaseResult==='purchased'||purchaseResult==='queued')commit(id);return purchaseResult;};
+    game[`${verb}${name}${kind==='bed'?'':'InRoom'}`]=()=>true;
   }
 }
 function card(tab,id) { const nodes=render();nodes.find(n=>n.type==='StoreTabBar').props.onChange(tab);return render().find(n=>n.type==='FlatList').props.renderItem({item:id}); }
 for(const [kind,tab,id] of [['decoration','kitchen','kitchenModernFloorShelfNavy'],['toy','toys','orangeBall'],['bed','beds','brown']]) {
-  setup();const item=card(tab,id);await item.props.onBuy();
+  setup();const roomBefore=JSON.stringify(game.pet),item=card(tab,id);await item.props.onBuy();
+  assert.equal(JSON.stringify(game.pet),roomBefore,'Buying grants ownership without changing existing furniture');
   assert.equal(events[0][0],'buy');assert.equal(events[1][1].item.kind,kind);
   assert.equal(events[1][1].roomId,'kitchen');
-  if(kind!=='bed')assert.equal(events[1][1].item.instanceId,'new-copy','Selection reads the committed purchase, not stale render props');
+  if(kind!=='bed')assert.notEqual(events[1][1].item.instanceId,'old-copy','A new draft never reuses an existing copy');
   assert.deepEqual(events[2],['route','/']);
   await item.props.onBuy();assert.equal(events.length,3,'A repeated tap during navigation cannot buy a second copy');
   setup();const previewCard=card(tab,id);previewCard.props.onPreview();
   await render().find(n=>n.type==='StorePreviewSheet').props.item.onBuy();
   assert.deepEqual(events.at(-1),['route','/'],'Preview purchases use the same handoff');
+  setup();purchaseResult='queued';await card(tab,id).props.onBuy();
+  assert.equal(events[1][1].item.kind,kind,'Locally saved purchases enter the editor before server confirmation');
+  if(kind!=='bed')assert.ok(events[1][1].item.instanceId);
+  assert.deepEqual(events[2],['route','/']);
   setup();purchaseResult='insufficient_funds';await card(tab,id).props.onBuy();
   assert.equal(events.length,1,'Failed purchases remain in the shop');
   setup();const owned=card(tab,id);owned.props[kind==='bed'?'onEquip':'onPlace']();
@@ -109,3 +117,12 @@ assert.ok(render().find(n=>n.type==='FlatList').props.data.includes('kitchenMode
 catalog.acceptStoreCatalog({server_time:new Date().toISOString(),items:[{...saleItem('room','room2'),sale_price:null}]});
 assert.equal(render().some(n=>n.type==='StoreSaleBanner'),false,'The banner disappears when no active offers remain');
 console.log('Verified cross-category sale discovery, Owned filter reset, relevant decor destinations and no purchase side effects.');
+setup();let finishPurchase;
+game.purchaseToy=()=>{events.push(['buy','toy']);return new Promise(resolve=>{finishPurchase=resolve;});};
+const repeatCard=card('toys','blueBall'),firstTap=repeatCard.props.onBuy();
+await repeatCard.props.onBuy();
+assert.equal(events.length,1,'Rapid taps before local persistence create only one purchase intent');
+assert.ok(render().some(node=>node.props?.accessibilityRole==='alert' && node.props.children==='store.preparingPurchase'),'Buying gives immediate visible progress');
+finishPurchase('queued');await firstTap;
+assert.equal(events.filter(event=>event[0]==='buy').length,1);
+console.log('Verified immediate purchase feedback and repeat-tap protection while persistence is pending.');

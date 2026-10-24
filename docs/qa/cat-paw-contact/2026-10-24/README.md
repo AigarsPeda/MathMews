@@ -1,5 +1,7 @@
 # Paw contact review
 
+Historical QA notes. Demonstration images and recordings were deleted at the user’s request; referenced media below is no longer retained.
+
 The refinement changes the runtime reach and physical contact, using the existing cat rigs and room. No model export or new simulator was needed.
 
 The original floor-toy logic could kick a ball from body proximity. The navigation-sized physics collider could also push it before a paw arrived. The revised collider covers the torso, and a swept paw contact supplies the impulse. Reaches ease toward the object's near surface, preserve the wrist curl and withdraw without chasing the moving object.

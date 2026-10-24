@@ -1,3 +1,4 @@
+import { markDecorationTiming } from '@/utils/decoration-timing';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MutableRefObject } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -68,12 +69,17 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
       if (!current()) throw new Error('Account changed');
       return data;
     };
+    // Polling an unchanged wallet must not repaint every preloaded room.
+    const updateSave = (update: (save: GameSave) => GameSave) => {
+      const before = getSave(), after = update(before);
+      if (after !== before) setSave(after);
+    };
     const accept = (wallet:ServerWallet) => {
       const previous = authorityRef.current;
       if (wallet.user_id !== userId || wallet.environment !== environment) throw new Error('Wrong wallet');
       if (previous?.user_id===userId && previous.environment===environment && previous.revision>wallet.revision) return;
       authorityRef.current=wallet;
-      setSave(save=>{
+      updateSave(save=>{
         const next={...save,walletAuthority:wallet};
         const coins=projectedWalletCoins(next,userId,environment);
         return save.walletAuthority?.revision===wallet.revision && save.walletAuthority.user_id===userId && save.wallet.coins===coins
@@ -88,7 +94,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
         ? orders.map(p=>p.id===purchase.id?purchase:p) : [...orders,purchase]);
       if (!current() || activeSaveIdRef.current !== purchase.saveId) return;
       if (purchase.status==='confirmed' && purchase.confirmedWallet && (!authorityRef.current || authorityRef.current.user_id!==userId || authorityRef.current.revision<=purchase.confirmedWallet.revision)) authorityRef.current=purchase.confirmedWallet;
-      setSave(save=>purchase.status==='confirmed'
+      updateSave(save=>purchase.status==='confirmed'
         ? confirmProvisionalPurchase({...save,walletAuthority:authorityRef.current ?? purchase.confirmedWallet},purchase,purchase.receiptId!)
         : rejectProvisionalPurchase(save,purchase,purchase.rejection!));
       await saveGameSave(getSave());
@@ -113,7 +119,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
           }
           const saved=getSave().pendingWalletPurchases?.find(p=>p.id===purchase.id);
           if (!saved || !getSave().appliedWalletOrderIds?.includes(`pending:${purchase.id}`)) {
-            setSave(save=>applyProvisionalPurchase(save,saved ?? purchase));
+            updateSave(save=>applyProvisionalPurchase(save,saved ?? purchase));
             const restored=getSave().pendingWalletPurchases!.find(p=>p.id===purchase.id)!;
             await updateWalletOutbox(scope,orders=>orders.map(p=>p.id===purchase.id && p.status==='pending'?restored:p));
           }
@@ -147,7 +153,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
           if (!reward && !purchase) break;
           if (reward && (!purchase || (reward.at??0)<=purchase.at)) {
             const rewarded:ServerWallet=await rpc('claim_puzzle_coins',{p_environment:environment,p_puzzle_id:reward.puzzleId,p_attempt_id:reward.attemptId});
-            setSave(save=>({...save,pendingCoinRewards:(save.pendingCoinRewards??[]).filter(r=>r.attemptId!==reward.attemptId)}));
+            updateSave(save=>({...save,pendingCoinRewards:(save.pendingCoinRewards??[]).filter(r=>r.attemptId!==reward.attemptId)}));
             accept(rewarded); await saveGameSave(getSave()); continue;
           }
           try {
@@ -167,7 +173,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
         if (!current() || activeSaveIdRef.current!==saveId) return;
         const delivery:{wallet:ServerWallet;orders:WalletOrder[]}=await rpc('get_my_game_delivery',{p_environment:environment,p_save_id:saveId});
         if (activeSaveIdRef.current!==saveId) return;
-        setSave(save=>delivery.orders.reduce(applyWalletOrder,save)); accept(delivery.wallet);
+        updateSave(save=>delivery.orders.reduce(applyWalletOrder,save)); accept(delivery.wallet);
         const {data:entries,error}=await withSyncDeadline(supabase.from('coin_wallet_entries').select('*').eq('user_id',userId)
           .eq('environment',environment).order('created_at',{ascending:false}).limit(150));
         if (error) throw error;
@@ -176,7 +182,10 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
           ? e.request_payload.kind==='life'?'life_purchase':`store_${e.request_payload.kind}`:e.kind,
           amount:Number(e.delta),balanceAfter:Number(e.balance_after),at:Date.parse(e.created_at),
           itemId:e.request_payload.item_id,productId:e.request_payload.product_id,transactionId:e.request_payload.transaction_id,label:e.reason}));
-        setSave(save=>({...save,coinTransactions:[...history,...(save.coinTransactions??[]).filter(tx=>tx.syncStatus==='pending'||tx.syncStatus==='rejected')].sort((a,b)=>a.at-b.at).slice(-150)}));
+        updateSave(save=>{
+          const coinTransactions=[...history,...(save.coinTransactions??[]).filter(tx=>tx.syncStatus==='pending'||tx.syncStatus==='rejected')].sort((a,b)=>a.at-b.at).slice(-150);
+          return JSON.stringify(coinTransactions)===JSON.stringify(save.coinTransactions??[]) ? save : {...save,coinTransactions};
+        });
         await saveGameSave(getSave()); setReadyScope(scope);
         void syncRef.current?.().catch(error=>reportAppError('wallet-save-sync',error));
       } catch(error) {
@@ -198,7 +207,7 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
     return()=>{clearInterval(timer);subscription.remove();};
   },[run]);
 
-  const spend=useCallback(async(kind:string,itemId:string,displayedPrice?:number):Promise<StorePurchaseResult>=>{
+  const spend=useCallback(async(kind:string,itemId:string,displayedPrice?:number,confirmation:'wait'|'background'='wait'):Promise<StorePurchaseResult>=>{
     const requestScope=scope;
     const enqueue=enqueueing.current.catch(()=>undefined).then(async()=>{
       const saveId=activeSaveIdRef.current;
@@ -215,9 +224,13 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
       await updateWalletOutbox(scope,orders=>[...orders,purchase]);
       if(scopeRef.current!==requestScope || activeSaveIdRef.current!==saveId)return {result:'queued' as StorePurchaseResult};
       setSave(current=>applyProvisionalPurchase(current,purchase));
+      markDecorationTiming('localGrant');
       const granted=getSave().pendingWalletPurchases!.find(p=>p.id===purchase.id)!;
-      await updateWalletOutbox(scope,orders=>orders.map(p=>p.id===purchase.id && p.status==='pending'?granted:p));
+      // Ownership-only grants retain the original undo record already on disk.
+      // Rewrite the outbox only when delivery actually created room instances.
+      if (granted.undo.addedInstances.length) await updateWalletOutbox(scope,orders=>orders.map(p=>p.id===purchase.id && p.status==='pending'?granted:p));
       await saveGameSave(getSave());
+      markDecorationTiming('localDurable');
       return {id:purchase.id,result:'queued' as StorePurchaseResult};
     });
     enqueueing.current=enqueue;
@@ -228,6 +241,12 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
         if(getSave().pendingWalletPurchases?.some(p=>p.id===queued.id))await run();
         const outcome=results.current.get(queued.id!);results.current.delete(queued.id!);
         return outcome??'queued';})();
+      // Room editing can start once the grant and its coin reserve are durable.
+      // Confirmation still settles or rolls back that same purchase in the background.
+      if(confirmation==='background') {
+        void synchronize.catch(error=>reportAppError('wallet-sync',error));
+        return queued.result;
+      }
       let timer:ReturnType<typeof setTimeout>|undefined;
       try{return await Promise.race([synchronize,new Promise<StorePurchaseResult>(resolve=>{timer=setTimeout(()=>resolve('queued'),1500);})]);}
       finally{clearTimeout(timer);}

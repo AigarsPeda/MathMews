@@ -1,5 +1,7 @@
 # Spine and shoulder refinement — 24 October 2026
 
+Historical QA notes. Demonstration images and recordings were deleted at the user’s request; referenced media below is no longer retained.
+
 The former torso pass counter-transformed all four upper legs and the neck. This protected contacts but largely pinned the shoulder line. The revised pass lets the shoulders and hips move above the original paw paths, with a two-bone solve retaining each pad position and orientation. It runs after gait and turn contact placement, before object reaches.
 
 Chest compression follows foot loading, the hips trail a change of direction, and alternating swats add anticipatory back rounding and support-side lean. The neck follows part of the chest displacement while retaining gaze rotation. Landing recovery suppresses the downward gait flex until the supported first stride finishes. Interrupted turns and launches subtract the previous overlay when capturing their base height.

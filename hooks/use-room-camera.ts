@@ -7,7 +7,7 @@ import { clampRoomCamera, pinchRoomCamera } from '@/utils/room-camera';
 const PAN_START_DISTANCE = 4;
 
 /** Gestures live on the unscaled viewport so the artwork and its hit targets move together. */
-export function useRoomCamera(width: number, height: number, enabled: boolean, reduceMotion: boolean, panEnabled = true) {
+export function useRoomCamera(width: number, height: number, enabled: boolean, reduceMotion: boolean, panEnabled = true, frameScale = 1, frameY = 0) {
   const [zoom, setZoom] = useState(1);
   const x = useSharedValue(0), y = useSharedValue(0), scale = useSharedValue(1);
   const start = useSharedValue({ x: 0, y: 0, scale: 1, focalX: 0, focalY: 0 });
@@ -23,10 +23,10 @@ export function useRoomCamera(width: number, height: number, enabled: boolean, r
   const gesture = useMemo(() => {
     const pinch = Gesture.Pinch().enabled(enabled).onStart(event => {
       cancelAnimation(x); cancelAnimation(y); cancelAnimation(scale);
-      start.set({ x: x.get(), y: y.get(), scale: scale.get(), focalX: event.focalX - width / 2, focalY: event.focalY - height / 2 });
+      start.set({ x: x.get() / frameScale, y: y.get() / frameScale, scale: scale.get(), focalX: (event.focalX - width / 2) / frameScale, focalY: (event.focalY - height / 2 - frameY) / frameScale });
     }).onUpdate(event => {
-      const camera = pinchRoomCamera(start.get(), event.scale, event.focalX - width / 2, event.focalY - height / 2, width, height);
-      x.set(camera.x); y.set(camera.y); scale.set(camera.scale);
+      const camera = pinchRoomCamera(start.get(), event.scale, (event.focalX - width / 2) / frameScale, (event.focalY - height / 2 - frameY) / frameScale, width, height);
+      x.set(camera.x * frameScale); y.set(camera.y * frameScale); scale.set(camera.scale);
     }).onFinalize(() => { scheduleOnRN(setZoom, scale.get()); });
     const pan = Gesture.Pan().enabled(enabled && panEnabled).minDistance(PAN_START_DISTANCE).maxPointers(1)
       .manualActivation(true).onTouchesDown((event, manager) => {
@@ -61,6 +61,6 @@ export function useRoomCamera(width: number, height: number, enabled: boolean, r
         x.set(camera.x); y.set(camera.y);
       }).onFinalize(() => { panning.set(false); });
     return Gesture.Simultaneous(pinch, pan);
-  }, [enabled, height, panEnabled, panning, panStart, scale, start, touchStart, width, x, y]);
+  }, [enabled, frameScale, frameY, height, panEnabled, panning, panStart, scale, start, touchStart, width, x, y]);
   return { x, y, scale, zoom, reset, gesture };
 }

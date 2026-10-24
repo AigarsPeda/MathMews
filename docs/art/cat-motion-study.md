@@ -47,7 +47,7 @@ Standing idle/completed-walk departures now use the collision-checked steering p
 
 These departures use the ordinary distance-driven gait and planted-paw correction. Standing starts accelerate from zero; moving replacements retain speed and foot phase. Seated poses, short repositioning, perches, jumps, contact passes, complex traversal routes and blocked curves retain supported alignment. Reduce Motion keeps its existing behavior. Zero-time redraws of unchanged commands now retain the displayed pose instead of re-solving contact IK on resume.
 
-`scripts/check-cat-walking-turns.mjs` exercises left/right quarter-turns and half-turns from standing and moving states on three skins at 30/60/120 FPS. It checks continuous translation, bounded frame-to-frame yaw, fixed contacts, obstacle-side fallback, exact endpoint/completion, pause/resume and excluded actions. Reproduce the [rendered walking turns](../qa/cat-motion/2026-10-23/walking-turns-sequence.png) with this check followed by `render-cat-gaits.py -- --walking-turns`.
+`scripts/check-cat-walking-turns.mjs` exercises left/right quarter-turns and half-turns from standing and moving states on three skins at 30/60/120 FPS. It checks continuous translation, bounded frame-to-frame yaw, fixed contacts, obstacle-side fallback, exact endpoint/completion, pause/resume and excluded actions. Reproduce the rendered walking turns (preview removed) with this check followed by `render-cat-gaits.py -- --walking-turns`.
 
 ### Supported pivot footwork
 
@@ -55,7 +55,7 @@ The subsequent visual review still found the stationary pivot hesitant. `native-
 
 The body lowers by 0.18 rig units during the turn to keep the larger steps within limb reach. Lowering blends over the first 16% of the turn; recovery begins at 82% and finishes at the endpoint. This longer recovery removed the abrupt rise seen in the first native iteration. Head anticipation blends over 22% to preserve continuity when a new command interrupts the faster turn. Planted paws retain their world position and sole orientation. The root stays within the original supported footprint, and the existing overlap into the first walking step remains active.
 
-The [native before/after comparison](../qa/cat-motion/2026-10-23/pivot-before-after.gif) shows the same repeated half-turn in the existing simulator, aligned at the start of anticipation and played at real speed. This is a stylized animation choice, not a claim to reproduce every feline turning strategy. All three shipped rigs retain reachable contacts, diagonal support, level soles, interruption continuity and pause behavior at 30/60/120 FPS and two scales. A separate rhythm check counts the actual paw-lift events rather than accepting a faster root rotation alone.
+The native before/after comparison (preview removed) shows the same repeated half-turn in the existing simulator, aligned at the start of anticipation and played at real speed. This is a stylized animation choice, not a claim to reproduce every feline turning strategy. All three shipped rigs retain reachable contacts, diagonal support, level soles, interruption continuity and pause behavior at 30/60/120 FPS and two scales. A separate rhythm check counts the actual paw-lift events rather than accepting a faster root rotation alone.
 
 ## Measurement and review
 
@@ -63,7 +63,7 @@ A controlled 12-body-length straight running route has a narrow patch at its mid
 
 `scripts/check-cat-anticipation.mjs` checks boundary velocity and acceleration, monotonic progress, braking before the narrow patch, acceleration bounds between samples, angular wraparound, and exact arrival. Its production-actor checks run direct and linked routes on all three coats at 30/60/120 FPS, measuring planted-paw drift, head anticipation, pause/resume and Reduce Motion. It is included in `npm run test:game`.
 
-The [rendered sequence](../qa/cat-motion/2026-10-23/turn-sequence.png) uses the shipped orange skin and matrices from the actual actor test. The [metrics](../qa/cat-motion/2026-10-23/metrics.json) retain the numeric results. Rendered frames show the gaze leading the bend and the paws remaining supported as the body turns. They do not substitute for a native renderer or physical-device performance test.
+The rendered sequence (preview removed) uses the shipped orange skin and matrices from the actual actor test. The [metrics](../qa/cat-motion/2026-10-23/metrics.json) retain the numeric results. Rendered frames show the gaze leading the bend and the paws remaining supported as the body turns. They do not substitute for a native renderer or physical-device performance test.
 
 Reproduce the isolated sequence with:
 

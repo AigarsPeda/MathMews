@@ -1,7 +1,7 @@
 /** Real GLB/worklet checks for independent ears and waking into other actions. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {load,openSkin,resetCatActor,render,drawCat,actorState,actorBones,enableActorCrossfade} from './check-cat-turning.mjs';
+import {load,openSkin,resetCatActor,render,drawCat,actorState,actorBones,enableActorCrossfade,sampleCatClip} from './check-cat-turning.mjs';
 const floor=load('@/utils/native-room-world').FLOOR_Y;
 const preview=process.argv.includes('--preview'),coats=preview?['orange']:['orange','grey','white'],rates=preview?[60]:[30,60,120];
 const distance=(a,b)=>Math.hypot(...a.map((v,k)=>v-b[k]));
@@ -14,6 +14,14 @@ assert.equal(wake.steps.at(-1).loop,false,'Waking never loops the stretch');
 enableActorCrossfade();
 for(const coat of coats)for(const fps of rates) {
   openSkin(coat);resetCatActor();
+  const sleeping=sampleCatClip('curlSleep',0),curled=sampleCatClip('curlUp',1);
+  assert.ok(sleeping.tailTip[13]<sleeping.tailjoint0[13]+.15,'Sleeping tail rests beside the body instead of standing upright');
+  assert.ok(Math.abs(sleeping.tailTip[12]-sleeping.tailjoint0[12])>.25,'Resting tail clears the center of the back');
+  for(const name of ['tailjoint0','tailjoint1','tailjoint2','tailjoint3','tailTip']) {
+    assert.ok(sleeping[name][13]>.1,'Resting tail stays above the cushion');
+    assert.ok(distance(curled[name],sleeping[name])<1e-5,'Settling ends in the exact sleeping tail pose');
+    assert.ok(distance(sleeping[name],sampleCatClip('curlSleep',2)[name])<1e-5,'Sleeping tail loops without a seam');
+  }
   const base={active:true,world,activityKey:'wake',playback:{kind:'scenario',steps:[
     {assetKey:'curlSleep',loop:false,model:{duration:.6,rate:1}},
     {assetKey:'curlUp',reverse:true,loop:false},
@@ -28,7 +36,7 @@ for(const coat of coats)for(const fps of rates) {
     assert.ok(bones['ear.L']&&bones['ear.R'],'Both ears have independent joints');
     for(const matrix of Object.values(bones))assert.ok(matrix.every(Number.isFinite),'Every blended pose stays finite');
     assert.ok(distance(state.position,world.home)<1e-8,'Waking does not slide the root');
-    if(last)for(const name of ['head','chest','pelvis','ear.L','ear.R','L.front.paw','R.rear.paw']) {
+    if(last)for(const name of ['head','chest','pelvis','tailTip','ear.L','ear.R','L.front.paw','R.rear.paw']) {
       maxDelta=Math.max(maxDelta,distance(bones[name].slice(12,15),last[name].slice(12,15))/world.catScale);
       maxAngle=Math.max(maxAngle,angle(bones[name],last[name]));
     }

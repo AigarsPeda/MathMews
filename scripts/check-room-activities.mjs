@@ -228,7 +228,7 @@ assert.equal(render().activity.plan.steps[0].hold, true);
 render().startActivity('sofaSit'); render(); advance(0);
 assert.equal(render().activity.plan.steps[0].reverse, true, 'Sitting up from sleep happens on the sofa');
 assert.equal(petX.get(), seatedPosition.x); assert.equal(petY.get(), seatedPosition.y);
-advance(1000);
+advance(render().activity.plan.steps[0].durationMs);
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].hold, true);
 
 const secondSofa = { ...sofa, instanceId: 'second-sofa', offset: { x: -.4, y: -.2 } };
@@ -277,8 +277,8 @@ render().startActivity('sofaSleep'); render(); advance(0);
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOn', 'A sleep command must not restart the jump midair');
 advance(600); render(); advance(0);
 assert.equal(render().activity.plan.steps[0].animation, 'curlUp', 'After landing, sleep starts in place');
-advance(1000); render();
-render().returnHome(); render(); advance(0); advance(1000); render();
+advance(render().activity.plan.steps[0].durationMs); render();
+render().returnHome(); render(); advance(0); advance(render().activity.plan.steps[0].durationMs); render();
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'wakeStretch');
 advance(2500); render();
 assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation, 'jumpOff');
@@ -1326,9 +1326,83 @@ console.log('Verified all four kitchen activities continue from pending commands
       }
     }
   }
-  assert.equal(getRoomCommands({ kind: 'bed' }, 'brown').length, 0, 'Small pet baskets do not expose duvet commands');
 }
 console.log('Verified all ten full-size beds, four rotations, mattress-height crawling, held sleep, quilt commands and interrupted exits.');
+
+// Pet baskets use the cushion contact and offer sleep without quilt actions.
+{
+  const { CAT_PET_BED_IDS } = load('@/constants/cat-beds');
+  const { getRoomCommands } = load('@/constants/room-commands');
+  for (const bedId of CAT_PET_BED_IDS) for (const bedRotationDegrees of [0, 90, 180, 270]) {
+    const options = { ...room, width: 390, height: 420, petSize: 80, bedId, bedRotationDegrees,
+      bedOffset: { x: -.15, y: .3 }, homeOffset: { x: .3, y: -.2 } };
+    const world = nativeRoom.buildNativeRoomWorld(options);
+    options.nativeWorld = world;
+    const bed = world.objects.find(o => o.instanceId === 'bed');
+    assert.deepEqual(Array.from(getRoomCommands({ kind: 'bed' }, bedId), c => c.kind), ['bedSleep']);
+    assert.equal(buildRoomActivity(options, 0, 'bedSnuggle', 'bed'), null);
+    const plan = buildRoomActivity(options, 0, 'bedSleep', 'bed');
+    assert.equal(plan.targetInstanceId, 'bed');
+    assert.ok(plan.steps.every(step => !step.bedPhase), 'Pet beds have no quilt animation');
+    let position = world.home;
+    for (let i = 0; i < plan.steps.length; i++) {
+      const step = nativeRoom.prepareNativeStep(plan, plan.steps[i], nativeRoom.catScreenPoint(position, world), world, position[1]);
+      assert.ok(!step.native.blocked, `${bedId}/${bedRotationDegrees}/${i} reaches the cushion`);
+      plan.steps[i] = step; position = step.native.path.at(-1);
+      if (!step.hold) continue;
+      assert.equal(step.animation, 'curlSleep');
+      assert.equal(step.native.sleepPose, step.sleepPose, 'Native preparation keeps the selected nap');
+      assert.ok(Math.hypot(...position.map((v, axis) => v - bed.seat[axis])) < 1e-6, 'Sleep rests on the cushion');
+      assert.ok(position[1] > nativeRoom.FLOOR_Y, 'Sleep stays above the floor');
+      const repeated = routeToSofa(options, buildRoomActivity(options, 0, 'bedSleep', 'bed'), step.position, { plan, stepIndex: i });
+      assert.ok(repeated.steps[0].hold, 'Repeated sleep keeps the resting pose');
+      const exit = buildRoomReturn(options, plan, i, step.position);
+      assert.deepEqual(Array.from(exit.steps.slice(0, 3), s => s.animation), ['curlUp', 'wakeStretch', 'jumpOff']);
+      for (let j = 0; j < exit.steps.length; j++) {
+        const leave = nativeRoom.prepareNativeStep(exit, exit.steps[j], nativeRoom.catScreenPoint(position, world), world, position[1]);
+        assert.ok(!leave.native.blocked, `${bedId}/${bedRotationDegrees} wakes and leaves safely`);
+        exit.steps[j] = leave; position = leave.native.path.at(-1);
+      }
+      break;
+    }
+  }
+  assert.equal(getRoomCommands({ kind: 'bed' }).length, 0);
+  assert.equal(getRoomCommands({ kind: 'bed' }, 'missing').length, 0);
+}
+console.log('Verified sleep commands for all six pet beds, four rotations, cushion contact, held sleep and safe wake-up.');
+
+// Round beds have no backrest: a blocked front must not hide a safe side entry.
+{
+  const { CAT_PET_BED_IDS } = load('@/constants/cat-beds');
+  for (const bedId of CAT_PET_BED_IDS) {
+    const options = { ...room, width: 390, height: 420, petSize: 80, sizeScale: 1.15,
+      bedId, bedOffset: { x: 0, y: 0 }, homeOffset: { x: 0, y: 0 } };
+    const world = nativeRoom.buildNativeRoomWorld(options);
+    const bed = world.objects.find(o => o.instanceId === 'bed');
+    world.home = [1.5, nativeRoom.FLOOR_Y, bed.seat[2]];
+    const blocker = { instanceId: 'front-blocker', modelId: 'test-wall', solid: true,
+      position: [0, 0, 0], scale: 1, heading: 0,
+      min: [-2.32, 0, bed.seat[2] + .55], max: [2.32, 3, bed.seat[2] + .95] };
+    world.objects.push(blocker);
+    options.nativeWorld = world;
+    const approach = nativeRoom.findSeatApproach(world.home, bed, world);
+    assert.ok(approach, `${bedId} uses its open side when the front is blocked`);
+    assert.ok(approach[2] <= bed.seat[2] + .01, 'Entry is outside the old front-only search');
+    const plan = buildRoomActivity(options, 0, 'bedSleep', 'bed');
+    let position = world.home;
+    for (let i = 0; i < plan.steps.length; i++) {
+      const step = nativeRoom.prepareNativeStep(plan, plan.steps[i], nativeRoom.catScreenPoint(position, world), world, position[1]);
+      assert.ok(!step.native.blocked, `${bedId}/${i} walks, sleeps and exits through the open side`);
+      plan.steps[i] = step;
+      position = step.native.path.at(-1);
+    }
+    world.objects.push({ ...blocker, instanceId: 'enclosure',
+      min: [-2.32, 0, -2.32], max: [2.32, 3, 2.32] });
+    assert.equal(nativeRoom.findSeatApproach(world.home, bed, world), undefined,
+      `${bedId} still rejects an obstructed cushion and all blocked approaches`);
+  }
+}
+console.log('Verified side entry for all six round beds with blocked fronts, complete sleep/exit routes and blocked-route rejection.');
 
 // Automatic bedroom sleep remains held all night and exits even offscreen.
 for (const reduced of [false, true]) {
@@ -1596,3 +1670,66 @@ console.log('Verified unprompted perch discovery and hopping, landing rests, no 
   assert.ok(nativeRoom.pathLength([travel.path[0],original.at(-1)])<1e-6,'The next task starts at the brush exit without relocation');
 }
 console.log('Verified actual autonomous brushing, pause/resume of its contact route and queued room travel from its safe exit.');
+
+// Nap variety is chosen once, retained on repeated commands, and carried through
+// interrupted exits and native preparation rather than selected every frame.
+const napRoom={...furnished,bedId:'green',bedOffset:{x:0,y:.15}};
+const napPoses=new Set();
+for(let turn=0;turn<3;turn++) {
+  const nap=buildRoomActivity(napRoom,turn,'bedSleep','bed');
+  const index=nap.steps.findIndex(step=>step.animation==='curlSleep'),held=nap.steps[index];
+  napPoses.add(held.sleepPose);
+  const entry=nap.steps[index-1],exit=nap.steps[index+1];
+  assert.equal(entry.sleepPose,held.sleepPose);assert.equal(exit.sleepPose,held.sleepPose);
+  assert.equal(entry.durationMs,2200);assert.equal(exit.durationMs,2200);
+  const repeated=routeToSofa(napRoom,buildRoomActivity(napRoom,turn+1,'bedSleep','bed'),held.position,{plan:nap,stepIndex:index});
+  assert.equal(repeated.steps[0].sleepPose,held.sleepPose,'Repeated sleep preserves the displayed pose');
+  const returning=buildRoomReturn(napRoom,nap,index,held.position);
+  assert.equal(returning.steps[0].sleepPose,held.sleepPose,'Interrupted wake reverses the current nap');
+  assert.equal(returning.steps[0].durationMs,2200);
+}
+assert.equal(napPoses.size,3,'Three successive nap choices cover all silhouettes');
+for(let turn=0;turn<3;turn++)assert.equal(buildRoomActivity(chairOptions,turn,'sofaSleep','rocker').steps.find(step=>step.hold).sleepPose,'Loaf','Narrow rockers use tucked limbs');
+console.log('Verified nap variety, longer settling, matching exit poses and repeated-command continuity.');
+
+// Other commands advance the activity counter, but must not skip nap variants.
+enabled=false;render();advance(0);roomVisible=true;visibility={active:true,reduceMotion:false};
+hookRoom={...napRoom,nativeStepCompletion:false};enabled=true;render();
+const scheduledNapPoses=new Set();
+for(let i=0;i<3;i++) {
+  render().startActivity('bedSleep','bed');render();advance(0);
+  let plan=render().activity.plan;
+  const heldIndex=plan.steps.findIndex(step=>step.animation==='curlSleep');
+  advance(plan.steps.slice(0,heldIndex).reduce((sum,step)=>sum+step.durationMs,0));render();
+  const selected=render().activity.plan.steps[render().activity.stepIndex].sleepPose;
+  scheduledNapPoses.add(selected);
+  render().startActivity('bedSleep','bed');render();advance(0);
+  assert.equal(render().activity.plan.steps[0].sleepPose,selected);
+  render().returnHome();render();advance(0);
+  advance(render().activity.plan.steps.reduce((sum,step)=>sum+step.durationMs,0));render();
+  render().startActivity('sofaSit','sofa');render();advance(0);
+  plan=render().activity.plan;advance(plan.steps[0].durationMs+plan.steps[1].durationMs);render();
+  render().returnHome();render();advance(0);
+  advance(render().activity.plan.steps.reduce((sum,step)=>sum+step.durationMs,0));render();
+}
+assert.equal(scheduledNapPoses.size,3,'Repeated sleep and other commands cannot consume the next nap variant');
+console.log('Verified independent nap rotation through the actual scheduler with repeated sleep and intervening sofa visits.');
+
+// The hook can start waking before React commits the new renderer command.
+// A queued sleep report in that gap must not become the wake resume clock.
+{
+  slots.forEach(value=>value?.cleanup?.());slots.length=0;timers.clear();
+  visibility={active:true,reduceMotion:false};roomVisible=true;enabled=true;
+  hookRoom={...napRoom,nativeWorld:nativeRoom.buildNativeRoomWorld(napRoom),nativeStepCompletion:true};
+  render();reportCat(hookRoom.nativeWorld.home);render();
+  render().startActivity('bedSleep','bed');render();advance(0);render();
+  for(let i=0;i<10&&!render().activity.plan.steps[render().activity.stepIndex].hold;i++)finishClockStep();
+  const nap=render().activity,napKey=roomActivityStepKey(nap),seat=nap.plan.steps[nap.stepIndex].native.path.at(-1);
+  assert.equal(nap.plan.steps[nap.stepIndex].animation,'curlSleep');
+  render().returnHome();render();advance(0);render();
+  assert.equal(render().activity.plan.steps[render().activity.stepIndex].animation,'curlUp');
+  render().updateNativeHeight(seat,20,napKey);
+  visibility={active:false,reduceMotion:false};render();visibility={active:true,reduceMotion:false};render();render();
+  assert.equal(render().activity.plan.steps[render().activity.stepIndex].native.elapsed,0,'A stale sleep report cannot fast-forward the resumed wake');
+}
+console.log('Verified delayed sleep reports cannot replace a newly started wake clock in the room scheduler.');

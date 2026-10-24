@@ -1,0 +1,188 @@
+{
+  "width": 390,
+  "height": 420,
+  "petSize": 100,
+  "sizeScale": 0.7,
+  "decorations": [
+    {
+      "decorationId": "kitchenMixerStand",
+      "instanceId": "kitchen-0",
+      "offset": {
+        "x": -0.12780750353019088,
+        "y": -0.28926927369119515
+      },
+      "wallFlipped": true
+    },
+    {
+      "decorationId": "windowPlain",
+      "instanceId": "kitchen-1",
+      "offset": {
+        "x": -0.4366378650293232,
+        "y": -0.44545151952359635
+      },
+      "wallFlipped": true,
+      "scale": 1.5
+    },
+    {
+      "decorationId": "kitchenModernCounterNavy",
+      "instanceId": "kitchen-2",
+      "offset": {
+        "x": 0.05012160874504398,
+        "y": -0.23477341279313266
+      },
+      "scale": 1.1
+    },
+    {
+      "decorationId": "kitchenModernInductionNavy",
+      "instanceId": "kitchen-3",
+      "offset": {
+        "x": -0.5558965480881466,
+        "y": -0.02964954927400957
+      },
+      "wallFlipped": true,
+      "scale": 1.1
+    },
+    {
+      "decorationId": "kitchenModernWallCabinetNavy",
+      "instanceId": "kitchen-4",
+      "offset": {
+        "x": -0.6805360678070972,
+        "y": -0.40827205831748775
+      },
+      "wallFlipped": true
+    },
+    {
+      "decorationId": "kitchenModernShelfNavy",
+      "instanceId": "kitchen-5",
+      "offset": {
+        "x": -0.6872718751290712,
+        "y": -0.29792210621972653
+      },
+      "wallFlipped": true
+    },
+    {
+      "decorationId": "kitchenModernFridgeNavy",
+      "instanceId": "kitchen-6",
+      "offset": {
+        "x": 0.48023062671135974,
+        "y": -0.3299783753051431
+      },
+      "fridgeHingeSide": "left",
+      "scale": 1.1
+    },
+    {
+      "decorationId": "kitchenModernIslandNavy",
+      "instanceId": "kitchen-7",
+      "offset": {
+        "x": 0.016234222777824922,
+        "y": 0.16497590528267309
+      },
+      "wallFlipped": true
+    },
+    {
+      "decorationId": "kitchenModernSinkNavy",
+      "instanceId": "kitchen-8",
+      "offset": {
+        "x": -0.2809299752320572,
+        "y": -0.17162415461817435
+      },
+      "wallFlipped": true,
+      "scale": 1.1
+    },
+    {
+      "decorationId": "lampTableMushroom",
+      "instanceId": "kitchen-9",
+      "offset": {
+        "x": 0.04600214253277126,
+        "y": 0.02035500283744286
+      },
+      "poweredOn": true,
+      "scale": 0.8
+    },
+    {
+      "decorationId": "halloweenGhostLantern",
+      "instanceId": "kitchen-10",
+      "offset": {
+        "x": -0.00989028976055872,
+        "y": -0.3908688930238928
+      },
+      "poweredOn": true,
+      "rotationDegrees": 46.2
+    },
+    {
+      "decorationId": "kitchenDiningTable",
+      "instanceId": "kitchen-11",
+      "offset": {
+        "x": 0.6387470866222439,
+        "y": 0.1300019170728348
+      },
+      "scale": 1.1
+    },
+    {
+      "decorationId": "kitchenChairUpholstered",
+      "instanceId": "kitchen-12",
+      "offset": {
+        "x": 0.40304784682264705,
+        "y": 0.09412313756227739
+      },
+      "rotationDegrees": 118.1
+    },
+    {
+      "decorationId": "kitchenChairUpholstered",
+      "instanceId": "kitchen-13",
+      "offset": {
+        "x": 0.7439212237687706,
+        "y": 0.09444566233261693
+      },
+      "rotationDegrees": 312.7
+    },
+    {
+      "decorationId": "kitchenChairUpholstered",
+      "instanceId": "kitchen-14",
+      "offset": {
+        "x": 0.5693641200335703,
+        "y": 0.05093537485473133
+      },
+      "rotationDegrees": 58
+    },
+    {
+      "decorationId": "kitchenChairUpholstered",
+      "instanceId": "kitchen-15",
+      "offset": {
+        "x": 0.40460480174010205,
+        "y": 0.18913487480222965
+      },
+      "rotationDegrees": 80.1
+    },
+    {
+      "decorationId": "lampFloorArc",
+      "instanceId": "kitchen-16",
+      "offset": {
+        "x": 0.8899748109603822,
+        "y": -0.07215564507428068
+      },
+      "poweredOn": true,
+      "rotationDegrees": 231.6,
+      "scale": 1.4
+    },
+    {
+      "decorationId": "kitchenModernFloorShelfNavy",
+      "instanceId": "kitchen-17",
+      "offset": {
+        "x": -0.851327008401117,
+        "y": 0.11173244259700746
+      },
+      "wallFlipped": true,
+      "scale": 1.1
+    },
+    {
+      "decorationId": "foodTrailTray",
+      "instanceId": "kitchen-18",
+      "offset": {
+        "x": -0.28521835422693714,
+        "y": 0.348487712494158
+      }
+    }
+  ],
+  "toys": []
+}

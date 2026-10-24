@@ -51,10 +51,15 @@ export function useRoomActivity(
   const objectY = useSharedValue(0);
   const objectRotation = useSharedValue(0);
   const turn = useRef(0);
+  const napTurn = useRef(0);
   const nativeHeight = useRef(FLOOR_Y);
   const nativePosition = useRef<Vec3 | undefined>(undefined);
   const nativeElapsed = useRef(0);
-  const updateNativeHeight = useCallback((position: readonly number[], elapsed?: number) => {
+  const running = useRef<ActivityState | null>(null);
+  const updateNativeHeight = useCallback((position: readonly number[], elapsed?: number, activityKey?: string) => {
+    // A new step can start before React publishes it to the drawing thread.
+    // Reports still arriving from the old step cannot set its resume clock.
+    if (activityKey && (!running.current || roomActivityStepKey(running.current) !== activityKey)) return;
     nativeHeight.current = position[1];
     nativePosition.current = [position[0], position[1], position[2]];
     if (elapsed !== undefined) nativeElapsed.current = elapsed;
@@ -62,7 +67,6 @@ export function useRoomActivity(
   const exitMotion = useRef<CatTravelMotion | undefined>(undefined);
   const nativeAdvance = useRef<((key: string, position: Vec3, motion?: CatTravelMotion) => void) | null>(null);
   const completeNativeStep = useCallback((key: string, position: Vec3, motion?: CatTravelMotion) => nativeAdvance.current?.(key, position, motion), []);
-  const running = useRef<ActivityState | null>(null);
   const queuedPlan = useRef<RoomActivityPlan | null>(null);
   const latestOptions = useRef(options);
   const liveWorld = useRef(options.nativeWorld);
@@ -333,9 +337,19 @@ export function useRoomActivity(
       }
       runStep(plan, 0);
     };
+    const planActivity = (room: RoomActivityOptions, kind?: RoomActivityKind, instanceId?: string) => {
+      const plan = buildRoomActivity({ ...room, napTurn: napTurn.current }, turn.current++, kind, instanceId);
+      if (plan?.steps.some(step => step.animation === 'curlSleep')) {
+        const current = running.current, step = current?.plan.steps[current.stepIndex];
+        const repeating = current?.plan.kind === plan.kind && current.plan.targetInstanceId === plan.targetInstanceId
+          && (step?.animation === 'curlSleep' || step?.animation === 'curlUp' && !step.reverse);
+        if (!repeating) napTurn.current++;
+      }
+      return plan;
+    };
     const startIdle = () => {
       if (reduceMotion || !roomVisible) return;
-      const plan = buildRoomActivity(latestOptions.current, turn.current++);
+      const plan = planActivity(latestOptions.current);
       if (plan) startPlan(plan);
       else timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
     };
@@ -363,7 +377,7 @@ export function useRoomActivity(
           && request.kind!=='returnHome' && request.kind!=='stop') {
           const edgeOptions=liveWorld.current ? {...options,nativeWorld:{...liveWorld.current,
             home:nativeRoomEdge(liveWorld.current,options.entry!.direction===1?-1:1)}} : options;
-          const task=buildRoomActivity(edgeOptions,turn.current++,request.kind,request.instanceId);
+          const task=planActivity(edgeOptions,request.kind,request.instanceId);
           if(task && isCatWalk(task.steps[0]?.animation)) {
             handledRequest.current=request.id;pendingCommand.current=null;
             startPlan({...task,userRequested:!request.ambientPeriod,ambientPeriod:request.ambientPeriod,
@@ -390,7 +404,7 @@ export function useRoomActivity(
         home: catFloorPoint(position, liveWorld.current, FLOOR_Y) } } : options;
       let next = newRequest && (!newRequest.ambientPeriod || newRequest.ambientPeriod === options.period)
         && newRequest.kind !== "returnHome" && newRequest.kind !== "stop"
-        ? buildRoomActivity(commandOptions, turn.current++, newRequest.kind, newRequest.instanceId ?? (sofaCommand ? current?.plan.targetInstanceId : undefined)) : null;
+        ? planActivity(commandOptions, newRequest.kind, newRequest.instanceId ?? (sofaCommand ? current?.plan.targetInstanceId : undefined)) : null;
       if (next) next = { ...next, userRequested: !newRequest?.ambientPeriod };
       // A cupboard/chair exit can land inside its coarse floor bounds. Keep
       // the detailed collision geometry for the next journey in this room.
@@ -411,7 +425,7 @@ export function useRoomActivity(
           timer = setTimeout(() => runStep(returning, 0), 0);
         } else if (step.animation === 'eating' && target && step.native?.targetPosition
           && pathLength([target.position, step.native.targetPosition]) > .05) {
-          const meal = buildRoomActivity(options, turn.current++, 'bowlEat', target.instanceId);
+          const meal = planActivity(options, 'bowlEat', target.instanceId);
           if (meal) timer = setTimeout(() => startPlan(meal), 0);
         } else {
           const replanWalk = isCatWalk(step.animation) && !step.native?.legs?.length && step.native?.brushSide === undefined;

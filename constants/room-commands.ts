@@ -1,6 +1,7 @@
 import { itemInteraction } from '@/constants/item-interactions';
 import { isFurniturePerch } from '@/constants/cat-furniture';
 import { isSleepingBed } from '@/constants/bedroom-activities';
+import { isCatPetBedId } from '@/constants/cat-beds';
 import type { AppIconName } from "@/constants/app-icons";
 import { bathroomFixtureKind } from "@/constants/bathroom-activities";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
@@ -44,7 +45,8 @@ export function roomCommandLabel(kind: string, decorationId?: string): string {
 /** Menu eligibility must not build animation plans or solve navigation paths. */
 export function getRoomCommands(item: RoomLayerItem, bedId?: string) {
   const commands = ROOM_COMMANDS.filter(command => {
-    if (item.kind === "bed") return command.target === "sleepingBed" && isSleepingBed(`bed-${bedId}`);
+    if (item.kind === "bed") return command.target === "sleepingBed"
+      && (isSleepingBed(`bed-${bedId}`) || command.kind === 'bedSleep' && isCatPetBedId(bedId ?? ''));
     if (item.kind === "toy") return command.target === (item.toyId === "mouse" ? "mouse" : "toy");
     const id = item.decorationId;
     switch (command.target) {

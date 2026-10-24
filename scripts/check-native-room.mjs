@@ -1796,7 +1796,7 @@ const stageAst=ts.createSourceFile('PetStage.tsx',stageSource,ts.ScriptTarget.La
 const repairEffects=[];
 function findRepairEffect(node) {
   if(ts.isCallExpression(node) && node.expression.getText(stageAst)==='useEffect'
-    && node.arguments[0]?.getText(stageAst).includes('pendingPlacementIds.current')
+    && node.arguments[0]?.getText(stageAst).includes('suggestionStarted.current')
     && node.arguments[0]?.getText(stageAst).includes('placement.nearestFreeAsync')) repairEffects.push(node.arguments[0].getText(stageAst));
   ts.forEachChild(node,findRepairEffect);
 }
@@ -1805,78 +1805,38 @@ const [repairEffect]=repairEffects;
 const repairCode=ts.transpileModule(`(${repairEffect})();`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
 const repairLayout={...base,decorations:[{decorationId:'windowOakWide',instanceId:'cached-window',scale:1.6,offset:{x:.3,y:.2}}]};
 let repairWorld=w.buildNativeRoomWorld(repairLayout),saves=0,repairFrame;
-const repairContext={roomVisible:false,rotationPreview:null,viewport:{width:base.width,height:base.height},nativeWorld:repairWorld,livePositions:{},
+const repairContext={roomVisible:false,placementDraft:undefined,movingItem:undefined,viewport:{width:base.width,height:base.height},nativeWorld:repairWorld,
   isCurtainDecorationId:load('@/constants/decoration-motion').isCurtainDecorationId,
-  roomItemAnchor:load('@/utils/room-item-placement').roomItemAnchor,
-  NATIVE_MODEL_CATALOG:w.NATIVE_MODEL_CATALOG,ROOM_SPAN:w.ROOM_SPAN,roomPlacedToys:[],
-  pendingPlacementIds:{current:new Set()},AbortController,
+  isWindowLightSource:()=>false,curtainAtWindow:()=>undefined,
+  suggestionStarted:{current:undefined},suggestionAbort:{current:undefined},AbortController,
   requestAnimationFrame(fn){repairFrame=fn;return 1;},cancelAnimationFrame(){},
-  seenPlacementIds:{current:undefined},placement:load('@/utils/room-item-placement').createRoomPlacementResolver(repairWorld),
-  onPlacedDecorationOffsetChange(id,offset){saves++;repairLayout.decorations[0].offset=offset;}};
+  placement:load('@/utils/room-item-placement').createRoomPlacementResolver(repairWorld),
+  editingObject:{value:undefined},setRoomPreview:(shared,value)=>{shared.value=value;},setPendingMove(){},setPlacementFeedback(){},markDecorationTiming(){},
+  onPlacedDecorationOffsetChange(){saves++;}};
 for(let render=0;render<100;render++) vm.runInNewContext(repairCode,repairContext);
-assert.equal(saves,0,'Hidden cached rooms never save into the active room or trigger an update loop');
-repairContext.roomVisible=true;vm.runInNewContext(repairCode,repairContext);
-assert.equal(saves,0,'Displaying a clamped existing window never changes its saved anchor');
-repairContext.nativeWorld=w.buildNativeRoomWorld(repairLayout);
-for(let render=0;render<100;render++)vm.runInNewContext(repairCode,repairContext);
-assert.equal(saves,0,'Further parent renders retain the original saved window placement');
-// Refresh first measures a short scene before the complete layout settles.
-// Its bottom clamp used to persist a higher anchor into the full-height room.
-const lowWindowLayout={...base,height:480,decorations:[{decorationId:'windowPlain',instanceId:'low-window',scale:1.5,wallFlipped:true,offset:{x:-.4366,y:-.4652}}]};
-const lowWindowBefore=w.buildNativeRoomWorld(lowWindowLayout).objects[0];
-assert.equal(lowWindowBefore.placementOffset,undefined,'The saved low pose is valid in the settled viewport');
-repairContext.seenPlacementIds.current=undefined;
-repairContext.onPlacedDecorationOffsetChange=(id,offset)=>{saves++;lowWindowLayout.decorations[0].offset=offset;};
+assert.equal(saves,0,'Hidden cached rooms cannot save into the active room');
+repairContext.roomVisible=true;
 for(const height of [260,480,320,480]) {
   repairContext.viewport={width:base.width,height};
-  repairContext.nativeWorld=w.buildNativeRoomWorld({...lowWindowLayout,height});
-  repairContext.placement=load('@/utils/room-item-placement').createRoomPlacementResolver(repairContext.nativeWorld);
-  if(height===260)assert.ok(repairContext.nativeWorld.objects[0].placementOffset,'The startup viewport needs a temporary bottom correction');
   vm.runInNewContext(repairCode,repairContext);
 }
-assert.equal(saves,0,'Transient viewport corrections never enter the save file');
-assert.ok(w.pathLength([lowWindowBefore.position,w.buildNativeRoomWorld(lowWindowLayout).objects[0].position])<1e-8,'The window returns to its exact low pose after refresh');
-repairContext.seenPlacementIds.current=new Set();
-repairContext.viewport={width:base.width,height:260};
-repairContext.nativeWorld=w.buildNativeRoomWorld({...lowWindowLayout,height:260});
-repairContext.placement=load('@/utils/room-item-placement').createRoomPlacementResolver(repairContext.nativeWorld);
+assert.equal(repairFrame,undefined,'Existing layouts never start a repair or fitting operation');
+const draftItem={kind:'decoration',decorationId:'windowOakWide',instanceId:'cached-window'};
+repairContext.placementDraft={target:{kind:'decoration',id:'windowOakWide'},item:draftItem};repairContext.movingItem=draftItem;
 vm.runInNewContext(repairCode,repairContext);
-assert.equal(saves,0,'Purchase acknowledgement can paint before new-item fitting');
-// The resolver now yields to the UI while searching. Wait for the actual save,
-// so this regression exercises the real resolver rather than synchronous mocks.
-await new Promise((resolve,reject)=>{
-  const timeout=setTimeout(()=>reject(new Error('New-item fitting did not finish')),5000);
-  const save=repairContext.onPlacedDecorationOffsetChange;
-  repairContext.onPlacedDecorationOffsetChange=(...args)=>{save(...args);clearTimeout(timeout);resolve();};
-  repairFrame();
-});
-assert.equal(saves,1,'A newly placed wall item still saves its fitted visible anchor');
-// Rapid purchases must fit against the preceding item's committed blockers,
-// rather than reserve the same free position from an outdated room snapshot.
-const fittedObject=repairContext.nativeWorld.objects[0],purchaseSaves=[];
-repairContext.seenPlacementIds.current=new Set();
-repairContext.pendingPlacementIds.current=new Set();
-repairContext.nativeWorld={...repairContext.nativeWorld,objects:[fittedObject,{...fittedObject,instanceId:'second-window'}]};
-repairContext.placement={nearestFreeAsync:async object=>object};
-repairContext.onPlacedDecorationOffsetChange=(id)=>purchaseSaves.push(id);
-vm.runInNewContext(repairCode,repairContext);repairFrame();
-await new Promise(resolve=>setImmediate(resolve));
-assert.deepEqual(purchaseSaves,[fittedObject.instanceId],'Only one fitting mutation uses a given room snapshot');
-assert.ok(repairContext.pendingPlacementIds.current.has('second-window'),'The next purchase remains queued for the updated layout');
-vm.runInNewContext(repairCode,repairContext);repairFrame();
-await new Promise(resolve=>setImmediate(resolve));
-assert.deepEqual(purchaseSaves,[fittedObject.instanceId,'second-window']);
+assert.equal(repairContext.editingObject.value,undefined,'First paint is not blocked by fitting');
+repairFrame();
+for(let i=0;i<100 && !repairContext.suggestionAbort.current.signal.aborted;i++)await new Promise(resolve=>setTimeout(resolve,20));
+assert.ok(repairContext.editingObject.value,'An owned draft receives a visible starting suggestion');
+assert.equal(saves,0,'A suggestion never commits until the user places it');
 let finishSearch;
-repairContext.seenPlacementIds.current=new Set();
-repairContext.pendingPlacementIds.current=new Set();
-repairContext.nativeWorld={...repairContext.nativeWorld,objects:[fittedObject]};
-repairContext.placement={canPlace:()=>false,nearestFreeAsync:()=>new Promise(resolve=>{finishSearch=resolve;})};
-purchaseSaves.length=0;
-const cancelRepair=vm.runInNewContext(repairCode,repairContext);repairFrame();cancelRepair();finishSearch(fittedObject);
+repairContext.suggestionStarted.current=undefined;repairContext.editingObject.value=undefined;
+repairContext.placement={canPlace:()=>false,nearestFreeAsync:()=>new Promise(resolve=>{finishSearch=resolve;}),feedback:()=>({blockers:[],boundaries:[]})};
+const cancelRepair=vm.runInNewContext(repairCode,repairContext);repairFrame();cancelRepair();const previewAtCancel=repairContext.editingObject.value;finishSearch({...repairWorld.objects[0],position:[9,9,9]});
 for(let i=0;i<5;i++)await Promise.resolve();
-assert.equal(purchaseSaves.length,0,'A canceled in-flight placement cannot save into a switched room');
-assert.ok(repairContext.pendingPlacementIds.current.has(fittedObject.instanceId),'Canceled purchases resume when their room is visible again');
-console.log('Verified local wall display corrections, hidden/visible refreshes, transient viewport sizes, exact saved pose restoration and new-item fitting.');
+assert.equal(repairContext.editingObject.value,previewAtCancel,'Cancelling a draft suppresses late suggestions');
+assert.equal(saves,0,'Cancelled suggestions cannot mutate a switched room');
+console.log('Verified hidden-room isolation, display-only viewport corrections, asynchronous draft suggestions and cancellation.');
 
 // Bathroom journeys use authored basin/tray/seat anchors, retain their entry
 // side through washing, and leave safely when another command interrupts.

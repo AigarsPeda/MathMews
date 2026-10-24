@@ -2,7 +2,7 @@ import type { CatToyId } from '@/constants/cat-toys';
 import type { CatDecorationId } from '@/constants/cat-decorations';
 import type { CoinTransaction } from '@/types/coin-transaction';
 import type { GameSave } from '@/types/save';
-import type { PetProfile } from '@/types/game';
+import type { PetProfile, PlacedToy, PlacedDecoration } from '@/types/game';
 import type { RoomLayout } from '@/utils/room-layout';
 import { applyWalletOrder } from '@/services/wallet/orders';
 import { normalizeRoomLayerOrder, syncPetLayerOrder } from '@/utils/room-layer-order';
@@ -116,7 +116,7 @@ export function rejectProvisionalPurchase(save: GameSave, purchase: PendingWalle
         progress.decorationQuantities = {...progress.decorationQuantities,[id]:count};
         if (!count) progress.decorationsUnlocked = progress.decorationsUnlocked.filter(owned => owned !== id);
       }
-      const rejectedInstances = new Set(purchase.undo.addedInstances);
+      const rejectedInstances = new Set([...purchase.undo.addedInstances, ...(save.pendingWalletPurchases?.find(order => order.id === purchase.id)?.undo.addedInstances ?? [])]);
       pet = cleanRooms(pet,layout => {
         const key = purchase.kind === 'toy' ? 'placedToys' : 'placedDecorations';
         let kept = 0;
@@ -129,6 +129,19 @@ export function rejectProvisionalPurchase(save: GameSave, purchase: PendingWalle
         });
         return {...layout,[key]:list,roomLayerOrder:layout.roomLayerOrder?.filter(item => item.kind === 'bed' || !removed.has(item.instanceId))};
       });
+      // Live named rooms share one owned quantity. Alternate saved layouts are
+      // snapshots, but cannot retain an instance revoked from a live room.
+      const key = purchase.kind === 'toy' ? 'placedToys' : 'placedDecorations';
+      const activeRoom = pet.homeRoomId ?? 'livingRoom';
+      const liveRooms = [pet, ...Object.entries(pet.homeRooms ?? {}).filter(([roomId]) => roomId !== activeRoom).map(([, room]) => room)];
+      const copies = [...new Map(liveRooms.flatMap<PlacedToy | PlacedDecoration>(room => room[key] ?? []).filter(item =>
+        ('toyId' in item ? item.toyId : item.decorationId) === id).map(item => [item.instanceId, item])).values()]
+        .sort((a, b) => a.instanceId.localeCompare(b.instanceId));
+      const excess = new Set(copies.slice(count).map(item => item.instanceId));
+      if (excess.size) pet = cleanRooms(pet, layout => ({ ...layout,
+        [key]: layout[key]?.filter(item => !excess.has(item.instanceId)),
+        roomLayerOrder: layout.roomLayerOrder?.filter(item => item.kind === 'bed' || !excess.has(item.instanceId)),
+      }));
     } else if (purchase.kind === 'life') {
       // A provisional life may already have been consumed; never undo progress.
       progress.lives = {...progress.lives,current:Math.max(0,progress.lives.current-1)};

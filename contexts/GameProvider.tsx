@@ -1,3 +1,4 @@
+import { roomFurnitureVersion, applyRoomObjectEdits, createRoomPlacementDraft, storedRoomItems, type RoomObjectEdit, type RoomPlacementDraft } from '@/utils/room-edit';
 import { applyLearningReview, applyGuidedLearning } from "@/utils/learning-review";
 import type { LearningAttemptContext } from "@/types/learning";
 import { isOpenableDecorationId } from '@/constants/item-interactions';
@@ -70,8 +71,6 @@ import {
   isSkinUnlocked,
 } from "@/utils/skin-store";
 import {
-  appendPlacedDecoration,
-  appendPlacedToy,
   countPlacedDecorations,
   countPlacedToys,
   findPlacedDecorationByInstance,
@@ -175,6 +174,9 @@ type GameContextValue = {
   equipRoom: (roomId: CatRoomId) => boolean;
   visitHomeRoom: (roomId: HomeRoomId) => void;
   sendCatToRoom: (roomId: HomeRoomId, follow?: boolean) => void;
+  placementDraft: { roomId: HomeRoomId; draft: RoomPlacementDraft } | null;
+  cancelPlacementDraft: () => void;
+  commitRoomEdit: (roomId: HomeRoomId, edits: RoomObjectEdit[], remove?: string[], expectedVersion?: string) => boolean;
   decorationEntry: RoomDecorationEntry | null;
   requestRoomDecoration: (target?: RoomDecorationTarget) => void;
   clearDecorationEntry: () => void;
@@ -255,8 +257,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
   },[userId]);
   // Navigation intent is local UI state, never part of the cloud save.
   const [decorationEntry, setDecorationEntry] = useState<RoomDecorationEntry | null>(null);
+  const [placementDraft, setPlacementDraft] = useState<{ roomId: HomeRoomId; draft: RoomPlacementDraft } | null>(null);
+  const cancelPlacementDraft = useCallback(() => setPlacementDraft(null), []);
   const requestRoomDecoration = useCallback((target?: RoomDecorationTarget) => {
-    setDecorationEntry(roomDecorationEntry(saveRef.current.pet, target));
+    const { pet, progress } = saveRef.current;
+    const roomId = pet.homeRoomId ?? 'livingRoom';
+    if (target && storedRoomItems(pet, progress).some(item => item.target.kind === target.kind && item.target.id === target.id)) {
+      const draft = createRoomPlacementDraft(target, pet);
+      setPlacementDraft({ roomId, draft });
+      setDecorationEntry({ roomId, item: draft.item });
+    } else {
+      setPlacementDraft(null);
+      setDecorationEntry(roomDecorationEntry(pet, target));
+    }
   }, []);
   const clearDecorationEntry = useCallback(() => setDecorationEntry(null), []);
   // Commands read and commit the latest snapshot before React renders it.
@@ -275,6 +288,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
     saveRef.current = next;
     setSaveState(next);
   }, [initialWorldClock]);
+  const commitRoomEdit = useCallback((roomId: HomeRoomId, edits: RoomObjectEdit[], remove: string[] = [], expectedVersion?: string) => {
+    const current = saveRef.current;
+    if ((current.pet.homeRoomId ?? 'livingRoom') !== roomId || (expectedVersion !== undefined && roomFurnitureVersion(current.pet) !== expectedVersion)) return false;
+    const draft = placementDraft?.roomId === roomId ? placementDraft.draft : undefined;
+    if (draft && !storedRoomItems(current.pet, current.progress).some(item => item.target.kind === draft.target.kind && item.target.id === draft.target.id)) {
+      setPlacementDraft(null); return false;
+    }
+    const pet = applyRoomObjectEdits(current.pet, edits, remove, draft);
+    const draftItem = draft?.item;
+    const pending = draft && draftItem?.kind !== 'bed' ? current.pendingWalletPurchases?.find(order =>
+      order.status === 'pending' && order.kind === draft.target.kind && order.itemId === draft.target.id && !order.undo.addedInstances.length) : undefined;
+    setSave({ ...current, pet, pendingWalletPurchases: pending && draftItem && draftItem.kind !== 'bed'
+      ? current.pendingWalletPurchases?.map(order => order.id === pending.id ? { ...order, undo: { ...order.undo, addedInstances: [draftItem.instanceId] } } : order)
+      : current.pendingWalletPurchases });
+    setPlacementDraft(null);
+    return true;
+  }, [placementDraft, setSave]);
+  if (placementDraft && ((save.pet.homeRoomId ?? 'livingRoom') !== placementDraft.roomId
+      || !storedRoomItems(save.pet, save.progress).some(item => item.target.kind === placementDraft.draft.target.kind && item.target.id === placementDraft.draft.target.id))) setPlacementDraft(null);
   const setWorldClock = useCallback((speed: number, minuteOfDay?: number) => {
     setSave(current => ({ ...current, worldClock: changeWorldClock(normalizeWorldClock(current.worldClock ?? initialWorldClock), speed, minuteOfDay) }));
   }, [initialWorldClock, setSave]);
@@ -597,7 +629,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const id = resolveCatBedId(bedId);
     if (!id) return "invalid_item";
     if (saveRef.current.progress.bedsUnlocked.includes(id)) return "already_owned";
-    return spendCoins('bed',id,expectedPrice);
+    return spendCoins('bed',id,expectedPrice,'background');
   },[spendCoins]);
 
   const equipBed = useCallback((bedId: CatBedId) => {
@@ -613,22 +645,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    setSave({
-      ...current,
-      pet: syncPetLayerOrder({
-        ...current.pet,
-        bedId: resolvedId,
-        roomBedOffset: current.pet.roomBedOffset ?? { x: -0.15, y: 0.3 },
-        bedFlipped:
-          current.pet.bedId === resolvedId ? current.pet.bedFlipped : undefined,
-        bedRotationDegrees: current.pet.bedId === resolvedId ? current.pet.bedRotationDegrees : undefined,
-        bedScale:
-          current.pet.bedId === resolvedId ? current.pet.bedScale : undefined,
-      }),
-    });
-
     return true;
-  }, [setSave]);
+  }, []);
 
   const removeBedFromRoom = useCallback(() => {
     const current = saveRef.current;
@@ -700,7 +718,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const purchaseToy = useCallback(async (toyId: CatToyId, expectedPrice?: number): Promise<ToyPurchaseResult> => {
     const id = resolveCatToyId(toyId);
     if (!id) return "invalid_item";
-    return spendCoins('toy',id,expectedPrice);
+    return spendCoins('toy',id,expectedPrice,'background');
   },[spendCoins]);
 
   const placeToyInRoom = useCallback((toyId: CatToyId) => {
@@ -722,16 +740,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    setSave({
-      ...current,
-      pet: syncPetLayerOrder({
-        ...current.pet,
-        placedToys: appendPlacedToy(current.pet.placedToys, resolvedId),
-      }),
-    });
-
     return true;
-  }, [setSave]);
+  }, []);
 
   const removeToyFromRoom = useCallback((toyId: CatToyId, instanceId?: string) => {
     const resolvedId = resolveCatToyId(toyId);
@@ -762,7 +772,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const purchaseDecoration = useCallback(async (decorationId: CatDecorationId, expectedPrice?: number): Promise<DecorationPurchaseResult> => {
     const id = resolveCatDecorationId(decorationId);
     if (!id) return "invalid_item";
-    return spendCoins('decoration',id,expectedPrice);
+    return spendCoins('decoration',id,expectedPrice,'background');
   },[spendCoins]);
 
   const placeDecorationInRoom = useCallback((decorationId: CatDecorationId) => {
@@ -787,19 +797,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return false;
     }
 
-    setSave({
-      ...current,
-      pet: syncPetLayerOrder({
-        ...current.pet,
-        placedDecorations: appendPlacedDecoration(
-          current.pet.placedDecorations,
-          resolvedId,
-        ),
-      }),
-    });
-
     return true;
-  }, [setSave]);
+  }, []);
 
   const removeDecorationFromRoom = useCallback(
     (decorationId: CatDecorationId, instanceId?: string) => {
@@ -879,6 +878,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [setSave]);
 
   const flipPlacedDecorationWall = useCallback((instanceId: string) => {
+    const staged = placementDraft?.draft.initial;
+    if (staged && 'decorationId' in staged && staged.instanceId === instanceId && canFlipWallDecoration(staged.decorationId as CatDecorationId)) {
+      setPlacementDraft(current => current ? { ...current, draft: { ...current.draft,
+        initial: updatePlacedDecorationWallFlipByInstance([staged], instanceId, !getPlacedDecorationWallFlipped(staged))[0] } } : null);
+      return true;
+    }
     const current = saveRef.current;
     const placed = findPlacedDecorationByInstance(
       current.pet.placedDecorations,
@@ -906,7 +911,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
 
     return true;
-  }, [setSave]);
+  }, [setSave, placementDraft]);
 
   const aimPlacedSpotlight = useCallback((instanceId: string, angle: number, swivel?: number) => {
     const current = saveRef.current;
@@ -1275,6 +1280,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       visitHomeRoom,
       sendCatToRoom,
+      placementDraft,
+      cancelPlacementDraft,
+      commitRoomEdit,
       decorationEntry,
       requestRoomDecoration,
       clearDecorationEntry,
@@ -1365,6 +1373,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       equipRoom,
       visitHomeRoom,
       sendCatToRoom,
+      placementDraft,
+      cancelPlacementDraft,
+      commitRoomEdit,
       decorationEntry,
       requestRoomDecoration,
       clearDecorationEntry,

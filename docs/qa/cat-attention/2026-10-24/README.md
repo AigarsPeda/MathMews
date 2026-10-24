@@ -1,5 +1,7 @@
 # Command acknowledgment review
 
+Historical QA notes. Demonstration images and recordings were deleted at the user’s request; referenced media below is no longer retained.
+
 Reviewed the production Home screen in the existing BrainPet Puzzle QA iPhone simulator, using the existing Metro server on port 8081. No simulator, server or temporary game screen was created for this pass.
 
 - `native-acknowledgment.gif`: the toy command menu closes and the cat's brief ear/head response settles. The native menu overlaps the beginning of the gesture, so this capture is not an input-latency measurement.

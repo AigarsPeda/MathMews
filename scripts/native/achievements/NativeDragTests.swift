@@ -90,8 +90,23 @@ final class NativeDragTests: XCTestCase {
    XCTAssertEqual(heldFrame, movie.screenshot().pngRepresentation, "Pause must preserve the displayed frame")
    shot(name)
    XCTAssertTrue(app.buttons["Share GIF"].isHittable)
+   XCTAssertLessThan(app.buttons["Share GIF"].frame.maxY, app.windows.firstMatch.frame.maxY - 20)
    app.buttons["Close"].tap()
   }
+ }
+ func testTrophyCloseupAndSleepyPayoff() {
+  app.buttons["Finale review"].tap(); tab("Collected").tap()
+  let trophy = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'achievement-' AND label CONTAINS 'Best. Cat bed. Ever.'")).firstMatch
+  XCTAssertTrue(trophy.waitForExistence(timeout: 6)); trophy.tap()
+  XCTAssertTrue(app.buttons["Watch the ending again"].waitForExistence(timeout: 6))
+  app.buttons["Watch the ending again"].tap()
+  Thread.sleep(forTimeInterval: 4.7)
+  app.buttons["Pause"].tap()
+  let movie = app.images["achievement-movie"]
+  XCTAssertTrue(movie.exists); XCTAssertGreaterThan(movie.frame.width, 280)
+  shot("achievement-trophy-closeup")
+  XCTAssertTrue(app.buttons["Share GIF"].isHittable)
+  app.buttons["Close"].tap()
  }
  func testNativeGifShareAndCancel() {
   app.buttons[first].tap(); XCTAssertTrue(app.buttons["Share GIF"].waitForExistence(timeout: 6))

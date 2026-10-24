@@ -1,8 +1,9 @@
 import type { PetProfile, Progress } from "@/types/game";
 import { captureRoomLayout, type RoomLayout } from "@/utils/room-layout";
+import { restoreOwnedRoomLayout } from '@/utils/room-edit';
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type RoomOwnership = Pick<Progress, 'bedsUnlocked' | 'toyQuantities' | 'decorationQuantities'>;
+type RoomOwnership = Progress;
 
 export function useRoomEditor(pet: PetProfile, setPet: (update: (pet: PetProfile) => PetProfile) => void, ownership: RoomOwnership) {
   const roomKey = `${pet.homeRoomId ?? "livingRoom"}:${pet.roomId ?? "room1"}`;
@@ -36,7 +37,7 @@ export function useRoomEditor(pet: PetProfile, setPet: (update: (pet: PetProfile
     savedRoomLayouts: { ...current.savedRoomLayouts, [current.roomId ?? "room1"]: captureRoomLayout(current) } })), [setPet]);
   const restoreLayout = useCallback(() => setPet(current => {
     const layout = current.savedRoomLayouts?.[current.roomId ?? "room1"];
-    return layout ? { ...current, ...layout } : current;
-  }), [setPet]);
+    return layout ? restoreOwnedRoomLayout(current, layout, ownership) : current;
+  }), [setPet, ownership]);
   return { undo, canUndo: history.length > 0, saveLayout, restoreLayout, canRestore: Boolean(pet.savedRoomLayouts?.[pet.roomId ?? "room1"]) };
 }

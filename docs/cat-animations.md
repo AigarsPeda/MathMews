@@ -306,3 +306,42 @@ The head and tail retain their connection to the relaxing torso after the last s
 ### Standing to walking
 
 Ordinary floor departures capture the standing paws and release them into the first stride. The support pose follows those paw targets, the idle clip eases into walking over 0.22 seconds, and head/tail follow-through builds during the first step. Scripted routes and moving handoffs retain their existing contact handling. See the [first-step checks and simulator recording](qa/cat-starting/2026-10-24/README.md).
+
+### Interrupted stops and restarts
+
+A quick idle/walk reversal now retains the currently displayed clip mixture and stride phase. Stopping preserves the rendered contact and first-step offsets, then releases those local pose corrections over 180 ms. Another interruption captures that partially recovered pose. A stationary restart uses zero route-entry speed even while the back/head/tail response is still settling, and captures the current paws for its first step. Published paw positions include the final correction.
+
+`check-cat-restarting.mjs` runs the production actor and shipped skeletons across all three coats at 30/60/120 FPS. It interrupts full strides and first steps after pauses from one frame to 240 ms, checks zero-time pose/root continuity, frame movement, floor clearance, pause/resume and exact final arrival. The check is included in `test:game`. See the [measurements and native simulator preview](qa/cat-restarting/2026-10-24/README.md).
+
+
+## Varied bed naps
+
+The reference study uses [Cats Protection’s sleeping-position guide](https://www.cats.org.uk/cats-blog/what-do-cat-sleeping-positions-mean), its [sleep guide](https://www.cats.org.uk/help-and-advice/cat-behaviour/cats-and-sleep), and [Purina’s body-language guide with Cats Protection](https://www.purina.co.uk/articles/cats/behaviour/understanding-cats/cat-body-language). Common physical patterns are paws tucked beneath a relaxed loaf, limbs drawn close with the tail wrapped in a curl, and side lying with relaxed extended legs. A pose alone does not determine a cat’s mood. We use the anatomy as animation reference rather than assigning emotional scores to poses.
+
+The native rig now has three authored pairs in `scripts/3d/sleep_poses.py`: `restLoafEnter/Sleep`, `restCrescentEnter/Sleep`, and `restSideEnter/Sleep`. The compact crescent accommodates this character’s large head; the side sleeper uses unequal leg reaches and a supported cheek. Hips lower before shoulders, wrists fold, and the head settles last. The tail wraps through its own joints. Each reversible entry joins its four-second breathing loop exactly. Root translation remains owned by room navigation.
+
+An independent nap counter advances without being consumed by other activities or repeated held-sleep commands. Room plans choose `sleepPose` once per nap and carry it through native preparation, repeated commands and interrupted returns. Chairs and covered beds use the compact loaf; open beds and sofas rotate through all three. Settling and uncurling take 2.2 seconds, followed by the existing waking stretch and safe exit. The logical `curlUp/curlSleep` activity names remain stable for navigation and quilt behavior.
+
+`node scripts/check-cat-sleeping.mjs` checks the exported clips and production worklet for distinct silhouettes, matched endpoints, breathing, pause and waking at 30/60/120 fps across all three coats. Room-activity regressions cover variant selection and retention. Native visual review uses the existing BrainPet simulator. The 2026-10-24 run checked all three poses on the green bed beside the fireplace, including repeat sleep and complete wake/stretch/exit cycles.
+
+Demonstration media is disposable. Review captures in temporary storage and delete them after testing; do not retain new preview images or recordings in the repository. Previous cat demonstration media was removed at the user’s request.
+
+The settling entry carries the head with the descending chest before adding the final nod. The neck follows that same motion directly instead of applying a second delayed blend. Hind paws tuck first, followed by the left and right front paws at separate times. Reversed entries retain the same supported sequence for waking. The sleep check bounds head-to-chest separation during descent and requires separate front-paw tuck timing.
+
+Follow-up visual review of the revised entry used the existing simulator’s Green Bed. Reviewed the loaf descent at 0.2-second intervals, held rest, reversed rise, waking stretch and jump to the floor. All three variants and coats passed the animation checks; all 59 clips per coat passed five-sample skin-deformation checks. Temporary review media was deleted afterward.
+
+Curled and side naps share the neck bend between chest and skull. The curled chest turns toward the head, while the head uses a smaller turn and the forearms retain cushion clearance during their tuck. Side sleep first lowers the torso, then rolls onto its flank; the head follows that roll, the legs reach farther from the belly, and the tail rests in a loose curve beside the haunches. Lower-face skin weights now keep the chin on the skull, with the neck blend behind the jaw.
+
+Regression checks cover the order of lowering and rolling, neck/head roll agreement, the curled head turn, distinct tail placement, and skull-bound chin vertices. Mesh checks sample 41 frames through each sleep entry to catch intersections between the usual quarter-cycle samples.
+
+The revised curled and side poses were tested on the Green Bed in the existing BrainPet Reward Contact QA simulator. Both completed settling, held sleep, waking, stretching and return to the floor using normal room commands. Close-up frame review confirmed the curled head and paw tuck, and the side sleeper's descent before rolling and unrolling before standing. Sleeping, waking, jump and skin-deformation checks passed for all three coats; TypeScript and the sleeping-check lint passed. Temporary recordings and preview images were deleted after review.
+
+### Gentle waking
+
+Completed naps use `restLoafWake`, `restCrescentWake` and `restSideWake`. These begin in the exact sleeping pose and lift the head over the first 0.53 seconds while the chest, hips and tucked paws stay supported. The eyes open during that lift. The body then unrolls and rises into the existing planted-paw stretch; the chin follows the shoulder bow and recovers slightly later, with a small tail response. The full rise still takes 2.2 seconds and the stretch takes 2.5 seconds before departure.
+
+An interrupted settling motion continues to reverse its entry from the displayed pose. Repeated wake commands retain progress through the authored wake clip. The sleep regression checks the head lift in the exported clip and native playback, stationary body support during that lift, exact endpoints, pause/resume, repeated commands and interrupted tucks. Skin checks sample 41 frames through both settling and waking.
+
+Simulator review exposed a timing race where a delayed sleeping position report could replace the new wake-up clock. Position reports now carry their command revision, and the RN receiver discards reports from earlier commands. The room scheduler also checks the activity key, covering the gap before React publishes a newly started step. Regressions delay delivery across both handoffs and verify that only the current wake reports update the clock.
+
+Final visual review used normal room commands on the Green Bed in the existing BrainPet Reward Contact QA simulator. Loaf, curled and side naps each completed the head lift, rise, planted-paw stretch and exit to the floor. Dense frame review confirmed that side waking no longer skips the supported head lift and unroll. Sleeping and waking checks passed for all three coats at 30/60/120 FPS, all 62 clips per coat passed skin-deformation checks, and the native-room, room-activity, TypeScript and scoped lint checks passed. Temporary recordings, extracted frames and previews were deleted after review.

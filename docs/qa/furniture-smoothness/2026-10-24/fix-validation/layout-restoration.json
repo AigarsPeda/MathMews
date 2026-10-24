@@ -1,0 +1,22 @@
+{
+  "livingRoom": {
+    "placedToys": true,
+    "placedDecorations": true,
+    "bedId": true,
+    "roomBedOffset": true,
+    "bedFlipped": true,
+    "bedScale": true,
+    "bedRotationDegrees": true,
+    "roomLayerOrder": true
+  },
+  "kitchen": {
+    "placedToys": true,
+    "placedDecorations": true,
+    "bedId": true,
+    "roomBedOffset": true,
+    "bedFlipped": true,
+    "bedScale": true,
+    "bedRotationDegrees": true,
+    "roomLayerOrder": true
+  }
+}

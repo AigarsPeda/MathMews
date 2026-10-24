@@ -164,8 +164,15 @@ def bind(mesh, arm):
             weights = {'head': 1}
         else:
             head = ramp(.98, 1.18, p.z)*(1-ramp(-.12, .08, p.y))
+            # The chin belongs to the skull. A height-only blend left the
+            # lower face on the neck when a sleeping cat turned its head.
+            # Keep the throat blend behind the jaw instead of across the face.
+            head = max(head, (1-ramp(-.70, -.53, p.y))*ramp(.84, .98, p.z))
             neck = ramp(.87, 1.08, p.z)*(1-ramp(-.12, .08, p.y))*(1-head)
             tail = ramp(.54, .68, p.y)*ramp(.93, 1.08, p.z)
+            # The hooked tip bends forward beyond the base's Y cutoff. Keep
+            # its upper vertices on the tail when it folds down for sleep.
+            tail = max(tail, ramp(.30, .46, p.y)*ramp(1.12, 1.25, p.z))
             leg_y = -.40 if p.y < 0 else .43
             distance = math.hypot(abs(p.x)-.215, p.y-leg_y)
             leg = (1-ramp(.54, .74, p.z))*(1-ramp(.14, .24, distance))

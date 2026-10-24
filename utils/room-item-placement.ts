@@ -2,14 +2,21 @@ import { FLOOR_Y, isSurfacePlaceable, placeObjectOnSurface, placeObjectOnRugs, n
 import type { RoomPoint } from '@/utils/room-activities';
 import { isCurtainDecorationId } from '@/constants/decoration-motion';
 import { WALL_MOUNT_PLANE, WALL_PLACEMENT_MIN, WALL_PLACEMENT_MAX, WALL_PLACEMENT_BOTTOM, WALL_PLACEMENT_TOP } from '@/constants/room-geometry';
-import { MODERN_KITCHEN_COUNTER_IDS, MODERN_KITCHEN_FLOOR_SHELF_IDS, MODERN_KITCHEN_SINK_IDS, MODERN_KITCHEN_INDUCTION_IDS, MODERN_KITCHEN_FRIDGE_IDS } from '@/constants/modern-kitchen';
+import { MODERN_KITCHEN_ISLAND_IDS, MODERN_KITCHEN_COUNTER_IDS, MODERN_KITCHEN_FLOOR_SHELF_IDS, MODERN_KITCHEN_SINK_IDS, MODERN_KITCHEN_INDUCTION_IDS, MODERN_KITCHEN_FRIDGE_IDS } from '@/constants/modern-kitchen';
 
 export type RoomPlacementEdge = 'leftWall' | 'backWall' | 'rightEdge' | 'frontEdge' | 'wallStart' | 'wallEnd' | 'wallBottom' | 'wallTop';
 export type RoomPlacementFeedback = {
   candidate: NativeRoomObject;
+  snapped?: boolean;
+  access?: 'clear' | 'blocked';
+  unsupportedSurfaceId?: string;
   blockers: { instanceId: string; boxes: Vec3[][] }[];
   boundaries: RoomPlacementEdge[];
 };
+export function roomPlacementStatus(feedback: RoomPlacementFeedback): 'blocked' | 'checking' | 'ready' {
+  if (feedback.blockers.length || feedback.boundaries.length || feedback.unsupportedSurfaceId || feedback.access === 'blocked') return 'blocked';
+  return feedback.access === 'clear' ? 'ready' : 'checking';
+}
 // Shipped room meshes: skirting inner faces and the flat floor before its bevel.
 export const ROOM_PLACEMENT_MIN = -2.3075;
 export const ROOM_PLACEMENT_MAX = 2.46;
@@ -17,6 +24,7 @@ export const ROOM_PLACEMENT_MAX = 2.46;
 type Box = { center: Vec3; half: Vec3; cos: number; sin: number; extentX: number; extentZ: number; axes?: Vec3[]; polygon?: Vec3[] };
 const rotate = (point: number[], angle: number): Vec3 => [Math.cos(angle) * point[0] + Math.sin(angle) * point[2], point[1], -Math.sin(angle) * point[0] + Math.cos(angle) * point[2]];
 const kitchenUnits = new Set<string>([...MODERN_KITCHEN_COUNTER_IDS, ...MODERN_KITCHEN_FLOOR_SHELF_IDS, ...MODERN_KITCHEN_SINK_IDS, ...MODERN_KITCHEN_INDUCTION_IDS, ...MODERN_KITCHEN_FRIDGE_IDS]);
+const magnetUnits = new Set<string>([...kitchenUnits, ...MODERN_KITCHEN_ISLAND_IDS]);
 const KITCHEN_SNAP_DISTANCE = .12;
 const WALL_SNAP_POINTS = 10;
 const OBJECT_SNAP_POINTS = 10;
@@ -162,6 +170,22 @@ function boxes(object: NativeRoomObject): Box[] {
   });
 }
 
+/** Cabinet magnets follow their worktop faces, not every bevel and handle.
+ * Detailed parts still own collision legality and the blocked-part overlay. */
+function magnetBoxes(object: NativeRoomObject): Box[] {
+  const meta = NATIVE_MODEL_CATALOG[object.modelId];
+  if (!magnetUnits.has(object.modelId) || (meta.placementBoxes ?? meta.collisionBoxes ?? []).length <= 12) return boxes(object);
+  const bounds = magnetUnits.has(object.modelId) && meta.supportSurfaces?.length ? meta.supportSurfaces : [meta];
+  return bounds.map(part => {
+    const center = rotate(part.min.map((v, i) => (v + part.max[i]) / 2), object.heading);
+    const half = part.min.map((v, i) => (part.max[i] - v) * object.scale / 2) as Vec3;
+    const cos = Math.cos(object.heading), sin = Math.sin(object.heading);
+    return { center: center.map((v, i) => v * object.scale + object.position[i]) as Vec3,
+      half, cos, sin, extentX: half[0] * Math.abs(cos) + half[2] * Math.abs(sin),
+      extentZ: half[0] * Math.abs(sin) + half[2] * Math.abs(cos) };
+  });
+}
+
 /** Actual mesh silhouette on the floor, rather than rotated bounding-box corners. */
 export function roomItemFootprint(object: NativeRoomObject): Vec3[] {
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
@@ -285,8 +309,9 @@ function closestBoxDirection(a: Box, b: Box): Vec3 | undefined {
 }
 
 /** Cache fixed obstacles once per layout, rather than rebuild the room while dragging. */
-export function createRoomPlacementResolver(world: NativeRoomWorld) {
-  const obstacles = world.objects.map(object => ({ id: object.instanceId, object, boxes: boxes(object) }));
+export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: string[] = []) {
+  const ignored = new Set(ignoredIds);
+  const obstacles = world.objects.filter(object => !ignored.has(object.instanceId)).map(object => ({ id: object.instanceId, object, boxes: boxes(object), magnets: magnetBoxes(object) }));
   // Index structural boxes, not their enclosing mesh bounds. Open chair frames
   // and rotated models still use the exact separating-axis test below.
   const cellSize = .5;
@@ -320,15 +345,35 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     }
     return result;
   };
+  const boxIndexes = new Map(obstacles.map(obstacle => {
+    const grid = new Map<string, Set<Box>>(), fallback = new Set<Box>();
+    for (const box of obstacle.boxes) {
+      if (!visitCells(box, key => {
+        let cell = grid.get(key);
+        if (!cell) { cell = new Set(); grid.set(key, cell); }
+        cell.add(box);
+      })) fallback.add(box);
+    }
+    return [obstacle, { grid, fallback }];
+  }));
+  const nearbyBoxes = (box: Box, obstacle: typeof obstacles[number], reach: number) => {
+    const index = boxIndexes.get(obstacle)!;
+    const found = new Set(index.fallback);
+    if (!visitCells({ ...box, extentX: box.extentX + reach, extentZ: box.extentZ + reach }, key => {
+      for (const candidate of index.grid.get(key) ?? []) found.add(candidate);
+    })) return obstacle.boxes;
+    return [...found];
+  };
   const templates = new Map<string, { object: NativeRoomObject; boxes: Box[] }>();
   const movingBoxes = (object: NativeRoomObject) => {
     const key = `${object.instanceId}:${object.heading}:${object.scale}`;
     let template = templates.get(key);
     if (!template) { template = { object, boxes: boxes(object) }; templates.set(key, template); }
     const origin = template.object.position;
+    const dx = object.position[0] - origin[0], dy = object.position[1] - origin[1], dz = object.position[2] - origin[2];
     return template.boxes.map(box => ({ ...box,
-      center: box.center.map((v,i) => v + object.position[i] - origin[i]) as Vec3,
-      polygon: box.polygon?.map(p => p.map((v, i) => v + object.position[i] - origin[i]) as Vec3) }));
+      center: [box.center[0] + dx, box.center[1] + dy, box.center[2] + dz] as Vec3,
+      polygon: box.polygon?.map(p => [p[0] + dx, p[1] + dy, p[2] + dz] as Vec3) }));
   };
   const collisions = (object: NativeRoomObject, tolerance = .005) => {
     const own = movingBoxes(object);
@@ -361,7 +406,7 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     const own = movingBoxes(object);
     for (const other of nearby(own)) {
       if (other.id === object.instanceId) continue;
-      for (const a of own) for (const b of other.boxes) if (penetration(a, b, tolerance) > 0) return false;
+      for (const a of own) for (const b of nearbyBoxes(a, other, 0)) if (penetration(a, b, tolerance) > 0) return false;
     }
     return true;
   };
@@ -388,9 +433,15 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     const zero = projectWorld([0, 0, 0], world.width);
     const reach = OBJECT_SNAP_POINTS * ROOM_SPAN / (world.width * zoom * .47);
     const shifts = new Map<string, { delta: Vec3; distance: number }>();
-    const own = movingBoxes(object);
-    for (const other of obstacles) {
+    const own = magnetBoxes(object);
+    for (const other of nearby(own.map(box => ({ ...box, extentX: box.extentX + reach, extentZ: box.extentZ + reach })))) {
       if (other.id === object.instanceId || other.id === object.supportId || isCurtainDecorationId(other.object.modelId)) continue;
+      // Magnets only attract at a neighbor's edge. Once the footprint is deep
+      // inside another item, keep following the pointer instead of searching
+      // hundreds of internal ribs and bevels for an escape snap.
+      if (object.wallAxis === undefined && other.object.wallAxis === undefined
+        && [0, 2].every(axis => Math.min(object.max[axis], other.object.max[axis])
+          - Math.max(object.min[axis], other.object.min[axis]) > Math.min(reach, .25 * Math.min(object.max[axis] - object.min[axis], other.object.max[axis] - other.object.min[axis])))) continue;
       const parallelKitchen = kitchenUnits.has(object.modelId) && kitchenUnits.has(other.object.modelId)
         && Math.abs(Math.sin((object.heading - other.object.heading) / 2)) < .00001;
       const localBounds = (item: NativeRoomObject) => {
@@ -404,10 +455,21 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
       // into the middle of another item has no clear contact intent.
       const axes = object.wallAxis === undefined ? [0, 2] : [object.wallAxis === 0 ? 2 : 0, 1];
       const shallow = .5 * Math.min(...axes.flatMap(axis => [object.max[axis] - object.min[axis], other.object.max[axis] - other.object.min[axis]]));
-      if (own.some(a => other.boxes.some(b => penetration(a, b, .005, true) > shallow))) continue;
-      for (const a of own) for (const b of other.boxes) {
+      const pairs = own.map(a => ({ a, nearby: (magnetUnits.has(other.object.modelId) ? other.magnets : nearbyBoxes(a, other, reach)).filter(b =>
+        Math.abs(a.center[0] - b.center[0]) <= a.extentX + b.extentX + reach
+        && Math.abs(a.center[2] - b.center[2]) <= a.extentZ + b.extentZ + reach) }));
+      if (pairs.some(({ a, nearby }) => nearby.some(b => penetration(a, b, .005, true) > shallow))) continue;
+      // Rank the nearest solid-part pairs before solving their contact planes.
+      // A curved bed/chair can contain hundreds of parts; trying every pair is
+      // an unbounded mesh search on the input thread.
+      const contacts = pairs.flatMap(({ a, nearby }) => nearby.flatMap(b => {
         const height = a.half[1] + b.half[1] - Math.abs(a.center[1] - b.center[1]);
-        if (object.wallAxis === undefined ? height <= .005 : height < -reach) continue;
+        if (object.wallAxis === undefined ? height <= .005 : height < -reach) return [];
+        const dx = Math.max(0, Math.abs(a.center[0] - b.center[0]) - a.extentX - b.extentX);
+        const dz = Math.max(0, Math.abs(a.center[2] - b.center[2]) - a.extentZ - b.extentZ);
+        return [{ a, b, distance: dx * dx + dz * dz }];
+      })).sort((a, b) => a.distance - b.distance).slice(0, 32);
+      for (const { a, b } of contacts) {
         if (Math.abs(a.center[0] - b.center[0]) > a.extentX + b.extentX + reach
           || Math.abs(a.center[2] - b.center[2]) > a.extentZ + b.extentZ + reach) continue;
         const overlapping = penetration(a, b) > 0;
@@ -433,13 +495,26 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
         }
       }
     }
-    return [...shifts.values()].sort((a, b) => a.distance - b.distance).map(({ delta }) => translateObject(object, delta));
+    // A magnet is a small correction, not an exhaustive placement search.
+    // Keep the nearest distinct screen-space corrections; all still pass exact
+    // solid-part collision validation before they can be displayed or saved.
+    const pixels = new Set<string>();
+    return [...shifts.values()].sort((a, b) => a.distance - b.distance).filter(({ delta }) => {
+      const p = projectWorld(delta, world.width);
+      const key = `${Math.round((p.x - zero.x) * zoom * 2)}:${Math.round((p.y - zero.y) * zoom * 2)}`;
+      if (pixels.has(key)) return false;
+      pixels.add(key); return true;
+    }).slice(0, 24).map(({ delta }) => translateObject(object, delta));
   };
   const feedback = (candidate: NativeRoomObject): RoomPlacementFeedback => {
     const own = movingBoxes(candidate);
     return { candidate, boundaries: boundaryExcess(candidate).filter(edge => edge.depth > .00001).map(edge => edge.edge),
-      blockers: obstacles.filter(other => other.id !== candidate.instanceId).flatMap(other => {
-        const hits = other.boxes.filter(b => own.some(a => penetration(a,b)>0));
+      blockers: [...nearby(own)].filter(other => other.id !== candidate.instanceId).flatMap(other => {
+        const hitSet = new Set<Box>();
+        for (const a of own) for (const b of nearbyBoxes(a, other, 0)) {
+          if (!hitSet.has(b) && penetration(a, b) > 0) hitSet.add(b);
+        }
+        const hits = other.boxes.filter(box => hitSet.has(box));
         return hits.length ? [{instanceId:other.id,boxes:hits.map(boxCorners)}] : [];
       }) };
   };
@@ -448,21 +523,56 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
     const joins = (object: NativeRoomObject) => snapInsideWalls || !canPlace(object) ? kitchenJoinCandidates(object, world, snapInsideWalls) : [];
     // Keep an established row's clearance first. Otherwise use the wall as
     // the common line and try side joins from the corrected wall pose.
-    const candidates = [
-      ...(snapInsideWalls ? kitchenJoinCandidates(moved, world, true, true) : []),
-      ...wallCandidates.flatMap(object => {
-        const footprint = roomItemFootprint(object);
-        const contacts = [0, 2].filter(axis => Math.abs(Math.min(...footprint.map(p => p[axis])) - ROOM_PLACEMENT_MIN) < .00001);
-        return [...joins(object).filter(joined => contacts.every(axis =>
-          Math.abs(joined.position[axis] - object.position[axis]) < .00001)), ...objectSnapCandidates(object, zoom, snapInsideWalls), object];
-      }),
-    ];
-    candidates.push(...joins(moved), ...objectSnapCandidates(moved, zoom, snapInsideWalls));
-    return candidates.find(object => preservesSupport(object) && canPlace(object, .00001)) ?? moved;
+    const acceptable = (object: NativeRoomObject) => preservesSupport(object) && canPlace(object, .00001);
+    if (snapInsideWalls) for (const candidate of kitchenJoinCandidates(moved, world, true, true)) {
+      if (acceptable(candidate)) return candidate;
+    }
+    for (const object of wallCandidates) {
+      const footprint = roomItemFootprint(object);
+      const contacts = [0, 2].filter(axis => Math.abs(Math.min(...footprint.map(p => p[axis])) - ROOM_PLACEMENT_MIN) < .00001);
+      for (const joined of joins(object)) if (contacts.every(axis => Math.abs(joined.position[axis] - object.position[axis]) < .00001)
+        && acceptable(joined)) return joined;
+      for (const candidate of objectSnapCandidates(object, zoom, snapInsideWalls)) if (acceptable(candidate)) return candidate;
+      if (acceptable(object)) return object;
+    }
+    for (const candidate of joins(moved)) if (acceptable(candidate)) return candidate;
+    for (const candidate of objectSnapCandidates(moved, zoom, snapInsideWalls)) if (acceptable(candidate)) return candidate;
+    return moved;
   };
-  function* findFree(object: NativeRoomObject): Generator<void, NativeRoomObject | undefined> {
+  function* findFree(object: NativeRoomObject, preferVisible = false): Generator<void, NativeRoomObject | undefined> {
+    // Suggestions should be easy to grab. This conservative screen-space score
+    // is only a ranking heuristic; physical legality still uses exact geometry.
+    const projectedBounds = (item: NativeRoomObject) => {
+      const points = [item.min[0], item.max[0]].flatMap(x => [item.min[1], item.max[1]]
+        .flatMap(y => [item.min[2], item.max[2]].map(z => projectWorld([x, y, z], world.width))));
+      return { left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)),
+        top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) };
+    };
+    const occluders = preferVisible ? world.objects.filter(other => other.instanceId !== object.instanceId && (other.wallAxis !== undefined || other.collidable !== false))
+      .map(other => ({ object: other, bounds: projectedBounds(other) })) : [];
+    const visibility = (candidate: NativeRoomObject) => {
+      if (!preferVisible) return 1;
+      const bounds = projectedBounds(candidate);
+      const depth = (candidate.min[0] + candidate.max[0] + candidate.min[2] + candidate.max[2]) / 2;
+      let visible = 0;
+      for (const x of [.2, .5, .8]) for (const y of [.2, .5, .8]) {
+        const px = bounds.left + x * (bounds.right - bounds.left), py = bounds.top + y * (bounds.bottom - bounds.top);
+        if (!occluders.some(({ object: other, bounds: b }) =>
+          ((candidate.wallAxis !== undefined && other.wallAxis === candidate.wallAxis)
+            || (other.min[0] + other.max[0] + other.min[2] + other.max[2]) / 2 > depth + .01)
+          && px >= b.left && px <= b.right && py >= b.top && py <= b.bottom)) visible++;
+      }
+      return visible / 9;
+    };
+    let best: NativeRoomObject | undefined, bestVisibility = -1;
+    const consider = (candidate: NativeRoomObject) => {
+      if (!canPlace(candidate)) return false;
+      const score = visibility(candidate);
+      if (score > bestVisibility) { best = candidate; bestVisibility = score; }
+      return score >= 2 / 3;
+    };
     const initial = kitchenUnits.has(object.modelId) ? snapObject(object) : object;
-    if (canPlace(initial)) return initial;
+    if (consider(initial)) return initial;
     const candidates: { point: RoomPoint; distance: number }[] = [];
     const center = rotate(NATIVE_MODEL_CATALOG[object.modelId].center, object.heading)
       .map((v, i) => v * object.scale + object.position[i]) as Vec3;
@@ -483,12 +593,41 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
       if (Math.abs(point.x) > (world.width - size) / 2 || Math.abs(point.y) > (world.height - size) / 2) continue;
       const moved = roomItemAtPoint(object, point, world.width);
       const candidate = kitchenUnits.has(object.modelId) ? snapObject(moved) : moved;
-      if (canPlace(candidate)) return candidate;
+      if (consider(candidate)) return candidate;
     }
-    return undefined;
+    return best;
   }
   return {
     canPlace,
+    feedback,
+    /** The visible candidate and release use the same snapping and geometry. */
+    preview(id: string, point: RoomPoint, zoom = 1, heldSnap?: NativeRoomObject, snapping = true) {
+      const original = world.objects.find(object => object.instanceId === id);
+      if (!original) return undefined;
+      const moved = placeObjectOnSurface(roomItemAtPoint(original, point, world.width), world.objects, world.width, true);
+      const anchor = heldSnap && roomItemAnchor(heldSnap, world.width);
+      const candidate = snapping && heldSnap && anchor
+        && Math.hypot(anchor.x - point.x, anchor.y - point.y) * zoom <= OBJECT_SNAP_POINTS * 1.5 && canPlace(heldSnap)
+        ? heldSnap : placeObjectOnRugs(snapping ? snapObject(moved, zoom) : moved, world.objects);
+      const details = feedback(candidate);
+      // A pointed-at board is an explicit surface intent. If the base cannot
+      // fit, keep the attempt invalid instead of silently dropping to the floor.
+      if (!candidate.supportId && isSurfacePlaceable(candidate.modelId)) {
+        for (const owner of world.objects) {
+          if (owner.instanceId === id || ignoredIds.includes(owner.instanceId)) continue;
+          for (const top of NATIVE_MODEL_CATALOG[owner.modelId].supportSurfaces ?? []) {
+            const corners = [[top.min[0], top.min[2]], [top.max[0], top.min[2]], [top.max[0], top.max[2]], [top.min[0], top.max[2]]]
+              .map(([x, z]) => projectWorld(rotate([x, top.max[1], z], owner.heading).map((v, i) => v * owner.scale + owner.position[i]) as Vec3, world.width));
+            const sides = corners.map((a, i) => { const b = corners[(i + 1) % corners.length]; return (b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x); });
+            if (sides.every(value => value >= 0) || sides.every(value => value <= 0)) { details.unsupportedSurfaceId = owner.instanceId; break; }
+          }
+          if (details.unsupportedSurfaceId) break;
+        }
+      }
+      return { object: candidate, point: roomItemAnchor(candidate, world.width), feedback: details,
+        accepted: !details.blockers.length && !details.boundaries.length && !details.unsupportedSurfaceId,
+        snapped: candidate.position.some((value, i) => Math.abs(value - moved.position[i]) > .00001) };
+    },
     /** New items use the nearest empty spot instead of overlapping furniture. */
     nearestFree(object: NativeRoomObject) {
       const search = findFree(object);
@@ -496,8 +635,8 @@ export function createRoomPlacementResolver(world: NativeRoomWorld) {
       while (!next.done) next = search.next();
       return next.value;
     },
-    async nearestFreeAsync(object: NativeRoomObject, signal: AbortSignal) {
-      const search = findFree(object);
+    async nearestFreeAsync(object: NativeRoomObject, signal: AbortSignal, preferVisible = false) {
+      const search = findFree(object, preferVisible);
       let start = performance.now();
       while (!signal.aborted) {
         const next = search.next();

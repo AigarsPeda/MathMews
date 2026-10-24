@@ -11,7 +11,7 @@ const stories = {
   boat: { en: ["Captain Quack", "A duck float, a tiny crew and a very fluffy captain.", "The captain is ready for a first voyage."], lv: ["Kapteinis Pēkšķis", "Visi uz klāja pie pūkainākā pīļu kapteiņa!", "Kapteinis ir gatavs savam pirmajam braucienam."] },
   fountain: { en: ["Ah... ah... ACHOO!", "One drop of water. One giant flower. One enormous sneeze.", "This flower needs a tiny drink."], lv: ["Ā... ā... APČĪ!", "Ūdens piliens, milzu puķe un varens šķaudiens.", "Šī puķe grib mazliet padzerties."] },
   beacon: { en: ["Disco whiskers", "The spotlight is on. These paws were born to dance.", "One cat. One spotlight."], lv: ["Disko ūsiņas", "Gaisma iedegas. Šīs ķepiņas ir dzimušas dejai.", "Viens kaķītis. Viens prožektors."] },
-  trophy: { en: ["Best. Cat bed. Ever.", "A shiny trophy? The cat sees a very fancy place to sit.", "You earned the trophy. The cat has plans."], lv: ["Labākā kaķa gultiņa", "Spīdīgs kauss? Kaķītis redz smalku vietiņu, kur iesēsties.", "Tu ieguvi kausu. Kaķītim ir savi plāni."] },
+  trophy: { en: ["Best. Cat bed. Ever.", "A trophy this comfy deserves a victory nap.", "You earned the trophy. The cat has plans."], lv: ["Labākā kaķa gultiņa", "Uzvara nosvinēta. Laiks snaudai kausā.", "Tu ieguvi kausu. Kaķītim ir savi plāni."] },
 } as const;
 export function getAchievementStory(sceneId: string, locale: AppLocale) {
   const kind = sceneId.includes("-") ? sceneId.split("-").at(-1)! : "trophy";

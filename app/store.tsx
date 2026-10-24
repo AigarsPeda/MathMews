@@ -1,3 +1,4 @@
+import { startDecorationTiming, markDecorationTiming } from '@/utils/decoration-timing';
 import { useStoreCatalog } from "@/hooks/use-store-catalog";
 import { getActiveStoreSales, type StoreSale } from "@/utils/store-catalog";
 import { STORE_SALE_CATEGORIES } from "@/utils/store-promotion";
@@ -147,6 +148,8 @@ export default function StoreScreen() {
   const [feedback, setFeedback] = useState<StoreFeedback | null>(null);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const leavingForDecoration = useRef(false);
+  const purchasingFurniture = useRef(false);
+  const [buyingFurniture, setBuyingFurniture] = useState(false);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useFocusEffect(useCallback(() => {
@@ -209,6 +212,7 @@ export default function StoreScreen() {
     if (leavingForDecoration.current) return;
     leavingForDecoration.current = true;
     setPreview(null);
+    markDecorationTiming('navigationRequested');
     requestRoomDecoration(target);
     router.dismissTo("/");
   }, [requestRoomDecoration, router]);
@@ -324,10 +328,13 @@ export default function StoreScreen() {
 
   const handleBuyBed = useCallback(
     async (bedId: CatBedId, expectedPrice?: number) => {
-      if (leavingForDecoration.current) return;
+      if (leavingForDecoration.current || purchasingFurniture.current) return;
+      purchasingFurniture.current = true;
+      setBuyingFurniture(true);
       recordInteraction();
       triggerHaptic();
-      const result = await purchaseBed(bedId, expectedPrice);
+      startDecorationTiming(bedId);
+      const result = await purchaseBed(bedId, expectedPrice).finally(() => { purchasingFurniture.current = false; setBuyingFurniture(false); });
       if (result === "purchased" || result === "queued") {
         openDecoration({ kind: "bed", id: bedId });
         return;
@@ -407,10 +414,13 @@ export default function StoreScreen() {
 
   const handleBuyToy = useCallback(
     async (toyId: CatToyId, expectedPrice?: number) => {
-      if (leavingForDecoration.current) return;
+      if (leavingForDecoration.current || purchasingFurniture.current) return;
+      purchasingFurniture.current = true;
+      setBuyingFurniture(true);
       recordInteraction();
       triggerHaptic();
-      const result = await purchaseToy(toyId, expectedPrice);
+      startDecorationTiming(toyId);
+      const result = await purchaseToy(toyId, expectedPrice).finally(() => { purchasingFurniture.current = false; setBuyingFurniture(false); });
       if (result === "purchased" || result === "queued") {
         openDecoration({ kind: "toy", id: toyId });
         return;
@@ -491,10 +501,13 @@ export default function StoreScreen() {
 
   const handleBuyDecoration = useCallback(
     async (decorationId: CatDecorationId, expectedPrice?: number) => {
-      if (leavingForDecoration.current) return;
+      if (leavingForDecoration.current || purchasingFurniture.current) return;
+      purchasingFurniture.current = true;
+      setBuyingFurniture(true);
       recordInteraction();
       triggerHaptic();
-      const result = await purchaseDecoration(decorationId, expectedPrice);
+      startDecorationTiming(decorationId);
+      const result = await purchaseDecoration(decorationId, expectedPrice).finally(() => { purchasingFurniture.current = false; setBuyingFurniture(false); });
       if (result === "purchased" || result === "queued") {
         openDecoration({ kind: "decoration", id: decorationId });
         return;
@@ -783,6 +796,7 @@ export default function StoreScreen() {
           <Text style={styles.subtitle}>{activeTab === "rooms" || activeTab === "colors" ? storeSubtitle : t("store.buyPlaceHint")}</Text>
         </View>
 
+        {buyingFurniture && <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.subtitle}>{t("store.preparingPurchase")}</Text>}
         {sales.length > 0 ? <StoreSaleBanner sales={sales} activeTab={activeTab} onOpenSale={handleOpenSale} /> : null}
         <StoreTabBar active={activeTab} onChange={handleTabChange} sales={sales} />
         <View style={styles.filters}>

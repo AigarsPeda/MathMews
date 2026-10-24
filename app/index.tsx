@@ -1,3 +1,4 @@
+import { roomFurnitureVersion, storedRoomItems, withRoomPlacementDraft } from '@/utils/room-edit';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { useCatBedtime } from '@/hooks/use-cat-bedtime';
 import type { WorldPeriod } from '@/utils/world-clock';
@@ -115,6 +116,7 @@ export default function HomeScreen() {
     scalePlacedDecoration,
     visitHomeRoom,
     sendCatToRoom,
+    placementDraft, cancelPlacementDraft, commitRoomEdit,
     decorationEntry,
     requestRoomDecoration,
     clearDecorationEntry,
@@ -129,13 +131,17 @@ export default function HomeScreen() {
     return () => cancelIdleCallback(task);
   }, [isReady, hasCompletedOnboarding, router]));
   const roomEditor = useRoomEditor(pet, setPet, progress);
+  const storedItems = useMemo(() => storedRoomItems(pet, progress), [pet, progress]);
   const [roomFailure, setRoomFailure] = useState<RoomActivityFailureNotice | null>(null);
   const [decoratingRoom, setDecoratingRoom] = useState<HomeRoomId | null>(null);
   const handleDecoratingChange = useCallback((roomId: HomeRoomId, active: boolean) => {
     if (active) setRoomFailure(null);
+    else cancelPlacementDraft();
     setDecoratingRoom(current => active ? roomId : current === roomId ? null : current);
-  }, []);
+  }, [cancelPlacementDraft]);
   const preloadedRooms = useMemo(() => HOME_ROOM_IDS.map(id => previewHomeRoom(pet, id)), [pet]);
+  const stagedRooms = useMemo(() => new Map(preloadedRooms.map(room => [room, withRoomPlacementDraft(room,
+    placementDraft && placementDraft.roomId === room.homeRoomId ? placementDraft.draft : undefined)])), [preloadedRooms, placementDraft]);
   const { transition, progress: roomSlideProgress, visit: slideToRoom, ready: roomSceneReady } = useRoomTransition(pet, visitHomeRoom);
   const handleVisitRoom = useCallback((destination: HomeRoomId, waitForCat = false) => {
     const origin = pet.homeRoomId ?? 'livingRoom';
@@ -361,10 +367,12 @@ export default function HomeScreen() {
   }, [router]);
 
   const handleOpenStore = useCallback(() => {
+    cancelPlacementDraft();
+    setDecoratingRoom(null);
     setRoomFailure(null);
     triggerHaptic();
     router.push("/store");
-  }, [router]);
+  }, [router, cancelPlacementDraft]);
 
   const handleOpenMathStats = useCallback(() => {
     triggerHaptic();
@@ -587,7 +595,10 @@ export default function HomeScreen() {
   const isNativeCatPet = pet.type === "cat";
   const petAnimating = isCareAnimationPlaying;
 
-  const renderStage = (roomPet: PetProfile, visible: boolean) => (
+  const renderStage = (savedRoomPet: PetProfile, visible: boolean) => {
+    const draft = placementDraft && placementDraft.roomId === savedRoomPet.homeRoomId ? placementDraft.draft : undefined;
+    const roomPet = stagedRooms.get(savedRoomPet) ?? savedRoomPet;
+    return (
     <PetStage
       key={`${roomPet.homeRoomId ?? "livingRoom"}:${roomPet.roomId ?? "room1"}`}
       worldClock={worldClock}
@@ -612,6 +623,11 @@ export default function HomeScreen() {
       roomToolbar={{ decorating: decoratingRoom === (roomPet.homeRoomId ?? 'livingRoom'), onDecoratingChange: handleDecoratingChange }}
       decorationEntry={decorationEntry?.roomId === roomPet.homeRoomId ? decorationEntry : null}
       onDecorationEntryConsumed={clearDecorationEntry}
+      placementDraft={draft}
+      onCancelPlacementDraft={cancelPlacementDraft}
+      onCommitRoomEdit={(edits, remove) => commitRoomEdit(roomPet.homeRoomId ?? 'livingRoom', edits, remove, roomFurnitureVersion(savedRoomPet))}
+      storedItems={storedItems}
+      onPlaceStoredItem={requestRoomDecoration}
       roomEditor={roomEditor}
       compact
       name={pet.name}
@@ -690,6 +706,7 @@ export default function HomeScreen() {
       onAnimationComplete={handleAnimationComplete}
     />
   );
+  };
 
   const viewRoom = pet.homeRoomId ?? "livingRoom";
   const editingCurrentRoom = isNativeCatPet && decoratingRoom === viewRoom;

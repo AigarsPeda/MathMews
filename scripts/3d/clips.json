@@ -11,6 +11,16 @@
   ],
   "sit": [96, 24],
   "wakeStretch": [60, 24],
+  "restLoafEnter": [48, 24],
+  "restLoafSleep": [96, 24],
+  "restLoafWake": [48, 24],
+  "restCrescentEnter": [48, 24],
+  "restCrescentSleep": [96, 24],
+  "restCrescentWake": [48, 24],
+  "restSideEnter": [48, 24],
+  "restSideSleep": [96, 24],
+  "restSideWake": [48, 24],
+
   "idle2": [
     96,
     24

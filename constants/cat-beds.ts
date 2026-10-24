@@ -39,6 +39,10 @@ export function isHumanBedId(bedId: string): bedId is HumanBedId {
   return HUMAN_BED_ID_SET.has(bedId);
 }
 
+export function isCatPetBedId(bedId: string): bedId is CatPetBedId {
+  return CAT_PET_BED_IDS.includes(bedId as CatPetBedId);
+}
+
 export function isCatBedId(value: string): value is CatBedId {
   return value in CAT_BED_SOURCES;
 }

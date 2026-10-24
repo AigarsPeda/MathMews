@@ -85,7 +85,7 @@ for (language of ['en', 'lv']) {
   assert.deepEqual(calls.slice(-4), ['left', 'right', 'up', 'down'], 'Every accessible directional alternative remains usable');
   button(nodes, t('common.back')).props.onPress();
   button(render(), t('home.putAway')).props.onPress();
-  assert.deepEqual(calls.slice(-2), ['put-away', 'place'], 'Put away removes this instance and closes its selection');
+  assert.equal(calls.at(-1), 'put-away', 'The storage transaction owns selection cleanup after any group confirmation');
   state = [];
   button(render(), t('home.finishMoving', { name: props.name })).props.onPress();
   assert.equal(calls.at(-1), 'place');

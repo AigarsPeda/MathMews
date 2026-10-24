@@ -428,7 +428,7 @@ test('a rejected queue removes provisional copies while preserving confirmed ite
   h.adjust(150);h.setOffline(false);await h.api.refresh();
   assert.equal(h.orders.length,1);assert.equal(h.balance,50);assert.equal(h.save.wallet.coins,50);
   assert.equal(h.save.progress.toyQuantities.blueBall,1);
-  assert.equal(h.save.pet.placedToys.filter(t=>t.toyId==='blueBall').length,1);
+  assert.equal(h.save.pet.placedToys.filter(t=>t.toyId==='blueBall').length,0,'Purchases grant stored copies');
   assert.equal(h.save.walletNotices.length,2);assert.equal(h.save.pendingWalletPurchases.length,0);
   assert.equal(h.save.coinTransactions.filter(t=>t.syncStatus==='rejected').length,2);
   h.setSave({...h.save,walletNotices:[]});await h.api.refresh();
@@ -442,8 +442,8 @@ test('rollback cleans every room and saved layout, including moved or recreated 
   const purchase=u.createPendingPurchase(confirmed,{id:'offline',userId:'account-a',environment:'sandbox',saveId:'save-a',kind:'decoration',itemId:'plantSmall',expectedPrice:24,at:1});
   let pending=u.applyProvisionalPurchase(confirmed,purchase);
   const stored=pending.pendingWalletPurchases[0];
-  const existing=confirmed.pet.placedDecorations.find(d=>d.decorationId==='plantSmall');
-  const added=pending.pet.placedDecorations.find(d=>stored.undo.addedInstances.includes(d.instanceId));
+  const existing={decorationId:'plantSmall',instanceId:'confirmed-copy',offset:{x:0,y:0}};
+  const added={decorationId:'plantSmall',instanceId:'pending-copy',offset:{x:.5,y:.5}};
   const layout={placedDecorations:[existing,added],roomLayerOrder:[{kind:'decoration',decorationId:'plantSmall',instanceId:existing.instanceId},{kind:'decoration',decorationId:'plantSmall',instanceId:added.instanceId}]};
   const recreated={...layout,placedDecorations:[existing,{...added,instanceId:'recreated-copy'}]};
   pending={...pending,pet:{...pending.pet,...layout,roomLayouts:{room1:layout},savedRoomLayouts:{room2:recreated},homeRooms:{bedroom:{...layout,roomId:'room1',roomLayouts:{room1:layout},savedRoomLayouts:{room1:recreated}}}}};
@@ -498,6 +498,57 @@ test('a tap during background wallet polling is queued rather than silently drop
   assert.equal(h.save.progress.toyQuantities.blueBall,1);
   release();await polling;
   assert.equal(await purchase,'purchased');assert.equal(h.orders.length,1);
+});
+
+test('room purchases return with durable ownership before the server responds',async()=>{
+  for(const [kind,id,moduleName] of [['bed','green','cat-beds'],['toy','blueBall','cat-toys'],['decoration','plantSmall','cat-decorations']]) {
+    const h=harness(),release=h.pauseWallet();
+    const name=kind[0].toUpperCase()+kind.slice(1);
+    const purchase=sourceCallback('contexts/GameProvider.tsx',node=>ts.isVariableDeclaration(node)&&node.name.getText()===`purchase${name}`)({
+      [`resolveCat${name}Id`]:h.load(`@/constants/${moduleName}`)[`resolveCat${name}Id`],
+      saveRef:{current:h.save},spendCoins:h.api.spend,
+    });
+    // Hold an existing poll too: checkout must not wait for it or start duplicate requests.
+    const polling=h.api.refresh();
+    try {
+      const result=await Promise.race([purchase(id,24),new Promise(resolve=>setImmediate(()=>resolve('waiting-for-server')))]);
+      assert.equal(result,'queued',`${kind} must be ready before any server response`);
+      assert.equal(h.balance,500,'Server debit is still blocked');
+      assert.equal(h.save.wallet.coins,476,'Pending purchase reserves the displayed price');
+      const saved=JSON.parse(h.stored.get(h.load('@/types/save').GAME_SAVE_STORAGE_KEY));
+      const entry=h.load('@/utils/room-edit').storedRoomItems(saved.pet,saved.progress).find(entry=>entry.target.kind===kind && entry.target.id===id);
+      assert.equal(entry?.count,1,'The durable purchase is available in storage');
+      assert.equal(saved.pendingWalletPurchases.length,1);
+      const outbox=JSON.parse([...h.stored].find(([key])=>key.includes('wallet-outbox:'))[1]);
+      assert.equal(outbox[0].id,saved.pendingWalletPurchases[0].id);
+      if(kind!=='bed')assert.equal(outbox[0].undo.addedInstances.length,0,'Buying must not mutate the room');
+    } finally {
+      release();await polling;await h.api.refresh();
+    }
+    assert.equal(h.orders.length,1,'Background confirmation debits once');
+    assert.equal(h.balance,476);assert.equal(h.save.wallet.coins,476);
+    assert.equal(h.save.pendingWalletPurchases.length,0);
+    if(kind==='bed')assert.notEqual(h.save.pet.bedId,id);
+    else assert.equal(h.save.pet[kind==='toy'?'placedToys':'placedDecorations'].filter(item=>item[`${kind}Id`]===id).length,0);
+  }
+});
+
+test('background decoration confirmation still rolls back a rejection and reports it',async()=>{
+  const h=harness(),release=h.pauseWallet();
+  h.rejectWith({code:'P0001',message:'Item unavailable'});
+  try {
+    assert.equal(await h.api.spend('decoration','plantSmall',24,'background'),'queued');
+    assert.equal(h.save.progress.decorationQuantities.plantSmall,1);
+  } finally {
+    release();await h.api.refresh();
+  }
+  assert.equal(h.balance,500);assert.equal(h.save.wallet.coins,500);
+  assert.equal(h.save.progress.decorationQuantities.plantSmall,0);
+  assert.ok(!h.save.pet.placedDecorations.some(item=>item.decorationId==='plantSmall'));
+  assert.equal(h.save.walletNotices[0].reason,'not_for_sale');
+  assert.equal(h.save.pendingWalletPurchases.length,0);
+  assert.equal(await h.api.spend('decoration','plantSmall',501,'background'),'insufficient_funds');
+  assert.equal(h.save.pendingWalletPurchases.length,0,'Local failures never grant an item');
 });
 
 test('offline puzzle rewards replay before the purchases they fund',async()=>{
@@ -587,4 +638,26 @@ test('restored connectivity drains queued rewards and purchases without remounti
   await h.reconnect();
   assert.equal(h.balance,513);
   assert.equal(h.orders.length,1);
+});
+
+test('rejection removes a draft placed during server confirmation across named rooms',()=>{
+  const h=harness(),u=h.load('@/services/wallet/offline-orders');
+  let save=h.load('@/services/wallet/orders').applyWalletOrder(h.save,{id:'confirmed-cross-room',request_payload:{save_id:'save-a',kind:'toy',item_id:'blueBall'}});
+  const purchase=u.createPendingPurchase(save,{id:'draft-pending',userId:'account-a',environment:'sandbox',saveId:'save-a',kind:'toy',itemId:'blueBall',expectedPrice:6,at:1});
+  save=u.applyProvisionalPurchase(save,purchase);
+  const pending={toyId:'blueBall',instanceId:'pending-draft',offset:{x:0,y:0}},confirmed={toyId:'blueBall',instanceId:'confirmed-toy',offset:{x:0,y:0}};
+  save={...save,pet:{...save.pet,homeRoomId:'livingRoom',placedToys:[pending],homeRooms:{kitchen:{roomId:'room1',placedToys:[confirmed]}}},pendingWalletPurchases:save.pendingWalletPurchases.map(order=>({...order,undo:{...order.undo,addedInstances:[pending.instanceId]}}))};
+  // The RPC holds the earlier outbox snapshot, before the player placed the item.
+  const rejected=u.rejectProvisionalPurchase(save,purchase,'not_for_sale');
+  assert.equal(rejected.pet.placedToys.length,0);assert.equal(rejected.pet.homeRooms.kitchen.placedToys[0].instanceId,'confirmed-toy');
+  assert.equal(rejected.progress.toyQuantities.blueBall,1);
+});
+
+test('unchanged wallet polling preserves the save while changed balances still apply',async()=>{
+  const h=harness();await h.api.refresh();
+  const before=h.save;
+  await h.api.refresh();
+  assert.equal(h.save,before,'Idle polling must not repaint preloaded rooms');
+  h.adjust(640);await h.api.refresh();
+  assert.notEqual(h.save,before);assert.equal(h.save.wallet.coins,640);
 });
