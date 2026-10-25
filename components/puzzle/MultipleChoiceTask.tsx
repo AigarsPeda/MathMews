@@ -19,10 +19,12 @@ export function MultipleChoiceTask({
   answered,
   onSelect,
 }: MultipleChoiceTaskProps) {
+  const compactChoices = puzzle.choices.length >= 2 && puzzle.choices.length <= 4 && puzzle.choices.every(choice => choice.length <= 4);
   return (
     <View style={styles.choices}>
       {puzzle.taskVisual ? <QuantityTaskScene key={puzzle.id} model={puzzle.taskVisual} disabled={answered} showExpression={puzzle.difficulty !== "hard"} /> : null}
-      {puzzle.choices.map((choice, index) => {
+      <View style={[styles.answerChoices, compactChoices && styles.compactChoices]}>
+        {puzzle.choices.map((choice, index) => {
         let result: "correct" | "wrong" | null = null;
         if (answered) {
           if (isCorrect && index === puzzle.correctIndex) {
@@ -39,10 +41,12 @@ export function MultipleChoiceTask({
             selected={selectedIndex === index}
             disabled={answered}
             result={result}
+            style={compactChoices ? puzzle.choices.length === 3 ? styles.threeColumnChoice : styles.twoColumnChoice : undefined}
             onPress={() => onSelect(index)}
           />
         );
-      })}
+        })}
+      </View>
     </View>
   );
 }
@@ -53,4 +57,8 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     gap: moderateScale(12),
   },
+  answerChoices: { gap: moderateScale(12) },
+  compactChoices: { flexDirection: "row", flexWrap: "wrap" },
+  twoColumnChoice: { width: "48%", flexGrow: 1 },
+  threeColumnChoice: { width: "30%", flexGrow: 1 },
 });

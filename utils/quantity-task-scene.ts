@@ -6,7 +6,11 @@ function counter(id: number, x: number, y: number, primary = false): PracticeTok
 }
 
 export function getQuantityTaskHeight(model: QuantityTaskModel): number {
-  return model.kind === "array" ? Math.max(140, model.rows * (model.object ? 28 : 16) + 24) : 140;
+  if (model.kind === "array") return Math.max(140, model.rows * (model.object ? 28 : 16) + 24);
+  if (model.kind === "share") return 140;
+  const groupRows = model.kind === "join" ? Math.ceil(Math.max(model.left, model.right) / 5) : 0;
+  const resultRows = Math.ceil((model.kind === "join" ? model.left + model.right : model.left) / 10);
+  return Math.max(92, 62 + (Math.max(groupRows, resultRows) - 1) * 28);
 }
 
 /** Stable identities let counters travel between the pool and their destinations. */

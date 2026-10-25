@@ -463,10 +463,6 @@ export function PlaySession({ session }: { session: LearningSession }) {
 
         <PuzzleProgress steps={progressSteps} total={position.total}
           label={t(level.kind === "boss" ? "learning.stageOf" : "play.puzzleOf", { number: position.current, total: position.total })} />
-        {!answered ? <Pressable accessibilityRole="button" style={styles.lifeAction} onPress={() => { recordLearningHelp(puzzle.id); router.push({ pathname: "/learn", params: { lesson: lesson.id, source: puzzle.id } }); }}>
-          <Text style={styles.lifeActionText}>{t("guided.title")}</Text>
-          {timed && run?.status === "active" ? <Text style={styles.lifePolicy}>{t("guided.timerContinues")}</Text> : null}
-        </Pressable> : null}
         {timed && challengePlayable && !answered && run ? <ChallengeClock milliseconds={run.deadlineAt - now} /> : null}
 
         <ScrollView
@@ -503,34 +499,32 @@ export function PlaySession({ session }: { session: LearningSession }) {
             coinReward={coinReward}
             levelKind={level.kind}
           />
-          <Text style={styles.lifePolicy}>{t("lives.mistakeCost")}</Text>
-
-
-
-          {hasVisualHelp ? (
-            <Pressable
-              style={[
-                styles.visualHelpBtn,
-                answered && styles.visualHelpBtnDisabled,
-              ]}
-              onPress={handleOpenVisualHelp}
-              disabled={answered}
-              accessibilityRole="button"
-              accessibilityLabel={t("visualHelp.a11yOpen")}
-            >
-              <Text style={styles.visualHelpBtnText}>
-                {t("visualHelp.compactButton")}
-              </Text>
-              {!visualHelpUnlocked ? (
-                <Text style={styles.visualHelpBtnHint}>
-                  {t("visualHelp.unlockPrice", { cost: visualHelpCost })}
-                </Text>
-              ) : null}
+          {!answered ? <View style={styles.helpRow}>
+            <Pressable accessibilityRole="button" style={styles.learnAction} onPress={() => { recordLearningHelp(puzzle.id); router.push({ pathname: "/learn", params: { lesson: lesson.id, source: puzzle.id } }); }}>
+              <Text style={styles.lifeActionText}>{t("guided.title")}</Text>
             </Pressable>
-          ) : null}
+            {hasVisualHelp ? (
+              <Pressable
+                style={styles.visualHelpBtn}
+                onPress={handleOpenVisualHelp}
+                accessibilityRole="button"
+                accessibilityLabel={t("visualHelp.a11yOpen")}
+              >
+                <Text style={styles.visualHelpBtnText}>
+                  {t("visualHelp.compactButton")}
+                </Text>
+                {!visualHelpUnlocked ? (
+                  <Text style={styles.visualHelpBtnHint}>
+                    {t("visualHelp.unlockPrice", { cost: visualHelpCost })}
+                  </Text>
+                ) : null}
+              </Pressable>
+            ) : null}
+          </View> : null}
+          {timed && run?.status === "active" && !answered ? <Text style={styles.lifePolicy}>{t("guided.timerContinues")}</Text> : null}
 
           <View style={styles.taskArea}>
-            {puzzle.type !== "order_numbers" && !(progress.completedPuzzleIds ?? []).some(
+            {puzzle.type !== "order_numbers" && puzzle.type !== "multiple_choice" && !(progress.completedPuzzleIds ?? []).some(
               (id) =>
                 puzzles.find((item) => item.id === id)?.type === puzzle.type,
             ) && (
@@ -763,6 +757,8 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     alignSelf: "stretch",
   },
+  helpRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: moderateScale(12) },
+  learnAction: { minHeight: 44, justifyContent: "center", flexShrink: 1 },
   visualHelpBtn: {
     backgroundColor: "#F3EEFF",
     borderRadius: moderateScale(16),
@@ -772,11 +768,7 @@ const styles = StyleSheet.create({
     paddingVertical: moderateScale(8),
     paddingHorizontal: moderateScale(12),
     alignItems: "center",
-    alignSelf: "flex-end",
     gap: moderateScale(2),
-  },
-  visualHelpBtnDisabled: {
-    opacity: 0.45,
   },
   visualHelpBtnText: {
     fontSize: moderateScale(14),

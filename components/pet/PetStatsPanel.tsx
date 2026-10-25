@@ -9,7 +9,7 @@ import type { PetStats } from "@/types/game";
 import { clampStat } from "@/utils/pet-care";
 import { moderateScale } from "@/utils/scale";
 import { Canvas, Circle, matchFont, Path, Skia, Text as SkiaText } from "@shopify/react-native-skia";
-import { useEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useDerivedValue, useReducedMotion, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
@@ -21,12 +21,22 @@ const RING_STROKE = moderateScale(4);
 const RING_RADIUS = (RING_SIZE - RING_STROKE) / 2;
 const PERCENT_HEIGHT = moderateScale(16);
 
-function StatRing({ stat, expanded, active, onPress }: { stat: Stat; expanded: boolean; active: boolean; onPress: () => void }) {
+function StatRing({ stat, expanded, active, visible, onPress }: { stat: Stat; expanded: boolean; active: boolean; visible: boolean; onPress: () => void }) {
   const { t } = useTranslation();
   const progress = useSharedValue(stat.value);
   const pulse = useSharedValue(1);
   const reducedMotion = useReducedMotion();
-  useEffect(() => {
+  const wasVisible = useRef(visible);
+  useLayoutEffect(() => {
+    const enteredRoom = visible && !wasVisible.current;
+    wasVisible.current = visible;
+    if (!visible || enteredRoom) {
+      cancelAnimation(progress);
+      cancelAnimation(pulse);
+      progress.set(stat.value);
+      pulse.set(1);
+      return;
+    }
     if (!active) return;
     const changed = progress.get() !== stat.value;
     if (reducedMotion) {
@@ -40,7 +50,7 @@ function StatRing({ stat, expanded, active, onPress }: { stat: Stat; expanded: b
       ));
     }
     return () => { cancelAnimation(progress); cancelAnimation(pulse); };
-  }, [stat.value, active, reducedMotion, progress, pulse]);
+  }, [stat.value, active, visible, reducedMotion, progress, pulse]);
   const ringEnd = useDerivedValue(() => progress.get() / 100);
   const ringOpacity = useDerivedValue(() => progress.get() > 0 ? 1 : 0);
   const percentText = useDerivedValue(() => `${Math.round(progress.get())}%`);
@@ -109,7 +119,7 @@ export function PetStatsPanel({ stats, wisdom, compact = false, visible = true, 
     <View style={styles.panel}>
       {compact ? <View style={styles.summary}>
         <View style={styles.gauges}>
-          {values.map(stat => <StatRing key={stat.icon} stat={stat} expanded={showStats} active={visible && screenSettled}
+          {values.map(stat => <StatRing key={stat.icon} stat={stat} expanded={showStats} active={visible && screenSettled} visible={visible}
             onPress={() => setShowStats(true)} />)}
         </View>
         {onOpenMathStats ? <MathStatsChip compact onPress={onOpenMathStats} /> : null}

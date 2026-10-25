@@ -26,7 +26,7 @@ export default function SceneFixture() {
   if (!__DEV__) return <Redirect href="/" />;
   const puzzle = kind === "compare" ? puzzles.find(p => p.type === "compare" && p.payload.object === compareObject && (compareObject !== "mouse" || p.id === (largeArray ? "v2-easy-numbers-tens-2" : "v2-easy-numbers-small-2")))!
     : kind === "share" ? puzzles.find(p => p.type === "fair_share" && p.payload.items === (largeArray ? 31 : 23))!
-    : puzzles.find(p => p.taskVisual?.kind === kind && (!largeArray || kind !== "array" || (p.taskVisual.kind === "array" && p.taskVisual.rows === 12)))!;
+    : puzzles.find(p => p.taskVisual?.kind === kind && (kind !== "join" || p.id === "v2-easy-addition-join-3") && (!largeArray || kind !== "array" || (p.taskVisual.kind === "array" && p.taskVisual.rows === 12)))!;
   const model: QuantityTaskModel = puzzle.type === "fair_share" ? { kind: "share", items: puzzle.payload.items, groups: puzzle.payload.people, object: puzzle.payload.object } : puzzle.taskVisual!;
   function change(next: QuantityTaskModel["kind"] | "compare") { setKind(next); setLargeArray(false); setLocked(false); setSelected(null); setRevision(n=>n+1); }
   return <I18nextProvider i18n={language}><SafeAreaView style={{ flex: 1, backgroundColor: "#FFF5EB" }}>

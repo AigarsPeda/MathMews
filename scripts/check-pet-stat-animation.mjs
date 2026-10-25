@@ -23,6 +23,11 @@ const React = {
     if (!sameDeps(current.slots[i]?.deps, deps)) current.slots[i] = { value: fn(), deps };
     return current.slots[i].value;
   },
+  useRef(initial) {
+    const host = current, i = host.cursor++;
+    if (!(i in host.slots)) host.slots[i] = { current: initial };
+    return host.slots[i];
+  },
   useEffect(fn, deps) {
     const host = current, i = host.cursor++;
     if (!sameDeps(host.slots[i]?.deps, deps)) host.effects.push(() => {
@@ -30,6 +35,7 @@ const React = {
     });
   },
 };
+React.useLayoutEffect = React.useEffect;
 const navigation = {
   isFocused: () => focused,
   addListener(name, fn) {
@@ -149,15 +155,18 @@ focused = true; emit('transitionEnd', false); update(); advance(1000);
 assert.equal([...sharedValues].reduce((sum, value) => sum + value.starts, 0), starts, 'Returning without changes never replays feedback');
 
 visible = false; wisdom = 30; update(); advance(1000);
-assert.equal(displayed(), 22, 'Hidden cached rooms and decoration mode retain pending feedback');
-visible = true; update(); advance(200); const interrupted = displayed();
-assert.ok(interrupted > 22 && interrupted < 30);
+assert.equal(displayed(), 30, 'Hidden rooms keep their gauges current');
+visible = true; update();
+assert.equal(displayed(), 30, 'Entering a room shows its current stats immediately');
+assert.equal([...sharedValues].reduce((sum, value) => sum + value.starts, 0), starts, 'Room entry does not replay old stat changes');
+wisdom = 34; update(); advance(200); const interrupted = displayed();
+assert.ok(interrupted > 30 && interrupted < 34, 'Visible stat changes still animate');
 foreground = false; update(); advance(5000);
 assert.equal(displayed(), interrupted, 'Backgrounding freezes the actual displayed progress');
 foreground = true; update(); advance(900);
-assert.equal(displayed(), 30, 'Interrupted feedback resumes from the displayed value');
+assert.equal(displayed(), 34, 'Interrupted feedback resumes from the displayed value');
 visible = false; wisdom = 35; reducedMotion = true; update(); advance(1000);
-assert.equal(displayed(), 30);
+assert.equal(displayed(), 35);
 visible = true; update(); assert.equal(displayed(), 35, 'Reduced motion snaps on return without a pulse');
 reducedMotion = false; wisdom = 40; update();
 for (const instance of [panelHost, ringHost]) for (const slot of instance.slots) slot?.cleanup?.();
@@ -177,15 +186,11 @@ function visit(node) {
   ts.forEachChild(node, visit);
 }
 visit(source); assert.ok(callback);
-function goHome({ isReplay = false, isCorrect = true, sessionIndex = 0, puzzles = [1, 2] } = {}) {
+function goHome() {
   const calls = [];
-  const context = { isReplay, isCorrect, sessionIndex, puzzles,
-    exitToPath: options => calls.push(['path', options]),
-    router: { dismissTo: href => calls.push(['dismissTo', href]), replace: href => calls.push(['replace', href]) } };
+  const context = { router: { dismissTo: href => calls.push(['dismissTo', href]) } };
   vm.runInNewContext(`(${callback.getText(source)})()`, context);
   return calls;
 }
 assert.deepEqual(goHome(), [['dismissTo', '/']], 'Go home preserves the existing screen and its previous stat values');
-assert.equal(goHome({ isReplay: true })[0][0], 'path', 'Replay retains puzzle-path navigation');
-assert.equal(goHome({ sessionIndex: 1 })[0][1].tierJustCompleted, true, 'Tier completion retains its path celebration');
-console.log('Pet stats retain hidden rewards, animate after return, resume interruptions, respect reduced motion, and preserve Home navigation.');
+console.log('Pet stats animate on screen return, enter rooms current, resume interruptions, respect reduced motion, and preserve Home navigation.');

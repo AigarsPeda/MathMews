@@ -22,10 +22,10 @@ export function QuantityTaskScene({ model, disabled, showExpression = true }: { 
     : model.kind === "array" ? t(`${sceneKeys}.${step ? "arrayBuilt" : "arrayReady"}`, { rows: model.rows, columns: model.columns, objects })
     : t(`${sceneKeys}.${model.kind}${step ? "Done" : "Ready"}`, { left: model.left, right: model.right, objects });
   return <View style={styles.wrap}>
-    <View accessible accessibilityRole="image" accessibilityLabel={description}>
+    <View accessible accessibilityRole="image" accessibilityLabel={description} accessibilityLiveRegion="polite">
       <VisualPracticeBoard compact boardHeight={getQuantityTaskHeight(model)} prompt={showExpression ? prompt : undefined} tokens={getQuantityTaskTokens(model, step)} />
     </View>
-    <Text style={styles.caption} accessibilityLiveRegion="polite">{description}</Text>
+    {sharing || model.kind === "array" ? <Text style={styles.caption} accessibilityLiveRegion="polite">{description}</Text> : null}
     <View style={styles.controls}>
       <Pressable disabled={disabled || (sharing && finished)} accessibilityRole="button"
         accessibilityState={{ disabled: disabled || (sharing && finished) }}

@@ -6,7 +6,11 @@ final class NativeDragTests: XCTestCase {
   app.activate()
   XCTAssertTrue(app.buttons["Add"].waitForExistence(timeout: 15))
  }
- func expect(_ text: String) { XCTAssertTrue(app.staticTexts[text].firstMatch.waitForExistence(timeout: 3), "Missing \(text)\n\(app.debugDescription)") }
+ func expect(_ text: String) {
+  let caption = app.staticTexts[text].firstMatch
+  let scene = app.images[text].firstMatch
+  XCTAssertTrue(caption.waitForExistence(timeout: 1) || scene.waitForExistence(timeout: 3), "Missing \(text)\n\(app.debugDescription)")
+ }
  func shot(_ name: String) {
   let image = XCTAttachment(screenshot: app.screenshot()); image.name=name; image.lifetime = .keepAlways; add(image)
  }

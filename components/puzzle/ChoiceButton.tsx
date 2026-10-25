@@ -1,13 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { GameColors } from "@/constants/game";
 import { moderateScale } from "@/utils/scale";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from "react-native";
 
 type ChoiceButtonProps = {
   label: string;
   selected: boolean;
   disabled: boolean;
   result?: "correct" | "wrong" | null;
+  style?: StyleProp<ViewStyle>;
   onPress: () => void;
 };
 
@@ -16,6 +17,7 @@ export function ChoiceButton({
   selected,
   disabled,
   result = null,
+  style,
   onPress,
 }: ChoiceButtonProps) {
   const { t } = useTranslation();
@@ -26,6 +28,7 @@ export function ChoiceButton({
     <Pressable
       style={[
         styles.button,
+        style,
         selected && styles.buttonSelected,
         showCorrect && styles.buttonCorrect,
         showWrong && styles.buttonWrong,

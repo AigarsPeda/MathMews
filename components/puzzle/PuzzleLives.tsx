@@ -9,6 +9,7 @@ export function PuzzleLives({ lives, onPress }: { lives: LivesState; onPress: ()
   const { t } = useTranslation();
   return <Pressable onPress={onPress} accessibilityRole="button"
     accessibilityLabel={t("lives.a11yLives", { current: lives.current, max: MAX_LIVES })}
+    accessibilityHint={t("lives.mistakeCost")}
     accessibilityLiveRegion="polite" style={styles.row}>
     {Array.from({ length: MAX_LIVES }, (_, index) => <View key={index} style={index >= lives.current ? styles.used : undefined}>
       <AppIcon name="heart" size={moderateScale(22)} />
