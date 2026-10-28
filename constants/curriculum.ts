@@ -103,3 +103,11 @@ export function getNextPracticeLevel(lesson: LearningLesson, level: LearningLeve
   const index = lesson.levels.findIndex(item => item.id === level.id);
   return lesson.levels.slice(index + 1).find(item => item.kind === "practice");
 }
+
+/** Offer unlocked, unfinished special levels after practice or a challenge. */
+export function getNextSpecialLevel(lesson: LearningLesson, level: LearningLevel, completedIds: readonly string[]) {
+  if (level.kind === "boss" || getNextPracticeLevel(lesson, level)) return undefined;
+  const available = (kind: LearningLevel["kind"]) => lesson.levels.find(item =>
+    item.kind === kind && item.id !== level.id && getLearningLevelState(lesson, item, completedIds) === "current");
+  return (level.kind === "practice" ? available("challenge") : undefined) ?? available("boss");
+}

@@ -103,6 +103,7 @@ async function harness(screen = 'store', compiled = false) {
         }, [body.id, body.world, body.shape, ...body.origin]);
       } },
     'react-native-worklets-core': { useSharedValue: value => React.useState(() => shared(value))[0] },
+    '@/hooks/use-filament-shared-value': { useFilamentSharedValue: value => value },
     'react-native-reanimated': { __esModule: true, default: { View: view('AnimatedView'), Text: view('AnimatedText') }, useReducedMotion: () => false,
       useSharedValue: value => React.useState(() => shared(value))[0],
       useAnimatedStyle: useWorkletValue,
@@ -177,7 +178,7 @@ async function harness(screen = 'store', compiled = false) {
     const world = {};
     Object.assign(mocks['react-native-filament'], {
       FilamentScene: view('FilamentScene'), FilamentView: view('FilamentView'), DefaultLight: view('DefaultLight'),
-      useFilamentContext: () => nativeContext, useSyncSharedValue: value => value,
+      useFilamentContext: () => nativeContext,
       useWorld: () => world, useStaticPlaneShape() {}, useSphereShape() {}, useAnimator() {}, useWorkletEffect() {},
       useModel: source => { counts.set(`model:${source}`, (counts.get(`model:${source}`) ?? 0) + 1); return { state: 'loading' }; },
       RenderCallbackContext: { useRenderCallback() {} },
@@ -219,10 +220,6 @@ async function harness(screen = 'store', compiled = false) {
       setInterval: fn => { const id = ++timerId; timers.set(id, fn); return id; }, clearInterval: id => timers.delete(id),
       setTimeout: fn => { const id = ++timerId; timers.set(id, fn); return id; }, clearTimeout: id => timers.delete(id),
     });
-    if (file.endsWith('/utils/learning-recommendations.ts')) {
-      const recommend = module.exports.getLearningRecommendation;
-      module.exports.getLearningRecommendation = (...args) => { counts.set('recommendation', (counts.get('recommendation') ?? 0) + 1); return recommend(...args); };
-    }
     if (file.endsWith('/constants/puzzles.ts')) {
       const compute = module.exports.computePetWisdom;
       module.exports.computePetWisdom = (...args) => {
@@ -463,6 +460,24 @@ test(`unchanged drag targets retain their views but use the latest drop handlers
   } finally { await h.close(); }
 });
 
+test(`selected drag border keeps a fixed layout origin while its anchor changes (${mode})`, async () => {
+  const h = await harness('drag-target', compiled);
+  try {
+    const animatedPosition = { x: { get: () => 30 }, y: { get: () => 25 } };
+    await h.setStage({ externalPosition: { x: 30, y: 25 }, animatedPosition, selected: true });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const initial = h.props('AnimatedView').style[1];
+    await h.setStage({ externalPosition: { x: 70, y: 25 } });
+    const updated = h.props('AnimatedView').style[1];
+    assert.equal(updated.left, initial.left, 'The saved pose cannot add a second layout shift during animation');
+    assert.equal(updated.top, initial.top);
+    await h.setStage({ animatedPosition: undefined });
+    const released = h.props('AnimatedView').style[1];
+    assert.equal(released.left, initial.left, 'Release cannot move the border layout origin');
+    assert.equal(released.top, initial.top);
+  } finally { await h.close(); }
+});
+
 test(`Undo controls stay stable across saves and restore the latest layout (${mode})`, async () => {
   const h = await harness('room-editor', compiled);
   try {
@@ -515,38 +530,22 @@ test(`saving a bed preserves other rooms' furniture callbacks and native scenes 
   } finally { await h.close(); }
 });
 
-test(`placement outlines reuse geometry during translation and refresh for changed shape (${mode})`, async () => {
+test(`placement diagnostics do not leave a duplicate furniture footprint behind the live model (${mode})`, async () => {
   const h = await harness('overlay', compiled);
   try {
-    const group = () => h.props('Group:fill');
-    const shape = () => React.Children.toArray(group().children)[0].props.path;
-    const initial = shape(), parts = React.Children.toArray(h.props('Group:1.2').children)[0].props.path;
+    const diagnostics = () => React.Children.toArray(h.props('Canvas').children);
+    assert.equal(diagnostics().length, 2, 'Only blocker and boundary paths are drawn');
     const world = h.load('@/utils/native-room-world');
     const layout = world.buildNativeRoomWorld({ width: 390, height: 420, petSize: 100, sizeScale: 1,
       decorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: 0, y: 0 } }], toys: [] });
     const original = layout.objects[0];
-    let candidate;
     for (const position of [[.2, .3, -.4], [-.5, 1.2, .7]]) {
-      candidate = h.load('@/utils/room-support').transformRoomObject(original, position, original.heading, original.scale);
+      const candidate = h.load('@/utils/room-support').transformRoomObject(original, position, original.heading, original.scale);
       await h.setStage({ feedback: { candidate, blockers: [], boundaries: [], access: 'clear' } });
-      assert.equal(shape(), initial, 'Translation must reuse the footprint path');
-      assert.equal(React.Children.toArray(h.props('Group:1.2').children)[0].props.path, parts, 'Translation must reuse structural paths');
-      const expected = h.load('@/utils/room-item-placement').roomItemFootprint(candidate).map(point => world.projectWorld(point, 390));
-      for (let i = 0; i < expected.length; i++) {
-        assert.ok(Math.abs(initial.points[i][0] + group().transform.get()[0].translateX - expected[i].x - 195) < 1e-8);
-        assert.ok(Math.abs(initial.points[i][1] + group().transform.get()[1].translateY - expected[i].y - 210) < 1e-8);
-      }
-      const expectedParts = h.load('@/utils/room-item-placement').roomItemPlacementOutline(candidate);
-      const point = world.projectWorld(expectedParts[0][0], 390), transform = h.props('Group:1.2').transform.get();
-      assert.ok(Math.abs(parts.points[0][0] + transform[0].translateX - point.x - 195) < 1e-8);
-      assert.ok(Math.abs(parts.points[0][1] + transform[1].translateY - point.y - 210) < 1e-8);
+      assert.equal(diagnostics().length, 2, 'Moving the model cannot paint a second footprint');
     }
-    for (const change of [{ heading: 1 }, { scale: original.scale * 1.2 }, { modelId: 'lampFloorArc' }]) {
-      const before = shape();
-      candidate = { ...candidate, ...change };
-      await h.setStage({ feedback: { candidate, blockers: [], boundaries: ['frontEdge'] } });
-      assert.notEqual(shape(), before, 'Rotation, scale and model changes rebuild the outline');
-    }
+    await h.setStage({ feedback: { candidate: original, blockers: [], boundaries: ['frontEdge'] } });
+    assert.ok(diagnostics()[1].props.path.points.length > 0, 'A blocked room edge remains visible');
   } finally { await h.close(); }
 });
 
@@ -565,6 +564,11 @@ test(`native drag motion updates independently of React diagnostics (${mode})`, 
     let motion = { session: 1, sequence: 0, x: 0, y: 0, active: true, moved: false, at: 1, measure: false };
     editor().motion.set(motion);
     await h.update(() => editor().prepare('bowl', start, motion));
+    const selectedTarget = h.props('room-object:bowl');
+    assert.equal(selectedTarget.animatedPosition.x.get(), start.x,
+      'The selection border stays at the grabbed item before the first movement sample');
+    assert.equal(selectedTarget.animatedPosition.y.get(), start.y,
+      'The selection border keeps its vertical anchor before movement');
     const move = async x => {
       motion = { ...motion, x, y: 1000, moved: true, sequence: motion.sequence + 1 };
       editor().motion.set(motion);
@@ -583,11 +587,115 @@ test(`native drag motion updates independently of React diagnostics (${mode})`, 
     assert.equal(target.x.get(), before + 20, 'UI position follows input without invoking any JS feedback callback');
     assert.equal(commits.length, 0);
     await h.update(() => editor().commit('bowl', { x: 1500, y: 1400 }));
+    assert.ok(Math.abs(target.x.get() - h.props('room-object:bowl').externalPosition.x) < 1e-6,
+      'The drag style hands off directly to the rejected release preview');
     assert.equal(commits.length, 0, 'Release still rejects the exact out-of-bounds drop');
     assert.equal(scene.dragBase.get(), undefined, 'Release relinquishes native preview ownership');
     assert.ok(scene.editingObject.value, 'Rejected final pose is kept for the placement controls');
     await h.update(() => editor().discard('bowl'));
     assert.equal(scene.editingObject.value, undefined);
+  } finally { await h.close(); }
+});
+
+test(`accepted drop keeps the selected border at its release pose until the saved room catches up (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const commits = [];
+    await h.setStage({ catPresent: false, roomToolbar: { decorating: true, onDecoratingChange() {} },
+      onCommitRoomEdit: (...args) => { commits.push(args); return true; },
+      placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: -.4, y: 0 } }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = () => h.props('NativeRoomEditor');
+    await h.update(() => editor().select('bowl'));
+    const start = editor().anchor('bowl');
+    const target = { x: start.x + 28, y: start.y + 12 };
+    const motion = { session: 18, sequence: 1, x: 28, y: 12, active: true, moved: true, at: 1, measure: false };
+    editor().motion.set(motion);
+    await h.update(() => editor().prepare('bowl', start, motion));
+    await h.update(() => editor().move('bowl', target, motion));
+    await h.update(() => editor().commit('bowl', target, motion));
+    assert.equal(commits.length, 1, 'The drop is accepted while the parent has not rendered the new room');
+    const border = h.props('room-object:bowl');
+    assert.equal(border.animatedPosition, undefined);
+    assert.ok(Math.hypot(border.externalPosition.x - target.x, border.externalPosition.y - target.y) < 1,
+      'The border stays at the release pose while saved room props are stale');
+    assert.ok(h.props('NativeRoomScene').editingObject.value,
+      'The 3D preview remains at the accepted pose until the saved room catches up');
+    assert.ok(Math.hypot(...h.props('NativeRoomScene').world.objects.find(object => object.instanceId === 'bowl').position
+      .map((value, index) => value - h.props('NativeRoomScene').editingObject.value.position[index])) < .01,
+    'The native scene must receive the accepted pose even while saved props are old');
+    assert.equal(h.props('NativeRoomScene').editingObject.value.releaseSession, motion.session,
+      'The release pose prevents a late native drag sample from replacing the accepted drop');
+    await h.setStage({ placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: -.4, y: 0 } }] });
+    assert.ok(Math.hypot(h.props('room-object:bowl').externalPosition.x - target.x,
+      h.props('room-object:bowl').externalPosition.y - target.y) < 1,
+      'Rebuilding the old room before the save arrives cannot pull the border backwards');
+    assert.ok(h.props('NativeRoomScene').editingObject.value,
+      'Rebuilding the old room cannot pull the 3D item backwards');
+    assert.ok(Math.hypot(...h.props('NativeRoomScene').world.objects.find(object => object.instanceId === 'bowl').position
+      .map((value, index) => value - h.props('NativeRoomScene').editingObject.value.position[index])) < .01,
+    'An old-room rerender still supplies the accepted position to the native scene');
+    await h.setStage({ placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: commits[0][0][0].offset }] });
+    assert.ok(Math.hypot(h.props('room-object:bowl').externalPosition.x - editor().anchor('bowl').x,
+      h.props('room-object:bowl').externalPosition.y - editor().anchor('bowl').y) < 1e-6,
+      'The border uses the saved anchor once the parent renders the committed room');
+    assert.ok(h.props('NativeRoomScene').editingObject.value,
+      'The accepted 3D pose stays held while native callbacks adopt the saved transform');
+    await h.setStage({ placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: -.4, y: 0 } }] });
+    assert.equal(h.props('NativeRoomScene').editingObject.value, undefined,
+      'A later Undo releases the previous committed pose');
+  } finally { await h.close(); }
+});
+
+test(`a quick drag from an unselected item keeps its accepted 3D pose (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const commits = [];
+    await h.setStage({ catPresent: false, roomToolbar: { decorating: true, onDecoratingChange() {} },
+      onCommitRoomEdit: (...args) => { commits.push(args); return true; },
+      placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: { x: -.4, y: 0 } }] });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = h.props('NativeRoomEditor');
+    const start = editor.anchor('bowl'), target = { x: start.x + 25, y: start.y + 10 };
+    const motion = { session: 20, sequence: 1, x: 25, y: 10, active: true, moved: true, released: true, at: 1, measure: false };
+    await h.update(() => {
+      editor.motion.set(motion);
+      editor.select('bowl'); editor.prepare('bowl', start, motion);
+      editor.move('bowl', target, motion); editor.commit('bowl', target, motion);
+    });
+    assert.equal(commits.length, 1);
+    assert.equal(h.props('NativeRoomScene').editingObject.value.releaseSession, motion.session,
+      'A selection update batched with the drop cannot clear its release pose');
+    await h.setStage({ placedDecorations: [{ decorationId: 'bowlBlue', instanceId: 'bowl', offset: commits[0][0][0].offset }] });
+    assert.ok(h.props('NativeRoomScene').editingObject.value,
+      'The final 3D pose remains held while the native renderer catches up');
+  } finally { await h.close(); }
+});
+
+test(`bed holds its accepted pose after the saved room update (${mode})`, async () => {
+  const h = await harness('stage', compiled);
+  try {
+    const commits = [];
+    await h.setStage({ catPresent: false, bedId: 'green', roomBedOffset: { x: 0, y: 0 },
+      roomToolbar: { decorating: true, onDecoratingChange() {} },
+      onCommitRoomEdit: (...args) => { commits.push(args); return true; } });
+    await h.update(() => h.props('AnimatedView:onLayout')({ nativeEvent: { layout: { width: 390, height: 420 } } }));
+    const editor = () => h.props('NativeRoomEditor');
+    await h.update(() => editor().select('bed'));
+    const start = editor().anchor('bed'), target = { x: start.x + 24, y: start.y };
+    const motion = { session: 19, sequence: 1, x: 24, y: 0, active: true, moved: true, at: 1, measure: false };
+    editor().motion.set(motion);
+    await h.update(() => editor().prepare('bed', start, motion));
+    await h.update(() => editor().move('bed', target, motion));
+    await h.update(() => editor().commit('bed', target, motion));
+    assert.equal(commits.length, 1);
+    assert.ok(h.props('NativeRoomScene').editingObject.value, 'The released 3D bed stays at its preview pose');
+    assert.ok(Math.hypot(...h.props('NativeRoomScene').world.objects.find(object => object.instanceId === 'bed').position
+      .map((value, index) => value - h.props('NativeRoomScene').editingObject.value.position[index])) < .01,
+    'The native bed world uses the accepted position before the saved props update');
+    await h.setStage({ roomBedOffset: commits[0][0][0].offset });
+    assert.ok(h.props('NativeRoomScene').editingObject.value,
+      'The bed stays at the accepted pose after the save updates React');
   } finally { await h.close(); }
 });
 
@@ -610,6 +718,12 @@ test(`bed drag through fireplace collisions keeps the pointer anchor (${mode})`,
     const start = editor().anchor('bed');
     let motion = { session: 12, sequence: 0, x: 0, y: 0, active: true, moved: false, at: 1, measure: false };
     editor().motion.set(motion); await h.update(() => editor().prepare('bed', start, motion));
+    assert.ok(Math.hypot(start.x, start.y) > 1, 'This bed exercises a noncentral selection anchor');
+    const selectedTarget = h.props('room-object:bed');
+    assert.equal(selectedTarget.animatedPosition.x.get(), start.x,
+      'The green border stays on the bed before its first movement sample');
+    assert.equal(selectedTarget.animatedPosition.y.get(), start.y,
+      'The green border does not jump vertically at drag start');
     for (let i = 12; i >= 0; i--) {
       const point = { x: target.x + i * 3, y: target.y };
       motion = { ...motion, sequence: motion.sequence + 1, moved: true, x: point.x - start.x, y: point.y - start.y };
@@ -1063,15 +1177,14 @@ test(`hidden Store skips room changes and catches up on focus without hiding acc
 test(`Puzzles skips furniture navigation updates but refreshes learning progress and readiness (${mode})`, async () => {
   const h = await harness('puzzles', compiled);
   try {
-    const before = h.count('recommendation'), picker = h.count('DifficultyPicker');
-    assert.ok(before > 0);
+    const picker = h.count('DifficultyPicker');
+    assert.ok(picker > 0);
     const { switchHomeRoom } = h.load('@/utils/home-rooms');
     for (const room of ['kitchen', 'bathroom', 'livingRoom']) await h.setGame({ pet: switchHomeRoom(h.game.pet, room) });
     await h.setGame({ pet: { ...h.game.pet, roomBedOffset: { x: .2, y: .1 } } });
-    assert.equal(h.count('recommendation'), before, 'Room updates must not recompute the learning path');
     assert.equal(h.count('DifficultyPicker'), picker);
     await h.setGame({ progress: { ...h.game.progress, completedPuzzleIds: [...h.game.progress.completedPuzzleIds, 'new-result'] } });
-    assert.ok(h.count('recommendation') > before, 'New progress still refreshes recommendations');
+    assert.ok(h.count('DifficultyPicker') > picker, 'New progress still refreshes the puzzle screen');
     await h.setGame({ isReady: false });
     assert.ok(h.count('ActivityIndicator') > 0);
     await h.setGame({ isReady: true, hasCompletedOnboarding: false });

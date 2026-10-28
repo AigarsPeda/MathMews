@@ -91,7 +91,7 @@ export function NativeRoomEditor(props: Props) {
     })
     .onTouchesMove(event => {
       const touch = event.allTouches[0], previous = motion.get();
-      if (!touch || !previous.active || event.numberOfTouches !== 1) return;
+      if (!touch || !previous.active || previous.released || event.numberOfTouches !== 1) return;
       const x = (touch.absoluteX - touchStart.get().x) / Math.max(.1, zoom);
       const y = (touch.absoluteY - touchStart.get().y) / Math.max(.1, zoom);
       const next = { ...previous, sequence: previous.sequence + 1, x, y,
@@ -107,7 +107,7 @@ export function NativeRoomEditor(props: Props) {
       if (!touch || ended.get() || !previous.active) return;
       const x = (touch.absoluteX - touchStart.get().x) / Math.max(.1, zoom);
       const y = (touch.absoluteY - touchStart.get().y) / Math.max(.1, zoom);
-      const next = { ...previous, sequence: previous.sequence + 1, x, y,
+      const next = { ...previous, sequence: previous.sequence + 1, x, y, released: true,
         moved: previous.moved || Math.hypot(x, y) > 6, at: Date.now() };
       ended.set(true); motion.set(next); scheduleOnRN(finish, next);
     })

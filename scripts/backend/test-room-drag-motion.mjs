@@ -55,9 +55,17 @@ test('native previews preserve groups, reject stale sessions and continue when r
   assert.deepEqual(JSON.parse(JSON.stringify(result.dragSample)), { session: 4, sequence: 2, inputAt: 123, phase: 'move' });
   assert.equal(roomDragPreview(input, { ...motion, session: 3 }), undefined);
   assert.equal(roomDragPreview(input, { ...motion, active: false }), undefined);
+  assert.equal(roomDragPreview(input, { ...motion, released: true }), undefined,
+    'A lifted finger cannot send another drawing-thread position after release');
   assert.equal(roomDragPreview(input, { ...motion, moved: false }), undefined);
   assert.ok(roomDragPreview(input, { ...motion, x: 1, y: 1 }));
   assert.equal(roomDragAnchor(base, motion, { x: 0, y: 0 }).x, 40);
+  assert.equal(roomDragAnchor(base, { ...motion, released: true }, { x: 0, y: 0 }).x, 40,
+    'The selection border holds its final drag anchor while JS completes the drop');
+  assert.deepEqual(JSON.parse(JSON.stringify(roomDragAnchor(base, { ...motion, moved: false }, { x: 0, y: 0 }))), base.anchor,
+    'Selection stays at the captured anchor before the first movement sample');
+  assert.deepEqual(JSON.parse(JSON.stringify(roomDragAnchor(base, { ...motion, session: 5 }, { x: 0, y: 0 }))), { x: 0, y: 0 },
+    'A stale drag session cannot move the next selection');
 });
 test('React drag feedback ignores translation but detects changed validity, support, shape and blocking parts', () => {
   const feedback = { candidate: object, boundaries: [], blockers: [] };

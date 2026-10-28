@@ -26,12 +26,14 @@
     },
     "plugins": [
       "./plugins/with-ios-pod-deployment-target",
+      "./plugins/with-ios-build-scripts",
       "./plugins/with-filament-logging",
       [
         "expo-build-properties",
         {
           "ios": {
             "deploymentTarget": "16.4",
+            "usePrecompiledModules": false,
             "enableSceneSupport": true
           }
         }

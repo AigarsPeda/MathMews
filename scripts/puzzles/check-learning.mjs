@@ -6,10 +6,8 @@ export function checkLearning({load}) {
   const {checkPuzzleAnswer}=load('@/utils/puzzle-type');
   const {createDefaultGameSave,parseGameSaveFromValue}=load('@/utils/game-storage');
   const {applyPuzzleAnswer}=load('@/utils/game-operations');
-  const {applyGuidedLearning,applyLearningReview}=load('@/utils/learning-review');
+  const {applyLearningReview}=load('@/utils/learning-review');
   const {getLearningReview}=load('@/constants/learning-review');
-  const {createGuidedLesson}=load('@/constants/guided-learning');
-  const {getLearningRecommendation}=load('@/utils/learning-recommendations');
   const clone=x=>JSON.parse(JSON.stringify(x)), now=Date.now(),day=Math.floor(now/86400000);
   const lesson=LEARNING_CATALOG.lessons.find(l=>l.id==='easy-addition-join');
   const all=['easy','medium','hard'].flatMap(d=>getPuzzlesByDifficulty('en',d)),byId=new Map(all.map(p=>[p.id,p]));
@@ -37,15 +35,6 @@ export function checkLearning({load}) {
       if(choices?.every(s=>/^\d+$/.test(s))&&'correctIndex' in p) ranks[choices.map(Number).filter(n=>n<Number(choices[p.correctIndex])).length]++;
     }
     for(let variant=0;variant<12;variant++) {
-      const guide=createGuidedLesson(l,variant);
-      assert.equal(guide.steps.length,3);
-      for(const step of guide.steps) {
-        for(const lang of ['en','lv'])for(const key of ['prompt','hint','explanation'])assert.ok(step[key][lang].length>0);
-        if(step.kind==='choice') {
-          assert.equal(new Set(step.choices.map(c=>c.en)).size,step.choices.length,'Guided answers are unambiguous');
-          assert.ok(step.correct>=0&&step.correct<step.choices.length);
-        } else assert.ok(step.target>=0&&step.target<=(step.kind==='counters'?step.total:step.denominator));
-      }
       const check=getLearningReview(l,day+variant);
       assert.equal(new Set(check.choices).size,check.choices.length,'Review choices are distinct');
       assert.ok(check.correctIndex>=0&&check.correctIndex<check.choices.length);
@@ -64,23 +53,22 @@ export function checkLearning({load}) {
   assert.ok(getPracticeIds(lesson).every(id=>!byId.get(id).hint.includes('full ten')),'Small sums receive a suitable hint');
 
   const empty=createDefaultGameSave();empty.progress.lives={current:0,nextRegenAt:now+1800000};
-  const before=clone(empty),guided=applyGuidedLearning(empty,lesson.id,'guided-test',now);
-  assert.equal(guided.progress.learningEvidence[lesson.skillId].guidedSessions,1);
-  assert.deepEqual(clone(guided.wallet),before.wallet);
-  for(const key of ['lives','completedPuzzleIds','puzzlesSolved','streak','puzzleStreak'])assert.deepEqual(clone(guided.progress[key]),before.progress[key],`Guided learning preserves ${key}`);
-  assert.deepEqual(clone(guided.pet),before.pet,'Guided practice cannot level up the pet');
-  assert.equal(applyGuidedLearning(guided,lesson.id,'guided-test',now),guided,'Repeated completion callback is harmless');
-  assert.equal(applyGuidedLearning(guided,'unknown','bad',now),guided);
-  const resumed=parseGameSaveFromValue(JSON.stringify(guided)).save;
-  assert.equal(resumed.progress.learningEvidence[lesson.skillId].guidedSessions,1);
   const check=getLearningReview(lesson,day);
-  assert.equal(applyLearningReview(resumed,lesson.id,day,check.correctIndex,now).accepted,false,'Independent checks remain gated at zero lives');
+  assert.equal(applyLearningReview(empty,lesson.id,day,check.correctIndex,now).accepted,false,'Independent checks remain gated at zero lives');
 
   let evidenceSave=createDefaultGameSave();
   const [p1,p2,p3,p4]=getPracticeIds(lesson).map(id=>byId.get(id));
   evidenceSave=applyPuzzleAnswer(evidenceSave,p1,true,'independent-1',now).save;
   evidenceSave=applyPuzzleAnswer(evidenceSave,p2,true,'independent-2',now).save;
   assert.equal(evidenceSave.progress.learningEvidence[lesson.skillId].independentPuzzleIds.length,2);
+  const legacy=clone(evidenceSave);
+  legacy.progress.guidedAttemptIds=['old-session'];
+  legacy.progress.learningEvidence[lesson.skillId].guidedSessions=2;
+  const migrated=parseGameSaveFromValue(JSON.stringify(legacy)).save;
+  assert.equal('guidedAttemptIds' in migrated.progress,false);
+  assert.equal('guidedSessions' in migrated.progress.learningEvidence[lesson.skillId],false);
+  assert.deepEqual(clone(migrated.wallet),clone(evidenceSave.wallet));
+  assert.deepEqual(clone(migrated.progress.completedPuzzleIds),clone(evidenceSave.progress.completedPuzzleIds));
   const helped=applyPuzzleAnswer(evidenceSave,p3,true,'helped',now,{helpUsed:true}).save;
   assert.equal(helped.progress.learningEvidence[lesson.skillId].independentPuzzleIds.length,2);
   assert.equal(helped.progress.learningEvidence[lesson.skillId].supportedSuccesses,1);
@@ -93,8 +81,6 @@ export function checkLearning({load}) {
   retry=parseGameSaveFromValue(JSON.stringify(retry)).save;
   retry=applyPuzzleAnswer(retry,p4,true,'retry',now).save;
   assert.equal(retry.progress.learningEvidence[lesson.skillId].independentPuzzleIds.length,2,'Reopening after a mistake does not make a retry independent');
-  assert.equal(getLearningRecommendation(retry.progress,'easy','addition',now).kind,'ready');
-  assert.equal(getLearningRecommendation(retry.progress,'easy','addition',now+3*86400000).kind,'review');
   const correctReview=applyLearningReview(evidenceSave,lesson.id,day,check.correctIndex,now);
   assert.equal(correctReview.accepted,true);assert.equal(correctReview.correct,true);
   assert.equal(correctReview.save.progress.learningEvidence[lesson.skillId].reviewCorrect,1);
@@ -112,5 +98,5 @@ export function checkLearning({load}) {
   assert.equal(afterExpiry.accepted,false,'An expired challenge spends the last life before a review');
   assert.equal(afterExpiry.save.progress.lives.current,0);
   assert.equal(afterExpiry.save.progress.challengeAttempt.status,'expired');
-  console.log(`Verified zero-life guided practice, saved evidence, independent review life costs, delayed recommendations, all bilingual guide variants, and numeric answer ranks ${ranks.join('/')}.`);
+  console.log(`Verified saved evidence, legacy save compatibility, independent review life costs, and numeric answer ranks ${ranks.join('/')}.`);
 }

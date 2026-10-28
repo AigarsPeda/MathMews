@@ -24,7 +24,7 @@ function load(id) {
     { module, exports: module.exports, require: load, Math }); return module.exports;
 }
 const { useRoomCamera: renderRoomCamera } = load('@/hooks/use-room-camera');
-function render(panEnabled = true) { index = 0; return renderRoomCamera(320,400,true,false,panEnabled); }
+function render(panEnabled = true, frameScale = 1, frameY = 0) { index = 0; return renderRoomCamera(320,400,true,false,panEnabled,frameScale,frameY); }
 let camera = render();
 const [pinch, pan] = camera.gesture;
 const manager = { activations:0, activate() { this.activations++; this.active = true; }, fail() { this.failed = true; } };
@@ -81,31 +81,40 @@ assert.equal(camera.scale.get(),3,'Repeated pinches cannot exceed 3×');
 pinch.handlers.onStart({ focalX: 160, focalY: 200 });
 pinch.handlers.onUpdate({ scale: 2.36 / 3, focalX: 160, focalY: 200 });
 assert.ok(Math.abs(camera.scale.get()-2.36)<1e-8,'Pinching inward from the cap preserves fractional zoom');
+pinch.handlers.onFinalize(); camera = render();
+const modeFrame = load('@/utils/room-camera').roomEditingFrame(220,74,48,66);
+const modeCamera = render(false, modeFrame.scale, modeFrame.y);
+assert.equal(modeCamera.zoom, 2.36, 'Entering decoration mode keeps the selected zoom');
+assert.equal(modeCamera.scale.get() * modeFrame.scale, 2.36, 'The displayed room keeps that zoom');
+assert.equal(render().zoom, 2.36, 'Returning to game mode keeps the same zoom');
 camera.reset(); assert.equal(camera.scale.get(),1); assert.equal(render().zoom,1);
 const editingCamera = render(false);
 assert.equal(editingCamera.gesture[0].handlers.enabled, true, 'Pinching remains available while decorating');
 assert.equal(editingCamera.gesture[1].handlers.enabled, false, 'A one-finger item drag cannot move the camera while decorating');
 console.log('Verified fractional focal-point pinch zoom, bounded panning, four-point activation, one native activation per pan, no JS work during pans, tap menus, scroll at 1× and reset.');
 
-const { roomEditingFrame } = load('@/utils/room-camera');
+const { roomEditingFrame, clampRoomEditingCamera, clampRoomCamera } = load('@/utils/room-camera');
 for (const [width, height] of [[320, 380], [390, 460], [768, 700]]) {
   const dock = Math.min(260, Math.max(160, height * .55));
-  const frame = roomEditingFrame(width, height, dock, 74, 48, 66);
-  // A square containing the room fits between toolbar and dock without changing
-  // the logical viewport used to save furniture coordinates.
+  const frame = roomEditingFrame(dock, 74, 48, 66);
+  // The editor may cover part of the room on short screens, but opening it
+  // cannot silently change the user's chosen zoom level.
   const top = height / 2 + frame.y - width * frame.scale / 2;
   const bottom = height / 2 + frame.y + width * frame.scale / 2;
-  assert.ok(top >= 66 - 1e-8);
-  assert.ok(bottom <= height - frame.overlap + 1e-8);
-  assert.ok(frame.scale > 0 && frame.scale <= 1);
+  assert.equal(frame.scale, 1);
+  assert.ok(Math.abs((top + bottom) / 2 - (66 + height - frame.overlap) / 2) < 1e-8);
+  const hidden = Math.max(0, (width - (height - frame.overlap - 66)) / 2);
+  assert.equal(clampRoomEditingCamera(0, 1000, 1, width, height, frame.overlap, 66).y, hidden);
+  assert.equal(clampRoomEditingCamera(0, -1000, 1, width, height, frame.overlap, 66).y, -hidden);
+  assert.equal(clampRoomCamera(0, hidden, 1, width, height).y, 0, 'Returning to play recenters a panned 1× room');
 }
-console.log('Verified fixed editing frames keep the room between toolbar and dock on phone/tablet sizes.');
+console.log('Verified editing frames preserve room zoom and let short screens pan covered room areas.');
 
 slots = []; index = 0;
-const fitted = renderRoomCamera(320, 400, true, false, false, .65, -50);
-const [fittedPinch] = fitted.gesture;
-fittedPinch.handlers.onStart({ focalX: 186, focalY: 176 });
-fittedPinch.handlers.onUpdate({ scale: 1.5, focalX: 186, focalY: 176 });
-assert.ok(Math.abs(160 + fitted.x.get() + 40 * .65 * 1.5 - 186) < 1e-8);
-assert.ok(Math.abs(200 - 50 + fitted.y.get() + 40 * .65 * 1.5 - 176) < 1e-8);
-console.log('Verified pinch keeps its focal point while the editing frame scales and raises the room.');
+const shifted = renderRoomCamera(320, 400, true, false, false, modeFrame.scale, modeFrame.y);
+const [shiftedPinch] = shifted.gesture;
+shiftedPinch.handlers.onStart({ focalX: 200, focalY: 200 + modeFrame.y + 40 });
+shiftedPinch.handlers.onUpdate({ scale: 1.5, focalX: 200, focalY: 200 + modeFrame.y + 40 });
+assert.ok(Math.abs(160 + shifted.x.get() + 40 * 1.5 - 200) < 1e-8);
+assert.ok(Math.abs(200 + modeFrame.y + shifted.y.get() + 40 * 1.5 - (200 + modeFrame.y + 40)) < 1e-8);
+console.log('Verified pinch keeps its focal point while the editing frame shifts the room.');

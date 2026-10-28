@@ -1,6 +1,7 @@
 import { FLOOR_Y, isSurfacePlaceable, placeObjectOnSurface, placeObjectOnRugs, nativeWallPlacementBounds, NATIVE_MODEL_CATALOG, ROOM_SPAN, projectWorld, unprojectFloor, type NativeRoomObject, type NativeRoomWorld, type Vec3 } from '@/utils/native-room-world';
 import type { RoomPoint } from '@/utils/room-activities';
 import { isCurtainDecorationId } from '@/constants/decoration-motion';
+import { isCatPetBedId } from '@/constants/cat-beds';
 import { WALL_MOUNT_PLANE, WALL_PLACEMENT_MIN, WALL_PLACEMENT_MAX, WALL_PLACEMENT_BOTTOM, WALL_PLACEMENT_TOP } from '@/constants/room-geometry';
 import { MODERN_KITCHEN_ISLAND_IDS, MODERN_KITCHEN_COUNTER_IDS, MODERN_KITCHEN_FLOOR_SHELF_IDS, MODERN_KITCHEN_SINK_IDS, MODERN_KITCHEN_INDUCTION_IDS, MODERN_KITCHEN_FRIDGE_IDS } from '@/constants/modern-kitchen';
 
@@ -17,9 +18,9 @@ export function roomPlacementStatus(feedback: RoomPlacementFeedback): 'blocked' 
   if (feedback.blockers.length || feedback.boundaries.length || feedback.unsupportedSurfaceId || feedback.access === 'blocked') return 'blocked';
   return feedback.access === 'clear' ? 'ready' : 'checking';
 }
-// Shipped room meshes: skirting inner faces and the flat floor before its bevel.
+// Shipped room meshes: skirting inner faces and the visible open floor edge.
 export const ROOM_PLACEMENT_MIN = -2.3075;
-export const ROOM_PLACEMENT_MAX = 2.46;
+export const ROOM_PLACEMENT_MAX = 2.5;
 
 type Box = { center: Vec3; half: Vec3; cos: number; sin: number; extentX: number; extentZ: number; axes?: Vec3[]; polygon?: Vec3[] };
 const rotate = (point: number[], angle: number): Vec3 => [Math.cos(angle) * point[0] + Math.sin(angle) * point[2], point[1], -Math.sin(angle) * point[0] + Math.cos(angle) * point[2]];
@@ -58,11 +59,12 @@ function wallSnapCandidates(object: NativeRoomObject, world: NativeRoomWorld, zo
       .map(({ distance }) => translateObject(object, shift(distance)));
   }
   const footprint = roomItemFootprint(object);
+  const floorContact = roomItemFloorContactFootprint(object);
   const correction = (axis: 0 | 2): number | undefined => {
     const shift = (distance: number): Vec3 => axis === 0 ? [distance, 0, 0] : [0, 0, distance];
     const start = ROOM_PLACEMENT_MIN - Math.min(...footprint.map(p => p[axis]));
     if (near(shift(start), -start)) return start;
-    const end = ROOM_PLACEMENT_MAX - Math.max(...footprint.map(p => p[axis]));
+    const end = ROOM_PLACEMENT_MAX - Math.max(...floorContact.map(p => p[axis]));
     // Open edges correct small overruns without attracting items across gaps.
     if (end < 0 && near(shift(end), end)) return end;
   };
@@ -192,10 +194,26 @@ export function roomItemFootprint(object: Pick<NativeRoomObject, 'modelId' | 'he
   const meta = NATIVE_MODEL_CATALOG[object.modelId];
   const hull = meta.placementHull ?? [[meta.min[0],meta.min[2]], [meta.max[0],meta.min[2]],
     [meta.max[0],meta.max[2]], [meta.min[0],meta.max[2]]];
+  return transformFloorHull(object, hull);
+}
+
+function transformFloorHull(object: Pick<NativeRoomObject, 'heading' | 'scale' | 'position' | 'min'>, hull: number[][]): Vec3[] {
   return hull.map(([x,z]) => {
     const p = rotate([x,0,z],object.heading);
     return [p[0]*object.scale+object.position[0], object.min[1], p[2]*object.scale+object.position[2]];
   });
+}
+
+// The six round beds share a GLB mesh. Its cushion contacts the floor within
+// these measured radii; the much wider raised rim may overhang an open edge.
+const ROUND_BED_FLOOR_HULL = Array.from({ length: 24 }, (_, index) => {
+  const angle = index * Math.PI / 12;
+  return [Math.cos(angle) * .54448, Math.sin(angle) * .44548];
+});
+
+function roomItemFloorContactFootprint(object: Pick<NativeRoomObject, 'modelId' | 'heading' | 'scale' | 'position' | 'min'>): Vec3[] {
+  return object.modelId.startsWith('bed-') && isCatPetBedId(object.modelId.slice(4))
+    ? transformFloorHull(object, ROUND_BED_FLOOR_HULL) : roomItemFootprint(object);
 }
 function boxCorners(box: Box): Vec3[] {
   return [-1,1].flatMap(y => [[-1,-1],[1,-1],[1,1],[-1,1]].map(([x,z]) => {
@@ -412,12 +430,13 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
     // Raised objects clear the floor skirting and can sit at the back of a shelf.
     const roomMin = object.supportId && object.min[1] > WALL_PLACEMENT_BOTTOM ? WALL_MOUNT_PLANE : ROOM_PLACEMENT_MIN;
     const footprint = roomItemFootprint(object);
+    const floorContact = floor ? roomItemFloorContactFootprint(object) : footprint;
     const wallBounds = !floor ? nativeWallPlacementBounds(object) : undefined;
     const axes = floor ? [0, 2] : [object.wallAxis === 0 ? 2 : 0];
     const result: { edge: RoomPlacementEdge; depth: number }[] = [];
     for (const axis of axes) {
       const lo = floor ? Math.min(...footprint.map(p => p[axis])) : object.min[axis];
-      const hi = floor ? Math.max(...footprint.map(p => p[axis])) : wallBounds!.max[axis];
+      const hi = floor ? Math.max(...floorContact.map(p => p[axis])) : wallBounds!.max[axis];
       result.push({ edge: floor ? axis === 0 ? 'leftWall' : 'backWall' : 'wallStart', depth: Math.max(0, (floor ? roomMin : WALL_PLACEMENT_MIN) - lo) },
         { edge: floor ? axis === 0 ? 'rightEdge' : 'frontEdge' : 'wallEnd', depth: Math.max(0, hi - (floor ? ROOM_PLACEMENT_MAX : WALL_PLACEMENT_MAX)) });
     }
@@ -696,9 +715,10 @@ export function createRoomPlacementResolver(world: NativeRoomWorld, ignoredIds: 
     rotate(before: NativeRoomObject, after: NativeRoomObject) {
       if (canPlace(after)) return after;
       const footprint = roomItemFootprint(after);
+      const floorContact = roomItemFloorContactFootprint(after);
       const shift = [0, 0, 0] as Vec3;
       if (after.wallAxis === undefined && !after.supportId) for (const axis of [0, 2]) {
-        const low = Math.min(...footprint.map(p => p[axis])), high = Math.max(...footprint.map(p => p[axis]));
+        const low = Math.min(...footprint.map(p => p[axis])), high = Math.max(...floorContact.map(p => p[axis]));
         shift[axis] = low < ROOM_PLACEMENT_MIN ? ROOM_PLACEMENT_MIN - low : high > ROOM_PLACEMENT_MAX ? ROOM_PLACEMENT_MAX - high : 0;
       }
       const inside = translateObject(after, shift);

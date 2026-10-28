@@ -181,6 +181,17 @@ for(const lesson of LEARNING_CATALOG.lessons) {
   const onlyPractice=lesson.levels.filter(l=>l.kind==='practice');
   assert.equal(curriculum.getNextPracticeLevel(lesson,onlyPractice[0]).id,onlyPractice[1].id);
   assert.equal(curriculum.getNextPracticeLevel(lesson,onlyPractice.at(-1)),undefined,'The play queue ends at the current lesson');
+  const challenge = lesson.levels.find(level => level.kind === 'challenge');
+  const boss = lesson.levels.find(level => level.kind === 'boss');
+  assert.equal(curriculum.getNextSpecialLevel(lesson, onlyPractice[0], core), undefined, 'Intermediate practice stays in practice');
+  assert.equal(curriculum.getNextSpecialLevel(lesson, onlyPractice.at(-1), core.slice(1)), undefined, 'Incomplete practice does not offer a locked special');
+  assert.equal(curriculum.getNextSpecialLevel(lesson, onlyPractice.at(-1), core), challenge, 'Last practice offers the challenge');
+  assert.equal(curriculum.getNextSpecialLevel(lesson, challenge, [...core, ...challenge.puzzleIds]), boss, 'Challenge completion offers the boss');
+  assert.equal(curriculum.getNextSpecialLevel(lesson, onlyPractice.at(-1), [...core, ...challenge.puzzleIds]), boss, 'A completed challenge is skipped');
+  assert.equal(curriculum.getNextSpecialLevel(lesson, challenge, [...core, ...challenge.puzzleIds, boss.puzzleIds[0]]), boss, 'A partially completed boss remains available');
+  assert.equal(resolveLearningSession(lesson.difficulty, lesson.id, boss.id, undefined, [...core, ...challenge.puzzleIds, boss.puzzleIds[0]]).phase, 1, 'The direct boss route resumes its saved stage');
+  assert.equal(curriculum.getNextSpecialLevel(lesson, challenge, [...core, ...challenge.puzzleIds, ...boss.puzzleIds]), undefined, 'A completed boss returns to the lesson');
+  assert.equal(curriculum.getNextSpecialLevel(lesson, boss, [...core, ...boss.puzzleIds]), undefined, 'Boss completion never loops to a special');
   assert.equal(getLearningLevelState(lesson,first,[]),getTopicLessons(lesson.difficulty,lesson.topicId)[0].id===lesson.id?'current':'locked');
   assert.equal(getLearningLevelState(lesson,onlyPractice[1],[]),'locked');
   assert.equal(getLearningLevelState(lesson,onlyPractice[1],[core[0]]),'current');

@@ -1,5 +1,5 @@
 import { roomFurnitureVersion, applyRoomObjectEdits, createRoomPlacementDraft, storedRoomItems, type RoomObjectEdit, type RoomPlacementDraft } from '@/utils/room-edit';
-import { applyLearningReview, applyGuidedLearning } from "@/utils/learning-review";
+import { applyLearningReview } from "@/utils/learning-review";
 import type { LearningAttemptContext } from "@/types/learning";
 import { isOpenableDecorationId } from '@/constants/item-interactions';
 import { projectedWalletCoins, type WalletNotice } from "@/services/wallet/offline-orders";
@@ -148,7 +148,6 @@ type GameContextValue = {
   setWorldWeather: (weather: WeatherMode) => void;
   answerLearningReview: (lessonId: string, day: number, selected: number) => boolean | null;
   recordLearningHelp: (puzzleId: string) => void;
-  finishGuidedLearning: (lessonId: string, attemptId: string) => void;
   answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string, context?: LearningAttemptContext) => number | null;
   beginChallenge: (levelId: string) => boolean;
   expireChallenge: (attemptId: string) => void;
@@ -339,9 +338,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [setSave]);
   const recordLearningHelp = useCallback((puzzleId: string) => {
     setSave(current => current.progress.learningSupportIds?.includes(puzzleId) ? current : { ...current, progress: { ...current.progress, learningSupportIds: [...(current.progress.learningSupportIds ?? []), puzzleId] } });
-  }, [setSave]);
-  const finishGuidedLearning = useCallback((lessonId: string, attemptId: string) => {
-    setSave(current => applyGuidedLearning(current, lessonId, attemptId));
   }, [setSave]);
   const answerPuzzle = useCallback((puzzle: Puzzle, correct: boolean, attemptId: string, context: LearningAttemptContext = {}) => {
     const current = saveRef.current;
@@ -1273,7 +1269,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       answerPuzzle,
       recordLearningHelp,
       answerLearningReview,
-      finishGuidedLearning,
       beginChallenge,
       expireChallenge,
       feedPet,
@@ -1334,7 +1329,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       answerPuzzle,
       recordLearningHelp,
       answerLearningReview,
-      finishGuidedLearning,
       beginChallenge,
       expireChallenge,
       feedPet,

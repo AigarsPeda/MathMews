@@ -128,13 +128,15 @@ function renderHarness(file, exportName, mocks = {}) {
   };
 }
 function nodes(node) { return Array.isArray(node) ? node.flatMap(nodes) : node?.props ? [node, ...nodes(node.props.children)] : []; }
-function screen(puzzle, { final = false, hasBoss = false, replay = false, kind = 'practice', lifeCount = 3 } = {}) {
+function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, replay = false, kind = 'practice', lifeCount = 3, completedIds = [] } = {}) {
   const level = { id: 'practice', kind, puzzleIds: [puzzle.id], title: { en: 'Practice' }, description: { en: 'Complete the mission.' } };
   const lesson = { id: 'lesson', difficulty: puzzle.difficulty, title: { en: 'Fractions' }, levels: [level] };
+  if (kind !== 'practice') lesson.levels.unshift({ ...level, id: 'earlier-practice', kind: 'practice', puzzleIds: ['earlier-puzzle'] });
   if (!final) lesson.levels.push({ ...level, id: 'next', puzzleIds: ['next-puzzle'] });
+  if (hasChallenge) lesson.levels.push({ id: 'challenge', kind: 'challenge', puzzleIds: ['challenge-puzzle'] });
   if (hasBoss) lesson.levels.push({ id: 'boss', kind: 'boss', puzzleIds: ['boss-puzzle'] });
   const attempts = [], routes = [];
-  const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { completedPuzzleIds: replay ? [puzzle.id] : [], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
+  const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { completedPuzzleIds: [...completedIds, ...(kind !== 'practice' ? ['earlier-puzzle'] : []), ...(replay ? [puzzle.id] : [])], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
     answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
   const router = { push: route => routes.push(['push',route]), prefetch: route => routes.push(['prefetch', route]), dismissTo: route => routes.push(['path', route]) };
   const render = renderHarness('app/play.tsx', 'PlaySession', {
@@ -238,8 +240,33 @@ for (const hasBoss of [false, true]) {
   final.task().onSelectChoice(0); final.refresh(); final.check().onPress(); final.refresh();
   assert.equal(final.result().message, hasBoss ? en.learning.practiceComplete : en.learning.lessonComplete);
   assert.ok(final.result().summary);
-  assert.equal(final.result().continueLabel, en.learning.backToLesson);
+  assert.equal(final.result().continueLabel, hasBoss ? en.learning.start_boss : en.learning.backToLesson);
 }
+
+for (const options of [
+  { hasChallenge: true, hasBoss: true, destination: 'challenge' },
+  { hasBoss: true, kind: 'challenge', destination: 'boss' },
+  { hasChallenge: true, hasBoss: true, replay: true, destination: 'challenge' },
+  { hasChallenge: true, hasBoss: true, completedIds: ['challenge-puzzle'], destination: 'boss' },
+]) {
+  const final = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { ...options, final: true });
+  final.task().onSelectChoice(0); final.refresh(); final.check().onPress(); final.refresh();
+  assert.equal(final.result().continueLabel, en.learning[`start_${options.destination}`]);
+  assert.equal(final.result().secondaryLabel, en.learning.backToLesson);
+  assert.equal(final.routes.some(([action]) => action === 'replace'), false, 'Success presents the choice before navigating');
+  final.result().onContinue();
+  const route = final.routes.find(([action]) => action === 'replace');
+  assert.deepEqual(json(route), ['replace', 'play', { difficulty: 'easy', lesson: 'lesson', level: options.destination }], 'Special levels open directly without forcing a boss checkpoint');
+  final.result().onGoHome();
+  assert.equal(final.routes.at(-1)[0], 'path');
+  assert.equal(final.routes.at(-1)[1].pathname, '/puzzles', 'The secondary action lets the player return to the lesson');
+}
+
+const completedSpecials = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, {
+  final: true, hasChallenge: true, hasBoss: true, completedIds: ['challenge-puzzle', 'boss-puzzle'],
+});
+completedSpecials.task().onSelectChoice(0); completedSpecials.refresh(); completedSpecials.check().onPress(); completedSpecials.refresh();
+assert.equal(completedSpecials.result().continueLabel, en.learning.backToLesson, 'Completed special levels are not offered again');
 
 const replay = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { final: true, replay: true });
 replay.task().onSelectChoice(0); replay.refresh(); replay.check().onPress(); replay.refresh();
@@ -389,12 +416,7 @@ const workedExample=nodes(threeLives.tree()).find(n=>n.type==='Pressable'&&nodes
 assert.ok(workedExample,'Help remains available without lives');workedExample.props.onPress();threeLives.refresh();
 assert.ok(nodes(threeLives.tree()).some(n=>n.type==='VisualHelpSheet'));
 assert.equal(threeLives.game.progress.lives.current,0,'Opening help costs no life');
-const learnLink=nodes(threeLives.tree()).find(n=>n.type==='Pressable'&&nodes(n).some(child=>child.props.children===en.guided.title));
-assert.ok(learnLink,'Guided learning is reachable from the depleted play screen');
-learnLink.props.onPress();
-assert.equal(threeLives.routes.at(-1)[1].pathname,'/learn');
-assert.equal(threeLives.routes.at(-1)[1].params.source,base.id);
-assert.ok(threeLives.game.progress.learningSupportIds.includes(base.id),'Entering guided learning records help for the source puzzle');
+assert.ok(threeLives.game.progress.learningSupportIds.includes(base.id),'Picture help records support for the source puzzle');
 assert.equal(threeLives.game.progress.lives.current,0);
 
 const reopenedNoLives=screen({...base,type:'multiple_choice',choices:['4','5'],correctIndex:0},{lifeCount:0});
@@ -466,6 +488,7 @@ reviewButton(en.play.checkAnswer).props.onPress();reviewTree=renderReview({});
 assert.equal(reviewSave.progress.lives.current,2,'The real review screen charges one life for a mistake');
 assert.equal(reviewSave.wallet.coins,42);
 assert.equal(reviewButton(en.play.checkAnswer),undefined,'A submitted review cannot be checked again');
-reviewButton(en.guided.title).props.onPress();
-assert.equal(reviewRoutes.at(-1).pathname,'/learn','Review feedback leads to free learning');
-console.log('Review screen requires selection, submits once, charges one life on error and offers guided support.');
+reviewButton(en.learning.backToLesson).props.onPress();
+assert.equal(reviewRoutes.at(-1).pathname,'/puzzles','Review feedback returns to the lesson');
+assert.equal(reviewRoutes.at(-1).params.lesson,reviewLesson.id);
+console.log('Review screen requires selection, submits once, charges one life on error and returns to the lesson.');

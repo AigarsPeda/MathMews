@@ -520,8 +520,8 @@
         "lv": "Apvieno mazas grupas"
       },
       "description": {
-        "en": "Learn to join small groups. Ask the cat for a guided example at any time.",
-        "lv": "Apvieno mazas grupas. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to join small groups.",
+        "lv": "Apvieno mazas grupas."
       },
       "levels": [
         {
@@ -708,8 +708,8 @@
         "lv": "Attēli un summas"
       },
       "description": {
-        "en": "Learn to pictures and sums. Ask the cat for a guided example at any time.",
-        "lv": "Attēli un summas. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to pictures and sums.",
+        "lv": "Attēli un summas."
       },
       "levels": [
         {
@@ -2026,8 +2026,8 @@
         "lv": "Vienādas daļas un puses"
       },
       "description": {
-        "en": "Learn to equal parts and halves. Ask the cat for a guided example at any time.",
-        "lv": "Vienādas daļas un puses. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to equal parts and halves.",
+        "lv": "Vienādas daļas un puses."
       },
       "levels": [
         {
@@ -2214,8 +2214,8 @@
         "lv": "Puses un ceturtdaļas"
       },
       "description": {
-        "en": "Learn to halves and quarters. Ask the cat for a guided example at any time.",
-        "lv": "Puses un ceturtdaļas. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to halves and quarters.",
+        "lv": "Puses un ceturtdaļas."
       },
       "levels": [
         {
@@ -8428,8 +8428,8 @@
         "lv": "Skaiti tālāk no zināma daudzuma"
       },
       "description": {
-        "en": "Learn to count on from a known amount. Ask the cat for a guided example at any time.",
-        "lv": "Skaiti tālāk no zināma daudzuma. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to count on from a known amount.",
+        "lv": "Skaiti tālāk no zināma daudzuma."
       },
       "levels": [
         {
@@ -8618,8 +8618,8 @@
         "lv": "Izveido desmitu un pieskaiti pārējo"
       },
       "description": {
-        "en": "Learn to make ten, then add the rest. Ask the cat for a guided example at any time.",
-        "lv": "Izveido desmitu un pieskaiti pārējo. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to make ten, then add the rest.",
+        "lv": "Izveido desmitu un pieskaiti pārējo."
       },
       "levels": [
         {
@@ -8808,8 +8808,8 @@
         "lv": "Atrodi trūkstošo daļu"
       },
       "description": {
-        "en": "Learn to find the missing part. Ask the cat for a guided example at any time.",
-        "lv": "Atrodi trūkstošo daļu. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to find the missing part.",
+        "lv": "Atrodi trūkstošo daļu."
       },
       "levels": [
         {
@@ -8998,8 +8998,8 @@
         "lv": "Atrodi pārus ar vienādu summu"
       },
       "description": {
-        "en": "Learn to find pairs with the same total. Ask the cat for a guided example at any time.",
-        "lv": "Atrodi pārus ar vienādu summu. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to find pairs with the same total.",
+        "lv": "Atrodi pārus ar vienādu summu."
       },
       "levels": [
         {
@@ -9188,8 +9188,8 @@
         "lv": "Pārbaudi summu ar modeli"
       },
       "description": {
-        "en": "Learn to check a sum with a model. Ask the cat for a guided example at any time.",
-        "lv": "Pārbaudi summu ar modeli. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to check a sum with a model.",
+        "lv": "Pārbaudi summu ar modeli."
       },
       "levels": [
         {
@@ -9378,8 +9378,8 @@
         "lv": "Izlabo saskaitīšanas kļūdu"
       },
       "description": {
-        "en": "Learn to repair an addition mistake. Ask the cat for a guided example at any time.",
-        "lv": "Izlabo saskaitīšanas kļūdu. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to repair an addition mistake.",
+        "lv": "Izlabo saskaitīšanas kļūdu."
       },
       "levels": [
         {
@@ -9568,8 +9568,8 @@
         "lv": "Izmanto saskaitīšanu stāstā"
       },
       "description": {
-        "en": "Learn to use addition in a story. Ask the cat for a guided example at any time.",
-        "lv": "Izmanto saskaitīšanu stāstā. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to use addition in a story.",
+        "lv": "Izmanto saskaitīšanu stāstā."
       },
       "levels": [
         {
@@ -14484,8 +14484,8 @@
         "lv": "Viena veselā daļa"
       },
       "description": {
-        "en": "Learn to one part of a whole. Ask the cat for a guided example at any time.",
-        "lv": "Viena veselā daļa. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to one part of a whole.",
+        "lv": "Viena veselā daļa."
       },
       "levels": [
         {
@@ -14674,8 +14674,8 @@
         "lv": "Salīdzini viena veselā daļas"
       },
       "description": {
-        "en": "Learn to compare parts of the same whole. Ask the cat for a guided example at any time.",
-        "lv": "Salīdzini viena veselā daļas. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to compare parts of the same whole.",
+        "lv": "Salīdzini viena veselā daļas."
       },
       "levels": [
         {
@@ -14864,8 +14864,8 @@
         "lv": "Salīdzini iekrāsotos daudzumus"
       },
       "description": {
-        "en": "Learn to compare colored amounts. Ask the cat for a guided example at any time.",
-        "lv": "Salīdzini iekrāsotos daudzumus. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to compare colored amounts.",
+        "lv": "Salīdzini iekrāsotos daudzumus."
       },
       "levels": [
         {
@@ -15054,8 +15054,8 @@
         "lv": "Sadali sīkāk, saglabājot daudzumu"
       },
       "description": {
-        "en": "Learn to split pieces without changing the amount. Ask the cat for a guided example at any time.",
-        "lv": "Sadali sīkāk, saglabājot daudzumu. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to split pieces without changing the amount.",
+        "lv": "Sadali sīkāk, saglabājot daudzumu."
       },
       "levels": [
         {
@@ -15244,8 +15244,8 @@
         "lv": "Nolasi dažādus daļu attēlus"
       },
       "description": {
-        "en": "Learn to read different fraction pictures. Ask the cat for a guided example at any time.",
-        "lv": "Nolasi dažādus daļu attēlus. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to read different fraction pictures.",
+        "lv": "Nolasi dažādus daļu attēlus."
       },
       "levels": [
         {
@@ -15434,8 +15434,8 @@
         "lv": "Izvēlies vienādas daļas"
       },
       "description": {
-        "en": "Learn to choose equivalent fractions. Ask the cat for a guided example at any time.",
-        "lv": "Izvēlies vienādas daļas. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to choose equivalent fractions.",
+        "lv": "Izvēlies vienādas daļas."
       },
       "levels": [
         {
@@ -15624,8 +15624,8 @@
         "lv": "Daļas kolekcijā"
       },
       "description": {
-        "en": "Learn to fractions in a collection. Ask the cat for a guided example at any time.",
-        "lv": "Daļas kolekcijā. Jebkurā brīdī vari mācīties kopā ar kaķi."
+        "en": "Learn to fractions in a collection.",
+        "lv": "Daļas kolekcijā."
       },
       "levels": [
         {

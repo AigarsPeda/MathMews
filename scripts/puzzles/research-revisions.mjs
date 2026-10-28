@@ -50,7 +50,7 @@ export function applyResearchRevisions({puzzles,lessons}) {
     entries.forEach((lesson,stage)=>{
       const goal=(topic==='addition'?addGoals:fractionGoals)[stage];
       lesson.title=text(goal[1],goal[2]);
-      lesson.description=text(stage===9?'Revisit earlier strategies with new examples.':`Learn to ${goal[1].toLowerCase()}. Ask the cat for a guided example at any time.`,stage===9?'Atkārto iepriekšējos paņēmienus jaunos piemēros.':`${goal[2]}. Jebkurā brīdī vari mācīties kopā ar kaķi.`);
+      lesson.description=text(stage===9?'Revisit earlier strategies with new examples.':`Learn to ${goal[1].toLowerCase()}.`,stage===9?'Atkārto iepriekšējos paņēmienus jaunos piemēros.':`${goal[2]}.`);
       lesson.skillId=`easy.${topic}.${goal[0]}`;
       lesson.prerequisiteSkillIds=stage?[`easy.${topic}.${(topic==='addition'?addGoals:fractionGoals)[stage-1][0]}`]:[];
       lesson.review=stage===9;

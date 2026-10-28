@@ -252,12 +252,14 @@ The 24 October revision keeps all 1,440 puzzle IDs per language and content vers
 
 Comparison answers balance left and right in the authored catalog and shuffle at runtime. Pure numeric three-choice practice answers vary their numeric rank; 90 are smallest, 88 middle and 97 largest. Existing authored errors are retained as distractors where they fit. Independent review questions also vary value rank and position. Hard pattern-repair examples no longer repeat the same multiplier every three lessons.
 
-Saved learning evidence is separate from earned completion. A correct first submission without prior help or a saved previous attempt counts as independent evidence for that puzzle. Helped solutions, retries and guided sessions remain supported evidence. Existing players keep completion and rewards; old completions are not retrospectively called independent successes.
+Saved learning evidence is separate from earned completion. A correct first submission without prior help or a saved previous attempt counts as independent evidence for that puzzle. Helped solutions and retries remain supported evidence. Existing players keep completion and rewards; old completions are not retrospectively called independent successes.
 
-Suggestions are deliberately simple: two mistakes with fewer than two independent successes offer guided support; two independent successes plus completed practice suggest the next available lesson; after two days, a previously practised skill can be offered for review. These are pilot rules, not a mastery diagnosis. Guided activities cover topic foundations; they are not a bespoke course for every advanced lesson. Review questions provide another topic check, and do not by themselves establish transfer or mastery.
+Automatic next-lesson and review recommendation cards were removed on 26 October 2026. Players choose topics and lessons directly. Review questions provide another topic check, and do not by themselves establish transfer or mastery.
+
+The separate Learn with the cat mode was removed on 26 October 2026, including its activities, entry points and support recommendations. Picture help remains available within puzzles. Loading older saves ignores retired guided-session fields while preserving puzzle progress and rewards.
 
 Review checks accept one submission per lesson per UTC day, use the existing life cost on a mistake, and award no coins or ordinary completion. Save/reopen cannot retry an exposed check for independent credit. An overdue challenge is settled before checking review eligibility. Questions crossing midnight must be reopened.
 
-Run `node scripts/check-curriculum.mjs` for bilingual content, progression, persistence and learning invariants. Run `npm run test:learning:ios -- --device <simulator-UDID>` for isolated native zero-life learning, fraction corrections, subtraction feedback, save/reopen and narrow Latvian layout. The fixture uses an in-memory save and never spends player currency.
+Run `node scripts/check-curriculum.mjs` for bilingual content, progression, persistence and learning invariants, including compatibility with saves made before the guided mode was removed.
 
 The research and remaining evaluation work are recorded in [the progression study](puzzle-progression-study-2026-10-24.md). Skip-ahead placement and untimed copies of scored challenges remain separate proposals. Educator review, fluent Latvian review and observation with children remain necessary before expanding the pilot or claiming a learning benefit.

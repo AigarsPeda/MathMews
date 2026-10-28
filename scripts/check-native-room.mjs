@@ -985,7 +985,8 @@ const startupVisualReadiness = [];
 mocks['@/contexts/StartupVisualContext'] = { useStartupVisualReady(ready) { startupVisualReadiness.push(ready); } };
 let sceneReduced = false;
 mocks['@/hooks/use-animation-activity'] = { useAnimationActivity: () => ({ active: true, reduceMotion: sceneReduced }) };
-Object.assign(mocks['react-native-filament'], { useSyncSharedValue: value => value, FilamentScene: 'FilamentScene', FilamentView: 'FilamentView', DefaultLight: 'Light', useWorld: () => ({}), useStaticPlaneShape() {}, useBoxShape() {}, useSphereShape() {}, useRigidBody() {} });
+Object.assign(mocks['react-native-filament'], { FilamentScene: 'FilamentScene', FilamentView: 'FilamentView', DefaultLight: 'Light', useWorld: () => ({}), useStaticPlaneShape() {}, useBoxShape() {}, useSphereShape() {}, useRigidBody() {} });
+mocks['@/hooks/use-filament-shared-value'] = { useFilamentSharedValue: value => value };
 mocks['@/components/recovery/RecoveryBoundary'] = { RecoveryBoundary: 'RecoveryBoundary' };
 mocks['@/components/recovery/SceneLoadGuard'] = { SceneLoadGuard: 'SceneLoadGuard' };
 mocks['@/lib/graphics-mode'] = { enableSimpleGraphicsForSession() {} };
@@ -1140,6 +1141,26 @@ assert.equal(editorPhysicsSteps, 0, 'Physics cannot push a manually dragged ball
 assert.equal(cached.find(child => child.type.name === 'RoomObject').props.active.value, false, 'Physics reports cannot overwrite editor placement');
 renderCachedScene({ ...cachedProps, paused: false, editing: false }); paintFrame();
 assert.equal(editorPhysicsSteps, 1, 'Normal ball physics resumes after decorating');
+
+// JS can finish a drop before an older UI-thread drag sample reaches Filament.
+// The accepted release pose must win even while the old drag base is in flight.
+slots = []; cursor = 0;
+const releasedObject = bowlRoom.objects[0];
+const releasedTarget = { value: undefined };
+const delayedBase = { value: { session: 42, version: 0, x: 0, y: 0, width: bowlRoom.width,
+  anchor: { x: 0, y: 0 }, object: releasedObject } };
+const delayedMotion = { value: { session: 42, sequence: 1, x: 30, y: 0, active: true, moved: true, at: 1, measure: false } };
+renderCachedScene({ ...cachedProps, editing: true, editingObject: releasedTarget,
+  dragBase: delayedBase, dragMotion: delayedMotion });
+paintFrame();
+assert.ok(releasedTarget.value && releasedTarget.value.position[0] !== releasedObject.position[0]);
+const acceptedPose = { ...releasedObject, position: [2, ...releasedObject.position.slice(1)], releaseSession: 42 };
+releasedTarget.value = acceptedPose;
+delayedMotion.value = { ...delayedMotion.value, sequence: 2, x: 10 };
+paintFrame();
+assert.equal(releasedTarget.value.position[0], 2,
+  'An in-flight drag sample cannot replace the accepted release pose');
+console.log('Verified a late native drag sample cannot overwrite a committed furniture pose.');
 
 const departurePlan = buildRoomActivity({ ...base, homeOffset: { x: 0, y: .12 }, ownedToyIds: [], decorations: [] }, 0, 'roomTravel', 'bedroom');
 const departure = w.prepareNativeStep(departurePlan, departurePlan.steps[0], w.catScreenPoint(routed.home, routed), routed, w.FLOOR_Y);
@@ -1641,8 +1662,8 @@ console.log('Verified real floor-toy approaches and paw-triggered impulses, no p
 // Move the real chair root entirely through its drawing-thread shared preview.
 {
   const room=w.buildNativeRoomWorld({...base,decorations:[{decorationId:'chairRockingOak',instanceId:'drag-chair',offset:{x:0,y:.2},rotationDegrees:20}]});
-  const object=room.objects[0], editingObject={value:undefined};
-  const child=sceneChildren({world:room,catPresent:false,editing:true,editingObject}).find(c=>c.type.name==='RoomObject');
+  const object=room.objects[0], editingObject={value:undefined}, previewReset={value:0};
+  const child=sceneChildren({world:room,catPresent:false,editing:true,editingObject,previewReset}).find(c=>c.type.name==='RoomObject');
   toyRoot=matrix();toyNodes=new Map();slots=[];cursor=0;effects=[];
   let bodies=0, models=0;
   const oldBody=mocks['react-native-filament'].useRigidBody,oldModel=mocks['react-native-filament'].useModel;
@@ -1672,6 +1693,24 @@ console.log('Verified real floor-toy approaches and paw-triggered impulses, no p
   assert.equal(toyRoot[12],.5,'A valid preview continues working after an incomplete update');
   assert.equal(bodies,1,'Dragging does not rebuild physics bodies');
   assert.equal(models,1,'Dragging does not reload model assets');
+  const staleObject={...object,position:[...object.position]};
+  cursor=0;effects=[];child.type({...child.props,object:staleObject});effects.forEach(fn=>fn());
+  assert.equal(toyRoot[12],.5,'Rerendering the old saved pose cannot overwrite an active native preview');
+  renderFrame({timeSinceLastFrame:1/60});
+  assert.equal(toyRoot[12],.5,'The next drawing frame keeps the active preview');
+  editingObject.value=undefined;
+  renderFrame({timeSinceLastFrame:1/60});
+  assert.equal(toyRoot[12],.5,'A transiently missing preview cannot restore the stale saved pose');
+  previewReset.value=1;
+  renderFrame({timeSinceLastFrame:1/60});
+  assert.equal(toyRoot[12],object.position[0],'An explicit cancellation restores the saved pose');
+  editingObject.value={...object,position:[.5,object.position[1],object.position[2]]};
+  renderFrame({timeSinceLastFrame:1/60});
+  const acceptedObject={...object,position:[.5,object.position[1],object.position[2]]};
+  cursor=0;effects=[];child.type({...child.props,object:acceptedObject});effects.forEach(fn=>fn());
+  editingObject.value=undefined;
+  renderFrame({timeSinceLastFrame:1/60});
+  assert.equal(toyRoot[12],.5,'The held pose yields when the saved room catches up');
   mocks['react-native-filament'].useRigidBody=oldBody;mocks['react-native-filament'].useModel=oldModel;
 }
 console.log('Verified native chair drag previews retain 20 degrees across 120 frames with no model reloads or physics body recreation.');

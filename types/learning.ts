@@ -6,7 +6,6 @@ export type SkillEvidence = {
   independentPuzzleIds: string[];
   supportedSuccesses: number;
   mistakes: number;
-  guidedSessions: number;
   lastPractisedAt: number;
   lastIndependentAt: number;
 };

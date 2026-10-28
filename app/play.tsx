@@ -19,7 +19,7 @@ import {
   MAX_LIVES,
 } from "@/constants/game";
 import { isPuzzleDifficulty } from "@/constants/puzzles";
-import { getLearningLevelLocation, getLevelPuzzles, getNextPracticeLevel, getRequiredIds, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
+import { getLearningLevelLocation, getLevelPuzzles, getNextPracticeLevel, getNextSpecialLevel, getRequiredIds, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
 import { isChallengeOpen } from "@/utils/timed-challenge";
 import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
@@ -246,14 +246,15 @@ export function PlaySession({ session }: { session: LearningSession }) {
     : level.puzzleIds.map(id => entryCompleted.includes(id) || answered && id === puzzle.id);
   const lessonFinished = answered && !isReplay && getRequiredIds(lesson).every(id => id === puzzle.id || entryCompleted.includes(id));
   const resultMood: PetAnimationState = isCorrect ? "correct" : "incorrect";
+  const nextSpecialLevel = isCorrect ? getNextSpecialLevel(lesson, level, [...entryCompleted, puzzle.id]) : undefined;
   const nextPuzzleRoute = useMemo(() => {
     if (!isCorrect) return undefined;
     if (level.kind === "boss" && sessionIndex + 1 < puzzles.length) {
       return { pathname: "/play" as const, params: { difficulty, lesson: lesson.id, level: level.id, phase: String(sessionIndex + 1) } };
     }
-    const next = !isReplay && getNextPracticeLevel(lesson, level);
+    const next = nextSpecialLevel ?? (!isReplay && getNextPracticeLevel(lesson, level));
     return next ? { pathname: "/play" as const, params: { difficulty, lesson: lesson.id, level: next.id } } : undefined;
-  }, [difficulty, isCorrect, isReplay, lesson, level, puzzles.length, sessionIndex]);
+  }, [difficulty, isCorrect, isReplay, lesson, level, nextSpecialLevel, puzzles.length, sessionIndex]);
 
   useEffect(() => {
     // Prepare the destination under the result sheet; navigation still waits for dismissal.
@@ -499,29 +500,23 @@ export function PlaySession({ session }: { session: LearningSession }) {
             coinReward={coinReward}
             levelKind={level.kind}
           />
-          {!answered ? <View style={styles.helpRow}>
-            <Pressable accessibilityRole="button" style={styles.learnAction} onPress={() => { recordLearningHelp(puzzle.id); router.push({ pathname: "/learn", params: { lesson: lesson.id, source: puzzle.id } }); }}>
-              <Text style={styles.lifeActionText}>{t("guided.title")}</Text>
-            </Pressable>
-            {hasVisualHelp ? (
-              <Pressable
-                style={styles.visualHelpBtn}
-                onPress={handleOpenVisualHelp}
-                accessibilityRole="button"
-                accessibilityLabel={t("visualHelp.a11yOpen")}
-              >
-                <Text style={styles.visualHelpBtnText}>
-                  {t("visualHelp.compactButton")}
+          {!answered && hasVisualHelp ? (
+            <Pressable
+              style={styles.visualHelpBtn}
+              onPress={handleOpenVisualHelp}
+              accessibilityRole="button"
+              accessibilityLabel={t("visualHelp.a11yOpen")}
+            >
+              <Text style={styles.visualHelpBtnText}>
+                {t("visualHelp.compactButton")}
+              </Text>
+              {!visualHelpUnlocked ? (
+                <Text style={styles.visualHelpBtnHint}>
+                  {t("visualHelp.unlockPrice", { cost: visualHelpCost })}
                 </Text>
-                {!visualHelpUnlocked ? (
-                  <Text style={styles.visualHelpBtnHint}>
-                    {t("visualHelp.unlockPrice", { cost: visualHelpCost })}
-                  </Text>
-                ) : null}
-              </Pressable>
-            ) : null}
-          </View> : null}
-          {timed && run?.status === "active" && !answered ? <Text style={styles.lifePolicy}>{t("guided.timerContinues")}</Text> : null}
+              ) : null}
+            </Pressable>
+          ) : null}
 
           <View style={styles.taskArea}>
             {puzzle.type !== "order_numbers" && puzzle.type !== "multiple_choice" && !(progress.completedPuzzleIds ?? []).some(
@@ -634,13 +629,14 @@ export function PlaySession({ session }: { session: LearningSession }) {
             coinsEarned={coinsEarned}
             coinType={isReplay ? "sparkle" : "regular"}
             continueLabel={isCorrect
-              ? level.kind === "boss" && sessionIndex + 1 < puzzles.length ? t("learning.nextStage")
+              ? nextSpecialLevel ? t(`learning.start_${nextSpecialLevel.kind}`)
+                : level.kind === "boss" && sessionIndex + 1 < puzzles.length ? t("learning.nextStage")
                 : level.kind !== "practice" || isReplay || !getNextPracticeLevel(lesson, level) ? t("learning.backToLesson") : t("play.nextPuzzle")
               : t("play.tryAgain")}
             onContinue={handleContinue}
-            onGoHome={isCorrect && !isReplay ? level.kind === "boss" && sessionIndex === puzzles.length - 1
+            onGoHome={nextSpecialLevel ? exitToPath : isCorrect && !isReplay ? level.kind === "boss" && sessionIndex === puzzles.length - 1
               ? () => router.replace({ pathname: "/achievements", params: { boss: level.id } }) : handleGoHome : undefined}
-            secondaryLabel={level.kind === "boss" && sessionIndex === puzzles.length - 1 ? t("achievements.view") : undefined}
+            secondaryLabel={nextSpecialLevel ? t("learning.backToLesson") : level.kind === "boss" && sessionIndex === puzzles.length - 1 ? t("achievements.view") : undefined}
             onBuyLife={undefined}
             coins={wallet.coins}
           />
@@ -757,8 +753,6 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     alignSelf: "stretch",
   },
-  helpRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: moderateScale(12) },
-  learnAction: { minHeight: 44, justifyContent: "center", flexShrink: 1 },
   visualHelpBtn: {
     backgroundColor: "#F3EEFF",
     borderRadius: moderateScale(16),
@@ -768,6 +762,7 @@ const styles = StyleSheet.create({
     paddingVertical: moderateScale(8),
     paddingHorizontal: moderateScale(12),
     alignItems: "center",
+    alignSelf: "flex-end",
     gap: moderateScale(2),
   },
   visualHelpBtnText: {

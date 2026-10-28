@@ -228,6 +228,7 @@ function parseGameSave(
     }
     if (!isRecord(parsed.progress)) return null;
     if (typeof parsed.progress.streak !== "number") return null;
+    delete parsed.progress.guidedAttemptIds;
 
     const currentCurriculum = parsed.progress.puzzleContentVersion === PUZZLE_CONTENT_VERSION;
     const completedPuzzleIds = currentCurriculum
@@ -375,7 +376,6 @@ function parseGameSave(
           learningEvidence: normalizeLearningEvidence(currentCurriculum ? parsed.progress.learningEvidence : {}, new Map(LEARNING_CATALOG.lessons.filter(l => l.skillId).map(l => [l.skillId!, new Set(l.levels.flatMap(v => v.puzzleIds))]))),
           learningSupportIds: currentCurriculum && Array.isArray(parsed.progress.learningSupportIds) ? getCompletedPuzzleIds({ completedPuzzleIds: parsed.progress.learningSupportIds.filter((id): id is string => typeof id === "string") }) : [],
           reviewAttemptKeys: currentCurriculum && Array.isArray(parsed.progress.reviewAttemptKeys) ? parsed.progress.reviewAttemptKeys.filter((id): id is string => typeof id === "string").slice(-200) : [],
-          guidedAttemptIds: currentCurriculum && Array.isArray(parsed.progress.guidedAttemptIds) ? parsed.progress.guidedAttemptIds.filter((id): id is string => typeof id === "string").slice(-200) : [],
           topicStats: normalizeTopicStats(currentCurriculum ? parsed.progress.topicStats : {}),
           topicStatsByDifficulty: Object.fromEntries((["easy", "medium", "hard"] as const).map(tier => [tier, normalizeTopicStats(difficultyStats[tier])])),
         },

@@ -1,7 +1,7 @@
 import { ROOM_SPAN, type NativeRoomObject, type Vec3 } from '@/utils/native-room-world';
 import type { RoomPoint } from '@/utils/room-activities';
 
-export type RoomDragMotion = { session: number; sequence: number; x: number; y: number; active: boolean; moved: boolean; at: number; measure: boolean };
+export type RoomDragMotion = { session: number; sequence: number; x: number; y: number; active: boolean; moved: boolean; at: number; measure: boolean; released?: boolean };
 export const IDLE_ROOM_DRAG: RoomDragMotion = { session: 0, sequence: 0, x: 0, y: 0, active: false, moved: false, at: 0, measure: false };
 export type RoomDragBase = {
   session: number; version: number; x: number; y: number; width: number; anchor: RoomPoint; object: NativeRoomObject;
@@ -27,10 +27,10 @@ export function roomDragDelta(dx: number, dy: number, width: number, wallAxis?: 
 }
 
 /** Only pose/bounds move here. Collision and support resolution stay on the JS feedback path. */
-export type RoomDragPreview = NativeRoomObject & { dragSample?: { session: number; sequence: number; inputAt: number; phase: 'move' | 'release' } };
+export type RoomDragPreview = NativeRoomObject & { releaseSession?: number; dragSample?: { session: number; sequence: number; inputAt: number; phase: 'move' | 'release' } };
 export function roomDragPreview(base: RoomDragBase, motion: RoomDragMotion): RoomDragPreview | undefined {
   'worklet';
-  if (!motion.active || motion.session !== base.session || !motion.moved) return undefined;
+  if (!motion.active || motion.released || motion.session !== base.session || !motion.moved) return undefined;
   const delta = roomDragDelta(motion.x - base.x, motion.y - base.y, base.width, base.object.wallAxis);
   const shift = (object: NativeRoomObject): NativeRoomObject => {
     const move = (p: Vec3): Vec3 => [p[0] + delta[0], p[1] + delta[1], p[2] + delta[2]];
@@ -41,6 +41,7 @@ export function roomDragPreview(base: RoomDragBase, motion: RoomDragMotion): Roo
 
 export function roomDragAnchor(base: RoomDragBase | undefined, motion: RoomDragMotion, fallback: RoomPoint): RoomPoint {
   'worklet';
-  return base && motion.active && motion.moved && base.session === motion.session
-    ? { x: base.anchor.x + motion.x - base.x, y: base.anchor.y + motion.y - base.y } : fallback;
+  return base && motion.active && base.session === motion.session
+    ? { x: base.anchor.x + (motion.moved ? motion.x - base.x : 0),
+      y: base.anchor.y + (motion.moved ? motion.y - base.y : 0) } : fallback;
 }

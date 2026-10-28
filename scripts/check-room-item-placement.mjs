@@ -341,6 +341,46 @@ for (const degrees of [0, 90]) {
 }
 console.log('Verified the fireplace keeps cat beds out of its hearth on both orientations.');
 
+// The visible floor reaches the open edge past the start of its bevel.
+{
+  const width = 390;
+  const world = buildNativeRoomWorld({ width, height: 420, petSize: 80, sizeScale: 1.15,
+    bedId: 'green', bedOffset: { x: 0, y: 0 }, toys: [], decorations: [] });
+  const bed = world.objects.find(item => item.instanceId === 'bed');
+  const extent = .44548 * bed.scale;
+  const atEdge = transformRoomObject(bed, [0, bed.position[1], 2.48 - extent]);
+  const beyondEdge = transformRoomObject(bed, [0, bed.position[1], 2.52 - extent]);
+  const resolver = createRoomPlacementResolver(world, ['bed']);
+  assert.equal(resolver.canPlace(atEdge), true, 'A bed on the visible floor is not rejected before the open edge');
+  assert.deepEqual(Array.from(resolver.feedback(atEdge).boundaries), []);
+  assert.equal(resolver.drop('bed', roomItemAnchor(atEdge, width), { zoom: 100 }).accepted, true);
+  assert.equal(resolver.canPlace(beyondEdge), false, 'The bed still cannot hang beyond the visible floor');
+  assert.deepEqual(Array.from(resolver.feedback(beyondEdge).boundaries), ['frontEdge']);
+}
+console.log('Verified bed placement at the visible front floor edge and rejection beyond it.');
+
+{
+  const layout = JSON.parse(fs.readFileSync('scripts/fixtures/crowded-living-room.json', 'utf8'));
+  const world = buildNativeRoomWorld(layout);
+  const bed = world.objects.find(item => item.instanceId === 'bed');
+  const resolver = createRoomPlacementResolver(world, ['bed']);
+  const feedback = resolver.feedback(bed);
+  assert.deepEqual(Array.from(feedback.boundaries), [], 'The saved bed rests on the visible front floor');
+  assert.deepEqual(Array.from(feedback.blockers), [], 'Nearby furniture does not block the saved bed');
+  assert.equal(resolver.canPlace(bed), true, 'The saved bed is placeable at its exact pose');
+  const anchor = roomItemAnchor(bed, world.width);
+  assert.equal(resolver.preview('bed', anchor, 100, undefined, false).accepted, true,
+    'The exact saved pose has a valid drag preview');
+  assert.equal(resolver.drop('bed', anchor, { zoom: 100 }).accepted, true,
+    'The exact saved pose can be placed again');
+  const beyond = transformRoomObject(bed, [bed.position[0], bed.position[1], bed.position[2] + .04]);
+  assert.deepEqual(Array.from(resolver.feedback(beyond).boundaries), ['frontEdge'],
+    'Moving the bed support past the open edge is still rejected');
+  const { roomPlacementAccess } = load('@/utils/room-placement-access');
+  assert.equal(roomPlacementAccess(world, world, world.home, false).blockedExit, false,
+    'The bed at the edge does not block the cat from leaving the room');
+}
+
 // Lamps rest on a rotated/scaled tabletop, and the screen anchor survives saves.
 const { placeObjectOnSurface } = load('@/utils/native-room-world');
 const { lampLightConfig } = load('@/utils/native-lamp-light');

@@ -11,11 +11,12 @@ import { NativeFireplace } from './NativeFireplace';
 import { configureRoomCamera } from '@/utils/native-room-camera';
 import { registerRoomModelWarmup } from '@/utils/native-model-warmup';
 import type { HomeRoomId } from '@/constants/home-rooms';
-import { prepareModel, clearPreparedModels, useSyncSharedValue } from 'react-native-filament';
+import { prepareModel, clearPreparedModels } from 'react-native-filament';
+import { useFilamentSharedValue } from '@/hooks/use-filament-shared-value';
 import { advanceSpotlightAim, type SpotlightAim } from '@/utils/native-spotlight-aim';
 import { NativeFridge } from './NativeFridge';
 import { NativeCurtain } from './NativeCurtain';
-import { nativeRoomPreview } from '@/utils/native-room-preview';
+import { nativeRoomPoseMatches, nativeRoomPreview } from '@/utils/native-room-preview';
 import { NativeLightning } from './NativeLightning';
 import type { CurtainProgress } from '@/utils/native-curtains';
 /* Native worklet shared values synchronize the drawing thread with React. */
@@ -61,6 +62,7 @@ type Props = {
   pickerRef?: RefObject<NativeRoomPicker | undefined>;
   spotlightAim?: ISharedValue<SpotlightAim | undefined>;
   editingObject?: ISharedValue<NativeRoomObject | undefined>;
+  previewReset?: ISharedValue<number>;
   dragMotion?: SharedValue<RoomDragMotion>;
   dragBase?: SharedValue<RoomDragBase | undefined>;
   worldClock?: WorldClock;
@@ -98,11 +100,12 @@ function RoomModel({ id, onReady }: { id: string; onReady?: () => void }) {
   useEffect(() => { if (model.state === 'loaded') onReady?.(); }, [model.state, onReady]);
   return null;
 }
-const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning, windows, world, worldClock, editingObject, spotlightPose, catPosition, rockingMotion, hangingBall, floorToy, plantLeaf, pawPositions, playingId, playContact, catPresent, active, lightingActive, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady, registerPickEntities }: {
+const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning, windows, world, worldClock, editingObject, previewReset, spotlightPose, catPosition, rockingMotion, hangingBall, floorToy, plantLeaf, pawPositions, playingId, playContact, catPresent, active, lightingActive, reduceMotion, roomWidth, catRadius, onPosition, travel, activityKey, airflow, onReady, registerPickEntities }: {
   registerPickEntities?: (id: string, entities: { id: number }[]) => () => void;
   lightning: ISharedValue<number>;
   spotlightPose?: ISharedValue<SpotlightAim | undefined>;
   editingObject?: ISharedValue<NativeRoomObject | undefined>;
+  previewReset?: ISharedValue<number>;
   worldClock?: WorldClock;
   curtainProgress: ISharedValue<CurtainProgress>;
   windows: NativeRoomObject[];
@@ -213,11 +216,24 @@ const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning
   const initialTransform = useMemo(() => transformManager.createIdentityMatrix().scaling([object.scale, object.scale, object.scale]).rotate(object.heading, [0, 1, 0]).translate(object.position), [object, transformManager]);
   const previewIdentity = useMemo(() => transformManager.createIdentityMatrix(), [transformManager]);
   const appliedPreview = useSharedValue<number[]>([]);
-  useEffect(() => { appliedPreview.value = []; }, [appliedPreview, entity, initialTransform]);
+  const appliedReset = useSharedValue(0);
+  useEffect(() => { appliedPreview.value = []; }, [appliedPreview, entity]);
   useWorkletEffect(() => {
     'worklet';
-    if (entity)
-      transformManager.setTransform(entity, initialTransform);
+    if (entity) {
+      const preview = nativeRoomPreview(editingObject?.value, object.instanceId);
+      const reset = previewReset?.value ?? 0;
+      if (preview) {
+        transformManager.setTransform(entity, previewIdentity.scaling([preview.scale, preview.scale, preview.scale])
+          .rotate(preview.heading, [0, 1, 0]).translate(preview.position));
+        appliedPreview.value = [preview.scale, preview.heading, ...preview.position];
+        appliedReset.value = reset;
+      } else if (reset !== appliedReset.value || !appliedPreview.value.length || nativeRoomPoseMatches(object, appliedPreview.value)) {
+        transformManager.setTransform(entity, initialTransform);
+        appliedPreview.value = [];
+        appliedReset.value = reset;
+      }
+    }
     if (!bathroomMotion.value.runningWater) for (const part of bathroomParts) {
       if (part.name !== 'Toilet lid hinge' && !part.name.startsWith('Bath water glint'))
         transformManager.setTransform(part.entity, part.transform.scaling([0, 0, 0]));
@@ -241,6 +257,7 @@ const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning
     if (!entity) return;
     const active = motionActive.value;
     const preview = nativeRoomPreview(editingObject?.value, object.instanceId);
+    const reset = previewReset?.value ?? 0;
     if (preview) {
       const prior = appliedPreview.value;
       if (prior[0] !== preview.scale || prior[1] !== preview.heading || prior[2] !== preview.position[0]
@@ -253,11 +270,14 @@ const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning
           reportDragFrame({ ...root.dragSample, appliedAt: Date.now() });
         }
       }
+      appliedReset.value = reset;
       return;
     }
     if (appliedPreview.value.length) {
+      if (reset === appliedReset.value && !nativeRoomPoseMatches(object, appliedPreview.value)) return;
       transformManager.setTransform(entity, initialTransform);
       appliedPreview.value = [];
+      appliedReset.value = reset;
     }
     if (bedCover) {
       const target = travel?.bed?.instanceId === object.instanceId && travel.bed.phase !== 'uncover' ? 1 : 0;
@@ -464,7 +484,7 @@ const RoomObject = memo(function RoomObject({ object, curtainProgress, lightning
       if (playingId === object.instanceId) plantLeaf.value = target;
     }
     clock.value = s;
-  }, [reportDragFrame, motionActive, modelMetadata, editingObject, appliedPreview, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, objectAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, floorToy, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
+  }, [reportDragFrame, motionActive, modelMetadata, editingObject, previewReset, appliedPreview, appliedReset, previewIdentity, reduceMotion, airflow, animator, lampAnimationOn, objectAnimationOn, bedCover, coverLift, bathroomParts, bathroomMotion, body, catPresent, catPosition, catRadius, center, chase, chaseTime, clock, worldClock, clockHands, entity, hanging, hangingBall, floorToy, initialTransform, leafStates, leafBends, leafCooldown, leaves, notify, object, pawPositions, plantLeaf, previousLeaves, playContact, playingId, radius, rockingMotion, roomWidth, previousContact, swing, transformManager, travel]);
   RenderCallbackContext.useRenderCallback(render, [render]);
   const interaction = asset && (modelMetadata.interactionParts?.length || itemInteraction(object.modelId)?.power)
     ? <NativeItemInteraction asset={asset} object={object} active={lightingActive} reduceMotion={reduceMotion}/> : null;
@@ -494,8 +514,8 @@ function Scene(props: Props) {
   'use no memo';
   const idleMotion = useUISharedValue<RoomDragMotion>(IDLE_ROOM_DRAG);
   const idleBase = useUISharedValue<RoomDragBase | undefined>(undefined);
-  const nativeDragMotion = useSyncSharedValue(props.dragMotion ?? idleMotion);
-  const nativeDragBase = useSyncSharedValue(props.dragBase ?? idleBase);
+  const nativeDragMotion = useFilamentSharedValue(props.dragMotion ?? idleMotion, IDLE_ROOM_DRAG);
+  const nativeDragBase = useFilamentSharedValue(props.dragBase ?? idleBase, undefined);
   const appliedDrag = useSharedValue('');
   const dragTarget = props.editingObject;
   const { camera, view, choreographer, engine, workletContext } = useFilamentContext();
@@ -593,7 +613,8 @@ function Scene(props: Props) {
       // Filament invokes this before the object callbacks, so every model,
       // light and shadow observes the same pointer pose for this frame.
       const motion = nativeDragMotion.value, base = nativeDragBase.value;
-      if (dragTarget && base) {
+      const released = (dragTarget?.value as RoomDragPreview | undefined)?.releaseSession === base?.session;
+      if (dragTarget && base && !released) {
         const key = `${motion.session}:${motion.sequence}:${base.version}`;
         if (appliedDrag.value !== key) {
           const preview = roomDragPreview(base, motion);
@@ -635,7 +656,7 @@ function Scene(props: Props) {
   <RoomModel id={props.roomId ?? 'room1'} onReady={handleRoomReady}/>
   <NativeContactShadows world={props.world} editingObject={props.editingObject} active={visible}/>
   <NativeRoomColliders world={world} objects={props.world.objects}/>
-  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} spotlightPose={spotlightPose} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={objectMotion} lightingActive={lightingActive && hasLightingUpdates(object)} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
+  {props.world.objects.map(object => <RoomObject key={object.instanceId + ':' + object.modelId} curtainProgress={curtainProgress} lightning={lightning} windows={windows} worldClock={props.worldClock} editingObject={props.editingObject} previewReset={props.previewReset} spotlightPose={spotlightPose} object={object} onReady={handleObjectReady} registerPickEntities={registerPickEntities} world={world} catPresent={catPresent} catPosition={catPosition} rockingMotion={rockingMotion} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} playingId={props.playingId} playContact={props.playContact} active={objectMotion} lightingActive={lightingActive && hasLightingUpdates(object)} reduceMotion={reduceMotion} airflow={airflow} travel={props.travel} activityKey={props.activityKey} roomWidth={props.world.width} catRadius={props.world.radius} onPosition={props.onObjectPosition}/>)}
   {props.world.objects.filter(o => isAirConditionerDecorationId(o.modelId) && o.poweredOn).map(o => <NativeAirflow key={o.instanceId} object={o} editingObject={props.editingObject} active={visible && !reduceMotion}/>)}
   {eatingFeeder && !reduceMotion && <NativeFoodSpill key={`${props.activityKey}:${eatingFeeder.instanceId}:${eatingFeeder.modelId}`} object={eatingFeeder} active={visible} animationTime={catAnimationTime}/>}
   {renderCat && <NativeCatActor model={catModel} registerPickEntities={registerPickEntities} key={catKey} initialPosition={props.initialCatPosition} skinId={props.skinId} playback={props.playback} commandAttention={props.commandAttention} world={props.world} travel={props.travel} activityKey={props.activityKey} active={visible} reduceMotion={reduceMotion} positionValue={catPosition} rockingMotion={rockingMotion} animationTimeValue={catAnimationTime} hangingBall={hangingBall} floorToy={floorToy} plantLeaf={plantLeaf} pawPositions={pawPositions} onReady={() => setCatReadyFor(catKey)} onPosition={props.onPosition} onContactPosition={props.onContactPosition} onRoomStepComplete={props.onRoomStepComplete} onAnimationComplete={props.onAnimationComplete} onStepComplete={props.onStepComplete}/>}

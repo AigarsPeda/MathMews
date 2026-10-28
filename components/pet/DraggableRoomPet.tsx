@@ -277,10 +277,11 @@ function DraggableRoomPetView({
   );
 
   const halfPet = petSize / 2;
-  // Keep the saved anchor in layout. Replacing the 3D placeholder with a still
-  // image can reapply the animated style's initial zero translation.
-  const layoutX = animatedPosition ? 0 : externalPosition?.x ?? position.x;
-  const layoutY = animatedPosition ? 0 : externalPosition?.y ?? position.y;
+  // Keep selected targets at one layout origin through the drag/release handoff.
+  // Other targets use their saved anchor so a still-image replacement cannot
+  // reapply an animated style's initial zero translation.
+  const layoutX = animatedPosition || selected ? 0 : externalPosition?.x ?? position.x;
+  const layoutY = animatedPosition || selected ? 0 : externalPosition?.y ?? position.y;
   const left =
     roomSize.width > 0 ? roomSize.width / 2 - halfPet + layoutX : 0;
   const top =

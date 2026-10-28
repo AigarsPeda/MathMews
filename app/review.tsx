@@ -34,20 +34,20 @@ export default function ReviewScreen() {
   return <SafeAreaView style={styles.safe} edges={['top','bottom']}>
     <View style={styles.header}><Pressable onPress={back} accessibilityRole="button" style={styles.button}><BackButtonLabel/></Pressable><PuzzleLives lives={lives} onPress={()=>router.push('/puzzles')}/></View>
     <ScrollView ref={scroll} contentContainerStyle={styles.content} onContentSizeChange={()=>{if(result!==null)scroll.current?.scrollToEnd({animated:false});}}>
-      <Text style={styles.title} accessibilityRole="header">{t('guided.review')}</Text><Text style={styles.subtitle}>{lesson.title[locale]}</Text>
-      <Text style={styles.body}>{t('guided.reviewPolicy')}</Text>
+      <Text style={styles.title} accessibilityRole="header">{t('learningReview.review')}</Text><Text style={styles.subtitle}>{lesson.title[locale]}</Text>
+      <Text style={styles.body}>{t('learningReview.reviewPolicy')}</Text>
       {!done || result!==null ? <>
         <Text style={styles.question}>{question.prompt[locale]}</Text>
-        {question.diagram ? <View style={styles.diagram} accessible accessibilityLabel={t('guided.reviewDiagram',{colored:question.diagram.colored,total:question.diagram.parts})}>{Array.from({length:question.diagram.parts},(_,i)=><View key={i} style={[styles.piece,i<question.diagram!.colored&&styles.colored]}/>)}</View>:null}
+        {question.diagram ? <View style={styles.diagram} accessible accessibilityLabel={t('learningReview.reviewDiagram',{colored:question.diagram.colored,total:question.diagram.parts})}>{Array.from({length:question.diagram.parts},(_,i)=><View key={i} style={[styles.piece,i<question.diagram!.colored&&styles.colored]}/>)}</View>:null}
         {question.choices.map((choice,index)=><Pressable key={`${day}-${index}`} accessibilityRole="button" accessibilityState={{selected:selected===index,disabled:done}} disabled={done} onPress={()=>setSelected(index)} style={[styles.choice,selected===index&&styles.selected]}><Text style={styles.subtitle}>{choice}</Text></Pressable>)}
       </>:null}
-      {result!==null?<View accessibilityLiveRegion="polite"><Text style={styles.subtitle}>{t(result?'guided.reviewCorrect':'guided.reviewTry')}</Text><Text style={styles.body}>{question.explanation[locale]}</Text></View>:done?<Text style={styles.body}>{t('guided.reviewDone')}</Text>:null}
-      {stale?<Text style={styles.body}>{t('guided.reviewStale')}</Text>:null}
-      {lives.current===0&&!done?<Text style={styles.body}>{t('guided.reviewNoLives')}</Text>:null}
+      {result!==null?<View accessibilityLiveRegion="polite"><Text style={styles.subtitle}>{t(result?'learningReview.reviewCorrect':'learningReview.reviewTry')}</Text><Text style={styles.body}>{question.explanation[locale]}</Text></View>:done?<Text style={styles.body}>{t('learningReview.reviewDone')}</Text>:null}
+      {stale?<Text style={styles.body}>{t('learningReview.reviewStale')}</Text>:null}
+      {lives.current===0&&!done?<Text style={styles.body}>{t('learningReview.reviewNoLives')}</Text>:null}
     </ScrollView>
     <View style={styles.content}>
       {!done?<Pressable disabled={!canCheck} accessibilityRole="button" accessibilityState={{disabled:!canCheck}} onPress={()=>{if(selected!==null)setResult(answerLearningReview(lesson.id,day,selected));}} style={[styles.primary,!canCheck&&styles.disabled]}><Text style={styles.primaryText}>{t('play.checkAnswer')}</Text></Pressable>:null}
-      <Pressable accessibilityRole="button" style={styles.button} onPress={()=>router.replace({pathname:'/learn',params:{lesson:lesson.id}})}><Text style={styles.link}>{t('guided.title')}</Text></Pressable>
+      <Pressable accessibilityRole="button" style={styles.button} onPress={()=>router.replace({pathname:'/puzzles',params:{difficulty:lesson.difficulty,topic:lesson.topicId,lesson:lesson.id}})}><Text style={styles.link}>{t('learning.backToLesson')}</Text></Pressable>
     </View>
   </SafeAreaView>;
 }

@@ -1,4 +1,3 @@
-import { getLearningRecommendation } from "@/utils/learning-recommendations";
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
 import { LearningLevelCard } from "@/components/puzzle/LearningLevelCard";
 import { LessonListItem } from "@/components/puzzle/LessonListItem";
@@ -46,11 +45,10 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
   const scopeProgress = lesson ? getLearningProgress(getRequiredIds(lesson), completed)
     : topic ? getTopicProgress(difficulty, topic.id, completed) : null;
   const title = lesson?.title[locale] ?? topic?.title[locale] ?? t("learning.chooseTopic");
-  const description = lesson?.description[locale] ?? topic?.description[locale] ?? t("learning.topicIntro");
+  const description = lesson?.description[locale] ?? topic?.description[locale];
   const availableLevels = lesson?.levels.filter(level => getLearningLevelState(lesson, level, completed) === "current");
-  const recommendation = getLearningRecommendation(progress, difficulty, topic?.id);
   const firstAvailable = availableLevels?.find(level => level.kind === "practice")
-    ?? availableLevels?.find(level => level.kind === "boss") ?? availableLevels?.[0];
+    ?? availableLevels?.find(level => level.kind === "challenge") ?? availableLevels?.find(level => level.kind === "boss");
   const nextLesson = !lesson ? lessons.find(item => isLessonAvailable(item, completed)
     && !getLearningProgress(getRequiredIds(item), completed).complete) : undefined;
   const scrollKey = `${difficulty}-${topic?.id}-${lesson?.id}`;
@@ -114,20 +112,12 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
           <View style={styles.content} onLayout={event => setContentLayout({ key: scrollKey, height: event.nativeEvent.layout.height })}>
           {topic && <Text style={styles.location}>{[t(`difficulty.${difficulty}`), ...(lesson ? [topic.title[locale]] : [])].join(" / ")}</Text>}
           <Text style={styles.title} accessibilityRole="header">{title}</Text>
-          <Text style={styles.description}>{description}</Text>
-          <Pressable style={styles.learn} accessibilityRole="button" onPress={() => router.push({ pathname: "/learn", params: { lesson: lesson?.id ?? lessons[0]?.id ?? getTopicLessons(difficulty, topics[0].id)[0].id } })}>
-            <AppIcon name="paw" size={28} /><View style={{ flex: 1 }}><Text style={styles.backText}>{t("guided.title")}</Text><Text style={styles.description}>{t("guided.promise")}</Text></View>
-          </Pressable>
+          {description ? <Text style={styles.description}>{description}</Text> : null}
           {scopeProgress && <View style={styles.scopeProgress} accessible accessibilityLabel={t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}>
             {lesson ? <Text style={styles.progressText}>{t("learning.requiredProgress", { count: scopeProgress.solved, total: scopeProgress.total })}</Text>
               : <View style={styles.row}><Text style={styles.progressText}>{t("lessonProgress.requiredTasks")}</Text><Text style={styles.progressText}>{scopeProgress.solved}/{scopeProgress.total}</Text></View>}
             <ProgressBar progress={scopeProgress.total ? scopeProgress.solved / scopeProgress.total : 0} fillColor={GameColors.success} trackColor={GameColors.cardBorder} />
           </View>}
-
-          {!lesson && recommendation ? <Pressable accessibilityRole="button" style={styles.topic} onPress={() => {
-            if (recommendation.kind === "ready") navigate(recommendation.lesson.topicId, recommendation.lesson.id);
-            else router.push({ pathname: recommendation.kind === "review" ? "/review" : "/learn", params: { lesson: recommendation.lesson.id } });
-          }}><Text style={styles.lessonTitle}>{t(`guided.${recommendation.kind === "ready" ? "recommended" : recommendation.kind}`)}</Text><Text style={styles.backText}>{recommendation.lesson.title[locale]}</Text><Text style={styles.description}>{t(`guided.${recommendation.kind === "ready" ? "ready" : recommendation.kind === "review" ? "reviewReason" : "supportReason"}`)}</Text></Pressable> : null}
 
           {!topic && topics.map(item => {
             const status = getTopicProgress(difficulty, item.id, completed);
@@ -184,7 +174,6 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
 });
 
 const styles = StyleSheet.create({
-  learn: { flexDirection: "row", alignItems: "center", gap: 12, minHeight: 64, padding: 14, borderRadius: 16, backgroundColor: "#E8FAF8" },
   safe: { flex: 1, backgroundColor: GameColors.background },
   loading: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: GameColors.background },
   screen: { flex: 1, paddingHorizontal: moderateScale(16), gap: moderateScale(12), paddingBottom: moderateScale(8) },

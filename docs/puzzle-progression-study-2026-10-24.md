@@ -1,6 +1,6 @@
 # Math Mews puzzle progression study
 
-Implementation update, 24 October 2026: the repository now includes the Easy addition/fractions pilot, varied answer ranks and comparison sides, zero-life **Learn with the cat**, saved supported versus independent evidence, simple next/support recommendations and delayed topic checks. See [the implementation and QA notes](qa/guided-learning/2026-10-24/results.md) for coverage and limits. The research below records the original audit and proposals. Skip-ahead placement, untimed scored challenge variants and child/educator evaluation remain future work; the implementation does not establish mastery or improved learning outcomes.
+Implementation update, 26 October 2026: the separate **Learn with the cat** mode and automatic recommendation cards have been removed. The Easy addition/fractions pilot, varied answer ranks and comparison sides, saved supported versus independent puzzle evidence and topic checks remain. The [24 October implementation and QA notes](qa/guided-learning/2026-10-24/results.md) are a historical record that includes the retired mode and recommendations. The research below records the original audit and proposals. Skip-ahead placement, untimed scored challenge variants and child/educator evaluation remain future work; the implementation does not establish mastery or improved learning outcomes.
 
 
 Research and repository audit, 24 October 2026.
