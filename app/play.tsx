@@ -1,17 +1,16 @@
-import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
-import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
-import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
-import { getPuzzleAttemptHint, getPuzzleDraftAnswer, getPuzzlePosition } from "@/utils/puzzle-attempt";
-import { getBossSceneProgress } from "@/utils/boss-story";
-import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
-import { PuzzleProgress } from "@/components/puzzle/PuzzleProgress";
-import { PuzzleLives } from "@/components/puzzle/PuzzleLives";
-import { ChallengeClock, TimedChallengeActions, TimedChallengeIntro } from "@/components/puzzle/TimedChallenge";
 import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
+import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
+import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { PuzzleCatPortrait } from "@/components/puzzle/PuzzleCatPortrait";
+import { PuzzleLives } from "@/components/puzzle/PuzzleLives";
+import { PuzzleProgress } from "@/components/puzzle/PuzzleProgress";
+import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
+import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
+import { ChallengeClock, TimedChallengeActions, TimedChallengeIntro } from "@/components/puzzle/TimedChallenge";
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { IconText as Text } from "@/components/ui/IconText";
+import { getLearningLevelLocation, getLevelPuzzles, getNextPracticeLevel, getNextSpecialLevel, getRequiredIds, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
 import {
   GameColors,
   getPuzzleCoinReward,
@@ -19,23 +18,24 @@ import {
   MAX_LIVES,
 } from "@/constants/game";
 import { isPuzzleDifficulty } from "@/constants/puzzles";
-import { getLearningLevelLocation, getLevelPuzzles, getNextPracticeLevel, getNextSpecialLevel, getRequiredIds, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
-import { isChallengeOpen } from "@/utils/timed-challenge";
 import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
 import { useLocale } from "@/contexts/LocaleProvider";
+import { useWorldClockNow } from "@/hooks/use-world-clock-now";
 import type { PetAnimationState } from "@/types/game";
 import type { MathOperator, Puzzle, PuzzleDifficulty } from "@/types/puzzle";
+import { getBossSceneProgress } from "@/utils/boss-story";
+import type { ChallengeAnswer } from "@/utils/challenge-puzzles";
 import {
   buildFractionMatchCards,
   isFractionMatchPair,
 } from "@/utils/fraction-match";
-import { moveOrderTile } from "@/utils/puzzle-drag";
 import { resizeFractionSelection, toggleFractionSlice } from "@/utils/fraction-pie";
-import { getPuzzleCompanionMessage } from "@/utils/puzzle-companion";
-import { shufflePuzzleChoices } from "@/utils/puzzle-practice";
 import { applyLifeRegen, formatRegenCountdown, msUntilNextLife } from "@/utils/lives";
-import { useWorldClockNow } from "@/hooks/use-world-clock-now";
+import { getPuzzleAttemptHint, getPuzzleDraftAnswer, getPuzzlePosition } from "@/utils/puzzle-attempt";
+import { getPuzzleCompanionMessage } from "@/utils/puzzle-companion";
+import { moveOrderTile } from "@/utils/puzzle-drag";
+import { shufflePuzzleChoices } from "@/utils/puzzle-practice";
 import {
   asFractionBuildPuzzle,
   asFractionMatchPuzzle,
@@ -45,7 +45,7 @@ import {
   getPuzzleType,
 } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
-import type { ChallengeAnswer } from "@/utils/challenge-puzzles";
+import { isChallengeOpen } from "@/utils/timed-challenge";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import type { NativeStackNavigationProp } from "expo-router/native-stack";
