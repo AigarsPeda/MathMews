@@ -94,10 +94,6 @@ export default function RootLayout() {
                       name="onboarding/name-pet"
                       options={{ headerShown: false }}
                     />
-                    <Stack.Screen
-                      name="modal"
-                      options={{ presentation: "modal", title: "Modal" }}
-                    />
                   </Stack>
                   <WalletSyncNotice />
                 </ThemeProvider>

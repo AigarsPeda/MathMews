@@ -14,6 +14,11 @@ import { useEffect, useRef, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import { Pressable, Text, TurboModuleRegistry, View, type TurboModule } from "react-native";
 const PREVIOUS_FAST_REFRESH = true;
+const COLLECTION_TRACKS = [
+  ...["addition", "subtraction", "numbers", "patterns", "multiplication", "fractions"].map(topic => ({ topic, difficulty: "easy" })),
+  ...["addition", "subtraction", "multiplication", "division", "fractions", "operations"].map(topic => ({ topic, difficulty: "medium" })),
+  ...["operations", "fractions", "patterns", "percentages", "measurement", "logic"].map(topic => ({ topic, difficulty: "hard" })),
+];
 const lesson = getPathLesson("easy", "easy-addition-explore-5")!;
 function initialSave() {
   const save = createDefaultGameSave();
@@ -26,6 +31,7 @@ export default function PathFixture() {
   const [mode, setMode] = useState("path"), [narrow, setNarrow] = useState(false), [locale, setLocale] = useState<"en" | "lv">("en");
   const [save, setSave] = useState(initialSave), [revision, setRevision] = useState(0);
   const current = useRef(save);
+  const themeIndex = useRef(0);
   const realGame = useGame();
   const [language] = useState(() => i18n.cloneInstance({ lng: "en" }));
   useEffect(() => {
@@ -59,8 +65,19 @@ export default function PathFixture() {
       <View style={{ flex: 1, width: narrow ? 320 : "100%", alignSelf: "center" }}>
         {mode === "pace" ? <PlaySession key={revision} session={{ lesson, level: lesson.levels[7], phase: 0 }} /> : <PuzzlesScreen />}
       </View>
-      <View style={{ padding: 6, backgroundColor: "#F3EEFF", flexDirection: "row", justifyContent: "space-around" }}>
-        {["QA Path", "QA Topics", "QA Pace", "QA Narrow", "QA LV", "QA Level 10"].map(label => <Pressable key={label} accessibilityRole="button" onPress={() => {
+      <View style={{ padding: 6, backgroundColor: "#F3EEFF", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around" }}>
+        {["QA Path", "QA Topics", "QA Pace", "QA Narrow", "QA LV", "QA Level 6", "QA Level 10", "QA Theme"].map(label => <Pressable key={label} accessibilityRole="button" onPress={() => {
+          if (label === "QA Theme") {
+            themeIndex.current = (themeIndex.current + 1) % COLLECTION_TRACKS.length;
+            const entry = COLLECTION_TRACKS[themeIndex.current];
+            setMode("path"); router.setParams({ ...entry, lesson: undefined });
+          }
+          if (label === "QA Level 6") {
+            const next = initialSave();
+            next.progress.unlockedPathLessonIds = [];
+            next.progress.completedPuzzleIds = getTopicPaths("easy", "addition").slice(0, 5).flatMap(item => item.levels.flatMap(level => level.puzzleIds));
+            commit(next);
+          }
           if (label === "QA Level 10") {
             const next = initialSave();
             next.progress.completedPuzzleIds = getTopicPaths("easy", "addition").slice(0, 9).flatMap(item => item.levels.flatMap(level => level.puzzleIds));

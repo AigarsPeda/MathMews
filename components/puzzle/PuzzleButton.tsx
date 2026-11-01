@@ -4,12 +4,15 @@ import { PuzzleColors } from "@/constants/puzzle-theme";
 import { moderateScale } from "@/utils/scale";
 import { Pressable, StyleSheet, type PressableProps } from "react-native";
 
-export function PuzzleButton({ label, disabled, style, ...props }: Omit<PressableProps, "children"> & { label: string }) {
+export function PuzzleButton({ label, disabled, style, palette, ...props }: Omit<PressableProps, "children"> & {
+  label: string; palette?: { top: string; face: string; edge: string };
+}) {
   return <Pressable {...props} disabled={disabled} accessibilityRole="button"
     accessibilityState={{ ...props.accessibilityState, disabled: !!disabled }}
-    style={state => [styles.button, disabled && styles.disabled, state.pressed && !disabled && styles.pressed,
+    style={state => [styles.button, palette && { backgroundColor: palette.face, borderBottomColor: palette.edge },
+      disabled && styles.disabled, state.pressed && !disabled && styles.pressed,
       typeof style === "function" ? style(state) : style]}>
-    {!disabled ? <PuzzleGradient colors={[PuzzleColors.primaryTop, PuzzleColors.primary]} /> : null}
+    {!disabled ? <PuzzleGradient colors={[palette?.top ?? PuzzleColors.primaryTop, palette?.face ?? PuzzleColors.primary]} /> : null}
     <PuzzleText style={[styles.label, disabled && styles.disabledLabel]}>{label}</PuzzleText>
   </Pressable>;
 }

@@ -1,3 +1,5 @@
+import type { DecimalPlaceState } from "@/utils/decimal-models";
+import type { FractionStripState } from "@/utils/fraction-models";
 import type { PlaceValueState } from "@/utils/place-value";
 import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
@@ -184,6 +186,9 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const [lastAttempt, setLastAttempt] = useState<{ key: string; hint: string } | null>(null);
   const submittedAnswer = useRef<string | null>(null);
   const matchingAttempt = useRef<string | null>(null);
+  const [decimalGrid, setDecimalGrid] = useState<number | null>(null);
+  const [decimalPlace, setDecimalPlace] = useState<DecimalPlaceState | null>(null);
+  const [fractionStrip, setFractionStrip] = useState<FractionStripState | null>(null);
   const [placeValue, setPlaceValue] = useState<PlaceValueState | null>(null);
   const [challengeAnswer, setChallengeAnswer] = useState<ChallengeAnswer | null>(null);
   const [fractionSelectedSlices, setFractionSelectedSlices] = useState<number[]>([]);
@@ -218,6 +223,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     if (!beginChallenge(level.id, challengeMode)) return;
     recordInteraction();
     setPendingChoice(null); setPendingNumberLine(null); setSelectedOperators(createEmptyOperators(puzzle));
+    setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
     setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
     setNumberOrder(createInitialOrder(puzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
     setLastAttempt(null); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
@@ -234,10 +240,10 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const hasVisualHelp = hasVisualExplanation(puzzle);
 
   const draftAnswer = useMemo(() => getPuzzleDraftAnswer(puzzle, {
-    placeValue, choice: pendingChoice, operators: selectedOperators, shaded: fractionPieces,
+    decimalGrid, decimalPlace, fractionStrip, placeValue, choice: pendingChoice, operators: selectedOperators, shaded: fractionPieces,
     numberLine: pendingNumberLine, pairIndices, order: numberOrder,
     matchedCount: fractionMatchMatchedIds.length / 2, pairs: foundPairs, challenge: challengeAnswer,
-  }), [puzzle, placeValue, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
+  }), [puzzle, decimalGrid, decimalPlace, fractionStrip, placeValue, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
   const draftKey = JSON.stringify(draftAnswer);
   const canCheck = hasLives && challengePlayable && !answered && draftAnswer !== null && draftKey !== lastAttempt?.key;
   const progressSteps = lesson.levels.map((item, index) => replaySession ? index < position.current - 1 || answered && index === position.current - 1
@@ -483,6 +489,12 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
               puzzle={puzzle}
               hasLives={hasLives && challengePlayable}
               onIncorrectAttempt={handleInlineMistake}
+              decimalGrid={decimalGrid}
+              onDecimalGridChange={setDecimalGrid}
+              decimalPlace={decimalPlace}
+              onDecimalPlaceChange={setDecimalPlace}
+              fractionStrip={fractionStrip}
+              onFractionStripChange={setFractionStrip}
               placeValue={placeValue}
               onPlaceValueChange={setPlaceValue}
               onChallengeAnswerChange={setChallengeAnswer}

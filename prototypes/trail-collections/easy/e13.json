@@ -1,0 +1,8 @@
+{
+  "id": "e13",
+  "collection": "easy",
+  "builder": "satchel",
+  "meshObjects": 9,
+  "samples": 48,
+  "renderSize": 640
+}

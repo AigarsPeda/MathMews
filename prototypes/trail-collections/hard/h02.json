@@ -1,0 +1,8 @@
+{
+  "id": "h02",
+  "collection": "hard",
+  "builder": "drafting",
+  "meshObjects": 10,
+  "samples": 48,
+  "renderSize": 640
+}

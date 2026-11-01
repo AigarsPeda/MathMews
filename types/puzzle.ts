@@ -17,6 +17,10 @@ export type PuzzleTopic =
   | "division";
 
 export type PuzzleType =
+  | "decimal_grid"
+  | "decimal_place_value"
+  | "fraction_number_line"
+  | "fraction_strip"
   | "place_value"
   | "multiple_choice"
   | "compare"
@@ -272,7 +276,30 @@ export type PlaceValuePuzzle = PuzzleBase & {
   payload: { mode: "build" | "bundle" | "split" | "add" | "subtract"; start: number; operand?: number; guided: boolean };
 };
 
+export type FractionNumberLinePuzzle = PuzzleBase & {
+  type: "fraction_number_line";
+  payload: { numerator: number; denominator: number; divisions: number; guided: boolean };
+};
+
+export type FractionStripPuzzle = PuzzleBase & {
+  type: "fraction_strip";
+  payload: { numerator: number; denominator: number; partitions: number[]; mode: "build" | "equivalent"; guided: boolean };
+};
+
+export type DecimalGridPuzzle = PuzzleBase & {
+  type: "decimal_grid";
+  payload: { hundredths: number; scale: 10 | 100; digits: 1 | 2; guided: boolean };
+};
+export type DecimalPlaceValuePuzzle = PuzzleBase & {
+  type: "decimal_place_value";
+  payload: { hundredths: number; digits: 1 | 2; mode: "build" | "bundle" | "split"; units: ("ones" | "tenths" | "hundredths")[]; exchangeUnit: "tenths" | "hundredths"; guided: boolean };
+};
+
 export type Puzzle =
+  | DecimalGridPuzzle
+  | DecimalPlaceValuePuzzle
+  | FractionNumberLinePuzzle
+  | FractionStripPuzzle
   | PlaceValuePuzzle
   | OptionalChallengePuzzle
   | FindAllPairsPuzzle

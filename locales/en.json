@@ -1223,7 +1223,11 @@
     "repair_pattern": "Pattern repair",
     "route_grid": "Number maze",
     "budget_plan": "Budget planner",
-    "place_value": "Tens and ones"
+    "place_value": "Tens and ones",
+    "fraction_number_line": "Fraction number line",
+    "fraction_strip": "Fraction strips",
+    "decimal_grid": "Decimal grid",
+    "decimal_place_value": "Decimal place value"
   },
   "puzzlePath": {
     "title": "Puzzle path",
@@ -1273,7 +1277,13 @@
       "budgetTooLittle": "You’re leaving too much money. Recheck the prices and discounts.",
       "placeValueSplit": "Exchange one ten for ten ones.",
       "placeValueAdd": "Add the second number to the board first.",
-      "placeValueBundle": "The amount is right. Exchange ten ones for one ten."
+      "placeValueBundle": "The amount is right. Exchange ten ones for one ten.",
+      "fractionDifferentParts": "These pieces cannot make the exact amount. Try another number of equal parts.",
+      "decimalTooSmall": "Your total is too small. Check the value of each column.",
+      "decimalTooLarge": "Your total is too large. Check the value of each column.",
+      "decimalExchange": "Use the exchange button. The total should stay the same.",
+      "decimalGridFew": "Too little is shaded. Add parts with +.",
+      "decimalGridMany": "Too much is shaded. Remove parts with −."
     },
     "solveFor": "Solve for {{name}}",
     "replayNut": "Replay nut #{{number}}",
@@ -1319,7 +1329,11 @@
       "route_grid": "Tap neighboring squares to build a route. You can undo steps before checking.",
       "budget_plan": "Compare the discounted prices and choose a plan. Several plans may work.",
       "target_buildHard": "Fill each gap, then check your answer.",
-      "place_value": "Use the tens and ones, then check your board."
+      "place_value": "Use the tens and ones, then check your board.",
+      "fraction_number_line": "Mark a point between 0 and 1, then check.",
+      "fraction_strip": "Use equal parts to build the fraction, then check.",
+      "decimal_grid": "Shade the decimal amount, then check.",
+      "decimal_place_value": "Build or exchange the pieces, then check."
     }
   },
   "lives": {
@@ -1634,6 +1648,10 @@
     "explore": "Explore a topic"
   },
   "puzzlePathDesign": {
+    "startHere": "Start here",
+    "continueHere": "Continue here",
+    "finishLine": "Finish line",
+    "topicComplete": "All levels complete!",
     "step": "Puzzle {{number}}",
     "completed": "Completed. Play again.",
     "current": "Ready to play.",
@@ -1684,5 +1702,54 @@
     "split": "1 ten → 10 ones",
     "removed": "Taken away: {{count}} of {{target}}",
     "reset": "Start this board again"
+  },
+  "fractionModels": {
+    "lineGuide": "There are {{count}} equal steps from 0 to 1. Count spaces, starting at 0.",
+    "lineLabel": "Fraction number line from zero to one",
+    "noPoint": "No point selected",
+    "point": "Point {{count}} of {{total}} equal steps",
+    "left": "Move left",
+    "right": "Move right",
+    "tapLine": "Tap the line, or use the buttons to move one step.",
+    "pointSelected": "Your point is marked on the line.",
+    "stripGuide": "The strip is one whole. Shade the required number of equal parts.",
+    "equalGuide": "Both strips are the same length. Use different parts to shade the same amount.",
+    "referenceLabel": "Reference strip: {{numerator}}/{{denominator}} of one whole",
+    "reference": "Reference",
+    "chooseParts": "Choose equal parts",
+    "parts": "{{count}} parts",
+    "partitionResets": "Choosing new parts clears your shading.",
+    "yourStrip": "Your strip",
+    "shaded": "Shaded parts: {{count}} of {{total}}",
+    "remove": "Unshade one part",
+    "add": "Shade one part",
+    "reset": "Start this strip again"
+  },
+  "decimalModels": {
+    "tenthsGuide": "The square is one whole. Each of its 10 equal strips is one tenth, or 0.1.",
+    "hundredthsGuide": "The square is one whole. Each of its 100 small squares is one hundredth, or 0.01. A full row is 0.10, the same as 0.1.",
+    "oneWhole": "1 whole",
+    "gridLabel": "Decimal grid",
+    "shaded": "{{count}} of {{total}} parts shaded",
+    "tapGrid": "Tap the grid to start.",
+    "unshade": "Unshade {{count}} parts",
+    "shade": "Shade {{count}} parts",
+    "gridControls": "Tap to shade up to a part. Use + or − to adjust.",
+    "reset": "Start again",
+    "placeGuide": "Build the number in its place-value columns. A zero means that place is empty.",
+    "exchangeGuide": "Ten hundredths make one tenth. Exchange the pieces without changing the total.",
+    "ones": "Ones",
+    "tenths": "Tenths",
+    "hundredths": "Hundredths",
+    "unitCount": "{{unit}}: {{count}}",
+    "removeUnit": "Remove one: {{unit}}",
+    "addUnit": "Add one: {{unit}}",
+    "blockScale": "A square is 1, a strip is 0.1, and a dot is 0.01.",
+    "total": "Total: {{value}}",
+    "bundle_hundredths": "10 hundredths → 1 tenth",
+    "split_hundredths": "1 tenth → 10 hundredths",
+    "bundle_tenths": "10 tenths → 1 one",
+    "split_tenths": "1 one → 10 tenths",
+    "blockScaleTenths": "A square is 1. A strip is one tenth, or 0.1."
   }
 }

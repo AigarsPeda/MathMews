@@ -58,10 +58,6 @@ export function getIdleSpeech({
   return { key: "pet.speech.idle" };
 }
 
-export function shouldShowContextualSpeech(context: IdleSpeechContext): boolean {
-  return !QUIET_SPEECH_KEYS.has(getIdleSpeech(context).key);
-}
-
 export function getContextualSpeechMessage(
   context: IdleSpeechContext,
   translate: (key: string, params?: Record<string, unknown>) => string,

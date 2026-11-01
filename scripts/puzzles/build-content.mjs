@@ -1,3 +1,5 @@
+import { applyDecimalModelPilot } from "./decimal-model-pilot.mjs";
+import { applyFractionModelPilot } from "./fraction-model-pilot.mjs";
 import { applyPlaceValuePilot } from "./place-value-pilot.mjs";
 /** Authoring source. Run npm run puzzles:build after changing topics or lessons. */
 import fs from 'node:fs';
@@ -401,6 +403,8 @@ for (const locale of ['en', 'lv']) for (const tier of ['easy', 'medium', 'hard']
 }
 applyProgressionRevisions({ puzzles, lessons, pathExtras });
 applyPlaceValuePilot({ puzzles, lessons, pathExtras });
+applyFractionModelPilot({ puzzles, lessons, pathExtras });
+applyDecimalModelPilot({ puzzles, lessons, pathExtras });
 writeGenerated('data/puzzle-path-extras.json', pathExtras);
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
 for (const locale of ['en','lv']) for (const difficulty of ['easy','medium','hard']) {

@@ -1224,7 +1224,11 @@
     "repair_pattern": "Virknes labošana",
     "route_grid": "Skaitļu labirints",
     "budget_plan": "Budžeta plānotājs",
-    "place_value": "Desmiti un vieni"
+    "place_value": "Desmiti un vieni",
+    "fraction_number_line": "Daļas uz skaitļu taisnes",
+    "fraction_strip": "Daļu joslas",
+    "decimal_grid": "Decimāldaļu režģis",
+    "decimal_place_value": "Decimāldaļu šķiras"
   },
   "puzzlePath": {
     "title": "Uzdevumu taka",
@@ -1274,7 +1278,13 @@
       "budgetTooLittle": "Tev paliek par daudz naudas. Pārbaudi cenas un atlaides.",
       "placeValueSplit": "Samaini vienu desmitu pret desmit vieniem.",
       "placeValueAdd": "Vispirms pievieno laukumā otro skaitli.",
-      "placeValueBundle": "Daudzums ir pareizs. Samaini desmit vienus pret vienu desmitu."
+      "placeValueBundle": "Daudzums ir pareizs. Samaini desmit vienus pret vienu desmitu.",
+      "fractionDifferentParts": "Ar šīm daļām nevar izveidot tieši vajadzīgo daudzumu. Izvēlies citu vienādo daļu skaitu.",
+      "decimalTooSmall": "Kopējais daudzums ir par mazu. Pārbaudi katras kolonnas vērtību.",
+      "decimalTooLarge": "Kopējais daudzums ir par lielu. Pārbaudi katras kolonnas vērtību.",
+      "decimalExchange": "Izmanto maiņas pogu. Kopējam daudzumam jāpaliek tādam pašam.",
+      "decimalGridFew": "Iekrāsots par maz. Pievieno daļas ar +.",
+      "decimalGridMany": "Iekrāsots par daudz. Noņem daļas ar −."
     },
     "solveFor": "Atrisini {{name}}",
     "replayNut": "Atkārtot riekstu #{{number}}",
@@ -1320,7 +1330,11 @@
       "route_grid": "Pieskaries blakus lauciņiem, lai veidotu ceļu. Pirms pārbaudes vari atsaukt soļus.",
       "budget_plan": "Salīdzini cenas pēc atlaidēm un izvēlies plānu. Var derēt vairāki plāni.",
       "target_buildHard": "Aizpildi katru atstarpi, tad pārbaudi atbildi.",
-      "place_value": "Izmanto desmitus un vienus, tad pārbaudi savu risinājumu."
+      "place_value": "Izmanto desmitus un vienus, tad pārbaudi savu risinājumu.",
+      "fraction_number_line": "Atzīmē punktu starp 0 un 1, tad pārbaudi.",
+      "fraction_strip": "Izveido daļu no vienādām daļām, tad pārbaudi.",
+      "decimal_grid": "Iekrāso decimāldaļai atbilstošo daudzumu un pārbaudi.",
+      "decimal_place_value": "Izveido vai samaini daļas un pārbaudi."
     }
   },
   "lives": {
@@ -1636,6 +1650,10 @@
     "explore": "Izvēlies tēmu"
   },
   "puzzlePathDesign": {
+    "startHere": "Sāc šeit",
+    "continueHere": "Turpini šeit",
+    "finishLine": "Finišs",
+    "topicComplete": "Visi līmeņi pabeigti!",
     "step": "Uzdevums {{number}}",
     "completed": "Pabeigts. Spēlē vēlreiz.",
     "current": "Gatavs spēlei.",
@@ -1686,5 +1704,54 @@
     "split": "1 desmits → 10 vieni",
     "removed": "Atņemts: {{count}} no {{target}}",
     "reset": "Sāc šo uzdevumu no jauna"
+  },
+  "fractionModels": {
+    "lineGuide": "No 0 līdz 1 ir {{count}} vienādi soļi. Skaiti atstarpes, sākot no 0.",
+    "lineLabel": "Daļu skaitļu taisne no nulles līdz vienam",
+    "noPoint": "Punkts nav izvēlēts",
+    "point": "Atzīme {{count}} no {{total}} vienādiem soļiem",
+    "left": "Soli pa kreisi",
+    "right": "Soli pa labi",
+    "tapLine": "Pieskaries taisnei vai izmanto pogas, lai pārvietotos par vienu soli.",
+    "pointSelected": "Tavs punkts ir atzīmēts uz taisnes.",
+    "stripGuide": "Josla ir viens veselais. Iekrāso vajadzīgo skaitu vienādu daļu.",
+    "equalGuide": "Abas joslas ir vienāda garuma. Izmanto citas daļas, lai iekrāsotu tikpat daudz.",
+    "referenceLabel": "Parauga josla: {{numerator}}/{{denominator}} no veselā",
+    "reference": "Paraugs",
+    "chooseParts": "Izvēlies vienādas daļas",
+    "parts": "{{count}} daļas",
+    "partitionResets": "Izvēloties citas daļas, iekrāsojums tiek notīrīts.",
+    "yourStrip": "Tava josla",
+    "shaded": "Iekrāsotās daļas: {{count}} no {{total}}",
+    "remove": "Notīri vienu daļu",
+    "add": "Iekrāso vienu daļu",
+    "reset": "Sāc šo joslu no jauna"
+  },
+  "decimalModels": {
+    "tenthsGuide": "Kvadrāts ir viens veselais. Katra no 10 vienādajām joslām ir viena desmitdaļa jeb 0,1.",
+    "hundredthsGuide": "Kvadrāts ir viens veselais. Katrs no 100 mazajiem kvadrātiņiem ir viena simtdaļa jeb 0,01. Pilna rinda ir 0,10, tikpat daudz kā 0,1.",
+    "oneWhole": "1 veselais",
+    "gridLabel": "Decimāldaļu režģis",
+    "shaded": "Iekrāsotas {{count}} no {{total}} daļām",
+    "tapGrid": "Pieskaries režģim, lai sāktu.",
+    "unshade": "Notīri {{count}} daļas",
+    "shade": "Iekrāso {{count}} daļas",
+    "gridControls": "Pieskaries daļai, lai iekrāsotu līdz tai. Pielāgo ar + vai −.",
+    "reset": "Sāc no jauna",
+    "placeGuide": "Veido skaitli šķiru kolonnās. Nulle nozīmē, ka šī šķira ir tukša.",
+    "exchangeGuide": "Desmit simtdaļas veido vienu desmitdaļu. Samaini daļas, nemainot kopējo daudzumu.",
+    "ones": "Vieni",
+    "tenths": "Desmitdaļas",
+    "hundredths": "Simtdaļas",
+    "unitCount": "{{unit}}: {{count}}",
+    "removeUnit": "Noņem vienu: {{unit}}",
+    "addUnit": "Pievieno vienu: {{unit}}",
+    "blockScale": "Kvadrāts ir 1, josla ir 0,1, punkts ir 0,01.",
+    "total": "Kopā: {{value}}",
+    "bundle_hundredths": "10 simtdaļas → 1 desmitdaļa",
+    "split_hundredths": "1 desmitdaļa → 10 simtdaļas",
+    "bundle_tenths": "10 desmitdaļas → 1 viens",
+    "split_tenths": "1 viens → 10 desmitdaļas",
+    "blockScaleTenths": "Kvadrāts ir 1. Josla ir viena desmitdaļa jeb 0,1."
   }
 }

@@ -37,10 +37,6 @@ export const DOG_VIDEO_SOURCES: Record<
   catches_a_coin: require("@/assets/video/catches_a_coin.mp4"),
 };
 
-export const DOG_MOOD_VIDEO_ASSET_KEYS = DOG_VIDEO_ASSET_KEYS.filter(
-  (key) => key !== "correct" && key !== "catches_a_coin",
-) as DogVideoAssetKey[];
-
 const MOOD_ASSET_KEYS: Record<PetAnimationState, DogVideoAssetKey> = {
   idle: "idle",
   excited: "happy_bounce",
@@ -138,17 +134,4 @@ export const dogVideoRegistry: PetMediaRegistry = {
   pickExcitedMood: () => "excited",
   getSegment: segmentFromMood,
   getScenario: (id) => DOG_SCENARIOS[id],
-};
-
-/** Prime positions (seconds) for each dog video clip. */
-export const DOG_VIDEO_PRIME_SEC: Record<DogVideoAssetKey, number> = {
-  idle: 0,
-  happy_bounce: (MOOD_ANIMATION.excited.startMs ?? 0) / 1000,
-  victory_spin: (MOOD_ANIMATION.dancing.startMs ?? 0) / 1000,
-  eating: (MOOD_ANIMATION.eating.startMs ?? 0) / 1000,
-  sad: 0,
-  sad2: (MOOD_ANIMATION.angry.startMs ?? 0) / 1000,
-  sleeping: (MOOD_ANIMATION.sleeping.startMs ?? 0) / 1000,
-  correct: 5,
-  catches_a_coin: 5,
 };

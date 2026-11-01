@@ -1,5 +1,4 @@
 import {
-  DOG_MOOD_VIDEO_ASSET_KEYS,
   DOG_VIDEO_SOURCES,
   type DogVideoAssetKey,
 } from "@/pet-display/registry/dog-video-registry";
@@ -72,8 +71,6 @@ function usePetVideoPlayerPool(): PetVideoPlayerPool {
 export function PetVideoMediaProvider({ children }: { children: ReactNode }) {
   const players = usePetVideoPlayerPool();
 
-
-
   return (
     <PetVideoContext.Provider value={players}>
       {children}
@@ -90,6 +87,3 @@ export function usePetVideoPlayers(): PetVideoPlayerPool {
   }
   return players;
 }
-
-/** Mood clips kept mounted on the home pet — excludes one-shot reaction videos. */
-export const PET_MOOD_VIDEO_ASSET_KEYS = DOG_MOOD_VIDEO_ASSET_KEYS;

@@ -1,0 +1,8 @@
+{
+  "id": "m10",
+  "collection": "medium",
+  "builder": "glider",
+  "meshObjects": 8,
+  "samples": 48,
+  "renderSize": 640
+}

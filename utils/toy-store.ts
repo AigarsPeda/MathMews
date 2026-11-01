@@ -2,15 +2,11 @@ import { getCatalogStorePrice } from "@/utils/store-catalog";
 import {
   CAT_TOY_IDS,
   isCatToyId,
-  resolveCatToyId,
   type CatToyId,
 } from "@/constants/cat-toys";
-import type { StorePrice, ToyPurchaseResult } from "@/types/store";
+import type { StorePrice } from "@/types/store";
 import type { PlacedToy, Progress } from "@/types/game";
 import { countPlacedToys } from "@/utils/room-placement";
-
-
-
 
 /** Catalog pricing — change amounts here; swap kind to `iap` per toy later. */
 export function getToyStorePrice(toyId: CatToyId): StorePrice {
@@ -86,61 +82,4 @@ export function normalizeToyQuantities(
   }
 
   return quantities;
-}
-
-export function tryPurchaseToy(params: {
-  toyId: CatToyId;
-  walletCoins: number;
-  toysUnlocked: CatToyId[];
-}): {
-  result: ToyPurchaseResult;
-  walletCoins: number;
-  toysUnlocked: CatToyId[];
-} {
-  const toyId = resolveCatToyId(params.toyId);
-  if (!toyId) {
-    return {
-      result: "invalid_item",
-      walletCoins: params.walletCoins,
-      toysUnlocked: params.toysUnlocked,
-    };
-  }
-
-  const price = getToyStorePrice(toyId);
-
-  if (price.kind === "iap") {
-    return {
-      result: "not_for_sale",
-      walletCoins: params.walletCoins,
-      toysUnlocked: params.toysUnlocked,
-    };
-  }
-
-  const alreadyUnlocked = isToyUnlocked(toyId, params.toysUnlocked);
-
-  if (price.kind === "free") {
-    return {
-      result: "purchased",
-      walletCoins: params.walletCoins,
-      toysUnlocked: alreadyUnlocked
-        ? params.toysUnlocked
-        : [...params.toysUnlocked, toyId],
-    };
-  }
-
-  if (params.walletCoins < price.amount) {
-    return {
-      result: "insufficient_funds",
-      walletCoins: params.walletCoins,
-      toysUnlocked: params.toysUnlocked,
-    };
-  }
-
-  return {
-    result: "purchased",
-    walletCoins: params.walletCoins - price.amount,
-    toysUnlocked: alreadyUnlocked
-      ? params.toysUnlocked
-      : [...params.toysUnlocked, toyId],
-  };
 }

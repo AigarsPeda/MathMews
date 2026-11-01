@@ -1,3 +1,5 @@
+import { decimalTotal, type DecimalPlaceState } from "@/utils/decimal-models";
+import type { FractionStripState } from "@/utils/fraction-models";
 import { placeValueTarget, type PlaceValueState } from "@/utils/place-value";
 import type { MathOperator, Puzzle } from "@/types/puzzle";
 import type { LearningLesson, LearningLevel } from "@/types/curriculum";
@@ -6,6 +8,9 @@ import { evaluateExpression, runOperationPath } from "@/utils/puzzle-math";
 import { getOperatorSlotCount, getValidPairs, type PuzzleAnswer } from "@/utils/puzzle-type";
 
 export type PuzzleDraft = {
+  decimalGrid?: number | null;
+  decimalPlace?: DecimalPlaceState | null;
+  fractionStrip?: FractionStripState | null;
   placeValue?: PlaceValueState | null;
   choice: number | null;
   operators: (MathOperator | null)[];
@@ -22,6 +27,10 @@ export type PuzzleDraft = {
 export function getPuzzleDraftAnswer(puzzle: Puzzle, draft: PuzzleDraft): PuzzleAnswer | null {
   if (isOptionalChallengePuzzle(puzzle)) return draft.challenge;
   switch (puzzle.type) {
+    case "decimal_grid": return draft.decimalGrid == null ? null : { kind: "decimal_grid", shaded: draft.decimalGrid };
+    case "decimal_place_value": return draft.decimalPlace ? { kind: "decimal_place", state: draft.decimalPlace } : null;
+    case "fraction_number_line": return draft.numberLine == null ? null : { kind: "fraction_point", tick: draft.numberLine };
+    case "fraction_strip": return draft.fractionStrip?.shaded != null ? { kind: "fraction_strip", state: draft.fractionStrip } : null;
     case "place_value": return draft.placeValue ? { kind: "place_value", state: draft.placeValue } : null;
     case "fraction_build": return draft.shaded > 0 ? { kind: "fraction", shaded: draft.shaded } : null;
     case "operation_path":
@@ -52,6 +61,19 @@ export function getPuzzleAttemptHint(puzzle: Puzzle, answer: PuzzleAnswer): Atte
   const direction = (value: number, target: number, low: string, high: string): AttemptHint => ({
     key: value < target ? low : high,
   });
+  if (puzzle.type === "decimal_grid" && answer.kind === "decimal_grid") return direction(answer.shaded * 100 / puzzle.payload.scale, puzzle.payload.hundredths, "decimalGridFew", "decimalGridMany");
+  if (puzzle.type === "decimal_place_value" && answer.kind === "decimal_place") {
+    if (puzzle.payload.mode !== "build") return { key: "decimalExchange" };
+    return direction(decimalTotal(answer.state), puzzle.payload.hundredths, "decimalTooSmall", "decimalTooLarge");
+  }
+  if (puzzle.type === "fraction_number_line" && answer.kind === "fraction_point") {
+    return direction(answer.tick * puzzle.payload.denominator, puzzle.payload.numerator * puzzle.payload.divisions, "moveRight", "moveLeft");
+  }
+  if (puzzle.type === "fraction_strip" && answer.kind === "fraction_strip") {
+    const { numerator, denominator } = puzzle.payload;
+    if (numerator * answer.state.parts % denominator !== 0) return { key: "fractionDifferentParts" };
+    return direction((answer.state.shaded ?? 0) * denominator, numerator * answer.state.parts, "fractionTooFew", "fractionTooMany");
+  }
   if (puzzle.type === "place_value" && answer.kind === "place_value") {
     if (puzzle.payload.mode === "split") return { key: "placeValueSplit" };
     if (puzzle.payload.mode === "add" && !answer.state.added) return { key: "placeValueAdd" };

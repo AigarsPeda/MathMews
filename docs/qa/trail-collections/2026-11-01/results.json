@@ -1,0 +1,96 @@
+{
+  "date": "2026-11-01",
+  "request": "Recreate the 60 approved concepts in Blender, compare/refine renders, and integrate all difficulty tracks.",
+  "assetCount": 60,
+  "assetsPerDifficulty": 20,
+  "editableBlenderScenes": 60,
+  "pngSize": [
+    640,
+    640
+  ],
+  "webpSize": [
+    384,
+    384
+  ],
+  "packedBytes": 1343956,
+  "largestSpriteBytes": 35852,
+  "referenceFiles": [
+    "prototypes/trail-collections/references/easy.png",
+    "prototypes/trail-collections/references/medium.png",
+    "prototypes/trail-collections/references/hard.png"
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "gitDiffCheck": "passed",
+    "educationProps": {
+      "status": "passed",
+      "collectionSprites": 60,
+      "legacyFinishMarkers": 1,
+      "retainedEducationModels": 9,
+      "difficultyTopicTracks": 18,
+      "layoutCases": 5940,
+      "allSpritesDistinct": true,
+      "allTwentyPlacedPerDifficulty": true,
+      "transparentEdges": true,
+      "noRepeatWithinTrail": true,
+      "reduceMotion": true
+    },
+    "puzzleExperience": {
+      "status": "passed",
+      "authoredPuzzles": 1800
+    },
+    "native": {
+      "status": "passed",
+      "device": "Math Mews Trail QA / iPhone 18 Pro / iOS 27 simulator",
+      "udid": "18105FA1-6C8B-4772-9583-C6ED84E61849",
+      "testMethods": [
+        "testThemedCraftTrailsAndReplay",
+        "testRevisedHardFractionsCraft"
+      ],
+      "tracksVisited": 18,
+      "checks": [
+        "Correct topic and difficulty headers",
+        "Current level remains visible",
+        "Future levels remain locked",
+        "320-point layout",
+        "Latvian current lesson caption",
+        "Reachable finish marker",
+        "Return through topic selection",
+        "Replay opens a real puzzle",
+        "Revised Mobius sprite on Hard Fractions"
+      ],
+      "resultBundles": [
+        "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-iY16FR/result.xcresult",
+        "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-JNv6Fw/result.xcresult"
+      ],
+      "saveIsolation": "In-memory fixture; user progress and wallet unchanged",
+      "temporaryRouteRemoved": true
+    }
+  },
+  "visualReview": {
+    "reviewed": [
+      "All 60 renders in comparison sheets",
+      "18 native track screenshots",
+      "Narrow Latvian current level screenshot",
+      "Updated Hard Fractions screenshot"
+    ],
+    "iterations": [
+      "Added actual loose wool fibres and woven fabric normals; reduced excessive fuzz on cloth",
+      "Fixed protractor self-crossing geometry",
+      "Closed tangram body gaps",
+      "Changed cube into connected interlocking pieces and corrected its camera crop",
+      "Improved glass transparency, prism spectrum and hourglass sand",
+      "Reworked cat pose, paw backing, arithmetic marks, slate, flowers and woven basket",
+      "Changed repeated sliding-puzzle symbols to distinct inlays",
+      "Rebuilt Mobius as a closed thick mesh to remove its normal seam; reoriented and retested"
+    ],
+    "assessment": "All approved subjects are represented and usable at trail size. These are modeled recreations; silhouette proportions, fine construction detail and lighting remain simplified compared with the concept sheets."
+  },
+  "limits": [
+    "No Android or physical-device rendering/performance verification",
+    "Native tour samples visible props; all 60 are reviewed in render sheets and checked for actual layout coverage",
+    "The floating Expo gear and bottom QA buttons are development controls, not product UI",
+    "No pixel-identical equivalence claim"
+  ]
+}

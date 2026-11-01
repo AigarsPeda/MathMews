@@ -59,8 +59,10 @@
     "test:puzzles:bosses:ios": "node scripts/native/check-puzzle-drag.mjs --bosses",
     "assets:puzzle-objects": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-puzzle-objects.py",
     "assets:achievement-stages": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/render-achievement-comedy.py -- --backgrounds",
-    "assets:education-props": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 4 --python scripts/3d/build-education-props.py && node scripts/3d/pack-education-props.mjs",
-    "test:education-props": "node scripts/check-education-props.mjs"
+    "assets:trail-props": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 4 --python-exit-code 1 --python scripts/3d/build-trail-props.py && node scripts/3d/pack-trail-props.mjs",
+    "assets:trail-collections": "python3 scripts/3d/rebuild-trail-collections.py",
+    "review:trail-collections": "node scripts/3d/review-trail-collections.mjs",
+    "test:trail-collections": "node scripts/check-trail-collections.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",
@@ -100,7 +102,6 @@
     "react-native-filament": "1.11.0",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-purchases": "^10.11.0",
-    "react-native-purchases-ui": "^10.11.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",

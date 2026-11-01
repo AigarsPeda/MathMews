@@ -50,7 +50,6 @@ const mocks = {
     },
   },
   '@/utils/scale': { moderateScale: value => value },
-  '@/utils/border-radius': { nestedBorderRadius: (outer, inset) => outer - inset },
   '@/utils/pet-care': { clampStat: value => value },
   '@/utils/room-layer-order': { normalizeRoomLayerOrder: () => [], ROOM_PET_LAYER_Z_INDEX: 1 },
   '@/utils/room-depth': { getRoomDepthZIndex: y => y, getRoomObjectDepthAnchor: () => .38, isRoomBackgroundDecoration: () => false },

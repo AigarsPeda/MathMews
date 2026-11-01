@@ -89,10 +89,6 @@ export function formatRegenClock(ms: number): string {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-export function canSpendLife(lives: LivesState, now = Date.now()): boolean {
-  return applyLifeRegen(lives, now).current > 0;
-}
-
 export function canBuyLife(
   lives: LivesState,
   coins: number,

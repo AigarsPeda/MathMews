@@ -1,3 +1,5 @@
+import { DECIMAL_PILOT_LESSONS } from "./puzzles/decimal-model-pilot.mjs";
+import { FRACTION_PILOT_LESSONS } from "./puzzles/fraction-model-pilot.mjs";
 /** Curriculum contracts, route authorization, real answer checks and saved progress. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -271,6 +273,10 @@ function authoredAnswer(puzzle) {
   if(challenge) {assert.ok(challenge.length>0,`${puzzle.id}: challenge must have a valid solution`); return challenge[0];}
   const p=puzzle.payload;
   switch(puzzle.type) {
+    case 'decimal_grid': return {kind:'decimal_grid',shaded:p.hundredths*p.scale/100};
+    case 'decimal_place_value': {const m=load('@/utils/decimal-models');const state=p.mode==='split'?m.changeDecimalPlace(puzzle,m.initialDecimalPlace(puzzle),{kind:'split',unit:p.exchangeUnit}):{ones:Math.floor(p.hundredths/100),tenths:Math.floor(p.hundredths%100/10),hundredths:p.hundredths%10};return {kind:'decimal_place',state};}
+    case 'fraction_number_line': return {kind:'fraction_point',tick:p.numerator*p.divisions/p.denominator};
+    case 'fraction_strip': {const parts=p.partitions.find(n=>p.numerator*n%p.denominator===0);return {kind:'fraction_strip',state:{parts,shaded:p.numerator*parts/p.denominator}};}
     case 'place_value': { const value=p.mode==='add'?p.start+p.operand:p.mode==='subtract'?p.start-p.operand:p.start; return {kind:'place_value',state:{tens:Math.floor(value/10)-(p.mode==='split'?1:0),ones:value%10+(p.mode==='split'?10:0),added:p.mode==='add'}}; }
     case 'find_all_pairs':return {kind:'pairs',pairs:getValidPairs(p.numbers,p.target)};
     case 'target_build':return {kind:'operators',operators:p.solution};
@@ -290,6 +296,9 @@ function practiceFacts(puzzle) {
   const p = puzzle.payload;
   let facts;
   switch (puzzle.type) {
+    case 'decimal_grid': case 'decimal_place_value': facts = [p.hundredths]; break;
+    case 'fraction_number_line': facts = [p.numerator,p.denominator,p.divisions]; break;
+    case 'fraction_strip': facts = [p.numerator,p.denominator,...p.partitions]; break;
     case 'place_value': facts = [p.start, ...(p.operand === undefined ? [] : [p.operand])]; break;
     case 'multiple_choice': facts = puzzle.question; break;
     case 'balance': facts = p.leftDisplay.replace('?', p.choices[puzzle.correctIndex]); break;
@@ -340,7 +349,9 @@ for (const lesson of LEARNING_CATALOG.lessons) {
     assert.equal(practiceFacts(counterpart), practiceFacts(puzzle), `${puzzle.id}: both languages use the same givens`);
   }
   assert.equal(practice.length, 4);
-  if (practice.every(p => p.type === 'place_value')) assert.ok(new Set(practice.map(p => p.payload.mode)).size >= 3, `${lesson.id}: build, exchange, then calculate`);
+  if (DECIMAL_PILOT_LESSONS.some(p => p.id === lesson.id)) assert.deepEqual([...new Set(practice.map(p=>p.type))].sort(), ['decimal_grid','decimal_place_value'], 'Decimal pilots connect grids and place value');
+  else if (FRACTION_PILOT_LESSONS.some(p => p.id === lesson.id)) assert.deepEqual([...new Set(practice.map(p=>p.type))].sort(), ['fraction_number_line','fraction_strip'], 'Fraction pilots connect two representations');
+  else if (practice.every(p => p.type === 'place_value')) assert.ok(new Set(practice.map(p => p.payload.mode)).size >= 3, `${lesson.id}: build, exchange, then calculate`);
   else if (!(lesson.difficulty === 'easy' && ['addition','subtraction','fractions'].includes(lesson.topicId))) assert.ok(new Set(practice.map(p => p.type)).size >= 3, `${lesson.id}: mix at least three task types`);
   if (!(lesson.difficulty === 'easy' && ['addition','fractions'].includes(lesson.topicId))) assert.equal(new Set(practice.map(practiceFacts)).size, 4, `${lesson.id}: use independent numbers for each activity`);
   if (lesson.topicId === 'patterns') checkPatternVariety(practice, lesson.id);
@@ -657,27 +668,10 @@ console.log(`Verified ${timedLevels.length} durable timed challenges: ready/resu
 
 // List states must distinguish optional work without changing unlocks or completion.
 {
- const {getLessonProgress}=load('@/utils/lesson-progress');
- for(const lesson of curriculum.LEARNING_CATALOG.lessons) {
-  const track=curriculum.getTopicLessons(lesson.difficulty,lesson.topicId);
-  const previous=track.slice(0,track.findIndex(item=>item.id===lesson.id)).flatMap(curriculum.getPracticeIds);
-  const practice=curriculum.getPracticeIds(lesson), boss=lesson.levels.find(level=>level.kind==='boss'), challenge=lesson.levels.find(level=>level.kind==='challenge');
-  const state=(ids,attempted=[])=>getLessonProgress(lesson,{completedPuzzleIds:[...previous,...ids],attemptedPuzzleIds:attempted});
-  assert.equal(state([]).status,'notStarted');
-  assert.equal(state([], [practice[0]]).status,'started','A first mistake counts as started, not completed');
-  assert.equal(state(practice.slice(0,2)).status,'started');
-  assert.equal(state(practice).status,'bossLeft');
-  assert.equal(state([...practice,...challenge.puzzleIds]).status,'bossLeft','Optional completion cannot conceal the unfinished boss');
-  assert.equal(state([...practice,boss.puzzleIds[0]]).parts[2].solved,1);
-  const optional=state([...practice,...boss.puzzleIds]);
-  assert.equal(optional.status,'challengeLeft');assert.ok(optional.requiredComplete,'Optional challenges never revoke core completion');
-  assert.equal(state([...practice,...boss.puzzleIds,...challenge.puzzleIds]).status,'complete');
- }
  const lesson=curriculum.getTopicLessons('easy','addition')[0], first=curriculum.getLevelPuzzles('en',lesson,lesson.levels[0])[0];
  const wrong=applyPuzzleAnswer(createDefaultGameSave(),first,false,'list-first-mistake').save;
  const restored=parseGameSaveFromValue(JSON.stringify(wrong)).save;
  assert.ok(restored.progress.attemptedPuzzleIds.includes(first.id));
- assert.equal(getLessonProgress(lesson,restored.progress).status,'started');
  assert.ok(!restored.progress.completedPuzzleIds.includes(first.id));
  const malformed={...wrong,progress:{...wrong.progress,attemptedPuzzleIds:[first.id,first.id,'unknown-puzzle',17]}};
  assert.deepEqual(JSON.parse(JSON.stringify(parseGameSaveFromValue(malformed).save.progress.attemptedPuzzleIds)),[first.id],'Attempt history keeps only distinct known puzzle IDs');
@@ -689,41 +683,11 @@ console.log(`Verified ${timedLevels.length} durable timed challenges: ready/resu
  const expired=settleChallengeTimeout(started,started.challengeAttempt.deadlineAt);
  const second=beginTimedChallenge(expired,challenges[1],'progress-start-two',started.challengeAttempt.deadlineAt+1);
  assert.ok(second.attemptedPuzzleIds.includes(challenges[0].puzzleIds[0]) && second.attemptedPuzzleIds.includes(challenges[1].puzzleIds[0]),'Starting another timed challenge retains the earlier started marker');
- assert.equal(getLessonProgress(curriculum.getTopicLessons('easy','addition')[1],createDefaultGameSave().progress).status,'locked');
- console.log('Verified visual practice/challenge/boss states for all180 lessons, optional completion, first mistakes and saved attempt history.');
+ console.log('Verified first mistakes and saved attempt history.');
 }
 
 const { checkLearning } = await import('./puzzles/check-learning.mjs');
 checkLearning({ load });
-
-// The home-of-puzzles recommendation follows saved prerequisites and running clocks.
-{
- const { getPuzzleRecommendation } = load('@/utils/puzzle-recommendation');
- const fresh = createDefaultGameSave().progress;
- for (const tier of ['easy','medium','hard']) {
-  const next = getPuzzleRecommendation(tier, fresh);
-  assert.ok(next); assert.equal(next.lesson.difficulty, tier);
-  assert.equal(getLearningLevelState(next.lesson,next.level,[]),'current');
-  assert.equal(next.level.kind,'practice');
- }
- const initial = getPuzzleRecommendation('easy', fresh);
- const partial = {...fresh,completedPuzzleIds:[...initial.level.puzzleIds]};
- const next = getPuzzleRecommendation('easy',partial);
- assert.equal(next.lesson.id,initial.lesson.id,'Continue the started lesson');
- assert.notEqual(next.level.id,initial.level.id,'Do not replay completed practice');
- const required = getRequiredIds(initial.lesson);
- const cleared = {...fresh,completedPuzzleIds:required};
- assert.notEqual(getPuzzleRecommendation('easy',cleared).lesson.id,initial.lesson.id,'Prefer unfinished required lessons over optional challenges');
- const challenge=initial.lesson.levels.find(level=>level.kind==='challenge');
- const active={...cleared,challengeAttempt:{levelId:challenge.id,status:'active',deadlineAt:2000}};
- const resumed=getPuzzleRecommendation('hard',active,1000);
- assert.equal(resumed.level.id,challenge.id,'An active clock remains resumable across difficulty changes');
- assert.equal(resumed.resumeChallenge,true);
- assert.equal(getPuzzleRecommendation('hard',active,3000).resumeChallenge,false,'Expired attempts cannot be offered as active');
- const allDone={...fresh,completedPuzzleIds:LEARNING_CATALOG.lessons.flatMap(lesson=>lesson.levels.flatMap(level=>level.puzzleIds))};
- assert.equal(getPuzzleRecommendation('easy',allDone),undefined,'A fully completed tier has no invented next activity');
-}
-console.log('Puzzle recommendations passed.');
 
 const { checkPaths } = await import('./puzzles/check-paths.mjs');
 checkPaths({ load });
@@ -732,3 +696,9 @@ checkProgression({ load });
 
 const { checkPlaceValuePilot } = await import('./puzzles/check-place-value.mjs');
 checkPlaceValuePilot({ load });
+
+const { checkFractionModels } = await import("./puzzles/check-fraction-models.mjs");
+checkFractionModels({ load });
+
+const { checkDecimalModels } = await import("./puzzles/check-decimal-models.mjs");
+checkDecimalModels({ load });

@@ -1,3 +1,9 @@
+import { DecimalGridTask } from "@/components/puzzle/DecimalGridTask";
+import { DecimalPlaceValueTask } from "@/components/puzzle/DecimalPlaceValueTask";
+import type { DecimalPlaceState } from "@/utils/decimal-models";
+import { FractionNumberLineTask } from "@/components/puzzle/FractionNumberLineTask";
+import { FractionStripTask } from "@/components/puzzle/FractionStripTask";
+import type { FractionStripState } from "@/utils/fraction-models";
 import { PlaceValueTask } from "@/components/puzzle/PlaceValueTask";
 import type { PlaceValueState } from "@/utils/place-value";
 import { FindAllPairsTask } from "@/components/puzzle/FindAllPairsTask";
@@ -43,6 +49,12 @@ import {
 
 type PuzzleTaskViewProps = {
   puzzle: Puzzle;
+  decimalGrid: number | null;
+  onDecimalGridChange: (value: number | null) => void;
+  decimalPlace: DecimalPlaceState | null;
+  onDecimalPlaceChange: (value: DecimalPlaceState | null) => void;
+  fractionStrip: FractionStripState | null;
+  onFractionStripChange: (state: FractionStripState | null) => void;
   placeValue: PlaceValueState | null;
   onPlaceValueChange: (state: PlaceValueState | null) => void;
   onChallengeAnswerChange: (answer: ChallengeAnswer | null) => void;
@@ -77,6 +89,8 @@ type PuzzleTaskViewProps = {
 
 export function PuzzleTaskView({
   puzzle,
+  decimalGrid, onDecimalGridChange, decimalPlace, onDecimalPlaceChange,
+  fractionStrip, onFractionStripChange,
   placeValue, onPlaceValueChange,
   onChallengeAnswerChange,
   onDragStateChange,
@@ -106,6 +120,10 @@ export function PuzzleTaskView({
   onSwapOrder,
   onTapFractionMatchCard,
 }: PuzzleTaskViewProps) {
+  if (puzzle.type === "decimal_grid") return <DecimalGridTask puzzle={puzzle} value={decimalGrid} onChange={onDecimalGridChange} answered={answered} />;
+  if (puzzle.type === "decimal_place_value") return <DecimalPlaceValueTask puzzle={puzzle} value={decimalPlace} onChange={onDecimalPlaceChange} answered={answered} />;
+  if (puzzle.type === "fraction_number_line") return <FractionNumberLineTask puzzle={puzzle} value={numberLineValue} onChange={onSelectNumberLineValue} answered={answered} />;
+  if (puzzle.type === "fraction_strip") return <FractionStripTask puzzle={puzzle} value={fractionStrip} onChange={onFractionStripChange} answered={answered} />;
   if (puzzle.type === "place_value") return <PlaceValueTask puzzle={puzzle} value={placeValue} onChange={onPlaceValueChange} answered={answered} />;
   if (isOptionalChallengePuzzle(puzzle)) return <ChallengeTask puzzle={puzzle} answered={answered} onAnswerChange={onChallengeAnswerChange} onDragStateChange={onDragStateChange} />;
   if (puzzle.type === "find_all_pairs") return <FindAllPairsTask puzzle={puzzle} pairs={foundPairs} answered={answered} canAttempt={hasLives} onIncorrectAttempt={onIncorrectAttempt} onChange={onFoundPairsChange} />;

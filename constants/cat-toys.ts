@@ -59,16 +59,6 @@ export function resolveCatToyId(toyId: string | undefined): CatToyId | undefined
   return undefined;
 }
 
-export function getLargeToyFrame(
-  toyId: string | undefined,
-): { col: number; row: number } | undefined {
-  const resolved = resolveCatToyId(toyId);
-  if (!resolved || !isLargeToyId(resolved)) {
-    return undefined;
-  }
-  return CAT_LARGE_TOY_FRAMES[resolved];
-}
-
 export function getCatToySource(toyId: string | undefined): number | undefined {
   const resolved = resolveCatToyId(toyId);
   if (!resolved) {

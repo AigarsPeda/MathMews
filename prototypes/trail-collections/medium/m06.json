@@ -1,0 +1,8 @@
+{
+  "id": "m06",
+  "collection": "medium",
+  "builder": "binoculars",
+  "meshObjects": 12,
+  "samples": 48,
+  "renderSize": 640
+}

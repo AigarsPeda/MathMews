@@ -1,0 +1,8 @@
+{
+  "id": "h01",
+  "collection": "hard",
+  "builder": "microscope",
+  "meshObjects": 15,
+  "samples": 48,
+  "renderSize": 640
+}

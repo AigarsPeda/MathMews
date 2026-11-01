@@ -6,20 +6,15 @@ import sharp from 'sharp';
 const output = path.resolve('assets/icons');
 await fs.mkdir(output, { recursive: true });
 const starter = ['paw','feed','play','sofa','sleep','puzzles','settings','home'];
-const paletteIcons = new Set(['challenge-timer.png', 'boss-badge.png', 'practice-book.png', 'lesson-medal.png', 'weather-sunrise.png', 'weather-sunset.png']);
+const paletteIcons = new Set(['challenge-timer.png', 'boss-badge.png', 'weather-sunrise.png', 'weather-sunset.png']);
 const speedIcons = new Set(['clock-real-time.png', 'clock-fast.png', 'clock-very-fast.png']);
 for (const name of starter) await sharp(`docs/art/icon-study/${name}.png`).resize(256,256).png().toFile(`${output}/${name}.png`);
 for (const file of await fs.readdir('docs/art/app-icons')) {
   if (file.endsWith('.png') && file !== 'review.png') await sharp(`docs/art/app-icons/${file}`).resize(256,256).png(speedIcons.has(file) ? { palette:true, dither:.3, quality:65, effort:10 } : paletteIcons.has(file) ? { palette:true, quality:100, effort:10 } : {}).toFile(`${output}/${file}`);
 }
-const legacyImages = await fs.readdir('assets/images');
 for (const name of ['store','stats']) {
-  if (!legacyImages.includes(`${name}-icon.png`)) {
-    // These icons now ship directly in assets/icons; keep the bundled artwork.
-    await fs.access(`${output}/${name}.png`);
-    continue;
-  }
-  await sharp(`assets/images/${name}-icon.png`).trim().resize(224,224,{fit:"contain",background:{r:0,g:0,b:0,alpha:0}}).extend({top:16,bottom:16,left:16,right:16,background:{r:0,g:0,b:0,alpha:0}}).png().toFile(`${output}/${name}.png`);
+  // These icons ship directly in assets/icons.
+  await fs.access(`${output}/${name}.png`);
 }
 const names = (await fs.readdir(output)).filter(file=>file.endsWith('.png')).map(file=>path.basename(file,'.png')).sort();
 await fs.writeFile('constants/app-icons.ts', `/** Original Blender renders. Keep static requires so Metro bundles every icon. */\nexport const APP_ICON_SOURCES = {\n${names.map(name=>`  "${name}": require("@/assets/icons/${name}.png"),`).join('\n')}\n} as const satisfies Record<string, number>;\n\nexport type AppIconName = keyof typeof APP_ICON_SOURCES;\n`);

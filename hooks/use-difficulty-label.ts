@@ -6,7 +6,3 @@ export function useDifficultyLabel(difficulty: PuzzleDifficulty): string {
   const { t } = useTranslation();
   return t(`difficulty.${difficulty}`);
 }
-
-export function useDifficultyLabelLower(difficulty: PuzzleDifficulty): string {
-  return useDifficultyLabel(difficulty).toLowerCase();
-}

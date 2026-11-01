@@ -1,0 +1,8 @@
+{
+  "id": "h20",
+  "collection": "hard",
+  "builder": "curveboard",
+  "meshObjects": 62,
+  "samples": 48,
+  "renderSize": 640
+}

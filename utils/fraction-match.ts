@@ -71,7 +71,3 @@ export function isFractionMatchPair(
   if (a.kind === b.kind) return false;
   return a.numerator === b.numerator && a.denominator === b.denominator;
 }
-
-export function getFractionMatchCardCount(puzzle: FractionMatchPuzzle): number {
-  return puzzle.payload.pairs.length * 2;
-}

@@ -1364,15 +1364,21 @@
       6,
       8
     ],
+    "type": "fraction_strip",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "1 no 4 vienādām daļām ir 1/4.",
-    "type": "fraction_build",
-    "question": "Iekrāso 1 no 4 vienādām daļām: 1/4.",
+    "question": "Iekrāso 1/2 no joslas.",
+    "hint": "Veselais sadalīts 2 vienādās daļās. Iekrāso 1 no tām.",
+    "explanation": "1/2.",
     "payload": {
       "numerator": 1,
-      "denominator": 4
+      "denominator": 2,
+      "partitions": [
+        2
+      ],
+      "mode": "build",
+      "guided": true
     },
+    "helpTemplate": "fraction_strip_build",
     "learning": {
       "skillId": "easy.fractions.quarters",
       "prerequisiteSkillIds": [
@@ -1390,32 +1396,25 @@
       6,
       8
     ],
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "Daļas ir vienāda lieluma. Visas daļas kopā veido vienu veselo.",
-    "type": "fraction_match",
-    "question": "Savieno daļu ar tās attēlu.",
+    "question": "Atzīmē 1/2 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 2 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "1 no 2 vienādiem soļiem ved no 0 līdz 1/2.",
     "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 4,
-          "visual": "pie"
-        },
-        {
-          "numerator": 4,
-          "denominator": 4,
-          "visual": "grid"
-        }
-      ]
+      "numerator": 1,
+      "denominator": 2,
+      "divisions": 2,
+      "guided": true
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.quarters",
       "prerequisiteSkillIds": [
         "easy.fractions.equal-parts"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -1426,15 +1425,21 @@
       6,
       8
     ],
+    "type": "fraction_strip",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "1 no 4 vienādām daļām ir 1/4.",
-    "type": "fraction_build",
-    "question": "Iekrāso 1 no 4 vienādām daļām: 1/4.",
+    "question": "Iekrāso 1/4 no joslas.",
+    "hint": "Veselais sadalīts 4 vienādās daļās. Iekrāso 1 no tām.",
+    "explanation": "1/4.",
     "payload": {
       "numerator": 1,
-      "denominator": 4
+      "denominator": 4,
+      "partitions": [
+        4
+      ],
+      "mode": "build",
+      "guided": true
     },
+    "helpTemplate": "fraction_strip_build",
     "learning": {
       "skillId": "easy.fractions.quarters",
       "prerequisiteSkillIds": [
@@ -1452,32 +1457,25 @@
       6,
       8
     ],
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "Daļas ir vienāda lieluma. Visas daļas kopā veido vienu veselo.",
-    "type": "fraction_match",
-    "question": "Savieno daļu ar tās attēlu.",
+    "question": "Atzīmē 3/4 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 4 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "3 no 4 vienādiem soļiem ved no 0 līdz 3/4.",
     "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 4,
-          "visual": "pie"
-        },
-        {
-          "numerator": 4,
-          "denominator": 4,
-          "visual": "grid"
-        }
-      ]
+      "numerator": 3,
+      "denominator": 4,
+      "divisions": 4,
+      "guided": false
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.quarters",
       "prerequisiteSkillIds": [
         "easy.fractions.equal-parts"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -7590,15 +7588,21 @@
       6,
       8
     ],
+    "type": "fraction_strip",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "1 no 3 vienādām daļām ir 1/3.",
-    "type": "fraction_build",
-    "question": "Iekrāso 1 no 3 vienādām daļām: 1/3.",
+    "question": "Iekrāso 1/3 no joslas.",
+    "hint": "Veselais sadalīts 3 vienādās daļās. Iekrāso 1 no tām.",
+    "explanation": "1/3.",
     "payload": {
       "numerator": 1,
-      "denominator": 3
+      "denominator": 3,
+      "partitions": [
+        3
+      ],
+      "mode": "build",
+      "guided": true
     },
+    "helpTemplate": "fraction_strip_build",
     "learning": {
       "skillId": "easy.fractions.unit",
       "prerequisiteSkillIds": [
@@ -7616,32 +7620,25 @@
       6,
       8
     ],
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "Daļas ir vienāda lieluma. Visas daļas kopā veido vienu veselo.",
-    "type": "fraction_match",
-    "question": "Savieno daļu ar tās attēlu.",
+    "question": "Atzīmē 2/3 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 3 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "2 no 3 vienādiem soļiem ved no 0 līdz 2/3.",
     "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 4,
-          "visual": "pie"
-        },
-        {
-          "numerator": 4,
-          "denominator": 4,
-          "visual": "grid"
-        }
-      ]
+      "numerator": 2,
+      "denominator": 3,
+      "divisions": 3,
+      "guided": true
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.unit",
       "prerequisiteSkillIds": [
         "easy.fractions.quarters"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -7652,15 +7649,21 @@
       6,
       8
     ],
+    "type": "fraction_strip",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "1 no 6 vienādām daļām ir 1/6.",
-    "type": "fraction_build",
-    "question": "Iekrāso 1 no 6 vienādām daļām: 1/6.",
+    "question": "Iekrāso 1/6 no joslas.",
+    "hint": "Veselais sadalīts 6 vienādās daļās. Iekrāso 1 no tām.",
+    "explanation": "1/6.",
     "payload": {
       "numerator": 1,
-      "denominator": 6
+      "denominator": 6,
+      "partitions": [
+        6
+      ],
+      "mode": "build",
+      "guided": true
     },
+    "helpTemplate": "fraction_strip_build",
     "learning": {
       "skillId": "easy.fractions.unit",
       "prerequisiteSkillIds": [
@@ -7678,32 +7681,25 @@
       6,
       8
     ],
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "Daļas ir vienāda lieluma. Visas daļas kopā veido vienu veselo.",
-    "type": "fraction_match",
-    "question": "Savieno daļu ar tās attēlu.",
+    "question": "Atzīmē 4/6 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 6 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "4 no 6 vienādiem soļiem ved no 0 līdz 4/6.",
     "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 8,
-          "visual": "pie"
-        },
-        {
-          "numerator": 8,
-          "denominator": 8,
-          "visual": "grid"
-        }
-      ]
+      "numerator": 4,
+      "denominator": 6,
+      "divisions": 6,
+      "guided": false
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.unit",
       "prerequisiteSkillIds": [
         "easy.fractions.quarters"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -7998,15 +7994,22 @@
       6,
       8
     ],
+    "type": "fraction_strip",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "1 no 3 vienādām daļām ir 1/3.",
-    "type": "fraction_build",
-    "question": "Iekrāso 1 no 3 vienādām daļām: 1/3.",
+    "question": "Izveido joslā daļu, kas vienāda ar 1/2.",
+    "hint": "Abas joslas ir vienāda garuma. Izvēlies daļas un iekrāso tikpat lielu laukumu kā paraugā.",
+    "explanation": "1/2 = 2/4.",
     "payload": {
       "numerator": 1,
-      "denominator": 3
+      "denominator": 2,
+      "partitions": [
+        4,
+        3
+      ],
+      "mode": "equivalent",
+      "guided": true
     },
+    "helpTemplate": "fraction_strip_equivalent",
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
@@ -8014,7 +8017,7 @@
       ],
       "role": "practice",
       "representation": "fraction-model",
-      "reasoningSteps": 1
+      "reasoningSteps": 2
     }
   },
   {
@@ -8024,23 +8027,25 @@
       6,
       8
     ],
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/4 > 2/4.",
-    "type": "compare",
-    "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
+    "question": "Atzīmē 2/4 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 2 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "1 no 2 vienādiem soļiem ved no 0 līdz 2/4.",
     "payload": {
-      "optionA": "2/4",
-      "optionB": "3/4"
+      "numerator": 2,
+      "denominator": 4,
+      "divisions": 2,
+      "guided": true
     },
-    "correctIndex": 1,
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
         "easy.fractions.compare"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -8051,21 +8056,22 @@
       6,
       8
     ],
-    "type": "fraction_equivalent",
+    "type": "fraction_strip",
     "topic": "fractions",
-    "correctIndex": 1,
-    "question": "Kura daļa ir tikpat liela?",
-    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
-    "explanation": "3/6 = 6/12.",
+    "question": "Izveido joslā daļu, kas vienāda ar 2/3.",
+    "hint": "Abas joslas ir vienāda garuma. Izvēlies daļas un iekrāso tikpat lielu laukumu kā paraugā.",
+    "explanation": "2/3 = 4/6.",
     "payload": {
-      "numerator": 3,
-      "denominator": 6,
-      "choices": [
-        "6/6",
-        "6/12",
-        "3/12"
-      ]
+      "numerator": 2,
+      "denominator": 3,
+      "partitions": [
+        4,
+        6
+      ],
+      "mode": "equivalent",
+      "guided": true
     },
+    "helpTemplate": "fraction_strip_equivalent",
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
@@ -8073,7 +8079,7 @@
       ],
       "role": "practice",
       "representation": "fraction-model",
-      "reasoningSteps": 1
+      "reasoningSteps": 2
     }
   },
   {
@@ -8083,32 +8089,25 @@
       6,
       8
     ],
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "Daļas ir vienāda lieluma. Visas daļas kopā veido vienu veselo.",
-    "type": "fraction_match",
-    "question": "Savieno daļu ar tās attēlu.",
+    "question": "Atzīmē 3/6 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 4 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "2 no 4 vienādiem soļiem ved no 0 līdz 3/6.",
     "payload": {
-      "pairs": [
-        {
-          "numerator": 4,
-          "denominator": 8,
-          "visual": "pie"
-        },
-        {
-          "numerator": 8,
-          "denominator": 8,
-          "visual": "grid"
-        }
-      ]
+      "numerator": 3,
+      "denominator": 6,
+      "divisions": 4,
+      "guided": false
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
         "easy.fractions.compare"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -8151,10 +8150,10 @@
     "type": "compare",
     "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
     "payload": {
-      "optionA": "3/4",
-      "optionB": "2/4"
+      "optionA": "2/4",
+      "optionB": "3/4"
     },
-    "correctIndex": 0,
+    "correctIndex": 1,
     "learning": {
       "skillId": "easy.fractions.models",
       "prerequisiteSkillIds": [
@@ -8269,13 +8268,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
     "explanation": "3/6 > 3/7.",
     "payload": {
-      "optionA": "3/7",
-      "optionB": "3/6"
+      "optionA": "3/6",
+      "optionB": "3/7"
     },
     "learning": {
       "skillId": "easy.fractions.equivalent",
@@ -8391,13 +8390,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
     "explanation": "1/5 > 1/6.",
     "payload": {
-      "optionA": "1/5",
-      "optionB": "1/6"
+      "optionA": "1/6",
+      "optionB": "1/5"
     },
     "learning": {
       "skillId": "easy.fractions.apply",
@@ -8513,13 +8512,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
     "explanation": "2/4 > 2/5.",
     "payload": {
-      "optionA": "2/5",
-      "optionB": "2/4"
+      "optionA": "2/4",
+      "optionB": "2/5"
     },
     "learning": {
       "skillId": "easy.fractions.review",
@@ -8736,13 +8735,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "11 > 5.",
     "payload": {
-      "optionA": "11",
-      "optionB": "5",
+      "optionA": "5",
+      "optionB": "11",
       "object": "mouse"
     },
     "learning": {
@@ -8825,13 +8824,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "12 > 6.",
     "payload": {
-      "optionA": "6",
-      "optionB": "12",
+      "optionA": "12",
+      "optionB": "6",
       "object": "mouse"
     },
     "learning": {
@@ -8952,13 +8951,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "13 > 7.",
     "payload": {
-      "optionA": "13",
-      "optionB": "7",
+      "optionA": "7",
+      "optionB": "13",
       "object": "mouse"
     },
     "learning": {
@@ -9079,13 +9078,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "14 > 8.",
     "payload": {
-      "optionA": "8",
-      "optionB": "14",
+      "optionA": "14",
+      "optionB": "8",
       "object": "mouse"
     },
     "learning": {
@@ -9172,13 +9171,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "15 > 9.",
     "payload": {
-      "optionA": "15",
-      "optionB": "9",
+      "optionA": "9",
+      "optionB": "15",
       "object": "mouse"
     },
     "learning": {
@@ -9299,13 +9298,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "16 > 10.",
     "payload": {
-      "optionA": "10",
-      "optionB": "16",
+      "optionA": "16",
+      "optionB": "10",
       "object": "mouse"
     },
     "learning": {
@@ -9426,13 +9425,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "17 > 11.",
     "payload": {
-      "optionA": "17",
-      "optionB": "11",
+      "optionA": "11",
+      "optionB": "17",
       "object": "mouse"
     },
     "learning": {
@@ -9553,13 +9552,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "18 > 12.",
     "payload": {
-      "optionA": "12",
-      "optionB": "18",
+      "optionA": "18",
+      "optionB": "12",
       "object": "mouse"
     },
     "learning": {
@@ -9680,13 +9679,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "19 > 13.",
     "payload": {
-      "optionA": "19",
-      "optionB": "13",
+      "optionA": "13",
+      "optionB": "19",
       "object": "mouse"
     },
     "learning": {
@@ -14384,50 +14383,25 @@
       6,
       8
     ],
-    "type": "sort_buckets",
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "question": "Sašķiro daļas pēc norādītā daudzuma.",
-    "hint": "Salīdzini skaitītāju un saucēju ar groza uzrakstu.",
-    "explanation": "Katra daļa atrodas pareizajā grozā.",
+    "question": "Atzīmē 2/4 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 4 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "2 no 4 vienādiem soļiem ved no 0 līdz 2/4.",
     "payload": {
-      "rule": "fractions",
-      "targets": [
-        [
-          1,
-          4
-        ],
-        [
-          4,
-          4
-        ]
-      ],
-      "fractions": [
-        [
-          1,
-          4
-        ],
-        [
-          4,
-          4
-        ],
-        [
-          1,
-          4
-        ],
-        [
-          4,
-          4
-        ]
-      ]
+      "numerator": 2,
+      "denominator": 4,
+      "divisions": 4,
+      "guided": false
     },
-    "helpTemplate": "fraction_build",
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.quarters",
       "prerequisiteSkillIds": [
         "easy.fractions.equal-parts"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -14526,50 +14500,25 @@
       6,
       8
     ],
-    "type": "sort_buckets",
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "question": "Sašķiro daļas pēc norādītā daudzuma.",
-    "hint": "Salīdzini skaitītāju un saucēju ar groza uzrakstu.",
-    "explanation": "Katra daļa atrodas pareizajā grozā.",
+    "question": "Atzīmē 2/5 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 5 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "2 no 5 vienādiem soļiem ved no 0 līdz 2/5.",
     "payload": {
-      "rule": "fractions",
-      "targets": [
-        [
-          1,
-          3
-        ],
-        [
-          3,
-          3
-        ]
-      ],
-      "fractions": [
-        [
-          1,
-          3
-        ],
-        [
-          3,
-          3
-        ],
-        [
-          1,
-          3
-        ],
-        [
-          3,
-          3
-        ]
-      ]
+      "numerator": 2,
+      "denominator": 5,
+      "divisions": 5,
+      "guided": false
     },
-    "helpTemplate": "fraction_build",
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.unit",
       "prerequisiteSkillIds": [
         "easy.fractions.quarters"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -14754,10 +14703,10 @@
     "type": "compare",
     "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
     "payload": {
-      "optionA": "2/6",
-      "optionB": "3/6"
+      "optionA": "3/6",
+      "optionB": "2/6"
     },
-    "correctIndex": 1,
+    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.magnitude",
       "prerequisiteSkillIds": [
@@ -14833,10 +14782,10 @@
     "type": "compare",
     "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
     "payload": {
-      "optionA": "3/6",
-      "optionB": "2/6"
+      "optionA": "2/6",
+      "optionB": "3/6"
     },
-    "correctIndex": 0,
+    "correctIndex": 1,
     "learning": {
       "skillId": "easy.fractions.compare",
       "prerequisiteSkillIds": [
@@ -14880,51 +14829,30 @@
       6,
       8
     ],
-    "type": "sort_buckets",
+    "type": "fraction_strip",
     "topic": "fractions",
-    "helpTemplate": "fraction_sort",
-    "question": "Sašķiro daļas pēc vērtības: 1/3 vai 2/3.",
-    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
-    "explanation": "1/3 = 2/6; 2/3 = 4/6.",
+    "question": "Izveido joslā daļu, kas vienāda ar 3/4.",
+    "hint": "Abas joslas ir vienāda garuma. Izvēlies daļas un iekrāso tikpat lielu laukumu kā paraugā.",
+    "explanation": "3/4 = 6/8.",
     "payload": {
-      "rule": "fractions",
-      "targets": [
-        [
-          1,
-          3
-        ],
-        [
-          2,
-          3
-        ]
+      "numerator": 3,
+      "denominator": 4,
+      "partitions": [
+        6,
+        8
       ],
-      "fractions": [
-        [
-          1,
-          3
-        ],
-        [
-          2,
-          3
-        ],
-        [
-          2,
-          6
-        ],
-        [
-          4,
-          6
-        ]
-      ]
+      "mode": "equivalent",
+      "guided": false
     },
+    "helpTemplate": "fraction_strip_equivalent",
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
         "easy.fractions.compare"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "fraction-model",
+      "reasoningSteps": 2
     }
   },
   {
@@ -14966,10 +14894,10 @@
     "type": "compare",
     "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
     "payload": {
-      "optionA": "2/6",
-      "optionB": "3/6"
+      "optionA": "3/6",
+      "optionB": "2/6"
     },
-    "correctIndex": 1,
+    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
@@ -15113,10 +15041,10 @@
     "type": "compare",
     "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
     "payload": {
-      "optionA": "3/6",
-      "optionB": "2/6"
+      "optionA": "2/6",
+      "optionB": "3/6"
     },
-    "correctIndex": 0,
+    "correctIndex": 1,
     "learning": {
       "skillId": "easy.fractions.models",
       "prerequisiteSkillIds": [
@@ -15257,13 +15185,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
     "explanation": "1/4 > 1/5.",
     "payload": {
-      "optionA": "1/5",
-      "optionB": "1/4"
+      "optionA": "1/4",
+      "optionB": "1/5"
     },
     "learning": {
       "skillId": "easy.fractions.equivalent",
@@ -15405,13 +15333,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
     "explanation": "2/6 > 2/7.",
     "payload": {
-      "optionA": "2/6",
-      "optionB": "2/7"
+      "optionA": "2/7",
+      "optionB": "2/6"
     },
     "learning": {
       "skillId": "easy.fractions.apply",
@@ -15498,13 +15426,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "14 > 8.",
     "payload": {
-      "optionA": "8",
-      "optionB": "14",
+      "optionA": "14",
+      "optionB": "8",
       "object": "mouse"
     },
     "learning": {
@@ -15560,13 +15488,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "15 > 9.",
     "payload": {
-      "optionA": "15",
-      "optionB": "9",
+      "optionA": "9",
+      "optionB": "15",
       "object": "mouse"
     },
     "learning": {
@@ -16158,15 +16086,21 @@
       6,
       8
     ],
+    "type": "fraction_strip",
     "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "1 no 4 vienādām daļām ir 1/4.",
-    "type": "fraction_build",
-    "question": "Iekrāso 1 no 4 vienādām daļām: 1/4.",
+    "question": "Iekrāso 3/4 no joslas.",
+    "hint": "Veselais sadalīts 4 vienādās daļās. Iekrāso 3 no tām.",
+    "explanation": "3/4.",
     "payload": {
-      "numerator": 1,
-      "denominator": 4
+      "numerator": 3,
+      "denominator": 4,
+      "partitions": [
+        4
+      ],
+      "mode": "build",
+      "guided": false
     },
+    "helpTemplate": "fraction_strip_build",
     "learning": {
       "skillId": "easy.fractions.quarters",
       "prerequisiteSkillIds": [
@@ -16184,32 +16118,25 @@
       6,
       8
     ],
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "Viena daļa ir 1/4. Visas 4 daļas veido veselo.",
-    "type": "fraction_match",
-    "question": "Savieno daļu ar tās attēlu.",
+    "question": "Atzīmē 1/4 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 4 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "1 no 4 vienādiem soļiem ved no 0 līdz 1/4.",
     "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 4,
-          "visual": "grid"
-        },
-        {
-          "numerator": 4,
-          "denominator": 4,
-          "visual": "pie"
-        }
-      ]
+      "numerator": 1,
+      "denominator": 4,
+      "divisions": 4,
+      "guided": false
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.quarters",
       "prerequisiteSkillIds": [
         "easy.fractions.equal-parts"
       ],
       "role": "review",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -16258,13 +16185,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "16 > 10.",
     "payload": {
-      "optionA": "10",
-      "optionB": "16",
+      "optionA": "16",
+      "optionB": "10",
       "object": "mouse"
     },
     "learning": {
@@ -16322,13 +16249,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "17 > 11.",
     "payload": {
-      "optionA": "17",
-      "optionB": "11",
+      "optionA": "11",
+      "optionB": "17",
       "object": "mouse"
     },
     "learning": {
@@ -16386,13 +16313,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "18 > 12.",
     "payload": {
-      "optionA": "12",
-      "optionB": "18",
+      "optionA": "18",
+      "optionB": "12",
       "object": "mouse"
     },
     "learning": {
@@ -16450,13 +16377,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "19 > 13.",
     "payload": {
-      "optionA": "19",
-      "optionB": "13",
+      "optionA": "13",
+      "optionB": "19",
       "object": "mouse"
     },
     "learning": {
@@ -16514,13 +16441,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "20 > 14.",
     "payload": {
-      "optionA": "14",
-      "optionB": "20",
+      "optionA": "20",
+      "optionB": "14",
       "object": "mouse"
     },
     "learning": {
@@ -16578,13 +16505,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "21 > 15.",
     "payload": {
-      "optionA": "21",
-      "optionB": "15",
+      "optionA": "15",
+      "optionB": "21",
       "object": "mouse"
     },
     "learning": {
@@ -16642,13 +16569,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "22 > 16.",
     "payload": {
-      "optionA": "16",
-      "optionB": "22",
+      "optionA": "22",
+      "optionB": "16",
       "object": "mouse"
     },
     "learning": {
@@ -16706,13 +16633,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurā paplātē ir vairāk rotaļu peļu?",
     "hint": "Salīdzini daudzumus.",
     "explanation": "23 > 17.",
     "payload": {
-      "optionA": "23",
-      "optionB": "17",
+      "optionA": "17",
+      "optionB": "23",
       "object": "mouse"
     },
     "learning": {
@@ -18810,15 +18737,21 @@
       6,
       8
     ],
+    "type": "fraction_strip",
     "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "1 no 5 vienādām daļām ir 1/5.",
-    "type": "fraction_build",
-    "question": "Iekrāso 1 no 5 vienādām daļām: 1/5.",
+    "question": "Iekrāso 3/5 no joslas.",
+    "hint": "Veselais sadalīts 5 vienādās daļās. Iekrāso 3 no tām.",
+    "explanation": "3/5.",
     "payload": {
-      "numerator": 1,
-      "denominator": 5
+      "numerator": 3,
+      "denominator": 5,
+      "partitions": [
+        5
+      ],
+      "mode": "build",
+      "guided": false
     },
+    "helpTemplate": "fraction_strip_build",
     "learning": {
       "skillId": "easy.fractions.unit",
       "prerequisiteSkillIds": [
@@ -18836,32 +18769,25 @@
       6,
       8
     ],
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "Viena daļa ir 1/7. Visas 7 daļas veido veselo.",
-    "type": "fraction_match",
-    "question": "Savieno daļu ar tās attēlu.",
+    "question": "Atzīmē 5/6 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 6 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "5 no 6 vienādiem soļiem ved no 0 līdz 5/6.",
     "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 7,
-          "visual": "grid"
-        },
-        {
-          "numerator": 7,
-          "denominator": 7,
-          "visual": "pie"
-        }
-      ]
+      "numerator": 5,
+      "denominator": 6,
+      "divisions": 6,
+      "guided": false
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.unit",
       "prerequisiteSkillIds": [
         "easy.fractions.quarters"
       ],
       "role": "review",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -18976,28 +18902,25 @@
       6,
       8
     ],
-    "type": "fraction_equivalent",
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "correctIndex": 2,
-    "question": "Kura daļa ir tikpat liela?",
-    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
-    "explanation": "2/5 = 4/10.",
+    "question": "Atzīmē 4/6 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 3 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "2 no 3 vienādiem soļiem ved no 0 līdz 4/6.",
     "payload": {
-      "numerator": 2,
-      "denominator": 5,
-      "choices": [
-        "2/10",
-        "4/5",
-        "4/10"
-      ]
+      "numerator": 4,
+      "denominator": 6,
+      "divisions": 3,
+      "guided": false
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
         "easy.fractions.compare"
       ],
       "role": "review",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -19008,15 +18931,22 @@
       6,
       8
     ],
+    "type": "fraction_strip",
     "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "3 no 7 vienādām daļām ir 3/7.",
-    "type": "fraction_build",
-    "question": "Iekrāso 3 no 7 vienādām daļām: 3/7.",
+    "question": "Izveido joslā daļu, kas vienāda ar 2/4.",
+    "hint": "Abas joslas ir vienāda garuma. Izvēlies daļas un iekrāso tikpat lielu laukumu kā paraugā.",
+    "explanation": "2/4 = 3/6.",
     "payload": {
-      "numerator": 3,
-      "denominator": 7
+      "numerator": 2,
+      "denominator": 4,
+      "partitions": [
+        6,
+        3
+      ],
+      "mode": "equivalent",
+      "guided": false
     },
+    "helpTemplate": "fraction_strip_equivalent",
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
@@ -19024,7 +18954,7 @@
       ],
       "role": "review",
       "representation": "fraction-model",
-      "reasoningSteps": 1
+      "reasoningSteps": 2
     }
   },
   {

@@ -1,0 +1,8 @@
+{
+  "id": "e10",
+  "collection": "easy",
+  "builder": "pencilroll",
+  "meshObjects": 12,
+  "samples": 48,
+  "renderSize": 640
+}

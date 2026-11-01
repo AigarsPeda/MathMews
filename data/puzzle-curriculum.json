@@ -2210,12 +2210,12 @@
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Halves and quarters",
-        "lv": "Puses un ceturtdaļas"
+        "en": "Halves and quarters on strips and lines",
+        "lv": "Puses un ceturtdaļas joslās un uz taisnes"
       },
       "description": {
-        "en": "Learn to halves and quarters.",
-        "lv": "Puses un ceturtdaļas."
+        "en": "Build fractions with equal parts, then locate their value between zero and one.",
+        "lv": "Veido daļas no vienādām daļām, tad atrodi to vērtību starp nulli un vienu."
       },
       "levels": [
         {
@@ -4091,12 +4091,12 @@
       "difficulty": "medium",
       "topicId": "fractions",
       "title": {
-        "en": "Match equivalent fractions",
-        "lv": "Savieno vienādas daļas"
+        "en": "Equivalent fractions on strips and lines",
+        "lv": "Vienādas daļas joslās un uz taisnes"
       },
       "description": {
-        "en": "Use what you learned with a new goal and different numbers.",
-        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+        "en": "Build fractions with equal parts, then locate their value between zero and one.",
+        "lv": "Veido daļas no vienādām daļām, tad atrodi to vērtību starp nulli un vienu."
       },
       "levels": [
         {
@@ -14480,12 +14480,12 @@
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "One part of a whole",
-        "lv": "Viena veselā daļa"
+        "en": "Thirds, fifths and sixths",
+        "lv": "Trešdaļas, piektdaļas un sestdaļas"
       },
       "description": {
-        "en": "Learn to one part of a whole.",
-        "lv": "Viena veselā daļa."
+        "en": "Build fractions with equal parts, then locate their value between zero and one.",
+        "lv": "Veido daļas no vienādām daļām, tad atrodi to vērtību starp nulli un vienu."
       },
       "levels": [
         {
@@ -15050,12 +15050,12 @@
       "difficulty": "easy",
       "topicId": "fractions",
       "title": {
-        "en": "Split pieces without changing the amount",
-        "lv": "Sadali sīkāk, saglabājot daudzumu"
+        "en": "Different parts, the same amount",
+        "lv": "Dažādas daļas, vienāds daudzums"
       },
       "description": {
-        "en": "Learn to split pieces without changing the amount.",
-        "lv": "Sadali sīkāk, saglabājot daudzumu."
+        "en": "Build fractions with equal parts, then locate their value between zero and one.",
+        "lv": "Veido daļas no vienādām daļām, tad atrodi to vērtību starp nulli un vienu."
       },
       "levels": [
         {
@@ -22804,12 +22804,12 @@
       "difficulty": "medium",
       "topicId": "fractions",
       "title": {
-        "en": "Match another model",
-        "lv": "Savieno citu modeli"
+        "en": "Tenths as decimals",
+        "lv": "Desmitdaļas decimāldaļās"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Connect tenths and hundredths to decimals, then build and exchange equal amounts.",
+        "lv": "Saisti desmitdaļas un simtdaļas ar decimāldaļām, tad veido un samaini vienādus daudzumus."
       },
       "levels": [
         {
@@ -22993,12 +22993,12 @@
       "difficulty": "medium",
       "topicId": "fractions",
       "title": {
-        "en": "Choose equivalent parts",
-        "lv": "Izvēlies vienādas daļas"
+        "en": "Hundredths and zero placeholders",
+        "lv": "Simtdaļas un nulles pierakstā"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Connect tenths and hundredths to decimals, then build and exchange equal amounts.",
+        "lv": "Saisti desmitdaļas un simtdaļas ar decimāldaļām, tad veido un samaini vienādus daudzumus."
       },
       "levels": [
         {
@@ -23182,12 +23182,12 @@
       "difficulty": "medium",
       "topicId": "fractions",
       "title": {
-        "en": "Fractions in a collection",
-        "lv": "Daļas kolekcijā"
+        "en": "Build and exchange decimals",
+        "lv": "Veido un samaini decimāldaļas"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Connect tenths and hundredths to decimals, then build and exchange equal amounts.",
+        "lv": "Saisti desmitdaļas un simtdaļas ar decimāldaļām, tad veido un samaini vienādus daudzumus."
       },
       "levels": [
         {

@@ -1,12 +1,10 @@
 import { getWalletEnvironment } from "@/services/wallet/environment";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import type { GameSave } from "@/types/save";
 import { parseGameSaveFromValue } from "@/utils/game-storage";
 import { loadDeletionReceipt } from './deletion-receipt';
 import { gameAccountOwner } from './account-game';
 import { isAccountTransitionActive } from '@/services/auth/account-operation';
 import {
-  pickNewerSave,
   toCloudSaveSummary,
   type CloudSaveSummary,
   type RemoteSaveSnapshot,
@@ -173,21 +171,4 @@ async function uploadRemoteSave(userId: string, saveId: string, environment: str
   }
 
   return true;
-}
-
-export async function mergeWithRemoteSave(options: {
-  userId: string;
-  saveId: string;
-  local: SaveSnapshot;
-}): Promise<{ save: GameSave; shouldUpload: boolean }> {
-  const remote = await pullRemoteSave(options.userId, options.saveId);
-  const merged = pickNewerSave(options.local, remote);
-
-  const shouldUpload =
-    !remote ||
-    (merged === options.local.save &&
-      options.local.clientUpdatedAt >=
-        (remote.clientUpdatedAt || Date.parse(remote.serverUpdatedAt)));
-
-  return { save: merged, shouldUpload };
 }

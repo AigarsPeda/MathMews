@@ -1,0 +1,8 @@
+{
+  "id": "h04",
+  "collection": "hard",
+  "builder": "polyhedra",
+  "meshObjects": 5,
+  "samples": 48,
+  "renderSize": 640
+}

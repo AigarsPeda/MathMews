@@ -1,0 +1,8 @@
+{
+  "id": "m08",
+  "collection": "medium",
+  "builder": "balance",
+  "meshObjects": 18,
+  "samples": 48,
+  "renderSize": 640
+}

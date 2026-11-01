@@ -1,0 +1,8 @@
+{
+  "id": "e17",
+  "collection": "easy",
+  "builder": "stars",
+  "meshObjects": 5,
+  "samples": 48,
+  "renderSize": 640
+}

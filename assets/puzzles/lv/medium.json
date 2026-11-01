@@ -1067,15 +1067,23 @@
       8,
       10
     ],
-    "type": "fraction_build",
+    "type": "fraction_strip",
     "topic": "fractions",
-    "question": "Iekrāso 3/8 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 3 no 8 vienādām daļām.",
+    "question": "Izveido joslā daļu, kas vienāda ar 3/4.",
+    "hint": "Abas joslas ir vienāda garuma. Izvēlies daļas un iekrāso tikpat lielu laukumu kā paraugā.",
+    "explanation": "3/4 = 6/8 = 9/12.",
     "payload": {
       "numerator": 3,
-      "denominator": 8
+      "denominator": 4,
+      "partitions": [
+        6,
+        8,
+        12
+      ],
+      "mode": "equivalent",
+      "guided": true
     },
+    "helpTemplate": "fraction_strip_equivalent",
     "learning": {
       "skillId": "medium.fractions.equivalent",
       "prerequisiteSkillIds": [
@@ -1083,7 +1091,7 @@
       ],
       "role": "practice",
       "representation": "fraction-model",
-      "reasoningSteps": 1
+      "reasoningSteps": 2
     }
   },
   {
@@ -1093,23 +1101,25 @@
       8,
       10
     ],
-    "type": "compare",
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "correctIndex": 1,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/7 > 2/7.",
+    "question": "Atzīmē 2/3 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 6 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "4 no 6 vienādiem soļiem ved no 0 līdz 2/3.",
     "payload": {
-      "optionA": "2/7",
-      "optionB": "3/7"
+      "numerator": 2,
+      "denominator": 3,
+      "divisions": 6,
+      "guided": true
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "medium.fractions.equivalent",
       "prerequisiteSkillIds": [
         "medium.fractions.value"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -1120,25 +1130,23 @@
       8,
       10
     ],
-    "type": "fraction_match",
+    "type": "fraction_strip",
     "topic": "fractions",
-    "question": "Savieno katru daļu ar tās attēlu.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "question": "Izveido joslā daļu, kas vienāda ar 2/5.",
+    "hint": "Abas joslas ir vienāda garuma. Izvēlies daļas un iekrāso tikpat lielu laukumu kā paraugā.",
+    "explanation": "2/5 = 4/10.",
     "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 10,
-          "visual": "pie"
-        },
-        {
-          "numerator": 4,
-          "denominator": 10,
-          "visual": "grid"
-        }
-      ]
+      "numerator": 2,
+      "denominator": 5,
+      "partitions": [
+        8,
+        10,
+        6
+      ],
+      "mode": "equivalent",
+      "guided": true
     },
+    "helpTemplate": "fraction_strip_equivalent",
     "learning": {
       "skillId": "medium.fractions.equivalent",
       "prerequisiteSkillIds": [
@@ -1146,7 +1154,7 @@
       ],
       "role": "practice",
       "representation": "fraction-model",
-      "reasoningSteps": 1
+      "reasoningSteps": 2
     }
   },
   {
@@ -1156,28 +1164,25 @@
       8,
       10
     ],
-    "type": "fraction_equivalent",
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "correctIndex": 2,
-    "question": "Kura daļa ir tikpat liela?",
-    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
-    "explanation": "4/5 = 8/10.",
+    "question": "Atzīmē 3/6 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 8 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "4 no 8 vienādiem soļiem ved no 0 līdz 3/6.",
     "payload": {
-      "numerator": 4,
-      "denominator": 5,
-      "choices": [
-        "4/10",
-        "8/5",
-        "8/10"
-      ]
+      "numerator": 3,
+      "denominator": 6,
+      "divisions": 8,
+      "guided": false
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "medium.fractions.equivalent",
       "prerequisiteSkillIds": [
         "medium.fractions.value"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -1286,13 +1291,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "16 < 61.",
     "payload": {
-      "optionA": "54 + 7",
-      "optionB": "54 ÷ 6 + 7"
+      "optionA": "54 ÷ 6 + 7",
+      "optionB": "54 + 7"
     },
     "learning": {
       "skillId": "medium.operations.routes",
@@ -1413,13 +1418,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "11 < 67.",
     "payload": {
-      "optionA": "63 ÷ 9 + 4",
-      "optionB": "63 + 4"
+      "optionA": "63 + 4",
+      "optionB": "63 ÷ 9 + 4"
     },
     "learning": {
       "skillId": "medium.operations.order",
@@ -2047,51 +2052,31 @@
       8,
       10
     ],
-    "type": "sort_buckets",
+    "type": "fraction_strip",
     "topic": "fractions",
-    "helpTemplate": "fraction_sort",
-    "question": "Sašķiro daļas pēc vērtības: 1/4 vai 3/4.",
-    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
-    "explanation": "1/4 = 2/8; 3/4 = 6/8.",
+    "question": "Izveido joslā daļu, kas vienāda ar 4/6.",
+    "hint": "Abas joslas ir vienāda garuma. Izvēlies daļas un iekrāso tikpat lielu laukumu kā paraugā.",
+    "explanation": "4/6 = 6/9 = 2/3.",
     "payload": {
-      "rule": "fractions",
-      "targets": [
-        [
-          1,
-          4
-        ],
-        [
-          3,
-          4
-        ]
+      "numerator": 4,
+      "denominator": 6,
+      "partitions": [
+        9,
+        8,
+        3
       ],
-      "fractions": [
-        [
-          1,
-          4
-        ],
-        [
-          3,
-          4
-        ],
-        [
-          2,
-          8
-        ],
-        [
-          6,
-          8
-        ]
-      ]
+      "mode": "equivalent",
+      "guided": false
     },
+    "helpTemplate": "fraction_strip_equivalent",
     "learning": {
       "skillId": "medium.fractions.equivalent",
       "prerequisiteSkillIds": [
         "medium.fractions.value"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "fraction-model",
+      "reasoningSteps": 2
     }
   },
   {
@@ -6540,13 +6525,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
     "explanation": "1/5 > 1/6.",
     "payload": {
-      "optionA": "1/5",
-      "optionB": "1/6"
+      "optionA": "1/6",
+      "optionB": "1/5"
     },
     "learning": {
       "skillId": "medium.fractions.explore-3",
@@ -6662,13 +6647,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
     "explanation": "2/4 > 2/5.",
     "payload": {
-      "optionA": "2/5",
-      "optionB": "2/4"
+      "optionA": "2/4",
+      "optionB": "2/5"
     },
     "learning": {
       "skillId": "medium.fractions.explore-4",
@@ -6784,13 +6769,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Salīdzini katru daudzumu ar pusi no tā paša veselā.",
     "explanation": "4/6 > 1/2.",
     "payload": {
-      "optionA": "4/6",
-      "optionB": "1/2"
+      "optionA": "1/2",
+      "optionB": "4/6"
     },
     "learning": {
       "skillId": "medium.fractions.explore-5",
@@ -6968,13 +6953,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Salīdzini katru daudzumu ar pusi no tā paša veselā.",
     "explanation": "4/7 > 1/2.",
     "payload": {
-      "optionA": "1/2",
-      "optionB": "4/7"
+      "optionA": "4/7",
+      "optionB": "1/2"
     },
     "learning": {
       "skillId": "medium.fractions.explore-6",
@@ -7061,15 +7046,6 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 1/7 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 1 no 7 vienādām daļām.",
-    "payload": {
-      "numerator": 1,
-      "denominator": 7
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
@@ -7078,7 +7054,19 @@
       "role": "practice",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,3 no veselā.",
+    "hint": "Veselajā ir 10 vienādas daļas. Katra daļa ir 0,1.",
+    "explanation": "3/10 = 0,3.",
+    "payload": {
+      "hundredths": 30,
+      "scale": 10,
+      "digits": 1,
+      "guided": true
+    },
+    "helpTemplate": "decimal_grid_10"
   },
   {
     "id": "v2-medium-fractions-explore-7-2",
@@ -7087,26 +7075,32 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 63 un salīdzini skaitītājus.",
-    "explanation": "4/9 > 3/7.",
-    "payload": {
-      "optionA": "4/9",
-      "optionB": "3/7"
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-6"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,6.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas. Desmit desmitdaļas veido vienu veselo.",
+    "explanation": "0 × 1 + 6 × 0,1 = 0,6.",
+    "payload": {
+      "hundredths": 60,
+      "digits": 1,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths"
+      ],
+      "guided": true
+    },
+    "helpTemplate": "decimal_place_tenths"
   },
   {
     "id": "v2-medium-fractions-explore-7-3",
@@ -7115,25 +7109,6 @@
       8,
       10
     ],
-    "type": "fraction_match",
-    "topic": "fractions",
-    "question": "Savieno katru daļu ar tās attēlu.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 9,
-          "visual": "pie"
-        },
-        {
-          "numerator": 5,
-          "denominator": 9,
-          "visual": "grid"
-        }
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
@@ -7142,7 +7117,19 @@
       "role": "practice",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,4 no veselā.",
+    "hint": "Veselajā ir 10 vienādas daļas. Katra daļa ir 0,1.",
+    "explanation": "4/10 = 0,4.",
+    "payload": {
+      "hundredths": 40,
+      "scale": 10,
+      "digits": 1,
+      "guided": true
+    },
+    "helpTemplate": "decimal_grid_10"
   },
   {
     "id": "v2-medium-fractions-explore-7-4",
@@ -7151,30 +7138,32 @@
       8,
       10
     ],
-    "type": "fraction_equivalent",
-    "topic": "fractions",
-    "correctIndex": 1,
-    "question": "Kura daļa ir tikpat liela?",
-    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
-    "explanation": "4/10 = 12/30.",
-    "payload": {
-      "numerator": 4,
-      "denominator": 10,
-      "choices": [
-        "12/10",
-        "12/30",
-        "4/30"
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-6"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,2.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas. Desmit desmitdaļas veido vienu veselo.",
+    "explanation": "0 × 1 + 2 × 0,1 = 0,2.",
+    "payload": {
+      "hundredths": 20,
+      "digits": 1,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_tenths"
   },
   {
     "id": "v2-medium-fractions-explore-8-1",
@@ -7183,15 +7172,6 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 3/11 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 3 no 11 vienādām daļām.",
-    "payload": {
-      "numerator": 3,
-      "denominator": 11
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
@@ -7200,7 +7180,19 @@
       "role": "practice",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,40 no veselā.",
+    "hint": "Veselajā ir 100 vienādas daļas. Katra daļa ir 0,01.",
+    "explanation": "40/100 = 0,40.",
+    "payload": {
+      "hundredths": 40,
+      "scale": 100,
+      "digits": 2,
+      "guided": true
+    },
+    "helpTemplate": "decimal_grid_100"
   },
   {
     "id": "v2-medium-fractions-explore-8-2",
@@ -7209,26 +7201,33 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 15 un salīdzini skaitītājus.",
-    "explanation": "2/3 > 3/5.",
-    "payload": {
-      "optionA": "3/5",
-      "optionB": "2/3"
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-7"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,35.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "0 × 1 + 3 × 0,1 + 5 × 0,01 = 0,35.",
+    "payload": {
+      "hundredths": 35,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": true
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-fractions-explore-8-3",
@@ -7237,25 +7236,6 @@
       8,
       10
     ],
-    "type": "fraction_match",
-    "topic": "fractions",
-    "question": "Savieno katru daļu ar tās attēlu.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 12,
-          "visual": "pie"
-        },
-        {
-          "numerator": 9,
-          "denominator": 12,
-          "visual": "grid"
-        }
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
@@ -7264,7 +7244,19 @@
       "role": "practice",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,07 no veselā.",
+    "hint": "Veselajā ir 100 vienādas daļas. Katra daļa ir 0,01.",
+    "explanation": "7/100 = 0,07.",
+    "payload": {
+      "hundredths": 7,
+      "scale": 100,
+      "digits": 2,
+      "guided": true
+    },
+    "helpTemplate": "decimal_grid_100"
   },
   {
     "id": "v2-medium-fractions-explore-8-4",
@@ -7273,30 +7265,33 @@
       8,
       10
     ],
-    "type": "fraction_equivalent",
-    "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
-    "hint": "Dali gan skaitītāju, gan saucēju ar 4.",
-    "explanation": "8/20 = 2/5.",
-    "payload": {
-      "numerator": 8,
-      "denominator": 20,
-      "choices": [
-        "2/5",
-        "2/20",
-        "8/5"
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-7"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,60.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "0 × 1 + 6 × 0,1 + 0 × 0,01 = 0,60.",
+    "payload": {
+      "hundredths": 60,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-fractions-explore-9-1",
@@ -7305,24 +7300,33 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 2/7 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 2 no 7 vienādām daļām.",
-    "payload": {
-      "numerator": 2,
-      "denominator": 7
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-8"
       ],
       "role": "practice",
-      "representation": "fraction-model",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 1,25.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "1 × 1 + 2 × 0,1 + 5 × 0,01 = 1,25.",
+    "payload": {
+      "hundredths": 125,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": true
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-fractions-explore-9-2",
@@ -7331,26 +7335,33 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 8 un salīdzini skaitītājus.",
-    "explanation": "3/4 > 5/8.",
-    "payload": {
-      "optionA": "3/4",
-      "optionB": "5/8"
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Samaini 10 simtdaļas pret 1 desmitdaļu.",
+    "hint": "Desmit simtdaļas ir viena desmitdaļa. Samainot daudzums nemainās.",
+    "explanation": "0,10 = 0,1. Kopā joprojām 0,46.",
+    "payload": {
+      "hundredths": 46,
+      "digits": 2,
+      "mode": "bundle",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": true
+    },
+    "helpTemplate": "decimal_place_bundle"
   },
   {
     "id": "v2-medium-fractions-explore-9-3",
@@ -7359,34 +7370,33 @@
       8,
       10
     ],
-    "type": "fraction_match",
-    "topic": "fractions",
-    "question": "Savieno katru daļu ar tās attēlu.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "payload": {
-      "pairs": [
-        {
-          "numerator": 1,
-          "denominator": 9,
-          "visual": "pie"
-        },
-        {
-          "numerator": 6,
-          "denominator": 9,
-          "visual": "grid"
-        }
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-8"
       ],
       "role": "practice",
-      "representation": "fraction-model",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Samaini 1 desmitdaļu pret 10 simtdaļām.",
+    "hint": "Desmit simtdaļas ir viena desmitdaļa. Samainot daudzums nemainās.",
+    "explanation": "0,10 = 0,1. Kopā joprojām 0,73.",
+    "payload": {
+      "hundredths": 73,
+      "digits": 2,
+      "mode": "split",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": true
+    },
+    "helpTemplate": "decimal_place_split"
   },
   {
     "id": "v2-medium-fractions-explore-9-4",
@@ -7395,21 +7405,6 @@
       8,
       10
     ],
-    "type": "fraction_equivalent",
-    "topic": "fractions",
-    "correctIndex": 2,
-    "question": "Kura daļa ir tikpat liela?",
-    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
-    "explanation": "5/10 = 10/20.",
-    "payload": {
-      "numerator": 5,
-      "denominator": 10,
-      "choices": [
-        "5/20",
-        "10/10",
-        "10/20"
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
@@ -7418,7 +7413,19 @@
       "role": "practice",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,58 no veselā.",
+    "hint": "Veselajā ir 100 vienādas daļas. Katra daļa ir 0,01.",
+    "explanation": "58/100 = 0,58.",
+    "payload": {
+      "hundredths": 58,
+      "scale": 100,
+      "digits": 2,
+      "guided": false
+    },
+    "helpTemplate": "decimal_grid_100"
   },
   {
     "id": "v2-medium-fractions-explore-10-1",
@@ -14007,60 +14014,32 @@
       8,
       10
     ],
-    "type": "sort_buckets",
-    "topic": "fractions",
-    "helpTemplate": "fraction_sort",
-    "question": "Sašķiro daļas pēc vērtības: 1/9 vai 8/9.",
-    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
-    "explanation": "1/9 = 2/18; 8/9 = 16/18.",
-    "payload": {
-      "rule": "fractions",
-      "targets": [
-        [
-          1,
-          9
-        ],
-        [
-          8,
-          9
-        ]
-      ],
-      "fractions": [
-        [
-          2,
-          18
-        ],
-        [
-          16,
-          18
-        ],
-        [
-          3,
-          27
-        ],
-        [
-          24,
-          27
-        ],
-        [
-          4,
-          36
-        ],
-        [
-          32,
-          36
-        ]
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-6"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,8.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas. Desmit desmitdaļas veido vienu veselo.",
+    "explanation": "0 × 1 + 8 × 0,1 = 0,8.",
+    "payload": {
+      "hundredths": 80,
+      "digits": 1,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_tenths"
   },
   {
     "id": "v2-medium-fractions-lesson-7-boss-1",
@@ -14069,15 +14048,6 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 7/10 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 7 no 10 vienādām daļām.",
-    "payload": {
-      "numerator": 7,
-      "denominator": 10
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
@@ -14086,7 +14056,19 @@
       "role": "application",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,7 no veselā.",
+    "hint": "Veselajā ir 10 vienādas daļas. Katra daļa ir 0,1.",
+    "explanation": "7/10 = 0,7.",
+    "payload": {
+      "hundredths": 70,
+      "scale": 10,
+      "digits": 1,
+      "guided": false
+    },
+    "helpTemplate": "decimal_grid_10"
   },
   {
     "id": "v2-medium-fractions-lesson-7-boss-2",
@@ -14095,26 +14077,32 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 63 un salīdzini skaitītājus.",
-    "explanation": "4/9 > 3/7.",
-    "payload": {
-      "optionA": "4/9",
-      "optionB": "3/7"
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-6"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,9.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas. Desmit desmitdaļas veido vienu veselo.",
+    "explanation": "0 × 1 + 9 × 0,1 = 0,9.",
+    "payload": {
+      "hundredths": 90,
+      "digits": 1,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_tenths"
   },
   {
     "id": "v2-medium-fractions-lesson-7-boss-3",
@@ -14123,21 +14111,6 @@
       8,
       10
     ],
-    "type": "fraction_equivalent",
-    "topic": "fractions",
-    "correctIndex": 2,
-    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
-    "hint": "Dali gan skaitītāju, gan saucēju ar 4.",
-    "explanation": "8/20 = 2/5.",
-    "payload": {
-      "numerator": 8,
-      "denominator": 20,
-      "choices": [
-        "2/20",
-        "8/5",
-        "2/5"
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
@@ -14146,7 +14119,19 @@
       "role": "application",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,5 no veselā.",
+    "hint": "Veselajā ir 10 vienādas daļas. Katra daļa ir 0,1.",
+    "explanation": "5/10 = 0,5.",
+    "payload": {
+      "hundredths": 50,
+      "scale": 10,
+      "digits": 1,
+      "guided": false
+    },
+    "helpTemplate": "decimal_grid_10"
   },
   {
     "id": "v2-medium-fractions-lesson-8-challenge-1",
@@ -14155,60 +14140,33 @@
       8,
       10
     ],
-    "type": "sort_buckets",
-    "topic": "fractions",
-    "helpTemplate": "fraction_sort",
-    "question": "Sašķiro daļas pēc vērtības: 1/10 vai 9/10.",
-    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
-    "explanation": "1/10 = 2/20; 9/10 = 18/20.",
-    "payload": {
-      "rule": "fractions",
-      "targets": [
-        [
-          1,
-          10
-        ],
-        [
-          9,
-          10
-        ]
-      ],
-      "fractions": [
-        [
-          2,
-          20
-        ],
-        [
-          18,
-          20
-        ],
-        [
-          3,
-          30
-        ],
-        [
-          27,
-          30
-        ],
-        [
-          4,
-          40
-        ],
-        [
-          36,
-          40
-        ]
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,52.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "0 × 1 + 5 × 0,1 + 2 × 0,01 = 0,52.",
+    "payload": {
+      "hundredths": 52,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-fractions-lesson-8-boss-1",
@@ -14217,15 +14175,6 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 8/11 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 8 no 11 vienādām daļām.",
-    "payload": {
-      "numerator": 8,
-      "denominator": 11
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
@@ -14234,7 +14183,19 @@
       "role": "application",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,24 no veselā.",
+    "hint": "Veselajā ir 100 vienādas daļas. Katra daļa ir 0,01.",
+    "explanation": "24/100 = 0,24.",
+    "payload": {
+      "hundredths": 24,
+      "scale": 100,
+      "digits": 2,
+      "guided": false
+    },
+    "helpTemplate": "decimal_grid_100"
   },
   {
     "id": "v2-medium-fractions-lesson-8-boss-2",
@@ -14243,26 +14204,33 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 15 un salīdzini skaitītājus.",
-    "explanation": "2/3 > 3/5.",
-    "payload": {
-      "optionA": "3/5",
-      "optionB": "2/3"
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,09.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "0 × 1 + 0 × 0,1 + 9 × 0,01 = 0,09.",
+    "payload": {
+      "hundredths": 9,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-fractions-lesson-8-boss-3",
@@ -14271,21 +14239,6 @@
       8,
       10
     ],
-    "type": "fraction_equivalent",
-    "topic": "fractions",
-    "correctIndex": 1,
-    "question": "Kura daļa ir tikpat liela?",
-    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
-    "explanation": "4/6 = 8/12.",
-    "payload": {
-      "numerator": 4,
-      "denominator": 6,
-      "choices": [
-        "8/6",
-        "8/12",
-        "4/12"
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
@@ -14294,7 +14247,19 @@
       "role": "application",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,8 no veselā.",
+    "hint": "Veselajā ir 100 vienādas daļas. Katra daļa ir 0,01.",
+    "explanation": "80/100 = 0,8.",
+    "payload": {
+      "hundredths": 80,
+      "scale": 100,
+      "digits": 1,
+      "guided": false
+    },
+    "helpTemplate": "decimal_grid_100"
   },
   {
     "id": "v2-medium-fractions-lesson-9-challenge-1",
@@ -14303,60 +14268,33 @@
       8,
       10
     ],
-    "type": "sort_buckets",
-    "topic": "fractions",
-    "helpTemplate": "fraction_sort",
-    "question": "Sašķiro daļas pēc vērtības: 1/11 vai 10/11.",
-    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
-    "explanation": "1/11 = 2/22; 10/11 = 20/22.",
-    "payload": {
-      "rule": "fractions",
-      "targets": [
-        [
-          1,
-          11
-        ],
-        [
-          10,
-          11
-        ]
-      ],
-      "fractions": [
-        [
-          2,
-          22
-        ],
-        [
-          20,
-          22
-        ],
-        [
-          3,
-          33
-        ],
-        [
-          30,
-          33
-        ],
-        [
-          4,
-          44
-        ],
-        [
-          40,
-          44
-        ]
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-8"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 1,63.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "1 × 1 + 6 × 0,1 + 3 × 0,01 = 1,63.",
+    "payload": {
+      "hundredths": 163,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-fractions-lesson-9-boss-1",
@@ -14365,24 +14303,33 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 9/12 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 9 no 12 vienādām daļām.",
-    "payload": {
-      "numerator": 9,
-      "denominator": 12
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-8"
       ],
       "role": "application",
-      "representation": "fraction-model",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 1,04.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "1 × 1 + 0 × 0,1 + 4 × 0,01 = 1,04.",
+    "payload": {
+      "hundredths": 104,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-fractions-lesson-9-boss-2",
@@ -14391,49 +14338,6 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 8 un salīdzini skaitītājus.",
-    "explanation": "3/4 > 5/8.",
-    "payload": {
-      "optionA": "3/4",
-      "optionB": "5/8"
-    },
-    "learning": {
-      "skillId": "medium.fractions.explore-9",
-      "prerequisiteSkillIds": [
-        "medium.fractions.explore-8"
-      ],
-      "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
-  },
-  {
-    "id": "v2-medium-fractions-lesson-9-boss-3",
-    "difficulty": "medium",
-    "ageRange": [
-      8,
-      10
-    ],
-    "type": "fraction_equivalent",
-    "topic": "fractions",
-    "correctIndex": 1,
-    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
-    "hint": "Dali gan skaitītāju, gan saucēju ar 3.",
-    "explanation": "9/21 = 3/7.",
-    "payload": {
-      "numerator": 9,
-      "denominator": 21,
-      "choices": [
-        "9/7",
-        "3/7",
-        "3/21"
-      ]
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
@@ -14442,7 +14346,54 @@
       "role": "application",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,62 no veselā.",
+    "hint": "Veselajā ir 100 vienādas daļas. Katra daļa ir 0,01.",
+    "explanation": "62/100 = 0,62.",
+    "payload": {
+      "hundredths": 62,
+      "scale": 100,
+      "digits": 2,
+      "guided": false
+    },
+    "helpTemplate": "decimal_grid_100"
+  },
+  {
+    "id": "v2-medium-fractions-lesson-9-boss-3",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "learning": {
+      "skillId": "medium.fractions.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-8"
+      ],
+      "role": "application",
+      "representation": "objects",
+      "reasoningSteps": 1
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 1,09.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "1 × 1 + 0 × 0,1 + 9 × 0,01 = 1,09.",
+    "payload": {
+      "hundredths": 109,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-operations-lesson-1-challenge-1",
@@ -14568,13 +14519,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "15 < 51.",
     "payload": {
-      "optionA": "45 ÷ 5 + 6",
-      "optionB": "45 + 6"
+      "optionA": "45 + 6",
+      "optionB": "45 ÷ 5 + 6"
     },
     "learning": {
       "skillId": "medium.operations.routes",
@@ -14663,13 +14614,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "17 < 67.",
     "payload": {
-      "optionA": "60 + 7",
-      "optionB": "60 ÷ 6 + 7"
+      "optionA": "60 ÷ 6 + 7",
+      "optionB": "60 + 7"
     },
     "learning": {
       "skillId": "medium.operations.order",
@@ -14811,13 +14762,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "19 < 85.",
     "payload": {
-      "optionA": "77 ÷ 7 + 8",
-      "optionB": "77 + 8"
+      "optionA": "77 + 8",
+      "optionB": "77 ÷ 7 + 8"
     },
     "learning": {
       "skillId": "medium.operations.explore-3",
@@ -14959,13 +14910,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "21 < 105.",
     "payload": {
-      "optionA": "96 + 9",
-      "optionB": "96 ÷ 8 + 9"
+      "optionA": "96 ÷ 8 + 9",
+      "optionB": "96 + 9"
     },
     "learning": {
       "skillId": "medium.operations.explore-4",
@@ -15056,13 +15007,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "23 < 127.",
     "payload": {
-      "optionA": "117 ÷ 9 + 10",
-      "optionB": "117 + 10"
+      "optionA": "117 + 10",
+      "optionB": "117 ÷ 9 + 10"
     },
     "learning": {
       "skillId": "medium.operations.explore-5",
@@ -15204,13 +15155,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "25 < 53.",
     "payload": {
-      "optionA": "42 + 11",
-      "optionB": "42 ÷ 3 + 11"
+      "optionA": "42 ÷ 3 + 11",
+      "optionB": "42 + 11"
     },
     "learning": {
       "skillId": "medium.operations.explore-6",
@@ -15352,13 +15303,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "27 < 72.",
     "payload": {
-      "optionA": "60 ÷ 4 + 12",
-      "optionB": "60 + 12"
+      "optionA": "60 + 12",
+      "optionB": "60 ÷ 4 + 12"
     },
     "learning": {
       "skillId": "medium.operations.explore-7",
@@ -15500,13 +15451,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "29 < 93.",
     "payload": {
-      "optionA": "80 + 13",
-      "optionB": "80 ÷ 5 + 13"
+      "optionA": "80 ÷ 5 + 13",
+      "optionB": "80 + 13"
     },
     "learning": {
       "skillId": "medium.operations.explore-8",
@@ -15648,13 +15599,13 @@
     ],
     "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Kurai izteiksmei ir lielāka vērtība?",
     "hint": "Izmēģini soli un pārbaudi, kur tas aizved.",
     "explanation": "31 < 116.",
     "payload": {
-      "optionA": "102 ÷ 6 + 14",
-      "optionB": "102 + 14"
+      "optionA": "102 + 14",
+      "optionB": "102 ÷ 6 + 14"
     },
     "learning": {
       "skillId": "medium.operations.explore-9",
@@ -16172,13 +16123,13 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
     "explanation": "7/9 > 6/9.",
     "payload": {
-      "optionA": "7/9",
-      "optionB": "6/9"
+      "optionA": "6/9",
+      "optionB": "7/9"
     },
     "learning": {
       "skillId": "medium.fractions.value",
@@ -16195,22 +16146,25 @@
       8,
       10
     ],
-    "type": "fraction_build",
+    "type": "fraction_number_line",
     "topic": "fractions",
-    "question": "Iekrāso 5/8 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 5 no 8 vienādām daļām.",
+    "question": "Atzīmē 6/8 uz skaitļu taisnes.",
+    "hint": "No 0 līdz 1 ir 4 vienādi soļi. Skaiti atstarpes starp atzīmēm.",
+    "explanation": "3 no 4 vienādiem soļiem ved no 0 līdz 6/8.",
     "payload": {
-      "numerator": 5,
-      "denominator": 8
+      "numerator": 6,
+      "denominator": 8,
+      "divisions": 4,
+      "guided": false
     },
+    "helpTemplate": "fraction_number_line",
     "learning": {
       "skillId": "medium.fractions.equivalent",
       "prerequisiteSkillIds": [
         "medium.fractions.value"
       ],
       "role": "review",
-      "representation": "fraction-model",
+      "representation": "number-line",
       "reasoningSteps": 1
     }
   },
@@ -16221,24 +16175,31 @@
       8,
       10
     ],
-    "type": "compare",
+    "type": "fraction_strip",
     "topic": "fractions",
-    "correctIndex": 1,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "8/10 > 7/10.",
+    "question": "Izveido joslā daļu, kas vienāda ar 3/9.",
+    "hint": "Abas joslas ir vienāda garuma. Izvēlies daļas un iekrāso tikpat lielu laukumu kā paraugā.",
+    "explanation": "3/9 = 2/6 = 4/12.",
     "payload": {
-      "optionA": "7/10",
-      "optionB": "8/10"
+      "numerator": 3,
+      "denominator": 9,
+      "partitions": [
+        6,
+        4,
+        12
+      ],
+      "mode": "equivalent",
+      "guided": false
     },
+    "helpTemplate": "fraction_strip_equivalent",
     "learning": {
       "skillId": "medium.fractions.equivalent",
       "prerequisiteSkillIds": [
         "medium.fractions.value"
       ],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "fraction-model",
+      "reasoningSteps": 2
     }
   },
   {
@@ -18560,15 +18521,6 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 2/4 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 2 no 4 vienādām daļām.",
-    "payload": {
-      "numerator": 2,
-      "denominator": 4
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
@@ -18577,7 +18529,19 @@
       "role": "review",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,1 no veselā.",
+    "hint": "Veselajā ir 10 vienādas daļas. Katra daļa ir 0,1.",
+    "explanation": "1/10 = 0,1.",
+    "payload": {
+      "hundredths": 10,
+      "scale": 10,
+      "digits": 1,
+      "guided": false
+    },
+    "helpTemplate": "decimal_grid_10"
   },
   {
     "id": "v2-medium-medium-fractions-explore-7-path-review-2",
@@ -18586,26 +18550,32 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 63 un salīdzini skaitītājus.",
-    "explanation": "4/9 > 3/7.",
-    "payload": {
-      "optionA": "4/9",
-      "optionB": "3/7"
-    },
     "learning": {
       "skillId": "medium.fractions.explore-7",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-6"
       ],
       "role": "review",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 1,0.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas. Desmit desmitdaļas veido vienu veselo.",
+    "explanation": "1 × 1 + 0 × 0,1 = 1,0.",
+    "payload": {
+      "hundredths": 100,
+      "digits": 1,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_tenths"
   },
   {
     "id": "v2-medium-medium-fractions-explore-8-path-review-1",
@@ -18614,15 +18584,6 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 2/5 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 2 no 5 vienādām daļām.",
-    "payload": {
-      "numerator": 2,
-      "denominator": 5
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
@@ -18631,7 +18592,19 @@
       "role": "review",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_grid",
+    "question": "Iekrāso 0,05 no veselā.",
+    "hint": "Veselajā ir 100 vienādas daļas. Katra daļa ir 0,01.",
+    "explanation": "5/100 = 0,05.",
+    "payload": {
+      "hundredths": 5,
+      "scale": 100,
+      "digits": 2,
+      "guided": false
+    },
+    "helpTemplate": "decimal_grid_100"
   },
   {
     "id": "v2-medium-medium-fractions-explore-8-path-review-2",
@@ -18640,26 +18613,33 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 15 un salīdzini skaitītājus.",
-    "explanation": "2/3 > 3/5.",
-    "payload": {
-      "optionA": "3/5",
-      "optionB": "2/3"
-    },
     "learning": {
       "skillId": "medium.fractions.explore-8",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-7"
       ],
       "role": "review",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 0,90.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "0 × 1 + 9 × 0,1 + 0 × 0,01 = 0,90.",
+    "payload": {
+      "hundredths": 90,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-medium-fractions-explore-9-path-review-1",
@@ -18668,24 +18648,33 @@
       8,
       10
     ],
-    "type": "fraction_build",
-    "topic": "fractions",
-    "question": "Iekrāso 4/6 no šī veselā.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "Iekrāso 4 no 6 vienādām daļām.",
-    "payload": {
-      "numerator": 4,
-      "denominator": 6
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-8"
       ],
       "role": "review",
-      "representation": "fraction-model",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Samaini 10 simtdaļas pret 1 desmitdaļu.",
+    "hint": "Desmit simtdaļas ir viena desmitdaļa. Samainot daudzums nemainās.",
+    "explanation": "0,10 = 0,1. Kopā joprojām 0,87.",
+    "payload": {
+      "hundredths": 87,
+      "digits": 2,
+      "mode": "bundle",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_bundle"
   },
   {
     "id": "v2-medium-medium-fractions-explore-9-path-review-2",
@@ -18694,26 +18683,33 @@
       8,
       10
     ],
-    "type": "compare",
-    "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 8 un salīdzini skaitītājus.",
-    "explanation": "3/4 > 5/8.",
-    "payload": {
-      "optionA": "3/4",
-      "optionB": "5/8"
-    },
     "learning": {
       "skillId": "medium.fractions.explore-9",
       "prerequisiteSkillIds": [
         "medium.fractions.explore-8"
       ],
       "role": "review",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "fractions",
+    "type": "decimal_place_value",
+    "question": "Izveido skaitli 2,06.",
+    "hint": "Pirms komata ir vieni, aiz tā ir desmitdaļas un tad simtdaļas. Nulle saglabā cipara vietu.",
+    "explanation": "2 × 1 + 0 × 0,1 + 6 × 0,01 = 2,06.",
+    "payload": {
+      "hundredths": 206,
+      "digits": 2,
+      "mode": "build",
+      "exchangeUnit": "hundredths",
+      "units": [
+        "ones",
+        "tenths",
+        "hundredths"
+      ],
+      "guided": false
+    },
+    "helpTemplate": "decimal_place_build"
   },
   {
     "id": "v2-medium-medium-fractions-explore-10-path-review-1",
@@ -18751,13 +18747,13 @@
     "type": "compare",
     "topic": "fractions",
     "helpTemplate": "fraction_equivalent",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
     "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 40 un salīdzini skaitītājus.",
     "explanation": "2/5 > 3/8.",
     "payload": {
-      "optionA": "3/8",
-      "optionB": "2/5"
+      "optionA": "2/5",
+      "optionB": "3/8"
     },
     "learning": {
       "skillId": "medium.fractions.explore-10",

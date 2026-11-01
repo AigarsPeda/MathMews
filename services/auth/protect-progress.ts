@@ -7,7 +7,6 @@ import {
 import {
   getPlatformRestoreProvider,
   isPlatformAuthEnabled,
-  type PlatformAuthProvider,
 } from "@/constants/platform-auth";
 import {
   finishOAuthFromUrl,
@@ -201,12 +200,6 @@ export async function verifyParentEmailCode(
   }
 
   return { ok: false, error: "invalid_code" };
-}
-
-export function getPlatformAccountName(provider: PlatformAuthProvider | null): string {
-  if (provider === "apple") return "Apple ID";
-  if (provider === "google") return "Google account";
-  return "account";
 }
 
 export { makeRedirectUri };

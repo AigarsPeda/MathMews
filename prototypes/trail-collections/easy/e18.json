@@ -1,0 +1,8 @@
+{
+  "id": "e18",
+  "collection": "easy",
+  "builder": "tray",
+  "meshObjects": 12,
+  "samples": 48,
+  "renderSize": 640
+}

@@ -15,6 +15,70 @@ final class NativeDragTests: XCTestCase {
   expectation(for: visible, evaluatedWith: nil)
   waitForExpectations(timeout: 5)
  }
+ func testThemedCraftTrailsAndReplay() {
+  app.buttons["QA Path"].tap()
+  let topics = ["Subtraction", "Numbers and order", "Patterns", "Equal groups", "Fractions",
+   "Addition", "Subtraction", "Equal groups", "Sharing and division", "Fractions", "Number routes",
+   "Number routes", "Fractions", "Patterns", "Percentages", "Measure and estimate", "Reasoning", "Addition"]
+  for (index, title) in topics.enumerated() {
+   app.buttons["QA Theme"].tap()
+   XCTAssertTrue(app.staticTexts[title].firstMatch.waitForExistence(timeout:5))
+   let difficulty = index < 5 || index == 17 ? "Easy" : index < 11 ? "Medium" : "Hard"
+   XCTAssertTrue(app.staticTexts[difficulty].firstMatch.exists)
+   for _ in 0..<8 {
+    if app.buttons["Level 1"].isHittable { break }
+    app.scrollViews.firstMatch.swipeDown()
+   }
+   shot("collection-\(index)-\(difficulty)-\(title)")
+  }
+  testBlenderTrailAndLocalizedCallout()
+ }
+ func testRevisedHardFractionsCraft() {
+  app.buttons["QA Path"].tap()
+  for _ in 0..<13 { app.buttons["QA Theme"].tap() }
+  XCTAssertTrue(app.staticTexts["Fractions"].firstMatch.waitForExistence(timeout:5))
+  XCTAssertTrue(app.staticTexts["Hard"].firstMatch.exists)
+  assertCurrentLevelVisible(1)
+  XCTAssertFalse(app.buttons["Level 2"].isEnabled)
+  shot("collection-12-Hard-Fractions")
+ }
+ func testBlenderTrailAndLocalizedCallout() {
+  app.buttons["QA Path"].tap()
+  app.buttons["QA Level 6"].tap()
+  assertCurrentLevelVisible(6)
+  // The visual callout ignores touches; level semantics carry its title and state.
+  XCTAssertTrue(app.buttons["Level 5"].isEnabled)
+  XCTAssertFalse(app.buttons["Level 7"].isEnabled)
+  shot("blender-trail-level-6")
+  app.buttons["QA Narrow"].tap()
+  assertCurrentLevelVisible(6)
+  shot("blender-trail-320")
+  app.buttons["QA LV"].tap()
+  XCTAssertTrue(app.buttons["6. līmenis"].waitForExistence(timeout:5))
+  XCTAssertTrue(app.buttons["6. līmenis"].isHittable)
+  shot("blender-trail-320-lv")
+  let finish = app.descendants(matching: .any)["topic-trail-finish"]
+  for _ in 0..<10 {
+   if finish.isHittable { break }
+   app.scrollViews.firstMatch.swipeUp()
+  }
+  XCTAssertTrue(finish.isHittable)
+  XCTAssertEqual(finish.label, "Finišs")
+  shot("blender-trail-finish-lv")
+  app.buttons["QA Topics"].tap()
+  XCTAssertTrue(app.staticTexts["Izvēlies tēmu"].waitForExistence(timeout:5))
+  app.buttons["Saskaitīšana"].tap()
+  XCTAssertTrue(app.buttons["6. līmenis"].waitForExistence(timeout:5))
+  for _ in 0..<8 {
+   if app.buttons["1. līmenis"].isHittable { break }
+   app.scrollViews.firstMatch.swipeDown()
+  }
+  shot("blender-trail-start-lv")
+  app.buttons["1. līmenis"].tap()
+  XCTAssertTrue(app.buttons["Check answer"].waitForExistence(timeout:8))
+  XCTAssertFalse(app.buttons["1. līmenis"].exists)
+  shot("blender-trail-replay-puzzle")
+ }
  func testCurrentLevelVisibleWhenOpeningAndReturning() {
   app.buttons["QA Path"].tap()
   assertCurrentLevelVisible(5)

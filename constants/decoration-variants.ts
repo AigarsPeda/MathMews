@@ -102,12 +102,6 @@ function decorationScaleMax(decorationId?: string): number {
 /** Posters use one sprite mirrored horizontally for the opposite isometric wall. */
 export const POSTER_WALL_ORIENTATION_COUNT = 2;
 
-export function isDecorationRotationVariantOnly(
-  decorationId: CatDecorationId,
-): boolean {
-  return ROTATION_VARIANT_ONLY_IDS.has(decorationId);
-}
-
 export function isCanonicalDecorationStoreId(
   decorationId: CatDecorationId,
 ): boolean {

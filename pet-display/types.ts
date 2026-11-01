@@ -65,15 +65,4 @@ export type PetDisplayEngine = PetDisplayEngineState & {
   send: (command: PetDisplayCommand) => void;
 };
 
-/** Snapshot passed to renderers — keeps pet type for registry lookup. */
-export type PetDisplayRenderProps = {
-  pet: PetProfile;
-  playback: PetPlaybackState;
-  width: number;
-  loop?: boolean;
-  onPress?: () => void;
-  onAnimationComplete?: () => void;
-  onStepComplete?: (stepIndex: number) => void;
-};
-
 export type { PetAnimationState, PetMood, PetProfile, PetType };

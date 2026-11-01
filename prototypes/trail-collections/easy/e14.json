@@ -1,0 +1,8 @@
+{
+  "id": "e14",
+  "collection": "easy",
+  "builder": "fractions",
+  "meshObjects": 6,
+  "samples": 48,
+  "renderSize": 640
+}

@@ -1,0 +1,8 @@
+{
+  "id": "e01",
+  "collection": "easy",
+  "builder": "yarn",
+  "meshObjects": 96,
+  "samples": 48,
+  "renderSize": 640
+}

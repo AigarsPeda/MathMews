@@ -1,0 +1,8 @@
+{
+  "id": "m05",
+  "collection": "medium",
+  "builder": "globe",
+  "meshObjects": 10,
+  "samples": 48,
+  "renderSize": 640
+}

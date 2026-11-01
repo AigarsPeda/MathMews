@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import * as AppleAuthentication from "expo-apple-authentication";
 import { Platform } from "react-native";
 
@@ -69,12 +69,4 @@ export async function linkAppleIdToken(
 
   if (error) return { ok: false, error: error.message };
   return { ok: true };
-}
-
-export function isAppleSignInAvailable(): boolean {
-  return Platform.OS === "ios";
-}
-
-export function isSupabaseAuthReady(): boolean {
-  return isSupabaseConfigured();
 }

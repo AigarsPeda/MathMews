@@ -1,0 +1,8 @@
+{
+  "id": "h05",
+  "collection": "hard",
+  "builder": "orrery",
+  "meshObjects": 14,
+  "samples": 48,
+  "renderSize": 640
+}

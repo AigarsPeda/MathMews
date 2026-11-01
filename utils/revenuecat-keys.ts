@@ -12,10 +12,6 @@ export function isTestStoreApiKey(apiKey: string): boolean {
   return apiKey.startsWith("test_");
 }
 
-export function isUsingRevenueCatTestStore(): boolean {
-  return __DEV__;
-}
-
 function getPlatform(): RevenueCatPlatform {
   return Platform.OS === "ios" ? "ios" : "android";
 }

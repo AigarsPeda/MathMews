@@ -107,22 +107,8 @@ def boss_badge():
     art.sphere('Crown coral jewel',(0,-.14,1.65),(.065,.035,.075),'coral')
 
 
-def practice_book():
-    art.box('Rounded workbook cover',(0,.04,.83),(1.30,.28,1.30),'teal',.13)
-    art.box('Cream workbook pages',(.07,-.13,.85),(1.08,.12,1.10),'cream',.075)
-    art.box('Golden book spine',(-.48,-.22,.84),(.10,.07,1.06),'gold',.025)
-    for x,z,color in [(-.14,1.12,'teal'),(.30,1.12,'coral'),(-.14,.65,'gold'),(.30,.65,'lilac')]:
-        art.box('Practice tile',(x,-.24,z),(.31,.09,.31),color,.055)
-    for z in [.39,.46]:
-        art.curve('Page edge',[(.1,-.21,z),(.48,-.21,z)],.012,'wood')
 
 
-def lesson_medal():
-    study.extruded_shape('Left award ribbon',[(-.48,.61),(-.56,.05),(-.29,.19),(-.09,.04),(-.05,.61)],'teal',.15)
-    study.extruded_shape('Right award ribbon',[(.05,.61),(.09,.04),(.29,.19),(.56,.05),(.48,.61)],'teal',.15)
-    art.cylinder('Gold lesson medal',(0,-.02,1.01),.62,.24,'gold',rotation=(math.pi/2,0,0))
-    art.cylinder('Cream medal face',(0,-.16,1.01),.49,.05,'cream',rotation=(math.pi/2,0,0))
-    study.extruded_shape('Completed lesson check',[(-.35,1.00),(-.22,1.13),(-.07,.96),(.27,1.31),(.40,1.17),(-.07,.68)],'teal',.08,(0,-.23,0))
 
 
 def coin():
@@ -301,11 +287,6 @@ def lock():
     art.box('Keyhole stem',(0,-.23,.51),(.10,.04,.18),'cream',.03)
 
 
-def trash():
-    art.box('Coral waste bin',(0,0,.63),(.86,.64,1.05),'coral',.09)
-    art.box('Bin lid',(0,0,1.19),(1.01,.76,.14),'cream',.055)
-    art.box('Bin handle',(0,0,1.32),(.34,.15,.13),'teal',.035)
-    for x in [-.23,0,.23]: stroke('Bin grooves',[(x,.27),(x,.96)],'cream',.029)
 
 
 def magnify(sign=None):
@@ -361,7 +342,6 @@ def pause():
     for x in [-.27,.27]: art.box('Pause bar',(x,0,.8),(.29,.23,1.1),'teal',.06)
 
 
-def play_video(): study.extruded_shape('Video play triangle',[(-.48,.18),(.63,.8),(-.48,1.42)],'teal',.23)
 
 def scale():
     stroke('Scale stand',[(0,.23),(0,1.43)],'teal',.065)
@@ -613,11 +593,11 @@ def horizon_sun(rising=True):
 
 extra=[('heart',heart),('broken-heart',lambda:heart(True)),('coin',coin),('sparkle',sparkle),
        ('flame',flame),('brain',brain),('lightbulb',lightbulb),('ball',ball),('feather',feather),('box',box),('mouse',mouse),
-       ('cat',cat),('nut',peanut),('film',film),('parent',parent),('lock',lock),('trash',trash),
+       ('cat',cat),('nut',peanut),('film',film),('parent',parent),('lock',lock),
        ('search',magnify),('zoom-in',lambda:magnify('+')),('zoom-out',lambda:magnify('-')),
        ('palette',palette),('check',check),('warning',warning),('rotate',circular_arrow),
        ('undo',lambda:circular_arrow(True)),('restore',circular_arrow),('save',save),
-       ('pause',pause),('video-play',play_video),('scale',scale),
+       ('pause',pause),('scale',scale),
        ('bed',lambda:art.bed('bedA')),('bedroom-bed',bedroom_bed),('bathtub',lambda:art.bathroom('bathroomBathAni')),
        ('cooking-pot',cooking_pot),('plant',lambda:art.plant('plantA')),
        ('power',power),('teddy',teddy),('blue-dot',blue_dot),('apple',apple),('cookie',cookie),('cupcake',cupcake),('balloon',balloon),('shell',shell),
@@ -628,7 +608,7 @@ extra += [(name,lambda label=label,color=color:tile(label,color)) for name,label
     ('addition','+','teal'),('subtraction','−','coral'),('multiplication','×','gold'),
     ('division','÷','lilac'),('equality','=','teal'),('patterns','123','lilac'),
     ('fractions','½','coral'),('operations','±','gold')]]
-extra += [('challenge-timer',challenge_timer),('boss-badge',boss_badge),('practice-book',practice_book),('lesson-medal',lesson_medal)]
+extra += [('challenge-timer',challenge_timer),('boss-badge',boss_badge)]
 extra += [('weather-sun',weather_sun),('weather-moon',weather_moon),('weather-rain',weather_rain),
           ('weather-snow',weather_snow),('weather-leaves',weather_leaves),('weather-auto',weather_auto)]
 extra += [('weather-sunrise',lambda:horizon_sun(True)),('weather-sunset',lambda:horizon_sun(False))]

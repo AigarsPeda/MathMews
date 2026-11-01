@@ -1,0 +1,8 @@
+{
+  "id": "h14",
+  "collection": "hard",
+  "builder": "wirecat",
+  "meshObjects": 25,
+  "samples": 48,
+  "renderSize": 640
+}

@@ -12,4 +12,3 @@ export function startDecorationTiming(item: string) {
 export function markDecorationTiming(event: string) {
   if (active && active.events[event] === undefined) active.events[event] = (globalThis.performance?.now() ?? Date.now()) - active.started;
 }
-export function decorationTimingSamples() { return samples.map(sample => ({ ...sample, events: { ...sample.events } })); }

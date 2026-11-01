@@ -45,8 +45,6 @@ export function isPuzzleDifficulty(value: string): value is PuzzleDifficulty {
   return value === "easy" || value === "medium" || value === "hard";
 }
 
-export type PuzzlePathState = "completed" | "current" | "locked";
-
 export function isDifficultyComplete(
   locale: AppLocale,
   difficulty: PuzzleDifficulty,

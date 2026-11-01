@@ -30,7 +30,6 @@ const sources=JSON.parse(await fs.readFile(sourceFile,'utf8'));
 for (const file of [nativePortrait,'assets/3d/cat-splash.png'])
  sources[file]=createHash('sha256').update(await fs.readFile(path.join(root,file))).digest('hex');
 await fs.writeFile(sourceFile,JSON.stringify(sources,null,2)+'\n');
-await sharp({create:{width:1,height:1,channels:4,background:'#FFF5EB'}}).png().toFile(path.join(out,'splash-background.png'));
 // Native launch branding is available before JavaScript starts. Its transparent
 // margins match the cream background rather than introducing letterbox bars.
 // A 240 pt square in both the native launch screen and React Native. Its cat

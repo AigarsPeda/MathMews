@@ -90,7 +90,6 @@ if (process.argv[2]) {
 let texture = null, playing = false, slots = [], cursor = 0, effects = [];
 let nextId = 1, readyCalls = 0;
 const frames = new Map();
-const isMounted = { current: true };
 function memo(fn, deps) {
   const index = cursor++;
   const old = slots[index];
@@ -127,7 +126,6 @@ const mocks = {
   'react-native-reanimated': { useDerivedValue: fn => ({ get: fn }) },
   '@shopify/react-native-skia': { Canvas: 'Canvas', Group: 'Group', Image: 'SkiaImage', FilterMode: { Linear: 1 }, MipmapMode: { None: 0 }, useImage: () => texture },
   '@/constants/game': { GameColors: { background: '#FFF5EB' } },
-  '@/hooks/use-is-mounted': { useIsMounted: () => isMounted },
   '@/utils/scale': { moderateScale: value => value },
 };
 const module = { exports: {} };

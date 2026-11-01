@@ -1,0 +1,1278 @@
+{
+  "date": "2026-11-01",
+  "scope": "Confirmed unused source code, images, assets, obsolete generators and one unused dependency. Existing feature work preserved.",
+  "removed": {
+    "files": 168,
+    "fileBytes": 63262451,
+    "unusedExports": 55,
+    "orphanedLocalDeclarations": 11,
+    "dependency": "react-native-purchases-ui",
+    "retiredIcons": [
+      "lesson-medal",
+      "practice-book",
+      "trash",
+      "video-play"
+    ]
+  },
+  "method": [
+    "Trace app routes, backend entrypoints and native/web platform variants through imports and static asset references.",
+    "Cross-check candidates against scripts, tests, dynamic catalogs, Blender source dependencies and licenses before deleting.",
+    "Remove unused exported declarations only after checking repository-wide identifier references; validate remaining locals with TypeScript."
+  ],
+  "retained": [
+    "All 60 current trail sprites, their editable Blender scenes, references and current visual QA.",
+    "Trail finish-marker sprite and Blender scene; shared geometry used by current collections.",
+    "425 native model registrations, saved-item catalogs and boss scene authoring/packing metadata.",
+    "Font licenses, platform/peer dependencies, global type declarations and test fixtures."
+  ],
+  "codeAudit": {
+    "roots": 26,
+    "reachable": 3296,
+    "runtimeUnreachableButRequired": {
+      "types/assets.d.ts": "Global TypeScript asset declarations.",
+      "components/puzzle/LearningLevelCard.tsx": "Native timed-challenges test fixture imports this component."
+    }
+  },
+  "validation": {
+    "typecheckWithNoUnusedLocals": "passed",
+    "lint": "passed",
+    "startupSuite": "passed",
+    "trailCollections": "passed: 60 distinct sprites plus finish marker, all 18 tracks, 5940 layout cases",
+    "puzzleExperience": "passed",
+    "curriculum": "passed",
+    "puzzleDrag": "passed",
+    "puzzleObjects": "passed",
+    "appIcons": "passed: 83 current icons",
+    "blenderSmoke": [
+      {
+        "asset": "E01",
+        "objects": 100
+      },
+      {
+        "asset": "E09",
+        "objects": 13
+      },
+      {
+        "asset": "E14",
+        "objects": 4
+      },
+      {
+        "asset": "M20",
+        "objects": 12
+      },
+      {
+        "asset": "milestone",
+        "objects": 2
+      },
+      {
+        "iconScenes": 74,
+        "retiredScenesAbsent": true
+      }
+    ],
+    "productionExports": {
+      "ios": {
+        "status": "passed",
+        "bundle": "_expo/static/js/ios/entry-32e0e3b62c0f1efbe8fed7236f8f16eb.hbc",
+        "assets": 2532
+      },
+      "android": {
+        "status": "passed",
+        "bundle": "_expo/static/js/android/entry-98a8312f4939b76067ba5c592c4bb488.hbc",
+        "assets": 2537
+      }
+    },
+    "backendSuite": {
+      "passed": 207,
+      "failed": 2,
+      "diagnostic": "Puzzles screen render harness cannot resolve @expo/vector-icons, both with and without React Compiler."
+    },
+    "puzzleSuite": {
+      "status": "failed",
+      "diagnostic": "Boss-asset freshness assertion: New lessons use the current shipped cat. Boss model and metadata were not changed by this cleanup."
+    },
+    "gameChecks": [
+      {
+        "check": "check-world-clock",
+        "status": 0
+      },
+      {
+        "check": "check-crash-recovery",
+        "status": 0
+      },
+      {
+        "check": "check-room-camera",
+        "status": 0
+      },
+      {
+        "check": "check-room-transition",
+        "status": 0
+      },
+      {
+        "check": "check-native-room",
+        "status": 0
+      },
+      {
+        "check": "check-operation-path",
+        "status": 1,
+        "diagnostic": "Test loader rejects relative ./AppIcon import."
+      },
+      {
+        "check": "check-function-machine",
+        "status": 0
+      },
+      {
+        "check": "check-number-line",
+        "status": 1,
+        "diagnostic": "Error: Unexpected import: @/components/puzzle/PuzzleText"
+      },
+      {
+        "check": "check-game-systems",
+        "status": 1,
+        "diagnostic": "AssertionError [ERR_ASSERTION]: decimal_place_tenths: steps demonstrate a changing quantity or spatial relationship"
+      },
+      {
+        "check": "check-video-lifecycle",
+        "status": 0
+      },
+      {
+        "check": "check-room-activities",
+        "status": 0
+      },
+      {
+        "check": "check-cat-bedtime",
+        "status": 0
+      },
+      {
+        "check": "check-room-depth",
+        "status": 1,
+        "diagnostic": "TypeError: (0 , react_1.memo) is not a function"
+      },
+      {
+        "check": "check-room-decoration-motion",
+        "status": 1,
+        "diagnostic": "TypeError: (0 , react_1.useLayoutEffect) is not a function"
+      },
+      {
+        "check": "check-room-decoration-controls",
+        "status": 0
+      },
+      {
+        "check": "check-room-controls-transition",
+        "status": 0
+      },
+      {
+        "check": "check-native-menus",
+        "status": 0
+      },
+      {
+        "check": "check-app-icons",
+        "status": 0
+      },
+      {
+        "check": "check-cat-play",
+        "status": 1,
+        "diagnostic": "TypeError: (0 , react_1.useLayoutEffect) is not a function"
+      },
+      {
+        "check": "check-pet-speech-anchor",
+        "status": 1,
+        "diagnostic": "TypeError: (0 , pet_care_1.canFeedForEffect) is not a function"
+      },
+      {
+        "check": "check-pet-speech-lifecycle",
+        "status": 0
+      },
+      {
+        "check": "check-store-expansion",
+        "status": 0
+      },
+      {
+        "check": "check-store-categories",
+        "status": 0
+      },
+      {
+        "check": "check-store-placement-flow",
+        "status": 1,
+        "diagnostic": "AssertionError [ERR_ASSERTION]: @react-native-async-storage/async-storage"
+      },
+      {
+        "check": "check-asset-policy",
+        "status": 0
+      },
+      {
+        "check": "check-asset-catalog",
+        "status": 0
+      },
+      {
+        "check": "check-placement-bounds",
+        "status": 0
+      },
+      {
+        "check": "check-room-item-placement",
+        "status": 0
+      },
+      {
+        "check": "check-room-editing",
+        "status": 0
+      },
+      {
+        "check": "check-room-drag-performance",
+        "status": 0
+      },
+      {
+        "check": "check-room-performance",
+        "status": 0
+      },
+      {
+        "check": "check-room-picking",
+        "status": 0
+      },
+      {
+        "check": "check-world-weather",
+        "status": 0
+      },
+      {
+        "check": "check-weather-control",
+        "status": 0
+      },
+      {
+        "check": "check-curtains",
+        "status": 0
+      },
+      {
+        "check": "check-pet-stat-animation",
+        "status": 0
+      },
+      {
+        "check": "check-contact-shadows",
+        "status": 0
+      },
+      {
+        "check": "check-native-shadows",
+        "status": 1,
+        "diagnostic": "TypeError: (0 , react_1.memo) is not a function"
+      },
+      {
+        "check": "check-wall-spotlights",
+        "status": 1,
+        "diagnostic": "TypeError: (0 , react_1.memo) is not a function"
+      },
+      {
+        "check": "check-fridges",
+        "status": 0
+      },
+      {
+        "check": "check-item-interactions",
+        "status": 0
+      },
+      {
+        "check": "check-filament-shared-value",
+        "status": 0
+      },
+      {
+        "check": "check-simple-graphics-layout",
+        "status": 1,
+        "diagnostic": "TypeError: (0 , react_1.memo) is not a function"
+      },
+      {
+        "check": "check-puzzle-progress",
+        "status": 1,
+        "diagnostic": "TypeError: Cannot read properties of undefined (reading 'progressTrack')"
+      },
+      {
+        "check": "check-puzzle-objects",
+        "status": 0
+      },
+      {
+        "check": "check-cat-locomotion",
+        "status": 0
+      },
+      {
+        "check": "check-cat-task-chains",
+        "status": 0
+      },
+      {
+        "check": "check-room-activity-notice",
+        "status": 0
+      },
+      {
+        "check": "check-cat-command-motion",
+        "status": 0
+      },
+      {
+        "check": "check-cat-turning",
+        "status": 0
+      },
+      {
+        "check": "check-cat-gaits",
+        "status": 1,
+        "diagnostic": "AssertionError [ERR_ASSERTION]: The real narrow corridor retains walking speed"
+      },
+      {
+        "check": "check-cat-jumps",
+        "status": 0
+      },
+      {
+        "check": "check-cat-jump-anatomy",
+        "status": 0
+      },
+      {
+        "check": "check-cat-landing-walk",
+        "status": 0
+      },
+      {
+        "check": "check-cat-motion-flow",
+        "status": 0
+      },
+      {
+        "check": "check-rocking-chair-navigation",
+        "status": 0
+      },
+      {
+        "check": "check-furniture-perches",
+        "status": 0
+      },
+      {
+        "check": "check-furniture-transfers",
+        "status": 0
+      },
+      {
+        "check": "check-catalog-furniture-jumps",
+        "status": 0
+      },
+      {
+        "check": "check-close-furniture-jumps",
+        "status": 0
+      },
+      {
+        "check": "check-cat-tail-contact",
+        "status": 0
+      },
+      {
+        "check": "check-cat-expression",
+        "status": 0
+      },
+      {
+        "check": "check-cat-command-attention",
+        "status": 0
+      },
+      {
+        "check": "check-cat-paw-contact",
+        "status": 0
+      },
+      {
+        "check": "check-cat-waking",
+        "status": 0
+      },
+      {
+        "check": "check-cat-sleeping",
+        "status": 0
+      },
+      {
+        "check": "check-cat-fluid-motion",
+        "status": 0
+      },
+      {
+        "check": "check-cat-anticipation",
+        "status": 0
+      },
+      {
+        "check": "check-cat-walking-turns",
+        "status": 0
+      },
+      {
+        "check": "check-cat-pivot-rhythm",
+        "status": 0
+      },
+      {
+        "check": "check-cat-exploration",
+        "status": 0
+      },
+      {
+        "check": "check-cat-spine",
+        "status": 0
+      },
+      {
+        "check": "check-cat-restarting",
+        "status": 0,
+        "diagnostic": "Initial run completed behavior assertions but failed to write metrics because /tmp/brainpet-restarting did not exist. Full rerun passed after creating the temporary output directory.",
+        "initialStatus": 1
+      },
+      {
+        "check": "check-cat-room-flow",
+        "status": 0
+      },
+      {
+        "check": "check-curriculum",
+        "status": 0
+      },
+      {
+        "check": "check-result-dismissal",
+        "status": 0
+      },
+      {
+        "check": "check-answer-feedback",
+        "status": 1,
+        "diagnostic": "AssertionError [ERR_ASSERTION]: @/components/puzzle/PuzzleText"
+      },
+      {
+        "check": "check-fraction-animation",
+        "status": 1,
+        "diagnostic": "AssertionError [ERR_ASSERTION]: @/constants/puzzle-theme"
+      },
+      {
+        "check": "check-puzzle-experience",
+        "status": 0
+      }
+    ],
+    "limitations": "Broader suites are not fully green. Failures are recorded rather than hidden by deleting assertions or changing unrelated behavior. Game checks after the first suite failure were run individually.",
+    "gameSummary": {
+      "completed": 79,
+      "passed": 64,
+      "failed": 15
+    },
+    "diffWhitespaceCheck": "passed"
+  },
+  "deletedFiles": [
+    {
+      "path": "assets/3d/education-props/addition.webp",
+      "bytes": 16702,
+      "sha256": "09634dff1453e81efd9e92b9a16ce8ed94e755054421ff3035da180ecebe9806"
+    },
+    {
+      "path": "assets/3d/education-props/book-closed.webp",
+      "bytes": 13768,
+      "sha256": "e6f5870675c5c3bbaaedc1535bc7bf5b6e1037784634ca9e97d1b0fdbe9802b2"
+    },
+    {
+      "path": "assets/3d/education-props/book-open.webp",
+      "bytes": 10404,
+      "sha256": "af8150c22b501738a732b35999c7e5abef3fad04477d94c7ae61f7432ceefc9c"
+    },
+    {
+      "path": "assets/3d/education-props/book-stack.webp",
+      "bytes": 24048,
+      "sha256": "8920359793d4d3ce84a6eab3c566bc3707ad70c42528546bee110e4a3a39f42e"
+    },
+    {
+      "path": "assets/3d/education-props/calculator.webp",
+      "bytes": 23650,
+      "sha256": "6c5646e0aa63880f5e0a36ef6850ca85836d6ac9f8657098bf62850914a71008"
+    },
+    {
+      "path": "assets/3d/education-props/fractions.webp",
+      "bytes": 16334,
+      "sha256": "293fdeb91c2f5f8c9d4ad60d38284c45b779bb567727e44f608ad511a5e08096"
+    },
+    {
+      "path": "assets/3d/education-props/pencil.webp",
+      "bytes": 9894,
+      "sha256": "1a5ae7e41bb803c73ed53b7824c6364238adbc11f44efbffdbf47ffcc9ae5a04"
+    },
+    {
+      "path": "assets/3d/education-props/set-square.webp",
+      "bytes": 11760,
+      "sha256": "4016cbef4f30355ceae48f8407b7666ef2899f82bf783bbc674242c8a71e55ca"
+    },
+    {
+      "path": "assets/3d/education-props/square-root.webp",
+      "bytes": 18142,
+      "sha256": "d1c29fff3873dbe881967cc39fe13e89c1e0ec71b8f3b5d4e58953047068cf80"
+    },
+    {
+      "path": "assets/3d/trail-props/abacus.webp",
+      "bytes": 23752,
+      "sha256": "9b68ff5a3904f42d26796d037b18dae414e760e8bd8d899dc1d2a876f02e7038"
+    },
+    {
+      "path": "assets/3d/trail-props/blocks.webp",
+      "bytes": 17642,
+      "sha256": "ab31d376439c09f027278305f5194c5da788da7a7b2e41b539705d39564af430"
+    },
+    {
+      "path": "assets/3d/trail-props/books.webp",
+      "bytes": 17154,
+      "sha256": "816024078af61eb9c9b16082dc9fdc8f002539767b03c45d6248703b238d3ee4"
+    },
+    {
+      "path": "assets/3d/trail-props/catnap.webp",
+      "bytes": 16184,
+      "sha256": "bd0c3a1d2faaff69da7fb15584d9a93498b4ccc175295479854dc09c8c143606"
+    },
+    {
+      "path": "assets/3d/trail-props/chalkboard.webp",
+      "bytes": 15670,
+      "sha256": "a56c48ccb377bf3afcf50f752c204b59d0428aa54b957893f49fb00795d00828"
+    },
+    {
+      "path": "assets/3d/trail-props/fish.webp",
+      "bytes": 15480,
+      "sha256": "d8ac09c1de302a270a12d7f865ec361bfc6cdbaa31b86183a6f064092b491489"
+    },
+    {
+      "path": "assets/3d/trail-props/flowers.webp",
+      "bytes": 19414,
+      "sha256": "589b1bbccf950e77f9473b60d6d15778a6237b0b675a8c4f4728e4261fa0fbec"
+    },
+    {
+      "path": "assets/3d/trail-props/fractionpie.webp",
+      "bytes": 16466,
+      "sha256": "a9b3302e5dff1cb1f707bff59ef4b4d88f1e79b432b314ae8b012a0a1b260835"
+    },
+    {
+      "path": "assets/3d/trail-props/mouse.webp",
+      "bytes": 16224,
+      "sha256": "58cd7b803791e98db96928bfa4853d7a74e33aa4d8916ab52762abb5481b8271"
+    },
+    {
+      "path": "assets/3d/trail-props/paperstars.webp",
+      "bytes": 18806,
+      "sha256": "567d17d2b0b7939c2b2e71636e6b68b897f0cb07315b6c1c3151185561ec3eb0"
+    },
+    {
+      "path": "assets/3d/trail-props/paw.webp",
+      "bytes": 15216,
+      "sha256": "5f58e23d1811abd30a6b69ed80552cefff3a8123406b7941f227efa6dbe9e0a1"
+    },
+    {
+      "path": "assets/3d/trail-props/pebbles.webp",
+      "bytes": 17144,
+      "sha256": "5be013733a18e52f1c26a26c250d811517ebfb84dec3b3d32dd0a81a202ab917"
+    },
+    {
+      "path": "assets/3d/trail-props/pencils.webp",
+      "bytes": 19126,
+      "sha256": "6f0d42b9cc597adc73dd18ea0bf5710b87095c20c95d0cf508ec448f2ed6a9c6"
+    },
+    {
+      "path": "assets/3d/trail-props/rings.webp",
+      "bytes": 17476,
+      "sha256": "05aaf0ab3b1c9a8db79874161d7909de130bfa3b9a2fd7fc6c1896a66d2e9778"
+    },
+    {
+      "path": "assets/3d/trail-props/ruler.webp",
+      "bytes": 16902,
+      "sha256": "276105dc5d245d58cae5144130c1d4c8996568c72130c415712eebb1c1ae15b6"
+    },
+    {
+      "path": "assets/3d/trail-props/yarn.webp",
+      "bytes": 30294,
+      "sha256": "c4655e9204a26bb44f4369c4767189ba6c30ec6bb67dd2b4b22bd350cfa9af94"
+    },
+    {
+      "path": "assets/images/splash-background.png",
+      "bytes": 91,
+      "sha256": "6769058f91866236297810220ec5dfe0f2ecc0163dc51e61d5309f991a4778a1"
+    },
+    {
+      "path": "components/economy/LivesCounter.tsx",
+      "bytes": 6489,
+      "sha256": "1f336cafcba4376959965baeac703ad6fa937044ade2dbd9a3d5b08d37f8a703"
+    },
+    {
+      "path": "components/external-link.tsx",
+      "bytes": 802,
+      "sha256": "60f52bfe9c69e3b9b4a37d869cd6d3ac88055037f55bdaaf95c0206616dc8671"
+    },
+    {
+      "path": "components/hello-wave.tsx",
+      "bytes": 410,
+      "sha256": "e03908c1b822ef27149dcd65c0552d0f30532b072ef47401a8bd24f8e4fd9bee"
+    },
+    {
+      "path": "components/parallax-scroll-view.tsx",
+      "bytes": 2058,
+      "sha256": "f60bf6f0b2c2aac72ec1f2fb8550e988ba55de1ffb1b4cc17630f7d2d6ec9551"
+    },
+    {
+      "path": "components/puzzle/LessonListItem.tsx",
+      "bytes": 6248,
+      "sha256": "7ea9aa0f059d883b8ea1844e55851161132857fd4265ac7ee40f6f9196f372d4"
+    },
+    {
+      "path": "components/puzzle/PuzzlePathItem.tsx",
+      "bytes": 5440,
+      "sha256": "346595bf614cd2a6a4639d0d4d932f505a019a824a667229051309b241635871"
+    },
+    {
+      "path": "components/puzzle/PuzzlePathProgress.tsx",
+      "bytes": 6608,
+      "sha256": "9e1bf50268a14841e21af0ca889e3f225f380e8f1b885de170d3d2a2838c63ee"
+    },
+    {
+      "path": "components/ui/ConfirmDialog.tsx",
+      "bytes": 3092,
+      "sha256": "25350cd3dedcf0523061b8f66e811313d4823b256afd323eefdc5709050e532d"
+    },
+    {
+      "path": "components/ui/collapsible.tsx",
+      "bytes": 1114,
+      "sha256": "2d7976f5981d55a493cb05efb93462a0c9ce2e8d6129558f636750e2840f9009"
+    },
+    {
+      "path": "components/ui/icon-symbol.ios.tsx",
+      "bytes": 598,
+      "sha256": "410e970a44835a834ae34981a23db258e63ce5e712ad9aaf73d3bf892696a6a1"
+    },
+    {
+      "path": "components/ui/icon-symbol.tsx",
+      "bytes": 1409,
+      "sha256": "4403bd4aad0942eb644472f75f71dc4a8b23b0f3af0631149657e31a2a7d1fd8"
+    },
+    {
+      "path": "constants/education-prop-assets.ts",
+      "bytes": 1647,
+      "sha256": "d135155f045e3346e14f946239ac0a5fdfa997be25efce242143b9fd5a72eaf7"
+    },
+    {
+      "path": "docs/art/education-props/collection.png",
+      "bytes": 521727,
+      "sha256": "68512a5966a6a6f4466e0d3bad5ab13619e2e6ee42e003d92c0c2cd6de966850"
+    },
+    {
+      "path": "docs/art/education-props/trail-interlocking-ios.png",
+      "bytes": 70529,
+      "sha256": "4fa3b131fb92670c7f6ec37f7b5412465b4bb78f10628ce9497b8fa090c5e90c"
+    },
+    {
+      "path": "docs/art/education-props/trail-parallax-ios.png",
+      "bytes": 65816,
+      "sha256": "6a69e7d7ae6b324c70bc088b9eda76a2606e12f29ce0fed26982cec441d37913"
+    },
+    {
+      "path": "docs/art/education-props/trail-soft-outlines-ios.png",
+      "bytes": 64492,
+      "sha256": "5d981f0c7e1bc2fa5e2249ea85e82cafaff80b81cfd5eec30be43cb61f44c2d7"
+    },
+    {
+      "path": "docs/art/education-props/trail-varied-shapes-ios.png",
+      "bytes": 67138,
+      "sha256": "ae17d18c5918499792b8e7ebc446457688ce6892622fb16944ced132040d113f"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/asset-comparison.png",
+      "bytes": 753092,
+      "sha256": "e56952de951e94e504aefbb4b7887ffc2207b449879bf6b3ef7d6f41b64a05e0"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/blender-trail-320-lv.png",
+      "bytes": 532440,
+      "sha256": "c53d980b49066e1c0b6448eb3c548a4b89f282dc827e5f85c58006d6f045b5af"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/blender-trail-320.png",
+      "bytes": 522690,
+      "sha256": "97437f365e70b009f383b386d5daf5cc1dc3f64264f93f50dff14af099eced4c"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/blender-trail-finish-lv.png",
+      "bytes": 419412,
+      "sha256": "fc6b344a2bd833ffa7d5aec64ae2e2c851f8fc257a3e211dae82336b9a660265"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/blender-trail-level-6.png",
+      "bytes": 538612,
+      "sha256": "24f7aeba401c56f3d228da43a7fdbe65f864944049cf729fa233b035927d4cbe"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/blender-trail-replay-puzzle.png",
+      "bytes": 196479,
+      "sha256": "67103b3bb03d8791bc83b6c7b7bf930a5d6b00de747b3ff712bd44460a601966"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/blender-trail-start-lv.png",
+      "bytes": 541713,
+      "sha256": "6c07711d6a1989c1cec08b490692af4efb8a8eeac9cf9facfe1bdfec41ddaa05"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/craft-props-on-mint.png",
+      "bytes": 384578,
+      "sha256": "83ddc6ab9eafadd04ac36cee433dc028b88eaa760e76469bf22b0ddb858ddbd5"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/results.json",
+      "bytes": 1833,
+      "sha256": "ea817e3210a25b5c915a72269b8fcc1a44a837446b5c0e2e0651260bb040b70e"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-0-subtraction.png",
+      "bytes": 491412,
+      "sha256": "be203a9c1982a3095a08cbc03ad5d8d65b65896d41c0342e3e33722201e2be6b"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-1-numbers-and-order.png",
+      "bytes": 504580,
+      "sha256": "b8b1e83783f60919f49d585ee1255f3cf626a5a6154b36a7214776898aac07d1"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-10-addition.png",
+      "bytes": 595062,
+      "sha256": "659dead556264d7c9467f3a1b3f45c19e3389b74c5a7ada11c7a015280a5b70f"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-2-patterns.png",
+      "bytes": 485243,
+      "sha256": "316f3cce5e653812117fa057c57e67a165088ebec64b33feb6d9b79a205304a0"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-3-equal-groups.png",
+      "bytes": 480644,
+      "sha256": "35a255f74aecbc44b1266d2a0f136b8c554d33fd592cbedad8c34ebfbc628a47"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-4-sharing-and-division.png",
+      "bytes": 487582,
+      "sha256": "20d1178179917a3dec1ee50686d2ea8974a10a60b6dbb7e4b46f8231c6ba7cb2"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-5-fractions.png",
+      "bytes": 485697,
+      "sha256": "74540681d48f2895cdb0d0cabcd3330001822fe0b9147e6b6b4c833abd378024"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-6-number-routes.png",
+      "bytes": 513947,
+      "sha256": "6089a9934a617707e7dc1b4df782f959bd7554df4d3e3c421abbe816aa7946ff"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-7-percentages.png",
+      "bytes": 496478,
+      "sha256": "6f5ec692a76bc185cba40716871add61424324bf7a42e3e4aa41d72eabd2cfa1"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-8-measure-and-estimate.png",
+      "bytes": 474305,
+      "sha256": "44e8b290963726ff06d130d4e93f67928a1cd2840652fe48ec0ba17efc9723d9"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-craft-9-reasoning.png",
+      "bytes": 480047,
+      "sha256": "e1b68bd67589136c708d6cd77dd165d230f8ffa986ba1597b48a9519a9ae72b2"
+    },
+    {
+      "path": "docs/qa/topic-trail/2026-11-01/topic-themes-native.png",
+      "bytes": 335304,
+      "sha256": "0f80fd420ea0227295defc922f15d86ce5d29097df4f32651e85ee3cc11bbcb9"
+    },
+    {
+      "path": "hooks/use-is-mounted.ts",
+      "bytes": 329,
+      "sha256": "75eda0ba5f48f62f02c203d8bb56d6a5df5ce48f5ab46ba035ee42d82db642c1"
+    },
+    {
+      "path": "images/angry.png",
+      "bytes": 2252502,
+      "sha256": "e445a37634902ab424e59786fbda83958d9e34d07821817b8537e2f43cf2710a"
+    },
+    {
+      "path": "images/dancing.png",
+      "bytes": 2222155,
+      "sha256": "308cf34b6abcc1964701add7dbc4faf0f78b0e246d60481e3277b83cd498eb5d"
+    },
+    {
+      "path": "images/eating.png",
+      "bytes": 2233374,
+      "sha256": "ad4d834eb39fb7c292340568a8d48c685c607d36d8855f739d7a79a292b14fc2"
+    },
+    {
+      "path": "images/excited.png",
+      "bytes": 2285458,
+      "sha256": "e9e5881f8d62a93f0fd0114a4ea9c4737e0b5d06564635a7162692065addd634"
+    },
+    {
+      "path": "images/idle.png",
+      "bytes": 2192304,
+      "sha256": "897d4aee507f75c278fcc487e8387a203a1752ddb06a87d76e8a62d1ead3f929"
+    },
+    {
+      "path": "images/sad.png",
+      "bytes": 2266011,
+      "sha256": "7d14a8785d831bd9d5d6968b0dd7d24d306b8b5c275955e536c73c940734f89f"
+    },
+    {
+      "path": "images/sleeping.png",
+      "bytes": 2198999,
+      "sha256": "3d3d83dbe3b6968128d547e5a9e64b13fae6707664243bd9fdd55eee2667f229"
+    },
+    {
+      "path": "output/2d-characters/brainpet-2d-character-handoff.zip",
+      "bytes": 3135925,
+      "sha256": "7cb3c45bb6ea9e6637be9090d502d92dcae9a998a595aa3703f168da0514a1a9"
+    },
+    {
+      "path": "pet-display/index.ts",
+      "bytes": 992,
+      "sha256": "fb78499df8a12dfaf9bdb6345014c437e5923fc18fa780749bed56807687e332"
+    },
+    {
+      "path": "prototypes/education-props/README.md",
+      "bytes": 2255,
+      "sha256": "7c89c8e6f17d45cfe1b78886dd88731b7e26705b197f0ac77d88f4494d4f19d9"
+    },
+    {
+      "path": "prototypes/education-props/addition.blend",
+      "bytes": 213198,
+      "sha256": "07668ba87e68ab4c26a9befc78c94d93370ffb6e3029ca50f996e63e0621c226"
+    },
+    {
+      "path": "prototypes/education-props/book-closed.blend",
+      "bytes": 101668,
+      "sha256": "262d2ccb749545e4ce07b889c1f8334754d6d315a8bae8f2ffc18061d0180b7e"
+    },
+    {
+      "path": "prototypes/education-props/book-open.blend",
+      "bytes": 107662,
+      "sha256": "aaf03bcef586373a88d8d588be0e804983557377eda974440918f1a651864ffc"
+    },
+    {
+      "path": "prototypes/education-props/book-stack.blend",
+      "bytes": 110214,
+      "sha256": "4a2867f7985dd22b78edc8b624c96978da803d994e2ebfd601a8a54d5d853a80"
+    },
+    {
+      "path": "prototypes/education-props/calculator.blend",
+      "bytes": 316751,
+      "sha256": "73782266c01cfba711e3288bebf25d5de3157006dbd6f5cde82c4182e7132642"
+    },
+    {
+      "path": "prototypes/education-props/catalog.json",
+      "bytes": 6380,
+      "sha256": "ab9f809f2482834aff0f6c12a7855af4250caa7c2b64c256b189bc829480c965"
+    },
+    {
+      "path": "prototypes/education-props/fractions.blend",
+      "bytes": 97832,
+      "sha256": "97b617ac6407017c1b8850ac1af24d16abbe03c3971f34c0e168307fd228f842"
+    },
+    {
+      "path": "prototypes/education-props/models/addition.glb",
+      "bytes": 269428,
+      "sha256": "b3ff576566c1fc571e6670441d00a9510eb7c401e81fb374a266e3dc672bad26"
+    },
+    {
+      "path": "prototypes/education-props/models/book-closed.glb",
+      "bytes": 62748,
+      "sha256": "72197afa4ce71807802e30b4b357af90ce8e47b360773c646f6a716181164c8c"
+    },
+    {
+      "path": "prototypes/education-props/models/book-open.glb",
+      "bytes": 176864,
+      "sha256": "0baa47f33a9bb08a787f8132db17ccdeb39a03378e22c5cf10b14564452875f2"
+    },
+    {
+      "path": "prototypes/education-props/models/book-stack.glb",
+      "bytes": 225772,
+      "sha256": "ddbd76415572bdcfb8044e3d2d105c97e63449bec398610b9390da78103979e4"
+    },
+    {
+      "path": "prototypes/education-props/models/calculator.glb",
+      "bytes": 687688,
+      "sha256": "2e95ff589f41f28c49fd239ba494cb3acd13d0fc499623e95b29d682afcea02d"
+    },
+    {
+      "path": "prototypes/education-props/models/fractions.glb",
+      "bytes": 40632,
+      "sha256": "467f0aa41342ef56b4d13581f7c0cf7b993a868011c44d846a5326a95f439e0a"
+    },
+    {
+      "path": "prototypes/education-props/models/pencil.glb",
+      "bytes": 125864,
+      "sha256": "59856790030b68551142c317df254b278029dcee20b4d8c4d7b550857a894538"
+    },
+    {
+      "path": "prototypes/education-props/models/set-square.glb",
+      "bytes": 63368,
+      "sha256": "3a1a1b491a2fedc719ed4a376e4e78999b921f0aafefe2bb55c2bc588b630bda"
+    },
+    {
+      "path": "prototypes/education-props/models/square-root.glb",
+      "bytes": 177944,
+      "sha256": "6078d96b669792e5ed63fe95ca834373896301c8f3643bd509c8323457c81a74"
+    },
+    {
+      "path": "prototypes/education-props/pencil.blend",
+      "bytes": 107868,
+      "sha256": "7586cc8125f8b54020fcebdbdf250151cb22f1a9dd4633205657e26e93f74fc9"
+    },
+    {
+      "path": "prototypes/education-props/renders/addition.png",
+      "bytes": 172324,
+      "sha256": "b63e70528b271107fde5a9979efe39c3eb249fb5cb58a990d1cf69995801f9b2"
+    },
+    {
+      "path": "prototypes/education-props/renders/book-closed.png",
+      "bytes": 176960,
+      "sha256": "e90a958b81ae4f7d00475c865ad9f6bdd4d683b40e972b2cf8e1d92d664df3f2"
+    },
+    {
+      "path": "prototypes/education-props/renders/book-open.png",
+      "bytes": 114857,
+      "sha256": "a588fb5840a891c6934fe0581c0358400653e450625e49f574acf87e3744a690"
+    },
+    {
+      "path": "prototypes/education-props/renders/book-stack.png",
+      "bytes": 297277,
+      "sha256": "bfd01e0451efdb624d6cf5a1d8e20a626147cfe2438d345983dfc388cee36cb0"
+    },
+    {
+      "path": "prototypes/education-props/renders/calculator.png",
+      "bytes": 238130,
+      "sha256": "6afc0bde15e92961a399f12a1e8dc309b23dede6036c479fb4b6fab074a34306"
+    },
+    {
+      "path": "prototypes/education-props/renders/fractions.png",
+      "bytes": 237974,
+      "sha256": "14f3e67b9fed7728a6cbc2817bcc7b62ef35634ebf7b3607208121daf9dd251e"
+    },
+    {
+      "path": "prototypes/education-props/renders/pencil.png",
+      "bytes": 112872,
+      "sha256": "94d87c2e5333ebbeee7135750e19c7f5547819c5153d576ac115461c492299a6"
+    },
+    {
+      "path": "prototypes/education-props/renders/set-square.png",
+      "bytes": 128375,
+      "sha256": "b9366bdd2bfb90ab87d805d6e990c314ad589b25027a0a8baa60dfdbc72da1d0"
+    },
+    {
+      "path": "prototypes/education-props/renders/square-root.png",
+      "bytes": 185429,
+      "sha256": "03d5247fc8bfee86db90879386310d992b5f1184506ccd13c760b33ca5db24a8"
+    },
+    {
+      "path": "prototypes/education-props/set-square.blend",
+      "bytes": 105420,
+      "sha256": "07378f57e5146ee5c462eb57e21bce2549e6d82c66fc73cc96946231aa316e61"
+    },
+    {
+      "path": "prototypes/education-props/square-root.blend",
+      "bytes": 212688,
+      "sha256": "7492c2ebacfdc285fdc8afa419b349d89369397ab40f300bdac00e634072fa94"
+    },
+    {
+      "path": "prototypes/level-path-concepts-2026-11-01/pocket-garden.png",
+      "bytes": 1859562,
+      "sha256": "91aee51931162afed727a33e86eee6c1f335f18c5387719d3cbe6e93be01f27e"
+    },
+    {
+      "path": "prototypes/level-path-concepts-2026-11-01/prompts.json",
+      "bytes": 9307,
+      "sha256": "88dcafb8f716b86e6d35f2f9eb086767837bf4bb58133b85b41f68b7ae66726b"
+    },
+    {
+      "path": "prototypes/level-path-concepts-2026-11-01/sticker-story.png",
+      "bytes": 1786616,
+      "sha256": "0833d40bb724d6f17a4d8d2156a483a7f4d3be560140353af47c6777a3f09a55"
+    },
+    {
+      "path": "prototypes/level-path-concepts-2026-11-01/toy-workshop.png",
+      "bytes": 1823701,
+      "sha256": "11dd456ceeca557b95352ddd10e471d39f4b5fbb657726bd33c4080e533ec13e"
+    },
+    {
+      "path": "prototypes/level-path-concepts-2026-11-01/yarn-trail.png",
+      "bytes": 1452608,
+      "sha256": "b5ab6ff072a96f7a198d79725d30e09808f5cc13f32eadd78020bf31a893fad7"
+    },
+    {
+      "path": "prototypes/trail-props/abacus.blend",
+      "bytes": 155228,
+      "sha256": "9c1ba575e17d7c35c39bf450b896e1727567002e0529431994f39a64f6c2ce24"
+    },
+    {
+      "path": "prototypes/trail-props/blocks.blend",
+      "bytes": 364170,
+      "sha256": "8494a7cea947d3e5c2a895515accc4517b46fd70a8fbf7b464d7e5ef0365bd3f"
+    },
+    {
+      "path": "prototypes/trail-props/books.blend",
+      "bytes": 126623,
+      "sha256": "1f266c04bcbc91248ff6918ed3d68207f82db1e8a00e4006f564fe5e18c7b71a"
+    },
+    {
+      "path": "prototypes/trail-props/catnap.blend",
+      "bytes": 125814,
+      "sha256": "b19a23c9fb6f7736add7579bcde0bff5e4e89fc417e2529eeb43762a62590c24"
+    },
+    {
+      "path": "prototypes/trail-props/chalkboard.blend",
+      "bytes": 118467,
+      "sha256": "346978f803e55c56f799a4b3adcf2b77f0e3cb0ab7ff6f2c2f9732aa39b97953"
+    },
+    {
+      "path": "prototypes/trail-props/fish.blend",
+      "bytes": 124574,
+      "sha256": "236dd7ff908e8e59f4517d251be7f6694a0837d25b55dc140dce43cb42faf081"
+    },
+    {
+      "path": "prototypes/trail-props/flowers.blend",
+      "bytes": 127459,
+      "sha256": "01d6f2bc393421f84cae79c9cd40baf23cd936094ae8aecef907582b1165ab06"
+    },
+    {
+      "path": "prototypes/trail-props/fractionpie.blend",
+      "bytes": 107528,
+      "sha256": "c606e3371964daba256a7a5287b60cd708e4ef9a5bf36a3bfba46de38ea9beb2"
+    },
+    {
+      "path": "prototypes/trail-props/mouse.blend",
+      "bytes": 131902,
+      "sha256": "ddfc7368f9731badf0d53d2e667ad3721163cf2204b42539ddb1145b021d0b8d"
+    },
+    {
+      "path": "prototypes/trail-props/paperstars.blend",
+      "bytes": 101022,
+      "sha256": "c1caca1e9057e1f52ea259aa878522ec6c44065efb8ee56c6a1936f6ef626a03"
+    },
+    {
+      "path": "prototypes/trail-props/paw.blend",
+      "bytes": 133962,
+      "sha256": "3c2bef654291ecbf2e7ddf3e175f801d9e0ef086f33151151d5634ba9f8ab0ec"
+    },
+    {
+      "path": "prototypes/trail-props/pebbles.blend",
+      "bytes": 160471,
+      "sha256": "e5c27a6a3a7df713801f94cc95d8aa6a4b4854ad24f0437288618a772022fad8"
+    },
+    {
+      "path": "prototypes/trail-props/pencils.blend",
+      "bytes": 127690,
+      "sha256": "02ad2bbb9e2b9c39005e1ac4727ee16f2552c81e984c1d3575fc43b2123a3fb2"
+    },
+    {
+      "path": "prototypes/trail-props/renders/abacus.png",
+      "bytes": 376271,
+      "sha256": "1b44c1096443ec982e67b940026fbbc1c05826b129aae5f5e1487db4e7e3f981"
+    },
+    {
+      "path": "prototypes/trail-props/renders/blocks.png",
+      "bytes": 415076,
+      "sha256": "0fba1ba84d3a9c8b243598c1165b26a4ac3192520b60df800f4312d202798396"
+    },
+    {
+      "path": "prototypes/trail-props/renders/books.png",
+      "bytes": 351917,
+      "sha256": "9721a83b03868d0477ffada13605b227f8a3a28a0c7f22b52b212161e44bdf75"
+    },
+    {
+      "path": "prototypes/trail-props/renders/catnap.png",
+      "bytes": 325169,
+      "sha256": "06b5c24aa18fae5a3264f476b828f80ebb4a181ad573fce14d1644a99775ec6e"
+    },
+    {
+      "path": "prototypes/trail-props/renders/chalkboard.png",
+      "bytes": 322815,
+      "sha256": "1c89f98c8eef606ddaf7e108f6aecc766058635948b7da7f11b4a229b65cbafd"
+    },
+    {
+      "path": "prototypes/trail-props/renders/fish.png",
+      "bytes": 284273,
+      "sha256": "f36ba3841bb2866790662c8182ff5c5eb6aabf1d369a48c725e03118f4861d84"
+    },
+    {
+      "path": "prototypes/trail-props/renders/flowers.png",
+      "bytes": 303784,
+      "sha256": "5ecc7a9ff0fc64ffeff3c06f29d5de680f664257ff86a6d1f408b1728a501c02"
+    },
+    {
+      "path": "prototypes/trail-props/renders/fractionpie.png",
+      "bytes": 308182,
+      "sha256": "19940af1aa5930b7424fb9459d7b07616ae09b2bb350570e3deffe037ace6f04"
+    },
+    {
+      "path": "prototypes/trail-props/renders/mouse.png",
+      "bytes": 288480,
+      "sha256": "79bce801309f4f0467e29411976c86ce2988c9cdede3b364ddc1d2fa2d9e24a8"
+    },
+    {
+      "path": "prototypes/trail-props/renders/paperstars.png",
+      "bytes": 290241,
+      "sha256": "82e6c0457cb0d04e2aa229e8004a16ccbf337814d80b57a528ca7eb0f8b484d7"
+    },
+    {
+      "path": "prototypes/trail-props/renders/paw.png",
+      "bytes": 287940,
+      "sha256": "4ad0214cf2d678d3bb554d8803cec88bac6975d6342d04cd609d2e3351b3f4f3"
+    },
+    {
+      "path": "prototypes/trail-props/renders/pebbles.png",
+      "bytes": 292155,
+      "sha256": "0105f63da33012a16485816fee58f703bcbe61631c5e912e293f3b1da13693bb"
+    },
+    {
+      "path": "prototypes/trail-props/renders/pencils.png",
+      "bytes": 327418,
+      "sha256": "c3960def136b79f5447ce2d94cfeb0af8b0592dd517ee222b92f86318ecda999"
+    },
+    {
+      "path": "prototypes/trail-props/renders/rings.png",
+      "bytes": 338761,
+      "sha256": "b9ae971278d2bb2fcbcd1ba28de13e3b575e9ab518ac7d2f8a24ea33615a41b7"
+    },
+    {
+      "path": "prototypes/trail-props/renders/ruler.png",
+      "bytes": 291038,
+      "sha256": "adba3f58c746599b5f9d67826045dbaf0768feac71c98ee604a4a284f1b16933"
+    },
+    {
+      "path": "prototypes/trail-props/renders/yarn.png",
+      "bytes": 509803,
+      "sha256": "633a6746f5606eba288ff11243bdd796e6c5793dbfa44c1bd81ff3501e680b46"
+    },
+    {
+      "path": "prototypes/trail-props/review/approved-preview.png",
+      "bytes": 1531471,
+      "sha256": "aa41e06632e79c8e1e2441bc0ba5bf8b2f1cefd7f3640c882678b0d8c37cd98d"
+    },
+    {
+      "path": "prototypes/trail-props/review/blocks-on-cream.png",
+      "bytes": 269617,
+      "sha256": "88b5c195d66af777d384ce92fa3a46bb38c8039dcfa82fe5ab3e612902604080"
+    },
+    {
+      "path": "prototypes/trail-props/review/comparison.png",
+      "bytes": 842144,
+      "sha256": "feebd8b1b1db3545b03235315253f72a928272fcf7dc15c80a27f7e7d112e54a"
+    },
+    {
+      "path": "prototypes/trail-props/review/first-pass/blocks.png",
+      "bytes": 484535,
+      "sha256": "38ce01818c875ea19e420c4bcecf41b868872008e8e287f20465c544156fa97b"
+    },
+    {
+      "path": "prototypes/trail-props/review/first-pass/yarn.png",
+      "bytes": 574967,
+      "sha256": "4aa890534f03cc0e8d1a1afd80b3953a335dd8cbdedc5168f0b833db3e4e4cb5"
+    },
+    {
+      "path": "prototypes/trail-props/review/second-pass/blocks.png",
+      "bytes": 441789,
+      "sha256": "84e387b42bea9c4ed46631b60a09258dae6e3345a20604df3193ea4fc3ea506e"
+    },
+    {
+      "path": "prototypes/trail-props/review/second-pass/yarn.png",
+      "bytes": 590886,
+      "sha256": "954b2de1383e17b533006e9ef08cd89da025cf72f6114bcc24ef93e88c0bb2d1"
+    },
+    {
+      "path": "prototypes/trail-props/review/yarn-on-mint.png",
+      "bytes": 491525,
+      "sha256": "5b4dc505bd8cd4abb25ee3564ac6038e35dbe4be3795785065c56030680ebc87"
+    },
+    {
+      "path": "prototypes/trail-props/rings.blend",
+      "bytes": 172591,
+      "sha256": "9a8aca1bb732cbc25aa0ab300927bd3c58e65f309cae011d74d15b97858403e9"
+    },
+    {
+      "path": "prototypes/trail-props/ruler.blend",
+      "bytes": 142713,
+      "sha256": "c946dec239255845eddfa97414353c4850bc445a75ec8ff8df391223484d7370"
+    },
+    {
+      "path": "prototypes/trail-props/yarn.blend",
+      "bytes": 8574101,
+      "sha256": "a356dce2465cb80e9d361d14934ab1ad8fa376a7cd65009fb1cc03c8aae677d5"
+    },
+    {
+      "path": "scripts/3d/build-education-props.py",
+      "bytes": 18407,
+      "sha256": "5d4501dfb54687fae8fe529905cae3ad9810f1e13774e7908e3a43fe5f21cc53"
+    },
+    {
+      "path": "scripts/3d/pack-education-props.mjs",
+      "bytes": 1478,
+      "sha256": "837ab3d5384eea5c781cb335796db407f59d9be3c6b8240e605a4276824e0c7d"
+    },
+    {
+      "path": "scripts/3d/review-trail-props.mjs",
+      "bytes": 2246,
+      "sha256": "6be626b73325008d7565c7f2f5160eef6d68c6cb55ffa88c18eb07bd9a1be17d"
+    },
+    {
+      "path": "services/iap/apply-coin-grant.ts",
+      "bytes": 205,
+      "sha256": "82b786cc2b32e8811581f6d5119176bc3f009b5f5be8bd6b2dd798e7827f4050"
+    },
+    {
+      "path": "utils/border-radius.ts",
+      "bytes": 210,
+      "sha256": "a06c101e913544eb01cca2f94f40cddda33d8b2ac11bc5442f15fccda4dca5c6"
+    },
+    {
+      "path": "utils/lesson-progress.ts",
+      "bytes": 1953,
+      "sha256": "45884f7b09fb9ba08b08efe7626acc4e19d93e6e71a110e5d9aeb3b321a4b42f"
+    },
+    {
+      "path": "utils/puzzle-recommendation.ts",
+      "bytes": 1929,
+      "sha256": "2d53d6c99dab9ff4a2b387ce8c94c43227a0111caab3dd70e332150c8c9c1bff"
+    },
+    {
+      "path": "app/modal.tsx",
+      "bytes": 702,
+      "sha256": "5b0cdca1cbb8ebf105a79fed6cb878f760012e9d462187fc903a4bf436fa07c2"
+    },
+    {
+      "path": "components/themed-text.tsx",
+      "bytes": 1284,
+      "sha256": "f453514b5f75ed08c22ab90cfa4e95292a36e9c1c941e911429e02e2e1d0ced1"
+    },
+    {
+      "path": "components/themed-view.tsx",
+      "bytes": 490,
+      "sha256": "6a9dc6c67fd8b274e8848fb3a7047961f2299a2c6dd90c2bc7951728cd94b573"
+    },
+    {
+      "path": "hooks/use-theme-color.ts",
+      "bytes": 570,
+      "sha256": "1763ef389ed26abb074c7a141a189e5e4e4e7441606609d08614093da429cffb"
+    },
+    {
+      "path": "constants/theme.ts",
+      "bytes": 751,
+      "sha256": "03377c5f0962ef31a4619b2ea0078ec7c61b93734d5fc47bc3d6bc54b378b01e"
+    },
+    {
+      "path": "assets/icons/lesson-medal.png",
+      "bytes": 14952,
+      "sha256": "a384505b00412d5fae8139e6454db782ab1597358ae95f812d93516a08ad6d10"
+    },
+    {
+      "path": "assets/icons/practice-book.png",
+      "bytes": 14791,
+      "sha256": "540060e4afba2e813dd35903ba4095d3683735415819a4a31316192c98b8552f"
+    },
+    {
+      "path": "assets/icons/trash.png",
+      "bytes": 31030,
+      "sha256": "eeb69eb7b4b6f9c78efd015df66d36d13f36d83929f50f222f84ed4c14a35088"
+    },
+    {
+      "path": "assets/icons/video-play.png",
+      "bytes": 29357,
+      "sha256": "55ad0017a4639a9d1324cc32c0d9e54f1c2692a19ff06ed3996831859c5e605a"
+    },
+    {
+      "path": "docs/art/app-icons/lesson-medal.png",
+      "bytes": 64678,
+      "sha256": "880bb42fc84107447e743cd8b223863d340b570bc4f2c264057c375fd9828b95"
+    },
+    {
+      "path": "docs/art/app-icons/practice-book.png",
+      "bytes": 67863,
+      "sha256": "3265d514e418c831106c6b77996fcd8aad236c0f17af0a3c7e45b350dd49a83b"
+    },
+    {
+      "path": "docs/art/app-icons/trash.png",
+      "bytes": 44562,
+      "sha256": "067554e35c853db5d3d5abed5b07d254099b0575949e3ca3e7157c56fd083749"
+    },
+    {
+      "path": "docs/art/app-icons/video-play.png",
+      "bytes": 49626,
+      "sha256": "5b2f794d42486420a82d2c971d6365b43f5b09dd3abe61b58f4864bb96a7f2e6"
+    }
+  ]
+}

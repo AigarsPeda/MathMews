@@ -1,0 +1,8 @@
+{
+  "id": "h03",
+  "collection": "hard",
+  "builder": "calculator",
+  "meshObjects": 26,
+  "samples": 48,
+  "renderSize": 640
+}

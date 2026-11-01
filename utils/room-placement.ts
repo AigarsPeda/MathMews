@@ -6,7 +6,7 @@ import { isHomeRoomId, isRoomDoor } from "@/constants/home-rooms";
 import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import { isFridgeDecorationId, isCurtainDecorationId, isPoweredDecorationId, isWallSpotlightDecorationId, normalizeSpotlightAngle, normalizeSpotlightSwivel } from "@/constants/decoration-motion";
 import type { CatDecorationId } from "@/constants/cat-decorations";
-import { getDecorationDisplaySize, isCatDecorationId, resolveCatDecorationId } from "@/constants/cat-decorations";
+import { getDecorationDisplaySize, resolveCatDecorationId } from "@/constants/cat-decorations";
 import {
   clampDecorationScale,
   getDecorationDefaultPlacementScale,
@@ -17,7 +17,7 @@ import {
   resolveDecorationPlacement,
 } from "@/constants/decoration-variants";
 import type { CatToyId } from "@/constants/cat-toys";
-import { getDefaultToyScale, getPlacedToyRotationIndex, isCatToyId, resolveCatToyId } from "@/constants/cat-toys";
+import { getDefaultToyScale, getPlacedToyRotationIndex, resolveCatToyId } from "@/constants/cat-toys";
 import type { PlacedDecoration, PlacedToy, RoomItemOffset, RoomItemSupport } from "@/types/game";
 
 function normalizeSupport(value: unknown): RoomItemSupport | undefined {
@@ -225,20 +225,6 @@ export function countPlacedDecorations(
   return (placedDecorations ?? []).filter(
     (item) => item.decorationId === decorationId,
   ).length;
-}
-
-export function isToyPlacedInRoom(
-  toyId: CatToyId,
-  placedToys: PlacedToy[] | undefined,
-): boolean {
-  return countPlacedToys(toyId, placedToys) > 0;
-}
-
-export function isDecorationPlacedInRoom(
-  decorationId: CatDecorationId,
-  placedDecorations: PlacedDecoration[] | undefined,
-): boolean {
-  return countPlacedDecorations(decorationId, placedDecorations) > 0;
 }
 
 export function appendPlacedToy(
@@ -500,20 +486,6 @@ export function removePlacedDecorationByInstance(
   return (placedDecorations ?? []).filter(
     (item) => item.instanceId !== instanceId,
   );
-}
-
-export function collectPlacedToyIds(placedToys: PlacedToy[] | undefined): CatToyId[] {
-  return (placedToys ?? [])
-    .map((item) => item.toyId)
-    .filter((id): id is CatToyId => isCatToyId(id));
-}
-
-export function collectPlacedDecorationIds(
-  placedDecorations: PlacedDecoration[] | undefined,
-): CatDecorationId[] {
-  return (placedDecorations ?? [])
-    .map((item) => item.decorationId)
-    .filter((id): id is CatDecorationId => isCatDecorationId(id));
 }
 
 export function togglePlacedDecorationOpenByInstance(items: PlacedDecoration[] | undefined, instanceId: string): PlacedDecoration[] {

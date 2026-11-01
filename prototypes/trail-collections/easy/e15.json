@@ -1,0 +1,8 @@
+{
+  "id": "e15",
+  "collection": "easy",
+  "builder": "rings",
+  "meshObjects": 9,
+  "samples": 48,
+  "renderSize": 640
+}

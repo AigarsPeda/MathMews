@@ -1,0 +1,8 @@
+{
+  "id": "h08",
+  "collection": "hard",
+  "builder": "prism",
+  "meshObjects": 9,
+  "samples": 48,
+  "renderSize": 640
+}

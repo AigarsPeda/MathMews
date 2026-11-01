@@ -75,8 +75,6 @@ export const FEED_HUNGER_RESTORE = 25;
 export const FEED_HAPPINESS_BOOST = 5;
 export const PET_HAPPINESS_BOOST = 10;
 export const BOX_PLAY_HAPPINESS_BOOST = 18;
-/** Max hunger / happiness (0–100). */
-export const MAX_PET_STAT = 100;
 /** Cooldown after a pet or feed action finishes. */
 export const PET_CARE_COOLDOWN_MS = 4_000;
 
@@ -102,9 +100,6 @@ export const PUZZLE_REPLAY_COIN_REWARDS = {
 
 export const PUZZLE_HAPPINESS_BOOST = 5;
 export const PUZZLE_REPLAY_HAPPINESS_BOOST = 2;
-export const PUZZLE_WRONG_HAPPINESS_PENALTY = 0;
-/** Hunger spent per puzzle attempt (thinking makes them peckish). */
-export const PUZZLE_HUNGER_COST = 0;
 
 /** Show hungry speech when fullness is at or below this (0–100). */
 export const HUNGER_SPEECH_FULLNESS_MAX = 30;
@@ -158,30 +153,6 @@ export const MOOD_ANIMATION: Record<PetMood, MoodAnimationConfig> = {
     skipIntroAfterAwayMs: 30 * 60 * 1000,
     idleAsleepMs: 30 * 60 * 1000,
   },
-};
-
-export const MOOD_LABELS: Record<PetMood, string> = {
-  idle: "Feeling good",
-  lyingDown: "Settling down…",
-  resting: "Taking a break",
-  excited: "So happy!",
-  dancing: "Party time!",
-  eating: "Yum yum!",
-  angry: "Missed you!",
-  sad: "Needs attention",
-  fallingAsleep: "Getting sleepy…",
-  sleeping: "Zzz…",
-};
-
-export const ANIMATION_LABELS: Record<PetAnimationState, string> = {
-  ...MOOD_LABELS,
-  correct: "Nice one!",
-  incorrect: "Let’s try again",
-  coinCatch: "Coin caught!",
-  playBox: "Box time!",
-  playBall: "Catch the ball!",
-  playYarn: "Yarn time!",
-  playFeather: "Chase the feathers!",
 };
 
 /** One-shot clips that return to the base mood when finished. */

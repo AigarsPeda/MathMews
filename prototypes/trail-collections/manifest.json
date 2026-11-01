@@ -1,0 +1,542 @@
+[
+  {
+    "id": "e01",
+    "collection": "easy",
+    "builder": "yarn",
+    "meshObjects": 96,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 28196
+  },
+  {
+    "id": "e02",
+    "collection": "easy",
+    "builder": "sleepingcat",
+    "meshObjects": 11,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 20884
+  },
+  {
+    "id": "e03",
+    "collection": "easy",
+    "builder": "mouse",
+    "meshObjects": 15,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 29532
+  },
+  {
+    "id": "e04",
+    "collection": "easy",
+    "builder": "fish",
+    "meshObjects": 8,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 21840
+  },
+  {
+    "id": "e05",
+    "collection": "easy",
+    "builder": "paw",
+    "meshObjects": 8,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 23722
+  },
+  {
+    "id": "e06",
+    "collection": "easy",
+    "builder": "books",
+    "meshObjects": 15,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 25572
+  },
+  {
+    "id": "e07",
+    "collection": "easy",
+    "builder": "blocks",
+    "meshObjects": 8,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 16018
+  },
+  {
+    "id": "e08",
+    "collection": "easy",
+    "builder": "abacus",
+    "meshObjects": 30,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 35852
+  },
+  {
+    "id": "e09",
+    "collection": "easy",
+    "builder": "pencils",
+    "meshObjects": 11,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 17870
+  },
+  {
+    "id": "e10",
+    "collection": "easy",
+    "builder": "pencilroll",
+    "meshObjects": 12,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 18838
+  },
+  {
+    "id": "e11",
+    "collection": "easy",
+    "builder": "ruler",
+    "meshObjects": 4,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 16964
+  },
+  {
+    "id": "e12",
+    "collection": "easy",
+    "builder": "chalkboard",
+    "meshObjects": 5,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 24352
+  },
+  {
+    "id": "e13",
+    "collection": "easy",
+    "builder": "satchel",
+    "meshObjects": 9,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 27100
+  },
+  {
+    "id": "e14",
+    "collection": "easy",
+    "builder": "fractions",
+    "meshObjects": 6,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 15686
+  },
+  {
+    "id": "e15",
+    "collection": "easy",
+    "builder": "rings",
+    "meshObjects": 9,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 18142
+  },
+  {
+    "id": "e16",
+    "collection": "easy",
+    "builder": "flowers",
+    "meshObjects": 30,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 29112
+  },
+  {
+    "id": "e17",
+    "collection": "easy",
+    "builder": "stars",
+    "meshObjects": 5,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 28830
+  },
+  {
+    "id": "e18",
+    "collection": "easy",
+    "builder": "tray",
+    "meshObjects": 12,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 16898
+  },
+  {
+    "id": "e19",
+    "collection": "easy",
+    "builder": "readingcat",
+    "meshObjects": 19,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 28302
+  },
+  {
+    "id": "e20",
+    "collection": "easy",
+    "builder": "basket",
+    "meshObjects": 111,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 28480
+  },
+  {
+    "id": "m01",
+    "collection": "medium",
+    "builder": "notebook",
+    "meshObjects": 16,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 23816
+  },
+  {
+    "id": "m02",
+    "collection": "medium",
+    "builder": "geometry",
+    "meshObjects": 54,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 21898
+  },
+  {
+    "id": "m03",
+    "collection": "medium",
+    "builder": "tangram",
+    "meshObjects": 9,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 21118
+  },
+  {
+    "id": "m04",
+    "collection": "medium",
+    "builder": "stopwatch",
+    "meshObjects": 10,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 24564
+  },
+  {
+    "id": "m05",
+    "collection": "medium",
+    "builder": "globe",
+    "meshObjects": 10,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 24150
+  },
+  {
+    "id": "m06",
+    "collection": "medium",
+    "builder": "binoculars",
+    "meshObjects": 12,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 18098
+  },
+  {
+    "id": "m07",
+    "collection": "medium",
+    "builder": "compass",
+    "meshObjects": 9,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 18052
+  },
+  {
+    "id": "m08",
+    "collection": "medium",
+    "builder": "balance",
+    "meshObjects": 18,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 25900
+  },
+  {
+    "id": "m09",
+    "collection": "medium",
+    "builder": "puzzlecube",
+    "meshObjects": 14,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 13170
+  },
+  {
+    "id": "m10",
+    "collection": "medium",
+    "builder": "glider",
+    "meshObjects": 8,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 19518
+  },
+  {
+    "id": "m11",
+    "collection": "medium",
+    "builder": "telescope",
+    "meshObjects": 10,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 23864
+  },
+  {
+    "id": "m12",
+    "collection": "medium",
+    "builder": "camera",
+    "meshObjects": 9,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 23128
+  },
+  {
+    "id": "m13",
+    "collection": "medium",
+    "builder": "terrarium",
+    "meshObjects": 60,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 30144
+  },
+  {
+    "id": "m14",
+    "collection": "medium",
+    "builder": "palette",
+    "meshObjects": 15,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 23014
+  },
+  {
+    "id": "m15",
+    "collection": "medium",
+    "builder": "crane",
+    "meshObjects": 4,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 21502
+  },
+  {
+    "id": "m16",
+    "collection": "medium",
+    "builder": "dominoes",
+    "meshObjects": 19,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 17428
+  },
+  {
+    "id": "m17",
+    "collection": "medium",
+    "builder": "chess",
+    "meshObjects": 7,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 22238
+  },
+  {
+    "id": "m18",
+    "collection": "medium",
+    "builder": "metronome",
+    "meshObjects": 6,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 17578
+  },
+  {
+    "id": "m19",
+    "collection": "medium",
+    "builder": "magnifier",
+    "meshObjects": 7,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 21454
+  },
+  {
+    "id": "m20",
+    "collection": "medium",
+    "builder": "pouch",
+    "meshObjects": 10,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 29748
+  },
+  {
+    "id": "h01",
+    "collection": "hard",
+    "builder": "microscope",
+    "meshObjects": 15,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 17760
+  },
+  {
+    "id": "h02",
+    "collection": "hard",
+    "builder": "drafting",
+    "meshObjects": 10,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 24542
+  },
+  {
+    "id": "h03",
+    "collection": "hard",
+    "builder": "calculator",
+    "meshObjects": 26,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 18576
+  },
+  {
+    "id": "h04",
+    "collection": "hard",
+    "builder": "polyhedra",
+    "meshObjects": 5,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 17578
+  },
+  {
+    "id": "h05",
+    "collection": "hard",
+    "builder": "orrery",
+    "meshObjects": 14,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 26012
+  },
+  {
+    "id": "h06",
+    "collection": "hard",
+    "builder": "molecule",
+    "meshObjects": 20,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 27390
+  },
+  {
+    "id": "h07",
+    "collection": "hard",
+    "builder": "circuit",
+    "meshObjects": 29,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 18390
+  },
+  {
+    "id": "h08",
+    "collection": "hard",
+    "builder": "prism",
+    "meshObjects": 9,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 22818
+  },
+  {
+    "id": "h09",
+    "collection": "hard",
+    "builder": "caliper",
+    "meshObjects": 10,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 17406
+  },
+  {
+    "id": "h10",
+    "collection": "hard",
+    "builder": "sundial",
+    "meshObjects": 4,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 14274
+  },
+  {
+    "id": "h11",
+    "collection": "hard",
+    "builder": "bridge",
+    "meshObjects": 43,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 28476
+  },
+  {
+    "id": "h12",
+    "collection": "hard",
+    "builder": "gears",
+    "meshObjects": 9,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 22170
+  },
+  {
+    "id": "h13",
+    "collection": "hard",
+    "builder": "mobius",
+    "meshObjects": 5,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 16644
+  },
+  {
+    "id": "h14",
+    "collection": "hard",
+    "builder": "wirecat",
+    "meshObjects": 25,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 35794
+  },
+  {
+    "id": "h15",
+    "collection": "hard",
+    "builder": "starmap",
+    "meshObjects": 20,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 16374
+  },
+  {
+    "id": "h16",
+    "collection": "hard",
+    "builder": "architecture",
+    "meshObjects": 13,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 22686
+  },
+  {
+    "id": "h17",
+    "collection": "hard",
+    "builder": "sliding",
+    "meshObjects": 20,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 19568
+  },
+  {
+    "id": "h18",
+    "collection": "hard",
+    "builder": "rover",
+    "meshObjects": 75,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 23692
+  },
+  {
+    "id": "h19",
+    "collection": "hard",
+    "builder": "hourglass",
+    "meshObjects": 11,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 21282
+  },
+  {
+    "id": "h20",
+    "collection": "hard",
+    "builder": "curveboard",
+    "meshObjects": 62,
+    "samples": 48,
+    "renderSize": 640,
+    "bytes": 19952
+  }
+]

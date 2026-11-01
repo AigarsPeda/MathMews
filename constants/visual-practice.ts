@@ -83,7 +83,40 @@ function baseTen(key: string, prompt: string, counts: [number, number][]) {
   return frames(key, counts.map(([tens, ones]) => board(prompt, baseTenFrame(tens, ones), `${tens} × 10 + ${ones} = ${tens * 10 + ones}`)));
 }
 
+function stripParts(count: number, shaded: number, y: number, prefix: string) {
+  return Array.from({ length: count }, (_, i) => token(`${prefix}-${i}`, "", 30 + (i + .5) * 240 / count, y,
+    { shape: "part", width: 240 / count, height: 26, tone: i < shaded ? "primary" : "muted" }));
+}
+const fractionLineHelp = [0, 1, 2].map(step => board("1/8", [
+  token("axis", "", 150, 65, { shape: "part", width: 240, height: 2, tone: "muted" }),
+  ...Array.from({ length: 9 }, (_, i) => token(`tick-${i}`, "", 30 + i * 30, 65,
+    { shape: "part", width: 2, height: 18, tone: "muted" })),
+  plain("zero", "0", 30, 100), plain("one", "1", 270, 100),
+  token("point", "", step === 0 ? 30 : 60, 65, { shape: "part", width: 12, height: 12, tone: "primary", visible: step > 0 }),
+], step === 2 ? "1/8" : undefined));
+
+function decimalGridHelp(scale: 10 | 100, counts: number[]) {
+  return frames(`decimal_grid_${scale}`, counts.map(count => board(`${counts[2]}/${scale}`, Array.from({ length: scale }, (_, i) =>
+    token(`cell-${i}`, "", 100 + (i % 10) * 10, scale === 10 ? 65 : 20 + Math.floor(i / 10) * 10,
+      { shape: "part", width: 10, height: scale === 10 ? 100 : 10, tone: i < count ? "primary" : "muted" })), `${count}/${scale}`)));
+}
+function decimalPlaceHelp(key: string, counts: [number, number, number][]) {
+  return frames(key, counts.map(([ones, tenths, hundredths]) => board("1     1/10     1/100", [
+    tile("ones", String(ones), 50), tile("tenths", String(tenths), 150), tile("hundredths", String(hundredths), 250),
+  ], `${ones} + ${tenths}/10 + ${hundredths}/100`)));
+}
+
 export const VISUAL_PRACTICE = {
+  decimal_grid_10: decimalGridHelp(10, [0, 3, 6]),
+  decimal_grid_100: decimalGridHelp(100, [0, 10, 18]),
+  decimal_place_tenths: frames("decimal_place_tenths", [0, 2, 5].map(n => board("1          1/10", [tile("ones", "0", 85), tile("tenths", String(n), 215)], `0 + ${n}/10`))),
+  decimal_place_build: decimalPlaceHelp("decimal_place_build", [[1, 0, 0], [1, 3, 0], [1, 3, 2]]),
+  decimal_place_bundle: decimalPlaceHelp("decimal_place_bundle", [[0, 4, 17], [0, 5, 7], [0, 5, 7]]),
+  decimal_place_split: decimalPlaceHelp("decimal_place_split", [[0, 6, 8], [0, 5, 18], [0, 5, 18]]),
+  fraction_number_line: frames("fraction_number_line", fractionLineHelp),
+  fraction_strip_build: frames("fraction_strip_build", [0, 1, 2].map(n => board("2/7", stripParts(7, n, 65, "piece"), n === 2 ? "2/7" : undefined))),
+  fraction_strip_equivalent: frames("fraction_strip_equivalent", [0, 2, 3].map(n => board("2/6 = ?/9", [...stripParts(6, 2, 35, "reference"), ...stripParts(9, n, 95, "work")], n === 3 ? "2/6 = 3/9" : undefined))),
+
   base_ten_build: baseTen("base_ten_build", "26", [[0, 0], [2, 0], [2, 6]]),
   base_ten_bundle: baseTen("base_ten_bundle", "10 = 10", [[1, 13], [2, 3], [2, 3]]),
   base_ten_split: baseTen("base_ten_split", "10 = 10", [[3, 2], [2, 12], [2, 12]]),

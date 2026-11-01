@@ -1,3 +1,5 @@
+import { checkDecimalGrid, checkDecimalPlace, type DecimalPlaceState } from "@/utils/decimal-models";
+import { validFractionPoint, validFractionStrip, type FractionStripState } from "@/utils/fraction-models";
 import { checkPlaceValue, type PlaceValueState } from "@/utils/place-value";
 import type {
   BalancePuzzle,
@@ -25,6 +27,8 @@ import { evaluateExpression, runOperationPath } from "@/utils/puzzle-math";
 import { checkChallengeAnswer, isOptionalChallengePuzzle, type ChallengeAnswer } from "@/utils/challenge-puzzles";
 
 const INTERACTIVE_TYPES = new Set<PuzzleType>([
+  "decimal_grid", "decimal_place_value",
+  "fraction_number_line", "fraction_strip",
   "place_value",
   "compare",
   "operation_path",
@@ -50,11 +54,11 @@ export function getPuzzleType(puzzle: Puzzle): PuzzleType {
   return puzzle.type ?? "multiple_choice";
 }
 
-export function getPuzzlePreview(puzzle: Puzzle): string {
-  return puzzle.question;
-}
-
 export type PuzzleAnswer =
+  | { kind: "fraction_point"; tick: number }
+  | { kind: "decimal_grid"; shaded: number }
+  | { kind: "decimal_place"; state: DecimalPlaceState }
+  | { kind: "fraction_strip"; state: FractionStripState }
   | { kind: "place_value"; state: PlaceValueState }
   | ChallengeAnswer
   | { kind: "choice"; index: number }
@@ -75,6 +79,10 @@ export function getValidPairs(numbers: readonly number[], target: number): [numb
 }
 
 export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean {
+  if (puzzle.type === "decimal_grid") return answer.kind === "decimal_grid" && checkDecimalGrid(puzzle, answer.shaded);
+  if (puzzle.type === "decimal_place_value") return answer.kind === "decimal_place" && checkDecimalPlace(puzzle, answer.state);
+  if (puzzle.type === "fraction_number_line") return answer.kind === "fraction_point" && validFractionPoint(puzzle, answer.tick);
+  if (puzzle.type === "fraction_strip") return answer.kind === "fraction_strip" && validFractionStrip(puzzle, answer.state);
   if (puzzle.type === "place_value") return answer.kind === "place_value" && checkPlaceValue(puzzle, answer.state);
   if (isOptionalChallengePuzzle(puzzle)) {
     return (answer.kind === "sort" || answer.kind === "sequence" || answer.kind === "route" || answer.kind === "budget")
@@ -163,18 +171,6 @@ export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean
   }
 
   return answer.index === (puzzle as MultipleChoicePuzzle).correctIndex;
-}
-
-export function getCorrectOperators(puzzle: Puzzle): MathOperator[] | null {
-  if (puzzle.type === "operation_path") {
-    return puzzle.payload.steps.map((step) => step.operator);
-  }
-
-  if (puzzle.type === "target_build") {
-    return puzzle.payload.solution;
-  }
-
-  return null;
 }
 
 export function getOperatorSlotCount(puzzle: Puzzle): number {

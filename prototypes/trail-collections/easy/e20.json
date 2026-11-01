@@ -1,0 +1,8 @@
+{
+  "id": "e20",
+  "collection": "easy",
+  "builder": "basket",
+  "meshObjects": 111,
+  "samples": 48,
+  "renderSize": 640
+}

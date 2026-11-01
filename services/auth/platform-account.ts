@@ -1,8 +1,5 @@
-import {
-  getPlatformRestoreProvider,
-  type PlatformAuthProvider,
-} from "@/constants/platform-auth";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { type PlatformAuthProvider } from "@/constants/platform-auth";
+import { supabase } from "@/lib/supabase";
 import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
@@ -77,77 +74,4 @@ export async function finishOAuthFromUrl(
   }
 
   return { ok: true };
-}
-
-async function openOAuthSession(authUrl: string): Promise<PlatformAccountResult> {
-  const redirectTo = getOAuthRedirectUri();
-  const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectTo);
-
-  if (result.type === "cancel" || result.type === "dismiss") {
-    return { ok: false, cancelled: true };
-  }
-
-  if (result.type !== "success") {
-    return { ok: false, error: "oauth_failed" };
-  }
-
-  return finishOAuthFromUrl(result.url);
-}
-
-export async function linkPlatformAccount(): Promise<PlatformAccountResult> {
-  if (!isSupabaseConfigured() || !supabase) {
-    return { ok: false, error: "supabase_not_configured" };
-  }
-
-  const provider = getPlatformRestoreProvider();
-  if (!provider) {
-    return { ok: false, error: "unsupported_platform" };
-  }
-
-  const { data, error } = await supabase.auth.linkIdentity({
-    provider,
-    options: {
-      redirectTo: getOAuthRedirectUri(),
-      skipBrowserRedirect: true,
-    },
-  });
-
-  if (error) {
-    return { ok: false, error: error.message };
-  }
-
-  if (!data?.url) {
-    return { ok: false, error: "missing_oauth_url" };
-  }
-
-  return openOAuthSession(data.url);
-}
-
-export async function restorePlatformAccount(): Promise<PlatformAccountResult> {
-  if (!isSupabaseConfigured() || !supabase) {
-    return { ok: false, error: "supabase_not_configured" };
-  }
-
-  const provider = getPlatformRestoreProvider();
-  if (!provider) {
-    return { ok: false, error: "unsupported_platform" };
-  }
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: getOAuthRedirectUri(),
-      skipBrowserRedirect: true,
-    },
-  });
-
-  if (error) {
-    return { ok: false, error: error.message };
-  }
-
-  if (!data?.url) {
-    return { ok: false, error: "missing_oauth_url" };
-  }
-
-  return openOAuthSession(data.url);
 }

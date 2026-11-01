@@ -51,10 +51,6 @@ const BASIC_FURNITURE_CATALOG = {
   tablePurple: { source: require("@/assets/3d/decoration/tablePurple.png"), displaySize: 40 },
 } as const satisfies Record<string, ImageDecorationCatalogEntry>;
 
-export const SHEET_DECORATION_IDS = Object.keys(
-  BASIC_FURNITURE_CATALOG,
-) as SheetDecorationId[];
-
 /** Floor carpets. */
 const CARPET_DECORATION_CATALOG = {
   rugBraidedRound: { source: require("@/assets/3d/decoration/rugBraidedRound.png"), displaySize: 72 },
@@ -181,7 +177,6 @@ export const CAT_DECORATION_CATALOG = {
   ...ANIMATED_DECORATION_CATALOG,
 } as const;
 
-export type SheetDecorationId = keyof typeof BASIC_FURNITURE_CATALOG;
 export type CarpetDecorationId = keyof typeof CARPET_DECORATION_CATALOG;
 export type ChairDecorationId = keyof typeof CHAIR_DECORATION_CATALOG;
 export type DeskDecorationId = keyof typeof DESK_DECORATION_CATALOG;
@@ -216,24 +211,12 @@ export const LAVA_LAMP_DECORATION_IDS = Object.keys(
   LAVA_LAMP_DECORATION_CATALOG,
 ) as LavaLampDecorationId[];
 
-export const ANIMATED_DECORATION_IDS = Object.keys(
-  ANIMATED_DECORATION_CATALOG,
-) as AnimatedDecorationId[];
-
 /** Animated computers shown in the Computers store tab. */
 export const COMPUTER_ANIMATED_DECORATION_IDS = [
   "computerBendedScreenAni",
   "computerMacbookAni",
   "computerPcTowerAni",
 ] as const satisfies readonly AnimatedDecorationId[];
-
-/** Shelves, tables, lamps, and gadgets for the Furniture tab. */
-export const FURNITURE_DECORATION_IDS = [
-  ...SHEET_DECORATION_IDS,
-  "lavaLampOff",
-  "lavaLampAni",
-  "cleaningRobot",
-] as const satisfies readonly CatDecorationId[];
 
 export {
   JAPANESE_DECORATION_IDS,
@@ -285,12 +268,7 @@ export const CAT_DECORATION_IDS = Object.keys(
 ) as CatDecorationId[];
 
 const CARPET_DECORATION_ID_SET = new Set<string>(CARPET_DECORATION_IDS);
-const CHAIR_DECORATION_ID_SET = new Set<string>(CHAIR_DECORATION_IDS);
-const DESK_DECORATION_ID_SET = new Set<string>(DESK_DECORATION_IDS);
-const COMPUTER_DECORATION_ID_SET = new Set<string>(COMPUTER_DECORATION_IDS);
-const CONSOLE_DECORATION_ID_SET = new Set<string>(CONSOLE_DECORATION_IDS);
 const LAVA_LAMP_DECORATION_ID_SET = new Set<string>(LAVA_LAMP_DECORATION_IDS);
-const ANIMATED_DECORATION_ID_SET = new Set<string>(ANIMATED_DECORATION_IDS);
 
 export function isCarpetDecorationId(
   decorationId: string,
@@ -298,40 +276,10 @@ export function isCarpetDecorationId(
   return CARPET_DECORATION_ID_SET.has(decorationId);
 }
 
-export function isChairDecorationId(
-  decorationId: string,
-): decorationId is ChairDecorationId {
-  return CHAIR_DECORATION_ID_SET.has(decorationId);
-}
-
-export function isDeskDecorationId(
-  decorationId: string,
-): decorationId is DeskDecorationId {
-  return DESK_DECORATION_ID_SET.has(decorationId);
-}
-
-export function isComputerDecorationId(
-  decorationId: string,
-): decorationId is ComputerDecorationId {
-  return COMPUTER_DECORATION_ID_SET.has(decorationId);
-}
-
-export function isConsoleDecorationId(
-  decorationId: string,
-): decorationId is ConsoleDecorationId {
-  return CONSOLE_DECORATION_ID_SET.has(decorationId);
-}
-
 export function isLavaLampDecorationId(
   decorationId: string,
 ): decorationId is LavaLampDecorationId {
   return LAVA_LAMP_DECORATION_ID_SET.has(decorationId);
-}
-
-export function isAnimatedDecorationId(
-  decorationId: string,
-): decorationId is AnimatedDecorationId {
-  return ANIMATED_DECORATION_ID_SET.has(decorationId);
 }
 
 export function isImageDecorationEntry(
@@ -394,11 +342,6 @@ export function getDecorationStorePreviewWallFlipped(
   decorationId: CatDecorationId,
 ): boolean {
   return decorationId === "bathroomWcAni";
-}
-
-/** Drag hit-box size — square large enough to cover the sprite. */
-export function getDecorationDragSize(decorationId: string | undefined): number {
-  return getDecorationDisplaySize(decorationId);
 }
 
 function getDecorationHitRatio(decorationId: string): number {

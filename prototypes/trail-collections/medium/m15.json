@@ -1,0 +1,8 @@
+{
+  "id": "m15",
+  "collection": "medium",
+  "builder": "crane",
+  "meshObjects": 4,
+  "samples": 48,
+  "renderSize": 640
+}

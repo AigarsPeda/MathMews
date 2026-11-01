@@ -496,3 +496,29 @@ reviewButton(en.learning.backToLesson).props.onPress();
 assert.equal(reviewRoutes.at(-1).pathname,'/puzzles','Review feedback returns to the lesson');
 assert.equal(reviewRoutes.at(-1).params.lesson,reviewLesson.id);
 console.log('Review screen requires selection, submits once, charges one life on error and returns to the lesson.');
+
+// Decimal drafts use the production screen's Check, life costs and result flow.
+for (const kind of ['decimal_grid','decimal_place_value']) {
+  const puzzle=allPuzzles.find(p=>p.type===kind && (kind==='decimal_grid'||p.payload.mode==='build'));
+  const state=screen(puzzle), grid=kind==='decimal_grid';
+  const update=value=>{state.task()[grid?'onDecimalGridChange':'onDecimalPlaceChange'](value);state.refresh();};
+  assert.equal(state.check().disabled,true);
+  const wrong=grid?0:{ones:0,tenths:0,hundredths:0};
+  update(wrong);state.check().onPress();state.refresh();
+  assert.equal(state.attempts.length,1);assert.equal(state.attempts[0].correct,false);
+  assert.equal(state.game.progress.lives.current,2);assert.equal(state.check().disabled,true);
+  assert.deepEqual(json(state.task()[grid?'decimalGrid':'decimalPlace']),wrong);
+  update(null);assert.equal(state.check().disabled,true,'Reset clears readiness without spending a life');
+  const n=puzzle.payload.hundredths;
+  update(grid?n*puzzle.payload.scale/100:{ones:Math.floor(n/100),tenths:Math.floor(n%100/10),hundredths:n%10});
+  const submit=state.check().onPress;submit();submit();state.refresh();
+  assert.equal(state.attempts.length,2);assert.equal(state.attempts[1].correct,true);
+  assert.equal(state.result().coinsEarned,getPuzzleCoinReward(puzzle.difficulty));assert.equal(state.task().answered,true);
+}
+const decimalRender=renderHarness('components/puzzle/DecimalGridTask.tsx','DecimalGridTask',{
+  'react-i18next':{useTranslation:()=>({t,i18n:{language:'lv'}})},
+});
+const decimalPuzzle=allPuzzles.find(p=>p.type==='decimal_grid'&&p.payload.scale===100&&p.payload.digits===1);
+const decimalTree=decimalRender({puzzle:decimalPuzzle,value:81,onChange(){},answered:false});
+assert.equal(nodes(decimalTree).find(n=>n.props.testID==='decimal-grid-value').props.children,'81/100 = 0,81','Hundredths stay visible even when the target is written with one decimal digit');
+console.log('Decimal screen checks passed: correction, one-life costs, resets, duplicate submission, rewards and localized precision.');

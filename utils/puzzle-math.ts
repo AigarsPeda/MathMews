@@ -68,7 +68,3 @@ export function evaluateExpression(
 
   return total;
 }
-
-export function formatOperator(operator: MathOperator): string {
-  return operator;
-}

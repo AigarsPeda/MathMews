@@ -48,6 +48,7 @@ assets/3d/frames/
 assets/3d/blender/
 *.blend1
 scripts/3d/__pycache__/
+scripts/3d/trail_collections/__pycache__/
 
 
 .impeccable

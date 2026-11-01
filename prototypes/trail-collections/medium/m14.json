@@ -1,0 +1,8 @@
+{
+  "id": "m14",
+  "collection": "medium",
+  "builder": "palette",
+  "meshObjects": 15,
+  "samples": 48,
+  "renderSize": 640
+}

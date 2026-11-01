@@ -1,0 +1,8 @@
+{
+  "id": "m19",
+  "collection": "medium",
+  "builder": "magnifier",
+  "meshObjects": 7,
+  "samples": 48,
+  "renderSize": 640
+}

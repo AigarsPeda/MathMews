@@ -1,0 +1,8 @@
+{
+  "id": "m17",
+  "collection": "medium",
+  "builder": "chess",
+  "meshObjects": 7,
+  "samples": 48,
+  "renderSize": 640
+}

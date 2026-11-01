@@ -1,0 +1,8 @@
+{
+  "id": "m18",
+  "collection": "medium",
+  "builder": "metronome",
+  "meshObjects": 6,
+  "samples": 48,
+  "renderSize": 640
+}
