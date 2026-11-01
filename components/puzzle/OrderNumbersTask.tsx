@@ -1,9 +1,10 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { OrderNumbersPuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { PuzzleDragBoard, PuzzleDragTile, PuzzleDropArea } from "./PuzzleDragBoard";
 
 type OrderNumbersTaskProps = {
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
     borderColor: GameColors.success,
     backgroundColor: "rgba(107, 203, 119, 0.15)",
   },
-  tileSelected: { borderColor: GameColors.secondaryDark, backgroundColor: "#E8FAF8" },
+  tileSelected: { borderColor: GameColors.secondaryDark, backgroundColor: GameColors.selectedSurface },
   tileWrong: {
     borderColor: "#FF9F43",
     backgroundColor: "rgba(255, 159, 67, 0.12)",

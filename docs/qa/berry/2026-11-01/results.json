@@ -1,0 +1,98 @@
+{
+  "date": "2026-11-01",
+  "scope": "Puzzle-only Berry implementation; pet home, global GameColors and room assets unchanged. No bottom tabs.",
+  "native": {
+    "platform": "iOS 27 simulator",
+    "device": "ADB990B5-026C-440E-8D30-6D3A8EE3FD85",
+    "isolatedSave": true,
+    "passed": [
+      "lesson mixed progress and saved reopen",
+      "fresh and wrong first answer",
+      "all difficulties and narrow Latvian",
+      "Berry selection, disabled check, selected answer and correct result"
+    ],
+    "finalBundles": [
+      "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-QuX67I/result.xcresult",
+      "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-gPO2b8/result.xcresult"
+    ],
+    "screenshotNote": "Bottom controls and floating Expo gear belong to the development fixture, not shipped navigation."
+  },
+  "passedChecks": [
+    "typecheck",
+    "lint",
+    "check-curriculum (including recommendations)",
+    "check-puzzle-drag",
+    "check-puzzle-objects",
+    "check-puzzle-experience",
+    "check-result-dismissal"
+  ],
+  "unrelatedFailure": {
+    "check": "check-boss-assets",
+    "message": "New lessons use the current shipped cat",
+    "details": "Existing boss-render model hash does not match catalog actor model. No 3D assets or this check were changed by Berry work."
+  },
+  "visualReview": {
+    "disposition": "Pass",
+    "lessonLabels": "Resolved: readable wrapping in narrow Latvian",
+    "resultInset": "Resolved: native sheet bottom stays white"
+  },
+  "limits": [
+    "Android native device rendering not verified in this task."
+  ],
+  "refinement": {
+    "request": "Remove small question metadata and replace pink gradient",
+    "changes": [
+      "Removed lesson heading, puzzle-count row, type label and coin badge from active questions",
+      "Mint-to-white header gradients; Berry buttons retained"
+    ],
+    "passed": [
+      "typecheck",
+      "puzzle-experience across 1440 puzzles",
+      "native selection/play/result flow"
+    ],
+    "bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-imKzdv/result.xcresult",
+    "note": "Selection, puzzle and result captures updated; narrow lesson capture retains prior pink background."
+  },
+  "headerRefinement": {
+    "changes": [
+      "Single heart with live numeric count, original refill behavior retained",
+      "Continuous green progress bar with light highlight and gray track"
+    ],
+    "passed": [
+      "typecheck",
+      "targeted ESLint",
+      "progress animation, saved state, accessibility and Reduce Motion checks",
+      "native Berry flow"
+    ],
+    "bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-xLQFAw/result.xcresult"
+  },
+  "answerFeedback": {
+    "changes": [
+      "Removed corner check, cross and selection dot",
+      "Correct choices green; checked incorrect choices red and editable",
+      "Changing the draft clears stale red feedback"
+    ],
+    "passed": [
+      "typecheck",
+      "targeted ESLint",
+      "puzzle-experience including incorrect feedback and correction",
+      "native wrong answer, one-life loss, correction and successful result"
+    ],
+    "bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-m75Oqp/result.xcresult"
+  },
+  "difficultyMotion": {
+    "changes": [
+      "Persistent Berry indicator slides in 240 ms",
+      "Recommendation and topics fade and slide 14 points in 220 ms",
+      "Route updates in place; initial load stays static; respects Reduce Motion"
+    ],
+    "passed": [
+      "typecheck",
+      "targeted ESLint",
+      "native Easy to Medium to Hard to Easy switching, selected state and puzzle entry",
+      "Recorded simulator motion and inspected intermediate frames"
+    ],
+    "recording": "/tmp/berry-difficulty-motion.mov",
+    "bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-XyaBWB/result.xcresult"
+  }
+}

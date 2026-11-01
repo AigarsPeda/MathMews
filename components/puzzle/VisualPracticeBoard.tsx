@@ -1,10 +1,11 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { IconText } from "@/components/ui/IconText";
 import { PuzzleObjectImage } from "./PuzzleObjectImage";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { PracticeToken } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSequence, withTiming } from "react-native-reanimated";
 
 type PracticeScene = { prompt?: string; tokens: PracticeToken[]; result?: string; compact?: boolean; boardHeight?: number };

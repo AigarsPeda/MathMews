@@ -1,6 +1,6 @@
-import { IconText as Text } from "@/components/ui/IconText";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { PuzzlePathState } from "@/constants/puzzles";
 import { useTopicLabel } from "@/hooks/use-topic-label";
 import type { Puzzle } from "@/types/puzzle";
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   cardCurrent: {
     borderColor: GameColors.primary,
-    backgroundColor: "#FFF8F6",
+    backgroundColor: GameColors.selectedSurface,
   },
   cardLocked: {
     backgroundColor: GameColors.background,

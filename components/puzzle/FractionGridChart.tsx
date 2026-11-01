@@ -1,4 +1,4 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { getFractionGridSize } from "@/utils/fraction-match";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";

@@ -1,5 +1,7 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { GameColors, getPuzzleCoinReward } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { getPuzzleCoinReward } from "@/constants/game";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import {
@@ -9,7 +11,7 @@ import {
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type PuzzlePathProgressSheetProps = {
   visible: boolean;

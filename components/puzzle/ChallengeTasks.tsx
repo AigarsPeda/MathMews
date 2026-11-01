@@ -1,4 +1,5 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { BudgetPlanPuzzle, OptionalChallengePuzzle, RepairPatternPuzzle, RouteGridPuzzle, SortBucketsPuzzle } from "@/types/puzzle";
 import { getRouteValue, type ChallengeAnswer } from "@/utils/challenge-puzzles";
 import { moderateScale } from "@/utils/scale";
@@ -6,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { PuzzleDragBoard, PuzzleDragTile, PuzzleDropArea } from "@/components/puzzle/PuzzleDragBoard";
 import { movePatternTile } from "@/utils/puzzle-drag";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type Controls = { answered: boolean; onAnswerChange: (answer: ChallengeAnswer | null) => void; onDragStateChange: (dragging: boolean) => void };
 
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
   tiles: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: moderateScale(10) },
   tile: { minWidth: moderateScale(64), minHeight: moderateScale(60), padding: moderateScale(12), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, justifyContent: "center", alignItems: "center" },
   number: { fontSize: moderateScale(23), fontWeight: "800", color: GameColors.text, textAlign: "center" },
-  placed: { backgroundColor: "#E8FAF8" }, selected: { backgroundColor: "#E8FAF8", borderColor: GameColors.secondaryDark },
+  placed: { backgroundColor: GameColors.selectedSurface }, selected: { backgroundColor: GameColors.selectedSurface, borderColor: GameColors.secondaryDark },
   fixed: { backgroundColor: GameColors.background, borderColor: GameColors.background }, hole: { borderStyle: "dashed", borderColor: "#5D408C" },
   sortBank: { minHeight: moderateScale(144), padding: moderateScale(6), justifyContent: "center" },
   patternBank: { minHeight: moderateScale(76), padding: moderateScale(6), justifyContent: "center" },

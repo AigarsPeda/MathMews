@@ -1,6 +1,6 @@
 import { AppIcon } from "@/components/ui/AppIcon";
-import { IconText as Text } from "@/components/ui/IconText";
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { getLearningProgress } from "@/constants/curriculum";
 import { useLocale } from "@/contexts/LocaleProvider";
 import type { LearningLevel } from "@/types/curriculum";

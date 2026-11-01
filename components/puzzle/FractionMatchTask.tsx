@@ -1,6 +1,7 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { FractionGridChart } from "@/components/puzzle/FractionGridChart";
 import { FractionPieChart } from "@/components/puzzle/FractionPieChart";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { FractionMatchPuzzle } from "@/types/puzzle";
 import {
   buildFractionMatchCards,
@@ -9,7 +10,7 @@ import {
 import { moderateScale } from "@/utils/scale";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type FractionMatchTaskProps = {
   puzzle: FractionMatchPuzzle;
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
   },
   cardSelected: {
     borderColor: GameColors.secondary,
-    backgroundColor: "rgba(78, 205, 196, 0.12)",
+    backgroundColor: GameColors.selectedSurface,
   },
   cardMatched: {
     borderColor: GameColors.success,

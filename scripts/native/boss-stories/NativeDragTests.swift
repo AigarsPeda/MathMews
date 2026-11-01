@@ -40,6 +40,64 @@ final class NativeDragTests: XCTestCase {
    app.buttons["Next mission"].tap()
   }
  }
+ func testFlatPicnicPilot() {
+  app.buttons["Picnic pilot"].tap()
+  expect("A picnic with Boba")
+  for coat in ["orange", "grey", "white"] {
+   expect("Coat: \(coat)")
+   app.buttons["Restart mission"].tap()
+   app.buttons["Wrong answer"].tap()
+   expect("This task has not changed the scene.")
+   app.buttons["Try again"].tap()
+   expect("Checkpoint 0")
+   for stage in 1...2 {
+    app.buttons["Complete task"].tap()
+    let scene = app.images["Mission scene: \(stage) of 3 tasks complete"].firstMatch
+    XCTAssertTrue(scene.waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["Continue the mission"].isHittable)
+    if stage == 1 { shot("picnic-\(coat)-stage-one") }
+    app.buttons["Continue the mission"].tap()
+    expect("Checkpoint \(stage)")
+   }
+   app.buttons["Complete task"].tap()
+   XCTAssertTrue(app.buttons["Finish mission"].waitForExistence(timeout: 5))
+   XCTAssertTrue(app.buttons["Watch the ending again"].waitForExistence(timeout: 8))
+   shot("picnic-\(coat)-ending")
+   app.buttons["Watch the ending again"].tap()
+   app.buttons["Finish mission"].doubleTap()
+   expect("Mission finished")
+   app.buttons["Next coat"].tap()
+  }
+  app.buttons["Restart mission"].tap()
+  app.buttons["Resume at task two"].tap()
+  expect("Checkpoint 1")
+  app.buttons["Switch language"].tap()
+  expect("Pikniks ar Bobu")
+  app.buttons["Preview ending"].tap()
+  XCTAssertTrue(app.buttons["Noskatīties noslēgumu vēlreiz"].waitForExistence(timeout: 8))
+  shot("picnic-latvian-ending")
+  XCUIDevice.shared.press(.home)
+  app.activate()
+  XCTAssertTrue(app.buttons["Finish mission"].waitForExistence(timeout: 5))
+  app.buttons["Finish mission"].tap()
+  expect("Mission finished")
+  app.buttons["Switch language"].tap()
+  app.buttons["Play puzzle"].tap()
+  expect("Which part is missing?")
+  let four = app.buttons["Answer 4"].firstMatch
+  XCTAssertTrue(four.waitForExistence(timeout: 5))
+  XCTAssertTrue(four.isHittable, "The answer must be visible without scrolling")
+  XCTAssertFalse(app.images["Mission scene: 0 of 3 tasks complete"].exists)
+  XCTAssertTrue(app.buttons["Check answer"].isHittable)
+  shot("picnic-production-puzzle")
+  four.tap()
+  app.buttons["Check answer"].tap()
+  XCTAssertTrue(app.images["Mission scene: 1 of 3 tasks complete"].waitForExistence(timeout: 5))
+  shot("picnic-production-result")
+  app.buttons["Continue the mission"].tap()
+  XCTAssertTrue(app.buttons["Check answer"].waitForExistence(timeout: 5))
+  app.buttons["Close puzzle"].tap()
+ }
  func testCheckpointsRetryResumeAndLatvian() {
   app.buttons["Restart mission"].tap()
   expect("Checkpoint 0")

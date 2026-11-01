@@ -1,4 +1,5 @@
 /** Authored destinations and problems for 162 individual character missions. */
+import { picnicPilot } from './picnic-pilot.mjs';
 const text=(en,lv)=>({en,lv});
 const worlds={
  train:['the midnight station','pusnakts stacijā',
@@ -100,6 +101,11 @@ export function lessonBossStory(world,index) {
   outcome:text(`${name} has restored ${goal.en}. The neighbors can continue their day.`,`Darbs ir pabeigts: ${goal.lv}. Kaimiņi var turpināt dienu.`),
   stages:m.stages.map(([en,lv,beforeEn,beforeLv,afterEn,afterLv])=>({title:text(en,lv),before:text(`${name}: ${beforeEn}`,`${name}: ${beforeLv}`),after:text(afterEn,afterLv)})),
   catActions:[text(`Minka meets ${name} beside the unfinished ${m.id}.`,`Minka satiek ${name} pie nepabeigtā darba.`),...m.stages.map(s=>text(s[4],s[5]))]};
+ if(sceneId==='picnic-balloon') {
+  Object.assign(title,picnicPilot.title); Object.assign(goal,picnicPilot.goal);
+  const {title:unusedTitle,goal:unusedGoal,...presentation}=picnicPilot;
+  Object.assign(story,presentation);
+ }
  lessonBossScenes.push({id:sceneId,world,worldIndex,mechanism:m.id,animal:m.animal,name,tool:m.tool,ending:m.ending,title,goal});
  return {title,story};
 }

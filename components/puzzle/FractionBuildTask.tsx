@@ -1,9 +1,10 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { FractionPieChart } from "@/components/puzzle/FractionPieChart";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { FractionBuildPuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type FractionBuildTaskProps = {
   puzzle: FractionBuildPuzzle;

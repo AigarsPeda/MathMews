@@ -8892,8 +8892,8 @@
           "id": "easy-addition-explore-5-lesson-5-boss",
           "kind": "boss",
           "title": {
-            "en": "Boba and a lunch basket caught in the branches",
-            "lv": "Boba: zaros iestrēgušu pusdienu grozu"
+            "en": "A picnic with Boba",
+            "lv": "Pikniks ar Bobu"
           },
           "description": {
             "en": "A story mission with three saved stages for this lesson.",
@@ -8902,77 +8902,77 @@
           "story": {
             "sceneId": "picnic-balloon",
             "backstory": {
-              "en": "Boba, a rabbit at the riverside picnic, has promised to restore a lunch basket caught in the branches. The work is unfinished, and the waiting neighbors need Minka’s help before they can continue.",
-              "lv": "Boba, trusis piknikā pie upes, apsolīja atjaunot zaros iestrēgušu pusdienu grozu. Darbs nav pabeigts, un gaidošajiem kaimiņiem vajag Minkas palīdzību, lai turpinātu."
+              "en": "Boba is getting a picnic ready. Help open the basket, pack lunch and spread the blanket.",
+              "lv": "Boba gatavojas piknikam. Palīdzi atvērt grozu, salikt pusdienas un izklāt segu."
             },
             "intro": {
-              "en": "Help Boba restore a lunch basket caught in the branches. Each completed task changes the scene and saves your progress.",
-              "lv": "Palīdzi Boba atjaunot zaros iestrēgušu pusdienu grozu. Katrs pabeigtais uzdevums maina ainu un saglabā progresu."
+              "en": "Solve three tasks to prepare the picnic together.",
+              "lv": "Atrisini trīs uzdevumus, lai kopā sagatavotu pikniku."
             },
             "outcome": {
-              "en": "Boba has restored a lunch basket caught in the branches. The neighbors can continue their day.",
-              "lv": "Darbs ir pabeigts: zaros iestrēgušu pusdienu grozu. Kaimiņi var turpināt dienu."
+              "en": "Lunch is packed and the blanket is ready. Enjoy the picnic!",
+              "lv": "Pusdienas ir grozā, un sega ir izklāta. Lai jauks pikniks!"
             },
             "stages": [
               {
                 "title": {
-                  "en": "Prepare the basket",
-                  "lv": "Sagatavo grozu"
+                  "en": "Open the basket",
+                  "lv": "Atver grozu"
                 },
                 "before": {
-                  "en": "Boba: Check the basket before its cargo is loaded.",
-                  "lv": "Boba: Pārbaudi grozu pirms kravas iekraušanas."
+                  "en": "Help Boba get the basket ready.",
+                  "lv": "Palīdzi Bobam sagatavot grozu."
                 },
                 "after": {
-                  "en": "The basket is ready beneath the waiting balloon.",
-                  "lv": "Grozs ir gatavs zem gaidošā balona."
+                  "en": "Boba opens the basket while the cat looks inside.",
+                  "lv": "Boba atver grozu, un kaķis ieskatās tajā."
                 }
               },
               {
                 "title": {
-                  "en": "Balance the load",
-                  "lv": "Līdzsvaro kravu"
+                  "en": "Pack lunch",
+                  "lv": "Saliec pusdienas"
                 },
                 "before": {
-                  "en": "Boba: Check the load so the balloon can rise steadily.",
-                  "lv": "Boba: Pārbaudi kravu, lai balons celtos vienmērīgi."
+                  "en": "Get lunch into the basket.",
+                  "lv": "Ieliec pusdienas grozā."
                 },
                 "after": {
-                  "en": "The cargo is balanced and the ropes are secure.",
-                  "lv": "Krava ir līdzsvarota, un virves ir drošas."
+                  "en": "The cat packs lunch. Boba closes the lid.",
+                  "lv": "Kaķis ieliek pusdienas grozā. Boba aizver vāku."
                 }
               },
               {
                 "title": {
-                  "en": "Release the balloon",
-                  "lv": "Atlaid balonu"
+                  "en": "Spread the blanket",
+                  "lv": "Izklāj segu"
                 },
                 "before": {
-                  "en": "Boba: Complete the launch check before releasing the rope.",
-                  "lv": "Boba: Pabeidz palaišanas pārbaudi pirms virves atlaišanas."
+                  "en": "Make a place for the picnic.",
+                  "lv": "Sagatavo vietu piknikam."
                 },
                 "after": {
-                  "en": "The balloon lifts its basket and sails toward its destination.",
-                  "lv": "Balons paceļ grozu un dodas uz galamērķi."
+                  "en": "Boba spreads the blanket. The picnic is ready!",
+                  "lv": "Boba izklāj segu. Pikniks ir gatavs!"
                 }
               }
             ],
             "catActions": [
               {
-                "en": "Minka meets Boba beside the unfinished balloon.",
-                "lv": "Minka satiek Boba pie nepabeigtā darba."
+                "en": "The cat meets Boba beside an empty basket.",
+                "lv": "Kaķis satiek Bobu pie tukša groza."
               },
               {
-                "en": "The basket is ready beneath the waiting balloon.",
-                "lv": "Grozs ir gatavs zem gaidošā balona."
+                "en": "Boba opens the basket; the cat looks inside.",
+                "lv": "Boba atver grozu; kaķis ieskatās tajā."
               },
               {
-                "en": "The cargo is balanced and the ropes are secure.",
-                "lv": "Krava ir līdzsvarota, un virves ir drošas."
+                "en": "The cat packs lunch and Boba closes the lid.",
+                "lv": "Kaķis saliek pusdienas, un Boba aizver vāku."
               },
               {
-                "en": "The balloon lifts its basket and sails toward its destination.",
-                "lv": "Balons paceļ grozu un dodas uz galamērķi."
+                "en": "Boba unfolds the blanket. Both friends sit beside their picnic.",
+                "lv": "Boba izklāj segu. Abi draugi apsēžas pie piknika groza."
               }
             ]
           },

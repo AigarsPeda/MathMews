@@ -40,7 +40,7 @@ export default function HardQuestionFixture() {
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
         {Object.entries(tasks).map(([label, value]) => <Button key={label} label={label} onPress={() => reset(value)} />)}
       </View>
-      <PuzzleCard puzzle={puzzle} puzzleNumber={1} puzzleTotal={4} />
+      <PuzzleCard puzzle={puzzle} />
       {puzzle.type === "fraction_build" ? <FractionBuildTask puzzle={puzzle} shadedPieces={slices.length} selectedSlices={slices} answered={answered} isCorrect={correct}
         onChangeShaded={count => setSlices(Array.from({ length: count }, (_, index) => index))}
         onToggleSlice={index => setSlices(current => current.includes(index) ? current.filter(item => item !== index) : [...current, index])} /> : null}

@@ -1,14 +1,16 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { PatternNextPuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type PatternNextTaskProps = {
   puzzle: PatternNextPuzzle;
   selectedIndex: number | null;
   isCorrect: boolean;
   answered: boolean;
+  incorrectAttempt?: boolean;
   onSelect: (index: number) => void;
 };
 
@@ -17,9 +19,11 @@ export function PatternNextTask({
   selectedIndex,
   isCorrect,
   answered,
+  incorrectAttempt = false,
   onSelect,
 }: PatternNextTaskProps) {
   const { sequence, choices } = puzzle.payload;
+  const compactChoices = choices.every(choice => choice.length <= 5);
 
   return (
     <View style={styles.wrap}>
@@ -34,10 +38,10 @@ export function PatternNextTask({
         </View>
       </View>
 
-      <View style={styles.choices}>
+      <View style={[styles.choices, compactChoices && styles.choicesGrid]}>
         {choices.map((choice, index) => {
           let result: "correct" | "wrong" | null = null;
-          if (answered) {
+          if (answered || incorrectAttempt) {
             if (isCorrect && index === puzzle.correctIndex) {
               result = "correct";
             } else if (!isCorrect && index === selectedIndex) {
@@ -49,6 +53,7 @@ export function PatternNextTask({
             <ChoiceButton
               key={`${puzzle.id}-${choice}`}
               label={choice}
+              style={compactChoices ? styles.gridChoice : undefined}
               selected={selectedIndex === index}
               disabled={answered}
               result={result}
@@ -76,8 +81,8 @@ const styles = StyleSheet.create({
     minHeight: moderateScale(48),
     borderRadius: moderateScale(14),
     borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    backgroundColor: GameColors.background,
+    borderColor: "transparent",
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: moderateScale(10),
@@ -90,13 +95,15 @@ const styles = StyleSheet.create({
   },
   questionChip: {
     borderColor: GameColors.secondary,
-    backgroundColor: "rgba(78, 205, 196, 0.12)",
+    backgroundColor: GameColors.selectedSurface,
   },
   questionText: {
     fontSize: moderateScale(22),
     fontWeight: "800",
     color: GameColors.secondary,
   },
+  choicesGrid: { flexDirection: "row", flexWrap: "wrap" },
+  gridChoice: { flexBasis: "45%", flexGrow: 1 },
   choices: {
     gap: moderateScale(12),
   },

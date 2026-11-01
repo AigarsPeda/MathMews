@@ -1,8 +1,9 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { PuzzleObjectCollection } from "./PuzzleObjectImage";
 import type { ComparePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 type CompareTaskProps = {
@@ -10,6 +11,7 @@ type CompareTaskProps = {
   selectedIndex: number | null;
   isCorrect: boolean;
   answered: boolean;
+  incorrectAttempt?: boolean;
   onSelect: (index: number) => void;
 };
 
@@ -18,6 +20,7 @@ export function CompareTask({
   selectedIndex,
   isCorrect,
   answered,
+  incorrectAttempt = false,
   onSelect,
 }: CompareTaskProps) {
   const { t } = useTranslation();
@@ -34,7 +37,7 @@ export function CompareTask({
         const selected = selectedIndex === index;
         const isCorrectOption =
           answered && isCorrect && index === puzzle.correctIndex;
-        const isWrongPick = answered && !isCorrect && selected;
+        const isWrongPick = (answered || incorrectAttempt) && !isCorrect && selected;
 
         return (
           <View key={index} style={styles.optionShell}>
@@ -85,15 +88,15 @@ const styles = StyleSheet.create({
   },
   optionSelected: {
     borderColor: GameColors.secondary,
-    backgroundColor: "rgba(78, 205, 196, 0.12)",
+    backgroundColor: GameColors.selectedSurface,
   },
   optionCorrect: {
     borderColor: GameColors.success,
     backgroundColor: "rgba(107, 203, 119, 0.15)",
   },
   optionWrong: {
-    borderColor: "#FF9F43",
-    backgroundColor: "rgba(255, 159, 67, 0.12)",
+    borderColor: GameColors.incorrect,
+    backgroundColor: GameColors.incorrectSurface,
   },
   optionMuted: {
     opacity: 0.75,

@@ -1,8 +1,9 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { PairSumPuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type PairSumTaskProps = {
   puzzle: PairSumPuzzle;
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   },
   tileSelected: {
     borderColor: GameColors.secondary,
-    backgroundColor: "rgba(78, 205, 196, 0.12)",
+    backgroundColor: GameColors.selectedSurface,
   },
   tileCorrect: {
     borderColor: GameColors.success,

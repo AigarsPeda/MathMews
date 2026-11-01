@@ -1,3 +1,4 @@
+import { PuzzleColors } from "@/constants/puzzle-theme";
 import { storedRoomItems, withRoomPlacementDraft } from '@/utils/room-edit';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
 import { useCatBedtime } from '@/hooks/use-cat-bedtime';
@@ -604,7 +605,7 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
   if (!isReady) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color={GameColors.primary} />
+        <ActivityIndicator size="large" color={PuzzleColors.primary} />
       </View>
     );
   }
@@ -891,14 +892,14 @@ const styles = StyleSheet.create({
     gap: moderateScale(6),
   },
   primaryBtn: {
-    backgroundColor: GameColors.primary,
+    backgroundColor: PuzzleColors.primary,
     borderRadius: moderateScale(20),
     paddingVertical: moderateScale(14),
     paddingHorizontal: moderateScale(20),
     alignItems: "center",
     gap: 2,
     minHeight: moderateScale(56),
-    shadowColor: GameColors.primaryDark,
+    shadowColor: PuzzleColors.primaryDark,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 6,

@@ -1,7 +1,8 @@
 import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
-import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
-import { PuzzleCatPortrait } from "@/components/puzzle/PuzzleCatPortrait";
+import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
+import { PuzzleHeaderGlow } from "@/components/puzzle/PuzzleGradient";
+import { useFonts } from "expo-font";
 import { PuzzleLives } from "@/components/puzzle/PuzzleLives";
 import { PuzzleProgress } from "@/components/puzzle/PuzzleProgress";
 import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
@@ -9,14 +10,11 @@ import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
 import { ChallengeClock, TimedChallengeActions, TimedChallengeIntro } from "@/components/puzzle/TimedChallenge";
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
-import { IconText as Text } from "@/components/ui/IconText";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { getLearningLevelLocation, getLevelPuzzles, getNextPracticeLevel, getNextSpecialLevel, getRequiredIds, resolveLearningSession, type LearningSession } from "@/constants/curriculum";
-import {
-  GameColors,
-  getPuzzleCoinReward,
-  getVisualHelpCost,
-  MAX_LIVES,
-} from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
+import { getVisualHelpCost, MAX_LIVES } from "@/constants/game";
 import { isPuzzleDifficulty } from "@/constants/puzzles";
 import { hasVisualExplanation } from "@/constants/visual-explanations";
 import { useGame } from "@/contexts/GameProvider";
@@ -148,6 +146,7 @@ function LearningPlayGate({ difficulty, lessonId, levelId, phaseParam }: {
 }
 
 export function PlaySession({ session }: { session: LearningSession }) {
+  const [fontsLoaded, fontError] = useFonts(PuzzleFontAssets);
   const router = useRouter();
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { t } = useTranslation();
@@ -169,8 +168,6 @@ export function PlaySession({ session }: { session: LearningSession }) {
   const [puzzle] = useState(() => shufflePuzzleChoices(puzzles[sessionIndex],
     `${level.id}-${sessionIndex}-${progress.puzzleStreak}`));
   const position = useMemo(() => getPuzzlePosition(lesson, level, sessionIndex), [lesson, level, sessionIndex]);
-  const puzzleNumber = position.current;
-  const coinReward = getPuzzleCoinReward(difficulty, isReplay, level.kind);
   const [foundPairs, setFoundPairs] = useState<[number, number][]>([]);
   const [isDraggingTile, setIsDraggingTile] = useState(false);
 
@@ -439,8 +436,10 @@ export function PlaySession({ session }: { session: LearningSession }) {
     onStart: handleBeginChallenge, onResume: handleResumeChallenge, onRefill: () => setShowLives(true),
     onHelp: hasVisualHelp ? handleOpenVisualHelp : undefined };
 
+  if (!fontsLoaded && !fontError) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
+      <PuzzleHeaderGlow color={GameColors.playGlow} />
       <View style={styles.screen}>
         <View style={styles.header}>
           <Pressable
@@ -455,15 +454,13 @@ export function PlaySession({ session }: { session: LearningSession }) {
               style={[styles.backText, answered && styles.backTextDisabled]}
             />
           </Pressable>
-        </View>
-
-        <View style={styles.titleRow}>
-          <Text style={[styles.title, { flex: 1 }]}>{level.kind === "practice" ? lesson.title[locale] : level.title[locale]}</Text>
+          <View style={styles.headerProgress}>
+            <PuzzleProgress steps={progressSteps} total={position.total}
+              label={t(level.kind === "boss" ? "learning.stageOf" : "play.puzzleOf", { number: position.current, total: position.total })} />
+          </View>
           <PuzzleLives lives={lives} onPress={() => { recordInteraction(); setShowLives(true); }} />
         </View>
 
-        <PuzzleProgress steps={progressSteps} total={position.total}
-          label={t(level.kind === "boss" ? "learning.stageOf" : "play.puzzleOf", { number: position.current, total: position.total })} />
         {timed && challengePlayable && !answered && run ? <ChallengeClock milliseconds={run.deadlineAt - now} /> : null}
 
         <ScrollView
@@ -473,50 +470,11 @@ export function PlaySession({ session }: { session: LearningSession }) {
           showsVerticalScrollIndicator={false}
         >
           {!challengePlayable ? <TimedChallengeIntro {...challengeIntroProps} /> : <>
-          {level.kind !== "practice" && <View style={[styles.mission, level.kind === "boss" ? styles.bossMission : styles.challengeMission]}>
-            <Text style={styles.missionTitle}>{t(`learning.${level.kind}`)}</Text>
-            {level.story?.backstory && sessionIndex === 0 ? <Text style={styles.missionDescription}>{level.story.backstory[locale]}</Text> : null}
-            {level.story ? sessionIndex === 0 ? <Text style={styles.missionDescription}>{level.story.intro[locale]}</Text> : null
-              : <Text style={styles.missionDescription}>{level.description[locale]}</Text>}
-            {level.kind === "boss" && level.story ? <>
-              <View style={styles.missionScene}><BossStoryScene story={level.story} locale={locale} completed={getBossSceneProgress(sessionIndex)} active={!answered} /></View>
-              <Text style={styles.missionTitle}>{t("learning.stageOf", { number: sessionIndex + 1, total: puzzles.length })}{" · "}{level.story.stages[sessionIndex].title[locale]}</Text>
-              <Text style={styles.missionDescription}>{level.story.stages[sessionIndex].before[locale]}</Text>
-            </> : null}
-            {level.kind === "boss" && <>
-              {!level.story ? <Text style={styles.missionTitle}>{t("learning.stageOf", { number: sessionIndex + 1, total: puzzles.length })}</Text> : null}
-              <View accessible accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 3, now: getBossSceneProgress(sessionIndex, answered && isCorrect) }}
-                accessibilityLabel={t("learning.boss")} style={styles.stageRow}>{puzzles.map((stage, index) => {
-                const done = index < sessionIndex || index === sessionIndex && answered && isCorrect;
-                return <View key={stage.id} style={[styles.stageMarker, done && styles.stageMarkerDone]} />;
-              })}</View>
-              <Text style={styles.missionSaved}>{t("learning.stagesSaved")}</Text>
-            </>}
-          </View>}
-          <PuzzleCard
-            puzzle={puzzle}
-            puzzleNumber={puzzleNumber}
-            puzzleTotal={position.total}
-            coinReward={coinReward}
-            levelKind={level.kind}
-          />
-          {!answered && hasVisualHelp ? (
-            <Pressable
-              style={styles.visualHelpBtn}
-              onPress={handleOpenVisualHelp}
-              accessibilityRole="button"
-              accessibilityLabel={t("visualHelp.a11yOpen")}
-            >
-              <Text style={styles.visualHelpBtnText}>
-                {t("visualHelp.compactButton")}
-              </Text>
-              {!visualHelpUnlocked ? (
-                <Text style={styles.visualHelpBtnHint}>
-                  {t("visualHelp.unlockPrice", { cost: visualHelpCost })}
-                </Text>
-              ) : null}
-            </Pressable>
-          ) : null}
+          {level.kind === "challenge" ? <View style={[styles.mission, styles.challengeMission]}>
+            <Text style={styles.missionTitle}>{t("learning.challenge")}</Text>
+            <Text style={styles.missionDescription}>{level.description[locale]}</Text>
+          </View> : null}
+          <PuzzleCard puzzle={puzzle} />
 
           <View style={styles.taskArea}>
             {puzzle.type !== "order_numbers" && puzzle.type !== "multiple_choice" && !(progress.completedPuzzleIds ?? []).some(
@@ -534,6 +492,7 @@ export function PlaySession({ session }: { session: LearningSession }) {
               onChallengeAnswerChange={setChallengeAnswer}
               onDragStateChange={setIsDraggingTile}
               selectedIndex={pendingChoice}
+              incorrectAttempt={!answered && lastAttempt !== null && draftKey === lastAttempt.key}
               selectedOperators={selectedOperators}
               fractionPieces={fractionPieces}
               fractionSelectedSlices={fractionSelectedSlices}
@@ -562,6 +521,23 @@ export function PlaySession({ session }: { session: LearningSession }) {
             />
 
           </View>
+          {!answered && hasVisualHelp ? (
+            <Pressable
+              style={styles.visualHelpBtn}
+              onPress={handleOpenVisualHelp}
+              accessibilityRole="button"
+              accessibilityLabel={t("visualHelp.a11yOpen")}
+            >
+              <Text style={styles.visualHelpBtnText}>
+                {t("visualHelp.compactButton")}
+              </Text>
+              {!visualHelpUnlocked ? (
+                <Text style={styles.visualHelpBtnHint}>
+                  {t("visualHelp.unlockPrice", { cost: visualHelpCost })}
+                </Text>
+              ) : null}
+            </Pressable>
+          ) : null}
           </>}
         </ScrollView>
 
@@ -576,8 +552,6 @@ export function PlaySession({ session }: { session: LearningSession }) {
           </View> : null}
           {!answered && lives.current > 0 && lastAttempt && draftKey === lastAttempt.key ? (
             <View style={styles.attemptFeedback} accessibilityLiveRegion="polite" accessible>
-              <PuzzleCatPortrait key={`${lastAttempt.key}-${retryCount}`} petType={pet.type} catSkinId={pet.catSkinId}
-                mood="incorrect" reaction={companionMessage.reaction} size={84} />
               <View style={styles.attemptCopy}>
                 <Text style={styles.attemptTitle}>{t("play.adjustAnswer")}</Text>
                 <Text style={styles.attemptHint}>{lastAttempt.hint}</Text>
@@ -587,16 +561,13 @@ export function PlaySession({ session }: { session: LearningSession }) {
           {!answered && (retryCount >= 2 || lives.current === 0) && hasVisualHelp ? <Pressable onPress={handleOpenVisualHelp} accessibilityRole="button" style={styles.lifeAction}>
             <Text style={styles.lifeActionText}>{t("lives.workedExample")}</Text>
           </Pressable> : null}
-          <Pressable
-            accessibilityRole="button"
+          <PuzzleButton
+            label={t("play.checkAnswer")}
             accessibilityLabel={t("play.checkAnswer")}
             accessibilityState={{ disabled: !canCheck }}
             disabled={!canCheck}
             onPress={handleCheckAnswer}
-            style={({ pressed }) => [styles.checkAnswer, !canCheck && styles.checkAnswerDisabled, pressed && canCheck && styles.checkAnswerPressed]}
-          >
-            <Text style={[styles.checkAnswerText, !canCheck && { color: GameColors.textMuted }]}>{t("play.checkAnswer")}</Text>
-          </Pressable>
+          />
         </View> : <View style={styles.answerDock}><TimedChallengeActions {...challengeIntroProps} /></View>}
 
         {answered ? (
@@ -661,41 +632,24 @@ export function PlaySession({ session }: { session: LearningSession }) {
 
 const styles = StyleSheet.create({
   mission: { padding: moderateScale(16), gap: moderateScale(10), borderRadius: moderateScale(16), borderWidth: 2, marginBottom: moderateScale(16) },
-  bossMission: { backgroundColor: "#FFF3D9", borderColor: "#C99632" },
   challengeMission: { backgroundColor: "#F3EEFF", borderColor: "#BBA4E6" },
   missionTitle: { color: GameColors.text, fontSize: moderateScale(17), fontWeight: "800" },
   missionDescription: { color: GameColors.text, fontSize: moderateScale(15), lineHeight: moderateScale(22) },
-  missionScene: { width: "100%", maxWidth: moderateScale(260), alignSelf: "center" },
-  missionSaved: { color: GameColors.textMuted, fontSize: moderateScale(12), lineHeight: moderateScale(18) },
-  stageRow: { flexDirection: "row", gap: moderateScale(8) },
-  stageMarker: { flex: 1, height: moderateScale(6), backgroundColor: GameColors.card, borderRadius: moderateScale(3) },
-  stageMarkerDone: { backgroundColor: GameColors.success },
   mechanicIntro: {
     color: GameColors.textMuted,
     fontSize: 15,
     lineHeight: 22,
     marginBottom: 12,
   },
-  checkAnswer: {
-    minHeight: moderateScale(56),
-    borderRadius: 16,
-    backgroundColor: GameColors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  answerDock: { paddingTop: moderateScale(10), gap: moderateScale(8), backgroundColor: GameColors.background },
-  attemptFeedback: { flexDirection: "row", alignItems: "center", gap: moderateScale(8), paddingHorizontal: moderateScale(4) },
+  answerDock: { paddingTop: moderateScale(16), paddingBottom: moderateScale(8), borderTopWidth: 1, borderTopColor: GameColors.cardBorder, gap: moderateScale(12), backgroundColor: GameColors.background },
+  attemptFeedback: { flexDirection: "row", alignItems: "center", gap: moderateScale(8), padding: moderateScale(14), borderRadius: moderateScale(14), backgroundColor: GameColors.warningSurface },
   attemptCopy: { flex: 1, gap: moderateScale(3) },
   attemptTitle: { fontSize: moderateScale(15), fontWeight: "800", color: "#875100" },
   attemptHint: { fontSize: moderateScale(15), lineHeight: moderateScale(21), color: GameColors.text },
-  titleRow: { flexDirection: "row", alignItems: "center", gap: moderateScale(12) },
   emptyLives: { gap: moderateScale(3) },
   lifePolicy: { fontSize: moderateScale(12), lineHeight: moderateScale(18), color: GameColors.textMuted },
   lifeAction: { minHeight: 44, alignItems: "center", justifyContent: "center" },
   lifeActionText: { fontSize: moderateScale(14), fontWeight: "700", color: GameColors.secondaryDark },
-  checkAnswerDisabled: { backgroundColor: "#E6DED5" },
-  checkAnswerPressed: { opacity: 0.85 },
-  checkAnswerText: { fontSize: 18, fontWeight: "700", color: "#FFFFFF" },
   loading: {
     flex: 1,
     alignItems: "center",
@@ -708,7 +662,7 @@ const styles = StyleSheet.create({
   },
   screen: {
     flex: 1,
-    paddingHorizontal: moderateScale(16),
+    paddingHorizontal: moderateScale(22),
     paddingTop: moderateScale(4),
     paddingBottom: moderateScale(4),
   },
@@ -717,7 +671,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: moderateScale(8),
+    gap: moderateScale(12),
   },
+  headerProgress: { flex: 1 },
   backBtn: {
     minHeight: moderateScale(48),
     justifyContent: "center",
@@ -734,15 +690,9 @@ const styles = StyleSheet.create({
   backTextDisabled: {
     color: GameColors.textMuted,
   },
-  title: {
-    fontSize: moderateScale(18),
-    fontWeight: "800",
-    color: GameColors.text,
-    marginBottom: moderateScale(8),
-  },
   scroll: {
     flex: 1,
-    backgroundColor: GameColors.background,
+    backgroundColor: "transparent",
   },
   scrollContent: {
     flexGrow: 0,
@@ -754,21 +704,19 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   visualHelpBtn: {
-    backgroundColor: "#F3EEFF",
+    backgroundColor: "transparent",
     borderRadius: moderateScale(16),
-    borderWidth: 2,
-    borderColor: "#C9B6FF",
     minHeight: 44,
     paddingVertical: moderateScale(8),
     paddingHorizontal: moderateScale(12),
     alignItems: "center",
-    alignSelf: "flex-end",
+    alignSelf: "center",
     gap: moderateScale(2),
   },
   visualHelpBtnText: {
     fontSize: moderateScale(14),
     fontWeight: "700",
-    color: "#6B4FCF",
+    color: GameColors.primary,
   },
   visualHelpBtnHint: {
     fontSize: moderateScale(13),

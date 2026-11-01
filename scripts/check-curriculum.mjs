@@ -689,3 +689,32 @@ console.log(`Verified ${timedLevels.length} durable timed challenges: ready/resu
 
 const { checkLearning } = await import('./puzzles/check-learning.mjs');
 checkLearning({ load });
+
+// The home-of-puzzles recommendation follows saved prerequisites and running clocks.
+{
+ const { getPuzzleRecommendation } = load('@/utils/puzzle-recommendation');
+ const fresh = createDefaultGameSave().progress;
+ for (const tier of ['easy','medium','hard']) {
+  const next = getPuzzleRecommendation(tier, fresh);
+  assert.ok(next); assert.equal(next.lesson.difficulty, tier);
+  assert.equal(getLearningLevelState(next.lesson,next.level,[]),'current');
+  assert.equal(next.level.kind,'practice');
+ }
+ const initial = getPuzzleRecommendation('easy', fresh);
+ const partial = {...fresh,completedPuzzleIds:[...initial.level.puzzleIds]};
+ const next = getPuzzleRecommendation('easy',partial);
+ assert.equal(next.lesson.id,initial.lesson.id,'Continue the started lesson');
+ assert.notEqual(next.level.id,initial.level.id,'Do not replay completed practice');
+ const required = getRequiredIds(initial.lesson);
+ const cleared = {...fresh,completedPuzzleIds:required};
+ assert.notEqual(getPuzzleRecommendation('easy',cleared).lesson.id,initial.lesson.id,'Prefer unfinished required lessons over optional challenges');
+ const challenge=initial.lesson.levels.find(level=>level.kind==='challenge');
+ const active={...cleared,challengeAttempt:{levelId:challenge.id,status:'active',deadlineAt:2000}};
+ const resumed=getPuzzleRecommendation('hard',active,1000);
+ assert.equal(resumed.level.id,challenge.id,'An active clock remains resumable across difficulty changes');
+ assert.equal(resumed.resumeChallenge,true);
+ assert.equal(getPuzzleRecommendation('hard',active,3000).resumeChallenge,false,'Expired attempts cannot be offered as active');
+ const allDone={...fresh,completedPuzzleIds:LEARNING_CATALOG.lessons.flatMap(lesson=>lesson.levels.flatMap(level=>level.puzzleIds))};
+ assert.equal(getPuzzleRecommendation('easy',allDone),undefined,'A fully completed tier has no invented next activity');
+}
+console.log('Puzzle recommendations passed.');

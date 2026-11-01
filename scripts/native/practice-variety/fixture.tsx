@@ -36,7 +36,7 @@ export default function PracticeVarietyFixture() {
         <Button label="Latviski" onPress={() => { setLocale("lv"); void language.changeLanguage("lv"); }} />
         <Button label="English" onPress={() => { setLocale("en"); void language.changeLanguage("en"); }} />
       </View>
-      <PuzzleCard puzzle={puzzle} puzzleNumber={step} puzzleTotal={total} />
+      <PuzzleCard puzzle={puzzle} />
       {puzzle.type === "pattern_next" ? <PatternNextTask puzzle={puzzle} {...props} /> : null}
       {puzzle.type === "function_machine" ? <FunctionMachineTask puzzle={puzzle} {...props} /> : null}
       {puzzle.type === "multiple_choice" ? <MultipleChoiceTask puzzle={puzzle} {...props} /> : null}

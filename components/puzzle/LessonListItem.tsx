@@ -1,13 +1,14 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { AppIcon } from "@/components/ui/AppIcon";
 import type { AppIconName } from "@/constants/app-icons";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { useLocale } from "@/contexts/LocaleProvider";
 import type { LearningLesson } from "@/types/curriculum";
 import { getLessonProgress, type LessonActivity, type LessonProgressSave } from "@/utils/lesson-progress";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 const activityIcons: Record<LessonActivity["kind"], AppIconName> = { practice: "practice-book", challenge: "challenge-timer", boss: "boss-badge" };
 const activityColors = { practice: GameColors.secondaryDark, challenge: "#5D408C", boss: GameColors.coinText };
@@ -44,7 +45,7 @@ export function LessonListItem({ lesson, number, progress, onPress }: {
       {status.parts.filter(part => part.total > 0).map(part => <View key={part.kind} style={styles.activity}>
         <View style={[styles.activityHeading, compact && styles.compactHeading]}>
           <AppIcon name={activityIcons[part.kind]} size={moderateScale(26)} />
-          <Text style={[styles.activityLabel, compact && styles.compactLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{t(`lessonProgress.${part.kind}`)}</Text>
+          <Text style={[styles.activityLabel, compact && styles.compactLabel]} numberOfLines={2}>{t(`lessonProgress.${part.kind}`)}</Text>
         </View>
         <View style={styles.segments}>{Array.from({ length: part.total }, (_, index) => <View key={index}
           style={[styles.segment, index < part.solved && { backgroundColor: activityColors[part.kind], borderColor: activityColors[part.kind] }]} />)}</View>
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
   activityHeading: { flexDirection: "row", alignItems: "center", gap: moderateScale(5) },
   compactHeading: { flexDirection: "column", alignItems: "flex-start" },
   activityLabel: { flexShrink: 1, color: GameColors.text, fontSize: moderateScale(12), lineHeight: moderateScale(17), fontWeight: "600" },
-  compactLabel: { alignSelf: "stretch" },
+  compactLabel: { alignSelf: "stretch", flexShrink: 0 },
   segments: { flexDirection: "row", gap: moderateScale(4) },
   segment: { flex: 1, height: moderateScale(6), borderRadius: moderateScale(3), borderWidth: 1, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card },
   activityFooter: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: moderateScale(3) },

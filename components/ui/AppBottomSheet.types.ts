@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 
 export type AppBottomSheetProps = {
   visible: boolean;
+  /** Optional surface override; other app sheets keep their existing palette. */
+  backgroundColor?: string;
   onClose: () => void;
   /** Called after the closing animation has finished. */
   onDismissComplete?: () => void;

@@ -17,6 +17,8 @@
     "branding": "node scripts/generate-branding.mjs",
     "dependencies": "npm run licenses",
     "assets:3d": "node scripts/3d/build.mjs",
+    "assets:2d-pilot": "node scripts/2d/build-pilot.mjs && node scripts/2d/register-pilot.mjs",
+    "test:2d-pilot": "node scripts/2d/check-pilot.mjs",
     "assets:verify": "node scripts/3d/verify.mjs",
     "typecheck": "tsc --noEmit",
     "typecheck:backend": "tsc --project supabase/functions/tsconfig.json",

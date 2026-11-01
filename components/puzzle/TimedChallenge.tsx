@@ -1,11 +1,13 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { useLocale } from "@/contexts/LocaleProvider";
 import type { LearningLevel } from "@/types/curriculum";
 import { formatChallengeTime } from "@/utils/timed-challenge";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 export function ChallengeClock({ milliseconds }: { milliseconds: number }) {
   const { t } = useTranslation();
@@ -37,9 +39,8 @@ export function TimedChallengeIntro({ level, expired, lifeLost, otherActive }: I
 export function TimedChallengeActions({ expired, hasLives, otherActive, onStart, onResume, onRefill, onHelp }: IntroProps) {
   const { t } = useTranslation();
   return <View style={styles.actions}>
-    <Pressable accessibilityRole="button" onPress={otherActive ? onResume : hasLives ? onStart : onRefill} style={styles.start}>
-      <Text style={styles.startText}>{t(otherActive ? "timedChallenge.resume" : !hasLives ? "lives.openRefill" : expired ? "timedChallenge.retry" : "timedChallenge.start")}</Text>
-    </Pressable>
+    <PuzzleButton onPress={otherActive ? onResume : hasLives ? onStart : onRefill}
+      label={t(otherActive ? "timedChallenge.resume" : !hasLives ? "lives.openRefill" : expired ? "timedChallenge.retry" : "timedChallenge.start")} />
     {onHelp ? <Pressable accessibilityRole="button" onPress={onHelp} style={styles.help}><Text style={styles.helpText}>{t("visualHelp.compactButton")}</Text></Pressable> : null}
   </View>;
 }

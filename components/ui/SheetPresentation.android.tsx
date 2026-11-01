@@ -4,7 +4,7 @@ import { GameColors } from "@/constants/game";
 import { useEffect, useRef, useState } from "react";
 import type { SheetPresentationProps } from "./SheetPresentation.types";
 
-export function SheetPresentation({ visible, expanded, onClose, onDismissComplete, children }: SheetPresentationProps) {
+export function SheetPresentation({ visible, expanded, onClose, onDismissComplete, children, backgroundColor = GameColors.background }: SheetPresentationProps) {
   const sheetRef = useRef<ModalBottomSheetRef>(null);
   const [mounted, setMounted] = useState(visible);
   if (visible && !mounted) setMounted(true);
@@ -30,7 +30,7 @@ export function SheetPresentation({ visible, expanded, onClose, onDismissComplet
         ref={sheetRef}
         onDismissRequest={onClose}
         skipPartiallyExpanded={expanded}
-        containerColor={GameColors.background}
+        containerColor={backgroundColor}
       >
         <Column modifiers={expanded ? [fillMaxHeight()] : []}>{children}</Column>
       </ModalBottomSheet>

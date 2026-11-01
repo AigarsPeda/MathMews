@@ -1,13 +1,14 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { FindAllPairsPuzzle } from "@/types/puzzle";
 import { getValidPairs } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 const pairColors = [
-  { background: "#E8FAF8", ink: "#006D68" },
+  { background: GameColors.selectedSurface, ink: "#006D68" },
   { background: "#F3EEFF", ink: "#65409A" },
   { background: "#FFF0DB", ink: "#875100" },
   { background: "#EAF2FF", ink: "#285DA1" },

@@ -1,0 +1,81 @@
+{
+  "viewBox": [
+    0,
+    0,
+    512,
+    512
+  ],
+  "floorAnchor": [
+    256,
+    464
+  ],
+  "groups": {
+    "root": [
+      256,
+      464
+    ],
+    "tail": [
+      180,
+      420
+    ],
+    "body": [
+      256,
+      400
+    ],
+    "head": [
+      270,
+      305
+    ],
+    "face": [
+      271,
+      270
+    ],
+    "front-left": [
+      211,
+      334
+    ],
+    "front-right": [
+      309,
+      334
+    ],
+    "foot-left": [
+      209,
+      449
+    ],
+    "foot-right": [
+      322,
+      449
+    ],
+    "ear-left": [
+      220,
+      200
+    ],
+    "ear-right": [
+      300,
+      200
+    ],
+    "accessory": [
+      270,
+      200
+    ]
+  },
+  "hierarchy": "root > tail/body/feet/front limbs/head; head > ears/face/cap; collar attached to body",
+  "bentEar": "right side of source canvas",
+  "coatTokens": {
+    "orange": [
+      "#F5A44C",
+      "#CC7A32",
+      "#FFF0D8"
+    ],
+    "grey": [
+      "#ADB4C0",
+      "#737D90",
+      "#F7F5F1"
+    ],
+    "white": [
+      "#FAF8F3",
+      "#D7D5D2",
+      "#FFFFFF"
+    ]
+  }
+}

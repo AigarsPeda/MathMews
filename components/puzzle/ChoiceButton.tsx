@@ -1,7 +1,8 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { useTranslation } from "react-i18next";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { moderateScale } from "@/utils/scale";
-import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 
 type ChoiceButtonProps = {
   label: string;
@@ -54,9 +55,10 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
     alignSelf: "stretch",
-    minHeight: moderateScale(56),
+    minHeight: moderateScale(64),
     borderRadius: moderateScale(16),
     borderWidth: 2,
+    borderBottomWidth: 4,
     borderColor: GameColors.cardBorder,
     backgroundColor: GameColors.card,
     alignItems: "center",
@@ -66,15 +68,15 @@ const styles = StyleSheet.create({
   },
   buttonSelected: {
     borderColor: GameColors.secondary,
-    backgroundColor: "rgba(78, 205, 196, 0.1)",
+    backgroundColor: GameColors.selectedSurface,
   },
   buttonCorrect: {
     borderColor: GameColors.success,
-    backgroundColor: "rgba(107, 203, 119, 0.15)",
+    backgroundColor: GameColors.successSurface,
   },
   buttonWrong: {
-    borderColor: "#FF9F43",
-    backgroundColor: "rgba(255, 159, 67, 0.12)",
+    borderColor: GameColors.incorrect,
+    backgroundColor: GameColors.incorrectSurface,
   },
   buttonDisabled: {
     opacity: 0.85,

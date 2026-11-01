@@ -1621,5 +1621,14 @@
     "reviewNoLives": "Lai izmēģinātu šo pārbaudi, vajadzīga dzīvība.",
     "reviewDiagram": "Iekrāsotas {{colored}} no {{total}} vienādām daļām.",
     "reviewStale": "Sākusies jauna diena. Atgriezies, lai atvērtu jaunu pārbaudi."
+  },
+  "puzzleDesign": {
+    "letsPlay": "Spēlēsim!",
+    "subtitle": "Mazliet prakses. Mazliet progresa.",
+    "pickUp": "Turpini no vietas, kur apstājies",
+    "startHere": "Laba vieta, kur sākt",
+    "continue": "Turpināt spēli",
+    "start": "Sākt spēli",
+    "explore": "Izvēlies tēmu"
   }
 }

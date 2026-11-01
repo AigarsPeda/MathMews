@@ -1,4 +1,4 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { moderateScale } from "@/utils/scale";
 import { getFractionSliceAtPoint } from "@/utils/fraction-pie";

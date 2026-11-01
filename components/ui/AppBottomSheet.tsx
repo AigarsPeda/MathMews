@@ -15,6 +15,7 @@ export function AppBottomSheet({
   onDismissComplete,
   children,
   expanded = false,
+  backgroundColor,
 }: AppBottomSheetProps) {
   const insets = useSafeAreaInsets();
   const [viewportHeight, setViewportHeight] = useState(0);
@@ -29,6 +30,7 @@ export function AppBottomSheet({
       onClose={onClose}
       onDismissComplete={onDismissComplete}
       expanded={expanded}
+      backgroundColor={backgroundColor}
     >
       {/* Native presentation owns visibility, including the closing animation. */}
       <RNHostView onLayout={event => {

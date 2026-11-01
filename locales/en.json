@@ -1619,5 +1619,14 @@
     "reviewNoLives": "You need a life to try this check.",
     "reviewDiagram": "{{colored}} of {{total}} equal parts are colored.",
     "reviewStale": "A new day has started. Go back to open a fresh check."
+  },
+  "puzzleDesign": {
+    "letsPlay": "Let's play.",
+    "subtitle": "A little practice. A little progress.",
+    "pickUp": "Pick up where you left off",
+    "startHere": "A good place to start",
+    "continue": "Continue playing",
+    "start": "Start playing",
+    "explore": "Explore a topic"
   }
 }

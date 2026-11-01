@@ -1,11 +1,14 @@
-import { IconText as Text } from "@/components/ui/IconText";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
+import { PuzzleGradient, PuzzleHeaderGlow } from "@/components/puzzle/PuzzleGradient";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
 import type { BossStory } from "@/types/curriculum";
 import type { AppLocale } from "@/types/locale";
 import { PuzzleCatCompanion } from "@/components/puzzle/PuzzleCatCompanion";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
-import { GameColors, LIFE_BUY_COST } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { LIFE_BUY_COST } from "@/constants/game";
 import type { PetAnimationState, PetType } from "@/types/game";
 import type { PuzzleCatReaction } from "@/constants/puzzle-cat-reactions";
 import { moderateScale } from "@/utils/scale";
@@ -93,13 +96,15 @@ export function ResultOverlay({
   };
 
   return (
-    <AppBottomSheet visible={visible && !closing} onClose={continueOnce} onDismissComplete={handleDismissComplete} expanded>
+    <AppBottomSheet backgroundColor={GameColors.background} visible={visible && !closing} onClose={continueOnce} onDismissComplete={handleDismissComplete} expanded>
       {contentHeight => <View style={[styles.screen, contentHeight !== undefined && { height: contentHeight, flex: 0 }]}>
+        <PuzzleHeaderGlow color={GameColors.rewardGlow} />
         <ScrollView style={styles.body} nestedScrollEnabled={Platform.OS === "android"} contentContainerStyle={styles.card} showsVerticalScrollIndicator={false}>
           {correct && bossStory ? <BossStoryScene story={bossStory.story} locale={bossStory.locale}
-            completed={bossStory.completed} outcome={bossStory.completed === 3} reaction={bossStory.completed < 3} active={visible} /> : null}
-          <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
-            catSkinId={catSkinId} mood={petMood} reaction={catReaction} petName={petName} message={encouragement} portraitSize={bossStory && correct ? 88 : 180} />
+            completed={bossStory.completed} outcome={bossStory.completed === 3} reaction={bossStory.completed < 3} active={visible && !closing} catSkinId={catSkinId} /> : null}
+          {!bossStory ? <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
+            catSkinId={catSkinId} mood={petMood} reaction={catReaction} petName={petName} message={encouragement} portraitSize={180} /> : null}
+          {bossStory && correct ? <Text style={styles.detail}>{encouragement}</Text> : null}
 
           <Text
             accessibilityRole="header"
@@ -120,6 +125,7 @@ export function ResultOverlay({
                 coinType === "sparkle" && styles.sparkleCoinRow,
               ]}
             >
+              <PuzzleGradient colors={[GameColors.rewardSurface, "#FFE393"]} />
               <AppIcon name={coinType === "sparkle" ? "sparkle" : "coin"} size={moderateScale(28)} />
               <Text
                 style={[
@@ -137,8 +143,8 @@ export function ResultOverlay({
 
         </ScrollView>
         <View style={styles.actions}>
-          <Pressable
-            style={styles.primaryButton}
+          <PuzzleButton
+            label={continueLabel ?? (correct ? t("play.nextPuzzle") : t("play.tryAgain"))}
             onPress={continueOnce}
             disabled={closing}
             accessibilityRole="button"
@@ -146,12 +152,7 @@ export function ResultOverlay({
               continueLabel ??
               (correct ? t("play.a11yNext") : t("play.a11yTryAgain"))
             }
-          >
-            <Text style={styles.primaryButtonText}>
-              {continueLabel ??
-                (correct ? t("play.nextPuzzle") : t("play.tryAgain"))}
-            </Text>
-          </Pressable>
+          />
 
           {correct && onGoHome && (
             <Pressable
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   titleSuccess: {
-    color: GameColors.success,
+    color: GameColors.text,
   },
   titleHint: {
     color: "#99501A",
@@ -216,12 +217,15 @@ const styles = StyleSheet.create({
   },
   summary: { fontSize: moderateScale(16), lineHeight: moderateScale(24), fontWeight: "700", textAlign: "center", color: GameColors.text },
   coinRow: {
+    width: "100%",
+    overflow: "hidden",
+    justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
     gap: moderateScale(6),
-    backgroundColor: GameColors.background,
+    backgroundColor: GameColors.rewardSurface,
     borderRadius: moderateScale(16),
-    paddingVertical: moderateScale(6),
+    paddingVertical: moderateScale(16),
     paddingHorizontal: moderateScale(12),
   },
   sparkleCoinRow: {
@@ -243,29 +247,15 @@ const styles = StyleSheet.create({
     gap: moderateScale(10),
     paddingHorizontal: moderateScale(20),
     paddingTop: moderateScale(12),
-  },
-  primaryButton: {
-    width: "100%",
-    minHeight: moderateScale(56),
-    borderRadius: moderateScale(16),
-    backgroundColor: GameColors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: moderateScale(14),
-  },
-  primaryButtonText: {
-    fontSize: moderateScale(17),
-    fontWeight: "800",
-    color: "#FFFFFF",
-    textAlign: "center",
+    borderTopWidth: 1,
+    borderTopColor: GameColors.cardBorder,
+    backgroundColor: GameColors.background,
   },
   secondaryButton: {
     width: "100%",
     minHeight: moderateScale(48),
     borderRadius: moderateScale(16),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    backgroundColor: GameColors.card,
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: moderateScale(12),
@@ -273,7 +263,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: moderateScale(16),
     fontWeight: "700",
-    color: GameColors.text,
+    color: GameColors.primary,
   },
   buyLifeButton: {
     width: "100%",
@@ -281,7 +271,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(16),
     borderWidth: 2,
     borderColor: GameColors.primary,
-    backgroundColor: "#FFF8F6",
+    backgroundColor: GameColors.selectedSurface,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: moderateScale(12),

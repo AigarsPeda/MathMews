@@ -1,9 +1,10 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { findPuzzleDropZone, type PuzzleDropZone } from "@/utils/puzzle-drag";
 import { moderateScale } from "@/utils/scale";
 import * as Haptics from "expo-haptics";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { cancelAnimation, Easing, measure, ReduceMotion, useAnimatedRef, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming, type AnimatedRef, type LayoutAnimationFunction, type SharedValue } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";

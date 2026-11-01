@@ -80,9 +80,9 @@ export default function RootLayout() {
                     <Stack.Screen name="index" options={{ headerShown: false }} />
                     <Stack.Screen
                       name="puzzles"
-                      options={{ headerShown: false }}
+                      options={{ headerShown: false, statusBarStyle: "dark", contentStyle: { backgroundColor: "#FFFFFF" } }}
                     />
-                    <Stack.Screen name="play" options={{ headerShown: false, animationTypeForReplace: "push", animationDuration: 160 }} />
+                    <Stack.Screen name="play" options={{ headerShown: false, statusBarStyle: "dark", contentStyle: { backgroundColor: "#FFFFFF" }, animationTypeForReplace: "push", animationDuration: 160 }} />
                     <Stack.Screen name="stats" options={{ headerShown: false }} />
                     <Stack.Screen name="achievements" options={{ headerShown: false }} />
                     <Stack.Screen

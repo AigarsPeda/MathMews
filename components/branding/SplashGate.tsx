@@ -1,3 +1,4 @@
+import { PuzzleColors } from "@/constants/puzzle-theme";
 import { AnimatedSplashCat, SplashBackdrop } from "@/components/branding/AnimatedSplashCat";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { GameColors } from "@/constants/game";
@@ -124,7 +125,7 @@ export function SplashGate({ children }: { children: ReactNode }) {
               </View>
             </View>
             <View style={styles.loading}>
-              <ProgressBar progress={progress} style={styles.progressBar} fillColor={GameColors.primary} trackColor={GameColors.cardBorder} accessibilityLabel={t("loading.label")} />
+              <ProgressBar progress={progress} style={styles.progressBar} fillColor={PuzzleColors.primary} trackColor={GameColors.cardBorder} accessibilityLabel={t("loading.label")} />
             </View>
           </SplashBackdrop>
         </View>

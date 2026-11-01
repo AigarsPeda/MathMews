@@ -9,6 +9,7 @@ type FairShareTaskProps = {
   selectedIndex: number | null;
   isCorrect: boolean;
   answered: boolean;
+  incorrectAttempt?: boolean;
   onSelect: (index: number) => void;
 };
 
@@ -17,6 +18,7 @@ export function FairShareTask({
   selectedIndex,
   isCorrect,
   answered,
+  incorrectAttempt = false,
   onSelect,
 }: FairShareTaskProps) {
   const { items, people, choices } = puzzle.payload;
@@ -28,7 +30,7 @@ export function FairShareTask({
       <View style={styles.choices}>
         {choices.map((choice, index) => {
           let result: "correct" | "wrong" | null = null;
-          if (answered) {
+          if (answered || incorrectAttempt) {
             if (isCorrect && index === puzzle.correctIndex) {
               result = "correct";
             } else if (!isCorrect && index === selectedIndex) {

@@ -1,14 +1,16 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { EstimatePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type EstimateTaskProps = {
   puzzle: EstimatePuzzle;
   selectedIndex: number | null;
   isCorrect: boolean;
   answered: boolean;
+  incorrectAttempt?: boolean;
   onSelect: (index: number) => void;
 };
 
@@ -17,6 +19,7 @@ export function EstimateTask({
   selectedIndex,
   isCorrect,
   answered,
+  incorrectAttempt = false,
   onSelect,
 }: EstimateTaskProps) {
   const { expression, choices } = puzzle.payload;
@@ -30,7 +33,7 @@ export function EstimateTask({
       <View style={styles.choices}>
         {choices.map((choice, index) => {
           let result: "correct" | "wrong" | null = null;
-          if (answered) {
+          if (answered || incorrectAttempt) {
             if (isCorrect && index === puzzle.correctIndex) {
               result = "correct";
             } else if (!isCorrect && index === selectedIndex) {

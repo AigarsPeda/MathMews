@@ -1,0 +1,71 @@
+{
+  "fps": 8,
+  "durationMs": 1000,
+  "loop": false,
+  "poses": [
+    {
+      "timeMs": 0,
+      "head": 0,
+      "paw": 0,
+      "ear": 0,
+      "hop": 0,
+      "expression": "neutral"
+    },
+    {
+      "timeMs": 125,
+      "head": 0.6424628232120679,
+      "paw": 0,
+      "ear": -0.6424628232120679,
+      "hop": 0,
+      "expression": "neutral"
+    },
+    {
+      "timeMs": 250,
+      "head": 5.478803987175517,
+      "paw": 0,
+      "ear": -5.478803987175517,
+      "hop": 0,
+      "expression": "neutral"
+    },
+    {
+      "timeMs": 375,
+      "head": 8.999583807311474,
+      "paw": 0,
+      "ear": -8.999583807311474,
+      "hop": 0,
+      "expression": "pleased"
+    },
+    {
+      "timeMs": 500,
+      "head": 5.592551192600631,
+      "paw": 0,
+      "ear": -5.592551192600631,
+      "hop": 0,
+      "expression": "pleased"
+    },
+    {
+      "timeMs": 625,
+      "head": 0.700051700030956,
+      "paw": 0,
+      "ear": -0.700051700030956,
+      "hop": 0,
+      "expression": "pleased"
+    },
+    {
+      "timeMs": 750,
+      "head": 1.102182119232618e-15,
+      "paw": 0,
+      "ear": -1.102182119232618e-15,
+      "hop": 0,
+      "expression": "pleased"
+    },
+    {
+      "timeMs": 875,
+      "head": 1.102182119232618e-15,
+      "paw": 0,
+      "ear": -1.102182119232618e-15,
+      "hop": 0,
+      "expression": "pleased"
+    }
+  ]
+}

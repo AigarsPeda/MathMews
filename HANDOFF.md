@@ -1,5 +1,19 @@
 # Math Mews handoff
 
+## Current scoped task 1 November 2026
+
+The user wants a production plan to give another AI agent. They selected simple flat 2D characters for scenes between puzzle exercises. Decorative illustrations must not appear during active solving. This applies to puzzle interludes only; the 3D pet home and its existing assets remain outside scope.
+
+Start with [the self-contained production plan](docs/production/2d-characters/START_HERE.md), [the exact asset manifest](docs/production/2d-characters/asset-plan.json), and [bounded agent prompts](docs/production/2d-characters/AGENT_PROMPTS.md). The proposed cast is the player cat, Boba the rabbit, Alder the beaver, and Ada the owl. Produce the cat and Boba first.
+
+Current progress: Cat/Boba flat SVG masters, model sheets, six generic clips and the picnic kit are implemented. Runtime media includes orange, grey and white cat coats. The single pilot is `easy-addition-explore-5-lesson-5-boss`, preserving the `picnic-balloon` scene ID. Active boss screens omit story panels and decorative portraits; result sheets show one scene and localized feedback. Read [implementation status](docs/production/2d-characters/production/STATUS.md) before doing more work. Alder and Ada remain proposals.
+
+Validation: TypeScript, lint, curriculum, puzzle-experience, dismissal and media checks pass. A real iOS simulator run exercised all coats, replay/early Continue, repeated taps, Latvian, backgrounding and the real PlaySession using a memory-only save. The full game suite stops on an unrelated existing `react.memo` mock failure in `check-room-depth.mjs`. Android and physical-device performance remain unverified.
+
+What worked: the existing boss result flow already supports short checkpoint reactions and a longer ending. What did not work: the persistent mission panel hid the puzzle; the user also rejected a compact scene thumbnail. The old Boba branch-rescue title and balloon-launch stages are inconsistent and must not be reused together in new scenes.
+
+Next step: inspect `production/preview.html` or the native screenshots in `docs/qa/boss-2d/2026-11-01/`. Rebuild with `npm run assets:2d-pilot`; verify with `npm run test:2d-pilot`. Do not redo the original First run prompt over the completed masters. The status file has a bounded expansion prompt if requested. The historical handoff below describes earlier 3D home work.
+
 Updated: 2026-10-06. Project: `/Users/aigarspeda/Desktop/BrainPet`.
 
 Historical handoff. Superseded review imagery was removed on 2026-10-16. Use [DESIGN.md](DESIGN.md) and current source/assets for present-day visual guidance; the observations and counts below belong to the original sessions.

@@ -1,10 +1,11 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { PuzzleCatPortrait } from "@/components/puzzle/PuzzleCatPortrait";
 import type { PuzzleCatReaction } from "@/constants/puzzle-cat-reactions";
 import type { PetAnimationState, PetType } from "@/types/game";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
 
 type Props = { petType: PetType; catSkinId?: string; petName: string; mood: PetAnimationState; reaction?: PuzzleCatReaction; message: string; portraitSize?: number };

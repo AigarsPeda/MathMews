@@ -9,6 +9,7 @@ type MultipleChoiceTaskProps = {
   selectedIndex: number | null;
   isCorrect: boolean;
   answered: boolean;
+  incorrectAttempt?: boolean;
   onSelect: (index: number) => void;
 };
 
@@ -17,6 +18,7 @@ export function MultipleChoiceTask({
   selectedIndex,
   isCorrect,
   answered,
+  incorrectAttempt = false,
   onSelect,
 }: MultipleChoiceTaskProps) {
   const compactChoices = puzzle.choices.length >= 2 && puzzle.choices.length <= 4 && puzzle.choices.every(choice => choice.length <= 4);
@@ -26,7 +28,7 @@ export function MultipleChoiceTask({
       <View style={[styles.answerChoices, compactChoices && styles.compactChoices]}>
         {puzzle.choices.map((choice, index) => {
         let result: "correct" | "wrong" | null = null;
-        if (answered) {
+        if (answered || incorrectAttempt) {
           if (isCorrect && index === puzzle.correctIndex) {
             result = "correct";
           } else if (!isCorrect && index === selectedIndex) {

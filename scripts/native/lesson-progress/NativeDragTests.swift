@@ -33,6 +33,8 @@ final class NativeDragTests: XCTestCase {
   }
   app.buttons["Narrow"].tap(); app.buttons["LV"].tap()
   let first=app.buttons.matching(NSPredicate(format:"label CONTAINS %@","Viss pabeigts")).firstMatch
-  XCTAssertTrue(first.waitForExistence(timeout:5)); XCTAssertTrue(first.isHittable); shot("lesson-progress-narrow-latvian")
+  XCTAssertTrue(first.waitForExistence(timeout:5))
+  // The list intentionally positions the next unfinished lesson below Back.
+  XCTAssertTrue(lesson(2, lv:true).isHittable); shot("lesson-progress-narrow-latvian")
  }
 }

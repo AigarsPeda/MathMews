@@ -1,14 +1,16 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { BalancePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 type BalanceTaskProps = {
   puzzle: BalancePuzzle;
   selectedIndex: number | null;
   isCorrect: boolean;
   answered: boolean;
+  incorrectAttempt?: boolean;
   onSelect: (index: number) => void;
 };
 
@@ -17,6 +19,7 @@ export function BalanceTask({
   selectedIndex,
   isCorrect,
   answered,
+  incorrectAttempt = false,
   onSelect,
 }: BalanceTaskProps) {
   const { leftDisplay, rightValue, choices } = puzzle.payload;
@@ -43,7 +46,7 @@ export function BalanceTask({
       <View style={styles.choices}>
         {choices.map((choice, index) => {
           let result: "correct" | "wrong" | null = null;
-          if (answered) {
+          if (answered || incorrectAttempt) {
             if (isCorrect && index === puzzle.correctIndex) {
               result = "correct";
             } else if (!isCorrect && index === selectedIndex) {

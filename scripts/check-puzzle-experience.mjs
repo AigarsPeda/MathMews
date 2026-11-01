@@ -108,6 +108,8 @@ function renderHarness(file, exportName, mocks = {}) {
     'react-native': { ...native, Platform: { OS: 'ios' }, StyleSheet: { create: value => value } },
     'react-i18next': { useTranslation: () => ({ t }) },
     '@/utils/scale': { moderateScale: value => value },
+    'expo-font': { useFonts: () => [true, null] },
+    '@/constants/puzzle-fonts': { PuzzleFontAssets: {} },
     '@/constants/game': { GameColors: {}, MAX_LIVES: 3, getPuzzleCoinReward, getVisualHelpCost: () => 0 },
     '@/hooks/use-world-clock-now': { useWorldClockNow: () => Date.now() },
     ...mocks,
@@ -154,14 +156,14 @@ function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, 
   refresh();
   const scroll = nodes(tree).find(node => node.type === 'ScrollView');
   assert.ok(scroll);
-  assert.equal(nodes(scroll).some(node => node.type === 'Pressable' && node.props.accessibilityLabel === t('play.checkAnswer')), false, 'The shared Check action stays outside scrolling puzzle content');
-  assert.equal(nodes(tree).filter(node => node.type === 'Pressable' && node.props.accessibilityLabel === t('play.checkAnswer')).length, 1);
+  assert.equal(nodes(scroll).some(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === t('play.checkAnswer')), false, 'The shared Check action stays outside scrolling puzzle content');
+  assert.equal(nodes(tree).filter(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === t('play.checkAnswer')).length, 1);
   return { refresh, attempts, routes, game, tree:()=>tree,
     task: () => nodes(tree).find(node => node.type === 'PuzzleTaskView').props,
-    check: () => nodes(tree).find(node => node.type === 'Pressable' && node.props.accessibilityLabel === t('play.checkAnswer')).props,
+    check: () => nodes(tree).find(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === t('play.checkAnswer')).props,
     card: () => nodes(tree).find(node => node.type === 'PuzzleCard').props,
     result: () => nodes(tree).find(node => node.type === 'ResultOverlay')?.props,
-    text: () => nodes(tree).filter(node => ['Text', 'IconText'].includes(node.type)).map(node => node.props.children).join(' '),
+    text: () => nodes(tree).filter(node => ['Text', 'IconText', 'PuzzleText'].includes(node.type)).map(node => node.props.children).join(' '),
   };
 }
 const base = { id: 'test', hint: 'Count carefully.', explanation: 'A worked answer.', difficulty: 'easy', topic: 'fractions' };
@@ -195,6 +197,10 @@ const choice = screen({ ...base, type: 'multiple_choice', choices: ['A', 'B'], c
 choice.task().onSelectChoice(0); choice.refresh(); choice.check().onPress(); choice.refresh();
 assert.equal(choice.task().selectedIndex, 0, 'An incorrect choice stays selected');
 assert.equal(choice.result(), undefined);
+assert.equal(choice.task().incorrectAttempt, true, 'A checked wrong choice receives incorrect feedback while editable');
+assert.equal(choice.task().answered, false);
+choice.task().onSelectChoice(1); choice.refresh();
+assert.equal(choice.task().incorrectAttempt, false, 'Changing the choice clears stale incorrect feedback');
 choice.task().onSelectChoice(1); choice.refresh(); choice.check().onPress(); choice.refresh();
 assert.equal(choice.result().correct, true);
 
@@ -317,7 +323,7 @@ const garden = allPuzzles.find(p => p.id === 'v2-hard-fractions-garden-2');
 assert.equal(garden.payload.hideTarget, true);
 const fractionProps = { puzzle: garden, shadedPieces: 0, selectedSlices: [], onChangeShaded() {}, onToggleSlice() {} };
 for (const state of [{ answered: false, isCorrect: false }, { answered: true, isCorrect: false }]) {
-  assert.ok(!nodes(renderFractionBuild({ ...fractionProps, ...state })).some(node => node.type === 'Text' && node.props.children === 1), 'The unknown fraction numerator stays hidden before success');
+  assert.ok(!nodes(renderFractionBuild({ ...fractionProps, ...state })).some(node => ['Text', 'PuzzleText'].includes(node.type) && node.props.children === 1), 'The unknown fraction numerator stays hidden before success');
 }
 assert.ok(nodes(renderFractionBuild({ ...fractionProps, answered: true, isCorrect: true })).some(node => node.props.children === 1), 'Successful fraction feedback may show the answer');
 assert.ok(nodes(renderFractionBuild({ ...fractionProps, puzzle: { ...garden, payload: { numerator: 1, denominator: 4 } }, answered: false, isCorrect: false })).some(node => node.props.children === 1), 'A copying task still displays the fraction it asks for');
@@ -390,20 +396,18 @@ assert.equal(getPuzzleAttemptHint(budgetProps.puzzle, { kind: 'budget', indices:
 console.log('All four challenge types preserve local work, update the shared action, disable incomplete drafts and grade corrections.');
 
 for (const difficulty of ['easy', 'medium', 'hard']) {
-  const puzzle = allPuzzles.find(p => p.difficulty === difficulty && curriculum.getPuzzleLevelKind(p.id) === 'boss');
   for (const replay of [false, true]) {
-    const boss = screen(puzzle, { final: true, kind: 'boss', replay });
-    assert.equal(boss.card().coinReward, 2 * getPuzzleCoinReward(difficulty, replay), 'The boss question badge advertises the actual increased reward');
+    assert.equal(getPuzzleCoinReward(difficulty, replay, 'boss'), 2 * getPuzzleCoinReward(difficulty, replay), 'Boss rewards remain doubled without a question badge');
     assert.equal(getPuzzleCoinReward(difficulty, replay, 'challenge'), getPuzzleCoinReward(difficulty, replay), 'Optional challenge rates stay unchanged');
   }
 }
-console.log('Boss question badges advertise double first-clear and replay rewards on every difficulty.');
+console.log('Boss rewards remain double for first clears and replays on every difficulty.');
 const threeLives=screen({...base,type:'multiple_choice',choices:['4','5','6'],correctIndex:0});
 for(const [index,left] of [[1,2],[2,1],[1,0]]) {
   threeLives.task().onSelectChoice(index);threeLives.refresh();
   const submit=threeLives.check().onPress;submit();submit();threeLives.refresh();
   assert.equal(threeLives.game.progress.lives.current,left,'A submitted mistake uses exactly one life');
-  assert.equal(threeLives.card().coinReward,4,'Coin values stay fixed');
+  assert.equal(getPuzzleCoinReward(base.difficulty),4,'Coin values stay fixed');
 }
 assert.equal(threeLives.attempts.length,3);
 assert.ok(threeLives.text().includes(en.lives.outOfLives));

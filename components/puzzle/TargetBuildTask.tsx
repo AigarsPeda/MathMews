@@ -1,11 +1,12 @@
-import { GameColors } from "@/constants/game";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { MathOperator, TargetBuildPuzzle } from "@/types/puzzle";
 import { MATH_OPERATORS } from "@/types/puzzle";
 import { evaluateExpression } from "@/utils/puzzle-math";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type TargetBuildTaskProps = {
   puzzle: TargetBuildPuzzle;
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(12),
     borderWidth: 2,
     borderColor: GameColors.secondary,
-    backgroundColor: "rgba(78, 205, 196, 0.12)",
+    backgroundColor: GameColors.selectedSurface,
     alignItems: "center",
     justifyContent: "center",
   },

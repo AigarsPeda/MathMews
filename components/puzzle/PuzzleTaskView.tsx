@@ -56,6 +56,7 @@ type PuzzleTaskViewProps = {
   fractionMatchSelectedId: string | null;
   fractionMatchWrongIds: string[];
   answered: boolean;
+  incorrectAttempt?: boolean;
   isCorrect: boolean;
   hasLives?: boolean;
   onIncorrectAttempt?: () => boolean;
@@ -86,6 +87,7 @@ export function PuzzleTaskView({
   fractionMatchSelectedId,
   fractionMatchWrongIds,
   answered,
+  incorrectAttempt = false,
   isCorrect,
   hasLives = true,
   onIncorrectAttempt,
@@ -138,6 +140,7 @@ export function PuzzleTaskView({
       <PatternNextTask
         puzzle={patternNextPuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -151,6 +154,7 @@ export function PuzzleTaskView({
       <FunctionMachineTask
         puzzle={functionMachinePuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -205,6 +209,7 @@ export function PuzzleTaskView({
       <TrueFalseTask
         puzzle={trueFalsePuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -218,6 +223,7 @@ export function PuzzleTaskView({
       <BalanceTask
         puzzle={balancePuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -231,6 +237,7 @@ export function PuzzleTaskView({
       <FixMistakeTask
         puzzle={fixMistakePuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -244,6 +251,7 @@ export function PuzzleTaskView({
       <EstimateTask
         puzzle={estimatePuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -257,6 +265,7 @@ export function PuzzleTaskView({
       <FairShareTask
         puzzle={fairSharePuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -270,6 +279,7 @@ export function PuzzleTaskView({
       <FractionEquivalentTask
         puzzle={fractionEquivalentPuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -283,6 +293,7 @@ export function PuzzleTaskView({
       <CompareTask
         puzzle={comparePuzzle}
         selectedIndex={selectedIndex}
+        incorrectAttempt={incorrectAttempt}
         isCorrect={isCorrect}
         answered={answered}
         onSelect={onSelectChoice}
@@ -325,6 +336,7 @@ export function PuzzleTaskView({
     <MultipleChoiceTask
       puzzle={multipleChoicePuzzle}
       selectedIndex={selectedIndex}
+      incorrectAttempt={incorrectAttempt}
       isCorrect={isCorrect}
       answered={answered}
       onSelect={onSelectChoice}

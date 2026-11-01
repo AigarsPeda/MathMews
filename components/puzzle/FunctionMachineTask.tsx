@@ -1,15 +1,17 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { FunctionMachinePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type FunctionMachineTaskProps = {
   puzzle: FunctionMachinePuzzle;
   selectedIndex: number | null;
   isCorrect: boolean;
   answered: boolean;
+  incorrectAttempt?: boolean;
   onSelect: (index: number) => void;
 };
 
@@ -18,6 +20,7 @@ export function FunctionMachineTask({
   selectedIndex,
   isCorrect,
   answered,
+  incorrectAttempt = false,
   onSelect,
 }: FunctionMachineTaskProps) {
   const { t } = useTranslation();
@@ -45,7 +48,7 @@ export function FunctionMachineTask({
       <View style={styles.choices}>
         {choices.map((choice, index) => {
           let result: "correct" | "wrong" | null = null;
-          if (answered) {
+          if (answered || incorrectAttempt) {
             if (isCorrect && index === puzzle.correctIndex) {
               result = "correct";
             } else if (!isCorrect && index === selectedIndex) {

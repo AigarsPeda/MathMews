@@ -3,7 +3,7 @@ import { frame, presentationBackground, presentationDetents, presentationDragInd
 import { GameColors } from "@/constants/game";
 import type { SheetPresentationProps } from "./SheetPresentation.types";
 
-export function SheetPresentation({ visible, expanded, onClose, onDismissComplete, children }: SheetPresentationProps) {
+export function SheetPresentation({ visible, expanded, onClose, onDismissComplete, children, backgroundColor = GameColors.background }: SheetPresentationProps) {
   return (
     <Host style={{ position: "absolute" }} pointerEvents="none">
       <BottomSheet
@@ -15,7 +15,7 @@ export function SheetPresentation({ visible, expanded, onClose, onDismissComplet
           frame({ maxWidth: Infinity, alignment: "topLeading" }),
           presentationDetents(expanded ? [{ fraction: 0.88 }] : ["medium"]),
           presentationDragIndicator("visible"),
-          presentationBackground(GameColors.background),
+          presentationBackground(backgroundColor),
         ]}>
           {children}
         </Group>

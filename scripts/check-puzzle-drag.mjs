@@ -13,7 +13,7 @@ const mocks={
  'react/jsx-runtime':{jsx,jsxs:jsx},
  'react-native':{View:'View',Text:'Text',StyleSheet:{create:styles=>styles,absoluteFill:{}}},
  'expo-haptics':{selectionAsync:async()=>{}},
- '@/constants/game':{GameColors:{}},'@/utils/scale':{moderateScale:n=>n},
+ '@/constants/game':{GameColors:{}},'@/constants/puzzle-theme':{PuzzleColors:{}},'@/components/puzzle/PuzzleText':{PuzzleText:'Text'},'@/utils/scale':{moderateScale:n=>n},
  'react-native-worklets':{scheduleOnRN:(fn,...args)=>queue.push(()=>fn(...args))},
  'react-native-reanimated':{__esModule:true,default:{View:'AnimatedView'},useSharedValue:shared,useAnimatedRef:()=>({rect:{pageX:110,pageY:220,width:64,height:60}}),measure:ref=>ref.rect,useAnimatedStyle:fn=>fn(),useReducedMotion:()=>reducedMotion,
    ReduceMotion:{System:'system'},Easing:{cubic:n=>n*n*n,out:fn=>fn},cancelAnimation:()=>{},

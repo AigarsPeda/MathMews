@@ -1,0 +1,45 @@
+{
+  "fps": 8,
+  "source": "scripts/2d/build-pilot.mjs:picnic",
+  "transitions": {
+    "reaction-1": {
+      "fromState": 0,
+      "toState": 1,
+      "action": "acknowledge",
+      "durationMs": 1000,
+      "frames": 8
+    },
+    "reaction-2": {
+      "fromState": 1,
+      "toState": 2,
+      "action": "acknowledge",
+      "durationMs": 1000,
+      "frames": 8
+    },
+    "outcome": {
+      "fromState": 2,
+      "toState": 3,
+      "action": "celebrate",
+      "durationMs": 2000,
+      "frames": 16
+    }
+  },
+  "checkpoints": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      4,
+      1
+    ]
+  ]
+}

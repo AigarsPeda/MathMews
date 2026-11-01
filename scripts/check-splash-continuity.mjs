@@ -177,6 +177,7 @@ let authReady = true, localReady = true, cloudReady = true;
 let assetSnapshot = { mayContinue: true, completed: 1, failed: 0, total: 1 };
 const gateMocks = {
   ...mocks,
+  '@/constants/puzzle-theme': { PuzzleColors: { primary: '#C32468' } },
   'react-native': { ...mocks['react-native'], Image: 'NativeImage' },
   '@/components/branding/AnimatedSplashCat': { AnimatedSplashCat: 'AnimatedSplashCat', SplashBackdrop: 'SplashBackdrop' },
   '@/components/ui/ProgressBar': { ProgressBar: 'ProgressBar' },

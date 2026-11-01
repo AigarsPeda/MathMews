@@ -1,8 +1,8 @@
 import { VisualPracticeBoard } from "@/components/puzzle/VisualPracticeBoard";
-import { IconText as Text } from "@/components/ui/IconText";
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { FractionPieChart } from "@/components/puzzle/FractionPieChart";
 import { NumberLineTrack } from "@/components/puzzle/NumberLineTrack";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { VisualScene } from "@/types/visual-explanation";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
@@ -539,7 +539,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF0EE",
   },
   sequenceCellAddend: {
-    backgroundColor: "#E8FAF8",
+    backgroundColor: GameColors.selectedSurface,
   },
   sequenceValue: {
     fontSize: moderateScale(20),

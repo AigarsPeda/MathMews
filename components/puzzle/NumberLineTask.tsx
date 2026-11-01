@@ -1,9 +1,10 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { NumberLineTrack } from "@/components/puzzle/NumberLineTrack";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { NumberLinePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type NumberLineTaskProps = {
   puzzle: NumberLinePuzzle;

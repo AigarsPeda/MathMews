@@ -38,8 +38,10 @@ function harness(file, extraMocks = {}) {
     'react-i18next': { useTranslation: () => ({ t: key => key }) },
     '@/utils/scale': { moderateScale: value => value },
     '@/constants/game': { GameColors: { background: '#FFF5EB' }, LIFE_BUY_COST: 10 },
+    '@/constants/puzzle-theme': { PuzzleColors: { background: '#FFFFFF' } },
+    '@/components/puzzle/PuzzleGradient': { PuzzleGradient: 'PuzzleGradient', PuzzleHeaderGlow: 'PuzzleHeaderGlow' },
     ...Object.fromEntries([
-      ['@/components/ui/IconText', 'IconText'], ['@/components/ui/AppIcon', 'AppIcon'],
+      ['@/components/puzzle/PuzzleText', 'PuzzleText'], ['@/components/puzzle/PuzzleButton', 'PuzzleButton'], ['@/components/ui/IconText', 'IconText'], ['@/components/ui/AppIcon', 'AppIcon'],
       ['@/components/puzzle/BossStoryScene', 'BossStoryScene'], ['@/components/puzzle/PuzzleCatCompanion', 'PuzzleCatCompanion'],
       ['@/components/ui/AppBottomSheet', 'AppBottomSheet'],
     ].map(([id, name]) => [id, { [name]: name }])),
@@ -77,14 +79,14 @@ for (const action of ['next', 'retry', 'home', 'swipe']) {
     petName: 'Minka', encouragement: 'Good job', message: 'Great job!', detail: '26',
     onContinue: () => calls.push('continue'), onGoHome: () => calls.push('home') };
   let sheet = view.render('ResultOverlay', props);
-  const buttons = nodes(sheet.props.children(600)).filter(node => node.type === 'Pressable');
+  const buttons = nodes(sheet.props.children(600)).filter(node => ['Pressable', 'PuzzleButton'].includes(node.type));
   const press = action === 'swipe' ? sheet.props.onClose : buttons[action === 'home' ? 1 : 0].props.onPress;
   press();
   press();
   assert.deepEqual(calls, [], `${action} must wait for the sheet to close`);
   sheet = view.render('ResultOverlay', props);
   assert.equal(sheet.props.visible, false, `${action} starts closing while its parent still holds the result`);
-  assert.ok(nodes(sheet.props.children(600)).filter(node => node.type === 'Pressable').every(node => node.props.disabled), 'Actions are disabled while closing');
+  assert.ok(nodes(sheet.props.children(600)).filter(node => ['Pressable', 'PuzzleButton'].includes(node.type)).every(node => node.props.disabled), 'Actions are disabled while closing');
   sheet.props.onClose();
   sheet.props.onDismissComplete();
   sheet.props.onDismissComplete();
@@ -131,6 +133,7 @@ const appSheet = harness('components/ui/AppBottomSheet.tsx', {
   './SheetPresentation': { SheetPresentation: 'SheetPresentation' },
 });
 const completed = () => {};
+assert.equal(appSheet.render('AppBottomSheet', { visible: false, onClose: () => {}, backgroundColor: "#FFFFFF" }).props.backgroundColor, "#FFFFFF", "Puzzle sheets forward their surface override");
 assert.equal(appSheet.render('AppBottomSheet', { visible: false, onClose: () => {}, onDismissComplete: completed }).props.onDismissComplete,
   completed, 'The shared sheet forwards completion to its platform adapter');
 
@@ -212,7 +215,7 @@ for (const [kind, nextSpecialLevel] of [['practice', undefined], ['boss', undefi
   const view = harness('components/puzzle/ResultOverlay.tsx');
   const props = { visible: true, correct: true, onContinue: callback(continueCallback, env) };
   let sheet = view.render('ResultOverlay', props);
-  nodes(sheet.props.children(600)).find(node => node.type === 'Pressable').props.onPress();
+  nodes(sheet.props.children(600)).find(node => ['Pressable', 'PuzzleButton'].includes(node.type)).props.onPress();
   assert.deepEqual(routes.map(([action]) => action), ['prefetch'], 'Tapping Next closes the sheet before replacing the native screen');
   sheet = view.render('ResultOverlay', props);
   assert.equal(sheet.props.visible, false);
@@ -252,9 +255,14 @@ for (const platform of ['ios', 'android']) {
     const navigationTheme = tree.find(node => node.type === 'ThemeProvider').props.value;
     const stack = tree.find(node => node.props.screenOptions).props;
     assert.equal(navigationTheme.colors.background, '#FFF5EB', `${platform}/${colorScheme}: native transitions never reveal the default navigation background`);
-    assert.equal(stack.screenOptions.contentStyle.backgroundColor, '#FFF5EB', 'New screen surfaces match the puzzle before content paints');
+    assert.equal(stack.screenOptions.contentStyle.backgroundColor, '#FFF5EB', 'Global background continues to match the pet home');
     assert.notEqual(stack.screenOptions.animation, 'none', 'Puzzle navigation retains the native slide animation');
     const playOptions = tree.find(node => node.props.name === 'play').props.options;
+    for (const route of ['puzzles', 'play']) {
+      const options = tree.find(node => node.props.name === route).props.options;
+      assert.equal(options.contentStyle.backgroundColor, '#FFFFFF');
+      assert.equal(options.statusBarStyle, 'dark', 'White puzzle screens keep readable status text');
+    }
     assert.equal(playOptions.animationTypeForReplace, 'push', 'The next puzzle transitions forward');
     assert.ok(playOptions.animationDuration < stack.screenOptions.animationDuration, 'The next puzzle uses the shorter slide duration');
   }

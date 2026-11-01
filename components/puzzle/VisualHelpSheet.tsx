@@ -1,21 +1,14 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPlayer";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
-import { GameColors } from "@/constants/game";
+import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { getVisualExplanation, NUMBER_LINE_EXAMPLES } from "@/constants/visual-explanations";
 import type { Puzzle } from "@/types/puzzle";
 import { getPuzzleType } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type VisualHelpSheetProps = {
@@ -45,7 +38,7 @@ export function VisualHelpSheet({
   const [previousKey, setPreviousKey] = useState(key);
   if (key !== previousKey) { setPreviousKey(key); setProgress(0); setDirection("forward"); }
   return (
-    <AppBottomSheet visible={visible} onClose={onClose} expanded>
+    <AppBottomSheet backgroundColor={GameColors.background} visible={visible} onClose={onClose} expanded>
       <ScrollView
         style={[styles.scroll, { maxHeight: height * 0.88 - insets.top - insets.bottom - moderateScale(48) }]}
         contentContainerStyle={styles.scrollContent}

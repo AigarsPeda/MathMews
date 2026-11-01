@@ -1,4 +1,7 @@
+import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { BOSS_SCENE_ASSETS } from "@/constants/boss-scene-assets";
+import { PICNIC_2D_ASSETS } from "@/constants/boss-scene-2d-assets";
+import { resolveCatSkinId } from "@/constants/cat-skins";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import type { BossStory } from "@/types/curriculum";
 import type { AppLocale } from "@/types/locale";
@@ -8,10 +11,10 @@ import { Canvas, Group, Image as SkiaImage, useImage } from "@shopify/react-nati
 import { Image } from "expo-image";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { runOnJS, useDerivedValue, useFrameCallback, useSharedValue, type FrameInfo } from "react-native-reanimated";
 
-type Props = { story: BossStory; locale: AppLocale; completed: number; outcome?: boolean; reaction?: boolean; active?: boolean };
+type Props = { story: BossStory; locale: AppLocale; completed: number; outcome?: boolean; reaction?: boolean; active?: boolean; catSkinId?: string };
 
 function ScenePlayback({ source, stillSource, frameCount, width, active, label, hint, ending }: {
   source: number; stillSource: number; frameCount: number; width: number; active: boolean; label: string; hint?: string; ending: boolean;
@@ -55,17 +58,18 @@ function ScenePlayback({ source, stillSource, frameCount, width, active, label, 
   </>;
 }
 
-/** Four Blender checkpoints, short cat reactions and a two-second mission outcome. */
-export function BossStoryScene({ story, locale, completed, outcome = false, reaction = false, active = true }: Props) {
+/** One focal result scene. The picnic pilot uses the player's saved coat. */
+export function BossStoryScene({ story, locale, completed, outcome = false, reaction = false, active = true, catSkinId }: Props) {
   const { t } = useTranslation();
   const { reduceMotion } = useAnimationActivity();
   const [width, setWidth] = useState(0);
-  const assets = BOSS_SCENE_ASSETS[story.sceneId];
+  const coat = resolveCatSkinId(catSkinId);
+  const assets = story.sceneId === "picnic-balloon" ? PICNIC_2D_ASSETS[coat] : BOSS_SCENE_ASSETS[story.sceneId];
   const stage = Math.max(0, Math.min(3, Math.floor(completed)));
   if (!assets) return null;
   return <View style={styles.wrap} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
     <View style={styles.picture}>
-      {(outcome || reaction && stage > 0) && width > 0 ? <ScenePlayback key={`${story.sceneId}-${stage}`}
+      {(outcome || reaction && stage > 0) && width > 0 ? <ScenePlayback key={`${story.sceneId}-${coat}-${stage}`}
         source={stage === 3 ? assets.outcome : assets.reactions[stage - 1]} stillSource={assets.states[stage]} frameCount={stage === 3 ? 16 : 8}
         width={width} active={active} label={stage === 3 ? story.outcome[locale] : t("bossStory.scene", { count: stage, total: 3 })}
         hint={story.catActions?.[stage]?.[locale]} ending={stage === 3} />
