@@ -15,7 +15,7 @@ const fractionGoals = [
   ['models','Read different fraction pictures','Nolasi dažādus daļu attēlus'], ['equivalent','Choose equivalent fractions','Izvēlies vienādas daļas'],
   ['apply','Fractions in a collection','Daļas kolekcijā'], ['review','Revisit fraction ideas','Atkārto daļu jēdzienus'],
 ];
-function arithmetic(stage, slot, boss, locale) {
+export function arithmetic(stage, slot, boss, locale) {
   const lv=locale==='lv', a=stage<2 ? 2+slot : stage===2 ? 5+slot : 7+slot%3;
   const b=stage<2 ? 1+(slot+(boss?1:0))%3 : stage===2 ? 2+slot%2 : 4+slot%4;
   const total=a+b, base={topic:'addition',hint:lv?`Sāc ar ${a} un pieskaiti ${b}.`:`Start with ${a} and add ${b}.`,explanation:`${a} + ${b} = ${total}.`};
@@ -33,6 +33,26 @@ function fraction(stage,slot,boss,locale) {
   if(stage>=3 && slot%3===1) return {...base,type:'compare',question:lv?'Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?':'The wholes are the same size. Which colored fraction is larger?',payload:{optionA:`${n}/${d}`,optionB:`${n+1}/${d}`},correctIndex:1,explanation:`${n+1}/${d} > ${n}/${d}.`};
   if(slot%2===1) return {...base,type:'fraction_match',question:lv?'Savieno daļu ar tās attēlu.':'Match each fraction to its picture.',payload:{pairs:[{numerator:n,denominator:d,visual:'pie'},{numerator:d,denominator:d,visual:'grid'}]},explanation:lv?'Daļas ir vienāda lieluma. Visas daļas kopā veido vienu veselo.':'The pieces are equal. All the pieces together make one whole.'};
   return {...base,type:'fraction_build',question:lv?`Iekrāso ${n} no ${d} vienādām daļām: ${n}/${d}.`:`Color ${n} of the ${d} equal parts: ${n}/${d}.`,payload:{numerator:n,denominator:d}};
+}
+/** New end-of-level examples keep the early whole/half sequence and vary the models. */
+export function pathFractionReview(stage, slot, locale) {
+  const lv = locale === 'lv';
+  const d = stage === 0 ? 2 : stage === 1 ? 4 : slot === 0 ? 5 : 7;
+  const n = stage === 0 ? 2 : stage < 3 ? 1 : slot + 2;
+  const base = { topic: 'fractions',
+    hint: lv ? 'Saskaiti iekrāsotās daļas un visas vienādās daļas.' : 'Count the colored parts and all the equal parts.',
+    explanation: lv ? `${n} no ${d} vienādām daļām ir ${n}/${d}.` : `${n} out of ${d} equal parts is ${n}/${d}.` };
+  if (slot === 1 && stage < 3) return { ...base, type: 'fraction_match',
+    question: lv ? 'Savieno daļu ar tās attēlu.' : 'Match each fraction to its picture.',
+    payload: { pairs: [{ numerator: 1, denominator: d, visual: 'grid' }, { numerator: d, denominator: d, visual: 'pie' }] },
+    explanation: lv ? `Viena daļa ir 1/${d}. Visas ${d} daļas veido veselo.` : `One part is 1/${d}. All ${d} parts make a whole.` };
+  if (slot === 0 && stage >= 5) return { ...base, type: 'fraction_equivalent', correctIndex: 0,
+    question: lv ? 'Kura daļa rāda to pašu daudzumu?' : 'Which fraction shows the same amount?',
+    payload: { numerator: n, denominator: d, choices: [`${n * 2}/${d * 2}`, `${n}/${d * 2}`, `${n + 1}/${d}`] },
+    explanation: `${n}/${d} = ${n * 2}/${d * 2}.` };
+  return { ...base, type: 'fraction_build',
+    question: lv ? `Iekrāso ${n} no ${d} vienādām daļām: ${n}/${d}.` : `Color ${n} of the ${d} equal parts: ${n}/${d}.`,
+    payload: { numerator: n, denominator: d } };
 }
 function replaceTask(target, spec) {
   const {id,difficulty,ageRange}=target;

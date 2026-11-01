@@ -50,6 +50,7 @@ export const DEFAULT_PET = {
 export const DEFAULT_WALLET = { coins: 42 };
 export const MAX_LIVES = 3;
 export const DEFAULT_PROGRESS = {
+  pathVersion: 1 as const,
   puzzleContentVersion: PUZZLE_CONTENT_VERSION,
   streak: 0,
   puzzleStreak: 0,

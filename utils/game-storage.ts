@@ -1,5 +1,5 @@
 import { normalizeLearningEvidence } from "@/utils/learning-evidence";
-import { LEARNING_CATALOG } from "@/constants/curriculum";
+import { PUZZLE_PATHS, migratePathProgress } from "@/constants/puzzle-path";
 import { PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
 import { normalizePendingWalletPurchases } from "@/services/wallet/offline-orders";
 import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
@@ -353,6 +353,7 @@ function parseGameSave(
         progress: {
           ...(parsed.progress as Progress),
           puzzleContentVersion: PUZZLE_CONTENT_VERSION,
+          ...migratePathProgress(currentCurriculum ? parsed.progress : { pathVersion: 1 }, completedPuzzleIds),
           streak: currentCurriculum ? parsed.progress.streak : 0,
           puzzleStreak:
             currentCurriculum && typeof parsed.progress.puzzleStreak === "number"
@@ -373,7 +374,7 @@ function parseGameSave(
           decorationsUnlocked,
           decorationQuantities,
           skinsUnlocked,
-          learningEvidence: normalizeLearningEvidence(currentCurriculum ? parsed.progress.learningEvidence : {}, new Map(LEARNING_CATALOG.lessons.filter(l => l.skillId).map(l => [l.skillId!, new Set(l.levels.flatMap(v => v.puzzleIds))]))),
+          learningEvidence: normalizeLearningEvidence(currentCurriculum ? parsed.progress.learningEvidence : {}, new Map(PUZZLE_PATHS.filter(l => l.skillId).map(l => [l.skillId!, new Set(l.levels.flatMap(v => v.puzzleIds))]))),
           learningSupportIds: currentCurriculum && Array.isArray(parsed.progress.learningSupportIds) ? getCompletedPuzzleIds({ completedPuzzleIds: parsed.progress.learningSupportIds.filter((id): id is string => typeof id === "string") }) : [],
           reviewAttemptKeys: currentCurriculum && Array.isArray(parsed.progress.reviewAttemptKeys) ? parsed.progress.reviewAttemptKeys.filter((id): id is string => typeof id === "string").slice(-200) : [],
           topicStats: normalizeTopicStats(currentCurriculum ? parsed.progress.topicStats : {}),

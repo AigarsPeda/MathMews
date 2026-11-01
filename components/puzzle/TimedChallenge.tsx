@@ -2,7 +2,6 @@ import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
-import { useLocale } from "@/contexts/LocaleProvider";
 import type { LearningLevel } from "@/types/curriculum";
 import { formatChallengeTime } from "@/utils/timed-challenge";
 import { moderateScale } from "@/utils/scale";
@@ -20,19 +19,27 @@ export function ChallengeClock({ milliseconds }: { milliseconds: number }) {
 }
 
 type IntroProps = {
+  mode?: "timed" | "untimed"; onModeChange?: (mode: "timed" | "untimed") => void;
   level: LearningLevel; expired: boolean; lifeLost: boolean; hasLives: boolean; otherActive: boolean;
   onStart: () => void; onResume: () => void; onRefill: () => void; onHelp?: () => void;
 };
-export function TimedChallengeIntro({ level, expired, lifeLost, otherActive }: IntroProps) {
-  const { t } = useTranslation(), { locale } = useLocale();
+export function TimedChallengeIntro({ level, expired, lifeLost, otherActive, mode = "timed", onModeChange }: IntroProps) {
+  const { t } = useTranslation();
   return <View style={styles.intro}>
-    <AppIcon name="challenge-timer" size={moderateScale(72)} />
-    <Text style={styles.title} accessibilityRole="header">{t(expired ? "timedChallenge.expired" : "timedChallenge.title")}</Text>
-    <Text style={styles.description}>{expired ? t(lifeLost ? "timedChallenge.lifeUsed" : "timedChallenge.attemptEnded") : level.description[locale]}</Text>
-    <Text style={styles.duration}>{t("timedChallenge.limit", { time: formatChallengeTime((level.timeLimitSeconds ?? 0) * 1000) })}</Text>
-    <Text style={styles.description}>{t("timedChallenge.rules")}</Text>
-    <Text style={styles.note}>{t("timedChallenge.keepsRunning")}</Text>
-    {otherActive ? <Text style={styles.note}>{t("timedChallenge.otherActive")}</Text> : null}
+    <AppIcon name="challenge-timer" size={moderateScale(56)} />
+    <Text style={styles.title} accessibilityRole="header">{t(expired ? "timedChallenge.expired" : "puzzlePathDesign.yourPace")}</Text>
+    {expired ? <Text style={styles.description}>{t(lifeLost ? "timedChallenge.lifeUsed" : "timedChallenge.attemptEnded")}</Text> : null}
+    {otherActive ? <Text style={styles.note}>{t("puzzlePathDesign.otherActive")}</Text> : <>
+      <View style={styles.modes}>
+        {(["untimed", "timed"] as const).map(value => <Pressable key={value} onPress={() => onModeChange?.(value)}
+          accessibilityRole="radio" accessibilityState={{ checked: mode === value }}
+          style={[styles.mode, mode === value && styles.selectedMode]}>
+          <Text style={styles.modeText}>{value === "untimed" ? t("puzzlePathDesign.noTimer") : formatChallengeTime((level.timeLimitSeconds ?? 0) * 1000)}</Text>
+        </Pressable>)}
+      </View>
+      <Text style={styles.description}>{t("puzzlePathDesign.sameProgress")}</Text>
+      {mode === "timed" ? <Text style={styles.note}>{t("puzzlePathDesign.timerRules")}</Text> : null}
+    </>}
   </View>;
 }
 
@@ -46,6 +53,10 @@ export function TimedChallengeActions({ expired, hasLives, otherActive, onStart,
 }
 
 const styles = StyleSheet.create({
+  modes: { flexDirection: "row", gap: 10, alignSelf: "stretch" },
+  mode: { flex: 1, minHeight: 58, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: "white", borderWidth: 2, borderColor: "#DBD3E8", borderRadius: 16 },
+  selectedMode: { borderColor: GameColors.primary, backgroundColor: "#FFF0F6" },
+  modeText: { color: GameColors.text, fontSize: moderateScale(17), fontWeight: "800" },
   clock: { flexDirection: "row", alignItems: "center", gap: moderateScale(8), paddingVertical: moderateScale(6) },
   clockLabel: { flex: 1, color: GameColors.textMuted, fontSize: moderateScale(14), fontWeight: "600" },
   clockTime: { color: "#5D408C", fontSize: moderateScale(20), fontWeight: "800", fontVariant: ["tabular-nums"] },

@@ -149,7 +149,7 @@ type GameContextValue = {
   answerLearningReview: (lessonId: string, day: number, selected: number) => boolean | null;
   recordLearningHelp: (puzzleId: string) => void;
   answerPuzzle: (puzzle: Puzzle, correct: boolean, attemptId: string, context?: LearningAttemptContext) => number | null;
-  beginChallenge: (levelId: string) => boolean;
+  beginChallenge: (levelId: string, mode?: "timed" | "untimed") => boolean;
   expireChallenge: (attemptId: string) => void;
   feedPet: () => boolean;
   isReady: boolean;
@@ -352,12 +352,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       pendingCoinRewards:[...(current.pendingCoinRewards ?? []),...pending] });
     return result.coins;
   }, [setSave]);
-  const beginChallenge = useCallback((levelId: string) => {
+  const beginChallenge = useCallback((levelId: string, mode: "timed" | "untimed" = "timed") => {
     const current = saveRef.current;
     const level = getLearningLevelLocation(levelId)?.level;
     if (!level) return false;
     const synced = settleChallengeTimeout(current.progress);
-    const next = beginTimedChallenge(synced, level, `challenge-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const next = beginTimedChallenge(synced, level, `challenge-${Date.now()}-${Math.random().toString(36).slice(2)}`, Date.now(), mode);
     if (next || synced !== current.progress) setSave({ ...current, progress: next ?? synced });
     return next !== null;
   }, [setSave]);

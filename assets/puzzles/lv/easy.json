@@ -15527,5 +15527,3782 @@
       "representation": "fraction-model",
       "reasoningSteps": 1
     }
+  },
+  {
+    "id": "v2-easy-easy-numbers-small-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 4, 6, 9, 12.",
+    "payload": {
+      "numbers": [
+        12,
+        4,
+        9,
+        6
+      ],
+      "correctOrder": [
+        4,
+        6,
+        9,
+        12
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.small",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-small-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "14 > 8.",
+    "payload": {
+      "optionA": "8",
+      "optionB": "14",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.small",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-tens-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 5, 7, 10, 13.",
+    "payload": {
+      "numbers": [
+        13,
+        5,
+        10,
+        7
+      ],
+      "correctOrder": [
+        5,
+        7,
+        10,
+        13
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.tens",
+      "prerequisiteSkillIds": [
+        "easy.numbers.small"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-tens-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "15 > 9.",
+    "payload": {
+      "optionA": "15",
+      "optionB": "9",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.tens",
+      "prerequisiteSkillIds": [
+        "easy.numbers.small"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-join-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 6 un pieskaiti 2.",
+    "explanation": "6 + 2 = 8.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 6 lentes, un viņš pievieno vēl 2. Cik lenšu kopā?",
+    "choices": [
+      "8",
+      "7",
+      "9"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 6,
+      "right": 2,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.join",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-join-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 7 un pieskaiti 3.",
+    "explanation": "7 + 3 = 10.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 7 lentes, un viņš pievieno vēl 3. Cik lenšu kopā?",
+    "choices": [
+      "10",
+      "9",
+      "11"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 7,
+      "right": 3,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.join",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-ten-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 6 un pieskaiti 2.",
+    "explanation": "6 + 2 = 8.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 6 lentes, un viņš pievieno vēl 2. Cik lenšu kopā?",
+    "choices": [
+      "8",
+      "7",
+      "9"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 6,
+      "right": 2,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.symbols",
+      "prerequisiteSkillIds": [
+        "easy.addition.join"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-ten-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 7 un pieskaiti 3.",
+    "explanation": "7 + 3 = 10.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 7 lentes, un viņš pievieno vēl 3. Cik lenšu kopā?",
+    "choices": [
+      "10",
+      "9",
+      "11"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 7,
+      "right": 3,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.symbols",
+      "prerequisiteSkillIds": [
+        "easy.addition.join"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-take-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "13",
+      "14",
+      "25"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 19,
+      "right": 6,
+      "object": "star"
+    },
+    "question": "Ir 19 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "19 − 6 = 13 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.take",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-take-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "20 − 7 = 13.",
+    "payload": {
+      "start": 20,
+      "jump": -7,
+      "min": 0,
+      "max": 23,
+      "correctValue": 13
+    },
+    "learning": {
+      "skillId": "easy.subtraction.take",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-back-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "14",
+      "15",
+      "28"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 21 papīra zvaigznes. 7 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "21 − 7 = 14 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.back",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.take"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-back-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "22 − 8 = 14.",
+    "payload": {
+      "start": 22,
+      "jump": -8,
+      "min": 0,
+      "max": 25,
+      "correctValue": 14
+    },
+    "learning": {
+      "skillId": "easy.subtraction.back",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.take"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-jumps-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +5. Trūkstošais skaitlis ir 25.",
+    "payload": {
+      "sequence": [
+        5,
+        10,
+        15,
+        20
+      ],
+      "choices": [
+        "25",
+        "26",
+        "27"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.jumps",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-jumps-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −6.",
+    "payload": {
+      "input": 26,
+      "output": 20,
+      "choices": [
+        "−6",
+        "+6",
+        "−7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.jumps",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-fives-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +2. Trūkstošais skaitlis ir 14.",
+    "payload": {
+      "sequence": [
+        6,
+        8,
+        10,
+        12
+      ],
+      "choices": [
+        "14",
+        "15",
+        "16"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.fives",
+      "prerequisiteSkillIds": [
+        "easy.patterns.jumps"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-fives-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −3.",
+    "payload": {
+      "input": 27,
+      "output": 24,
+      "choices": [
+        "−3",
+        "+3",
+        "−4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.fives",
+      "prerequisiteSkillIds": [
+        "easy.patterns.jumps"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-rows-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "30",
+      "11",
+      "36"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 5,
+      "columns": 6,
+      "object": "mouse"
+    },
+    "question": "Izveido 5 rindas, katrā pa 6 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "5 × 6 = 30.",
+    "learning": {
+      "skillId": "easy.multiplication.rows",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-rows-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 3.",
+    "payload": {
+      "input": 6,
+      "output": 18,
+      "choices": [
+        "×3",
+        "+3",
+        "×4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.rows",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-groups-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "42",
+      "13",
+      "49"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 6,
+      "columns": 7,
+      "object": "mouse"
+    },
+    "question": "Izveido 6 rindas, katrā pa 7 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "6 × 7 = 42.",
+    "learning": {
+      "skillId": "easy.multiplication.groups",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.rows"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-groups-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 4.",
+    "payload": {
+      "input": 2,
+      "output": 8,
+      "choices": [
+        "×4",
+        "+4",
+        "×5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.groups",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.rows"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-parts-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "2 no 2 vienādām daļām ir 2/2.",
+    "type": "fraction_build",
+    "question": "Iekrāso 2 no 2 vienādām daļām: 2/2.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 2
+    },
+    "learning": {
+      "skillId": "easy.fractions.equal-parts",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-parts-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "Viena daļa ir 1/2. Visas 2 daļas veido veselo.",
+    "type": "fraction_match",
+    "question": "Savieno daļu ar tās attēlu.",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 1,
+          "denominator": 2,
+          "visual": "grid"
+        },
+        {
+          "numerator": 2,
+          "denominator": 2,
+          "visual": "pie"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.equal-parts",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-pictures-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "1 no 4 vienādām daļām ir 1/4.",
+    "type": "fraction_build",
+    "question": "Iekrāso 1 no 4 vienādām daļām: 1/4.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 4
+    },
+    "learning": {
+      "skillId": "easy.fractions.quarters",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equal-parts"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-pictures-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "Viena daļa ir 1/4. Visas 4 daļas veido veselo.",
+    "type": "fraction_match",
+    "question": "Savieno daļu ar tās attēlu.",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 1,
+          "denominator": 4,
+          "visual": "grid"
+        },
+        {
+          "numerator": 4,
+          "denominator": 4,
+          "visual": "pie"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.quarters",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equal-parts"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 6, 8, 11, 14.",
+    "payload": {
+      "numbers": [
+        14,
+        6,
+        11,
+        8
+      ],
+      "correctOrder": [
+        6,
+        8,
+        11,
+        14
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.numbers.tens"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "16 > 10.",
+    "payload": {
+      "optionA": "10",
+      "optionB": "16",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.numbers.tens"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 7, 9, 12, 15.",
+    "payload": {
+      "numbers": [
+        15,
+        7,
+        12,
+        9
+      ],
+      "correctOrder": [
+        7,
+        9,
+        12,
+        15
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "17 > 11.",
+    "payload": {
+      "optionA": "17",
+      "optionB": "11",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 8, 10, 13, 16.",
+    "payload": {
+      "numbers": [
+        16,
+        8,
+        13,
+        10
+      ],
+      "correctOrder": [
+        8,
+        10,
+        13,
+        16
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "18 > 12.",
+    "payload": {
+      "optionA": "12",
+      "optionB": "18",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 9, 11, 14, 17.",
+    "payload": {
+      "numbers": [
+        17,
+        9,
+        14,
+        11
+      ],
+      "correctOrder": [
+        9,
+        11,
+        14,
+        17
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "19 > 13.",
+    "payload": {
+      "optionA": "19",
+      "optionB": "13",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 10, 12, 15, 18.",
+    "payload": {
+      "numbers": [
+        18,
+        10,
+        15,
+        12
+      ],
+      "correctOrder": [
+        10,
+        12,
+        15,
+        18
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "20 > 14.",
+    "payload": {
+      "optionA": "14",
+      "optionB": "20",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 11, 13, 16, 19.",
+    "payload": {
+      "numbers": [
+        19,
+        11,
+        16,
+        13
+      ],
+      "correctOrder": [
+        11,
+        13,
+        16,
+        19
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "21 > 15.",
+    "payload": {
+      "optionA": "21",
+      "optionB": "15",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 12, 14, 17, 20.",
+    "payload": {
+      "numbers": [
+        20,
+        12,
+        17,
+        14
+      ],
+      "correctOrder": [
+        12,
+        14,
+        17,
+        20
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "22 > 16.",
+    "payload": {
+      "optionA": "16",
+      "optionB": "22",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Sakārto skaitļu kartītes no mazākā līdz lielākajam.",
+    "hint": "Vispirms atrodi mazāko kartīti.",
+    "explanation": "Secība ir 13, 15, 18, 21.",
+    "payload": {
+      "numbers": [
+        21,
+        13,
+        18,
+        15
+      ],
+      "correctOrder": [
+        13,
+        15,
+        18,
+        21
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Kurā paplātē ir vairāk rotaļu peļu?",
+    "hint": "Salīdzini daudzumus.",
+    "explanation": "23 > 17.",
+    "payload": {
+      "optionA": "23",
+      "optionB": "17",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 9 un pieskaiti 2.",
+    "explanation": "9 + 2 = 11.",
+    "type": "number_line",
+    "question": "Sāc ar 9 un lec 2 soļus uz priekšu.",
+    "payload": {
+      "start": 9,
+      "jump": 2,
+      "min": 0,
+      "max": 14,
+      "correctValue": 11
+    },
+    "learning": {
+      "skillId": "easy.addition.count-on",
+      "prerequisiteSkillIds": [
+        "easy.addition.symbols"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 10 un pieskaiti 3.",
+    "explanation": "10 + 3 = 13.",
+    "type": "number_line",
+    "question": "Sāc ar 10 un lec 3 soļus uz priekšu.",
+    "payload": {
+      "start": 10,
+      "jump": 3,
+      "min": 0,
+      "max": 16,
+      "correctValue": 13
+    },
+    "learning": {
+      "skillId": "easy.addition.count-on",
+      "prerequisiteSkillIds": [
+        "easy.addition.symbols"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Lai no 8 iegūtu 10, vajag 2. Sadali 4 un pieskaiti pārējo.",
+    "explanation": "8 + 4 = 12.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 8 lentes, un viņš pievieno vēl 4. Cik lenšu kopā?",
+    "choices": [
+      "12",
+      "11",
+      "13"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 4,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.make-ten",
+      "prerequisiteSkillIds": [
+        "easy.addition.count-on"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Lai no 9 iegūtu 10, vajag 1. Sadali 5 un pieskaiti pārējo.",
+    "explanation": "9 + 5 = 14.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 9 lentes, un viņš pievieno vēl 5. Cik lenšu kopā?",
+    "choices": [
+      "14",
+      "13",
+      "15"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 9,
+      "right": 5,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.make-ten",
+      "prerequisiteSkillIds": [
+        "easy.addition.count-on"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 8 un pieskaiti 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "balance",
+    "correctIndex": 0,
+    "question": "Kura daļa trūkst?",
+    "payload": {
+      "leftDisplay": "8 + ?",
+      "rightValue": 12,
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.addition.missing-part",
+      "prerequisiteSkillIds": [
+        "easy.addition.make-ten"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 9 un pieskaiti 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "balance",
+    "correctIndex": 0,
+    "question": "Kura daļa trūkst?",
+    "payload": {
+      "leftDisplay": "9 + ?",
+      "rightValue": 14,
+      "choices": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.addition.missing-part",
+      "prerequisiteSkillIds": [
+        "easy.addition.make-ten"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Izvēlies vienu kartīti un atrodi trūkstošo daļu.",
+    "explanation": "8 + 4 = 12.",
+    "type": "pair_sum",
+    "question": "Izvēlies divas kartītes, kuru summa ir 12.",
+    "payload": {
+      "numbers": [
+        8,
+        4,
+        1,
+        11
+      ],
+      "target": 12,
+      "correctIndices": [
+        0,
+        1
+      ]
+    },
+    "learning": {
+      "skillId": "easy.addition.pairs",
+      "prerequisiteSkillIds": [
+        "easy.addition.missing-part"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Izvēlies vienu kartīti un atrodi trūkstošo daļu.",
+    "explanation": "9 + 5 = 14.",
+    "type": "pair_sum",
+    "question": "Izvēlies divas kartītes, kuru summa ir 14.",
+    "payload": {
+      "numbers": [
+        9,
+        5,
+        1,
+        13
+      ],
+      "target": 14,
+      "correctIndices": [
+        0,
+        1
+      ]
+    },
+    "learning": {
+      "skillId": "easy.addition.pairs",
+      "prerequisiteSkillIds": [
+        "easy.addition.missing-part"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 8 un pieskaiti 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 8 lentes, un viņš pievieno vēl 4. Cik lenšu kopā?",
+    "choices": [
+      "12",
+      "11",
+      "13"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 4,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.explain",
+      "prerequisiteSkillIds": [
+        "easy.addition.pairs"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 9 un pieskaiti 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "fix_mistake",
+    "question": "Kurš labojums dod pareizo kopskaitu?",
+    "payload": {
+      "wrongWork": [
+        "9 + 5 = 13"
+      ],
+      "choices": [
+        "9 + 5 = 14",
+        "9 + 5 = 13",
+        "9 + 5 = 15"
+      ]
+    },
+    "correctIndex": 0,
+    "learning": {
+      "skillId": "easy.addition.explain",
+      "prerequisiteSkillIds": [
+        "easy.addition.pairs"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 8 un pieskaiti 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "fix_mistake",
+    "question": "Kurš labojums dod pareizo kopskaitu?",
+    "payload": {
+      "wrongWork": [
+        "8 + 4 = 11"
+      ],
+      "choices": [
+        "8 + 4 = 12",
+        "8 + 4 = 11",
+        "8 + 4 = 13"
+      ]
+    },
+    "correctIndex": 0,
+    "learning": {
+      "skillId": "easy.addition.repair",
+      "prerequisiteSkillIds": [
+        "easy.addition.explain"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 9 un pieskaiti 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "fix_mistake",
+    "question": "Kurš labojums dod pareizo kopskaitu?",
+    "payload": {
+      "wrongWork": [
+        "9 + 5 = 13"
+      ],
+      "choices": [
+        "9 + 5 = 14",
+        "9 + 5 = 13",
+        "9 + 5 = 15"
+      ]
+    },
+    "correctIndex": 0,
+    "learning": {
+      "skillId": "easy.addition.repair",
+      "prerequisiteSkillIds": [
+        "easy.addition.explain"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 8 un pieskaiti 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 8 lentes, un viņš pievieno vēl 4. Cik lenšu kopā?",
+    "choices": [
+      "12",
+      "11",
+      "13"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 4,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.apply",
+      "prerequisiteSkillIds": [
+        "easy.addition.repair"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 9 un pieskaiti 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 9 lentes, un viņš pievieno vēl 5. Cik lenšu kopā?",
+    "choices": [
+      "14",
+      "13",
+      "15"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 9,
+      "right": 5,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.apply",
+      "prerequisiteSkillIds": [
+        "easy.addition.repair"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 8 un pieskaiti 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 8 lentes, un viņš pievieno vēl 4. Cik lenšu kopā?",
+    "choices": [
+      "12",
+      "11",
+      "13"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 4,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.review",
+      "prerequisiteSkillIds": [
+        "easy.addition.apply"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Sāc ar 9 un pieskaiti 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 9 lentes, un viņš pievieno vēl 5. Cik lenšu kopā?",
+    "choices": [
+      "14",
+      "13",
+      "15"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 9,
+      "right": 5,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.review",
+      "prerequisiteSkillIds": [
+        "easy.addition.apply"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "15",
+      "16",
+      "31"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 23 papīra zvaigznes. 8 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "23 − 8 = 15 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.back"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "24 − 9 = 15.",
+    "payload": {
+      "start": 24,
+      "jump": -9,
+      "min": 0,
+      "max": 27,
+      "correctValue": 15
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.back"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "16",
+      "17",
+      "34"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 25 papīra zvaigznes. 9 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "25 − 9 = 16 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "26 − 10 = 16.",
+    "payload": {
+      "start": 26,
+      "jump": -10,
+      "min": 0,
+      "max": 29,
+      "correctValue": 16
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "17",
+      "18",
+      "37"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 27 papīra zvaigznes. 10 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "27 − 10 = 17 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "28 − 3 = 25.",
+    "payload": {
+      "start": 28,
+      "jump": -3,
+      "min": 0,
+      "max": 31,
+      "correctValue": 25
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "26",
+      "27",
+      "32"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 29 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "29 − 3 = 26 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "30 − 4 = 26.",
+    "payload": {
+      "start": 30,
+      "jump": -4,
+      "min": 0,
+      "max": 33,
+      "correctValue": 26
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "27",
+      "28",
+      "35"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 31 papīra zvaigznes. 4 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "31 − 4 = 27 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "32 − 5 = 27.",
+    "payload": {
+      "start": 32,
+      "jump": -5,
+      "min": 0,
+      "max": 35,
+      "correctValue": 27
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "28",
+      "29",
+      "38"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 33 papīra zvaigznes. 5 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "33 − 5 = 28 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "34 − 6 = 28.",
+    "payload": {
+      "start": 34,
+      "jump": -6,
+      "min": 0,
+      "max": 37,
+      "correctValue": 28
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "29",
+      "30",
+      "41"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 35 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "35 − 6 = 29 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "36 − 7 = 29.",
+    "payload": {
+      "start": 36,
+      "jump": -7,
+      "min": 0,
+      "max": 39,
+      "correctValue": 29
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "30",
+      "31",
+      "44"
+    ],
+    "correctIndex": 0,
+    "question": "Ir 37 papīra zvaigznes. 7 pielīmē kartītei. Cik paliek kastē?",
+    "hint": "Sadali atņemamo skaitli mazākos soļos.",
+    "explanation": "37 − 7 = 30 paliek.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
+    "hint": "Skaiti soļus pēc sākuma punkta.",
+    "explanation": "38 − 8 = 30.",
+    "payload": {
+      "start": 38,
+      "jump": -8,
+      "min": 0,
+      "max": 41,
+      "correctValue": 30
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +3. Trūkstošais skaitlis ir 19.",
+    "payload": {
+      "sequence": [
+        7,
+        10,
+        13,
+        16
+      ],
+      "choices": [
+        "19",
+        "20",
+        "21"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.patterns.fives"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −4.",
+    "payload": {
+      "input": 28,
+      "output": 24,
+      "choices": [
+        "−4",
+        "+4",
+        "−5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.patterns.fives"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +4. Trūkstošais skaitlis ir 24.",
+    "payload": {
+      "sequence": [
+        8,
+        12,
+        16,
+        20
+      ],
+      "choices": [
+        "24",
+        "25",
+        "26"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −5.",
+    "payload": {
+      "input": 29,
+      "output": 24,
+      "choices": [
+        "−5",
+        "+5",
+        "−6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +5. Trūkstošais skaitlis ir 29.",
+    "payload": {
+      "sequence": [
+        9,
+        14,
+        19,
+        24
+      ],
+      "choices": [
+        "29",
+        "30",
+        "31"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −6.",
+    "payload": {
+      "input": 30,
+      "output": 24,
+      "choices": [
+        "−6",
+        "+6",
+        "−7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +2. Trūkstošais skaitlis ir 18.",
+    "payload": {
+      "sequence": [
+        10,
+        12,
+        14,
+        16
+      ],
+      "choices": [
+        "18",
+        "19",
+        "20"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −3.",
+    "payload": {
+      "input": 31,
+      "output": 28,
+      "choices": [
+        "−3",
+        "+3",
+        "−4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +3. Trūkstošais skaitlis ir 23.",
+    "payload": {
+      "sequence": [
+        11,
+        14,
+        17,
+        20
+      ],
+      "choices": [
+        "23",
+        "24",
+        "25"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −4.",
+    "payload": {
+      "input": 32,
+      "output": 28,
+      "choices": [
+        "−4",
+        "+4",
+        "−5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +4. Trūkstošais skaitlis ir 28.",
+    "payload": {
+      "sequence": [
+        12,
+        16,
+        20,
+        24
+      ],
+      "choices": [
+        "28",
+        "29",
+        "30"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −5.",
+    "payload": {
+      "input": 33,
+      "output": 28,
+      "choices": [
+        "−5",
+        "+5",
+        "−6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +5. Trūkstošais skaitlis ir 33.",
+    "payload": {
+      "sequence": [
+        13,
+        18,
+        23,
+        28
+      ],
+      "choices": [
+        "33",
+        "34",
+        "35"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −6.",
+    "payload": {
+      "input": 34,
+      "output": 28,
+      "choices": [
+        "−6",
+        "+6",
+        "−7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Kas būs tālāk?",
+    "hint": "Salīdzini katru skaitli ar iepriekšējo.",
+    "explanation": "Katrā solī izmanto +2. Trūkstošais skaitlis ir 22.",
+    "payload": {
+      "sequence": [
+        14,
+        16,
+        18,
+        20
+      ],
+      "choices": [
+        "22",
+        "23",
+        "24"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Izvēlies šai mašīnai derīgu likumu.",
+    "hint": "Pārbaudi katru piedāvāto likumu ar ievades skaitli.",
+    "explanation": "Likums ir −3.",
+    "payload": {
+      "input": 35,
+      "output": 32,
+      "choices": [
+        "−3",
+        "+3",
+        "−4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "6",
+      "5",
+      "9"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 2,
+      "columns": 3,
+      "object": "mouse"
+    },
+    "question": "Izveido 2 rindas, katrā pa 3 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "2 × 3 = 6.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.groups"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 5.",
+    "payload": {
+      "input": 3,
+      "output": 15,
+      "choices": [
+        "×5",
+        "+5",
+        "×6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.groups"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "12",
+      "7",
+      "16"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 3,
+      "columns": 4,
+      "object": "mouse"
+    },
+    "question": "Izveido 3 rindas, katrā pa 4 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "3 × 4 = 12.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-3"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 6.",
+    "payload": {
+      "input": 4,
+      "output": 24,
+      "choices": [
+        "×6",
+        "+6",
+        "×7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "20",
+      "9",
+      "25"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 4,
+      "columns": 5,
+      "object": "mouse"
+    },
+    "question": "Izveido 4 rindas, katrā pa 5 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "4 × 5 = 20.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-4"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 7.",
+    "payload": {
+      "input": 5,
+      "output": 35,
+      "choices": [
+        "×7",
+        "+7",
+        "×8"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "30",
+      "11",
+      "36"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 5,
+      "columns": 6,
+      "object": "mouse"
+    },
+    "question": "Izveido 5 rindas, katrā pa 6 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "5 × 6 = 30.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-5"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 3.",
+    "payload": {
+      "input": 6,
+      "output": 18,
+      "choices": [
+        "×3",
+        "+3",
+        "×4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "42",
+      "13",
+      "49"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 6,
+      "columns": 7,
+      "object": "mouse"
+    },
+    "question": "Izveido 6 rindas, katrā pa 7 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "6 × 7 = 42.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-6"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 4.",
+    "payload": {
+      "input": 2,
+      "output": 8,
+      "choices": [
+        "×4",
+        "+4",
+        "×5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "6",
+      "5",
+      "9"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 2,
+      "columns": 3,
+      "object": "mouse"
+    },
+    "question": "Izveido 2 rindas, katrā pa 3 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "2 × 3 = 6.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-7"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 5.",
+    "payload": {
+      "input": 3,
+      "output": 15,
+      "choices": [
+        "×5",
+        "+5",
+        "×6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "12",
+      "7",
+      "16"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 3,
+      "columns": 4,
+      "object": "mouse"
+    },
+    "question": "Izveido 3 rindas, katrā pa 4 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "3 × 4 = 12.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-8"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 6.",
+    "payload": {
+      "input": 4,
+      "output": 24,
+      "choices": [
+        "×6",
+        "+6",
+        "×7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "20",
+      "9",
+      "25"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 4,
+      "columns": 5,
+      "object": "mouse"
+    },
+    "question": "Izveido 4 rindas, katrā pa 5 rotaļu pelēm. Cik peļu kopā?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "4 × 5 = 20.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-9"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Kurš likums dod pareizo rotaļlietu skaitu?",
+    "hint": "Katrā grupā saskaiti vienādu skaitu.",
+    "explanation": "Reizini ar 7.",
+    "payload": {
+      "input": 5,
+      "output": 35,
+      "choices": [
+        "×7",
+        "+7",
+        "×8"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "1 no 5 vienādām daļām ir 1/5.",
+    "type": "fraction_build",
+    "question": "Iekrāso 1 no 5 vienādām daļām: 1/5.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 5
+    },
+    "learning": {
+      "skillId": "easy.fractions.unit",
+      "prerequisiteSkillIds": [
+        "easy.fractions.quarters"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "Viena daļa ir 1/7. Visas 7 daļas veido veselo.",
+    "type": "fraction_match",
+    "question": "Savieno daļu ar tās attēlu.",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 1,
+          "denominator": 7,
+          "visual": "grid"
+        },
+        {
+          "numerator": 7,
+          "denominator": 7,
+          "visual": "pie"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.unit",
+      "prerequisiteSkillIds": [
+        "easy.fractions.quarters"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "2 no 5 vienādām daļām ir 2/5.",
+    "type": "fraction_build",
+    "question": "Iekrāso 2 no 5 vienādām daļām: 2/5.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5
+    },
+    "learning": {
+      "skillId": "easy.fractions.magnitude",
+      "prerequisiteSkillIds": [
+        "easy.fractions.unit"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "3 no 7 vienādām daļām ir 3/7.",
+    "type": "fraction_build",
+    "question": "Iekrāso 3 no 7 vienādām daļām: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.magnitude",
+      "prerequisiteSkillIds": [
+        "easy.fractions.unit"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "2 no 5 vienādām daļām ir 2/5.",
+    "type": "fraction_build",
+    "question": "Iekrāso 2 no 5 vienādām daļām: 2/5.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5
+    },
+    "learning": {
+      "skillId": "easy.fractions.compare",
+      "prerequisiteSkillIds": [
+        "easy.fractions.magnitude"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "3 no 7 vienādām daļām ir 3/7.",
+    "type": "fraction_build",
+    "question": "Iekrāso 3 no 7 vienādām daļām: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.compare",
+      "prerequisiteSkillIds": [
+        "easy.fractions.magnitude"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Kura daļa rāda to pašu daudzumu?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.equivalence",
+      "prerequisiteSkillIds": [
+        "easy.fractions.compare"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "3 no 7 vienādām daļām ir 3/7.",
+    "type": "fraction_build",
+    "question": "Iekrāso 3 no 7 vienādām daļām: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.equivalence",
+      "prerequisiteSkillIds": [
+        "easy.fractions.compare"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Kura daļa rāda to pašu daudzumu?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.models",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalence"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "3 no 7 vienādām daļām ir 3/7.",
+    "type": "fraction_build",
+    "question": "Iekrāso 3 no 7 vienādām daļām: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.models",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalence"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Kura daļa rāda to pašu daudzumu?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.equivalent",
+      "prerequisiteSkillIds": [
+        "easy.fractions.models"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "3 no 7 vienādām daļām ir 3/7.",
+    "type": "fraction_build",
+    "question": "Iekrāso 3 no 7 vienādām daļām: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.equivalent",
+      "prerequisiteSkillIds": [
+        "easy.fractions.models"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Kura daļa rāda to pašu daudzumu?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.apply",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalent"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "3 no 7 vienādām daļām ir 3/7.",
+    "type": "fraction_build",
+    "question": "Iekrāso 3 no 7 vienādām daļām: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.apply",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalent"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Kura daļa rāda to pašu daudzumu?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.review",
+      "prerequisiteSkillIds": [
+        "easy.fractions.apply"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
+    "explanation": "3 no 7 vienādām daļām ir 3/7.",
+    "type": "fraction_build",
+    "question": "Iekrāso 3 no 7 vienādām daļām: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.review",
+      "prerequisiteSkillIds": [
+        "easy.fractions.apply"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
   }
 ]

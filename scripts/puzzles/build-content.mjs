@@ -2,9 +2,9 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { bossStories } from './boss-stories.mjs';
-import { applyResearchRevisions } from './research-revisions.mjs';
+import { applyResearchRevisions, arithmetic, pathFractionReview } from './research-revisions.mjs';
 import { expandLessons } from './expanded-lessons.mjs';
-import { completeLessonSpecials } from './lesson-specials.mjs';
+import { completeLessonSpecials, bossTasks } from './lesson-specials.mjs';
 import { lessonBossScenes } from './lesson-boss-stories.mjs';
 const text = (en, lv) => ({ en, lv });
 function writeGenerated(file, value) {
@@ -366,6 +366,38 @@ for (const difficulty of ['easy','medium','hard']) for (const topic of topics) {
 }
 completeLessonSpecials({ lessons, special, text, task, addSet, subtractSet, numberSet, patternSet, multiplySet, divideSet, fractionSet, operationSet, percentSet, measureSet, logicSet });
 applyResearchRevisions({ puzzles, lessons });
+// Two new examples finish each ten-puzzle path. Legacy IDs and reward metadata stay intact.
+const pathExtras = {};
+const pathFactories = { addSet, subtractSet, numberSet, patternSet, multiplySet, divideSet, fractionSet, operationSet, percentSet, measureSet, logicSet };
+for (const entry of lessons) {
+  const track = lessons.filter(l => l.difficulty === entry.difficulty && l.topicId === entry.topicId);
+  const stage = track.indexOf(entry);
+  const ids = register(entry.difficulty, `${entry.id}-path-review`, bossTasks(entry, stage + 3, pathFactories).slice(0, 2));
+  for (const locale of ['en', 'lv']) for (const [slot, id] of ids.entries()) {
+    const p = puzzles[locale][entry.difficulty].find(p => p.id === id);
+    if (entry.difficulty === 'easy' && ['addition', 'fractions'].includes(entry.topicId)) {
+      const spec = entry.topicId === 'addition' ? arithmetic(stage, slot + 4, false, locale) : pathFractionReview(stage, slot, locale);
+      const { difficulty, ageRange } = p;
+      for (const key of Object.keys(p)) delete p[key];
+      Object.assign(p, { id, difficulty, ageRange, ...spec });
+    }
+    if (p.payload) p.payload = structuredClone(p.payload);
+    p.learning = { skillId: entry.skillId, prerequisiteSkillIds: entry.prerequisiteSkillIds,
+      role: 'review', representation: p.taskVisual ? 'objects' : p.type.startsWith('fraction') ? 'fraction-model' : 'symbols', reasoningSteps: 1 };
+  }
+  pathExtras[entry.id] = ids;
+}
+// Balance only the new comparison examples; never rewrite a saved puzzle's content.
+const extraIds = new Set(Object.values(pathExtras).flat());
+for (const locale of ['en', 'lv']) for (const tier of ['easy', 'medium', 'hard']) {
+  puzzles[locale][tier].filter(p => p.type === 'compare').forEach((p, index) => {
+    if (extraIds.has(p.id) && p.correctIndex !== index % 2) {
+      [p.payload.optionA, p.payload.optionB] = [p.payload.optionB, p.payload.optionA];
+      p.correctIndex = index % 2;
+    }
+  });
+}
+writeGenerated('data/puzzle-path-extras.json', pathExtras);
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
 for (const locale of ['en','lv']) for (const difficulty of ['easy','medium','hard']) {
   const list=puzzles[locale][difficulty];

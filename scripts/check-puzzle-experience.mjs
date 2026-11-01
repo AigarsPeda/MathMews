@@ -136,9 +136,9 @@ function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, 
   if (kind !== 'practice') lesson.levels.unshift({ ...level, id: 'earlier-practice', kind: 'practice', puzzleIds: ['earlier-puzzle'] });
   if (!final) lesson.levels.push({ ...level, id: 'next', puzzleIds: ['next-puzzle'] });
   if (hasChallenge) lesson.levels.push({ id: 'challenge', kind: 'challenge', puzzleIds: ['challenge-puzzle'] });
-  if (hasBoss) lesson.levels.push({ id: 'boss', kind: 'boss', puzzleIds: ['boss-puzzle'] });
+  if (hasBoss) lesson.levels.push({ id: 'boss', kind: 'practice', puzzleIds: ['boss-puzzle'] });
   const attempts = [], routes = [];
-  const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { completedPuzzleIds: [...completedIds, ...(kind !== 'practice' ? ['earlier-puzzle'] : []), ...(replay ? [puzzle.id] : [])], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
+  const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { unlockedPathLessonIds: ['lesson'], completedPuzzleIds: [...completedIds, ...(kind !== 'practice' ? ['earlier-puzzle'] : []), ...(replay ? [puzzle.id] : [])], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
     answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
   const router = { push: route => routes.push(['push',route]), prefetch: route => routes.push(['prefetch', route]), dismissTo: route => routes.push(['path', route]) };
   const render = renderHarness('app/play.tsx', 'PlaySession', {
@@ -244,9 +244,9 @@ matching.check().onPress(); matching.refresh(); assert.equal(matching.result().c
 for (const hasBoss of [false, true]) {
   const final = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { final: true, hasBoss });
   final.task().onSelectChoice(0); final.refresh(); final.check().onPress(); final.refresh();
-  assert.equal(final.result().message, hasBoss ? en.learning.practiceComplete : en.learning.lessonComplete);
-  assert.ok(final.result().summary);
-  assert.equal(final.result().continueLabel, hasBoss ? en.learning.start_boss : en.learning.backToLesson);
+  assert.equal(final.result().message, hasBoss ? en.play.greatJob : en.puzzlePathDesign.levelComplete);
+  assert.equal(final.result().summary, undefined, 'Path completion keeps the result concise');
+  assert.equal(final.result().continueLabel, hasBoss ? en.play.nextPuzzle : en.puzzlePathDesign.viewPath);
 }
 
 for (const options of [
@@ -257,8 +257,8 @@ for (const options of [
 ]) {
   const final = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { ...options, final: true });
   final.task().onSelectChoice(0); final.refresh(); final.check().onPress(); final.refresh();
-  assert.equal(final.result().continueLabel, en.learning[`start_${options.destination}`]);
-  assert.equal(final.result().secondaryLabel, en.learning.backToLesson);
+  assert.equal(final.result().continueLabel, en.play.nextPuzzle);
+  assert.equal(final.result().secondaryLabel, en.puzzlePathDesign.viewPath);
   assert.equal(final.routes.some(([action]) => action === 'replace'), false, 'Success presents the choice before navigating');
   final.result().onContinue();
   const route = final.routes.find(([action]) => action === 'replace');
@@ -272,11 +272,11 @@ const completedSpecials = screen({ ...base, choices: ['A', 'B'], correctIndex: 0
   final: true, hasChallenge: true, hasBoss: true, completedIds: ['challenge-puzzle', 'boss-puzzle'],
 });
 completedSpecials.task().onSelectChoice(0); completedSpecials.refresh(); completedSpecials.check().onPress(); completedSpecials.refresh();
-assert.equal(completedSpecials.result().continueLabel, en.learning.backToLesson, 'Completed special levels are not offered again');
+assert.equal(completedSpecials.result().continueLabel, en.puzzlePathDesign.viewPath, 'Completed special levels are not offered again');
 
 const replay = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { final: true, replay: true });
 replay.task().onSelectChoice(0); replay.refresh(); replay.check().onPress(); replay.refresh();
-assert.equal(replay.result().message, en.play.crackedAgain, 'A replay does not announce a new lesson completion');
+assert.equal(replay.result().message, en.puzzlePathDesign.levelComplete, 'The last question ends a replayed level too');
 assert.equal(replay.result().summary, undefined);
 
 const pairPuzzle = { ...base, type: 'pair_sum', payload: { numbers: [2, 8, 4, 6], target: 10, correctIndices: [0, 1] } };

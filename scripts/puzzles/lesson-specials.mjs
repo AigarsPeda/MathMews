@@ -27,7 +27,7 @@ export function completeLessonSpecials(api) {
   }
 }
 
-function bossTasks(entry,index,api) {
+export function bossTasks(entry,index,api) {
   const { topicId:topic,difficulty:d }=entry;
   if(topic==='patterns') {
     const step=2+index%4;

@@ -199,17 +199,18 @@ function callback(node, context) {
 const routeFactory = find(node => ts.isVariableDeclaration(node) && node.name.getText(playSource) === 'nextPuzzleRoute').initializer.arguments[0];
 const preloadEffect = find(node => ts.isCallExpression(node) && node.expression.getText(playSource) === 'useEffect' && node.arguments[0]?.getText(playSource).includes('router.prefetch')).arguments[0];
 const continueCallback = find(node => ts.isVariableDeclaration(node) && node.name.getText(playSource) === 'handleContinue').initializer.arguments[0];
-for (const [kind, nextSpecialLevel] of [['practice', undefined], ['boss', undefined], ['practice', { id: 'challenge' }], ['challenge', { id: 'boss' }]]) {
+for (const [kind, nextId] of [['practice', 'two'], ['practice', 'challenge'], ['challenge', 'review']]) {
   const routes = [];
   let interactions = 0;
-  const env = { isCorrect: true, isReplay: false, answered: true, difficulty: 'easy', sessionIndex: 0, nextSpecialLevel,
-    level: { id: 'one', kind }, lesson: { id: 'lesson' }, puzzles: [{}, {}, {}],
-    getNextPracticeLevel: () => ({ id: 'two' }), recordInteraction() { interactions++; }, exitToPath() { routes.push(['path']); },
+  const env = { isCorrect: true, isReplay: false, replaySession: false, answered: true, difficulty: 'easy', progress: {}, entryCompleted: [], puzzle: { id: 'current' },
+    level: { id: 'one', kind }, lesson: { id: 'lesson' },
+    getNextPathStep: () => ({ lesson: { id: 'lesson' }, level: { id: nextId } }),
+    recordInteraction() { interactions++; }, exitToPath() { routes.push(['path']); },
     navigation: { replace: (name, params) => routes.push(['replace', { pathname: `/${name}`, params }]) },
     router: { prefetch: route => routes.push(['prefetch', route]) } };
   env.nextPuzzleRoute = callback(routeFactory, env)();
-  assert.equal(env.nextPuzzleRoute.params.level, nextSpecialLevel?.id ?? (kind === 'boss' ? 'one' : 'two'));
-  assert.equal(env.nextPuzzleRoute.params.phase, kind === 'boss' ? '1' : undefined);
+  assert.equal(env.nextPuzzleRoute.params.level, nextId);
+  assert.equal(env.nextPuzzleRoute.params.phase, undefined, 'Every path step is an individual puzzle');
   callback(preloadEffect, env)();
   assert.deepEqual(routes.map(([action]) => action), ['prefetch'], 'Preloading preserves the current puzzle and navigation state');
   const view = harness('components/puzzle/ResultOverlay.tsx');
@@ -223,10 +224,8 @@ for (const [kind, nextSpecialLevel] of [['practice', undefined], ['boss', undefi
   assert.deepEqual(routes.map(([action]) => action), ['prefetch', 'replace']);
   assert.equal(routes[0][1].params, routes[1][1].params, 'The transition uses the already prepared destination');
   assert.equal(interactions, 0, 'Continuing does not queue a game-wide rerender before navigation');
-  env.nextSpecialLevel = undefined;
-  env.isReplay = true;
-  env.level = { ...env.level, kind: 'practice' };
-  assert.equal(callback(routeFactory, env)(), undefined, 'Replays still return to the lesson');
+  env.getNextPathStep = () => undefined;
+  assert.equal(callback(routeFactory, env)(), undefined, 'A finished topic returns to its path');
   env.isCorrect = false;
   assert.equal(callback(routeFactory, env)(), undefined, 'Incorrect answers do not preload a new puzzle');
 }

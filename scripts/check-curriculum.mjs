@@ -200,7 +200,9 @@ for(const lesson of LEARNING_CATALOG.lessons) {
     assert.equal(getLearningLevelState(lesson,special,core),'current');
   }
 }
-assert.equal(placements.length,en.length);
+const extraIds = Object.values(JSON.parse(fs.readFileSync("data/puzzle-path-extras.json", "utf8"))).flat();
+assert.equal(placements.length + extraIds.length,en.length);
+assert.equal(new Set([...placements, ...extraIds]).size,en.length);
 assert.equal(new Set(placements).size,placements.length,'Every puzzle appears in exactly one lesson or mission stage');
 assert.equal(new Set(LEARNING_CATALOG.lessons.flatMap(l=>l.levels.map(level=>level.id))).size,LEARNING_CATALOG.lessons.flatMap(l=>l.levels).length);
 assert.ok(bosses >= 18);assert.ok(challenges >= 11);assert.ok(en.length >= 209);
@@ -718,3 +720,6 @@ checkLearning({ load });
  assert.equal(getPuzzleRecommendation('easy',allDone),undefined,'A fully completed tier has no invented next activity');
 }
 console.log('Puzzle recommendations passed.');
+
+const { checkPaths } = await import('./puzzles/check-paths.mjs');
+checkPaths({ load });

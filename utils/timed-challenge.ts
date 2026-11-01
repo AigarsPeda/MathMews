@@ -8,7 +8,7 @@ type ChallengeProgress = Pick<Progress, "lives" | "challengeAttempt" | "attempte
 /** Settle once, at the original deadline, then regenerate lives up to the current time. */
 export function settleChallengeTimeout<T extends ChallengeProgress>(progress: T, now = Date.now(), expectedId?: string): T {
   const attempt = progress.challengeAttempt;
-  if (!attempt || attempt.status !== "active" || now < attempt.deadlineAt || expectedId && expectedId !== attempt.id) return progress;
+  if (!attempt || attempt.status !== "active" || attempt.mode === "untimed" || now < attempt.deadlineAt || expectedId && expectedId !== attempt.id) return progress;
   const lives = applyLifeRegen(progress.lives, attempt.deadlineAt);
   const lifeLost = lives.current > 0;
   return { ...progress, lives: applyLifeRegen(lifeLost ? loseLife(lives, attempt.deadlineAt) : lives, now),
@@ -16,19 +16,19 @@ export function settleChallengeTimeout<T extends ChallengeProgress>(progress: T,
 }
 
 /** A running challenge must be resumed, never silently replaced by a fresh clock. */
-export function beginTimedChallenge<T extends ChallengeProgress>(progress: T, level: LearningLevel, id: string, now = Date.now()): T | null {
+export function beginTimedChallenge<T extends ChallengeProgress>(progress: T, level: LearningLevel, id: string, now = Date.now(), mode: "timed" | "untimed" = "timed"): T | null {
   const synced = settleChallengeTimeout(progress, now);
   const previous = synced.challengeAttempt;
   if (previous?.status === "active") return previous.levelId === level.id ? synced : null;
   const seconds = level.timeLimitSeconds;
   const lives = applyLifeRegen(synced.lives, now);
   if (level.kind !== "challenge" || level.puzzleIds.length !== 1 || !seconds || !Number.isFinite(seconds) || seconds < 1 || lives.current < 1) return null;
-  return { ...synced, lives, attemptedPuzzleIds: [...new Set([...(synced.attemptedPuzzleIds ?? []), level.puzzleIds[0]])], challengeAttempt: { id, levelId: level.id, puzzleId: level.puzzleIds[0], startedAt: now,
+  return { ...synced, lives, attemptedPuzzleIds: [...new Set([...(synced.attemptedPuzzleIds ?? []), level.puzzleIds[0]])], challengeAttempt: { id, ...(mode === "untimed" && { mode }), levelId: level.id, puzzleId: level.puzzleIds[0], startedAt: now,
     deadlineAt: now + seconds * 1000, status: "active" } };
 }
 
 export function isChallengeOpen(attempt: ChallengeAttempt | undefined, puzzleId: string, now = Date.now()): boolean {
-  return !!attempt && attempt.puzzleId === puzzleId && attempt.status === "active" && now < attempt.deadlineAt;
+  return !!attempt && attempt.puzzleId === puzzleId && attempt.status === "active" && (attempt.mode === "untimed" || now < attempt.deadlineAt);
 }
 
 export function normalizeChallengeAttempt(value: unknown): ChallengeAttempt | undefined {
@@ -38,8 +38,10 @@ export function normalizeChallengeAttempt(value: unknown): ChallengeAttempt | un
   const level = getLearningLevelLocation(p.levelId)?.level;
   if (!level || level.kind !== "challenge" || !level.timeLimitSeconds || level.puzzleIds[0] !== p.puzzleId || level.puzzleIds.length !== 1) return;
   if (typeof p.startedAt !== "number" || !Number.isFinite(p.startedAt) || p.startedAt < 0 || p.deadlineAt !== p.startedAt + level.timeLimitSeconds * 1000) return;
+  if (p.mode !== undefined && p.mode !== "timed" && p.mode !== "untimed") return;
+  if (p.mode === "untimed" && p.status === "expired") return;
   if (p.status !== "active" && p.status !== "expired" && p.status !== "completed") return;
-  return { id: p.id, levelId: p.levelId, puzzleId: p.puzzleId, startedAt: p.startedAt, deadlineAt: p.deadlineAt,
+  return { ...(p.mode && { mode: p.mode }), id: p.id, levelId: p.levelId, puzzleId: p.puzzleId, startedAt: p.startedAt, deadlineAt: p.deadlineAt,
     status: p.status, ...(p.lifeLost === true && { lifeLost: true }) };
 }
 

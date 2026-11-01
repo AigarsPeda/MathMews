@@ -15701,5 +15701,3661 @@
       "representation": "symbols",
       "reasoningSteps": 1
     }
+  },
+  {
+    "id": "v2-medium-medium-addition-tens-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "65",
+      "64",
+      "66"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 39 red ribbons and 26 blue ribbons. How many ribbons?",
+    "hint": "Start with 39 and count on 26.",
+    "explanation": "39 + 26 = 65 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.tens",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-tens-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 46 to make 77?",
+    "explanation": "46 + 31 = 77.",
+    "payload": {
+      "leftDisplay": "46 + ?",
+      "rightValue": 77,
+      "choices": [
+        "31",
+        "32",
+        "33"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.tens",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-regroup-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "73",
+      "72",
+      "74"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 44 red ribbons and 29 blue ribbons. How many ribbons?",
+    "hint": "Start with 44 and count on 29.",
+    "explanation": "44 + 29 = 73 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.regroup",
+      "prerequisiteSkillIds": [
+        "medium.addition.tens"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-regroup-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 51 to make 85?",
+    "explanation": "51 + 34 = 85.",
+    "payload": {
+      "leftDisplay": "51 + ?",
+      "rightValue": 85,
+      "choices": [
+        "34",
+        "35",
+        "36"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.regroup",
+      "prerequisiteSkillIds": [
+        "medium.addition.tens"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-parts-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "54",
+      "55",
+      "94"
+    ],
+    "correctIndex": 0,
+    "question": "There are 74 paper stars. Use 20 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "74 − 20 = 54 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.parts",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-parts-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "81 − 23 = 58.",
+    "payload": {
+      "start": 81,
+      "jump": -23,
+      "min": 0,
+      "max": 84,
+      "correctValue": 58
+    },
+    "learning": {
+      "skillId": "medium.subtraction.parts",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-check-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "57",
+      "58",
+      "99"
+    ],
+    "correctIndex": 0,
+    "question": "There are 78 paper stars. Use 21 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "78 − 21 = 57 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.check",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.parts"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-check-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "85 − 24 = 61.",
+    "payload": {
+      "start": 85,
+      "jump": -24,
+      "min": 0,
+      "max": 88,
+      "correctValue": 61
+    },
+    "learning": {
+      "skillId": "medium.subtraction.check",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.parts"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-arrays-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "56",
+      "15",
+      "64"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 7,
+      "columns": 8,
+      "object": "mouse"
+    },
+    "question": "Make 7 rows with 8 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "7 × 8 = 56.",
+    "learning": {
+      "skillId": "medium.multiplication.arrays",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-arrays-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 10.",
+    "payload": {
+      "input": 8,
+      "output": 80,
+      "choices": [
+        "×10",
+        "+10",
+        "×11"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.arrays",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-facts-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "72",
+      "17",
+      "81"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 8,
+      "columns": 9,
+      "object": "mouse"
+    },
+    "question": "Make 8 rows with 9 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "8 × 9 = 72.",
+    "learning": {
+      "skillId": "medium.multiplication.facts",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.arrays"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-facts-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 5.",
+    "payload": {
+      "input": 9,
+      "output": 45,
+      "choices": [
+        "×5",
+        "+5",
+        "×6"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.facts",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.arrays"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-equal-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "20 = 3 × 6 + 2.",
+    "payload": {
+      "items": 20,
+      "people": 3,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "6 each, 2 left",
+        "7 each, none left",
+        "6 each, 3 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.equal",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-equal-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "4",
+      "5",
+      "6"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 16 bells into 4 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "16 ÷ 4 = 4.",
+    "learning": {
+      "skillId": "medium.division.equal",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-leftovers-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "13 = 4 × 3 + 1.",
+    "payload": {
+      "items": 13,
+      "people": 4,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "3 each, 1 left",
+        "4 each, none left",
+        "3 each, 2 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.leftovers",
+      "prerequisiteSkillIds": [
+        "medium.division.equal"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-leftovers-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "5",
+      "6",
+      "7"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 25 bells into 5 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "25 ÷ 5 = 5.",
+    "learning": {
+      "skillId": "medium.division.leftovers",
+      "prerequisiteSkillIds": [
+        "medium.division.equal"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-value-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 4/7 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 4 out of 7 equal parts.",
+    "payload": {
+      "numerator": 4,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "medium.fractions.value",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-value-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "7/9 > 6/9.",
+    "payload": {
+      "optionA": "7/9",
+      "optionB": "6/9"
+    },
+    "learning": {
+      "skillId": "medium.fractions.value",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-equivalent-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 5/8 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 5 out of 8 equal parts.",
+    "payload": {
+      "numerator": 5,
+      "denominator": 8
+    },
+    "learning": {
+      "skillId": "medium.fractions.equivalent",
+      "prerequisiteSkillIds": [
+        "medium.fractions.value"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-equivalent-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "8/10 > 7/10.",
+    "payload": {
+      "optionA": "7/10",
+      "optionB": "8/10"
+    },
+    "learning": {
+      "skillId": "medium.fractions.equivalent",
+      "prerequisiteSkillIds": [
+        "medium.fractions.value"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-routes-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "48 ÷ 6 = 8; 8 + 7 = 15.",
+    "payload": {
+      "start": 48,
+      "target": 15,
+      "steps": [
+        {
+          "operand": 6,
+          "operator": "÷"
+        },
+        {
+          "operand": 7,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.routes",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-routes-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "8 + 7 × 10 = 78.",
+    "payload": {
+      "numbers": [
+        8,
+        7,
+        10
+      ],
+      "target": 78,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.routes",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-order-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "63 ÷ 7 = 9; 9 + 8 = 17.",
+    "payload": {
+      "start": 63,
+      "target": 17,
+      "steps": [
+        {
+          "operand": 7,
+          "operator": "÷"
+        },
+        {
+          "operand": 8,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.order",
+      "prerequisiteSkillIds": [
+        "medium.operations.routes"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-order-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "9 + 8 × 11 = 97.",
+    "payload": {
+      "numbers": [
+        9,
+        8,
+        11
+      ],
+      "target": 97,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.order",
+      "prerequisiteSkillIds": [
+        "medium.operations.routes"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-3-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "81",
+      "80",
+      "82"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 49 red ribbons and 32 blue ribbons. How many ribbons?",
+    "hint": "Start with 49 and count on 32.",
+    "explanation": "49 + 32 = 81 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.addition.regroup"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-3-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 56 to make 93?",
+    "explanation": "56 + 37 = 93.",
+    "payload": {
+      "leftDisplay": "56 + ?",
+      "rightValue": 93,
+      "choices": [
+        "37",
+        "38",
+        "39"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.addition.regroup"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-4-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "89",
+      "88",
+      "90"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 54 red ribbons and 35 blue ribbons. How many ribbons?",
+    "hint": "Start with 54 and count on 35.",
+    "explanation": "54 + 35 = 89 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-4-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 61 to make 101?",
+    "explanation": "61 + 40 = 101.",
+    "payload": {
+      "leftDisplay": "61 + ?",
+      "rightValue": 101,
+      "choices": [
+        "40",
+        "41",
+        "42"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-5-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "97",
+      "96",
+      "98"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 59 red ribbons and 38 blue ribbons. How many ribbons?",
+    "hint": "Start with 59 and count on 38.",
+    "explanation": "59 + 38 = 97 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-5-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 66 to make 109?",
+    "explanation": "66 + 43 = 109.",
+    "payload": {
+      "leftDisplay": "66 + ?",
+      "rightValue": 109,
+      "choices": [
+        "43",
+        "44",
+        "45"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-6-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "105",
+      "104",
+      "106"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 64 red ribbons and 41 blue ribbons. How many ribbons?",
+    "hint": "Start with 64 and count on 41.",
+    "explanation": "64 + 41 = 105 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-6-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 71 to make 117?",
+    "explanation": "71 + 46 = 117.",
+    "payload": {
+      "leftDisplay": "71 + ?",
+      "rightValue": 117,
+      "choices": [
+        "46",
+        "47",
+        "48"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-7-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "113",
+      "112",
+      "114"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 69 red ribbons and 44 blue ribbons. How many ribbons?",
+    "hint": "Start with 69 and count on 44.",
+    "explanation": "69 + 44 = 113 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-7-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 76 to make 125?",
+    "explanation": "76 + 49 = 125.",
+    "payload": {
+      "leftDisplay": "76 + ?",
+      "rightValue": 125,
+      "choices": [
+        "49",
+        "50",
+        "51"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-8-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "121",
+      "120",
+      "122"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 74 red ribbons and 47 blue ribbons. How many ribbons?",
+    "hint": "Start with 74 and count on 47.",
+    "explanation": "74 + 47 = 121 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-8-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 81 to make 133?",
+    "explanation": "81 + 52 = 133.",
+    "payload": {
+      "leftDisplay": "81 + ?",
+      "rightValue": 133,
+      "choices": [
+        "52",
+        "53",
+        "54"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-9-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "129",
+      "128",
+      "130"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 79 red ribbons and 50 blue ribbons. How many ribbons?",
+    "hint": "Start with 79 and count on 50.",
+    "explanation": "79 + 50 = 129 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-9-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 86 to make 141?",
+    "explanation": "86 + 55 = 141.",
+    "payload": {
+      "leftDisplay": "86 + ?",
+      "rightValue": 141,
+      "choices": [
+        "55",
+        "56",
+        "57"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-10-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "addition",
+    "choices": [
+      "137",
+      "136",
+      "138"
+    ],
+    "correctIndex": 0,
+    "question": "The cat packs 84 red ribbons and 53 blue ribbons. How many ribbons?",
+    "hint": "Start with 84 and count on 53.",
+    "explanation": "84 + 53 = 137 ribbons.",
+    "learning": {
+      "skillId": "medium.addition.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-addition-explore-10-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "balance",
+    "topic": "equality",
+    "correctIndex": 0,
+    "question": "Fill the missing part of the sum.",
+    "hint": "What must join 91 to make 149?",
+    "explanation": "91 + 58 = 149.",
+    "payload": {
+      "leftDisplay": "91 + ?",
+      "rightValue": 149,
+      "choices": [
+        "58",
+        "59",
+        "60"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.addition.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.addition.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-3-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "60",
+      "61",
+      "104"
+    ],
+    "correctIndex": 0,
+    "question": "There are 82 paper stars. Use 22 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "82 − 22 = 60 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.check"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-3-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "89 − 25 = 64.",
+    "payload": {
+      "start": 89,
+      "jump": -25,
+      "min": 0,
+      "max": 92,
+      "correctValue": 64
+    },
+    "learning": {
+      "skillId": "medium.subtraction.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.check"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-4-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "63",
+      "64",
+      "109"
+    ],
+    "correctIndex": 0,
+    "question": "There are 86 paper stars. Use 23 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "86 − 23 = 63 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-4-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "93 − 26 = 67.",
+    "payload": {
+      "start": 93,
+      "jump": -26,
+      "min": 0,
+      "max": 96,
+      "correctValue": 67
+    },
+    "learning": {
+      "skillId": "medium.subtraction.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-5-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "66",
+      "67",
+      "114"
+    ],
+    "correctIndex": 0,
+    "question": "There are 90 paper stars. Use 24 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "90 − 24 = 66 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-5-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "97 − 27 = 70.",
+    "payload": {
+      "start": 97,
+      "jump": -27,
+      "min": 0,
+      "max": 100,
+      "correctValue": 70
+    },
+    "learning": {
+      "skillId": "medium.subtraction.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-6-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "69",
+      "70",
+      "119"
+    ],
+    "correctIndex": 0,
+    "question": "There are 94 paper stars. Use 25 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "94 − 25 = 69 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-6-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "101 − 28 = 73.",
+    "payload": {
+      "start": 101,
+      "jump": -28,
+      "min": 0,
+      "max": 104,
+      "correctValue": 73
+    },
+    "learning": {
+      "skillId": "medium.subtraction.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-7-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "72",
+      "73",
+      "124"
+    ],
+    "correctIndex": 0,
+    "question": "There are 98 paper stars. Use 26 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "98 − 26 = 72 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-7-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "105 − 29 = 76.",
+    "payload": {
+      "start": 105,
+      "jump": -29,
+      "min": 0,
+      "max": 108,
+      "correctValue": 76
+    },
+    "learning": {
+      "skillId": "medium.subtraction.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-8-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "75",
+      "76",
+      "129"
+    ],
+    "correctIndex": 0,
+    "question": "There are 102 paper stars. Use 27 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "102 − 27 = 75 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-8-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "109 − 30 = 79.",
+    "payload": {
+      "start": 109,
+      "jump": -30,
+      "min": 0,
+      "max": 112,
+      "correctValue": 79
+    },
+    "learning": {
+      "skillId": "medium.subtraction.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-9-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "78",
+      "79",
+      "134"
+    ],
+    "correctIndex": 0,
+    "question": "There are 106 paper stars. Use 28 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "106 − 28 = 78 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-9-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "113 − 31 = 82.",
+    "payload": {
+      "start": 113,
+      "jump": -31,
+      "min": 0,
+      "max": 116,
+      "correctValue": 82
+    },
+    "learning": {
+      "skillId": "medium.subtraction.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-10-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "81",
+      "82",
+      "139"
+    ],
+    "correctIndex": 0,
+    "question": "There are 110 paper stars. Use 29 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "110 − 29 = 81 stay.",
+    "learning": {
+      "skillId": "medium.subtraction.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-subtraction-explore-10-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "117 − 32 = 85.",
+    "payload": {
+      "start": 117,
+      "jump": -32,
+      "min": 0,
+      "max": 120,
+      "correctValue": 85
+    },
+    "learning": {
+      "skillId": "medium.subtraction.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.subtraction.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-3-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "90",
+      "19",
+      "100"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 9,
+      "columns": 10,
+      "object": "mouse"
+    },
+    "question": "Make 9 rows with 10 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "9 × 10 = 90.",
+    "learning": {
+      "skillId": "medium.multiplication.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.facts"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-3-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 6.",
+    "payload": {
+      "input": 10,
+      "output": 60,
+      "choices": [
+        "×6",
+        "+6",
+        "×7"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.facts"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-4-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "50",
+      "15",
+      "55"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 10,
+      "columns": 5,
+      "object": "mouse"
+    },
+    "question": "Make 10 rows with 5 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "10 × 5 = 50.",
+    "learning": {
+      "skillId": "medium.multiplication.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-3"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-4-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 7.",
+    "payload": {
+      "input": 4,
+      "output": 28,
+      "choices": [
+        "×7",
+        "+7",
+        "×8"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-5-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "24",
+      "10",
+      "30"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 4,
+      "columns": 6,
+      "object": "mouse"
+    },
+    "question": "Make 4 rows with 6 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "4 × 6 = 24.",
+    "learning": {
+      "skillId": "medium.multiplication.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-4"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-5-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 8.",
+    "payload": {
+      "input": 5,
+      "output": 40,
+      "choices": [
+        "×8",
+        "+8",
+        "×9"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-6-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "35",
+      "12",
+      "42"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 5,
+      "columns": 7,
+      "object": "mouse"
+    },
+    "question": "Make 5 rows with 7 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "5 × 7 = 35.",
+    "learning": {
+      "skillId": "medium.multiplication.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-5"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-6-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 9.",
+    "payload": {
+      "input": 6,
+      "output": 54,
+      "choices": [
+        "×9",
+        "+9",
+        "×10"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-7-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "48",
+      "14",
+      "56"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 6,
+      "columns": 8,
+      "object": "mouse"
+    },
+    "question": "Make 6 rows with 8 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "6 × 8 = 48.",
+    "learning": {
+      "skillId": "medium.multiplication.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-6"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-7-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 10.",
+    "payload": {
+      "input": 7,
+      "output": 70,
+      "choices": [
+        "×10",
+        "+10",
+        "×11"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-8-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "63",
+      "16",
+      "72"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 7,
+      "columns": 9,
+      "object": "mouse"
+    },
+    "question": "Make 7 rows with 9 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "7 × 9 = 63.",
+    "learning": {
+      "skillId": "medium.multiplication.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-7"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-8-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 5.",
+    "payload": {
+      "input": 8,
+      "output": 40,
+      "choices": [
+        "×5",
+        "+5",
+        "×6"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-9-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "80",
+      "18",
+      "90"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 8,
+      "columns": 10,
+      "object": "mouse"
+    },
+    "question": "Make 8 rows with 10 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "8 × 10 = 80.",
+    "learning": {
+      "skillId": "medium.multiplication.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-8"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-9-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 6.",
+    "payload": {
+      "input": 9,
+      "output": 54,
+      "choices": [
+        "×6",
+        "+6",
+        "×7"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-10-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "45",
+      "14",
+      "50"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 9,
+      "columns": 5,
+      "object": "mouse"
+    },
+    "question": "Make 9 rows with 5 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "9 × 5 = 45.",
+    "learning": {
+      "skillId": "medium.multiplication.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-9"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-multiplication-explore-10-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 7.",
+    "payload": {
+      "input": 10,
+      "output": 70,
+      "choices": [
+        "×7",
+        "+7",
+        "×8"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.multiplication.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.multiplication.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-3-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "24 = 5 × 4 + 4.",
+    "payload": {
+      "items": 24,
+      "people": 5,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "4 each, 4 left",
+        "5 each, none left",
+        "4 each, 5 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.division.leftovers"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-3-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "6",
+      "7",
+      "8"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 18 bells into 3 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "18 ÷ 3 = 6.",
+    "learning": {
+      "skillId": "medium.division.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.division.leftovers"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-4-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "16 = 3 × 5 + 1.",
+    "payload": {
+      "items": 16,
+      "people": 3,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "5 each, 1 left",
+        "6 each, none left",
+        "5 each, 2 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-4-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "3",
+      "4",
+      "5"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 12 bells into 4 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "12 ÷ 4 = 3.",
+    "learning": {
+      "skillId": "medium.division.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-5-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "25 = 4 × 6 + 1.",
+    "payload": {
+      "items": 25,
+      "people": 4,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "6 each, 1 left",
+        "7 each, none left",
+        "6 each, 2 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-5-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "4",
+      "5",
+      "6"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 20 bells into 5 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "20 ÷ 5 = 4.",
+    "learning": {
+      "skillId": "medium.division.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-6-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "16 = 5 × 3 + 1.",
+    "payload": {
+      "items": 16,
+      "people": 5,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "3 each, 1 left",
+        "4 each, none left",
+        "3 each, 2 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-6-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "5",
+      "6",
+      "7"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 15 bells into 3 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "15 ÷ 3 = 5.",
+    "learning": {
+      "skillId": "medium.division.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-7-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "14 = 3 × 4 + 2.",
+    "payload": {
+      "items": 14,
+      "people": 3,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "4 each, 2 left",
+        "5 each, none left",
+        "4 each, 3 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-7-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "6",
+      "7",
+      "8"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 24 bells into 4 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "24 ÷ 4 = 6.",
+    "learning": {
+      "skillId": "medium.division.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-8-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "21 = 4 × 5 + 1.",
+    "payload": {
+      "items": 21,
+      "people": 4,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "5 each, 1 left",
+        "6 each, none left",
+        "5 each, 2 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-8-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "3",
+      "4",
+      "5"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 15 bells into 5 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "15 ÷ 5 = 3.",
+    "learning": {
+      "skillId": "medium.division.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-9-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "32 = 5 × 6 + 2.",
+    "payload": {
+      "items": 32,
+      "people": 5,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "6 each, 2 left",
+        "7 each, none left",
+        "6 each, 3 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-9-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "4",
+      "5",
+      "6"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 12 bells into 3 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "12 ÷ 3 = 4.",
+    "learning": {
+      "skillId": "medium.division.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-10-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fair_share",
+    "topic": "division",
+    "correctIndex": 0,
+    "question": "Share whole cookies equally. How many each, and how many remain?",
+    "hint": "Give each friend one cookie per round.",
+    "explanation": "10 = 3 × 3 + 1.",
+    "payload": {
+      "items": 10,
+      "people": 3,
+      "object": "cookie",
+      "emoji": "🍪",
+      "choices": [
+        "3 each, 1 left",
+        "4 each, none left",
+        "3 each, 2 left"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.division.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-division-explore-10-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "multiple_choice",
+    "topic": "division",
+    "choices": [
+      "5",
+      "6",
+      "7"
+    ],
+    "correctIndex": 0,
+    "question": "Pack 20 bells into 4 equal boxes. How many per box?",
+    "hint": "Think of the matching multiplication fact.",
+    "explanation": "20 ÷ 4 = 5.",
+    "learning": {
+      "skillId": "medium.division.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.division.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-3-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 6/9 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 6 out of 9 equal parts.",
+    "payload": {
+      "numerator": 6,
+      "denominator": 9
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.fractions.equivalent"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-3-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "9/11 > 8/11.",
+    "payload": {
+      "optionA": "9/11",
+      "optionB": "8/11"
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.fractions.equivalent"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-4-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 7/10 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 7 out of 10 equal parts.",
+    "payload": {
+      "numerator": 7,
+      "denominator": 10
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-3"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-4-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "10/12 > 9/12.",
+    "payload": {
+      "optionA": "9/12",
+      "optionB": "10/12"
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-5-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 8/11 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 8 out of 11 equal parts.",
+    "payload": {
+      "numerator": 8,
+      "denominator": 11
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-4"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-5-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "3/4 > 2/4.",
+    "payload": {
+      "optionA": "3/4",
+      "optionB": "2/4"
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-6-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 9/12 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 9 out of 12 equal parts.",
+    "payload": {
+      "numerator": 9,
+      "denominator": 12
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-5"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-6-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "3/5 > 2/5.",
+    "payload": {
+      "optionA": "2/5",
+      "optionB": "3/5"
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-7-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 2/4 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 2 out of 4 equal parts.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 4
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-6"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-7-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "5/6 > 4/6.",
+    "payload": {
+      "optionA": "5/6",
+      "optionB": "4/6"
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-8-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 2/5 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 2 out of 5 equal parts.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-7"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-8-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "4/7 > 3/7.",
+    "payload": {
+      "optionA": "3/7",
+      "optionB": "4/7"
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-9-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 4/6 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 4 out of 6 equal parts.",
+    "payload": {
+      "numerator": 4,
+      "denominator": 6
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-8"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-9-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "3/8 > 2/8.",
+    "payload": {
+      "optionA": "3/8",
+      "optionB": "2/8"
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-10-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "fraction_build",
+    "topic": "fractions",
+    "question": "Color 3/7 of this whole.",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "Color 3 out of 7 equal parts.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-9"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-fractions-explore-10-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "compare",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "2/9 > 1/9.",
+    "payload": {
+      "optionA": "1/9",
+      "optionB": "2/9"
+    },
+    "learning": {
+      "skillId": "medium.fractions.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.fractions.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-3-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "80 ÷ 8 = 10; 10 + 9 = 19.",
+    "payload": {
+      "start": 80,
+      "target": 19,
+      "steps": [
+        {
+          "operand": 8,
+          "operator": "÷"
+        },
+        {
+          "operand": 9,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.operations.order"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-3-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "10 + 9 × 12 = 118.",
+    "payload": {
+      "numbers": [
+        10,
+        9,
+        12
+      ],
+      "target": 118,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-3",
+      "prerequisiteSkillIds": [
+        "medium.operations.order"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-4-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "99 ÷ 9 = 11; 11 + 10 = 21.",
+    "payload": {
+      "start": 99,
+      "target": 21,
+      "steps": [
+        {
+          "operand": 9,
+          "operator": "÷"
+        },
+        {
+          "operand": 10,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-4-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "11 + 3 × 13 = 50.",
+    "payload": {
+      "numbers": [
+        11,
+        3,
+        13
+      ],
+      "target": 50,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-4",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-5-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "36 ÷ 3 = 12; 12 + 11 = 23.",
+    "payload": {
+      "start": 36,
+      "target": 23,
+      "steps": [
+        {
+          "operand": 3,
+          "operator": "÷"
+        },
+        {
+          "operand": 11,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-5-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "12 + 4 × 14 = 68.",
+    "payload": {
+      "numbers": [
+        12,
+        4,
+        14
+      ],
+      "target": 68,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-5",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-6-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "52 ÷ 4 = 13; 13 + 12 = 25.",
+    "payload": {
+      "start": 52,
+      "target": 25,
+      "steps": [
+        {
+          "operand": 4,
+          "operator": "÷"
+        },
+        {
+          "operand": 12,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-6-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "13 + 5 × 15 = 88.",
+    "payload": {
+      "numbers": [
+        13,
+        5,
+        15
+      ],
+      "target": 88,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-6",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-7-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "70 ÷ 5 = 14; 14 + 13 = 27.",
+    "payload": {
+      "start": 70,
+      "target": 27,
+      "steps": [
+        {
+          "operand": 5,
+          "operator": "÷"
+        },
+        {
+          "operand": 13,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-7-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "14 + 6 × 16 = 110.",
+    "payload": {
+      "numbers": [
+        14,
+        6,
+        16
+      ],
+      "target": 110,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-7",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-8-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "90 ÷ 6 = 15; 15 + 14 = 29.",
+    "payload": {
+      "start": 90,
+      "target": 29,
+      "steps": [
+        {
+          "operand": 6,
+          "operator": "÷"
+        },
+        {
+          "operand": 14,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-8-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "15 + 7 × 17 = 134.",
+    "payload": {
+      "numbers": [
+        15,
+        7,
+        17
+      ],
+      "target": 134,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-8",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-9-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "112 ÷ 7 = 16; 16 + 15 = 31.",
+    "payload": {
+      "start": 112,
+      "target": 31,
+      "steps": [
+        {
+          "operand": 7,
+          "operator": "÷"
+        },
+        {
+          "operand": 15,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-9-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "16 + 8 × 18 = 160.",
+    "payload": {
+      "numbers": [
+        16,
+        8,
+        18
+      ],
+      "target": 160,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-9",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-10-path-review-1",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "136 ÷ 8 = 17; 17 + 16 = 33.",
+    "payload": {
+      "start": 136,
+      "target": 33,
+      "steps": [
+        {
+          "operand": 8,
+          "operator": "÷"
+        },
+        {
+          "operand": 16,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-medium-medium-operations-explore-10-path-review-2",
+    "difficulty": "medium",
+    "ageRange": [
+      8,
+      10
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Keep the numbers in order. Multiply and divide before adding or subtracting.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "17 + 9 × 19 = 188.",
+    "payload": {
+      "numbers": [
+        17,
+        9,
+        19
+      ],
+      "target": 188,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "medium.operations.explore-10",
+      "prerequisiteSkillIds": [
+        "medium.operations.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
   }
 ]

@@ -166,6 +166,7 @@ export type TopicStatsMap = Partial<
 >;
 
 export type ChallengeAttempt = {
+  mode?: "timed" | "untimed";
   id: string;
   levelId: string;
   puzzleId: string;
@@ -176,6 +177,9 @@ export type ChallengeAttempt = {
 };
 
 export type Progress = {
+  pathVersion?: 1;
+  completedPathLessonIds?: string[];
+  unlockedPathLessonIds?: string[];
   learningEvidence?: import("./learning").LearningEvidence;
   learningSupportIds?: string[];
   reviewAttemptKeys?: string[];

@@ -15527,5 +15527,3782 @@
       "representation": "fraction-model",
       "reasoningSteps": 1
     }
+  },
+  {
+    "id": "v2-easy-easy-numbers-small-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 4, 6, 9, 12.",
+    "payload": {
+      "numbers": [
+        12,
+        4,
+        9,
+        6
+      ],
+      "correctOrder": [
+        4,
+        6,
+        9,
+        12
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.small",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-small-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "14 > 8.",
+    "payload": {
+      "optionA": "8",
+      "optionB": "14",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.small",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-tens-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 5, 7, 10, 13.",
+    "payload": {
+      "numbers": [
+        13,
+        5,
+        10,
+        7
+      ],
+      "correctOrder": [
+        5,
+        7,
+        10,
+        13
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.tens",
+      "prerequisiteSkillIds": [
+        "easy.numbers.small"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-tens-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "15 > 9.",
+    "payload": {
+      "optionA": "15",
+      "optionB": "9",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.tens",
+      "prerequisiteSkillIds": [
+        "easy.numbers.small"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-join-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 6 and add 2.",
+    "explanation": "6 + 2 = 8.",
+    "type": "multiple_choice",
+    "question": "The cat has 6 ribbons and adds 2 more. How many altogether?",
+    "choices": [
+      "8",
+      "7",
+      "9"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 6,
+      "right": 2,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.join",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-join-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 7 and add 3.",
+    "explanation": "7 + 3 = 10.",
+    "type": "multiple_choice",
+    "question": "The cat has 7 ribbons and adds 3 more. How many altogether?",
+    "choices": [
+      "10",
+      "9",
+      "11"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 7,
+      "right": 3,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.join",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-ten-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 6 and add 2.",
+    "explanation": "6 + 2 = 8.",
+    "type": "multiple_choice",
+    "question": "The cat has 6 ribbons and adds 2 more. How many altogether?",
+    "choices": [
+      "8",
+      "7",
+      "9"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 6,
+      "right": 2,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.symbols",
+      "prerequisiteSkillIds": [
+        "easy.addition.join"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-ten-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 7 and add 3.",
+    "explanation": "7 + 3 = 10.",
+    "type": "multiple_choice",
+    "question": "The cat has 7 ribbons and adds 3 more. How many altogether?",
+    "choices": [
+      "10",
+      "9",
+      "11"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 7,
+      "right": 3,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.symbols",
+      "prerequisiteSkillIds": [
+        "easy.addition.join"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-take-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "13",
+      "14",
+      "25"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 19,
+      "right": 6,
+      "object": "star"
+    },
+    "question": "There are 19 paper stars. Use 6 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "19 − 6 = 13 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.take",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-take-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "20 − 7 = 13.",
+    "payload": {
+      "start": 20,
+      "jump": -7,
+      "min": 0,
+      "max": 23,
+      "correctValue": 13
+    },
+    "learning": {
+      "skillId": "easy.subtraction.take",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-back-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "14",
+      "15",
+      "28"
+    ],
+    "correctIndex": 0,
+    "question": "There are 21 paper stars. Use 7 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "21 − 7 = 14 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.back",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.take"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-back-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "22 − 8 = 14.",
+    "payload": {
+      "start": 22,
+      "jump": -8,
+      "min": 0,
+      "max": 25,
+      "correctValue": 14
+    },
+    "learning": {
+      "skillId": "easy.subtraction.back",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.take"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-jumps-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +5. The missing number is 25.",
+    "payload": {
+      "sequence": [
+        5,
+        10,
+        15,
+        20
+      ],
+      "choices": [
+        "25",
+        "26",
+        "27"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.jumps",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-jumps-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −6.",
+    "payload": {
+      "input": 26,
+      "output": 20,
+      "choices": [
+        "−6",
+        "+6",
+        "−7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.jumps",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-fives-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +2. The missing number is 14.",
+    "payload": {
+      "sequence": [
+        6,
+        8,
+        10,
+        12
+      ],
+      "choices": [
+        "14",
+        "15",
+        "16"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.fives",
+      "prerequisiteSkillIds": [
+        "easy.patterns.jumps"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-fives-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −3.",
+    "payload": {
+      "input": 27,
+      "output": 24,
+      "choices": [
+        "−3",
+        "+3",
+        "−4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.fives",
+      "prerequisiteSkillIds": [
+        "easy.patterns.jumps"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-rows-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "30",
+      "11",
+      "36"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 5,
+      "columns": 6,
+      "object": "mouse"
+    },
+    "question": "Make 5 rows with 6 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "5 × 6 = 30.",
+    "learning": {
+      "skillId": "easy.multiplication.rows",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-rows-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 3.",
+    "payload": {
+      "input": 6,
+      "output": 18,
+      "choices": [
+        "×3",
+        "+3",
+        "×4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.rows",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-groups-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "42",
+      "13",
+      "49"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 6,
+      "columns": 7,
+      "object": "mouse"
+    },
+    "question": "Make 6 rows with 7 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "6 × 7 = 42.",
+    "learning": {
+      "skillId": "easy.multiplication.groups",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.rows"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-groups-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 4.",
+    "payload": {
+      "input": 2,
+      "output": 8,
+      "choices": [
+        "×4",
+        "+4",
+        "×5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.groups",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.rows"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-parts-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "2 out of 2 equal parts is 2/2.",
+    "type": "fraction_build",
+    "question": "Color 2 of the 2 equal parts: 2/2.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 2
+    },
+    "learning": {
+      "skillId": "easy.fractions.equal-parts",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-parts-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "One part is 1/2. All 2 parts make a whole.",
+    "type": "fraction_match",
+    "question": "Match each fraction to its picture.",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 1,
+          "denominator": 2,
+          "visual": "grid"
+        },
+        {
+          "numerator": 2,
+          "denominator": 2,
+          "visual": "pie"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.equal-parts",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-pictures-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "1 out of 4 equal parts is 1/4.",
+    "type": "fraction_build",
+    "question": "Color 1 of the 4 equal parts: 1/4.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 4
+    },
+    "learning": {
+      "skillId": "easy.fractions.quarters",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equal-parts"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-pictures-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "One part is 1/4. All 4 parts make a whole.",
+    "type": "fraction_match",
+    "question": "Match each fraction to its picture.",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 1,
+          "denominator": 4,
+          "visual": "grid"
+        },
+        {
+          "numerator": 4,
+          "denominator": 4,
+          "visual": "pie"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.quarters",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equal-parts"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 6, 8, 11, 14.",
+    "payload": {
+      "numbers": [
+        14,
+        6,
+        11,
+        8
+      ],
+      "correctOrder": [
+        6,
+        8,
+        11,
+        14
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.numbers.tens"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "16 > 10.",
+    "payload": {
+      "optionA": "10",
+      "optionB": "16",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.numbers.tens"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 7, 9, 12, 15.",
+    "payload": {
+      "numbers": [
+        15,
+        7,
+        12,
+        9
+      ],
+      "correctOrder": [
+        7,
+        9,
+        12,
+        15
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "17 > 11.",
+    "payload": {
+      "optionA": "17",
+      "optionB": "11",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 8, 10, 13, 16.",
+    "payload": {
+      "numbers": [
+        16,
+        8,
+        13,
+        10
+      ],
+      "correctOrder": [
+        8,
+        10,
+        13,
+        16
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "18 > 12.",
+    "payload": {
+      "optionA": "12",
+      "optionB": "18",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 9, 11, 14, 17.",
+    "payload": {
+      "numbers": [
+        17,
+        9,
+        14,
+        11
+      ],
+      "correctOrder": [
+        9,
+        11,
+        14,
+        17
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "19 > 13.",
+    "payload": {
+      "optionA": "19",
+      "optionB": "13",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 10, 12, 15, 18.",
+    "payload": {
+      "numbers": [
+        18,
+        10,
+        15,
+        12
+      ],
+      "correctOrder": [
+        10,
+        12,
+        15,
+        18
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "20 > 14.",
+    "payload": {
+      "optionA": "14",
+      "optionB": "20",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 11, 13, 16, 19.",
+    "payload": {
+      "numbers": [
+        19,
+        11,
+        16,
+        13
+      ],
+      "correctOrder": [
+        11,
+        13,
+        16,
+        19
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "21 > 15.",
+    "payload": {
+      "optionA": "21",
+      "optionB": "15",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 12, 14, 17, 20.",
+    "payload": {
+      "numbers": [
+        20,
+        12,
+        17,
+        14
+      ],
+      "correctOrder": [
+        12,
+        14,
+        17,
+        20
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 1,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "22 > 16.",
+    "payload": {
+      "optionA": "16",
+      "optionB": "22",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "order_numbers",
+    "topic": "comparison",
+    "question": "Put the number tiles from smallest to largest.",
+    "hint": "Find the smallest tile first.",
+    "explanation": "The order is 13, 15, 18, 21.",
+    "payload": {
+      "numbers": [
+        21,
+        13,
+        18,
+        15
+      ],
+      "correctOrder": [
+        13,
+        15,
+        18,
+        21
+      ]
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-numbers-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "compare",
+    "topic": "comparison",
+    "correctIndex": 0,
+    "question": "Which tray has more toy mice?",
+    "hint": "Compare the amounts.",
+    "explanation": "23 > 17.",
+    "payload": {
+      "optionA": "23",
+      "optionB": "17",
+      "object": "mouse"
+    },
+    "learning": {
+      "skillId": "easy.numbers.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.numbers.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 9 and add 2.",
+    "explanation": "9 + 2 = 11.",
+    "type": "number_line",
+    "question": "Start at 9 and jump forward 2.",
+    "payload": {
+      "start": 9,
+      "jump": 2,
+      "min": 0,
+      "max": 14,
+      "correctValue": 11
+    },
+    "learning": {
+      "skillId": "easy.addition.count-on",
+      "prerequisiteSkillIds": [
+        "easy.addition.symbols"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 10 and add 3.",
+    "explanation": "10 + 3 = 13.",
+    "type": "number_line",
+    "question": "Start at 10 and jump forward 3.",
+    "payload": {
+      "start": 10,
+      "jump": 3,
+      "min": 0,
+      "max": 16,
+      "correctValue": 13
+    },
+    "learning": {
+      "skillId": "easy.addition.count-on",
+      "prerequisiteSkillIds": [
+        "easy.addition.symbols"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "It takes 2 to reach 10 from 8. Split 4, then add what remains.",
+    "explanation": "8 + 4 = 12.",
+    "type": "multiple_choice",
+    "question": "The cat has 8 ribbons and adds 4 more. How many altogether?",
+    "choices": [
+      "12",
+      "11",
+      "13"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 4,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.make-ten",
+      "prerequisiteSkillIds": [
+        "easy.addition.count-on"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "It takes 1 to reach 10 from 9. Split 5, then add what remains.",
+    "explanation": "9 + 5 = 14.",
+    "type": "multiple_choice",
+    "question": "The cat has 9 ribbons and adds 5 more. How many altogether?",
+    "choices": [
+      "14",
+      "13",
+      "15"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 9,
+      "right": 5,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.make-ten",
+      "prerequisiteSkillIds": [
+        "easy.addition.count-on"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 8 and add 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "balance",
+    "correctIndex": 0,
+    "question": "Which part is missing?",
+    "payload": {
+      "leftDisplay": "8 + ?",
+      "rightValue": 12,
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.addition.missing-part",
+      "prerequisiteSkillIds": [
+        "easy.addition.make-ten"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 9 and add 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "balance",
+    "correctIndex": 0,
+    "question": "Which part is missing?",
+    "payload": {
+      "leftDisplay": "9 + ?",
+      "rightValue": 14,
+      "choices": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.addition.missing-part",
+      "prerequisiteSkillIds": [
+        "easy.addition.make-ten"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Choose one tile and find the missing part.",
+    "explanation": "8 + 4 = 12.",
+    "type": "pair_sum",
+    "question": "Choose two tiles that make 12.",
+    "payload": {
+      "numbers": [
+        8,
+        4,
+        1,
+        11
+      ],
+      "target": 12,
+      "correctIndices": [
+        0,
+        1
+      ]
+    },
+    "learning": {
+      "skillId": "easy.addition.pairs",
+      "prerequisiteSkillIds": [
+        "easy.addition.missing-part"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Choose one tile and find the missing part.",
+    "explanation": "9 + 5 = 14.",
+    "type": "pair_sum",
+    "question": "Choose two tiles that make 14.",
+    "payload": {
+      "numbers": [
+        9,
+        5,
+        1,
+        13
+      ],
+      "target": 14,
+      "correctIndices": [
+        0,
+        1
+      ]
+    },
+    "learning": {
+      "skillId": "easy.addition.pairs",
+      "prerequisiteSkillIds": [
+        "easy.addition.missing-part"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 8 and add 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "multiple_choice",
+    "question": "The cat has 8 ribbons and adds 4 more. How many altogether?",
+    "choices": [
+      "12",
+      "11",
+      "13"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 4,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.explain",
+      "prerequisiteSkillIds": [
+        "easy.addition.pairs"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 9 and add 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "fix_mistake",
+    "question": "Which repair gives the correct total?",
+    "payload": {
+      "wrongWork": [
+        "9 + 5 = 13"
+      ],
+      "choices": [
+        "9 + 5 = 14",
+        "9 + 5 = 13",
+        "9 + 5 = 15"
+      ]
+    },
+    "correctIndex": 0,
+    "learning": {
+      "skillId": "easy.addition.explain",
+      "prerequisiteSkillIds": [
+        "easy.addition.pairs"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 8 and add 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "fix_mistake",
+    "question": "Which repair gives the correct total?",
+    "payload": {
+      "wrongWork": [
+        "8 + 4 = 11"
+      ],
+      "choices": [
+        "8 + 4 = 12",
+        "8 + 4 = 11",
+        "8 + 4 = 13"
+      ]
+    },
+    "correctIndex": 0,
+    "learning": {
+      "skillId": "easy.addition.repair",
+      "prerequisiteSkillIds": [
+        "easy.addition.explain"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 9 and add 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "fix_mistake",
+    "question": "Which repair gives the correct total?",
+    "payload": {
+      "wrongWork": [
+        "9 + 5 = 13"
+      ],
+      "choices": [
+        "9 + 5 = 14",
+        "9 + 5 = 13",
+        "9 + 5 = 15"
+      ]
+    },
+    "correctIndex": 0,
+    "learning": {
+      "skillId": "easy.addition.repair",
+      "prerequisiteSkillIds": [
+        "easy.addition.explain"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 8 and add 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "multiple_choice",
+    "question": "The cat has 8 ribbons and adds 4 more. How many altogether?",
+    "choices": [
+      "12",
+      "11",
+      "13"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 4,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.apply",
+      "prerequisiteSkillIds": [
+        "easy.addition.repair"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 9 and add 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "multiple_choice",
+    "question": "The cat has 9 ribbons and adds 5 more. How many altogether?",
+    "choices": [
+      "14",
+      "13",
+      "15"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 9,
+      "right": 5,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.apply",
+      "prerequisiteSkillIds": [
+        "easy.addition.repair"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 8 and add 4.",
+    "explanation": "8 + 4 = 12.",
+    "type": "multiple_choice",
+    "question": "The cat has 8 ribbons and adds 4 more. How many altogether?",
+    "choices": [
+      "12",
+      "11",
+      "13"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 4,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.review",
+      "prerequisiteSkillIds": [
+        "easy.addition.apply"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-addition-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "addition",
+    "hint": "Start with 9 and add 5.",
+    "explanation": "9 + 5 = 14.",
+    "type": "multiple_choice",
+    "question": "The cat has 9 ribbons and adds 5 more. How many altogether?",
+    "choices": [
+      "14",
+      "13",
+      "15"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 9,
+      "right": 5,
+      "object": "ribbon"
+    },
+    "learning": {
+      "skillId": "easy.addition.review",
+      "prerequisiteSkillIds": [
+        "easy.addition.apply"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "15",
+      "16",
+      "31"
+    ],
+    "correctIndex": 0,
+    "question": "There are 23 paper stars. Use 8 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "23 − 8 = 15 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.back"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "24 − 9 = 15.",
+    "payload": {
+      "start": 24,
+      "jump": -9,
+      "min": 0,
+      "max": 27,
+      "correctValue": 15
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.back"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "16",
+      "17",
+      "34"
+    ],
+    "correctIndex": 0,
+    "question": "There are 25 paper stars. Use 9 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "25 − 9 = 16 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "26 − 10 = 16.",
+    "payload": {
+      "start": 26,
+      "jump": -10,
+      "min": 0,
+      "max": 29,
+      "correctValue": 16
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "17",
+      "18",
+      "37"
+    ],
+    "correctIndex": 0,
+    "question": "There are 27 paper stars. Use 10 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "27 − 10 = 17 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "28 − 3 = 25.",
+    "payload": {
+      "start": 28,
+      "jump": -3,
+      "min": 0,
+      "max": 31,
+      "correctValue": 25
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "26",
+      "27",
+      "32"
+    ],
+    "correctIndex": 0,
+    "question": "There are 29 paper stars. Use 3 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "29 − 3 = 26 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "30 − 4 = 26.",
+    "payload": {
+      "start": 30,
+      "jump": -4,
+      "min": 0,
+      "max": 33,
+      "correctValue": 26
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "27",
+      "28",
+      "35"
+    ],
+    "correctIndex": 0,
+    "question": "There are 31 paper stars. Use 4 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "31 − 4 = 27 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "32 − 5 = 27.",
+    "payload": {
+      "start": 32,
+      "jump": -5,
+      "min": 0,
+      "max": 35,
+      "correctValue": 27
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "28",
+      "29",
+      "38"
+    ],
+    "correctIndex": 0,
+    "question": "There are 33 paper stars. Use 5 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "33 − 5 = 28 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "34 − 6 = 28.",
+    "payload": {
+      "start": 34,
+      "jump": -6,
+      "min": 0,
+      "max": 37,
+      "correctValue": 28
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "29",
+      "30",
+      "41"
+    ],
+    "correctIndex": 0,
+    "question": "There are 35 paper stars. Use 6 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "35 − 6 = 29 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "36 − 7 = 29.",
+    "payload": {
+      "start": 36,
+      "jump": -7,
+      "min": 0,
+      "max": 39,
+      "correctValue": 29
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "subtraction",
+    "choices": [
+      "30",
+      "31",
+      "44"
+    ],
+    "correctIndex": 0,
+    "question": "There are 37 paper stars. Use 7 on a card. How many stay in the box?",
+    "hint": "Break the amount you take away into smaller steps.",
+    "explanation": "37 − 7 = 30 stay.",
+    "learning": {
+      "skillId": "easy.subtraction.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-subtraction-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "number_line",
+    "topic": "subtraction",
+    "question": "Move back on the number line.",
+    "hint": "Count moves after the starting point.",
+    "explanation": "38 − 8 = 30.",
+    "payload": {
+      "start": 38,
+      "jump": -8,
+      "min": 0,
+      "max": 41,
+      "correctValue": 30
+    },
+    "learning": {
+      "skillId": "easy.subtraction.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.subtraction.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +3. The missing number is 19.",
+    "payload": {
+      "sequence": [
+        7,
+        10,
+        13,
+        16
+      ],
+      "choices": [
+        "19",
+        "20",
+        "21"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.patterns.fives"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −4.",
+    "payload": {
+      "input": 28,
+      "output": 24,
+      "choices": [
+        "−4",
+        "+4",
+        "−5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.patterns.fives"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +4. The missing number is 24.",
+    "payload": {
+      "sequence": [
+        8,
+        12,
+        16,
+        20
+      ],
+      "choices": [
+        "24",
+        "25",
+        "26"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −5.",
+    "payload": {
+      "input": 29,
+      "output": 24,
+      "choices": [
+        "−5",
+        "+5",
+        "−6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +5. The missing number is 29.",
+    "payload": {
+      "sequence": [
+        9,
+        14,
+        19,
+        24
+      ],
+      "choices": [
+        "29",
+        "30",
+        "31"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −6.",
+    "payload": {
+      "input": 30,
+      "output": 24,
+      "choices": [
+        "−6",
+        "+6",
+        "−7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +2. The missing number is 18.",
+    "payload": {
+      "sequence": [
+        10,
+        12,
+        14,
+        16
+      ],
+      "choices": [
+        "18",
+        "19",
+        "20"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −3.",
+    "payload": {
+      "input": 31,
+      "output": 28,
+      "choices": [
+        "−3",
+        "+3",
+        "−4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +3. The missing number is 23.",
+    "payload": {
+      "sequence": [
+        11,
+        14,
+        17,
+        20
+      ],
+      "choices": [
+        "23",
+        "24",
+        "25"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −4.",
+    "payload": {
+      "input": 32,
+      "output": 28,
+      "choices": [
+        "−4",
+        "+4",
+        "−5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +4. The missing number is 28.",
+    "payload": {
+      "sequence": [
+        12,
+        16,
+        20,
+        24
+      ],
+      "choices": [
+        "28",
+        "29",
+        "30"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −5.",
+    "payload": {
+      "input": 33,
+      "output": 28,
+      "choices": [
+        "−5",
+        "+5",
+        "−6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +5. The missing number is 33.",
+    "payload": {
+      "sequence": [
+        13,
+        18,
+        23,
+        28
+      ],
+      "choices": [
+        "33",
+        "34",
+        "35"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −6.",
+    "payload": {
+      "input": 34,
+      "output": 28,
+      "choices": [
+        "−6",
+        "+6",
+        "−7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses +2. The missing number is 22.",
+    "payload": {
+      "sequence": [
+        14,
+        16,
+        18,
+        20
+      ],
+      "choices": [
+        "22",
+        "23",
+        "24"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-patterns-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −3.",
+    "payload": {
+      "input": 35,
+      "output": 32,
+      "choices": [
+        "−3",
+        "+3",
+        "−4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.patterns.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.patterns.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "6",
+      "5",
+      "9"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 2,
+      "columns": 3,
+      "object": "mouse"
+    },
+    "question": "Make 2 rows with 3 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "2 × 3 = 6.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.groups"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 5.",
+    "payload": {
+      "input": 3,
+      "output": 15,
+      "choices": [
+        "×5",
+        "+5",
+        "×6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-3",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.groups"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "12",
+      "7",
+      "16"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 3,
+      "columns": 4,
+      "object": "mouse"
+    },
+    "question": "Make 3 rows with 4 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "3 × 4 = 12.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-3"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 6.",
+    "payload": {
+      "input": 4,
+      "output": 24,
+      "choices": [
+        "×6",
+        "+6",
+        "×7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-4",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "20",
+      "9",
+      "25"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 4,
+      "columns": 5,
+      "object": "mouse"
+    },
+    "question": "Make 4 rows with 5 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "4 × 5 = 20.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-4"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 7.",
+    "payload": {
+      "input": 5,
+      "output": 35,
+      "choices": [
+        "×7",
+        "+7",
+        "×8"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-5",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "30",
+      "11",
+      "36"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 5,
+      "columns": 6,
+      "object": "mouse"
+    },
+    "question": "Make 5 rows with 6 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "5 × 6 = 30.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-5"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 3.",
+    "payload": {
+      "input": 6,
+      "output": 18,
+      "choices": [
+        "×3",
+        "+3",
+        "×4"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-6",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "42",
+      "13",
+      "49"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 6,
+      "columns": 7,
+      "object": "mouse"
+    },
+    "question": "Make 6 rows with 7 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "6 × 7 = 42.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-6"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 4.",
+    "payload": {
+      "input": 2,
+      "output": 8,
+      "choices": [
+        "×4",
+        "+4",
+        "×5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-7",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "6",
+      "5",
+      "9"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 2,
+      "columns": 3,
+      "object": "mouse"
+    },
+    "question": "Make 2 rows with 3 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "2 × 3 = 6.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-7"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 5.",
+    "payload": {
+      "input": 3,
+      "output": 15,
+      "choices": [
+        "×5",
+        "+5",
+        "×6"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-8",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "12",
+      "7",
+      "16"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 3,
+      "columns": 4,
+      "object": "mouse"
+    },
+    "question": "Make 3 rows with 4 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "3 × 4 = 12.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-8"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 6.",
+    "payload": {
+      "input": 4,
+      "output": 24,
+      "choices": [
+        "×6",
+        "+6",
+        "×7"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-9",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "20",
+      "9",
+      "25"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 4,
+      "columns": 5,
+      "object": "mouse"
+    },
+    "question": "Make 4 rows with 5 toy mice in each. How many mice?",
+    "hint": "Count the same number in every group.",
+    "explanation": "4 × 5 = 20.",
+    "learning": {
+      "skillId": "easy.multiplication.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-9"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-multiplication-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "type": "function_machine",
+    "topic": "multiplication",
+    "correctIndex": 0,
+    "question": "Which rule makes the right number of toys?",
+    "hint": "Count the same number in every group.",
+    "explanation": "Multiply by 7.",
+    "payload": {
+      "input": 5,
+      "output": 35,
+      "choices": [
+        "×7",
+        "+7",
+        "×8"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.multiplication.explore-10",
+      "prerequisiteSkillIds": [
+        "easy.multiplication.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-3-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "1 out of 5 equal parts is 1/5.",
+    "type": "fraction_build",
+    "question": "Color 1 of the 5 equal parts: 1/5.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 5
+    },
+    "learning": {
+      "skillId": "easy.fractions.unit",
+      "prerequisiteSkillIds": [
+        "easy.fractions.quarters"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-3-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "One part is 1/7. All 7 parts make a whole.",
+    "type": "fraction_match",
+    "question": "Match each fraction to its picture.",
+    "payload": {
+      "pairs": [
+        {
+          "numerator": 1,
+          "denominator": 7,
+          "visual": "grid"
+        },
+        {
+          "numerator": 7,
+          "denominator": 7,
+          "visual": "pie"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.unit",
+      "prerequisiteSkillIds": [
+        "easy.fractions.quarters"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-4-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "2 out of 5 equal parts is 2/5.",
+    "type": "fraction_build",
+    "question": "Color 2 of the 5 equal parts: 2/5.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5
+    },
+    "learning": {
+      "skillId": "easy.fractions.magnitude",
+      "prerequisiteSkillIds": [
+        "easy.fractions.unit"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-4-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "3 out of 7 equal parts is 3/7.",
+    "type": "fraction_build",
+    "question": "Color 3 of the 7 equal parts: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.magnitude",
+      "prerequisiteSkillIds": [
+        "easy.fractions.unit"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-5-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "2 out of 5 equal parts is 2/5.",
+    "type": "fraction_build",
+    "question": "Color 2 of the 5 equal parts: 2/5.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5
+    },
+    "learning": {
+      "skillId": "easy.fractions.compare",
+      "prerequisiteSkillIds": [
+        "easy.fractions.magnitude"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-5-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "3 out of 7 equal parts is 3/7.",
+    "type": "fraction_build",
+    "question": "Color 3 of the 7 equal parts: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.compare",
+      "prerequisiteSkillIds": [
+        "easy.fractions.magnitude"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-6-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Which fraction shows the same amount?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.equivalence",
+      "prerequisiteSkillIds": [
+        "easy.fractions.compare"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-6-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "3 out of 7 equal parts is 3/7.",
+    "type": "fraction_build",
+    "question": "Color 3 of the 7 equal parts: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.equivalence",
+      "prerequisiteSkillIds": [
+        "easy.fractions.compare"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-7-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Which fraction shows the same amount?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.models",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalence"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-7-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "3 out of 7 equal parts is 3/7.",
+    "type": "fraction_build",
+    "question": "Color 3 of the 7 equal parts: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.models",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalence"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-8-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Which fraction shows the same amount?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.equivalent",
+      "prerequisiteSkillIds": [
+        "easy.fractions.models"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-8-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "3 out of 7 equal parts is 3/7.",
+    "type": "fraction_build",
+    "question": "Color 3 of the 7 equal parts: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.equivalent",
+      "prerequisiteSkillIds": [
+        "easy.fractions.models"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-9-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Which fraction shows the same amount?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.apply",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalent"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-9-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "3 out of 7 equal parts is 3/7.",
+    "type": "fraction_build",
+    "question": "Color 3 of the 7 equal parts: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.apply",
+      "prerequisiteSkillIds": [
+        "easy.fractions.equivalent"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-10-path-review-1",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "2/5 = 4/10.",
+    "type": "fraction_equivalent",
+    "correctIndex": 0,
+    "question": "Which fraction shows the same amount?",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "3/5"
+      ]
+    },
+    "learning": {
+      "skillId": "easy.fractions.review",
+      "prerequisiteSkillIds": [
+        "easy.fractions.apply"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-easy-fractions-explore-10-path-review-2",
+    "difficulty": "easy",
+    "ageRange": [
+      6,
+      8
+    ],
+    "topic": "fractions",
+    "hint": "Count the colored parts and all the equal parts.",
+    "explanation": "3 out of 7 equal parts is 3/7.",
+    "type": "fraction_build",
+    "question": "Color 3 of the 7 equal parts: 3/7.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7
+    },
+    "learning": {
+      "skillId": "easy.fractions.review",
+      "prerequisiteSkillIds": [
+        "easy.fractions.apply"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
   }
 ]

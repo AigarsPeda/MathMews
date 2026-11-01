@@ -16004,5 +16004,3741 @@
       "representation": "symbols",
       "reasoningSteps": 1
     }
+  },
+  {
+    "id": "v2-hard-hard-operations-connected-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "48 ÷ 6 = 8; 8 + 7 = 15.",
+    "payload": {
+      "start": 48,
+      "target": 15,
+      "steps": [
+        {
+          "operand": 6,
+          "operator": "÷"
+        },
+        {
+          "operand": 7,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.connected",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-connected-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "8 + 7 × 10 = 78.",
+    "payload": {
+      "numbers": [
+        8,
+        7,
+        10
+      ],
+      "target": 78,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.connected",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-strategies-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "63 ÷ 7 = 9; 9 + 8 = 17.",
+    "payload": {
+      "start": 63,
+      "target": 17,
+      "steps": [
+        {
+          "operand": 7,
+          "operator": "÷"
+        },
+        {
+          "operand": 8,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.strategies",
+      "prerequisiteSkillIds": [
+        "hard.operations.connected"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-strategies-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "9 + 8 × 11 = 97.",
+    "payload": {
+      "numbers": [
+        9,
+        8,
+        11
+      ],
+      "target": 97,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.strategies",
+      "prerequisiteSkillIds": [
+        "hard.operations.connected"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-amounts-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "16",
+      "17",
+      "24"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 28 seedlings. 4/7 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 4 parts make 16.",
+    "learning": {
+      "skillId": "hard.fractions.amounts",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-amounts-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "6/9 = 12/18.",
+    "payload": {
+      "numerator": 6,
+      "denominator": 9,
+      "choices": [
+        "12/18",
+        "6/18",
+        "12/9"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.amounts",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-apply-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "20",
+      "21",
+      "27"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 32 seedlings. 5/8 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 5 parts make 20.",
+    "learning": {
+      "skillId": "hard.fractions.apply",
+      "prerequisiteSkillIds": [
+        "hard.fractions.amounts"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-apply-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "7/10 = 14/20.",
+    "payload": {
+      "numerator": 7,
+      "denominator": 10,
+      "choices": [
+        "14/20",
+        "7/20",
+        "14/10"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.apply",
+      "prerequisiteSkillIds": [
+        "hard.fractions.amounts"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-multiply-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×2. The missing number is 96.",
+    "payload": {
+      "sequence": [
+        6,
+        12,
+        24,
+        48
+      ],
+      "choices": [
+        "96",
+        "97",
+        "98"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.multiply",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-multiply-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −7.",
+    "payload": {
+      "input": 34,
+      "output": 27,
+      "choices": [
+        "−7",
+        "+7",
+        "−8"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.multiply",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-scale-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×3. The missing number is 567.",
+    "payload": {
+      "sequence": [
+        7,
+        21,
+        63,
+        189
+      ],
+      "choices": [
+        "567",
+        "568",
+        "569"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.scale",
+      "prerequisiteSkillIds": [
+        "hard.patterns.multiply"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-scale-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −8.",
+    "payload": {
+      "input": 35,
+      "output": 27,
+      "choices": [
+        "−8",
+        "+8",
+        "−9"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.scale",
+      "prerequisiteSkillIds": [
+        "hard.patterns.multiply"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-quarters-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "32",
+      "37",
+      "128"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth",
+    "question": "What is 20% of 160 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "160 × 20/100 = 32.",
+    "learning": {
+      "skillId": "hard.percentages.quarters",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-quarters-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "165",
+      "275",
+      "166"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_discount",
+    "question": "A 220-coin toy has a 25% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "220 − 55 = 165 coins.",
+    "learning": {
+      "skillId": "hard.percentages.quarters",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-discounts-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "18",
+      "23",
+      "162"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_tenth",
+    "question": "What is 10% of 180 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "180 × 10/100 = 18.",
+    "learning": {
+      "skillId": "hard.percentages.discounts",
+      "prerequisiteSkillIds": [
+        "hard.percentages.quarters"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-discounts-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "192",
+      "288",
+      "193"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth_discount",
+    "question": "A 240-coin toy has a 20% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "240 − 48 = 192 coins.",
+    "learning": {
+      "skillId": "hard.percentages.discounts",
+      "prerequisiteSkillIds": [
+        "hard.percentages.quarters"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-area-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "70",
+      "17",
+      "34"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 10,
+      "columns": 7,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 10 rows of 7 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "10 × 7 = 70 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.area",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-area-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "143",
+      "119",
+      "234"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "117 grams of clay fill 9 equal bags. How many grams for 11 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "117 ÷ 9 × 11 = 143 grams.",
+    "learning": {
+      "skillId": "hard.measurement.area",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-rates-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "88",
+      "19",
+      "38"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 11,
+      "columns": 8,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 11 rows of 8 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "11 × 8 = 88 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.rates",
+      "prerequisiteSkillIds": [
+        "hard.measurement.area"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-rates-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "168",
+      "142",
+      "280"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "140 grams of clay fill 10 equal bags. How many grams for 12 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "140 ÷ 10 × 12 = 168 grams.",
+    "learning": {
+      "skillId": "hard.measurement.rates",
+      "prerequisiteSkillIds": [
+        "hard.measurement.area"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-clues-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "58",
+      "57",
+      "60"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 56, less than 60, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "58 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.clues",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-clues-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "subtraction",
+    "isTrue": true,
+    "question": "Subtracting a positive whole number always gives a smaller result. Is that true?",
+    "hint": "Consider what changes when a positive amount is taken away.",
+    "explanation": "True. For example, 62 − 7 = 55, which is smaller than 62.",
+    "payload": {
+      "statement": "62 > 62 − 7",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.clues",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-claims-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "68",
+      "67",
+      "70"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 66, less than 70, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "68 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.claims",
+      "prerequisiteSkillIds": [
+        "hard.logic.clues"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-claims-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "multiplication",
+    "isTrue": false,
+    "question": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?",
+    "hint": "What happens when you multiply by one?",
+    "explanation": "False. 72 × 1 = 72, so it stays equal.",
+    "payload": {
+      "statement": "72 × 1 > 72",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.claims",
+      "prerequisiteSkillIds": [
+        "hard.logic.clues"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-3-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "80 ÷ 8 = 10; 10 + 9 = 19.",
+    "payload": {
+      "start": 80,
+      "target": 19,
+      "steps": [
+        {
+          "operand": 8,
+          "operator": "÷"
+        },
+        {
+          "operand": 9,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.operations.strategies"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-3-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "10 + 9 × 12 = 118.",
+    "payload": {
+      "numbers": [
+        10,
+        9,
+        12
+      ],
+      "target": 118,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.operations.strategies"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-4-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "99 ÷ 9 = 11; 11 + 10 = 21.",
+    "payload": {
+      "start": 99,
+      "target": 21,
+      "steps": [
+        {
+          "operand": 9,
+          "operator": "÷"
+        },
+        {
+          "operand": 10,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-4-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "11 + 3 × 13 = 50.",
+    "payload": {
+      "numbers": [
+        11,
+        3,
+        13
+      ],
+      "target": 50,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-5-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "36 ÷ 3 = 12; 12 + 11 = 23.",
+    "payload": {
+      "start": 36,
+      "target": 23,
+      "steps": [
+        {
+          "operand": 3,
+          "operator": "÷"
+        },
+        {
+          "operand": 11,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-5-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "12 + 4 × 14 = 68.",
+    "payload": {
+      "numbers": [
+        12,
+        4,
+        14
+      ],
+      "target": 68,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-6-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "52 ÷ 4 = 13; 13 + 12 = 25.",
+    "payload": {
+      "start": 52,
+      "target": 25,
+      "steps": [
+        {
+          "operand": 4,
+          "operator": "÷"
+        },
+        {
+          "operand": 12,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-6-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "13 + 5 × 15 = 88.",
+    "payload": {
+      "numbers": [
+        13,
+        5,
+        15
+      ],
+      "target": 88,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-7-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "70 ÷ 5 = 14; 14 + 13 = 27.",
+    "payload": {
+      "start": 70,
+      "target": 27,
+      "steps": [
+        {
+          "operand": 5,
+          "operator": "÷"
+        },
+        {
+          "operand": 13,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-7-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "14 + 6 × 16 = 110.",
+    "payload": {
+      "numbers": [
+        14,
+        6,
+        16
+      ],
+      "target": 110,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-8-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "90 ÷ 6 = 15; 15 + 14 = 29.",
+    "payload": {
+      "start": 90,
+      "target": 29,
+      "steps": [
+        {
+          "operand": 6,
+          "operator": "÷"
+        },
+        {
+          "operand": 14,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-8-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "15 + 7 × 17 = 134.",
+    "payload": {
+      "numbers": [
+        15,
+        7,
+        17
+      ],
+      "target": 134,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-9-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "112 ÷ 7 = 16; 16 + 15 = 31.",
+    "payload": {
+      "start": 112,
+      "target": 31,
+      "steps": [
+        {
+          "operand": 7,
+          "operator": "÷"
+        },
+        {
+          "operand": 15,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-9-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "16 + 8 × 18 = 160.",
+    "payload": {
+      "numbers": [
+        16,
+        8,
+        18
+      ],
+      "target": 160,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-10-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "operation_path",
+    "topic": "operations",
+    "question": "Choose two operations to finish this delivery route.",
+    "hint": "Try a step, then check where it takes you.",
+    "explanation": "136 ÷ 8 = 17; 17 + 16 = 33.",
+    "payload": {
+      "start": 136,
+      "target": 33,
+      "steps": [
+        {
+          "operand": 8,
+          "operator": "÷"
+        },
+        {
+          "operand": 16,
+          "operator": "+"
+        }
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-operations-explore-10-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "target_build",
+    "topic": "operations",
+    "question": "Which operations make the target? Keep the numbers in order.",
+    "hint": "Try multiplying the last two numbers first.",
+    "explanation": "17 + 9 × 19 = 188.",
+    "payload": {
+      "numbers": [
+        17,
+        9,
+        19
+      ],
+      "target": 188,
+      "solution": [
+        "+",
+        "×"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.operations.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.operations.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-3-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "24",
+      "25",
+      "30"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 36 seedlings. 6/9 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 6 parts make 24.",
+    "learning": {
+      "skillId": "hard.fractions.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.fractions.apply"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-3-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "8/11 = 16/22.",
+    "payload": {
+      "numerator": 8,
+      "denominator": 11,
+      "choices": [
+        "16/22",
+        "8/22",
+        "16/11"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.fractions.apply"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-4-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "28",
+      "29",
+      "33"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 40 seedlings. 7/10 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 7 parts make 28.",
+    "learning": {
+      "skillId": "hard.fractions.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-4-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "9/12 = 18/24.",
+    "payload": {
+      "numerator": 9,
+      "denominator": 12,
+      "choices": [
+        "18/24",
+        "9/24",
+        "18/12"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-3"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-5-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "32",
+      "33",
+      "36"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 44 seedlings. 8/11 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 8 parts make 32.",
+    "learning": {
+      "skillId": "hard.fractions.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-5-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "2/4 = 4/8.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 4,
+      "choices": [
+        "4/8",
+        "2/8",
+        "4/4"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-4"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-6-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "36",
+      "37",
+      "39"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 48 seedlings. 9/12 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 9 parts make 36.",
+    "learning": {
+      "skillId": "hard.fractions.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-6-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "2/5 = 4/10.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 5,
+      "choices": [
+        "4/10",
+        "2/10",
+        "4/5"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-5"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-7-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "8",
+      "9",
+      "14"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 16 seedlings. 2/4 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 2 parts make 8.",
+    "learning": {
+      "skillId": "hard.fractions.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-7-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "4/6 = 8/12.",
+    "payload": {
+      "numerator": 4,
+      "denominator": 6,
+      "choices": [
+        "8/12",
+        "4/12",
+        "8/6"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-6"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-8-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "8",
+      "9",
+      "18"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 20 seedlings. 2/5 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 2 parts make 8.",
+    "learning": {
+      "skillId": "hard.fractions.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-8-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "3/7 = 6/14.",
+    "payload": {
+      "numerator": 3,
+      "denominator": 7,
+      "choices": [
+        "6/14",
+        "3/14",
+        "6/7"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-7"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-9-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "16",
+      "17",
+      "20"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 24 seedlings. 4/6 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 4 parts make 16.",
+    "learning": {
+      "skillId": "hard.fractions.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-9-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "2/8 = 4/16.",
+    "payload": {
+      "numerator": 2,
+      "denominator": 8,
+      "choices": [
+        "4/16",
+        "2/16",
+        "4/8"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-8"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-10-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "12",
+      "13",
+      "25"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_of_set",
+    "question": "A tray has 28 seedlings. 3/7 are flowers. How many flowers?",
+    "hint": "Check the total number of equal parts first.",
+    "explanation": "One part is 4 seedlings. 3 parts make 12.",
+    "learning": {
+      "skillId": "hard.fractions.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-fractions-explore-10-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "fraction_equivalent",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Choose the fraction with the same value.",
+    "hint": "Split every part into two equal smaller parts.",
+    "explanation": "1/9 = 2/18.",
+    "payload": {
+      "numerator": 1,
+      "denominator": 9,
+      "choices": [
+        "2/18",
+        "1/18",
+        "2/9"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.fractions.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.fractions.explore-9"
+      ],
+      "role": "review",
+      "representation": "fraction-model",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-3-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×4. The missing number is 2048.",
+    "payload": {
+      "sequence": [
+        8,
+        32,
+        128,
+        512
+      ],
+      "choices": [
+        "2048",
+        "2049",
+        "2050"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.patterns.scale"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-3-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −9.",
+    "payload": {
+      "input": 36,
+      "output": 27,
+      "choices": [
+        "−9",
+        "+9",
+        "−10"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.patterns.scale"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-4-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×2. The missing number is 144.",
+    "payload": {
+      "sequence": [
+        9,
+        18,
+        36,
+        72
+      ],
+      "choices": [
+        "144",
+        "145",
+        "146"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-4-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −10.",
+    "payload": {
+      "input": 37,
+      "output": 27,
+      "choices": [
+        "−10",
+        "+10",
+        "−11"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-5-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×3. The missing number is 810.",
+    "payload": {
+      "sequence": [
+        10,
+        30,
+        90,
+        270
+      ],
+      "choices": [
+        "810",
+        "811",
+        "812"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-5-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −11.",
+    "payload": {
+      "input": 38,
+      "output": 27,
+      "choices": [
+        "−11",
+        "+11",
+        "−12"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-6-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×4. The missing number is 2816.",
+    "payload": {
+      "sequence": [
+        11,
+        44,
+        176,
+        704
+      ],
+      "choices": [
+        "2816",
+        "2817",
+        "2818"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-6-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −12.",
+    "payload": {
+      "input": 39,
+      "output": 27,
+      "choices": [
+        "−12",
+        "+12",
+        "−13"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-7-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×2. The missing number is 192.",
+    "payload": {
+      "sequence": [
+        12,
+        24,
+        48,
+        96
+      ],
+      "choices": [
+        "192",
+        "193",
+        "194"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-7-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −13.",
+    "payload": {
+      "input": 40,
+      "output": 27,
+      "choices": [
+        "−13",
+        "+13",
+        "−14"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-8-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×3. The missing number is 1053.",
+    "payload": {
+      "sequence": [
+        13,
+        39,
+        117,
+        351
+      ],
+      "choices": [
+        "1053",
+        "1054",
+        "1055"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-8-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −14.",
+    "payload": {
+      "input": 41,
+      "output": 27,
+      "choices": [
+        "−14",
+        "+14",
+        "−15"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-9-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×4. The missing number is 3584.",
+    "payload": {
+      "sequence": [
+        14,
+        56,
+        224,
+        896
+      ],
+      "choices": [
+        "3584",
+        "3585",
+        "3586"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-9-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −15.",
+    "payload": {
+      "input": 42,
+      "output": 27,
+      "choices": [
+        "−15",
+        "+15",
+        "−16"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-10-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "pattern_next",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "What comes next?",
+    "hint": "Compare each number with the one before it.",
+    "explanation": "Each step uses ×2. The missing number is 240.",
+    "payload": {
+      "sequence": [
+        15,
+        30,
+        60,
+        120
+      ],
+      "choices": [
+        "240",
+        "241",
+        "242"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-patterns-explore-10-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "function_machine",
+    "topic": "patterns",
+    "correctIndex": 0,
+    "question": "Choose the rule that works for this machine.",
+    "hint": "Test each offered rule on the input.",
+    "explanation": "The rule is −16.",
+    "payload": {
+      "input": 43,
+      "output": 27,
+      "choices": [
+        "−16",
+        "+16",
+        "−17"
+      ]
+    },
+    "learning": {
+      "skillId": "hard.patterns.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.patterns.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-3-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "100",
+      "105",
+      "95"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_half",
+    "question": "What is 50% of 200 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "200 × 50/100 = 100.",
+    "learning": {
+      "skillId": "hard.percentages.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.percentages.discounts"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-3-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "234",
+      "286",
+      "235"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_tenth_discount",
+    "question": "A 260-coin toy has a 10% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "260 − 26 = 234 coins.",
+    "learning": {
+      "skillId": "hard.percentages.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.percentages.discounts"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-4-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "55",
+      "60",
+      "165"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_of",
+    "question": "What is 25% of 220 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "220 × 25/100 = 55.",
+    "learning": {
+      "skillId": "hard.percentages.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-4-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "140",
+      "420",
+      "141"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_half_discount",
+    "question": "A 280-coin toy has a 50% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "280 − 140 = 140 coins.",
+    "learning": {
+      "skillId": "hard.percentages.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-5-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "48",
+      "53",
+      "192"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth",
+    "question": "What is 20% of 240 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "240 × 20/100 = 48.",
+    "learning": {
+      "skillId": "hard.percentages.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-5-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "225",
+      "375",
+      "226"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_discount",
+    "question": "A 300-coin toy has a 25% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "300 − 75 = 225 coins.",
+    "learning": {
+      "skillId": "hard.percentages.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-6-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "26",
+      "31",
+      "234"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_tenth",
+    "question": "What is 10% of 260 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "260 × 10/100 = 26.",
+    "learning": {
+      "skillId": "hard.percentages.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-6-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "256",
+      "384",
+      "257"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth_discount",
+    "question": "A 320-coin toy has a 20% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "320 − 64 = 256 coins.",
+    "learning": {
+      "skillId": "hard.percentages.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-7-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "140",
+      "145",
+      "135"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_half",
+    "question": "What is 50% of 280 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "280 × 50/100 = 140.",
+    "learning": {
+      "skillId": "hard.percentages.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-7-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "306",
+      "374",
+      "307"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_tenth_discount",
+    "question": "A 340-coin toy has a 10% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "340 − 34 = 306 coins.",
+    "learning": {
+      "skillId": "hard.percentages.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-8-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "75",
+      "80",
+      "225"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_of",
+    "question": "What is 25% of 300 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "300 × 25/100 = 75.",
+    "learning": {
+      "skillId": "hard.percentages.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-8-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "180",
+      "540",
+      "181"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_half_discount",
+    "question": "A 360-coin toy has a 50% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "360 − 180 = 180 coins.",
+    "learning": {
+      "skillId": "hard.percentages.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-9-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "64",
+      "69",
+      "256"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth",
+    "question": "What is 20% of 320 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "320 × 20/100 = 64.",
+    "learning": {
+      "skillId": "hard.percentages.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-9-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "285",
+      "475",
+      "286"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_discount",
+    "question": "A 380-coin toy has a 25% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "380 − 95 = 285 coins.",
+    "learning": {
+      "skillId": "hard.percentages.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-10-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "34",
+      "39",
+      "306"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_tenth",
+    "question": "What is 10% of 340 coins?",
+    "hint": "Find the fraction represented by the percent.",
+    "explanation": "340 × 10/100 = 34.",
+    "learning": {
+      "skillId": "hard.percentages.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-percentages-explore-10-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "fractions",
+    "choices": [
+      "320",
+      "480",
+      "321"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "percent_fifth_discount",
+    "question": "A 400-coin toy has a 20% discount. What is the new price?",
+    "hint": "Find the discount amount, then take it away.",
+    "explanation": "400 − 80 = 320 coins.",
+    "learning": {
+      "skillId": "hard.percentages.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.percentages.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-3-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "108",
+      "21",
+      "42"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 12,
+      "columns": 9,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 12 rows of 9 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "12 × 9 = 108 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.measurement.rates"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-3-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "90",
+      "62",
+      "120"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "60 grams of clay fill 4 equal bags. How many grams for 6 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "60 ÷ 4 × 6 = 90 grams.",
+    "learning": {
+      "skillId": "hard.measurement.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.measurement.rates"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-4-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "130",
+      "23",
+      "46"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 13,
+      "columns": 10,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 13 rows of 10 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "13 × 10 = 130 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-3"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-4-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "112",
+      "82",
+      "160"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "80 grams of clay fill 5 equal bags. How many grams for 7 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "80 ÷ 5 × 7 = 112 grams.",
+    "learning": {
+      "skillId": "hard.measurement.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-5-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "56",
+      "18",
+      "36"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 14,
+      "columns": 4,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 14 rows of 4 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "14 × 4 = 56 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-4"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-5-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "136",
+      "104",
+      "204"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "102 grams of clay fill 6 equal bags. How many grams for 8 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "102 ÷ 6 × 8 = 136 grams.",
+    "learning": {
+      "skillId": "hard.measurement.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-6-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "75",
+      "20",
+      "40"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 15,
+      "columns": 5,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 15 rows of 5 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "15 × 5 = 75 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-5"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-6-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "162",
+      "128",
+      "252"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "126 grams of clay fill 7 equal bags. How many grams for 9 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "126 ÷ 7 × 9 = 162 grams.",
+    "learning": {
+      "skillId": "hard.measurement.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-7-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "96",
+      "22",
+      "44"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 16,
+      "columns": 6,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 16 rows of 6 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "16 × 6 = 96 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-6"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-7-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "190",
+      "154",
+      "304"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "152 grams of clay fill 8 equal bags. How many grams for 10 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "152 ÷ 8 × 10 = 190 grams.",
+    "learning": {
+      "skillId": "hard.measurement.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-8-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "119",
+      "24",
+      "48"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 17,
+      "columns": 7,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 17 rows of 7 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "17 × 7 = 119 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-7"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-8-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "220",
+      "182",
+      "360"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "180 grams of clay fill 9 equal bags. How many grams for 11 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "180 ÷ 9 × 11 = 220 grams.",
+    "learning": {
+      "skillId": "hard.measurement.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-9-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "144",
+      "26",
+      "52"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 18,
+      "columns": 8,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 18 rows of 8 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "18 × 8 = 144 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-8"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-9-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "252",
+      "212",
+      "420"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "210 grams of clay fill 10 equal bags. How many grams for 12 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "210 ÷ 10 × 12 = 252 grams.",
+    "learning": {
+      "skillId": "hard.measurement.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-10-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "multiplication",
+    "choices": [
+      "171",
+      "28",
+      "56"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "array",
+      "rows": 19,
+      "columns": 9,
+      "object": "planting_tile"
+    },
+    "question": "A garden has 19 rows of 9 square planting spaces. How many square spaces?",
+    "hint": "Count the same number in every group.",
+    "explanation": "19 × 9 = 171 square spaces.",
+    "learning": {
+      "skillId": "hard.measurement.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-9"
+      ],
+      "role": "review",
+      "representation": "objects",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-measurement-explore-10-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "operations",
+    "choices": [
+      "132",
+      "90",
+      "176"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "rate",
+    "question": "88 grams of clay fill 4 equal bags. How many grams for 6 bags?",
+    "hint": "Find the amount for one bag first.",
+    "explanation": "88 ÷ 4 × 6 = 132 grams.",
+    "learning": {
+      "skillId": "hard.measurement.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-3-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "78",
+      "77",
+      "80"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 76, less than 80, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "78 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.logic.claims"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-3-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "subtraction",
+    "isTrue": true,
+    "question": "Subtracting a positive whole number always gives a smaller result. Is that true?",
+    "hint": "Consider what changes when a positive amount is taken away.",
+    "explanation": "True. For example, 82 − 7 = 75, which is smaller than 82.",
+    "payload": {
+      "statement": "82 > 82 − 7",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.logic.claims"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-4-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "88",
+      "87",
+      "90"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 86, less than 90, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "88 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-4-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "multiplication",
+    "isTrue": false,
+    "question": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?",
+    "hint": "What happens when you multiply by one?",
+    "explanation": "False. 92 × 1 = 92, so it stays equal.",
+    "payload": {
+      "statement": "92 × 1 > 92",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.explore-4",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-3"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-5-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "98",
+      "97",
+      "100"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 96, less than 100, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "98 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-5-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "subtraction",
+    "isTrue": true,
+    "question": "Subtracting a positive whole number always gives a smaller result. Is that true?",
+    "hint": "Consider what changes when a positive amount is taken away.",
+    "explanation": "True. For example, 102 − 7 = 95, which is smaller than 102.",
+    "payload": {
+      "statement": "102 > 102 − 7",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.explore-5",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-4"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-6-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "108",
+      "107",
+      "110"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 106, less than 110, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "108 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-6-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "multiplication",
+    "isTrue": false,
+    "question": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?",
+    "hint": "What happens when you multiply by one?",
+    "explanation": "False. 112 × 1 = 112, so it stays equal.",
+    "payload": {
+      "statement": "112 × 1 > 112",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-5"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-7-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "118",
+      "117",
+      "120"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 116, less than 120, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "118 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-7-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "subtraction",
+    "isTrue": true,
+    "question": "Subtracting a positive whole number always gives a smaller result. Is that true?",
+    "hint": "Consider what changes when a positive amount is taken away.",
+    "explanation": "True. For example, 122 − 7 = 115, which is smaller than 122.",
+    "payload": {
+      "statement": "122 > 122 − 7",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.explore-7",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-6"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-8-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "128",
+      "127",
+      "130"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 126, less than 130, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "128 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-8-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "multiplication",
+    "isTrue": false,
+    "question": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?",
+    "hint": "What happens when you multiply by one?",
+    "explanation": "False. 132 × 1 = 132, so it stays equal.",
+    "payload": {
+      "statement": "132 × 1 > 132",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.explore-8",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-7"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-9-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "138",
+      "137",
+      "140"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 136, less than 140, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "138 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-9-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "subtraction",
+    "isTrue": true,
+    "question": "Subtracting a positive whole number always gives a smaller result. Is that true?",
+    "hint": "Consider what changes when a positive amount is taken away.",
+    "explanation": "True. For example, 142 − 7 = 135, which is smaller than 142.",
+    "payload": {
+      "statement": "142 > 142 − 7",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.explore-9",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-8"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-10-path-review-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "multiple_choice",
+    "topic": "logic",
+    "choices": [
+      "148",
+      "147",
+      "150"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "number_range",
+    "question": "A number is greater than 146, less than 150, and even. Choose the number.",
+    "hint": "Check every clue, including the endpoints.",
+    "explanation": "148 is even and lies strictly between the endpoints.",
+    "learning": {
+      "skillId": "hard.logic.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-hard-hard-logic-explore-10-path-review-2",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "type": "true_false",
+    "topic": "multiplication",
+    "isTrue": false,
+    "question": "Multiplying two positive whole numbers always gives a result larger than either number. Is that true?",
+    "hint": "What happens when you multiply by one?",
+    "explanation": "False. 152 × 1 = 152, so it stays equal.",
+    "payload": {
+      "statement": "152 × 1 > 152",
+      "hideStatement": true
+    },
+    "learning": {
+      "skillId": "hard.logic.explore-10",
+      "prerequisiteSkillIds": [
+        "hard.logic.explore-9"
+      ],
+      "role": "review",
+      "representation": "symbols",
+      "reasoningSteps": 1
+    }
   }
 ]
