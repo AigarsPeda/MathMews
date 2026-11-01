@@ -1636,6 +1636,7 @@
     "back": "Back to topics",
     "chooseLevel": "Choose a level",
     "level": "Level {{number}}",
+    "playLevel": "Play level {{number}}",
     "progress": "{{count}} of {{total}} puzzles completed",
     "play": "Play",
     "playTopic": "Play {{topic}}",

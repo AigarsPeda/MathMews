@@ -61,6 +61,23 @@ export function getPathRecommendation(difficulty: PuzzleDifficulty, progress: Pa
   const level = lesson.levels.find(l => getPathStepState(lesson, l, progress) === "current") ?? lesson.levels[0];
   return { lesson, level, resumeChallenge: false };
 }
+/** Offer a continuation only when this difficulty has saved activity. */
+export function getPathResumeRecommendation(difficulty: PuzzleDifficulty, progress: PathProgress) {
+  const recommendation = getPathRecommendation(difficulty, progress);
+  if (!recommendation) return;
+  if (recommendation.resumeChallenge) return recommendation;
+  if (getPathProgress(recommendation.lesson, progress).complete) return;
+  const history = [...(progress.completedPuzzleIds ?? []), ...(progress.attemptedPuzzleIds ?? [])];
+  const lessons = PUZZLE_PATHS.filter(lesson => lesson.difficulty === difficulty);
+  for (let index = history.length - 1; index >= 0; index--) {
+    const last = lessons.find(lesson => lesson.levels.some(level => level.puzzleIds.includes(history[index])));
+    if (!last) continue;
+    // Finishing a level should continue its topic, not jump to the catalog's first topic.
+    const next = getPathRecommendation(difficulty, progress, last.topicId);
+    return next && !getPathProgress(next.lesson, progress).complete ? next : recommendation;
+  }
+  return lessons.some(lesson => progress.completedPathLessonIds?.includes(lesson.id)) ? recommendation : undefined;
+}
 export function resolvePathSession(difficulty: PuzzleDifficulty, lessonId: string | undefined, levelId: string | undefined,
   phaseParam: string | undefined, progress: PathProgress): LearningSession | null {
   const lesson = getPathLesson(difficulty, lessonId);

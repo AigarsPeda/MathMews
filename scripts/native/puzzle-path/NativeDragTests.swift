@@ -15,7 +15,7 @@ final class NativeDragTests: XCTestCase {
   app.buttons["QA Topics"].tap()
   XCTAssertTrue(app.staticTexts["Choose a topic"].waitForExistence(timeout:5))
   XCTAssertFalse(app.buttons["Play Addition"].exists)
-  XCTAssertFalse(app.buttons["Continue playing"].exists)
+  XCTAssertTrue(app.buttons["Continue playing"].exists)
   shot("choose-topic")
   app.buttons["Addition"].tap()
   XCTAssertTrue(app.buttons["Level 5"].waitForExistence(timeout:5))
@@ -36,5 +36,20 @@ final class NativeDragTests: XCTestCase {
   XCTAssertFalse(app.buttons["Level 1"].exists)
   XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format:"label CONTAINS %@", "of 10")).firstMatch.exists)
   shot("level-opens-directly-in-puzzle")
+ }
+ func testContinuePlayingResumesSavedPuzzle() {
+  app.buttons["QA Topics"].tap()
+  XCTAssertTrue(app.buttons["Continue playing"].waitForExistence(timeout:5))
+  XCTAssertTrue(app.staticTexts["Find the missing part"].exists)
+  shot("resume-card")
+  app.buttons["QA Narrow"].tap()
+  shot("resume-card-320")
+  app.buttons["Continue playing"].tap()
+  XCTAssertTrue(app.buttons["Check answer"].waitForExistence(timeout:8))
+  XCTAssertFalse(app.buttons["Level 5"].exists)
+  // The destination reads the app's save, while the selection fixture owns its sample progress.
+  // The pure path checks verify the exact resumed puzzle; here verify direct native entry.
+  XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format:"label CONTAINS %@", "of 10")).firstMatch.exists)
+  shot("resume-opens-saved-puzzle")
  }
 }

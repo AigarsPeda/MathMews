@@ -11,6 +11,20 @@ export function checkPaths({ load }) {
   const now = Date.now();
   const allIds = [];
   const nextLessonLocked = (track, lesson) => track[track.indexOf(lesson) + 1];
+  {
+    const fresh = createDefaultGameSave().progress;
+    const first = path.getTopicPaths('easy', 'addition')[0];
+    assert.equal(path.getPathResumeRecommendation('easy', fresh), undefined, 'New players see topics without a false resume card');
+    const attempted = { ...fresh, attemptedPuzzleIds: [first.levels[0].puzzleIds[0]] };
+    assert.equal(path.getPathResumeRecommendation('easy', attempted)?.lesson.id, first.id, 'An incorrect first answer still counts as started');
+    const partial = { ...fresh, completedPuzzleIds: first.levels.slice(0, 6).flatMap(level => level.puzzleIds) };
+    assert.equal(path.getPathResumeRecommendation('easy', partial)?.level.id, first.levels[6].id, 'Continue resumes the first unfinished puzzle');
+    assert.equal(path.getPathResumeRecommendation('hard', partial), undefined, 'Continue follows the selected difficulty');
+    const finished = { ...fresh, completedPuzzleIds: first.levels.flatMap(level => level.puzzleIds) };
+    assert.equal(path.getPathResumeRecommendation('easy', finished)?.lesson.id, path.getTopicPaths('easy', 'addition')[1].id, 'After finishing a level, Continue offers the next level');
+    const allFinished = { ...fresh, completedPuzzleIds: path.PUZZLE_PATHS.filter(lesson => lesson.difficulty === 'easy').flatMap(lesson => lesson.levels.flatMap(level => level.puzzleIds)) };
+    assert.equal(path.getPathResumeRecommendation('easy', allFinished), undefined, 'A finished difficulty does not pretend to have unfinished work');
+  }
   for (const lesson of path.PUZZLE_PATHS) {
     assert.equal(lesson.levels.length, 10);
     assert.equal(lesson.levels[7].kind, 'challenge');

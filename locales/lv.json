@@ -1638,6 +1638,7 @@
     "back": "Atpakaļ pie tēmām",
     "chooseLevel": "Izvēlies līmeni",
     "level": "{{number}}. līmenis",
+    "playLevel": "Spēlēt {{number}}. līmeni",
     "progress": "Pabeigti {{count}} no {{total}} uzdevumiem",
     "play": "Spēlēt",
     "playTopic": "Spēlēt: {{topic}}",

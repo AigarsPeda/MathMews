@@ -2,14 +2,14 @@ import { Feather } from "@expo/vector-icons";
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
 import { TopicLevelPath } from "@/components/puzzle/TopicLevelPath";
 import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
-import { PuzzleHeaderGlow } from "@/components/puzzle/PuzzleGradient";
+import { PuzzleGradient, PuzzleHeaderGlow } from "@/components/puzzle/PuzzleGradient";
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleProgress } from "@/components/puzzle/PuzzleProgress";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { AchievementsLink } from "@/components/puzzle/AchievementsLink";
 import { getLearningTopics } from "@/constants/curriculum";
-import { getPathEntry, getPathProgress, getPathRecommendation, getTopicPaths } from "@/constants/puzzle-path";
+import { getPathEntry, getPathProgress, getPathRecommendation, getPathResumeRecommendation, getTopicPaths } from "@/constants/puzzle-path";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
 import { PUZZLE_DIFFICULTIES, isPuzzleDifficulty } from "@/constants/puzzles";
@@ -57,9 +57,12 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
   const selectionStyle = useAnimatedStyle(() => ({ opacity: contentOpacity.get(), transform: [{ translateX: contentOffset.get() }] }));
   const topics = getLearningTopics(difficulty);
   const topic = topics.find(item => item.id === params.topic);
-  const recommendation = getPathRecommendation(difficulty, progress, topic?.id);
+  const recommendation = topic ? getPathRecommendation(difficulty, progress, topic.id)
+    : getPathResumeRecommendation(difficulty, progress);
+  const recommendedProgress = recommendation ? getPathProgress(recommendation.lesson, progress) : undefined;
   const lessons = topic ? getTopicPaths(difficulty, topic.id) : [];
   const completedLevels = lessons.filter(lesson => getPathProgress(lesson, progress).complete).length;
+  const recommendedLevel = lessons.findIndex(lesson => lesson.id === recommendation?.lesson.id) + 1;
 
   function play(lesson: LearningLesson) {
     const entry = getPathEntry(lesson, progress);
@@ -88,14 +91,26 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
         <Text style={styles.title} accessibilityRole="header">{topic?.title[locale] ?? t("puzzlePathDesign.chooseTopic")}</Text>
         {topic ? <>
           <View style={styles.row}>
-            <Text style={styles.progressText}>{completedLevels} / {lessons.length}</Text>
+            <Text style={styles.progressText}>{t(`difficulty.${difficulty}`)}</Text>
+            <View style={styles.progressTrack}>
+              <PuzzleProgress steps={lessons.map(lesson => getPathProgress(lesson, progress).complete)}
+                label={t("puzzlePathDesign.levelProgress", { count: completedLevels, total: lessons.length })} />
+            </View>
           </View>
-          <PuzzleProgress steps={lessons.map(lesson => getPathProgress(lesson, progress).complete)}
-            label={t("puzzlePathDesign.levelProgress", { count: completedLevels, total: lessons.length })} />
           <TopicLevelPath lessons={lessons} progress={progress} currentLessonId={recommendation?.lesson.id} onPlay={play} />
         </> : <>
           <DifficultyPicker selected={difficulty} onSelect={tier => { if (tier !== difficulty) router.setParams({ difficulty: tier }); }} />
           <Animated.View style={[styles.selectionContent, selectionStyle]}>
+            {recommendation ? <View style={styles.resumeCard}>
+              <PuzzleGradient colors={[GameColors.recommendationTop, GameColors.recommendationSurface]} />
+              <Text style={styles.resumeTitle} accessibilityRole="header">{recommendation.lesson.title[locale]}</Text>
+              <PuzzleProgress
+                size="slim"
+                steps={recommendation.lesson.levels.flatMap(level => level.puzzleIds.map(id => progress.completedPuzzleIds?.includes(id) ?? false))}
+                label={t("puzzlePathDesign.progress", { count: recommendedProgress?.solved ?? 0, total: recommendedProgress?.total ?? 0 })} />
+              <PuzzleButton label={t("puzzleDesign.continue")} accessibilityHint={recommendation.lesson.title[locale]}
+                onPress={() => play(recommendation.lesson)} />
+            </View> : null}
             {topics.map((item, index) => <Pressable key={item.id} style={styles.topic}
               accessibilityRole="button" accessibilityLabel={item.title[locale]}
               accessibilityHint={t("puzzlePathDesign.viewTopicPath", { topic: item.title[locale] })}
@@ -108,7 +123,9 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
           <Pressable onPress={() => router.push("/stats")} style={styles.secondary} accessibilityRole="button"><Text style={styles.backText}>{t("stats.title")}</Text></Pressable>
         </>}
       </ScrollView>
-      {topic && recommendation ? <PuzzleButton label={t("puzzleDesign.continue")} onPress={() => play(recommendation.lesson)} /> : null}
+      {topic && recommendation ? <View style={styles.pathAction}>
+        <PuzzleButton label={t(recommendedProgress?.complete ? "puzzlePathDesign.replay" : "puzzlePathDesign.playLevel", { number: recommendedLevel })} onPress={() => play(recommendation.lesson)} />
+      </View> : null}
     </View>
   </SafeAreaView>;
 });
@@ -123,8 +140,12 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 }, content: { paddingBottom: moderateScale(20), gap: moderateScale(18) },
   title: { fontSize: moderateScale(32), fontWeight: "900", color: GameColors.text },
   progressText: { fontSize: moderateScale(16), color: GameColors.textMuted, fontWeight: "700" },
-  row: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center" },
+  row: { flexDirection: "row", gap: moderateScale(12), alignItems: "center" },
+  progressTrack: { flex: 1 },
+  pathAction: { paddingTop: moderateScale(12) },
   selectionContent: { gap: moderateScale(14) },
+  resumeCard: { padding: moderateScale(20), gap: moderateScale(16), borderRadius: moderateScale(24), overflow: "hidden", marginBottom: moderateScale(8) },
+  resumeTitle: { fontSize: moderateScale(23), lineHeight: moderateScale(30), fontWeight: "900", color: GameColors.text },
   topic: { flexDirection: "row", alignItems: "center", gap: moderateScale(14), minHeight: 84, paddingVertical: moderateScale(16), borderBottomWidth: 1, borderColor: GameColors.cardBorder },
   topicIcon: { width: moderateScale(46), height: moderateScale(46), alignItems: "center", justifyContent: "center", borderRadius: moderateScale(13) },
   topicTitle: { flex: 1, fontSize: moderateScale(18), fontWeight: "800", color: GameColors.text },
