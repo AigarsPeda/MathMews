@@ -6,22 +6,22 @@
       8,
       10
     ],
-    "type": "multiple_choice",
     "topic": "addition",
-    "choices": [
-      "43",
-      "42",
-      "44"
-    ],
-    "correctIndex": 0,
-    "question": "Kaķis saliek 27 sarkanas un 16 zilas lentes. Cik lenšu kopā?",
-    "hint": "Sāc ar 27 un skaiti vēl 16.",
-    "explanation": "27 + 16 = 43 lentes.",
+    "type": "place_value",
+    "question": "Izveido skaitli 34 no desmitiem un vieniem.",
+    "hint": "Pirmais cipars rāda desmitus, otrais — vienus.",
+    "explanation": "3 × 10 + 4 = 34.",
+    "payload": {
+      "mode": "build",
+      "start": 34,
+      "guided": true
+    },
+    "helpTemplate": "base_ten_build",
     "learning": {
       "skillId": "medium.addition.tens",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -32,26 +32,22 @@
       8,
       10
     ],
-    "type": "balance",
-    "topic": "equality",
-    "correctIndex": 0,
-    "question": "Aizpildi trūkstošo summas daļu.",
-    "hint": "Kas jāpieskaita 38, lai iegūtu 63?",
-    "explanation": "38 + 25 = 63.",
+    "topic": "addition",
+    "type": "place_value",
+    "question": "Samaini 10 vienus pret 1 desmitu.",
+    "hint": "Desmit vienus var samainīt pret vienu desmitu. Beigās vienu jābūt mazāk par desmit.",
+    "explanation": "2 × 10 + 5 = 25.",
     "payload": {
-      "leftDisplay": "38 + ?",
-      "rightValue": 63,
-      "choices": [
-        "25",
-        "24",
-        "23"
-      ]
+      "mode": "bundle",
+      "start": 25,
+      "guided": true
     },
+    "helpTemplate": "base_ten_bundle",
     "learning": {
       "skillId": "medium.addition.tens",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -62,32 +58,24 @@
       8,
       10
     ],
-    "type": "pair_sum",
-    "topic": "mental_math",
-    "question": "Izvēlies divas kartītes, kuru summa ir 54.",
-    "hint": "Izvēlies skaitli un atrodi tā trūkstošo pārinieku.",
-    "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 54.",
+    "topic": "addition",
+    "type": "place_value",
+    "question": "27 + 16 = ?",
+    "hint": "Desmit vienus var samainīt pret vienu desmitu. Beigās vienu jābūt mazāk par desmit.",
+    "explanation": "27 + 16 = 43. 4 × 10 + 3 = 43.",
     "payload": {
-      "numbers": [
-        19,
-        35,
-        1,
-        53,
-        2,
-        52
-      ],
-      "target": 54,
-      "correctIndices": [
-        0,
-        1
-      ]
+      "mode": "add",
+      "start": 27,
+      "operand": 16,
+      "guided": true
     },
+    "helpTemplate": "base_ten_add",
     "learning": {
       "skillId": "medium.addition.tens",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -97,28 +85,24 @@
       8,
       10
     ],
-    "type": "fix_mistake",
     "topic": "addition",
-    "correctIndex": 0,
-    "question": "Minka mēģināja saskaitīt. Kurš labojums ir pareizs?",
-    "hint": "Sāc ar 46 un skaiti vēl 28 vai sadali pieskaitāmo ērtās daļās.",
-    "explanation": "Summa ir 74, nevis 73.",
+    "type": "place_value",
+    "question": "36 + 28 = ?",
+    "hint": "Desmit vienus var samainīt pret vienu desmitu. Beigās vienu jābūt mazāk par desmit.",
+    "explanation": "36 + 28 = 64. 6 × 10 + 4 = 64.",
     "payload": {
-      "wrongWork": [
-        "46 + 28 = 73"
-      ],
-      "choices": [
-        "46 + 28 = 74",
-        "46 + 28 = 75",
-        "46 + 28 = 76"
-      ]
+      "mode": "add",
+      "start": 36,
+      "operand": 28,
+      "guided": false
     },
+    "helpTemplate": "base_ten_add",
     "learning": {
       "skillId": "medium.addition.tens",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -195,17 +179,17 @@
     "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 65.",
     "payload": {
       "numbers": [
+        30,
         29,
+        37,
+        31,
         36,
-        1,
-        64,
-        2,
-        63
+        38
       ],
       "target": 65,
       "correctIndices": [
-        0,
-        1
+        1,
+        4
       ]
     },
     "learning": {
@@ -258,22 +242,22 @@
       8,
       10
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "25",
-      "24",
-      "26"
-    ],
-    "correctIndex": 0,
-    "question": "Ir 42 papīra zvaigznes. 17 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "42 − 17 = 25 paliek.",
+    "type": "place_value",
+    "question": "Izveido skaitli 42 no desmitiem un vieniem.",
+    "hint": "Pirmais cipars rāda desmitus, otrais — vienus.",
+    "explanation": "4 × 10 + 2 = 42.",
+    "payload": {
+      "mode": "build",
+      "start": 42,
+      "guided": true
+    },
+    "helpTemplate": "base_ten_build",
     "learning": {
       "skillId": "medium.subtraction.parts",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -284,23 +268,22 @@
       8,
       10
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "51 − 24 = 27.",
+    "type": "place_value",
+    "question": "Samaini 1 desmitu pret 10 vieniem.",
+    "hint": "Daudzums nemainās, ja vienu desmitu samaina pret desmit vieniem.",
+    "explanation": "2 × 10 + 11 = 31.",
     "payload": {
-      "start": 51,
-      "jump": -24,
-      "min": 0,
-      "max": 54,
-      "correctValue": 27
+      "mode": "split",
+      "start": 31,
+      "guided": true
     },
+    "helpTemplate": "base_ten_split",
     "learning": {
       "skillId": "medium.subtraction.parts",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -311,21 +294,24 @@
       8,
       10
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 64 − 38 = 26.",
+    "type": "place_value",
+    "question": "42 − 17 = ?",
+    "hint": "Ja nepietiek vienu, samaini vienu desmitu pret desmit vieniem. Tad atņem vajadzīgo daudzumu.",
+    "explanation": "42 − 17 = 25. 2 × 10 + 5 = 25.",
     "payload": {
-      "statement": "64 − 38 = 27"
+      "mode": "subtract",
+      "start": 42,
+      "operand": 17,
+      "guided": true
     },
+    "helpTemplate": "base_ten_subtract",
     "learning": {
       "skillId": "medium.subtraction.parts",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -335,28 +321,24 @@
       8,
       10
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
-    "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 45, paliek 28.",
+    "type": "place_value",
+    "question": "51 − 24 = ?",
+    "hint": "Ja nepietiek vienu, samaini vienu desmitu pret desmit vieniem. Tad atņem vajadzīgo daudzumu.",
+    "explanation": "51 − 24 = 27. 2 × 10 + 7 = 27.",
     "payload": {
-      "wrongWork": [
-        "73 − 45 = 27"
-      ],
-      "choices": [
-        "73 − 45 = 28",
-        "73 − 45 = 30",
-        "73 + 45 = 118"
-      ]
+      "mode": "subtract",
+      "start": 51,
+      "operand": 24,
+      "guided": false
     },
+    "helpTemplate": "base_ten_subtract",
     "learning": {
       "skillId": "medium.subtraction.parts",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -425,12 +407,12 @@
     ],
     "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 81 − 37 = 44.",
+    "explanation": "Pareizi. 81 − 37 = 44.",
     "payload": {
-      "statement": "81 − 37 = 45"
+      "statement": "81 − 37 = 44"
     },
     "learning": {
       "skillId": "medium.subtraction.check",
@@ -546,12 +528,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": true,
+    "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Pareizi. 9 grupas pa 5 ir 45.",
+    "explanation": "Nepareizi. 9 × 5 = 45.",
     "payload": {
-      "statement": "9 × 5 = 45"
+      "statement": "9 × 5 = 54"
     },
     "learning": {
       "skillId": "medium.multiplication.arrays",
@@ -667,12 +649,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 8 grupas pa 8 ir 64.",
+    "explanation": "Pareizi. 8 × 8 = 64.",
     "payload": {
-      "statement": "8 × 8 = 65"
+      "statement": "8 × 8 = 64"
     },
     "learning": {
       "skillId": "medium.multiplication.facts",
@@ -1058,8 +1040,8 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
     "explanation": "3/4 = 6/8.",
     "payload": {
       "numerator": 3,
@@ -1067,7 +1049,7 @@
       "choices": [
         "6/8",
         "3/8",
-        "4/4"
+        "6/4"
       ]
     },
     "learning": {
@@ -1176,17 +1158,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
     "explanation": "4/5 = 8/10.",
     "payload": {
       "numerator": 4,
       "denominator": 5,
       "choices": [
-        "8/10",
         "4/10",
-        "5/5"
+        "8/5",
+        "8/10"
       ]
     },
     "learning": {
@@ -1963,17 +1945,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Sadali katru laukumu divās daļās. Kura daļa joprojām attēlo zilās 3/8?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/8 = 6/16. Zilais laukums nemainās.",
+    "correctIndex": 2,
+    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
+    "hint": "Dali gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "9/24 = 3/8.",
     "payload": {
-      "numerator": 3,
-      "denominator": 8,
+      "numerator": 9,
+      "denominator": 24,
       "choices": [
-        "6/16",
-        "3/16",
-        "6/8"
+        "3/24",
+        "9/8",
+        "3/8"
       ]
     },
     "learning": {
@@ -2068,45 +2050,37 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: viena puse vai trīs ceturtdaļas.",
-    "hint": "Saīsini daļu vai sadali mērķa daļu sīkākās vienādās daļās.",
-    "explanation": "2/4, 3/6 un 5/10 ir 1/2. 6/8, 9/12 un 12/16 ir 3/4.",
+    "question": "Sašķiro daļas pēc vērtības: 1/4 vai 3/4.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/4 = 2/8; 3/4 = 6/8.",
     "payload": {
       "rule": "fractions",
+      "targets": [
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ]
+      ],
       "fractions": [
         [
-          2,
+          1,
           4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          2,
+          8
         ],
         [
           6,
           8
-        ],
-        [
-          3,
-          6
-        ],
-        [
-          9,
-          12
-        ],
-        [
-          5,
-          10
-        ],
-        [
-          12,
-          16
-        ]
-      ],
-      "targets": [
-        [
-          1,
-          2
-        ],
-        [
-          3,
-          4
         ]
       ]
     },
@@ -2298,17 +2272,17 @@
     "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 75.",
     "payload": {
       "numbers": [
+        29,
+        47,
+        31,
+        43,
         30,
-        45,
-        1,
-        74,
-        2,
-        73
+        45
       ],
       "target": 75,
       "correctIndices": [
-        0,
-        1
+        4,
+        5
       ]
     },
     "learning": {
@@ -2428,17 +2402,17 @@
     "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 29.",
     "payload": {
       "numbers": [
+        20,
         18,
+        10,
         11,
-        1,
-        28,
-        2,
-        27
+        16,
+        12
       ],
       "target": 29,
       "correctIndices": [
-        0,
-        1
+        1,
+        3
       ]
     },
     "learning": {
@@ -2558,17 +2532,17 @@
     "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 98.",
     "payload": {
       "numbers": [
+        68,
+        29,
+        72,
         70,
-        28,
-        1,
-        97,
-        2,
-        96
+        27,
+        28
       ],
       "target": 98,
       "correctIndices": [
-        0,
-        1
+        3,
+        5
       ]
     },
     "learning": {
@@ -2722,17 +2696,17 @@
     "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 103.",
     "payload": {
       "numbers": [
+        59,
         58,
         45,
-        1,
-        102,
-        2,
-        101
+        43,
+        57,
+        47
       ],
       "target": 103,
       "correctIndices": [
-        0,
-        1
+        1,
+        2
       ]
     },
     "learning": {
@@ -2852,17 +2826,17 @@
     "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 57.",
     "payload": {
       "numbers": [
+        45,
+        10,
+        44,
         46,
         11,
-        1,
-        56,
-        2,
-        55
+        9
       ],
       "target": 57,
       "correctIndices": [
-        0,
-        1
+        3,
+        4
       ]
     },
     "learning": {
@@ -2983,16 +2957,16 @@
     "payload": {
       "numbers": [
         34,
-        28,
-        1,
-        61,
-        2,
-        60
+        35,
+        29,
+        36,
+        30,
+        28
       ],
       "target": 62,
       "correctIndices": [
         0,
-        1
+        5
       ]
     },
     "learning": {
@@ -3112,17 +3086,17 @@
     "explanation": "Der jebkuras divas atšķirīgas kartītes, kuru summa ir 67.",
     "payload": {
       "numbers": [
+        21,
+        47,
         22,
-        45,
-        1,
-        66,
-        2,
-        65
+        23,
+        43,
+        45
       ],
       "target": 67,
       "correctIndices": [
-        0,
-        1
+        2,
+        5
       ]
     },
     "learning": {
@@ -3243,16 +3217,16 @@
     "payload": {
       "numbers": [
         74,
+        76,
+        10,
+        72,
         11,
-        1,
-        84,
-        2,
-        83
+        12
       ],
       "target": 85,
       "correctIndices": [
         0,
-        1
+        4
       ]
     },
     "learning": {
@@ -3398,12 +3372,12 @@
     ],
     "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 56 − 31 = 25.",
+    "explanation": "Pareizi. 56 − 31 = 25.",
     "payload": {
-      "statement": "56 − 31 = 26"
+      "statement": "56 − 31 = 25"
     },
     "learning": {
       "skillId": "medium.subtraction.explore-3",
@@ -3630,12 +3604,12 @@
     ],
     "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 89 − 29 = 60.",
+    "explanation": "Pareizi. 89 − 29 = 60.",
     "payload": {
-      "statement": "89 − 29 = 61"
+      "statement": "89 − 29 = 60"
     },
     "learning": {
       "skillId": "medium.subtraction.explore-5",
@@ -3903,12 +3877,12 @@
     ],
     "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 67 − 27 = 40.",
+    "explanation": "Pareizi. 67 − 27 = 40.",
     "payload": {
-      "statement": "67 − 27 = 41"
+      "statement": "67 − 27 = 40"
     },
     "learning": {
       "skillId": "medium.subtraction.explore-7",
@@ -4019,12 +3993,12 @@
     ],
     "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi kaķa atņemšanu.",
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 56 − 26 = 30.",
+    "explanation": "Pareizi. 56 − 26 = 30.",
     "payload": {
-      "statement": "56 − 26 = 31"
+      "statement": "56 − 26 = 30"
     },
     "learning": {
       "skillId": "medium.subtraction.explore-8",
@@ -4256,7 +4230,7 @@
     "hint": "Sadali atņemamo skaitli mazākos soļos.",
     "explanation": "Nepareizi. 89 − 24 = 65.",
     "payload": {
-      "statement": "89 − 24 = 66"
+      "statement": "89 − 24 = 113"
     },
     "learning": {
       "skillId": "medium.subtraction.explore-10",
@@ -4417,12 +4391,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 4 grupas pa 4 ir 16.",
+    "explanation": "Pareizi. 4 × 4 = 16.",
     "payload": {
-      "statement": "4 × 4 = 17"
+      "statement": "4 × 4 = 16"
     },
     "learning": {
       "skillId": "medium.multiplication.explore-3",
@@ -4542,12 +4516,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 8 grupas pa 6 ir 48.",
+    "explanation": "Pareizi. 8 × 6 = 48.",
     "payload": {
-      "statement": "8 × 6 = 49"
+      "statement": "8 × 6 = 48"
     },
     "learning": {
       "skillId": "medium.multiplication.explore-4",
@@ -4670,9 +4644,9 @@
     "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 4 grupas pa 8 ir 32.",
+    "explanation": "Nepareizi. 4 × 8 = 32.",
     "payload": {
-      "statement": "4 × 8 = 33"
+      "statement": "4 × 8 = 12"
     },
     "learning": {
       "skillId": "medium.multiplication.explore-5",
@@ -4833,12 +4807,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 8 grupas pa 10 ir 80.",
+    "explanation": "Pareizi. 8 × 10 = 80.",
     "payload": {
-      "statement": "8 × 10 = 81"
+      "statement": "8 × 10 = 80"
     },
     "learning": {
       "skillId": "medium.multiplication.explore-6",
@@ -4961,9 +4935,9 @@
     "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 4 grupas pa 3 ir 12.",
+    "explanation": "Nepareizi. 4 × 3 = 12.",
     "payload": {
-      "statement": "4 × 3 = 13"
+      "statement": "4 × 3 = 7"
     },
     "learning": {
       "skillId": "medium.multiplication.explore-7",
@@ -5083,12 +5057,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 8 grupas pa 5 ir 40.",
+    "explanation": "Pareizi. 8 × 5 = 40.",
     "payload": {
-      "statement": "8 × 5 = 41"
+      "statement": "8 × 5 = 40"
     },
     "learning": {
       "skillId": "medium.multiplication.explore-8",
@@ -5211,9 +5185,9 @@
     "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 4 grupas pa 7 ir 28.",
+    "explanation": "Nepareizi. 4 × 7 = 28.",
     "payload": {
-      "statement": "4 × 7 = 29"
+      "statement": "4 × 7 = 32"
     },
     "learning": {
       "skillId": "medium.multiplication.explore-9",
@@ -5336,9 +5310,9 @@
     "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 8 grupas pa 9 ir 72.",
+    "explanation": "Nepareizi. 8 × 9 = 72.",
     "payload": {
-      "statement": "8 × 9 = 73"
+      "statement": "8 × 9 = 80"
     },
     "learning": {
       "skillId": "medium.multiplication.explore-10",
@@ -6565,13 +6539,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "2/8 > 1/8.",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "1/5 > 1/6.",
     "payload": {
-      "optionA": "2/8",
-      "optionB": "1/8"
+      "optionA": "1/5",
+      "optionB": "1/6"
     },
     "learning": {
       "skillId": "medium.fractions.explore-3",
@@ -6628,17 +6603,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "2/10 = 4/20.",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "2/10 = 6/30.",
     "payload": {
       "numerator": 2,
       "denominator": 10,
       "choices": [
-        "4/20",
-        "2/20",
-        "3/10"
+        "2/30",
+        "6/10",
+        "6/30"
       ]
     },
     "learning": {
@@ -6686,13 +6661,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "9/11 > 8/11.",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "2/4 > 2/5.",
     "payload": {
-      "optionA": "8/11",
-      "optionB": "9/11"
+      "optionA": "2/5",
+      "optionB": "2/4"
     },
     "learning": {
       "skillId": "medium.fractions.explore-4",
@@ -6749,17 +6725,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "2/4 = 4/8.",
+    "correctIndex": 1,
+    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
+    "hint": "Dali gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "2/4 = 1/2.",
     "payload": {
       "numerator": 2,
       "denominator": 4,
       "choices": [
-        "4/8",
-        "2/8",
-        "3/4"
+        "2/2",
+        "1/2",
+        "1/4"
       ]
     },
     "learning": {
@@ -6807,13 +6783,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/8 > 2/8.",
+    "hint": "Salīdzini katru daudzumu ar pusi no tā paša veselā.",
+    "explanation": "4/6 > 1/2.",
     "payload": {
-      "optionA": "3/8",
-      "optionB": "2/8"
+      "optionA": "4/6",
+      "optionB": "1/2"
     },
     "learning": {
       "skillId": "medium.fractions.explore-5",
@@ -6871,16 +6848,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "3/10 = 6/20.",
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 4 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 4.",
+    "explanation": "3/10 = 12/40.",
     "payload": {
       "numerator": 3,
       "denominator": 10,
       "choices": [
-        "6/20",
-        "3/20",
-        "4/10"
+        "12/40",
+        "3/40",
+        "12/10"
       ]
     },
     "learning": {
@@ -6903,45 +6880,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/3 vai 2/3.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/7 vai 6/7.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/7 = 2/14; 6/7 = 12/14.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          3
+          7
         ],
         [
-          2,
-          3
+          6,
+          7
         ]
       ],
       "fractions": [
         [
           2,
-          6
+          14
         ],
         [
-          4,
-          6
+          12,
+          14
         ],
         [
           3,
-          9
+          21
         ],
         [
-          6,
-          9
+          18,
+          21
         ],
         [
           4,
-          12
+          28
         ],
         [
-          8,
-          12
+          24,
+          28
         ]
       ]
     },
@@ -6990,13 +6967,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "10/11 > 9/11.",
+    "hint": "Salīdzini katru daudzumu ar pusi no tā paša veselā.",
+    "explanation": "4/7 > 1/2.",
     "payload": {
-      "optionA": "9/11",
-      "optionB": "10/11"
+      "optionA": "1/2",
+      "optionB": "4/7"
     },
     "learning": {
       "skillId": "medium.fractions.explore-6",
@@ -7053,17 +7031,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "1/5 = 2/10.",
+    "correctIndex": 2,
+    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
+    "hint": "Dali gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "2/10 = 1/5.",
     "payload": {
-      "numerator": 1,
-      "denominator": 5,
+      "numerator": 2,
+      "denominator": 10,
       "choices": [
-        "2/10",
         "1/10",
-        "2/5"
+        "2/5",
+        "1/5"
       ]
     },
     "learning": {
@@ -7111,13 +7089,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "4/8 > 3/8.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 63 un salīdzini skaitītājus.",
+    "explanation": "4/9 > 3/7.",
     "payload": {
-      "optionA": "4/8",
-      "optionB": "3/8"
+      "optionA": "4/9",
+      "optionB": "3/7"
     },
     "learning": {
       "skillId": "medium.fractions.explore-7",
@@ -7174,17 +7153,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "4/10 = 8/20.",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "4/10 = 12/30.",
     "payload": {
       "numerator": 4,
       "denominator": 10,
       "choices": [
-        "8/20",
-        "4/20",
-        "5/10"
+        "12/10",
+        "12/30",
+        "4/30"
       ]
     },
     "learning": {
@@ -7232,13 +7211,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "2/12 > 1/12.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 15 un salīdzini skaitītājus.",
+    "explanation": "2/3 > 3/5.",
     "payload": {
-      "optionA": "1/12",
-      "optionB": "2/12"
+      "optionA": "3/5",
+      "optionB": "2/3"
     },
     "learning": {
       "skillId": "medium.fractions.explore-8",
@@ -7296,16 +7276,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "2/5 = 4/10.",
+    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
+    "hint": "Dali gan skaitītāju, gan saucēju ar 4.",
+    "explanation": "8/20 = 2/5.",
     "payload": {
-      "numerator": 2,
-      "denominator": 5,
+      "numerator": 8,
+      "denominator": 20,
       "choices": [
-        "4/10",
-        "2/10",
-        "3/5"
+        "2/5",
+        "2/20",
+        "8/5"
       ]
     },
     "learning": {
@@ -7353,13 +7333,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "5/8 > 4/8.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 8 un salīdzini skaitītājus.",
+    "explanation": "3/4 > 5/8.",
     "payload": {
-      "optionA": "5/8",
-      "optionB": "4/8"
+      "optionA": "3/4",
+      "optionB": "5/8"
     },
     "learning": {
       "skillId": "medium.fractions.explore-9",
@@ -7416,17 +7397,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
     "explanation": "5/10 = 10/20.",
     "payload": {
       "numerator": 5,
       "denominator": 10,
       "choices": [
-        "10/20",
         "5/20",
-        "6/10"
+        "10/10",
+        "10/20"
       ]
     },
     "learning": {
@@ -7474,13 +7455,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/12 > 2/12.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 40 un salīdzini skaitītājus.",
+    "explanation": "2/5 > 3/8.",
     "payload": {
-      "optionA": "2/12",
-      "optionB": "3/12"
+      "optionA": "3/8",
+      "optionB": "2/5"
     },
     "learning": {
       "skillId": "medium.fractions.explore-10",
@@ -7537,17 +7519,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "3/5 = 6/10.",
+    "correctIndex": 1,
+    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
+    "hint": "Dali gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "9/15 = 3/5.",
     "payload": {
-      "numerator": 3,
-      "denominator": 5,
+      "numerator": 9,
+      "denominator": 15,
       "choices": [
-        "6/10",
-        "3/10",
-        "4/5"
+        "9/5",
+        "3/5",
+        "3/15"
       ]
     },
     "learning": {
@@ -7570,45 +7552,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 2/5 vai 3/5.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/12 vai 11/12.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/12 = 2/24; 11/12 = 22/24.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
-          2,
-          5
+          1,
+          12
         ],
         [
-          3,
-          5
+          11,
+          12
         ]
       ],
       "fractions": [
         [
+          2,
+          24
+        ],
+        [
+          22,
+          24
+        ],
+        [
+          3,
+          36
+        ],
+        [
+          33,
+          36
+        ],
+        [
           4,
-          10
+          48
         ],
         [
-          6,
-          10
-        ],
-        [
-          6,
-          15
-        ],
-        [
-          9,
-          15
-        ],
-        [
-          8,
-          20
-        ],
-        [
-          12,
-          20
+          44,
+          48
         ]
       ]
     },
@@ -8763,29 +8745,24 @@
       8,
       10
     ],
-    "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 40. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "type": "place_value",
+    "question": "48 + 15 = ?",
+    "hint": "Desmit vienus var samainīt pret vienu desmitu. Beigās vienu jābūt mazāk par desmit.",
+    "explanation": "48 + 15 = 63. 6 × 10 + 3 = 63.",
     "payload": {
-      "numbers": [
-        1,
-        3,
-        5,
-        39,
-        37,
-        35
-      ],
-      "target": 40
+      "mode": "add",
+      "start": 48,
+      "operand": 15,
+      "guided": false
     },
+    "helpTemplate": "base_ten_add",
     "learning": {
       "skillId": "medium.addition.tens",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -9830,36 +9807,24 @@
       8,
       10
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "type": "place_value",
+    "question": "63 − 28 = ?",
+    "hint": "Ja nepietiek vienu, samaini vienu desmitu pret desmit vieniem. Tad atņem vajadzīgo daudzumu.",
+    "explanation": "63 − 28 = 35. 3 × 10 + 5 = 35.",
     "payload": {
-      "sequence": [
-        34,
-        null,
-        26,
-        null,
-        18
-      ],
-      "tiles": [
-        22,
-        35,
-        30,
-        20
-      ],
-      "solution": [
-        30,
-        22
-      ]
+      "mode": "subtract",
+      "start": 63,
+      "operand": 28,
+      "guided": false
     },
+    "helpTemplate": "base_ten_subtract",
     "learning": {
       "skillId": "medium.subtraction.parts",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -13299,45 +13264,37 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/4 vai 3/4.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/3 vai 2/3.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/3 = 2/6; 2/3 = 4/6.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          4
+          3
         ],
         [
-          3,
-          4
+          2,
+          3
         ]
       ],
       "fractions": [
         [
+          1,
+          3
+        ],
+        [
           2,
-          8
+          3
         ],
         [
-          6,
-          8
-        ],
-        [
-          3,
-          12
-        ],
-        [
-          9,
-          12
+          2,
+          6
         ],
         [
           4,
-          16
-        ],
-        [
-          12,
-          16
+          6
         ]
       ]
     },
@@ -13408,8 +13365,8 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
     "explanation": "5/8 = 10/16.",
     "payload": {
       "numerator": 5,
@@ -13417,7 +13374,7 @@
       "choices": [
         "10/16",
         "5/16",
-        "6/8"
+        "10/8"
       ]
     },
     "learning": {
@@ -13490,17 +13447,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
     "explanation": "6/9 = 12/18.",
     "payload": {
       "numerator": 6,
       "denominator": 9,
       "choices": [
-        "12/18",
         "6/18",
-        "7/9"
+        "12/9",
+        "12/18"
       ]
     },
     "learning": {
@@ -13523,45 +13480,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/6 vai 5/6.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/5 vai 4/5.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/5 = 2/10; 4/5 = 8/10.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          6
+          5
         ],
         [
-          5,
-          6
+          4,
+          5
         ]
       ],
       "fractions": [
         [
-          2,
-          12
-        ],
-        [
-          10,
-          12
-        ],
-        [
-          3,
-          18
-        ],
-        [
-          15,
-          18
+          1,
+          5
         ],
         [
           4,
-          24
+          5
         ],
         [
-          20,
-          24
+          2,
+          10
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          3,
+          15
+        ],
+        [
+          12,
+          15
         ]
       ]
     },
@@ -13610,13 +13567,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "6/8 > 5/8.",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "2/6 > 2/7.",
     "payload": {
-      "optionA": "6/8",
-      "optionB": "5/8"
+      "optionA": "2/6",
+      "optionB": "2/7"
     },
     "learning": {
       "skillId": "medium.fractions.explore-3",
@@ -13637,17 +13595,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
     "explanation": "7/10 = 14/20.",
     "payload": {
       "numerator": 7,
       "denominator": 10,
       "choices": [
+        "14/10",
         "14/20",
-        "7/20",
-        "8/10"
+        "7/20"
       ]
     },
     "learning": {
@@ -13670,45 +13628,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/7 vai 6/7.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/6 vai 5/6.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/6 = 2/12; 5/6 = 10/12.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          7
+          6
         ],
         [
-          6,
-          7
+          5,
+          6
         ]
       ],
       "fractions": [
         [
-          2,
-          14
+          1,
+          6
         ],
         [
-          12,
-          14
+          5,
+          6
+        ],
+        [
+          2,
+          12
+        ],
+        [
+          10,
+          12
         ],
         [
           3,
-          21
+          18
         ],
         [
-          18,
-          21
-        ],
-        [
-          4,
-          28
-        ],
-        [
-          24,
-          28
+          15,
+          18
         ]
       ]
     },
@@ -13757,13 +13715,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "7/9 > 6/9.",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "3/5 > 3/6.",
     "payload": {
-      "optionA": "6/9",
-      "optionB": "7/9"
+      "optionA": "3/6",
+      "optionB": "3/5"
     },
     "learning": {
       "skillId": "medium.fractions.explore-4",
@@ -13784,17 +13743,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "8/11 = 16/22.",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "8/11 = 24/33.",
     "payload": {
       "numerator": 8,
       "denominator": 11,
       "choices": [
-        "16/22",
-        "8/22",
-        "9/11"
+        "24/11",
+        "24/33",
+        "8/33"
       ]
     },
     "learning": {
@@ -13842,13 +13801,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "8/10 > 7/10.",
+    "hint": "Salīdzini katru daudzumu ar pusi no tā paša veselā.",
+    "explanation": "4/6 > 1/2.",
     "payload": {
-      "optionA": "8/10",
-      "optionB": "7/10"
+      "optionA": "4/6",
+      "optionB": "1/2"
     },
     "learning": {
       "skillId": "medium.fractions.explore-5",
@@ -13870,16 +13830,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "9/12 = 18/24.",
+    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
+    "hint": "Dali gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "6/8 = 3/4.",
     "payload": {
-      "numerator": 9,
-      "denominator": 12,
+      "numerator": 6,
+      "denominator": 8,
       "choices": [
-        "18/24",
-        "9/24",
-        "10/12"
+        "3/4",
+        "3/8",
+        "6/4"
       ]
     },
     "learning": {
@@ -13902,45 +13862,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/9 vai 8/9.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/8 vai 7/8.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/8 = 2/16; 7/8 = 14/16.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          9
+          8
         ],
         [
-          8,
-          9
+          7,
+          8
         ]
       ],
       "fractions": [
         [
           2,
-          18
+          16
         ],
         [
-          16,
-          18
+          14,
+          16
         ],
         [
           3,
-          27
+          24
         ],
         [
-          24,
-          27
+          21,
+          24
         ],
         [
           4,
-          36
+          32
         ],
         [
-          32,
-          36
+          28,
+          32
         ]
       ]
     },
@@ -13989,13 +13949,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "9/11 > 8/11.",
+    "hint": "Salīdzini katru daudzumu ar pusi no tā paša veselā.",
+    "explanation": "4/7 > 1/2.",
     "payload": {
-      "optionA": "8/11",
-      "optionB": "9/11"
+      "optionA": "1/2",
+      "optionB": "4/7"
     },
     "learning": {
       "skillId": "medium.fractions.explore-6",
@@ -14017,16 +13978,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "2/4 = 4/8.",
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "2/4 = 6/12.",
     "payload": {
       "numerator": 2,
       "denominator": 4,
       "choices": [
-        "4/8",
-        "2/8",
-        "3/4"
+        "6/12",
+        "2/12",
+        "6/4"
       ]
     },
     "learning": {
@@ -14049,45 +14010,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/10 vai 9/10.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/9 vai 8/9.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/9 = 2/18; 8/9 = 16/18.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          10
+          9
         ],
         [
-          9,
-          10
+          8,
+          9
         ]
       ],
       "fractions": [
         [
           2,
-          20
+          18
         ],
         [
-          18,
-          20
+          16,
+          18
         ],
         [
           3,
-          30
+          27
         ],
         [
-          27,
-          30
+          24,
+          27
         ],
         [
           4,
-          40
+          36
         ],
         [
-          36,
-          40
+          32,
+          36
         ]
       ]
     },
@@ -14136,13 +14097,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "10/12 > 9/12.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 63 un salīdzini skaitītājus.",
+    "explanation": "4/9 > 3/7.",
     "payload": {
-      "optionA": "10/12",
-      "optionB": "9/12"
+      "optionA": "4/9",
+      "optionB": "3/7"
     },
     "learning": {
       "skillId": "medium.fractions.explore-7",
@@ -14163,17 +14125,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "2/5 = 4/10.",
+    "correctIndex": 2,
+    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
+    "hint": "Dali gan skaitītāju, gan saucēju ar 4.",
+    "explanation": "8/20 = 2/5.",
     "payload": {
-      "numerator": 2,
-      "denominator": 5,
+      "numerator": 8,
+      "denominator": 20,
       "choices": [
-        "4/10",
-        "2/10",
-        "3/5"
+        "2/20",
+        "8/5",
+        "2/5"
       ]
     },
     "learning": {
@@ -14196,45 +14158,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/11 vai 10/11.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/10 vai 9/10.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/10 = 2/20; 9/10 = 18/20.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          11
+          10
         ],
         [
-          10,
-          11
+          9,
+          10
         ]
       ],
       "fractions": [
         [
           2,
-          22
+          20
         ],
         [
-          20,
-          22
+          18,
+          20
         ],
         [
           3,
-          33
+          30
         ],
         [
-          30,
-          33
+          27,
+          30
         ],
         [
           4,
-          44
+          40
         ],
         [
-          40,
-          44
+          36,
+          40
         ]
       ]
     },
@@ -14283,13 +14245,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/4 > 2/4.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 15 un salīdzini skaitītājus.",
+    "explanation": "2/3 > 3/5.",
     "payload": {
-      "optionA": "2/4",
-      "optionB": "3/4"
+      "optionA": "3/5",
+      "optionB": "2/3"
     },
     "learning": {
       "skillId": "medium.fractions.explore-8",
@@ -14310,17 +14273,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
     "explanation": "4/6 = 8/12.",
     "payload": {
       "numerator": 4,
       "denominator": 6,
       "choices": [
+        "8/6",
         "8/12",
-        "4/12",
-        "5/6"
+        "4/12"
       ]
     },
     "learning": {
@@ -14343,45 +14306,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/12 vai 11/12.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/11 vai 10/11.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/11 = 2/22; 10/11 = 20/22.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          12
+          11
         ],
         [
-          11,
-          12
+          10,
+          11
         ]
       ],
       "fractions": [
         [
           2,
-          24
+          22
         ],
         [
-          22,
-          24
+          20,
+          22
         ],
         [
           3,
-          36
+          33
         ],
         [
-          33,
-          36
+          30,
+          33
         ],
         [
           4,
-          48
+          44
         ],
         [
-          44,
-          48
+          40,
+          44
         ]
       ]
     },
@@ -14430,13 +14393,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/5 > 2/5.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 8 un salīdzini skaitītājus.",
+    "explanation": "3/4 > 5/8.",
     "payload": {
-      "optionA": "3/5",
-      "optionB": "2/5"
+      "optionA": "3/4",
+      "optionB": "5/8"
     },
     "learning": {
       "skillId": "medium.fractions.explore-9",
@@ -14457,17 +14421,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Kura daļa aizņem tikpat daudz no vienāda lieluma veselā?",
-    "hint": "Sadali katru vienādo daļu divās.",
-    "explanation": "3/7 = 6/14.",
+    "correctIndex": 1,
+    "question": "Saīsini daļu. Kura daļa ir tikpat liela?",
+    "hint": "Dali gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "9/21 = 3/7.",
     "payload": {
-      "numerator": 3,
-      "denominator": 7,
+      "numerator": 9,
+      "denominator": 21,
       "choices": [
-        "6/14",
-        "3/14",
-        "4/7"
+        "9/7",
+        "3/7",
+        "3/21"
       ]
     },
     "learning": {
@@ -15709,23 +15673,24 @@
       8,
       10
     ],
-    "type": "multiple_choice",
     "topic": "addition",
-    "choices": [
-      "65",
-      "64",
-      "66"
-    ],
-    "correctIndex": 0,
-    "question": "Kaķis saliek 39 sarkanas un 26 zilas lentes. Cik lenšu kopā?",
-    "hint": "Sāc ar 39 un skaiti vēl 26.",
-    "explanation": "39 + 26 = 65 lentes.",
+    "type": "place_value",
+    "question": "29 + 38 = ?",
+    "hint": "Desmit vienus var samainīt pret vienu desmitu. Beigās vienu jābūt mazāk par desmit.",
+    "explanation": "29 + 38 = 67. 6 × 10 + 7 = 67.",
+    "payload": {
+      "mode": "add",
+      "start": 29,
+      "operand": 38,
+      "guided": false
+    },
+    "helpTemplate": "base_ten_add",
     "learning": {
       "skillId": "medium.addition.tens",
       "prerequisiteSkillIds": [],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -15735,27 +15700,24 @@
       8,
       10
     ],
-    "type": "balance",
-    "topic": "equality",
-    "correctIndex": 0,
-    "question": "Aizpildi trūkstošo summas daļu.",
-    "hint": "Kas jāpieskaita 46, lai iegūtu 77?",
-    "explanation": "46 + 31 = 77.",
+    "topic": "addition",
+    "type": "place_value",
+    "question": "57 + 26 = ?",
+    "hint": "Desmit vienus var samainīt pret vienu desmitu. Beigās vienu jābūt mazāk par desmit.",
+    "explanation": "57 + 26 = 83. 8 × 10 + 3 = 83.",
     "payload": {
-      "leftDisplay": "46 + ?",
-      "rightValue": 77,
-      "choices": [
-        "31",
-        "32",
-        "33"
-      ]
+      "mode": "add",
+      "start": 57,
+      "operand": 26,
+      "guided": false
     },
+    "helpTemplate": "base_ten_add",
     "learning": {
       "skillId": "medium.addition.tens",
       "prerequisiteSkillIds": [],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -15825,23 +15787,24 @@
       8,
       10
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "54",
-      "55",
-      "94"
-    ],
-    "correctIndex": 0,
-    "question": "Ir 74 papīra zvaigznes. 20 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "74 − 20 = 54 paliek.",
+    "type": "place_value",
+    "question": "54 − 18 = ?",
+    "hint": "Ja nepietiek vienu, samaini vienu desmitu pret desmit vieniem. Tad atņem vajadzīgo daudzumu.",
+    "explanation": "54 − 18 = 36. 3 × 10 + 6 = 36.",
+    "payload": {
+      "mode": "subtract",
+      "start": 54,
+      "operand": 18,
+      "guided": false
+    },
+    "helpTemplate": "base_ten_subtract",
     "learning": {
       "skillId": "medium.subtraction.parts",
       "prerequisiteSkillIds": [],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -15851,24 +15814,24 @@
       8,
       10
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "81 − 23 = 58.",
+    "type": "place_value",
+    "question": "72 − 39 = ?",
+    "hint": "Ja nepietiek vienu, samaini vienu desmitu pret desmit vieniem. Tad atņem vajadzīgo daudzumu.",
+    "explanation": "72 − 39 = 33. 3 × 10 + 3 = 33.",
     "payload": {
-      "start": 81,
-      "jump": -23,
-      "min": 0,
-      "max": 84,
-      "correctValue": 58
+      "mode": "subtract",
+      "start": 72,
+      "operand": 39,
+      "guided": false
     },
+    "helpTemplate": "base_ten_subtract",
     "learning": {
       "skillId": "medium.subtraction.parts",
       "prerequisiteSkillIds": [],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
+      "representation": "objects",
+      "reasoningSteps": 2
     }
   },
   {
@@ -18409,13 +18372,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "9/11 > 8/11.",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "3/7 > 3/8.",
     "payload": {
-      "optionA": "9/11",
-      "optionB": "8/11"
+      "optionA": "3/7",
+      "optionB": "3/8"
     },
     "learning": {
       "skillId": "medium.fractions.explore-3",
@@ -18462,13 +18426,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "10/12 > 9/12.",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "1/3 > 1/4.",
     "payload": {
-      "optionA": "9/12",
-      "optionB": "10/12"
+      "optionA": "1/4",
+      "optionB": "1/3"
     },
     "learning": {
       "skillId": "medium.fractions.explore-4",
@@ -18515,13 +18480,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/4 > 2/4.",
+    "hint": "Salīdzini katru daudzumu ar pusi no tā paša veselā.",
+    "explanation": "4/6 > 1/2.",
     "payload": {
-      "optionA": "3/4",
-      "optionB": "2/4"
+      "optionA": "4/6",
+      "optionB": "1/2"
     },
     "learning": {
       "skillId": "medium.fractions.explore-5",
@@ -18568,13 +18534,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/5 > 2/5.",
+    "hint": "Salīdzini katru daudzumu ar pusi no tā paša veselā.",
+    "explanation": "4/7 > 1/2.",
     "payload": {
-      "optionA": "2/5",
-      "optionB": "3/5"
+      "optionA": "1/2",
+      "optionB": "4/7"
     },
     "learning": {
       "skillId": "medium.fractions.explore-6",
@@ -18621,13 +18588,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "5/6 > 4/6.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 63 un salīdzini skaitītājus.",
+    "explanation": "4/9 > 3/7.",
     "payload": {
-      "optionA": "5/6",
-      "optionB": "4/6"
+      "optionA": "4/9",
+      "optionB": "3/7"
     },
     "learning": {
       "skillId": "medium.fractions.explore-7",
@@ -18674,13 +18642,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "4/7 > 3/7.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 15 un salīdzini skaitītājus.",
+    "explanation": "2/3 > 3/5.",
     "payload": {
-      "optionA": "3/7",
-      "optionB": "4/7"
+      "optionA": "3/5",
+      "optionB": "2/3"
     },
     "learning": {
       "skillId": "medium.fractions.explore-8",
@@ -18727,13 +18696,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "3/8 > 2/8.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 8 un salīdzini skaitītājus.",
+    "explanation": "3/4 > 5/8.",
     "payload": {
-      "optionA": "3/8",
-      "optionB": "2/8"
+      "optionA": "3/4",
+      "optionB": "5/8"
     },
     "learning": {
       "skillId": "medium.fractions.explore-9",
@@ -18780,13 +18750,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
     "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "2/9 > 1/9.",
+    "hint": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 40 un salīdzini skaitītājus.",
+    "explanation": "2/5 > 3/8.",
     "payload": {
-      "optionA": "1/9",
-      "optionB": "2/9"
+      "optionA": "3/8",
+      "optionB": "2/5"
     },
     "learning": {
       "skillId": "medium.fractions.explore-10",

@@ -1223,7 +1223,8 @@
     "sort_buckets": "Šķirošana grozos",
     "repair_pattern": "Virknes labošana",
     "route_grid": "Skaitļu labirints",
-    "budget_plan": "Budžeta plānotājs"
+    "budget_plan": "Budžeta plānotājs",
+    "place_value": "Desmiti un vieni"
   },
   "puzzlePath": {
     "title": "Uzdevumu taka",
@@ -1270,7 +1271,10 @@
       "patternRule": "Apskati, kā mainās virkne, tad pielāgo skaitļus tukšajās vietās.",
       "routeSteps": "Pārbaudi ceļa soļus un pabeidz pie izejas.",
       "budgetTooMuch": "Tu tērē par daudz. Pamēģini lētāku kombināciju.",
-      "budgetTooLittle": "Tev paliek par daudz naudas. Pārbaudi cenas un atlaides."
+      "budgetTooLittle": "Tev paliek par daudz naudas. Pārbaudi cenas un atlaides.",
+      "placeValueSplit": "Samaini vienu desmitu pret desmit vieniem.",
+      "placeValueAdd": "Vispirms pievieno laukumā otro skaitli.",
+      "placeValueBundle": "Daudzums ir pareizs. Samaini desmit vienus pret vienu desmitu."
     },
     "solveFor": "Atrisini {{name}}",
     "replayNut": "Atkārtot riekstu #{{number}}",
@@ -1315,7 +1319,8 @@
       "repair_pattern": "Ievelc kartītes tukšajās vietās. Vari tās samainīt vai atgriezt pie rezervēm.",
       "route_grid": "Pieskaries blakus lauciņiem, lai veidotu ceļu. Pirms pārbaudes vari atsaukt soļus.",
       "budget_plan": "Salīdzini cenas pēc atlaidēm un izvēlies plānu. Var derēt vairāki plāni.",
-      "target_buildHard": "Aizpildi katru atstarpi, tad pārbaudi atbildi."
+      "target_buildHard": "Aizpildi katru atstarpi, tad pārbaudi atbildi.",
+      "place_value": "Izmanto desmitus un vienus, tad pārbaudi savu risinājumu."
     }
   },
   "lives": {
@@ -1656,5 +1661,30 @@
     "level_completed": "Pabeigts. Spēlē šos 10 uzdevumus vēlreiz.",
     "level_current": "Atver līmeni un turpini tā 10 uzdevumus.",
     "level_locked": "Pabeidz iepriekšējos līmeņus, lai atbloķētu."
+  },
+  "placeValue": {
+    "tens": "Desmiti",
+    "ones": "Vieni",
+    "count": {
+      "tens": "Desmiti: {{count}}",
+      "ones": "Vieni: {{count}}"
+    },
+    "guide": {
+      "build": "Izveido skaitli no desmitiem un vieniem. Katrā garajā klucītī ir desmit vieni.",
+      "bundle": "Samaini desmit vienus pret vienu desmitu. Daudzums nemainās.",
+      "split": "Samaini vienu desmitu pret desmit vieniem. Daudzums nemainās.",
+      "add": "Pievieno otro skaitli, tad samaini desmit vienus pret vienu desmitu.",
+      "subtract": "Ja nepietiek vienu, samaini vienu desmitu. Tad atņem desmitus un vienus."
+    },
+    "addTen": "Pievieno 1 desmitu",
+    "addOne": "Pievieno 1 vienu",
+    "removeTen": "Atņem 1 desmitu",
+    "removeOne": "Atņem 1 vienu",
+    "add": "Pievieno {{count}}",
+    "added": "Pievienots: {{count}}",
+    "bundle": "10 vieni → 1 desmits",
+    "split": "1 desmits → 10 vieni",
+    "removed": "Atņemts: {{count}} no {{target}}",
+    "reset": "Sāc šo uzdevumu no jauna"
   }
 }

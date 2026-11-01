@@ -894,12 +894,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Take some away",
-        "lv": "Atņem daļu"
+        "en": "Take away within ten",
+        "lv": "Atņem skaitļu desmita robežās"
       },
       "description": {
-        "en": "Start with a model, then try the idea in different ways.",
-        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+        "en": "Practise: take away within ten.",
+        "lv": "Atņem skaitļu desmita robežās."
       },
       "levels": [
         {
@@ -1081,12 +1081,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Count back across ten",
-        "lv": "Skaiti atpakaļ pāri desmitam"
+        "en": "Count back within ten",
+        "lv": "Skaiti atpakaļ desmita robežās"
       },
       "description": {
-        "en": "Use what you learned with a new goal and different numbers.",
-        "lv": "Izmanto apgūto jaunam mērķim un citiem skaitļiem."
+        "en": "Practise: count back within ten.",
+        "lv": "Skaiti atpakaļ desmita robežās."
       },
       "levels": [
         {
@@ -2400,12 +2400,12 @@
       "difficulty": "medium",
       "topicId": "addition",
       "title": {
-        "en": "Join tens and ones",
-        "lv": "Apvieno desmitus un vienus"
+        "en": "Tens, ones and addition",
+        "lv": "Desmiti, vieni un saskaitīšana"
       },
       "description": {
-        "en": "Start with a model, then try the idea in different ways.",
-        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+        "en": "Build numbers, exchange tens and ones, then try a fresh calculation.",
+        "lv": "Veido skaitļus, samaini desmitus un vienus, tad izmēģini jaunu aprēķinu."
       },
       "levels": [
         {
@@ -2776,12 +2776,12 @@
       "difficulty": "medium",
       "topicId": "subtraction",
       "title": {
-        "en": "Subtract in useful parts",
-        "lv": "Atņem pa ērtām daļām"
+        "en": "Exchange to subtract",
+        "lv": "Samaini, lai atņemtu"
       },
       "description": {
-        "en": "Start with a model, then try the idea in different ways.",
-        "lv": "Sāc ar modeli un tad izmēģini ideju dažādos veidos."
+        "en": "Build numbers, exchange tens and ones, then try a fresh calculation.",
+        "lv": "Veido skaitļus, samaini desmitus un vienus, tad izmēģini jaunu aprēķinu."
       },
       "levels": [
         {
@@ -9944,12 +9944,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "What stays behind?",
-        "lv": "Kas paliek pāri?"
+        "en": "Subtract to reach ten",
+        "lv": "Atņem līdz desmitam"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Practise: subtract to reach ten.",
+        "lv": "Atņem līdz desmitam."
       },
       "levels": [
         {
@@ -10133,12 +10133,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Back along the trail",
-        "lv": "Atpakaļ pa taku"
+        "en": "Subtract across ten",
+        "lv": "Atņem pāri desmitam"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Practise: subtract across ten.",
+        "lv": "Atņem pāri desmitam."
       },
       "levels": [
         {
@@ -10322,12 +10322,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Compare what remains",
-        "lv": "Salīdzini atlikumus"
+        "en": "Find what was taken away",
+        "lv": "Atrodi, cik tika atņemts"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Practise: find what was taken away.",
+        "lv": "Atrodi, cik tika atņemts."
       },
       "levels": [
         {
@@ -10511,12 +10511,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Missing differences",
-        "lv": "Trūkstošās starpības"
+        "en": "Compare two amounts",
+        "lv": "Salīdzini divus daudzumus"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Practise: compare two amounts.",
+        "lv": "Salīdzini divus daudzumus."
       },
       "levels": [
         {
@@ -10700,12 +10700,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Check the supplies",
-        "lv": "Pārbaudi krājumus"
+        "en": "Check a difference",
+        "lv": "Pārbaudi starpību"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Practise: check a difference.",
+        "lv": "Pārbaudi starpību."
       },
       "levels": [
         {
@@ -10889,12 +10889,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Repair a difference",
-        "lv": "Izlabo starpību"
+        "en": "Repair a subtraction mistake",
+        "lv": "Izlabo atņemšanas kļūdu"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Practise: repair a subtraction mistake.",
+        "lv": "Izlabo atņemšanas kļūdu."
       },
       "levels": [
         {
@@ -11078,12 +11078,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Take away in stories",
-        "lv": "Atņemšana stāstos"
+        "en": "Subtract in a story",
+        "lv": "Atņem stāsta uzdevumā"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Practise: subtract in a story.",
+        "lv": "Atņem stāsta uzdevumā."
       },
       "levels": [
         {
@@ -11267,12 +11267,12 @@
       "difficulty": "easy",
       "topicId": "subtraction",
       "title": {
-        "en": "Subtraction explorer",
-        "lv": "Atņemšanas pētnieks"
+        "en": "Revisit subtraction strategies",
+        "lv": "Atkārto atņemšanas paņēmienus"
       },
       "description": {
-        "en": "Use new examples to connect the topic’s ideas. Check each answer before moving on.",
-        "lv": "Saisti tēmas prasmes jaunos piemēros. Pārbaudi katru atbildi pirms nākamā uzdevuma."
+        "en": "Practise: revisit subtraction strategies.",
+        "lv": "Atkārto atņemšanas paņēmienus."
       },
       "levels": [
         {

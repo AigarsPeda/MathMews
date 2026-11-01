@@ -506,23 +506,23 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "6",
-      "5",
-      "4"
-    ],
+    "hint": "Sāc ar 5. Atņem 1 un saskaiti atlikušo.",
+    "explanation": "5 − 1 = 4.",
+    "type": "multiple_choice",
     "correctIndex": 0,
+    "choices": [
+      "4",
+      "3",
+      "2"
+    ],
+    "question": "Ir 5 papīra zvaigznes. 1 pielīmē kartītei. Cik paliek?",
     "taskVisual": {
       "kind": "take_away",
-      "left": 9,
-      "right": 3,
+      "left": 5,
+      "right": 1,
       "object": "star"
     },
-    "question": "Ir 9 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "9 − 3 = 6 paliek.",
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
@@ -538,23 +538,28 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "12 − 5 = 7.",
-    "payload": {
-      "start": 12,
-      "jump": -5,
-      "min": 0,
-      "max": 15,
-      "correctValue": 7
+    "hint": "Sāc ar 6. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "6 − 2 = 4.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "4",
+      "5",
+      "6"
+    ],
+    "question": "Ir 6 papīra zvaigznes. 2 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 6,
+      "right": 2,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -565,20 +570,28 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 15 − 6 = 9.",
-    "payload": {
-      "statement": "15 − 6 = 10"
+    "hint": "Sāc ar 7. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "7 − 3 = 4.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "4",
+      "3",
+      "6"
+    ],
+    "question": "Ir 7 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 7,
+      "right": 3,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -589,27 +602,28 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Sāc ar 8. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "8 − 2 = 6.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 8, paliek 10.",
-    "payload": {
-      "wrongWork": [
-        "18 − 8 = 9"
-      ],
-      "choices": [
-        "18 − 8 = 10",
-        "18 − 8 = 12",
-        "18 + 8 = 26"
-      ]
+    "choices": [
+      "6",
+      "5",
+      "4"
+    ],
+    "question": "Ir 8 papīra zvaigznes. 2 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 8,
+      "right": 2,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -620,30 +634,25 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "8",
-      "9",
-      "20"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "take_away",
-      "left": 14,
-      "right": 6,
-      "object": "star"
+    "hint": "Sāc ar 5. Atņem 1 un saskaiti atlikušo.",
+    "explanation": "5 − 1 = 4.",
+    "type": "number_line",
+    "question": "Sāc pie 5 un pārvietojies 1 soļus atpakaļ.",
+    "payload": {
+      "start": 5,
+      "jump": -1,
+      "min": 0,
+      "max": 10,
+      "correctValue": 4
     },
-    "question": "Ir 14 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "14 − 6 = 8 paliek.",
     "learning": {
       "skillId": "easy.subtraction.back",
       "prerequisiteSkillIds": [
         "easy.subtraction.take"
       ],
       "role": "practice",
-      "representation": "objects",
+      "representation": "symbols",
       "reasoningSteps": 1
     }
   },
@@ -654,17 +663,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "17 − 8 = 9.",
+    "hint": "Sāc ar 6. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "6 − 2 = 4.",
+    "type": "number_line",
+    "question": "Sāc pie 6 un pārvietojies 2 soļus atpakaļ.",
     "payload": {
-      "start": 17,
-      "jump": -8,
+      "start": 6,
+      "jump": -2,
       "min": 0,
-      "max": 20,
-      "correctValue": 9
+      "max": 10,
+      "correctValue": 4
     },
     "learning": {
       "skillId": "easy.subtraction.back",
@@ -683,14 +692,17 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 20 − 7 = 13.",
+    "hint": "Sāc ar 7. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "7 − 3 = 4.",
+    "type": "number_line",
+    "question": "Sāc pie 7 un pārvietojies 3 soļus atpakaļ.",
     "payload": {
-      "statement": "20 − 7 = 14"
+      "start": 7,
+      "jump": -3,
+      "min": 0,
+      "max": 10,
+      "correctValue": 4
     },
     "learning": {
       "skillId": "easy.subtraction.back",
@@ -709,21 +721,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
-    "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 4, paliek 12.",
+    "hint": "Sāc ar 8. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "8 − 2 = 6.",
+    "type": "number_line",
+    "question": "Sāc pie 8 un pārvietojies 2 soļus atpakaļ.",
     "payload": {
-      "wrongWork": [
-        "16 − 4 = 11"
-      ],
-      "choices": [
-        "16 − 4 = 12",
-        "16 − 4 = 14",
-        "16 + 4 = 20"
-      ]
+      "start": 8,
+      "jump": -2,
+      "min": 0,
+      "max": 10,
+      "correctValue": 6
     },
     "learning": {
       "skillId": "easy.subtraction.back",
@@ -1062,12 +1070,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 4 grupas pa 4 ir 16.",
+    "explanation": "Pareizi. 4 × 4 = 16.",
     "payload": {
-      "statement": "4 × 4 = 17"
+      "statement": "4 × 4 = 16"
     },
     "learning": {
       "skillId": "easy.multiplication.rows",
@@ -1183,12 +1191,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": true,
+    "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Pareizi. 5 grupas pa 5 ir 25.",
+    "explanation": "Nepareizi. 5 × 5 = 25.",
     "payload": {
-      "statement": "5 × 5 = 25"
+      "statement": "5 × 5 = 30"
     },
     "learning": {
       "skillId": "easy.multiplication.groups",
@@ -1757,17 +1765,21 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "8",
-      "20",
-      "10"
-    ],
+    "hint": "No 14 skaiti līdz 21.",
+    "explanation": "21 − 7 = 14.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
     "correctIndex": 0,
-    "question": "Ir 14 papīra laiviņas. Palaid 6. Cik gaida krastā?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "14 − 6 = 8 laiviņas gaida krastā.",
+    "payload": {
+      "leftDisplay": "21 − ?",
+      "rightValue": 14,
+      "choices": [
+        "7",
+        "8",
+        "9"
+      ]
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-10",
       "prerequisiteSkillIds": [
@@ -1785,17 +1797,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Trīs no 8 gaidošajām laiviņām aizpeld. Pārvietojies atpakaļ, lai atrastu atlikumu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "8 − 3 = 5 laiviņas paliek.",
+    "hint": "Sāc ar 22. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "22 − 3 = 19.",
+    "type": "number_line",
+    "question": "Sāc pie 22 un pārvietojies 3 soļus atpakaļ.",
     "payload": {
-      "start": 8,
+      "start": 22,
       "jump": -3,
       "min": 0,
-      "max": 10,
-      "correctValue": 5
+      "max": 23,
+      "correctValue": 19
     },
     "learning": {
       "skillId": "easy.subtraction.explore-10",
@@ -1814,22 +1826,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Sāc ar 23. Atņem 6 un saskaiti atlikušo.",
+    "explanation": "23 − 6 = 17.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Divas no pēdējām 5 laiviņām sasniedz mājas. Izlabo vēl gaidāmo laiviņu skaitu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "5 − 2 = 3. Aizved pēdējās trīs mājās!",
-    "payload": {
-      "wrongWork": [
-        "5 − 2 = 4"
-      ],
-      "choices": [
-        "5 − 2 = 3",
-        "5 − 2 = 4",
-        "5 − 2 = 7"
-      ]
-    },
+    "choices": [
+      "17",
+      "16",
+      "15"
+    ],
+    "question": "Ir 23 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek?",
     "learning": {
       "skillId": "easy.subtraction.explore-10",
       "prerequisiteSkillIds": [
@@ -1971,17 +1978,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Remonta loksnei ir 12 vienādi gabali. Izvēlies tādu pašu daļu kā 2/6 ielāps.",
-    "hint": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-    "explanation": "2/6 = 4/12. Ielāps ir tikpat liels.",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "2/6 = 6/18.",
     "payload": {
       "numerator": 2,
       "denominator": 6,
       "choices": [
-        "4/12",
-        "2/12",
-        "6/12"
+        "6/6",
+        "6/18",
+        "2/18"
       ]
     },
     "learning": {
@@ -2037,22 +2044,22 @@
       6,
       8
     ],
-    "type": "find_all_pairs",
-    "topic": "mental_math",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 10. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izskati kartītes pa vienai un meklē to pāriniekus.",
-    "explanation": "Tu atradi visus pārus. Apgriezta secība neveido jaunu pāri.",
-    "payload": {
-      "numbers": [
-        1,
-        2,
-        3,
-        7,
-        8,
-        9
-      ],
-      "target": 10
+    "topic": "addition",
+    "hint": "Sāc ar 8 un pieskaiti 1.",
+    "explanation": "8 + 1 = 9.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 8 lentes, un viņš pievieno vēl 1. Cik lenšu kopā?",
+    "choices": [
+      "9",
+      "8",
+      "10"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 8,
+      "right": 1,
+      "object": "ribbon"
     },
     "learning": {
       "skillId": "easy.addition.symbols",
@@ -2060,7 +2067,7 @@
         "easy.addition.join"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -3570,22 +3577,20 @@
       6,
       8
     ],
-    "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 14. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "Sāc ar 7 un pieskaiti 6.",
+    "explanation": "7 + 6 = 13.",
+    "type": "balance",
+    "correctIndex": 0,
+    "question": "Kura daļa trūkst?",
     "payload": {
-      "numbers": [
-        1,
-        3,
-        5,
-        13,
-        11,
-        9
-      ],
-      "target": 14
+      "leftDisplay": "7 + ?",
+      "rightValue": 13,
+      "choices": [
+        "6",
+        "7",
+        "8"
+      ]
     },
     "learning": {
       "skillId": "easy.addition.missing-part",
@@ -3613,8 +3618,8 @@
       "numbers": [
         7,
         4,
-        1,
-        10
+        6,
+        3
       ],
       "target": 11,
       "correctIndices": [
@@ -3647,14 +3652,14 @@
     "payload": {
       "numbers": [
         8,
+        9,
         5,
-        1,
-        12
+        6
       ],
       "target": 13,
       "correctIndices": [
         0,
-        1
+        2
       ]
     },
     "learning": {
@@ -3682,14 +3687,14 @@
     "payload": {
       "numbers": [
         9,
-        6,
-        1,
-        14
+        8,
+        10,
+        6
       ],
       "target": 15,
       "correctIndices": [
         0,
-        1
+        3
       ]
     },
     "learning": {
@@ -3716,15 +3721,15 @@
     "question": "Izvēlies divas kartītes, kuru summa ir 14.",
     "payload": {
       "numbers": [
+        9,
         7,
         7,
-        1,
-        13
+        6
       ],
       "target": 14,
       "correctIndices": [
-        0,
-        1
+        1,
+        2
       ]
     },
     "learning": {
@@ -4279,20 +4284,17 @@
     ],
     "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 19. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Atrodi visus pārus, kuru summa ir 15.",
+    "hint": "Izvēlies vienu skaitli un atrodi trūkstošo daļu. Meklē arī otru pāri.",
+    "explanation": "3 + 12 = 15; 4 + 11 = 15.",
     "payload": {
       "numbers": [
-        1,
         3,
-        5,
-        18,
-        16,
-        14
+        11,
+        4,
+        12
       ],
-      "target": 19
+      "target": 15
     },
     "learning": {
       "skillId": "easy.addition.review",
@@ -4311,24 +4313,30 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "6",
-      "7",
-      "8"
-    ],
+    "hint": "Sadali 11 skaitļos 10 un 1. Atņem 1.",
+    "explanation": "11 − 1 = 10.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Grozā ir 13 rotaļu peles. Kaķis paņem 7. Cik paliek?",
-    "hint": "Seko tam, ko pievieno vai atņem.",
-    "explanation": "13 − 7 = 6.",
+    "choices": [
+      "10",
+      "11",
+      "12"
+    ],
+    "question": "Ir 11 papīra zvaigznes. 1 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 11,
+      "right": 1,
+      "object": "star"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
       "prerequisiteSkillIds": [
         "easy.subtraction.back"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -4339,17 +4347,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "20 − 4 = 16.",
+    "hint": "Sadali 12 skaitļos 10 un 2. Atņem 2.",
+    "explanation": "12 − 2 = 10.",
+    "type": "number_line",
+    "question": "Sāc pie 12 un pārvietojies 2 soļus atpakaļ.",
     "payload": {
-      "start": 20,
-      "jump": -4,
+      "start": 12,
+      "jump": -2,
       "min": 0,
-      "max": 23,
-      "correctValue": 16
+      "max": 20,
+      "correctValue": 10
     },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
@@ -4368,14 +4376,22 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 12 − 9 = 3.",
-    "payload": {
-      "statement": "12 − 9 = 4"
+    "hint": "Sadali 13 skaitļos 10 un 3. Atņem 3.",
+    "explanation": "13 − 3 = 10.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "10",
+      "9",
+      "8"
+    ],
+    "question": "Ir 13 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 13,
+      "right": 3,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
@@ -4383,7 +4399,7 @@
         "easy.subtraction.back"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -4394,21 +4410,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
-    "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 6, paliek 13.",
+    "hint": "Sadali 14 skaitļos 10 un 4. Atņem 4.",
+    "explanation": "14 − 4 = 10.",
+    "type": "number_line",
+    "question": "Sāc pie 14 un pārvietojies 4 soļus atpakaļ.",
     "payload": {
-      "wrongWork": [
-        "19 − 6 = 12"
-      ],
-      "choices": [
-        "19 − 6 = 13",
-        "19 − 6 = 15",
-        "19 + 6 = 25"
-      ]
+      "start": 14,
+      "jump": -4,
+      "min": 0,
+      "max": 20,
+      "correctValue": 10
     },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
@@ -4427,24 +4439,30 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "8",
-      "7",
-      "9"
-    ],
+    "hint": "Atņem 1, lai iegūtu 10, tad atņem atlikušos 1.",
+    "explanation": "11 − 2 = 9.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kokā ir 11 papīra lapas. 3 aizpūš vējš. Cik paliek?",
-    "hint": "Seko tam, ko pievieno vai atņem.",
-    "explanation": "11 − 3 = 8.",
+    "choices": [
+      "9",
+      "8",
+      "11"
+    ],
+    "question": "Ir 11 papīra zvaigznes. 2 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 11,
+      "right": 2,
+      "object": "star"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
       "prerequisiteSkillIds": [
         "easy.subtraction.explore-3"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -4455,17 +4473,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "18 − 8 = 10.",
+    "hint": "Atņem 2, lai iegūtu 10, tad atņem atlikušos 2.",
+    "explanation": "12 − 4 = 8.",
+    "type": "number_line",
+    "question": "Sāc pie 12 un pārvietojies 4 soļus atpakaļ.",
     "payload": {
-      "start": 18,
-      "jump": -8,
+      "start": 12,
+      "jump": -4,
       "min": 0,
-      "max": 21,
-      "correctValue": 10
+      "max": 20,
+      "correctValue": 8
     },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
@@ -4484,14 +4502,22 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 10 − 5 = 5.",
-    "payload": {
-      "statement": "10 − 5 = 6"
+    "hint": "Atņem 3, lai iegūtu 10, tad atņem atlikušos 3.",
+    "explanation": "13 − 6 = 7.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "7",
+      "8",
+      "9"
+    ],
+    "question": "Ir 13 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 13,
+      "right": 6,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
@@ -4499,7 +4525,7 @@
         "easy.subtraction.explore-3"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -4510,21 +4536,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
-    "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 2, paliek 15.",
+    "hint": "Atņem 4, lai iegūtu 10, tad atņem atlikušos 1.",
+    "explanation": "14 − 5 = 9.",
+    "type": "number_line",
+    "question": "Sāc pie 14 un pārvietojies 5 soļus atpakaļ.",
     "payload": {
-      "wrongWork": [
-        "17 − 2 = 14"
-      ],
-      "choices": [
-        "17 − 2 = 15",
-        "17 − 2 = 17",
-        "17 + 2 = 19"
-      ]
+      "start": 14,
+      "jump": -5,
+      "min": 0,
+      "max": 20,
+      "correctValue": 9
     },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
@@ -4543,17 +4565,21 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "17",
-      "16",
-      "15"
-    ],
+    "hint": "No 10 skaiti līdz 12.",
+    "explanation": "12 − 2 = 10.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
     "correctIndex": 0,
-    "question": "Ceptuve izcep 24 cepumus un pārdod 7. Cik cepumu paliek?",
-    "hint": "Seko tam, ko pievieno vai atņem.",
-    "explanation": "24 − 7 = 17.",
+    "payload": {
+      "leftDisplay": "12 − ?",
+      "rightValue": 10,
+      "choices": [
+        "2",
+        "1",
+        "0"
+      ]
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-5",
       "prerequisiteSkillIds": [
@@ -4571,17 +4597,20 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "16 − 4 = 12.",
+    "hint": "No 8 skaiti līdz 13.",
+    "explanation": "13 − 5 = 8.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
+    "correctIndex": 0,
     "payload": {
-      "start": 16,
-      "jump": -4,
-      "min": 0,
-      "max": 19,
-      "correctValue": 12
+      "leftDisplay": "13 − ?",
+      "rightValue": 8,
+      "choices": [
+        "5",
+        "6",
+        "7"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-5",
@@ -4600,14 +4629,20 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 23 − 9 = 14.",
+    "hint": "No 6 skaiti līdz 14.",
+    "explanation": "14 − 8 = 6.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
+    "correctIndex": 0,
     "payload": {
-      "statement": "23 − 9 = 15"
+      "leftDisplay": "14 − ?",
+      "rightValue": 6,
+      "choices": [
+        "8",
+        "7",
+        "10"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-5",
@@ -4626,20 +4661,19 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "No 11 skaiti līdz 15.",
+    "explanation": "15 − 4 = 11.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 6, paliek 9.",
     "payload": {
-      "wrongWork": [
-        "15 − 6 = 8"
-      ],
+      "leftDisplay": "15 − ?",
+      "rightValue": 11,
       "choices": [
-        "15 − 6 = 9",
-        "15 − 6 = 11",
-        "15 + 6 = 21"
+        "4",
+        "3",
+        "2"
       ]
     },
     "learning": {
@@ -4659,28 +4693,19 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "No 17 skaiti līdz 19.",
+    "explanation": "19 − 2 = 17.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
+    "correctIndex": 0,
     "payload": {
-      "sequence": [
-        26,
-        null,
-        18,
-        null,
-        10
-      ],
-      "tiles": [
-        14,
-        27,
-        22,
-        12
-      ],
-      "solution": [
-        22,
-        14
+      "leftDisplay": "19 − ?",
+      "rightValue": 17,
+      "choices": [
+        "2",
+        "1",
+        "4"
       ]
     },
     "learning": {
@@ -4700,17 +4725,17 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "19",
-      "20",
-      "21"
-    ],
+    "hint": "Atņem mazāko daudzumu 2 no lielākā 12.",
+    "explanation": "12 − 2 = 10.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Bibliotēkā ir sagatavotas 22 grāmatas. 3 aizņemas. Cik vēl paliek?",
-    "hint": "Seko tam, ko pievieno vai atņem.",
-    "explanation": "22 − 3 = 19.",
+    "choices": [
+      "10",
+      "11",
+      "12"
+    ],
+    "question": "Vienā kastē ir 12 zvaigznes, otrā 2. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -4728,18 +4753,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "14 − 8 = 6.",
-    "payload": {
-      "start": 14,
-      "jump": -8,
-      "min": 0,
-      "max": 17,
-      "correctValue": 6
-    },
+    "hint": "Atņem mazāko daudzumu 5 no lielākā 13.",
+    "explanation": "13 − 5 = 8.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "8",
+      "7",
+      "10"
+    ],
+    "question": "Vienā kastē ir 13 zvaigznes, otrā 5. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -4757,15 +4781,17 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 21 − 5 = 16.",
-    "payload": {
-      "statement": "21 − 5 = 17"
-    },
+    "hint": "Atņem mazāko daudzumu 8 no lielākā 14.",
+    "explanation": "14 − 8 = 6.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "6",
+      "5",
+      "4"
+    ],
+    "question": "Vienā kastē ir 14 zvaigznes, otrā 8. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -4783,22 +4809,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Atņem mazāko daudzumu 4 no lielākā 15.",
+    "explanation": "15 − 4 = 11.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 2, paliek 11.",
-    "payload": {
-      "wrongWork": [
-        "13 − 2 = 10"
-      ],
-      "choices": [
-        "13 − 2 = 11",
-        "13 − 2 = 13",
-        "13 + 2 = 15"
-      ]
-    },
+    "choices": [
+      "11",
+      "12",
+      "13"
+    ],
+    "question": "Vienā kastē ir 15 zvaigznes, otrā 4. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -4816,17 +4837,15 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "13",
-      "12",
-      "14"
-    ],
-    "correctIndex": 0,
-    "question": "Grozā ir 20 rotaļu peles. Kaķis paņem 7. Cik paliek?",
-    "hint": "Seko tam, ko pievieno vai atņem.",
-    "explanation": "20 − 7 = 13.",
+    "hint": "Sāc ar 12. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "Pareizi. 12 − 2 = 10.",
+    "type": "true_false",
+    "isTrue": true,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
+    "payload": {
+      "statement": "12 − 2 = 10"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
       "prerequisiteSkillIds": [
@@ -4844,17 +4863,14 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "12 − 4 = 8.",
+    "hint": "Sāc ar 13. Atņem 5 un saskaiti atlikušo.",
+    "explanation": "Pareizi. 13 − 5 = 8.",
+    "type": "true_false",
+    "isTrue": true,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
     "payload": {
-      "start": 12,
-      "jump": -4,
-      "min": 0,
-      "max": 15,
-      "correctValue": 8
+      "statement": "13 − 5 = 8"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
@@ -4873,14 +4889,14 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 19 − 9 = 10.",
+    "hint": "Sāc ar 14. Atņem 8 un saskaiti atlikušo.",
+    "explanation": "Pareizi. 14 − 8 = 6.",
+    "type": "true_false",
+    "isTrue": true,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
     "payload": {
-      "statement": "19 − 9 = 11"
+      "statement": "14 − 8 = 6"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
@@ -4899,21 +4915,14 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
-    "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 6, paliek 5.",
+    "hint": "Sāc ar 15. Atņem 4 un saskaiti atlikušo.",
+    "explanation": "Nepareizi. 15 − 4 = 11.",
+    "type": "true_false",
+    "isTrue": false,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
     "payload": {
-      "wrongWork": [
-        "11 − 6 = 4"
-      ],
-      "choices": [
-        "11 − 6 = 5",
-        "11 − 6 = 7",
-        "11 + 6 = 17"
-      ]
+      "statement": "15 − 4 = 12"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
@@ -4932,17 +4941,22 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "15",
-      "14",
-      "13"
-    ],
+    "hint": "Sāc ar 12. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "12 − 2 = 10.",
+    "type": "fix_mistake",
     "correctIndex": 0,
-    "question": "Kokā ir 18 papīra lapas. 3 aizpūš vējš. Cik paliek?",
-    "hint": "Seko tam, ko pievieno vai atņem.",
-    "explanation": "18 − 3 = 15.",
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
+    "payload": {
+      "wrongWork": [
+        "12 − 2 = 9"
+      ],
+      "choices": [
+        "12 − 2 = 10",
+        "12 − 2 = 9",
+        "12 − 2 = 8"
+      ]
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-8",
       "prerequisiteSkillIds": [
@@ -4960,17 +4974,21 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "10 − 8 = 2.",
+    "hint": "Sāc ar 13. Atņem 5 un saskaiti atlikušo.",
+    "explanation": "13 − 5 = 8.",
+    "type": "fix_mistake",
+    "correctIndex": 0,
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
     "payload": {
-      "start": 10,
-      "jump": -8,
-      "min": 0,
-      "max": 13,
-      "correctValue": 2
+      "wrongWork": [
+        "13 − 5 = 9"
+      ],
+      "choices": [
+        "13 − 5 = 8",
+        "13 − 5 = 9",
+        "13 − 5 = 10"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-8",
@@ -4989,14 +5007,21 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 17 − 5 = 12.",
+    "hint": "Sāc ar 14. Atņem 8 un saskaiti atlikušo.",
+    "explanation": "14 − 8 = 6.",
+    "type": "fix_mistake",
+    "correctIndex": 0,
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
     "payload": {
-      "statement": "17 − 5 = 13"
+      "wrongWork": [
+        "14 − 8 = 5"
+      ],
+      "choices": [
+        "14 − 8 = 6",
+        "14 − 8 = 5",
+        "14 − 8 = 8"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-8",
@@ -5015,20 +5040,20 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Sāc ar 15. Atņem 4 un saskaiti atlikušo.",
+    "explanation": "15 − 4 = 11.",
+    "type": "fix_mistake",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 2, paliek 22.",
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
     "payload": {
       "wrongWork": [
-        "24 − 2 = 21"
+        "15 − 4 = 12"
       ],
       "choices": [
-        "24 − 2 = 22",
-        "24 − 2 = 24",
-        "24 + 2 = 26"
+        "15 − 4 = 11",
+        "15 − 4 = 10",
+        "15 − 4 = 9"
       ]
     },
     "learning": {
@@ -5048,24 +5073,30 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "9",
-      "10",
-      "11"
-    ],
+    "hint": "Sāc ar 17. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "17 − 2 = 15.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Ceptuve izcep 16 cepumus un pārdod 7. Cik cepumu paliek?",
-    "hint": "Seko tam, ko pievieno vai atņem.",
-    "explanation": "16 − 7 = 9.",
+    "choices": [
+      "15",
+      "16",
+      "17"
+    ],
+    "question": "Ir 17 papīra zvaigznes. 2 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 17,
+      "right": 2,
+      "object": "star"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-9",
       "prerequisiteSkillIds": [
         "easy.subtraction.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -5076,17 +5107,22 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "23 − 4 = 19.",
-    "payload": {
-      "start": 23,
-      "jump": -4,
-      "min": 0,
-      "max": 26,
-      "correctValue": 19
+    "hint": "Sāc ar 18. Atņem 5 un saskaiti atlikušo.",
+    "explanation": "18 − 5 = 13.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "13",
+      "12",
+      "15"
+    ],
+    "question": "Ir 18 papīra zvaigznes. 5 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 18,
+      "right": 5,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-9",
@@ -5094,7 +5130,7 @@
         "easy.subtraction.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -5105,14 +5141,22 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 15 − 9 = 6.",
-    "payload": {
-      "statement": "15 − 9 = 7"
+    "hint": "Sāc ar 19. Atņem 8 un saskaiti atlikušo.",
+    "explanation": "19 − 8 = 11.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "11",
+      "10",
+      "9"
+    ],
+    "question": "Ir 19 papīra zvaigznes. 8 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 19,
+      "right": 8,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-9",
@@ -5120,7 +5164,7 @@
         "easy.subtraction.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -5131,21 +5175,22 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Sāc ar 20. Atņem 4 un saskaiti atlikušo.",
+    "explanation": "20 − 4 = 16.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 6, paliek 16.",
-    "payload": {
-      "wrongWork": [
-        "22 − 6 = 15"
-      ],
-      "choices": [
-        "22 − 6 = 16",
-        "22 − 6 = 18",
-        "22 + 6 = 28"
-      ]
+    "choices": [
+      "16",
+      "17",
+      "18"
+    ],
+    "question": "Ir 20 papīra zvaigznes. 4 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 20,
+      "right": 4,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-9",
@@ -5153,7 +5198,7 @@
         "easy.subtraction.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -5164,24 +5209,30 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "11",
-      "12",
-      "13"
-    ],
+    "hint": "Sāc ar 17. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "17 − 2 = 15.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Bibliotēkā ir sagatavotas 14 grāmatas. 3 aizņemas. Cik vēl paliek?",
-    "hint": "Seko tam, ko pievieno vai atņem.",
-    "explanation": "14 − 3 = 11.",
+    "choices": [
+      "15",
+      "16",
+      "17"
+    ],
+    "question": "Ir 17 papīra zvaigznes. 2 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 17,
+      "right": 2,
+      "object": "star"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-10",
       "prerequisiteSkillIds": [
         "easy.subtraction.explore-9"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -5192,17 +5243,20 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "21 − 8 = 13.",
+    "hint": "No 13 skaiti līdz 18.",
+    "explanation": "18 − 5 = 13.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
+    "correctIndex": 0,
     "payload": {
-      "start": 21,
-      "jump": -8,
-      "min": 0,
-      "max": 24,
-      "correctValue": 13
+      "leftDisplay": "18 − ?",
+      "rightValue": 13,
+      "choices": [
+        "5",
+        "4",
+        "7"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-10",
@@ -5221,14 +5275,22 @@
       6,
       8
     ],
-    "type": "true_false",
     "topic": "subtraction",
-    "isTrue": false,
-    "question": "Pārbaudi kaķa atņemšanu.",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Nepareizi. 13 − 5 = 8.",
-    "payload": {
-      "statement": "13 − 5 = 9"
+    "hint": "Sāc ar 19. Atņem 8 un saskaiti atlikušo.",
+    "explanation": "19 − 8 = 11.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "11",
+      "10",
+      "9"
+    ],
+    "question": "Ir 19 papīra zvaigznes. 8 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 19,
+      "right": 8,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-10",
@@ -5236,7 +5298,7 @@
         "easy.subtraction.explore-9"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -5247,21 +5309,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
-    "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 2, paliek 18.",
+    "hint": "Sāc ar 20. Atņem 4 un saskaiti atlikušo.",
+    "explanation": "20 − 4 = 16.",
+    "type": "number_line",
+    "question": "Sāc pie 20 un pārvietojies 4 soļus atpakaļ.",
     "payload": {
-      "wrongWork": [
-        "20 − 2 = 17"
-      ],
-      "choices": [
-        "20 − 2 = 18",
-        "20 − 2 = 20",
-        "20 + 2 = 22"
-      ]
+      "start": 20,
+      "jump": -4,
+      "min": 0,
+      "max": 21,
+      "correctValue": 16
     },
     "learning": {
       "skillId": "easy.subtraction.explore-10",
@@ -5280,28 +5338,19 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "No 22 skaiti līdz 24.",
+    "explanation": "24 − 2 = 22.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
+    "correctIndex": 0,
     "payload": {
-      "sequence": [
-        37,
-        null,
-        27,
-        null,
-        17
-      ],
-      "tiles": [
-        22,
-        38,
-        32,
-        19
-      ],
-      "solution": [
-        32,
-        22
+      "leftDisplay": "24 − ?",
+      "rightValue": 22,
+      "choices": [
+        "2",
+        "1",
+        "0"
       ]
     },
     "learning": {
@@ -6527,12 +6576,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 5 grupas pa 3 ir 15.",
+    "explanation": "Pareizi. 5 × 3 = 15.",
     "payload": {
-      "statement": "5 × 3 = 16"
+      "statement": "5 × 3 = 15"
     },
     "learning": {
       "skillId": "easy.multiplication.explore-3",
@@ -6655,9 +6704,9 @@
     "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 2 grupas pa 5 ir 10.",
+    "explanation": "Nepareizi. 2 × 5 = 10.",
     "payload": {
-      "statement": "2 × 5 = 11"
+      "statement": "2 × 5 = 12"
     },
     "learning": {
       "skillId": "easy.multiplication.explore-4",
@@ -6780,9 +6829,9 @@
     "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 4 grupas pa 7 ir 28.",
+    "explanation": "Nepareizi. 4 × 7 = 28.",
     "payload": {
-      "statement": "4 × 7 = 29"
+      "statement": "4 × 7 = 32"
     },
     "learning": {
       "skillId": "easy.multiplication.explore-5",
@@ -6943,12 +6992,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 6 grupas pa 3 ir 18.",
+    "explanation": "Pareizi. 6 × 3 = 18.",
     "payload": {
-      "statement": "6 × 3 = 19"
+      "statement": "6 × 3 = 18"
     },
     "learning": {
       "skillId": "easy.multiplication.explore-6",
@@ -7071,9 +7120,9 @@
     "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 3 grupas pa 5 ir 15.",
+    "explanation": "Nepareizi. 3 × 5 = 15.",
     "payload": {
-      "statement": "3 × 5 = 16"
+      "statement": "3 × 5 = 8"
     },
     "learning": {
       "skillId": "easy.multiplication.explore-7",
@@ -7193,12 +7242,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 5 grupas pa 7 ir 35.",
+    "explanation": "Pareizi. 5 × 7 = 35.",
     "payload": {
-      "statement": "5 × 7 = 36"
+      "statement": "5 × 7 = 35"
     },
     "learning": {
       "skillId": "easy.multiplication.explore-8",
@@ -7321,9 +7370,9 @@
     "isTrue": false,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 2 grupas pa 3 ir 6.",
+    "explanation": "Nepareizi. 2 × 3 = 6.",
     "payload": {
-      "statement": "2 × 3 = 7"
+      "statement": "2 × 3 = 5"
     },
     "learning": {
       "skillId": "easy.multiplication.explore-9",
@@ -7443,12 +7492,12 @@
     ],
     "type": "true_false",
     "topic": "multiplication",
-    "isTrue": false,
+    "isTrue": true,
     "question": "Pārbaudi apgalvojumu par vienādām grupām.",
     "hint": "Katrā grupā saskaiti vienādu skaitu.",
-    "explanation": "Nepareizi. 4 grupas pa 5 ir 20.",
+    "explanation": "Pareizi. 4 × 5 = 20.",
     "payload": {
-      "statement": "4 × 5 = 21"
+      "statement": "4 × 5 = 20"
     },
     "learning": {
       "skillId": "easy.multiplication.explore-10",
@@ -8002,21 +8051,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/6 = 6/12.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "3/6 = 6/12.",
     "payload": {
       "numerator": 3,
       "denominator": 6,
       "choices": [
+        "6/6",
         "6/12",
-        "3/12",
-        "4/6"
+        "3/12"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
@@ -8123,21 +8172,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/6 = 6/12.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "3/6 = 9/18.",
     "payload": {
       "numerator": 3,
       "denominator": 6,
       "choices": [
-        "6/12",
-        "3/12",
-        "4/6"
+        "9/18",
+        "3/18",
+        "9/6"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.models",
       "prerequisiteSkillIds": [
@@ -8217,16 +8266,17 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/4 > 2/4.",
     "type": "compare",
-    "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
-    "payload": {
-      "optionA": "2/4",
-      "optionB": "3/4"
-    },
+    "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "3/6 > 3/7.",
+    "payload": {
+      "optionA": "3/7",
+      "optionB": "3/6"
+    },
     "learning": {
       "skillId": "easy.fractions.equivalent",
       "prerequisiteSkillIds": [
@@ -8244,21 +8294,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/6 = 6/12.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "3/6 = 9/18.",
     "payload": {
       "numerator": 3,
       "denominator": 6,
       "choices": [
-        "6/12",
-        "3/12",
-        "4/6"
+        "3/18",
+        "9/6",
+        "9/18"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.equivalent",
       "prerequisiteSkillIds": [
@@ -8338,16 +8388,17 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/4 > 2/4.",
     "type": "compare",
-    "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
-    "payload": {
-      "optionA": "3/4",
-      "optionB": "2/4"
-    },
+    "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "1/5 > 1/6.",
+    "payload": {
+      "optionA": "1/5",
+      "optionB": "1/6"
+    },
     "learning": {
       "skillId": "easy.fractions.apply",
       "prerequisiteSkillIds": [
@@ -8365,21 +8416,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/6 = 6/12.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 4 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 4.",
+    "explanation": "3/6 = 12/24.",
     "payload": {
       "numerator": 3,
       "denominator": 6,
       "choices": [
-        "6/12",
-        "3/12",
-        "4/6"
+        "12/6",
+        "12/24",
+        "3/24"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.apply",
       "prerequisiteSkillIds": [
@@ -8459,16 +8510,17 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/4 > 2/4.",
     "type": "compare",
-    "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
-    "payload": {
-      "optionA": "2/4",
-      "optionB": "3/4"
-    },
+    "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "2/4 > 2/5.",
+    "payload": {
+      "optionA": "2/5",
+      "optionB": "2/4"
+    },
     "learning": {
       "skillId": "easy.fractions.review",
       "prerequisiteSkillIds": [
@@ -8486,21 +8538,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/6 = 6/12.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "3/6 = 6/12.",
     "payload": {
       "numerator": 3,
       "denominator": 6,
       "choices": [
+        "6/6",
         "6/12",
-        "3/12",
-        "4/6"
+        "3/12"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.review",
       "prerequisiteSkillIds": [
@@ -8557,45 +8609,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 2/5 vai 3/5.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/7 vai 6/7.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/7 = 2/14; 6/7 = 12/14.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
-          2,
-          5
+          1,
+          7
         ],
         [
-          3,
-          5
+          6,
+          7
         ]
       ],
       "fractions": [
         [
-          4,
-          10
-        ],
-        [
-          6,
-          10
-        ],
-        [
-          6,
-          15
-        ],
-        [
-          9,
-          15
-        ],
-        [
-          8,
-          20
+          2,
+          14
         ],
         [
           12,
-          20
+          14
+        ],
+        [
+          3,
+          21
+        ],
+        [
+          18,
+          21
+        ],
+        [
+          4,
+          28
+        ],
+        [
+          24,
+          28
         ]
       ]
     },
@@ -9683,28 +9735,28 @@
       6,
       8
     ],
-    "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 22. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
-    "payload": {
-      "numbers": [
-        1,
-        3,
-        5,
-        21,
-        19,
-        17
-      ],
-      "target": 22
+    "hint": "Saskaiti lentes abās grupās.",
+    "explanation": "5 + 2 = 7.",
+    "type": "multiple_choice",
+    "question": "Apvieno 5 lentes un vēl 2 lentes. Cik kopā?",
+    "choices": [
+      "7",
+      "6",
+      "8"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 5,
+      "right": 2,
+      "object": "ribbon"
     },
     "learning": {
       "skillId": "easy.addition.join",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -9913,22 +9965,17 @@
       6,
       8
     ],
-    "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 24. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "Sāc ar 11 un pieskaiti 2.",
+    "explanation": "11 + 2 = 13.",
+    "type": "number_line",
+    "question": "Sāc ar 11 un lec 2 soļus uz priekšu.",
     "payload": {
-      "numbers": [
-        1,
-        3,
-        5,
-        23,
-        21,
-        19
-      ],
-      "target": 24
+      "start": 11,
+      "jump": 2,
+      "min": 0,
+      "max": 16,
+      "correctValue": 13
     },
     "learning": {
       "skillId": "easy.addition.count-on",
@@ -10034,22 +10081,22 @@
       6,
       8
     ],
-    "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 25. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
-    "payload": {
-      "numbers": [
-        1,
-        3,
-        5,
-        24,
-        22,
-        20
-      ],
-      "target": 25
+    "hint": "Lai no 7 iegūtu 10, vajag 3. Sadali 6 un pieskaiti pārējo.",
+    "explanation": "7 + 6 = 13.",
+    "type": "multiple_choice",
+    "question": "Kaķim ir 7 lentes, un viņš pievieno vēl 6. Cik lenšu kopā?",
+    "choices": [
+      "13",
+      "12",
+      "14"
+    ],
+    "correctIndex": 0,
+    "taskVisual": {
+      "kind": "join",
+      "left": 7,
+      "right": 6,
+      "object": "ribbon"
     },
     "learning": {
       "skillId": "easy.addition.make-ten",
@@ -10057,7 +10104,7 @@
         "easy.addition.count-on"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -10268,20 +10315,17 @@
     ],
     "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 27. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Atrodi visus pārus, kuru summa ir 11.",
+    "hint": "Izvēlies vienu skaitli un atrodi trūkstošo daļu. Meklē arī otru pāri.",
+    "explanation": "3 + 8 = 11; 4 + 7 = 11.",
     "payload": {
       "numbers": [
-        1,
         3,
-        5,
-        26,
-        24,
-        22
+        7,
+        4,
+        8
       ],
-      "target": 27
+      "target": 11
     },
     "learning": {
       "skillId": "easy.addition.pairs",
@@ -10307,15 +10351,15 @@
     "question": "Izvēlies divas kartītes, kuru summa ir 11.",
     "payload": {
       "numbers": [
+        5,
         7,
-        4,
-        1,
-        10
+        9,
+        4
       ],
       "target": 11,
       "correctIndices": [
-        0,
-        1
+        1,
+        3
       ]
     },
     "learning": {
@@ -10342,15 +10386,15 @@
     "question": "Izvēlies divas kartītes, kuru summa ir 13.",
     "payload": {
       "numbers": [
+        9,
+        3,
         8,
-        5,
-        1,
-        12
+        5
       ],
       "target": 13,
       "correctIndices": [
-        0,
-        1
+        2,
+        3
       ]
     },
     "learning": {
@@ -10379,8 +10423,8 @@
       "numbers": [
         9,
         6,
-        1,
-        14
+        8,
+        5
       ],
       "target": 15,
       "correctIndices": [
@@ -10407,20 +10451,17 @@
     ],
     "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 28. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Atrodi visus pārus, kuru summa ir 12.",
+    "hint": "Izvēlies vienu skaitli un atrodi trūkstošo daļu. Meklē arī otru pāri.",
+    "explanation": "3 + 9 = 12; 4 + 8 = 12.",
     "payload": {
       "numbers": [
-        1,
         3,
-        5,
-        27,
-        25,
-        23
+        8,
+        4,
+        9
       ],
-      "target": 28
+      "target": 12
     },
     "learning": {
       "skillId": "easy.addition.explain",
@@ -10542,20 +10583,17 @@
     ],
     "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 29. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Atrodi visus pārus, kuru summa ir 13.",
+    "hint": "Izvēlies vienu skaitli un atrodi trūkstošo daļu. Meklē arī otru pāri.",
+    "explanation": "3 + 10 = 13; 4 + 9 = 13.",
     "payload": {
       "numbers": [
-        1,
         3,
-        5,
-        28,
-        26,
-        24
+        9,
+        4,
+        10
       ],
-      "target": 29
+      "target": 13
     },
     "learning": {
       "skillId": "easy.addition.repair",
@@ -10675,20 +10713,17 @@
     ],
     "type": "find_all_pairs",
     "topic": "addition",
-    "helpTemplate": "all_pairs",
-    "question": "Atrodi visus pārus, kuru summa ir 30. Kartīti drīkst izmantot dažādos pāros.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Atrodi visus pārus, kuru summa ir 14.",
+    "hint": "Izvēlies vienu skaitli un atrodi trūkstošo daļu. Meklē arī otru pāri.",
+    "explanation": "3 + 11 = 14; 4 + 10 = 14.",
     "payload": {
       "numbers": [
-        1,
         3,
-        5,
-        29,
-        27,
-        25
+        10,
+        4,
+        11
       ],
-      "target": 30
+      "target": 14
     },
     "learning": {
       "skillId": "easy.addition.apply",
@@ -10809,35 +10844,28 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
-    "payload": {
-      "sequence": [
-        34,
-        null,
-        26,
-        null,
-        18
-      ],
-      "tiles": [
-        22,
-        35,
-        30,
-        20
-      ],
-      "solution": [
-        30,
-        22
-      ]
+    "hint": "Sāc ar 9. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "9 − 2 = 7.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "7",
+      "8",
+      "9"
+    ],
+    "question": "Ir 9 papīra zvaigznes. 2 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 9,
+      "right": 2,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -10848,23 +10876,23 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "10",
-      "9",
-      "8"
-    ],
+    "hint": "Sāc ar 9. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "9 − 3 = 6.",
+    "type": "multiple_choice",
     "correctIndex": 0,
+    "choices": [
+      "6",
+      "5",
+      "4"
+    ],
+    "question": "Ir 9 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek?",
     "taskVisual": {
       "kind": "take_away",
-      "left": 13,
+      "left": 9,
       "right": 3,
       "object": "star"
     },
-    "question": "Ir 13 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "13 − 3 = 10 paliek.",
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
@@ -10880,23 +10908,28 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "14 − 4 = 10.",
-    "payload": {
-      "start": 14,
-      "jump": -4,
-      "min": 0,
-      "max": 17,
-      "correctValue": 10
+    "hint": "Sāc ar 7. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "7 − 2 = 5.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "5",
+      "6",
+      "7"
+    ],
+    "question": "Ir 7 papīra zvaigznes. 2 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 7,
+      "right": 2,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -10907,27 +10940,28 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Sāc ar 10. Atņem 4 un saskaiti atlikušo.",
+    "explanation": "10 − 4 = 6.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 5, paliek 10.",
-    "payload": {
-      "wrongWork": [
-        "15 − 5 = 9"
-      ],
-      "choices": [
-        "15 − 5 = 10",
-        "15 − 5 = 12",
-        "15 + 5 = 20"
-      ]
+    "choices": [
+      "6",
+      "5",
+      "8"
+    ],
+    "question": "Ir 10 papīra zvaigznes. 4 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 10,
+      "right": 4,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -10938,29 +10972,17 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "Sāc ar 9. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "9 − 2 = 7.",
+    "type": "number_line",
+    "question": "Sāc pie 9 un pārvietojies 2 soļus atpakaļ.",
     "payload": {
-      "sequence": [
-        41,
-        null,
-        31,
-        null,
-        21
-      ],
-      "tiles": [
-        26,
-        42,
-        36,
-        23
-      ],
-      "solution": [
-        36,
-        26
-      ]
+      "start": 9,
+      "jump": -2,
+      "min": 0,
+      "max": 10,
+      "correctValue": 7
     },
     "learning": {
       "skillId": "easy.subtraction.back",
@@ -10979,30 +11001,25 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "11",
-      "12",
-      "19"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "take_away",
-      "left": 15,
-      "right": 4,
-      "object": "star"
+    "hint": "Sāc ar 9. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "9 − 3 = 6.",
+    "type": "number_line",
+    "question": "Sāc pie 9 un pārvietojies 3 soļus atpakaļ.",
+    "payload": {
+      "start": 9,
+      "jump": -3,
+      "min": 0,
+      "max": 10,
+      "correctValue": 6
     },
-    "question": "Ir 15 papīra zvaigznes. 4 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "15 − 4 = 11 paliek.",
     "learning": {
       "skillId": "easy.subtraction.back",
       "prerequisiteSkillIds": [
         "easy.subtraction.take"
       ],
       "role": "application",
-      "representation": "objects",
+      "representation": "symbols",
       "reasoningSteps": 1
     }
   },
@@ -11013,17 +11030,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "16 − 5 = 11.",
+    "hint": "Sāc ar 7. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "7 − 2 = 5.",
+    "type": "number_line",
+    "question": "Sāc pie 7 un pārvietojies 2 soļus atpakaļ.",
     "payload": {
-      "start": 16,
-      "jump": -5,
+      "start": 7,
+      "jump": -2,
       "min": 0,
-      "max": 19,
-      "correctValue": 11
+      "max": 10,
+      "correctValue": 5
     },
     "learning": {
       "skillId": "easy.subtraction.back",
@@ -11042,21 +11059,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
-    "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 6, paliek 11.",
+    "hint": "Sāc ar 10. Atņem 4 un saskaiti atlikušo.",
+    "explanation": "10 − 4 = 6.",
+    "type": "number_line",
+    "question": "Sāc pie 10 un pārvietojies 4 soļus atpakaļ.",
     "payload": {
-      "wrongWork": [
-        "17 − 6 = 10"
-      ],
-      "choices": [
-        "17 − 6 = 11",
-        "17 − 6 = 13",
-        "17 + 6 = 23"
-      ]
+      "start": 10,
+      "jump": -4,
+      "min": 0,
+      "max": 10,
+      "correctValue": 6
     },
     "learning": {
       "skillId": "easy.subtraction.back",
@@ -11075,29 +11088,17 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "Sadali 18 skaitļos 10 un 8. Atņem 8.",
+    "explanation": "18 − 8 = 10.",
+    "type": "number_line",
+    "question": "Sāc pie 18 un pārvietojies 8 soļus atpakaļ.",
     "payload": {
-      "sequence": [
-        24,
-        null,
-        20,
-        null,
-        16
-      ],
-      "tiles": [
-        18,
-        25,
-        22,
-        18
-      ],
-      "solution": [
-        22,
-        18
-      ]
+      "start": 18,
+      "jump": -8,
+      "min": 0,
+      "max": 20,
+      "correctValue": 10
     },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
@@ -11116,23 +11117,23 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "12",
-      "13",
-      "22"
-    ],
+    "hint": "Sadali 15 skaitļos 10 un 5. Atņem 5.",
+    "explanation": "15 − 5 = 10.",
+    "type": "multiple_choice",
     "correctIndex": 0,
+    "choices": [
+      "10",
+      "11",
+      "12"
+    ],
+    "question": "Ir 15 papīra zvaigznes. 5 pielīmē kartītei. Cik paliek?",
     "taskVisual": {
       "kind": "take_away",
-      "left": 17,
+      "left": 15,
       "right": 5,
       "object": "star"
     },
-    "question": "Ir 17 papīra zvaigznes. 5 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "17 − 5 = 12 paliek.",
     "learning": {
       "skillId": "easy.subtraction.explore-3",
       "prerequisiteSkillIds": [
@@ -11150,17 +11151,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "18 − 6 = 12.",
+    "hint": "Sadali 16 skaitļos 10 un 6. Atņem 6.",
+    "explanation": "16 − 6 = 10.",
+    "type": "number_line",
+    "question": "Sāc pie 16 un pārvietojies 6 soļus atpakaļ.",
     "payload": {
-      "start": 18,
+      "start": 16,
       "jump": -6,
       "min": 0,
-      "max": 21,
-      "correctValue": 12
+      "max": 20,
+      "correctValue": 10
     },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
@@ -11179,21 +11180,22 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Sadali 17 skaitļos 10 un 7. Atņem 7.",
+    "explanation": "17 − 7 = 10.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 7, paliek 12.",
-    "payload": {
-      "wrongWork": [
-        "19 − 7 = 11"
-      ],
-      "choices": [
-        "19 − 7 = 12",
-        "19 − 7 = 14",
-        "19 + 7 = 26"
-      ]
+    "choices": [
+      "10",
+      "9",
+      "8"
+    ],
+    "question": "Ir 17 papīra zvaigznes. 7 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 17,
+      "right": 7,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
@@ -11201,7 +11203,7 @@
         "easy.subtraction.back"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -11212,29 +11214,17 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "Atņem 8, lai iegūtu 10, tad atņem atlikušos 2.",
+    "explanation": "18 − 10 = 8.",
+    "type": "number_line",
+    "question": "Sāc pie 18 un pārvietojies 10 soļus atpakaļ.",
     "payload": {
-      "sequence": [
-        31,
-        null,
-        25,
-        null,
-        19
-      ],
-      "tiles": [
-        22,
-        32,
-        28,
-        21
-      ],
-      "solution": [
-        28,
-        22
-      ]
+      "start": 18,
+      "jump": -10,
+      "min": 0,
+      "max": 20,
+      "correctValue": 8
     },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
@@ -11253,23 +11243,23 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "13",
-      "12",
-      "14"
-    ],
+    "hint": "Atņem 5, lai iegūtu 10, tad atņem atlikušos 2.",
+    "explanation": "15 − 7 = 8.",
+    "type": "multiple_choice",
     "correctIndex": 0,
+    "choices": [
+      "8",
+      "7",
+      "10"
+    ],
+    "question": "Ir 15 papīra zvaigznes. 7 pielīmē kartītei. Cik paliek?",
     "taskVisual": {
       "kind": "take_away",
-      "left": 19,
-      "right": 6,
+      "left": 15,
+      "right": 7,
       "object": "star"
     },
-    "question": "Ir 19 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "19 − 6 = 13 paliek.",
     "learning": {
       "skillId": "easy.subtraction.explore-4",
       "prerequisiteSkillIds": [
@@ -11287,17 +11277,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "20 − 7 = 13.",
+    "hint": "Atņem 6, lai iegūtu 10, tad atņem atlikušos 3.",
+    "explanation": "16 − 9 = 7.",
+    "type": "number_line",
+    "question": "Sāc pie 16 un pārvietojies 9 soļus atpakaļ.",
     "payload": {
-      "start": 20,
-      "jump": -7,
+      "start": 16,
+      "jump": -9,
       "min": 0,
-      "max": 23,
-      "correctValue": 13
+      "max": 20,
+      "correctValue": 7
     },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
@@ -11316,21 +11306,22 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Atņem 7, lai iegūtu 10, tad atņem atlikušos 1.",
+    "explanation": "17 − 8 = 9.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 8, paliek 13.",
-    "payload": {
-      "wrongWork": [
-        "21 − 8 = 12"
-      ],
-      "choices": [
-        "21 − 8 = 13",
-        "21 − 8 = 15",
-        "21 + 8 = 29"
-      ]
+    "choices": [
+      "9",
+      "10",
+      "11"
+    ],
+    "question": "Ir 17 papīra zvaigznes. 8 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 17,
+      "right": 8,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
@@ -11338,7 +11329,7 @@
         "easy.subtraction.explore-3"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -11349,17 +11340,21 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "14",
-      "13",
-      "15"
-    ],
+    "hint": "No 9 skaiti līdz 16.",
+    "explanation": "16 − 7 = 9.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
     "correctIndex": 0,
-    "question": "Ir 21 papīra zvaigznes. 7 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "21 − 7 = 14 paliek.",
+    "payload": {
+      "leftDisplay": "16 − ?",
+      "rightValue": 9,
+      "choices": [
+        "7",
+        "6",
+        "9"
+      ]
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-5",
       "prerequisiteSkillIds": [
@@ -11377,17 +11372,20 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "22 − 8 = 14.",
+    "hint": "No 14 skaiti līdz 17.",
+    "explanation": "17 − 3 = 14.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
+    "correctIndex": 0,
     "payload": {
-      "start": 22,
-      "jump": -8,
-      "min": 0,
-      "max": 25,
-      "correctValue": 14
+      "leftDisplay": "17 − ?",
+      "rightValue": 14,
+      "choices": [
+        "3",
+        "2",
+        "1"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-5",
@@ -11406,20 +11404,19 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "No 12 skaiti līdz 18.",
+    "explanation": "18 − 6 = 12.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 9, paliek 14.",
     "payload": {
-      "wrongWork": [
-        "23 − 9 = 13"
-      ],
+      "leftDisplay": "18 − ?",
+      "rightValue": 12,
       "choices": [
-        "23 − 9 = 14",
-        "23 − 9 = 16",
-        "23 + 9 = 32"
+        "6",
+        "7",
+        "8"
       ]
     },
     "learning": {
@@ -11439,30 +11436,17 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
-    "payload": {
-      "sequence": [
-        45,
-        null,
-        35,
-        null,
-        25
-      ],
-      "tiles": [
-        30,
-        46,
-        40,
-        27
-      ],
-      "solution": [
-        40,
-        30
-      ]
-    },
+    "hint": "Atņem mazāko daudzumu 2 no lielākā 19.",
+    "explanation": "19 − 2 = 17.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "17",
+      "16",
+      "19"
+    ],
+    "question": "Vienā kastē ir 19 zvaigznes, otrā 2. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -11480,17 +11464,17 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "15",
-      "14",
-      "13"
-    ],
+    "hint": "Atņem mazāko daudzumu 7 no lielākā 16.",
+    "explanation": "16 − 7 = 9.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Ir 23 papīra zvaigznes. 8 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "23 − 8 = 15 paliek.",
+    "choices": [
+      "9",
+      "8",
+      "7"
+    ],
+    "question": "Vienā kastē ir 16 zvaigznes, otrā 7. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -11508,18 +11492,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "24 − 9 = 15.",
-    "payload": {
-      "start": 24,
-      "jump": -9,
-      "min": 0,
-      "max": 27,
-      "correctValue": 15
-    },
+    "hint": "Atņem mazāko daudzumu 3 no lielākā 17.",
+    "explanation": "17 − 3 = 14.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "14",
+      "15",
+      "16"
+    ],
+    "question": "Vienā kastē ir 17 zvaigznes, otrā 3. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -11537,22 +11520,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Atņem mazāko daudzumu 6 no lielākā 18.",
+    "explanation": "18 − 6 = 12.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 10, paliek 15.",
-    "payload": {
-      "wrongWork": [
-        "25 − 10 = 14"
-      ],
-      "choices": [
-        "25 − 10 = 15",
-        "25 − 10 = 17",
-        "25 + 10 = 35"
-      ]
-    },
+    "choices": [
+      "12",
+      "11",
+      "14"
+    ],
+    "question": "Vienā kastē ir 18 zvaigznes, otrā 6. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -11570,29 +11548,14 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "Sāc ar 19. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "Nepareizi. 19 − 2 = 17.",
+    "type": "true_false",
+    "isTrue": false,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
     "payload": {
-      "sequence": [
-        28,
-        null,
-        24,
-        null,
-        20
-      ],
-      "tiles": [
-        22,
-        29,
-        26,
-        22
-      ],
-      "solution": [
-        26,
-        22
-      ]
+      "statement": "19 − 2 = 18"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
@@ -11611,17 +11574,15 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "16",
-      "17",
-      "34"
-    ],
-    "correctIndex": 0,
-    "question": "Ir 25 papīra zvaigznes. 9 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "25 − 9 = 16 paliek.",
+    "hint": "Sāc ar 16. Atņem 7 un saskaiti atlikušo.",
+    "explanation": "Pareizi. 16 − 7 = 9.",
+    "type": "true_false",
+    "isTrue": true,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
+    "payload": {
+      "statement": "16 − 7 = 9"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
       "prerequisiteSkillIds": [
@@ -11639,17 +11600,14 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "26 − 10 = 16.",
+    "hint": "Sāc ar 17. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "Nepareizi. 17 − 3 = 14.",
+    "type": "true_false",
+    "isTrue": false,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
     "payload": {
-      "start": 26,
-      "jump": -10,
-      "min": 0,
-      "max": 29,
-      "correctValue": 16
+      "statement": "17 − 3 = 20"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
@@ -11668,21 +11626,14 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
-    "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 3, paliek 24.",
+    "hint": "Sāc ar 18. Atņem 6 un saskaiti atlikušo.",
+    "explanation": "Nepareizi. 18 − 6 = 12.",
+    "type": "true_false",
+    "isTrue": false,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
     "payload": {
-      "wrongWork": [
-        "27 − 3 = 23"
-      ],
-      "choices": [
-        "27 − 3 = 24",
-        "27 − 3 = 26",
-        "27 + 3 = 30"
-      ]
+      "statement": "18 − 6 = 13"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
@@ -11701,28 +11652,20 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "hint": "Sāc ar 19. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "19 − 2 = 17.",
+    "type": "fix_mistake",
+    "correctIndex": 0,
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
     "payload": {
-      "sequence": [
-        35,
-        null,
-        29,
-        null,
-        23
+      "wrongWork": [
+        "19 − 2 = 18"
       ],
-      "tiles": [
-        26,
-        36,
-        32,
-        25
-      ],
-      "solution": [
-        32,
-        26
+      "choices": [
+        "19 − 2 = 17",
+        "19 − 2 = 16",
+        "19 − 2 = 15"
       ]
     },
     "learning": {
@@ -11742,17 +11685,22 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "17",
-      "18",
-      "37"
-    ],
+    "hint": "Sāc ar 16. Atņem 7 un saskaiti atlikušo.",
+    "explanation": "16 − 7 = 9.",
+    "type": "fix_mistake",
     "correctIndex": 0,
-    "question": "Ir 27 papīra zvaigznes. 10 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "27 − 10 = 17 paliek.",
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
+    "payload": {
+      "wrongWork": [
+        "16 − 7 = 8"
+      ],
+      "choices": [
+        "16 − 7 = 9",
+        "16 − 7 = 10",
+        "16 − 7 = 11"
+      ]
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-8",
       "prerequisiteSkillIds": [
@@ -11770,17 +11718,21 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "28 − 3 = 25.",
+    "hint": "Sāc ar 17. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "17 − 3 = 14.",
+    "type": "fix_mistake",
+    "correctIndex": 0,
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
     "payload": {
-      "start": 28,
-      "jump": -3,
-      "min": 0,
-      "max": 31,
-      "correctValue": 25
+      "wrongWork": [
+        "17 − 3 = 15"
+      ],
+      "choices": [
+        "17 − 3 = 14",
+        "17 − 3 = 13",
+        "17 − 3 = 16"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-8",
@@ -11799,20 +11751,20 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Sāc ar 18. Atņem 6 un saskaiti atlikušo.",
+    "explanation": "18 − 6 = 12.",
+    "type": "fix_mistake",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 4, paliek 25.",
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
     "payload": {
       "wrongWork": [
-        "29 − 4 = 24"
+        "18 − 6 = 11"
       ],
       "choices": [
-        "29 − 4 = 25",
-        "29 − 4 = 27",
-        "29 + 4 = 33"
+        "18 − 6 = 12",
+        "18 − 6 = 11",
+        "18 − 6 = 10"
       ]
     },
     "learning": {
@@ -11832,30 +11784,17 @@
       6,
       8
     ],
-    "type": "repair_pattern",
     "topic": "subtraction",
-    "question": "Atjauno abas vietas. Katru kartīti izmanto ne vairāk kā vienreiz; atstāj liekās kartītes.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
-    "payload": {
-      "sequence": [
-        42,
-        null,
-        34,
-        null,
-        26
-      ],
-      "tiles": [
-        30,
-        43,
-        38,
-        28
-      ],
-      "solution": [
-        38,
-        30
-      ]
-    },
+    "hint": "Sāc ar 24. Atņem 2 un saskaiti atlikušo.",
+    "explanation": "24 − 2 = 22.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "22",
+      "21",
+      "24"
+    ],
+    "question": "Ir 24 papīra zvaigznes. 2 pielīmē kartītei. Cik paliek?",
     "learning": {
       "skillId": "easy.subtraction.explore-9",
       "prerequisiteSkillIds": [
@@ -11873,17 +11812,17 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "26",
-      "25",
-      "27"
-    ],
+    "hint": "Sāc ar 21. Atņem 7 un saskaiti atlikušo.",
+    "explanation": "21 − 7 = 14.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Ir 29 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "29 − 3 = 26 paliek.",
+    "choices": [
+      "14",
+      "13",
+      "16"
+    ],
+    "question": "Ir 21 papīra zvaigznes. 7 pielīmē kartītei. Cik paliek?",
     "learning": {
       "skillId": "easy.subtraction.explore-9",
       "prerequisiteSkillIds": [
@@ -11901,18 +11840,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "30 − 4 = 26.",
-    "payload": {
-      "start": 30,
-      "jump": -4,
-      "min": 0,
-      "max": 33,
-      "correctValue": 26
-    },
+    "hint": "Sāc ar 22. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "22 − 3 = 19.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "19",
+      "18",
+      "17"
+    ],
+    "question": "Ir 22 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek?",
     "learning": {
       "skillId": "easy.subtraction.explore-9",
       "prerequisiteSkillIds": [
@@ -11930,22 +11868,17 @@
       6,
       8
     ],
-    "type": "fix_mistake",
     "topic": "subtraction",
+    "hint": "Sāc ar 23. Atņem 6 un saskaiti atlikušo.",
+    "explanation": "23 − 6 = 17.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Kurš aprēķins izlabo Minkas darbu?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "Atņem 5, paliek 26.",
-    "payload": {
-      "wrongWork": [
-        "31 − 5 = 25"
-      ],
-      "choices": [
-        "31 − 5 = 26",
-        "31 − 5 = 28",
-        "31 + 5 = 36"
-      ]
-    },
+    "choices": [
+      "17",
+      "18",
+      "19"
+    ],
+    "question": "Ir 23 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek?",
     "learning": {
       "skillId": "easy.subtraction.explore-9",
       "prerequisiteSkillIds": [
@@ -14950,45 +14883,37 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/9 vai 8/9.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/3 vai 2/3.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/3 = 2/6; 2/3 = 4/6.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          9
+          3
         ],
         [
-          8,
-          9
+          2,
+          3
         ]
       ],
       "fractions": [
         [
+          1,
+          3
+        ],
+        [
           2,
-          18
+          3
         ],
         [
-          16,
-          18
-        ],
-        [
-          3,
-          27
-        ],
-        [
-          24,
-          27
+          2,
+          6
         ],
         [
           4,
-          36
-        ],
-        [
-          32,
-          36
+          6
         ]
       ]
     },
@@ -15062,21 +14987,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/8 = 6/16.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "3/8 = 6/16.",
     "payload": {
       "numerator": 3,
       "denominator": 8,
       "choices": [
+        "6/8",
         "6/16",
-        "3/16",
-        "4/8"
+        "3/16"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.equivalence",
       "prerequisiteSkillIds": [
@@ -15097,45 +15022,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/10 vai 9/10.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/4 vai 3/4.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/4 = 2/8; 3/4 = 6/8.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          10
+          4
         ],
         [
-          9,
-          10
+          3,
+          4
         ]
       ],
       "fractions": [
         [
-          2,
-          20
-        ],
-        [
-          18,
-          20
+          1,
+          4
         ],
         [
           3,
-          30
+          4
         ],
         [
-          27,
-          30
+          2,
+          8
         ],
         [
-          4,
-          40
+          6,
+          8
         ],
         [
-          36,
-          40
+          3,
+          12
+        ],
+        [
+          9,
+          12
         ]
       ]
     },
@@ -15209,21 +15134,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/8 = 6/16.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 0,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "3/8 = 9/24.",
     "payload": {
       "numerator": 3,
       "denominator": 8,
       "choices": [
-        "6/16",
-        "3/16",
-        "4/8"
+        "9/24",
+        "3/24",
+        "9/8"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.models",
       "prerequisiteSkillIds": [
@@ -15244,45 +15169,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/11 vai 10/11.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/5 vai 4/5.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/5 = 2/10; 4/5 = 8/10.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          11
+          5
         ],
         [
-          10,
-          11
+          4,
+          5
         ]
       ],
       "fractions": [
         [
-          2,
-          22
-        ],
-        [
-          20,
-          22
-        ],
-        [
-          3,
-          33
-        ],
-        [
-          30,
-          33
+          1,
+          5
         ],
         [
           4,
-          44
+          5
         ],
         [
-          40,
-          44
+          2,
+          10
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          3,
+          15
+        ],
+        [
+          12,
+          15
         ]
       ]
     },
@@ -15329,16 +15254,17 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/6 > 2/6.",
     "type": "compare",
-    "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
-    "payload": {
-      "optionA": "2/6",
-      "optionB": "3/6"
-    },
+    "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 1,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "1/4 > 1/5.",
+    "payload": {
+      "optionA": "1/5",
+      "optionB": "1/4"
+    },
     "learning": {
       "skillId": "easy.fractions.equivalent",
       "prerequisiteSkillIds": [
@@ -15356,21 +15282,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/8 = 6/16.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "3/8 = 6/16.",
     "payload": {
       "numerator": 3,
       "denominator": 8,
       "choices": [
-        "6/16",
         "3/16",
-        "4/8"
+        "6/8",
+        "6/16"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.equivalent",
       "prerequisiteSkillIds": [
@@ -15391,45 +15317,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sašķiro katru daļu pēc vērtības: 1/12 vai 11/12.",
-    "hint": "Izmēģini vienu daļu, tad pārbaudi visu laukumu.",
-    "explanation": "Katra daļa atbilst nosacījumiem.",
+    "question": "Sašķiro daļas pēc vērtības: 1/6 vai 5/6.",
+    "hint": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
+    "explanation": "1/6 = 2/12; 5/6 = 10/12.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          12
+          6
         ],
         [
-          11,
-          12
+          5,
+          6
         ]
       ],
       "fractions": [
         [
           2,
-          24
+          12
         ],
         [
-          22,
-          24
+          10,
+          12
         ],
         [
           3,
-          36
+          18
         ],
         [
-          33,
-          36
+          15,
+          18
         ],
         [
           4,
-          48
+          24
         ],
         [
-          44,
-          48
+          20,
+          24
         ]
       ]
     },
@@ -15476,16 +15402,17 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/6 > 2/6.",
     "type": "compare",
-    "question": "Veselie ir vienāda lieluma. Kura iekrāsotā daļa ir lielāka?",
-    "payload": {
-      "optionA": "3/6",
-      "optionB": "2/6"
-    },
+    "topic": "fractions",
+    "helpTemplate": "fraction_equivalent",
     "correctIndex": 0,
+    "question": "Veselie ir vienāda lieluma. Kura daļa ir lielāka?",
+    "hint": "Veselie ir vienādi. Ja ņemts vienāds daļu skaits, tad mazāks saucējs nozīmē lielākas daļas.",
+    "explanation": "2/6 > 2/7.",
+    "payload": {
+      "optionA": "2/6",
+      "optionB": "2/7"
+    },
     "learning": {
       "skillId": "easy.fractions.apply",
       "prerequisiteSkillIds": [
@@ -15503,21 +15430,21 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Visām daļām jābūt vienādām. Saskaiti iekrāsotās daļas un visas daļas.",
-    "explanation": "3/8 = 6/16.",
     "type": "fraction_equivalent",
-    "question": "Sadali katru daļu uz pusēm. Kura daļa saglabā to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "3/8 = 9/24.",
     "payload": {
       "numerator": 3,
       "denominator": 8,
       "choices": [
-        "6/16",
-        "3/16",
-        "4/8"
+        "3/24",
+        "9/8",
+        "9/24"
       ]
     },
-    "correctIndex": 0,
     "learning": {
       "skillId": "easy.fractions.apply",
       "prerequisiteSkillIds": [
@@ -15791,23 +15718,23 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "13",
-      "14",
-      "25"
-    ],
+    "hint": "Sāc ar 8. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "8 − 3 = 5.",
+    "type": "multiple_choice",
     "correctIndex": 0,
+    "choices": [
+      "5",
+      "4",
+      "7"
+    ],
+    "question": "Ir 8 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek?",
     "taskVisual": {
       "kind": "take_away",
-      "left": 19,
-      "right": 6,
+      "left": 8,
+      "right": 3,
       "object": "star"
     },
-    "question": "Ir 19 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "19 − 6 = 13 paliek.",
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
@@ -15823,23 +15750,28 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "20 − 7 = 13.",
-    "payload": {
-      "start": 20,
-      "jump": -7,
-      "min": 0,
-      "max": 23,
-      "correctValue": 13
+    "hint": "Sāc ar 10. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "10 − 3 = 7.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "7",
+      "6",
+      "5"
+    ],
+    "question": "Ir 10 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 10,
+      "right": 3,
+      "object": "star"
     },
     "learning": {
       "skillId": "easy.subtraction.take",
       "prerequisiteSkillIds": [],
       "role": "review",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -15850,17 +15782,18 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "14",
-      "15",
-      "28"
-    ],
-    "correctIndex": 0,
-    "question": "Ir 21 papīra zvaigznes. 7 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "21 − 7 = 14 paliek.",
+    "hint": "Sāc ar 8. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "8 − 3 = 5.",
+    "type": "number_line",
+    "question": "Sāc pie 8 un pārvietojies 3 soļus atpakaļ.",
+    "payload": {
+      "start": 8,
+      "jump": -3,
+      "min": 0,
+      "max": 10,
+      "correctValue": 5
+    },
     "learning": {
       "skillId": "easy.subtraction.back",
       "prerequisiteSkillIds": [
@@ -15878,17 +15811,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "22 − 8 = 14.",
+    "hint": "Sāc ar 10. Atņem 3 un saskaiti atlikušo.",
+    "explanation": "10 − 3 = 7.",
+    "type": "number_line",
+    "question": "Sāc pie 10 un pārvietojies 3 soļus atpakaļ.",
     "payload": {
-      "start": 22,
-      "jump": -8,
+      "start": 10,
+      "jump": -3,
       "min": 0,
-      "max": 25,
-      "correctValue": 14
+      "max": 10,
+      "correctValue": 7
     },
     "learning": {
       "skillId": "easy.subtraction.back",
@@ -16997,14 +16930,14 @@
     "payload": {
       "numbers": [
         8,
+        9,
         4,
-        1,
-        11
+        5
       ],
       "target": 12,
       "correctIndices": [
         0,
-        1
+        2
       ]
     },
     "learning": {
@@ -17032,14 +16965,14 @@
     "payload": {
       "numbers": [
         9,
-        5,
-        1,
-        13
+        8,
+        7,
+        5
       ],
       "target": 14,
       "correctIndices": [
         0,
-        1
+        3
       ]
     },
     "learning": {
@@ -17328,24 +17261,30 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "15",
-      "16",
-      "31"
-    ],
+    "hint": "Sadali 19 skaitļos 10 un 9. Atņem 9.",
+    "explanation": "19 − 9 = 10.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Ir 23 papīra zvaigznes. 8 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "23 − 8 = 15 paliek.",
+    "choices": [
+      "10",
+      "11",
+      "12"
+    ],
+    "question": "Ir 19 papīra zvaigznes. 9 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 19,
+      "right": 9,
+      "object": "star"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
       "prerequisiteSkillIds": [
         "easy.subtraction.back"
       ],
       "role": "review",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -17356,17 +17295,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "24 − 9 = 15.",
+    "hint": "Sadali 20 skaitļos 10 un 10. Atņem 10.",
+    "explanation": "20 − 10 = 10.",
+    "type": "number_line",
+    "question": "Sāc pie 20 un pārvietojies 10 soļus atpakaļ.",
     "payload": {
-      "start": 24,
-      "jump": -9,
+      "start": 20,
+      "jump": -10,
       "min": 0,
-      "max": 27,
-      "correctValue": 15
+      "max": 21,
+      "correctValue": 10
     },
     "learning": {
       "skillId": "easy.subtraction.explore-3",
@@ -17385,24 +17324,30 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "16",
-      "17",
-      "34"
-    ],
+    "hint": "Atņem 1, lai iegūtu 10, tad atņem atlikušos 3.",
+    "explanation": "11 − 4 = 7.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Ir 25 papīra zvaigznes. 9 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "25 − 9 = 16 paliek.",
+    "choices": [
+      "7",
+      "6",
+      "5"
+    ],
+    "question": "Ir 11 papīra zvaigznes. 4 pielīmē kartītei. Cik paliek?",
+    "taskVisual": {
+      "kind": "take_away",
+      "left": 11,
+      "right": 4,
+      "object": "star"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
       "prerequisiteSkillIds": [
         "easy.subtraction.explore-3"
       ],
       "role": "review",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
     }
   },
@@ -17413,17 +17358,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "26 − 10 = 16.",
+    "hint": "Atņem 2, lai iegūtu 10, tad atņem atlikušos 1.",
+    "explanation": "12 − 3 = 9.",
+    "type": "number_line",
+    "question": "Sāc pie 12 un pārvietojies 3 soļus atpakaļ.",
     "payload": {
-      "start": 26,
-      "jump": -10,
+      "start": 12,
+      "jump": -3,
       "min": 0,
-      "max": 29,
-      "correctValue": 16
+      "max": 20,
+      "correctValue": 9
     },
     "learning": {
       "skillId": "easy.subtraction.explore-4",
@@ -17442,17 +17387,21 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "17",
-      "18",
-      "37"
-    ],
+    "hint": "No 15 skaiti līdz 20.",
+    "explanation": "20 − 5 = 15.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
     "correctIndex": 0,
-    "question": "Ir 27 papīra zvaigznes. 10 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "27 − 10 = 17 paliek.",
+    "payload": {
+      "leftDisplay": "20 − ?",
+      "rightValue": 15,
+      "choices": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-5",
       "prerequisiteSkillIds": [
@@ -17470,17 +17419,20 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "28 − 3 = 25.",
+    "hint": "No 13 skaiti līdz 21.",
+    "explanation": "21 − 8 = 13.",
+    "type": "balance",
+    "question": "Cik tika atņemts?",
+    "correctIndex": 0,
     "payload": {
-      "start": 28,
-      "jump": -3,
-      "min": 0,
-      "max": 31,
-      "correctValue": 25
+      "leftDisplay": "21 − ?",
+      "rightValue": 13,
+      "choices": [
+        "8",
+        "7",
+        "10"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-5",
@@ -17499,17 +17451,17 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "26",
-      "27",
-      "32"
-    ],
+    "hint": "Atņem mazāko daudzumu 5 no lielākā 20.",
+    "explanation": "20 − 5 = 15.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Ir 29 papīra zvaigznes. 3 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "29 − 3 = 26 paliek.",
+    "choices": [
+      "15",
+      "14",
+      "13"
+    ],
+    "question": "Vienā kastē ir 20 zvaigznes, otrā 5. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -17527,18 +17479,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "30 − 4 = 26.",
-    "payload": {
-      "start": 30,
-      "jump": -4,
-      "min": 0,
-      "max": 33,
-      "correctValue": 26
-    },
+    "hint": "Atņem mazāko daudzumu 8 no lielākā 21.",
+    "explanation": "21 − 8 = 13.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "13",
+      "14",
+      "15"
+    ],
+    "question": "Vienā kastē ir 21 zvaigznes, otrā 8. Par cik zvaigznēm pirmajā kastē ir vairāk?",
     "learning": {
       "skillId": "easy.subtraction.explore-6",
       "prerequisiteSkillIds": [
@@ -17556,17 +17507,15 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "27",
-      "28",
-      "35"
-    ],
-    "correctIndex": 0,
-    "question": "Ir 31 papīra zvaigznes. 4 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "31 − 4 = 27 paliek.",
+    "hint": "Sāc ar 20. Atņem 5 un saskaiti atlikušo.",
+    "explanation": "Pareizi. 20 − 5 = 15.",
+    "type": "true_false",
+    "isTrue": true,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
+    "payload": {
+      "statement": "20 − 5 = 15"
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
       "prerequisiteSkillIds": [
@@ -17584,17 +17533,14 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "32 − 5 = 27.",
+    "hint": "Sāc ar 21. Atņem 8 un saskaiti atlikušo.",
+    "explanation": "Nepareizi. 21 − 8 = 13.",
+    "type": "true_false",
+    "isTrue": false,
+    "question": "Vai atņemšanas vienādība ir pareiza?",
     "payload": {
-      "start": 32,
-      "jump": -5,
-      "min": 0,
-      "max": 35,
-      "correctValue": 27
+      "statement": "21 − 8 = 29"
     },
     "learning": {
       "skillId": "easy.subtraction.explore-7",
@@ -17613,17 +17559,22 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "28",
-      "29",
-      "38"
-    ],
+    "hint": "Sāc ar 20. Atņem 5 un saskaiti atlikušo.",
+    "explanation": "20 − 5 = 15.",
+    "type": "fix_mistake",
     "correctIndex": 0,
-    "question": "Ir 33 papīra zvaigznes. 5 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "33 − 5 = 28 paliek.",
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
+    "payload": {
+      "wrongWork": [
+        "20 − 5 = 14"
+      ],
+      "choices": [
+        "20 − 5 = 15",
+        "20 − 5 = 14",
+        "20 − 5 = 13"
+      ]
+    },
     "learning": {
       "skillId": "easy.subtraction.explore-8",
       "prerequisiteSkillIds": [
@@ -17641,17 +17592,21 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "34 − 6 = 28.",
+    "hint": "Sāc ar 21. Atņem 8 un saskaiti atlikušo.",
+    "explanation": "21 − 8 = 13.",
+    "type": "fix_mistake",
+    "correctIndex": 0,
+    "question": "Kura atbilde izlabo atņemšanas kļūdu?",
     "payload": {
-      "start": 34,
-      "jump": -6,
-      "min": 0,
-      "max": 37,
-      "correctValue": 28
+      "wrongWork": [
+        "21 − 8 = 14"
+      ],
+      "choices": [
+        "21 − 8 = 13",
+        "21 − 8 = 14",
+        "21 − 8 = 15"
+      ]
     },
     "learning": {
       "skillId": "easy.subtraction.explore-8",
@@ -17670,17 +17625,17 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "29",
-      "30",
-      "41"
-    ],
+    "hint": "Sāc ar 25. Atņem 5 un saskaiti atlikušo.",
+    "explanation": "25 − 5 = 20.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Ir 35 papīra zvaigznes. 6 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "35 − 6 = 29 paliek.",
+    "choices": [
+      "20",
+      "19",
+      "22"
+    ],
+    "question": "Ir 25 papīra zvaigznes. 5 pielīmē kartītei. Cik paliek?",
     "learning": {
       "skillId": "easy.subtraction.explore-9",
       "prerequisiteSkillIds": [
@@ -17698,18 +17653,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "36 − 7 = 29.",
-    "payload": {
-      "start": 36,
-      "jump": -7,
-      "min": 0,
-      "max": 39,
-      "correctValue": 29
-    },
+    "hint": "Sāc ar 26. Atņem 8 un saskaiti atlikušo.",
+    "explanation": "26 − 8 = 18.",
+    "type": "multiple_choice",
+    "correctIndex": 0,
+    "choices": [
+      "18",
+      "17",
+      "16"
+    ],
+    "question": "Ir 26 papīra zvaigznes. 8 pielīmē kartītei. Cik paliek?",
     "learning": {
       "skillId": "easy.subtraction.explore-9",
       "prerequisiteSkillIds": [
@@ -17727,17 +17681,17 @@
       6,
       8
     ],
-    "type": "multiple_choice",
     "topic": "subtraction",
-    "choices": [
-      "30",
-      "31",
-      "44"
-    ],
+    "hint": "Sāc ar 25. Atņem 5 un saskaiti atlikušo.",
+    "explanation": "25 − 5 = 20.",
+    "type": "multiple_choice",
     "correctIndex": 0,
-    "question": "Ir 37 papīra zvaigznes. 7 pielīmē kartītei. Cik paliek kastē?",
-    "hint": "Sadali atņemamo skaitli mazākos soļos.",
-    "explanation": "37 − 7 = 30 paliek.",
+    "choices": [
+      "20",
+      "19",
+      "18"
+    ],
+    "question": "Ir 25 papīra zvaigznes. 5 pielīmē kartītei. Cik paliek?",
     "learning": {
       "skillId": "easy.subtraction.explore-10",
       "prerequisiteSkillIds": [
@@ -17755,17 +17709,17 @@
       6,
       8
     ],
-    "type": "number_line",
     "topic": "subtraction",
-    "question": "Pārvietojies atpakaļ pa skaitļu taisni.",
-    "hint": "Skaiti soļus pēc sākuma punkta.",
-    "explanation": "38 − 8 = 30.",
+    "hint": "Sāc ar 26. Atņem 8 un saskaiti atlikušo.",
+    "explanation": "26 − 8 = 18.",
+    "type": "number_line",
+    "question": "Sāc pie 26 un pārvietojies 8 soļus atpakaļ.",
     "payload": {
-      "start": 38,
+      "start": 26,
       "jump": -8,
       "min": 0,
-      "max": 41,
-      "correctValue": 30
+      "max": 27,
+      "correctValue": 18
     },
     "learning": {
       "skillId": "easy.subtraction.explore-10",
@@ -19022,19 +18976,19 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "2/5 = 4/10.",
     "type": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Kura daļa rāda to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "2/5 = 4/10.",
     "payload": {
       "numerator": 2,
       "denominator": 5,
       "choices": [
-        "4/10",
         "2/10",
-        "3/5"
+        "4/5",
+        "4/10"
       ]
     },
     "learning": {
@@ -19080,19 +19034,19 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "2/5 = 4/10.",
     "type": "fraction_equivalent",
+    "topic": "fractions",
     "correctIndex": 0,
-    "question": "Kura daļa rāda to pašu daudzumu?",
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "2/5 = 6/15.",
     "payload": {
       "numerator": 2,
       "denominator": 5,
       "choices": [
-        "4/10",
-        "2/10",
-        "3/5"
+        "6/15",
+        "2/15",
+        "6/5"
       ]
     },
     "learning": {
@@ -19138,19 +19092,19 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "2/5 = 4/10.",
     "type": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Kura daļa rāda to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 2,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 2 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 2.",
+    "explanation": "2/5 = 4/10.",
     "payload": {
       "numerator": 2,
       "denominator": 5,
       "choices": [
-        "4/10",
         "2/10",
-        "3/5"
+        "4/5",
+        "4/10"
       ]
     },
     "learning": {
@@ -19196,19 +19150,19 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "2/5 = 4/10.",
     "type": "fraction_equivalent",
+    "topic": "fractions",
     "correctIndex": 0,
-    "question": "Kura daļa rāda to pašu daudzumu?",
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 3 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 3.",
+    "explanation": "2/5 = 6/15.",
     "payload": {
       "numerator": 2,
       "denominator": 5,
       "choices": [
-        "4/10",
-        "2/10",
-        "3/5"
+        "6/15",
+        "2/15",
+        "6/5"
       ]
     },
     "learning": {
@@ -19254,19 +19208,19 @@
       6,
       8
     ],
-    "topic": "fractions",
-    "hint": "Saskaiti iekrāsotās daļas un visas vienādās daļas.",
-    "explanation": "2/5 = 4/10.",
     "type": "fraction_equivalent",
-    "correctIndex": 0,
-    "question": "Kura daļa rāda to pašu daudzumu?",
+    "topic": "fractions",
+    "correctIndex": 1,
+    "question": "Kura daļa ir tikpat liela?",
+    "hint": "Sadali katru daļu 4 vienādās daļās. Reizini gan skaitītāju, gan saucēju ar 4.",
+    "explanation": "2/5 = 8/20.",
     "payload": {
       "numerator": 2,
       "denominator": 5,
       "choices": [
-        "4/10",
-        "2/10",
-        "3/5"
+        "8/5",
+        "8/20",
+        "2/20"
       ]
     },
     "learning": {

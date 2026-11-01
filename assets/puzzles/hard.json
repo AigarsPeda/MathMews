@@ -285,17 +285,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "correctIndex": 1,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "5/6 = 10/12.",
     "payload": {
       "numerator": 5,
       "denominator": 6,
       "choices": [
+        "10/6",
         "10/12",
-        "5/12",
-        "10/6"
+        "5/12"
       ]
     },
     "learning": {
@@ -315,14 +315,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 0,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "4/7 > 3/7.",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "The wholes are equal. With the same number of pieces, fewer pieces in the whole means larger pieces.",
+    "explanation": "3/5 > 3/6.",
     "payload": {
-      "optionA": "4/7",
-      "optionB": "3/7"
+      "optionA": "3/5",
+      "optionB": "3/6"
     },
     "learning": {
       "skillId": "hard.fractions.amounts",
@@ -404,17 +404,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "correctIndex": 2,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "4/7 = 8/14.",
     "payload": {
       "numerator": 4,
       "denominator": 7,
       "choices": [
-        "8/14",
         "4/14",
-        "8/7"
+        "8/7",
+        "8/14"
       ]
     },
     "learning": {
@@ -436,14 +436,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 1,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "6/12 > 5/12.",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "The wholes are equal. With the same number of pieces, fewer pieces in the whole means larger pieces.",
+    "explanation": "1/4 > 1/5.",
     "payload": {
-      "optionA": "5/12",
-      "optionB": "6/12"
+      "optionA": "1/5",
+      "optionB": "1/4"
     },
     "learning": {
       "skillId": "hard.fractions.apply",
@@ -810,13 +810,13 @@
     ],
     "type": "true_false",
     "topic": "fractions",
-    "isTrue": true,
+    "isTrue": false,
     "helpTemplate": "percent_tenth",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "True. 10% of 90 is 9.",
+    "explanation": "False. 10% × 90 = 9.",
     "payload": {
-      "statement": "10% × 90 = 9"
+      "statement": "10% × 90 = 81"
     },
     "learning": {
       "skillId": "hard.percentages.quarters",
@@ -929,7 +929,7 @@
     "helpTemplate": "percent_half",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "True. 50% of 70 is 35.",
+    "explanation": "True. 50% × 70 = 35.",
     "payload": {
       "statement": "50% × 70 = 35"
     },
@@ -1046,15 +1046,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 129, which rounds to 130.",
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "64 + 65 = 129. To the nearest ten, this is 130.",
     "payload": {
       "expression": "64 + 65",
       "choices": [
         "About 130",
-        "About 189",
-        "About 252"
+        "About 140",
+        "About 150"
       ]
     },
     "learning": {
@@ -1169,15 +1169,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 179, which rounds to 180.",
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "83 + 91 = 174. To the nearest ten, this is 170.",
     "payload": {
-      "expression": "89 + 90",
+      "expression": "83 + 91",
       "choices": [
-        "About 180",
-        "About 264",
-        "About 352"
+        "About 170",
+        "About 160",
+        "About 180"
       ]
     },
     "learning": {
@@ -1898,15 +1898,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "81 tiles arrive, along with 27 spares. What is the total to the nearest ten?",
-    "hint": "Round each delivery separately before adding.",
-    "explanation": "80 + 30 = 110. The shelter has enough supplies!",
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "81 + 27 = 108. To the nearest ten, this is 110.",
     "payload": {
       "expression": "81 + 27",
       "choices": [
         "About 110",
-        "About 90",
-        "About 150"
+        "About 100",
+        "About 90"
       ]
     },
     "learning": {
@@ -3374,17 +3374,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "5/14 = 10/28.",
+    "correctIndex": 1,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 4 equal pieces. Multiply both the numerator and denominator by 4.",
+    "explanation": "5/14 = 20/56.",
     "payload": {
       "numerator": 5,
       "denominator": 14,
       "choices": [
-        "10/28",
-        "5/28",
-        "10/14"
+        "20/14",
+        "20/56",
+        "5/56"
       ]
     },
     "learning": {
@@ -3406,14 +3406,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 0,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "13/14 > 12/14.",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "The wholes are equal. With the same number of pieces, fewer pieces in the whole means larger pieces.",
+    "explanation": "2/6 > 2/7.",
     "payload": {
-      "optionA": "13/14",
-      "optionB": "12/14"
+      "optionA": "2/6",
+      "optionB": "2/7"
     },
     "learning": {
       "skillId": "hard.fractions.explore-3",
@@ -3500,16 +3500,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "8/16 = 16/32.",
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 2.",
+    "explanation": "2/4 = 1/2.",
     "payload": {
-      "numerator": 8,
-      "denominator": 16,
+      "numerator": 2,
+      "denominator": 4,
       "choices": [
-        "16/32",
-        "8/32",
-        "16/16"
+        "1/2",
+        "1/4",
+        "2/2"
       ]
     },
     "learning": {
@@ -3531,14 +3531,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 1,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "2/3 > 1/3.",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "The wholes are equal. With the same number of pieces, fewer pieces in the whole means larger pieces.",
+    "explanation": "3/5 > 3/6.",
     "payload": {
-      "optionA": "1/3",
-      "optionB": "2/3"
+      "optionA": "3/6",
+      "optionB": "3/5"
     },
     "learning": {
       "skillId": "hard.fractions.explore-4",
@@ -3624,17 +3624,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "1/9 = 2/18.",
+    "correctIndex": 2,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 3 equal pieces. Multiply both the numerator and denominator by 3.",
+    "explanation": "1/9 = 3/27.",
     "payload": {
       "numerator": 1,
       "denominator": 9,
       "choices": [
-        "2/18",
-        "1/18",
-        "2/9"
+        "1/27",
+        "3/9",
+        "3/27"
       ]
     },
     "learning": {
@@ -3656,14 +3656,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 0,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "2/10 > 1/10.",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Compare each amount with half of the same whole.",
+    "explanation": "4/7 > 1/2.",
     "payload": {
-      "optionA": "2/10",
-      "optionB": "1/10"
+      "optionA": "4/7",
+      "optionB": "1/2"
     },
     "learning": {
       "skillId": "hard.fractions.explore-5",
@@ -3721,45 +3721,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/3 or 2/3.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/7 or 6/7.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/7 = 2/14; 6/7 = 12/14.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          3
+          7
         ],
         [
-          2,
-          3
+          6,
+          7
         ]
       ],
       "fractions": [
         [
           2,
-          6
+          14
         ],
         [
-          4,
-          6
+          12,
+          14
         ],
         [
           3,
-          9
+          21
         ],
         [
-          6,
-          9
+          18,
+          21
         ],
         [
           4,
-          12
+          28
         ],
         [
-          8,
-          12
+          24,
+          28
         ]
       ]
     },
@@ -3811,17 +3811,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "5/12 = 10/24.",
+    "correctIndex": 1,
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 4.",
+    "explanation": "20/48 = 5/12.",
     "payload": {
-      "numerator": 5,
-      "denominator": 12,
+      "numerator": 20,
+      "denominator": 48,
       "choices": [
-        "10/24",
-        "5/24",
-        "10/12"
+        "20/12",
+        "5/12",
+        "5/48"
       ]
     },
     "learning": {
@@ -3843,14 +3843,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 1,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "3/13 > 2/13.",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Compare each amount with half of the same whole.",
+    "explanation": "5/8 > 1/2.",
     "payload": {
-      "optionA": "2/13",
-      "optionB": "3/13"
+      "optionA": "1/2",
+      "optionB": "5/8"
     },
     "learning": {
       "skillId": "hard.fractions.explore-6",
@@ -3937,8 +3937,8 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "12/14 = 24/28.",
     "payload": {
       "numerator": 12,
@@ -3968,14 +3968,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 0,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "8/15 > 7/15.",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Use equal-sized wholes. Rewrite both fractions with denominator 15, then compare their numerators.",
+    "explanation": "2/3 > 3/5.",
     "payload": {
-      "optionA": "8/15",
-      "optionB": "7/15"
+      "optionA": "2/3",
+      "optionB": "3/5"
     },
     "learning": {
       "skillId": "hard.fractions.explore-7",
@@ -4061,17 +4061,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "1/3 = 2/6.",
+    "correctIndex": 2,
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 3.",
+    "explanation": "3/9 = 1/3.",
     "payload": {
-      "numerator": 1,
-      "denominator": 3,
+      "numerator": 3,
+      "denominator": 9,
       "choices": [
-        "2/6",
-        "1/6",
-        "2/3"
+        "1/9",
+        "3/3",
+        "1/3"
       ]
     },
     "learning": {
@@ -4093,14 +4093,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 1,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "3/6 > 2/6.",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Use equal-sized wholes. Rewrite both fractions with denominator 8, then compare their numerators.",
+    "explanation": "3/4 > 5/8.",
     "payload": {
-      "optionA": "2/6",
-      "optionB": "3/6"
+      "optionA": "5/8",
+      "optionB": "3/4"
     },
     "learning": {
       "skillId": "hard.fractions.explore-8",
@@ -4186,17 +4186,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "1/10 = 2/20.",
+    "correctIndex": 1,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 4 equal pieces. Multiply both the numerator and denominator by 4.",
+    "explanation": "1/10 = 4/40.",
     "payload": {
       "numerator": 1,
       "denominator": 10,
       "choices": [
-        "2/20",
-        "1/20",
-        "2/10"
+        "4/10",
+        "4/40",
+        "1/40"
       ]
     },
     "learning": {
@@ -4218,14 +4218,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 0,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "9/10 > 8/10.",
+    "correctIndex": 0,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Use equal-sized wholes. Rewrite both fractions with denominator 40, then compare their numerators.",
+    "explanation": "2/5 > 3/8.",
     "payload": {
-      "optionA": "9/10",
-      "optionB": "8/10"
+      "optionA": "2/5",
+      "optionB": "3/8"
     },
     "learning": {
       "skillId": "hard.fractions.explore-9",
@@ -4312,14 +4312,14 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "2/13 = 4/26.",
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 2.",
+    "explanation": "4/26 = 2/13.",
     "payload": {
-      "numerator": 2,
-      "denominator": 13,
+      "numerator": 4,
+      "denominator": 26,
       "choices": [
-        "4/26",
+        "2/13",
         "2/26",
         "4/13"
       ]
@@ -4343,14 +4343,14 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "correctIndex": 1,
     "helpTemplate": "fraction_equivalent",
-    "question": "The ribbons have the same length. Which colored amount is larger?",
-    "hint": "Check the total number of equal parts first.",
-    "explanation": "10/13 > 9/13.",
+    "correctIndex": 1,
+    "question": "The wholes are the same size. Which fraction is larger?",
+    "hint": "Use equal-sized wholes. Rewrite both fractions with denominator 63, then compare their numerators.",
+    "explanation": "4/9 > 3/7.",
     "payload": {
-      "optionA": "9/13",
-      "optionB": "10/13"
+      "optionA": "3/7",
+      "optionB": "4/9"
     },
     "learning": {
       "skillId": "hard.fractions.explore-10",
@@ -4408,45 +4408,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 2/5 or 3/5.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/12 or 11/12.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/12 = 2/24; 11/12 = 22/24.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
-          2,
-          5
+          1,
+          12
         ],
         [
-          3,
-          5
+          11,
+          12
         ]
       ],
       "fractions": [
         [
+          2,
+          24
+        ],
+        [
+          22,
+          24
+        ],
+        [
+          3,
+          36
+        ],
+        [
+          33,
+          36
+        ],
+        [
           4,
-          10
+          48
         ],
         [
-          6,
-          10
-        ],
-        [
-          6,
-          15
-        ],
-        [
-          9,
-          15
-        ],
-        [
-          8,
-          20
-        ],
-        [
-          12,
-          20
+          44,
+          48
         ]
       ]
     },
@@ -5665,13 +5665,13 @@
     ],
     "type": "true_false",
     "topic": "fractions",
-    "isTrue": false,
+    "isTrue": true,
     "helpTemplate": "percent_of",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "False. 25% of 340 is 85.",
+    "explanation": "True. 25% × 340 = 85.",
     "payload": {
-      "statement": "25% × 340 = 86"
+      "statement": "25% × 340 = 85"
     },
     "learning": {
       "skillId": "hard.percentages.explore-3",
@@ -5788,7 +5788,7 @@
     "helpTemplate": "percent_half",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "False. 50% of 200 is 100.",
+    "explanation": "False. 50% × 200 = 100.",
     "payload": {
       "statement": "50% × 200 = 101"
     },
@@ -5907,7 +5907,7 @@
     "helpTemplate": "percent_tenth",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "False. 10% of 60 is 6.",
+    "explanation": "False. 10% × 60 = 6.",
     "payload": {
       "statement": "10% × 60 = 7"
     },
@@ -6072,13 +6072,13 @@
     ],
     "type": "true_false",
     "topic": "fractions",
-    "isTrue": false,
+    "isTrue": true,
     "helpTemplate": "percent_fifth",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "False. 20% of 300 is 60.",
+    "explanation": "True. 20% × 300 = 60.",
     "payload": {
-      "statement": "20% × 300 = 61"
+      "statement": "20% × 300 = 60"
     },
     "learning": {
       "skillId": "hard.percentages.explore-6",
@@ -6195,9 +6195,9 @@
     "helpTemplate": "percent_of",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "False. 25% of 160 is 40.",
+    "explanation": "False. 25% × 160 = 40.",
     "payload": {
-      "statement": "25% × 160 = 41"
+      "statement": "25% × 160 = 120"
     },
     "learning": {
       "skillId": "hard.percentages.explore-7",
@@ -6310,13 +6310,13 @@
     ],
     "type": "true_false",
     "topic": "fractions",
-    "isTrue": false,
+    "isTrue": true,
     "helpTemplate": "percent_half",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "False. 50% of 400 is 200.",
+    "explanation": "True. 50% × 400 = 200.",
     "payload": {
-      "statement": "50% × 400 = 201"
+      "statement": "50% × 400 = 200"
     },
     "learning": {
       "skillId": "hard.percentages.explore-8",
@@ -6433,7 +6433,7 @@
     "helpTemplate": "percent_tenth",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "False. 10% of 260 is 26.",
+    "explanation": "False. 10% × 260 = 26.",
     "payload": {
       "statement": "10% × 260 = 27"
     },
@@ -6548,13 +6548,13 @@
     ],
     "type": "true_false",
     "topic": "fractions",
-    "isTrue": false,
+    "isTrue": true,
     "helpTemplate": "percent_fifth",
     "question": "Check the percentage claim.",
     "hint": "Use one hundred as the whole percentage.",
-    "explanation": "False. 20% of 120 is 24.",
+    "explanation": "True. 20% × 120 = 24.",
     "payload": {
-      "statement": "20% × 120 = 25"
+      "statement": "20% × 120 = 24"
     },
     "learning": {
       "skillId": "hard.percentages.explore-10",
@@ -6722,16 +6722,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 83, which rounds to 80.",
+    "correctIndex": 2,
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "46 + 32 = 78. To the nearest ten, this is 80.",
     "payload": {
-      "expression": "41 + 42",
+      "expression": "46 + 32",
       "choices": [
-        "About 80",
-        "About 120",
-        "About 160"
+        "About 90",
+        "About 100",
+        "About 80"
       ]
     },
     "learning": {
@@ -6849,16 +6849,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 99, which rounds to 100.",
+    "correctIndex": 2,
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "53 + 47 = 100. To the nearest ten, this is 100.",
     "payload": {
-      "expression": "49 + 50",
+      "expression": "53 + 47",
       "choices": [
-        "About 100",
-        "About 144",
-        "About 192"
+        "About 90",
+        "About 110",
+        "About 100"
       ]
     },
     "learning": {
@@ -6976,16 +6976,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 99, which rounds to 100.",
+    "correctIndex": 2,
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "68 + 56 = 124. To the nearest ten, this is 120.",
     "payload": {
-      "expression": "49 + 50",
+      "expression": "68 + 56",
       "choices": [
+        "About 130",
         "About 100",
-        "About 144",
-        "About 192"
+        "About 120"
       ]
     },
     "learning": {
@@ -7137,16 +7137,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 363, which rounds to 360.",
+    "correctIndex": 1,
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "181 + 182 = 363. To the nearest ten, this is 360.",
     "payload": {
       "expression": "181 + 182",
       "choices": [
+        "About 380",
         "About 360",
-        "About 540",
-        "About 720"
+        "About 370"
       ]
     },
     "learning": {
@@ -7264,16 +7264,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 99, which rounds to 100.",
+    "correctIndex": 1,
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "49 + 46 = 95. To the nearest ten, this is 100.",
     "payload": {
-      "expression": "49 + 50",
+      "expression": "49 + 46",
       "choices": [
+        "About 110",
         "About 100",
-        "About 144",
-        "About 192"
+        "About 90"
       ]
     },
     "learning": {
@@ -7391,16 +7391,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 143, which rounds to 140.",
+    "correctIndex": 1,
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "71 + 72 = 143. To the nearest ten, this is 140.",
     "payload": {
       "expression": "71 + 72",
       "choices": [
+        "About 120",
         "About 140",
-        "About 210",
-        "About 280"
+        "About 130"
       ]
     },
     "learning": {
@@ -7519,15 +7519,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 171, which rounds to 170.",
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "85 + 86 = 171. To the nearest ten, this is 170.",
     "payload": {
       "expression": "85 + 86",
       "choices": [
         "About 170",
-        "About 252",
-        "About 336"
+        "About 180",
+        "About 190"
       ]
     },
     "learning": {
@@ -7646,15 +7646,15 @@
     "type": "estimate",
     "topic": "estimation",
     "correctIndex": 0,
-    "question": "What is the total to the nearest ten?",
-    "hint": "Keep track of the size of the whole answer.",
-    "explanation": "The total is 183, which rounds to 180.",
+    "question": "Add exactly, then round the total to the nearest ten.",
+    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
+    "explanation": "91 + 92 = 183. To the nearest ten, this is 180.",
     "payload": {
       "expression": "91 + 92",
       "choices": [
         "About 180",
-        "About 270",
-        "About 360"
+        "About 170",
+        "About 190"
       ]
     },
     "learning": {
@@ -10036,45 +10036,37 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/4 or 3/4.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/3 or 2/3.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/3 = 2/6; 2/3 = 4/6.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          4
+          3
         ],
         [
-          3,
-          4
+          2,
+          3
         ]
       ],
       "fractions": [
         [
+          1,
+          3
+        ],
+        [
           2,
-          8
+          3
         ],
         [
-          6,
-          8
-        ],
-        [
-          3,
-          12
-        ],
-        [
-          9,
-          12
+          2,
+          6
         ],
         [
           4,
-          16
-        ],
-        [
-          12,
-          16
+          6
         ]
       ]
     },
@@ -10122,17 +10114,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "correctIndex": 1,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "3/6 = 6/12.",
     "payload": {
       "numerator": 3,
       "denominator": 6,
       "choices": [
+        "6/6",
         "6/12",
-        "3/12",
-        "6/6"
+        "3/12"
       ]
     },
     "learning": {
@@ -10187,45 +10179,37 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/5 or 4/5.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/4 or 3/4.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/4 = 2/8; 3/4 = 6/8.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          5
+          4
         ],
         [
-          4,
-          5
+          3,
+          4
         ]
       ],
       "fractions": [
         [
-          2,
-          10
-        ],
-        [
-          8,
-          10
+          1,
+          4
         ],
         [
           3,
-          15
+          4
         ],
         [
-          12,
-          15
+          2,
+          8
         ],
         [
-          4,
-          20
-        ],
-        [
-          16,
-          20
+          6,
+          8
         ]
       ]
     },
@@ -10278,8 +10262,8 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "4/7 = 8/14.",
     "payload": {
       "numerator": 4,
@@ -10346,45 +10330,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/6 or 5/6.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/5 or 4/5.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/5 = 2/10; 4/5 = 8/10.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          6
+          5
         ],
         [
-          5,
-          6
+          4,
+          5
         ]
       ],
       "fractions": [
         [
-          2,
-          12
-        ],
-        [
-          10,
-          12
-        ],
-        [
-          3,
-          18
-        ],
-        [
-          15,
-          18
+          1,
+          5
         ],
         [
           4,
-          24
+          5
         ],
         [
-          20,
-          24
+          2,
+          10
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          4,
+          20
+        ],
+        [
+          16,
+          20
         ]
       ]
     },
@@ -10437,8 +10421,8 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "5/8 = 10/16.",
     "payload": {
       "numerator": 5,
@@ -10505,45 +10489,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/7 or 6/7.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/6 or 5/6.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/6 = 2/12; 5/6 = 10/12.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          7
+          6
         ],
         [
-          6,
-          7
+          5,
+          6
         ]
       ],
       "fractions": [
         [
-          2,
-          14
+          1,
+          6
         ],
         [
-          12,
-          14
+          5,
+          6
+        ],
+        [
+          2,
+          12
+        ],
+        [
+          10,
+          12
         ],
         [
           3,
-          21
+          18
         ],
         [
-          18,
-          21
-        ],
-        [
-          4,
-          28
-        ],
-        [
-          24,
-          28
+          15,
+          18
         ]
       ]
     },
@@ -10595,17 +10579,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "6/9 = 12/18.",
+    "correctIndex": 2,
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 3.",
+    "explanation": "6/9 = 2/3.",
     "payload": {
       "numerator": 6,
       "denominator": 9,
       "choices": [
-        "12/18",
-        "6/18",
-        "12/9"
+        "2/9",
+        "6/3",
+        "2/3"
       ]
     },
     "learning": {
@@ -10692,17 +10676,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "7/10 = 14/20.",
+    "correctIndex": 2,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 4 equal pieces. Multiply both the numerator and denominator by 4.",
+    "explanation": "7/10 = 28/40.",
     "payload": {
       "numerator": 7,
       "denominator": 10,
       "choices": [
-        "14/20",
-        "7/20",
-        "14/10"
+        "7/40",
+        "28/10",
+        "28/40"
       ]
     },
     "learning": {
@@ -10761,45 +10745,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/9 or 8/9.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/8 or 7/8.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/8 = 2/16; 7/8 = 14/16.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          9
+          8
         ],
         [
-          8,
-          9
+          7,
+          8
         ]
       ],
       "fractions": [
         [
           2,
-          18
+          16
         ],
         [
-          16,
-          18
+          14,
+          16
         ],
         [
           3,
-          27
+          24
         ],
         [
-          24,
-          27
+          21,
+          24
         ],
         [
           4,
-          36
+          32
         ],
         [
-          32,
-          36
+          28,
+          32
         ]
       ]
     },
@@ -10851,17 +10835,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "8/11 = 16/22.",
+    "correctIndex": 1,
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 2.",
+    "explanation": "16/22 = 8/11.",
     "payload": {
-      "numerator": 8,
-      "denominator": 11,
+      "numerator": 16,
+      "denominator": 22,
       "choices": [
-        "16/22",
-        "8/22",
-        "16/11"
+        "16/11",
+        "8/11",
+        "8/22"
       ]
     },
     "learning": {
@@ -10920,45 +10904,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/10 or 9/10.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/9 or 8/9.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/9 = 2/18; 8/9 = 16/18.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          10
+          9
         ],
         [
-          9,
-          10
+          8,
+          9
         ]
       ],
       "fractions": [
         [
           2,
-          20
+          18
         ],
         [
-          18,
-          20
+          16,
+          18
         ],
         [
           3,
-          30
+          27
         ],
         [
-          27,
-          30
+          24,
+          27
         ],
         [
           4,
-          40
+          36
         ],
         [
-          36,
-          40
+          32,
+          36
         ]
       ]
     },
@@ -11011,16 +10995,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "9/12 = 18/24.",
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 3 equal pieces. Multiply both the numerator and denominator by 3.",
+    "explanation": "9/12 = 27/36.",
     "payload": {
       "numerator": 9,
       "denominator": 12,
       "choices": [
-        "18/24",
-        "9/24",
-        "18/12"
+        "27/36",
+        "9/36",
+        "27/12"
       ]
     },
     "learning": {
@@ -11079,45 +11063,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/11 or 10/11.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/10 or 9/10.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/10 = 2/20; 9/10 = 18/20.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          11
+          10
         ],
         [
-          10,
-          11
+          9,
+          10
         ]
       ],
       "fractions": [
         [
           2,
-          22
+          20
         ],
         [
-          20,
-          22
+          18,
+          20
         ],
         [
           3,
-          33
+          30
         ],
         [
-          30,
-          33
+          27,
+          30
         ],
         [
           4,
-          44
+          40
         ],
         [
-          40,
-          44
+          36,
+          40
         ]
       ]
     },
@@ -11170,16 +11154,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "2/4 = 4/8.",
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 4.",
+    "explanation": "4/8 = 1/2.",
     "payload": {
-      "numerator": 2,
-      "denominator": 4,
+      "numerator": 4,
+      "denominator": 8,
       "choices": [
-        "4/8",
-        "2/8",
-        "4/4"
+        "1/2",
+        "1/8",
+        "4/2"
       ]
     },
     "learning": {
@@ -11238,45 +11222,45 @@
     "type": "sort_buckets",
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
-    "question": "Sort every fraction by value: 1/12 or 11/12.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
+    "question": "Sort the fractions by value: 1/11 or 10/11.",
+    "hint": "Multiply or divide the numerator and denominator by the same number.",
+    "explanation": "1/11 = 2/22; 10/11 = 20/22.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          12
+          11
         ],
         [
-          11,
-          12
+          10,
+          11
         ]
       ],
       "fractions": [
         [
           2,
-          24
+          22
         ],
         [
-          22,
-          24
+          20,
+          22
         ],
         [
           3,
-          36
+          33
         ],
         [
-          33,
-          36
+          30,
+          33
         ],
         [
           4,
-          48
+          44
         ],
         [
-          44,
-          48
+          40,
+          44
         ]
       ]
     },
@@ -11328,17 +11312,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "correctIndex": 2,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "2/5 = 4/10.",
     "payload": {
       "numerator": 2,
       "denominator": 5,
       "choices": [
-        "4/10",
         "2/10",
-        "4/5"
+        "4/5",
+        "4/10"
       ]
     },
     "learning": {
@@ -16177,17 +16161,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "correctIndex": 2,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "6/9 = 12/18.",
     "payload": {
       "numerator": 6,
       "denominator": 9,
       "choices": [
-        "12/18",
         "6/18",
-        "12/9"
+        "12/9",
+        "12/18"
       ]
     },
     "learning": {
@@ -16237,8 +16221,8 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "7/10 = 14/20.",
     "payload": {
       "numerator": 7,
@@ -17331,17 +17315,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "8/11 = 16/22.",
+    "correctIndex": 1,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 4 equal pieces. Multiply both the numerator and denominator by 4.",
+    "explanation": "8/11 = 32/44.",
     "payload": {
       "numerator": 8,
       "denominator": 11,
       "choices": [
-        "16/22",
-        "8/22",
-        "16/11"
+        "32/11",
+        "32/44",
+        "8/44"
       ]
     },
     "learning": {
@@ -17393,16 +17377,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "9/12 = 18/24.",
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 2.",
+    "explanation": "6/8 = 3/4.",
     "payload": {
-      "numerator": 9,
-      "denominator": 12,
+      "numerator": 6,
+      "denominator": 8,
       "choices": [
-        "18/24",
-        "9/24",
-        "18/12"
+        "3/4",
+        "3/8",
+        "6/4"
       ]
     },
     "learning": {
@@ -17453,17 +17437,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "2/4 = 4/8.",
+    "correctIndex": 1,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 3 equal pieces. Multiply both the numerator and denominator by 3.",
+    "explanation": "2/4 = 6/12.",
     "payload": {
       "numerator": 2,
       "denominator": 4,
       "choices": [
-        "4/8",
-        "2/8",
-        "4/4"
+        "6/4",
+        "6/12",
+        "2/12"
       ]
     },
     "learning": {
@@ -17514,17 +17498,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "2/5 = 4/10.",
+    "correctIndex": 2,
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 4.",
+    "explanation": "8/20 = 2/5.",
     "payload": {
-      "numerator": 2,
-      "denominator": 5,
+      "numerator": 8,
+      "denominator": 20,
       "choices": [
-        "4/10",
-        "2/10",
-        "4/5"
+        "2/20",
+        "8/5",
+        "2/5"
       ]
     },
     "learning": {
@@ -17575,17 +17559,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
+    "correctIndex": 1,
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 2 equal pieces. Multiply both the numerator and denominator by 2.",
     "explanation": "4/6 = 8/12.",
     "payload": {
       "numerator": 4,
       "denominator": 6,
       "choices": [
+        "8/6",
         "8/12",
-        "4/12",
-        "8/6"
+        "4/12"
       ]
     },
     "learning": {
@@ -17636,17 +17620,17 @@
     ],
     "type": "fraction_equivalent",
     "topic": "fractions",
-    "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "3/7 = 6/14.",
+    "correctIndex": 2,
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 3.",
+    "explanation": "9/21 = 3/7.",
     "payload": {
-      "numerator": 3,
-      "denominator": 7,
+      "numerator": 9,
+      "denominator": 21,
       "choices": [
-        "6/14",
-        "3/14",
-        "6/7"
+        "3/21",
+        "9/7",
+        "3/7"
       ]
     },
     "learning": {
@@ -17698,16 +17682,16 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "2/8 = 4/16.",
+    "question": "Which fraction has the same value?",
+    "hint": "Split each part into 4 equal pieces. Multiply both the numerator and denominator by 4.",
+    "explanation": "2/8 = 8/32.",
     "payload": {
       "numerator": 2,
       "denominator": 8,
       "choices": [
-        "4/16",
-        "2/16",
-        "4/8"
+        "8/32",
+        "2/32",
+        "8/8"
       ]
     },
     "learning": {
@@ -17759,14 +17743,14 @@
     "type": "fraction_equivalent",
     "topic": "fractions",
     "correctIndex": 0,
-    "question": "Choose the fraction with the same value.",
-    "hint": "Split every part into two equal smaller parts.",
-    "explanation": "1/9 = 2/18.",
+    "question": "Simplify the fraction. Which fraction has the same value?",
+    "hint": "Divide both the numerator and denominator by 2.",
+    "explanation": "2/18 = 1/9.",
     "payload": {
-      "numerator": 1,
-      "denominator": 9,
+      "numerator": 2,
+      "denominator": 18,
       "choices": [
-        "2/18",
+        "1/9",
         "1/18",
         "2/9"
       ]

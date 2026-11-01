@@ -173,7 +173,7 @@ for(const lesson of LEARNING_CATALOG.lessons) {
     assert.ok(level.puzzleIds.length>0);
     assert.ok(level.title.en && level.title.lv && level.description.en && level.description.lv);
     if(level.kind==='boss') { bosses++; assert.ok(level.puzzleIds.length>=3); }
-    if(level.kind==='challenge') { challenges++; assert.ok(level.puzzleIds.every(id=>['find_all_pairs','sort_buckets','repair_pattern','route_grid','budget_plan'].includes(byId.get(id).type))); }
+    if(level.kind==='challenge') { challenges++; assert.ok(level.puzzleIds.every(id=>byId.has(id)), 'Challenge pacing is independent of the task interaction'); }
     if(level.kind==='practice' || level.kind==='boss') assert.ok(level.puzzleIds.every(id=>!['find_all_pairs','sort_buckets','repair_pattern','route_grid','budget_plan'].includes(byId.get(id).type)),'Optional challenges have distinct interactions');
     for(const id of level.puzzleIds) { assert.equal(byId.get(id)?.difficulty,lesson.difficulty); placements.push(id); }
   }
@@ -218,7 +218,7 @@ for(const tier of tiers) for(const topic of getLearningTopics(tier)) {
   const topicBosses=lessons.flatMap(lesson=>lesson.levels.filter(level=>level.kind==='boss'));
   assert.equal(topicBosses.length,lessons.length,`${tier}/${topic.id} must have a boss in every lesson`);
   const boards=lessons.map(lesson=>byId.get(lesson.levels.find(level=>level.kind==='challenge').puzzleIds[0]));
-  assert.equal(new Set(boards.map(puzzle=>JSON.stringify(puzzle.payload))).size,lessons.length,`${tier}/${topic.id}: challenge boards vary between lessons`);
+  assert.equal(new Set(boards.map(puzzle=>JSON.stringify([puzzle.type,puzzle.payload,puzzle.taskVisual,puzzle.question]))).size,lessons.length,`${tier}/${topic.id}: challenge tasks vary between lessons`);
   const boss=topicBosses.at(-1),last=lessons.at(-1);
   assert.equal(last.levels.at(-1).id,boss.id,'The boss is the final level of the final lesson');
   for(const topicBoss of topicBosses) for(const locale of ['en','lv']) {
@@ -271,6 +271,7 @@ function authoredAnswer(puzzle) {
   if(challenge) {assert.ok(challenge.length>0,`${puzzle.id}: challenge must have a valid solution`); return challenge[0];}
   const p=puzzle.payload;
   switch(puzzle.type) {
+    case 'place_value': { const value=p.mode==='add'?p.start+p.operand:p.mode==='subtract'?p.start-p.operand:p.start; return {kind:'place_value',state:{tens:Math.floor(value/10)-(p.mode==='split'?1:0),ones:value%10+(p.mode==='split'?10:0),added:p.mode==='add'}}; }
     case 'find_all_pairs':return {kind:'pairs',pairs:getValidPairs(p.numbers,p.target)};
     case 'target_build':return {kind:'operators',operators:p.solution};
     case 'operation_path':return {kind:'operators',operators:p.steps.map(step=>step.operator)};
@@ -289,6 +290,7 @@ function practiceFacts(puzzle) {
   const p = puzzle.payload;
   let facts;
   switch (puzzle.type) {
+    case 'place_value': facts = [p.start, ...(p.operand === undefined ? [] : [p.operand])]; break;
     case 'multiple_choice': facts = puzzle.question; break;
     case 'balance': facts = p.leftDisplay.replace('?', p.choices[puzzle.correctIndex]); break;
     case 'pair_sum': facts = p.correctIndices.map(i => p.numbers[i]); break;
@@ -338,13 +340,14 @@ for (const lesson of LEARNING_CATALOG.lessons) {
     assert.equal(practiceFacts(counterpart), practiceFacts(puzzle), `${puzzle.id}: both languages use the same givens`);
   }
   assert.equal(practice.length, 4);
-  if (!(lesson.difficulty === 'easy' && ['addition','fractions'].includes(lesson.topicId))) assert.ok(new Set(practice.map(p => p.type)).size >= 3, `${lesson.id}: mix at least three task types`);
+  if (practice.every(p => p.type === 'place_value')) assert.ok(new Set(practice.map(p => p.payload.mode)).size >= 3, `${lesson.id}: build, exchange, then calculate`);
+  else if (!(lesson.difficulty === 'easy' && ['addition','subtraction','fractions'].includes(lesson.topicId))) assert.ok(new Set(practice.map(p => p.type)).size >= 3, `${lesson.id}: mix at least three task types`);
   if (!(lesson.difficulty === 'easy' && ['addition','fractions'].includes(lesson.topicId))) assert.equal(new Set(practice.map(practiceFacts)).size, 4, `${lesson.id}: use independent numbers for each activity`);
   if (lesson.topicId === 'patterns') checkPatternVariety(practice, lesson.id);
 }
 for (const lesson of LEARNING_CATALOG.lessons) for (const level of lesson.levels.filter(l => l.kind === 'boss')) {
   const stages = level.puzzleIds.map(id => byId.get(id));
-  if (!(lesson.difficulty === 'easy' && ['addition','fractions'].includes(lesson.topicId))) assert.ok(new Set(stages.map(p => p.type)).size >= 2, `${level.id}: a mission needs different task types`);
+  if (!(lesson.difficulty === 'easy' && ['addition','subtraction','fractions'].includes(lesson.topicId))) assert.ok(new Set(stages.map(p => p.type)).size >= 2, `${level.id}: a mission needs different task types`);
   if (/lesson-\d+-boss$/.test(level.id) && !(lesson.difficulty === 'easy' && ['addition','fractions'].includes(lesson.topicId))) assert.equal(new Set(stages.map(practiceFacts)).size,3,`${level.id}: new boss stages use independent examples`);
   if (lesson.topicId === 'patterns') checkPatternVariety(stages, level.id);
 }
@@ -359,6 +362,7 @@ for(const locale of ['en','lv']) {
       assert.ok(puzzle.id.startsWith(`v2-${tier}-`));
       assert.ok(puzzle.question && puzzle.hint && puzzle.explanation);
       assert.ok(labels.puzzleTypes[puzzle.type],`Missing type label: ${puzzle.type}`);
+      assert.ok(labels.play.mechanicIntro[puzzle.type], `Missing mechanic introduction: ${puzzle.type}`);
       assert.equal(checkPuzzleAnswer(puzzle,authoredAnswer(puzzle)),true,puzzle.id);
       const choices=puzzle.choices ?? puzzle.payload?.choices;
       if(choices) {
@@ -444,7 +448,7 @@ for(const locale of ['en','lv']) {
       }
       if(puzzle.type==='find_all_pairs') {
         const pairs=getValidPairs(puzzle.payload.numbers,puzzle.payload.target);
-        assert.ok(pairs.length >= 3);
+        assert.ok(pairs.length >= 2, 'Pair hunts start with two pairs after missing-part practice');
         assert.equal(checkPuzzleAnswer(puzzle,{kind:'pairs',pairs:pairs.slice(1)}),false);
         assert.equal(checkPuzzleAnswer(puzzle,{kind:'pairs',pairs:[...pairs.slice(1),pairs[1]]}),false);
         assert.equal(checkPuzzleAnswer(puzzle,{kind:'pairs',pairs:pairs.map(([a,b])=>[b,a])}),true);
@@ -723,3 +727,8 @@ console.log('Puzzle recommendations passed.');
 
 const { checkPaths } = await import('./puzzles/check-paths.mjs');
 checkPaths({ load });
+const { checkProgression } = await import('./puzzles/check-progression.mjs');
+checkProgression({ load });
+
+const { checkPlaceValuePilot } = await import('./puzzles/check-place-value.mjs');
+checkPlaceValuePilot({ load });

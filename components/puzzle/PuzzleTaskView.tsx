@@ -1,3 +1,5 @@
+import { PlaceValueTask } from "@/components/puzzle/PlaceValueTask";
+import type { PlaceValueState } from "@/utils/place-value";
 import { FindAllPairsTask } from "@/components/puzzle/FindAllPairsTask";
 import { ChallengeTask } from "@/components/puzzle/ChallengeTasks";
 import { isOptionalChallengePuzzle, type ChallengeAnswer } from "@/utils/challenge-puzzles";
@@ -41,6 +43,8 @@ import {
 
 type PuzzleTaskViewProps = {
   puzzle: Puzzle;
+  placeValue: PlaceValueState | null;
+  onPlaceValueChange: (state: PlaceValueState | null) => void;
   onChallengeAnswerChange: (answer: ChallengeAnswer | null) => void;
   onDragStateChange: (dragging: boolean) => void;
   selectedIndex: number | null;
@@ -73,6 +77,7 @@ type PuzzleTaskViewProps = {
 
 export function PuzzleTaskView({
   puzzle,
+  placeValue, onPlaceValueChange,
   onChallengeAnswerChange,
   onDragStateChange,
   selectedIndex,
@@ -101,6 +106,7 @@ export function PuzzleTaskView({
   onSwapOrder,
   onTapFractionMatchCard,
 }: PuzzleTaskViewProps) {
+  if (puzzle.type === "place_value") return <PlaceValueTask puzzle={puzzle} value={placeValue} onChange={onPlaceValueChange} answered={answered} />;
   if (isOptionalChallengePuzzle(puzzle)) return <ChallengeTask puzzle={puzzle} answered={answered} onAnswerChange={onChallengeAnswerChange} onDragStateChange={onDragStateChange} />;
   if (puzzle.type === "find_all_pairs") return <FindAllPairsTask puzzle={puzzle} pairs={foundPairs} answered={answered} canAttempt={hasLives} onIncorrectAttempt={onIncorrectAttempt} onChange={onFoundPairsChange} />;
   const fractionMatchPuzzle = asFractionMatchPuzzle(puzzle);

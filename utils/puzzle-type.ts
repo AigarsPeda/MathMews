@@ -1,3 +1,4 @@
+import { checkPlaceValue, type PlaceValueState } from "@/utils/place-value";
 import type {
   BalancePuzzle,
   ComparePuzzle,
@@ -24,6 +25,7 @@ import { evaluateExpression, runOperationPath } from "@/utils/puzzle-math";
 import { checkChallengeAnswer, isOptionalChallengePuzzle, type ChallengeAnswer } from "@/utils/challenge-puzzles";
 
 const INTERACTIVE_TYPES = new Set<PuzzleType>([
+  "place_value",
   "compare",
   "operation_path",
   "target_build",
@@ -53,6 +55,7 @@ export function getPuzzlePreview(puzzle: Puzzle): string {
 }
 
 export type PuzzleAnswer =
+  | { kind: "place_value"; state: PlaceValueState }
   | ChallengeAnswer
   | { kind: "choice"; index: number }
   | { kind: "operators"; operators: MathOperator[] }
@@ -72,6 +75,7 @@ export function getValidPairs(numbers: readonly number[], target: number): [numb
 }
 
 export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean {
+  if (puzzle.type === "place_value") return answer.kind === "place_value" && checkPlaceValue(puzzle, answer.state);
   if (isOptionalChallengePuzzle(puzzle)) {
     return (answer.kind === "sort" || answer.kind === "sequence" || answer.kind === "route" || answer.kind === "budget")
       && checkChallengeAnswer(puzzle, answer);

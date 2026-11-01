@@ -1,5 +1,6 @@
 import type { LearningLesson } from '@/types/curriculum';
 import type { AppLocale } from '@/types/locale';
+import { getTopicLessons } from '@/constants/curriculum';
 export type ReviewQuestion = { diagram?: {parts:number;colored:number}; prompt: Record<AppLocale,string>; choices: string[]; correctIndex: number; explanation: Record<AppLocale,string> };
 const hash = (value: string) => {
   let seed = 2166136261;
@@ -16,14 +17,46 @@ function numericChoices(answer: number, key: string) {
 /** Fresh, self-contained checks. No previous teaching step supplies the answer. */
 export function getLearningReview(lesson: LearningLesson, day: number): ReviewQuestion {
   const seed = [...lesson.id].reduce((n,c) => n+c.charCodeAt(0), day), v = seed % 11;
-  const a = (lesson.difficulty === 'easy' ? 3 : lesson.difficulty === 'medium' ? 23 : 103) + v, b = (lesson.difficulty === 'easy' ? 2 : 8) + v % 4;
+  const stage = getTopicLessons(lesson.difficulty, lesson.topicId).findIndex(item => item.id === lesson.id);
+  let a = (lesson.difficulty === 'easy' ? 3 : lesson.difficulty === 'medium' ? 23 : 103) + v, b = (lesson.difficulty === 'easy' ? 2 : 8) + v % 4;
+  if (lesson.difficulty === 'easy' && ['addition', 'subtraction'].includes(lesson.topicId) && stage < 2) {
+    a = 3 + v % 5; b = 1 + v % 3;
+  }
+  if (lesson.difficulty === 'easy' && lesson.topicId === 'subtraction') {
+    if (stage === 2) { a = 10; b = 1 + v % 9; }
+    if (stage === 3) { a = 7 + v % 3; b = 11 + v % 8 - a; }
+  }
   const key = `${lesson.id}/${day}`;
   if(lesson.topicId === 'fractions') {
     const advanced=lesson.difficulty==='hard', equivalent=lesson.difficulty==='medium'||['equivalence','equivalent','review'].some(key=>lesson.skillId?.endsWith('.'+key));
     const d=lesson.skillId?.endsWith('.equal-parts')?2:lesson.skillId?.endsWith('.quarters')?4:3+v%4, n=1+v%(d-1);
-    const options=advanced?numericChoices(a,key):equivalent?[`${2*n}/${2*d}`,`${n}/${2*d}`,`${n+1}/${d}`]:[`${n}/${d}`,`${d}/${n}`,`${n+1}/${d}`];
+    if (equivalent && !advanced) {
+      const factor = stage < 2 || lesson.difficulty === 'easy' && stage === 5 ? 2
+        : lesson.difficulty === 'easy' && stage === 6 ? 3
+          : lesson.difficulty === 'medium' && stage < 4 ? 2 + v % 2 : 2 + v % 3;
+      const simplify = lesson.difficulty === 'medium' && stage >= 3 && v % 2 === 0;
+      const sourceN = simplify ? n * factor : n, sourceD = simplify ? d * factor : d;
+      const answerN = simplify ? n : n * factor, answerD = simplify ? d : d * factor;
+      const answer = `${answerN}/${answerD}`;
+      const options = [answer, `${sourceN}/${answerD}`, `${answerN}/${sourceD}`];
+      const shift = seed % 3, choices = [...options.slice(shift), ...options.slice(0, shift)];
+      const detail = `${sourceN}/${sourceD} = ${answer}.`;
+      return { prompt: { en: `Which fraction equals ${sourceN}/${sourceD}?`, lv: `Kura daļa ir vienāda ar ${sourceN}/${sourceD}?` },
+        choices, correctIndex: choices.indexOf(answer), explanation: { en: detail, lv: detail } };
+    }
+    const options=advanced?numericChoices(a,key):[`${n}/${d}`,`${d}/${n}`,`${n+1}/${d}`];
     const shift=seed%3,choices=[...options.slice(shift),...options.slice(0,shift)];
-    return {prompt:advanced?{en:`There are ${a*d} seeds. 1/${d} of them are flower seeds. How many flowers?`,lv:`Ir ${a*d} sēklas. Puķu sēklas veido 1/${d}. Cik puķu sēklu?`}:equivalent?{en:`Which fraction equals ${n}/${d}?`,lv:`Kura daļa ir vienāda ar ${n}/${d}?`}:{en:'Which fraction of this whole is colored?',lv:'Kāda šī veselā daļa ir iekrāsota?'},choices,correctIndex:choices.indexOf(advanced?String(a):options[0]),explanation:{en:advanced?`${a*d} ÷ ${d} = ${a}.`:equivalent?`${n}/${d} = ${2*n}/${2*d}.`:`${n} of ${d} equal parts: ${n}/${d}.`,lv:advanced?`${a*d} ÷ ${d} = ${a}.`:equivalent?`${n}/${d} = ${2*n}/${2*d}.`:`${n} no ${d} vienādām daļām: ${n}/${d}.`},...(!advanced&&!equivalent?{diagram:{parts:d,colored:n}}:{})};
+    return {
+      prompt: advanced
+        ? { en: `There are ${a*d} seeds. 1/${d} of them are flower seeds. How many flowers?`, lv: `Ir ${a*d} sēklas. Puķu sēklas veido 1/${d}. Cik puķu sēklu?` }
+        : { en: 'Which fraction of this whole is colored?', lv: 'Kāda šī veselā daļa ir iekrāsota?' },
+      choices, correctIndex: choices.indexOf(advanced ? String(a) : options[0]),
+      explanation: {
+        en: advanced ? `${a*d} ÷ ${d} = ${a}.` : `${n} of ${d} equal parts: ${n}/${d}.`,
+        lv: advanced ? `${a*d} ÷ ${d} = ${a}.` : `${n} no ${d} vienādām daļām: ${n}/${d}.`,
+      },
+      ...(!advanced ? { diagram: { parts: d, colored: n } } : {}),
+    };
   }
   let en: string, lv: string, answer: number, detail: string;
   switch (lesson.topicId) {
@@ -39,6 +72,10 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
   }
   if(lesson.topicId==='addition' && ['missing-part','pairs'].some(key=>lesson.skillId?.endsWith('.'+key))) {
     en=`What is the missing part? ${a} + ? = ${a+b}`;lv=`Kāda ir trūkstošā daļa? ${a} + ? = ${a+b}`;answer=b;detail=`${a} + ${b} = ${a+b}.`;
+  }
+  if (lesson.difficulty === 'easy' && lesson.topicId === 'subtraction' && stage === 4) {
+    en=`How many were taken away? ${a+b} − ? = ${a}`;lv=`Cik tika atņemts? ${a+b} − ? = ${a}`;
+    answer=b;detail=`${a+b} − ${b} = ${a}.`;
   }
   const choices = numericChoices(answer, key);
   return {prompt:{en,lv},choices,correctIndex:choices.indexOf(String(answer)),explanation:{en:detail,lv:detail}};

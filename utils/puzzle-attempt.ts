@@ -1,3 +1,4 @@
+import { placeValueTarget, type PlaceValueState } from "@/utils/place-value";
 import type { MathOperator, Puzzle } from "@/types/puzzle";
 import type { LearningLesson, LearningLevel } from "@/types/curriculum";
 import { isOptionalChallengePuzzle, getRouteValue, type ChallengeAnswer } from "@/utils/challenge-puzzles";
@@ -5,6 +6,7 @@ import { evaluateExpression, runOperationPath } from "@/utils/puzzle-math";
 import { getOperatorSlotCount, getValidPairs, type PuzzleAnswer } from "@/utils/puzzle-type";
 
 export type PuzzleDraft = {
+  placeValue?: PlaceValueState | null;
   choice: number | null;
   operators: (MathOperator | null)[];
   shaded: number;
@@ -20,6 +22,7 @@ export type PuzzleDraft = {
 export function getPuzzleDraftAnswer(puzzle: Puzzle, draft: PuzzleDraft): PuzzleAnswer | null {
   if (isOptionalChallengePuzzle(puzzle)) return draft.challenge;
   switch (puzzle.type) {
+    case "place_value": return draft.placeValue ? { kind: "place_value", state: draft.placeValue } : null;
     case "fraction_build": return draft.shaded > 0 ? { kind: "fraction", shaded: draft.shaded } : null;
     case "operation_path":
     case "target_build":
@@ -49,6 +52,13 @@ export function getPuzzleAttemptHint(puzzle: Puzzle, answer: PuzzleAnswer): Atte
   const direction = (value: number, target: number, low: string, high: string): AttemptHint => ({
     key: value < target ? low : high,
   });
+  if (puzzle.type === "place_value" && answer.kind === "place_value") {
+    if (puzzle.payload.mode === "split") return { key: "placeValueSplit" };
+    if (puzzle.payload.mode === "add" && !answer.state.added) return { key: "placeValueAdd" };
+    const value = answer.state.tens * 10 + answer.state.ones, target = placeValueTarget(puzzle);
+    if (value === target) return { key: "placeValueBundle" };
+    return direction(value, target, "totalTooLow", "totalTooHigh");
+  }
   if (puzzle.type === "fraction_build" && answer.kind === "fraction") {
     return direction(answer.shaded, puzzle.payload.numerator, "fractionTooFew", "fractionTooMany");
   }

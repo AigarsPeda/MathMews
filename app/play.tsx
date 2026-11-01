@@ -1,3 +1,4 @@
+import type { PlaceValueState } from "@/utils/place-value";
 import { BuyLifeSheet } from "@/components/economy/BuyLifeSheet";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
@@ -183,6 +184,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const [lastAttempt, setLastAttempt] = useState<{ key: string; hint: string } | null>(null);
   const submittedAnswer = useRef<string | null>(null);
   const matchingAttempt = useRef<string | null>(null);
+  const [placeValue, setPlaceValue] = useState<PlaceValueState | null>(null);
   const [challengeAnswer, setChallengeAnswer] = useState<ChallengeAnswer | null>(null);
   const [fractionSelectedSlices, setFractionSelectedSlices] = useState<number[]>([]);
   const fractionPieces = fractionSelectedSlices.length;
@@ -232,10 +234,10 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const hasVisualHelp = hasVisualExplanation(puzzle);
 
   const draftAnswer = useMemo(() => getPuzzleDraftAnswer(puzzle, {
-    choice: pendingChoice, operators: selectedOperators, shaded: fractionPieces,
+    placeValue, choice: pendingChoice, operators: selectedOperators, shaded: fractionPieces,
     numberLine: pendingNumberLine, pairIndices, order: numberOrder,
     matchedCount: fractionMatchMatchedIds.length / 2, pairs: foundPairs, challenge: challengeAnswer,
-  }), [puzzle, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
+  }), [puzzle, placeValue, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
   const draftKey = JSON.stringify(draftAnswer);
   const canCheck = hasLives && challengePlayable && !answered && draftAnswer !== null && draftKey !== lastAttempt?.key;
   const progressSteps = lesson.levels.map((item, index) => replaySession ? index < position.current - 1 || answered && index === position.current - 1
@@ -481,6 +483,8 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
               puzzle={puzzle}
               hasLives={hasLives && challengePlayable}
               onIncorrectAttempt={handleInlineMistake}
+              placeValue={placeValue}
+              onPlaceValueChange={setPlaceValue}
               onChallengeAnswerChange={setChallengeAnswer}
               onDragStateChange={setIsDraggingTile}
               selectedIndex={pendingChoice}

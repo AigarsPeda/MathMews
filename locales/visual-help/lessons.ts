@@ -2,6 +2,11 @@ import type { VISUAL_PRACTICE } from "@/constants/visual-practice";
 type Lessons = Record<keyof typeof VISUAL_PRACTICE, { title: string; s0: string; s1: string; s2: string }>;
 
 export const visualLessonsEn = {
+  base_ten_build: {"title": "Build a number", "s0": "Build 26. Start with an empty board.", "s1": "Add two tens. That makes 20.", "s2": "Add six ones. Two tens and six ones make 26."},
+  base_ten_bundle: {"title": "Exchange ten ones", "s0": "Here are one ten and thirteen ones: 23 in all.", "s1": "Trade ten of the ones for one ten.", "s2": "Two tens and three ones still make 23."},
+  base_ten_split: {"title": "Exchange one ten", "s0": "Start with three tens and two ones: 32.", "s1": "Trade one ten for ten ones.", "s2": "Two tens and twelve ones still make 32."},
+  base_ten_add: {"title": "Add with an exchange", "s0": "Start with 23: two tens and three ones.", "s1": "Add 18: one ten and eight ones. Now there are eleven ones.", "s2": "Exchange ten ones for one ten. Four tens and one one make 41."},
+  base_ten_subtract: {"title": "Subtract with an exchange", "s0": "Take 16 away from 32. There are only two ones.", "s1": "Exchange one ten. Now there are two tens and twelve ones.", "s2": "Take away one ten and six ones. One ten and six ones remain: 16."},
   sort_buckets: { title: "Sort into baskets", s0: "Compare each tile with the basket boundary, seven.", s1: "Four is below seven. Put it in the left basket.", s2: "Nine is at least seven. Put it in the right basket. Check every tile." },
   fraction_sort: { title: "Sort equal fractions", s0: "The addresses are one third and two thirds.", s1: "Two sixths equals one third. Deliver it to that address.", s2: "Four sixths equals two thirds. Changing the pieces does not change the amount." },
   repair_pattern: { title: "Repair every gap", s0: "Two, gap, six, gap. Look for one rule that fits the whole pattern.", s1: "Counting in twos puts four in the first gap.", s2: "Eight fits the second gap. Drag each tile into its gap. Check the whole strip." },
@@ -48,6 +53,11 @@ export const visualLessonsEn = {
 } satisfies Lessons;
 
 export const visualLessonsLv = {
+  base_ten_build: {"title": "Izveido skaitli", "s0": "Izveido 26. Sāc ar tukšu laukumu.", "s1": "Pievieno divus desmitus. Kopā ir 20.", "s2": "Pievieno sešus vienus. Divi desmiti un seši vieni veido 26."},
+  base_ten_bundle: {"title": "Samaini desmit vienus", "s0": "Te ir viens desmits un trīspadsmit vieni: kopā 23.", "s1": "Samaini desmit vienus pret vienu desmitu.", "s2": "Divi desmiti un trīs vieni joprojām veido 23."},
+  base_ten_split: {"title": "Samaini vienu desmitu", "s0": "Sāc ar trim desmitiem un diviem vieniem: 32.", "s1": "Samaini vienu desmitu pret desmit vieniem.", "s2": "Divi desmiti un divpadsmit vieni joprojām veido 32."},
+  base_ten_add: {"title": "Saskaiti ar maiņu", "s0": "Sāc ar 23: diviem desmitiem un trim vieniem.", "s1": "Pievieno 18: vienu desmitu un astoņus vienus. Tagad ir vienpadsmit vieni.", "s2": "Samaini desmit vienus pret vienu desmitu. Četri desmiti un viens viens veido 41."},
+  base_ten_subtract: {"title": "Atņem ar maiņu", "s0": "No 32 atņem 16. Te ir tikai divi vieni.", "s1": "Samaini vienu desmitu. Tagad ir divi desmiti un divpadsmit vieni.", "s2": "Atņem vienu desmitu un sešus vienus. Paliek viens desmits un seši vieni: 16."},
   sort_buckets: { title: "Šķiro grozos", s0: "Salīdzini katru kartīti ar grozu robežu, septiņi.", s1: "Četri ir zem septiņi. Liec kreisajā grozā.", s2: "Deviņi ir vismaz septiņi. Liec labajā grozā. Pārbaudi katru kartīti." },
   fraction_sort: { title: "Šķiro vienādas daļas", s0: "Adreses ir viena trešdaļa un divas trešdaļas.", s1: "Divas sestdaļas ir viena trešdaļa. Nogādā šajā adresē.", s2: "Četras sestdaļas ir divas trešdaļas. Gabalu maiņa nemaina daudzumu." },
   repair_pattern: { title: "Aizpildi visas vietas", s0: "Divi, tukšums, seši, tukšums. Meklē vienu likumu visai virknei.", s1: "Skaitot pa divi, pirmajā tukšumā liec četri.", s2: "Otrajā tukšumā der astoņi. Ievelc katru kartīti tās vietā. Pārbaudi visu virkni." },

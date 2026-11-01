@@ -4,6 +4,19 @@ import type { Puzzle } from "@/types/puzzle";
 export function shufflePuzzleChoices(puzzle: Puzzle, seed: string): Puzzle {
   let state = 2166136261;
   for (const character of seed) state = Math.imul(state ^ character.charCodeAt(0), 16777619) >>> 0;
+  if (puzzle.type === "pair_sum" || puzzle.type === "find_all_pairs") {
+    const indices = puzzle.payload.numbers.map((_, index) => index);
+    for (let i = indices.length - 1; i > 0; i--) {
+      state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+      const j = Math.floor(state / 0x100000000 * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    const numbers = indices.map(index => puzzle.payload.numbers[index]);
+    return puzzle.type === "pair_sum"
+      ? { ...puzzle, payload: { ...puzzle.payload, numbers,
+        correctIndices: puzzle.payload.correctIndices.map(index => indices.indexOf(index)) as [number, number] } }
+      : { ...puzzle, payload: { ...puzzle.payload, numbers } };
+  }
   if (puzzle.type === "compare") return state % 2 === 0 ? puzzle : { ...puzzle,
     payload: { ...puzzle.payload, optionA: puzzle.payload.optionB, optionB: puzzle.payload.optionA },
     correctIndex: (puzzle.correctIndex === 0 ? 1 : 0) as 0 | 1,

@@ -30,6 +30,7 @@ type ExampleKey = keyof typeof VISUAL_EXAMPLES;
 export function getVisualHelpTemplateKey(puzzle: Puzzle): ExampleKey {
   if (puzzle.helpTemplate) return puzzle.helpTemplate;
   const type = getPuzzleType(puzzle);
+  if (type === "place_value") return "base_ten_build";
   if (type === "find_all_pairs") return "all_pairs";
   if (type !== "multiple_choice") return type;
   switch (puzzle.topic) {

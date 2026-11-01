@@ -58,7 +58,9 @@
     "assets:lesson-bosses": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-lesson-bosses.py && node scripts/3d/pack-lesson-bosses.mjs",
     "test:puzzles:bosses:ios": "node scripts/native/check-puzzle-drag.mjs --bosses",
     "assets:puzzle-objects": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/build-puzzle-objects.py",
-    "assets:achievement-stages": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/render-achievement-comedy.py -- --backgrounds"
+    "assets:achievement-stages": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 2 --python-exit-code 1 --python scripts/3d/render-achievement-comedy.py -- --backgrounds",
+    "assets:education-props": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 4 --python scripts/3d/build-education-props.py && node scripts/3d/pack-education-props.mjs",
+    "test:education-props": "node scripts/check-education-props.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

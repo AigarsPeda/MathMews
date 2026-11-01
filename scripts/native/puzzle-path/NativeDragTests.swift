@@ -6,6 +6,38 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(app.buttons["QA Path"].waitForExistence(timeout:25))
  }
  func shot(_ name:String) { let item=XCTAttachment(screenshot:app.screenshot()); item.name=name; item.lifetime = .keepAlways; add(item) }
+ func assertCurrentLevelVisible(_ number: Int) {
+  let level = app.buttons["Level \(number)"]
+  let visible = NSPredicate { _, _ in
+   let viewport = self.app.scrollViews.firstMatch.frame
+   return level.exists && level.isSelected && level.isHittable && level.frame.minY >= viewport.minY && level.frame.maxY <= viewport.maxY
+  }
+  expectation(for: visible, evaluatedWith: nil)
+  waitForExpectations(timeout: 5)
+ }
+ func testCurrentLevelVisibleWhenOpeningAndReturning() {
+  app.buttons["QA Path"].tap()
+  assertCurrentLevelVisible(5)
+  app.buttons["QA Level 10"].tap()
+  assertCurrentLevelVisible(10)
+  app.buttons["QA Topics"].tap()
+  app.buttons["Addition"].tap()
+  assertCurrentLevelVisible(10)
+  app.buttons["QA Narrow"].tap()
+  assertCurrentLevelVisible(10)
+  shot("current-level-10-visible")
+  for _ in 0..<10 {
+   if app.buttons["Level 1"].isHittable { break }
+   app.scrollViews.firstMatch.swipeDown()
+  }
+  app.buttons["Level 1"].tap()
+  XCTAssertTrue(app.buttons["Check answer"].waitForExistence(timeout:8))
+  // Pop to the fixture's isolated save instead of the play button's /puzzles destination.
+  app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5)).press(forDuration: 0.1,
+    thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)))
+  assertCurrentLevelVisible(10)
+  shot("current-level-visible-after-return")
+ }
  func testTopicPathOpensTenPuzzleLevel() {
   let gear = app.images["gearshape.fill"]
   if gear.exists {
@@ -26,11 +58,29 @@ final class NativeDragTests: XCTestCase {
   XCTAssertFalse(app.buttons["Puzzle 7"].exists)
   XCTAssertFalse(app.buttons["Choose a level"].exists)
   XCTAssertEqual(app.tabBars.count, 0)
+  for _ in 0..<6 {
+   if app.buttons["Level 5"].frame.maxY < app.scrollViews.firstMatch.frame.maxY { break }
+   app.scrollViews.firstMatch.swipeUp()
+  }
+  XCTAssertTrue(app.buttons["Level 5"].isHittable)
+  XCTAssertGreaterThanOrEqual(app.buttons["Level 5"].frame.width, 92)
+  XCTAssertLessThan(app.buttons["Level 5"].frame.maxY, app.scrollViews.firstMatch.frame.maxY)
   shot("topic-level-path")
   app.buttons["QA Narrow"].tap()
   XCTAssertTrue(app.buttons["Level 10"].exists)
   shot("topic-path-320")
+  for _ in 0..<8 {
+   if app.buttons["Level 10"].frame.maxY <= app.scrollViews.firstMatch.frame.maxY { break }
+   app.scrollViews.firstMatch.swipeUp()
+  }
+  XCTAssertLessThanOrEqual(app.buttons["Level 10"].frame.maxY, app.scrollViews.firstMatch.frame.maxY)
+  XCTAssertGreaterThanOrEqual(app.buttons["Level 10"].frame.minY, app.scrollViews.firstMatch.frame.minY)
+  shot("topic-trail-end-320")
   app.buttons["QA Narrow"].tap()
+  for _ in 0..<8 {
+   if app.buttons["Level 1"].isHittable { break }
+   app.scrollViews.firstMatch.swipeDown()
+  }
   app.buttons["Level 1"].tap()
   XCTAssertTrue(app.buttons["Check answer"].waitForExistence(timeout:8))
   XCTAssertFalse(app.buttons["Level 1"].exists)

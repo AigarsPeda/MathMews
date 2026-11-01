@@ -1222,7 +1222,8 @@
     "sort_buckets": "Basket sorting",
     "repair_pattern": "Pattern repair",
     "route_grid": "Number maze",
-    "budget_plan": "Budget planner"
+    "budget_plan": "Budget planner",
+    "place_value": "Tens and ones"
   },
   "puzzlePath": {
     "title": "Puzzle path",
@@ -1269,7 +1270,10 @@
       "patternRule": "Look at how the pattern changes, then adjust the tiles in the gaps.",
       "routeSteps": "Check the route’s steps and finish at the exit.",
       "budgetTooMuch": "You’re spending too much. Try a less expensive combination.",
-      "budgetTooLittle": "You’re leaving too much money. Recheck the prices and discounts."
+      "budgetTooLittle": "You’re leaving too much money. Recheck the prices and discounts.",
+      "placeValueSplit": "Exchange one ten for ten ones.",
+      "placeValueAdd": "Add the second number to the board first.",
+      "placeValueBundle": "The amount is right. Exchange ten ones for one ten."
     },
     "solveFor": "Solve for {{name}}",
     "replayNut": "Replay nut #{{number}}",
@@ -1314,7 +1318,8 @@
       "repair_pattern": "Drag tiles into the gaps. You can swap them or return them to the tile bank.",
       "route_grid": "Tap neighboring squares to build a route. You can undo steps before checking.",
       "budget_plan": "Compare the discounted prices and choose a plan. Several plans may work.",
-      "target_buildHard": "Fill each gap, then check your answer."
+      "target_buildHard": "Fill each gap, then check your answer.",
+      "place_value": "Use the tens and ones, then check your board."
     }
   },
   "lives": {
@@ -1654,5 +1659,30 @@
     "level_completed": "Completed. Play these 10 puzzles again.",
     "level_current": "Open this level and continue its 10 puzzles.",
     "level_locked": "Finish the previous levels to unlock."
+  },
+  "placeValue": {
+    "tens": "Tens",
+    "ones": "Ones",
+    "count": {
+      "tens": "Tens: {{count}}",
+      "ones": "Ones: {{count}}"
+    },
+    "guide": {
+      "build": "Use tens and ones to make the number. Each long block holds ten ones.",
+      "bundle": "Exchange ten ones for one ten. The amount stays the same.",
+      "split": "Exchange one ten for ten ones. The amount stays the same.",
+      "add": "Add the second number, then exchange ten ones for one ten.",
+      "subtract": "Exchange a ten if you need more ones. Then take away the tens and ones."
+    },
+    "addTen": "Add 1 ten",
+    "addOne": "Add 1 one",
+    "removeTen": "Take away 1 ten",
+    "removeOne": "Take away 1 one",
+    "add": "Add {{count}}",
+    "added": "Added {{count}}",
+    "bundle": "10 ones → 1 ten",
+    "split": "1 ten → 10 ones",
+    "removed": "Taken away: {{count}} of {{target}}",
+    "reset": "Start this board again"
   }
 }

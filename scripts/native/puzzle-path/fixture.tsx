@@ -60,7 +60,12 @@ export default function PathFixture() {
         {mode === "pace" ? <PlaySession key={revision} session={{ lesson, level: lesson.levels[7], phase: 0 }} /> : <PuzzlesScreen />}
       </View>
       <View style={{ padding: 6, backgroundColor: "#F3EEFF", flexDirection: "row", justifyContent: "space-around" }}>
-        {["QA Path", "QA Topics", "QA Pace", "QA Narrow", "QA LV"].map(label => <Pressable key={label} accessibilityRole="button" onPress={() => {
+        {["QA Path", "QA Topics", "QA Pace", "QA Narrow", "QA LV", "QA Level 10"].map(label => <Pressable key={label} accessibilityRole="button" onPress={() => {
+          if (label === "QA Level 10") {
+            const next = initialSave();
+            next.progress.completedPuzzleIds = getTopicPaths("easy", "addition").slice(0, 9).flatMap(item => item.levels.flatMap(level => level.puzzleIds));
+            commit(next);
+          }
           if (label === "QA Path") { setMode("path"); router.setParams({ topic: "addition", lesson: lesson.id, difficulty: "easy" }); }
           if (label === "QA Topics") { setMode("path"); router.setParams({ topic: undefined, lesson: undefined, difficulty: "easy" }); }
           if (label === "QA Pace") { setMode("pace"); commit(initialSave()); setRevision(n => n + 1); }

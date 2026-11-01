@@ -17,6 +17,7 @@ export type PuzzleTopic =
   | "division";
 
 export type PuzzleType =
+  | "place_value"
   | "multiple_choice"
   | "compare"
   | "operation_path"
@@ -266,7 +267,13 @@ export type FractionMatchPuzzle = PuzzleBase & {
   payload: FractionMatchPayload;
 };
 
+export type PlaceValuePuzzle = PuzzleBase & {
+  type: "place_value";
+  payload: { mode: "build" | "bundle" | "split" | "add" | "subtract"; start: number; operand?: number; guided: boolean };
+};
+
 export type Puzzle =
+  | PlaceValuePuzzle
   | OptionalChallengePuzzle
   | FindAllPairsPuzzle
   | MultipleChoicePuzzle

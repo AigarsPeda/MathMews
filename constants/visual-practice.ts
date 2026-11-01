@@ -70,7 +70,26 @@ function percentExample(key: string, percent: number, whole: number, groups: num
     step === 2 ? (discount ? `${whole} − ${part} = ${whole-part}` : `${percent}% × ${whole} = ${part}`) : step === 1 ? `${whole} ÷ ${groups} = ${part}` : undefined)));
 }
 
+// Base-ten help uses separate examples and unit-sized cells in every ten rod.
+function baseTenFrame(tens: number, ones: number) {
+  return [
+    ...Array.from({ length: tens * 10 }, (_, i) => token(`ten-${i}`, "", 30 + (i % 10) * 11, 25 + Math.floor(i / 10) * 18,
+      { shape: "part", width: 10, height: 10, tone: "secondary" })),
+    ...Array.from({ length: ones }, (_, i) => token(`one-${i}`, "", 190 + (i % 5) * 18, 25 + Math.floor(i / 5) * 18,
+      { shape: "part", width: 10, height: 10, tone: "primary" })),
+  ];
+}
+function baseTen(key: string, prompt: string, counts: [number, number][]) {
+  return frames(key, counts.map(([tens, ones]) => board(prompt, baseTenFrame(tens, ones), `${tens} × 10 + ${ones} = ${tens * 10 + ones}`)));
+}
+
 export const VISUAL_PRACTICE = {
+  base_ten_build: baseTen("base_ten_build", "26", [[0, 0], [2, 0], [2, 6]]),
+  base_ten_bundle: baseTen("base_ten_bundle", "10 = 10", [[1, 13], [2, 3], [2, 3]]),
+  base_ten_split: baseTen("base_ten_split", "10 = 10", [[3, 2], [2, 12], [2, 12]]),
+  base_ten_add: baseTen("base_ten_add", "23 + 18", [[2, 3], [3, 11], [4, 1]]),
+  base_ten_subtract: baseTen("base_ten_subtract", "32 − 16", [[3, 2], [2, 12], [1, 6]]),
+
   sort_buckets: frames("sort_buckets", [0, 1, 2].map(step => board("< 7     |     ≥ 7", [
     tile("small", "4", step ? 75 : 110, 60, { tone: step ? "primary" : "secondary" }),
     tile("large", "9", step === 2 ? 225 : 190, 60, { tone: step === 2 ? "primary" : "secondary" }),

@@ -35,3 +35,20 @@ export const PuzzleColors = {
   playGlow: "#D7F5E9",
   rewardGlow: "#D7F5E9",
 } as const;
+
+/** The topic trail's tabletop palette; other puzzle screens retain their own surfaces. */
+export const TopicPathColors = {
+  background: "#FFFCF7",
+  header: "#E3F4EC",
+  text: "#29443F",
+  textMuted: "#607970",
+  progress: PuzzleColors.challenge,
+  progressTrack: "#E9E2F1",
+  connection: "#DCD3E5",
+  completedConnection: "#9D64D5",
+  scenery: { lavender: "#9970BF70", mint: "#459E9270", gold: "#BC913570" },
+  completed: { top: "#FFFEF9", face: "#F8F0E3", edge: "#D7CCBB", border: "#E4DACA", inset: "#E5DCCB70", text: "#6930A5" },
+  locked: { top: "#EDF2EB", face: "#EDF2EB", edge: "#D4DFD4", border: "#DCE5DB", inset: "#FFFFFF70", text: "#75877B" },
+  current: { top: PuzzleColors.primaryTop, face: PuzzleColors.primary, edge: PuzzleColors.primaryDark, border: "#BD2463", inset: "#FFFFFF28", text: "#FFFFFF" },
+  halo: "#F9E7EE",
+} as const;

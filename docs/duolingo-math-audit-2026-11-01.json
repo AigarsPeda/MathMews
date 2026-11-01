@@ -1,0 +1,160 @@
+{
+  "date": "2026-11-01",
+  "baseline_commit": "74647b47",
+  "method": "Counts from all generated English puzzles; locale ID parity checked. Lesson ordering reconstructed from constants/puzzle-path.ts. Coverage judgments are in the companion report.",
+  "lessons": 180,
+  "path_steps_per_lesson": 10,
+  "legacy_catalog_puzzles": 1440,
+  "additional_path_review_puzzles": 360,
+  "difficulties": {
+    "easy": {
+      "puzzles": 600,
+      "english_latvian_ids_equal": true,
+      "ageRange": [
+        6,
+        8
+      ],
+      "type_counts": {
+        "balance": 30,
+        "compare": 43,
+        "find_all_pairs": 10,
+        "fix_mistake": 34,
+        "fraction_build": 42,
+        "fraction_equivalent": 15,
+        "fraction_match": 20,
+        "function_machine": 59,
+        "multiple_choice": 148,
+        "number_line": 50,
+        "order_numbers": 30,
+        "pair_sum": 9,
+        "pattern_next": 40,
+        "repair_pattern": 30,
+        "sort_buckets": 20,
+        "true_false": 20
+      },
+      "true_false": {
+        "total": 20,
+        "false": 19,
+        "subtraction_total": 10,
+        "subtraction_false": 10
+      },
+      "fraction_equivalent": {
+        "total": 15,
+        "answer_doubles_both_terms": 15
+      },
+      "fraction_compare": {
+        "total": 13,
+        "same_denominator": 13
+      },
+      "estimate": {
+        "total": 0,
+        "smallest_answer": 0
+      },
+      "number_line": {
+        "total": 50,
+        "negative_domain": 0
+      }
+    },
+    "medium": {
+      "puzzles": 600,
+      "english_latvian_ids_equal": true,
+      "ageRange": [
+        8,
+        10
+      ],
+      "type_counts": {
+        "balance": 51,
+        "compare": 48,
+        "fair_share": 31,
+        "find_all_pairs": 10,
+        "fix_mistake": 50,
+        "fraction_build": 30,
+        "fraction_equivalent": 20,
+        "fraction_match": 11,
+        "function_machine": 60,
+        "multiple_choice": 120,
+        "number_line": 29,
+        "operation_path": 30,
+        "pair_sum": 10,
+        "repair_pattern": 30,
+        "route_grid": 10,
+        "sort_buckets": 10,
+        "target_build": 30,
+        "true_false": 20
+      },
+      "true_false": {
+        "total": 20,
+        "false": 19,
+        "subtraction_total": 10,
+        "subtraction_false": 10
+      },
+      "fraction_equivalent": {
+        "total": 20,
+        "answer_doubles_both_terms": 20
+      },
+      "fraction_compare": {
+        "total": 29,
+        "same_denominator": 29
+      },
+      "estimate": {
+        "total": 0,
+        "smallest_answer": 0
+      },
+      "number_line": {
+        "total": 29,
+        "negative_domain": 0
+      }
+    },
+    "hard": {
+      "puzzles": 600,
+      "english_latvian_ids_equal": true,
+      "ageRange": [
+        10,
+        12
+      ],
+      "type_counts": {
+        "balance": 19,
+        "budget_plan": 10,
+        "compare": 29,
+        "estimate": 11,
+        "find_all_pairs": 1,
+        "fix_mistake": 20,
+        "fraction_build": 1,
+        "fraction_equivalent": 29,
+        "fraction_match": 19,
+        "function_machine": 41,
+        "multiple_choice": 211,
+        "operation_path": 30,
+        "order_numbers": 20,
+        "pattern_next": 40,
+        "repair_pattern": 10,
+        "route_grid": 19,
+        "sort_buckets": 20,
+        "target_build": 30,
+        "true_false": 40
+      },
+      "true_false": {
+        "total": 40,
+        "false": 23,
+        "subtraction_total": 10,
+        "subtraction_false": 0
+      },
+      "fraction_equivalent": {
+        "total": 29,
+        "answer_doubles_both_terms": 29
+      },
+      "fraction_compare": {
+        "total": 10,
+        "same_denominator": 10
+      },
+      "estimate": {
+        "total": 11,
+        "smallest_answer": 10
+      },
+      "number_line": {
+        "total": 0,
+        "negative_domain": 0
+      }
+    }
+  }
+}

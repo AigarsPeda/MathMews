@@ -10,7 +10,7 @@ import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { AchievementsLink } from "@/components/puzzle/AchievementsLink";
 import { getLearningTopics } from "@/constants/curriculum";
 import { getPathEntry, getPathProgress, getPathRecommendation, getPathResumeRecommendation, getTopicPaths } from "@/constants/puzzle-path";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { PuzzleColors as GameColors, TopicPathColors } from "@/constants/puzzle-theme";
 import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
 import { PUZZLE_DIFFICULTIES, isPuzzleDifficulty } from "@/constants/puzzles";
 import { useGame } from "@/contexts/GameProvider";
@@ -18,12 +18,13 @@ import { useLocale } from "@/contexts/LocaleProvider";
 import type { LearningLesson } from "@/types/curriculum";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { getTopicPathLayout } from "@/utils/topic-path-layout";
+import { Redirect, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useFonts } from "expo-font";
-import { memo, useLayoutEffect, useRef } from "react";
+import { memo, useCallback, useLayoutEffect, useRef } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import Animated, { Easing, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { Easing, ReduceMotion, useAnimatedScrollHandler, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PuzzlesScreen() {
@@ -61,8 +62,45 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
     : getPathResumeRecommendation(difficulty, progress);
   const recommendedProgress = recommendation ? getPathProgress(recommendation.lesson, progress) : undefined;
   const lessons = topic ? getTopicPaths(difficulty, topic.id) : [];
-  const completedLevels = lessons.filter(lesson => getPathProgress(lesson, progress).complete).length;
   const recommendedLevel = lessons.findIndex(lesson => lesson.id === recommendation?.lesson.id) + 1;
+  const topicId = params.topic;
+  const lessonCount = Number(lessons.length);
+  const trailScroll = useRef<ScrollView>(null);
+  const trailOffset = useSharedValue(0);
+  const trailViewport = useSharedValue(0);
+  const onTrailScroll = useAnimatedScrollHandler(event => {
+    trailOffset.set(event.contentOffset.y);
+  });
+  const trailLayout = useRef({ width: 0, height: 0, contentHeight: 0, positioned: false });
+  const focusFrame = useRef<number | null>(null);
+  useLayoutEffect(() => {
+    trailLayout.current.contentHeight = 0;
+    trailLayout.current.positioned = false;
+    trailOffset.set(0);
+  }, [topic?.id, difficulty, trailOffset]);
+
+  const focusCurrentLevel = useCallback(() => {
+    if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
+    // Native content bounds must be committed before issuing the scroll command.
+    focusFrame.current = requestAnimationFrame(() => {
+      focusFrame.current = null;
+      const viewport = trailLayout.current;
+      if (!topicId || viewport.positioned || !viewport.width || !viewport.height || !trailScroll.current) return;
+      const layout = getTopicPathLayout(Math.min(viewport.width, 460), lessonCount, recommendedLevel - 1);
+      const point = layout.points[recommendedLevel - 1];
+      if (!point || viewport.contentHeight < layout.height) return;
+      trailScroll.current.scrollTo({ y: Math.max(0, point.y - viewport.height * 0.45), animated: false });
+      viewport.positioned = true;
+    });
+  }, [topicId, lessonCount, recommendedLevel]);
+  useFocusEffect(useCallback(() => {
+    trailLayout.current.positioned = false;
+    focusCurrentLevel();
+    return () => {
+      if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
+      focusFrame.current = null;
+    };
+  }, [focusCurrentLevel]));
 
   function play(lesson: LearningLesson) {
     const entry = getPathEntry(lesson, progress);
@@ -78,27 +116,32 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
   if (!isReady) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
   if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
   if (params.topic && !topic) return <Redirect href={{ pathname: "/puzzles", params: { difficulty } }} />;
-  return <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
-    <PuzzleHeaderGlow color={GameColors.playGlow} />
+  return <SafeAreaView style={[styles.safe, topic && styles.trailSafe]} edges={["top", "bottom"]}>
+    {topic ? <PuzzleGradient colors={[TopicPathColors.header, TopicPathColors.background]} /> : <PuzzleHeaderGlow color={GameColors.playGlow} />}
     <View style={styles.screen}>
       <View style={styles.header}>
         <Pressable onPress={back} style={styles.iconButton} accessibilityRole="button" accessibilityLabel={t(topic ? "puzzlePathDesign.back" : "puzzlePath.a11yBack")}>
-          {topic ? <Feather name="arrow-left" color={GameColors.text} size={26} /> : <BackButtonLabel style={styles.backText} />}
+          {topic ? <Feather name="arrow-left" color={TopicPathColors.text} size={24} /> : <BackButtonLabel style={styles.backText} />}
         </Pressable>
+        {topic ? <Text style={styles.trailTitle} accessibilityRole="header">{topic.title[locale]}</Text> : null}
         {!topic ? <AchievementsLink /> : null}
       </View>
-      <ScrollView key={topic?.id ?? "selection"} style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title} accessibilityRole="header">{topic?.title[locale] ?? t("puzzlePathDesign.chooseTopic")}</Text>
-        {topic ? <>
-          <View style={styles.row}>
-            <Text style={styles.progressText}>{t(`difficulty.${difficulty}`)}</Text>
-            <View style={styles.progressTrack}>
-              <PuzzleProgress steps={lessons.map(lesson => getPathProgress(lesson, progress).complete)}
-                label={t("puzzlePathDesign.levelProgress", { count: completedLevels, total: lessons.length })} />
-            </View>
-          </View>
-          <TopicLevelPath lessons={lessons} progress={progress} currentLessonId={recommendation?.lesson.id} onPlay={play} />
-        </> : <>
+      {topic ? <Text style={styles.difficultyLabel}>{t(`difficulty.${difficulty}`)}</Text> : null}
+      <Animated.ScrollView ref={trailScroll} key={`${difficulty}:${topic?.id ?? "selection"}`} style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}
+        onScroll={onTrailScroll} scrollEventThrottle={16}
+        onLayout={({ nativeEvent: { layout } }) => {
+          if (trailLayout.current.width !== layout.width || trailLayout.current.height !== layout.height) trailLayout.current.positioned = false;
+          trailLayout.current.width = layout.width;
+          trailLayout.current.height = layout.height;
+          trailViewport.set(layout.height);
+          focusCurrentLevel();
+        }} onContentSizeChange={(_width, height) => {
+          trailLayout.current.contentHeight = height;
+          focusCurrentLevel();
+        }}>
+        {topic ? <TopicLevelPath lessons={lessons} progress={progress} currentLessonId={recommendation?.lesson.id} onPlay={play}
+          scrollOffset={trailOffset} viewportHeight={trailViewport} /> : <>
+          <Text style={styles.title} accessibilityRole="header">{t("puzzlePathDesign.chooseTopic")}</Text>
           <DifficultyPicker selected={difficulty} onSelect={tier => { if (tier !== difficulty) router.setParams({ difficulty: tier }); }} />
           <Animated.View style={[styles.selectionContent, selectionStyle]}>
             {recommendation ? <View style={styles.resumeCard}>
@@ -122,7 +165,7 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
           </Animated.View>
           <Pressable onPress={() => router.push("/stats")} style={styles.secondary} accessibilityRole="button"><Text style={styles.backText}>{t("stats.title")}</Text></Pressable>
         </>}
-      </ScrollView>
+      </Animated.ScrollView>
       {topic && recommendation ? <View style={styles.pathAction}>
         <PuzzleButton label={t(recommendedProgress?.complete ? "puzzlePathDesign.replay" : "puzzlePathDesign.playLevel", { number: recommendedLevel })} onPress={() => play(recommendation.lesson)} />
       </View> : null}
@@ -132,6 +175,7 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
 const topicSurfaces = ["#D5F4FF", "#E8FFC2", "#FFDCF8", "#F0D8FF", "#FFF3BF"];
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: GameColors.background },
+  trailSafe: { backgroundColor: TopicPathColors.background },
   loading: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: GameColors.background },
   screen: { flex: 1, paddingHorizontal: moderateScale(22), gap: moderateScale(12), paddingBottom: moderateScale(8) },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
@@ -139,9 +183,8 @@ const styles = StyleSheet.create({
   backText: { fontSize: moderateScale(16), fontWeight: "700", color: GameColors.text },
   scroll: { flex: 1 }, content: { paddingBottom: moderateScale(20), gap: moderateScale(18) },
   title: { fontSize: moderateScale(32), fontWeight: "900", color: GameColors.text },
-  progressText: { fontSize: moderateScale(16), color: GameColors.textMuted, fontWeight: "700" },
-  row: { flexDirection: "row", gap: moderateScale(12), alignItems: "center" },
-  progressTrack: { flex: 1 },
+  trailTitle: { flex: 1, marginLeft: moderateScale(8), fontSize: moderateScale(28), fontWeight: "800", color: TopicPathColors.text },
+  difficultyLabel: { fontSize: moderateScale(14), color: TopicPathColors.textMuted, fontWeight: "700", paddingVertical: moderateScale(8) },
   pathAction: { paddingTop: moderateScale(12) },
   selectionContent: { gap: moderateScale(14) },
   resumeCard: { padding: moderateScale(20), gap: moderateScale(16), borderRadius: moderateScale(24), overflow: "hidden", marginBottom: moderateScale(8) },
