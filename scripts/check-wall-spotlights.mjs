@@ -295,6 +295,7 @@ Object.assign(mocks['react-native-filament'], {
   useEntityInScene: () => {},
   RenderCallbackContext: { useRenderCallback: fn => { callback = fn; } },
 });
+mocks.react.memo = component => component;
 const { NativeLampLight } = load('@/components/pet/native/NativeLampLight');
 const object = buildNativeRoomWorld({ width: 390, height: 430, petSize: 90, sizeScale: 1,
   decorations: [{ decorationId: ids[0], instanceId: 'spot', offset: { x: .2, y: -.7 }, poweredOn: true }], toys: [] }).objects[0];
@@ -338,7 +339,7 @@ try {
 
 const emissions = [];
 const glowMaterial = { setFloat4Parameter: (name, value) => emissions.push([name, Array.from(value)]) };
-mocks.react.useMemo = fn => hostArray(fn());
+mocks.react.useMemo = fn => { const value = fn(); return Array.isArray(value) ? hostArray(value) : value; };
 mocks['react-native-filament'].useFilamentContext = () => ({
   renderableManager: { getPrimitiveCount: () => 1, getMaterialInstanceAt: () => glowMaterial },
   nameComponentManager: { getEntityName: () => 'Spotlight lens' },
@@ -428,8 +429,9 @@ console.log('Verified smoothing uses the same pose for lens and beam without Rea
 // Linear bathroom diffusers illuminate their full exported width, on either wall.
 let emitterState;
 const emitterWrites = [];
-mocks['react-native-worklets-core'].useSharedValue = () => emitterState.applied;
+mocks['react-native-worklets-core'].useSharedValue = initial => typeof initial === 'boolean' ? emitterState.drawing ??= { value: initial } : emitterState.applied;
 mocks.react.useEffect = (fn, deps) => {
+  if (typeof deps[1] === 'boolean') { fn(); return; }
   if (emitterState.effectLight !== deps[1]) { emitterState.effectLight = deps[1]; fn(); }
 };
 mocks['react-native-filament'].useLightEntity = (_manager, config) => {
@@ -452,8 +454,10 @@ for (const [id, count] of [['bathroomLightStrip', 7], ['bathroomLightVanity', 5]
     const fixture = buildNativeRoomWorld({ width: 390, height: 430, petSize: 90, sizeScale: 1, toys: [],
       decorations: [{ decorationId: id, instanceId: 'linear', offset: { x: wallFlipped ? -.2 : .2, y: -.65 }, wallFlipped, scale, poweredOn: true }],
     }).objects[0];
+    const parentState = {};
     const drag = { value: undefined }, states = Array.from({ length: count }, () => ({ applied: { value: [] } }));
     const paint = (object, active = true) => {
+      emitterState = parentState;
       const node = NativeLampLight({ object, active, editingObject: drag });
       const children = node.props.children.flat();
       assert.equal(children.length, count);

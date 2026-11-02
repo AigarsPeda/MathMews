@@ -24,7 +24,8 @@ for (const locale of ['en', 'lv']) {
     if (id === 'react-i18next') return { useTranslation: () => ({ t: translate }) };
     if (id === 'react-native') return { Pressable: 'Pressable', Text: 'Text', View: 'View', StyleSheet: { create: s => s } };
     if (id === '@/utils/scale') return { moderateScale: value => value };
-    if (id === '@/constants/game') return { GameColors: {} };
+    if (id === '@/constants/puzzle-theme') return { PuzzleColors: {} };
+    if (id === '@/components/puzzle/PuzzleText') return { PuzzleText: 'Text' };
     if (id === '@/components/puzzle/NumberLineTrack') return { NumberLineTrack: 'Track' };
     throw new Error(`Unexpected import: ${id}`);
   };
@@ -88,7 +89,8 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('components/puzzle/NumberL
   if (id === 'react-i18next') return { useTranslation: () => ({ t: (key, params = {}) => key.split('.').reduce((value, part) => value[part], strings).replace(/{{(\w+)}}/g, (_, name) => params[name]) }) };
   if (id === 'react-native') return { Pressable: 'Pressable', ScrollView: 'ScrollView', Text: 'Text', View: 'View', StyleSheet: { create: s => s } };
   if (id === '@shopify/react-native-skia') return { Canvas: 'Canvas', Path: 'Path', Skia: { Path: { Make: path } } };
-  if (id === '@/constants/game') return { GameColors: {} };
+  if (id === '@/constants/puzzle-theme') return { PuzzleColors: {} };
+  if (id === '@/components/puzzle/PuzzleText') return { PuzzleText: 'Text' };
   if (id === '@/utils/scale') return { moderateScale: n => n };
   throw new Error(`Unexpected import: ${id}`);
 } });

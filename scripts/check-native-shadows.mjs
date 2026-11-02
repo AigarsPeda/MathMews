@@ -8,7 +8,7 @@ const root = process.cwd(), cache = new Map(), flags = [], lights = [];
 let supported, renderCallbacks = 0, enumerations = 0;
 const manager = { get shadowMapsSupported() { return supported; } };
 const mocks = {
-  react: { useMemo: fn => fn(), useEffect() {} },
+  react: { memo: component => component, useMemo: fn => fn(), useEffect() {} },
   '@/hooks/use-world-clock-now': { useWorldClockNow: () => 1_790_000_000_000 },
   'react/jsx-runtime': { jsx: (type, props) => ({ type, props }), jsxs: (type, props) => ({ type, props }), Fragment: 'Fragment' },
   'react-native-worklets-core': { useSharedValue: value => ({ value }) },

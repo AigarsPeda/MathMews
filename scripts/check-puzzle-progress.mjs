@@ -13,7 +13,7 @@ vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleK
   if(id==='react')return{useEffect:fn=>fn()};
   if(id==='react-native')return{View:'View',StyleSheet:{create:s=>s}};
   if(id==='@/utils/scale')return{moderateScale:n=>n};
-  if(id==='@/constants/puzzle-theme')return{PuzzleColors:{progress:'green',progressTop:'lime',progressTrack:'gray'}};
+  if(id==='@/constants/puzzle-theme')return{PuzzleColors:{progress:'green',progressTop:'lime',progressTrack:'gray'},TopicPathColors:{progress:'purple',progressTrack:'lavender'}};
   if(id==='react-native-reanimated')return{__esModule:true,default:{View:'Fill'},ReduceMotion:{System:'system'},Easing:{cubic:n=>n*n*n,out:fn=>fn},
    useSharedValue:initial=>fill??={value:initial,get(){return this.value;},set(value){this.value=value;}},
    useAnimatedStyle:fn=>{animatedStyle=fn;return{};},withTiming:(to,options)=>{requests.push({from:fill.get(),to,...options});return to;}};

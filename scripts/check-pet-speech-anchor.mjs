@@ -6,9 +6,10 @@ import ts from 'typescript';
 
 const states = [];
 const sharedValues = [];
-let stateIndex = 0, sharedIndex = 0, stageZoom = 1;
+let stateIndex = 0, sharedIndex = 0, stageZoom = 1, camera;
 const React = {
   createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
+  memo: component => component,
   useMemo: fn => fn(), useCallback: fn => fn, useEffect: () => {},
   useLayoutEffect: fn => fn(),
   useRef: current => ({ current }),
@@ -22,7 +23,8 @@ const shared = () => ({ get: () => 0, set() {} });
 const mocks = {
   '@/hooks/use-world-period': { useWorldPeriod: () => undefined },
   'react-native-worklets-core': { useSharedValue: value => ({ value }) },
-  '@/utils/room-item-placement': { createRoomPlacementResolver: () => ({}) },
+  '@/utils/room-item-placement': { createRoomPlacementResolver: () => ({}), createRoomPlacementResolverCache: () => () => ({}) },
+  '@/utils/room-support': { roomSupportGroup: () => [] },
   "@/constants/room-commands": { ROOM_COMMANDS: [], getRoomCommands: () => [] },
   "@/lib/graphics-mode": { useGraphicsMode: () => "3d" },
   '@/utils/native-room-world': { buildNativeRoomWorld: () => ({ width: 320, height: 320, objects: [], home: [0,0,0] }) },
@@ -50,14 +52,14 @@ const mocks = {
     },
   },
   '@/utils/scale': { moderateScale: value => value },
-  '@/utils/pet-care': { clampStat: value => value },
+  '@/utils/pet-care': { clampStat: value => value, canFeedForEffect: () => false },
   '@/utils/room-layer-order': { normalizeRoomLayerOrder: () => [], ROOM_PET_LAYER_Z_INDEX: 1 },
   '@/utils/room-depth': { getRoomDepthZIndex: y => y, getRoomObjectDepthAnchor: () => .38, isRoomBackgroundDecoration: () => false },
   '@/constants/game': { GameColors: {} },
   '@/constants/cat-toys': { getToyDisplaySize: () => 30 },
   '@/constants/cat-beds': { getEquippedBedScale: () => 1, getBedDisplaySize: () => 120, getCatBedSource: () => undefined },
 };
-mocks['@/hooks/use-room-camera'] = { useRoomCamera: () => ({
+mocks['@/hooks/use-room-camera'] = { useRoomCamera: () => (camera = {
   x: mocks['react-native-reanimated'].useSharedValue(0),
   y: mocks['react-native-reanimated'].useSharedValue(0),
   scale: mocks['react-native-reanimated'].useSharedValue(stageZoom),
@@ -110,7 +112,7 @@ for (const zoom of [1, 1.73, 2.36, 3]) {
   assert.ok(artwork && !ancestors.includes(artwork), 'Speech is outside the scaled artwork');
   pet.props.onPositionChange({ x: -40, y: 60 });
   for (const scale of [1, 1.25, 1.75, 2, 2.5, 3]) {
-    sharedValues[0].set(0); sharedValues[1].set(0); sharedValues[2].set(scale);
+    camera.x.set(0); camera.y.set(0); camera.scale.set(scale);
     const initial = style(bubble.props.style).transform;
     assert.ok(initial.every(transform => !('scale' in transform)),
       'Bubble text must stay at native screen size throughout animated zoom');
@@ -124,8 +126,8 @@ for (const zoom of [1, 1.73, 2.36, 3]) {
   }
   if (zoom > 1) {
     const beforePan = style(bubble.props.style).transform;
-    sharedValues[0].set(sharedValues[0].get() + 45);
-    sharedValues[1].set(sharedValues[1].get() - 60);
+    camera.x.set(camera.x.get() + 45);
+    camera.y.set(camera.y.get() - 60);
     const afterPan = style(bubble.props.style).transform;
     assert.equal(afterPan[0].translateX - beforePan[0].translateX, 45,
       'Speech and cat must move by the same screen distance during panning');
@@ -145,10 +147,14 @@ vm.runInNewContext(draggableSource, {
 });
 states.splice(0, states.length);
 sharedValues.splice(0, sharedValues.length);
+function renderPet(props) {
+  const node = draggableModule.exports.DraggableRoomPet(props);
+  return node.type(node.props);
+}
 let reportedPosition;
 function renderDraggable() {
   stateIndex = 0; sharedIndex = 0;
-  return flatten(draggableModule.exports.DraggableRoomPet({
+  return flatten(renderPet({
     children: null, petSize: 120, initialOffset: offset,
     onPositionChange: position => { reportedPosition = position; },
   }));
@@ -166,7 +172,7 @@ console.log('Verified cat-attached speech at fractional zoom, live cat movement,
 
 for (const [allowDrag, interactive] of [[true, true], [false, true], [true, false]]) {
   stateIndex = 0; sharedIndex = 0;
-  const menuItem = flatten(draggableModule.exports.DraggableRoomPet({
+  const menuItem = flatten(renderPet({
     children: null, petSize: 120, allowDrag, interactive,
     menuActions: [{ label: 'Remove', icon: 'delete-outline', onPress() {} }],
   }));
@@ -191,7 +197,7 @@ for (const [allowDrag, interactive] of [[true, true], [false, true], [true, fals
 // A small touch selects an item; a real drag saves its position without a tap.
 stateIndex = 0; sharedIndex = 0;
 let taps = 0, dragStarts = 0, saves = 0;
-const dragItem = flatten(draggableModule.exports.DraggableRoomPet({
+const dragItem = flatten(renderPet({
   children: null, petSize: 120, allowDrag: true,
   onPetTap: () => taps++, onDragStart: () => dragStarts++, onOffsetChange: () => saves++,
   menuActions: [{ label: 'Remove', icon: 'delete-outline', onPress() {} }],
@@ -215,7 +221,7 @@ states.length=0;sharedValues.length=0;
 let acceptedSave;
 function renderBlockedDrag() {
   stateIndex=0;sharedIndex=0;
-  return flatten(draggableModule.exports.DraggableRoomPet({children:null,petSize:120,initialOffset:{x:0,y:0},snapToGrid:true,
+  return flatten(renderPet({children:null,petSize:120,initialOffset:{x:0,y:0},snapToGrid:true,
     onDragPositionChange:point=>({x:Math.min(16,point.x),y:point.y}),onOffsetChange:offset=>{acceptedSave=offset;}}));
 }
 renderBlockedDrag()[0].node.props.onLayout({nativeEvent:{layout:{width:320,height:320}}});
@@ -231,7 +237,7 @@ for (const constrainToRoom of [false,true]) {
   let saved;
   function renderCurtainDrag() {
     stateIndex=0;sharedIndex=0;
-    return flatten(draggableModule.exports.DraggableRoomPet({children:null,petSize:120,constrainToRoom,
+    return flatten(renderPet({children:null,petSize:120,constrainToRoom,
       initialOffset:{x:0,y:0},onOffsetChange:offset=>{saved=offset;}}));
   }
   renderCurtainDrag()[0].node.props.onLayout({nativeEvent:{layout:{width:320,height:320}}});
@@ -251,7 +257,7 @@ for (const zoom of [1, 1.73, 2.6, 3]) {
   let live, saved;
   const zoomedDraggable = () => {
     stateIndex = 0; sharedIndex = 0;
-    return flatten(draggableModule.exports.DraggableRoomPet({ children: null, petSize: 48,
+    return flatten(renderPet({ children: null, petSize: 48,
       dragScale: zoom, initialOffset: { x: .2, y: .3 },
       onDragPositionChange: point => { live = point; }, onOffsetChange: offset => { saved = offset; } }));
   };

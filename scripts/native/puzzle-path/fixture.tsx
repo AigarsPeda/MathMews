@@ -10,7 +10,7 @@ import { beginTimedChallenge, settleChallengeTimeout } from "@/utils/timed-chall
 import type { GameSave } from "@/types/save";
 import i18n from "@/i18n";
 import { Redirect, Stack, useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import { Pressable, Text, TurboModuleRegistry, View, type TurboModule } from "react-native";
 const PREVIOUS_FAST_REFRESH = true;
@@ -41,7 +41,18 @@ export default function PathFixture() {
     settings.setHotLoadingEnabled(false);
     return () => settings.setHotLoadingEnabled(PREVIOUS_FAST_REFRESH);
   }, [router]);
-  function commit(next: GameSave) { current.current = next; setSave(next); }
+  const commit = useCallback((next: GameSave) => { current.current = next; setSave(next); }, []);
+  const beginChallenge = useCallback((id: string, pace: "timed" | "untimed" = "timed") => {
+    const level = getPathLocation(id)?.level;
+    if (!level) return false;
+    const now = Date.now();
+    const progress = beginTimedChallenge(current.current.progress, level, `qa-${now}`, now, pace);
+    if (!progress) return false;
+    commit({ ...current.current, progress }); return true;
+  }, [commit]);
+  const expireChallenge = useCallback((id: string) => {
+    commit({ ...current.current, progress: settleChallengeTimeout(current.current.progress, Date.now(), id) });
+  }, [commit]);
   if (!__DEV__) return <Redirect href="/" />;
   const game = { ...realGame, pet: save.pet, wallet: save.wallet, progress: save.progress, isReady: true, hasCompletedOnboarding: true,
     recordInteraction() { return 0; }, recordLearningHelp() {}, purchaseVisualHelp: () => true,
@@ -50,14 +61,8 @@ export default function PathFixture() {
       if (!result.accepted) return null;
       commit(result.save); return result.coins;
     },
-    beginChallenge(id: string, pace: "timed" | "untimed" = "timed") {
-      const level = getPathLocation(id)?.level;
-      if (!level) return false;
-      const progress = beginTimedChallenge(current.current.progress, level, `qa-${Date.now()}`, Date.now(), pace);
-      if (!progress) return false;
-      commit({ ...current.current, progress }); return true;
-    },
-    expireChallenge(id: string) { commit({ ...current.current, progress: settleChallengeTimeout(current.current.progress, Date.now(), id) }); },
+    beginChallenge,
+    expireChallenge,
   };
   return <I18nextProvider i18n={language}><LocaleContext.Provider value={{ locale, isReady: true, setLocale: async next => { setLocale(next); await language.changeLanguage(next); } }}><GameContext.Provider value={game}>
     <Stack.Screen options={{ statusBarStyle: "dark", contentStyle: { backgroundColor: "#FFFFFF" } }} />

@@ -81,6 +81,8 @@ async function harness(screen = 'store', compiled = false) {
   let stageActivity = { activity: null, scale: shared(1), facing: shared(1), objectX: shared(0), objectY: shared(0),
     clearBlockedActivity() {}, startActivity() {}, returnHome() {}, stopActivity() {} };
   const mocks = {
+    '@expo/vector-icons': { Feather: view('Feather') },
+    'expo-font': { useFonts: () => [true, null] },
     '@shopify/react-native-skia': { Canvas: view('Canvas'), Path: view('Path'), Group: view('Group'), DashPathEffect: view('DashPathEffect'),
       Skia: { Path: { Make() { const points = []; return { points, moveTo(x, y) { points.push([x, y]); }, lineTo(x, y) { points.push([x, y]); }, close() {} }; } } } },
     '@/lib/graphics-mode': { useGraphicsMode: () => '3d' },
@@ -104,8 +106,9 @@ async function harness(screen = 'store', compiled = false) {
       } },
     'react-native-worklets-core': { useSharedValue: value => React.useState(() => shared(value))[0] },
     '@/hooks/use-filament-shared-value': { useFilamentSharedValue: value => value },
-    'react-native-reanimated': { __esModule: true, default: { View: view('AnimatedView'), Text: view('AnimatedText') }, useReducedMotion: () => false,
+    'react-native-reanimated': { __esModule: true, default: { View: view('AnimatedView'), Text: view('AnimatedText'), ScrollView: view('AnimatedScrollView') }, useReducedMotion: () => false,
       useSharedValue: value => React.useState(() => shared(value))[0],
+      useAnimatedScrollHandler: handler => handler,
       useAnimatedStyle: useWorkletValue,
       useDerivedValue: useWorkletValue },
     'react-native-gesture-handler': { GestureDetector: view('GestureDetector') },
@@ -201,7 +204,7 @@ async function harness(screen = 'store', compiled = false) {
       return new Proxy({ [name]: view(name) }, { get: (target, key) => key === 'ROOM_NAVIGATION_HEIGHT' ? 52 : target[key] ?? view(key) });
     }
     let file = id.startsWith('@/') ? path.resolve(id.slice(2)) : path.resolve(base, id);
-    if (/\.(png|webp|mp4|glb)$/.test(file)) return file;
+    if (/\.(png|webp|mp4|glb|ttf)$/.test(file)) return file;
     if (!fs.existsSync(file)) file = ['.ts', '.tsx', '.json'].map(ext => file + ext).find(fs.existsSync);
     assert.ok(file, `Resolve ${id}`);
     if (cache.has(file)) return cache.get(file).exports;

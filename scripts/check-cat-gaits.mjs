@@ -34,7 +34,12 @@ assert.ok(distance(revised.path[0],before)<1e-8&&revised.paces[0]>1,'A changed r
 // regular cat radius but has too little extra room for a run.
 {
   const built=buildNativeRoomWorld({width:390,height:420,petSize:80,sizeScale:1,decorations:[],toys:[{toyId:'blueBall',instanceId:'toy',offset:{x:.5,y:.3}}]});
-  const ball={...built.objects.find(o=>o.instanceId==='toy'),position:[1.3,FLOOR_Y,1.3]};
+  // Keep collision bounds aligned when relocating the toy in this fixture.
+  const moveObject=(object,position)=>({...object,position,
+    min:object.min.map((value,index)=>value+position[index]-object.position[index]),
+    max:object.max.map((value,index)=>value+position[index]-object.position[index]),
+  });
+  const ball=moveObject(built.objects.find(o=>o.instanceId==='toy'),[1.3,FLOOR_Y,1.3]);
   const world={...built,objects:[ball]};
   const from=[-1.5,FLOOR_Y,-1.5],to=[1.5,FLOOR_Y,1.5];
   const step={animation:'walk',mood:'idle',targetInstanceId:'toy',position:catScreenPoint(to,world),durationMs:1000,moveMs:1000};
@@ -44,9 +49,10 @@ assert.ok(distance(revised.path[0],before)<1e-8&&revised.paces[0]>1,'A changed r
   const returning={...step,returnHome:true};
   assert.equal(prepareNativeStep({kind:'toyPlay',steps:[returning]},returning,catScreenPoint(from,world),world,FLOOR_Y).native.gait,'walk','Cooling down from play uses a relaxed return');
   const box=(id,min,max)=>({instanceId:id,modelId:'livingTable',position:[0,0,0],scale:1,heading:0,min,max,solid:true,collidable:true,collisionBoxes:[{min,max}]});
-  const corridorWorld={...world,catScale:.5,radius:.15,objects:[box('left',[-1,0,-2],[-.18,1,2]),box('right',[.18,0,-2],[1,1,2]),{...ball,position:[.1,FLOOR_Y,1.2]}]};
+  const corridorWorld={...world,catScale:.5,radius:.15,objects:[box('left',[-1,0,-2],[-.18,1,2]),box('right',[.18,0,-2],[1,1,2]),moveObject(ball,[0,FLOOR_Y,1.2])]};
   const start=[0,FLOOR_Y,-1.5],end=[0,FLOOR_Y,1.5],walkStep={...step,position:catScreenPoint(end,corridorWorld)};
   const travel=prepareNativeStep({kind:'toyPlay',steps:[walkStep]},walkStep,catScreenPoint(start,corridorWorld),corridorWorld,FLOOR_Y).native;
+  assert.ok(travel.path.length>1&&travel.path.every(point=>Math.abs(point[0])<.03&&point[2]>=start[2]&&point[2]<end[2]),'The route stays inside the corridor and approaches the toy');
   assert.ok(!travel.blocked&&travel.paces.every(p=>p>=4.6/1.8-.001),'The real narrow corridor retains walking speed');
 }
 

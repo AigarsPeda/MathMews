@@ -23,7 +23,7 @@ const react = {
     const i = stateIndex++;
     if (!(i in states)) states[i] = { current };
     return states[i];
-  }, useMemo: fn => fn(), useCallback: fn => fn, useEffect: fn => { if (captureEffects) effects.push(fn); },
+  }, useMemo: fn => fn(), useCallback: fn => fn, useLayoutEffect: fn => fn(), useEffect: fn => { if (captureEffects) effects.push(fn); },
 };
 const mocks = {
   react,
@@ -259,8 +259,10 @@ editingMenu.actions.find(action => action.label === 'home.shop').onPress();
 assert.equal(routes.length, storeVisitsBefore + 1);
 assert.equal(routes.at(-1), '/store', 'The active decoration dropdown opens Shop');
 house = renderHome();
-assert.equal(visibleStage(house).props.roomToolbar.decorating, true, 'Opening Shop preserves decoration mode for returning');
-assert.equal(house.some(node => node.props.accessibilityLabel === 'home.a11ySolve'), false, 'The puzzle action does not compete with finishing decoration');
+assert.equal(visibleStage(house).props.roomToolbar.decorating, false, 'Opening Shop exits decoration mode before browsing');
+assert.equal(house.some(node => node.props.accessibilityLabel === 'home.a11ySolve'), true, 'The normal home action returns after editing ends');
+visibleStage(house).props.roomToolbar.onDecoratingChange('livingRoom', true);
+house = renderHome();
 house.find(node => node.props.accessibilityLabel === 'home.finishDecorating').props.onPress();
 house = renderHome();
 assert.equal(visibleStage(house).props.roomToolbar.decorating, false, 'Done ends editing in the controlled room');

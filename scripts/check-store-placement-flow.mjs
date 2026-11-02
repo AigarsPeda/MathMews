@@ -8,8 +8,9 @@ const root = process.cwd(), cache = new Map();
 let states = [], index = 0, game, events = [], purchaseResult = 'purchased', focusEffect;
 const jsx = (type, props) => ({ type, props });
 const react = {
+  memo: component => component,
   useSyncExternalStore: (_subscribe, getSnapshot) => getSnapshot(),
-  useMemo: fn => fn(), useCallback: fn => fn, useEffect() {},
+  useMemo: fn => fn(), useCallback: fn => fn, useEffect() {}, useLayoutEffect: fn => fn(),
   useState: initial => { const i = index++; if (!(i in states)) states[i] = typeof initial === 'function' ? initial() : initial;
     return [states[i], next => { states[i] = typeof next === 'function' ? next(states[i]) : next; }]; },
   useRef: current => { const i = index++; return states[i] ??= { current }; },
@@ -24,6 +25,7 @@ function load(id) {
   if (id === 'expo-router') return { useFocusEffect: fn => { focusEffect=fn; }, useRouter:()=>({ dismissTo:route=>events.push(['route', route]) }) };
   if (id === 'expo-haptics') return {};
   if (id === '@/contexts/GameProvider') return { useGame:()=>game };
+  if (id === '@/hooks/use-animation-activity') return { useAnimationActivity: () => ({ active: true, reduceMotion: false }) };
   if (id === '@/utils/scale') return { moderateScale:n=>n };
   if (id.startsWith('@/components/')) { const name=path.basename(id); return { [name]:name, IconText:'Text' }; }
   if (/\.(png|webp|mp4)$/.test(id)) return id;
@@ -40,7 +42,10 @@ function load(id) {
 const StoreScreen = load('app/store.tsx').default;
 const { roomDecorationEntry } = load('@/utils/room-decoration-entry');
 const { createRoomPlacementDraft } = load('@/utils/room-edit');
-function flatten(node) { return !node || typeof node !== 'object' ? [] : Array.isArray(node) ? node.flatMap(flatten) : [node,...flatten(node.props?.children)]; }
+function flatten(node) {
+  if (typeof node?.type === 'function') return flatten(node.type(node.props));
+  return !node || typeof node !== 'object' ? [] : Array.isArray(node) ? node.flatMap(flatten) : [node,...flatten(node.props?.children)];
+}
 function render() { index=0; return flatten(StoreScreen()); }
 function setup() {
   states=[]; events=[]; purchaseResult='purchased';

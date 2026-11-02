@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 const shared = initial => { let value=initial; return { get:()=>value, set:next=>{value=next;} }; };
-const React={createElement:(type,props,...children)=>({type,props:{...props,children}}),useCallback:fn=>fn,useMemo:fn=>fn(),useRef:current=>({current}),useState:initial=>[initial,()=>{}],useEffect:()=>{},useLayoutEffect:fn=>fn()};
+const React={memo: component => component,createElement:(type,props,...children)=>({type,props:{...props,children}}),useCallback:fn=>fn,useMemo:fn=>fn(),useRef:current=>({current}),useState:initial=>[initial,()=>{}],useEffect:()=>{},useLayoutEffect:fn=>fn()};
 const mocks={
   react:React, 'react-i18next':{useTranslation:()=>({t:key=>key})},
   'react-native':{View:'View',StyleSheet:{create:value=>value,absoluteFill:{}},PanResponder:{create:handlers=>({panHandlers:handlers})}},
@@ -22,7 +22,8 @@ function load(file){
 const depth=load('utils/room-depth.ts');
 mocks['@/utils/room-depth']=depth;
 mocks['@/utils/room-layer-order']={ROOM_MENU_OPEN_Z_INDEX:600100};
-const {DraggableRoomPet}=load('components/pet/DraggableRoomPet.tsx');
+const {DraggableRoomPet: DraggableWrapper}=load('components/pet/DraggableRoomPet.tsx');
+const DraggableRoomPet = props => { const node = DraggableWrapper(props); return node.type(node.props); };
 const style=value=>Object.assign({},...[value].flat(Infinity).filter(Boolean).map(part=>part.read?part.read():part));
 const y=shared(-30),x=shared(0);
 const toy=DraggableRoomPet({petSize:48,depthAnchor:.3,layerZIndex:5,animatedPosition:{x,y}});

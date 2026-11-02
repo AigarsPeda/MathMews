@@ -59,10 +59,15 @@ for (const [key, lesson] of Object.entries(VISUAL_PRACTICE)) {
     const width = token.width ?? (token.shape === 'plain' ? Math.max(40, token.label.length * 14) : 40);
     assert.ok(token.x - width / 2 >= 0 && token.x + width / 2 <= 300 && token.y >= 18 && token.y <= 122, `${key}: visible diagram content fits its board`);
   }
-  const hasMovement = lesson.some((frame, index) => index > 0 && frame.scene.tokens.some(token => {
-    const previous = lesson[index - 1].scene.tokens.find(other => other.id === token.id);
-    return previous && (previous.x !== token.x || previous.y !== token.y || previous.visible !== token.visible || previous.tone !== token.tone || previous.scale !== token.scale);
-  }));
+  const hasMovement = lesson.some((frame, index) => {
+    if (index === 0) return false;
+    const before = visibleTokens(lesson[index - 1]), after = visibleTokens(frame);
+    return before.length !== after.length || after.some(token => {
+      const previous = before.find(other => other.id === token.id);
+      return !previous || previous.x !== token.x || previous.y !== token.y || previous.tone !== token.tone || previous.scale !== token.scale
+        || (previous.label !== token.label && /^\d+$/.test(previous.label) && /^\d+$/.test(token.label));
+    });
+  });
   assert.ok(hasMovement, `${key}: steps demonstrate a changing quantity or spatial relationship`);
 }
 const totalPuzzles = ['easy', 'medium', 'hard'].reduce((sum, tier) => sum + getPuzzlesByDifficulty('en', tier).length, 0);
@@ -79,6 +84,25 @@ for (const tier of ['easy', 'medium', 'hard']) {
     assert.ok(p.question && p.hint && p.explanation);
     let answer;
     switch (p.type) {
+      case 'place_value': {
+        const { mode, start, operand = 0 } = p.payload;
+        const target = mode === 'add' ? start + operand : mode === 'subtract' ? start - operand : start;
+        answer = { kind: 'place_value', state: { tens: Math.floor(target / 10) - (mode === 'split' ? 1 : 0),
+          ones: target % 10 + (mode === 'split' ? 10 : 0), added: mode === 'add' } }; break;
+      }
+      case 'fraction_number_line': answer = { kind: 'fraction_point', tick: p.payload.numerator * p.payload.divisions / p.payload.denominator }; break;
+      case 'fraction_strip': {
+        const parts = p.payload.partitions.find(parts => Number.isInteger(p.payload.numerator * parts / p.payload.denominator));
+        assert.ok(parts, `${p.id}: an allowed partition represents the target fraction`);
+        answer = { kind: 'fraction_strip', state: { parts, shaded: p.payload.numerator * parts / p.payload.denominator } }; break;
+      }
+      case 'decimal_grid': answer = { kind: 'decimal_grid', shaded: p.payload.hundredths * p.payload.scale / 100 }; break;
+      case 'decimal_place_value': {
+        const { hundredths: total, mode, exchangeUnit } = p.payload;
+        const state = { ones: Math.floor(total / 100), tenths: Math.floor(total % 100 / 10), hundredths: total % 10 };
+        if (mode === 'split') { state[exchangeUnit === 'tenths' ? 'ones' : 'tenths']--; state[exchangeUnit] += 10; }
+        answer = { kind: 'decimal_place', state }; break;
+      }
       case 'sort_buckets': case 'repair_pattern': case 'route_grid': case 'budget_plan': answer=challengeAnswers(p)[0]; break;
       case 'find_all_pairs': answer = { kind: 'pairs', pairs: getValidPairs(p.payload.numbers, p.payload.target) }; break;
       case 'target_build': answer = { kind: 'operators', operators: p.payload.solution }; break;
@@ -89,7 +113,7 @@ for (const tier of ['easy', 'medium', 'hard']) {
       case 'order_numbers': answer = { kind: 'order', numbers: p.payload.correctOrder }; assert.deepEqual([...p.payload.numbers].sort((a,b)=>a-b), [...p.payload.correctOrder].sort((a,b)=>a-b)); break;
       case 'fraction_match': answer = { kind: 'fraction_match', matchedCount: p.payload.pairs.length }; break;
       case 'true_false': answer = { kind: 'choice', index: p.isTrue ? 0 : 1 }; break;
-      default: answer = { kind: 'choice', index: p.correctIndex }; if(p.type !== 'compare') { const choices = p.choices ?? p.payload.choices; assert.ok(answer.index >= 0 && answer.index < choices.length); }
+      default: answer = { kind: 'choice', index: p.correctIndex }; if(p.type !== 'compare') { const choices = p.choices ?? p.payload.choices; assert.ok(answer.index >= 0 && answer.index < choices.length, `${p.id}: valid choice index`); }
     }
     assert.equal(checkPuzzleAnswer(p, answer), true, `${locale}/${p.id}: authored answer must be accepted`);
     for (let seed = 0; seed < 6; seed++) {

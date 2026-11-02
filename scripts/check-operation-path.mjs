@@ -4,21 +4,24 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { Children } from 'react';
 
 const root = process.cwd(), cache = new Map();
 const strings = JSON.parse(fs.readFileSync('locales/en.json', 'utf8'));
 const translate = (key, params = {}) => key.split('.').reduce((value, part) => value[part], strings)
   .replace(/{{(\w+)}}/g, (_, name) => params[name]);
 const jsx = (type, props) => ({ type, props });
-function load(id) {
-  if (id === 'react') return { useMemo: fn => fn() };
+function load(id, base = root) {
+  if (id === 'react') return { Children, useMemo: fn => fn() };
   if (id === 'react/jsx-runtime') return { jsx, jsxs: jsx, Fragment: 'Fragment' };
   if (id === 'react-i18next') return { useTranslation: () => ({ t: translate }) };
+  if (id === 'expo-font') return { isLoaded: () => true };
   if (id === 'react-native') return {
-    Pressable: 'Pressable', Text: 'Text', View: 'View', StyleSheet: { create: styles => styles },
+    Pressable: 'Pressable', Text: 'Text', View: 'View', Image: 'Image',
+    StyleSheet: { create: styles => styles, flatten: styles => Object.assign({}, ...[styles].flat(Infinity).filter(Boolean)) },
   };
   if (id === '@/utils/scale') return { moderateScale: value => value };
-  const file = path.join(root, id.slice(2));
+  const file = id.startsWith('@/') ? path.join(root, id.slice(2)) : path.resolve(base, id);
   if (/\.(png|webp|mp4)$/.test(file)) return file;
   const resolved = ['.ts', '.tsx'].map(ext => file + ext).find(fs.existsSync);
   assert.ok(resolved, id);
@@ -27,7 +30,7 @@ function load(id) {
   const source = ts.transpileModule(fs.readFileSync(resolved, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
   }).outputText;
-  vm.runInNewContext(source, { module, exports: module.exports, require: load });
+  vm.runInNewContext(source, { module, exports: module.exports, require: child => load(child, path.dirname(resolved)) });
   return module.exports;
 }
 function flatten(node) {

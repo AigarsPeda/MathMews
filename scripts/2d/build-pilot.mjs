@@ -1,5 +1,6 @@
 /** Editable vector masters and deterministic eight-fps exports. No image-model frame redraws. */
 import fs from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';

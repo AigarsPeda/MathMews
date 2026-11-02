@@ -14,7 +14,8 @@ const placementFrames = new Map();
 let placementFrameId = 0;
 const React = {
   createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
-  useMemo: fn => fn(), useCallback: fn => fn, useEffect: fn => effects.push(fn),
+  cloneElement: (node, props) => ({ ...node, props: { ...node.props, ...props } }),
+  useMemo: fn => fn(), useCallback: fn => fn, useEffect: fn => effects.push(fn), useLayoutEffect: fn => effects.push(fn),
   useRef: current => refs[refIndex++] ??= { current },
   useState: initial => {
     const index = stateIndex++;
@@ -76,7 +77,7 @@ function load(id) {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.React, esModuleInterop: true },
   }).outputText;
   vm.runInNewContext(source, { module, exports: module.exports, React, require: load,
-    AbortController, performance, setTimeout,
+    __DEV__: false, AbortController, performance, setTimeout,
     requestAnimationFrame: fn => { const id=++placementFrameId; placementFrames.set(id,fn); return id; },
     cancelAnimationFrame: id => placementFrames.delete(id) });
   return module.exports;

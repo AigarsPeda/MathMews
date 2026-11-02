@@ -51,10 +51,13 @@ function shared(initial) {
     listeners,
   };
 }
+function FilamentSharedValueProbe({ source, initialValue }) {
+  return useFilamentSharedValue(source, initialValue);
+}
 function render(source, initialValue) {
   cursor = 0;
   rendering = true;
-  try { return useFilamentSharedValue(source, initialValue); }
+  try { return FilamentSharedValueProbe({ source, initialValue }); }
   finally { rendering = false; }
 }
 function drain(queue) { while (queue.length) queue.shift()(); }

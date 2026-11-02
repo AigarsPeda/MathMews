@@ -6,6 +6,7 @@ import ts from 'typescript';
 
 let slots = [], cursor = 0, layouts = [], dirty = false;
 const React = {
+  memo: component => component,
   createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
   useState(initial) {
     const index = cursor++;
@@ -44,6 +45,7 @@ function render(props) {
   do {
     dirty = false; cursor = 0; layouts = [];
     tree = module.exports.DraggableRoomPet(props);
+    tree = tree.type(tree.props);
   } while (dirty);
   layouts.forEach(fn => fn());
   return tree;
