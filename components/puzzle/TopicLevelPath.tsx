@@ -2,13 +2,11 @@ import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleGradient } from "@/components/puzzle/PuzzleGradient";
 import { getPathProgress, isPathAvailable } from "@/constants/puzzle-path";
 import { useLocale } from "@/contexts/LocaleProvider";
-import { Image } from "expo-image";
-import { TrailCollectionImages } from "@/constants/trail-collection-images";
 import { TopicPathColors } from "@/constants/puzzle-theme";
 import type { LearningLesson } from "@/types/curriculum";
 import type { Progress } from "@/types/game";
-import { getTopicPathDecorations, getTopicPathLayout, getTopicSceneryOffset, getTopicPathCallout } from "@/utils/topic-path-layout";
-import { Canvas, DashPathEffect, Path, Skia } from "@shopify/react-native-skia";
+import { getTopicPathConnection, getTopicPathLayout, getTopicPathCallout } from "@/utils/topic-path-layout";
+import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { Feather } from "@expo/vector-icons";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
 import Animated, { cancelAnimation, Easing, ReduceMotion, useAnimatedReaction, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from "react-native-reanimated";
@@ -25,29 +23,20 @@ export function TopicLevelPath({ lessons, progress, currentLessonId, onPlay, scr
   const { active, reduceMotion } = useAnimationActivity();
   const [width, setWidth] = useState(0);
   const currentIndex = lessons.findIndex(lesson => lesson.id === currentLessonId);
-  const topicId = lessons[0]?.topicId ?? "addition";
-  const difficulty = lessons[0]?.difficulty ?? "easy";
-  const { points, height, finish, connections, decorations } = useMemo(() => {
+  const { points, height, finish, connections } = useMemo(() => {
     const layout = getTopicPathLayout(width, lessons.length, currentIndex);
     const destinations = [...layout.points.slice(1), ...(layout.finish ? [layout.finish] : [])];
     const connections = destinations.map((point, index) => {
-      const previous = layout.points[index];
-      const middleY = (previous.y + point.y) / 2;
-      const path = Skia.Path.Make();
-      path.moveTo(previous.x, previous.y);
-      path.cubicTo(previous.x, middleY, point.x, middleY, point.x, point.y);
-      return path;
+      return Skia.Path.MakeFromSVGString(getTopicPathConnection(width, layout.points[index], point))!;
     });
-    return { ...layout, connections, decorations: getTopicPathDecorations(width, layout.points, layout.height, currentIndex, topicId, difficulty) };
-  }, [width, lessons.length, currentIndex, topicId, difficulty]);
+    return { ...layout, connections };
+  }, [width, lessons.length, currentIndex]);
   return <View style={styles.container} onLayout={e => setWidth(e.nativeEvent.layout.width)}>
     {width > 0 ? <View style={{ height }}>
       <Canvas pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={StyleSheet.absoluteFill}>
         {connections.map((path, index) => <Path key={lessons[index].id} path={path} style="stroke" strokeWidth={4}
-          color={getPathProgress(lessons[index], progress).complete ? TopicPathColors.completedConnection : TopicPathColors.connection} strokeCap="round"><DashPathEffect intervals={[6, 10]} /></Path>)}
+          color={getPathProgress(lessons[index], progress).complete ? TopicPathColors.completedConnection : TopicPathColors.connection} strokeCap="round" />)}
       </Canvas>
-      {decorations.map(placement => <TrailProp key={placement.index} placement={placement}
-        scrollOffset={scrollOffset} viewportHeight={viewportHeight} reduceMotion={reduceMotion} />)}
       {currentIndex >= 0 ? <View pointerEvents="none">
         <View style={[styles.startTag, { left: points[currentIndex].x - 68, top: points[currentIndex].y - points[currentIndex].radius - 36 }]}>
           <Text style={styles.startText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.9} maxFontSizeMultiplier={1.2}>{t(getPathProgress(lessons[currentIndex], progress).complete ? "puzzlePathDesign.replay"
@@ -61,8 +50,7 @@ export function TopicLevelPath({ lessons, progress, currentLessonId, onPlay, scr
       {finish ? <View accessible accessibilityRole="text" testID="topic-trail-finish"
         accessibilityLabel={t(lessons.every(lesson => getPathProgress(lesson, progress).complete)
           ? "puzzlePathDesign.topicComplete" : "puzzlePathDesign.finishLine")}
-        style={[styles.finish, { left: finish.x - 100, top: finish.y - 35 }]}>
-        <Image source={trailAssets.milestone} style={styles.medallion} contentFit="contain" accessible={false} />
+        style={[styles.finish, { left: finish.x - 100, top: finish.y + 12 }]}>
         <Text style={styles.finishLabel} numberOfLines={2} maxFontSizeMultiplier={1.3}>{t(lessons.every(lesson => getPathProgress(lesson, progress).complete)
           ? "puzzlePathDesign.topicComplete" : "puzzlePathDesign.finishLine")}</Text>
       </View> : null}
@@ -127,22 +115,6 @@ function CurrentLevelHalo({ point, scrollOffset, viewportHeight, active, reduceM
     <Animated.View style={[styles.ring, styles.pulseRing, pulse]} />
   </View>;
 }
-const trailAssets = {
-  ...TrailCollectionImages,
-  milestone: require("@/assets/3d/trail-props/milestone.webp"),
-};
-function TrailProp({ placement, scrollOffset, viewportHeight, reduceMotion }: {
-  placement: ReturnType<typeof getTopicPathDecorations>[number];
-  scrollOffset: SharedValue<number>; viewportHeight: SharedValue<number>; reduceMotion: boolean;
-}) {
-  const depth = useAnimatedStyle(() => ({ transform: [{ translateY: getTopicSceneryOffset(
-    scrollOffset.get(), viewportHeight.get(), placement.top + placement.size / 2, reduceMotion,
-  ) }] }));
-  return <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
-    style={[styles.prop, { left: placement.left, top: placement.top, width: placement.size, height: placement.size }, depth]}>
-    <Image source={trailAssets[placement.kind]} contentFit="contain" style={StyleSheet.absoluteFill} accessible={false} />
-  </Animated.View>;
-}
 const styles = StyleSheet.create({
   container: { width: "100%", maxWidth: 460, alignSelf: "center" },
   node: { position: "absolute", borderRadius: 25, paddingBottom: 5,
@@ -151,7 +123,6 @@ const styles = StyleSheet.create({
   inset: { position: "absolute", top: 7, right: 7, bottom: 7, left: 7, borderRadius: 19, borderWidth: 1 },
   ring: { position: "absolute", top: -8, right: -8, bottom: -8, left: -8, borderRadius: 33, borderWidth: 6, borderColor: TopicPathColors.halo },
   pulseRing: { borderWidth: 3, borderColor: TopicPathColors.current.face },
-  prop: { position: "absolute" },
   startTag: { position: "absolute", minHeight: 28, width: 136, flexDirection: "row", gap: 5,
     justifyContent: "center", alignItems: "center", paddingHorizontal: 8, paddingVertical: 3,
     borderRadius: 14, backgroundColor: TopicPathColors.calloutSurface },
@@ -163,7 +134,6 @@ const styles = StyleSheet.create({
     borderWidth: 2, borderColor: TopicPathColors.checkBorder,
     shadowColor: "#3D6651", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 2, elevation: 2 },
   finish: { position: "absolute", width: 200, alignItems: "center", gap: 4 },
-  medallion: { width: 74, height: 74 },
   finishLabel: { fontSize: 15, lineHeight: 20, fontWeight: "700", color: TopicPathColors.textMuted, textAlign: "center" },
   lock: { position: "absolute", right: 8, top: 8 },
   number: { fontSize: 34, fontWeight: "800" },

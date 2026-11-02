@@ -1,5 +1,7 @@
 # Difficulty trail collections
 
+As of 2026-11-02, the level tracks display no decorations. These sources and exports are retained for future use; the path no longer loads them.
+
 Sixty editable Blender scenes recreate the three approved concept sheets. Each difficulty has twenty independent props. These are decorative trail images; they do not replace lesson controls, alter rewards, or become room inventory.
 
 The exact approved sheets are preserved in `references/`. The IDs below match their positions, read left to right and top to bottom. Easy uses the supplied `exec-56f9d753` sheet, including its front-facing arithmetic symbols.

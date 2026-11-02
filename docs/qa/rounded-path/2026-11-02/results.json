@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-02",
+  "request": "Remove decorations and implement the approved solid rounded level path.",
+  "changes": [
+    "No decorative sprites or finish medallion loaded by TopicLevelPath",
+    "Paired stops with solid lavender rounded orthogonal connectors",
+    "Stable tile centers across unlocks",
+    "Narrow captions placed below tiles with extra route spacing",
+    "Localized finish text retained"
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "targetedEslint": "passed",
+    "gitDiffCheck": "passed",
+    "layoutDetector": "no findings",
+    "routeLayouts": 440,
+    "retainedSprites": 60,
+    "native": {
+      "status": "passed",
+      "device": "iPhone 18 Pro / iOS 27 simulator",
+      "udid": "18105FA1-6C8B-4772-9583-C6ED84E61849",
+      "tests": [
+        "testBlenderTrailAndLocalizedCallout",
+        "testCurrentLevelVisibleWhenOpeningAndReturning"
+      ],
+      "coverage": [
+        "Current level 6, completed and locked states",
+        "320-point fixture and Latvian caption",
+        "Reachable localized finish",
+        "Completed-level replay",
+        "Level 10 visibility at entry, narrow layout, and return from play"
+      ],
+      "bundles": [
+        "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-vlkVOK/result.xcresult",
+        "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-WMs9cy/result.xcresult"
+      ],
+      "isolation": "In-memory fixture; user save and wallet unchanged; temporary route removed"
+    }
+  },
+  "visualReview": {
+    "screenshots": [
+      "level-6.png",
+      "narrow-lv.png"
+    ],
+    "corrections": [
+      "Removed a doubled-back short finish connection and moved the finish label below the endpoint",
+      "Reserved extra space after the last tile on narrow screens for the active lesson caption"
+    ]
+  },
+  "limits": [
+    "No Android or physical-device verification",
+    "Large accessibility text sizes were not tested",
+    "Floating Expo gear and QA buttons in captures are development controls"
+  ]
+}

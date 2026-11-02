@@ -1,0 +1,70 @@
+{
+  "status": "Imagegen visual concepts; not implemented or Blender production assets.",
+  "date": "2026-11-02",
+  "palette": {
+    "teal": "#00A9A1",
+    "royalBlue": "#3974D8",
+    "coral": "#EE6855",
+    "gold": "#F2B63F",
+    "plum": "#8C60C7",
+    "navy": "#223550",
+    "background": "#FFF9F0"
+  },
+  "paletteNote": "Proposed tokens. Generated image colors are approximate. Retain the app's existing berry action accent.",
+  "characters": [
+    {
+      "name": "Mira",
+      "role": "Curious maker",
+      "description": "Older teenage girl or young woman; observant and practical; royal blue and coral."
+    },
+    {
+      "name": "Leo",
+      "role": "Thoughtful problem solver",
+      "description": "Older teenage boy or young man; dry humor; teal and gold."
+    },
+    {
+      "name": "Ada",
+      "role": "Collaborative teacher",
+      "description": "Adult mentor; curious and amused rather than scolding; plum and cream."
+    },
+    {
+      "name": "Bodi",
+      "role": "Enthusiastic companion",
+      "description": "Adult cream and cocoa dog; long muzzle, floppy ear, teal collar."
+    },
+    {
+      "name": "Pip",
+      "role": "Observant comic foil",
+      "description": "Lean adult orange and cream cat; expressive brows, long tail, plum collar."
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://blog.duolingo.com/shape-language-duolingos-art-style/",
+      "supports": "Simple shapes, readable silhouettes, minimal details, humor and scalable illustration."
+    },
+    {
+      "url": "https://blog.duolingo.com/building-character/",
+      "supports": "Shared visual construction, distinct personalities, recurring characters across lessons and stories."
+    },
+    {
+      "url": "https://www.canny-creative.com/atlas/brand/duolingo/",
+      "supports": "Secondary reference documenting Duolingo palette. The former official identity/color page currently redirects."
+    }
+  ],
+  "review": {
+    "observed": "Distinct silhouettes and recurring clothing colors across cast sheet and story scene.",
+    "limitations": "Not age-group tested. Small path illustrations need reduced clothing and facial shading detail. These are concept images, not a validated production character system."
+  },
+  "prompts": [
+    {
+      "file": "cast-sheet.png",
+      "prompt": "Use case: illustration-story / character-design presentation.\nCreate a beautifully art-directed wide landscape CHARACTER CAST DESIGN SHEET for Math Mews, a math-learning game used by teens and adults as well as children. This is the first ORIGINAL contemporary cast concept, not production game art. Render as crisp, professional 2D vector-like editorial animation artwork with a small amount of flat cel shading, NOT a 3D render, not felt toys, no plush or chibi style. Modern approachable wit, restrained expressions, distinctive silhouettes, readable at small sizes. Human proportions about 4 to 4.5 heads tall, clear necks, long enough limbs, modest eyes, expressive eyebrows, simple hands. No huge glossy eyes, baby bodies, blushing cheeks, anime, preschool clipart, outlines around everything, gradients or fuzzy texture. Shapes use rounded angular geometry with gentle asymmetry; silhouettes must remain clear. Characters have their own designs, no copies of any Duolingo character, costume or mascot. Adults should enjoy spending time with this cast.\nCanvas: warm near-white #FFF9F0 with very subtle pale mint section tint, abundant negative space, restrained dark navy editorial type. A small title at upper left exactly 'MATH MEWS' and smaller subtitle 'Meet the cast'. Five evenly spaced columns, a large full-body character in the upper two-thirds of each column, the character's name directly below. Shared human floor line and animal floor line, clean flat small contact shadows only. Bottom quarter: three small expressive face studies for EACH same character, showing focused, pleased, and puzzled; these portraits must preserve the hair, face, ears and markings of their matching full-body character. Avoid giant grins and exaggerated distress. Exactly FIVE distinct characters, in this left-to-right order:\n1 MIRA: an older teenage girl / young woman, curious observant maker. Warm medium-brown skin, short dark navy-black asymmetrical bob tucked behind one ear, one simple golden hair clip. Royal blue open boxy utility overshirt over ivory tee, warm coral straight wide-leg trousers, cream low-top sneakers. Holds a small geometric puzzle piece in one hand, other hand on hip, raised eyebrow and subtle confident smile. Relaxed contemporary everyday clothing, no school uniform, no sexualized styling.\n2 LEO: an older teenage boy / young man, tall and slim, dry humor and patient problem-solver. Deep brown skin, short clearly sculpted dark coiled hair, teal lightweight zip jacket over warm golden tee, navy tapered trousers, simple ivory trainers. One arm relaxed, other holding a little navy notebook at his side; thoughtful sideways half-smile. Distinct face shape and posture from Mira.\n3 ADA: an adult woman teacher around 45-55, an approachable thoughtful mentor, NOT a stern school caricature. Light warm skin, short swept silver hair with a dark section, rounded rectangular dark glasses, plum long cardigan over cream blouse and navy ankle trousers, simple coral flat shoes. Average fuller build, taller than Mira, no giant head. One hand presenting an idea and the other holding a golden pencil, amused knowing expression.\n4 BODI: a medium-sized adult dog, cream coat with large dark navy-brown ears and one dark ear folded, a warm cocoa saddle patch, long rounded muzzle, medium expressive brows, solid confident paws, small teal collar with simple golden round tag. Curious slightly clumsy companion, shown standing in three-quarter view leaning forward to investigate a small wooden block. Not a puppy, no clothing, no enormous eyes.\n5 PIP: a lean adult ginger-and-cream cat, distinct angular ears, long curved expressive tail, cream muzzle and chest, two broad dark orange stripes, smaller almond eyes and a subtly skeptical friendly raised eyebrow. Small plum collar. Sits upright with one front paw resting on a simple coral geometry block. Not a plush kitten, no fur texture or glossy highlights.\nShared clothing/prop palette, use only 2 strong colors per character plus neutrals and natural skin/fur tones: Teal #00A9A1, Royal blue #3974D8, Coral #EE6855, warm Gold #F2B63F, Plum #8C60C7, Navy #223550. At the very bottom put six small elegant color swatches with those six hex labels exact, no extra palette colors. Keep existing app berry out of clothes so the interactive UI can own it later. The sheet must feel like a cohesive original recurring ensemble with personalities and story potential, not five unrelated stock characters. Character names exact: 'MIRA', 'LEO', 'ADA', 'BODI', 'PIP'. No additional slogans, fake statistics or ornamental sparkles. Prioritize excellent character design, clear expressions and the same rendering rules for all five."
+    },
+    {
+      "file": "story-moment.png",
+      "prompt": "Use case: illustration-story. Create a polished wide landscape STORYBOARD CONCEPT with exactly three equally sized panels, showing the same original Math Mews cast from the attached reference. Input image 1 is the CHARACTER IDENTITY AND ART STYLE reference. Match its faces, hair, skin tones, clothing colors, animal markings and proportions accurately. Do not redesign or swap outfits. Match its elegant clean 2D cel-shaded editorial illustration, suitable for teens AND ADULTS; no 3D, plush, chibi or preschool style. This image demonstrates reuse of the cast in an educational game's narrative.\nComposition: a restrained small upper-left title 'A story moment'. Three panels left to right with simple fine pale-gray dividers, generous ivory/mint negative space, no elaborate backgrounds. Below each panel, a short navy caption exactly 'PLAN', 'SURPRISE', 'RETHINK'. Consistent eye-level three-quarter view and restrained tabletop props. No speech bubbles or other text, no equations, no confetti or stars. Three story beats must be visually clear and subtly funny.\nPanel 1 PLAN: MIRA, the short dark-bob-haired young woman with gold clip, blue utility overshirt and coral trousers, and LEO, the tall dark-skinned curly-haired young man with teal jacket, gold tee and navy trousers, stand at a simple pale wood worktable arranging a very small bridge construction from chunky wooden rods and a turquoise triangular brace. Mira confidently explains with a geometric piece in hand; Leo studies the plan with a thoughtful sideways expression. PIP, the lean ginger cat with cream muzzle/chest and plum collar, looks on from the table edge. Only 3 or 4 large geometric pieces so the illustration is clear at small sizes.\nPanel 2 SURPRISE: the same MIRA raises one eyebrow at an incomplete bridge. The adult cream-and-cocoa dog BODI, long muzzle, dark ears, teal collar and round golden tag, proudly brings a wooden block, slightly too big for the gap. Beside the construction PIP lounges on the actual small triangular piece they need, looking innocently pleased. Gentle situational humor without anyone being mocked or acting like a toddler. Physical contact makes clear what the cat is sitting on. Keep objects large and legible.\nPanel 3 RETHINK: ADA, the silver-haired adult teacher with dark glasses, plum cardigan, cream blouse and navy trousers, stands at the table with LEO. Ada offers a new idea with a relaxed open-palm gesture, while Leo rotates a turquoise triangle into a simple structurally legible braced bridge. BODI watches attentively from floor beside the table. Ada is a collaborative guide, not a scolding authority; learner is the one doing the solving.\nKeep backgrounds quiet, bright balanced accent colors controlled. Main palette teal #00A9A1, royal blue #3974D8, coral #EE6855, warm gold #F2B63F, plum #8C60C7, navy #223550, ivory #FFF9F0, plus natural skin/fur colors. Use broad flat colors, a few clean shadow shapes, attached small foot/contact shadows; no photographic wood grain or lighting, texture noise, rainbow effect or decorative borders. This should read as a contemporary illustrated game narrative with original engaging personalities, not a children's classroom worksheet or promotional ad. Exactly three panels and the exact three one-word captions.",
+      "reference": "cast-sheet.png"
+    }
+  ]
+}
