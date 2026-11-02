@@ -5,7 +5,9 @@ import { moderateScale } from "@/utils/scale";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+
+export type HomeMetricLayout = 'regular' | 'compact' | 'stacked';
 
 type CoinCounterProps = {
   layout?: 'inline' | 'home';
@@ -13,7 +15,7 @@ type CoinCounterProps = {
   streak?: number;
   compact?: boolean;
   onPress?: () => void;
-  homeAccessory?: (stacked: boolean) => ReactNode;
+  homeAccessory?: (layout: HomeMetricLayout) => ReactNode;
 };
 
 export function CoinCounter({
@@ -25,27 +27,31 @@ export function CoinCounter({
   homeAccessory,
 }: CoinCounterProps) {
   const { t } = useTranslation();
-  const [stacked, setStacked] = useState(false);
+  const { fontScale } = useWindowDimensions();
+  const [homeWidth, setHomeWidth] = useState(0);
+  const stacked = fontScale > 1.35 && homeWidth < moderateScale(520) * fontScale;
+  const compactHome = !stacked && homeWidth < moderateScale(352);
+  const metricLayout: HomeMetricLayout = stacked ? 'stacked' : compactHome ? 'compact' : 'regular';
 
   if (layout === 'home') return <View style={[styles.homeRow, stacked && styles.stackedRow]}
-    onLayout={event => setStacked(event.nativeEvent.layout.width < moderateScale(352))}>
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.homeMetric, stacked && styles.stackedMetric, pressed && { opacity: .7 }]}
+    onLayout={event => setHomeWidth(event.nativeEvent.layout.width)}>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.homeMetric, compactHome && styles.compactMetric, compactHome && coins >= 100000 && styles.wideCoinMetric, stacked && styles.stackedMetric, pressed && { opacity: .7 }]}
       accessibilityRole="button" accessibilityLabel={t('economy.a11yCoins', { coins })}>
-      <Text style={styles.metricLabel}>{t('economy.coinsLabel')}</Text>
+      {!compactHome ? <Text style={styles.metricLabel}>{t('economy.coinsLabel')}</Text> : null}
       <View style={styles.metricValueRow}>
         <AppIcon name="coin" size={moderateScale(16)} />
-        <Text style={[styles.coinValue, styles.homeValue]}>{coins}</Text>
+        <Text style={[styles.coinValue, styles.homeValue]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={.85}>{coins}</Text>
       </View>
     </Pressable>
     {!stacked ? <View style={styles.metricDivider}/> : null}
-    <View style={[styles.homeMetric, stacked && styles.stackedMetric]} accessible accessibilityLabel={`${t('economy.streakLabel')}: ${t('economy.streakDay', { count: streak })}`}>
-      <Text style={styles.metricLabel}>{t('economy.streakLabel')}</Text>
+    <View style={[styles.homeMetric, compactHome && styles.compactMetric, stacked && styles.stackedMetric]} accessible accessibilityLabel={`${t('economy.streakLabel')}: ${t('economy.streakDay', { count: streak })}`}>
+      {!compactHome ? <Text style={styles.metricLabel}>{t('economy.streakLabel')}</Text> : null}
       <View style={styles.metricValueRow}>
         <AppIcon name="flame" size={moderateScale(16)} />
-        <Text style={[styles.streakValue, styles.homeValue]}>{t('economy.streakDay', { count: streak })}</Text>
+        <Text style={[styles.streakValue, styles.homeValue]}>{compactHome ? streak : t('economy.streakDay', { count: streak })}</Text>
       </View>
     </View>
-    {homeAccessory ? <>{!stacked ? <View style={styles.metricDivider}/> : null}{homeAccessory(stacked)}</> : null}
+    {homeAccessory ? <>{!stacked ? <View style={styles.metricDivider}/> : null}{homeAccessory(metricLayout)}</> : null}
   </View>;
 
   const content = (
@@ -97,6 +103,8 @@ export function CoinCounter({
 const styles = StyleSheet.create({
   homeRow: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center' },
   homeMetric: { flex: 1, minWidth: 0, minHeight: 56, paddingHorizontal: moderateScale(4), paddingVertical: moderateScale(8), gap: moderateScale(3), justifyContent: 'center' },
+  compactMetric: { minHeight: 48, paddingHorizontal: moderateScale(2), paddingVertical: moderateScale(4) },
+  wideCoinMetric: { flex: 2 },
   stackedRow: { flexWrap: 'wrap', alignItems: 'stretch' },
   stackedMetric: { flex: 0, width: '50%' },
   metricLabel: { color: GameColors.textMuted, fontSize: moderateScale(11), lineHeight: moderateScale(14), fontWeight: '600', textAlign: 'center' },

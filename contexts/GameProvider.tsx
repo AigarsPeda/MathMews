@@ -233,7 +233,7 @@ export const GameContext = createContext<GameContextValue | null>(null);
 type GameActions = {
   [K in keyof GameContextValue as GameContextValue[K] extends (...args: never[]) => unknown ? K : never]: GameContextValue[K];
 };
-const GameActionsContext = createContext<GameActions | null>(null);
+export const GameActionsContext = createContext<GameActions | null>(null);
 const EMPTY_COIN_TRANSACTIONS: CoinTransaction[] = [];
 const EMPTY_WALLET_NOTICES: WalletNotice[] = [];
 const EMPTY_PURCHASE_IDS: string[] = [];

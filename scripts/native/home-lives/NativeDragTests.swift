@@ -17,8 +17,12 @@ final class NativeDragTests: XCTestCase {
   XCTAssertEqual(streak.frame.width, coins.frame.width, accuracy: 1)
   XCTAssertEqual(heart(3).frame.width, coins.frame.width, accuracy: 1)
   XCTAssertGreaterThanOrEqual(app.buttons["Settings"].frame.width, 44)
-  XCTAssertLessThanOrEqual(app.buttons["Settings"].frame.maxY, heart(3).frame.minY)
-  let achievements=app.buttons["Open boss achievements. 0 of 180 bosses collected"]
+  XCTAssertEqual(app.buttons["Settings"].frame.midY, heart(3).frame.midY, accuracy: 1)
+  XCTAssertGreaterThanOrEqual(coins.frame.height, 44)
+  XCTAssertGreaterThanOrEqual(heart(3).frame.height, 44)
+  XCTAssertLessThanOrEqual(coins.frame.height, 56)
+  XCTAssertEqual(coins.frame.minY, heart(3).frame.minY, accuracy: 1)
+  let achievements=app.buttons["Open achievements. 0 of 180 rewards unlocked"]
   XCTAssertTrue(achievements.isHittable)
   XCTAssertEqual(achievements.frame.width, coins.frame.width, accuracy: 1)
   XCTAssertLessThanOrEqual(achievements.frame.maxX, heart(3).frame.minX)
@@ -35,7 +39,7 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(buy.waitForExistence(timeout: 5)); buy.tap()
   XCTAssertTrue(heart(3).waitForExistence(timeout: 5)); XCTAssertFalse(heart(3).label.contains("Next life"))
   app.buttons["Earn"].tap()
-  let earned=app.buttons["Open boss achievements. 2 of 180 bosses collected"]
+  let earned=app.buttons["Open achievements. 2 of 180 rewards unlocked"]
   XCTAssertTrue(earned.waitForExistence(timeout:5))
   app.buttons["Reopen"].tap(); XCTAssertTrue(earned.waitForExistence(timeout:5)); shot("home-achievements-earned")
   earned.tap(); XCTAssertTrue(app.staticTexts["Achievements"].waitForExistence(timeout:5))
@@ -53,10 +57,11 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(lives.isHittable); XCTAssertTrue(app.buttons["Settings"].isHittable)
   let coins = app.buttons["Tev ir 1234567 monētas. Pieskaries, lai iegūtu vairāk."]
   XCTAssertTrue(coins.isHittable)
-  let wrapped = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in coins.frame.minY < lives.frame.minY }, object: nil)
-  let layoutResult = XCTWaiter.wait(for: [wrapped], timeout: 3)
+  XCTAssertEqual(coins.frame.minY, lives.frame.minY, accuracy: 1)
+  XCTAssertLessThanOrEqual(lives.frame.height, 56)
+  XCTAssertGreaterThanOrEqual(lives.frame.width, 44)
+  XCTAssertGreaterThanOrEqual(lives.frame.height, 44)
   shot("home-lives-narrow-latvian")
-  XCTAssertEqual(layoutResult, .completed)
-  XCTAssertLessThanOrEqual(lives.frame.maxX, app.buttons["Settings"].frame.maxX + 1)
+  XCTAssertLessThanOrEqual(lives.frame.maxX, app.buttons["Settings"].frame.minX)
  }
 }

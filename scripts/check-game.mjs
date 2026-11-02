@@ -4,6 +4,7 @@ checks.push('check-placement-bounds', 'check-room-item-placement', 'check-room-e
 checks.push('check-filament-shared-value');
 checks.push('check-simple-graphics-layout', 'check-puzzle-progress', 'check-puzzle-objects');
 checks.push('check-cat-locomotion');
+checks.push('check-cat-collision-recovery');
 checks.push('check-cat-task-chains');
 checks.push('check-room-activity-notice');
 checks.push('check-cat-command-motion');

@@ -729,7 +729,9 @@ for (const reduced of [false, true]) {
     if (step.animation === 'eating') {
       const bowl = hookRoom.nativeWorld.objects.find(o => o.instanceId === 'left-bowl');
       const arrived = step.native.path[0];
-      assert.ok(Math.abs(nativeRoom.pathLength([arrived, bowl.position]) - nativeRoom.CAT_EATING_REACH * hookRoom.nativeWorld.catScale) < 1e-5,
+      const heading = Math.atan2(bowl.position[0] - arrived[0], bowl.position[2] - arrived[2]);
+      assert.ok(Math.abs(Math.hypot(bowl.position[0] - arrived[0], bowl.position[2] - arrived[2])
+        - nativeRoom.foodBowlReach(bowl, hookRoom.nativeWorld, heading)) < 1e-5,
         'The meal starts at the exact reachable muzzle position, not a stale reported anchor');
     }
     finishRenderedStep();

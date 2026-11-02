@@ -40,6 +40,7 @@ export function isCatSuppliesDecorationId(
 }
 
 export function isFoodBowlDecorationId(decorationId: string): boolean {
+  'worklet';
   return ["bowlTan", "bowlBlue", "bowlPurple", "bowlPink"].includes(decorationId);
 }
 
@@ -49,6 +50,7 @@ export const CAT_FEEDER_DECORATION_IDS = [
 
 /** Every placed surface the cat can use for the Eat action. */
 export function isCatFeederDecorationId(decorationId: string): boolean {
+  'worklet';
   return isFoodBowlDecorationId(decorationId)
     || CAT_FEEDER_DECORATION_IDS.some(id => id === decorationId);
 }

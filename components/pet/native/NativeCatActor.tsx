@@ -2,12 +2,12 @@
 /* Native asset requires are statically resolved by Metro. */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { rockingChairContact, type RockingMotion } from '@/utils/native-rocking-chair';
-import { catJumpPoint, catJumpAim, catJumpEffort, CAT_JUMP_PREPARE, catMotionSample, CAT_LANDING_WALK_PHASE, CAT_JUMP_TAKEOFF, CAT_JUMP_TOUCHDOWN, catPathFromPosition, catPathPoint, catTravelProgress, catWalkExitRate, type CatTravelMotion, type CatMotionLeg } from '@/utils/native-cat-locomotion';
+import { catPacedPath, catWalkTiming, catJumpPoint, catJumpAim, catJumpEffort, CAT_JUMP_PREPARE, catMotionSample, CAT_LANDING_WALK_PHASE, CAT_JUMP_TAKEOFF, CAT_JUMP_TOUCHDOWN, catPathFromPosition, catPathPoint, catTravelProgress, catWalkExitRate, type CatTravelMotion, type CatMotionLeg } from '@/utils/native-cat-locomotion';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { RenderCallbackContext, useAnimator, useFilamentContext, useModel, type FilamentModel } from 'react-native-filament';
 import { useSharedValue, Worklets, type ISharedValue } from 'react-native-worklets-core';
 import { resolveCatSkinId } from '@/constants/cat-skins';
-import { FLOOR_Y, movingCatRoute, catScreenPoint, hasNativeArrived, type NativeRoomWorld, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
+import { FLOOR_Y, isFree, nearestFree, findCatRoomRoute, pathLength, movingCatRoute, catScreenPoint, hasNativeArrived, type NativeRoomWorld, type NativeTravel, type Vec3 } from '@/utils/native-room-world';
 import type { PetPlaybackState } from '@/pet-display/types';
 import { CAT_ANIMATION_CLIPS } from '@/constants/cat-animation-clips';
 import { resolveTailContact, tailParentAxis, type TailContact } from '@/utils/native-cat-contact';
@@ -151,7 +151,8 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       duration: segment.model ? segment.model.duration / segment.model.rate : meta[0] / meta[1], reverse: segment.reverse ?? false,
       loop: segment.loop ?? loop ?? false };
   }), [loop, playback]);
-  const command = useSharedValue({ id: 0, activityKey, commandAttention, segments, travel, world, active, reduceMotion, rugSurfaces, steering: undefined as ReturnType<typeof movingCatRoute> });
+  const command = useSharedValue({ id: 0, activityKey, commandAttention, segments, travel, world, active, reduceMotion, rugSurfaces,
+    recoveryPosition: undefined as Vec3 | undefined, steering: undefined as ReturnType<typeof movingCatRoute> });
   const commandRevision = useRef<{ id: number; activityKey?: string; segments?: typeof segments; travel?: NativeTravel; home?: Vec3 }>({ id: 0 });
   const state = useSharedValue({ id: -1, elapsed: 0, index: 0, complete: false, roomComplete: false, heading: world ? Math.PI / 4 : 0, distance: 0,
     position: (initialPosition ?? world?.home ?? [0, 0, 0]) as Vec3, home: (world?.home ?? [0, 0, 0]) as Vec3, routeStart: (world?.home ?? [0, 0, 0]) as Vec3, report: 0, ready: false, clip: -1, clipTime: 0, previous: -1, previousTime: 0, blend: 1, blendSeconds: .12,
@@ -180,26 +181,42 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
   }, [asset, state]);
   useEffect(() => {
     const previous = commandRevision.current;
+    const frame=state.value;
+    // Entry anchors and retained actor positions can predate a layout edit.
+    // Repair floor overlap on JS before the worklet rebases the planned route.
+    const navigationWorld = world && travel?.navigation ? { ...world, ...travel.navigation } : world;
+    const floorPosition = frame.ready ? frame.position : initialPosition ?? world?.home;
+    const recoveryPosition = navigationWorld && floorPosition && Math.abs(floorPosition[1] - FLOOR_Y) < .04
+      && !travel?.jump && !travel?.legs?.length && !travel?.bed && !travel?.bathroom && travel?.brushSide === undefined
+      && !isFree(floorPosition, navigationWorld) ? nearestFree(floorPosition, navigationWorld) : undefined;
+    let nextTravel = travel;
+    if (recoveryPosition && navigationWorld && travel && travel.path.length > 1) {
+      const route = findCatRoomRoute(recoveryPosition, travel.path[travel.path.length - 1], navigationWorld);
+      const path = route.legs ? route.path : catPacedPath(route.path, navigationWorld.catScale);
+      const timing = catWalkTiming(path, navigationWorld.catScale, travel.gait ?? 'walk', undefined, travel.through);
+      nextTravel = { ...travel, ...timing, path, legs: route.legs, elapsed: 0,
+        distance: pathLength(path),
+        duration: route.legs ? route.legs.reduce((sum, leg) => sum + leg.duration, 0) : timing.duration };
+    }
     const movedHome = !travel && previous.home && world && previous.home.some((v, i) => v !== world.home[i]);
     const sameSegments = previous.segments?.length === segments.length && segments.every((segment, i) => {
       const old = previous.segments![i];
       return old.name === segment.name && old.duration === segment.duration && old.loop === segment.loop && old.reverse === segment.reverse;
     });
-    const changed = previous.activityKey !== activityKey || !sameSegments || previous.travel !== travel || movedHome;
+    const changed = previous.activityKey !== activityKey || !sameSegments || previous.travel !== travel || movedHome || !!recoveryPosition;
     const id = changed ? ++nextCommandRevision : previous.id;
     commandRevision.current = { id, activityKey, segments, travel, home: world?.home };
     // Publish one complete snapshot. Separate read/modify/write effects can
     // overwrite a new movement revision with an older drawing-thread snapshot.
-    const frame=state.value;
     const moving=changed && frame.ready && !frame.sourceJump && !frame.routeLegs.length
       && frame.elapsed<frame.routeDuration && frame.turnElapsed>=frame.turnDuration;
     const previousClip=previous.segments?.[frame.index]?.name;
     const departing=changed && frame.ready && !frame.sourceJump && !frame.routeLegs.length
       && frame.turnElapsed>=frame.turnDuration && (previousClip==='idle' || previousClip==='walk'&&frame.elapsed>=frame.routeDuration);
     const landed=changed && frame.ready && frame.sourceJump && frame.landingPending && frame.jumpPhase>=CAT_LANDING_WALK_PHASE;
-    const steering=(moving||departing||landed)&&!reduceMotion ? movingCatRoute(travel,frame.position,frame.heading,(departing?0:frame.gaitSpeed)*(world?.catScale??1),world,departing||landed,landed) : undefined;
-    command.value = { id, activityKey, commandAttention, segments, travel, world, active, reduceMotion, rugSurfaces, steering };
-  }, [activityKey, active, command, commandAttention, reduceMotion, rugSurfaces, segments, state, travel, world]);
+    const steering=(moving||departing||landed)&&!reduceMotion && !recoveryPosition ? movingCatRoute(travel,frame.position,frame.heading,(departing?0:frame.gaitSpeed)*(world?.catScale??1),world,departing||landed,landed) : undefined;
+    command.value = { id, activityKey, commandAttention, segments, travel: nextTravel, world, active, reduceMotion, rugSurfaces, recoveryPosition, steering };
+  }, [activityKey, active, command, commandAttention, initialPosition, reduceMotion, rugSurfaces, segments, state, travel, world]);
   const clips = useMemo(() => {
     if (!animator)
       return {};
@@ -242,6 +259,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
     frameState.spinePose.chestRoll ??= 0;frameState.spinePose.hipRoll ??= 0;frameState.spinePose.scapula ??= 0;
     for(const key of ['headPitch','headYaw','headRoll','tailFollowYaw','tailFollowPitch','tailTipYaw','tailTipPitch'] as const)frameState.spinePose[key] ??= 0;
     if (frameState.id !== request.id) {
+      if (request.recoveryPosition) frameState.position = request.recoveryPosition;
       const floorCommand=!request.travel?.jump && !request.travel?.legs?.length
         && !request.travel?.bed && !request.travel?.bathroom
         && ['walk','idle'].includes(request.segments[0]?.name);
@@ -288,7 +306,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
       }
       if (request.travel?.path.length) {
         const journey = request.travel;
-        let resume = frameState.ready && !!journey.elapsed && frameState.sourceDuration === journey.duration
+        let resume = !request.recoveryPosition && frameState.ready && !!journey.elapsed && frameState.sourceDuration === journey.duration
           && frameState.sourceJump === journey.jump && frameState.sourcePath?.length === journey.path.length;
         if (resume) for (let i = 0; i < journey.path.length; i++) {
           const before = frameState.sourcePath[i], after = journey.path[i];
@@ -341,8 +359,9 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
           const firstLeg = journey.legs?.[0];
           const floorLeg = firstLeg?.kind === 'walk' && !firstLeg.animation && !firstLeg.turnDuration ? firstLeg : undefined;
           const floorStart = !journey.legs?.length || !!floorLeg;
-          const rebase = frameState.ready && !request.reduceMotion && !journey.jump && floorStart && !journey.elapsed;
-          const sourcePath = floorLeg?.path ?? journey.path, sourcePaces = floorLeg?.paces ?? journey.paces;
+          const rebase = (frameState.ready || !!request.recoveryPosition) && !request.reduceMotion && !journey.jump && floorStart && !journey.elapsed;
+          const sourcePath = request.recoveryPosition && journey.path.length === 1 ? [request.recoveryPosition] : floorLeg?.path ?? journey.path;
+          const sourcePaces = floorLeg?.paces ?? journey.paces;
           const route = request.steering ? catPathFromPosition(request.steering.path,frameState.position,request.steering.paces) : rebase ? catPathFromPosition(sourcePath, frameState.position, sourcePaces) : { path: sourcePath, paces: sourcePaces ?? [], fraction: 1 };
           frameState.routePath = journey.legs?.length ? journey.path : route.path;
           frameState.routePaces = route.paces;
@@ -386,7 +405,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
             const last=frameState.routeLegs.length-1;
             frameState.routeLegs=frameState.routeLegs.map((leg,index)=>index===last&&leg.kind==='walk'?{...leg,through:true}:leg);
           }
-          if (!frameState.ready || request.reduceMotion) frameState.position = [journey.path[0][0], journey.path[0][1], journey.path[0][2]];
+          if (!frameState.ready || request.reduceMotion) frameState.position = request.recoveryPosition ?? [journey.path[0][0], journey.path[0][1], journey.path[0][2]];
           frameState.routeStart = frameState.position;
           if (request.reduceMotion && journey.heading !== undefined && journey.path.length === 1) frameState.heading = journey.heading;
           if (floorStart && !journey.elapsed && !request.reduceMotion) {
@@ -419,7 +438,7 @@ export function NativeCatActor({ model, playback, world, travel, activityKey, co
         }
       }
       else if (request.world && (!frameState.ready || frameState.home.some((v, i) => v !== request.world!.home[i])))
-        frameState.position = !frameState.ready && initialPosition ? initialPosition : request.world.home;
+        frameState.position = request.recoveryPosition ?? (!frameState.ready && initialPosition ? initialPosition : request.world.home);
       if (request.world) frameState.home = request.world.home;
     }
     const deltaSeconds = request.active ? Math.min(1 / 15, Math.max(0, timeSinceLastFrame)) : 0;

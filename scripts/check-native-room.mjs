@@ -181,7 +181,9 @@ for (const decorationId of ['bowlTan', 'bowlBlue', 'bowlPurple', 'bowlPink', ...
   assert.equal(meal.native.blocked, false, `${decorationId}/${bowlScale}: meal reaches the feeding surface`);
   assert.ok(Number.isFinite(meal.native.heading), 'The cat faces the food bowl');
   const actualBowl = mealWorld.objects[0];
-  assert.ok(Math.abs(Math.hypot(actualBowl.position[0] - arrival[0], actualBowl.position[2] - arrival[2]) - w.CAT_EATING_REACH * mealWorld.catScale) < .001);
+  assert.ok(w.isFree(arrival, mealWorld), 'Feeding keeps the cat body outside the feeding surface');
+  assert.ok(Math.abs(Math.hypot(actualBowl.position[0] - arrival[0], actualBowl.position[2] - arrival[2])
+    - w.foodBowlReach(actualBowl, mealWorld, meal.native.heading)) < .001);
   const homeStep = w.prepareNativeStep(mealPlan, mealPlan.steps.at(-1), meal.position, mealWorld, w.FLOOR_Y);
   assert.ok(w.pathLength([homeStep.native.path.at(-1), mealWorld.home]) < .001, 'The cat walks back from the bowl');
 }
@@ -355,7 +357,9 @@ for (const source of ['floor', 'sofaSit', 'sofaSleep']) {
     start = prepared.native.path.at(-1);
     if (step.animation === 'eating') {
       cornerArrival = start;
-      assert.ok(Math.abs(w.pathLength([start, [cornerBowl.position[0], w.FLOOR_Y, cornerBowl.position[2]]]) - w.CAT_EATING_REACH * cornerWorld.catScale) < 1e-6, 'The cat reaches the food instead of stopping at a nearby free cell');
+      const heading = Math.atan2(cornerBowl.position[0] - start[0], cornerBowl.position[2] - start[2]);
+      assert.ok(Math.abs(w.pathLength([start, [cornerBowl.position[0], w.FLOOR_Y, cornerBowl.position[2]]])
+        - w.foodBowlReach(cornerBowl, cornerWorld, heading)) < 1e-6, 'The cat reaches the feeding rim instead of stopping at a nearby free cell');
     }
   }
 }
@@ -846,9 +850,9 @@ const movingProps = { playback: movingPlayback, world: empty, active: true, posi
 render(movingProps);
 for (let i = 0; i < 45; i++) renderFrame({ timeSinceLastFrame: 1 / 60 });
 const beforeWorldUpdate = Array.from(livePosition.value);
-const changedWorld = { ...empty, objects: [obstacle] };
+const changedWorld = { ...empty, objects: [{ ...obstacle, min: [-2, 0, -2], max: [-1.8, 1, -1.8] }] };
 render({ ...movingProps, world: changedWorld }); renderFrame({ timeSinceLastFrame: 1 / 60 });
-assert.ok(w.pathLength([beforeWorldUpdate, livePosition.value]) < .03, 'An object update cannot restart the rendered cat journey');
+assert.ok(w.pathLength([beforeWorldUpdate, livePosition.value]) < .03, 'An unrelated object update cannot restart the rendered cat journey');
 const beforeReroute = Array.from(livePosition.value), destination = [.4, w.FLOOR_Y, 1];
 const staleReportedStart = [beforeReroute[0] - 1, w.FLOOR_Y, beforeReroute[2]];
 // Worklets Core's JsiArrayWrapper exposes indices and iteration, but no slice method.

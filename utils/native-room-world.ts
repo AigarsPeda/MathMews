@@ -12,7 +12,7 @@ import { normalizeRotationDegrees } from "@/utils/room-rotation";
 import type { BedPhase } from '@/constants/bedroom-activities';
 import type { BathroomFixtureKind, BathroomPhase } from '@/constants/bathroom-activities';
 import { isPlayablePlant } from "@/constants/plant-play";
-import { isCatFeederDecorationId } from "@/constants/cat-supplies-decorations";
+import { isCatFeederDecorationId, isFoodBowlDecorationId } from "@/constants/cat-supplies-decorations";
 import { isWindowDecorationId } from "@/constants/window-decorations";
 import { isKitchenChairDecorationId, isKitchenIslandDecorationId, isKitchenPerchDecorationId } from '@/constants/kitchen-activities';
 import type { RockingChair } from '@/utils/native-rocking-chair';
@@ -172,6 +172,8 @@ export type NativeRoomWorld = {
 };
 export type CatBrushPass = { from: Vec3; to: Vec3; side: number; instanceId: string };
 export type NativeTravel = {
+  /** Retain the planner's footprint for narrow aisles and open door approaches. */
+  navigation?: Pick<NativeRoomWorld, 'radius' | 'kitchenNavigation' | 'fridgeDoorClearance'>;
   sleepPose?: CatSleepPose;
   brushSide?: number;
   through?: boolean;
@@ -483,7 +485,10 @@ export function buildNativeRoomWorld(options: {
     const min = [0, 1, 2].map(i => Math.min(...corners.map(c => c[i]))) as Vec3;
     const max = [0, 1, 2].map(i => Math.max(...corners.map(c => c[i]))) as Vec3;
     const movable = /Ball$|toy-mouse|^yarn/i.test(modelId);
-    const solid = !isCatFeederDecorationId(modelId) && !wall && !/carpet|rug/i.test(modelId) && !movable && max[1] > FLOOR_Y + .10;
+    // Flat feeding mats remain walkable; bowl rims and dispensers block the body.
+    const feederObstacle = isFoodBowlDecorationId(modelId) || modelId === 'kibbleDispenser';
+    const solid = (!isCatFeederDecorationId(modelId) || feederObstacle) && !wall && !/carpet|rug/i.test(modelId) && !movable
+      && max[1] > FLOOR_Y + (feederObstacle ? .01 : .10);
     const collidable = !isCurtainDecorationId(modelId) && !/carpet|rug/i.test(modelId) && max[1] > FLOOR_Y + .01;
     const object: NativeRoomObject = { instanceId, modelId, position, scale, heading, min, max, solid, collidable, movable, poweredOn, opened, curtainOpen, fridgeOpen, fridgeHingeSide, spotlightAngle: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightAngle(spotlightAngle) : undefined, spotlightSwivel: isWallSpotlightDecorationId(modelId) ? normalizeSpotlightSwivel(spotlightSwivel) : undefined, placementOffset,
       wallAxis: wall ? flip ? 0 : 2 : undefined };
@@ -631,7 +636,8 @@ export function isFree(point: Vec3, world: NativeRoomWorld, ignoreId?: string): 
         const x = Math.max(box.min[0], Math.min(box.max[0], point[0]));
         const z = Math.max(box.min[2], Math.min(box.max[2], point[2]));
         // The low base can sit beneath the reaching paws; keep the torso outside it.
-        const clearance = /^catTree|^toy-scratchPost/.test(o.modelId) ? Math.min(r, .4 * world.catScale)
+        const clearance = isCatFeederDecorationId(o.modelId) ? Math.min(r, .3 * world.catScale)
+          : /^catTree|^toy-scratchPost/.test(o.modelId) ? Math.min(r, .4 * world.catScale)
           : isPlayablePlant(o.modelId) ? Math.min(r, .65 * world.catScale) : r;
         const margin = clearance + .015, dx = point[0] - x, dz = point[2] - z;
         // A silhouette is inside its bounding box. Most floor samples are far
@@ -673,27 +679,8 @@ export function findCatBrushPass(world: NativeRoomWorld, turn: number): CatBrush
  * stale obstacles in a later navigation query. */
 function createFloorSearch(world: NativeRoomWorld) {
   let freeFloor: Vec3[] | undefined;
-  const edge = 2.32 - Math.min(world.radius, .5 * world.catScale);
-  const obstacles = world.objects.flatMap(object => {
-    if (!object.solid) return [];
-    const plant = isPlayablePlant(object.modelId);
-    const parts = (plant || object.modelId === 'lampFloorArc') && object.collisionBoxes?.length ? object.collisionBoxes : [object];
-    const clearance = (/^catTree|^toy-scratchPost/.test(object.modelId) ? Math.min(world.radius, .4 * world.catScale)
-      : plant ? Math.min(world.radius, .65 * world.catScale) : world.radius) + .015;
-    return parts.filter(box => box.min[1] <= FLOOR_Y + .8 * world.catScale)
-      .map(box => ({ minX: box.min[0], maxX: box.max[0], minZ: box.min[2], maxZ: box.max[2], clearance, squared: clearance * clearance }));
-  });
-  const free = (x: number, z: number) => {
-    if (world.kitchenNavigation) return isFree([x, FLOOR_Y, z], world);
-    if (Math.abs(x) > edge || Math.abs(z) > edge) return false;
-    for (const box of obstacles) {
-      if (x <= box.minX - box.clearance || x >= box.maxX + box.clearance || z <= box.minZ - box.clearance || z >= box.maxZ + box.clearance) continue;
-      const dx = x - Math.max(box.minX, Math.min(box.maxX, x));
-      const dz = z - Math.max(box.minZ, Math.min(box.maxZ, z));
-      if (dx * dx + dz * dz < box.squared) return false;
-    }
-    return true;
-  };
+  // Spawn repair must use exactly the same doors, feeders and footprints as routing.
+  const free = (x: number, z: number) => isFree([x, FLOOR_Y, z], world);
   return (point: Vec3): Vec3 => {
     if (free(point[0], point[2])) return point;
     if (!freeFloor) {
@@ -754,7 +741,8 @@ function clearLine(a: Vec3, b: Vec3, world: NativeRoomWorld): boolean {
   for (const object of world.objects) {
     if ((object.interactionBoxes??[]).some(box=>hits(box,world.radius+.015))) return false;
     if (!object.solid || world.kitchenNavigation && (isKitchenChairDecorationId(object.modelId)||object.modelId==='kitchenDiningTable')) continue;
-    const radius=(/^catTree|^toy-scratchPost/.test(object.modelId)?Math.min(world.radius,.4*world.catScale)
+    const radius=(isCatFeederDecorationId(object.modelId)?Math.min(world.radius,.3*world.catScale)
+      :/^catTree|^toy-scratchPost/.test(object.modelId)?Math.min(world.radius,.4*world.catScale)
       :isPlayablePlant(object.modelId)?Math.min(world.radius,.65*world.catScale):world.radius)+.015;
     const boxes=(isPlayablePlant(object.modelId)||object.modelId==='lampFloorArc')&&object.collisionBoxes?.length?object.collisionBoxes:[object];
     if (boxes.some(box=>hits(box,radius))) return false;
@@ -967,6 +955,14 @@ function findTraversalApproach(start: Vec3, points: Vec3[], world: NativeRoomWor
   }
   return undefined;
 }
+/** Larger feeding surfaces are reached at their rim, with the body outside. */
+export function foodBowlReach(bowl: NativeRoomObject, world: NativeRoomWorld, heading: number): number {
+  if (!bowl.solid) return CAT_EATING_REACH * world.catScale;
+  const x = Math.max(bowl.position[0] - bowl.min[0], bowl.max[0] - bowl.position[0]);
+  const z = Math.max(bowl.position[2] - bowl.min[2], bowl.max[2] - bowl.position[2]);
+  return Math.max(CAT_EATING_REACH * world.catScale,
+    Math.abs(Math.sin(heading)) * x + Math.abs(Math.cos(heading)) * z + Math.min(world.radius, .3 * world.catScale) + .02);
+}
 /** Face the food from a reachable point, retaining the route already solved. */
 export function findFoodBowlApproach(start: Vec3, bowl: NativeRoomObject, world: NativeRoomWorld): Vec3[] | undefined {
   const heading = Math.atan2(bowl.position[0] - start[0], bowl.position[2] - start[2]);
@@ -974,8 +970,9 @@ export function findFoodBowlApproach(start: Vec3, bowl: NativeRoomObject, world:
   for (let i = 0; i < 64; i++) {
     const turn = i % 2 ? (i + 1) / 2 : -i / 2;
     const angle = heading + turn * Math.PI / 32;
-    const point: Vec3 = [bowl.position[0] - Math.sin(angle) * CAT_EATING_REACH * world.catScale, FLOOR_Y,
-      bowl.position[2] - Math.cos(angle) * CAT_EATING_REACH * world.catScale];
+    const reach = foodBowlReach(bowl, world, angle);
+    const point: Vec3 = [bowl.position[0] - Math.sin(angle) * reach, FLOOR_Y,
+      bowl.position[2] - Math.cos(angle) * reach];
     if (!isFree(point, world)) continue;
     candidates.push(point);
     const path = findRoomPath(start, point, world);
@@ -1587,7 +1584,8 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   let blocked = !!step.crawl && !crawlValid || !!step.brush && !brushValid || !!walking && path.length === 1 && Math.hypot(start[0] - target[0], start[2] - target[2]) > .05;
   if (plan.kind === 'bowlEat' && step.bowlApproach && !bowlPath) { blocked = true; path = [start]; }
   if (plan.kind === 'bowlEat' && step.animation === 'eating' && object
-    && Math.abs(Math.hypot(start[0] - object.position[0], start[2] - object.position[2]) - CAT_EATING_REACH * world.catScale) > .08) blocked = true;
+    && Math.abs(Math.hypot(start[0] - object.position[0], start[2] - object.position[2])
+      - foodBowlReach(object, world, Math.atan2(object.position[0] - start[0], object.position[2] - start[2]))) > .08) blocked = true;
   if (step.bathroomPhase && (!object?.bathroom || !bathroomApproach)) { blocked = true; path = [start]; }
   if (plan.kind === 'investigate' && !step.returnHome && (!object || walking && !investigateApproach)
     || plan.kind === 'cupboardHide' && (!object?.cupboard || !object.cupboardFits || !object.opened)
@@ -1665,7 +1663,7 @@ export function prepareNativeStep(plan: RoomActivityPlan, step: RoomActivityStep
   const prepareJump=preparationArc!==undefined && object?.seat
     ? {target:object.seat,light:catJumpEffort(target,object.seat,world.catScale,preparationArc)<.8} : undefined;
   return { ...step, kitchenNavigation: world.kitchenNavigation, seatPosition, seatApproach, treeApproach, plantApproach, bathroomApproach, position, durationMs: walking || jump ? duration * 1000 : step.durationMs, moveMs: walking || jump ? duration * 1000 : step.moveMs,
-    native: { sleepPose: step.sleepPose, prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
+    native: { navigation: { radius: world.radius, kitchenNavigation: world.kitchenNavigation, fridgeDoorClearance: world.fridgeDoorClearance }, sleepPose: step.sleepPose, prepareJump, brushSide: !blocked ? brush?.side : undefined, through: walkingThrough, entryMotion: step.entryMotion, path, distance, duration, arcHeight, stance, launchStance, stanceWidth, launchStanceWidth, landingHeading:step.jumpFromInstanceId ? step.seatHeading : undefined, paces: walkTiming?.paces, gait: walkTiming?.gait, ramp: walkTiming?.ramp, legs: !blocked ? route?.legs : undefined, rockingChair, bed: object?.bed && step.bedPhase && !blocked
       ? { instanceId: object.instanceId, phase: step.bedPhase } : undefined, bathroom: object?.bathroom && step.bathroomPhase && !blocked
       ? { instanceId: object.instanceId, kind: object.bathroom.kind, phase: step.bathroomPhase } : undefined,
       jump: jump && !blocked, blocked, hideEatingProps: plan.kind === "bowlEat", treePlay: plan.kind === 'toyPlay' && !!object?.seat, plantPlay: !!plant, playTargetId: plan.kind==='toyPlay'?object?.instanceId:undefined, pawTargetRadius: tree && object ? .1*object.scale : 0, targetPosition: object?.position, objectPath, objectDuration: duration * .6,

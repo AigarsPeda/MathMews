@@ -709,8 +709,6 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
 
   const viewRoom = pet.homeRoomId ?? "livingRoom";
   const editingCurrentRoom = isNativeCatPet && decoratingRoom === viewRoom;
-  const settingsTop = Math.max(moderateScale(24), screenInsets.paddingTop - moderateScale(24));
-  const settingsClearance = settingsTop + moderateScale(44) - screenInsets.paddingTop;
   const stageRooms = Array.from(new Map([
     ...(isNativeCatPet ? preloadedRooms : [pet]), ...(transition ? [transition.outgoing] : []),
   ].map(room => [room.homeRoomId ?? "livingRoom", room])).values());
@@ -721,7 +719,7 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
         busy={isCareBlocked || isCareAnimationPlaying || !!decoratingRoom || !!decorationEntry || !!transition}
         hasCommand={!!requestedRoomCommand} onBedtime={handleBedtime} onMorning={handleMorning} />
       <View style={styles.screen}>
-        <View style={[styles.header, { paddingTop: settingsClearance }]}>
+        <View style={styles.header}>
           <View style={styles.accountRow}>
             <GameHeaderStats
               layout="home"
@@ -730,6 +728,11 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
               lives={progress.lives}
               completedPuzzleIds={progress.completedPuzzleIds}
             />
+            <View style={styles.settingsDivider} />
+            <HeaderChip style={styles.settingsButton} onPress={handleOpenSettings}
+              accessibilityLabel={t('home.a11ySettings')}>
+              <AppIcon name="settings" size={moderateScale(18)} />
+            </HeaderChip>
           </View>
           {isNativeCatPet && <View style={styles.roomToolbar}>
             <RoomActionMenu style={styles.decorationMenu} blocked={!!transition}
@@ -811,13 +814,6 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
           </RoomControlsTransition>
         </View>
       </View>
-      <HeaderChip
-        style={[styles.settingsButton, { top: settingsTop, right: screenInsets.paddingRight }]}
-        onPress={handleOpenSettings}
-        accessibilityLabel={t("home.a11ySettings")}
-      >
-        <AppIcon name="settings" size={moderateScale(18)} />
-      </HeaderChip>
     </View>
   );
 }, (previous, next) => {
@@ -867,7 +863,8 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(16),
     paddingHorizontal: moderateScale(4),
   },
-  settingsButton: { position: 'absolute', zIndex: 1, width: moderateScale(44), borderWidth: 0, backgroundColor: 'transparent' },
+  settingsDivider: { width: 1, height: moderateScale(28), backgroundColor: GameColors.cardBorder },
+  settingsButton: { flexShrink: 0, width: 44, height: 44, minHeight: 44, maxHeight: 44, borderWidth: 0, backgroundColor: 'transparent' },
   roomToolbar: { flexDirection: 'row', alignItems: 'stretch', gap: moderateScale(8) },
   decorationMenu: { flex: 1, minWidth: 0, minHeight: 56 },
   modeHeaderContent: { flex: 1, minHeight: 56 },
