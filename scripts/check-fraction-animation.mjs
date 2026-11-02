@@ -71,7 +71,7 @@ function harness(reducedMotion = false) {
     'react-native': { View: 'View', Pressable: 'Pressable', StyleSheet: { create: styles => styles } },
     '@/utils/fraction-pie': selectionModule.exports,
     '@/utils/scale': { moderateScale: value => value },
-    '@/constants/game': { GameColors: { secondary: '#4ECDC4', success: '#247A3C' } },
+    '@/constants/puzzle-theme': { PuzzleColors: { secondary: '#4ECDC4', success: '#247A3C' } },
     '@shopify/react-native-skia': { Canvas: 'Canvas', Path: 'Path', Skia: { Path: { Make: path } } },
     'react-native-reanimated': {
       useSharedValue: value => react.useMemo(() => shared(value), []),

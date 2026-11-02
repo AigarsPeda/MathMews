@@ -262,6 +262,13 @@ newItemEditing.find(({ node }) => node.props.accessibilityLabel === 'home.finish
 console.log('Verified direct Shop button, decoration handoff, exact purchased-copy selection, and Done.');
 const normalRoom = render([sofa]);
 const sofaNode = nodes => decorationNode(nodes, 'sofaA').node;
+function editControls(decorations, props, instanceId) {
+  const target = render(decorations, props).find(({node}) => node.props.testID === `room-object:${instanceId}`).node;
+  assert.equal(target.props.menuActions, undefined, 'Editing uses the dock instead of competing native menus');
+  target.props.onDragStart();
+  return render(decorations, props).find(({node}) => node.type === 'RoomItemMoveControls').node.props;
+}
+
 const catNode = nodes => nodes.find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-cat').node;
 assert.equal(sofaNode(normalRoom).props.allowDrag, false);
 assert.equal(sofaNode(normalRoom).props.interactive, false, 'Furniture must not intercept petting');
@@ -275,7 +282,10 @@ assert.equal(catNode(editingRoom).props.onPetTap, undefined, 'Arranging the cat 
 assert.equal(editingRoom.filter(({ node }) => node.type === 'PetSpeechBubble').length, 0);
 editingRoom.find(({ node }) => node.props.accessibilityLabel === 'home.roomTools').node.props.onPress();
 let moved;
-const moveProps = { onPlacedDecorationOffsetChange: (id, offset) => { moved = { id, offset }; }, onPlacedDecorationRemove() {} };
+const moveProps = {
+  onPlacedDecorationOffsetChange: (id, offset) => { moved = { id, offset }; }, onPlacedDecorationRemove() {},
+  onCommitRoomEdit: edits => { const edit = edits.find(edit => edit.instanceId !== 'cat'); moved = { id: edit.instanceId, offset: edit.offset }; return true; },
+};
 const picker = render([sofa], moveProps).find(({ node }) => node.type === 'RoomEditorSheet').node;
 assert.equal(picker.props.visible, true);
 assert.ok(picker.props.items.every(item => item.picture), 'Every item must have a recognizable picture');
@@ -286,8 +296,12 @@ assert.equal(sofaNode(selectedRoom).props.selected, true, 'Highlight the one ite
 assert.equal(selectedRoom.some(({ node }) => node.type === 'RoomActionMenu'), false, 'Choosing an item must not open an unrelated action menu');
 const moveControls = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node;
 assert.ok(moveControls.props.actions.some(action => action.label === 'home.putAway'), 'Object options remain available beside the movement controls');
+measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
 let appliedRotation;
-const rotationProps = { ...moveProps, onSetRoomItemRotation: (item, degrees) => { appliedRotation = { item, degrees }; } };
+const rotationProps = { ...moveProps,
+  onSetRoomItemRotation: () => assert.fail('Rotation must use the atomic room-edit callback'),
+  onCommitRoomEdit: edits => { appliedRotation = edits.find(edit => edit.instanceId === 'sofa'); return true; },
+};
 const rotationControls = nodes => nodes.find(({ node }) => node.type === 'RoomRotationControls')?.node;
 const roomWorld = nodes => nodes.find(({ node }) => node.type === 'NativeRoomScene').node.props.world;
 const rotatableRoom = render([sofa], rotationProps);
@@ -303,18 +317,22 @@ rotationControls(previewRoom).props.onClose();
 assert.equal(roomWorld(render([sofa], rotationProps)).objects[0].heading, 0, 'Leaving an unfinished slider preview restores its saved orientation');
 rotatableRoom.find(({ node }) => node.type === 'RoomItemMoveControls').node.props.onRotate();
 rotationControls(render([sofa], rotationProps)).props.onCommit(137.5);
-assert.equal(appliedRotation.item.instanceId, 'sofa');
-assert.equal(appliedRotation.degrees, 137.5);
+assert.equal(appliedRotation.instanceId, 'sofa');
+assert.equal(appliedRotation.rotationDegrees, 137.5);
 assert.ok(rotationControls(render([sofa], rotationProps)), 'Automatic saving keeps the rotation tool open for another turn');
 rotationControls(render([sofa], rotationProps)).props.onClose();
-assert.equal(appliedRotation.degrees, 137.5, 'Back does not cancel the saved turn');
+assert.equal(appliedRotation.rotationDegrees, 137.5, 'Back does not cancel the saved turn');
 const spot = { decorationId:'spotlightChromePicture', instanceId:'aim-lamp', poweredOn:true, spotlightAngle:-25, offset:{x:.3,y:-.2} };
 // Use an actual catalog ID rather than depending on a particular style name.
 spot.decorationId = Object.keys(LAMP_LIGHT_ORIGINS).find(isWallSpotlightDecorationId);
 let appliedAim;
 const aimProps = { ...rotationProps, onAimPlacedSpotlight:(id,angle,swivel) => { appliedAim={id,angle,swivel}; } };
 const aimControls = nodes => nodes.find(({node}) => node.type === 'RoomSpotlightControls')?.node;
-const openAim = () => decorationNode(render([spot],aimProps),'aim-lamp').node.props.menuActions.find(action => action.label === 'home.aimSpotlight').onPress();
+const openAim = () => {
+  decorationNode(render([spot], aimProps), 'aim-lamp').node.props.onDragStart();
+  render([spot], aimProps).find(({node}) => node.type === 'RoomItemMoveControls').node.props.actions
+    .find(action => action.label === 'home.aimSpotlight').onPress();
+};
 openAim();
 let aiming = render([spot],aimProps);
 const aimDock = aiming.find(({node}) => node.type === 'RoomSpotlightControls');
@@ -346,10 +364,9 @@ render([sofa],rotationProps).find(({node})=>node.props.accessibilityLabel==='hom
 assert.equal(roomWorld(render([sofa],rotationProps)).objects[0].heading,0,'Done discards pending rotation');
 render([sofa],rotationProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
 console.log('Verified decoration-only inline aim, live preview, Cancel, Apply and Done discarding unsaved angles.');
-const everyKindRoom = render([sofa], { ...rotationProps, bedId: 'brown', placedToys: [{ toyId: 'scratchPostGreen', instanceId: 'rotating-toy', offset: { x: 0, y: 0 } }] });
+const everyKindProps = { ...rotationProps, bedId: 'brown', placedToys: [{ toyId: 'scratchPostGreen', instanceId: 'rotating-toy', offset: { x: 0, y: 0 } }] };
 for (const id of ['room-object:bed', 'room-object:sofa', 'room-object:rotating-toy']) {
-  const node = everyKindRoom.find(({ node }) => node.props.testID === id)?.node;
-  assert.ok(node?.props.menuActions.some(action => action.label === 'home.rotateItem'), `${id}: all item kinds offer free rotation`);
+  assert.equal(typeof editControls([sofa], everyKindProps, id.replace('room-object:', '')).onRotate, 'function', `${id}: all item kinds offer free rotation`);
 }
 measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
 let flippedWindow;
@@ -357,8 +374,9 @@ const rotatedWindowProps = { ...windowProps, onSetRoomItemRotation() { assert.fa
   onFlipPlacedDecorationWall(id) { flippedWindow=id; } };
 const windowEditor = render([misplacedWindow], rotatedWindowProps);
 const editableWindow=windowEditor.find(({node}) => node.props.testID === 'room-object:window').node;
-assert.ok(!editableWindow.props.menuActions.some(action=>action.label==='home.rotateItem'),'Window options omit free rotation');
-editableWindow.props.menuActions.find(action=>action.label==='home.flipWall').onPress();
+const windowDock = editControls([misplacedWindow], rotatedWindowProps, 'window');
+assert.equal(windowDock.onRotate, undefined, 'Window options omit free rotation');
+windowDock.onFaceWall();
 assert.equal(flippedWindow,'window');
 editableWindow.props.onDragStart();
 const windowControls=render([misplacedWindow],rotatedWindowProps).find(({node})=>node.type==='RoomItemMoveControls').node;
@@ -373,19 +391,23 @@ picker.props.onSelect(picker.props.items[0].item);
 console.log('Verified Rotate for beds, toys and furniture; local preview; Apply; Cancel; and window wall switches without free rotation.');
 const hintSlot = editingRoom.find(({ node }) => node.props.children?.includes('home.decorateHint')).ancestors.findLast(node => style(node.props.style).position === 'absolute' && style(node.props.style).bottom === 0);
 const controlsSlot = selectedRoom.find(({ node }) => node.type === 'RoomItemMoveControls').ancestors.findLast(node => style(node.props.style).position === 'absolute' && style(node.props.style).bottom === 0);
-assert.equal(style(hintSlot.props.style).minHeight, style(controlsSlot.props.style).minHeight, 'Reserve the same space before and after selecting an item so dragging does not shift the room');
+assert.equal(style(hintSlot.props.style).height, style(controlsSlot.props.style).height, 'Reserve the same space before and after selecting an item so dragging does not shift the room');
 const statsPanel = nodes => nodes.find(({ node }) => node.type === 'PetStatsPanel');
 const normalStats = statsPanel(normalRoom), editingStats = statsPanel(editingRoom), selectedStats = statsPanel(selectedRoom);
 assert.equal(normalStats.node.props.visible, true, 'Visible play mode may reveal pending stat changes');
 assert.equal(editingStats.node.props.visible, false, 'Decoration mode must not consume hidden stat changes');
 assert.equal(statsPanel(render([sofa], { roomVisible: false })).node.props.visible, false, 'Cached inactive rooms must not animate their stats');
 const footer = entry => entry.ancestors.at(-2);
-assert.deepEqual(style(footer(normalStats).props.style), style(footer(editingStats).props.style), 'Entering decoration mode retains the same footer dimensions and room viewport');
-assert.deepEqual(style(footer(normalStats).props.style), style(footer(selectedStats).props.style), 'Selecting an object does not resize the room');
+const footerFootprint = entry => {
+  const layout = style(footer(entry).props.style);
+  return (layout.height ?? layout.minHeight) + (layout.marginTop ?? 0);
+};
+assert.equal(footerFootprint(normalStats), footerFootprint(editingStats), 'The expanded dock preserves the footer layout footprint');
+assert.equal(footerFootprint(normalStats), footerFootprint(selectedStats), 'Selecting an object preserves the footer layout footprint');
 const statsFootprint = style(footer(normalStats).props.style).minHeight;
-const editingFootprint = style(controlsSlot.props.style).minHeight;
+const editingHeight = style(controlsSlot.props.style).height;
 assert.equal(statsFootprint, 74, 'The play footer gives its unused space back to the scene');
-assert.ok(editingFootprint <= statsFootprint + 52, 'The editing dock fits the footer plus the hidden room-navigation strip');
+assert.ok(editingHeight >= 160 && editingHeight <= 260, 'The scrollable editing dock stays within its phone height limits');
 assert.equal(style(controlsSlot.props.style).bottom, 0, 'The taller editing dock grows upward without resizing the room');
 const roomFrame = normalRoom.find(({ node }) => style(node.props.style).marginHorizontal < 0);
 assert.equal(style(roomFrame.node.props.style).alignSelf, 'stretch');
@@ -400,10 +422,11 @@ for (const zoom of [1,2.5]) {
   const nodes=render([{...sofa,scale:.8}],moveProps),world=roomWorld(nodes),object=world.objects.find(object=>object.instanceId===sofa.instanceId);
   const {NATIVE_MODEL_CATALOG,ROOM_SPAN}=load('@/utils/native-room-world');
   const size=object.scale*world.width*NATIVE_MODEL_CATALOG[object.modelId].renderScale/ROOM_SPAN;
+  const before = load('@/utils/room-item-placement').roomItemAnchor(object, world.width);
   nodes.find(({node})=>node.type==='RoomItemMoveControls').node.props.onMove('left');
   assert.equal(moved.id,sofa.instanceId);
-  assert.ok(Math.abs((sofa.offset.x-moved.offset.x)*((world.width-size)/2)*zoom-8)<1e-8,'Arrow movement is eight visible points at each zoom');
-  assert.ok(Math.abs(moved.offset.y-sofa.offset.y)<1e-9,'Move only the selected item on the requested axis');
+  assert.ok(Math.abs((before.x-moved.offset.x*((world.width-size)/2))*zoom-8)<1e-8,'Arrow movement is eight visible points at each zoom: '+JSON.stringify({zoom,moved,offset:sofa.offset,size,position:object.position}));
+  assert.ok(Math.abs(moved.offset.y-before.y/((world.height-size)/2))<1e-9,'Move only the selected item on the requested axis');
 }
 cameraZoom=1;
 measureWindowRoom({nativeEvent:{layout:{width:0,height:0}}});
@@ -419,7 +442,7 @@ console.log('Verified explicit decorating, protected furniture taps, cat reposit
 console.log('Verified a compact footer, wider scene, stable play/edit viewport, and an editing dock that borrows the hidden navigation strip.');
 console.log('Verified picture selection closes the picker, highlights one item, and moves it with the room visible.');
 
-states[2] = { width: 320, height: 320 };
+measureWindowRoom({nativeEvent:{layout:{width:320,height:320}}});
 const ball = { toyId: 'blueBall', instanceId: 'ball', offset: { x: .3, y: .4 } };
 let petTaps = 0;
 const mouse = { toyId: 'mouse', instanceId: 'mouse', offset: { x: -.4, y: .4 } };
@@ -504,25 +527,24 @@ roomActivityForTest = null; editingReady(); render([sofa]);
 assert.equal(sofaNode(render([sofa])).props.allowDrag, true, 'Decorating begins after the return finishes');
 const post = { toyId: 'scratchPostRed', instanceId: 'post', offset: { x: .2, y: .3 }, scale: 1.5 };
 const scaled = [];
-const toyProps = { placedToys: [post], onScalePlacedToy: (id, direction) => scaled.push([id, direction]), onPlacedToyRemove() {} };
+const toyProps = { placedToys: [post], onScalePlacedToy: () => assert.fail('Resizing must use atomic room edits'),
+  onCommitRoomEdit: edits => { const edit = edits.find(edit => edit.instanceId === 'post'); scaled.push([edit.instanceId, edit.scale]); return true; }, onPlacedToyRemove() {} };
 const postNode = render([sofa], toyProps).find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:post').node;
 postNode.props.onDragStart();
 assert.equal(render([sofa], toyProps).find(({ node }) => node.type === 'RoomItemMoveControls').node.props.name, 'store.toyName.scratchPostRed', 'Dragging selects the exact object for its separate controls');
 assert.equal(postNode.props.petSize, 72 * load('@/constants/room-scale').ROOM_OBJECT_SCALE, 'Render and drag bounds both use the saved scratching-post size and room proportions');
-const postMenu = postNode.props.menuActions;
+const postMenu = editControls([sofa], toyProps, 'post').actions;
 assert.deepEqual(Array.from(postMenu, action => action.label), ['home.makeBigger', 'home.makeSmaller', 'home.putAway']);
 let rotatedToy;
-const rotatedPostNode = render([sofa], { ...toyProps, onRotatePlacedToy: id => { rotatedToy = id; } })
-  .find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:post').node;
-const rotateAction = rotatedPostNode.props.menuActions.find(action => action.label === 'home.rotateItem');
+const rotateAction = editControls([sofa], { ...toyProps, onRotatePlacedToy: id => { rotatedToy = id; } }, 'post').actions.find(action => action.label === 'home.rotateItem');
 assert.ok(rotateAction, 'The selected toy exposes the same rotate action as other furniture');
 assert.equal(rotateAction.icon, 'rotate');
 rotateAction.onPress();
 assert.equal(rotatedToy, 'post', 'Rotate dispatches to the selected toy instance');
 postMenu[0].onPress(); postMenu[1].onPress();
-assert.deepEqual(scaled, [['post', 'up'], ['post', 'down']]);
+assert.deepEqual(scaled, [['post', 1.6], ['post', 1.5]]);
 for (const [scale, disabledIndex] of [[2.2, 0], [.7, 1]]) {
-  const actions = render([sofa], { ...toyProps, placedToys: [{ ...post, scale }] }).find(({ node }) => node.type === 'DraggableRoomPet' && node.props.testID === 'room-object:post').node.props.menuActions;
+  const actions = editControls([sofa], { ...toyProps, placedToys: [{ ...post, scale }] }, 'post').actions;
   assert.equal(actions[disabledIndex].disabled, true, 'Disable resizing beyond furniture limits');
 }
 console.log('Verified decorating waits for the cat, and scratching posts expose bounded resize controls.');
@@ -556,7 +578,7 @@ const houseEditor = render([homeDoor], houseProps);
 houseEditor.find(({ node }) => node.props.accessibilityLabel === 'home.decorateRoom').node.props.onPress();
 const editableDoor = decorationNode(render([homeDoor], houseProps), homeDoor.decorationId).node;
 assert.equal(editableDoor.props.allowDrag, true, 'Optional door decor still moves normally');
-assert.equal(editableDoor.props.menuActions.some(action => action.label === 'home.doorLeadsTo'), false);
+assert.equal(editControls([homeDoor], houseProps, homeDoor.instanceId).actions.some(action => action.label === 'home.doorLeadsTo'), false);
 const hiddenNavigation = render([homeDoor], houseProps).find(({ node }) => node.type === 'RoomNavigation');
 assert.equal(hiddenNavigation.node.props.disabled, true, 'Room arrows cannot switch away during an edit or outgoing fade');
 assert.equal(hiddenNavigation.ancestors.at(-1).props.visible, false, 'Room arrows fade out while editing');
@@ -800,7 +822,7 @@ sweepSlider.props.onSlidingComplete(90.36);
 assert.equal(aimForm().find(node=>node.props.minimumValue===-75).props.value,90.36);
 console.log('Verified continuous native slider, full wall/down/room/up sweep, preset preview, Apply and Cancel.');
 
-// A real stage drag publishes a shared native pose without scheduling React work.
+// Legacy drag callbacks publish shared poses and synchronous placement feedback.
 states.length=0; drawingValues.length=0; refs.length=0;
 measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
 const dragChair={decorationId:'chairRockingOak',instanceId:'drag-chair',offset:{x:0,y:.25},rotationDegrees:20,scale:.8};
@@ -812,7 +834,7 @@ const dragNode=decorationNode(dragRoom,'drag-chair').node;
 const sharedPreview=dragRoom.find(({node})=>node.type==='NativeRoomScene').node.props.editingObject;
 // Worklets Core clears its backing properties before copying an assigned object.
 // Its getter is a live proxy: assigning that same proxy erases the source too.
-let previewProperties, previewWrites=0;
+let previewProperties;
 const previewProxy=new Proxy({}, {
   get:(_target,key)=>previewProperties?.[key],
   ownKeys:()=>Reflect.ownKeys(previewProperties ?? {}),
@@ -821,7 +843,6 @@ const previewProxy=new Proxy({}, {
 Object.defineProperty(sharedPreview,'value',{
   get:()=>previewProperties ? previewProxy : undefined,
   set:value=>{
-    previewWrites++;
     if(!value){previewProperties=undefined;return;}
     previewProperties={};
     for(const key of Object.keys(value))previewProperties[key]=value[key];
@@ -832,21 +853,23 @@ const placementApi=load('@/utils/room-item-placement');
 const anchor=placementApi.roomItemAnchor(savedChair,390);
 const writesBefore=stateWrites;
 for(let frame=0;frame<120;frame++)dragNode.props.onDragPositionChange({x:anchor.x+frame*.1,y:anchor.y});
-assert.equal(stateWrites,writesBefore,'Furniture drag frames do not update React state or rebuild the room');
+assert.ok(stateWrites>writesBefore,'Legacy drag callbacks refresh placement feedback');
 assert.equal(sharedPreview.value.heading,20*Math.PI/180,'The native preview retains the saved 20-degree angle');
 assert.equal(roomWorld(dragRoom).objects[0],savedChair,'The saved world stays unchanged during the drag');
-const blockedWrites=previewWrites;
+let blockedPose;
 for(let frame=0;frame<60;frame++) {
   dragNode.props.onDragPositionChange({x:anchor.x+1000,y:anchor.y});
   assert.equal(sharedPreview.value.instanceId,'drag-chair','Blocked dragging cannot erase the live shared object');
   assert.ok(Number.isFinite(sharedPreview.value.scale));
   assert.ok(sharedPreview.value.position.every(Number.isFinite));
   assert.equal(sharedPreview.value.heading,20*Math.PI/180);
+  const pose = JSON.stringify(sharedPreview.value.position);
+  if(blockedPose) assert.equal(pose,blockedPose,'Repeated input preserves the same preview position');
+  blockedPose=pose;
 }
-assert.ok(previewWrites-blockedWrites<=1,'Stationary drag movement does not republish an unchanged native shared pose');
-dragNode.props.onOffsetChange({x:.1,y:.25});
+dragNode.props.onDragEnd(anchor);
 assert.equal(moved.id,'drag-chair');
-console.log('Verified live-proxy furniture previews, unchanged-pose caching, no React updates and an unchanged saved angle.');
+console.log('Verified live-proxy furniture previews, stable poses, legacy placement feedback and an unchanged saved angle.');
 
 // The actual stage wires geometry picking to selection, native previews and one save.
 const nativeEditor=dragRoom.find(({node})=>node.type==='NativeRoomEditor').node.props;
@@ -859,10 +882,14 @@ nativeEditor.select('drag-chair');
 assert.equal(decorationNode(render([dragChair],moveProps),'drag-chair').node.props.selected,true);
 nativeEditor.discard('drag-chair');
 assert.equal(sharedPreview.value,undefined,'Cancelled native editing discards the unsaved pose');
+const motion={session:1,sequence:0,x:0,y:0,at:0};
+nativeEditor.prepare('drag-chair',anchor,motion);
+nativeEditor.move('drag-chair',anchor,motion);
 const nativeWrites=stateWrites;
-const nativePoint=nativeEditor.move('drag-chair',{x:anchor.x+10,y:anchor.y});
-assert.equal(stateWrites,nativeWrites,'The geometry editor retains drawing-thread previews without React work');
-assert.equal(sharedPreview.value.heading,savedChair.heading);
+let nativePoint;
+for(let frame=1;frame<=120;frame++)nativePoint=nativeEditor.move('drag-chair',{x:anchor.x+frame/12,y:anchor.y},{...motion,sequence:frame,x:frame/12});
+assert.equal(stateWrites,nativeWrites,'Native drag frames with unchanged feedback do not schedule React work');
+assert.equal(nativeEditor.base.get().object.heading,savedChair.heading);
 nativeEditor.commit('drag-chair',nativePoint);
 const chairSize=savedChair.scale*390*load('@/utils/native-room-world').NATIVE_MODEL_CATALOG[savedChair.modelId].renderScale/load('@/utils/native-room-world').ROOM_SPAN;
 assert.ok(Math.abs(moved.offset.x-nativePoint.x/((390-chairSize)/2))<1e-8,'Commit converts the accepted native anchor into the saved offset');
@@ -883,7 +910,7 @@ measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
 const closeChair={...dragChair,wallFlipped:true,offset:{x:-.51,y:.21},scale:1};
 const closeSofa={...sofa,offset:{x:-.37,y:.093},rotationDegrees:270,scale:1.5};
 let dropSaves=0;
-const dropProps={...moveProps,onPlacedDecorationOffsetChange:(id,offset)=>{dropSaves++;moved={id,offset};}};
+const dropProps={...moveProps,onCommitRoomEdit:edits=>{const edit=edits.find(edit=>edit.instanceId==='drag-chair');dropSaves++;moved={id:edit.instanceId,offset:edit.offset};return true;}};
 let closeRoom=render([closeChair,closeSofa],dropProps);
 closeRoom.find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
 closeRoom=render([closeChair,closeSofa],dropProps);
@@ -902,48 +929,57 @@ editor.commit('drag-chair',previewPoint);
 let rejectedRoom=render([closeChair,closeSofa],dropProps);
 const failedOverlay=rejectedRoom.find(({node})=>node.type==='RoomPlacementOverlay').node;
 assert.ok(failedOverlay.props.feedback.blockers.some(hit=>hit.instanceId==='sofa'));
-const restoredSelection=decorationNode(rejectedRoom,'drag-chair').node.props.externalPosition;
-const savedSelection=placementApi.roomItemAnchor(originalChair,390);
-assert.ok(Math.abs(restoredSelection.x-savedSelection.x)<1e-8 && Math.abs(restoredSelection.y-savedSelection.y)<1e-8,'The native selection frame uses the restored model anchor, not stale sprite coordinates');
-assert.equal(rejectedRoom.find(({node})=>node.type==='RoomItemMoveControls').node.props.feedback,'home.placementReturned · home.placementBlocked');
-editor.select('drag-chair');
-assert.ok(!render([closeChair,closeSofa],dropProps).some(({node})=>node.type==='RoomPlacementOverlay'),'Beginning the next gesture clears stale rejection feedback');
+const blockedSelection=decorationNode(rejectedRoom,'drag-chair').node.props.externalPosition;
+assert.ok(Math.abs(blockedSelection.x-previewPoint.x)<1e-8 && Math.abs(blockedSelection.y-previewPoint.y)<1e-8,'The selection frame follows the unsaved blocked preview');
+const rejectedControls=rejectedRoom.find(({node})=>node.type==='RoomItemMoveControls').node.props;
+assert.equal(rejectedControls.feedback,'home.placementNotSaved · home.placementBlocked');
+assert.equal(rejectedControls.pending,true);
+assert.equal(rejectedControls.placementAllowed,false);
 assert.equal(dropSaves,beforeReject,'An invalid native drop is never saved');
-assert.equal(closePreview.value,undefined,'Rejecting a drop restores the saved native pose');
+rejectedControls.onCancel();
+assert.equal(closePreview.value,undefined,'Cancel restores the saved native pose');
+assert.equal(roomWorld(render([closeChair,closeSofa],dropProps)).objects.find(object=>object.instanceId==='drag-chair').heading,originalChair.heading);
 const freeChair=closeResolver.nearestFree(placementApi.roomItemAtPoint(originalChair,sofaPoint,390));
 assert.ok(freeChair,'The reported layout has a clear place for the chair');
 const freePoint=placementApi.roomItemAnchor(freeChair,390);
 editor.move('drag-chair',sofaPoint);
 editor.commit('drag-chair',editor.move('drag-chair',freePoint));
 assert.equal(dropSaves,beforeReject+1,'A clear drop after crossing the sofa saves exactly once');
-assert.ok(!render([closeChair,closeSofa],dropProps).some(({node})=>node.type==='RoomPlacementOverlay'),'An accepted drop has no rejection overlay');
+assert.equal(render([closeChair,closeSofa],dropProps).find(({node})=>node.type==='RoomPlacementOverlay').node.props.visible,false,'An accepted drop has no visible rejection overlay');
 assert.equal(closePreview.value.heading,originalChair.heading,'The accepted drop retains the saved 20-degree rotation and wall orientation');
 const proxyChair=decorationNode(closeRoom,'drag-chair').node;
 const simpleReturn=proxyChair.props.onDragEnd(sofaPoint);
-const originalPoint=placementApi.roomItemAnchor(originalChair,390);
-assert.ok(Math.abs(simpleReturn.x-originalPoint.x)<1e-8 && Math.abs(simpleReturn.y-originalPoint.y)<1e-8,'The sprite/accessibility drag path rejects the same overlap');
+assert.ok(Math.abs(simpleReturn.x-sofaPoint.x)<1e-8 && Math.abs(simpleReturn.y-sofaPoint.y)<1e-8,'The sprite/accessibility path also retains an unsaved blocked preview');
+assert.equal(dropSaves,beforeReject+1,'The blocked sprite drop does not save');
+render([closeChair,closeSofa],dropProps).find(({node})=>node.type==='RoomItemMoveControls').node.props.onCancel();
 assert.equal(closePreview.value,undefined);
-console.log('Verified the reported rotated chair previews over the sofa, restores invalid drops, accepts a clear drop and preserves its angle on both edit paths.');
+console.log('Verified the reported rotated chair previews over the sofa, keeps blocked drops unsaved until cancelled, accepts a clear drop and preserves its angle on both edit paths.');
 
-// Newly placed furniture receives a free spot rather than the old overlapping default.
+// A new placement suggests a free spot, but waits for explicit Place before saving.
 states.length=0; drawingValues.length=0; refs.length=0;
 measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
 const smallSofa={...sofa,scale:.8,offset:{x:0,y:0}};
-render([smallSofa],moveProps);
-moved=undefined;
 const newChair={...dragChair,offset:{x:0,y:0}};
-const added=render([smallSofa,newChair],moveProps);
-assert.equal(moved,undefined,'Ownership feedback can paint before the free-position search starts');
+const draft={target:{kind:'decoration',id:newChair.decorationId},item:{kind:'decoration',decorationId:newChair.decorationId,instanceId:newChair.instanceId},initial:newChair};
+const draftProps={...moveProps,placementDraft:draft};
+moved=undefined;
+render([smallSofa,newChair],{...draftProps,decorationEntry:{roomId:'livingRoom',item:draft.item}});
+const added=render([smallSofa,newChair],draftProps);
+assert.equal(moved,undefined,'A placement draft does not write the saved room');
 for(const frame of placementFrames.values())frame();
 placementFrames.clear();
-for(let i=0;i<100 && !moved;i++)await new Promise(resolve=>setTimeout(resolve,0));
-assert.equal(moved.id,newChair.instanceId,'The new overlapping chair receives a corrected offset');
+const draftPreview=added.find(({node})=>node.type==='NativeRoomScene').node.props.editingObject;
+const draftWorld=roomWorld(added), draftResolver=placementApi.createRoomPlacementResolver(draftWorld,[newChair.instanceId]);
+for(let i=0;i<100 && (!draftPreview.value || !draftResolver.canPlace(draftPreview.value));i++)await new Promise(resolve=>setTimeout(resolve,0));
+assert.ok(draftPreview.value && draftResolver.canPlace(draftPreview.value),'The draft receives a free suggested position');
+assert.equal(draftPreview.value.heading,20*Math.PI/180,'The suggestion retains the selected angle');
+assert.equal(moved,undefined,'A free suggestion still waits for Place');
+render([smallSofa,newChair],draftProps).find(({node})=>node.type==='RoomItemMoveControls').node.props.onPlace();
+assert.equal(moved.id,newChair.instanceId,'Place commits the selected draft');
 const fixedChair={...newChair,offset:moved.offset};
 const correctedWorld=roomWorld(render([smallSofa,fixedChair],moveProps));
-assert.ok(placementApi.createRoomPlacementResolver(correctedWorld).canPlace(correctedWorld.objects[1]));
-assert.equal(correctedWorld.objects[1].heading,20*Math.PI/180,'Automatic placement retains the selected angle');
-assert.equal(added.find(({node})=>node.type==='NativeRoomScene').node.props.world.objects.length,2);
-console.log('Verified new furniture is placed in the nearest available space while retaining its angle.');
+assert.ok(placementApi.createRoomPlacementResolver(correctedWorld,[newChair.instanceId]).canPlace(correctedWorld.objects[1]));
+console.log('Verified new furniture receives a free suggestion, preserves its angle and waits for Place before saving.');
 
 const routineClock = { worldMs: 23 * 3_600_000, realMs: Date.now(), speed: 1 };
 render([], { worldClock: routineClock });
@@ -957,16 +993,22 @@ console.log('Verified actual room-stage clock wiring for day, night and clock-fr
 // Actual editor wiring saves a rotation and its wall-clearance adjustment once.
 states.length=0;drawingValues.length=0;refs.length=0;
 measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
-const diningTable={decorationId:'kitchenDiningTable',instanceId:'dining-table',offset:{x:.7579651283871901,y:.12811517440151143},scale:1.1};
+// Leave clearance for the stage's 1.15× furniture scale while keeping the chair at the wall.
+const diningTable={decorationId:'kitchenDiningTable',instanceId:'dining-table',offset:{x:.6,y:.12811517440151143},scale:1.1};
 const wallChair={decorationId:'kitchenChairUpholstered',instanceId:'wall-chair',offset:{x:.8946879957449176,y:.11800410678215711}};
 const dining=[diningTable,wallChair];
 let rotationSave;
-const diningProps={onSetRoomItemRotation:(item,degrees,offset)=>{rotationSave={item,degrees,offset};}};
+const diningProps={onSetRoomItemRotation:()=>assert.fail('Use atomic room edits'),onCommitRoomEdit:edits=>{
+  const edit=edits.find(edit=>edit.instanceId==='wall-chair');
+  rotationSave={item:{kind:'decoration',instanceId:edit.instanceId,decorationId:wallChair.decorationId},degrees:edit.rotationDegrees,offset:edit.offset};
+  return true;
+}};
 render(dining,diningProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
 const chooseRoom=render(dining,diningProps);
 chooseRoom.find(({node})=>node.props.testID==='room-object:wall-chair').node.props.onPetTap();
 render(dining,diningProps).find(({node})=>node.type==='RoomItemMoveControls').node.props.onRotate();
 rotationControls(render(dining,diningProps)).props.onCommit(90);
+assert.ok(rotationSave,'An allowed turn must save an atomic room edit');
 assert.equal(rotationSave.degrees,90,'A turn validates and saves its new angle before a preview rerender');
 rotationControls(render(dining,diningProps)).props.onPreview(90);
 const chairPreview=render(dining,diningProps),previewWorld=roomWorld(chairPreview);
@@ -989,18 +1031,18 @@ measureWindowRoom({nativeEvent:{layout:{width:390,height:420}}});
 let lampLayout=JSON.parse(fs.readFileSync('scripts/fixtures/arc-lamp-kitchen.json','utf8'));
 const resizeLampId='pi-mv3k95w8-lz12vw';
 let resizeSaves=0;
-const resizeProps={onScalePlacedDecoration:(id,direction,offset)=>{
-  assert.equal(id,resizeLampId);assert.ok(offset,'A size edit includes its stable-base anchor');
-  const entry=lampLayout.find(item=>item.instanceId===id);
-  const variants=load('@/constants/decoration-variants');
-  lampLayout=placement.updatePlacedDecorationScaleByInstance(lampLayout,id,variants.scaleDecorationBy(variants.getPlacedDecorationScale(entry),direction),offset);
-  resizeSaves++;
+const resizeProps={onScalePlacedDecoration:()=>assert.fail('Resizing uses atomic room edits'),onCommitRoomEdit:edits=>{
+  const edit=edits.find(edit=>edit.instanceId===resizeLampId);
+  assert.ok(edit?.offset,'A size edit includes its stable-base anchor');
+  const entry=lampLayout.find(item=>item.instanceId===resizeLampId);
+  assert.ok(Math.abs(edit.scale-(entry.scale-.1))<1e-8,'Smaller decreases the saved size by one step');
+  lampLayout=placement.updatePlacedDecorationScaleByInstance(lampLayout,resizeLampId,edit.scale,edit.offset);
+  resizeSaves++; return true;
 }};
 render(lampLayout,resizeProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
 const originalLamp=roomWorld(render(lampLayout,resizeProps)).objects.find(o=>o.instanceId===resizeLampId);
 for(let step=0;step<3;step++) {
-  const nodes=render(lampLayout,resizeProps);
-  const action=decorationNode(nodes,resizeLampId).node.props.menuActions.find(action=>action.icon==='zoom-out');
+  const action=editControls(lampLayout,resizeProps,resizeLampId).actions.find(action=>action.icon==='zoom-out');
   assert.equal(action.disabled,false);action.onPress();
   assert.equal(resizeSaves,step+1,'Smaller saves exactly once');
   const savedLamp=roomWorld(render(placement.normalizePlacedDecorations(JSON.parse(JSON.stringify(lampLayout))),resizeProps)).objects.find(o=>o.instanceId===resizeLampId);
@@ -1036,9 +1078,9 @@ ajarFridgeMenu[0].onPress();assert.equal(fridgeOpening,'full');assert.equal(requ
 ajarFridgeMenu.find(a=>a.label==='home.openFridge').onPress();assert.equal(fridgeOpening,'full');
 ajarFridgeMenu.find(a=>a.label==='home.closeFridge').onPress();assert.equal(fridgeOpening,undefined);
 fridgeNodes.find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
-const editFridgeMenu=decorationNode(render([fridgeItem],fridgeProps),'fridge').node.props.menuActions;
+const editFridgeMenu=editControls([fridgeItem],fridgeProps,'fridge').actions;
 editFridgeMenu.find(a=>a.label==='home.fridgeHingeRight').onPress();assert.equal(fridgeFlipped,'fridge');
-assert.ok(decorationNode(render([{...fridgeItem,fridgeHingeSide:'right'}],fridgeProps),'fridge').node.props.menuActions.some(a=>a.label==='home.fridgeHingeLeft'));
+assert.ok(editControls([{...fridgeItem,fridgeHingeSide:'right'}],fridgeProps,'fridge').actions.some(a=>a.label==='home.fridgeHingeLeft'));
 assert.equal(roomWorld(render([{...fridgeItem,fridgeOpen:true,fridgeHingeSide:'right'}],fridgeProps)).objects[0].fridgeHingeSide,'right');
 console.log('Verified actual fridge full/crack/close menus, normal-play interaction and reversible hinge choice only in decoration mode.');
 
@@ -1088,12 +1130,12 @@ console.log('Verified shared header decoration entry, exact selected item, scene
 
 let rugResize;
 const rugAtOldLimit={decorationId:'bedroomRug',instanceId:'resize-rug',offset:{x:0,y:0},scale:2.2};
-const rugResizeProps={onScalePlacedDecoration:(id,direction,offset)=>{rugResize={id,direction,offset};}};
+const rugResizeProps={onScalePlacedDecoration:()=>assert.fail('Resizing uses atomic room edits'),onCommitRoomEdit:edits=>{rugResize=edits.find(edit=>edit.instanceId==='resize-rug');return true;}};
 render([rugAtOldLimit],rugResizeProps).find(({node})=>node.props.accessibilityLabel==='home.decorateRoom').node.props.onPress();
-const largerRug=decorationNode(render([rugAtOldLimit],rugResizeProps),'resize-rug').node.props.menuActions.find(a=>a.icon==='zoom-in');
+const largerRug=editControls([rugAtOldLimit],rugResizeProps,'resize-rug').actions.find(a=>a.icon==='zoom-in');
 assert.equal(largerRug.disabled,false,'The actual Bigger action remains enabled above the old rug maximum');
-largerRug.onPress();assert.equal(rugResize.id,'resize-rug');assert.equal(rugResize.direction,'up');assert.ok(rugResize.offset);
-const rugAtNewLimit=decorationNode(render([{...rugAtOldLimit,scale:4.4}],rugResizeProps),'resize-rug').node.props.menuActions;
+largerRug.onPress();assert.equal(rugResize.instanceId,'resize-rug');assert.ok(Math.abs(rugResize.scale-2.3)<1e-8);assert.ok(rugResize.offset);
+const rugAtNewLimit=editControls([{...rugAtOldLimit,scale:4.4}],rugResizeProps,'resize-rug').actions;
 assert.equal(rugAtNewLimit.find(a=>a.icon==='zoom-in').disabled,true);
 assert.equal(rugAtNewLimit.find(a=>a.icon==='zoom-out').disabled,false,'A maximum-size rug can still be shrunk');
 console.log('Verified the actual rug Bigger action passes the old limit, saves its fitted anchor and stops at the new maximum.');

@@ -5,13 +5,14 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 const jsx = (type, props) => ({ type, props });
-const colors = { success: '#6BCB77', secondary: '#4ECDC4', cardBorder: '#FFE0CC' };
+const colors = { incorrect: '#C82E39', success: '#6BCB77', secondary: '#4ECDC4', cardBorder: '#FFE0CC' };
 const mocks = {
   'react/jsx-runtime': { jsx, jsxs: jsx },
   'react-native': { Pressable: 'Pressable', Text: 'Text', View: 'View', StyleSheet: { create: styles => styles } },
   'react-i18next': { useTranslation: () => ({ t: key => key }) },
   './PuzzleObjectImage': { PuzzleObjectCollection: 'PuzzleObjectCollection' },
-  '@/constants/game': { GameColors: colors },
+  '@/constants/puzzle-theme': { PuzzleColors: colors },
+  '@/components/puzzle/PuzzleText': { PuzzleText: 'Text' },
   '@/utils/scale': { moderateScale: value => value },
 };
 function load(name) {
@@ -51,7 +52,7 @@ for (const [name, puzzle, correctIndex = 1] of cases) {
 
   const incorrect = render(true, false, wrongIndex);
   assert.equal(incorrect.some(button => border(button) === colors.success), false, `${name}: an incorrect submission must not highlight the solution`);
-  assert.equal(border(incorrect[wrongIndex]), '#FF9F43', `${name}: the incorrect choice retains its feedback`);
+  assert.equal(border(incorrect[wrongIndex]), colors.incorrect, `${name}: the incorrect choice retains its feedback`);
   assert.ok(incorrect.every(button => button.props.disabled), `${name}: submitted choices stay locked`);
 
   const correct = render(true, true, correctIndex);

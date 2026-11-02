@@ -124,9 +124,9 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
           {topic ? <Feather name="arrow-left" color={TopicPathColors.text} size={24} /> : <BackButtonLabel style={styles.backText} />}
         </Pressable>
         {topic ? <Text style={styles.trailTitle} accessibilityRole="header">{topic.title[locale]}</Text> : null}
+        {topic ? <Text style={styles.difficultyLabel}>{t(`difficulty.${difficulty}`)}</Text> : null}
         {!topic ? <AchievementsLink /> : null}
       </View>
-      {topic ? <Text style={styles.difficultyLabel}>{t(`difficulty.${difficulty}`)}</Text> : null}
       <Animated.ScrollView ref={trailScroll} key={`${difficulty}:${topic?.id ?? "selection"}`} style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}
         onScroll={onTrailScroll} scrollEventThrottle={16}
         onLayout={({ nativeEvent: { layout } }) => {
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 }, content: { paddingBottom: moderateScale(20), gap: moderateScale(18) },
   title: { fontSize: moderateScale(32), fontWeight: "900", color: GameColors.text },
   trailTitle: { flex: 1, marginLeft: moderateScale(8), fontSize: moderateScale(28), fontWeight: "800", color: TopicPathColors.text },
-  difficultyLabel: { fontSize: moderateScale(14), color: TopicPathColors.textMuted, fontWeight: "700", marginLeft: 48 + moderateScale(8), paddingBottom: moderateScale(4) },
+  difficultyLabel: { flexShrink: 0, fontSize: moderateScale(14), color: TopicPathColors.textMuted, fontWeight: "700", marginLeft: moderateScale(12), textAlign: "right" },
   pathAction: { paddingTop: moderateScale(12) },
   selectionContent: { gap: moderateScale(14) },
   resumeCard: { padding: moderateScale(20), gap: moderateScale(16), borderRadius: moderateScale(24), overflow: "hidden", marginBottom: moderateScale(8) },
