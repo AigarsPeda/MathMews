@@ -2608,9 +2608,9 @@
     "topic": "fractions",
     "correctIndex": 2,
     "question": {
-      "en": "Simplify the fraction. Which fraction has the same value?",
-      "lv": "Saīsini daļu. Kura daļa ir tikpat liela?",
-      "ru": "Сократи дробь. Какая дробь ей равна?"
+      "en": "Which fraction shows the same amount?",
+      "lv": "Kura daļa rāda to pašu daudzumu?",
+      "ru": "Какая дробь показывает такую же долю?"
     },
     "hint": {
       "en": "Divide both the numerator and denominator by 3.",
@@ -2622,8 +2622,8 @@
       "numerator": 9,
       "denominator": 24,
       "choices": [
-        "3/24",
-        "9/8",
+        "2/8",
+        "4/8",
         "3/8"
       ]
     },
@@ -2635,7 +2635,8 @@
       "role": "application",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "helpTemplate": "fraction_equivalent"
   },
   {
     "id": "v2-medium-fractions-fountain-3",
@@ -9839,26 +9840,22 @@
       8,
       10
     ],
-    "type": "fraction_build",
+    "type": "multiple_choice",
     "topic": "fractions",
     "question": {
-      "en": "Color 4/11 of this whole.",
-      "lv": "Iekrāso 4/11 no šī veselā.",
-      "ru": "Закрась 4/11 целого."
+      "en": "Which fraction equals 0.6?",
+      "lv": "Kura daļa ir vienāda ar 0,6?",
+      "ru": "Какая дробь равна 0,6?"
     },
     "hint": {
-      "en": "Check the total number of equal parts first.",
-      "lv": "Vispirms pārbaudi visu vienādo daļu skaitu.",
-      "ru": "Сначала проверьте общее количество равных частей."
+      "en": "Write the decimal as tenths, then simplify the fraction.",
+      "lv": "Izsaki decimāldaļu desmitdaļās, tad saīsini daļu.",
+      "ru": "Запишите десятичную дробь в десятых, затем сократите дробь."
     },
     "explanation": {
-      "en": "Color 4 out of 11 equal parts.",
-      "lv": "Iekrāso 4 no 11 vienādām daļām.",
-      "ru": "Закрась 4 из 11 равных частей."
-    },
-    "payload": {
-      "numerator": 4,
-      "denominator": 11
+      "en": "0.6 = 6/10 = 3/5.",
+      "lv": "0,6 = 6/10 = 3/5.",
+      "ru": "0,6 = 6/10 = 3/5."
     },
     "learning": {
       "skillId": "medium.fractions.explore-10",
@@ -9866,9 +9863,16 @@
         "medium.fractions.explore-9"
       ],
       "role": "practice",
-      "representation": "fraction-model",
-      "reasoningSteps": 1
-    }
+      "representation": "symbols",
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "3/5",
+      "1/5",
+      "1/2"
+    ],
+    "correctIndex": 0,
+    "helpTemplate": "fraction_decimal_link"
   },
   {
     "id": "v2-medium-fractions-explore-10-2",
@@ -9879,7 +9883,7 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
+    "helpTemplate": "fraction_compare_common",
     "correctIndex": 1,
     "question": {
       "en": "The wholes are the same size. Which fraction is larger?",
@@ -9887,14 +9891,14 @@
       "ru": "Целые одинакового размера. Какая дробь больше?"
     },
     "hint": {
-      "en": "Use equal-sized wholes. Rewrite both fractions with denominator 40, then compare their numerators.",
-      "lv": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 40 un salīdzini skaitītājus.",
-      "ru": "Используй целые одинакового размера. Приведи обе дроби к знаменателю 40, затем сравни числители."
+      "en": "Use equal-sized wholes. Rewrite both fractions with denominator 8, then compare their numerators.",
+      "lv": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 8 un salīdzini skaitītājus.",
+      "ru": "Используй целые одинакового размера. Приведи обе дроби к знаменателю 8, затем сравни числители."
     },
-    "explanation": "2/5 > 3/8.",
+    "explanation": "3/4 > 5/8.",
     "payload": {
-      "optionA": "3/8",
-      "optionB": "2/5"
+      "optionA": "5/8",
+      "optionB": "3/4"
     },
     "learning": {
       "skillId": "medium.fractions.explore-10",
@@ -9965,9 +9969,9 @@
     "topic": "fractions",
     "correctIndex": 1,
     "question": {
-      "en": "Simplify the fraction. Which fraction has the same value?",
-      "lv": "Saīsini daļu. Kura daļa ir tikpat liela?",
-      "ru": "Сократи дробь. Какая дробь ей равна?"
+      "en": "Which fraction shows the same amount?",
+      "lv": "Kura daļa rāda to pašu daudzumu?",
+      "ru": "Какая дробь показывает такую же долю?"
     },
     "hint": {
       "en": "Divide both the numerator and denominator by 3.",
@@ -9979,9 +9983,9 @@
       "numerator": 9,
       "denominator": 15,
       "choices": [
-        "9/5",
+        "2/5",
         "3/5",
-        "3/15"
+        "4/5"
       ]
     },
     "learning": {
@@ -9992,7 +9996,8 @@
       "role": "practice",
       "representation": "fraction-model",
       "reasoningSteps": 1
-    }
+    },
+    "helpTemplate": "fraction_equivalent"
   },
   {
     "id": "v2-medium-fractions-expedition-10-1",
@@ -10005,52 +10010,52 @@
     "topic": "fractions",
     "helpTemplate": "fraction_sort",
     "question": {
-      "en": "Sort the fractions by value: 1/12 or 11/12.",
-      "lv": "Sašķiro daļas pēc vērtības: 1/12 vai 11/12.",
-      "ru": "Отсортируйте дроби по значению: 1/12 или 11/12."
+      "en": "Sort the fractions by value: 1/6 or 5/6.",
+      "lv": "Sašķiro daļas pēc vērtības: 1/6 vai 5/6.",
+      "ru": "Отсортируйте дроби по значению: 1/6 или 5/6."
     },
     "hint": {
       "en": "Multiply or divide the numerator and denominator by the same number.",
       "lv": "Reizini vai dali skaitītāju un saucēju ar vienu un to pašu skaitli.",
       "ru": "Умножьте или разделите числитель и знаменатель на одно и то же число."
     },
-    "explanation": "1/12 = 2/24; 11/12 = 22/24.",
+    "explanation": "1/6 = 2/12 = 3/18 = 4/24; 5/6 = 10/12 = 15/18 = 20/24.",
     "payload": {
       "rule": "fractions",
       "targets": [
         [
           1,
-          12
+          6
         ],
         [
-          11,
-          12
+          5,
+          6
         ]
       ],
       "fractions": [
         [
           2,
-          24
+          12
         ],
         [
-          22,
-          24
+          10,
+          12
         ],
         [
           3,
-          36
+          18
         ],
         [
-          33,
-          36
+          15,
+          18
         ],
         [
           4,
-          48
+          24
         ],
         [
-          44,
-          48
+          20,
+          24
         ]
       ]
     },
@@ -24507,7 +24512,7 @@
     ],
     "type": "compare",
     "topic": "fractions",
-    "helpTemplate": "fraction_equivalent",
+    "helpTemplate": "fraction_compare_common",
     "correctIndex": 0,
     "question": {
       "en": "The wholes are the same size. Which fraction is larger?",
@@ -24515,14 +24520,14 @@
       "ru": "Целые одинакового размера. Какая дробь больше?"
     },
     "hint": {
-      "en": "Use equal-sized wholes. Rewrite both fractions with denominator 40, then compare their numerators.",
-      "lv": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 40 un salīdzini skaitītājus.",
-      "ru": "Используй целые одинакового размера. Приведи обе дроби к знаменателю 40, затем сравни числители."
+      "en": "Use equal-sized wholes. Rewrite both fractions with denominator 6, then compare their numerators.",
+      "lv": "Izmanto vienāda lieluma veselos. Izsaki abas daļas ar saucēju 6 un salīdzini skaitītājus.",
+      "ru": "Используй целые одинакового размера. Приведи обе дроби к знаменателю 6, затем сравни числители."
     },
-    "explanation": "2/5 > 3/8.",
+    "explanation": "2/3 > 3/6.",
     "payload": {
-      "optionA": "2/5",
-      "optionB": "3/8"
+      "optionA": "2/3",
+      "optionB": "3/6"
     },
     "learning": {
       "skillId": "medium.fractions.explore-10",

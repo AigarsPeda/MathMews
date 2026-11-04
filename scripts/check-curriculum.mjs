@@ -130,7 +130,13 @@ const animatedTasks = en.filter(puzzle => puzzle.taskVisual);
 assert.ok(animatedTasks.length >= 10, 'At least ten arithmetic tasks have authored quantity models');
 for (const puzzle of animatedTasks) {
   const model = puzzle.taskVisual;
-  const total = model.kind === 'array' ? model.rows * model.columns : model.kind === 'join' ? model.left + model.right : model.left - model.right;
+  let total = model.kind === 'array' ? model.rows * model.columns : model.kind === 'join' ? model.left + model.right : model.left - model.right;
+  if (model.kind === 'share') {
+    const [items, numerator, denominator] = puzzle.question.match(/\d+/g).map(Number);
+    assert.equal(model.items, items); assert.equal(model.groups, denominator);
+    assert.equal(items % denominator, 0, 'The introductory model divides into whole groups');
+    total = items / denominator * numerator;
+  }
   assert.equal(Number(puzzle.choices[puzzle.correctIndex]), total, `${puzzle.id}: the task model must match the answer`);
   assert.deepEqual(puzzle.taskVisual, tiers.flatMap(tier=>getPuzzlesByDifficulty('lv',tier)).find(other=>other.id===puzzle.id).taskVisual,'Authored quantities match across locales');
   const before = getQuantityTaskTokens(model, 0), after = getQuantityTaskTokens(model, 1);
@@ -721,6 +727,8 @@ const { checkEasyFractions } = await import('./puzzles/check-easy-fractions.mjs'
 checkEasyFractions({ load });
 const { checkFractionTransition } = await import('./puzzles/check-fraction-transition.mjs');
 checkFractionTransition({ load });
+const { checkHardFractionTransition } = await import('./puzzles/check-hard-fraction-transition.mjs');
+checkHardFractionTransition({ load });
 
 const { checkDecimalModels } = await import("./puzzles/check-decimal-models.mjs");
 checkDecimalModels({ load });

@@ -5,6 +5,7 @@ import { getTopicLessons } from '@/constants/curriculum';
 import foundationPlans from '@/data/puzzle-foundations.json';
 import easyFractionPairs from '@/data/easy-fraction-pairs.json';
 import mediumFractionTransition from '@/data/medium-fraction-transition.json';
+import hardFractionTransition from '@/data/hard-fraction-transition.json';
 export type ReviewQuestion = { diagram?: {parts:number;colored:number}; prompt: Record<AppLocale,string>; choices: string[]; correctIndex: number; explanation: Record<AppLocale,string> };
 const hash = (value: string) => {
   let seed = 2166136261;
@@ -58,6 +59,29 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
     }, choices, correctIndex: choices.indexOf(String(units)), explanation: { en: detail, lv: detail.replace('.', ','), ru: detail.replace('.', ',') } };
   }
   if(lesson.topicId === 'fractions') {
+    if (lesson.difficulty === 'hard') {
+      const [n, d, taughtTotal] = hardFractionTransition.amounts[stage][v % 3];
+      const maximum = stage < 4 ? [20, 25, 32, 40][stage] : 64;
+      const each = Math.min(Math.floor(maximum / d), Math.max(2, taughtTotal / d - 1 + Math.floor(v / 3) % 3));
+      const total = each * d, answer = each * n;
+      const choices = numericChoices(answer, key, total);
+      const detail = `${total} ÷ ${d} = ${each}${n === 1 ? '.' : `; ${each} × ${n} = ${answer}.`}`;
+      return { prompt: {
+        en: `There are ${total} seeds. ${n}/${d} of them are flower seeds. How many flower seeds?`,
+        lv: `Ir ${total} sēklas. Puķu sēklas veido ${n}/${d}. Cik puķu sēklu?`,
+        ru: `Всего ${total} семян. Семена цветов составляют ${n}/${d}. Сколько семян цветов?`,
+      }, choices, correctIndex: choices.indexOf(String(answer)), explanation: { en: detail, lv: detail, ru: detail } };
+    }
+    if (lesson.difficulty === 'medium' && stage === 9) {
+      const [n, d, a, b] = hardFractionTransition.mediumFinaleEquivalents[v % 4];
+      const wrong = Array.from({ length: b + 1 }, (_, i) => i).filter(i => i !== a)
+        .sort((x, y) => Math.abs(x - a) - Math.abs(y - a)).slice(0, 2);
+      const choices = wrong.map(i => `${i}/${b}`), correctIndex = seed % 3;
+      choices.splice(correctIndex, 0, `${a}/${b}`);
+      const detail = `${n}/${d} = ${a}/${b}.`;
+      return { prompt: { en: `Which fraction equals ${n}/${d}?`, lv: `Kura daļa ir vienāda ar ${n}/${d}?`, ru: `Какая дробь равна ${n}/${d}?` },
+        choices, correctIndex, explanation: { en: detail, lv: detail, ru: detail } };
+    }
     if (lesson.difficulty === 'easy' && stage >= 4 || lesson.difficulty === 'medium' && stage >= 0 && stage < mediumFractionTransition.length) {
       const equivalent = lesson.difficulty === 'medium' || [5, 7, 9].includes(stage);
       const pairs = lesson.difficulty === 'medium' ? mediumFractionTransition[stage].equivalents : easyFractionPairs[String(stage) as keyof typeof easyFractionPairs];
@@ -73,9 +97,9 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
         : { en: 'Which fraction of this whole is colored?', lv: 'Kāda šī veselā daļa ir iekrāsota?', ru: 'Какая часть целого закрашена?' },
         choices, correctIndex, explanation: { en: detail, lv: detail, ru: detail } };
     }
-    const advanced=lesson.difficulty==='hard', equivalent=lesson.difficulty==='medium'||['equivalence','equivalent','review'].some(key=>lesson.skillId?.endsWith('.'+key));
+    const equivalent=lesson.difficulty==='medium'||['equivalence','equivalent','review'].some(key=>lesson.skillId?.endsWith('.'+key));
     const d=lesson.skillId?.endsWith('.equal-parts')?2:lesson.skillId?.endsWith('.quarters')?4:3+v%4, n=1+v%(d-1);
-    if (equivalent && !advanced) {
+    if (equivalent) {
       const factor = stage < 2 || lesson.difficulty === 'easy' && stage === 5 ? 2
         : lesson.difficulty === 'easy' && stage === 6 ? 3
           : lesson.difficulty === 'medium' && stage < 4 ? 2 + v % 2 : 2 + v % 3;
@@ -89,19 +113,17 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
       return { prompt: { en: `Which fraction equals ${sourceN}/${sourceD}?`, lv: `Kura daļa ir vienāda ar ${sourceN}/${sourceD}?`, ru: `Какая дробь равна ${sourceN}/${sourceD}?` },
         choices, correctIndex: choices.indexOf(answer), explanation: { en: detail, lv: detail, ru: detail } };
     }
-    const options=advanced?numericChoices(a,key):[`${n}/${d}`,`${d}/${n}`,`${n+1}/${d}`];
+    const options=[`${n}/${d}`,`${d}/${n}`,`${n+1}/${d}`];
     const shift=seed%3,choices=[...options.slice(shift),...options.slice(0,shift)];
     return {
-      prompt: advanced
-        ? { en: `There are ${a*d} seeds. 1/${d} of them are flower seeds. How many flowers?`, lv: `Ir ${a*d} sēklas. Puķu sēklas veido 1/${d}. Cik puķu sēklu?`, ru: `Всего ${a*d} семян. Семена цветов составляют 1/${d}. Сколько семян цветов?` }
-        : { en: 'Which fraction of this whole is colored?', lv: 'Kāda šī veselā daļa ir iekrāsota?', ru: 'Какая часть целого закрашена?' },
-      choices, correctIndex: choices.indexOf(advanced ? String(a) : options[0]),
+      prompt: { en: 'Which fraction of this whole is colored?', lv: 'Kāda šī veselā daļa ir iekrāsota?', ru: 'Какая часть целого закрашена?' },
+      choices, correctIndex: choices.indexOf(options[0]),
       explanation: {
-        en: advanced ? `${a*d} ÷ ${d} = ${a}.` : `${n} of ${d} equal parts: ${n}/${d}.`,
-        lv: advanced ? `${a*d} ÷ ${d} = ${a}.` : `${n} no ${d} vienādām daļām: ${n}/${d}.`,
-        ru: advanced ? `${a*d} ÷ ${d} = ${a}.` : `${n} из ${d} равных частей: ${n}/${d}.`,
+        en: `${n} of ${d} equal parts: ${n}/${d}.`,
+        lv: `${n} no ${d} vienādām daļām: ${n}/${d}.`,
+        ru: `${n} из ${d} равных частей: ${n}/${d}.`,
       },
-      ...(!advanced ? { diagram: { parts: d, colored: n } } : {}),
+      diagram: { parts: d, colored: n },
     };
   }
   let en: string, lv: string, answer: number, detail: string;

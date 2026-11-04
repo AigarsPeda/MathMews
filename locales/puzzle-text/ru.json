@@ -2588,5 +2588,9 @@
   "Use the familiar pairs. Splitting each piece in half keeps the same amount.": "Используйте знакомые пары. Если разделить каждую часть пополам, доля не изменится.",
   "Join each pair of sixths to make thirds. Choose an equal-sized patch.": "Объедините шестые доли попарно, чтобы получить третьи. Выберите заплатку такого же размера.",
   "Which fraction shows the same amount?": "Какая дробь показывает такую же долю?",
-  "Sort every fraction by value: __N0__/__N1__ or __N2__/__N3__.": "Разложите каждую дробь по значению: __N0__/__N1__ или __N2__/__N3__."
+  "Sort every fraction by value: __N0__/__N1__ or __N2__/__N3__.": "Разложите каждую дробь по значению: __N0__/__N1__ или __N2__/__N3__.",
+  "Share the seedlings into __N0__ equal groups. Count the seedlings in one group.": "Разделите саженцы на __N0__ равных групп. Посчитайте саженцы в одной группе.",
+  "Share the seedlings into __N0__ equal groups. Count the seedlings in __N1__ groups.": "Разделите саженцы на __N0__ равных групп. Посчитайте саженцы в __N1__ группах.",
+  "Which fraction equals __N0__?": "Какая дробь равна __N0__?",
+  "Write the decimal as tenths, then simplify the fraction.": "Запишите десятичную дробь в десятых, затем сократите дробь."
 }

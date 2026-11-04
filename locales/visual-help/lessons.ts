@@ -2,6 +2,9 @@ import type { VISUAL_PRACTICE } from "@/constants/visual-practice";
 type Lessons = Record<keyof typeof VISUAL_PRACTICE, { title: string; s0: string; s1: string; s2: string }>;
 
 export const visualLessonsEn = {
+  fraction_unit_set: { title: "Find one equal group", s0: "Find one third of 18 dots. The columns show three equal groups.", s1: "Each group has six dots: 18 divided by 3 is 6.", s2: "One third means one of the three groups. The answer is six dots." },
+  fraction_decimal_link: { title: "Connect decimals and fractions", s0: "This strip shows 0.5, or five tenths of a whole.", s1: "Five tenths covers the same length as one half.", s2: "The amount stays the same: 0.5 = 5/10 = 1/2." },
+  fraction_compare_common: { title: "Compare with equal-sized pieces", s0: "Compare two thirds with three quarters of equal-length strips.", s1: "Split both strips into twelfths. Two thirds is eight twelfths; three quarters is nine twelfths.", s2: "Eight pieces is less than nine pieces of the same size: 2/3 < 3/4." },
   fraction_compare_unit: { title: "Compare one piece", s0: "Both strips are the same length. Split one into halves and the other into thirds.", s1: "Shade one piece in each strip. A half is a larger piece than a third.", s2: "One half covers more of the whole: 1/2 > 1/3." },
   fraction_compare_same_numerator: { title: "Compare the same number of pieces", s0: "The wholes have equal lengths. One has three pieces and the other has five.", s1: "Shade two pieces in each. Thirds are larger than fifths.", s2: "Two larger pieces cover more: 2/3 > 2/5." },
   fraction_compare_half: { title: "Use half as a guide", s0: "Both strips show the same whole. Compare one half with two fifths.", s1: "Shade half above and two of five pieces below. The lower shading stops before halfway.", s2: "Two fifths is less than half: 1/2 > 2/5." },
@@ -78,6 +81,9 @@ export const visualLessonsEn = {
 } satisfies Lessons;
 
 export const visualLessonsLv = {
+  fraction_unit_set: { title: "Atrodi vienu vienādu grupu", s0: "Atrodi trešdaļu no 18 punktiem. Kolonnas rāda trīs vienādas grupas.", s1: "Katrā grupā ir seši punkti: 18 dalīts ar 3 ir 6.", s2: "Trešdaļa ir viena no trim grupām. Atbilde ir seši punkti." },
+  fraction_decimal_link: { title: "Saisti decimāldaļas ar parastajām daļām", s0: "Joslā redzams 0,5 jeb piecas desmitdaļas no veselā.", s1: "Piecas desmitdaļas aizņem tikpat lielu garumu kā puse.", s2: "Daudzums nemainās: 0,5 = 5/10 = 1/2." },
+  fraction_compare_common: { title: "Salīdzini vienāda lieluma gabaliņus", s0: "Salīdzini divas trešdaļas ar trim ceturtdaļām vienāda garuma joslās.", s1: "Sadali abas joslas divpadsmitdaļās. Divas trešdaļas ir astoņas divpadsmitdaļas; trīs ceturtdaļas ir deviņas.", s2: "Astoņi gabaliņi ir mazāk nekā deviņi tāda paša lieluma gabaliņi: 2/3 < 3/4." },
   fraction_compare_unit: { title: "Salīdzini vienu daļu", s0: "Abas joslas ir vienāda garuma. Sadali vienu uz pusēm, bet otru trešdaļās.", s1: "Iekrāso vienu daļu katrā joslā. Puse ir lielāka nekā trešdaļa.", s2: "Puse aizņem vairāk no veselā: 1/2 > 1/3." },
   fraction_compare_same_numerator: { title: "Salīdzini vienādu daļu skaitu", s0: "Veselie ir vienāda garuma. Viens sadalīts trīs, otrs piecās daļās.", s1: "Iekrāso divas daļas katrā joslā. Trešdaļas ir lielākas nekā piektdaļas.", s2: "Divas lielākās daļas aizņem vairāk: 2/3 > 2/5." },
   fraction_compare_half: { title: "Salīdzini ar pusi", s0: "Abas joslas rāda vienādu veselo. Salīdzini pusi ar divām piektdaļām.", s1: "Augšā iekrāso pusi, apakšā divas no piecām daļām. Apakšējais iekrāsojums nesasniedz vidu.", s2: "Divas piektdaļas ir mazāk nekā puse: 1/2 > 2/5." },

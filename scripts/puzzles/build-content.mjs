@@ -3,6 +3,7 @@ import { applyGeometryPilot } from "./geometry-pilot.mjs";
 import { applyHardReasoning } from './hard-reasoning.mjs';
 import { simplifyEasyFractions } from './easy-fractions.mjs';
 import { smoothMediumFractions } from './medium-fraction-transition.mjs';
+import { smoothHardFractions } from './hard-fraction-transition.mjs';
 import { applyFoundationProgression } from './foundation-progression.mjs';
 import { applyDecimalModelPilot } from "./decimal-model-pilot.mjs";
 import { addRussianLearningText, russianPuzzle } from './russian-content.mjs';
@@ -419,6 +420,7 @@ applyFoundationProgression({ puzzles, lessons, pathExtras, text, task, numberSet
 applyBridgePilot({ puzzles, lessons, pathExtras });
 simplifyEasyFractions({ puzzles, lessons, pathExtras });
 smoothMediumFractions({ puzzles, lessons, pathExtras });
+smoothHardFractions({ puzzles, lessons, pathExtras });
 writeGenerated('data/puzzle-bridge-lessons.json', BRIDGE_PLANS.map(({id,type,difficulty})=>({id,type,difficulty})));
 writeGenerated('data/puzzle-path-extras.json', pathExtras);
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");

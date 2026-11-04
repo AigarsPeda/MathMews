@@ -147,6 +147,13 @@ const geometryMissingPerimeterHelp = [0, 1, 2].map(step => board("2 × (8 + ?) =
 ], step === 0 ? undefined : step === 1 ? "26 ÷ 2 = 13" : "13 − 8 = 5"));
 
 export const VISUAL_PRACTICE = {
+  fraction_unit_set: frames("fraction_unit_set", [0, 1, 2].map(step => board("1/3 × 18 = ?", [
+    ...counters(18, "●", i => [50 + (i % 3) * 100, 16 + Math.floor(i / 3) * 22], i => ({ width: 24, height: 24, scale: .7, tone: step > 0 && i % 3 === 0 ? "primary" : "secondary" })),
+  ], step === 2 ? "1/3 × 18 = 6" : step === 1 ? "18 ÷ 3 = 6" : undefined))),
+  fraction_decimal_link: frames("fraction_decimal_link", [0, 1, 2].map(step => board("0.5 = ?",
+    [...stripParts(10, 5, 35, "tenths"), ...stripParts(2, step > 0 ? 1 : 0, 95, "halves")], step === 2 ? "0.5 = 5/10 = 1/2" : step === 1 ? "5/10 = 1/2" : undefined))),
+  fraction_compare_common: frames("fraction_compare_common", [0, 1, 2].map(step => board(step === 0 ? "2/3   ?   3/4" : "8/12   ?   9/12",
+    [...stripParts(step === 0 ? 3 : 12, step === 0 ? 2 : 8, 35, "top"), ...stripParts(step === 0 ? 4 : 12, step === 0 ? 3 : 9, 95, "bottom")], step === 2 ? "2/3 < 3/4" : undefined))),
   fraction_compare_unit: frames("fraction_compare_unit", [0, 1, 2].map(step => board("1/2   ?   1/3",
     [...stripParts(2, step > 0 ? 1 : 0, 35, "top"), ...stripParts(3, step > 0 ? 1 : 0, 95, "bottom")], step === 2 ? "1/2 > 1/3" : undefined))),
   fraction_compare_same_numerator: frames("fraction_compare_same_numerator", [0, 1, 2].map(step => board("2/3   ?   2/5",

@@ -5,6 +5,11 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
+    files: ['scripts/**/*.mjs'],
+    // Node 22 supports JSON import attributes; Expo defaults to ES2022 parsing.
+    languageOptions: { ecmaVersion: 2025 },
+  },
+  {
     // QA captures are archived browser-console snippets, not project source.
     ignores: ['dist/*', '.expo/**', 'docs/qa/**'],
   },
