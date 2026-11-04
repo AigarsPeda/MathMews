@@ -10,11 +10,13 @@
     "ending": "walk",
     "title": {
       "en": "Alder and a footbridge to the far platform",
-      "lv": "Alder: tiltiņu uz tālo peronu"
+      "lv": "Alder: tiltiņu uz tālo peronu",
+      "ru": "Ольха и пешеходный мост на дальнюю платформу"
     },
     "goal": {
       "en": "a footbridge to the far platform",
-      "lv": "tiltiņu uz tālo peronu"
+      "lv": "tiltiņu uz tālo peronu",
+      "ru": "пешеходный мост на дальнюю платформу"
     }
   },
   {
@@ -28,11 +30,13 @@
     "ending": "surprised",
     "title": {
       "en": "Ada and the rain-soaked timetable",
-      "lv": "Ada: lietus samērcēto sarakstu"
+      "lv": "Ada: lietus samērcēto sarakstu",
+      "ru": "Ада и мокрое от дождя расписание"
     },
     "goal": {
       "en": "the rain-soaked timetable",
-      "lv": "lietus samērcēto sarakstu"
+      "lv": "lietus samērcēto sarakstu",
+      "ru": "мокрое от дождя расписание"
     }
   },
   {
@@ -46,11 +50,13 @@
     "ending": "dance",
     "title": {
       "en": "Arlo and new ribbons for the platform signs",
-      "lv": "Arlo: jaunas lentes peronu zīmēm"
+      "lv": "Arlo: jaunas lentes peronu zīmēm",
+      "ru": "Арло и новые ленты для табличек на перроне"
     },
     "goal": {
       "en": "new ribbons for the platform signs",
-      "lv": "jaunas lentes peronu zīmēm"
+      "lv": "jaunas lentes peronu zīmēm",
+      "ru": "новые ленты для табличек на перроне"
     }
   },
   {
@@ -64,11 +70,13 @@
     "ending": "correct",
     "title": {
       "en": "Aster and the station clock before the last departure",
-      "lv": "Aster: stacijas pulksteni pirms pēdējā reisa"
+      "lv": "Aster: stacijas pulksteni pirms pēdējā reisa",
+      "ru": "Астер и вокзальные часы перед последним отправлением"
     },
     "goal": {
       "en": "the station clock before the last departure",
-      "lv": "stacijas pulksteni pirms pēdējā reisa"
+      "lv": "stacijas pulksteni pirms pēdējā reisa",
+      "ru": "вокзальные часы перед последним отправлением"
     }
   },
   {
@@ -82,11 +90,13 @@
     "ending": "excited",
     "title": {
       "en": "Alba and a stranded suitcase above the tracks",
-      "lv": "Alba: iestrēgušu koferi virs sliedēm"
+      "lv": "Alba: iestrēgušu koferi virs sliedēm",
+      "ru": "Альба и застрявший над путями чемодан"
     },
     "goal": {
       "en": "a stranded suitcase above the tracks",
-      "lv": "iestrēgušu koferi virs sliedēm"
+      "lv": "iestrēgušu koferi virs sliedēm",
+      "ru": "застрявший над путями чемодан"
     }
   },
   {
@@ -100,11 +110,13 @@
     "ending": "walk",
     "title": {
       "en": "Acorn and luggage for the correct carriage",
-      "lv": "Acorn: bagāžu pareizajam vagonam"
+      "lv": "Acorn: bagāžu pareizajam vagonam",
+      "ru": "Желудь и багаж для правильной перевозки"
     },
     "goal": {
       "en": "luggage for the correct carriage",
-      "lv": "bagāžu pareizajam vagonam"
+      "lv": "bagāžu pareizajam vagonam",
+      "ru": "багаж для правильной перевозки"
     }
   },
   {
@@ -118,11 +130,13 @@
     "ending": "correct",
     "title": {
       "en": "Amble and a ferry across the station canal",
-      "lv": "Amble: prāmi pāri stacijas kanālam"
+      "lv": "Amble: prāmi pāri stacijas kanālam",
+      "ru": "Иноходь и паром через привокзальный канал"
     },
     "goal": {
       "en": "a ferry across the station canal",
-      "lv": "prāmi pāri stacijas kanālam"
+      "lv": "prāmi pāri stacijas kanālam",
+      "ru": "паром через привокзальный канал"
     }
   },
   {
@@ -136,11 +150,13 @@
     "ending": "excited",
     "title": {
       "en": "Anise and water for the thirsty engine",
-      "lv": "Anise: ūdeni izslāpušajai lokomotīvei"
+      "lv": "Anise: ūdeni izslāpušajai lokomotīvei",
+      "ru": "Анис и вода для жаждущего двигателя"
     },
     "goal": {
       "en": "water for the thirsty engine",
-      "lv": "ūdeni izslāpušajai lokomotīvei"
+      "lv": "ūdeni izslāpušajai lokomotīvei",
+      "ru": "вода для жаждущего двигателя"
     }
   },
   {
@@ -154,11 +170,13 @@
     "ending": "surprised",
     "title": {
       "en": "Axo and the signal that guides the train home",
-      "lv": "Axo: signālu vilciena mājupceļam"
+      "lv": "Axo: signālu vilciena mājupceļam",
+      "ru": "Аксо и сигнал, который ведет поезд домой"
     },
     "goal": {
       "en": "the signal that guides the train home",
-      "lv": "signālu vilciena mājupceļam"
+      "lv": "signālu vilciena mājupceļam",
+      "ru": "сигнал, который ведет поезд домой"
     }
   },
   {
@@ -172,11 +190,13 @@
     "ending": "walk",
     "title": {
       "en": "Bramble and a dry crossing for the picnic baskets",
-      "lv": "Bramble: sausu pāreju piknika groziem"
+      "lv": "Bramble: sausu pāreju piknika groziem",
+      "ru": "Брамбл и сухая переправа для корзин для пикника"
     },
     "goal": {
       "en": "a dry crossing for the picnic baskets",
-      "lv": "sausu pāreju piknika groziem"
+      "lv": "sausu pāreju piknika groziem",
+      "ru": "сухая переправа для корзин для пикника"
     }
   },
   {
@@ -190,11 +210,13 @@
     "ending": "surprised",
     "title": {
       "en": "Bea and Grandma’s scattered recipe pages",
-      "lv": "Bea: vecmāmiņas izkaisītās recepšu lapas"
+      "lv": "Bea: vecmāmiņas izkaisītās recepšu lapas",
+      "ru": "Разбросанные страницы рецептов Беа и бабушки"
     },
     "goal": {
       "en": "Grandma’s scattered recipe pages",
-      "lv": "vecmāmiņas izkaisītās recepšu lapas"
+      "lv": "vecmāmiņas izkaisītās recepšu lapas",
+      "ru": "бабушки"
     }
   },
   {
@@ -208,11 +230,13 @@
     "ending": "dance",
     "title": {
       "en": "Basil and the torn picnic blanket",
-      "lv": "Basil: saplēsto piknika segu"
+      "lv": "Basil: saplēsto piknika segu",
+      "ru": "Бэзил и порванное одеяло для пикника"
     },
     "goal": {
       "en": "the torn picnic blanket",
-      "lv": "saplēsto piknika segu"
+      "lv": "saplēsto piknika segu",
+      "ru": "порванное одеяло для пикника"
     }
   },
   {
@@ -226,11 +250,13 @@
     "ending": "correct",
     "title": {
       "en": "Bix and the tea-brewing timer",
-      "lv": "Bix: tējas gatavošanas taimeri"
+      "lv": "Bix: tējas gatavošanas taimeri",
+      "ru": "Бикс и таймер для заваривания чая"
     },
     "goal": {
       "en": "the tea-brewing timer",
-      "lv": "tējas gatavošanas taimeri"
+      "lv": "tējas gatavošanas taimeri",
+      "ru": "таймер для заваривания чая"
     }
   },
   {
@@ -244,11 +270,13 @@
     "ending": "excited",
     "title": {
       "en": "A picnic with Boba",
-      "lv": "Pikniks ar Bobu"
+      "lv": "Pikniks ar Bobu",
+      "ru": "Пикник с Бобой"
     },
     "goal": {
       "en": "a picnic with friends",
-      "lv": "pikniku ar draugiem"
+      "lv": "pikniku ar draugiem",
+      "ru": "пикник с друзьями"
     }
   },
   {
@@ -262,11 +290,13 @@
     "ending": "walk",
     "title": {
       "en": "Burr and the mixed-up picnic deliveries",
-      "lv": "Burr: sajauktās piknika piegādes"
+      "lv": "Burr: sajauktās piknika piegādes",
+      "ru": "Берр и перепутанные поставки для пикника"
     },
     "goal": {
       "en": "the mixed-up picnic deliveries",
-      "lv": "sajauktās piknika piegādes"
+      "lv": "sajauktās piknika piegādes",
+      "ru": "перепутанные поставки для пикника"
     }
   },
   {
@@ -280,11 +310,13 @@
     "ending": "correct",
     "title": {
       "en": "Brook and a little boat for friends across the pond",
-      "lv": "Brook: laiviņu draugiem dīķa otrā krastā"
+      "lv": "Brook: laiviņu draugiem dīķa otrā krastā",
+      "ru": "Ручей и лодка для друзей через пруд"
     },
     "goal": {
       "en": "a little boat for friends across the pond",
-      "lv": "laiviņu draugiem dīķa otrā krastā"
+      "lv": "laiviņu draugiem dīķa otrā krastā",
+      "ru": "лодка для друзей через пруд"
     }
   },
   {
@@ -298,11 +330,13 @@
     "ending": "excited",
     "title": {
       "en": "Breeze and drinking water for the arriving guests",
-      "lv": "Breeze: dzeramo ūdeni viesiem"
+      "lv": "Breeze: dzeramo ūdeni viesiem",
+      "ru": "Бриз и питьевая вода для прибывающих гостей"
     },
     "goal": {
       "en": "drinking water for the arriving guests",
-      "lv": "dzeramo ūdeni viesiem"
+      "lv": "dzeramo ūdeni viesiem",
+      "ru": "питьевая вода для прибывающих гостей"
     }
   },
   {
@@ -316,11 +350,13 @@
     "ending": "surprised",
     "title": {
       "en": "Bepo and a lantern for the walk home",
-      "lv": "Bepo: laternu mājupceļam"
+      "lv": "Bepo: laternu mājupceļam",
+      "ru": "Бепо и фонарь для прогулки домой"
     },
     "goal": {
       "en": "a lantern for the walk home",
-      "lv": "laternu mājupceļam"
+      "lv": "laternu mājupceļam",
+      "ru": "фонарь для прогулки домой"
     }
   },
   {
@@ -334,11 +370,13 @@
     "ending": "walk",
     "title": {
       "en": "Cedar and the harbor’s broken boarding ramp",
-      "lv": "Cedar: ostas salūzušo iekāpšanas laipu"
+      "lv": "Cedar: ostas salūzušo iekāpšanas laipu",
+      "ru": "Кедр и сломанная посадочная рампа в гавани"
     },
     "goal": {
       "en": "the harbor’s broken boarding ramp",
-      "lv": "ostas salūzušo iekāpšanas laipu"
+      "lv": "ostas salūzušo iekāpšanas laipu",
+      "ru": "сломанная посадочная рампа в гавани"
     }
   },
   {
@@ -352,11 +390,13 @@
     "ending": "surprised",
     "title": {
       "en": "Cleo and the captain’s missing tide notes",
-      "lv": "Cleo: kapteiņa pazudušās paisuma piezīmes"
+      "lv": "Cleo: kapteiņa pazudušās paisuma piezīmes",
+      "ru": "Пропавшие записи Клео и капитана о приливах"
     },
     "goal": {
       "en": "the captain’s missing tide notes",
-      "lv": "kapteiņa pazudušās paisuma piezīmes"
+      "lv": "kapteiņa pazudušās paisuma piezīmes",
+      "ru": "капитана о приливах"
     }
   },
   {
@@ -370,11 +410,13 @@
     "ending": "dance",
     "title": {
       "en": "Cosmo and a sail for the rescue boat",
-      "lv": "Cosmo: buru glābšanas laivai"
+      "lv": "Cosmo: buru glābšanas laivai",
+      "ru": "Космо и парус для спасательной лодки"
     },
     "goal": {
       "en": "a sail for the rescue boat",
-      "lv": "buru glābšanas laivai"
+      "lv": "buru glābšanas laivai",
+      "ru": "парус для спасательной лодки"
     }
   },
   {
@@ -388,11 +430,13 @@
     "ending": "correct",
     "title": {
       "en": "Cricket and the harbor bell’s stuck mechanism",
-      "lv": "Cricket: ostas zvana iestrēgušo mehānismu"
+      "lv": "Cricket: ostas zvana iestrēgušo mehānismu",
+      "ru": "Сверчок и застрявший механизм портового колокола"
     },
     "goal": {
       "en": "the harbor bell’s stuck mechanism",
-      "lv": "ostas zvana iestrēgušo mehānismu"
+      "lv": "ostas zvana iestrēgušo mehānismu",
+      "ru": "застрявший механизм портового колокола"
     }
   },
   {
@@ -406,11 +450,13 @@
     "ending": "excited",
     "title": {
       "en": "Coco and a rescue parcel for the far bank",
-      "lv": "Coco: glābšanas sūtījumu tālajam krastam"
+      "lv": "Coco: glābšanas sūtījumu tālajam krastam",
+      "ru": "Коко и спасательная посылка для дальнего берега"
     },
     "goal": {
       "en": "a rescue parcel for the far bank",
-      "lv": "glābšanas sūtījumu tālajam krastam"
+      "lv": "glābšanas sūtījumu tālajam krastam",
+      "ru": "спасательная посылка для дальнего берега"
     }
   },
   {
@@ -424,11 +470,13 @@
     "ending": "walk",
     "title": {
       "en": "Chestnut and dry supplies for the waiting crews",
-      "lv": "Chestnut: sausus krājumus gaidošajām komandām"
+      "lv": "Chestnut: sausus krājumus gaidošajām komandām",
+      "ru": "Каштаны и сухие припасы для ожидающих бригад"
     },
     "goal": {
       "en": "dry supplies for the waiting crews",
-      "lv": "sausus krājumus gaidošajām komandām"
+      "lv": "sausus krājumus gaidošajām komandām",
+      "ru": "сухие припасы для ожидающих бригад"
     }
   },
   {
@@ -442,11 +490,13 @@
     "ending": "correct",
     "title": {
       "en": "Coral and the paper flotilla’s last journey",
-      "lv": "Coral: papīra flotiles pēdējo braucienu"
+      "lv": "Coral: papīra flotiles pēdējo braucienu",
+      "ru": "Коралл и последнее путешествие бумажной флотилии"
     },
     "goal": {
       "en": "the paper flotilla’s last journey",
-      "lv": "papīra flotiles pēdējo braucienu"
+      "lv": "papīra flotiles pēdējo braucienu",
+      "ru": "последнее путешествие бумажной флотилии"
     }
   },
   {
@@ -460,11 +510,13 @@
     "ending": "excited",
     "title": {
       "en": "Cloverleaf and the pump that empties a flooded dock",
-      "lv": "Cloverleaf: sūkni applūdušās piestātnes nosusināšanai"
+      "lv": "Cloverleaf: sūkni applūdušās piestātnes nosusināšanai",
+      "ru": "Клеверный лист и насос, опорожняющий затопленный док"
     },
     "goal": {
       "en": "the pump that empties a flooded dock",
-      "lv": "sūkni applūdušās piestātnes nosusināšanai"
+      "lv": "sūkni applūdušās piestātnes nosusināšanai",
+      "ru": "насос, опорожняющий затопленный док"
     }
   },
   {
@@ -478,11 +530,13 @@
     "ending": "surprised",
     "title": {
       "en": "Coda and a lighthouse in the evening fog",
-      "lv": "Coda: bāku vakara miglā"
+      "lv": "Coda: bāku vakara miglā",
+      "ru": "Кода и маяк в вечернем тумане"
     },
     "goal": {
       "en": "a lighthouse in the evening fog",
-      "lv": "bāku vakara miglā"
+      "lv": "bāku vakara miglā",
+      "ru": "маяк в вечернем тумане"
     }
   },
   {
@@ -496,11 +550,13 @@
     "ending": "walk",
     "title": {
       "en": "Drift and a bridge to the outdoor bandstand",
-      "lv": "Drift: tiltiņu uz āra estrādi"
+      "lv": "Drift: tiltiņu uz āra estrādi",
+      "ru": "Дрифт и мостик к открытой эстраде"
     },
     "goal": {
       "en": "a bridge to the outdoor bandstand",
-      "lv": "tiltiņu uz āra estrādi"
+      "lv": "tiltiņu uz āra estrādi",
+      "ru": "мостик к открытой эстраде"
     }
   },
   {
@@ -514,11 +570,13 @@
     "ending": "surprised",
     "title": {
       "en": "Dora and the windblown concert score",
-      "lv": "Dora: vēja izpūstās koncerta notis"
+      "lv": "Dora: vēja izpūstās koncerta notis",
+      "ru": "Дора и партитура концерта, унесённая ветром"
     },
     "goal": {
       "en": "the windblown concert score",
-      "lv": "vēja izpūstās koncerta notis"
+      "lv": "vēja izpūstās koncerta notis",
+      "ru": "партитура концерта, унесённая ветром"
     }
   },
   {
@@ -532,11 +590,13 @@
     "ending": "dance",
     "title": {
       "en": "Dax and a ribbon curtain for the small stage",
-      "lv": "Dax: lenšu priekškaru mazajai skatuvei"
+      "lv": "Dax: lenšu priekškaru mazajai skatuvei",
+      "ru": "Дакс и ленточный занавес для малой сцены."
     },
     "goal": {
       "en": "a ribbon curtain for the small stage",
-      "lv": "lenšu priekškaru mazajai skatuvei"
+      "lv": "lenšu priekškaru mazajai skatuvei",
+      "ru": "ленточный занавес для малой сцены."
     }
   },
   {
@@ -550,11 +610,13 @@
     "ending": "correct",
     "title": {
       "en": "Doodle and the music box’s silent clockwork",
-      "lv": "Doodle: mūzikas lādītes apklusušo mehānismu"
+      "lv": "Doodle: mūzikas lādītes apklusušo mehānismu",
+      "ru": "Дудл и тихий часовой механизм музыкальной шкатулки"
     },
     "goal": {
       "en": "the music box’s silent clockwork",
-      "lv": "mūzikas lādītes apklusušo mehānismu"
+      "lv": "mūzikas lādītes apklusušo mehānismu",
+      "ru": "тихий часовой механизм музыкальной шкатулки"
     }
   },
   {
@@ -568,11 +630,13 @@
     "ending": "excited",
     "title": {
       "en": "Daisy and the conductor’s floating music stand",
-      "lv": "Daisy: diriģenta lidojošo nošu statīvu"
+      "lv": "Daisy: diriģenta lidojošo nošu statīvu",
+      "ru": "Дейзи и плавучий пюпитр дирижера"
     },
     "goal": {
       "en": "the conductor’s floating music stand",
-      "lv": "diriģenta lidojošo nošu statīvu"
+      "lv": "diriģenta lidojošo nošu statīvu",
+      "ru": "плавучий пюпитр дирижера"
     }
   },
   {
@@ -586,11 +650,13 @@
     "ending": "walk",
     "title": {
       "en": "Dimple and the instruments for the right performers",
-      "lv": "Dimple: instrumentus pareizajiem izpildītājiem"
+      "lv": "Dimple: instrumentus pareizajiem izpildītājiem",
+      "ru": "Dimple и инструменты для правильных исполнителей"
     },
     "goal": {
       "en": "the instruments for the right performers",
-      "lv": "instrumentus pareizajiem izpildītājiem"
+      "lv": "instrumentus pareizajiem izpildītājiem",
+      "ru": "инструменты для правильных исполнителей"
     }
   },
   {
@@ -604,11 +670,13 @@
     "ending": "correct",
     "title": {
       "en": "Delta and a musical boat for the canal parade",
-      "lv": "Delta: muzikālu laivu kanāla parādei"
+      "lv": "Delta: muzikālu laivu kanāla parādei",
+      "ru": "Дельта и музыкальная лодка для парада по каналу"
     },
     "goal": {
       "en": "a musical boat for the canal parade",
-      "lv": "muzikālu laivu kanāla parādei"
+      "lv": "muzikālu laivu kanāla parādei",
+      "ru": "музыкальная лодка для парада по каналу"
     }
   },
   {
@@ -622,11 +690,13 @@
     "ending": "excited",
     "title": {
       "en": "Dew and the water chimes’ missing flow",
-      "lv": "Dew: trūkstošo ūdens plūsmu ūdens zvaniņiem"
+      "lv": "Dew: trūkstošo ūdens plūsmu ūdens zvaniņiem",
+      "ru": "Роса и отсутствие звона воды"
     },
     "goal": {
       "en": "the water chimes’ missing flow",
-      "lv": "trūkstošo ūdens plūsmu ūdens zvaniņiem"
+      "lv": "trūkstošo ūdens plūsmu ūdens zvaniņiem",
+      "ru": "отсутствие звона воды"
     }
   },
   {
@@ -640,11 +710,13 @@
     "ending": "surprised",
     "title": {
       "en": "Dito and the lights for the evening solo",
-      "lv": "Dito: gaismas vakara solo"
+      "lv": "Dito: gaismas vakara solo",
+      "ru": "Дито и свет на вечер соло"
     },
     "goal": {
       "en": "the lights for the evening solo",
-      "lv": "gaismas vakara solo"
+      "lv": "gaismas vakara solo",
+      "ru": "свет на вечер соло"
     }
   },
   {
@@ -658,11 +730,13 @@
     "ending": "walk",
     "title": {
       "en": "Elmo and a ramp to the high toy shelf",
-      "lv": "Elmo: laipu uz augsto rotaļlietu plauktu"
+      "lv": "Elmo: laipu uz augsto rotaļlietu plauktu",
+      "ru": "Элмо и пандус к высокой полке с игрушками"
     },
     "goal": {
       "en": "a ramp to the high toy shelf",
-      "lv": "laipu uz augsto rotaļlietu plauktu"
+      "lv": "laipu uz augsto rotaļlietu plauktu",
+      "ru": "пандус к высокой полке с игрушками"
     }
   },
   {
@@ -676,11 +750,13 @@
     "ending": "surprised",
     "title": {
       "en": "Etta and the lost toy-making instructions",
-      "lv": "Etta: pazudušo rotaļlietu izgatavošanas pamācību"
+      "lv": "Etta: pazudušo rotaļlietu izgatavošanas pamācību",
+      "ru": "Этта и потерянные инструкции по изготовлению игрушек"
     },
     "goal": {
       "en": "the lost toy-making instructions",
-      "lv": "pazudušo rotaļlietu izgatavošanas pamācību"
+      "lv": "pazudušo rotaļlietu izgatavošanas pamācību",
+      "ru": "потерянные инструкции по изготовлению игрушек"
     }
   },
   {
@@ -694,11 +770,13 @@
     "ending": "dance",
     "title": {
       "en": "Enzo and a soft hammock for the stuffed toys",
-      "lv": "Enzo: mīkstu šūpuļtīklu plīša rotaļlietām"
+      "lv": "Enzo: mīkstu šūpuļtīklu plīša rotaļlietām",
+      "ru": "Энцо и мягкий гамак для мягких игрушек."
     },
     "goal": {
       "en": "a soft hammock for the stuffed toys",
-      "lv": "mīkstu šūpuļtīklu plīša rotaļlietām"
+      "lv": "mīkstu šūpuļtīklu plīša rotaļlietām",
+      "ru": "мягкий гамак для мягких игрушек."
     }
   },
   {
@@ -712,11 +790,13 @@
     "ending": "correct",
     "title": {
       "en": "Echo and the wooden robot’s jammed gears",
-      "lv": "Echo: koka robota iestrēgušos zobratus"
+      "lv": "Echo: koka robota iestrēgušos zobratus",
+      "ru": "Эхо и заклинившие шестерни деревянного робота"
     },
     "goal": {
       "en": "the wooden robot’s jammed gears",
-      "lv": "koka robota iestrēgušos zobratus"
+      "lv": "koka robota iestrēgušos zobratus",
+      "ru": "заклинившие шестерни деревянного робота"
     }
   },
   {
@@ -730,11 +810,13 @@
     "ending": "excited",
     "title": {
       "en": "Elsa and a toy airship’s first safe flight",
-      "lv": "Elsa: rotaļu dirižabļa pirmo drošo lidojumu"
+      "lv": "Elsa: rotaļu dirižabļa pirmo drošo lidojumu",
+      "ru": "Эльза и первый безопасный полет игрушечного дирижабля"
     },
     "goal": {
       "en": "a toy airship’s first safe flight",
-      "lv": "rotaļu dirižabļa pirmo drošo lidojumu"
+      "lv": "rotaļu dirižabļa pirmo drošo lidojumu",
+      "ru": "первый безопасный полет игрушечного дирижабля"
     }
   },
   {
@@ -748,11 +830,13 @@
     "ending": "walk",
     "title": {
       "en": "Elder and the toy orders before collection time",
-      "lv": "Elder: rotaļlietu pasūtījumus pirms saņemšanas"
+      "lv": "Elder: rotaļlietu pasūtījumus pirms saņemšanas",
+      "ru": "Старейшина и игрушки заказываются до того, как их заберут."
     },
     "goal": {
       "en": "the toy orders before collection time",
-      "lv": "rotaļlietu pasūtījumus pirms saņemšanas"
+      "lv": "rotaļlietu pasūtījumus pirms saņemšanas",
+      "ru": "игрушки заказываются до того, как их заберут."
     }
   },
   {
@@ -766,11 +850,13 @@
     "ending": "correct",
     "title": {
       "en": "Estuary and a model boat for the playroom pool",
-      "lv": "Estuary: modelīti rotaļu istabas baseinam"
+      "lv": "Estuary: modelīti rotaļu istabas baseinam",
+      "ru": "Устье и модель лодки для бассейна в игровой комнате."
     },
     "goal": {
       "en": "a model boat for the playroom pool",
-      "lv": "modelīti rotaļu istabas baseinam"
+      "lv": "modelīti rotaļu istabas baseinam",
+      "ru": "модель лодки для бассейна в игровой комнате."
     }
   },
   {
@@ -784,11 +870,13 @@
     "ending": "excited",
     "title": {
       "en": "Eddy and the workshop’s paint-washing pump",
-      "lv": "Eddy: darbnīcas otu mazgāšanas sūkni"
+      "lv": "Eddy: darbnīcas otu mazgāšanas sūkni",
+      "ru": "Эдди и насос для промывки краски в мастерской"
     },
     "goal": {
       "en": "the workshop’s paint-washing pump",
-      "lv": "darbnīcas otu mazgāšanas sūkni"
+      "lv": "darbnīcas otu mazgāšanas sūkni",
+      "ru": "насос для промывки краски в мастерской"
     }
   },
   {
@@ -802,11 +890,13 @@
     "ending": "surprised",
     "title": {
       "en": "Evo and a night-light for the playroom",
-      "lv": "Evo: naktslampiņu rotaļu istabai"
+      "lv": "Evo: naktslampiņu rotaļu istabai",
+      "ru": "Эво и ночник для игровой комнаты"
     },
     "goal": {
       "en": "a night-light for the playroom",
-      "lv": "naktslampiņu rotaļu istabai"
+      "lv": "naktslampiņu rotaļu istabai",
+      "ru": "ночник для игровой комнаты"
     }
   },
   {
@@ -820,11 +910,13 @@
     "ending": "walk",
     "title": {
       "en": "Fennel and a crossing to the windy launch hill",
-      "lv": "Fennel: pāreju uz vējaino palaišanas kalnu"
+      "lv": "Fennel: pāreju uz vējaino palaišanas kalnu",
+      "ru": "Фенхель и переход на ветреную стартовую горку"
     },
     "goal": {
       "en": "a crossing to the windy launch hill",
-      "lv": "pāreju uz vējaino palaišanas kalnu"
+      "lv": "pāreju uz vējaino palaišanas kalnu",
+      "ru": "переход на ветреную стартовую горку"
     }
   },
   {
@@ -838,11 +930,13 @@
     "ending": "surprised",
     "title": {
       "en": "Faye and the flying club’s weather journal",
-      "lv": "Faye: lidotāju kluba laikapstākļu žurnālu"
+      "lv": "Faye: lidotāju kluba laikapstākļu žurnālu",
+      "ru": "Фэй и журнал погоды аэроклуба"
     },
     "goal": {
       "en": "the flying club’s weather journal",
-      "lv": "lidotāju kluba laikapstākļu žurnālu"
+      "lv": "lidotāju kluba laikapstākļu žurnālu",
+      "ru": "журнал погоды аэроклуба"
     }
   },
   {
@@ -856,11 +950,13 @@
     "ending": "dance",
     "title": {
       "en": "Flint and a patchwork tail for the festival kite",
-      "lv": "Flint: raibu asti svētku pūķim"
+      "lv": "Flint: raibu asti svētku pūķim",
+      "ru": "Флинт и лоскутный хвост для праздничного змея"
     },
     "goal": {
       "en": "a patchwork tail for the festival kite",
-      "lv": "raibu asti svētku pūķim"
+      "lv": "raibu asti svētku pūķim",
+      "ru": "лоскутный хвост для праздничного змея"
     }
   },
   {
@@ -874,11 +970,13 @@
     "ending": "correct",
     "title": {
       "en": "Fizz and the kite reel’s tangled gears",
-      "lv": "Fizz: pūķa spoles sapinušos zobratus"
+      "lv": "Fizz: pūķa spoles sapinušos zobratus",
+      "ru": "Запутанные шестерни Физза и катушки воздушного змея"
     },
     "goal": {
       "en": "the kite reel’s tangled gears",
-      "lv": "pūķa spoles sapinušos zobratus"
+      "lv": "pūķa spoles sapinušos zobratus",
+      "ru": "катушки воздушного змея"
     }
   },
   {
@@ -892,11 +990,13 @@
     "ending": "excited",
     "title": {
       "en": "Flora and a weather balloon for the flying club",
-      "lv": "Flora: laikapstākļu balonu lidotāju klubam"
+      "lv": "Flora: laikapstākļu balonu lidotāju klubam",
+      "ru": "Флора и метеозонд для аэроклуба"
     },
     "goal": {
       "en": "a weather balloon for the flying club",
-      "lv": "laikapstākļu balonu lidotāju klubam"
+      "lv": "laikapstākļu balonu lidotāju klubam",
+      "ru": "метеозонд для аэроклуба"
     }
   },
   {
@@ -910,11 +1010,13 @@
     "ending": "walk",
     "title": {
       "en": "Fig and the repair kits for each kite team",
-      "lv": "Fig: remonta komplektus katrai komandai"
+      "lv": "Fig: remonta komplektus katrai komandai",
+      "ru": "Рис и ремкомплекты для каждой кайт-команды"
     },
     "goal": {
       "en": "the repair kits for each kite team",
-      "lv": "remonta komplektus katrai komandai"
+      "lv": "remonta komplektus katrai komandai",
+      "ru": "ремкомплекты для каждой кайт-команды"
     }
   },
   {
@@ -928,11 +1030,13 @@
     "ending": "correct",
     "title": {
       "en": "Foam and a recovery boat for a water-landed kite",
-      "lv": "Foam: glābšanas laivu ūdenī nolaistam pūķim"
+      "lv": "Foam: glābšanas laivu ūdenī nolaistam pūķim",
+      "ru": "Пена и спасательная лодка для воздушного змея, приземлившегося на воду"
     },
     "goal": {
       "en": "a recovery boat for a water-landed kite",
-      "lv": "glābšanas laivu ūdenī nolaistam pūķim"
+      "lv": "glābšanas laivu ūdenī nolaistam pūķim",
+      "ru": "спасательная лодка для воздушного змея, приземлившегося на воду"
     }
   },
   {
@@ -946,11 +1050,13 @@
     "ending": "excited",
     "title": {
       "en": "Fern and water for the meadow’s new seedlings",
-      "lv": "Fern: ūdeni pļavas jaunajiem stādiem"
+      "lv": "Fern: ūdeni pļavas jaunajiem stādiem",
+      "ru": "Папоротник и вода для новых саженцев луга"
     },
     "goal": {
       "en": "water for the meadow’s new seedlings",
-      "lv": "ūdeni pļavas jaunajiem stādiem"
+      "lv": "ūdeni pļavas jaunajiem stādiem",
+      "ru": "вода для новых саженцев луга"
     }
   },
   {
@@ -964,11 +1070,13 @@
     "ending": "surprised",
     "title": {
       "en": "Faro and a landing beacon before dusk",
-      "lv": "Faro: nosēšanās signālu pirms krēslas"
+      "lv": "Faro: nosēšanās signālu pirms krēslas",
+      "ru": "Фару и посадочный маяк перед сумерками"
     },
     "goal": {
       "en": "a landing beacon before dusk",
-      "lv": "nosēšanās signālu pirms krēslas"
+      "lv": "nosēšanās signālu pirms krēslas",
+      "ru": "посадочный маяк перед сумерками"
     }
   },
   {
@@ -982,11 +1090,13 @@
     "ending": "walk",
     "title": {
       "en": "Grove and a footbridge beside the crowded entrance",
-      "lv": "Grove: tiltiņu pie pārpildītās ieejas"
+      "lv": "Grove: tiltiņu pie pārpildītās ieejas",
+      "ru": "Роща и пешеходный мост у многолюдного входа"
     },
     "goal": {
       "en": "a footbridge beside the crowded entrance",
-      "lv": "tiltiņu pie pārpildītās ieejas"
+      "lv": "tiltiņu pie pārpildītās ieejas",
+      "ru": "пешеходный мост у многолюдного входа"
     }
   },
   {
@@ -1000,11 +1110,13 @@
     "ending": "surprised",
     "title": {
       "en": "Greta and the festival’s muddled guest book",
-      "lv": "Greta: sajaukto svētku viesu grāmatu"
+      "lv": "Greta: sajaukto svētku viesu grāmatu",
+      "ru": "Грета и запутанная гостевая книга фестиваля"
     },
     "goal": {
       "en": "the festival’s muddled guest book",
-      "lv": "sajaukto svētku viesu grāmatu"
+      "lv": "sajaukto svētku viesu grāmatu",
+      "ru": "запутанная гостевая книга фестиваля"
     }
   },
   {
@@ -1018,11 +1130,13 @@
     "ending": "dance",
     "title": {
       "en": "Gizmo and a welcome banner for the gate",
-      "lv": "Gizmo: sagaidīšanas karogu vārtiem"
+      "lv": "Gizmo: sagaidīšanas karogu vārtiem",
+      "ru": "Гизмо и приветственный баннер для ворот"
     },
     "goal": {
       "en": "a welcome banner for the gate",
-      "lv": "sagaidīšanas karogu vārtiem"
+      "lv": "sagaidīšanas karogu vārtiem",
+      "ru": "приветственный баннер для ворот"
     }
   },
   {
@@ -1036,11 +1150,13 @@
     "ending": "correct",
     "title": {
       "en": "Glim and the ticket stamper’s stopped wheels",
-      "lv": "Glim: biļešu spiedoga apstājušos riteņus"
+      "lv": "Glim: biļešu spiedoga apstājušos riteņus",
+      "ru": "Глим и остановившиеся колеса билетного штампа"
     },
     "goal": {
       "en": "the ticket stamper’s stopped wheels",
-      "lv": "biļešu spiedoga apstājušos riteņus"
+      "lv": "biļešu spiedoga apstājušos riteņus",
+      "ru": "остановившиеся колеса билетного штампа"
     }
   },
   {
@@ -1054,11 +1170,13 @@
     "ending": "excited",
     "title": {
       "en": "Gala and a floating sign above the ticket queue",
-      "lv": "Gala: lidojošu zīmi virs biļešu rindas"
+      "lv": "Gala: lidojošu zīmi virs biļešu rindas",
+      "ru": "Гала-концерт и плавающая вывеска над очередью за билетами"
     },
     "goal": {
       "en": "a floating sign above the ticket queue",
-      "lv": "lidojošu zīmi virs biļešu rindas"
+      "lv": "lidojošu zīmi virs biļešu rindas",
+      "ru": "плавающая вывеска над очередью за билетами"
     }
   },
   {
@@ -1072,11 +1190,13 @@
     "ending": "walk",
     "title": {
       "en": "Gooseberry and the envelopes for the right visitors",
-      "lv": "Gooseberry: aploksnes pareizajiem viesiem"
+      "lv": "Gooseberry: aploksnes pareizajiem viesiem",
+      "ru": "Крыжовник и конверты для нужных посетителей"
     },
     "goal": {
       "en": "the envelopes for the right visitors",
-      "lv": "aploksnes pareizajiem viesiem"
+      "lv": "aploksnes pareizajiem viesiem",
+      "ru": "конверты для нужных посетителей"
     }
   },
   {
@@ -1090,11 +1210,13 @@
     "ending": "correct",
     "title": {
       "en": "Gully and a canal shuttle for the late guests",
-      "lv": "Gully: kanāla laivu nokavējušajiem viesiem"
+      "lv": "Gully: kanāla laivu nokavējušajiem viesiem",
+      "ru": "Овраг и шаттл по каналу для опоздавших гостей"
     },
     "goal": {
       "en": "a canal shuttle for the late guests",
-      "lv": "kanāla laivu nokavējušajiem viesiem"
+      "lv": "kanāla laivu nokavējušajiem viesiem",
+      "ru": "шаттл по каналу для опоздавших гостей"
     }
   },
   {
@@ -1108,11 +1230,13 @@
     "ending": "excited",
     "title": {
       "en": "Ginger and a drinking fountain beside the queue",
-      "lv": "Ginger: dzeramā ūdens strūklaku pie rindas"
+      "lv": "Ginger: dzeramā ūdens strūklaku pie rindas",
+      "ru": "Имбирь и питьевой фонтанчик рядом с очередью"
     },
     "goal": {
       "en": "a drinking fountain beside the queue",
-      "lv": "dzeramā ūdens strūklaku pie rindas"
+      "lv": "dzeramā ūdens strūklaku pie rindas",
+      "ru": "питьевой фонтанчик рядом с очередью"
     }
   },
   {
@@ -1126,11 +1250,13 @@
     "ending": "surprised",
     "title": {
       "en": "Garo and the final lantern above the entrance",
-      "lv": "Garo: pēdējo laternu virs ieejas"
+      "lv": "Garo: pēdējo laternu virs ieejas",
+      "ru": "Гаро и последний фонарь над входом"
     },
     "goal": {
       "en": "the final lantern above the entrance",
-      "lv": "pēdējo laternu virs ieejas"
+      "lv": "pēdējo laternu virs ieejas",
+      "ru": "последний фонарь над входом"
     }
   },
   {
@@ -1144,11 +1270,13 @@
     "ending": "walk",
     "title": {
       "en": "Huckle and a crossing over the snowmelt stream",
-      "lv": "Huckle: pāreju pār atkušņa strautu"
+      "lv": "Huckle: pāreju pār atkušņa strautu",
+      "ru": "Хакл и переправа через талый ручей"
     },
     "goal": {
       "en": "a crossing over the snowmelt stream",
-      "lv": "pāreju pār atkušņa strautu"
+      "lv": "pāreju pār atkušņa strautu",
+      "ru": "переправа через талый ручей"
     }
   },
   {
@@ -1162,11 +1290,13 @@
     "ending": "surprised",
     "title": {
       "en": "Hera and the rescue team’s damaged supply log",
-      "lv": "Hera: glābēju bojāto krājumu žurnālu"
+      "lv": "Hera: glābēju bojāto krājumu žurnālu",
+      "ru": "Гера и поврежденный журнал поставок спасательной команды"
     },
     "goal": {
       "en": "the rescue team’s damaged supply log",
-      "lv": "glābēju bojāto krājumu žurnālu"
+      "lv": "glābēju bojāto krājumu žurnālu",
+      "ru": "поврежденный журнал поставок спасательной команды"
     }
   },
   {
@@ -1180,11 +1310,13 @@
     "ending": "dance",
     "title": {
       "en": "Hugo and a warm cover for the supply basket",
-      "lv": "Hugo: siltu pārsegu krājumu grozam"
+      "lv": "Hugo: siltu pārsegu krājumu grozam",
+      "ru": "Хьюго и теплый чехол для корзины с припасами."
     },
     "goal": {
       "en": "a warm cover for the supply basket",
-      "lv": "siltu pārsegu krājumu grozam"
+      "lv": "siltu pārsegu krājumu grozam",
+      "ru": "теплый чехол для корзины с припасами."
     }
   },
   {
@@ -1198,11 +1330,13 @@
     "ending": "correct",
     "title": {
       "en": "Hiccup and the lift winch’s stubborn gears",
-      "lv": "Hiccup: pacēlāja vinčas spītīgos zobratus"
+      "lv": "Hiccup: pacēlāja vinčas spītīgos zobratus",
+      "ru": "Иккинг и упрямые шестерни подъемной лебедки"
     },
     "goal": {
       "en": "the lift winch’s stubborn gears",
-      "lv": "pacēlāja vinčas spītīgos zobratus"
+      "lv": "pacēlāja vinčas spītīgos zobratus",
+      "ru": "упрямые шестерни подъемной лебедки"
     }
   },
   {
@@ -1216,11 +1350,13 @@
     "ending": "excited",
     "title": {
       "en": "Honey and an emergency balloon for the upper camp",
-      "lv": "Honey: ārkārtas balonu augšējai nometnei"
+      "lv": "Honey: ārkārtas balonu augšējai nometnei",
+      "ru": "Мед и аварийный воздушный шар для верхнего лагеря."
     },
     "goal": {
       "en": "an emergency balloon for the upper camp",
-      "lv": "ārkārtas balonu augšējai nometnei"
+      "lv": "ārkārtas balonu augšējai nometnei",
+      "ru": "аварийный воздушный шар для верхнего лагеря."
     }
   },
   {
@@ -1234,11 +1370,13 @@
     "ending": "walk",
     "title": {
       "en": "Hazelwood and the packs for each mountain shelter",
-      "lv": "Hazelwood: somas katram kalnu patvērumam"
+      "lv": "Hazelwood: somas katram kalnu patvērumam",
+      "ru": "Хейзелвуд и рюкзаки для каждого горного приюта."
     },
     "goal": {
       "en": "the packs for each mountain shelter",
-      "lv": "somas katram kalnu patvērumam"
+      "lv": "somas katram kalnu patvērumam",
+      "ru": "рюкзаки для каждого горного приюта."
     }
   },
   {
@@ -1252,11 +1390,13 @@
     "ending": "correct",
     "title": {
       "en": "Harbor and a supply raft across the glacier lake",
-      "lv": "Harbor: krājumu plostu pāri ledāja ezeram"
+      "lv": "Harbor: krājumu plostu pāri ledāja ezeram",
+      "ru": "Гавань и плот с припасами через ледниковое озеро"
     },
     "goal": {
       "en": "a supply raft across the glacier lake",
-      "lv": "krājumu plostu pāri ledāja ezeram"
+      "lv": "krājumu plostu pāri ledāja ezeram",
+      "ru": "плот с припасами через ледниковое озеро"
     }
   },
   {
@@ -1270,11 +1410,13 @@
     "ending": "excited",
     "title": {
       "en": "Heather and the thaw-water pump at base camp",
-      "lv": "Heather: atkušņa ūdens sūkni nometnē"
+      "lv": "Heather: atkušņa ūdens sūkni nometnē",
+      "ru": "Хизер и насос для талой воды в базовом лагере"
     },
     "goal": {
       "en": "the thaw-water pump at base camp",
-      "lv": "atkušņa ūdens sūkni nometnē"
+      "lv": "atkušņa ūdens sūkni nometnē",
+      "ru": "насос для талой воды в базовом лагере"
     }
   },
   {
@@ -1288,11 +1430,13 @@
     "ending": "surprised",
     "title": {
       "en": "Hexo and a beacon for travelers in the snow",
-      "lv": "Hexo: signālu ceļiniekiem sniegā"
+      "lv": "Hexo: signālu ceļiniekiem sniegā",
+      "ru": "Hexo и маяк для путешественников по снегу"
     },
     "goal": {
       "en": "a beacon for travelers in the snow",
-      "lv": "signālu ceļiniekiem sniegā"
+      "lv": "signālu ceļiniekiem sniegā",
+      "ru": "маяк для путешественников по снегу"
     }
   },
   {
@@ -1306,11 +1450,13 @@
     "ending": "walk",
     "title": {
       "en": "Ivo and a walkway to the little orchestra pit",
-      "lv": "Ivo: laipu uz mazo orķestra bedri"
+      "lv": "Ivo: laipu uz mazo orķestra bedri",
+      "ru": "Иво и дорожка к маленькой оркестровой яме"
     },
     "goal": {
       "en": "a walkway to the little orchestra pit",
-      "lv": "laipu uz mazo orķestra bedri"
+      "lv": "laipu uz mazo orķestra bedri",
+      "ru": "дорожка к маленькой оркестровой яме"
     }
   },
   {
@@ -1324,11 +1470,13 @@
     "ending": "surprised",
     "title": {
       "en": "Iris and the actor’s scrambled script",
-      "lv": "Iris: aktiera sajaukto scenāriju"
+      "lv": "Iris: aktiera sajaukto scenāriju",
+      "ru": "Айрис и зашифрованный сценарий актера"
     },
     "goal": {
       "en": "the actor’s scrambled script",
-      "lv": "aktiera sajaukto scenāriju"
+      "lv": "aktiera sajaukto scenāriju",
+      "ru": "зашифрованный сценарий актера"
     }
   },
   {
@@ -1342,11 +1490,13 @@
     "ending": "dance",
     "title": {
       "en": "Indie and the velvet curtain’s missing ribbon",
-      "lv": "Indie: samta priekškara trūkstošo lenti"
+      "lv": "Indie: samta priekškara trūkstošo lenti",
+      "ru": "Инди и пропавшая лента бархатного занавеса"
     },
     "goal": {
       "en": "the velvet curtain’s missing ribbon",
-      "lv": "samta priekškara trūkstošo lenti"
+      "lv": "samta priekškara trūkstošo lenti",
+      "ru": "пропавшая лента бархатного занавеса"
     }
   },
   {
@@ -1360,11 +1510,13 @@
     "ending": "correct",
     "title": {
       "en": "Inka and the scenery turntable’s clockwork",
-      "lv": "Inka: dekorāciju grozāmās grīdas mehānismu"
+      "lv": "Inka: dekorāciju grozāmās grīdas mehānismu",
+      "ru": "Инка и часовой механизм проигрывателя декораций"
     },
     "goal": {
       "en": "the scenery turntable’s clockwork",
-      "lv": "dekorāciju grozāmās grīdas mehānismu"
+      "lv": "dekorāciju grozāmās grīdas mehānismu",
+      "ru": "часовой механизм проигрывателя декораций"
     }
   },
   {
@@ -1378,11 +1530,13 @@
     "ending": "excited",
     "title": {
       "en": "Isla and a moon balloon for the opening scene",
-      "lv": "Isla: mēness balonu atklāšanas ainai"
+      "lv": "Isla: mēness balonu atklāšanas ainai",
+      "ru": "Исла и лунный шар во вступительной сцене."
     },
     "goal": {
       "en": "a moon balloon for the opening scene",
-      "lv": "mēness balonu atklāšanas ainai"
+      "lv": "mēness balonu atklāšanas ainai",
+      "ru": "лунный шар во вступительной сцене."
     }
   },
   {
@@ -1396,11 +1550,13 @@
     "ending": "walk",
     "title": {
       "en": "Inkberry and the props for the right stage doors",
-      "lv": "Inkberry: rekvizītus pareizajām skatuves durvīm"
+      "lv": "Inkberry: rekvizītus pareizajām skatuves durvīm",
+      "ru": "Чернильная ягода и реквизит для правых дверей сцены"
     },
     "goal": {
       "en": "the props for the right stage doors",
-      "lv": "rekvizītus pareizajām skatuves durvīm"
+      "lv": "rekvizītus pareizajām skatuves durvīm",
+      "ru": "реквизит для правых дверей сцены"
     }
   },
   {
@@ -1414,11 +1570,13 @@
     "ending": "correct",
     "title": {
       "en": "Inlet and a storybook ship for the stage canal",
-      "lv": "Inlet: pasaku kuģi skatuves kanālam"
+      "lv": "Inlet: pasaku kuģi skatuves kanālam",
+      "ru": "Залив и корабль-сборник рассказов для сценического канала"
     },
     "goal": {
       "en": "a storybook ship for the stage canal",
-      "lv": "pasaku kuģi skatuves kanālam"
+      "lv": "pasaku kuģi skatuves kanālam",
+      "ru": "корабль-сборник рассказов для сценического канала"
     }
   },
   {
@@ -1432,11 +1590,13 @@
     "ending": "excited",
     "title": {
       "en": "Ivory and the rain effect’s dry water pump",
-      "lv": "Ivory: lietus efekta izžuvušo sūkni"
+      "lv": "Ivory: lietus efekta izžuvušo sūkni",
+      "ru": "Насос для сухой воды цвета слоновой кости и эффекта дождя"
     },
     "goal": {
       "en": "the rain effect’s dry water pump",
-      "lv": "lietus efekta izžuvušo sūkni"
+      "lv": "lietus efekta izžuvušo sūkni",
+      "ru": "эффекта дождя"
     }
   },
   {
@@ -1450,11 +1610,13 @@
     "ending": "surprised",
     "title": {
       "en": "Iota and a spotlight for the shy performer",
-      "lv": "Iota: prožektoru kautrīgajam māksliniekam"
+      "lv": "Iota: prožektoru kautrīgajam māksliniekam",
+      "ru": "Йота и прожектор для застенчивой исполнительницы"
     },
     "goal": {
       "en": "a spotlight for the shy performer",
-      "lv": "prožektoru kautrīgajam māksliniekam"
+      "lv": "prožektoru kautrīgajam māksliniekam",
+      "ru": "прожектор для застенчивой исполнительницы"
     }
   },
   {
@@ -1468,11 +1630,13 @@
     "ending": "walk",
     "title": {
       "en": "Junco and a loading bridge for the delivery carts",
-      "lv": "Junco: iekraušanas laipu piegādes ratiņiem"
+      "lv": "Junco: iekraušanas laipu piegādes ratiņiem",
+      "ru": "Junco и погрузочный мост для тележек доставки"
     },
     "goal": {
       "en": "a loading bridge for the delivery carts",
-      "lv": "iekraušanas laipu piegādes ratiņiem"
+      "lv": "iekraušanas laipu piegādes ratiņiem",
+      "ru": "погрузочный мост для тележек доставки"
     }
   },
   {
@@ -1486,11 +1650,13 @@
     "ending": "surprised",
     "title": {
       "en": "Juno and the courier’s smudged address book",
-      "lv": "Juno: kurjera izsmērēto adrešu grāmatu"
+      "lv": "Juno: kurjera izsmērēto adrešu grāmatu",
+      "ru": "Юнона и заляпанная адресная книга курьера"
     },
     "goal": {
       "en": "the courier’s smudged address book",
-      "lv": "kurjera izsmērēto adrešu grāmatu"
+      "lv": "kurjera izsmērēto adrešu grāmatu",
+      "ru": "заляпанная адресная книга курьера"
     }
   },
   {
@@ -1504,11 +1670,13 @@
     "ending": "dance",
     "title": {
       "en": "Jasper and secure straps for the fragile parcels",
-      "lv": "Jasper: drošas saites trauslajiem sūtījumiem"
+      "lv": "Jasper: drošas saites trauslajiem sūtījumiem",
+      "ru": "Яшмовые и надежные ремни для хрупких посылок."
     },
     "goal": {
       "en": "secure straps for the fragile parcels",
-      "lv": "drošas saites trauslajiem sūtījumiem"
+      "lv": "drošas saites trauslajiem sūtījumiem",
+      "ru": "надежные ремни для хрупких посылок."
     }
   },
   {
@@ -1522,11 +1690,13 @@
     "ending": "correct",
     "title": {
       "en": "Jolt and the sorting belt’s missing gear",
-      "lv": "Jolt: šķirošanas lentes trūkstošo zobratu"
+      "lv": "Jolt: šķirošanas lentes trūkstošo zobratu",
+      "ru": "Сотрясение и отсутствие шестерни сортировочной ленты"
     },
     "goal": {
       "en": "the sorting belt’s missing gear",
-      "lv": "šķirošanas lentes trūkstošo zobratu"
+      "lv": "šķirošanas lentes trūkstošo zobratu",
+      "ru": "отсутствие шестерни сортировочной ленты"
     }
   },
   {
@@ -1540,11 +1710,13 @@
     "ending": "excited",
     "title": {
       "en": "Jelly and a balloon delivery across a washed-out road",
-      "lv": "Jelly: balona piegādi pāri izskalotam ceļam"
+      "lv": "Jelly: balona piegādi pāri izskalotam ceļam",
+      "ru": "Доставка желе и воздушного шара через размытую дорогу"
     },
     "goal": {
       "en": "a balloon delivery across a washed-out road",
-      "lv": "balona piegādi pāri izskalotam ceļam"
+      "lv": "balona piegādi pāri izskalotam ceļam",
+      "ru": "воздушного шара через размытую дорогу"
     }
   },
   {
@@ -1558,11 +1730,13 @@
     "ending": "walk",
     "title": {
       "en": "Jujube and the parcels for the correct routes",
-      "lv": "Jujube: sūtījumus pareizajiem maršrutiem"
+      "lv": "Jujube: sūtījumus pareizajiem maršrutiem",
+      "ru": "Мармелад и посылки для правильных маршрутов"
     },
     "goal": {
       "en": "the parcels for the correct routes",
-      "lv": "sūtījumus pareizajiem maršrutiem"
+      "lv": "sūtījumus pareizajiem maršrutiem",
+      "ru": "посылки для правильных маршрутов"
     }
   },
   {
@@ -1576,11 +1750,13 @@
     "ending": "correct",
     "title": {
       "en": "Jetty and a mail boat for the island families",
-      "lv": "Jetty: pasta laivu salu ģimenēm"
+      "lv": "Jetty: pasta laivu salu ģimenēm",
+      "ru": "Пристань и почтовый катер для островных семей."
     },
     "goal": {
       "en": "a mail boat for the island families",
-      "lv": "pasta laivu salu ģimenēm"
+      "lv": "pasta laivu salu ģimenēm",
+      "ru": "почтовый катер для островных семей."
     }
   },
   {
@@ -1594,11 +1770,13 @@
     "ending": "excited",
     "title": {
       "en": "Jade and the depot’s blocked cleaning pump",
-      "lv": "Jade: stacijas aizsērējušo tīrīšanas sūkni"
+      "lv": "Jade: stacijas aizsērējušo tīrīšanas sūkni",
+      "ru": "Джейд и заблокированный очистительный насос склада"
     },
     "goal": {
       "en": "the depot’s blocked cleaning pump",
-      "lv": "stacijas aizsērējušo tīrīšanas sūkni"
+      "lv": "stacijas aizsērējušo tīrīšanas sūkni",
+      "ru": "заблокированный очистительный насос склада"
     }
   },
   {
@@ -1612,11 +1790,13 @@
     "ending": "surprised",
     "title": {
       "en": "Jiro and a loading light for the last delivery",
-      "lv": "Jiro: iekraušanas gaismu pēdējai piegādei"
+      "lv": "Jiro: iekraušanas gaismu pēdējai piegādei",
+      "ru": "Дзиро и погрузочный свет для последней доставки"
     },
     "goal": {
       "en": "a loading light for the last delivery",
-      "lv": "iekraušanas gaismu pēdējai piegādei"
+      "lv": "iekraušanas gaismu pēdējai piegādei",
+      "ru": "погрузочный свет для последней доставки"
     }
   },
   {
@@ -1630,11 +1810,13 @@
     "ending": "walk",
     "title": {
       "en": "Koa and a safe crossing over the fountain channel",
-      "lv": "Koa: drošu pāreju pār strūklakas kanālu"
+      "lv": "Koa: drošu pāreju pār strūklakas kanālu",
+      "ru": "Коа и безопасный переход через канал фонтана"
     },
     "goal": {
       "en": "a safe crossing over the fountain channel",
-      "lv": "drošu pāreju pār strūklakas kanālu"
+      "lv": "drošu pāreju pār strūklakas kanālu",
+      "ru": "безопасный переход через канал фонтана"
     }
   },
   {
@@ -1648,11 +1830,13 @@
     "ending": "surprised",
     "title": {
       "en": "Kiki and the mosaic maker’s faded pattern book",
-      "lv": "Kiki: mozaīkas meistara izbalējušo rakstu grāmatu"
+      "lv": "Kiki: mozaīkas meistara izbalējušo rakstu grāmatu",
+      "ru": "Книга выцветших выкроек Кики и мастера мозаики"
     },
     "goal": {
       "en": "the mosaic maker’s faded pattern book",
-      "lv": "mozaīkas meistara izbalējušo rakstu grāmatu"
+      "lv": "mozaīkas meistara izbalējušo rakstu grāmatu",
+      "ru": "мастера мозаики"
     }
   },
   {
@@ -1666,11 +1850,13 @@
     "ending": "dance",
     "title": {
       "en": "Kiro and a woven canopy for the tile workers",
-      "lv": "Kiro: austu nojumi flīžu meistariem"
+      "lv": "Kiro: austu nojumi flīžu meistariem",
+      "ru": "Киро и плетеный навес для плиточников"
     },
     "goal": {
       "en": "a woven canopy for the tile workers",
-      "lv": "austu nojumi flīžu meistariem"
+      "lv": "austu nojumi flīžu meistariem",
+      "ru": "плетеный навес для плиточников"
     }
   },
   {
@@ -1684,11 +1870,13 @@
     "ending": "correct",
     "title": {
       "en": "Knot and the fountain clock’s missing rhythm",
-      "lv": "Knot: strūklakas pulksteņa trūkstošo ritmu"
+      "lv": "Knot: strūklakas pulksteņa trūkstošo ritmu",
+      "ru": "Узел и сбившийся ритм фонтанных часов"
     },
     "goal": {
       "en": "the fountain clock’s missing rhythm",
-      "lv": "strūklakas pulksteņa trūkstošo ritmu"
+      "lv": "strūklakas pulksteņa trūkstošo ritmu",
+      "ru": "сбившийся ритм фонтанных часов"
     }
   },
   {
@@ -1702,11 +1890,13 @@
     "ending": "excited",
     "title": {
       "en": "Klara and a lifting balloon for a heavy mosaic panel",
-      "lv": "Klara: celšanas balonu smagam mozaīkas panelim"
+      "lv": "Klara: celšanas balonu smagam mozaīkas panelim",
+      "ru": "Клара и воздушный шар для тяжелого мозаичного панно."
     },
     "goal": {
       "en": "a lifting balloon for a heavy mosaic panel",
-      "lv": "celšanas balonu smagam mozaīkas panelim"
+      "lv": "celšanas balonu smagam mozaīkas panelim",
+      "ru": "воздушный шар для тяжелого мозаичного панно."
     }
   },
   {
@@ -1720,11 +1910,13 @@
     "ending": "walk",
     "title": {
       "en": "Kiwi and the tiles for each part of the fountain",
-      "lv": "Kiwi: flīzes katrai strūklakas daļai"
+      "lv": "Kiwi: flīzes katrai strūklakas daļai",
+      "ru": "Киви и карточка для каждой части фонтана"
     },
     "goal": {
       "en": "the tiles for each part of the fountain",
-      "lv": "flīzes katrai strūklakas daļai"
+      "lv": "flīzes katrai strūklakas daļai",
+      "ru": "карточка для каждой части фонтана"
     }
   },
   {
@@ -1738,11 +1930,13 @@
     "ending": "correct",
     "title": {
       "en": "Kelpie and a floating tray for the island planter",
-      "lv": "Kelpie: peldošu paplāti salas stādu kastei"
+      "lv": "Kelpie: peldošu paplāti salas stādu kastei",
+      "ru": "Келпи и плавающий поднос для островного горшка"
     },
     "goal": {
       "en": "a floating tray for the island planter",
-      "lv": "peldošu paplāti salas stādu kastei"
+      "lv": "peldošu paplāti salas stādu kastei",
+      "ru": "плавающий поднос для островного горшка"
     }
   },
   {
@@ -1756,11 +1950,13 @@
     "ending": "excited",
     "title": {
       "en": "Kelp and the dry fountain’s returning water",
-      "lv": "Kelp: ūdeni izžuvušajai strūklakai"
+      "lv": "Kelp: ūdeni izžuvušajai strūklakai",
+      "ru": "Келп и возвращающаяся вода сухого фонтана"
     },
     "goal": {
       "en": "the dry fountain’s returning water",
-      "lv": "ūdeni izžuvušajai strūklakai"
+      "lv": "ūdeni izžuvušajai strūklakai",
+      "ru": "возвращающаяся вода сухого фонтана"
     }
   },
   {
@@ -1774,11 +1970,13 @@
     "ending": "surprised",
     "title": {
       "en": "Kubo and a colored light for the restored mosaic",
-      "lv": "Kubo: krāsainu gaismu atjaunotajai mozaīkai"
+      "lv": "Kubo: krāsainu gaismu atjaunotajai mozaīkai",
+      "ru": "Кубо и цветной свет для отреставрированной мозаики"
     },
     "goal": {
       "en": "a colored light for the restored mosaic",
-      "lv": "krāsainu gaismu atjaunotajai mozaīkai"
+      "lv": "krāsainu gaismu atjaunotajai mozaīkai",
+      "ru": "цветной свет для отреставрированной мозаики"
     }
   },
   {
@@ -1792,11 +1990,13 @@
     "ending": "walk",
     "title": {
       "en": "Larch and a bridge above the muddy woodland path",
-      "lv": "Larch: tiltiņu pār dubļaino meža taku"
+      "lv": "Larch: tiltiņu pār dubļaino meža taku",
+      "ru": "Лиственница и мост над грязной лесной тропой"
     },
     "goal": {
       "en": "a bridge above the muddy woodland path",
-      "lv": "tiltiņu pār dubļaino meža taku"
+      "lv": "tiltiņu pār dubļaino meža taku",
+      "ru": "мост над грязной лесной тропой"
     }
   },
   {
@@ -1810,11 +2010,13 @@
     "ending": "surprised",
     "title": {
       "en": "Luma and the ranger’s rain-damaged trail guide",
-      "lv": "Luma: mežsarga lietū bojāto taku ceļvedi"
+      "lv": "Luma: mežsarga lietū bojāto taku ceļvedi",
+      "ru": "Лума и поврежденный дождем путеводитель рейнджера"
     },
     "goal": {
       "en": "the ranger’s rain-damaged trail guide",
-      "lv": "mežsarga lietū bojāto taku ceļvedi"
+      "lv": "mežsarga lietū bojāto taku ceļvedi",
+      "ru": "поврежденный дождем путеводитель рейнджера"
     }
   },
   {
@@ -1828,11 +2030,13 @@
     "ending": "dance",
     "title": {
       "en": "Loki and reflective ribbons for the dark turns",
-      "lv": "Loki: atstarojošas lentes tumšajiem pagriezieniem"
+      "lv": "Loki: atstarojošas lentes tumšajiem pagriezieniem",
+      "ru": "Локи и светоотражающие ленты для темных поворотов"
     },
     "goal": {
       "en": "reflective ribbons for the dark turns",
-      "lv": "atstarojošas lentes tumšajiem pagriezieniem"
+      "lv": "atstarojošas lentes tumšajiem pagriezieniem",
+      "ru": "светоотражающие ленты для темных поворотов"
     }
   },
   {
@@ -1846,11 +2050,13 @@
     "ending": "correct",
     "title": {
       "en": "Lint and the trail gate’s stopped clockwork",
-      "lv": "Lint: takas vārtu apstājušos mehānismu"
+      "lv": "Lint: takas vārtu apstājušos mehānismu",
+      "ru": "Ворс и остановившийся часовой механизм ворот"
     },
     "goal": {
       "en": "the trail gate’s stopped clockwork",
-      "lv": "takas vārtu apstājušos mehānismu"
+      "lv": "takas vārtu apstājušos mehānismu",
+      "ru": "остановившийся часовой механизм ворот"
     }
   },
   {
@@ -1864,11 +2070,13 @@
     "ending": "excited",
     "title": {
       "en": "Lily and a supply balloon above the tangled branches",
-      "lv": "Lily: krājumu balonu virs sapinušiem zariem"
+      "lv": "Lily: krājumu balonu virs sapinušiem zariem",
+      "ru": "Лили и воздушный шар над запутанными ветвями"
     },
     "goal": {
       "en": "a supply balloon above the tangled branches",
-      "lv": "krājumu balonu virs sapinušiem zariem"
+      "lv": "krājumu balonu virs sapinušiem zariem",
+      "ru": "воздушный шар над запутанными ветвями"
     }
   },
   {
@@ -1882,11 +2090,13 @@
     "ending": "walk",
     "title": {
       "en": "Lychee and the lantern batteries for each shelter",
-      "lv": "Lychee: laternu baterijas katram patvērumam"
+      "lv": "Lychee: laternu baterijas katram patvērumam",
+      "ru": "Личи и батарейки для фонарей для каждого убежища."
     },
     "goal": {
       "en": "the lantern batteries for each shelter",
-      "lv": "laternu baterijas katram patvērumam"
+      "lv": "laternu baterijas katram patvērumam",
+      "ru": "батарейки для фонарей для каждого убежища."
     }
   },
   {
@@ -1900,11 +2110,13 @@
     "ending": "correct",
     "title": {
       "en": "Lagoon and a little ferry for the marsh crossing",
-      "lv": "Lagoon: prāmi purva pārejai"
+      "lv": "Lagoon: prāmi purva pārejai",
+      "ru": "Лагуна и небольшой паром для переправы через болото."
     },
     "goal": {
       "en": "a little ferry for the marsh crossing",
-      "lv": "prāmi purva pārejai"
+      "lv": "prāmi purva pārejai",
+      "ru": "небольшой паром для переправы через болото."
     }
   },
   {
@@ -1918,11 +2130,13 @@
     "ending": "excited",
     "title": {
       "en": "Lotus and fresh water at the forest rest stop",
-      "lv": "Lotus: svaigu ūdeni meža atpūtas vietai"
+      "lv": "Lotus: svaigu ūdeni meža atpūtas vietai",
+      "ru": "Лотос и пресная вода на лесной остановке"
     },
     "goal": {
       "en": "fresh water at the forest rest stop",
-      "lv": "svaigu ūdeni meža atpūtas vietai"
+      "lv": "svaigu ūdeni meža atpūtas vietai",
+      "ru": "пресная вода на лесной остановке"
     }
   },
   {
@@ -1936,11 +2150,13 @@
     "ending": "surprised",
     "title": {
       "en": "Leto and the farthest lantern on the trail",
-      "lv": "Leto: tālāko laternu uz takas"
+      "lv": "Leto: tālāko laternu uz takas",
+      "ru": "Лето и самый дальний фонарь на тропе"
     },
     "goal": {
       "en": "the farthest lantern on the trail",
-      "lv": "tālāko laternu uz takas"
+      "lv": "tālāko laternu uz takas",
+      "ru": "самый дальний фонарь на тропе"
     }
   },
   {
@@ -1954,11 +2170,13 @@
     "ending": "walk",
     "title": {
       "en": "Marlow and a walkway to the telescope balcony",
-      "lv": "Marlow: laipu uz teleskopa balkonu"
+      "lv": "Marlow: laipu uz teleskopa balkonu",
+      "ru": "Марлоу и проход к балкону телескопа"
     },
     "goal": {
       "en": "a walkway to the telescope balcony",
-      "lv": "laipu uz teleskopa balkonu"
+      "lv": "laipu uz teleskopa balkonu",
+      "ru": "проход к балкону телескопа"
     }
   },
   {
@@ -1972,11 +2190,13 @@
     "ending": "surprised",
     "title": {
       "en": "Mira and the astronomer’s scattered star atlas",
-      "lv": "Mira: astronoma izkaisīto zvaigžņu atlantu"
+      "lv": "Mira: astronoma izkaisīto zvaigžņu atlantu",
+      "ru": "Мира и рассеянный звездный атлас астронома"
     },
     "goal": {
       "en": "the astronomer’s scattered star atlas",
-      "lv": "astronoma izkaisīto zvaigžņu atlantu"
+      "lv": "astronoma izkaisīto zvaigžņu atlantu",
+      "ru": "рассеянный звездный атлас астронома"
     }
   },
   {
@@ -1990,11 +2210,13 @@
     "ending": "dance",
     "title": {
       "en": "Milo and a protective wrap for the telescope lens",
-      "lv": "Milo: aizsargpārsegu teleskopa lēcai"
+      "lv": "Milo: aizsargpārsegu teleskopa lēcai",
+      "ru": "Майло и защитная пленка для линзы телескопа"
     },
     "goal": {
       "en": "a protective wrap for the telescope lens",
-      "lv": "aizsargpārsegu teleskopa lēcai"
+      "lv": "aizsargpārsegu teleskopa lēcai",
+      "ru": "защитная пленка для линзы телескопа"
     }
   },
   {
@@ -2008,11 +2230,13 @@
     "ending": "correct",
     "title": {
       "en": "Midge and the star tracker’s slipping gears",
-      "lv": "Midge: zvaigžņu sekotāja slīdošos zobratus"
+      "lv": "Midge: zvaigžņu sekotāja slīdošos zobratus",
+      "ru": "Мидж и проскальзывание звездного трекера"
     },
     "goal": {
       "en": "the star tracker’s slipping gears",
-      "lv": "zvaigžņu sekotāja slīdošos zobratus"
+      "lv": "zvaigžņu sekotāja slīdošos zobratus",
+      "ru": "проскальзывание звездного трекера"
     }
   },
   {
@@ -2026,11 +2250,13 @@
     "ending": "excited",
     "title": {
       "en": "Momo and a weather balloon before the comet arrives",
-      "lv": "Momo: laikapstākļu balonu pirms komētas"
+      "lv": "Momo: laikapstākļu balonu pirms komētas",
+      "ru": "Момо и метеозонд перед прилетом кометы"
     },
     "goal": {
       "en": "a weather balloon before the comet arrives",
-      "lv": "laikapstākļu balonu pirms komētas"
+      "lv": "laikapstākļu balonu pirms komētas",
+      "ru": "метеозонд перед прилетом кометы"
     }
   },
   {
@@ -2044,11 +2270,13 @@
     "ending": "walk",
     "title": {
       "en": "Mulberry and the lenses for the right instruments",
-      "lv": "Mulberry: lēcas pareizajām ierīcēm"
+      "lv": "Mulberry: lēcas pareizajām ierīcēm",
+      "ru": "Mulberry и линзы для правильных инструментов"
     },
     "goal": {
       "en": "the lenses for the right instruments",
-      "lv": "lēcas pareizajām ierīcēm"
+      "lv": "lēcas pareizajām ierīcēm",
+      "ru": "линзы для правильных инструментов"
     }
   },
   {
@@ -2062,11 +2290,13 @@
     "ending": "correct",
     "title": {
       "en": "Marina and a solar-sail model for the planetarium",
-      "lv": "Marina: saules buras modeli planetārijam"
+      "lv": "Marina: saules buras modeli planetārijam",
+      "ru": "Марина и модель солнечного паруса для планетария"
     },
     "goal": {
       "en": "a solar-sail model for the planetarium",
-      "lv": "saules buras modeli planetārijam"
+      "lv": "saules buras modeli planetārijam",
+      "ru": "модель солнечного паруса для планетария"
     }
   },
   {
@@ -2080,11 +2310,13 @@
     "ending": "excited",
     "title": {
       "en": "Mint and cooling water for the tracking motor",
-      "lv": "Mint: dzesēšanas ūdeni sekošanas motoram"
+      "lv": "Mint: dzesēšanas ūdeni sekošanas motoram",
+      "ru": "Мята и охлаждающая вода для следящего двигателя"
     },
     "goal": {
       "en": "cooling water for the tracking motor",
-      "lv": "dzesēšanas ūdeni sekošanas motoram"
+      "lv": "dzesēšanas ūdeni sekošanas motoram",
+      "ru": "охлаждающая вода для следящего двигателя"
     }
   },
   {
@@ -2098,11 +2330,13 @@
     "ending": "surprised",
     "title": {
       "en": "Mako and the observatory’s missing guide star",
-      "lv": "Mako: observatorijas trūkstošo ceļa zvaigzni"
+      "lv": "Mako: observatorijas trūkstošo ceļa zvaigzni",
+      "ru": "Мако и пропавшая путеводная звезда обсерватории"
     },
     "goal": {
       "en": "the observatory’s missing guide star",
-      "lv": "observatorijas trūkstošo ceļa zvaigzni"
+      "lv": "observatorijas trūkstošo ceļa zvaigzni",
+      "ru": "пропавшая путеводная звезда обсерватории"
     }
   },
   {
@@ -2116,11 +2350,13 @@
     "ending": "walk",
     "title": {
       "en": "Nori and a path between the raised beds",
-      "lv": "Nori: taku starp augstajām dobēm"
+      "lv": "Nori: taku starp augstajām dobēm",
+      "ru": "Нори и дорожка между приподнятыми грядками"
     },
     "goal": {
       "en": "a path between the raised beds",
-      "lv": "taku starp augstajām dobēm"
+      "lv": "taku starp augstajām dobēm",
+      "ru": "дорожка между приподнятыми грядками"
     }
   },
   {
@@ -2134,11 +2370,13 @@
     "ending": "surprised",
     "title": {
       "en": "Nala and the gardener’s missing planting diary",
-      "lv": "Nala: dārznieka pazudušo stādīšanas dienasgrāmatu"
+      "lv": "Nala: dārznieka pazudušo stādīšanas dienasgrāmatu",
+      "ru": "Пропавший дневник посадки Налы и садовника"
     },
     "goal": {
       "en": "the gardener’s missing planting diary",
-      "lv": "dārznieka pazudušo stādīšanas dienasgrāmatu"
+      "lv": "dārznieka pazudušo stādīšanas dienasgrāmatu",
+      "ru": "садовника"
     }
   },
   {
@@ -2152,11 +2390,13 @@
     "ending": "dance",
     "title": {
       "en": "Nico and a shade cloth for the thirsty seedlings",
-      "lv": "Nico: ēnas audumu izslāpušajiem stādiem"
+      "lv": "Nico: ēnas audumu izslāpušajiem stādiem",
+      "ru": "Нико и затеняющая ткань для жаждущей рассады"
     },
     "goal": {
       "en": "a shade cloth for the thirsty seedlings",
-      "lv": "ēnas audumu izslāpušajiem stādiem"
+      "lv": "ēnas audumu izslāpušajiem stādiem",
+      "ru": "затеняющая ткань для жаждущей рассады"
     }
   },
   {
@@ -2170,11 +2410,13 @@
     "ending": "correct",
     "title": {
       "en": "Nim and the greenhouse vent’s jammed wheel",
-      "lv": "Nim: siltumnīcas lūkas iestrēgušo riteni"
+      "lv": "Nim: siltumnīcas lūkas iestrēgušo riteni",
+      "ru": "Ним и заклинившее колесо вентиляционного отверстия теплицы"
     },
     "goal": {
       "en": "the greenhouse vent’s jammed wheel",
-      "lv": "siltumnīcas lūkas iestrēgušo riteni"
+      "lv": "siltumnīcas lūkas iestrēgušo riteni",
+      "ru": "заклинившее колесо вентиляционного отверстия теплицы"
     }
   },
   {
@@ -2188,11 +2430,13 @@
     "ending": "excited",
     "title": {
       "en": "Nina and a seed basket for the neighboring roof",
-      "lv": "Nina: sēklu grozu blakus jumtam"
+      "lv": "Nina: sēklu grozu blakus jumtam",
+      "ru": "Нина и корзинка с семенами для соседней крыши."
     },
     "goal": {
       "en": "a seed basket for the neighboring roof",
-      "lv": "sēklu grozu blakus jumtam"
+      "lv": "sēklu grozu blakus jumtam",
+      "ru": "корзинка с семенами для соседней крыши."
     }
   },
   {
@@ -2206,11 +2450,13 @@
     "ending": "walk",
     "title": {
       "en": "Nutmeg and the seed packets for the correct beds",
-      "lv": "Nutmeg: sēklu paciņas pareizajām dobēm"
+      "lv": "Nutmeg: sēklu paciņas pareizajām dobēm",
+      "ru": "Мускатный орех и пакетики с семенами для правильной грядки"
     },
     "goal": {
       "en": "the seed packets for the correct beds",
-      "lv": "sēklu paciņas pareizajām dobēm"
+      "lv": "sēklu paciņas pareizajām dobēm",
+      "ru": "пакетики с семенами для правильной грядки"
     }
   },
   {
@@ -2224,11 +2470,13 @@
     "ending": "correct",
     "title": {
       "en": "Nacre and a floating planter for the garden pond",
-      "lv": "Nacre: peldošu stādu kasti dārza dīķim"
+      "lv": "Nacre: peldošu stādu kasti dārza dīķim",
+      "ru": "Перламутр и плавучее кашпо для садового пруда"
     },
     "goal": {
       "en": "a floating planter for the garden pond",
-      "lv": "peldošu stādu kasti dārza dīķim"
+      "lv": "peldošu stādu kasti dārza dīķim",
+      "ru": "плавучее кашпо для садового пруда"
     }
   },
   {
@@ -2242,11 +2490,13 @@
     "ending": "excited",
     "title": {
       "en": "Nettle and the garden’s dry irrigation line",
-      "lv": "Nettle: dārza sauso laistīšanas līniju"
+      "lv": "Nettle: dārza sauso laistīšanas līniju",
+      "ru": "Крапива и линия сухого орошения сада"
     },
     "goal": {
       "en": "the garden’s dry irrigation line",
-      "lv": "dārza sauso laistīšanas līniju"
+      "lv": "dārza sauso laistīšanas līniju",
+      "ru": "линия сухого орошения сада"
     }
   },
   {
@@ -2260,11 +2510,13 @@
     "ending": "surprised",
     "title": {
       "en": "Nexo and a warm light for the late seedlings",
-      "lv": "Nexo: siltu gaismu vēlajiem stādiem"
+      "lv": "Nexo: siltu gaismu vēlajiem stādiem",
+      "ru": "Нексо и теплый свет для поздней рассады"
     },
     "goal": {
       "en": "a warm light for the late seedlings",
-      "lv": "siltu gaismu vēlajiem stādiem"
+      "lv": "siltu gaismu vēlajiem stādiem",
+      "ru": "теплый свет для поздней рассады"
     }
   },
   {
@@ -2278,11 +2530,13 @@
     "ending": "walk",
     "title": {
       "en": "Oakley and a maintenance bridge to the tower",
-      "lv": "Oakley: apkopes tiltiņu uz torni"
+      "lv": "Oakley: apkopes tiltiņu uz torni",
+      "ru": "Окли и ремонтный мост к башне"
     },
     "goal": {
       "en": "a maintenance bridge to the tower",
-      "lv": "apkopes tiltiņu uz torni"
+      "lv": "apkopes tiltiņu uz torni",
+      "ru": "ремонтный мост к башне"
     }
   },
   {
@@ -2296,11 +2550,13 @@
     "ending": "surprised",
     "title": {
       "en": "Opal and the operator’s incomplete message book",
-      "lv": "Opal: operatora nepabeigto ziņu grāmatu"
+      "lv": "Opal: operatora nepabeigto ziņu grāmatu",
+      "ru": "Опал и неполная книга сообщений оператора"
     },
     "goal": {
       "en": "the operator’s incomplete message book",
-      "lv": "operatora nepabeigto ziņu grāmatu"
+      "lv": "operatora nepabeigto ziņu grāmatu",
+      "ru": "неполная книга сообщений оператора"
     }
   },
   {
@@ -2314,11 +2570,13 @@
     "ending": "dance",
     "title": {
       "en": "Orion and a new flag for the silent semaphore",
-      "lv": "Orion: jaunu karogu klusajam semaforam"
+      "lv": "Orion: jaunu karogu klusajam semaforam",
+      "ru": "Орион и новый флаг для бесшумного семафора"
     },
     "goal": {
       "en": "a new flag for the silent semaphore",
-      "lv": "jaunu karogu klusajam semaforam"
+      "lv": "jaunu karogu klusajam semaforam",
+      "ru": "новый флаг для бесшумного семафора"
     }
   },
   {
@@ -2332,11 +2590,13 @@
     "ending": "correct",
     "title": {
       "en": "Odo and the signal drum’s uneven gears",
-      "lv": "Odo: signālu cilindra nevienmērīgos zobratus"
+      "lv": "Odo: signālu cilindra nevienmērīgos zobratus",
+      "ru": "Одо и неровные шестерни сигнального барабана"
     },
     "goal": {
       "en": "the signal drum’s uneven gears",
-      "lv": "signālu cilindra nevienmērīgos zobratus"
+      "lv": "signālu cilindra nevienmērīgos zobratus",
+      "ru": "неровные шестерни сигнального барабана"
     }
   },
   {
@@ -2350,11 +2610,13 @@
     "ending": "excited",
     "title": {
       "en": "Oona and a replacement radio above the steep valley",
-      "lv": "Oona: maiņas radio virs stāvās ielejas"
+      "lv": "Oona: maiņas radio virs stāvās ielejas",
+      "ru": "Уна и запасное радио над крутой долиной"
     },
     "goal": {
       "en": "a replacement radio above the steep valley",
-      "lv": "maiņas radio virs stāvās ielejas"
+      "lv": "maiņas radio virs stāvās ielejas",
+      "ru": "запасное радио над крутой долиной"
     }
   },
   {
@@ -2368,11 +2630,13 @@
     "ending": "walk",
     "title": {
       "en": "Olive and the message capsules for the correct villages",
-      "lv": "Olive: ziņu kapsulas pareizajiem ciemiem"
+      "lv": "Olive: ziņu kapsulas pareizajiem ciemiem",
+      "ru": "Оливия и капсулы с сообщениями для правильных деревень"
     },
     "goal": {
       "en": "the message capsules for the correct villages",
-      "lv": "ziņu kapsulas pareizajiem ciemiem"
+      "lv": "ziņu kapsulas pareizajiem ciemiem",
+      "ru": "капсулы с сообщениями для правильных деревень"
     }
   },
   {
@@ -2386,11 +2650,13 @@
     "ending": "correct",
     "title": {
       "en": "Ocean and a radio boat for the river settlement",
-      "lv": "Ocean: radio laivu upes apmetnei"
+      "lv": "Ocean: radio laivu upes apmetnei",
+      "ru": "Океан и радиолодка для речного поселения"
     },
     "goal": {
       "en": "a radio boat for the river settlement",
-      "lv": "radio laivu upes apmetnei"
+      "lv": "radio laivu upes apmetnei",
+      "ru": "радиолодка для речного поселения"
     }
   },
   {
@@ -2404,11 +2670,13 @@
     "ending": "excited",
     "title": {
       "en": "Oregano and cooling water for the transmitter",
-      "lv": "Oregano: dzesēšanas ūdeni raidītājam"
+      "lv": "Oregano: dzesēšanas ūdeni raidītājam",
+      "ru": "Орегано и охлаждающая вода для передатчика."
     },
     "goal": {
       "en": "cooling water for the transmitter",
-      "lv": "dzesēšanas ūdeni raidītājam"
+      "lv": "dzesēšanas ūdeni raidītājam",
+      "ru": "охлаждающая вода для передатчика."
     }
   },
   {
@@ -2422,11 +2690,13 @@
     "ending": "surprised",
     "title": {
       "en": "Oki and the first clear signal after the storm",
-      "lv": "Oki: pirmo skaidro signālu pēc vētras"
+      "lv": "Oki: pirmo skaidro signālu pēc vētras",
+      "ru": "Оки и первый четкий сигнал после грозы"
     },
     "goal": {
       "en": "the first clear signal after the storm",
-      "lv": "pirmo skaidro signālu pēc vētras"
+      "lv": "pirmo skaidro signālu pēc vētras",
+      "ru": "первый четкий сигнал после грозы"
     }
   },
   {
@@ -2440,11 +2710,13 @@
     "ending": "walk",
     "title": {
       "en": "Pebble and an entrance ramp for the toy carts",
-      "lv": "Pebble: ieejas laipu rotaļlietu ratiņiem"
+      "lv": "Pebble: ieejas laipu rotaļlietu ratiņiem",
+      "ru": "Галька и пандус для игрушечных тележек."
     },
     "goal": {
       "en": "an entrance ramp for the toy carts",
-      "lv": "ieejas laipu rotaļlietu ratiņiem"
+      "lv": "ieejas laipu rotaļlietu ratiņiem",
+      "ru": "пандус для игрушечных тележек."
     }
   },
   {
@@ -2458,11 +2730,13 @@
     "ending": "surprised",
     "title": {
       "en": "Pia and the shopkeeper’s untidy order book",
-      "lv": "Pia: veikalnieka nesakārtoto pasūtījumu grāmatu"
+      "lv": "Pia: veikalnieka nesakārtoto pasūtījumu grāmatu",
+      "ru": "Пиа и неопрятная книга заказов продавца"
     },
     "goal": {
       "en": "the shopkeeper’s untidy order book",
-      "lv": "veikalnieka nesakārtoto pasūtījumu grāmatu"
+      "lv": "veikalnieka nesakārtoto pasūtījumu grāmatu",
+      "ru": "неопрятная книга заказов продавца"
     }
   },
   {
@@ -2476,11 +2750,13 @@
     "ending": "dance",
     "title": {
       "en": "Pico and gift ribbons for the surprise boxes",
-      "lv": "Pico: dāvanu lentes pārsteigumu kastēm"
+      "lv": "Pico: dāvanu lentes pārsteigumu kastēm",
+      "ru": "Пико и подарочные ленты для коробок-сюрпризов."
     },
     "goal": {
       "en": "gift ribbons for the surprise boxes",
-      "lv": "dāvanu lentes pārsteigumu kastēm"
+      "lv": "dāvanu lentes pārsteigumu kastēm",
+      "ru": "подарочные ленты для коробок-сюрпризов."
     }
   },
   {
@@ -2494,11 +2770,13 @@
     "ending": "correct",
     "title": {
       "en": "Pipkin and the toy carousel’s missing drive",
-      "lv": "Pipkin: rotaļu karuseļa trūkstošo piedziņu"
+      "lv": "Pipkin: rotaļu karuseļa trūkstošo piedziņu",
+      "ru": "Пипкин и пропавший драйв игрушечной карусели"
     },
     "goal": {
       "en": "the toy carousel’s missing drive",
-      "lv": "rotaļu karuseļa trūkstošo piedziņu"
+      "lv": "rotaļu karuseļa trūkstošo piedziņu",
+      "ru": "пропавший драйв игрушечной карусели"
     }
   },
   {
@@ -2512,11 +2790,13 @@
     "ending": "excited",
     "title": {
       "en": "Poppy and a floating display above the storefront",
-      "lv": "Poppy: peldošu izstādi virs skatloga"
+      "lv": "Poppy: peldošu izstādi virs skatloga",
+      "ru": "Мак и плавающая витрина над витриной"
     },
     "goal": {
       "en": "a floating display above the storefront",
-      "lv": "peldošu izstādi virs skatloga"
+      "lv": "peldošu izstādi virs skatloga",
+      "ru": "плавающая витрина над витриной"
     }
   },
   {
@@ -2530,11 +2810,13 @@
     "ending": "walk",
     "title": {
       "en": "Prune and the orders for the right customers",
-      "lv": "Prune: pasūtījumus pareizajiem pircējiem"
+      "lv": "Prune: pasūtījumus pareizajiem pircējiem",
+      "ru": "Prune и заказы для нужных клиентов"
     },
     "goal": {
       "en": "the orders for the right customers",
-      "lv": "pasūtījumus pareizajiem pircējiem"
+      "lv": "pasūtījumus pareizajiem pircējiem",
+      "ru": "заказы для нужных клиентов"
     }
   },
   {
@@ -2548,11 +2830,13 @@
     "ending": "correct",
     "title": {
       "en": "Puddle and a toy sailboat for the window display",
-      "lv": "Puddle: rotaļu buru laivu skatlogam"
+      "lv": "Puddle: rotaļu buru laivu skatlogam",
+      "ru": "Лужа и игрушечный парусник для витрины"
     },
     "goal": {
       "en": "a toy sailboat for the window display",
-      "lv": "rotaļu buru laivu skatlogam"
+      "lv": "rotaļu buru laivu skatlogam",
+      "ru": "игрушечный парусник для витрины"
     }
   },
   {
@@ -2566,11 +2850,13 @@
     "ending": "excited",
     "title": {
       "en": "Petal and the window fountain’s empty pipes",
-      "lv": "Petal: skatloga strūklakas tukšās caurules"
+      "lv": "Petal: skatloga strūklakas tukšās caurules",
+      "ru": "Лепесток и пустые трубы оконного фонтана"
     },
     "goal": {
       "en": "the window fountain’s empty pipes",
-      "lv": "skatloga strūklakas tukšās caurules"
+      "lv": "skatloga strūklakas tukšās caurules",
+      "ru": "пустые трубы оконного фонтана"
     }
   },
   {
@@ -2584,11 +2870,13 @@
     "ending": "surprised",
     "title": {
       "en": "Polo and the shop’s first illuminated sign",
-      "lv": "Polo: veikala pirmo izgaismoto izkārtni"
+      "lv": "Polo: veikala pirmo izgaismoto izkārtni",
+      "ru": "Polo и первая световая вывеска магазина"
     },
     "goal": {
       "en": "the shop’s first illuminated sign",
-      "lv": "veikala pirmo izgaismoto izkārtni"
+      "lv": "veikala pirmo izgaismoto izkārtni",
+      "ru": "первая световая вывеска магазина"
     }
   },
   {
@@ -2602,11 +2890,13 @@
     "ending": "walk",
     "title": {
       "en": "Quill and a safe walkway between the rooftops",
-      "lv": "Quill: drošu laipu starp jumtiem"
+      "lv": "Quill: drošu laipu starp jumtiem",
+      "ru": "Перо и безопасный переход между крышами"
     },
     "goal": {
       "en": "a safe walkway between the rooftops",
-      "lv": "drošu laipu starp jumtiem"
+      "lv": "drošu laipu starp jumtiem",
+      "ru": "безопасный переход между крышами"
     }
   },
   {
@@ -2620,11 +2910,13 @@
     "ending": "surprised",
     "title": {
       "en": "Rhea and the rescue leader’s damaged shelter plan",
-      "lv": "Rhea: glābēju vadītāja bojāto patvēruma plānu"
+      "lv": "Rhea: glābēju vadītāja bojāto patvēruma plānu",
+      "ru": "Рея и план поврежденного убежища лидера спасателей"
     },
     "goal": {
       "en": "the rescue leader’s damaged shelter plan",
-      "lv": "glābēju vadītāja bojāto patvēruma plānu"
+      "lv": "glābēju vadītāja bojāto patvēruma plānu",
+      "ru": "план поврежденного убежища лидера спасателей"
     }
   },
   {
@@ -2638,11 +2930,13 @@
     "ending": "dance",
     "title": {
       "en": "Rolo and warm bedding for the rescued birds",
-      "lv": "Rolo: siltu guļvietu izglābtajiem putniem"
+      "lv": "Rolo: siltu guļvietu izglābtajiem putniem",
+      "ru": "Роло и теплая подстилка для спасенных птиц"
     },
     "goal": {
       "en": "warm bedding for the rescued birds",
-      "lv": "siltu guļvietu izglābtajiem putniem"
+      "lv": "siltu guļvietu izglābtajiem putniem",
+      "ru": "теплая подстилка для спасенных птиц"
     }
   },
   {
@@ -2656,11 +2950,13 @@
     "ending": "correct",
     "title": {
       "en": "Rivet and the shelter shutter’s stuck handle",
-      "lv": "Rivet: patvēruma slēģa iestrēgušo rokturi"
+      "lv": "Rivet: patvēruma slēģa iestrēgušo rokturi",
+      "ru": "Заклепка и застрявшая ручка ставен укрытия"
     },
     "goal": {
       "en": "the shelter shutter’s stuck handle",
-      "lv": "patvēruma slēģa iestrēgušo rokturi"
+      "lv": "patvēruma slēģa iestrēgušo rokturi",
+      "ru": "застрявшая ручка ставен укрытия"
     }
   },
   {
@@ -2674,11 +2970,13 @@
     "ending": "excited",
     "title": {
       "en": "Queenie and a rescue basket for a nearby balcony",
-      "lv": "Queenie: glābšanas grozu tuvākajam balkonam"
+      "lv": "Queenie: glābšanas grozu tuvākajam balkonam",
+      "ru": "Куини и спасательная корзина на соседнем балконе."
     },
     "goal": {
       "en": "a rescue basket for a nearby balcony",
-      "lv": "glābšanas grozu tuvākajam balkonam"
+      "lv": "glābšanas grozu tuvākajam balkonam",
+      "ru": "спасательная корзина на соседнем балконе."
     }
   },
   {
@@ -2692,11 +2990,13 @@
     "ending": "walk",
     "title": {
       "en": "Quince and the supplies for each resting place",
-      "lv": "Quince: krājumus katrai atpūtas vietai"
+      "lv": "Quince: krājumus katrai atpūtas vietai",
+      "ru": "Айва и припасы для каждого места отдыха"
     },
     "goal": {
       "en": "the supplies for each resting place",
-      "lv": "krājumus katrai atpūtas vietai"
+      "lv": "krājumus katrai atpūtas vietai",
+      "ru": "припасы для каждого места отдыха"
     }
   },
   {
@@ -2710,11 +3010,13 @@
     "ending": "correct",
     "title": {
       "en": "Ripple and a rescue raft for the flooded courtyard",
-      "lv": "Ripple: glābšanas plostu applūdušajam pagalmam"
+      "lv": "Ripple: glābšanas plostu applūdušajam pagalmam",
+      "ru": "Ripple и спасательный плот для затопленного двора"
     },
     "goal": {
       "en": "a rescue raft for the flooded courtyard",
-      "lv": "glābšanas plostu applūdušajam pagalmam"
+      "lv": "glābšanas plostu applūdušajam pagalmam",
+      "ru": "спасательный плот для затопленного двора"
     }
   },
   {
@@ -2728,11 +3030,13 @@
     "ending": "excited",
     "title": {
       "en": "Rain and drinking water for the recovering birds",
-      "lv": "Rain: dzeramo ūdeni atlabstošajiem putniem"
+      "lv": "Rain: dzeramo ūdeni atlabstošajiem putniem",
+      "ru": "Дождевая и питьевая вода для выздоравливающих птиц"
     },
     "goal": {
       "en": "drinking water for the recovering birds",
-      "lv": "dzeramo ūdeni atlabstošajiem putniem"
+      "lv": "dzeramo ūdeni atlabstošajiem putniem",
+      "ru": "питьевая вода для выздоравливающих птиц"
     }
   },
   {
@@ -2746,11 +3050,13 @@
     "ending": "surprised",
     "title": {
       "en": "Qino and a rooftop light for the rescue crew",
-      "lv": "Qino: jumta gaismu glābēju komandai"
+      "lv": "Qino: jumta gaismu glābēju komandai",
+      "ru": "Кино и фонарь на крыше для спасательной команды"
     },
     "goal": {
       "en": "a rooftop light for the rescue crew",
-      "lv": "jumta gaismu glābēju komandai"
+      "lv": "jumta gaismu glābēju komandai",
+      "ru": "фонарь на крыше для спасательной команды"
     }
   },
   {
@@ -2764,11 +3070,13 @@
     "ending": "walk",
     "title": {
       "en": "Reed and a rolling walkway to the high shelves",
-      "lv": "Reed: ripojošu laipu uz augstajiem plauktiem"
+      "lv": "Reed: ripojošu laipu uz augstajiem plauktiem",
+      "ru": "Рид и катящаяся дорожка к высоким полкам"
     },
     "goal": {
       "en": "a rolling walkway to the high shelves",
-      "lv": "ripojošu laipu uz augstajiem plauktiem"
+      "lv": "ripojošu laipu uz augstajiem plauktiem",
+      "ru": "катящаяся дорожка к высоким полкам"
     }
   },
   {
@@ -2782,11 +3090,13 @@
     "ending": "surprised",
     "title": {
       "en": "Sora and the archive’s scrambled memory album",
-      "lv": "Sora: arhīva sajaukto atmiņu albumu"
+      "lv": "Sora: arhīva sajaukto atmiņu albumu",
+      "ru": "Сора и зашифрованный альбом воспоминаний архива"
     },
     "goal": {
       "en": "the archive’s scrambled memory album",
-      "lv": "arhīva sajaukto atmiņu albumu"
+      "lv": "arhīva sajaukto atmiņu albumu",
+      "ru": "зашифрованный альбом воспоминаний архива"
     }
   },
   {
@@ -2800,11 +3110,13 @@
     "ending": "dance",
     "title": {
       "en": "Sage and a cloth cover for the oldest book",
-      "lv": "Sage: auduma pārsegu vecākajai grāmatai"
+      "lv": "Sage: auduma pārsegu vecākajai grāmatai",
+      "ru": "Мудрец и тканевая обложка для самой старой книги"
     },
     "goal": {
       "en": "a cloth cover for the oldest book",
-      "lv": "auduma pārsegu vecākajai grāmatai"
+      "lv": "auduma pārsegu vecākajai grāmatai",
+      "ru": "тканевая обложка для самой старой книги"
     }
   },
   {
@@ -2818,11 +3130,13 @@
     "ending": "correct",
     "title": {
       "en": "Speck and the archive door’s locked gear train",
-      "lv": "Speck: arhīva durvju nobloķētos zobratus"
+      "lv": "Speck: arhīva durvju nobloķētos zobratus",
+      "ru": "Спек и запертая зубчатая передача двери архива"
     },
     "goal": {
       "en": "the archive door’s locked gear train",
-      "lv": "arhīva durvju nobloķētos zobratus"
+      "lv": "arhīva durvju nobloķētos zobratus",
+      "ru": "запертая зубчатая передача двери архива"
     }
   },
   {
@@ -2836,11 +3150,13 @@
     "ending": "excited",
     "title": {
       "en": "Rosa and a lifting balloon for a fragile globe",
-      "lv": "Rosa: celšanas balonu trauslam globusam"
+      "lv": "Rosa: celšanas balonu trauslam globusam",
+      "ru": "Роза и воздушный шар для хрупкого глобуса."
     },
     "goal": {
       "en": "a lifting balloon for a fragile globe",
-      "lv": "celšanas balonu trauslam globusam"
+      "lv": "celšanas balonu trauslam globusam",
+      "ru": "воздушный шар для хрупкого глобуса."
     }
   },
   {
@@ -2854,11 +3170,13 @@
     "ending": "walk",
     "title": {
       "en": "Rosehip and the keepsakes for the right drawers",
-      "lv": "Rosehip: piemiņas lietas pareizajām atvilktnēm"
+      "lv": "Rosehip: piemiņas lietas pareizajām atvilktnēm",
+      "ru": "Шиповник и сувениры для нужных ящиков"
     },
     "goal": {
       "en": "the keepsakes for the right drawers",
-      "lv": "piemiņas lietas pareizajām atvilktnēm"
+      "lv": "piemiņas lietas pareizajām atvilktnēm",
+      "ru": "сувениры для нужных ящиков"
     }
   },
   {
@@ -2872,11 +3190,13 @@
     "ending": "correct",
     "title": {
       "en": "Shoal and a model ship for the village history exhibit",
-      "lv": "Shoal: kuģa modeli ciema vēstures izstādei"
+      "lv": "Shoal: kuģa modeli ciema vēstures izstādei",
+      "ru": "Мелководье и модель корабля для выставки истории деревни."
     },
     "goal": {
       "en": "a model ship for the village history exhibit",
-      "lv": "kuģa modeli ciema vēstures izstādei"
+      "lv": "kuģa modeli ciema vēstures izstādei",
+      "ru": "модель корабля для выставки истории деревни."
     }
   },
   {
@@ -2890,11 +3210,13 @@
     "ending": "excited",
     "title": {
       "en": "Sprout and the archive garden’s silent water feature",
-      "lv": "Sprout: arhīva dārza kluso ūdens rotājumu"
+      "lv": "Sprout: arhīva dārza kluso ūdens rotājumu",
+      "ru": "Росток и тихий водный объект в архивном саду"
     },
     "goal": {
       "en": "the archive garden’s silent water feature",
-      "lv": "arhīva dārza kluso ūdens rotājumu"
+      "lv": "arhīva dārza kluso ūdens rotājumu",
+      "ru": "тихий водный объект в архивном саду"
     }
   },
   {
@@ -2908,11 +3230,13 @@
     "ending": "surprised",
     "title": {
       "en": "Rumo and a reading light for the recovered diary",
-      "lv": "Rumo: lasīšanas gaismu atgūtajai dienasgrāmatai"
+      "lv": "Rumo: lasīšanas gaismu atgūtajai dienasgrāmatai",
+      "ru": "Румо и лампа для чтения найденного дневника."
     },
     "goal": {
       "en": "a reading light for the recovered diary",
-      "lv": "lasīšanas gaismu atgūtajai dienasgrāmatai"
+      "lv": "lasīšanas gaismu atgūtajai dienasgrāmatai",
+      "ru": "лампа для чтения найденного дневника."
     }
   }
 ]

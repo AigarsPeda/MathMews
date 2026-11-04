@@ -61,7 +61,12 @@
       ],
       "expo-font",
       "expo-video",
-      "expo-localization",
+      [
+        "expo-localization",
+        {
+          "supportedLocales": ["en", "lv", "ru"]
+        }
+      ],
       "expo-image",
       "expo-status-bar",
       "expo-web-browser"

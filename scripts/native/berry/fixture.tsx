@@ -9,6 +9,7 @@ import { applyPuzzleAnswer } from "@/utils/game-operations";
 import { buyOneLife, canBuyLife } from "@/utils/lives";
 import { getStoreCoinPrice } from "@/utils/store-catalog";
 import type { GameSave } from "@/types/save";
+import type { AppLocale } from "@/types/locale";
 import i18n from "@/i18n";
 import { Redirect, Stack, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -20,7 +21,7 @@ const lesson = LEARNING_CATALOG.lessons.find(l => l.id === "easy-patterns-jumps"
 const level = lesson.levels[0];
 export default function BerryFixture() {
   const router = useRouter();
-  const [mode, setMode] = useState("selection"), [narrow, setNarrow] = useState(false), [locale, setLocale] = useState<"en" | "lv">("en");
+  const [mode, setMode] = useState("selection"), [narrow, setNarrow] = useState(false), [locale, setLocale] = useState<AppLocale>("en");
   useEffect(() => {
     if (!__DEV__) return;
     const settings = TurboModuleRegistry.getEnforcing<TurboModule & {setHotLoadingEnabled(enabled:boolean):void}>("DevSettings");

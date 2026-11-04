@@ -189,6 +189,8 @@ export type Progress = {
   puzzleContentVersion?: number;
   topicStatsByDifficulty?: Partial<Record<import("@/types/puzzle").PuzzleDifficulty, TopicStatsMap>>;
   storeGoal?: { kind: "room" | "bed" | "toy" | "decoration" | "skin"; id: string };
+  /** Earned completions retained for pet growth after a learning reset. */
+  lifetimeCompletedPuzzleIds?: string[];
   completedPuzzleIds?: string[];
   /** Accepted answers, including mistakes, distinguish started work from untouched tasks. */
   attemptedPuzzleIds?: string[];

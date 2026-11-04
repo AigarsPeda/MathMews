@@ -8,7 +8,7 @@ import { planCatalog, syncCatalog } from './sync.mjs';
 function fixture(t) {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'brainpet-catalog-'));
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
-  for (const file of ['data/room-catalog.json','data/store-prices.json','constants/cat-rooms.ts','locales/en.json','locales/lv.json','scripts/3d/inventory.json']) {
+  for (const file of ['data/room-catalog.json','data/store-prices.json','constants/cat-rooms.ts','locales/en.json','locales/lv.json','locales/ru.json','scripts/3d/inventory.json']) {
     fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});
     fs.copyFileSync(file,path.join(root,file));
   }
@@ -17,7 +17,7 @@ function fixture(t) {
 }
 function addRoom(root) {
   const file=path.join(root,'data/room-catalog.json');const rooms=JSON.parse(fs.readFileSync(file));
-  rooms.push({...rooms[0],id:'room31',initialPrice:64,en:{name:'New room',description:'Linen and cork'},lv:{name:'Jauna istaba',description:'Lins un korķis'}});
+  rooms.push({...rooms[0],id:'room31',initialPrice:64,en:{name:'New room',description:'Linen and cork'},lv:{name:'Jauna istaba',description:'Lins un korķis'},ru:{name:'Новая комната',description:'Лён и пробка'}});
   fs.writeFileSync(file,JSON.stringify(rooms));
 }
 test('one room definition generates registrations, locales and an insert-only migration', t => {
@@ -30,6 +30,7 @@ test('one room definition generates registrations, locales and an insert-only mi
   assert.match(fs.readFileSync(path.join(root,result.migration),'utf8'),/on conflict\(kind,item_id\) do nothing/);
   assert.match(fs.readFileSync(path.join(root,'constants/cat-rooms.ts'),'utf8'),/room31: require/);
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'locales/en.json'))).store.roomStyles.room31.name,'New room');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'locales/ru.json'))).store.roomStyles.room31.name,'Новая комната');
   assert.equal(fs.readFileSync(path.join(root,'supabase/migrations/202610160004_wallet_catalog.sql'),'utf8'),before);
   assert.equal(syncCatalog(root).migration,null);
   assert.deepEqual(syncCatalog(root,{check:true}).changed,[]);

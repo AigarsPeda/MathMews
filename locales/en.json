@@ -100,7 +100,8 @@
   },
   "locale": {
     "en": "English",
-    "lv": "Latviešu"
+    "lv": "Latviešu",
+    "ru": "Русский"
   },
   "home": {
     "greeting": "Hi there!",
@@ -1227,7 +1228,12 @@
     "fraction_number_line": "Fraction number line",
     "fraction_strip": "Fraction strips",
     "decimal_grid": "Decimal grid",
-    "decimal_place_value": "Decimal place value"
+    "decimal_place_value": "Decimal place value",
+    "geometry_measure": "Area and perimeter",
+    "ratio_table": "Ratio table",
+    "signed_line": "Signed number line",
+    "equation_board": "Equation balance",
+    "coordinate_map": "Coordinate map"
   },
   "puzzlePath": {
     "title": "Puzzle path",
@@ -1283,7 +1289,20 @@
       "decimalTooLarge": "Your total is too large. Check the value of each column.",
       "decimalExchange": "Use the exchange button. The total should stay the same.",
       "decimalGridFew": "Too little is shaded. Add parts with +.",
-      "decimalGridMany": "Too much is shaded. Remove parts with −."
+      "decimalGridMany": "Too much is shaded. Remove parts with −.",
+      "geometryCompare": "Compare all four outside sides. Equal area does not always mean equal perimeter.",
+      "geometryMissingArea": "Divide the area by the known side length.",
+      "geometryMissingPerimeter": "The unknown side occurs twice. Halve the perimeter before subtracting the known side.",
+      "geometryAreaNotBoundary": "That is the boundary length. Area counts the squares inside.",
+      "geometryBoundaryNotArea": "That counts the squares inside. Perimeter counts only the outside edges.",
+      "geometryAreaLow": "The area is larger. Count every square inside the boundary.",
+      "geometryAreaHigh": "The area is smaller. Count each square once.",
+      "geometryPerimeterLow": "The perimeter is longer. Include all four outside sides.",
+      "geometryPerimeterHigh": "The perimeter is shorter. Count only the outside boundary once.",
+      "ratio_table": "Scale both quantities equally. Adding the same amount to both does not keep the ratio.",
+      "signed_line": "Check the direction and count intervals from the starting point.",
+      "equation_board": "Keep working until one x is alone on the left. Do the same operation to both sides.",
+      "coordinate_map": "Check x first, then y. Count the intervals, not the points."
     },
     "solveFor": "Solve for {{name}}",
     "replayNut": "Replay nut #{{number}}",
@@ -1333,7 +1352,12 @@
       "fraction_number_line": "Mark a point between 0 and 1, then check.",
       "fraction_strip": "Use equal parts to build the fraction, then check.",
       "decimal_grid": "Shade the decimal amount, then check.",
-      "decimal_place_value": "Build or exchange the pieces, then check."
+      "decimal_place_value": "Build or exchange the pieces, then check.",
+      "geometry_measure": "Use the diagram, enter your answer, then check.",
+      "ratio_table": "One group always holds the same amount. Match both rows of the table.",
+      "signed_line": "Zero is the reference point. Numbers increase to the right.",
+      "equation_board": "Keep both sides equal. Undo extra amounts and split equal groups.",
+      "coordinate_map": "Read (x, y): move across first, then up or down. Each grid interval is one unit."
     }
   },
   "lives": {
@@ -1673,6 +1697,8 @@
     "timerRules": "The clock starts when you press Start and keeps running if you leave. Running out of time uses one heart.",
     "otherActive": "Finish your current challenge first.",
     "chooseTopic": "Choose a topic",
+    "topicProgress": "{{completed}} completed · {{remaining}} remaining",
+    "topicProgressLabel": "{{completed}} puzzles completed, {{remaining}} remaining.",
     "levelProgress": "{{count}} of {{total}} levels completed",
     "level_completed": "Completed. Play these 10 puzzles again.",
     "level_current": "Open this level and continue its 10 puzzles.",
@@ -1751,5 +1777,46 @@
     "bundle_tenths": "10 tenths → 1 one",
     "split_tenths": "1 one → 10 tenths",
     "blockScaleTenths": "A square is 1. A strip is one tenth, or 0.1."
+  },
+  "geometryModels": {
+    "guide_area": "Area measures the inside. Cover the rectangle with equal unit squares, without gaps or overlaps.",
+    "guide_perimeter": "Perimeter measures the boundary. Trace each unit edge around the outside once.",
+    "guide_compare": "Both rectangles cover the same area. Their boundaries can have different lengths.",
+    "guide_missing_area": "Area equals width × height. Use the area and the known side to find the other side.",
+    "guide_missing_perimeter": "The perimeter includes two widths and two heights. Find half the perimeter, then subtract the known side.",
+    "shape": "Rectangle {{name}}. Width in units: {{width}}. Height in units: {{height}}.",
+    "unknownShape": "Rectangle with a known side of {{width}} units and one unknown side",
+    "notToScale": "Not to scale",
+    "given_area": "Area: {{value}} square units",
+    "given_perimeter": "Perimeter: {{value}} units",
+    "unitSquare": "Each square is 1 unit wide and 1 unit high.",
+    "coverSquare": "Cover one square",
+    "traceEdge": "Trace one boundary edge",
+    "squaresMarked": "Squares covered: {{count}}",
+    "edgesMarked": "Boundary edges traced: {{count}}",
+    "equal": "Equal perimeters",
+    "sideAnswer": "Missing side, in units",
+    "areaAnswer": "Area, in square units",
+    "perimeterAnswer": "Perimeter, in units",
+    "erase": "Erase last digit",
+    "reset": "Start again",
+    "oneUnit": "1 unit",
+    "manyUnits": "{{value}} units"
+  },
+  "bridge": {
+    "answer": "Your answer",
+    "groups": "Groups",
+    "items": "Items",
+    "linkedLines": "Matching positions show matching quantities.",
+    "original": "Starting equation",
+    "bothSides": "Apply each operation to both sides. Finish with x alone.",
+    "divideWhole": "Divide only when every term makes a whole number.",
+    "selectZero": "Select zero",
+    "selectOrigin": "Select (0, 0)",
+    "guide_ratio_table": "One group always holds the same amount. Match both rows of the table.",
+    "guide_signed_line": "Zero is the reference point. Numbers increase to the right.",
+    "guide_equation_board": "Keep both sides equal. Undo extra amounts and split equal groups.",
+    "guide_coordinate_map": "Read (x, y): move across first, then up or down. Each grid interval is one unit.",
+    "moveBy": "Change x by {{x}} and y by {{y}}."
   }
 }

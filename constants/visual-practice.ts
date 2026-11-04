@@ -106,7 +106,37 @@ function decimalPlaceHelp(key: string, counts: [number, number, number][]) {
   ], `${ones} + ${tenths}/10 + ${hundredths}/100`)));
 }
 
+function geometryCells(width: number, height: number, filled: number, x = 110, y = 40, size = 20) {
+  return Array.from({ length: width * height }, (_, i) => token(`cell-${x}-${i}`, "", x + i % width * size, y + Math.floor(i / width) * size,
+    { shape: "part", width: size - 1, height: size - 1, tone: i < filled ? "primary" : "muted" }));
+}
+function geometryBoundary(count: number) {
+  const points = [[0,0,1],[1,0,1],[2,0,1],[3,0,1],[4,0,0],[4,1,0],[3,2,1],[2,2,1],[1,2,1],[0,2,1],[0,1,0],[0,0,0]];
+  return points.map(([x,y,h], i) => token(`edge-${i}`, "", 100 + x * 24 + (h ? 12 : 0), 40 + y * 24 + (h ? 0 : 12),
+    { shape: "part", width: h ? 24 : 3, height: h ? 3 : 24, tone: i < count ? "primary" : "muted" }));
+}
+
 export const VISUAL_PRACTICE = {
+  ratio_table: frames("ratio_table", [board("1 : 3",[tile("a","1",80),tile("b","3",220)]),board("× 2",[tile("a","2",80),tile("b","?",220)]),board("2 : 6",[tile("a","2",80),tile("b","6",220)],"1 × 2 : 3 × 2")]),
+  bridge_positive: working("bridge_positive", "3 + 2 = ?", [["3","+1","4"],["4","+1","5"],["3","+2","5"]]),
+  signed_line: working("signed_line", "−2 + 3 = ?", [["−2","+1","−1"],["−1","+1","0"],["0","+1","1"]]),
+  equation_board: frames("equation_board", [0,1,2].map(step=>board("x + 2 = 6",[
+    tile("unknown","x",60),plain("equals","=",150),
+    ...Array.from({length:2},(_,i)=>token(`left-${i}`,"",95+i*18,55,{shape:"part",width:12,height:12,tone:"primary",visible:step===0})),
+    ...Array.from({length:6},(_,i)=>token(`right-${i}`,"",190+(i%3)*24,40+Math.floor(i/3)*30,{shape:"part",width:12,height:12,tone:"secondary",visible:step===0||i<4})),
+  ],step===0?undefined:step===1?"−2 = −2":"x = 4"))),
+  coordinate_map: frames("coordinate_map", [0,1,2].map(step=>board("(2, 3)",[
+    ...Array.from({length:5},(_,i)=>token(`v-${i}`,"",90+i*20,70,{shape:"part",width:1,height:80,tone:"muted"})),
+    ...Array.from({length:5},(_,i)=>token(`h-${i}`,"",130,30+i*20,{shape:"part",width:80,height:1,tone:"muted"})),
+    plain("origin","0",70,110),plain("x","x",190,110),plain("y","y",70,30),
+    token("point","",step===0?90:130,step===2?50:110,{shape:"part",width:10,height:10,tone:"primary"}),
+  ],step===2?"(2, 3)":undefined))),
+
+  geometry_area: frames("geometry_area", [0,4,8].map(n => board("4 × 2", geometryCells(4,2,n), n === 8 ? "4 × 2 = 8" : undefined))),
+  geometry_perimeter: frames("geometry_perimeter", [0,6,12].map(n => board("4 + 2 + 4 + 2", geometryBoundary(n), n === 12 ? "12" : undefined))),
+  geometry_compare: frames("geometry_compare", [0,1,2].map(n => board("5 × 2 = 10 × 1", [...geometryCells(5,2,10,25,45,12), ...geometryCells(10,1,10,160,45,12)], n === 2 ? "14 < 22" : undefined))),
+  geometry_missing_area: frames("geometry_missing_area", ["2 × ? = 18", "18 ÷ 2 = ?", "18 ÷ 2 = 9"].map(line => board("2 × ? = 18", [plain("step", line, 150)], line))),
+  geometry_missing_perimeter: frames("geometry_missing_perimeter", ["2 × (8 + ?) = 26", "26 ÷ 2 = 13", "13 − 8 = 5"].map(line => board("2 × (8 + ?) = 26", [plain("step", line, 150)], line))),
   decimal_grid_10: decimalGridHelp(10, [0, 3, 6]),
   decimal_grid_100: decimalGridHelp(100, [0, 10, 18]),
   decimal_place_tenths: frames("decimal_place_tenths", [0, 2, 5].map(n => board("1          1/10", [tile("ones", "0", 85), tile("tenths", String(n), 215)], `0 + ${n}/10`))),

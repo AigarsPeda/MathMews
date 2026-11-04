@@ -9,7 +9,7 @@ import { AppIcon } from "@/components/ui/AppIcon";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { AchievementsLink } from "@/components/puzzle/AchievementsLink";
 import { getLearningTopics } from "@/constants/curriculum";
-import { getPathEntry, getPathProgress, getPathRecommendation, getPathResumeRecommendation, getTopicPaths } from "@/constants/puzzle-path";
+import { getPathEntry, getPathProgress, getPathRecommendation, getPathResumeRecommendation, getTopicPaths, getTopicPathProgress } from "@/constants/puzzle-path";
 import { PuzzleColors as GameColors, TopicPathColors } from "@/constants/puzzle-theme";
 import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
 import { PUZZLE_DIFFICULTIES, isPuzzleDifficulty } from "@/constants/puzzles";
@@ -154,14 +154,22 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
               <PuzzleButton label={t("puzzleDesign.continue")} accessibilityHint={recommendation.lesson.title[locale]}
                 onPress={() => play(recommendation.lesson)} />
             </View> : null}
-            {topics.map((item, index) => <Pressable key={item.id} style={styles.topic}
-              accessibilityRole="button" accessibilityLabel={item.title[locale]}
-              accessibilityHint={t("puzzlePathDesign.viewTopicPath", { topic: item.title[locale] })}
-              onPress={() => router.setParams({ topic: item.id, lesson: undefined })}>
-              <View style={[styles.topicIcon, { backgroundColor: topicSurfaces[index % topicSurfaces.length] }]}><AppIcon name={item.icon} size={moderateScale(34)} /></View>
-              <Text style={styles.topicTitle}>{item.title[locale]}</Text>
-              <Feather name="chevron-right" size={23} color={GameColors.textMuted} />
-            </Pressable>)}
+            {topics.map((item, index) => {
+              const { solved, total } = getTopicPathProgress(difficulty, item.id, progress);
+              const counts = { completed: solved, remaining: total - solved };
+              return <Pressable key={item.id} style={styles.topic}
+                accessibilityRole="button" accessibilityLabel={item.title[locale]}
+                accessibilityValue={{ text: t("puzzlePathDesign.topicProgressLabel", counts) }}
+                accessibilityHint={t("puzzlePathDesign.viewTopicPath", { topic: item.title[locale] })}
+                onPress={() => router.setParams({ topic: item.id, lesson: undefined })}>
+                <View style={[styles.topicIcon, { backgroundColor: topicSurfaces[index % topicSurfaces.length] }]}><AppIcon name={item.icon} size={moderateScale(34)} /></View>
+                <View style={styles.topicDetails}>
+                  <Text style={styles.topicTitle}>{item.title[locale]}</Text>
+                  <Text style={styles.topicProgress}>{t("puzzlePathDesign.topicProgress", counts)}</Text>
+                </View>
+                <Feather name="chevron-right" size={23} color={GameColors.textMuted} />
+              </Pressable>;
+            })}
           </Animated.View>
           <Pressable onPress={() => router.push("/stats")} style={styles.secondary} accessibilityRole="button"><Text style={styles.backText}>{t("stats.title")}</Text></Pressable>
         </>}
@@ -191,6 +199,8 @@ const styles = StyleSheet.create({
   resumeTitle: { fontSize: moderateScale(23), lineHeight: moderateScale(30), fontWeight: "900", color: GameColors.text },
   topic: { flexDirection: "row", alignItems: "center", gap: moderateScale(14), minHeight: 84, paddingVertical: moderateScale(16), borderBottomWidth: 1, borderColor: GameColors.cardBorder },
   topicIcon: { width: moderateScale(46), height: moderateScale(46), alignItems: "center", justifyContent: "center", borderRadius: moderateScale(13) },
-  topicTitle: { flex: 1, fontSize: moderateScale(18), fontWeight: "800", color: GameColors.text },
+  topicDetails: { flex: 1, gap: moderateScale(4) },
+  topicTitle: { fontSize: moderateScale(18), fontWeight: "800", color: GameColors.text },
+  topicProgress: { fontSize: moderateScale(13), lineHeight: moderateScale(19), fontWeight: "700", color: GameColors.textMuted },
   secondary: { alignItems: "center", padding: moderateScale(14) },
 });

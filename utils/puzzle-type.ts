@@ -1,3 +1,5 @@
+import { isBridgePuzzle, checkBridgeAnswer, type BridgeState } from "@/utils/bridge-models";
+import { checkGeometryAnswer } from "@/utils/geometry-models";
 import { checkDecimalGrid, checkDecimalPlace, type DecimalPlaceState } from "@/utils/decimal-models";
 import { validFractionPoint, validFractionStrip, type FractionStripState } from "@/utils/fraction-models";
 import { checkPlaceValue, type PlaceValueState } from "@/utils/place-value";
@@ -27,7 +29,8 @@ import { evaluateExpression, runOperationPath } from "@/utils/puzzle-math";
 import { checkChallengeAnswer, isOptionalChallengePuzzle, type ChallengeAnswer } from "@/utils/challenge-puzzles";
 
 const INTERACTIVE_TYPES = new Set<PuzzleType>([
-  "decimal_grid", "decimal_place_value",
+  "ratio_table", "signed_line", "equation_board", "coordinate_map",
+  "geometry_measure", "decimal_grid", "decimal_place_value",
   "fraction_number_line", "fraction_strip",
   "place_value",
   "compare",
@@ -55,7 +58,9 @@ export function getPuzzleType(puzzle: Puzzle): PuzzleType {
 }
 
 export type PuzzleAnswer =
+  | { kind: "bridge"; state: BridgeState }
   | { kind: "fraction_point"; tick: number }
+  | { kind: "geometry"; value: number }
   | { kind: "decimal_grid"; shaded: number }
   | { kind: "decimal_place"; state: DecimalPlaceState }
   | { kind: "fraction_strip"; state: FractionStripState }
@@ -79,6 +84,8 @@ export function getValidPairs(numbers: readonly number[], target: number): [numb
 }
 
 export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean {
+  if (isBridgePuzzle(puzzle)) return answer.kind === "bridge" && checkBridgeAnswer(puzzle, answer.state);
+  if (puzzle.type === "geometry_measure") return answer.kind === "geometry" && checkGeometryAnswer(puzzle, answer.value);
   if (puzzle.type === "decimal_grid") return answer.kind === "decimal_grid" && checkDecimalGrid(puzzle, answer.shaded);
   if (puzzle.type === "decimal_place_value") return answer.kind === "decimal_place" && checkDecimalPlace(puzzle, answer.state);
   if (puzzle.type === "fraction_number_line") return answer.kind === "fraction_point" && validFractionPoint(puzzle, answer.tick);

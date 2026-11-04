@@ -1,3 +1,4 @@
+import { lifetimePuzzleIds } from "@/utils/reset-puzzle-progress";
 import { recordLearningAttempt } from "@/utils/learning-evidence";
 import type { LearningAttemptContext } from "@/types/learning";
 import { FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
@@ -72,7 +73,7 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
       streak, lastPuzzleDay: correct ? day : save.progress.lastPuzzleDay },
     pet: { ...withPetCareUpdate(save.pet, stats => ({ ...stats,
       happiness: correct ? boostStat(stats.happiness, replay ? PUZZLE_REPLAY_HAPPINESS_BOOST : PUZZLE_HAPPINESS_BOOST) : stats.happiness,
-      level: 1 + Math.floor(ids.length / 10) }), now), lastInteractionAt: now },
+      level: 1 + Math.floor(lifetimePuzzleIds({ ...save.progress, completedPuzzleIds: ids }).length / 10) }), now), lastInteractionAt: now },
   };
   if (coins) next = withCoinDelta(next, coins, { kind: "puzzle_reward", itemId: puzzle.id }, now)!;
   return { save: next, coins, accepted: true };

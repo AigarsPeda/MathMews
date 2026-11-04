@@ -8,6 +8,7 @@ import { createDefaultGameSave } from "@/utils/game-storage";
 import { applyPuzzleAnswer } from "@/utils/game-operations";
 import { beginTimedChallenge, settleChallengeTimeout } from "@/utils/timed-challenge";
 import type { GameSave } from "@/types/save";
+import type { AppLocale } from "@/types/locale";
 import i18n from "@/i18n";
 import { Redirect, Stack, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -28,7 +29,7 @@ function initialSave() {
 }
 export default function PathFixture() {
   const router = useRouter();
-  const [mode, setMode] = useState("path"), [narrow, setNarrow] = useState(false), [locale, setLocale] = useState<"en" | "lv">("en");
+  const [mode, setMode] = useState("path"), [narrow, setNarrow] = useState(false), [locale, setLocale] = useState<AppLocale>("en");
   const [save, setSave] = useState(initialSave), [revision, setRevision] = useState(0);
   const current = useRef(save);
   const themeIndex = useRef(0);
@@ -71,7 +72,7 @@ export default function PathFixture() {
         {mode === "pace" ? <PlaySession key={revision} session={{ lesson, level: lesson.levels[7], phase: 0 }} /> : <PuzzlesScreen />}
       </View>
       <View style={{ padding: 6, backgroundColor: "#F3EEFF", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around" }}>
-        {["QA Path", "QA Topics", "QA Pace", "QA Narrow", "QA LV", "QA Level 6", "QA Level 10", "QA Theme"].map(label => <Pressable key={label} accessibilityRole="button" onPress={() => {
+        {["QA Path", "QA Topics", "QA Pace", "QA Narrow", "QA LV", "QA RU", "QA Level 6", "QA Level 10", "QA Theme"].map(label => <Pressable key={label} accessibilityRole="button" onPress={() => {
           if (label === "QA Theme") {
             themeIndex.current = (themeIndex.current + 1) % COLLECTION_TRACKS.length;
             const entry = COLLECTION_TRACKS[themeIndex.current];
@@ -93,6 +94,7 @@ export default function PathFixture() {
           if (label === "QA Pace") { setMode("pace"); commit(initialSave()); setRevision(n => n + 1); }
           if (label === "QA Narrow") setNarrow(value => !value);
           if (label === "QA LV") { setLocale("lv"); void language.changeLanguage("lv"); }
+          if (label === "QA RU") { setLocale("ru"); void language.changeLanguage("ru"); }
         }} style={{ padding: 8 }}><Text style={{ fontSize: 10 }}>{label}</Text></Pressable>)}
       </View>
     </View>

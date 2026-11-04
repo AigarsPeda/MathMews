@@ -100,7 +100,8 @@
   },
   "locale": {
     "en": "English",
-    "lv": "Latviešu"
+    "lv": "Latviešu",
+    "ru": "Русский"
   },
   "home": {
     "greeting": "Sveiki!",
@@ -1228,7 +1229,12 @@
     "fraction_number_line": "Daļas uz skaitļu taisnes",
     "fraction_strip": "Daļu joslas",
     "decimal_grid": "Decimāldaļu režģis",
-    "decimal_place_value": "Decimāldaļu šķiras"
+    "decimal_place_value": "Decimāldaļu šķiras",
+    "geometry_measure": "Laukums un perimetrs",
+    "ratio_table": "Attiecību tabula",
+    "signed_line": "Skaitļu taisne",
+    "equation_board": "Vienādojuma līdzsvars",
+    "coordinate_map": "Koordinātu karte"
   },
   "puzzlePath": {
     "title": "Uzdevumu taka",
@@ -1284,7 +1290,20 @@
       "decimalTooLarge": "Kopējais daudzums ir par lielu. Pārbaudi katras kolonnas vērtību.",
       "decimalExchange": "Izmanto maiņas pogu. Kopējam daudzumam jāpaliek tādam pašam.",
       "decimalGridFew": "Iekrāsots par maz. Pievieno daļas ar +.",
-      "decimalGridMany": "Iekrāsots par daudz. Noņem daļas ar −."
+      "decimalGridMany": "Iekrāsots par daudz. Noņem daļas ar −.",
+      "geometryCompare": "Salīdzini visas četras ārējās malas. Vienāds laukums ne vienmēr nozīmē vienādu perimetru.",
+      "geometryMissingArea": "Izdali laukumu ar zināmās malas garumu.",
+      "geometryMissingPerimeter": "Nezināmā mala atkārtojas divreiz. Izdali perimetru ar divi, pirms atņem zināmo malu.",
+      "geometryAreaNotBoundary": "Tas ir ārējās malas garums. Laukumam jāskaita kvadrāti iekšpusē.",
+      "geometryBoundaryNotArea": "Tas ir kvadrātu skaits iekšpusē. Perimetram jāskaita tikai ārējās malas nogriežņi.",
+      "geometryAreaLow": "Laukums ir lielāks. Saskaiti visus kvadrātus ārējās malas iekšpusē.",
+      "geometryAreaHigh": "Laukums ir mazāks. Katru kvadrātu skaiti vienu reizi.",
+      "geometryPerimeterLow": "Perimetrs ir garāks. Iekļauj visas četras ārējās malas.",
+      "geometryPerimeterHigh": "Perimetrs ir īsāks. Skaiti tikai ārējo malu un tikai vienu reizi.",
+      "ratio_table": "Abus daudzumus mērogo vienādi. Vienāda skaitļa pieskaitīšana abiem nesaglabā attiecību.",
+      "signed_line": "Pārbaudi virzienu un skaiti intervālus no sākuma punkta.",
+      "equation_board": "Turpini, līdz kreisajā pusē viens x ir atsevišķi. Abās pusēs veic vienādu darbību.",
+      "coordinate_map": "Vispirms pārbaudi x, tad y. Skaiti intervālus, nevis punktus."
     },
     "solveFor": "Atrisini {{name}}",
     "replayNut": "Atkārtot riekstu #{{number}}",
@@ -1334,7 +1353,12 @@
       "fraction_number_line": "Atzīmē punktu starp 0 un 1, tad pārbaudi.",
       "fraction_strip": "Izveido daļu no vienādām daļām, tad pārbaudi.",
       "decimal_grid": "Iekrāso decimāldaļai atbilstošo daudzumu un pārbaudi.",
-      "decimal_place_value": "Izveido vai samaini daļas un pārbaudi."
+      "decimal_place_value": "Izveido vai samaini daļas un pārbaudi.",
+      "geometry_measure": "Izmanto zīmējumu, ievadi atbildi un pārbaudi.",
+      "ratio_table": "Katrā grupā vienmēr ir vienāds daudzums. Saskaņo abas tabulas rindas.",
+      "signed_line": "Nulle ir atskaites punkts. Skaitļi palielinās pa labi.",
+      "equation_board": "Saglabā abas puses vienādas. Atcel papildu daudzumus un sadali vienādās grupās.",
+      "coordinate_map": "Nolasi (x, y): vispirms horizontāli, tad uz augšu vai leju. Katrs režģa intervāls ir viena vienība."
     }
   },
   "lives": {
@@ -1675,6 +1699,8 @@
     "timerRules": "Laiks sākas, nospiežot Sākt, un turpina ritēt, ja izej. Ja laiks beidzas, tiek izmantota viena sirds.",
     "otherActive": "Vispirms pabeidz iesākto izaicinājumu.",
     "chooseTopic": "Izvēlies tēmu",
+    "topicProgress": "Pabeigti {{completed}} · Atlikuši {{remaining}}",
+    "topicProgressLabel": "Pabeigti {{completed}} uzdevumi, atlikuši {{remaining}}.",
     "levelProgress": "Pabeigti {{count}} no {{total}} līmeņiem",
     "level_completed": "Pabeigts. Spēlē šos 10 uzdevumus vēlreiz.",
     "level_current": "Atver līmeni un turpini tā 10 uzdevumus.",
@@ -1753,5 +1779,46 @@
     "bundle_tenths": "10 desmitdaļas → 1 viens",
     "split_tenths": "1 viens → 10 desmitdaļas",
     "blockScaleTenths": "Kvadrāts ir 1. Josla ir viena desmitdaļa jeb 0,1."
+  },
+  "geometryModels": {
+    "guide_area": "Laukums mēra iekšpusi. Noklāj taisnstūri ar vienādiem vienības kvadrātiem bez spraugām un pārklāšanās.",
+    "guide_perimeter": "Perimetrs mēra ārējo malu. Izseko katru vienības nogriezni ārējā malā vienu reizi.",
+    "guide_compare": "Abu taisnstūru laukumi ir vienādi. To ārējo malu kopgarums var atšķirties.",
+    "guide_missing_area": "Laukums ir platums × augstums. Izmanto laukumu un zināmo malu, lai atrastu otru malu.",
+    "guide_missing_perimeter": "Perimetru veido divi platumi un divi augstumi. Atrodi pusi perimetra un atņem zināmo malu.",
+    "shape": "Taisnstūris {{name}}. Platums vienībās: {{width}}. Augstums vienībās: {{height}}.",
+    "unknownShape": "Taisnstūris ar zināmu malu {{width}} vienību garumā un vienu nezināmu malu",
+    "notToScale": "Nav mērogā",
+    "given_area": "Laukums: {{value}} kvadrātvienības",
+    "given_perimeter": "Perimetrs: {{value}} vienības",
+    "unitSquare": "Katra kvadrāta platums un augstums ir 1 vienība.",
+    "coverSquare": "Noklāj vienu kvadrātu",
+    "traceEdge": "Izseko vienu ārējās malas nogriezni",
+    "squaresMarked": "Noklātie kvadrāti: {{count}}",
+    "edgesMarked": "Izsekotie ārējās malas nogriežņi: {{count}}",
+    "equal": "Vienādi perimetri",
+    "sideAnswer": "Nezināmā mala vienībās",
+    "areaAnswer": "Laukums kvadrātvienībās",
+    "perimeterAnswer": "Perimetrs vienībās",
+    "erase": "Dzēs pēdējo ciparu",
+    "reset": "Sāc no jauna",
+    "oneUnit": "1 vienība",
+    "manyUnits": "{{value}} vienības"
+  },
+  "bridge": {
+    "answer": "Tava atbilde",
+    "groups": "Grupas",
+    "items": "Priekšmeti",
+    "linkedLines": "Atbilstošas vietas rāda atbilstošus daudzumus.",
+    "original": "Sākuma vienādojums",
+    "bothSides": "Katru darbību veic abās pusēs. Beigās atstāj x atsevišķi.",
+    "divideWhole": "Dali tikai tad, ja katrs loceklis dod veselu skaitli.",
+    "selectZero": "Izvēlies nulli",
+    "selectOrigin": "Izvēlies (0, 0)",
+    "guide_ratio_table": "Katrā grupā vienmēr ir vienāds daudzums. Saskaņo abas tabulas rindas.",
+    "guide_signed_line": "Nulle ir atskaites punkts. Skaitļi palielinās pa labi.",
+    "guide_equation_board": "Saglabā abas puses vienādas. Atcel papildu daudzumus un sadali vienādās grupās.",
+    "guide_coordinate_map": "Nolasi (x, y): vispirms horizontāli, tad uz augšu vai leju. Katrs režģa intervāls ir viena vienība.",
+    "moveBy": "Maini x par {{x}} un y par {{y}}."
   }
 }

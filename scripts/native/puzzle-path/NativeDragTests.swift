@@ -1,11 +1,52 @@
 import XCTest
+final class NativeLaunchTests: XCTestCase {
+ func testHomeReady() {
+  let app = XCUIApplication(bundleIdentifier: "com.mathmews.app"); app.activate()
+  let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+  if springboard.buttons["Open"].waitForExistence(timeout: 2) { springboard.buttons["Open"].tap() }
+  if app.buttons["Open"].exists { app.buttons["Open"].tap() }
+  let developerIntro = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'This is the developer menu'")).firstMatch
+  if developerIntro.waitForExistence(timeout: 5), app.buttons["Continue"].exists { app.buttons["Continue"].tap() }
+  let reload = app.buttons["Reload"]
+  if reload.exists {
+   let window = app.windows.firstMatch.frame
+   let close = app.buttons.allElementsBoundByIndex.first { $0.isHittable && $0.frame.midX > window.width * 0.8 && $0.frame.maxY <= reload.frame.minY && $0.frame.minY > window.height * 0.25 }
+   close?.tap()
+  }
+  let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+   app.buttons["Open settings"].isHittable || app.textFields.firstMatch.isHittable
+  }, object: nil)
+  XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 60), .completed)
+ }
+}
 final class NativeDragTests: XCTestCase {
  let app = XCUIApplication(bundleIdentifier: "com.mathmews.app")
  override func setUpWithError() throws {
   continueAfterFailure = false; app.activate()
+  let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+  if springboard.buttons["Open"].waitForExistence(timeout:2) { springboard.buttons["Open"].tap() }
+  if app.buttons["Open"].exists { app.buttons["Open"].tap() }
   XCTAssertTrue(app.buttons["QA Path"].waitForExistence(timeout:25))
  }
  func shot(_ name:String) { let item=XCTAttachment(screenshot:app.screenshot()); item.name=name; item.lifetime = .keepAlways; add(item) }
+ func testRussianPathAndPuzzle() {
+  app.buttons["QA RU"].tap()
+  app.buttons["QA Topics"].tap()
+  XCTAssertTrue(app.staticTexts["Выберите тему"].waitForExistence(timeout:5))
+  XCTAssertTrue(app.buttons["Сложение"].exists)
+  shot("russian-topics")
+  app.buttons["QA Path"].tap()
+  app.buttons["QA Narrow"].tap()
+  XCTAssertTrue(app.buttons["Уровень 5"].waitForExistence(timeout:5))
+  XCTAssertTrue(app.buttons["Уровень 5"].isHittable)
+  shot("russian-path-320")
+  app.buttons["QA Pace"].tap()
+  XCTAssertTrue(app.buttons["Начать испытание"].waitForExistence(timeout:5))
+  shot("russian-pace-320")
+  app.buttons["Начать испытание"].tap()
+  XCTAssertTrue(app.buttons["Проверить ответ"].waitForExistence(timeout:5))
+  shot("russian-puzzle-320")
+ }
  func assertCurrentLevelVisible(_ number: Int) {
   let level = app.buttons["Level \(number)"]
   let visible = NSPredicate { _, _ in

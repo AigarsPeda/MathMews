@@ -336,7 +336,7 @@ for (const state of [{ answered: false, isCorrect: false }, { answered: true, is
 const visibleStatement = { ...claim, payload: { statement: '25% × 80 = 20' } };
 assert.ok(nodes(renderTrueFalse({ ...claimProps, puzzle: visibleStatement, answered: false, isCorrect: false })).some(node => node.props.children === visibleStatement.payload.statement), 'Ordinary true/false questions retain the statement being judged');
 const renderStory = renderHarness('components/puzzle/MultipleChoiceTask.tsx', 'MultipleChoiceTask');
-const area = allPuzzles.find(p => p.id === 'v2-hard-measurement-area-1');
+const area = allPuzzles.find(p => p.difficulty === 'hard' && p.type === 'multiple_choice' && p.taskVisual?.kind === 'array');
 const storyProps = { puzzle: area, selectedIndex: null, answered: false, isCorrect: false, onSelect() {} };
 assert.equal(nodes(renderStory(storyProps)).find(node => node.type === 'QuantityTaskScene').props.showExpression, false, 'Hard story pictures do not supply the arithmetic operation');
 assert.equal(nodes(renderStory({ ...storyProps, puzzle: { ...area, difficulty: 'easy' } })).find(node => node.type === 'QuantityTaskScene').props.showExpression, true, 'Easy story models keep their equation support');
@@ -522,3 +522,43 @@ const decimalPuzzle=allPuzzles.find(p=>p.type==='decimal_grid'&&p.payload.scale=
 const decimalTree=decimalRender({puzzle:decimalPuzzle,value:81,onChange(){},answered:false});
 assert.equal(nodes(decimalTree).find(n=>n.props.testID==='decimal-grid-value').props.children,'81/100 = 0,81','Hundredths stay visible even when the target is written with one decimal digit');
 console.log('Decimal screen checks passed: correction, one-life costs, resets, duplicate submission, rewards and localized precision.');
+
+for (const mode of ['area','perimeter','compare','missing_area','missing_perimeter']) {
+  const puzzle=allPuzzles.find(p=>p.type==='geometry_measure'&&p.payload.mode===mode);
+  const target=loadPure('@/utils/geometry-models').geometryTarget(puzzle), state=screen(puzzle);
+  assert.equal(state.check().disabled,true);
+  state.task().onGeometryChange(0);state.refresh();state.check().onPress();state.refresh();
+  assert.equal(state.game.progress.lives.current,2);assert.equal(state.attempts[0].correct,false);
+  assert.equal(state.task().geometry,0);assert.equal(state.check().disabled,true,'Same wrong answer cannot spend another life');
+  state.task().onGeometryChange(null);state.refresh();assert.equal(state.check().disabled,true);
+  state.task().onGeometryChange(target);state.refresh();const submit=state.check().onPress;submit();submit();state.refresh();
+  assert.equal(state.attempts.length,2);assert.equal(state.result().correct,true);
+  assert.equal(state.result().coinsEarned,getPuzzleCoinReward(puzzle.difficulty));
+}
+const renderGeometry=renderHarness('components/puzzle/GeometryMeasureTask.tsx','GeometryMeasureTask');
+const hiddenSides=allPuzzles.filter(p=>p.type==='geometry_measure'&&p.payload.mode.startsWith('missing'));
+let referenceGeometry;
+for(const puzzle of hiddenSides){
+  const tree=renderGeometry({puzzle,value:null,onChange(){},answered:false});
+  const shape=nodes(tree).find(n=>n.props.testID==='geometry-shape-main');
+  const size=json(shape.props.style);
+  referenceGeometry??=size;assert.deepEqual(size,referenceGeometry,'Missing-side schematics do not reveal the answer through their size');
+  assert.equal(shape.props.accessibilityLabel,t('geometryModels.unknownShape',{width:puzzle.payload.width}));
+  assert.ok(nodes(tree).some(n=>n.props.children===en.geometryModels.notToScale));
+  assert.ok(!nodes(tree).some(n=>n.props.children===en.geometryModels.unitSquare),'Schematic diagrams are not described as countable unit grids');
+}
+console.log('Geometry screen checks passed: all five modes, empty drafts, correction, lives, duplicate submission, rewards and missing-side answer concealment.');
+
+for(const type of ['ratio_table','signed_line','equation_board','coordinate_map'])for(const tier of ['easy','medium','hard']) {
+ const puzzle=allPuzzles.find(p=>p.type===type&&p.difficulty===tier);
+ const target=loadPure('@/utils/bridge-models').bridgeTarget(puzzle),state=screen(puzzle);
+ const wrong=type==='equation_board'?{equation:{a:1,b:0,c:999}}:typeof target==='number'?{value:999}:{point:{x:99,y:99}};
+ const right=type==='equation_board'?{equation:{a:1,b:0,c:target}}:typeof target==='number'?{value:target}:{point:target};
+ assert.equal(state.check().disabled,true);
+ state.task().onBridgeChange(wrong);state.refresh();state.check().onPress();state.refresh();
+ assert.equal(state.game.progress.lives.current,2);assert.equal(state.attempts[0].correct,false);assert.equal(state.check().disabled,true);
+ state.task().onBridgeChange(null);state.refresh();assert.equal(state.check().disabled,true);assert.equal(state.game.progress.lives.current,2);
+ state.task().onBridgeChange(right);state.refresh();const submit=state.check().onPress;submit();submit();state.refresh();
+ assert.equal(state.attempts.length,2);assert.equal(state.result().correct,true);assert.equal(state.result().coinsEarned,getPuzzleCoinReward(tier));
+}
+console.log('Bridge screen checks passed in every difficulty: empty drafts, correction, reset, one-life mistakes, duplicate submissions and rewards.');

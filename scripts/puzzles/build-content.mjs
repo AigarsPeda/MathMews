@@ -1,4 +1,9 @@
+import { applyBridgePilot, BRIDGE_PLANS } from "./bridge-pilot.mjs";
+import { applyGeometryPilot } from "./geometry-pilot.mjs";
+import { applyHardReasoning } from './hard-reasoning.mjs';
+import { applyFoundationProgression } from './foundation-progression.mjs';
 import { applyDecimalModelPilot } from "./decimal-model-pilot.mjs";
+import { addRussianLearningText, russianPuzzle } from './russian-content.mjs';
 import { applyFractionModelPilot } from "./fraction-model-pilot.mjs";
 import { applyPlaceValuePilot } from "./place-value-pilot.mjs";
 /** Authoring source. Run npm run puzzles:build after changing topics or lessons. */
@@ -322,7 +327,7 @@ finale('hard','measurement','shelter',text('Build the rooftop shelter','Uzbūvē
   choice('operations',text('7 equal crates hold 63 tiles. How many tiles will 9 crates hold?', '7 vienādās kastēs ir 63 flīzes. Cik flīžu būs 9 kastēs?'),81,[65,126],text('Find tiles per crate, then scale to nine crates.', 'Atrodi flīžu skaitu vienā kastē un pārrēķini deviņām.'),text('63 ÷ 7 × 9 = 81 tiles arrive.', '63 ÷ 7 × 9 = 81 flīze pienāk.'),'rate'),
   task('estimate','estimation',text('81 tiles arrive, along with 27 spares. What is the total to the nearest ten?', 'Pienāk 81 flīze un 27 rezerves flīzes. Kāds ir kopskaits, noapaļojot līdz tuvākajam desmitam?'),{en:{expression:'81 + 27',choices:['About 110','About 90','About 150']},lv:{expression:'81 + 27',choices:['Aptuveni 110','Aptuveni 90','Aptuveni 150']}},text('Round each delivery separately before adding.', 'Pirms saskaitīšanas noapaļo katru piegādi atsevišķi.'),text('80 + 30 = 110. The shelter has enough supplies!', '80 + 30 = 110. Patvērumam pietiek krājumu!'),{correctIndex:0}),
 ]);
-finale('hard','logic','vault',text('The archive vault','Arhīva glabātava'),text('Solve the door clues, check the drawer labels and arrange the final code.', 'Atrisini durvju norādes, pārbaudi atvilktņu etiķetes un sakārto gala kodu.'),[
+finale('hard','logic','vault',text('The archive vault','Arhīva glabātava'),text('Solve the door clues, check the drawer labels and solve the final code.', 'Atrisini durvju norādes, pārbaudi atvilktņu etiķetes un atrisini gala kodu.'),[
   choice('logic',text('The door number is even, greater than 40, less than 46 and divisible by 3. Which is it?', 'Durvju numurs ir pāra, lielāks par 40, mazāks par 46 un dalās ar 3. Kurš tas ir?'),42,[44,46],text('A number must satisfy every clue.', 'Skaitlim jāatbilst visām norādēm.'),text('42 is even, lies between 40 and 46, and 42 ÷ 3 = 14.', '42 ir pāra, atrodas starp 40 un 46, un 42 ÷ 3 = 14.'),'number_range'),
   task('true_false','division',text('There are 42 records in 6 equal drawers. Check the claim of 7 records per drawer.', '42 ieraksti sadalīti 6 vienādās atvilktnēs. Pārbaudi apgalvojumu par 7 ierakstiem katrā.'),{statement:'42 ÷ 6 = 7'},text('Multiply the claimed amount by the number of drawers.', 'Reizini piedāvāto daudzumu ar atvilktņu skaitu.'),text('True. 6 × 7 = 42. The drawer labels are correct.', 'Pareizi. 6 × 7 = 42. Atvilktņu etiķetes ir pareizas.'),{isTrue:true,helpTemplate:'division'}),
   task('order_numbers','comparison',text('The final code uses increasing multiples of 7. Arrange the code tiles.', 'Gala kods izmanto augošus skaitļa 7 daudzkārtņus. Sakārto koda kartītes.'),{numbers:[21,7,28,14],correctOrder:[7,14,21,28]},text('Start at the smallest multiple, then keep the same gap.', 'Sāc ar mazāko daudzkārtni un saglabā vienādu soli.'),text('7, 14, 21, 28. The archive opens!', '7, 14, 21, 28. Arhīvs atveras!')),
@@ -405,11 +410,21 @@ applyProgressionRevisions({ puzzles, lessons, pathExtras });
 applyPlaceValuePilot({ puzzles, lessons, pathExtras });
 applyFractionModelPilot({ puzzles, lessons, pathExtras });
 applyDecimalModelPilot({ puzzles, lessons, pathExtras });
+applyGeometryPilot({ puzzles, lessons, pathExtras });
+applyHardReasoning({ puzzles, lessons, pathExtras });
+applyFoundationProgression({ puzzles, lessons, pathExtras, text, task, numberSet, patternSet, multiplySet, divideSet, addSet, subtractSet, operationSet });
+applyBridgePilot({ puzzles, lessons, pathExtras });
+writeGenerated('data/puzzle-bridge-lessons.json', BRIDGE_PLANS.map(({id,type,difficulty})=>({id,type,difficulty})));
 writeGenerated('data/puzzle-path-extras.json', pathExtras);
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
-for (const locale of ['en','lv']) for (const difficulty of ['easy','medium','hard']) {
+addRussianLearningText(topics);
+addRussianLearningText(lessons);
+addRussianLearningText(lessonBossScenes);
+puzzles.ru = Object.fromEntries(['easy', 'medium', 'hard'].map(tier => [tier, puzzles.en[tier].map(russianPuzzle)]));
+fs.mkdirSync('assets/puzzles/ru', { recursive: true });
+for (const locale of ['en','lv','ru']) for (const difficulty of ['easy','medium','hard']) {
   const list=puzzles[locale][difficulty];
-  const file=`assets/puzzles/${locale==='lv'?'lv/':''}${difficulty}.json`;
+  const file=`assets/puzzles/${locale==='en'?'':`${locale}/`}${difficulty}.json`;
   writeGenerated(file, list);
 }
 writeGenerated('data/puzzle-curriculum.json', {version:2,topics,lessons});

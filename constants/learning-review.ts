@@ -1,21 +1,24 @@
+import { getBridgeReview } from "@/constants/bridge-review";
 import type { LearningLesson } from '@/types/curriculum';
 import type { AppLocale } from '@/types/locale';
 import { getTopicLessons } from '@/constants/curriculum';
+import foundationPlans from '@/data/puzzle-foundations.json';
 export type ReviewQuestion = { diagram?: {parts:number;colored:number}; prompt: Record<AppLocale,string>; choices: string[]; correctIndex: number; explanation: Record<AppLocale,string> };
 const hash = (value: string) => {
   let seed = 2166136261;
   for (const char of value) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619);
   return seed >>> 0;
 };
-function numericChoices(answer: number, key: string) {
-  const rank = hash(`${key}/rank`) % 3;
-  const values = rank === 0 ? [answer, answer + 1, answer + 3]
-    : rank === 1 ? [answer - 1, answer, answer + 2] : [answer - 2, answer - 1, answer];
+function numericChoices(answer: number, key: string, maximum = Infinity) {
+  const rank = Math.max(2 - Math.min(2, maximum - answer), Math.min(hash(`${key}/rank`) % 3, answer));
+  const values = rank === 0 ? [answer, answer + 1, answer + 2]
+    : rank === 1 ? [answer - 1, answer, answer + 1] : [answer - 2, answer - 1, answer];
   return values.map((value, index) => ({ value, order: hash(`${key}/position/${index}`) }))
     .sort((a, b) => a.order - b.order).map(item => String(item.value));
 }
 /** Fresh, self-contained checks. No previous teaching step supplies the answer. */
 export function getLearningReview(lesson: LearningLesson, day: number): ReviewQuestion {
+  const bridge = getBridgeReview(lesson, day); if (bridge) return bridge;
   const seed = [...lesson.id].reduce((n,c) => n+c.charCodeAt(0), day), v = seed % 11;
   const stage = getTopicLessons(lesson.difficulty, lesson.topicId).findIndex(item => item.id === lesson.id);
   let a = (lesson.difficulty === 'easy' ? 3 : lesson.difficulty === 'medium' ? 23 : 103) + v, b = (lesson.difficulty === 'easy' ? 2 : 8) + v % 4;
@@ -26,7 +29,32 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
     if (stage === 2) { a = 10; b = 1 + v % 9; }
     if (stage === 3) { a = 7 + v % 3; b = 11 + v % 8 - a; }
   }
+  if (lesson.difficulty !== 'hard' && ['multiplication', 'division'].includes(lesson.topicId)) {
+    const tables = (lesson.difficulty === 'easy' ? foundationPlans.easyTables : foundationPlans.mediumTables)[stage];
+    if (lesson.topicId === 'multiplication') { a = tables[v % tables.length]; b = 2 + v % (lesson.difficulty === 'easy' ? 5 : 9); }
+    else { a = 2 + v % 9; b = tables[v % tables.length]; }
+  }
+  if (lesson.difficulty === 'easy' && lesson.topicId === 'numbers') a = stage === 0 ? 1 + v % 8 : 5 + v % 14;
+  if (lesson.difficulty === 'easy' && lesson.topicId === 'patterns') {
+    a = 1 + v % 5; b = stage < 2 ? 1 + v % 2 : stage < 5 ? 2 + v % 2 : stage < 8 ? [2, 5][v % 2] : [5, 10][v % 2];
+  }
+  if (lesson.difficulty === 'medium' && lesson.topicId === 'operations' && stage < 3) { a = 7 + v % 8; b = 2 + v % 4; }
+  if (lesson.difficulty === 'medium' && lesson.topicId === 'addition') {
+    a = stage < 4 ? 23 + v : 55 + v * 3; b = stage < 4 ? 12 + v % 12 : 25 + v % 15;
+  }
+  if (lesson.difficulty === 'medium' && lesson.topicId === 'subtraction') { a = 20 + v * 2; b = 15 + stage + v % 17; }
   const key = `${lesson.id}/${day}`;
+  if (lesson.difficulty === 'medium' && lesson.topicId === 'fractions' && stage >= 6 && stage <= 8) {
+    const scale = stage === 6 ? 10 : 100;
+    const units = stage === 6 ? 1 + v % 9 : stage === 7 ? 5 + v * 7 : 104 + v * 7;
+    const decimal = (units / scale).toFixed(stage === 6 ? 1 : 2), comma = decimal.replace('.', ',');
+    const choices = numericChoices(units, key), detail = `${units}/${scale} = ${decimal}.`;
+    return { prompt: {
+      en: `How many ${scale === 10 ? 'tenths' : 'hundredths'} make ${decimal}?`,
+      lv: `Cik ${scale === 10 ? 'desmitdaļu' : 'simtdaļu'} veido ${comma}?`,
+      ru: `Сколько ${scale === 10 ? 'десятых' : 'сотых'} составляет ${comma}?`,
+    }, choices, correctIndex: choices.indexOf(String(units)), explanation: { en: detail, lv: detail.replace('.', ','), ru: detail.replace('.', ',') } };
+  }
   if(lesson.topicId === 'fractions') {
     const advanced=lesson.difficulty==='hard', equivalent=lesson.difficulty==='medium'||['equivalence','equivalent','review'].some(key=>lesson.skillId?.endsWith('.'+key));
     const d=lesson.skillId?.endsWith('.equal-parts')?2:lesson.skillId?.endsWith('.quarters')?4:3+v%4, n=1+v%(d-1);
@@ -41,42 +69,65 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
       const options = [answer, `${sourceN}/${answerD}`, `${answerN}/${sourceD}`];
       const shift = seed % 3, choices = [...options.slice(shift), ...options.slice(0, shift)];
       const detail = `${sourceN}/${sourceD} = ${answer}.`;
-      return { prompt: { en: `Which fraction equals ${sourceN}/${sourceD}?`, lv: `Kura daļa ir vienāda ar ${sourceN}/${sourceD}?` },
-        choices, correctIndex: choices.indexOf(answer), explanation: { en: detail, lv: detail } };
+      return { prompt: { en: `Which fraction equals ${sourceN}/${sourceD}?`, lv: `Kura daļa ir vienāda ar ${sourceN}/${sourceD}?`, ru: `Какая дробь равна ${sourceN}/${sourceD}?` },
+        choices, correctIndex: choices.indexOf(answer), explanation: { en: detail, lv: detail, ru: detail } };
     }
     const options=advanced?numericChoices(a,key):[`${n}/${d}`,`${d}/${n}`,`${n+1}/${d}`];
     const shift=seed%3,choices=[...options.slice(shift),...options.slice(0,shift)];
     return {
       prompt: advanced
-        ? { en: `There are ${a*d} seeds. 1/${d} of them are flower seeds. How many flowers?`, lv: `Ir ${a*d} sēklas. Puķu sēklas veido 1/${d}. Cik puķu sēklu?` }
-        : { en: 'Which fraction of this whole is colored?', lv: 'Kāda šī veselā daļa ir iekrāsota?' },
+        ? { en: `There are ${a*d} seeds. 1/${d} of them are flower seeds. How many flowers?`, lv: `Ir ${a*d} sēklas. Puķu sēklas veido 1/${d}. Cik puķu sēklu?`, ru: `Всего ${a*d} семян. Семена цветов составляют 1/${d}. Сколько семян цветов?` }
+        : { en: 'Which fraction of this whole is colored?', lv: 'Kāda šī veselā daļa ir iekrāsota?', ru: 'Какая часть целого закрашена?' },
       choices, correctIndex: choices.indexOf(advanced ? String(a) : options[0]),
       explanation: {
         en: advanced ? `${a*d} ÷ ${d} = ${a}.` : `${n} of ${d} equal parts: ${n}/${d}.`,
         lv: advanced ? `${a*d} ÷ ${d} = ${a}.` : `${n} no ${d} vienādām daļām: ${n}/${d}.`,
+        ru: advanced ? `${a*d} ÷ ${d} = ${a}.` : `${n} из ${d} равных частей: ${n}/${d}.`,
       },
       ...(!advanced ? { diagram: { parts: d, colored: n } } : {}),
     };
   }
   let en: string, lv: string, answer: number, detail: string;
+  const russianPrompts: Record<string, string> = {
+    addition: `Было ${a} карандашей. Добавили ещё ${b}. Сколько стало?`,
+    subtraction: `Было ${a+b} карандашей. Отдали ${b}. Сколько осталось?`,
+    multiplication: `Есть ${b} мешочков, в каждом по ${a} пуговиц. Сколько пуговиц всего?`,
+    division: `Раздели ${a*b} пуговиц поровну между ${b} мешочками. Сколько в каждом?`,
+    patterns: `Продолжи с одинаковым шагом: ${a}, ${a+b}, ${a+2*b}, ?`,
+    operations: `Начни с ${a}. Прибавь ${b}, затем вычти 2. Какое число получится?`,
+    percentages: `Сколько будет 25% от ${a*4}?`,
+    measurement: `В прямоугольнике ${a} рядов по ${b} единичных квадратов. Чему равна его площадь?`,
+  };
+  let ru = russianPrompts[lesson.topicId] ?? `Выбери чётное число строго между ${2*a} и ${2*a+4}.`;
   switch (lesson.topicId) {
+    case 'numbers': en=`Which number comes just after ${a}?`;lv=`Kurš skaitlis seko uzreiz pēc ${a}?`;ru=`Какое число идёт сразу после ${a}?`;answer=a+1;detail=`${a} + 1 = ${answer}.`;break;
     case 'addition': en=`There are ${a} pencils. Add ${b} more. How many altogether?`;lv=`Ir ${a} zīmuļi. Pievieno vēl ${b}. Cik kopā?`;answer=a+b;detail=`${a} + ${b} = ${answer}.`;break;
     case 'subtraction': en=`There are ${a+b} pencils. Give away ${b}. How many remain?`;lv=`Ir ${a+b} zīmuļi. Atdod ${b}. Cik paliek?`;answer=a;detail=`${a+b} − ${b} = ${a}.`;break;
     case 'multiplication': en=`There are ${b} bags with ${a} buttons each. How many buttons?`;lv=`Ir ${b} maisiņi, katrā ${a} pogas. Cik pogu kopā?`;answer=a*b;detail=`${b} × ${a} = ${answer}.`;break;
     case 'division': en=`Share ${a*b} buttons equally among ${b} bags. How many in each?`;lv=`Sadali ${a*b} pogas vienādi ${b} maisiņos. Cik katrā?`;answer=a;detail=`${a*b} ÷ ${b} = ${a}.`;break;
     case 'patterns': en=`Continue the equal jumps: ${a}, ${a+b}, ${a+2*b}, ?`;lv=`Turpini vienādus soļus: ${a}, ${a+b}, ${a+2*b}, ?`;answer=a+3*b;detail=`${a+2*b} + ${b} = ${answer}.`;break;
-    case 'operations': en=`Start at ${a}. Add ${b}, then take away 2. Where do you finish?`;lv=`Sāc ar ${a}. Pieskaiti ${b}, tad atņem 2. Kur nonāc?`;answer=a+b-2;detail=`${a} + ${b} − 2 = ${answer}.`;break;
+    case 'operations': {
+      if (lesson.difficulty === 'medium' && stage >= 3) {
+        const factor = 2 + v % 4, value = 4 + v % 7, extra = 3 + v % 5;
+        const expression = stage < 5 ? `${value} × ${factor} + ${extra}` : stage === 5 ? `${value * factor} ÷ ${factor} + ${extra}` : `${extra} + ${factor} × ${value}`;
+        answer = stage === 5 ? value + extra : value * factor + extra;
+        en=`What is the value of ${expression}?`;lv=`Kāda ir izteiksmes ${expression} vērtība?`;ru=`Чему равно выражение ${expression}?`;detail=`${expression} = ${answer}.`;
+      } else { en=`Start at ${a}. Add ${b}, then take away 2. Where do you finish?`;lv=`Sāc ar ${a}. Pieskaiti ${b}, tad atņem 2. Kur nonāc?`;answer=a+b-2;detail=`${a} + ${b} − 2 = ${answer}.`; }
+      break;
+    }
     case 'percentages': en=`What is 25% of ${a*4}?`;lv=`Cik ir 25% no ${a*4}?`;answer=a;detail=`${a*4} ÷ 4 = ${a}.`;break;
     case 'measurement': en=`A rectangle has ${a} rows of ${b} unit squares. How many square units cover it?`;lv=`Taisnstūrī ir ${a} rindas, katrā ${b} vienības kvadrāti. Cik kvadrātvienību to pārklāj?`;answer=a*b;detail=`${a} × ${b} = ${answer}.`;break;
     default: en=`Choose the even number strictly between ${2*a} and ${2*a+4}.`;lv=`Izvēlies pāra skaitli stingri starp ${2*a} un ${2*a+4}.`;answer=2*a+2;detail=`${2*a} < ${answer} < ${2*a+4}.`;
   }
   if(lesson.topicId==='addition' && ['missing-part','pairs'].some(key=>lesson.skillId?.endsWith('.'+key))) {
     en=`What is the missing part? ${a} + ? = ${a+b}`;lv=`Kāda ir trūkstošā daļa? ${a} + ? = ${a+b}`;answer=b;detail=`${a} + ${b} = ${a+b}.`;
+    ru=`Какое слагаемое пропущено? ${a} + ? = ${a+b}`;
   }
   if (lesson.difficulty === 'easy' && lesson.topicId === 'subtraction' && stage === 4) {
     en=`How many were taken away? ${a+b} − ? = ${a}`;lv=`Cik tika atņemts? ${a+b} − ? = ${a}`;
+    ru=`Сколько вычли? ${a+b} − ? = ${a}`;
     answer=b;detail=`${a+b} − ${b} = ${a}.`;
   }
-  const choices = numericChoices(answer, key);
-  return {prompt:{en,lv},choices,correctIndex:choices.indexOf(String(answer)),explanation:{en:detail,lv:detail}};
+  const choices = numericChoices(answer, key, lesson.topicId === 'numbers' && lesson.difficulty === 'easy' ? stage === 0 ? 10 : 20 : Infinity);
+  return {prompt:{en,lv,ru},choices,correctIndex:choices.indexOf(String(answer)),explanation:{en:detail,lv:detail,ru:detail}};
 }

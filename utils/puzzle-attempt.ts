@@ -1,3 +1,5 @@
+import { isBridgePuzzle, bridgeComplete, type BridgeState } from "@/utils/bridge-models";
+import { geometryTarget } from "@/utils/geometry-models";
 import { decimalTotal, type DecimalPlaceState } from "@/utils/decimal-models";
 import type { FractionStripState } from "@/utils/fraction-models";
 import { placeValueTarget, type PlaceValueState } from "@/utils/place-value";
@@ -8,6 +10,8 @@ import { evaluateExpression, runOperationPath } from "@/utils/puzzle-math";
 import { getOperatorSlotCount, getValidPairs, type PuzzleAnswer } from "@/utils/puzzle-type";
 
 export type PuzzleDraft = {
+  bridge?: BridgeState | null;
+  geometry?: number | null;
   decimalGrid?: number | null;
   decimalPlace?: DecimalPlaceState | null;
   fractionStrip?: FractionStripState | null;
@@ -25,8 +29,10 @@ export type PuzzleDraft = {
 
 /** A complete draft enables the shared Check button, regardless of puzzle type. */
 export function getPuzzleDraftAnswer(puzzle: Puzzle, draft: PuzzleDraft): PuzzleAnswer | null {
+  if (isBridgePuzzle(puzzle)) return bridgeComplete(puzzle, draft.bridge) ? { kind: "bridge", state: draft.bridge } : null;
   if (isOptionalChallengePuzzle(puzzle)) return draft.challenge;
   switch (puzzle.type) {
+    case "geometry_measure": return draft.geometry == null ? null : { kind: "geometry", value: draft.geometry };
     case "decimal_grid": return draft.decimalGrid == null ? null : { kind: "decimal_grid", shaded: draft.decimalGrid };
     case "decimal_place_value": return draft.decimalPlace ? { kind: "decimal_place", state: draft.decimalPlace } : null;
     case "fraction_number_line": return draft.numberLine == null ? null : { kind: "fraction_point", tick: draft.numberLine };
@@ -61,6 +67,15 @@ export function getPuzzleAttemptHint(puzzle: Puzzle, answer: PuzzleAnswer): Atte
   const direction = (value: number, target: number, low: string, high: string): AttemptHint => ({
     key: value < target ? low : high,
   });
+  if (isBridgePuzzle(puzzle)) return { key: puzzle.type };
+  if (puzzle.type === "geometry_measure" && answer.kind === "geometry") {
+    const { mode, width, height } = puzzle.payload;
+    if (mode === "compare") return { key: "geometryCompare" };
+    if (mode.startsWith("missing")) return { key: mode === "missing_area" ? "geometryMissingArea" : "geometryMissingPerimeter" };
+    if (mode === "area" && answer.value === 2 * (width + height)) return { key: "geometryAreaNotBoundary" };
+    if (mode === "perimeter" && answer.value === width * height) return { key: "geometryBoundaryNotArea" };
+    return direction(answer.value, geometryTarget(puzzle), mode === "area" ? "geometryAreaLow" : "geometryPerimeterLow", mode === "area" ? "geometryAreaHigh" : "geometryPerimeterHigh");
+  }
   if (puzzle.type === "decimal_grid" && answer.kind === "decimal_grid") return direction(answer.shaded * 100 / puzzle.payload.scale, puzzle.payload.hundredths, "decimalGridFew", "decimalGridMany");
   if (puzzle.type === "decimal_place_value" && answer.kind === "decimal_place") {
     if (puzzle.payload.mode !== "build") return { key: "decimalExchange" };

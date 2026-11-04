@@ -1,3 +1,4 @@
+import { lifetimePuzzleIds } from "@/utils/reset-puzzle-progress";
 import { normalizeLearningEvidence } from "@/utils/learning-evidence";
 import { PUZZLE_PATHS, migratePathProgress } from "@/constants/puzzle-path";
 import { PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
@@ -234,6 +235,7 @@ function parseGameSave(
     const completedPuzzleIds = currentCurriculum
       ? getCompletedPuzzleIds({ completedPuzzleIds: Array.isArray(parsed.progress.completedPuzzleIds) ? parsed.progress.completedPuzzleIds.filter((id): id is string => typeof id === "string") : [] })
       : [];
+    const lifetimeCompletedPuzzleIds = Array.isArray(parsed.progress.lifetimeCompletedPuzzleIds) ? getCompletedPuzzleIds({ completedPuzzleIds: parsed.progress.lifetimeCompletedPuzzleIds.filter((id): id is string => typeof id === "string") }) : [];
     const puzzlesSolved = getSolvedCounts(completedPuzzleIds);
     const difficultyStats = currentCurriculum && isRecord(parsed.progress.topicStatsByDifficulty) ? parsed.progress.topicStatsByDifficulty : {};
     const timed = settleChallengeTimeout({ lives: normalizeLives(parsed.progress.lives),
@@ -335,7 +337,7 @@ function parseGameSave(
         ...(parsed as GameSave),
         accountOwnerId: typeof parsed.accountOwnerId === 'string' ? parsed.accountOwnerId : undefined,
         worldClock: normalizeWorldClock(parsed.worldClock),
-        pet: removeRoomNavigationDoors({ ...pet, stats: { ...pet.stats, level: 1 + Math.floor(completedPuzzleIds.length / 10) } }),
+        pet: removeRoomNavigationDoors({ ...pet, stats: { ...pet.stats, level: 1 + Math.floor(lifetimePuzzleIds({ ...parsed.progress as Progress, completedPuzzleIds, lifetimeCompletedPuzzleIds }).length / 10) } }),
         wallet: { coins: Math.max(0, Math.floor(parsed.wallet.coins)) },
         pendingWalletPurchases: normalizePendingWalletPurchases(parsed.pendingWalletPurchases),
         walletNotices: Array.isArray(parsed.walletNotices) ? parsed.walletNotices.filter(n => isRecord(n) && typeof n.id==='string' && typeof n.itemId==='string' && ['room','bed','toy','decoration','skin','life'].includes(String(n.kind)) && ['insufficient_funds','price_changed','already_owned','not_for_sale'].includes(String(n.reason))) as GameSave['walletNotices'] : [],
@@ -352,6 +354,7 @@ function parseGameSave(
         creditedPurchaseIds: [...new Set([...(Array.isArray(parsed.creditedPurchaseIds) ? parsed.creditedPurchaseIds.filter((id): id is string => typeof id === "string") : []), ...normalizeCoinTransactions(parsed.coinTransactions).filter(tx => tx.kind === "iap_purchase" && tx.transactionId).map(tx => tx.transactionId!)])],
         progress: {
           ...(parsed.progress as Progress),
+          lifetimeCompletedPuzzleIds,
           puzzleContentVersion: PUZZLE_CONTENT_VERSION,
           ...migratePathProgress(currentCurriculum ? parsed.progress : { pathVersion: 1 }, completedPuzzleIds),
           streak: currentCurriculum ? parsed.progress.streak : 0,

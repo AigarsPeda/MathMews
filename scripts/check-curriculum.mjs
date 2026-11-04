@@ -1,3 +1,5 @@
+import { BRIDGE_PLANS, BRIDGE_TYPES } from "./puzzles/bridge-pilot.mjs";
+import { GEOMETRY_PILOT_LESSONS } from "./puzzles/geometry-pilot.mjs";
 import { DECIMAL_PILOT_LESSONS } from "./puzzles/decimal-model-pilot.mjs";
 import { FRACTION_PILOT_LESSONS } from "./puzzles/fraction-model-pilot.mjs";
 /** Curriculum contracts, route authorization, real answer checks and saved progress. */
@@ -47,7 +49,7 @@ assert.equal(companion({kind:'boss',finalStage:true}).key,'bossComplete');
 assert.equal(companion({kind:'challenge'}).key,'challengeComplete');
 assert.equal(new Set([1,2,3,4].map(completedCount=>companion({completedCount}).key)).size,4,'Routine messages vary without random changes on rerender');
 const companionKeys=['retry','retryPatient','persistence','milestone','replay','practiceComplete','bossStage','bossComplete','challengeComplete',...Array.from({length:4},(_,i)=>`progress${i}`)];
-for(const locale of ['en','lv']) {
+for(const locale of ['en','lv','ru']) {
  const messages=JSON.parse(fs.readFileSync(`locales/${locale}.json`,'utf8')).puzzleCompanion;
  assert.ok(companionKeys.every(key=>typeof messages[key]==='string' && messages[key].length>0),'Both locales include every companion message');
 }
@@ -82,7 +84,7 @@ const { getBossSceneProgress, advanceBossOutcome } = load('@/utils/boss-story');
 const storyBosses = LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === 'boss'));
 assert.equal(storyBosses.length, LEARNING_CATALOG.lessons.length, 'Every lesson has its own boss');
 assert.equal(new Set(storyBosses.map(boss => boss.story?.sceneId)).size, storyBosses.length, 'Every lesson has its own animation scene');
-for(const locale of ['en','lv']) {
+for(const locale of ['en','lv','ru']) {
   assert.equal(new Set(storyBosses.map(boss=>boss.story.backstory[locale])).size,storyBosses.length,'Every boss has an individual backstory');
   assert.equal(new Set(storyBosses.map(boss=>boss.story.outcome[locale])).size,storyBosses.length,'Every boss has an individual ending');
 }
@@ -91,7 +93,7 @@ for (const boss of storyBosses) {
   assert.equal(boss.puzzleIds.length, 3, 'A story is exactly three saved tasks');
   assert.equal(boss.story.stages.length, 3);
   assert.equal(boss.story.catActions.length, 4, 'The cat participates before the mission and after all three tasks');
-  for (const locale of ['en', 'lv']) {
+  for (const locale of ['en', 'lv', 'ru']) {
     for (const line of [boss.story.backstory, boss.story.intro, boss.story.outcome, ...boss.story.catActions, ...boss.story.stages.flatMap(stage => [stage.title, stage.before, stage.after])]) {
       assert.ok(typeof line[locale] === 'string' && line[locale].trim().length > 5, `${boss.id}: incomplete ${locale} story`);
     }
@@ -212,7 +214,7 @@ for(const type of ['find_all_pairs','sort_buckets','repair_pattern','route_grid'
 assert.ok(!getPuzzlesByDifficulty('en','easy').some(p=>['route_grid','budget_plan'].includes(p.type)),'Route planning and discounts are not Easy activities');
 assert.ok(en.filter(p=>p.type==='budget_plan').every(p=>p.difficulty==='hard'),'Discount planning is reserved for Hard');
 for(const tier of tiers) assert.ok(getLearningTopics(tier).length > 0);
-const bossTitles={en:new Set(),lv:new Set()};
+const bossTitles={en:new Set(),lv:new Set(),ru:new Set()};
 for(const tier of tiers) for(const topic of getLearningTopics(tier)) {
   const lessons=getTopicLessons(tier,topic.id);
   assert.ok(lessons.length>=10,`${tier}/${topic.id}: at least ten lessons`);
@@ -223,7 +225,7 @@ for(const tier of tiers) for(const topic of getLearningTopics(tier)) {
   assert.equal(new Set(boards.map(puzzle=>JSON.stringify([puzzle.type,puzzle.payload,puzzle.taskVisual,puzzle.question]))).size,lessons.length,`${tier}/${topic.id}: challenge tasks vary between lessons`);
   const boss=topicBosses.at(-1),last=lessons.at(-1);
   assert.equal(last.levels.at(-1).id,boss.id,'The boss is the final level of the final lesson');
-  for(const topicBoss of topicBosses) for(const locale of ['en','lv']) {
+  for(const topicBoss of topicBosses) for(const locale of ['en','lv','ru']) {
     assert.ok(!bossTitles[locale].has(topicBoss.title[locale]),'Every lesson has a uniquely named mission');
     bossTitles[locale].add(topicBoss.title[locale]);
   }
@@ -273,6 +275,11 @@ function authoredAnswer(puzzle) {
   if(challenge) {assert.ok(challenge.length>0,`${puzzle.id}: challenge must have a valid solution`); return challenge[0];}
   const p=puzzle.payload;
   switch(puzzle.type) {
+    case 'ratio_table': case 'signed_line': case 'equation_board': case 'coordinate_map': {
+      const target=load('@/utils/bridge-models').bridgeTarget(puzzle);
+      return {kind:'bridge',state:puzzle.type==='equation_board'?{equation:{a:1,b:0,c:target}}:typeof target==='number'?{value:target}:{point:target}};
+    }
+    case 'geometry_measure': return {kind:'geometry',value:load('@/utils/geometry-models').geometryTarget(puzzle)};
     case 'decimal_grid': return {kind:'decimal_grid',shaded:p.hundredths*p.scale/100};
     case 'decimal_place_value': {const m=load('@/utils/decimal-models');const state=p.mode==='split'?m.changeDecimalPlace(puzzle,m.initialDecimalPlace(puzzle),{kind:'split',unit:p.exchangeUnit}):{ones:Math.floor(p.hundredths/100),tenths:Math.floor(p.hundredths%100/10),hundredths:p.hundredths%10};return {kind:'decimal_place',state};}
     case 'fraction_number_line': return {kind:'fraction_point',tick:p.numerator*p.divisions/p.denominator};
@@ -296,6 +303,8 @@ function practiceFacts(puzzle) {
   const p = puzzle.payload;
   let facts;
   switch (puzzle.type) {
+    case 'ratio_table': case 'signed_line': case 'equation_board': case 'coordinate_map': return JSON.stringify(Object.fromEntries(Object.entries(p).filter(([key])=>key!=='guided')));
+    case 'geometry_measure': facts = [p.mode,p.width,p.height,p.other?.width,p.other?.height]; break;
     case 'decimal_grid': case 'decimal_place_value': facts = [p.hundredths]; break;
     case 'fraction_number_line': facts = [p.numerator,p.denominator,p.divisions]; break;
     case 'fraction_strip': facts = [p.numerator,p.denominator,...p.partitions]; break;
@@ -349,21 +358,28 @@ for (const lesson of LEARNING_CATALOG.lessons) {
     assert.equal(practiceFacts(counterpart), practiceFacts(puzzle), `${puzzle.id}: both languages use the same givens`);
   }
   assert.equal(practice.length, 4);
-  if (DECIMAL_PILOT_LESSONS.some(p => p.id === lesson.id)) assert.deepEqual([...new Set(practice.map(p=>p.type))].sort(), ['decimal_grid','decimal_place_value'], 'Decimal pilots connect grids and place value');
+  if (BRIDGE_PLANS.some(p => p.id === lesson.id)) assert.ok(practice.every(p=>BRIDGE_TYPES.includes(p.type)), 'Bridge lessons teach one model with fading guidance');
+  else if (GEOMETRY_PILOT_LESSONS.some(p => p.id === lesson.id)) assert.ok(practice.every(p=>p.type==='geometry_measure'), 'Geometry pilots connect grid measurement and reasoning within one board');
+  else if (DECIMAL_PILOT_LESSONS.some(p => p.id === lesson.id)) assert.deepEqual([...new Set(practice.map(p=>p.type))].sort(), ['decimal_grid','decimal_place_value'], 'Decimal pilots connect grids and place value');
   else if (FRACTION_PILOT_LESSONS.some(p => p.id === lesson.id)) assert.deepEqual([...new Set(practice.map(p=>p.type))].sort(), ['fraction_number_line','fraction_strip'], 'Fraction pilots connect two representations');
   else if (practice.every(p => p.type === 'place_value')) assert.ok(new Set(practice.map(p => p.payload.mode)).size >= 3, `${lesson.id}: build, exchange, then calculate`);
+  else if (lesson.difficulty === 'easy' && ['easy-multiplication-rows', 'easy-multiplication-groups'].includes(lesson.id)) assert.ok(practice.every(p => p.type === 'multiple_choice' && p.taskVisual?.kind === 'array'), 'Introduce equal groups with visible arrays before rules and missing factors');
+  else if (lesson.difficulty === 'hard' && lesson.topicId === 'logic') {
+    assert.deepEqual([...new Set(practice.map(p => p.type))].sort(), ['multiple_choice', 'true_false'], 'Hard reasoning uses clue solving and claims without adding basic sorting for control variety');
+    assert.ok(practice[2].learning.reasoningSteps >= 2, 'The former sorting slot requires combined clues or two calculation steps');
+  }
   else if (!(lesson.difficulty === 'easy' && ['addition','subtraction','fractions'].includes(lesson.topicId))) assert.ok(new Set(practice.map(p => p.type)).size >= 3, `${lesson.id}: mix at least three task types`);
   if (!(lesson.difficulty === 'easy' && ['addition','fractions'].includes(lesson.topicId))) assert.equal(new Set(practice.map(practiceFacts)).size, 4, `${lesson.id}: use independent numbers for each activity`);
   if (lesson.topicId === 'patterns') checkPatternVariety(practice, lesson.id);
 }
 for (const lesson of LEARNING_CATALOG.lessons) for (const level of lesson.levels.filter(l => l.kind === 'boss')) {
   const stages = level.puzzleIds.map(id => byId.get(id));
-  if (!(lesson.difficulty === 'easy' && ['addition','subtraction','fractions'].includes(lesson.topicId))) assert.ok(new Set(stages.map(p => p.type)).size >= 2, `${level.id}: a mission needs different task types`);
+  if (!BRIDGE_PLANS.some(p=>p.id===lesson.id) && !GEOMETRY_PILOT_LESSONS.some(p=>p.id===lesson.id) && !['easy-multiplication-rows', 'easy-multiplication-groups'].includes(lesson.id) && !(lesson.difficulty === 'easy' && ['addition','subtraction','fractions'].includes(lesson.topicId))) assert.ok(new Set(stages.map(p => p.type)).size >= 2, `${level.id}: a mission needs different task types`);
   if (/lesson-\d+-boss$/.test(level.id) && !(lesson.difficulty === 'easy' && ['addition','fractions'].includes(lesson.topicId))) assert.equal(new Set(stages.map(practiceFacts)).size,3,`${level.id}: new boss stages use independent examples`);
   if (lesson.topicId === 'patterns') checkPatternVariety(stages, level.id);
 }
-for(const locale of ['en','lv']) {
-  const helpLocale=load(`@/locales/visual-help/${locale}`)[locale==='en'?'visualHelpEn':'visualHelpLv'];
+for(const locale of ['en','lv','ru']) {
+  const helpLocale=load(`@/locales/visual-help/${locale}`)[{en:'visualHelpEn',lv:'visualHelpLv',ru:'visualHelpRu'}[locale]];
   const labels=JSON.parse(fs.readFileSync(`locales/${locale}.json`));
   for(const tier of tiers) {
     const puzzles=getPuzzlesByDifficulty(locale,tier);
@@ -390,7 +406,7 @@ for(const locale of ['en','lv']) {
         const [a,b] = puzzle.payload.expression.split('+').map(Number);
         assert.equal(Number(puzzle.payload.choices[puzzle.correctIndex].replace(/[^0-9]/g,'')),Math.round((a+b)/10)*10);
       }
-      const equation = puzzle.explanation.match(/(\d+(?:\s*[+×÷−]\s*\d+)+)\s*=\s*(\d+)/);
+      const equation = puzzle.explanation.match(/(-?\d+(?:\s*[+×÷−]\s*\d+)+)\s*=\s*(-?\d+)/);
       if(equation) assert.equal(numeric(equation[1]),Number(equation[2]),`${puzzle.id}: explanation arithmetic`);
       if(puzzle.type==='number_line') {
         assert.equal(puzzle.payload.start+puzzle.payload.jump,puzzle.payload.correctValue);
@@ -567,7 +583,7 @@ const prerequisitePractice=getTopicLessons(bossLesson.difficulty,bossLesson.topi
 assert.equal(isLessonAvailable(addedLesson,prerequisitePractice),true,'A future lesson opens without requiring bosses or challenges');
 LEARNING_CATALOG.lessons.pop();
 assert.deepEqual(canonical(getSolvedCounts(save.progress.completedPuzzleIds)),canonical(save.progress.puzzlesSolved));
-console.log(`Verified ${en.length*2} localized puzzles, ${LEARNING_CATALOG.lessons.length} lessons, ${bosses} lesson bosses, ${challenges} optional challenges, completion, checkpoints, reset isolation and route guards.`);
+console.log(`Verified ${en.length*3} localized puzzles, ${LEARNING_CATALOG.lessons.length} lessons, ${bosses} lesson bosses, ${challenges} optional challenges, completion, checkpoints, reset isolation and route guards.`);
 
 const registration = fs.readdirSync('supabase/migrations').filter(file=>file.endsWith('.sql')).sort().map(file=>fs.readFileSync(`supabase/migrations/${file}`,'utf8')).join('\n');
 const registered = new Map([...registration.matchAll(/\('([^']+)',(\d+),(\d+)\)/g)].map(([,id,first,replay])=>[id,[Number(first),Number(replay)]]));
@@ -693,6 +709,8 @@ const { checkPaths } = await import('./puzzles/check-paths.mjs');
 checkPaths({ load });
 const { checkProgression } = await import('./puzzles/check-progression.mjs');
 checkProgression({ load });
+const { checkFoundations } = await import('./puzzles/check-foundations.mjs');
+checkFoundations({ load });
 
 const { checkPlaceValuePilot } = await import('./puzzles/check-place-value.mjs');
 checkPlaceValuePilot({ load });
@@ -702,3 +720,9 @@ checkFractionModels({ load });
 
 const { checkDecimalModels } = await import("./puzzles/check-decimal-models.mjs");
 checkDecimalModels({ load });
+
+const { checkGeometryModels } = await import("./puzzles/check-geometry-models.mjs");
+checkGeometryModels({ load });
+
+const { checkBridgeModels } = await import("./puzzles/check-bridge-models.mjs");
+checkBridgeModels({load});

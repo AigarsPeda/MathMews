@@ -3,6 +3,7 @@ import type { AppLocale } from "@/types/locale";
 const LOCALE_TAGS: Record<AppLocale, string> = {
   en: "en-US",
   lv: "lv-LV",
+  ru: "ru-RU",
 };
 
 export function formatGameStartedDate(

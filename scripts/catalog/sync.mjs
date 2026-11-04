@@ -17,7 +17,7 @@ export function planCatalog(root) {
     if (!/^room[1-9][0-9]*$/.test(room.id) || ids.has(room.id)) throw new Error(`Invalid or duplicate room ID: ${room.id}`);
     ids.add(room.id);
     if (!Number.isSafeInteger(room.initialPrice) || room.initialPrice < 0 || room.initialPrice > 2147483647) throw new Error(`Invalid initial price: ${room.id}`);
-    for (const locale of ['en','lv']) for (const key of ['name','description']) {
+    for (const locale of ['en','lv','ru']) for (const key of ['name','description']) {
       if (typeof room[locale]?.[key] !== 'string' || !room[locale][key].trim()) throw new Error(`Missing ${locale}.${key}: ${room.id}`);
     }
     for (const [surface, patterns] of [['wall',wallPatterns],['floor',floorPatterns]]) {
@@ -31,7 +31,7 @@ export function planCatalog(root) {
   const sources = rooms.map(room => `  ${room.id}: require("@/assets/3d/rooms/${room.id}.png"),`).join('\n');
   outputs.set('constants/cat-rooms.ts',read('constants/cat-rooms.ts').replace(/export const CAT_ROOM_SOURCES = \{[\s\S]*?\} as const;/,
     `export const CAT_ROOM_SOURCES = {\n${sources}\n} as const;`));
-  for (const locale of ['en','lv']) {
+  for (const locale of ['en','lv','ru']) {
     const file = `locales/${locale}.json`, data = JSON.parse(read(file));
     data.store.roomStyles = Object.fromEntries(rooms.map(room => [room.id,room[locale]]));
     outputs.set(file,json(data));

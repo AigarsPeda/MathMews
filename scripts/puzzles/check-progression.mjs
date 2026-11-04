@@ -25,9 +25,47 @@ export function checkProgression({ load }) {
   const { checkPuzzleAnswer, getValidPairs } = load('@/utils/puzzle-type');
   assert.equal(PUZZLE_CONTENT_VERSION, 2, 'A content revision must not reset existing learning progress');
 
-  for (const locale of ['en', 'lv']) {
-    const all = tiers.flatMap(d => read(`assets/puzzles/${locale === 'lv' ? 'lv/' : ''}${d}.json`));
+  for (const locale of ['en', 'lv', 'ru']) {
+    const all = tiers.flatMap(d => read(`assets/puzzles/${locale === 'en' ? '' : `${locale}/`}${d}.json`));
     const byId = new Map(all.map(p => [p.id, p]));
+    const hardLogic = catalog.lessons.filter(l => l.difficulty === 'hard' && l.topicId === 'logic');
+    const reasoningIds = hardLogic.flatMap(l => [
+      l.levels.filter(level => level.kind === 'practice')[2].puzzleIds[0],
+      l.levels.find(level => level.kind === 'boss').puzzleIds[2],
+    ]);
+    assert.equal(reasoningIds.length, 20);
+    assert.ok(!all.some(p => p.difficulty === 'hard' && p.type === 'order_numbers'), 'Hard no longer tests basic whole-number sorting');
+    for (const id of reasoningIds) {
+      const p = byId.get(id), source = english.flat().find(p => p.id === id);
+      assert.equal(p.type, 'multiple_choice');
+      assert.equal(p.topic, 'logic');
+      assert.ok(p.learning.reasoningSteps >= 2);
+      const numbers = source.question.match(/\d+/g).map(Number);
+      let valid;
+      if (source.question.startsWith('The code')) {
+        const [lower, upper, divisor] = numbers;
+        valid = n => n > lower && n < upper && n % divisor === 0 && n % 2 === 0;
+        assert.equal(Array.from({ length: upper - lower - 1 }, (_, i) => lower + i + 1).filter(valid).length, 1, 'All clues together determine one whole number');
+      } else if (source.question.startsWith('A machine')) {
+        const [factor, extra, result] = numbers;
+        valid = n => n * factor + extra === result;
+      } else {
+        assert.ok(source.question.startsWith('Two boxes'));
+        const [total, difference] = numbers;
+        valid = n => n + (n + difference) === total;
+      }
+      assert.equal(new Set(p.choices).size, 3);
+      for (let seed = 0; seed < 12; seed++) {
+        const shuffled = shufflePuzzleChoices(p, `hard-reasoning/${seed}`);
+        shuffled.choices.forEach((value, index) => {
+          assert.equal(checkPuzzleAnswer(shuffled, { kind: 'choice', index }), valid(Number(value)), `${id}: accept exactly the mathematically valid choice after shuffling`);
+        });
+      }
+    }
+    for (const source of english.flat().filter(p => p.question.startsWith('A box holds fewer than'))) {
+      const p = byId.get(source.id), boundary = Number(source.question.match(/\d+/)[0]);
+      assert.deepEqual(p.choices.map(Number).map(n => n >= boundary), p.choices.map((_, i) => i === p.correctIndex), `${p.id}: only one amount is impossible`);
+    }
     for (const difficulty of tiers) {
       const pairs = all.filter(p => p.difficulty === difficulty && p.type === 'pair_sum');
       if (!pairs.length) continue;
@@ -72,7 +110,7 @@ export function checkProgression({ load }) {
       const tasks = path(lesson), givens = p => JSON.stringify([p.type, p.payload, p.taskVisual, p.question]);
       assert.ok(tasks.slice(0, 7).every(p => givens(p) !== givens(tasks[7])), 'The challenge uses a fresh example of the taught skill');
     }
-    assert.ok(additions.slice(5).every(l => path(l)[7].payload.target <= 15), 'Early pair hunts use the totals practised in the lesson');
+    assert.ok(additions.slice(5).filter(l => path(l)[7].type === 'pair_sum' || path(l)[7].type === 'find_all_pairs').every(l => path(l)[7].payload.target <= 15), 'Early pair hunts use the totals practised in the lesson');
 
     const subtractions = catalog.lessons.filter(l => l.difficulty === 'easy' && l.topicId === 'subtraction');
     for (const lesson of subtractions.slice(0, 2)) for (const p of path(lesson)) {

@@ -1,3 +1,4 @@
+import { lifetimePuzzleIds } from "@/utils/reset-puzzle-progress";
 import { PuzzleColors } from "@/constants/puzzle-theme";
 import { storedRoomItems, withRoomPlacementDraft } from '@/utils/room-edit';
 import type { CatTravelMotion } from '@/utils/native-cat-locomotion';
@@ -144,8 +145,8 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
   }, [isReady, hasCompletedOnboarding, router]));
   const roomEditor = useRoomEditor(pet, setPet, progress);
   const storedItems = useMemo(() => storedRoomItems(pet, progress), [pet, progress]);
-  const wisdom = useMemo(() => computePetWisdom(progress.puzzlesSolved, progress.completedPuzzleIds),
-    [progress.puzzlesSolved, progress.completedPuzzleIds]);
+  const wisdom = useMemo(() => computePetWisdom(progress.puzzlesSolved, lifetimePuzzleIds(progress)),
+    [progress]);
   const [roomFailure, setRoomFailure] = useState<RoomActivityFailureNotice | null>(null);
   const [decoratingRoom, setDecoratingRoom] = useState<HomeRoomId | null>(null);
   const handleDecoratingChange = useCallback((roomId: HomeRoomId, active: boolean) => {

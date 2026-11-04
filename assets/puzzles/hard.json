@@ -984,30 +984,25 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "48",
-      "14",
-      "28"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 8,
-      "columns": 6,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 8 rows of 6 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "8 × 6 = 48 square spaces.",
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "practice",
       "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "2 × 3 = 6.",
+    "payload": {
+      "mode": "area",
+      "width": 2,
+      "height": 3,
+      "guided": true
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-area-2",
@@ -1016,25 +1011,25 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "90",
-      "120",
-      "92"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "60 grams of clay fill 4 equal bags. How many grams for 6 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "60 ÷ 4 × 6 = 90 grams.",
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "3 × 3 = 9.",
+    "payload": {
+      "mode": "area",
+      "width": 3,
+      "height": 3,
+      "guided": true
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-area-3",
@@ -1043,27 +1038,25 @@
       10,
       12
     ],
-    "type": "estimate",
-    "topic": "estimation",
-    "correctIndex": 0,
-    "question": "Add exactly, then round the total to the nearest ten.",
-    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
-    "explanation": "64 + 65 = 129. To the nearest ten, this is 130.",
-    "payload": {
-      "expression": "64 + 65",
-      "choices": [
-        "About 130",
-        "About 140",
-        "About 150"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "4 × 3 = 12.",
+    "payload": {
+      "mode": "area",
+      "width": 4,
+      "height": 3,
+      "guided": true
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-area-4",
@@ -1072,29 +1065,25 @@
       10,
       12
     ],
-    "type": "balance",
-    "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "11 × 5 = 55.",
-    "payload": {
-      "leftDisplay": "? × 5",
-      "rightValue": 55,
-      "choices": [
-        "11",
-        "10",
-        "9"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "4 × 4 = 16.",
+    "payload": {
+      "mode": "area",
+      "width": 4,
+      "height": 4,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-rates-1",
@@ -1168,16 +1157,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
+    "correctIndex": 1,
     "question": "Add exactly, then round the total to the nearest ten.",
     "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
     "explanation": "83 + 91 = 174. To the nearest ten, this is 170.",
     "payload": {
       "expression": "83 + 91",
       "choices": [
+        "About 180",
         "About 170",
-        "About 160",
-        "About 180"
+        "About 190"
       ]
     },
     "learning": {
@@ -1282,32 +1271,25 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "31 < 33 < 37 < 39.",
-    "payload": {
-      "numbers": [
-        39,
-        33,
-        37,
-        31
-      ],
-      "correctOrder": [
-        31,
-        33,
-        37,
-        39
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "number_range",
+    "question": "The code is greater than 9, less than 18, divisible by 3, and even. Which number fits every clue?",
+    "hint": "Find the multiples inside the range, then check which are even. The endpoints are excluded.",
+    "explanation": "12 and 15 are the multiples strictly inside the range. Only 12 is even; 18 is excluded.",
     "learning": {
       "skillId": "hard.logic.clues",
       "prerequisiteSkillIds": [],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "12",
+      "15",
+      "18"
+    ],
+    "correctIndex": 0
   },
   {
     "id": "v2-hard-logic-clues-4",
@@ -1321,7 +1303,7 @@
     "choices": [
       "49",
       "47",
-      "51"
+      "46"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
@@ -1399,25 +1381,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "65 < 67 < 71 < 73.",
-    "payload": {
-      "numbers": [
-        73,
-        67,
-        71,
-        65
-      ],
-      "correctOrder": [
-        65,
-        67,
-        71,
-        73
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "number_range",
+    "question": "The code is greater than 25, less than 40, divisible by 5, and even. Which number fits every clue?",
+    "hint": "Find the multiples inside the range, then check which are even. The endpoints are excluded.",
+    "explanation": "30 and 35 are the multiples strictly inside the range. Only 30 is even; 40 is excluded.",
     "learning": {
       "skillId": "hard.logic.claims",
       "prerequisiteSkillIds": [
@@ -1425,8 +1394,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "35",
+      "30",
+      "40"
+    ],
+    "correctIndex": 1
   },
   {
     "id": "v2-hard-logic-claims-4",
@@ -1438,11 +1413,11 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
+      "82",
       "84",
-      "85",
-      "86"
+      "81"
     ],
-    "correctIndex": 0,
+    "correctIndex": 1,
     "helpTemplate": "number_range",
     "question": "A box holds fewer than 83 balls. Which amount is impossible?",
     "hint": "Test each amount against “fewer than”.",
@@ -1906,7 +1881,7 @@
       "choices": [
         "About 110",
         "About 100",
-        "About 90"
+        "About 120"
       ]
     },
     "learning": {
@@ -1982,25 +1957,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "The final code uses increasing multiples of 7. Arrange the code tiles.",
-    "hint": "Start at the smallest multiple, then keep the same gap.",
-    "explanation": "7, 14, 21, 28. The archive opens!",
-    "payload": {
-      "numbers": [
-        21,
-        7,
-        28,
-        14
-      ],
-      "correctOrder": [
-        7,
-        14,
-        21,
-        28
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "number_range",
+    "question": "The code is greater than 77, less than 98, divisible by 7, and even. Which number fits every clue?",
+    "hint": "Find the multiples inside the range, then check which are even. The endpoints are excluded.",
+    "explanation": "84 and 91 are the multiples strictly inside the range. Only 84 is even; 98 is excluded.",
     "learning": {
       "skillId": "hard.logic.explore-10",
       "prerequisiteSkillIds": [
@@ -2008,8 +1970,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "91",
+      "84",
+      "98"
+    ],
+    "correctIndex": 1
   },
   {
     "id": "v2-hard-logic-pair-hunt-1",
@@ -2905,34 +2873,29 @@
       10,
       12
     ],
-    "type": "operation_path",
     "topic": "operations",
-    "question": "Choose two operations to finish this delivery route.",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "33 ÷ 3 = 11; 11 + 9 = 20.",
-    "payload": {
-      "start": 33,
-      "target": 20,
-      "steps": [
-        {
-          "operand": 3,
-          "operator": "÷"
-        },
-        {
-          "operand": 9,
-          "operator": "+"
-        }
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 2
-    }
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "-3 + 5 = 2.",
+    "payload": {
+      "mode": "move",
+      "start": -3,
+      "delta": 5,
+      "min": -6,
+      "max": 6,
+      "guided": true
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-operations-explore-8-2",
@@ -2941,32 +2904,29 @@
       10,
       12
     ],
-    "type": "target_build",
     "topic": "operations",
-    "question": "Which operations make the target? Keep the numbers in order.",
-    "hint": "Try multiplying the last two numbers first.",
-    "explanation": "8 + 8 × 5 = 48.",
-    "payload": {
-      "numbers": [
-        8,
-        8,
-        5
-      ],
-      "target": 48,
-      "solution": [
-        "+",
-        "×"
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "4 − 7 = -3.",
+    "payload": {
+      "mode": "move",
+      "start": 4,
+      "delta": -7,
+      "min": -6,
+      "max": 6,
+      "guided": true
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-operations-explore-8-3",
@@ -2975,30 +2935,29 @@
       10,
       12
     ],
-    "type": "function_machine",
     "topic": "operations",
-    "correctIndex": 0,
-    "question": "Select the rule that turns input into output.",
-    "hint": "Test the whole rule, in the order shown.",
-    "explanation": "12 × 5 + 7 = 67.",
-    "payload": {
-      "input": 12,
-      "output": 67,
-      "choices": [
-        "×5+7",
-        "×5",
-        "+5"
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "-2 − 3 = -5.",
+    "payload": {
+      "mode": "move",
+      "start": -2,
+      "delta": -3,
+      "min": -6,
+      "max": 6,
+      "guided": true
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-operations-explore-8-4",
@@ -3007,25 +2966,29 @@
       10,
       12
     ],
-    "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
-    "question": "Which expression has the greater value?",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "12 < 18.",
-    "payload": {
-      "optionA": "12 ÷ 2 + 6",
-      "optionB": "12 + 6"
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "5 − 8 = -3.",
+    "payload": {
+      "mode": "move",
+      "start": 5,
+      "delta": -8,
+      "min": -6,
+      "max": 6,
+      "guided": false
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-operations-explore-9-1",
@@ -3034,34 +2997,27 @@
       10,
       12
     ],
-    "type": "operation_path",
     "topic": "operations",
-    "question": "Choose two operations to finish this delivery route.",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "91 ÷ 7 = 13; 13 + 5 = 18.",
-    "payload": {
-      "start": 91,
-      "target": 18,
-      "steps": [
-        {
-          "operand": 7,
-          "operator": "÷"
-        },
-        {
-          "operand": 5,
-          "operator": "+"
-        }
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 2
-    }
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 3.",
+    "payload": {
+      "a": 2,
+      "b": 3,
+      "c": 9,
+      "guided": true
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-operations-explore-9-2",
@@ -3070,32 +3026,27 @@
       10,
       12
     ],
-    "type": "target_build",
     "topic": "operations",
-    "question": "Which operations make the target? Keep the numbers in order.",
-    "hint": "Try multiplying the last two numbers first.",
-    "explanation": "4 + 4 × 7 = 32.",
-    "payload": {
-      "numbers": [
-        4,
-        4,
-        7
-      ],
-      "target": 32,
-      "solution": [
-        "+",
-        "×"
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 5.",
+    "payload": {
+      "a": 3,
+      "b": -3,
+      "c": 12,
+      "guided": true
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-operations-explore-9-3",
@@ -3104,30 +3055,27 @@
       10,
       12
     ],
-    "type": "function_machine",
     "topic": "operations",
-    "correctIndex": 0,
-    "question": "Select the rule that turns input into output.",
-    "hint": "Test the whole rule, in the order shown.",
-    "explanation": "14 × 9 + 3 = 129.",
-    "payload": {
-      "input": 14,
-      "output": 129,
-      "choices": [
-        "×9+3",
-        "×9",
-        "+9"
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 2.",
+    "payload": {
+      "a": 4,
+      "b": 5,
+      "c": 13,
+      "guided": true
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-operations-explore-9-4",
@@ -3136,25 +3084,27 @@
       10,
       12
     ],
-    "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
-    "question": "Which expression has the greater value?",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "10 < 50.",
-    "payload": {
-      "optionA": "48 + 2",
-      "optionB": "48 ÷ 6 + 2"
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 6.",
+    "payload": {
+      "a": 2,
+      "b": -5,
+      "c": 7,
+      "guided": false
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-operations-explore-10-1",
@@ -6657,23 +6607,6 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "54",
-      "55",
-      "56"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 18,
-      "columns": 3,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 18 rows of 3 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "18 × 3 = 54 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
@@ -6682,7 +6615,19 @@
       "role": "practice",
       "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the perimeter of this rectangle?",
+    "hint": "Count every unit edge around the outside once. Do not count the lines inside.",
+    "explanation": "2 + 3 + 2 + 3 = 10.",
+    "payload": {
+      "mode": "perimeter",
+      "width": 2,
+      "height": 3,
+      "guided": true
+    },
+    "helpTemplate": "geometry_perimeter"
   },
   {
     "id": "v2-hard-measurement-explore-3-2",
@@ -6691,27 +6636,27 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "70",
-      "58",
-      "112"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "56 grams of clay fill 8 equal bags. How many grams for 10 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "56 ÷ 8 × 10 = 70 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
         "hard.measurement.rates"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the perimeter of this rectangle?",
+    "hint": "Count every unit edge around the outside once. Do not count the lines inside.",
+    "explanation": "3 + 3 + 3 + 3 = 12.",
+    "payload": {
+      "mode": "perimeter",
+      "width": 3,
+      "height": 3,
+      "guided": true
+    },
+    "helpTemplate": "geometry_perimeter"
   },
   {
     "id": "v2-hard-measurement-explore-3-3",
@@ -6720,29 +6665,27 @@
       10,
       12
     ],
-    "type": "estimate",
-    "topic": "estimation",
-    "correctIndex": 2,
-    "question": "Add exactly, then round the total to the nearest ten.",
-    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
-    "explanation": "46 + 32 = 78. To the nearest ten, this is 80.",
-    "payload": {
-      "expression": "46 + 32",
-      "choices": [
-        "About 90",
-        "About 100",
-        "About 80"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
         "hard.measurement.rates"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the perimeter of this rectangle?",
+    "hint": "Count every unit edge around the outside once. Do not count the lines inside.",
+    "explanation": "4 + 3 + 4 + 3 = 14.",
+    "payload": {
+      "mode": "perimeter",
+      "width": 4,
+      "height": 3,
+      "guided": true
+    },
+    "helpTemplate": "geometry_perimeter"
   },
   {
     "id": "v2-hard-measurement-explore-3-4",
@@ -6751,31 +6694,27 @@
       10,
       12
     ],
-    "type": "balance",
-    "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "13 × 9 = 117.",
-    "payload": {
-      "leftDisplay": "? × 9",
-      "rightValue": 117,
-      "choices": [
-        "13",
-        "14",
-        "15"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
         "hard.measurement.rates"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the perimeter of this rectangle?",
+    "hint": "Count every unit edge around the outside once. Do not count the lines inside.",
+    "explanation": "5 + 2 + 5 + 2 = 14.",
+    "payload": {
+      "mode": "perimeter",
+      "width": 5,
+      "height": 2,
+      "guided": false
+    },
+    "helpTemplate": "geometry_perimeter"
   },
   {
     "id": "v2-hard-measurement-explore-4-1",
@@ -6857,7 +6796,7 @@
       "expression": "53 + 47",
       "choices": [
         "About 90",
-        "About 110",
+        "About 80",
         "About 100"
       ]
     },
@@ -6976,7 +6915,7 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 2,
+    "correctIndex": 1,
     "question": "Add exactly, then round the total to the nearest ten.",
     "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
     "explanation": "68 + 56 = 124. To the nearest ten, this is 120.",
@@ -6984,8 +6923,8 @@
       "expression": "68 + 56",
       "choices": [
         "About 130",
-        "About 100",
-        "About 120"
+        "About 120",
+        "About 140"
       ]
     },
     "learning": {
@@ -7072,23 +7011,6 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "108",
-      "109",
-      "110"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 12,
-      "columns": 9,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 12 rows of 9 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "12 × 9 = 108 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
@@ -7096,8 +7018,24 @@
       ],
       "role": "practice",
       "representation": "objects",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Which rectangle has the larger perimeter?",
+    "hint": "The areas are equal. Compare the total lengths around the two boundaries. They may be equal too.",
+    "explanation": "A: 14; B: 16.",
+    "payload": {
+      "mode": "compare",
+      "width": 3,
+      "height": 4,
+      "other": {
+        "width": 2,
+        "height": 6
+      },
+      "guided": true
+    },
+    "helpTemplate": "geometry_compare"
   },
   {
     "id": "v2-hard-measurement-explore-6-2",
@@ -7106,27 +7044,27 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "105",
-      "77",
-      "150"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "75 grams of clay fill 5 equal bags. How many grams for 7 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "75 ÷ 5 × 7 = 105 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-5"
       ],
       "role": "practice",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Find the missing side using the area.",
+    "hint": "Divide the area by the known side length. The drawing is not to scale.",
+    "explanation": "15 ÷ 3 = 5.",
+    "payload": {
+      "mode": "missing_area",
+      "width": 3,
+      "height": 5,
+      "guided": true
+    },
+    "helpTemplate": "geometry_missing_area"
   },
   {
     "id": "v2-hard-measurement-explore-6-3",
@@ -7135,29 +7073,27 @@
       10,
       12
     ],
-    "type": "estimate",
-    "topic": "estimation",
-    "correctIndex": 1,
-    "question": "Add exactly, then round the total to the nearest ten.",
-    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
-    "explanation": "181 + 182 = 363. To the nearest ten, this is 360.",
-    "payload": {
-      "expression": "181 + 182",
-      "choices": [
-        "About 380",
-        "About 360",
-        "About 370"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-5"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Find the missing side using the perimeter.",
+    "hint": "Halve the perimeter, then subtract the known side. The drawing is not to scale.",
+    "explanation": "14 ÷ 2 − 4 = 3.",
+    "payload": {
+      "mode": "missing_perimeter",
+      "width": 4,
+      "height": 3,
+      "guided": true
+    },
+    "helpTemplate": "geometry_missing_perimeter"
   },
   {
     "id": "v2-hard-measurement-explore-6-4",
@@ -7166,31 +7102,31 @@
       10,
       12
     ],
-    "type": "balance",
-    "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "7 × 6 = 42.",
-    "payload": {
-      "leftDisplay": "? × 6",
-      "rightValue": 42,
-      "choices": [
-        "7",
-        "8",
-        "9"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-5"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Which rectangle has the larger perimeter?",
+    "hint": "The areas are equal. Compare the total lengths around the two boundaries. They may be equal too.",
+    "explanation": "A: 18; B: 12.",
+    "payload": {
+      "mode": "compare",
+      "width": 1,
+      "height": 8,
+      "other": {
+        "width": 2,
+        "height": 4
+      },
+      "guided": false
+    },
+    "helpTemplate": "geometry_compare"
   },
   {
     "id": "v2-hard-measurement-explore-7-1",
@@ -7264,16 +7200,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 1,
+    "correctIndex": 0,
     "question": "Add exactly, then round the total to the nearest ten.",
     "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
     "explanation": "49 + 46 = 95. To the nearest ten, this is 100.",
     "payload": {
       "expression": "49 + 46",
       "choices": [
-        "About 110",
         "About 100",
-        "About 90"
+        "About 90",
+        "About 110"
       ]
     },
     "learning": {
@@ -7326,23 +7262,7 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "multiplication",
-    "choices": [
-      "32",
-      "12",
-      "24"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 8,
-      "columns": 4,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 8 rows of 4 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "8 × 4 = 32 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
@@ -7350,8 +7270,19 @@
       ],
       "role": "practice",
       "representation": "objects",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "12 ÷ 3 × 1 = 4.",
+    "payload": {
+      "a": 3,
+      "b": 12,
+      "targetA": 1,
+      "guided": true
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-measurement-explore-8-2",
@@ -7360,27 +7291,27 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "operations",
-    "choices": [
-      "121",
-      "198",
-      "123"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "99 grams of clay fill 9 equal bags. How many grams for 11 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "99 ÷ 9 × 11 = 121 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-7"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "20 ÷ 4 × 6 = 30.",
+    "payload": {
+      "a": 4,
+      "b": 20,
+      "targetA": 6,
+      "guided": true
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-measurement-explore-8-3",
@@ -7389,29 +7320,27 @@
       10,
       12
     ],
-    "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 1,
-    "question": "Add exactly, then round the total to the nearest ten.",
-    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
-    "explanation": "71 + 72 = 143. To the nearest ten, this is 140.",
-    "payload": {
-      "expression": "71 + 72",
-      "choices": [
-        "About 120",
-        "About 140",
-        "About 130"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-7"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "18 ÷ 6 × 4 = 12.",
+    "payload": {
+      "a": 6,
+      "b": 18,
+      "targetA": 4,
+      "guided": true
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-measurement-explore-8-4",
@@ -7420,31 +7349,27 @@
       10,
       12
     ],
-    "type": "balance",
     "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "17 × 10 = 170.",
-    "payload": {
-      "leftDisplay": "? × 10",
-      "rightValue": 170,
-      "choices": [
-        "17",
-        "16",
-        "15"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-7"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "35 ÷ 5 × 3 = 21.",
+    "payload": {
+      "a": 5,
+      "b": 35,
+      "targetA": 3,
+      "guided": false
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-measurement-explore-9-1",
@@ -7453,23 +7378,7 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "multiplication",
-    "choices": [
-      "36",
-      "37",
-      "38"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 6,
-      "columns": 6,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 6 rows of 6 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "6 × 6 = 36 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
@@ -7477,8 +7386,27 @@
       ],
       "role": "practice",
       "representation": "objects",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "Place the point at the given coordinates.",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "(-2, 3)",
+    "payload": {
+      "mode": "plot",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": -3,
+        "y": 2
+      },
+      "end": {
+        "x": -2,
+        "y": 3
+      },
+      "guided": true
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-measurement-explore-9-2",
@@ -7487,27 +7415,35 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "operations",
-    "choices": [
-      "117",
-      "101",
-      "198"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "99 grams of clay fill 11 equal bags. How many grams for 13 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "99 ÷ 11 × 13 = 117 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "Place the point at the given coordinates.",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "(3, -2)",
+    "payload": {
+      "mode": "plot",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": -2,
+        "y": 1
+      },
+      "end": {
+        "x": 3,
+        "y": -2
+      },
+      "guided": true
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-measurement-explore-9-3",
@@ -7516,29 +7452,35 @@
       10,
       12
     ],
-    "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
-    "question": "Add exactly, then round the total to the nearest ten.",
-    "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
-    "explanation": "85 + 86 = 171. To the nearest ten, this is 170.",
-    "payload": {
-      "expression": "85 + 86",
-      "choices": [
-        "About 170",
-        "About 180",
-        "About 190"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "Place the point at the given coordinates.",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "(-1, -3)",
+    "payload": {
+      "mode": "plot",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": -1,
+        "y": 0
+      },
+      "end": {
+        "x": -1,
+        "y": -3
+      },
+      "guided": true
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-measurement-explore-9-4",
@@ -7547,31 +7489,35 @@
       10,
       12
     ],
-    "type": "balance",
     "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "15 × 3 = 45.",
-    "payload": {
-      "leftDisplay": "? × 3",
-      "rightValue": 45,
-      "choices": [
-        "15",
-        "16",
-        "17"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-8"
       ],
       "role": "practice",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "How many units separate A and B along the grid line?",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "4",
+    "payload": {
+      "mode": "distance",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": 0,
+        "y": -1
+      },
+      "end": {
+        "x": 4,
+        "y": -1
+      },
+      "guided": false
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-measurement-explore-10-1",
@@ -7645,16 +7591,16 @@
     ],
     "type": "estimate",
     "topic": "estimation",
-    "correctIndex": 0,
+    "correctIndex": 2,
     "question": "Add exactly, then round the total to the nearest ten.",
     "hint": "Do not round the two numbers separately. Round a total ending in 0–4 down and 5–9 up.",
     "explanation": "91 + 92 = 183. To the nearest ten, this is 180.",
     "payload": {
       "expression": "91 + 92",
       "choices": [
-        "About 180",
         "About 170",
-        "About 190"
+        "About 160",
+        "About 180"
       ]
     },
     "learning": {
@@ -7797,25 +7743,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "42 < 44 < 48 < 50.",
-    "payload": {
-      "numbers": [
-        50,
-        44,
-        48,
-        42
-      ],
-      "correctOrder": [
-        42,
-        44,
-        48,
-        50
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "number_range",
+    "question": "The code is greater than 49, less than 70, divisible by 7, and even. Which number fits every clue?",
+    "hint": "Find the multiples inside the range, then check which are even. The endpoints are excluded.",
+    "explanation": "56 and 63 are the multiples strictly inside the range. Only 56 is even; 70 is excluded.",
     "learning": {
       "skillId": "hard.logic.explore-3",
       "prerequisiteSkillIds": [
@@ -7823,8 +7756,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "63",
+      "70",
+      "56"
+    ],
+    "correctIndex": 2
   },
   {
     "id": "v2-hard-logic-explore-3-4",
@@ -7836,11 +7775,11 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "45",
       "43",
-      "42"
+      "42",
+      "45"
     ],
-    "correctIndex": 0,
+    "correctIndex": 2,
     "helpTemplate": "number_range",
     "question": "A box holds fewer than 44 balls. Which amount is impossible?",
     "hint": "Test each amount against “fewer than”.",
@@ -7918,25 +7857,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "50 < 52 < 56 < 58.",
-    "payload": {
-      "numbers": [
-        58,
-        52,
-        56,
-        50
-      ],
-      "correctOrder": [
-        50,
-        52,
-        56,
-        58
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "operation_path",
+    "question": "A machine multiplies a starting number by 2, then adds 8. The result is 38. What was the starting number?",
+    "hint": "Work backwards: undo the addition first, then undo the multiplication. Check by running the steps forwards.",
+    "explanation": "38 − 8 = 30; 30 ÷ 2 = 15. 15 × 2 + 8 = 38.",
     "learning": {
       "skillId": "hard.logic.explore-4",
       "prerequisiteSkillIds": [
@@ -7944,8 +7870,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "15",
+      "30",
+      "23"
+    ],
+    "correctIndex": 0
   },
   {
     "id": "v2-hard-logic-explore-4-4",
@@ -7958,8 +7890,8 @@
     "topic": "logic",
     "choices": [
       "53",
-      "54",
-      "55"
+      "51",
+      "50"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
@@ -8039,25 +7971,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "58 < 60 < 64 < 66.",
-    "payload": {
-      "numbers": [
-        66,
-        60,
-        64,
-        58
-      ],
-      "correctOrder": [
-        58,
-        60,
-        64,
-        66
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "operation_path",
+    "question": "A machine multiplies a starting number by 3, then adds 9. The result is 60. What was the starting number?",
+    "hint": "Work backwards: undo the addition first, then undo the multiplication. Check by running the steps forwards.",
+    "explanation": "60 − 9 = 51; 51 ÷ 3 = 17. 17 × 3 + 9 = 60.",
     "learning": {
       "skillId": "hard.logic.explore-5",
       "prerequisiteSkillIds": [
@@ -8065,8 +7984,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "51",
+      "17",
+      "26"
+    ],
+    "correctIndex": 1
   },
   {
     "id": "v2-hard-logic-explore-5-4",
@@ -8078,11 +8003,11 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "61",
       "59",
-      "63"
+      "61",
+      "58"
     ],
-    "correctIndex": 0,
+    "correctIndex": 1,
     "helpTemplate": "number_range",
     "question": "A box holds fewer than 60 balls. Which amount is impossible?",
     "hint": "Test each amount against “fewer than”.",
@@ -8211,25 +8136,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "66 < 68 < 72 < 74.",
-    "payload": {
-      "numbers": [
-        74,
-        68,
-        72,
-        66
-      ],
-      "correctOrder": [
-        66,
-        68,
-        72,
-        74
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "operation_path",
+    "question": "A machine multiplies a starting number by 4, then adds 10. The result is 86. What was the starting number?",
+    "hint": "Work backwards: undo the addition first, then undo the multiplication. Check by running the steps forwards.",
+    "explanation": "86 − 10 = 76; 76 ÷ 4 = 19. 19 × 4 + 10 = 86.",
     "learning": {
       "skillId": "hard.logic.explore-6",
       "prerequisiteSkillIds": [
@@ -8237,8 +8149,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "76",
+      "29",
+      "19"
+    ],
+    "correctIndex": 2
   },
   {
     "id": "v2-hard-logic-explore-6-4",
@@ -8250,11 +8168,11 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "69",
       "67",
-      "66"
+      "66",
+      "69"
     ],
-    "correctIndex": 0,
+    "correctIndex": 2,
     "helpTemplate": "number_range",
     "question": "A box holds fewer than 68 balls. Which amount is impossible?",
     "hint": "Test each amount against “fewer than”.",
@@ -8332,25 +8250,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "74 < 76 < 80 < 82.",
-    "payload": {
-      "numbers": [
-        82,
-        76,
-        80,
-        74
-      ],
-      "correctOrder": [
-        74,
-        76,
-        80,
-        82
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "balance",
+    "question": "Two boxes hold 40 stars altogether. The larger box has 4 more stars than the smaller box. How many are in the smaller box?",
+    "hint": "Remove the extra stars from the total, then split what remains equally between the two boxes.",
+    "explanation": "40 − 4 = 36; 36 ÷ 2 = 18. The boxes hold 18 and 22, with total 40 and difference 4.",
     "learning": {
       "skillId": "hard.logic.explore-7",
       "prerequisiteSkillIds": [
@@ -8358,8 +8263,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "18",
+      "22",
+      "20"
+    ],
+    "correctIndex": 0
   },
   {
     "id": "v2-hard-logic-explore-7-4",
@@ -8372,8 +8283,8 @@
     "topic": "logic",
     "choices": [
       "77",
-      "78",
-      "79"
+      "75",
+      "74"
     ],
     "correctIndex": 0,
     "helpTemplate": "number_range",
@@ -8453,25 +8364,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "82 < 84 < 88 < 90.",
-    "payload": {
-      "numbers": [
-        90,
-        84,
-        88,
-        82
-      ],
-      "correctOrder": [
-        82,
-        84,
-        88,
-        90
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "balance",
+    "question": "Two boxes hold 44 stars altogether. The larger box has 6 more stars than the smaller box. How many are in the smaller box?",
+    "hint": "Remove the extra stars from the total, then split what remains equally between the two boxes.",
+    "explanation": "44 − 6 = 38; 38 ÷ 2 = 19. The boxes hold 19 and 25, with total 44 and difference 6.",
     "learning": {
       "skillId": "hard.logic.explore-8",
       "prerequisiteSkillIds": [
@@ -8479,8 +8377,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "25",
+      "19",
+      "22"
+    ],
+    "correctIndex": 1
   },
   {
     "id": "v2-hard-logic-explore-8-4",
@@ -8492,11 +8396,11 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "85",
       "83",
-      "87"
+      "85",
+      "82"
     ],
-    "correctIndex": 0,
+    "correctIndex": 1,
     "helpTemplate": "number_range",
     "question": "A box holds fewer than 84 balls. Which amount is impossible?",
     "hint": "Test each amount against “fewer than”.",
@@ -8574,25 +8478,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "90 < 92 < 96 < 98.",
-    "payload": {
-      "numbers": [
-        98,
-        92,
-        96,
-        90
-      ],
-      "correctOrder": [
-        90,
-        92,
-        96,
-        98
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "balance",
+    "question": "Two boxes hold 48 stars altogether. The larger box has 8 more stars than the smaller box. How many are in the smaller box?",
+    "hint": "Remove the extra stars from the total, then split what remains equally between the two boxes.",
+    "explanation": "48 − 8 = 40; 40 ÷ 2 = 20. The boxes hold 20 and 28, with total 48 and difference 8.",
     "learning": {
       "skillId": "hard.logic.explore-9",
       "prerequisiteSkillIds": [
@@ -8600,8 +8491,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "28",
+      "24",
+      "20"
+    ],
+    "correctIndex": 2
   },
   {
     "id": "v2-hard-logic-explore-9-4",
@@ -8613,11 +8510,11 @@
     "type": "multiple_choice",
     "topic": "logic",
     "choices": [
-      "93",
       "91",
-      "90"
+      "90",
+      "93"
     ],
-    "correctIndex": 0,
+    "correctIndex": 2,
     "helpTemplate": "number_range",
     "question": "A box holds fewer than 92 balls. Which amount is impossible?",
     "hint": "Test each amount against “fewer than”.",
@@ -8695,25 +8592,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "98 < 100 < 104 < 106.",
-    "payload": {
-      "numbers": [
-        106,
-        100,
-        104,
-        98
-      ],
-      "correctOrder": [
-        98,
-        100,
-        104,
-        106
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "balance",
+    "question": "Two boxes hold 52 stars altogether. The larger box has 10 more stars than the smaller box. How many are in the smaller box?",
+    "hint": "Remove the extra stars from the total, then split what remains equally between the two boxes.",
+    "explanation": "52 − 10 = 42; 42 ÷ 2 = 21. The boxes hold 21 and 31, with total 52 and difference 10.",
     "learning": {
       "skillId": "hard.logic.explore-10",
       "prerequisiteSkillIds": [
@@ -8721,8 +8605,14 @@
       ],
       "role": "practice",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "21",
+      "31",
+      "26"
+    ],
+    "correctIndex": 0
   },
   {
     "id": "v2-hard-logic-explore-10-4",
@@ -9737,49 +9627,29 @@
       10,
       12
     ],
-    "type": "route_grid",
     "topic": "operations",
-    "question": "Reach the bottom-right exit with 82 in exactly 3 moves. Start with 110.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
-    "payload": {
-      "columns": 3,
-      "start": 110,
-      "target": 82,
-      "moves": 3,
-      "cells": [
-        null,
-        {
-          "operator": "÷",
-          "operand": 5
-        },
-        {
-          "operator": "+",
-          "operand": 19
-        },
-        {
-          "operator": "-",
-          "operand": 1
-        },
-        {
-          "operator": "+",
-          "operand": 7
-        },
-        {
-          "operator": "×",
-          "operand": 2
-        }
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 3
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "3 − 7 = -4.",
+    "payload": {
+      "mode": "move",
+      "start": 3,
+      "delta": -7,
+      "min": -6,
+      "max": 6,
+      "guided": false
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-operations-lesson-8-boss-1",
@@ -9788,34 +9658,29 @@
       10,
       12
     ],
-    "type": "operation_path",
     "topic": "operations",
-    "question": "Choose two operations to finish this delivery route.",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "36 ÷ 3 = 12; 12 + 11 = 23.",
-    "payload": {
-      "start": 36,
-      "target": 23,
-      "steps": [
-        {
-          "operand": 3,
-          "operator": "÷"
-        },
-        {
-          "operand": 11,
-          "operator": "+"
-        }
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 2
-    }
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "-4 + 6 = 2.",
+    "payload": {
+      "mode": "move",
+      "start": -4,
+      "delta": 6,
+      "min": -6,
+      "max": 6,
+      "guided": false
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-operations-lesson-8-boss-2",
@@ -9824,32 +9689,29 @@
       10,
       12
     ],
-    "type": "target_build",
     "topic": "operations",
-    "question": "Which operations make the target? Keep the numbers in order.",
-    "hint": "Try multiplying the last two numbers first.",
-    "explanation": "12 + 4 × 14 = 68.",
-    "payload": {
-      "numbers": [
-        12,
-        4,
-        14
-      ],
-      "target": 68,
-      "solution": [
-        "+",
-        "×"
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "2 − 5 = -3.",
+    "payload": {
+      "mode": "move",
+      "start": 2,
+      "delta": -5,
+      "min": -6,
+      "max": 6,
+      "guided": false
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-operations-lesson-8-boss-3",
@@ -9858,25 +9720,29 @@
       10,
       12
     ],
-    "type": "compare",
     "topic": "comparison",
-    "correctIndex": 1,
-    "question": "Which expression has the greater value?",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "29 < 93.",
-    "payload": {
-      "optionA": "80 ÷ 5 + 13",
-      "optionB": "80 + 13"
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "-1 + 5 = 4.",
+    "payload": {
+      "mode": "move",
+      "start": -1,
+      "delta": 5,
+      "min": -6,
+      "max": 6,
+      "guided": false
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-operations-lesson-9-challenge-1",
@@ -9885,49 +9751,27 @@
       10,
       12
     ],
-    "type": "route_grid",
     "topic": "operations",
-    "question": "Reach the bottom-right exit with 86 in exactly 3 moves. Start with 69.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
-    "payload": {
-      "columns": 3,
-      "start": 69,
-      "target": 86,
-      "moves": 3,
-      "cells": [
-        null,
-        {
-          "operator": "÷",
-          "operand": 3
-        },
-        {
-          "operator": "+",
-          "operand": 20
-        },
-        {
-          "operator": "-",
-          "operand": 1
-        },
-        {
-          "operator": "+",
-          "operand": 7
-        },
-        {
-          "operator": "×",
-          "operand": 2
-        }
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 3
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 8.",
+    "payload": {
+      "a": 3,
+      "b": -5,
+      "c": 19,
+      "guided": false
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-operations-lesson-9-boss-1",
@@ -9936,34 +9780,27 @@
       10,
       12
     ],
-    "type": "operation_path",
     "topic": "operations",
-    "question": "Choose two operations to finish this delivery route.",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "52 ÷ 4 = 13; 13 + 12 = 25.",
-    "payload": {
-      "start": 52,
-      "target": 25,
-      "steps": [
-        {
-          "operand": 4,
-          "operator": "÷"
-        },
-        {
-          "operand": 12,
-          "operator": "+"
-        }
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 2
-    }
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 4.",
+    "payload": {
+      "a": 3,
+      "b": 3,
+      "c": 15,
+      "guided": false
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-operations-lesson-9-boss-2",
@@ -9972,32 +9809,27 @@
       10,
       12
     ],
-    "type": "target_build",
     "topic": "operations",
-    "question": "Which operations make the target? Keep the numbers in order.",
-    "hint": "Try multiplying the last two numbers first.",
-    "explanation": "13 + 5 × 15 = 88.",
-    "payload": {
-      "numbers": [
-        13,
-        5,
-        15
-      ],
-      "target": 88,
-      "solution": [
-        "+",
-        "×"
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 7.",
+    "payload": {
+      "a": 4,
+      "b": -3,
+      "c": 25,
+      "guided": false
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-operations-lesson-9-boss-3",
@@ -10006,25 +9838,27 @@
       10,
       12
     ],
-    "type": "compare",
     "topic": "comparison",
-    "correctIndex": 0,
-    "question": "Which expression has the greater value?",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "31 < 116.",
-    "payload": {
-      "optionA": "102 + 14",
-      "optionB": "102 ÷ 6 + 14"
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 1.",
+    "payload": {
+      "a": 2,
+      "b": 5,
+      "c": 7,
+      "guided": false
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-fractions-lesson-1-challenge-1",
@@ -13691,30 +13525,25 @@
       10,
       12
     ],
-    "type": "sort_buckets",
-    "topic": "comparison",
-    "question": "Sort the lengths in centimetres: below 60 or at least 60.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
-    "payload": {
-      "rule": "range",
-      "numbers": [
-        63,
-        56,
-        60,
-        59,
-        67,
-        54
-      ],
-      "boundary": 60
-    },
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "4 × 5 = 20.",
+    "payload": {
+      "mode": "area",
+      "width": 4,
+      "height": 5,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-lesson-1-boss-1",
@@ -13723,30 +13552,25 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "28",
-      "11",
-      "22"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 7,
-      "columns": 4,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 7 rows of 4 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "7 × 4 = 28 square spaces.",
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "application",
       "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "5 × 2 = 10.",
+    "payload": {
+      "mode": "area",
+      "width": 5,
+      "height": 2,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-lesson-1-boss-2",
@@ -13755,25 +13579,25 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "80",
-      "120",
-      "82"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "60 grams of clay fill 6 equal bags. How many grams for 8 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "60 ÷ 6 × 8 = 80 grams.",
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "3 × 5 = 15.",
+    "payload": {
+      "mode": "area",
+      "width": 3,
+      "height": 5,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-lesson-1-boss-3",
@@ -13782,29 +13606,25 @@
       10,
       12
     ],
-    "type": "balance",
-    "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "13 × 8 = 104.",
-    "payload": {
-      "leftDisplay": "? × 8",
-      "rightValue": 104,
-      "choices": [
-        "13",
-        "12",
-        "14"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "2 × 6 = 12.",
+    "payload": {
+      "mode": "area",
+      "width": 2,
+      "height": 6,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-lesson-2-challenge-1",
@@ -13943,57 +13763,6 @@
       10,
       12
     ],
-    "type": "sort_buckets",
-    "topic": "comparison",
-    "question": "Sort the lengths in centimetres: below 62 or at least 62.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
-    "payload": {
-      "rule": "range",
-      "numbers": [
-        65,
-        58,
-        62,
-        61,
-        69,
-        56
-      ],
-      "boundary": 62
-    },
-    "learning": {
-      "skillId": "hard.measurement.explore-3",
-      "prerequisiteSkillIds": [
-        "hard.measurement.rates"
-      ],
-      "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
-  },
-  {
-    "id": "v2-hard-measurement-lesson-3-boss-1",
-    "difficulty": "hard",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "54",
-      "55",
-      "56"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 9,
-      "columns": 6,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 9 rows of 6 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "9 × 6 = 54 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
@@ -14002,7 +13771,48 @@
       "role": "application",
       "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the perimeter of this rectangle?",
+    "hint": "Count every unit edge around the outside once. Do not count the lines inside.",
+    "explanation": "5 + 4 + 5 + 4 = 18.",
+    "payload": {
+      "mode": "perimeter",
+      "width": 5,
+      "height": 4,
+      "guided": false
+    },
+    "helpTemplate": "geometry_perimeter"
+  },
+  {
+    "id": "v2-hard-measurement-lesson-3-boss-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "learning": {
+      "skillId": "hard.measurement.explore-3",
+      "prerequisiteSkillIds": [
+        "hard.measurement.rates"
+      ],
+      "role": "application",
+      "representation": "objects",
+      "reasoningSteps": 1
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "4 × 4 = 16.",
+    "payload": {
+      "mode": "area",
+      "width": 4,
+      "height": 4,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-lesson-3-boss-2",
@@ -14011,27 +13821,27 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "120",
-      "98",
-      "192"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "96 grams of clay fill 8 equal bags. How many grams for 10 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "96 ÷ 8 × 10 = 120 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
         "hard.measurement.rates"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the perimeter of this rectangle?",
+    "hint": "Count every unit edge around the outside once. Do not count the lines inside.",
+    "explanation": "6 + 2 + 6 + 2 = 16.",
+    "payload": {
+      "mode": "perimeter",
+      "width": 6,
+      "height": 2,
+      "guided": false
+    },
+    "helpTemplate": "geometry_perimeter"
   },
   {
     "id": "v2-hard-measurement-lesson-3-boss-3",
@@ -14040,31 +13850,27 @@
       10,
       12
     ],
-    "type": "balance",
-    "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "15 × 10 = 150.",
-    "payload": {
-      "leftDisplay": "? × 10",
-      "rightValue": 150,
-      "choices": [
-        "15",
-        "14",
-        "13"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
         "hard.measurement.rates"
       ],
       "role": "application",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "3 × 5 = 15.",
+    "payload": {
+      "mode": "area",
+      "width": 3,
+      "height": 5,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-measurement-lesson-4-challenge-1",
@@ -14299,57 +14105,6 @@
       10,
       12
     ],
-    "type": "sort_buckets",
-    "topic": "comparison",
-    "question": "Sort the lengths in centimetres: below 65 or at least 65.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
-    "payload": {
-      "rule": "range",
-      "numbers": [
-        68,
-        61,
-        65,
-        64,
-        72,
-        59
-      ],
-      "boundary": 65
-    },
-    "learning": {
-      "skillId": "hard.measurement.explore-6",
-      "prerequisiteSkillIds": [
-        "hard.measurement.explore-5"
-      ],
-      "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
-  },
-  {
-    "id": "v2-hard-measurement-lesson-6-boss-1",
-    "difficulty": "hard",
-    "ageRange": [
-      10,
-      12
-    ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "108",
-      "21",
-      "42"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 12,
-      "columns": 9,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 12 rows of 9 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "12 × 9 = 108 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
@@ -14358,7 +14113,48 @@
       "role": "application",
       "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Find the missing side using the area.",
+    "hint": "Divide the area by the known side length. The drawing is not to scale.",
+    "explanation": "35 ÷ 5 = 7.",
+    "payload": {
+      "mode": "missing_area",
+      "width": 5,
+      "height": 7,
+      "guided": false
+    },
+    "helpTemplate": "geometry_missing_area"
+  },
+  {
+    "id": "v2-hard-measurement-lesson-6-boss-1",
+    "difficulty": "hard",
+    "ageRange": [
+      10,
+      12
+    ],
+    "learning": {
+      "skillId": "hard.measurement.explore-6",
+      "prerequisiteSkillIds": [
+        "hard.measurement.explore-5"
+      ],
+      "role": "application",
+      "representation": "objects",
+      "reasoningSteps": 1
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Find the missing side using the area.",
+    "hint": "Divide the area by the known side length. The drawing is not to scale.",
+    "explanation": "24 ÷ 4 = 6.",
+    "payload": {
+      "mode": "missing_area",
+      "width": 4,
+      "height": 6,
+      "guided": false
+    },
+    "helpTemplate": "geometry_missing_area"
   },
   {
     "id": "v2-hard-measurement-lesson-6-boss-2",
@@ -14367,27 +14163,31 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "90",
-      "120",
-      "92"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "60 grams of clay fill 4 equal bags. How many grams for 6 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "60 ÷ 4 × 6 = 90 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-5"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Which rectangle has the larger perimeter?",
+    "hint": "The areas are equal. Compare the total lengths around the two boundaries. They may be equal too.",
+    "explanation": "A: 16; B: 14.",
+    "payload": {
+      "mode": "compare",
+      "width": 2,
+      "height": 6,
+      "other": {
+        "width": 3,
+        "height": 4
+      },
+      "guided": false
+    },
+    "helpTemplate": "geometry_compare"
   },
   {
     "id": "v2-hard-measurement-lesson-6-boss-3",
@@ -14396,31 +14196,27 @@
       10,
       12
     ],
-    "type": "balance",
-    "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "18 × 6 = 108.",
-    "payload": {
-      "leftDisplay": "? × 6",
-      "rightValue": 108,
-      "choices": [
-        "18",
-        "17",
-        "19"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-5"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Find the missing side using the perimeter.",
+    "hint": "Halve the perimeter, then subtract the known side. The drawing is not to scale.",
+    "explanation": "14 ÷ 2 − 5 = 2.",
+    "payload": {
+      "mode": "missing_perimeter",
+      "width": 5,
+      "height": 2,
+      "guided": false
+    },
+    "helpTemplate": "geometry_missing_perimeter"
   },
   {
     "id": "v2-hard-measurement-lesson-7-challenge-1",
@@ -14559,32 +14355,27 @@
       10,
       12
     ],
-    "type": "sort_buckets",
     "topic": "comparison",
-    "question": "Sort the lengths in centimetres: below 67 or at least 67.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
-    "payload": {
-      "rule": "range",
-      "numbers": [
-        70,
-        63,
-        67,
-        66,
-        74,
-        61
-      ],
-      "boundary": 67
-    },
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "36 ÷ 9 × 12 = 48.",
+    "payload": {
+      "a": 9,
+      "b": 36,
+      "targetA": 12,
+      "guided": false
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-measurement-lesson-8-boss-1",
@@ -14593,23 +14384,7 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "multiplication",
-    "choices": [
-      "56",
-      "57",
-      "58"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 14,
-      "columns": 4,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 14 rows of 4 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "14 × 4 = 56 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
@@ -14617,8 +14392,19 @@
       ],
       "role": "application",
       "representation": "objects",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "24 ÷ 8 × 10 = 30.",
+    "payload": {
+      "a": 8,
+      "b": 24,
+      "targetA": 10,
+      "guided": false
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-measurement-lesson-8-boss-2",
@@ -14627,27 +14413,27 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "operations",
-    "choices": [
-      "136",
-      "104",
-      "204"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "102 grams of clay fill 6 equal bags. How many grams for 8 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "102 ÷ 6 × 8 = 136 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "30 ÷ 6 × 9 = 45.",
+    "payload": {
+      "a": 6,
+      "b": 30,
+      "targetA": 9,
+      "guided": false
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-measurement-lesson-8-boss-3",
@@ -14656,31 +14442,27 @@
       10,
       12
     ],
-    "type": "balance",
     "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "20 × 8 = 160.",
-    "payload": {
-      "leftDisplay": "? × 8",
-      "rightValue": 160,
-      "choices": [
-        "20",
-        "19",
-        "18"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-7"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "28 ÷ 4 × 2 = 14.",
+    "payload": {
+      "a": 4,
+      "b": 28,
+      "targetA": 2,
+      "guided": false
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-measurement-lesson-9-challenge-1",
@@ -14689,32 +14471,35 @@
       10,
       12
     ],
-    "type": "sort_buckets",
     "topic": "comparison",
-    "question": "Sort the lengths in centimetres: below 68 or at least 68.",
-    "hint": "Try one part, then check the whole board.",
-    "explanation": "Every part fits the conditions.",
-    "payload": {
-      "rule": "range",
-      "numbers": [
-        71,
-        64,
-        68,
-        67,
-        75,
-        62
-      ],
-      "boundary": 68
-    },
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-8"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "Move point A by the shown changes in x and y.",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "(2, -2)",
+    "payload": {
+      "mode": "translate",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": 0,
+        "y": -1
+      },
+      "end": {
+        "x": 2,
+        "y": -1
+      },
+      "guided": false
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-measurement-lesson-9-boss-1",
@@ -14723,23 +14508,7 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "multiplication",
-    "choices": [
-      "75",
-      "20",
-      "77"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 15,
-      "columns": 5,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 15 rows of 5 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "15 × 5 = 75 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
@@ -14747,8 +14516,27 @@
       ],
       "role": "application",
       "representation": "objects",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "Move point A by the shown changes in x and y.",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "(-1, 1)",
+    "payload": {
+      "mode": "translate",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": -3,
+        "y": 2
+      },
+      "end": {
+        "x": 2,
+        "y": -1
+      },
+      "guided": false
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-measurement-lesson-9-boss-2",
@@ -14757,27 +14545,35 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "operations",
-    "choices": [
-      "162",
-      "128",
-      "160"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "126 grams of clay fill 7 equal bags. How many grams for 9 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "126 ÷ 7 × 9 = 162 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-8"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "Move point A by the shown changes in x and y.",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "(0, 0)",
+    "payload": {
+      "mode": "translate",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": -2,
+        "y": 1
+      },
+      "end": {
+        "x": 2,
+        "y": -1
+      },
+      "guided": false
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-measurement-lesson-9-boss-3",
@@ -14786,31 +14582,35 @@
       10,
       12
     ],
-    "type": "balance",
     "topic": "equality",
-    "correctIndex": 0,
-    "helpTemplate": "multiplication",
-    "question": "Find the missing number of equal rows.",
-    "hint": "Count the same number in every group.",
-    "explanation": "21 × 9 = 189.",
-    "payload": {
-      "leftDisplay": "? × 9",
-      "rightValue": 189,
-      "choices": [
-        "21",
-        "22",
-        "23"
-      ]
-    },
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-8"
       ],
       "role": "application",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "How many units separate A and B along the grid line?",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "4",
+    "payload": {
+      "mode": "distance",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": -1,
+        "y": 0
+      },
+      "end": {
+        "x": 3,
+        "y": 0
+      },
+      "guided": false
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-logic-lesson-1-challenge-1",
@@ -14920,32 +14720,25 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "38 < 40 < 44 < 46.",
-    "payload": {
-      "numbers": [
-        46,
-        40,
-        44,
-        38
-      ],
-      "correctOrder": [
-        38,
-        40,
-        44,
-        46
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "number_range",
+    "question": "The code is greater than 15, less than 24, divisible by 3, and even. Which number fits every clue?",
+    "hint": "Find the multiples inside the range, then check which are even. The endpoints are excluded.",
+    "explanation": "18 and 21 are the multiples strictly inside the range. Only 18 is even; 24 is excluded.",
     "learning": {
       "skillId": "hard.logic.clues",
       "prerequisiteSkillIds": [],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "21",
+      "18",
+      "24"
+    ],
+    "correctIndex": 1
   },
   {
     "id": "v2-hard-logic-lesson-2-boss-1",
@@ -15010,25 +14803,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "48 < 50 < 54 < 56.",
-    "payload": {
-      "numbers": [
-        56,
-        50,
-        54,
-        48
-      ],
-      "correctOrder": [
-        48,
-        50,
-        54,
-        56
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "number_range",
+    "question": "The code is greater than 35, less than 50, divisible by 5, and even. Which number fits every clue?",
+    "hint": "Find the multiples inside the range, then check which are even. The endpoints are excluded.",
+    "explanation": "40 and 45 are the multiples strictly inside the range. Only 40 is even; 50 is excluded.",
     "learning": {
       "skillId": "hard.logic.claims",
       "prerequisiteSkillIds": [
@@ -15036,8 +14816,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "45",
+      "50",
+      "40"
+    ],
+    "correctIndex": 2
   },
   {
     "id": "v2-hard-logic-lesson-3-challenge-1",
@@ -15153,25 +14939,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "58 < 60 < 64 < 66.",
-    "payload": {
-      "numbers": [
-        66,
-        60,
-        64,
-        58
-      ],
-      "correctOrder": [
-        58,
-        60,
-        64,
-        66
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "number_range",
+    "question": "The code is greater than 63, less than 84, divisible by 7, and even. Which number fits every clue?",
+    "hint": "Find the multiples inside the range, then check which are even. The endpoints are excluded.",
+    "explanation": "70 and 77 are the multiples strictly inside the range. Only 70 is even; 84 is excluded.",
     "learning": {
       "skillId": "hard.logic.explore-3",
       "prerequisiteSkillIds": [
@@ -15179,8 +14952,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "70",
+      "77",
+      "84"
+    ],
+    "correctIndex": 0
   },
   {
     "id": "v2-hard-logic-lesson-4-challenge-1",
@@ -15296,25 +15075,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "68 < 70 < 74 < 76.",
-    "payload": {
-      "numbers": [
-        76,
-        70,
-        74,
-        68
-      ],
-      "correctOrder": [
-        68,
-        70,
-        74,
-        76
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "operation_path",
+    "question": "A machine multiplies a starting number by 2, then adds 9. The result is 45. What was the starting number?",
+    "hint": "Work backwards: undo the addition first, then undo the multiplication. Check by running the steps forwards.",
+    "explanation": "45 − 9 = 36; 36 ÷ 2 = 18. 18 × 2 + 9 = 45.",
     "learning": {
       "skillId": "hard.logic.explore-4",
       "prerequisiteSkillIds": [
@@ -15322,8 +15088,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "36",
+      "18",
+      "27"
+    ],
+    "correctIndex": 1
   },
   {
     "id": "v2-hard-logic-lesson-5-boss-1",
@@ -15388,25 +15160,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "78 < 80 < 84 < 86.",
-    "payload": {
-      "numbers": [
-        86,
-        80,
-        84,
-        78
-      ],
-      "correctOrder": [
-        78,
-        80,
-        84,
-        86
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "operation_path",
+    "question": "A machine multiplies a starting number by 3, then adds 10. The result is 70. What was the starting number?",
+    "hint": "Work backwards: undo the addition first, then undo the multiplication. Check by running the steps forwards.",
+    "explanation": "70 − 10 = 60; 60 ÷ 3 = 20. 20 × 3 + 10 = 70.",
     "learning": {
       "skillId": "hard.logic.explore-5",
       "prerequisiteSkillIds": [
@@ -15414,8 +15173,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "60",
+      "30",
+      "20"
+    ],
+    "correctIndex": 2
   },
   {
     "id": "v2-hard-logic-lesson-6-challenge-1",
@@ -15531,25 +15296,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "88 < 90 < 94 < 96.",
-    "payload": {
-      "numbers": [
-        96,
-        90,
-        94,
-        88
-      ],
-      "correctOrder": [
-        88,
-        90,
-        94,
-        96
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "operation_path",
+    "question": "A machine multiplies a starting number by 4, then adds 11. The result is 99. What was the starting number?",
+    "hint": "Work backwards: undo the addition first, then undo the multiplication. Check by running the steps forwards.",
+    "explanation": "99 − 11 = 88; 88 ÷ 4 = 22. 22 × 4 + 11 = 99.",
     "learning": {
       "skillId": "hard.logic.explore-6",
       "prerequisiteSkillIds": [
@@ -15557,8 +15309,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "22",
+      "88",
+      "33"
+    ],
+    "correctIndex": 0
   },
   {
     "id": "v2-hard-logic-lesson-7-challenge-1",
@@ -15674,25 +15432,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "98 < 100 < 104 < 106.",
-    "payload": {
-      "numbers": [
-        106,
-        100,
-        104,
-        98
-      ],
-      "correctOrder": [
-        98,
-        100,
-        104,
-        106
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "balance",
+    "question": "Two boxes hold 50 stars altogether. The larger box has 6 more stars than the smaller box. How many are in the smaller box?",
+    "hint": "Remove the extra stars from the total, then split what remains equally between the two boxes.",
+    "explanation": "50 − 6 = 44; 44 ÷ 2 = 22. The boxes hold 22 and 28, with total 50 and difference 6.",
     "learning": {
       "skillId": "hard.logic.explore-7",
       "prerequisiteSkillIds": [
@@ -15700,8 +15445,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "28",
+      "22",
+      "25"
+    ],
+    "correctIndex": 1
   },
   {
     "id": "v2-hard-logic-lesson-8-challenge-1",
@@ -15817,25 +15568,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "108 < 110 < 114 < 116.",
-    "payload": {
-      "numbers": [
-        116,
-        110,
-        114,
-        108
-      ],
-      "correctOrder": [
-        108,
-        110,
-        114,
-        116
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "balance",
+    "question": "Two boxes hold 54 stars altogether. The larger box has 8 more stars than the smaller box. How many are in the smaller box?",
+    "hint": "Remove the extra stars from the total, then split what remains equally between the two boxes.",
+    "explanation": "54 − 8 = 46; 46 ÷ 2 = 23. The boxes hold 23 and 31, with total 54 and difference 8.",
     "learning": {
       "skillId": "hard.logic.explore-8",
       "prerequisiteSkillIds": [
@@ -15843,8 +15581,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "31",
+      "27",
+      "23"
+    ],
+    "correctIndex": 2
   },
   {
     "id": "v2-hard-logic-lesson-9-challenge-1",
@@ -15960,25 +15704,12 @@
       10,
       12
     ],
-    "type": "order_numbers",
-    "topic": "comparison",
-    "question": "Arrange the clues from smallest to largest.",
-    "hint": "Compare the numbers before moving them.",
-    "explanation": "118 < 120 < 124 < 126.",
-    "payload": {
-      "numbers": [
-        126,
-        120,
-        124,
-        118
-      ],
-      "correctOrder": [
-        118,
-        120,
-        124,
-        126
-      ]
-    },
+    "type": "multiple_choice",
+    "topic": "logic",
+    "helpTemplate": "balance",
+    "question": "Two boxes hold 58 stars altogether. The larger box has 10 more stars than the smaller box. How many are in the smaller box?",
+    "hint": "Remove the extra stars from the total, then split what remains equally between the two boxes.",
+    "explanation": "58 − 10 = 48; 48 ÷ 2 = 24. The boxes hold 24 and 34, with total 58 and difference 10.",
     "learning": {
       "skillId": "hard.logic.explore-9",
       "prerequisiteSkillIds": [
@@ -15986,8 +15717,14 @@
       ],
       "role": "application",
       "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "choices": [
+      "24",
+      "34",
+      "29"
+    ],
+    "correctIndex": 0
   },
   {
     "id": "v2-hard-hard-operations-connected-path-review-1",
@@ -16494,30 +16231,25 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "70",
-      "17",
-      "34"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 10,
-      "columns": 7,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 10 rows of 7 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "10 × 7 = 70 square spaces.",
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "review",
       "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "3 × 6 = 18.",
+    "payload": {
+      "mode": "area",
+      "width": 3,
+      "height": 6,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-hard-measurement-area-path-review-2",
@@ -16526,25 +16258,25 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "143",
-      "119",
-      "234"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "117 grams of clay fill 9 equal bags. How many grams for 11 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "117 ÷ 9 × 11 = 143 grams.",
     "learning": {
       "skillId": "hard.measurement.area",
       "prerequisiteSkillIds": [],
       "role": "review",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "5 × 5 = 25.",
+    "payload": {
+      "mode": "area",
+      "width": 5,
+      "height": 5,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-hard-measurement-rates-path-review-1",
@@ -17074,34 +16806,29 @@
       10,
       12
     ],
-    "type": "operation_path",
     "topic": "operations",
-    "question": "Choose two operations to finish this delivery route.",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "90 ÷ 6 = 15; 15 + 14 = 29.",
-    "payload": {
-      "start": 90,
-      "target": 29,
-      "steps": [
-        {
-          "operand": 6,
-          "operator": "÷"
-        },
-        {
-          "operand": 14,
-          "operator": "+"
-        }
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "-5 + 8 = 3.",
+    "payload": {
+      "mode": "move",
+      "start": -5,
+      "delta": 8,
+      "min": -6,
+      "max": 6,
+      "guided": false
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-hard-operations-explore-8-path-review-2",
@@ -17110,32 +16837,29 @@
       10,
       12
     ],
-    "type": "target_build",
     "topic": "operations",
-    "question": "Which operations make the target? Keep the numbers in order.",
-    "hint": "Try multiplying the last two numbers first.",
-    "explanation": "15 + 7 × 17 = 134.",
-    "payload": {
-      "numbers": [
-        15,
-        7,
-        17
-      ],
-      "target": 134,
-      "solution": [
-        "+",
-        "×"
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-8",
       "prerequisiteSkillIds": [
         "hard.operations.explore-7"
       ],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "signed_line",
+    "question": "Start at the first number. Find where the move ends.",
+    "hint": "Numbers increase to the right. Adding moves right; subtracting moves left.",
+    "explanation": "0 − 4 = -4.",
+    "payload": {
+      "mode": "move",
+      "start": 0,
+      "delta": -4,
+      "min": -6,
+      "max": 6,
+      "guided": false
+    },
+    "helpTemplate": "signed_line"
   },
   {
     "id": "v2-hard-hard-operations-explore-9-path-review-1",
@@ -17144,34 +16868,27 @@
       10,
       12
     ],
-    "type": "operation_path",
     "topic": "operations",
-    "question": "Choose two operations to finish this delivery route.",
-    "hint": "Try a step, then check where it takes you.",
-    "explanation": "112 ÷ 7 = 16; 16 + 15 = 31.",
-    "payload": {
-      "start": 112,
-      "target": 31,
-      "steps": [
-        {
-          "operand": 7,
-          "operator": "÷"
-        },
-        {
-          "operand": 15,
-          "operator": "+"
-        }
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 9.",
+    "payload": {
+      "a": 4,
+      "b": 3,
+      "c": 39,
+      "guided": false
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-hard-operations-explore-9-path-review-2",
@@ -17180,32 +16897,27 @@
       10,
       12
     ],
-    "type": "target_build",
     "topic": "operations",
-    "question": "Which operations make the target? Keep the numbers in order.",
-    "hint": "Try multiplying the last two numbers first.",
-    "explanation": "16 + 8 × 18 = 160.",
-    "payload": {
-      "numbers": [
-        16,
-        8,
-        18
-      ],
-      "target": 160,
-      "solution": [
-        "+",
-        "×"
-      ]
-    },
     "learning": {
       "skillId": "hard.operations.explore-9",
       "prerequisiteSkillIds": [
         "hard.operations.explore-8"
       ],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "equation_board",
+    "question": "Leave one x alone by doing the same operation to both sides.",
+    "hint": "Undo the added or subtracted amount, then divide both sides into equal groups.",
+    "explanation": "x = 0.",
+    "payload": {
+      "a": 2,
+      "b": -3,
+      "c": -3,
+      "guided": false
+    },
+    "helpTemplate": "equation_board"
   },
   {
     "id": "v2-hard-hard-operations-explore-10-path-review-1",
@@ -18780,23 +18492,6 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "108",
-      "21",
-      "42"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 12,
-      "columns": 9,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 12 rows of 9 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "12 × 9 = 108 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
@@ -18805,7 +18500,19 @@
       "role": "review",
       "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the area of this rectangle?",
+    "hint": "Count the unit squares inside the boundary. Each square has area one square unit.",
+    "explanation": "2 × 7 = 14.",
+    "payload": {
+      "mode": "area",
+      "width": 2,
+      "height": 7,
+      "guided": false
+    },
+    "helpTemplate": "geometry_area"
   },
   {
     "id": "v2-hard-hard-measurement-explore-3-path-review-2",
@@ -18814,27 +18521,27 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "90",
-      "62",
-      "120"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "60 grams of clay fill 4 equal bags. How many grams for 6 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "60 ÷ 4 × 6 = 90 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-3",
       "prerequisiteSkillIds": [
         "hard.measurement.rates"
       ],
       "role": "review",
-      "representation": "symbols",
+      "representation": "objects",
       "reasoningSteps": 1
-    }
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "What is the perimeter of this rectangle?",
+    "hint": "Count every unit edge around the outside once. Do not count the lines inside.",
+    "explanation": "4 + 6 + 4 + 6 = 20.",
+    "payload": {
+      "mode": "perimeter",
+      "width": 4,
+      "height": 6,
+      "guided": false
+    },
+    "helpTemplate": "geometry_perimeter"
   },
   {
     "id": "v2-hard-hard-measurement-explore-4-path-review-1",
@@ -18969,23 +18676,6 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "multiplication",
-    "choices": [
-      "75",
-      "20",
-      "40"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 15,
-      "columns": 5,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 15 rows of 5 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "15 × 5 = 75 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
@@ -18993,8 +18683,24 @@
       ],
       "role": "review",
       "representation": "objects",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Which rectangle has the larger perimeter?",
+    "hint": "The areas are equal. Compare the total lengths around the two boundaries. They may be equal too.",
+    "explanation": "A: 18; B: 18.",
+    "payload": {
+      "mode": "compare",
+      "width": 3,
+      "height": 6,
+      "other": {
+        "width": 6,
+        "height": 3
+      },
+      "guided": false
+    },
+    "helpTemplate": "geometry_compare"
   },
   {
     "id": "v2-hard-hard-measurement-explore-6-path-review-2",
@@ -19003,27 +18709,27 @@
       10,
       12
     ],
-    "type": "multiple_choice",
-    "topic": "operations",
-    "choices": [
-      "162",
-      "128",
-      "252"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "126 grams of clay fill 7 equal bags. How many grams for 9 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "126 ÷ 7 × 9 = 162 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-6",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-5"
       ],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "topic": "measurement",
+    "type": "geometry_measure",
+    "question": "Find the missing side using the perimeter.",
+    "hint": "Halve the perimeter, then subtract the known side. The drawing is not to scale.",
+    "explanation": "22 ÷ 2 − 6 = 5.",
+    "payload": {
+      "mode": "missing_perimeter",
+      "width": 6,
+      "height": 5,
+      "guided": false
+    },
+    "helpTemplate": "geometry_missing_perimeter"
   },
   {
     "id": "v2-hard-hard-measurement-explore-7-path-review-1",
@@ -19095,23 +18801,7 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "multiplication",
-    "choices": [
-      "119",
-      "24",
-      "48"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 17,
-      "columns": 7,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 17 rows of 7 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "17 × 7 = 119 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
@@ -19119,8 +18809,19 @@
       ],
       "role": "review",
       "representation": "objects",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "42 ÷ 7 × 5 = 30.",
+    "payload": {
+      "a": 7,
+      "b": 42,
+      "targetA": 5,
+      "guided": false
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-hard-measurement-explore-8-path-review-2",
@@ -19129,27 +18830,27 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "operations",
-    "choices": [
-      "220",
-      "182",
-      "360"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "180 grams of clay fill 9 equal bags. How many grams for 11 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "180 ÷ 9 × 11 = 220 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-8",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-7"
       ],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "ratio_table",
+    "question": "Complete the missing amount in the ratio table.",
+    "hint": "Keep the same amount per group. Scale both quantities by the same factor.",
+    "explanation": "40 ÷ 8 × 14 = 70.",
+    "payload": {
+      "a": 8,
+      "b": 40,
+      "targetA": 14,
+      "guided": false
+    },
+    "helpTemplate": "ratio_table"
   },
   {
     "id": "v2-hard-hard-measurement-explore-9-path-review-1",
@@ -19158,23 +18859,7 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "multiplication",
-    "choices": [
-      "144",
-      "26",
-      "52"
-    ],
-    "correctIndex": 0,
-    "taskVisual": {
-      "kind": "array",
-      "rows": 18,
-      "columns": 8,
-      "object": "planting_tile"
-    },
-    "question": "A garden has 18 rows of 8 square planting spaces. How many square spaces?",
-    "hint": "Count the same number in every group.",
-    "explanation": "18 × 8 = 144 square spaces.",
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
@@ -19182,8 +18867,27 @@
       ],
       "role": "review",
       "representation": "objects",
-      "reasoningSteps": 1
-    }
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "Move point A by the shown changes in x and y.",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "(-1, 1)",
+    "payload": {
+      "mode": "translate",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": -3,
+        "y": 2
+      },
+      "end": {
+        "x": 2,
+        "y": -1
+      },
+      "guided": false
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-hard-measurement-explore-9-path-review-2",
@@ -19192,27 +18896,35 @@
       10,
       12
     ],
-    "type": "multiple_choice",
     "topic": "operations",
-    "choices": [
-      "252",
-      "212",
-      "420"
-    ],
-    "correctIndex": 0,
-    "helpTemplate": "rate",
-    "question": "210 grams of clay fill 10 equal bags. How many grams for 12 bags?",
-    "hint": "Find the amount for one bag first.",
-    "explanation": "210 ÷ 10 × 12 = 252 grams.",
     "learning": {
       "skillId": "hard.measurement.explore-9",
       "prerequisiteSkillIds": [
         "hard.measurement.explore-8"
       ],
       "role": "review",
-      "representation": "symbols",
-      "reasoningSteps": 1
-    }
+      "representation": "objects",
+      "reasoningSteps": 2
+    },
+    "type": "coordinate_map",
+    "question": "How many units separate A and B along the grid line?",
+    "hint": "Read x across first, then y up or down. Count intervals, not grid points.",
+    "explanation": "4",
+    "payload": {
+      "mode": "distance",
+      "min": -4,
+      "max": 4,
+      "start": {
+        "x": -2,
+        "y": 1
+      },
+      "end": {
+        "x": 2,
+        "y": 1
+      },
+      "guided": false
+    },
+    "helpTemplate": "coordinate_map"
   },
   {
     "id": "v2-hard-hard-measurement-explore-10-path-review-1",

@@ -1,3 +1,6 @@
+import { BridgeTask } from "@/components/puzzle/BridgeTask";
+import { isBridgePuzzle, type BridgeState } from "@/utils/bridge-models";
+import { GeometryMeasureTask } from "@/components/puzzle/GeometryMeasureTask";
 import { DecimalGridTask } from "@/components/puzzle/DecimalGridTask";
 import { DecimalPlaceValueTask } from "@/components/puzzle/DecimalPlaceValueTask";
 import type { DecimalPlaceState } from "@/utils/decimal-models";
@@ -49,6 +52,10 @@ import {
 
 type PuzzleTaskViewProps = {
   puzzle: Puzzle;
+  bridge?: BridgeState | null;
+  onBridgeChange?: (value: BridgeState | null) => void;
+  geometry: number | null;
+  onGeometryChange: (value: number | null) => void;
   decimalGrid: number | null;
   onDecimalGridChange: (value: number | null) => void;
   decimalPlace: DecimalPlaceState | null;
@@ -89,6 +96,8 @@ type PuzzleTaskViewProps = {
 
 export function PuzzleTaskView({
   puzzle,
+  bridge, onBridgeChange,
+  geometry, onGeometryChange,
   decimalGrid, onDecimalGridChange, decimalPlace, onDecimalPlaceChange,
   fractionStrip, onFractionStripChange,
   placeValue, onPlaceValueChange,
@@ -120,6 +129,8 @@ export function PuzzleTaskView({
   onSwapOrder,
   onTapFractionMatchCard,
 }: PuzzleTaskViewProps) {
+  if (isBridgePuzzle(puzzle) && onBridgeChange) return <BridgeTask puzzle={puzzle} value={bridge ?? null} onChange={onBridgeChange} answered={answered} />;
+  if (puzzle.type === "geometry_measure") return <GeometryMeasureTask puzzle={puzzle} value={geometry} onChange={onGeometryChange} answered={answered} />;
   if (puzzle.type === "decimal_grid") return <DecimalGridTask puzzle={puzzle} value={decimalGrid} onChange={onDecimalGridChange} answered={answered} />;
   if (puzzle.type === "decimal_place_value") return <DecimalPlaceValueTask puzzle={puzzle} value={decimalPlace} onChange={onDecimalPlaceChange} answered={answered} />;
   if (puzzle.type === "fraction_number_line") return <FractionNumberLineTask puzzle={puzzle} value={numberLineValue} onChange={onSelectNumberLineValue} answered={answered} />;

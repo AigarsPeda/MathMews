@@ -3,7 +3,7 @@ import type { DecimalGridPuzzle, DecimalPlaceValuePuzzle } from '@/types/puzzle'
 // All arithmetic is in integer hundredths. Formatting never determines correctness.
 export function decimalLabel(hundredths: number, digits: 1 | 2, locale: string): string {
   const remainder = String(hundredths % 100).padStart(2, '0');
-  return `${Math.floor(hundredths / 100)}${locale.startsWith('lv') ? ',' : '.'}${remainder.slice(0, digits)}`;
+  return `${Math.floor(hundredths / 100)}${/^(lv|ru)(-|$)/.test(locale) ? ',' : '.'}${remainder.slice(0, digits)}`;
 }
 export function checkDecimalGrid(puzzle: DecimalGridPuzzle, shaded: number): boolean {
   return Number.isInteger(shaded) && shaded >= 0 && shaded <= puzzle.payload.scale

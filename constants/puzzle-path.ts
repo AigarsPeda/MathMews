@@ -25,6 +25,11 @@ export function getPathProgress(lesson: LearningLesson, progress: PathProgress) 
   const counts = getLearningProgress(lesson.levels.flatMap(l => l.puzzleIds), progress.completedPuzzleIds ?? []);
   return { ...counts, complete: counts.complete || !!progress.completedPathLessonIds?.includes(lesson.id) };
 }
+/** Count every playable puzzle, including challenges and newly added review tasks. */
+export function getTopicPathProgress(difficulty: PuzzleDifficulty, topicId: string, progress: PathProgress) {
+  return getLearningProgress(getTopicPaths(difficulty, topicId).flatMap(lesson => lesson.levels.flatMap(level => level.puzzleIds)),
+    progress.completedPuzzleIds ?? []);
+}
 export function isPathAvailable(lesson: LearningLesson, progress: PathProgress): boolean {
   if (progress.unlockedPathLessonIds?.includes(lesson.id) || progress.completedPathLessonIds?.includes(lesson.id)) return true;
   if (lesson.levels.some(l => l.puzzleIds.some(id => progress.completedPuzzleIds?.includes(id)))) return true;

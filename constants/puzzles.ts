@@ -4,6 +4,9 @@ import easyLv from "@/assets/puzzles/lv/easy.json";
 import hardLv from "@/assets/puzzles/lv/hard.json";
 import mediumLv from "@/assets/puzzles/lv/medium.json";
 import mediumEn from "@/assets/puzzles/medium.json";
+import easyRu from "@/assets/puzzles/ru/easy.json";
+import mediumRu from "@/assets/puzzles/ru/medium.json";
+import hardRu from "@/assets/puzzles/ru/hard.json";
 import type { PuzzleProgress } from "@/types/game";
 import type { AppLocale } from "@/types/locale";
 import type { Puzzle, PuzzleDifficulty } from "@/types/puzzle";
@@ -27,6 +30,11 @@ const AUTHORED_PUZZLES: Record<
     easy: easyLv as unknown as Puzzle[],
     medium: mediumLv as unknown as Puzzle[],
     hard: hardLv as unknown as Puzzle[],
+  },
+  ru: {
+    easy: easyRu as unknown as Puzzle[],
+    medium: mediumRu as unknown as Puzzle[],
+    hard: hardRu as unknown as Puzzle[],
   },
 };
 

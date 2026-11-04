@@ -35,7 +35,7 @@ const EN: PrivacyPolicyContent = {
         "Game progress on your device: pet name, room layout, coins, unlocks, puzzle progress, and similar gameplay data.",
         "Supabase stores cloud saves, a pseudonymous account ID, the server coin wallet, earned rewards, spending and administrator adjustments. Recovery on another device requires access to the same linked account; an anonymous profile alone does not guarantee recovery after reinstall.",
         "Apple or Google processes coin-pack payments. RevenueCat processes store transactions and purchase history using the account ID. Our server keeps transaction identifiers and a coin ledger so repeated events do not grant coins twice. We do not receive payment card details.",
-        "App language preference, English or Latvian. If a grown-up links a sign-in provider or parent email, Supabase also processes the account information needed for that sign-in.",
+        "App language preference, English, Latvian or Russian. If a grown-up links a sign-in provider or parent email, Supabase also processes the account information needed for that sign-in.",
         "If you email support or request account deletion by email, we process your email address and the information you provide to answer your request and verify account ownership. Do not send passwords, sign-in codes or payment card details.",
       ],
     },
@@ -125,7 +125,7 @@ const LV: PrivacyPolicyContent = {
         "Spēles progress ierīcē: mīluļa vārds, istabas izkārtojums, monētas, atslēgājumi, puzļu progress un līdzīgi spēles dati.",
         "Supabase glabā mākoņa saglabājumus, pseidonīmu konta identifikatoru, monētu maku, nopelnītās monētas, tēriņus un administratora labojumus. Atjaunošanai citā ierīcē vajadzīga piekļuve tam pašam piesaistītajam kontam. Anonīms profils negarantē atjaunošanu pēc pārinstalēšanas.",
         "Apple vai Google apstrādā monētu paku maksājumus. RevenueCat apstrādā veikala darījumus un pirkumu vēsturi, izmantojot konta identifikatoru. Serveris glabā darījumu identifikatorus un monētu žurnālu, lai atkārtoti notikumi nepiešķirtu monētas vēlreiz. Mēs nesaņemam maksājumu kartes datus.",
-        "Lietotnes valoda, angļu vai latviešu. Ja pieaugušais piesaista kontu vai vecāka e-pastu, Supabase apstrādā arī pieteikšanai nepieciešamos konta datus.",
+        "Lietotnes valoda, angļu, latviešu vai krievu. Ja pieaugušais piesaista kontu vai vecāka e-pastu, Supabase apstrādā arī pieteikšanai nepieciešamos konta datus.",
         "Ja raksti atbalstam vai pieprasi konta dzēšanu e-pastā, apstrādājam tavu e-pastu un sniegto informāciju, lai atbildētu un pārbaudītu konta īpašumtiesības. Nesūti paroles, pieteikšanās kodus vai kartes datus.",
       ],
     },
@@ -195,6 +195,96 @@ const LV: PrivacyPolicyContent = {
   ],
 };
 
+const RU: PrivacyPolicyContent = {
+  screenTitle: "Политика конфиденциальности",
+  screenHint: "Как Math Mews обрабатывает ваши данные.",
+  lastUpdatedLabel: `Последнее обновление: ${PRIVACY_POLICY_LAST_UPDATED}`,
+  viewOnline: "Открыть в интернете",
+  contactLabel: "Есть вопросы?",
+  sections: [
+    {
+      title: "Общие сведения",
+      paragraphs: [
+        "Math Mews — математическая игра с виртуальным питомцем для детей примерно от 6 лет и взрослых. Эта политика объясняет, какие данные используются для игры, аккаунтов и покупок.",
+        "При подключении к интернету приложение автоматически создаёт анонимный аккаунт. Для игры не нужен адрес электронной почты. Взрослый может привязать поддерживаемый аккаунт для входа, чтобы защитить прогресс.",
+      ],
+    },
+    {
+      title: "Какие данные мы храним",
+      paragraphs: [
+        "На устройстве хранится игровой прогресс: имя питомца, обстановка комнаты, монеты, открытые предметы, пройденные задачи и другие игровые данные.",
+        "Supabase хранит облачные сохранения, псевдонимный идентификатор аккаунта, серверный кошелёк монет, награды, расходы и изменения администратора. Для восстановления на другом устройстве нужен доступ к тому же привязанному аккаунту. Один анонимный профиль не гарантирует восстановление после переустановки.",
+        "Apple или Google обрабатывает оплату наборов монет. RevenueCat обрабатывает транзакции магазина и историю покупок с использованием идентификатора аккаунта. Наш сервер хранит идентификаторы транзакций и журнал монет, чтобы повторные события не приводили к повторному начислению. Мы не получаем данные платёжных карт.",
+        "Мы храним выбранный язык приложения: английский, латышский или русский. Если взрослый привязывает аккаунт или почту родителя, Supabase также обрабатывает данные, необходимые для входа.",
+        "Если вы пишете в поддержку или запрашиваете удаление аккаунта по почте, мы обрабатываем ваш адрес и предоставленные сведения, чтобы ответить и проверить принадлежность аккаунта. Не отправляйте пароли, коды входа или данные платёжных карт.",
+      ],
+    },
+    {
+      title: "Какие данные мы не собираем",
+      paragraphs: [
+        "Мы не просим детей указывать электронную почту, номер телефона, домашний адрес или точное местоположение.",
+        "Мы не используем рекламные трекеры и не продаём персональные данные.",
+        "Мы сознательно не собираем персональные данные детей сверх необходимого для работы игры.",
+      ],
+    },
+    {
+      title: "Сторонние сервисы",
+      paragraphs: [
+        "Supabase обеспечивает вход, облачные сохранения, кошельки и запросы на удаление. Конфиденциальность: supabase.com/privacy",
+        "RevenueCat обрабатывает покупки и записи о них, связанные с псевдонимным идентификатором аккаунта. Конфиденциальность: revenuecat.com/privacy",
+        "Apple App Store и Google Play обрабатывают платежи и предоставляют записи о покупках.",
+        "GitHub Pages размещает наши общедоступные страницы конфиденциальности, поддержки и удаления аккаунта. GitHub записывает IP-адреса посетителей для обеспечения безопасности. Конфиденциальность GitHub: docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
+        "Эти компании обрабатывают данные по собственным политикам. Мы передаём только сведения, необходимые для синхронизации сохранений и покупок.",
+      ],
+    },
+    {
+      title: "Покупки в приложении",
+      paragraphs: [
+        "За реальные деньги продаются расходуемые наборы монет. Перед экраном покупки находится задание для взрослого на чтение и порядок чисел. Оно не проверяет возраст и не является родительским согласием.",
+        "Монеты принадлежат аккаунту и доступны всем его питомцам. Купленные монеты не имеют срока действия. Серверный кошелёк хранит текущий баланс с учётом расходов и возвратов. Восстановление проверяет этот баланс, а не выдаёт потраченные монеты повторно. Привязка аккаунта до покупки помогает восстановить доступ на другом устройстве.",
+      ],
+    },
+    {
+      title: "Облачные сохранения и несколько игр",
+      paragraphs: [
+        "В одном аккаунте может быть несколько сохранённых игр. Каждая игра хранится в облаке отдельно.",
+        "Перед выпуском необходимо включить и проверить привязку и восстановление аккаунтов. До этого не следует рассчитывать на перенос анонимного аккаунта на другое устройство. Локальное или анонимное сохранение может быть потеряно после удаления приложения или замены устройства. Одна история магазина не восстанавливает остаток потраченных монет.",
+      ],
+    },
+    {
+      title: "Ваш выбор",
+      paragraphs: [
+        "Команда удаления аккаунта и данных в настройках запрашивает удаление аккаунта входа и всех облачных питомцев в тестовой и основной средах. Приложение сообщает об успехе только после завершения удаления у поставщиков услуг. При ошибке или незавершённом запросе локальная игра и сеанс сохраняются для повторной попытки. Удаление не возвращает деньги за покупки.",
+        "Задачи и уход за питомцем работают без интернета. Награды в монетах ожидают синхронизации с сервером. Для расходов и покупок нужен онлайн-кошелёк.",
+      ],
+    },
+    {
+      title: "Конфиденциальность детей",
+      paragraphs: [
+        "Игра предназначена в том числе для детей. Привязкой аккаунта, покупками и удалением должен заниматься родитель или опекун. В необязательных полях аккаунта родителя следует указывать данные взрослого, а не ребёнка.",
+        "Если вы считаете, что мы по ошибке собрали персональные данные ребёнка, свяжитесь с нами, и мы их удалим.",
+      ],
+    },
+    {
+      title: "Безопасность и сроки хранения",
+      paragraphs: [
+        "Данные передаются по HTTPS. Облачные данные защищены правилами доступа на уровне строк, чтобы каждый пользователь имел доступ только к своим сохранениям.",
+        "После завершения удаления у поставщиков услуг удаляются активные сохранения, аккаунт входа и запись клиента RevenueCat. Ограниченные псевдонимные записи о монетах и транзакциях сохраняются для предотвращения повторного начисления и обработки возвратов. Резервные копии и рабочие журналы поставщиков могут иметь отдельные сроки хранения. TODO перед публикацией: согласовать с издателем законные сроки хранения, срок выполнения удаления и сроки удаления резервных копий и журналов.",
+      ],
+    },
+    {
+      title: "Изменения",
+      paragraphs: [
+        "Мы можем обновлять эту политику. Дата последнего обновления указана вверху. Прочитайте обновлённую политику, если дата изменилась.",
+      ],
+    },
+    {
+      title: "Контакты",
+      paragraphs: [`Издатель: ${PUBLISHER_NAME}`, `Электронная почта: ${SUPPORT_EMAIL}`],
+    },
+  ],
+};
+
 export function getPrivacyPolicyContent(locale: AppLocale): PrivacyPolicyContent {
-  return locale === "lv" ? LV : EN;
+  return { en: EN, lv: LV, ru: RU }[locale];
 }

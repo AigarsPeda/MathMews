@@ -1,0 +1,62 @@
+[
+  {
+    "id": "easy-multiplication-explore-8",
+    "type": "ratio_table",
+    "difficulty": "easy"
+  },
+  {
+    "id": "easy-numbers-explore-8",
+    "type": "signed_line",
+    "difficulty": "easy"
+  },
+  {
+    "id": "easy-addition-explore-8",
+    "type": "equation_board",
+    "difficulty": "easy"
+  },
+  {
+    "id": "easy-numbers-explore-9",
+    "type": "coordinate_map",
+    "difficulty": "easy"
+  },
+  {
+    "id": "medium-multiplication-explore-8",
+    "type": "ratio_table",
+    "difficulty": "medium"
+  },
+  {
+    "id": "medium-subtraction-explore-8",
+    "type": "signed_line",
+    "difficulty": "medium"
+  },
+  {
+    "id": "medium-addition-explore-8",
+    "type": "equation_board",
+    "difficulty": "medium"
+  },
+  {
+    "id": "medium-operations-explore-9",
+    "type": "coordinate_map",
+    "difficulty": "medium"
+  },
+  {
+    "id": "hard-measurement-explore-8",
+    "type": "ratio_table",
+    "difficulty": "hard"
+  },
+  {
+    "id": "hard-operations-explore-8",
+    "type": "signed_line",
+    "difficulty": "hard"
+  },
+  {
+    "id": "hard-operations-explore-9",
+    "type": "equation_board",
+    "difficulty": "hard"
+  },
+  {
+    "id": "hard-measurement-explore-9",
+    "type": "coordinate_map",
+    "difficulty": "hard"
+  }
+]

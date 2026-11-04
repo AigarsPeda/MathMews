@@ -4,8 +4,10 @@ import { initReactI18next } from 'react-i18next';
 
 import en from '@/locales/en.json';
 import lv from '@/locales/lv.json';
+import ru from '@/locales/ru.json';
 import { visualHelpEn } from '@/locales/visual-help/en';
 import { visualHelpLv } from '@/locales/visual-help/lv';
+import { visualHelpRu } from '@/locales/visual-help/ru';
 import { isAppLocale, type AppLocale } from '@/types/locale';
 
 export function getDeviceLocale(): AppLocale {
@@ -16,6 +18,7 @@ export function getDeviceLocale(): AppLocale {
 const resources = {
   en: { translation: { ...en, visualHelp: visualHelpEn } },
   lv: { translation: { ...lv, visualHelp: visualHelpLv } },
+  ru: { translation: { ...ru, visualHelp: visualHelpRu } },
 };
 
 // Fast Refresh reuses the instance. Merge newly authored keys without resetting

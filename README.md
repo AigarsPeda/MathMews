@@ -41,7 +41,7 @@ For in-app purchases, use an [EAS development build](https://docs.expo.dev/devel
 ## Puzzle learning
 
 Choose a difficulty, topic, lesson and puzzle. Each topic has independent progress.
-The catalog has 180 lessons and 1,440 puzzles per language, including 180
+The catalog has 180 lessons and 1,800 puzzles per language in English, Latvian and Russian, including 180
 checkpointed boss missions and 180 optional timed challenges. Bosses count toward
 lesson completion but never block the next lesson or another topic. Three shared
 lives limit scored mistakes. Learn with the cat remains available at zero lives,
@@ -49,6 +49,13 @@ with free supported exercises and no currency or completion rewards. The current
 content revisions preserve existing puzzle IDs and earned progress.
 See [curriculum authoring and verification](docs/puzzle-curriculum.md) for adding
 content and applying the new puzzle reward registration migration.
+
+Language selection is available during onboarding and in Settings. Russian UI
+messages live in `locales/ru.json`, picture help in `locales/visual-help/ru.json`,
+and puzzle translation templates in `locales/puzzle-text/ru.json`. Run
+`npm run puzzles:build` after editing puzzle templates, then `npm run test:locales`.
+The builder requires Russian translations for new puzzle and lesson text. All
+languages share puzzle IDs, answers, rewards and saved progress.
 
 ## Connected cat rooms
 

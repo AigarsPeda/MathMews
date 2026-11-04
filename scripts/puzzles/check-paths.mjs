@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 
 export function checkPaths({ load }) {
+  for (const locale of ['en', 'lv', 'ru']) {
+    const messages = JSON.parse(fs.readFileSync(`locales/${locale}.json`, 'utf8')).puzzlePathDesign;
+    for (const key of ['topicProgress', 'topicProgressLabel']) {
+      assert.ok(messages[key]?.includes('{{completed}}') && messages[key]?.includes('{{remaining}}'), `${locale}: topic counts exist in the path namespace`);
+    }
+  }
   const path = load('@/constants/puzzle-path');
   const legacy = load('@/constants/curriculum');
   const { createDefaultGameSave, parseGameSaveFromValue } = load('@/utils/game-storage');
@@ -11,6 +18,23 @@ export function checkPaths({ load }) {
   const now = Date.now();
   const allIds = [];
   const nextLessonLocked = (track, lesson) => track[track.indexOf(lesson) + 1];
+  for (const difficulty of ['easy', 'medium', 'hard']) {
+    for (const topic of legacy.getLearningTopics(difficulty)) {
+      const fresh = createDefaultGameSave().progress;
+      const track = path.getTopicPaths(difficulty, topic.id);
+      const ids = track.flatMap(lesson => lesson.levels.flatMap(level => level.puzzleIds));
+      const counts = progress => path.getTopicPathProgress(difficulty, topic.id, progress);
+      assert.deepEqual(clone(counts(fresh)), { solved: 0, total: 100, complete: false }, 'New topics include all ten puzzles in each of ten levels');
+      const elsewhere = path.PUZZLE_PATHS.filter(lesson => lesson.difficulty !== difficulty || lesson.topicId !== topic.id)
+        .flatMap(lesson => lesson.levels.flatMap(level => level.puzzleIds));
+      const partial = { ...fresh, completedPuzzleIds: [...ids.slice(0, 9), ids[0], ...elsewhere], attemptedPuzzleIds: [ids[9]] };
+      assert.equal(counts(partial).solved, 9, 'Count challenges and reviews once; ignore other topics, difficulties, replays and incorrect attempts');
+      assert.equal(counts(partial).total - counts(partial).solved, 91);
+      const inherited = { ...fresh, completedPathLessonIds: track.map(lesson => lesson.id), completedPuzzleIds: ids.slice(0, 7) };
+      assert.equal(counts(inherited).solved, 7, 'Legacy level completion never invents solved answers for newly added puzzles');
+      assert.deepEqual(clone(counts({ ...fresh, completedPuzzleIds: ids })), { solved: 100, total: 100, complete: true });
+    }
+  }
   {
     const fresh = createDefaultGameSave().progress;
     const first = path.getTopicPaths('easy', 'addition')[0];

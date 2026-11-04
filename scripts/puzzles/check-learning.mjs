@@ -13,7 +13,7 @@ export function checkLearning({load}) {
   const all=['easy','medium','hard'].flatMap(d=>getPuzzlesByDifficulty('en',d)),byId=new Map(all.map(p=>[p.id,p]));
   const ranks=[0,0,0], reviewRanks=[0,0,0], reviewPositions=[0,0,0];
   for(const tier of ['easy','medium','hard']) {
-    for(const locale of ['en','lv']) {
+    for(const locale of ['en','lv','ru']) {
       const comparisons=getPuzzlesByDifficulty(locale,tier).filter(p=>p.type==='compare');
       assert.ok(Math.abs(comparisons.filter(p=>p.correctIndex===0).length-comparisons.filter(p=>p.correctIndex===1).length)<=1,'Comparison answers balance left and right');
       for(const p of comparisons) {

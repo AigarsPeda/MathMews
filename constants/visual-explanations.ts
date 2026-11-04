@@ -26,6 +26,7 @@ type ExampleKey = keyof typeof VISUAL_EXAMPLES;
 export function getVisualHelpTemplateKey(puzzle: Puzzle): ExampleKey {
   if (puzzle.helpTemplate) return puzzle.helpTemplate;
   const type = getPuzzleType(puzzle);
+  if (type === "geometry_measure") return "geometry_area";
   if (type === "decimal_grid") return "decimal_grid_100";
   if (type === "decimal_place_value") return "decimal_place_build";
   if (type === "fraction_strip") return "fraction_strip_build";

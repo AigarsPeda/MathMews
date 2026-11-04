@@ -16,8 +16,9 @@ const fractionGoals = [
   ['apply','Fractions in a collection','Daļas kolekcijā'], ['review','Revisit fraction ideas','Atkārto daļu jēdzienus'],
 ];
 export function arithmetic(stage, slot, boss, locale) {
-  const lv=locale==='lv', a=stage<2 ? 2+slot : stage===2 ? 5+slot : 7+slot%3;
-  const b=stage<2 ? 1+(slot+(boss?1:0))%3 : stage===2 ? 2+slot%2 : 4+slot%4;
+  if (boss && stage >= 1) slot += 8;
+  const lv=locale==='lv', a=stage<2 ? (stage===1 ? [4,2,5,3,6,4,7,3,4,5,6][slot] : 2+slot) : stage===2 ? 5+slot : 7+slot%3;
+  const b=stage<2 ? (stage===1 ? [2,5,3,4,1,5,2,6,4,5,2][slot] : 1+(slot+(boss?1:0))%3) : stage===2 ? 2+slot%2 : 4+slot%4;
   const total=a+b, base={topic:'addition',hint:lv?`Sāc ar ${a} un pieskaiti ${b}.`:`Start with ${a} and add ${b}.`,explanation:`${a} + ${b} = ${total}.`};
   if(stage===3) base.hint=lv?`Lai no ${a} iegūtu 10, vajag ${10-a}. Sadali ${b} un pieskaiti pārējo.`:`It takes ${10-a} to reach 10 from ${a}. Split ${b}, then add what remains.`;
   if(stage===4) return {...base,type:'balance',correctIndex:0,question:lv?'Kura daļa trūkst?':'Which part is missing?',payload:{leftDisplay:`${a} + ?`,rightValue:total,choices:[b,b+1,b+2].map(String)}};

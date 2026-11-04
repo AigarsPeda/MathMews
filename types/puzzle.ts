@@ -17,6 +17,8 @@ export type PuzzleTopic =
   | "division";
 
 export type PuzzleType =
+  | "ratio_table" | "signed_line" | "equation_board" | "coordinate_map"
+  | "geometry_measure"
   | "decimal_grid"
   | "decimal_place_value"
   | "fraction_number_line"
@@ -295,7 +297,31 @@ export type DecimalPlaceValuePuzzle = PuzzleBase & {
   payload: { hundredths: number; digits: 1 | 2; mode: "build" | "bundle" | "split"; units: ("ones" | "tenths" | "hundredths")[]; exchangeUnit: "tenths" | "hundredths"; guided: boolean };
 };
 
+export type GeometryMeasurePuzzle = PuzzleBase & {
+  type: "geometry_measure";
+  payload: { mode: "area" | "perimeter" | "compare" | "missing_area" | "missing_perimeter"; width: number; height: number; other?: { width: number; height: number }; guided: boolean };
+};
+
+export type RatioTablePuzzle = PuzzleBase & {
+  type: "ratio_table";
+  payload: { a: number; b: number; targetA: number; guided: boolean };
+};
+export type SignedLinePuzzle = PuzzleBase & {
+  type: "signed_line";
+  payload: { mode: "place" | "move"; start: number; delta: number; min: number; max: number; guided: boolean };
+};
+export type EquationBoardPuzzle = PuzzleBase & {
+  type: "equation_board";
+  payload: { a: number; b: number; c: number; guided: boolean };
+};
+export type CoordinateMapPuzzle = PuzzleBase & {
+  type: "coordinate_map";
+  payload: { mode: "plot" | "translate" | "distance"; min: number; max: number; start: { x: number; y: number }; end: { x: number; y: number }; guided: boolean };
+};
+
 export type Puzzle =
+  | RatioTablePuzzle | SignedLinePuzzle | EquationBoardPuzzle | CoordinateMapPuzzle
+  | GeometryMeasurePuzzle
   | DecimalGridPuzzle
   | DecimalPlaceValuePuzzle
   | FractionNumberLinePuzzle

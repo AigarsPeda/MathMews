@@ -19,6 +19,10 @@
     "lv": {
       "name": "Rozā lins",
       "description": "Austas sienas · Gaišs ozols"
+    },
+    "ru": {
+      "name": "Розовое белье",
+      "description": "Тканые стены · Светлый дуб"
     }
   },
   {
@@ -41,6 +45,10 @@
     "lv": {
       "name": "Piekrastes svītras",
       "description": "Zilas svītras · Smilšu ozols"
+    },
+    "ru": {
+      "name": "Прибрежные полосы",
+      "description": "Синие полосы · Дуб песчаный"
     }
   },
   {
@@ -63,6 +71,10 @@
     "lv": {
       "name": "Lavandas zariņi",
       "description": "Ziedu tapetes · Gaišs ozols"
+    },
+    "ru": {
+      "name": "Веточки лаванды",
+      "description": "Цветочная бумага · Дуб светлый"
     }
   },
   {
@@ -85,6 +97,10 @@
     "lv": {
       "name": "Siltais ozols",
       "description": "Koka paneļi · Dabīgs ozols"
+    },
+    "ru": {
+      "name": "Теплый дуб",
+      "description": "Деревянные панели · Дуб натуральный"
     }
   },
   {
@@ -107,6 +123,10 @@
     "lv": {
       "name": "Salvijas lapas",
       "description": "Lapu tapetes · Medus ozols"
+    },
+    "ru": {
+      "name": "Ботанический мудрец",
+      "description": "Листовые обои · Дуб медовый"
     }
   },
   {
@@ -129,6 +149,10 @@
     "lv": {
       "name": "Rozā zvīņas",
       "description": "Zvīņu raksts · Gaišs ozols"
+    },
+    "ru": {
+      "name": "Румяна гребешки",
+      "description": "Бумага-гребешок · Светлый дуб"
     }
   },
   {
@@ -151,6 +175,10 @@
     "lv": {
       "name": "Tirkīza art deco",
       "description": "Vēdekļu raksts · Zeltains ozols"
+    },
+    "ru": {
+      "name": "Бирюзовый деко",
+      "description": "Веерные обои · Золотой дуб"
     }
   },
   {
@@ -173,6 +201,10 @@
     "lv": {
       "name": "Lauku krēms",
       "description": "Dēļu apdare · Dabīgs ozols"
+    },
+    "ru": {
+      "name": "Деревенский крем",
+      "description": "Бисероплетение · Дуб натуральный"
     }
   },
   {
@@ -195,6 +227,10 @@
     "lv": {
       "name": "Medus rombi",
       "description": "Ģeometrisks raksts · Silts ozols"
+    },
+    "ru": {
+      "name": "Медовые бриллианты",
+      "description": "Геометрическая бумага · Теплый дуб"
     }
   },
   {
@@ -217,6 +253,10 @@
     "lv": {
       "name": "Gaišais lofts",
       "description": "Krāsoti ķieģeļi · Vecināts ozols"
+    },
+    "ru": {
+      "name": "Мягкий лофт",
+      "description": "Крашеный кирпич · Дуб состаренный"
     }
   },
   {
@@ -239,6 +279,10 @@
     "lv": {
       "name": "Ceriņu režģis",
       "description": "Režģa raksts · Gaišs ozols"
+    },
+    "ru": {
+      "name": "Сиреневая решетка",
+      "description": "Трельяжная бумага · Дуб светлый"
     }
   },
   {
@@ -261,6 +305,10 @@
     "lv": {
       "name": "Zilās flīzes",
       "description": "Glazētas flīzes · Gaišs ozols"
+    },
+    "ru": {
+      "name": "Синяя карточка",
+      "description": "Глазурованная карточка · Дуб светлый"
     }
   },
   {
@@ -283,6 +331,10 @@
     "lv": {
       "name": "Salvijas pinums",
       "description": "Austas šķiedras · Medus ozols"
+    },
+    "ru": {
+      "name": "Трава шалфея",
+      "description": "Тканые волокна · Медовый дуб"
     }
   },
   {
@@ -305,6 +357,10 @@
     "lv": {
       "name": "Terakota",
       "description": "Kaļķa apmetums · Silts ozols"
+    },
+    "ru": {
+      "name": "Терракота",
+      "description": "Известковая штукатурка · Дуб теплый"
     }
   },
   {
@@ -327,6 +383,10 @@
     "lv": {
       "name": "Riekstkoka miers",
       "description": "Koka paneļi · Medus ozols"
+    },
+    "ru": {
+      "name": "Ореховое отступление",
+      "description": "Деревянные панели · Дуб медовый"
     }
   },
   {
@@ -349,6 +409,10 @@
     "lv": {
       "name": "Pusnakts zvaigznes",
       "description": "Zelta zvaigznes · Tumšs ozols"
+    },
+    "ru": {
+      "name": "Полуночные звезды",
+      "description": "Золотые звезды · Дуб темный"
     }
   },
   {
@@ -371,6 +435,10 @@
     "lv": {
       "name": "Lauku margrietiņas",
       "description": "Ziedu tapetes · Rūtainas flīzes"
+    },
+    "ru": {
+      "name": "Дачные ромашки",
+      "description": "Бумага-ромашка · Шахматная доска"
     }
   },
   {
@@ -393,6 +461,10 @@
     "lv": {
       "name": "Tropu lapotne",
       "description": "Tropu lapas · Bambuss"
+    },
+    "ru": {
+      "name": "Тропический навес",
+      "description": "Тропические листья · Бамбук"
     }
   },
   {
@@ -415,6 +487,10 @@
     "lv": {
       "name": "Japāņu viļņi",
       "description": "Viļņu raksts · Tatami"
+    },
+    "ru": {
+      "name": "Японские волны",
+      "description": "Волнистая бумага · Маты татами"
     }
   },
   {
@@ -437,6 +513,10 @@
     "lv": {
       "name": "Ķieģeļu lofts",
       "description": "Sarkani ķieģeļi · Betons"
+    },
+    "ru": {
+      "name": "Лофт из красного кирпича",
+      "description": "Рустикальный кирпич · Бетон"
     }
   },
   {
@@ -459,6 +539,10 @@
     "lv": {
       "name": "Ogļu studija",
       "description": "Betona sienas · Šīferis"
+    },
+    "ru": {
+      "name": "Угольная студия",
+      "description": "Бетонные стены · Сланцевая карточка"
     }
   },
   {
@@ -481,6 +565,10 @@
     "lv": {
       "name": "Retro arkas",
       "description": "Okera arkas · Teraco"
+    },
+    "ru": {
+      "name": "Ретро арки",
+      "description": "Арки охры · Терраццо"
     }
   },
   {
@@ -503,6 +591,10 @@
     "lv": {
       "name": "Rozā teraco",
       "description": "Akmens šķembas · Gaišs teraco"
+    },
+    "ru": {
+      "name": "Румяна терраццо",
+      "description": "Каменная крошка · Кремовое терраццо"
     }
   },
   {
@@ -525,6 +617,10 @@
     "lv": {
       "name": "Marokas tirkīzs",
       "description": "Četrlapju raksts · Mozaīka"
+    },
+    "ru": {
+      "name": "Марокканский чирок",
+      "description": "Бумага четырехлистник · Мозаика"
     }
   },
   {
@@ -547,6 +643,10 @@
     "lv": {
       "name": "Rozā rūtiņas",
       "description": "Rūtainas tapetes · Gaišs ozols"
+    },
+    "ru": {
+      "name": "Роза в клетку",
+      "description": "Бумага в мелкую клетку · Светлый дуб"
     }
   },
   {
@@ -569,6 +669,10 @@
     "lv": {
       "name": "Klasiskais zilais",
       "description": "Puspaneļi · Ozola parkets"
+    },
+    "ru": {
+      "name": "Наследие синий",
+      "description": "Половина вагонки · Дубовый паркет"
     }
   },
   {
@@ -591,6 +695,10 @@
     "lv": {
       "name": "Medus šūnas",
       "description": "Sešstūru raksts · Akmens flīzes"
+    },
+    "ru": {
+      "name": "Сотовый камень",
+      "description": "Шестигранная бумага · Каменная карточка"
     }
   },
   {
@@ -613,6 +721,10 @@
     "lv": {
       "name": "Saulrieta arkas",
       "description": "Arku raksts · Korķis"
+    },
+    "ru": {
+      "name": "Закатные арки",
+      "description": "Многослойные арки · Пробка"
     }
   },
   {
@@ -635,6 +747,10 @@
     "lv": {
       "name": "Meža stūrītis",
       "description": "Sēņu tapetes · Parkets"
+    },
+    "ru": {
+      "name": "Лесной уголок",
+      "description": "Грибная бумага · Паркет"
     }
   },
   {
@@ -657,6 +773,10 @@
     "lv": {
       "name": "Jūras zilais",
       "description": "Svītraini paneļi · Rūtainas flīzes"
+    },
+    "ru": {
+      "name": "Морской флот",
+      "description": "Полосатая вагонка · Шахматная доска"
     }
   }
 ]

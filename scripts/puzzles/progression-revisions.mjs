@@ -17,7 +17,7 @@ function numberChoices(answer, key) {
   return [answer, ...Array.from({ length: 2 }, (_, i) => answer + (i < rank ? -i - 1 : i + 1))].map(String);
 }
 
-function revisePairTiles(list) {
+export function revisePairTiles(list) {
   list.filter(p => p.type === 'pair_sum').forEach((puzzle, ordinal) => {
     const { numbers: old, target, correctIndices } = puzzle.payload;
     const numbers = correctIndices.map(i => old[i]);
@@ -201,7 +201,7 @@ function reviseEstimates(list, locale) {
   });
 }
 
-function balanceTruthValues(list, locale) {
+export function balanceTruthValues(list, locale) {
   const topics = [...new Set(list.filter(p => p.type === 'true_false' && !p.payload.hideStatement).map(p => p.topic))];
   for (const topic of topics) {
     const tasks = list.filter(p => p.type === 'true_false' && !p.payload.hideStatement && p.topic === topic);

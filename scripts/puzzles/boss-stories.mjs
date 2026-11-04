@@ -163,12 +163,12 @@ export const bossStories = {
       stage('Check the supplies', 'Pārbaudi krājumus', 'Estimate the total supplies for the shelter.', 'Aptuveni novērtē patvēruma krājumu kopskaitu.', 'The estimate is checked. Let’s finish the shelter!', 'Aplēse ir pārbaudīta. Pabeigsim patversmi!'),
     ]),
   vault: story('vault',
-    'The clue vault holds a hidden star. Solve its number lock, verify the answer and order the key tiles to reveal it.',
-    'Norāžu seifā slēpjas zvaigzne. Atrisini skaitļa slēdzeni, pārbaudi atbildi un sakārto atslēgas kartītes, lai to atklātu.',
+    'The clue vault holds a hidden star. Solve its number lock, verify the answer and solve the final code to reveal it.',
+    'Norāžu seifā slēpjas zvaigzne. Atrisini skaitļa slēdzeni, pārbaudi atbildi un atrisini gala kodu, lai to atklātu.',
     'The vault door opens and the hidden star rises. Every clue led us here!',
     'Seifa durvis atveras, un slēptā zvaigzne paceļas. Visas norādes atveda mūs šurp!', [
       stage('Solve the number lock', 'Atrisini skaitļa slēdzeni', 'Find the single number that fits every clue.', 'Atrodi vienīgo skaitli, kas atbilst visām norādēm.', 'The lock number is 42. Check its division clue next.', 'Slēdzenes skaitlis ir 42. Tālāk pārbaudi tā dalīšanas norādi.'),
       stage('Verify the clue', 'Pārbaudi norādi', 'Test the claim about our lock number before turning the key.', 'Pirms atslēgas pagriešanas pārbaudi apgalvojumu par slēdzenes skaitli.', 'The verified clue gives seven. Look for its multiples on the key tiles.', 'Pārbaudītā norāde dod septiņi. Meklē tā daudzkārtņus atslēgas kartītēs.'),
-      stage('Order the key tiles', 'Sakārto atslēgas kartītes', 'Arrange the multiples from smallest to largest to open the vault.', 'Sakārto daudzkārtņus augošā secībā, lai atvērtu seifu.', 'All the key tiles fit. Let’s see what’s inside!', 'Visas atslēgas kartītes der. Apskatīsimies, kas ir iekšā!'),
+      stage('Solve the final code', 'Atrisini gala kodu', 'Find the even multiple of seven that fits both bounds to open the vault.', 'Atrodi pāra skaitli, kas dalās ar septiņi un atbilst abām robežām, lai atvērtu seifu.', 'All the key tiles fit. Let’s see what’s inside!', 'Visas atslēgas kartītes der. Apskatīsimies, kas ir iekšā!'),
     ]),
 };
