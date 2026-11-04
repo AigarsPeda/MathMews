@@ -1,3 +1,4 @@
+import { rectangleEdges } from "@/utils/geometry-models";
 import type { PracticeToken, VisualKeyframe, VisualScene } from "@/types/visual-explanation";
 
 const token = (id: string, label: string, x: number, y: number, extra: Partial<PracticeToken> = {}): PracticeToken =>
@@ -108,7 +109,7 @@ function decimalPlaceHelp(key: string, counts: [number, number, number][]) {
 
 function geometryCells(width: number, height: number, filled: number, x = 110, y = 40, size = 20) {
   return Array.from({ length: width * height }, (_, i) => token(`cell-${x}-${i}`, "", x + i % width * size, y + Math.floor(i / width) * size,
-    { shape: "part", width: size - 1, height: size - 1, tone: i < filled ? "primary" : "muted" }));
+    { shape: "part", width: size - 1, height: size - 1, cornerRadius: 0, tone: i < filled ? "primary" : "muted" }));
 }
 function geometryBoundary(count: number) {
   const points = [[0,0,1],[1,0,1],[2,0,1],[3,0,1],[4,0,0],[4,1,0],[3,2,1],[2,2,1],[1,2,1],[0,2,1],[0,1,0],[0,0,0]];
@@ -116,7 +117,46 @@ function geometryBoundary(count: number) {
     { shape: "part", width: h ? 24 : 3, height: h ? 3 : 24, tone: i < count ? "primary" : "muted" }));
 }
 
+// Keep each unit edge/cell mounted while its role changes between teaching steps.
+function geometryHelpEdges(prefix: string, width: number, height: number, x: number, y: number, size: number,
+  highlighted: boolean, visible: (index: number) => boolean = () => true) {
+  return rectangleEdges(width, height).map((edge, i) => token(`${prefix}-edge-${i}`, "",
+    x + (edge.x + (edge.horizontal ? .5 : 0)) * size,
+    y + (edge.y + (edge.horizontal ? 0 : .5)) * size,
+    { shape: "part", cornerRadius: 0, width: edge.horizontal ? size - 1 : 3, height: edge.horizontal ? 3 : size - 1,
+      tone: highlighted ? "primary" : "muted", visible: visible(i) }));
+}
+const geometryComparisonHelp = [0, 1, 2].map(step => board("5 × 2 = 10 × 1", [
+  ...geometryCells(5, 2, 0, 25, 45, 12), ...geometryCells(10, 1, 0, 160, 57, 12),
+  ...geometryHelpEdges("a", 5, 2, 19, 39, 12, step >= 1),
+  ...geometryHelpEdges("b", 10, 1, 154, 51, 12, step === 2),
+  plain("a-label", "5 × 2", 49, 95), plain("b-label", "10 × 1", 214, 95),
+], step === 0 ? undefined : step === 1 ? "5 + 2 + 5 + 2 = 14" : "14 < 22"));
+const geometryMissingAreaHelp = [0, 1, 2].map(step => board("2 × ? = 18", [
+  ...Array.from({ length: 18 }, (_, i) => token(`area-unit-${i}`, "",
+    step === 0 ? 144 + (i % 2) * 12 : i % 2 === 0 ? 90 : 210,
+    24 + Math.floor(i / 2) * 10,
+    { shape: "part", width: 9, height: 9, cornerRadius: 0, tone: step === 2 ? "primary" : "muted" })),
+  ...[90, 210].map((x, i) => plain(`column-count-${i}`, "9", x, 122, { height: 20, visible: step === 2 })),
+], step === 0 ? undefined : step === 1 ? "18 ÷ 2 = ?" : "18 ÷ 2 = 9"));
+const geometryMissingPerimeterHelp = [0, 1, 2].map(step => board("2 × (8 + ?) = 26", [
+  ...geometryHelpEdges("side", 8, 5, 100, 40, 12, step > 0,
+    i => step === 0 || (step === 1 ? i < 13 : i >= 8 && i < 13)),
+  plain("width", "8", 148, 20, { height: 20, visible: step < 2 }),
+  plain("height", step === 2 ? "5" : "?", 220, 70),
+], step === 0 ? undefined : step === 1 ? "26 ÷ 2 = 13" : "13 − 8 = 5"));
+
 export const VISUAL_PRACTICE = {
+  fraction_compare_unit: frames("fraction_compare_unit", [0, 1, 2].map(step => board("1/2   ?   1/3",
+    [...stripParts(2, step > 0 ? 1 : 0, 35, "top"), ...stripParts(3, step > 0 ? 1 : 0, 95, "bottom")], step === 2 ? "1/2 > 1/3" : undefined))),
+  fraction_compare_same_numerator: frames("fraction_compare_same_numerator", [0, 1, 2].map(step => board("2/3   ?   2/5",
+    [...stripParts(3, step > 0 ? 2 : 0, 35, "top"), ...stripParts(5, step > 0 ? 2 : 0, 95, "bottom")], step === 2 ? "2/3 > 2/5" : undefined))),
+  fraction_compare_half: frames("fraction_compare_half", [0, 1, 2].map(step => board("1/2   ?   2/5",
+    [...stripParts(2, step > 0 ? 1 : 0, 35, "top"), ...stripParts(5, step > 0 ? 2 : 0, 95, "bottom")], step === 2 ? "1/2 > 2/5" : undefined))),
+  easy_fraction_half: frames("easy_fraction_half", [0, 1, 2].map(n => board("1/2 = ?/4",
+    [...stripParts(2, 1, 35, "reference"), ...stripParts(4, n, 95, "work")], n === 2 ? "1/2 = 2/4" : undefined))),
+  easy_fraction_compare: frames("easy_fraction_compare", [0, 1, 2].map(step => board("1/3   ?   2/3",
+    [...stripParts(3, step === 0 ? 0 : 1, 35, "top"), ...stripParts(3, step === 0 ? 0 : 2, 95, "bottom")], step === 2 ? "1/3 < 2/3" : undefined))),
   ratio_table: frames("ratio_table", [board("1 : 3",[tile("a","1",80),tile("b","3",220)]),board("× 2",[tile("a","2",80),tile("b","?",220)]),board("2 : 6",[tile("a","2",80),tile("b","6",220)],"1 × 2 : 3 × 2")]),
   bridge_positive: working("bridge_positive", "3 + 2 = ?", [["3","+1","4"],["4","+1","5"],["3","+2","5"]]),
   signed_line: working("signed_line", "−2 + 3 = ?", [["−2","+1","−1"],["−1","+1","0"],["0","+1","1"]]),
@@ -134,9 +174,9 @@ export const VISUAL_PRACTICE = {
 
   geometry_area: frames("geometry_area", [0,4,8].map(n => board("4 × 2", geometryCells(4,2,n), n === 8 ? "4 × 2 = 8" : undefined))),
   geometry_perimeter: frames("geometry_perimeter", [0,6,12].map(n => board("4 + 2 + 4 + 2", geometryBoundary(n), n === 12 ? "12" : undefined))),
-  geometry_compare: frames("geometry_compare", [0,1,2].map(n => board("5 × 2 = 10 × 1", [...geometryCells(5,2,10,25,45,12), ...geometryCells(10,1,10,160,45,12)], n === 2 ? "14 < 22" : undefined))),
-  geometry_missing_area: frames("geometry_missing_area", ["2 × ? = 18", "18 ÷ 2 = ?", "18 ÷ 2 = 9"].map(line => board("2 × ? = 18", [plain("step", line, 150)], line))),
-  geometry_missing_perimeter: frames("geometry_missing_perimeter", ["2 × (8 + ?) = 26", "26 ÷ 2 = 13", "13 − 8 = 5"].map(line => board("2 × (8 + ?) = 26", [plain("step", line, 150)], line))),
+  geometry_compare: frames("geometry_compare", geometryComparisonHelp),
+  geometry_missing_area: frames("geometry_missing_area", geometryMissingAreaHelp),
+  geometry_missing_perimeter: frames("geometry_missing_perimeter", geometryMissingPerimeterHelp),
   decimal_grid_10: decimalGridHelp(10, [0, 3, 6]),
   decimal_grid_100: decimalGridHelp(100, [0, 10, 18]),
   decimal_place_tenths: frames("decimal_place_tenths", [0, 2, 5].map(n => board("1          1/10", [tile("ones", "0", 85), tile("tenths", String(n), 215)], `0 + ${n}/10`))),

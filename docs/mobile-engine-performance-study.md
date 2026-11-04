@@ -179,7 +179,7 @@ Same synthetic fixtures and desktop Node/VM benchmark as the baseline, Apple M1 
 | 30 | 295.469 | 18.883 | 307.368 | 4.349 |
 | 60 | 849.727 | 35.652 | 2430.756 | 19.163 |
 
-Raw results: [baseline](benchmarks/room-loading-2026-10-11.json), [optimized](benchmarks/room-loading-2026-10-11-optimized.json). Run `node scripts/benchmark-room-loading.mjs` to repeat the CPU study. The performance/lifecycle checks are part of `npm run test:game`.
+Raw results: [baseline](benchmarks/room-loading-2026-10-11.json), [optimized](benchmarks/room-loading-2026-10-11-optimized.json). Run `node scripts/benchmark-room-loading.mjs` to repeat the CPU study. The detailed performance/lifecycle checks are part of `npm run test:game:extended`.
 
 ### Simulator shadows and remaining validation
 

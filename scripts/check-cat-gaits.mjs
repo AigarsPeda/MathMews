@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { openSkin, resetCatActor, drawCat, render, point, actorState, actorBones, load, walking, idle, enableActorCrossfade, sampleCatClip } from './check-cat-turning.mjs';
 const motion=load('@/utils/native-cat-locomotion');
 const {CAT_GAITS,catJourneyGait,catSpeedGait}=load('@/utils/native-cat-gaits');
-const {FLOOR_Y,buildNativeRoomWorld,prepareNativeStep,catScreenPoint}=load('@/utils/native-room-world');
+const {FLOOR_Y,buildNativeRoomWorld,prepareNativeStep,catScreenPoint,isFree}=load('@/utils/native-room-world');
 const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
 const names=['L.front.paw','R.front.paw','L.rear.paw','R.rear.paw'];
 enableActorCrossfade();
@@ -67,15 +67,19 @@ for(const skin of ['orange','grey','white']) {
   }
   for(const fps of [30,60,120])for(const scale of [.3,.8])for(const gait of ['walk','trot','run']) {
     resetCatActor();
-    const home=[0,FLOOR_Y,-4*scale],room={width:390,height:420,catScale:scale,radius:.3*scale,home,objects:[]};
+    // A diagonal gives the large cat room to run without starting outside the
+    // floor and triggering collision recovery before the gait test begins.
+    const half=Math.min(4*scale/Math.SQRT2,2),home=[-half,FLOOR_Y,-half],target=[half,FLOOR_Y,half];
+    const room={width:390,height:420,catScale:scale,radius:.3*scale,home,objects:[]},travelDistance=distance(home,target);
+    assert.ok(isFree(home,room)&&isFree(target,room),'Gait fixtures stay inside the walkable room');
     render({active:true,world:room,playback:idle});drawCat(1/fps);
-    const path=motion.catPacedPath([home,[0,FLOOR_Y,4*scale]],scale),timing=motion.catWalkTiming(path,scale,gait);
-    let props={active:true,world:room,playback:walking,activityKey:'gait',travel:{path,...timing,distance:8*scale,jump:false}};
+    const path=motion.catPacedPath([home,target],scale),timing=motion.catWalkTiming(path,scale,gait);
+    let props={active:true,world:room,playback:walking,activityKey:'gait',travel:{path,...timing,distance:travelDistance,jump:false}};
     render(props);let previous,peak=0,contactFrames=0,slip=0,maxStep=0,maxDetail;const seen=new Set();
     for(let i=0;i<Math.ceil((timing.duration+2)*fps);i++) {
       drawCat(1/fps);const state=actorState(),paws=names.map(point);
       seen.add(state.gait);peak=Math.max(peak,state.gaitSpeed);
-      if(previous && state.distance<4*scale && state.gaitSpeed>=previous.state.speed) {
+      if(previous && state.distance<travelDistance/2 && state.gaitSpeed>=previous.state.speed) {
         const ranks={walk:0,trot:1,run:2};
         assert.ok(ranks[state.gait]>=ranks[previous.state.gait],'Changing stride length cannot restart the first-step launch or force a walk mid-acceleration');
       }

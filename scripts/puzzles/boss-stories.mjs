@@ -60,7 +60,7 @@ export const bossStories = {
     'The repaired kite lifts into the breeze. Our festival can begin!',
     'Salabotais pūķis paceļas vējā. Mūsu svētki var sākties!', [
       stage('Plan the patch', 'Izplāno ielāpu', 'Mark the two sail panels that need a red patch.', 'Atzīmē abus buras laukumus, kuriem vajag sarkanu ielāpu.', 'The patch covers 2/6 of the sail. Find that same amount on our repair sheet.', 'Ielāps pārklāj 2/6 buras. Atrodi tādu pašu daļu remonta loksnē.'),
-      stage('Find matching material', 'Atrodi piemērotu materiālu', 'The repair sheet has smaller pieces. Choose an equal-sized patch.', 'Remonta loksnei ir mazāki gabali. Izvēlies tikpat lielu ielāpu.', 'The matching material is ready. Now fit the patch and the rest of the sail.', 'Atbilstošais materiāls ir gatavs. Tagad saliec ielāpu un pārējo buru.'),
+      stage('Find matching material', 'Atrodi piemērotu materiālu', 'Join each pair of sixths to make thirds. Choose an equal-sized patch.', 'Apvieno sestdaļas pa pāriem, lai iegūtu trešdaļas. Izvēlies tikpat lielu ielāpu.', 'The matching material is ready. Now fit the patch and the rest of the sail.', 'Atbilstošais materiāls ir gatavs. Tagad saliec ielāpu un pārējo buru.'),
       stage('Fit the sail', 'Saliec buru', 'Match both parts of the sail to complete the repair.', 'Savieno abas buras daļas, lai pabeigtu remontu.', 'The whole sail is mended. Let’s try it in the wind!', 'Visa bura ir salabota. Izmēģināsim to vējā!'),
     ]),
   tickets: story('tickets',

@@ -34,6 +34,7 @@ const { getVisualExplanation } = load('@/constants/visual-explanations');
 const helpLocales = {
   en: load('@/locales/visual-help/en').visualHelpEn,
   lv: load('@/locales/visual-help/lv').visualHelpLv,
+  ru: load('@/locales/visual-help/ru').visualHelpRu,
 };
 // Check the visual quantities and arrangements, not just their captions.
 const { VISUAL_PRACTICE } = load('@/constants/visual-practice');
@@ -54,6 +55,18 @@ for (const [key, total, leftover] of [['division', 8, 0], ['fair_share', 9, 1]])
 assert.deepEqual(Array.from(VISUAL_PRACTICE.fraction_build, frame => visibleTokens(frame).filter(token => token.shape === 'part' && token.tone !== 'muted').length), [0, 1, 2]);
 const sorted = visibleTokens(VISUAL_PRACTICE.order_numbers.at(-1)).sort((a, b) => a.x - b.x).map(token => token.label);
 assert.deepEqual(Array.from(sorted), ['2', '6', '8'], 'Tile positions actually show ascending order');
+// Geometry help must explain the quantities, not just change an equation caption.
+for (const [key, expected] of [['geometry_compare', [0,14,36]], ['geometry_missing_perimeter', [0,13,5]]]) {
+  const lesson = VISUAL_PRACTICE[key];
+  assert.deepEqual(Array.from(lesson, frame => visibleTokens(frame).filter(t => t.id.includes('-edge-') && t.tone === 'primary').length), expected);
+  assert.ok(lesson.every(frame => JSON.stringify(frame.scene.tokens.map(t => t.id)) === JSON.stringify(lesson[0].scene.tokens.map(t => t.id))), 'Unit edges keep their identity when highlighted or removed');
+}
+const areaHelp = VISUAL_PRACTICE.geometry_missing_area;
+assert.ok(areaHelp.every(frame => visibleTokens(frame).filter(t => t.id.startsWith('area-unit-')).length === 18), 'Splitting area conserves eighteen square units');
+assert.ok(areaHelp.every(frame => visibleTokens(frame).filter(t => t.id.startsWith('area-unit-')).every(t => t.width === t.height && t.cornerRadius === 0)), 'Area units render as squares, not rounded counters');
+const columns = visibleTokens(areaHelp[1]).filter(t => t.id.startsWith('area-unit-'));
+assert.deepEqual([90,210].map(x => columns.filter(t => t.x === x).length), [9,9], 'Divide area into two equal columns of nine');
+assert.deepEqual(Array.from(VISUAL_PRACTICE.geometry_missing_perimeter, frame => visibleTokens(frame).filter(t => t.id.startsWith('side-edge-')).length), [26,13,5], 'Halve the boundary, then remove the known width');
 for (const [key, lesson] of Object.entries(VISUAL_PRACTICE)) {
   for (const frame of lesson) for (const token of visibleTokens(frame)) {
     const width = token.width ?? (token.shape === 'plain' ? Math.max(40, token.label.length * 14) : 40);
@@ -78,12 +91,19 @@ for (const tier of ['easy', 'medium', 'hard']) {
   for (let i = 0; i < en.length; i++) for (const field of ['question', 'hint', 'explanation']) {
     if (/[A-Za-z]{3}/.test(en[i][field])) assert.notEqual(en[i][field], lv[i][field], `${lv[i].id}: ${field} must be localized`);
   }
-  for (const locale of ['en', 'lv']) for (const p of getPuzzlesByDifficulty(locale, tier)) {
+  for (const locale of ['en', 'lv', 'ru']) for (const p of getPuzzlesByDifficulty(locale, tier)) {
     count++;
     assert.equal(p.difficulty, tier);
     assert.ok(p.question && p.hint && p.explanation);
     let answer;
     switch (p.type) {
+      case 'geometry_measure': answer = { kind: 'geometry', value: load('@/utils/geometry-models').geometryTarget(p) }; break;
+      case 'ratio_table': case 'signed_line': case 'equation_board': case 'coordinate_map': {
+        const target = load('@/utils/bridge-models').bridgeTarget(p);
+        answer = { kind: 'bridge', state: p.type === 'equation_board' ? { equation: { a: 1, b: 0, c: target } }
+          : typeof target === 'number' ? { value: target } : { point: target } }; break;
+      }
+
       case 'place_value': {
         const { mode, start, operand = 0 } = p.payload;
         const target = mode === 'add' ? start + operand : mode === 'subtract' ? start - operand : start;

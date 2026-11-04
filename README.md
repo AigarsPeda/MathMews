@@ -55,7 +55,9 @@ messages live in `locales/ru.json`, picture help in `locales/visual-help/ru.json
 and puzzle translation templates in `locales/puzzle-text/ru.json`. Run
 `npm run puzzles:build` after editing puzzle templates, then `npm run test:locales`.
 The builder requires Russian translations for new puzzle and lesson text. All
-languages share puzzle IDs, answers, rewards and saved progress.
+languages share puzzle IDs, answers, rewards and saved progress. The three generated
+files in `assets/puzzles/` each contain one record per puzzle, with translations
+grouped within its display fields. The app resolves the requested language on demand.
 
 ## Connected cat rooms
 
@@ -69,7 +71,37 @@ Tap **Decorate**, then **Choose an item**. Under **Add a door**, choose its dest
 
 Use **Find furniture and toys** in the room tools to furnish the current space. Tap placed toys or sofas to start their available play or resting actions. Idle play uses the objects placed in that space. The room name above the scene also opens a room picker.
 
-## Startup regression tests
+## Test suites
+
+Automatic CI keeps type checking, lint, startup, account/wallet tests, catalog
+validation, release checks, required runtime assets and 16 essential game checks.
+`npm run test:game` covers saved progress, answers, lives, rewards, purchases,
+room edits, recovery and completion of cat commands. Each script covers multiple
+scenarios. Use `npm run test:game -- --list` to see the current selection.
+
+Detailed checks are available when the affected feature changes or before release:
+
+| Command | Coverage |
+| --- | --- |
+| `npm run test:game:extended` | Detailed animation, renderer, catalog and performance audits, plus UI render/drag tests |
+| `npm run test:game:all` | Essential and detailed game checks, plus UI render/drag tests |
+| `npm run test:ui` | Screen-render and drag internals |
+| `npm run test:puzzles` | Puzzle content, grading, progression, interactions and locales |
+| `npm run test:puzzle-art` | Boss renders, model provenance, atlases and puzzle illustrations |
+
+The **Detailed feature audits** GitHub workflow runs a selected audit manually.
+Animation, native-renderer and model changes still need their relevant detailed
+checks; they no longer block every unrelated change. Detailed audits keep their
+assertions and fail normally. Moving a check out of automatic CI does not fix an
+existing failure, including the recorded boss-render/model hash mismatch.
+
+Add a default check only when it protects a user action or saved data and is not
+already covered. Keep full coat/frame-rate sweeps, visual measurements and machine
+timing budgets in the detailed suite. The function-machine answer check now lives
+only in curriculum validation; required native models are checked by asset
+verification, and store-catalog backend tests run once in `test:backend`.
+
+### Startup regression tests
 
 ```bash
 npm run test:startup

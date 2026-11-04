@@ -1,6 +1,8 @@
 /** Explicit lesson ranges replace unrelated random quantities in the foundation tracks. */
 import { balanceTruthValues, revisePairTiles } from './progression-revisions.mjs';
-import plans from '../../data/puzzle-foundations.json' with { type: 'json' };
+import fs from 'node:fs';
+
+const plans = JSON.parse(fs.readFileSync(new URL('../../data/puzzle-foundations.json', import.meta.url), 'utf8'));
 
 const { easyTables: EASY_TABLES, mediumTables: MEDIUM_TABLES } = plans;
 

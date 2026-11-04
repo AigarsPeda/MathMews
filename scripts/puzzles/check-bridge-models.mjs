@@ -1,3 +1,4 @@
+import { readPuzzles } from './catalog.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {BRIDGE_PLANS,BRIDGE_TYPES,bridgeSolution} from './bridge-pilot.mjs';
@@ -9,7 +10,7 @@ export function checkBridgeModels({load}){
  const {getVisualExplanation}=load('@/constants/visual-explanations');
  const {checkPuzzleAnswer}=load('@/utils/puzzle-type');
  const catalog=JSON.parse(fs.readFileSync('data/puzzle-curriculum.json'));
- const lists=Object.fromEntries(['en','lv','ru'].map(l=>[l,['easy','medium','hard'].flatMap(d=>JSON.parse(fs.readFileSync(`assets/puzzles/${l==='en'?'':l+'/'}${d}.json`)))]));
+ const lists=Object.fromEntries(['en','lv','ru'].map(l=>[l,['easy','medium','hard'].flatMap(d=>readPuzzles(l, d))]));
  const tasks=lists.en.filter(p=>BRIDGE_TYPES.includes(p.type));assert.equal(tasks.length,120);
  for(const type of BRIDGE_TYPES)for(const tier of ['easy','medium','hard'])assert.equal(tasks.filter(p=>p.type===type&&p.difficulty===tier).length,10);
  for(const p of tasks){

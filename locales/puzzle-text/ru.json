@@ -2581,5 +2581,12 @@
   "Calculate across zero": "Вычисления через ноль",
   "Two-step equations": "Уравнения в два действия",
   "Four-quadrant maps": "Карты с четырьмя квадрантами",
-  "x = __N0__.": "x = __N0__."
+  "x = __N0__.": "x = __N0__.",
+  "Imagine splitting each piece in half. The shaded amount stays the same.": "Представьте, что каждую часть разделили пополам. Закрашенная доля остаётся прежней.",
+  "Join each pair of neighboring pieces into one larger piece. The amount stays the same.": "Объедините каждую пару соседних частей в одну большую. Доля остаётся прежней.",
+  "The wholes and the piece sizes are equal. Compare how many pieces are shaded.": "Целые и размеры частей одинаковы. Сравните количество закрашенных частей.",
+  "Use the familiar pairs. Splitting each piece in half keeps the same amount.": "Используйте знакомые пары. Если разделить каждую часть пополам, доля не изменится.",
+  "Join each pair of sixths to make thirds. Choose an equal-sized patch.": "Объедините шестые доли попарно, чтобы получить третьи. Выберите заплатку такого же размера.",
+  "Which fraction shows the same amount?": "Какая дробь показывает такую же долю?",
+  "Sort every fraction by value: __N0__/__N1__ or __N2__/__N3__.": "Разложите каждую дробь по значению: __N0__/__N1__ или __N2__/__N3__."
 }

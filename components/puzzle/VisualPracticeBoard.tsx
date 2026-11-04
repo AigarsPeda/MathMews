@@ -43,6 +43,7 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
   const plain = token.shape === "plain";
   const size = (token.width ?? (plain ? Math.max(40, token.label.length * 14) : 40)) * ratio;
   const height = (token.height ?? 36) * ratio;
+  const shapeStyle = token.cornerRadius === undefined ? undefined : { borderRadius: token.cornerRadius * ratio };
   const color = token.tone === "primary" ? GameColors.primary : token.tone === "blue" ? "#246FA8" : GameColors.secondary;
   return (
     <Animated.View
@@ -57,8 +58,8 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
       ]}
     >
       {token.shape && !plain && !token.object ? (
-        <View style={[StyleSheet.absoluteFill, styles.tokenShape, { backgroundColor: GameColors.cardBorder }]}>
-          <Animated.View style={[StyleSheet.absoluteFill, styles.tokenShape, { backgroundColor: color }, fillStyle]} />
+        <View style={[StyleSheet.absoluteFill, styles.tokenShape, shapeStyle, { backgroundColor: GameColors.cardBorder }]}>
+          <Animated.View style={[StyleSheet.absoluteFill, styles.tokenShape, shapeStyle, { backgroundColor: color }, fillStyle]} />
         </View>
       ) : null}
       {token.object ? <PuzzleObjectImage object={token.object} primary={token.tone === "primary"} /> : <Animated.View key={token.label} entering={FadeIn.duration(250).reduceMotion(ReduceMotion.System)}>

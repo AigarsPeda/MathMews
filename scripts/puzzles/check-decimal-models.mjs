@@ -1,3 +1,4 @@
+import { readPuzzles } from './catalog.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DECIMAL_PILOT_LESSONS } from './decimal-model-pilot.mjs';
@@ -8,7 +9,7 @@ export function checkDecimalModels({ load }) {
   const { checkPuzzleAnswer }=load('@/utils/puzzle-type');
   const { getPuzzleDraftAnswer, getPuzzleAttemptHint }=load('@/utils/puzzle-attempt');
   const { getVisualExplanation }=load('@/constants/visual-explanations');
-  const en=JSON.parse(fs.readFileSync('assets/puzzles/medium.json')), lv=JSON.parse(fs.readFileSync('assets/puzzles/lv/medium.json'));
+  const en=readPuzzles('en', 'medium'), lv=readPuzzles('lv', 'medium');
   const boards=en.filter(p=>p.type.startsWith('decimal_'));assert.equal(boards.length,30);
   const labels=['en','lv'].map(l=>JSON.parse(fs.readFileSync(`locales/${l}.json`)).decimalModels);
   assert.deepEqual(Object.keys(labels[0]).sort(),Object.keys(labels[1]).sort());

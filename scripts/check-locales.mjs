@@ -1,15 +1,16 @@
+import { readPuzzles } from './puzzles/catalog.mjs';
 /** Locale coverage, interpolation, Russian plurals and shared puzzle semantics. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
-import i18next from 'i18next';
+import { createInstance } from 'i18next';
 
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 const stored = new Map(), cache = new Map();
 let deviceLanguage = 'ru';
-const language = i18next.createInstance();
+const language = createInstance();
 function load(id) {
   if (id === 'i18next') return language;
   if (id === 'react-i18next') return { initReactI18next: { type: '3rdParty', init() {} } };
@@ -108,7 +109,7 @@ function comparePuzzle(source, translated, location, display = false) {
 }
 let puzzleCount = 0;
 for (const tier of ['easy','medium','hard']) {
-  const source = read(`assets/puzzles/${tier}.json`), translated = read(`assets/puzzles/ru/${tier}.json`);
+  const source = readPuzzles('en', tier), translated = readPuzzles('ru', tier);
   comparePuzzle(source, translated, tier);
   for (const [index, puzzle] of translated.entries()) {
     for (const key of ['question','hint']) {

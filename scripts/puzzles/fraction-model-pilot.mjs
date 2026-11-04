@@ -9,12 +9,12 @@ export const FRACTION_PILOT_LESSONS = [
     strip(1, 3), line(2, 3), strip(1, 6), line(4, 6), line(2, 5), strip(3, 5), line(5, 6),
   ] },
   { id: 'easy-fractions-explore-6', title: { en: 'Different parts, the same amount', lv: 'Dažādas daļas, vienāds daudzums' }, tasks: [
-    strip(1, 2, [4, 3], 'equivalent'), line(2, 4, 2), strip(2, 3, [4, 6], 'equivalent'), line(3, 6, 4),
-    strip(3, 4, [6, 8], 'equivalent'), line(4, 6, 3), strip(2, 4, [6, 3], 'equivalent'),
+    strip(1, 2, [4, 8], 'equivalent'), line(2, 4), strip(1, 2, [4, 6], 'equivalent'), line(3, 6),
+    strip(1, 2, [6, 8], 'equivalent'), line(4, 6), strip(3, 4),
   ] },
   { id: 'medium-fractions-equivalent', title: { en: 'Equivalent fractions on strips and lines', lv: 'Vienādas daļas joslās un uz taisnes' }, tasks: [
-    strip(3, 4, [6, 8, 12], 'equivalent'), line(2, 3, 6), strip(2, 5, [8, 10, 6], 'equivalent'), line(3, 6, 8),
-    strip(4, 6, [9, 8, 3], 'equivalent'), line(6, 8, 4), strip(3, 9, [6, 4, 12], 'equivalent'),
+    strip(1, 2, [4, 8], 'equivalent'), line(2, 3, 6), strip(2, 4, [2, 8], 'equivalent'), line(3, 4, 8),
+    strip(3, 6, [2, 4], 'equivalent'), line(6, 8, 4), strip(4, 8, [2, 4], 'equivalent'),
   ] },
 ];
 

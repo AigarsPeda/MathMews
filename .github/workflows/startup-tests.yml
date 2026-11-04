@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: regressions-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   startup:
     runs-on: ubuntu-latest
@@ -26,5 +30,6 @@ jobs:
       - run: npm run test:release
       - run: npx eslint . --max-warnings 0
       - run: npm run test:startup
-      - run: npm run test:game
+      - name: Essential game checks
+        run: npm run test:game
       - run: npm run assets:verify -- --runtime-only

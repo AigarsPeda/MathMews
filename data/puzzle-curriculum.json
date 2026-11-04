@@ -18495,9 +18495,9 @@
                   "ru": "Найдите подходящий материал"
                 },
                 "before": {
-                  "en": "The repair sheet has smaller pieces. Choose an equal-sized patch.",
-                  "lv": "Remonta loksnei ir mazāki gabali. Izvēlies tikpat lielu ielāpu.",
-                  "ru": "Ремонтный лист состоит из более мелких частей. Выберите заплатку одинакового размера."
+                  "en": "Join each pair of sixths to make thirds. Choose an equal-sized patch.",
+                  "lv": "Apvieno sestdaļas pa pāriem, lai iegūtu trešdaļas. Izvēlies tikpat lielu ielāpu.",
+                  "ru": "Объедините шестые доли попарно, чтобы получить третьи. Выберите заплатку такого же размера."
                 },
                 "after": {
                   "en": "The matching material is ready. Now fit the patch and the rest of the sail.",

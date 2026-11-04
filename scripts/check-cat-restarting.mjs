@@ -50,5 +50,6 @@ for(const skin of ['orange','grey','white'])for(const fps of [30,60,120]) {
   assert.ok(minPaw>.06,`${skin}/${fps}: paw penetrates floor (${minPaw})`);
   metrics.push({skin,fps,maxJump,maxStep,minPaw});
 }
+fs.mkdirSync('/tmp/brainpet-restarting', { recursive: true });
 fs.writeFileSync('/tmp/brainpet-restarting/metrics.json',JSON.stringify(metrics,null,2));
 console.log('Verified rapid stop/restart across three coats at 30/60/120 FPS: pose continuity, bounded frame movement, pause/resume, exact arrival and completed recovery.');

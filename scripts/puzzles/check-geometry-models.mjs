@@ -1,3 +1,4 @@
+import { readPuzzles } from './catalog.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { GEOMETRY_PILOT_LESSONS } from './geometry-pilot.mjs';
@@ -8,7 +9,7 @@ export function checkGeometryModels({load}) {
  const {checkPuzzleAnswer}=load('@/utils/puzzle-type');
  const {getPuzzleDraftAnswer,getPuzzleAttemptHint}=load('@/utils/puzzle-attempt');
  const {getVisualExplanation}=load('@/constants/visual-explanations');
- const puzzles=Object.fromEntries(['en','lv','ru'].map(locale=>[locale,JSON.parse(fs.readFileSync(`assets/puzzles/${locale==='en'?'':locale+'/'}hard.json`))]));
+ const puzzles=Object.fromEntries(['en','lv','ru'].map(locale=>[locale,readPuzzles(locale, 'hard')]));
  const en=puzzles.en.filter(p=>p.type==='geometry_measure');assert.equal(en.length,30);
  const labels=['en','lv','ru'].map(l=>JSON.parse(fs.readFileSync(`locales/${l}.json`)).geometryModels);
  for(const label of labels){assert.deepEqual(Object.keys(label).sort(),Object.keys(labels[0]).sort());assert.ok(Object.values(label).every(v=>v.length));}

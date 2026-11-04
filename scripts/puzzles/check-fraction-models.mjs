@@ -1,3 +1,4 @@
+import { readPuzzles } from './catalog.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { FRACTION_PILOT_LESSONS } from './fraction-model-pilot.mjs';
@@ -8,7 +9,7 @@ export function checkFractionModels({ load }) {
   const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
   const { getPuzzleDraftAnswer, getPuzzleAttemptHint } = load('@/utils/puzzle-attempt');
   const { getVisualExplanation } = load('@/constants/visual-explanations');
-  const read = locale => ['easy','medium','hard'].flatMap(d => JSON.parse(fs.readFileSync(`assets/puzzles/${locale==='lv'?'lv/':''}${d}.json`)));
+  const read = locale => ['easy','medium','hard'].flatMap(d => readPuzzles(locale, d));
   const en = read('en'), lv = read('lv');
   const labels = ['en','lv'].map(l => JSON.parse(fs.readFileSync(`locales/${l}.json`)));
   assert.deepEqual(Object.keys(labels[0].fractionModels).sort(), Object.keys(labels[1].fractionModels).sort());

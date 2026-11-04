@@ -81,6 +81,8 @@ export type PracticeToken = {
   scale?: number;
   width?: number;
   height?: number;
+  /** Exact geometry can opt out of the usual rounded teaching tiles. */
+  cornerRadius?: number;
   /** Separate lanes keep swapping number tiles readable while they cross. */
   arc?: number;
 };

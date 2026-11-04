@@ -1,3 +1,4 @@
+import { readPuzzles } from './catalog.mjs';
 import { BRIDGE_PLANS } from './bridge-pilot.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -13,7 +14,7 @@ export function checkFoundations({ load }) {
   const lessons = catalog.lessons.filter(l => l.difficulty !== 'hard');
   assert.equal(lessons.length, 120);
   for (const locale of ['en', 'lv', 'ru']) {
-    const all = ['easy', 'medium'].flatMap(d => read(`assets/puzzles/${locale === 'en' ? '' : `${locale}/`}${d}.json`));
+    const all = ['easy', 'medium'].flatMap(d => readPuzzles(locale, d));
     const byId = new Map(all.map(p => [p.id, p]));
     const path = lesson => [...['practice', 'boss', 'challenge'].flatMap(kind => lesson.levels.filter(l => l.kind === kind).flatMap(l => l.puzzleIds)), ...extras[lesson.id]].map(id => byId.get(id));
     for (const lesson of lessons) {

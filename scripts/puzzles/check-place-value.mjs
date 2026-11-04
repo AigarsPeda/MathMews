@@ -1,12 +1,12 @@
+import { readPuzzles } from './catalog.mjs';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
 
 export function checkPlaceValuePilot({ load }) {
   const { initialPlaceValue, changePlaceValue, checkPlaceValue, placeValueTarget } = load('@/utils/place-value');
   const { getPuzzleDraftAnswer, getPuzzleAttemptHint } = load('@/utils/puzzle-attempt');
   const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
   const { getTopicPaths } = load('@/constants/puzzle-path');
-  const read = locale => JSON.parse(fs.readFileSync(`assets/puzzles/${locale === 'lv' ? 'lv/' : ''}medium.json`));
+  const read = locale => readPuzzles(locale, 'medium');
   const en = read('en'), lv = read('lv');
   const pilot = en.filter(p => p.type === 'place_value');
   assert.equal(pilot.length, 14);

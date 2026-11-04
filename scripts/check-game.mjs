@@ -1,44 +1,114 @@
 import { spawnSync } from 'node:child_process';
-const checks = ['check-world-clock', 'check-crash-recovery', 'check-room-camera', 'check-room-transition', 'check-native-room', 'check-operation-path', 'check-function-machine', 'check-number-line', 'check-game-systems', 'check-video-lifecycle', 'check-room-activities', 'check-cat-bedtime', 'check-room-depth', 'check-room-decoration-motion', 'check-room-decoration-controls', 'check-room-controls-transition', 'check-native-menus', 'check-app-icons', 'check-cat-play', 'check-pet-speech-anchor', 'check-pet-speech-lifecycle', 'check-store-expansion', 'check-store-categories', 'check-store-placement-flow', 'check-asset-policy', 'check-asset-catalog'];
-checks.push('check-placement-bounds', 'check-room-item-placement', 'check-room-editing', 'check-room-drag-performance', 'check-room-performance', 'check-room-picking', 'check-world-weather', 'check-weather-control', 'check-curtains', 'check-pet-stat-animation', 'check-contact-shadows', 'check-native-shadows', 'check-wall-spotlights', 'check-fridges', 'check-item-interactions');
-checks.push('check-filament-shared-value');
-checks.push('check-simple-graphics-layout', 'check-puzzle-progress', 'check-puzzle-objects');
-checks.push('check-cat-locomotion');
-checks.push('check-cat-collision-recovery');
-checks.push('check-cat-task-chains');
-checks.push('check-room-activity-notice');
-checks.push('check-cat-command-motion');
-checks.push('check-cat-turning');
-checks.push('check-cat-gaits');
-checks.push('check-cat-jumps');
-checks.push('check-cat-jump-anatomy');
-checks.push('check-cat-landing-walk');
-checks.push('check-cat-motion-flow');
-checks.push('check-rocking-chair-navigation');
-checks.push('check-furniture-perches');
-checks.push('check-furniture-transfers');
-checks.push('check-catalog-furniture-jumps');
-checks.push('check-close-furniture-jumps');
-checks.push('check-cat-tail-contact');
-checks.push('check-cat-expression');
-checks.push('check-cat-command-attention');
-checks.push('check-cat-paw-contact');
-checks.push('check-cat-waking');
-checks.push('check-cat-sleeping');
-checks.push('check-cat-fluid-motion');
-checks.push('check-cat-anticipation');
-checks.push('check-cat-walking-turns');
-checks.push('check-cat-pivot-rhythm');
-checks.push('check-cat-exploration');
-checks.push('check-cat-spine');
-checks.push('check-cat-restarting');
-checks.push('check-cat-room-flow');
-checks.push('check-curriculum');
-checks.push('check-result-dismissal');
-checks.push('check-answer-feedback');
-checks.push('check-fraction-animation');
-checks.push('check-puzzle-experience');
-for (const check of checks) {
-  const result = spawnSync(process.execPath, [`scripts/${check}.mjs`], { stdio: 'inherit' });
-  if (result.status !== 0) process.exit(result.status ?? 1);
+
+// Default CI protects saved data, money, learning and completion of user actions.
+// Add a check here only if its failure demonstrates a broken user flow or data.
+const core = [
+  "check-world-clock",
+  "check-crash-recovery",
+  "check-game-systems",
+  "check-store-placement-flow",
+  "check-room-editing",
+  "check-room-transition",
+  "check-cat-task-chains",
+  "check-cat-collision-recovery",
+  "check-filament-shared-value",
+  "check-curriculum",
+  "check-puzzle-experience",
+  "check-puzzle-drag",
+  "check-result-dismissal",
+  "check-answer-feedback",
+  "check-locales",
+  "puzzles/test-catalog"
+];
+
+// Detailed rendering, animation anatomy, catalog sweeps and timing measurements
+// belong to explicit feature/release audits, not every unrelated change.
+const extended = [
+  "check-room-camera",
+  "check-native-room",
+  "check-operation-path",
+  "check-number-line",
+  "check-video-lifecycle",
+  "check-room-activities",
+  "check-cat-bedtime",
+  "check-room-depth",
+  "check-room-decoration-motion",
+  "check-room-decoration-controls",
+  "check-room-controls-transition",
+  "check-native-menus",
+  "check-app-icons",
+  "check-cat-play",
+  "check-pet-speech-anchor",
+  "check-pet-speech-lifecycle",
+  "check-store-expansion",
+  "check-store-categories",
+  "check-asset-policy",
+  "check-placement-bounds",
+  "check-room-item-placement",
+  "check-room-drag-performance",
+  "check-room-performance",
+  "check-room-picking",
+  "check-world-weather",
+  "check-weather-control",
+  "check-curtains",
+  "check-pet-stat-animation",
+  "check-contact-shadows",
+  "check-native-shadows",
+  "check-wall-spotlights",
+  "check-fridges",
+  "check-item-interactions",
+  "check-simple-graphics-layout",
+  "check-puzzle-progress",
+  "check-puzzle-objects",
+  "check-cat-locomotion",
+  "check-room-activity-notice",
+  "check-cat-command-motion",
+  "check-cat-turning",
+  "check-cat-gaits",
+  "check-cat-jumps",
+  "check-cat-jump-anatomy",
+  "check-cat-landing-walk",
+  "check-cat-motion-flow",
+  "check-rocking-chair-navigation",
+  "check-furniture-perches",
+  "check-furniture-transfers",
+  "check-catalog-furniture-jumps",
+  "check-close-furniture-jumps",
+  "check-cat-tail-contact",
+  "check-cat-expression",
+  "check-cat-command-attention",
+  "check-cat-paw-contact",
+  "check-cat-waking",
+  "check-cat-sleeping",
+  "check-cat-fluid-motion",
+  "check-cat-anticipation",
+  "check-cat-walking-turns",
+  "check-cat-pivot-rhythm",
+  "check-cat-exploration",
+  "check-cat-spine",
+  "check-cat-restarting",
+  "check-cat-room-flow",
+  "check-fraction-animation"
+];
+
+const suites = { core, extended, all: [...core, ...extended] };
+const args = process.argv.slice(2);
+const suite = args.find(arg => arg.startsWith('--suite='))?.slice(8) ?? 'core';
+if (!Object.hasOwn(suites, suite) || args.some(arg => arg !== '--list' && !arg.startsWith('--suite='))) {
+  console.error('Usage: node scripts/check-game.mjs [--suite=core|extended|all] [--list]');
+  process.exit(1);
+}
+const checks = suites[suite];
+if (args.includes('--list')) {
+  console.log(checks.join('\n'));
+} else {
+  console.log(`Running ${checks.length} ${suite} game checks.`);
+  for (const check of checks) {
+    const started = Date.now();
+    console.log(`Checking ${check}...`);
+    const result = spawnSync(process.execPath, [`scripts/${check}.mjs`], { stdio: 'inherit' });
+    if (result.error) console.error(result.error.message);
+    if (result.status !== 0) process.exit(result.status ?? 1);
+    console.log(`Passed ${check} (${((Date.now() - started) / 1000).toFixed(1)}s).`);
+  }
 }

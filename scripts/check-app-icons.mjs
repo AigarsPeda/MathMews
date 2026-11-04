@@ -49,7 +49,7 @@ function walk(value){
   if(value.emoji)assert.ok(value.emoji in inline,`Puzzle illustration ${value.emoji} lacks app artwork`);
   Object.values(value).forEach(walk);
 }
-for(const locale of ['', 'lv/'])for(const difficulty of ['easy','medium','hard'])walk(JSON.parse(fs.readFileSync(`assets/puzzles/${locale}${difficulty}.json`,'utf8')));
+for(const difficulty of ['easy','medium','hard'])walk(JSON.parse(fs.readFileSync(`assets/puzzles/${difficulty}.json`,'utf8')));
 const {IconText}=load('components/ui/IconText.tsx');
 const tree=IconText({style:[{fontSize:20},{fontWeight:'700'}],accessibilityLabel:'4 coins',children:['Cost 4 🪙; ', '🍎🍎🍎', '2 × 3 = 6 → ?']});
 const children=tree.props.children.flat(Infinity);

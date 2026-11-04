@@ -717,6 +717,10 @@ checkPlaceValuePilot({ load });
 
 const { checkFractionModels } = await import("./puzzles/check-fraction-models.mjs");
 checkFractionModels({ load });
+const { checkEasyFractions } = await import('./puzzles/check-easy-fractions.mjs');
+checkEasyFractions({ load });
+const { checkFractionTransition } = await import('./puzzles/check-fraction-transition.mjs');
+checkFractionTransition({ load });
 
 const { checkDecimalModels } = await import("./puzzles/check-decimal-models.mjs");
 checkDecimalModels({ load });

@@ -3,6 +3,8 @@ import type { LearningLesson } from '@/types/curriculum';
 import type { AppLocale } from '@/types/locale';
 import { getTopicLessons } from '@/constants/curriculum';
 import foundationPlans from '@/data/puzzle-foundations.json';
+import easyFractionPairs from '@/data/easy-fraction-pairs.json';
+import mediumFractionTransition from '@/data/medium-fraction-transition.json';
 export type ReviewQuestion = { diagram?: {parts:number;colored:number}; prompt: Record<AppLocale,string>; choices: string[]; correctIndex: number; explanation: Record<AppLocale,string> };
 const hash = (value: string) => {
   let seed = 2166136261;
@@ -56,6 +58,21 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
     }, choices, correctIndex: choices.indexOf(String(units)), explanation: { en: detail, lv: detail.replace('.', ','), ru: detail.replace('.', ',') } };
   }
   if(lesson.topicId === 'fractions') {
+    if (lesson.difficulty === 'easy' && stage >= 4 || lesson.difficulty === 'medium' && stage >= 0 && stage < mediumFractionTransition.length) {
+      const equivalent = lesson.difficulty === 'medium' || [5, 7, 9].includes(stage);
+      const pairs = lesson.difficulty === 'medium' ? mediumFractionTransition[stage].equivalents : easyFractionPairs[String(stage) as keyof typeof easyFractionPairs];
+      const d = [3, 4, 6, 8][v % 4], n = 1 + v % (d - 1);
+      const [sourceN, sourceD, answerN, answerD] = equivalent ? pairs[v % pairs.length] : [n, d, n, d];
+      const wrong = Array.from({ length: answerD + 1 }, (_, i) => i).filter(i => i !== answerN)
+        .sort((a, b) => Math.abs(a - answerN) - Math.abs(b - answerN)).slice(0, 2);
+      const choices = wrong.map(i => `${i}/${answerD}`), correctIndex = seed % 3;
+      choices.splice(correctIndex, 0, `${answerN}/${answerD}`);
+      const detail = `${sourceN}/${sourceD} = ${answerN}/${answerD}.`;
+      return { diagram: { parts: sourceD, colored: sourceN }, prompt: equivalent
+        ? { en: 'Which fraction shows the same shaded amount?', lv: 'Kura daļa rāda to pašu iekrāsoto daudzumu?', ru: 'Какая дробь показывает такую же закрашенную часть?' }
+        : { en: 'Which fraction of this whole is colored?', lv: 'Kāda šī veselā daļa ir iekrāsota?', ru: 'Какая часть целого закрашена?' },
+        choices, correctIndex, explanation: { en: detail, lv: detail, ru: detail } };
+    }
     const advanced=lesson.difficulty==='hard', equivalent=lesson.difficulty==='medium'||['equivalence','equivalent','review'].some(key=>lesson.skillId?.endsWith('.'+key));
     const d=lesson.skillId?.endsWith('.equal-parts')?2:lesson.skillId?.endsWith('.quarters')?4:3+v%4, n=1+v%(d-1);
     if (equivalent && !advanced) {

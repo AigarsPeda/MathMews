@@ -1,3 +1,4 @@
+import { readPuzzles } from './puzzles/catalog.mjs';
 /** Exercise production draft readiness, retries, hints and completion without a native renderer. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -25,7 +26,7 @@ const { isOptionalChallengePuzzle } = loadPure('@/utils/challenge-puzzles');
 const { buildFractionMatchCards } = loadPure('@/utils/fraction-match');
 const curriculum = loadPure('@/constants/curriculum');
 const catalog = JSON.parse(fs.readFileSync('data/puzzle-curriculum.json', 'utf8'));
-const allPuzzles = ['easy', 'medium', 'hard'].flatMap(level => JSON.parse(fs.readFileSync(`assets/puzzles/${level}.json`, 'utf8')));
+const allPuzzles = ['easy', 'medium', 'hard'].flatMap(level => readPuzzles('en', level));
 const empty = { choice: null, operators: [], shaded: 0, numberLine: null, pairIndices: [], order: [], matchedCount: 0, pairs: [], challenge: null };
 const en = JSON.parse(fs.readFileSync('locales/en.json', 'utf8'));
 const lv = JSON.parse(fs.readFileSync('locales/lv.json', 'utf8'));

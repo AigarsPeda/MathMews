@@ -1,0 +1,32 @@
+name: Detailed feature audits
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Select the feature audit to run
+        required: true
+        default: test:game:extended
+        type: choice
+        options:
+          - test:game:extended
+          - test:puzzle-art
+          - test:ui
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run "$CHECK_SUITE"
+        env:
+          CHECK_SUITE: ${{ inputs.suite }}

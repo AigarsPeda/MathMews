@@ -1,9 +1,12 @@
 import { applyBridgePilot, BRIDGE_PLANS } from "./bridge-pilot.mjs";
 import { applyGeometryPilot } from "./geometry-pilot.mjs";
 import { applyHardReasoning } from './hard-reasoning.mjs';
+import { simplifyEasyFractions } from './easy-fractions.mjs';
+import { smoothMediumFractions } from './medium-fraction-transition.mjs';
 import { applyFoundationProgression } from './foundation-progression.mjs';
 import { applyDecimalModelPilot } from "./decimal-model-pilot.mjs";
 import { addRussianLearningText, russianPuzzle } from './russian-content.mjs';
+import { groupPuzzleTranslations, localizePuzzle } from './catalog.mjs';
 import { applyFractionModelPilot } from "./fraction-model-pilot.mjs";
 import { applyPlaceValuePilot } from "./place-value-pilot.mjs";
 /** Authoring source. Run npm run puzzles:build after changing topics or lessons. */
@@ -414,6 +417,8 @@ applyGeometryPilot({ puzzles, lessons, pathExtras });
 applyHardReasoning({ puzzles, lessons, pathExtras });
 applyFoundationProgression({ puzzles, lessons, pathExtras, text, task, numberSet, patternSet, multiplySet, divideSet, addSet, subtractSet, operationSet });
 applyBridgePilot({ puzzles, lessons, pathExtras });
+simplifyEasyFractions({ puzzles, lessons, pathExtras });
+smoothMediumFractions({ puzzles, lessons, pathExtras });
 writeGenerated('data/puzzle-bridge-lessons.json', BRIDGE_PLANS.map(({id,type,difficulty})=>({id,type,difficulty})));
 writeGenerated('data/puzzle-path-extras.json', pathExtras);
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
@@ -421,11 +426,14 @@ addRussianLearningText(topics);
 addRussianLearningText(lessons);
 addRussianLearningText(lessonBossScenes);
 puzzles.ru = Object.fromEntries(['easy', 'medium', 'hard'].map(tier => [tier, puzzles.en[tier].map(russianPuzzle)]));
-fs.mkdirSync('assets/puzzles/ru', { recursive: true });
-for (const locale of ['en','lv','ru']) for (const difficulty of ['easy','medium','hard']) {
-  const list=puzzles[locale][difficulty];
-  const file=`assets/puzzles/${locale==='en'?'':`${locale}/`}${difficulty}.json`;
-  writeGenerated(file, list);
+for (const difficulty of ['easy','medium','hard']) {
+  const versions = Object.fromEntries(['en', 'lv', 'ru'].map(locale => [locale, puzzles[locale][difficulty]]));
+  const definitions = groupPuzzleTranslations(versions, difficulty);
+  for (const locale of ['en', 'lv', 'ru']) {
+    assert.deepEqual(JSON.parse(JSON.stringify(definitions.map(puzzle => localizePuzzle(puzzle, locale)))),
+      JSON.parse(JSON.stringify(versions[locale])), `${difficulty}/${locale}: localization must preserve every authored field`);
+  }
+  writeGenerated(`assets/puzzles/${difficulty}.json`, definitions);
 }
 writeGenerated('data/puzzle-curriculum.json', {version:2,topics,lessons});
 writeGenerated('data/lesson-boss-scenes.json', lessonBossScenes);

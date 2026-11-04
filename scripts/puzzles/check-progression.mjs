@@ -1,3 +1,4 @@
+import { readPuzzles } from './catalog.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -11,7 +12,7 @@ const equalFraction = (a, b) => a[0] * b[1] === b[0] * a[1];
 export function checkProgression({ load }) {
   const catalog = read('data/puzzle-curriculum.json'), extras = read('data/puzzle-path-extras.json');
   const tiers = ['easy', 'medium', 'hard'];
-  const english = tiers.map(d => read(`assets/puzzles/${d}.json`));
+  const english = tiers.map(d => readPuzzles('en', d));
   const manifest = { version: catalog.version, lessons: catalog.lessons.map(l => ({ id: l.id, difficulty: l.difficulty,
     topicId: l.topicId, skillId: l.skillId, prerequisiteSkillIds: l.prerequisiteSkillIds,
     levels: l.levels.map(v => ({ id: v.id, kind: v.kind, timeLimitSeconds: v.timeLimitSeconds, puzzleIds: v.puzzleIds })) })),
@@ -26,7 +27,7 @@ export function checkProgression({ load }) {
   assert.equal(PUZZLE_CONTENT_VERSION, 2, 'A content revision must not reset existing learning progress');
 
   for (const locale of ['en', 'lv', 'ru']) {
-    const all = tiers.flatMap(d => read(`assets/puzzles/${locale === 'en' ? '' : `${locale}/`}${d}.json`));
+    const all = tiers.flatMap(d => readPuzzles(locale, d));
     const byId = new Map(all.map(p => [p.id, p]));
     const hardLogic = catalog.lessons.filter(l => l.difficulty === 'hard' && l.topicId === 'logic');
     const reasoningIds = hardLogic.flatMap(l => [
@@ -146,11 +147,13 @@ export function checkProgression({ load }) {
         const correct = fraction(p.payload.choices[p.correctIndex]);
         factors.add(correct[0] / source[0]);
       }
-      assert.ok(factors.has(3) && factors.has(4), 'Equivalence is not always doubling');
+      if (difficulty === 'easy') assert.ok(factors.has(2) && [...factors].every(f => f === 2 || f === 0.5), 'Easy equivalence only splits pieces in two or joins pairs');
+      else assert.ok(factors.has(3) && factors.has(4), 'Later tiers extend beyond doubling');
       if (difficulty !== 'easy') assert.ok([...factors].some(f => f < 1), 'Later fraction questions include simplifying');
       const comparisons = tasks.filter(p => p.type === 'compare' && p.payload.optionA.includes('/'));
       const unlike = comparisons.filter(p => fraction(p.payload.optionA)[1] !== fraction(p.payload.optionB)[1]);
-      assert.ok(unlike.length >= (difficulty === 'easy' ? 3 : 8), 'Fraction comparison extends beyond equal denominators');
+      if (difficulty === 'easy') assert.equal(unlike.length, 0, 'Easy comparisons use the same-sized pieces');
+      else assert.ok(unlike.length >= 8, 'Later tiers compare unlike denominators');
       for (const p of comparisons) {
         const a = fraction(p.payload.optionA), b = fraction(p.payload.optionB);
         assert.notEqual(a[0] * b[1], b[0] * a[1], 'Comparison choices are not equivalent');

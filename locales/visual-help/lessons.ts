@@ -2,6 +2,12 @@ import type { VISUAL_PRACTICE } from "@/constants/visual-practice";
 type Lessons = Record<keyof typeof VISUAL_PRACTICE, { title: string; s0: string; s1: string; s2: string }>;
 
 export const visualLessonsEn = {
+  fraction_compare_unit: { title: "Compare one piece", s0: "Both strips are the same length. Split one into halves and the other into thirds.", s1: "Shade one piece in each strip. A half is a larger piece than a third.", s2: "One half covers more of the whole: 1/2 > 1/3." },
+  fraction_compare_same_numerator: { title: "Compare the same number of pieces", s0: "The wholes have equal lengths. One has three pieces and the other has five.", s1: "Shade two pieces in each. Thirds are larger than fifths.", s2: "Two larger pieces cover more: 2/3 > 2/5." },
+  fraction_compare_half: { title: "Use half as a guide", s0: "Both strips show the same whole. Compare one half with two fifths.", s1: "Shade half above and two of five pieces below. The lower shading stops before halfway.", s2: "Two fifths is less than half: 1/2 > 2/5." },
+  easy_fraction_half: {"title": "The same amount in smaller pieces", "s0": "This example shows one half of a strip.", "s1": "Split each half into two equal pieces. One quarter is too little.", "s2": "Two quarters cover the same length as one half: 1/2 = 2/4."},
+  easy_fraction_compare: {"title": "Compare equal-sized pieces", "s0": "Both strips are the same length and have three equal parts.", "s1": "Shade one third above and two thirds below.", "s2": "Two shaded thirds cover more than one shaded third: 2/3 > 1/3."},
+
   ratio_table: {"title": "Scale a ratio", "s0": "One group has three items.", "s1": "Double the number of groups.", "s2": "Double the items too: two groups have six items."},
   bridge_positive: {"title": "Move from zero", "s0": "Start at three. One step right reaches four.", "s1": "One more step right reaches five.", "s2": "Two steps right add two: three plus two is five."},
   signed_line: {"title": "Cross zero", "s0": "Start at minus two. One step right reaches minus one.", "s1": "One more step right reaches zero.", "s2": "One more reaches one. Minus two plus three is one."},
@@ -72,6 +78,12 @@ export const visualLessonsEn = {
 } satisfies Lessons;
 
 export const visualLessonsLv = {
+  fraction_compare_unit: { title: "Salīdzini vienu daļu", s0: "Abas joslas ir vienāda garuma. Sadali vienu uz pusēm, bet otru trešdaļās.", s1: "Iekrāso vienu daļu katrā joslā. Puse ir lielāka nekā trešdaļa.", s2: "Puse aizņem vairāk no veselā: 1/2 > 1/3." },
+  fraction_compare_same_numerator: { title: "Salīdzini vienādu daļu skaitu", s0: "Veselie ir vienāda garuma. Viens sadalīts trīs, otrs piecās daļās.", s1: "Iekrāso divas daļas katrā joslā. Trešdaļas ir lielākas nekā piektdaļas.", s2: "Divas lielākās daļas aizņem vairāk: 2/3 > 2/5." },
+  fraction_compare_half: { title: "Salīdzini ar pusi", s0: "Abas joslas rāda vienādu veselo. Salīdzini pusi ar divām piektdaļām.", s1: "Augšā iekrāso pusi, apakšā divas no piecām daļām. Apakšējais iekrāsojums nesasniedz vidu.", s2: "Divas piektdaļas ir mazāk nekā puse: 1/2 > 2/5." },
+  easy_fraction_half: {"title": "Tas pats daudzums mazākās daļās", "s0": "Šajā piemērā iekrāsota puse joslas.", "s1": "Sadali katru pusi divās vienādās daļās. Viena ceturtdaļa ir par maz.", "s2": "Divas ceturtdaļas aizņem tikpat lielu garumu kā viena puse: 1/2 = 2/4."},
+  easy_fraction_compare: {"title": "Salīdzini vienāda lieluma daļas", "s0": "Abas joslas ir vienāda garuma un sadalītas trīs vienādās daļās.", "s1": "Augšā iekrāso vienu trešdaļu, apakšā divas trešdaļas.", "s2": "Divas iekrāsotas trešdaļas ir vairāk nekā viena: 2/3 > 1/3."},
+
   ratio_table: {"title": "Mērogo attiecību", "s0": "Vienā grupā ir trīs priekšmeti.", "s1": "Divkāršo grupu skaitu.", "s2": "Divkāršo arī priekšmetus: divās grupās ir seši priekšmeti."},
   bridge_positive: {"title": "Pārvietojies no nulles", "s0": "Sāc pie trīs. Viens solis pa labi sasniedz četri.", "s1": "Vēl viens solis pa labi sasniedz pieci.", "s2": "Divi soļi pa labi pieskaita divi: trīs plus divi ir pieci."},
   signed_line: {"title": "Šķērso nulli", "s0": "Sāc pie mīnus divi. Viens solis pa labi sasniedz mīnus viens.", "s1": "Vēl viens solis pa labi sasniedz nulli.", "s2": "Vēl viens sasniedz viens. Mīnus divi plus trīs ir viens."},

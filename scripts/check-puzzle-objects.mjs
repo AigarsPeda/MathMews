@@ -1,11 +1,12 @@
+import { readPuzzles } from './puzzles/catalog.mjs';
 /** The pictures must represent the authored quantities without overlap or answer hints. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 import sharp from 'sharp';
-const en=['easy','medium','hard'].flatMap(t=>JSON.parse(fs.readFileSync(`assets/puzzles/${t}.json`)));
-const lv=['easy','medium','hard'].flatMap(t=>JSON.parse(fs.readFileSync(`assets/puzzles/lv/${t}.json`)));
+const en=['easy','medium','hard'].flatMap(t=>readPuzzles('en', t));
+const lv=['easy','medium','hard'].flatMap(t=>readPuzzles('lv', t));
 const module={exports:{}};
 vm.runInNewContext(ts.transpileModule(fs.readFileSync('utils/quantity-task-scene.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{module,exports:module.exports});
 const {getQuantityTaskTokens,getQuantityTaskHeight}=module.exports;
