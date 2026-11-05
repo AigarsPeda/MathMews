@@ -24,6 +24,7 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
   if (lesson.difficulty === 'easy' && ['addition', 'subtraction'].includes(lesson.topicId) && stage < 2) {
     a = 3 + v % 5; b = 1 + v % 3;
   }
+  if (lesson.difficulty === 'easy' && lesson.topicId === 'addition' && stage === 3) { a = 6 + v % 4; b = 11 - a + v % 3; }
   if (lesson.difficulty === 'easy' && lesson.topicId === 'subtraction') {
     if (stage === 2) { a = 10; b = 1 + v % 9; }
     if (stage === 3) { a = 7 + v % 3; b = 11 + v % 8 - a; }
@@ -159,7 +160,7 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
     en = `Find the missing addend: ${expression}.`; lv = `Atrodi trūkstošo saskaitāmo: ${expression}.`; ru = `Найди пропущенное слагаемое: ${expression}.`;
     detail = `${a} + ${b} = ${a + b}.`;
   }
-  if (lesson.topicId === 'subtraction' && stage >= 4 && variant === 1) {
+  if (lesson.topicId === 'subtraction' && (stage >= 4 && variant === 1 || lesson.difficulty === 'easy' && stage === 5)) {
     en = `How many more is ${a + b} than ${b}?`; lv = `Par cik ${a + b} ir lielāks nekā ${b}?`; ru = `На сколько ${a + b} больше ${b}?`;
     answer = a; detail = `${a + b} − ${b} = ${a}.`;
   }

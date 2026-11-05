@@ -738,3 +738,6 @@ checkGeometryModels({ load });
 
 const { checkBridgeModels } = await import("./puzzles/check-bridge-models.mjs");
 checkBridgeModels({load});
+
+const { checkReviewAlignment } = await import('./puzzles/check-review-alignment.mjs');
+checkReviewAlignment({load});

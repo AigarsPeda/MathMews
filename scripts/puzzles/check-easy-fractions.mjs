@@ -1,3 +1,4 @@
+import { solveAlignedReview } from './check-review-alignment.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { readPuzzles } from './catalog.mjs';
@@ -72,6 +73,21 @@ export function checkEasyFractions({ load }) {
       for (let day = 20500; day < 20533; day++) {
         const q = getLearningReview(lesson, day);
         assert.ok(q.prompt[locale]?.trim() && q.explanation[locale]?.trim());
+        if (q.prompt.en.startsWith('Equal-sized strips')) {
+          const [d, a, b] = q.prompt.en.match(/\d+/g).map(Number);
+          familiar([a, d], lesson.id); familiar([b, d], lesson.id);
+          assert.equal(q.diagram.parts, d); assert.equal(q.diagram.colored, a);
+          assert.equal(q.choices[q.correctIndex], solveAlignedReview(q));
+          assert.deepEqual([...q.choices].sort(), ['A', 'A = B', 'B']);
+          continue;
+        }
+        if (q.prompt.en.startsWith('From 0 to 1')) {
+          const [, divisions, n, d] = q.prompt.en.match(/has (\d+) equal intervals.*reach (\d+)\/(\d+)/).map(Number);
+          assert.ok(divisions <= 8 && n > 0 && n < d);
+          assert.equal(Number(q.choices[q.correctIndex]), solveAlignedReview(q), 'Count intervals, not tick marks');
+          assert.ok(q.choices.every(c => Number(c) >= 0 && Number(c) <= divisions));
+          continue;
+        }
         assert.ok(q.diagram, 'Later Easy daily checks retain a visible fraction model');
         const source = [q.diagram.colored, q.diagram.parts], options = q.choices.map(fraction);
         familiar(source, lesson.id);

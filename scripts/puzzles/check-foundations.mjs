@@ -1,3 +1,4 @@
+import { solveAlignedReview } from './check-review-alignment.mjs';
 import { readPuzzles } from './catalog.mjs';
 import { BRIDGE_PLANS } from './bridge-pilot.mjs';
 import assert from 'node:assert/strict';
@@ -81,8 +82,7 @@ export function checkFoundations({ load }) {
         if (lesson.topicId === 'division') assert.ok(numbers[1] <= 12 && Number(q.choices[q.correctIndex]) <= 10, 'Daily sharing uses known facts, not two-digit quotients');
         if (lesson.difficulty === 'easy' && lesson.topicId === 'numbers') assert.ok(q.choices.every(c => Number(c) <= (stage === 0 ? 10 : 20)), 'Daily number choices stay inside the lesson range');
         if (lesson.difficulty === 'medium' && lesson.topicId === 'fractions' && stage >= 6 && stage <= 8) {
-          const scale = stage === 6 ? 10 : 100;
-          assert.equal(Number(q.choices[q.correctIndex]), Math.round(numbers[0] * scale), 'Decimal reviews connect the value with tenths or hundredths');
+          assert.equal(Number(q.choices[q.correctIndex]), solveAlignedReview(q), 'Decimal reviews check grids, digit positions and both exchange directions');
         }
       }
     }

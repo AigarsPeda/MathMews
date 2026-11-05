@@ -38,8 +38,44 @@ const helpLocales = {
 };
 // Check the visual quantities and arrangements, not just their captions.
 const { VISUAL_PRACTICE } = load('@/constants/visual-practice');
+const { getPracticeTokenBounds, PRACTICE_BOARD_WIDTH, PRACTICE_BOARD_HEIGHT } = load('@/utils/practice-token-layout');
+function assertTokenFits(token, location) {
+  if (token.visible === false) return;
+  const bounds = getPracticeTokenBounds(token);
+  assert.ok(Object.values(bounds).every(Number.isFinite)
+    && bounds.left >= 0 && bounds.right <= PRACTICE_BOARD_WIDTH
+    && bounds.top >= 0 && bounds.bottom <= PRACTICE_BOARD_HEIGHT,
+  `${location}/${token.id}: rendered bounds ${JSON.stringify(bounds)} exceed the ${PRACTICE_BOARD_WIDTH} × ${PRACTICE_BOARD_HEIGHT} board`);
+}
+// Accept small counters near an edge, but still catch real clipping. These
+// cases exercise the validator against the sizing rules used by the renderer.
+const counter = { id: 'edge-counter', label: '●', x: 50, y: 16, width: 24, height: 24, scale: .7 };
+assertTokenFits(counter, 'small top counter');
+assertTokenFits({ ...counter, y: 126 }, 'small bottom counter');
+assertTokenFits({ id: 'default', label: '2', x: 20, y: 18 }, 'default token touching top/left');
+assertTokenFits({ id: 'default', label: '2', x: 280, y: 122 }, 'default token touching bottom/right');
+assertTokenFits({ ...counter, x: -100, y: -100, visible: false }, 'hidden off-board token');
+for (const change of [{ x: 0 }, { x: 300 }, { y: 0 }, { y: 140 }, { height: 100 }, { scale: 2 }, { y: NaN }]) {
+  assert.throws(() => assertTokenFits({ ...counter, ...change }, 'clipped counter'), /rendered bounds/);
+}
+assert.throws(() => assertTokenFits({ id: 'wide-label', label: '123456', shape: 'plain', x: 270, y: 70 }, 'wide text'), /rendered bounds/);
 const visibleTokens = frame => frame.scene.tokens.filter(token => token.visible !== false);
 const objects = (frame, label) => visibleTokens(frame).filter(token => token.label === label);
+const unitFractionHelp = VISUAL_PRACTICE.fraction_unit_set;
+for (const [step, frame] of unitFractionHelp.entries()) {
+  const dots = objects(frame, '●');
+  assert.equal(dots.length, 18, 'Unit-fraction help conserves all eighteen dots');
+  assert.deepEqual([50, 150, 250].map(x => dots.filter(t => t.x === x).length), [6, 6, 6], 'One third is one of three equal columns');
+  assert.equal(dots.filter(t => t.tone === 'primary').length, step === 0 ? 0 : 6);
+  for (const dot of dots) {
+    assertTokenFits(dot, `fraction_unit_set/step-${step + 1}`);
+    const original = unitFractionHelp[0].scene.tokens.find(t => t.id === dot.id);
+    assert.deepEqual([dot.x, dot.y, dot.width, dot.height, dot.scale], [original.x, original.y, original.width, original.height, original.scale], 'Highlighting keeps each dot inside the same bounds throughout the transition');
+  }
+  for (const locale of Object.values(helpLocales)) assert.ok(locale.lessons.fraction_unit_set[`s${step}`]?.trim());
+}
+assert.equal(unitFractionHelp[2].scene.result, '1/3 × 18 = 6');
+
 assert.deepEqual(Array.from(VISUAL_PRACTICE.multiplication, frame => objects(frame, '🧸').length), [3, 6, 9]);
 assert.equal(objects(VISUAL_PRACTICE.subtraction.at(-1), '🍎').length, 5);
 assert.equal(objects(VISUAL_PRACTICE.all_but.at(-1), '🐑').length, 2);
@@ -68,9 +104,8 @@ const columns = visibleTokens(areaHelp[1]).filter(t => t.id.startsWith('area-uni
 assert.deepEqual([90,210].map(x => columns.filter(t => t.x === x).length), [9,9], 'Divide area into two equal columns of nine');
 assert.deepEqual(Array.from(VISUAL_PRACTICE.geometry_missing_perimeter, frame => visibleTokens(frame).filter(t => t.id.startsWith('side-edge-')).length), [26,13,5], 'Halve the boundary, then remove the known width');
 for (const [key, lesson] of Object.entries(VISUAL_PRACTICE)) {
-  for (const frame of lesson) for (const token of visibleTokens(frame)) {
-    const width = token.width ?? (token.shape === 'plain' ? Math.max(40, token.label.length * 14) : 40);
-    assert.ok(token.x - width / 2 >= 0 && token.x + width / 2 <= 300 && token.y >= 18 && token.y <= 122, `${key}: visible diagram content fits its board`);
+  for (const [index, frame] of lesson.entries()) for (const token of frame.scene.tokens) {
+    assertTokenFits(token, `${key}/step-${index + 1}`);
   }
   const hasMovement = lesson.some((frame, index) => {
     if (index === 0) return false;

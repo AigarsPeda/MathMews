@@ -23,7 +23,7 @@ export function numericReview(prompt: ReviewQuestion['prompt'], answer: number, 
   const nearby = rank === 0 ? [answer + 1, answer + 2] : rank === 1 ? [answer - 1, answer + 1] : [answer - 1, answer - 2];
   const candidates = reviewHash(`${key}/mistakes`) % 2 ? [...distractors, ...nearby] : [...nearby, ...distractors];
   const wrong = [...new Set([...candidates, answer - 1, answer + 1, answer - 2, answer + 2])]
-    .filter(n => Number.isFinite(n) && n !== answer && n >= min && n <= max).slice(0, 2);
+    .filter(n => Number.isSafeInteger(n) && n !== answer && n >= min && n <= max).slice(0, 2);
   const choices = reviewChoiceOrder([String(answer), ...wrong.map(String)], key);
   return { prompt, choices, correctIndex: choices.indexOf(String(answer)),
     explanation: typeof detail === 'string' ? { en: detail, lv: detail, ru: detail } : detail };

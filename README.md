@@ -101,6 +101,19 @@ timing budgets in the detailed suite. The function-machine answer check now live
 only in curriculum validation; required native models are checked by asset
 verification, and store-catalog backend tests run once in `test:backend`.
 
+When adding or repairing a test:
+
+- Name the user-visible failure it prevents. Prove it accepts a valid case and
+  rejects a deliberately broken case, rather than only checking today's output.
+- Use valid fixtures and create any temporary directories the test needs. Control
+  clocks and asynchronous callbacks instead of depending on machine timing.
+- Use the renderer's sizing rules for layout checks, with independent boundary
+  examples. Keep mathematical answer expectations independent of the grader.
+- Report the failing item, expected behavior and actual values. A message such as
+  "diagram does not fit" is insufficient without the step, token and bounds.
+- Run the affected CI command before reporting a fix. Keep unrelated visual and
+  performance audits out of that verification unless the change affects them.
+
 ### Startup regression tests
 
 ```bash

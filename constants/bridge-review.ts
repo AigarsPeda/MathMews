@@ -16,9 +16,9 @@ export function getBridgeReview(lesson: LearningLesson, day: number): ReviewQues
     const rate = 2 + Math.floor(v / 3) % (tier === 'easy' ? 4 : 5), b = a * rate;
     const n = tier === 'easy' ? 2 + v % 3 : tier === 'medium' ? a * (2 + v % 3) : 1 + v % 8;
     return ask({
-      en: `${a} groups hold ${b} items. How many items are in ${n} equal groups?`,
-      lv: `${a} grupās ir ${b} priekšmeti. Cik priekšmetu ir ${n} tādās pašās grupās?`,
-      ru: `В ${a} группах ${b} предметов. Сколько предметов в ${n} таких же группах?`,
+      en: `${a} ${a === 1 ? 'group holds' : 'groups hold'} ${b} items. How many items are in ${n} equal ${n === 1 ? 'group' : 'groups'}?`,
+      lv: `${a} ${a === 1 ? 'grupā' : 'grupās'} ir ${b} priekšmeti. Cik priekšmetu būs, ja šādu grupu skaits ir ${n}?`,
+      ru: `В ${a} ${a === 1 ? 'группе' : 'группах'} ${b} предметов. Сколько предметов в ${n} ${n === 1 ? 'такой же группе' : 'таких же группах'}?`,
     }, n * rate, `${b} ÷ ${a} × ${n} = ${n * rate}.`, [b + n - a, n * b]);
   }
   if (plan.type === 'signed_line') {
@@ -26,9 +26,9 @@ export function getBridgeReview(lesson: LearningLesson, day: number): ReviewQues
     const a = tier === 'easy' ? 1 + v % 7 : -3 + v % 7;
     const delta = (tier === 'easy' ? 1 : v % 2 ? 1 : -1) * (1 + Math.floor(v / 7) % 3), result = a + delta;
     return ask({
-      en: `Start at ${a}. Move ${Math.abs(delta)} steps ${delta < 0 ? 'left' : 'right'}. Where do you finish?`,
-      lv: `Sāc pie ${a}. Veic ${Math.abs(delta)} soļus pa ${delta < 0 ? 'kreisi' : 'labi'}. Kur nonāc?`,
-      ru: `Начни с ${a}. Сделай ${Math.abs(delta)} шага ${delta < 0 ? 'влево' : 'вправо'}. Где окажешься?`,
+      en: `Start at ${a}. Move ${Math.abs(delta)} ${Math.abs(delta) === 1 ? 'step' : 'steps'} ${delta < 0 ? 'left' : 'right'}. Where do you finish?`,
+      lv: `Sāc pie ${a}. Veic ${Math.abs(delta)} ${Math.abs(delta) === 1 ? 'soli' : 'soļus'} pa ${delta < 0 ? 'kreisi' : 'labi'}. Kur nonāc?`,
+      ru: `Начни с ${a}. Сделай ${Math.abs(delta)} ${Math.abs(delta) === 1 ? 'шаг' : 'шага'} ${delta < 0 ? 'влево' : 'вправо'}. Где окажешься?`,
     }, result, `${a} ${delta < 0 ? '−' : '+'} ${Math.abs(delta)} = ${result}.`, [a - delta, a], min, max);
   }
   if (plan.type === 'equation_board') {

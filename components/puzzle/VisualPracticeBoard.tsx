@@ -3,6 +3,7 @@ import { IconText } from "@/components/ui/IconText";
 import { PuzzleObjectImage } from "./PuzzleObjectImage";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { PracticeToken } from "@/types/visual-explanation";
+import { getPracticeTokenSize, PRACTICE_BOARD_HEIGHT, PRACTICE_BOARD_WIDTH } from "@/utils/practice-token-layout";
 import { moderateScale } from "@/utils/scale";
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -41,12 +42,14 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
   }));
   const fillStyle = useAnimatedStyle(() => ({ opacity: fill.value * (token.shape === "part" ? 1 : .16) }));
   const plain = token.shape === "plain";
-  const size = (token.width ?? (plain ? Math.max(40, token.label.length * 14) : 40)) * ratio;
-  const height = (token.height ?? 36) * ratio;
+  const dimensions = getPracticeTokenSize(token);
+  const size = dimensions.width * ratio;
+  const height = dimensions.height * ratio;
   const shapeStyle = token.cornerRadius === undefined ? undefined : { borderRadius: token.cornerRadius * ratio };
   const color = token.tone === "primary" ? GameColors.primary : token.tone === "blue" ? "#246FA8" : GameColors.secondary;
   return (
     <Animated.View
+      testID={`practice-token-${token.id}`}
       accessible={token.visible !== false && token.label.length > 0}
       accessibilityLabel={token.label}
       accessibilityElementsHidden={token.visible === false}
@@ -74,13 +77,13 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
   );
 }
 
-export function VisualPracticeBoard({ prompt, tokens, result, compact = false, boardHeight = 140 }: PracticeScene) {
+export function VisualPracticeBoard({ prompt, tokens, result, compact = false, boardHeight = PRACTICE_BOARD_HEIGHT }: PracticeScene) {
   const [width, setWidth] = useState(0);
-  const ratio = width / 300;
+  const ratio = width / PRACTICE_BOARD_WIDTH;
   return (
     <View style={styles.stage}>
       {prompt ? <Text style={styles.prompt}>{prompt}</Text> : null}
-      <View style={[styles.board, { aspectRatio: 300 / boardHeight }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
+      <View testID="practice-board" style={[styles.board, { aspectRatio: PRACTICE_BOARD_WIDTH / boardHeight }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
         {width > 0 ? tokens.map((token, i) => (
           <MovingToken key={token.id} token={token} ratio={ratio} delay={Math.min(i, 5) * 55} />
         )) : null}

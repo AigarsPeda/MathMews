@@ -84,12 +84,25 @@ export function getModelReview(lesson: LearningLesson, day: number): ReviewQuest
     if (mode === 1) return ask({
       en: `In ${value}, which digit is in the tenths place?`, lv: `Kurš cipars skaitlī ${local} ir desmitdaļu vietā?`, ru: `Какая цифра в числе ${local} стоит в разряде десятых?`,
     }, t, { en: `${value} = ${whole} × 1 + ${t} × 0.1 + ${h} × 0.01.`, lv: `${local} = ${whole} × 1 + ${t} × 0,1 + ${h} × 0,01.`, ru: `${local} = ${whole} × 1 + ${t} × 0,1 + ${h} × 0,01.` }, [h, whole], 0, 9);
+    if (exchange) return ask({
+      en: `How many hundredths make ${value}?`, lv: `Cik simtdaļu veido ${local}?`, ru: `Сколько сотых составляет ${local}?`,
+    }, n, { en: `${n}/100 = ${value}.`, lv: `${n}/100 = ${local}.`, ru: `${n}/100 = ${local}.` }, [t * 10 + h, n * 10]);
     const scale = tenths ? 10 : 100, answer = n * scale / 100;
     return ask({
       en: `A whole grid has ${scale} equal cells. How many cells must be shaded to show ${value}?`,
       lv: `Veselajā režģī ir ${scale} vienādas rūtiņas. Cik rūtiņu jāiekrāso, lai attēlotu ${local}?`,
       ru: `В целой сетке ${scale} равных клеток. Сколько клеток нужно закрасить, чтобы показать ${local}?`,
     }, answer, { en: `${answer}/${scale} = ${value}.`, lv: `${answer}/${scale} = ${local}.`, ru: `${answer}/${scale} = ${local}.` }, [tenths ? answer + 1 : t, h]);
+  }
+  if (['easy-fractions-explore-4', 'easy-fractions-explore-5'].includes(lesson.id) && mode !== 0) {
+    const d = [3, 4, 6, 8][v % 4], n = 1 + Math.floor(v / 4) % (d - 1), m = 1 + Math.floor(v / 32) % (d - 1);
+    const answer = n > m ? 'A' : n < m ? 'B' : 'A = B', choices = reviewChoiceOrder(['A', 'B', 'A = B'], key);
+    const detail = `${n}/${d} ${n > m ? '>' : n < m ? '<' : '='} ${m}/${d}.`;
+    return { diagram: { parts: d, colored: n }, prompt: {
+      en: `Equal-sized strips each have ${d} equal parts. The picture shows A with ${n} shaded parts. B has ${m} shaded parts. Which has more shaded? Choose A = B if equal.`,
+      lv: `Vienāda lieluma joslās katrā ir ${d} vienādas daļas. Attēlā ir A ar ${n} iekrāsotām daļām. B ir ${m} iekrāsotas daļas. Kurai iekrāsots vairāk? Ja vienādi, izvēlies A = B.`,
+      ru: `Одинаковые полоски разделены на ${d} равных частей. На рисунке A закрашено ${n} частей. На B закрашено ${m} частей. Где закрашено больше? Если поровну, выбери A = B.`,
+    }, choices, correctIndex: choices.indexOf(answer), explanation: { en: detail, lv: detail, ru: detail } };
   }
   // Keep the existing picture-supported equivalence checks on alternating days.
   if (['easy-fractions-pictures', 'easy-fractions-explore-3', 'easy-fractions-explore-6', 'medium-fractions-equivalent'].includes(lesson.id) && mode === 0) {

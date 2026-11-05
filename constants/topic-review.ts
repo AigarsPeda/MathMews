@@ -1,6 +1,6 @@
 import type { LearningLesson } from '@/types/curriculum';
 import type { ReviewQuestion } from '@/constants/learning-review';
-import { numericReview, reviewHash } from '@/utils/review-question';
+import { numericReview, reviewChoiceOrder, reviewHash } from '@/utils/review-question';
 import foundationPlans from '@/data/puzzle-foundations.json';
 
 export function getTopicReview(lesson: LearningLesson, day: number, stage: number): ReviewQuestion | null {
@@ -75,6 +75,21 @@ export function getTopicReview(lesson: LearningLesson, day: number, stage: numbe
         lv: `Kods ir lielāks par ${answer - divisor} un mazāks par ${answer + divisor}. Tas dalās ar ${divisor}. Kāds ir kods?`,
         ru: `Код больше ${answer - divisor} и меньше ${answer + divisor}. Он делится на ${divisor}. Чему равен код?`,
       }, answer, `${answer} ÷ ${divisor} = ${answer / divisor}.`, [answer - 1, answer + 1]);
+    }
+    if ([1, 4, 6].includes(stage)) {
+      const d = v % 2 ? 3 : 5, k = 1 + Math.floor(v / 2) % 5, answer = d * (2 * k + 1);
+      const rank = Math.floor(v / 11) % 3;
+      const evenFactors = rank === 0 ? [2 * k + 2, 2 * k + 4] : rank === 1 ? [2 * k, 2 * k + 2] : [2 * k - 2, 2 * k];
+      const choices = reviewChoiceOrder([String(answer), ...evenFactors.map(f => String(d * f))], key);
+      return { prompt: {
+        en: `Someone claims all multiples of ${d} are even. Which number disproves the claim?`,
+        lv: `Kāds apgalvo, ka visi skaitļa ${d} daudzkārtņi ir pāra skaitļi. Kurš skaitlis atspēko apgalvojumu?`,
+        ru: `Кто-то утверждает, что все числа, кратные ${d}, чётные. Какое число опровергает это утверждение?`,
+      }, choices, correctIndex: choices.indexOf(String(answer)), explanation: {
+        en: `${answer} = ${d} × ${2 * k + 1}, but ${answer} is odd.`,
+        lv: `${answer} = ${d} × ${2 * k + 1}, bet ${answer} ir nepāra skaitlis.`,
+        ru: `${answer} = ${d} × ${2 * k + 1}, но ${answer} — нечётное число.`,
+      } };
     }
     return ask({
       en: `A box holds fewer than ${n} balls. Which amount is impossible?`,

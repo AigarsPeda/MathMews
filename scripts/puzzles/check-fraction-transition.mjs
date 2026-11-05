@@ -1,3 +1,4 @@
+import { solveAlignedReview } from './check-review-alignment.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { readPuzzles } from './catalog.mjs';
@@ -67,6 +68,13 @@ export function checkFractionTransition({ load }) {
       for (let day = 20500; day < 20533; day++) {
         const q = getLearningReview(lesson, day), source = [q.diagram?.colored, q.diagram?.parts];
         assert.ok(q.prompt[locale]?.trim() && q.explanation[locale]?.trim());
+        if (q.prompt.en.startsWith('From 0 to 1')) {
+          const [, divisions, n, d] = q.prompt.en.match(/has (\d+) equal intervals.*reach (\d+)\/(\d+)/).map(Number);
+          assert.ok(divisions <= 8 && n > 0 && n < d);
+          assert.equal(Number(q.choices[q.correctIndex]), solveAlignedReview(q), 'Count intervals, not tick marks');
+          assert.ok(q.choices.every(c => Number(c) >= 0 && Number(c) <= divisions));
+          continue;
+        }
         bounded(source);
         assert.ok(source[1] <= 12, 'Daily picture remains countable');
         const choices = q.choices.map(fraction);
