@@ -1,4 +1,7 @@
 import { getBridgeReview } from "@/constants/bridge-review";
+import { getModelReview } from "@/constants/model-review";
+import { getTopicReview } from "@/constants/topic-review";
+import { numericReview, reviewHash } from "@/utils/review-question";
 import type { LearningLesson } from '@/types/curriculum';
 import type { AppLocale } from '@/types/locale';
 import { getTopicLessons } from '@/constants/curriculum';
@@ -7,23 +10,16 @@ import easyFractionPairs from '@/data/easy-fraction-pairs.json';
 import mediumFractionTransition from '@/data/medium-fraction-transition.json';
 import hardFractionTransition from '@/data/hard-fraction-transition.json';
 export type ReviewQuestion = { diagram?: {parts:number;colored:number}; prompt: Record<AppLocale,string>; choices: string[]; correctIndex: number; explanation: Record<AppLocale,string> };
-const hash = (value: string) => {
-  let seed = 2166136261;
-  for (const char of value) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619);
-  return seed >>> 0;
-};
 function numericChoices(answer: number, key: string, maximum = Infinity) {
-  const rank = Math.max(2 - Math.min(2, maximum - answer), Math.min(hash(`${key}/rank`) % 3, answer));
-  const values = rank === 0 ? [answer, answer + 1, answer + 2]
-    : rank === 1 ? [answer - 1, answer, answer + 1] : [answer - 2, answer - 1, answer];
-  return values.map((value, index) => ({ value, order: hash(`${key}/position/${index}`) }))
-    .sort((a, b) => a.order - b.order).map(item => String(item.value));
+  return numericReview({ en: '', lv: '', ru: '' }, answer, '', key, [], 0, maximum).choices;
 }
 /** Fresh, self-contained checks. No previous teaching step supplies the answer. */
 export function getLearningReview(lesson: LearningLesson, day: number): ReviewQuestion {
   const bridge = getBridgeReview(lesson, day); if (bridge) return bridge;
-  const seed = [...lesson.id].reduce((n,c) => n+c.charCodeAt(0), day), v = seed % 11;
+  const seed = reviewHash(`${lesson.id}/${day}/values`), v = seed % 11;
   const stage = getTopicLessons(lesson.difficulty, lesson.topicId).findIndex(item => item.id === lesson.id);
+  const aligned = getModelReview(lesson, day) ?? getTopicReview(lesson, day, stage);
+  if (aligned) return aligned;
   let a = (lesson.difficulty === 'easy' ? 3 : lesson.difficulty === 'medium' ? 23 : 103) + v, b = (lesson.difficulty === 'easy' ? 2 : 8) + v % 4;
   if (lesson.difficulty === 'easy' && ['addition', 'subtraction'].includes(lesson.topicId) && stage < 2) {
     a = 3 + v % 5; b = 1 + v % 3;
@@ -47,17 +43,6 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
   }
   if (lesson.difficulty === 'medium' && lesson.topicId === 'subtraction') { a = 20 + v * 2; b = 15 + stage + v % 17; }
   const key = `${lesson.id}/${day}`;
-  if (lesson.difficulty === 'medium' && lesson.topicId === 'fractions' && stage >= 6 && stage <= 8) {
-    const scale = stage === 6 ? 10 : 100;
-    const units = stage === 6 ? 1 + v % 9 : stage === 7 ? 5 + v * 7 : 104 + v * 7;
-    const decimal = (units / scale).toFixed(stage === 6 ? 1 : 2), comma = decimal.replace('.', ',');
-    const choices = numericChoices(units, key), detail = `${units}/${scale} = ${decimal}.`;
-    return { prompt: {
-      en: `How many ${scale === 10 ? 'tenths' : 'hundredths'} make ${decimal}?`,
-      lv: `Cik ${scale === 10 ? 'desmitdaļu' : 'simtdaļu'} veido ${comma}?`,
-      ru: `Сколько ${scale === 10 ? 'десятых' : 'сотых'} составляет ${comma}?`,
-    }, choices, correctIndex: choices.indexOf(String(units)), explanation: { en: detail, lv: detail.replace('.', ','), ru: detail.replace('.', ',') } };
-  }
   if(lesson.topicId === 'fractions') {
     if (lesson.difficulty === 'hard') {
       const [n, d, taughtTotal] = hardFractionTransition.amounts[stage][v % 3];
@@ -166,6 +151,17 @@ export function getLearningReview(lesson: LearningLesson, day: number): ReviewQu
     en=`How many were taken away? ${a+b} − ? = ${a}`;lv=`Cik tika atņemts? ${a+b} − ? = ${a}`;
     ru=`Сколько вычли? ${a+b} − ? = ${a}`;
     answer=b;detail=`${a+b} − ${b} = ${a}.`;
+  }
+  const variant = (day + reviewHash(lesson.id)) % 3;
+  if (lesson.topicId === 'addition' && (lesson.difficulty === 'medium' && stage >= 4 || lesson.difficulty === 'easy' && stage >= 4) && variant !== 0) {
+    const expression = variant === 1 ? `? + ${b} = ${a + b}` : `${a} + ? = ${a + b}`;
+    answer = variant === 1 ? a : b;
+    en = `Find the missing addend: ${expression}.`; lv = `Atrodi trūkstošo saskaitāmo: ${expression}.`; ru = `Найди пропущенное слагаемое: ${expression}.`;
+    detail = `${a} + ${b} = ${a + b}.`;
+  }
+  if (lesson.topicId === 'subtraction' && stage >= 4 && variant === 1) {
+    en = `How many more is ${a + b} than ${b}?`; lv = `Par cik ${a + b} ir lielāks nekā ${b}?`; ru = `На сколько ${a + b} больше ${b}?`;
+    answer = a; detail = `${a + b} − ${b} = ${a}.`;
   }
   const choices = numericChoices(answer, key, lesson.topicId === 'numbers' && lesson.difficulty === 'easy' ? stage === 0 ? 10 : 20 : Infinity);
   return {prompt:{en,lv,ru},choices,correctIndex:choices.indexOf(String(answer)),explanation:{en:detail,lv:detail,ru:detail}};
