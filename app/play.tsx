@@ -1,3 +1,4 @@
+import { getCatPlanReward } from "@/constants/cat-plan-rewards";
 import type { BridgeState } from "@/utils/bridge-models";
 import type { DecimalPlaceState } from "@/utils/decimal-models";
 import type { FractionStripState } from "@/utils/fraction-models";
@@ -163,7 +164,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const { locale } = useLocale();
   const { lesson, level, phase: sessionIndex } = session;
   const difficulty = lesson.difficulty;
-  const { pet, recordLearningHelp, answerPuzzle, buyLife, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp, beginChallenge, expireChallenge } = useGame();
+  const { pet, requestRoomDecoration, recordLearningHelp, answerPuzzle, buyLife, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp, beginChallenge, expireChallenge } = useGame();
   const run = progress.challengeAttempt;
   const [challengeMode, setChallengeMode] = useState<"timed" | "untimed">("untimed");
   const atChallenge = level.kind === "challenge" && !!level.timeLimitSeconds;
@@ -172,6 +173,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const nextLife = msUntilNextLife(lives, now);
   const hasLives = lives.current > 0;
   const puzzles = getLevelPuzzles(locale, lesson, level);
+  const [entryRewardIds, setEntryRewardIds] = useState(progress.catPlanRewardsClaimed ?? []);
   const [entryCompleted, setEntryCompleted] = useState(getPathCompletedIds(progress));
   const [initialAttemptId] = useState(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`);
   const attemptId = useRef(initialAttemptId);
@@ -230,6 +232,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     setActiveSessionKey(sessionKey);
     setPuzzle(nextPuzzle);
     setEntryCompleted(getPathCompletedIds(progress));
+    setEntryRewardIds(progress.catPlanRewardsClaimed ?? []);
     setChallengeMode("untimed");
     setPendingChoice(null); setPendingNumberLine(null); setSelectedOperators(createEmptyOperators(nextPuzzle));
     setBridge(null); setGeometry(null); setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
@@ -289,6 +292,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     : item.puzzleIds.every(id => entryCompleted.includes(id) || answered && id === puzzle.id));
   const resultProgress = { ...progress, completedPuzzleIds: [...entryCompleted, ...(answered ? [puzzle.id] : [])] };
   const lessonFinished = answered && position.current === position.total && getPathProgress(lesson, resultProgress).complete;
+  const earnedDecoration = lessonFinished && isCorrect && !expired && !entryRewardIds.includes(lesson.id) && progress.catPlanRewardsClaimed?.includes(lesson.id) ? getCatPlanReward(lesson.id) : undefined;
   const resultMood: PetAnimationState = isCorrect && !expired ? "correct" : "incorrect";
   const nextPuzzleRoute = useMemo(() => {
     if (!isCorrect) return undefined;
@@ -647,6 +651,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
         {answered ? (
           <ResultOverlay
             visible
+            decorationLessonId={earnedDecoration?.lessonId}
             correct={isCorrect && !expired}
             petType={pet.type}
             catSkinId={pet.catSkinId}
@@ -662,8 +667,11 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
             coinType={isReplay ? "sparkle" : "regular"}
             continueLabel={t(expired ? "timedChallenge.retry" : isCorrect ? nextPuzzleRoute ? "play.nextPuzzle" : nextLevelRoute ? "puzzlePathDesign.nextLevel" : "puzzlePathDesign.viewPath" : "play.tryAgain")}
             onContinue={handleContinue}
-            onGoHome={isCorrect && !expired && !nextPuzzleRoute && !nextLevelRoute ? undefined : exitToPath}
-            secondaryLabel={t("play.backToPath")}
+            onGoHome={earnedDecoration ? () => {
+              requestRoomDecoration({ kind: "decoration", id: earnedDecoration.decorationId });
+              router.dismissTo("/");
+            } : isCorrect && !expired && !nextPuzzleRoute && !nextLevelRoute ? undefined : exitToPath}
+            secondaryLabel={t(earnedDecoration ? "catPlans.placeInHouse" : "play.backToPath")}
             onBuyLife={undefined}
             coins={wallet.coins}
           />

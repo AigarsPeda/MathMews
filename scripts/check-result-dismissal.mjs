@@ -43,6 +43,7 @@ function harness(file, extraMocks = {}) {
     ...Object.fromEntries([
       ['@/components/puzzle/PuzzleText', 'PuzzleText'], ['@/components/puzzle/PuzzleButton', 'PuzzleButton'], ['@/components/ui/IconText', 'IconText'], ['@/components/ui/AppIcon', 'AppIcon'],
       ['@/components/puzzle/PuzzleCatCompanion', 'PuzzleCatCompanion'],
+      ['@/components/puzzle/CatPlanDecoration', 'CatPlanDecoration'],
       ['@/components/ui/AppBottomSheet', 'AppBottomSheet'],
     ].map(([id, name]) => [id, { [name]: name }])),
     ...extraMocks,

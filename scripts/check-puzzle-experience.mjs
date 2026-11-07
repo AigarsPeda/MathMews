@@ -137,15 +137,15 @@ function renderHarness(file, exportName, mocks = {}) {
   };
 }
 function nodes(node) { return Array.isArray(node) ? node.flatMap(nodes) : node?.props ? [node, ...nodes(node.props.children)] : []; }
-function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, replay = false, kind = 'practice', lifeCount = 3, completedIds = [], nextPuzzles = [], locale = 'en' } = {}) {
+function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, replay = false, kind = 'practice', lifeCount = 3, completedIds = [], nextPuzzles = [], locale = 'en', lessonOverride, claimedRewards = [] } = {}) {
   const strings = JSON.parse(fs.readFileSync(`locales/${locale}.json`));
   const tr = (key, values = {}) => {
     let text = key.split('.').reduce((value, part) => value?.[part], strings) ?? key;
     for (const [name, value] of Object.entries(values)) text = text.replaceAll(`{{${name}}}`, String(value));
     return text;
   };
-  const level = { id: 'practice', kind, puzzleIds: [puzzle.id], title: { en: 'Practice' }, description: { en: 'Complete the mission.' } };
-  const lesson = { id: 'lesson', difficulty: puzzle.difficulty, title: { en: 'Fractions' }, levels: [level] };
+  const level = lessonOverride?.levels.at(-1) ?? { id: 'practice', kind, puzzleIds: [puzzle.id], title: { en: 'Practice' }, description: { en: 'Complete the mission.' } };
+  const lesson = lessonOverride ?? { id: 'lesson', difficulty: puzzle.difficulty, title: { en: 'Fractions' }, levels: [level] };
   if (kind !== 'practice') lesson.levels.unshift({ ...level, id: 'earlier-practice', kind: 'practice', puzzleIds: ['earlier-puzzle'] });
   if (!final) lesson.levels.push({ ...level, id: 'next', puzzleIds: ['next-puzzle'] });
   if (hasChallenge) lesson.levels.push({ id: 'challenge', kind: 'challenge', puzzleIds: ['challenge-puzzle'] });
@@ -153,8 +153,8 @@ function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, 
   for (const next of nextPuzzles) lesson.levels.push({ ...level, id: next.id, puzzleIds: [next.id] });
   let session = { lesson, level, phase: 0 };
   const attempts = [], routes = [];
-  const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { unlockedPathLessonIds: ['lesson'], completedPuzzleIds: [...completedIds, ...(kind !== 'practice' ? ['earlier-puzzle'] : []), ...(replay ? [puzzle.id] : [])], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
-    answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; else game.progress.completedPuzzleIds = [...new Set([...game.progress.completedPuzzleIds, p.id])]; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
+  const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { decorationsUnlocked: [], decorationQuantities: {}, catPlanRewardsClaimed: claimedRewards, unlockedPathLessonIds: ['lesson'], completedPuzzleIds: [...completedIds, ...(kind !== 'practice' ? ['earlier-puzzle'] : []), ...(replay ? [puzzle.id] : [])], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
+    answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; else game.progress.completedPuzzleIds = [...new Set([...game.progress.completedPuzzleIds, p.id])]; if (correct && lessonOverride) game.progress = loadPure('@/utils/cat-plan-rewards').grantCatPlanRewards(game).progress; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, requestRoomDecoration: target => routes.push(['decorate', target]), buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
   const router = { push: route => routes.push(['push',route]), dismissTo: route => routes.push(['path', route]),
     setParams: params => { routes.push(['params', params]); session = { lesson, level: lesson.levels.find(item => item.id === params.level), phase: 0 }; } };
   const render = renderHarness('app/play.tsx', 'PlaySession', {
@@ -701,3 +701,22 @@ for (const locale of ['en','lv','ru']) for (const type of ['ratio_table','signed
   assert.equal(state.result().coinsEarned,getPuzzleCoinReward(puzzle.difficulty));
 }
 console.log('Localized bridge retry flow passed: specific first hints, expanded second hints, unchanged drafts, duplicate-tap guards, life costs and normal solve rewards.');
+
+// Completion hands the earned inventory item to the existing room placement flow.
+{
+  const plan = PUZZLE_PATHS.find(lesson => lesson.id === 'easy-cat-plans-picnic');
+  const ids = plan.levels.flatMap(level => level.puzzleIds);
+  const puzzle = allPuzzles.find(item => item.id === ids.at(-1));
+  const state = screen(puzzle, { final: true, lessonOverride: plan, completedIds: ids.slice(0, -1) });
+  state.task().onSelectChoice(puzzle.correctIndex); state.refresh(); state.check().onPress(); state.refresh();
+  assert.equal(state.result().decorationLessonId, plan.id);
+  assert.equal(state.game.progress.decorationQuantities.kitchenBreadBasket, 1);
+  assert.equal(state.result().secondaryLabel, en.catPlans.placeInHouse);
+  assert.equal(state.routes.length, 0, 'Earning a decoration does not force navigation');
+  state.result().onGoHome();
+  assert.deepEqual(json(state.routes), [['decorate', { kind: 'decoration', id: 'kitchenBreadBasket' }], ['path', '/']], 'Place in house selects the earned item before returning home');
+  const replay = screen(puzzle, { final: true, lessonOverride: plan, completedIds: ids, claimedRewards: [plan.id], replay: true });
+  replay.task().onSelectChoice(puzzle.correctIndex); replay.refresh(); replay.check().onPress(); replay.refresh();
+  assert.equal(replay.result().decorationLessonId, undefined, 'Replay does not announce another item');
+}
+console.log('Cat-plan completion previews its earned furnishing and opens the existing placement flow without a duplicate replay reward.');

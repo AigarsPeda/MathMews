@@ -1,3 +1,4 @@
+import { CatPlanDecoration } from "@/components/puzzle/CatPlanDecoration";
 import { Feather } from "@expo/vector-icons";
 import { DifficultyPicker } from "@/components/puzzle/DifficultyPicker";
 import { TopicLevelPath } from "@/components/puzzle/TopicLevelPath";
@@ -155,7 +156,7 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
             {topics.map((item, index) => {
               const { solved, total } = getTopicPathProgress(difficulty, item.id, progress);
               const counts = { completed: solved, remaining: total - solved };
-              return <Pressable key={item.id} style={styles.topic}
+              return <Pressable key={item.id} style={[styles.topic, index === topics.length - 2 && styles.lastSubject, item.id === "cat-plans" && styles.catPlans]}
                 accessibilityRole="button" accessibilityLabel={item.title[locale]}
                 accessibilityValue={{ text: t("puzzlePathDesign.topicProgressLabel", counts) }}
                 accessibilityHint={t("puzzlePathDesign.viewTopicPath", { topic: item.title[locale] })}
@@ -164,6 +165,7 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
                 <View style={styles.topicDetails}>
                   <Text style={styles.topicTitle}>{item.title[locale]}</Text>
                   <Text style={styles.topicProgress}>{t("puzzlePathDesign.topicProgress", counts)}</Text>
+                  {item.id === "cat-plans" ? <Text style={styles.topicProgress}>{t("catPlans.topicHint")}</Text> : null}
                 </View>
                 <Feather name="chevron-right" size={23} color={GameColors.textMuted} />
               </Pressable>;
@@ -173,6 +175,7 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
         </>}
       </Animated.ScrollView>
       {topic && recommendation ? <View style={styles.pathAction}>
+        {topic.id === "cat-plans" ? <CatPlanDecoration lessonId={recommendation.lesson.id} earned={progress.catPlanRewardsClaimed?.includes(recommendation.lesson.id)} /> : null}
         <PuzzleButton palette={TopicPathColors.current} label={t(recommendedProgress?.complete ? "puzzlePathDesign.replay" : "puzzlePathDesign.playLevel", { number: recommendedLevel })} onPress={() => play(recommendation.lesson)} />
       </View> : null}
     </View>
@@ -196,6 +199,8 @@ const styles = StyleSheet.create({
   resumeCard: { padding: moderateScale(20), gap: moderateScale(16), borderRadius: moderateScale(24), overflow: "hidden", marginBottom: moderateScale(8) },
   resumeTitle: { fontSize: moderateScale(23), lineHeight: moderateScale(30), fontWeight: "900", color: GameColors.text },
   topic: { flexDirection: "row", alignItems: "center", gap: moderateScale(14), minHeight: 84, paddingVertical: moderateScale(16), borderBottomWidth: 1, borderColor: GameColors.cardBorder },
+  lastSubject: { borderBottomWidth: 0 },
+  catPlans: { marginTop: moderateScale(18), paddingTop: moderateScale(24), borderTopWidth: 1, borderBottomWidth: 0 },
   topicIcon: { width: moderateScale(46), height: moderateScale(46), alignItems: "center", justifyContent: "center", borderRadius: moderateScale(13) },
   topicDetails: { flex: 1, gap: moderateScale(4) },
   topicTitle: { fontSize: moderateScale(18), fontWeight: "800", color: GameColors.text },

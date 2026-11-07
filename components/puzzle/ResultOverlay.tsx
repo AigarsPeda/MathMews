@@ -1,3 +1,4 @@
+import { CatPlanDecoration } from "@/components/puzzle/CatPlanDecoration";
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
 import { PuzzleGradient, PuzzleHeaderGlow } from "@/components/puzzle/PuzzleGradient";
@@ -25,6 +26,7 @@ type ResultOverlayProps = {
   message: string;
   detail: string;
   summary?: string;
+  decorationLessonId?: string;
   coinsEarned?: number;
   pendingCoins?: number;
   coinType?: "regular" | "sparkle";
@@ -49,6 +51,7 @@ export function ResultOverlay({
   message,
   detail,
   summary,
+  decorationLessonId,
   coinsEarned = 0,
   pendingCoins = 0,
   coinType = "regular",
@@ -97,8 +100,8 @@ export function ResultOverlay({
       {contentHeight => <View style={[styles.screen, contentHeight !== undefined && { height: contentHeight, flex: 0 }]}>
         <PuzzleHeaderGlow color={GameColors.rewardGlow} />
         <ScrollView style={styles.body} nestedScrollEnabled={Platform.OS === "android"} contentContainerStyle={styles.card} showsVerticalScrollIndicator={false}>
-          <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
-            catSkinId={catSkinId} mood={petMood} reaction={catReaction} petName={petName} message={encouragement} portraitSize={180} />
+          {decorationLessonId ? <CatPlanDecoration lessonId={decorationLessonId} earned /> : <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
+            catSkinId={catSkinId} mood={petMood} reaction={catReaction} petName={petName} message={encouragement} portraitSize={180} />}
 
           <Text
             accessibilityRole="header"

@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-08",
+  "scope": "Separate Cat plans from subjects and award usable house decorations",
+  "behavior": [
+    "Regular subjects come first; Cat plans follows a divider and spacing.",
+    "Each of the nine plans previews a distinct furnishing and grants one copy on first completion.",
+    "Place in house opens the existing placement flow; players can also keep the item for later.",
+    "Previously completed plans receive their item when loaded. Receipts survive replay, learning reset and save restoration.",
+    "Cat-care coins and timer rewards remain unchanged."
+  ],
+  "localChecks": [
+    "Full game regression suite, including all nine rewards with actual inventory placement",
+    "App and backend type checks; 117 backend tests",
+    "Catalog validation and tests; release checks",
+    "Full ESLint, startup checks and runtime assets",
+    "Home preload regression and type checks rerun after navigation fix"
+  ],
+  "native": {
+    "device": "iPhone 15 simulator",
+    "result": "Passed",
+    "coverage": [
+      "Subject ordering and divider",
+      "Reward preview and first-completion inventory quantity",
+      "Timed picnic completion, retry, refill and coin balance",
+      "Reading corner and party in English, Latvian and Russian",
+      "Back to path resolves the selected Cat plans topic"
+    ],
+    "isolation": "Production screens with in-memory fixture progress; no fixture spending or lesson completion saved to the player account."
+  },
+  "fixes": {
+    "github": "Removed duplicate locale keys so canonical catalog validation passes.",
+    "pathReturn": "Expo Router POP_TO reuses a preloaded destination without its incoming params when no matching stack entry exists. Stop preloading /puzzles from Home; preserve /store preloading. Native path return now passes."
+  },
+  "database": "Existing Cat plans migration is deployed; decorations use existing game-save inventory and require no additional SQL migration.",
+  "limits": [
+    "Physical devices and Android were not exercised."
+  ],
+  "remoteVerification": "See GitHub Actions for the pushed commit."
+}

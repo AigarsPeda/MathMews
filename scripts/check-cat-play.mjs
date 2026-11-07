@@ -156,10 +156,10 @@ for (const [label, route] of [['home.a11ySolve', '/puzzles'], ['home.a11ySetting
   home();
   assert.equal(prefetched.length,0,'Route preparation does not run during the initial home render');
   assert.equal(idleTasks.size,1,'Main destinations are prepared in idle time');
-  idleTasks.get(1)();assert.deepEqual(prefetched,['/puzzles','/store'],'Idle preparation preloads the actual puzzle and shop routes');
+  idleTasks.get(1)();assert.deepEqual(prefetched,['/store'],'Only the shop is preloaded: a preloaded puzzle route drops the topic on dismissTo');
   focusCleanups[0]();assert.equal(idleTasks.size,0,'Leaving home cancels pending preparation');
   home();idleTasks.get(1)();
-  assert.deepEqual(prefetched,['/puzzles','/store','/puzzles','/store'],'Returning home prepares the next visits too');
+  assert.deepEqual(prefetched,['/store','/store'],'Returning home prepares the shop without creating a stale topic route');
 }
 console.log('Verified idle puzzle/shop preloading on each home focus, cancellation and navigation without a synchronous game-state update.');
 

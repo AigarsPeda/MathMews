@@ -38,9 +38,11 @@ final class NativeDragTests: XCTestCase {
   let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
   if springboard.buttons["Open"].waitForExistence(timeout: 2) { springboard.buttons["Open"].tap() }
   if app.buttons["Open"].exists { app.buttons["Open"].tap() }
-  XCTAssertTrue(app.buttons["Cat plans"].waitForExistence(timeout: 15)); shot("topics-without-rewards")
+  XCTAssertTrue(app.buttons["Addition"].waitForExistence(timeout: 15)); shot("subjects-first")
   XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label CONTAINS 'rewards'")).firstMatch.exists)
-  tap("Cat plans"); XCTAssertTrue(app.buttons["Level 1"].waitForExistence(timeout: 5)); shot("three-cat-plans")
+  for _ in 0..<6 { if app.buttons["Cat plans"].isHittable { break }; app.scrollViews.firstMatch.swipeUp() }
+  shot("cat-plans-separated")
+  tap("Cat plans"); XCTAssertTrue(app.buttons["Level 1"].waitForExistence(timeout: 5)); shot("three-cat-plans-with-decoration")
   tap("qa-Timer"); XCTAssertTrue(heading("Prepare a picnic").waitForExistence(timeout: 5)); shot("simple-timer-choice")
   let timed = app.descendants(matching: .any)["pace-timed"]; XCTAssertTrue(timed.waitForExistence(timeout: 5)); timed.tap(); tap("Start challenge")
   XCTAssertTrue(heading("Prepare a picnic. The cats arrive").waitForExistence(timeout: 5)); shot("picnic-clock")
@@ -69,6 +71,9 @@ final class NativeDragTests: XCTestCase {
   tap("Answer 3"); tap("Check answer")
   XCTAssertTrue(heading("The picnic is ready.").waitForExistence(timeout: 5)); shot("plan-complete")
   XCTAssertTrue(app.staticTexts["Run completed"].exists)
+  XCTAssertTrue(app.staticTexts["Bread baskets 1"].exists)
+  XCTAssertTrue(app.buttons["Place in house"].exists)
+  XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH 'You earned Bread basket'")).firstMatch.exists)
   XCTAssertTrue(app.staticTexts["Coins \(66 - refillCost)"].exists)
   XCTAssertFalse(app.buttons["New milestone performance"].exists)
   XCTAssertFalse(app.buttons["Watch the adventure ending"].exists)
@@ -80,7 +85,10 @@ final class NativeDragTests: XCTestCase {
   let wrongParty = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Answer ' AND label != 'Answer 16'")).firstMatch
   XCTAssertTrue(wrongParty.waitForExistence(timeout: 5)); wrongParty.tap(); tap("Check answer")
   tap("Back to path")
-  XCTAssertTrue(app.buttons["Level 1"].waitForExistence(timeout: 10)); shot("returned-to-path")
+  let returned = app.buttons["Level 1"].waitForExistence(timeout: 10)
+  shot("returned-to-path")
+  if !returned { let diagnostic = XCTAttachment(string: app.debugDescription); diagnostic.lifetime = .keepAlways; add(diagnostic) }
+  XCTAssertTrue(returned)
   XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label CONTAINS 'rewards'")).firstMatch.exists)
  }
 }

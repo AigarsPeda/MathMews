@@ -1354,7 +1354,6 @@
     "crackedAgain": "Atkal izdevās!",
     "goodTry": "Labs mēģinājums!",
     "nextPuzzle": "Nākamais uzdevums",
-    "backToPath": "Atpakaļ uz taku",
     "tryAgain": "Mēģināt vēlreiz",
     "backToHome": "Uz sākumu",
     "coinsEarned": "+{{count}} monētas",
@@ -1884,5 +1883,13 @@
     "giveOne": "Iedot vienu priekšmetu",
     "sharing": "Vēl nesadalīti: {{remaining}}. Katrā grupā: {{counts}}.",
     "exchange": "{{tens}} desmiti un {{ones}} vieni. Desmit vieni veido vienu desmitu."
+  },
+  "catPlans": {
+    "topicHint": "Pabeidz plānus un iegūsti dekorācijas kaķa mājai.",
+    "decorationPreview": "Iegūsti: {{name}}",
+    "decorationEarned": "Iegūta dekorācija: {{name}}",
+    "forYourHouse": "Pabeidz šo plānu, lai pievienotu to mājas priekšmetiem.",
+    "inYourItems": "Pievienota taviem priekšmetiem. Vari to novietot mājā.",
+    "placeInHouse": "Novietot mājā"
   }
 }

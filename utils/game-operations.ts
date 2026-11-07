@@ -1,3 +1,4 @@
+import { grantCatPlanRewards } from "@/utils/cat-plan-rewards";
 import { lifetimePuzzleIds } from "@/utils/reset-puzzle-progress";
 import { recordLearningAttempt } from "@/utils/learning-evidence";
 import type { LearningAttemptContext } from "@/types/learning";
@@ -86,6 +87,7 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
       level: 1 + Math.floor(lifetimePuzzleIds({ ...save.progress, completedPuzzleIds: ids }).length / 10) }), now), lastInteractionAt: now },
   };
   if (coins) next = withCoinDelta(next, coins, { kind: "puzzle_reward", itemId: puzzle.id }, now)!;
+  if (correct) next = grantCatPlanRewards(next);
   return { save: next, coins, accepted: true,
     ...(runFinished && { challengeLevelId: run!.levelId, rewardAttemptId: run!.id }) };
 }

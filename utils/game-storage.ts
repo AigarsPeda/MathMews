@@ -1,3 +1,5 @@
+import { grantCatPlanRewards } from "@/utils/cat-plan-rewards";
+import { getCatPlanReward } from "@/constants/cat-plan-rewards";
 import { lifetimePuzzleIds } from "@/utils/reset-puzzle-progress";
 import { normalizeLearningEvidence } from "@/utils/learning-evidence";
 import { PUZZLE_PATHS, migratePathProgress } from "@/constants/puzzle-path";
@@ -333,7 +335,7 @@ function parseGameSave(
     );
 
     return {
-      save: {
+      save: grantCatPlanRewards({
         ...(parsed as GameSave),
         accountOwnerId: typeof parsed.accountOwnerId === 'string' ? parsed.accountOwnerId : undefined,
         worldClock: normalizeWorldClock(parsed.worldClock),
@@ -377,6 +379,7 @@ function parseGameSave(
           toyQuantities,
           decorationsUnlocked,
           decorationQuantities,
+          catPlanRewardsClaimed: Array.isArray(parsed.progress.catPlanRewardsClaimed) ? [...new Set(parsed.progress.catPlanRewardsClaimed.filter((id): id is string => typeof id === "string" && !!getCatPlanReward(id)))] : [],
           skinsUnlocked,
           learningEvidence: normalizeLearningEvidence(currentCurriculum ? parsed.progress.learningEvidence : {}, new Map(PUZZLE_PATHS.filter(l => l.skillId).map(l => [l.skillId!, new Set(l.levels.flatMap(v => v.puzzleIds))]))),
           learningSupportIds: currentCurriculum && Array.isArray(parsed.progress.learningSupportIds) ? getCompletedPuzzleIds({ completedPuzzleIds: parsed.progress.learningSupportIds.filter((id): id is string => typeof id === "string") }) : [],
@@ -384,7 +387,7 @@ function parseGameSave(
           topicStats: normalizeTopicStats(currentCurriculum ? parsed.progress.topicStats : {}),
           topicStatsByDifficulty: Object.fromEntries((["easy", "medium", "hard"] as const).map(tier => [tier, normalizeTopicStats(difficultyStats[tier])])),
         },
-      },
+      }),
       awayMsAtSessionStart: awayMs,
     };
   } catch {

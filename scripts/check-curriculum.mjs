@@ -1,3 +1,4 @@
+import { checkCatPlanRewards } from './puzzles/check-cat-plan-rewards.mjs';
 import { checkCatPlans } from './puzzles/check-cat-plans.mjs';
 import { checkEverydayTopics } from './puzzles/check-everyday-topics.mjs';
 import { BRIDGE_PLANS, BRIDGE_TYPES } from "./puzzles/bridge-pilot.mjs";
@@ -770,3 +771,5 @@ checkReviewAlignment({load});
 
 checkEverydayTopics();
 checkCatPlans();
+
+checkCatPlanRewards({ load });

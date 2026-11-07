@@ -1353,7 +1353,6 @@
     "crackedAgain": "Cracked it again!",
     "goodTry": "Good try!",
     "nextPuzzle": "Next puzzle",
-    "backToPath": "Back to path",
     "tryAgain": "Try again",
     "backToHome": "Back to home",
     "coinsEarned": "+{{count}} coins",
@@ -1882,5 +1881,13 @@
     "giveOne": "Give one object",
     "sharing": "In the pool: {{remaining}}. In each group: {{counts}}.",
     "exchange": "{{tens}} tens and {{ones}} ones. Ten individual units make one ten."
+  },
+  "catPlans": {
+    "topicHint": "Finish plans to earn decorations for your cat’s house.",
+    "decorationPreview": "Earn {{name}}",
+    "decorationEarned": "You earned {{name}}",
+    "forYourHouse": "Complete this plan to add it to your house items.",
+    "inYourItems": "Added to your items. Ready to place in the house.",
+    "placeInHouse": "Place in house"
   }
 }

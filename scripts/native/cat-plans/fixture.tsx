@@ -57,6 +57,7 @@ export default function CatPlansFixture() {
       <View style={{ flex: 1, width: locale === 'en' ? '100%' : 320, alignSelf: 'center' }}>
         {mode === 'play' ? <PlaySession key={locale} session={{ lesson, level, phase: 0 }} /> : mode === 'home' ? <View style={{ padding: 24, paddingTop: 100 }}><GameHeaderStats layout="home" coins={save.wallet.coins} streak={3} lives={save.progress.lives} /></View> : <PuzzlesScreen />}
       </View>
+      <Text testID="qa-earned">{`Bread baskets ${save.progress.decorationQuantities?.kitchenBreadBasket ?? 0}`}</Text>
       <Text testID="qa-lives">{`Lives ${save.progress.lives.current}`}</Text>
       <Text testID="qa-run">{`Run ${save.progress.challengeAttempt?.status ?? 'none'}`}</Text>
       <Text testID="qa-coins">{`Coins ${save.wallet.coins}`}</Text>

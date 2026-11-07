@@ -2,20 +2,6 @@
   "version": 2,
   "topics": [
     {
-      "id": "cat-plans",
-      "title": {
-        "en": "Cat plans",
-        "lv": "Kaķu plāni",
-        "ru": "Планы для котов"
-      },
-      "description": {
-        "en": "Use maths to prepare something for the cats.",
-        "lv": "Izmanto matemātiku, lai kaut ko sagatavotu kaķiem.",
-        "ru": "Используй математику, чтобы подготовить что-нибудь для котов."
-      },
-      "icon": "cat"
-    },
-    {
       "id": "addition",
       "title": {
         "en": "Addition",
@@ -238,6 +224,20 @@
         "lv": "Mēri šķidrumus un izpēti tilpumu.",
         "ru": "Измеряй жидкости и исследуй объём."
       }
+    },
+    {
+      "id": "cat-plans",
+      "title": {
+        "en": "Cat plans",
+        "lv": "Kaķu plāni",
+        "ru": "Планы для котов"
+      },
+      "description": {
+        "en": "Use maths to prepare something for the cats.",
+        "lv": "Izmanto matemātiku, lai kaut ko sagatavotu kaķiem.",
+        "ru": "Используй математику, чтобы подготовить что-нибудь для котов."
+      },
+      "icon": "cat"
     }
   ],
   "lessons": [

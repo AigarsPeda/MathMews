@@ -217,7 +217,9 @@ export type Progress = {
   toyQuantities?: Record<string, number>;
   /** Room decorations the player owns. */
   decorationsUnlocked: string[];
-  /** How many of each decoration type the player has purchased. */
+  /** Plan IDs whose one-time decoration has already entered this pet's inventory. */
+  catPlanRewardsClaimed?: string[];
+  /** How many of each decoration type the player owns, purchased or earned. */
   decorationQuantities?: Record<string, number>;
   /** Cat fur colors the player owns. */
   skinsUnlocked: string[];

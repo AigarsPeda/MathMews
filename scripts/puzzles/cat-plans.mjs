@@ -100,7 +100,7 @@ function choices(spec, slot, locale) {
 }
 export function appendCatPlans({ topics, lessons, puzzles, pathExtras }) {
   const description = T('Use maths to prepare something for the cats.', 'Izmanto matemātiku, lai kaut ko sagatavotu kaķiem.', 'Используй математику, чтобы подготовить что-нибудь для котов.');
-  topics.unshift({ id: 'cat-plans', title: T('Cat plans', 'Kaķu plāni', 'Планы для котов'), description, icon: 'cat' });
+  topics.push({ id: 'cat-plans', title: T('Cat plans', 'Kaķu plāni', 'Планы для котов'), description, icon: 'cat' });
   const reviews = {};
   for (const [tier, difficulty] of tiers.entries()) for (const [index, plan] of plans.entries()) {
     const id = `${difficulty}-cat-plans-${plan.id}`, skillId = `${difficulty}.cat-plans.${plan.id}`;

@@ -136,9 +136,9 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
   } = game;
   useFocusEffect(useCallback(() => {
     if (!isReady || !hasCompletedOnboarding) return;
-    // Prepare the main destinations while idle, including after returning home.
+    // Prepare the shop while idle. A preloaded /puzzles route loses its topic
+    // when dismissTo opens it after a directly entered lesson (Expo Router).
     const task = requestIdleCallback(() => {
-      router.prefetch("/puzzles");
       router.prefetch("/store");
     }, { timeout: 1500 });
     return () => cancelIdleCallback(task);
