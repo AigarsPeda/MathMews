@@ -90,8 +90,10 @@ export function createRoomActivitySegment(animationId: CatRoomAnimation, reverse
     loop: !ROOM_ONE_SHOT_CLIPS.includes(animationId), reverse, fps,
   });
 }
-export function createPuzzleReactionSegment(animationId: PuzzleCatReaction): PetMediaSegment {
-  return modelSegment(animationId, { loop: false });
+export function createPuzzleReactionSegment(animationId: PuzzleCatReaction, brief = false): PetMediaSegment {
+  const segment = modelSegment(animationId, { loop: false });
+  if (brief && segment.model) segment.model.rate = segment.model.duration / .75;
+  return segment;
 }
 export function createBoxPlaySegment(animationId: BoxPlayAnimationId): PetMediaSegment {
   return modelSegment(animationId, {

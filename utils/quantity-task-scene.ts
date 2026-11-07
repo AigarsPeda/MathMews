@@ -14,8 +14,8 @@ export function getQuantityTaskHeight(model: QuantityTaskModel): number {
 }
 
 /** Stable identities let counters travel between the pool and their destinations. */
-export function getQuantityTaskTokens(model: QuantityTaskModel, step: number): PracticeToken[] {
-  const tokens = buildQuantityTaskTokens(model, step);
+export function getQuantityTaskTokens(model: QuantityTaskModel, step: number, dealtCount?: number): PracticeToken[] {
+  const tokens = buildQuantityTaskTokens(model, step, dealtCount);
   if (!model.object) return tokens;
   return tokens.map(token => token.id.startsWith("counter-") ? {
     ...token, object: model.object,
@@ -24,9 +24,10 @@ export function getQuantityTaskTokens(model: QuantityTaskModel, step: number): P
   } : token);
 }
 
-function buildQuantityTaskTokens(model: QuantityTaskModel, step: number): PracticeToken[] {
+function buildQuantityTaskTokens(model: QuantityTaskModel, step: number, dealtCount?: number): PracticeToken[] {
   if (model.kind === "share") {
-    const dealt = Math.min(Math.max(0, Math.floor(step)), Math.floor(model.items / model.groups)) * model.groups;
+    const limit = Math.floor(model.items / model.groups) * model.groups;
+    const dealt = Math.min(limit, Math.max(0, Math.floor(dealtCount ?? step * model.groups)));
     const plates: PracticeToken[] = Array.from({ length: model.groups }, (_, group) => ({
       id: `plate-${group}`, label: "", shape: "tile", tone: "muted",
       x: (group + 0.5) * 300 / model.groups, y: 103,
@@ -34,7 +35,7 @@ function buildQuantityTaskTokens(model: QuantityTaskModel, step: number): Practi
     }));
     return [...plates, ...Array.from({ length: model.items }, (_, index) => {
       if (index >= dealt) {
-        const pool = index - dealt;
+        const pool = dealtCount === undefined ? index - dealt : index;
         return counter(index, 24 + (pool % 10) * 28, 12 + Math.floor(pool / 10) * 16);
       }
       const group = index % model.groups, round = Math.floor(index / model.groups);

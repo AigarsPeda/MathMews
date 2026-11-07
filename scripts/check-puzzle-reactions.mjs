@@ -9,7 +9,12 @@ const clips = load('@/constants/cat-animation-clips').CAT_ANIMATION_CLIPS;
 const context = { correct: true, kind: 'practice', finalStage: false, practiceFinished: false,
   replay: false, retries: 0, completedCount: 1, puzzleId: 'fractions-1' };
 const reaction = changes => getPuzzleCompanionMessage({ ...context, ...changes }).reaction;
-assert.equal(reaction({ retries: 1 }), 'puzzleHighPaw', 'Persistence wording gets the offered high paw');
+for (const name of [...success, ...retry]) {
+  const brief = createPuzzleReactionSegment(name, true);
+  assert.equal(brief.loop, false);
+  assert.ok(Math.abs(brief.model.duration / brief.model.rate - .75) < .00001, 'Ordinary feedback fits within 750 ms');
+}
+assert.equal(reaction({ retries: 1 }), 'puzzleProud', 'A corrected mistake gets the modest nod');
 assert.equal(reaction({ kind: 'boss', finalStage: true }), 'puzzleHighPaw');
 assert.equal(reaction({ completedCount: 5 }), 'puzzleBounce');
 assert.equal(reaction({}), reaction({}), 'Rendering again does not reroll the reaction');

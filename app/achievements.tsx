@@ -1,4 +1,6 @@
 import { AchievementMovie } from "@/components/puzzle/AchievementMovie";
+import { LearningMilestonePerformance } from '@/components/puzzle/LearningMilestonePerformance';
+import { countFinishedLessons, LEARNING_MILESTONES, type LearningMilestone } from '@/constants/learning-milestones';
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
@@ -49,7 +51,9 @@ export default function AchievementsScreen() {
   return <AchievementsCollection key={params.boss ?? "collection"} initialBoss={params.boss} />;
 }
 function AchievementsCollection({ initialBoss }: { initialBoss?: string }) {
-  const { progress } = useGame(), { locale } = useLocale(), { t } = useTranslation();
+  const { progress, pet } = useGame(), { locale } = useLocale(), { t } = useTranslation();
+  const finishedLessons = useMemo(() => countFinishedLessons(progress.completedPuzzleIds ?? []), [progress.completedPuzzleIds]);
+  const [milestone, setMilestone] = useState<LearningMilestone | null>(null);
   const router = useRouter();
   const all = useMemo(() => getBossAchievements(progress.completedPuzzleIds), [progress.completedPuzzleIds]);
   const initial = all.find(item => item.id === initialBoss && item.collected);
@@ -80,7 +84,7 @@ function AchievementsCollection({ initialBoss }: { initialBoss?: string }) {
     <View style={styles.screen}>
       <Pressable onPress={back} accessibilityRole="button" accessibilityLabel={t("common.back")} style={styles.back}><BackButtonLabel style={styles.backText} /></Pressable>
       <View style={styles.heading}><AppIcon name="boss-badge" size={moderateScale(40)} /><Text style={styles.title} accessibilityRole="header">{t("achievements.title")}</Text></View>
-      <Text style={styles.count}>{t("achievements.count", { count: collected.length, total: all.length })}</Text>
+      <Text style={styles.count}>{t('actionMotion.movies')} · {t("achievements.count", { count: collected.length, total: all.length })}</Text>
       <View style={styles.filters} accessibilityRole="tablist">
         {(["all", "collected"] as const).map(value => <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: filter === value }}
           onPress={() => setFilter(value)} style={[styles.filter, filter === value && styles.filterSelected]}>
@@ -88,8 +92,19 @@ function AchievementsCollection({ initialBoss }: { initialBoss?: string }) {
         </Pressable>)}
       </View>
       <FlatList data={filter === "all" ? all : collected} keyExtractor={item => item.id} renderItem={renderItem}
-        ListHeaderComponent={<Text style={styles.description}>{t("achievements.description")}</Text>}
-        ListEmptyComponent={<View style={styles.empty}><AppIcon name="boss-badge" size={moderateScale(72)} />
+        ListHeaderComponent={<View style={{ gap: 12 }}>
+          <Text style={styles.cardTitle} accessibilityRole="header">{t('actionMotion.collection')}</Text>
+          {LEARNING_MILESTONES.filter(item => filter === 'all' || finishedLessons >= item.lessons).map(item => <Pressable key={item.lessons}
+            testID={`learning-milestone-${item.lessons}`}
+            accessibilityRole="button" disabled={finishedLessons < item.lessons} accessibilityState={{ disabled: finishedLessons < item.lessons }}
+            onPress={() => setMilestone(item)} style={[styles.filter, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
+            <AppIcon name={finishedLessons >= item.lessons ? 'boss-badge' : 'lock'} size={32} />
+            <View style={{ flex: 1 }}><Text style={styles.filterText}>{t(`actionMotion.milestone${item.lessons}`)}</Text>
+              <Text style={styles.context}>{t(finishedLessons >= item.lessons ? 'actionMotion.watch' : 'actionMotion.unlock', { count: item.lessons, completed: finishedLessons })}</Text></View>
+          </Pressable>)}
+          <Text style={styles.description}>{t("achievements.description")}</Text>
+        </View>}
+        ListEmptyComponent={finishedLessons > 0 ? null : <View style={styles.empty}><AppIcon name="boss-badge" size={moderateScale(72)} />
           <Text style={styles.cardTitle}>{t("achievements.emptyTitle")}</Text><Text style={styles.description}>{t("achievements.emptyBody")}</Text>
           <Pressable accessibilityRole="button" onPress={() => setFilter("all")} style={styles.filter}><Text style={styles.filterText}>{t("achievements.all")}</Text></Pressable>
         </View>}
@@ -126,6 +141,12 @@ function AchievementsCollection({ initialBoss }: { initialBoss?: string }) {
           </View>
         </View>
       </View>}
+    </AppBottomSheet>
+    <AppBottomSheet visible={!!milestone} onClose={() => setMilestone(null)} expanded>
+      <ScrollView contentContainerStyle={styles.previewContent}>
+        {milestone ? <LearningMilestonePerformance key={milestone.lessons} milestone={milestone} catSkinId={pet.catSkinId} /> : null}
+        <Pressable accessibilityRole="button" onPress={() => setMilestone(null)} style={styles.close}><Text style={styles.closeText}>{t('common.close')}</Text></Pressable>
+      </ScrollView>
     </AppBottomSheet>
   </SafeAreaView>;
 }

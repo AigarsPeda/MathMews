@@ -5,14 +5,14 @@ import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { PracticeToken } from "@/types/visual-explanation";
 import { getPracticeTokenSize, PRACTICE_BOARD_HEIGHT, PRACTICE_BOARD_WIDTH } from "@/utils/practice-token-layout";
 import { moderateScale } from "@/utils/scale";
+import { useAnimationActivity } from '@/hooks/use-animation-activity';
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { FadeIn, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withSequence, withTiming } from "react-native-reanimated";
+import Animated, { cancelAnimation, FadeIn, ReduceMotion, useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from "react-native-reanimated";
 
-type PracticeScene = { prompt?: string; tokens: PracticeToken[]; result?: string; compact?: boolean; boardHeight?: number };
+type PracticeScene = { prompt?: string; tokens: PracticeToken[]; result?: string; compact?: boolean; boardHeight?: number; durationMs?: number; staggerMs?: number };
 
-function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: number; delay: number }) {
-  const reducedMotion = useReducedMotion();
+function MovingToken({ token, ratio, delay, durationMs, motion }: { token: PracticeToken; ratio: number; delay: number; durationMs: number; motion: boolean }) {
   const x = useSharedValue(token.x);
   const y = useSharedValue(token.y);
   const opacity = useSharedValue(token.visible === false ? 0 : 1);
@@ -21,8 +21,10 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
   const lane = useSharedValue(0);
   const previousX = useRef(token.x);
   useEffect(() => {
-    const duration = reducedMotion ? 0 : 600;
-    const wait = reducedMotion ? 0 : delay;
+    const duration = motion ? durationMs : 0;
+    const wait = motion ? delay : 0;
+    for (const value of [x, y, opacity, scale, fill, lane]) cancelAnimation(value);
+    lane.value = 0;
     x.value = withDelay(wait, withTiming(token.x, { duration }));
     y.value = withDelay(wait, withTiming(token.y, { duration }));
     opacity.value = withDelay(wait, withTiming(token.visible === false ? 0 : 1, { duration }));
@@ -30,12 +32,13 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
     fill.value = withDelay(wait, withTiming(token.tone === "muted" ? 0 : 1, { duration }));
     if (token.arc && previousX.current !== token.x) {
       lane.value = withDelay(wait, withSequence(
-        withTiming(reducedMotion ? 0 : token.arc, { duration: duration / 2 }),
+        withTiming(motion ? token.arc : 0, { duration: duration / 2 }),
         withTiming(0, { duration: duration / 2 }),
       ));
     }
     previousX.current = token.x;
-  }, [token.x, token.y, token.visible, token.scale, token.tone, token.arc, reducedMotion, delay, x, y, opacity, scale, fill, lane]);
+    return () => { for (const value of [x, y, opacity, scale, fill, lane]) cancelAnimation(value); };
+  }, [token.x, token.y, token.visible, token.scale, token.tone, token.arc, motion, durationMs, delay, x, y, opacity, scale, fill, lane]);
   const movingStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     transform: [{ translateX: x.value * ratio }, { translateY: (y.value + lane.value) * ratio }, { scale: scale.value }],
@@ -77,7 +80,8 @@ function MovingToken({ token, ratio, delay }: { token: PracticeToken; ratio: num
   );
 }
 
-export function VisualPracticeBoard({ prompt, tokens, result, compact = false, boardHeight = PRACTICE_BOARD_HEIGHT }: PracticeScene) {
+export function VisualPracticeBoard({ prompt, tokens, result, compact = false, boardHeight = PRACTICE_BOARD_HEIGHT, durationMs = 600, staggerMs = 55 }: PracticeScene) {
+  const { active, reduceMotion } = useAnimationActivity();
   const [width, setWidth] = useState(0);
   const ratio = width / PRACTICE_BOARD_WIDTH;
   return (
@@ -85,7 +89,7 @@ export function VisualPracticeBoard({ prompt, tokens, result, compact = false, b
       {prompt ? <Text style={styles.prompt}>{prompt}</Text> : null}
       <View testID="practice-board" style={[styles.board, { aspectRatio: PRACTICE_BOARD_WIDTH / boardHeight }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
         {width > 0 ? tokens.map((token, i) => (
-          <MovingToken key={token.id} token={token} ratio={ratio} delay={Math.min(i, 5) * 55} />
+          <MovingToken key={token.id} token={token} ratio={ratio} delay={Math.min(i, 5) * staggerMs} durationMs={durationMs} motion={active && !reduceMotion} />
         )) : null}
       </View>
       {!compact || result ? <View style={styles.resultHost}>

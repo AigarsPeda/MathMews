@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-07",
+  "scope": "Purposeful puzzle motion and collectible cat performances",
+  "native": {
+    "device": "iPhone 15 simulator",
+    "fixture": "Production components with isolated in-memory progress; no game save written",
+    "results": "native-results.json",
+    "coverage": [
+      "Single-object sharing and remainder, reset",
+      "Ten-unit regrouping and reset",
+      "Corrected-result nod and immediate Continue",
+      "Milestone and adventure playback with Continue available",
+      "Pause, resume and replay",
+      "Earned collection entry opens; unearned fifty-lesson entry stays locked"
+    ]
+  },
+  "checks": {
+    "typecheck": "passed",
+    "eslint": "passed for changed TypeScript files",
+    "puzzles": "npm run test:puzzles passed",
+    "actionMotion": "npm run test:action-motion passed",
+    "diff": "git diff --check passed"
+  },
+  "visualReview": {
+    "boards": "boards-and-collection.jpg, reading left to right: partial share, final remainder, before exchange, after exchange, collection, collected performance",
+    "results": "result-performances.jpg: correction, selected milestone, selected adventure ending",
+    "fixes": [
+      "Keep the sharing portrait mounted while replaying its gesture",
+      "Replace the large feedback portrait while the selected performance plays so the performance is visible above Continue"
+    ]
+  },
+  "motionChecks": [
+    "All three cat coats sampled at 30/60/120 FPS",
+    "750 ms ordinary reactions complete once",
+    "Reduce Motion settles teaching objects immediately and holds a cat pose",
+    "Interrupted and inactive token animations cancel and settle",
+    "Milestones at 1, 10 and 50 full lessons; duplicate completions and replays do not unlock again"
+  ],
+  "limits": [
+    "Native walkthrough on one iPhone simulator; physical devices and Android not exercised",
+    "Reduce Motion verified by renderer and animation regression checks, not a separate OS-toggle screenshot run"
+  ]
+}

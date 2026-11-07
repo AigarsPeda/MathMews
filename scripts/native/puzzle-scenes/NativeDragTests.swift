@@ -41,20 +41,20 @@ final class NativeDragTests: XCTestCase {
   app.buttons["Lock scene"].tap()
   XCTAssertFalse(app.buttons["Start again"].isEnabled)
  }
- func testSharingWholeRoundsAndLeftovers() {
+ func testSharingSingleObjectsAndLeftovers() {
   app.buttons["Share"].tap()
-  expect("In the pool: 23 cookies. 5 groups, 0 in each.")
+  expect("In the pool: 23. In each group: 0 · 0 · 0 · 0 · 0.")
   XCTAssertFalse(app.buttons["Start again"].isEnabled)
-  app.buttons["Share one round"].tap()
-  expect("In the pool: 18 cookies. 5 groups, 1 in each.")
+  for _ in 0..<5 { app.buttons["Give one object"].tap() }
+  expect("In the pool: 18. In each group: 1 · 1 · 1 · 1 · 1.")
   shot("sharing-one-round")
-  for _ in 0..<3 { app.buttons["Share one round"].tap() }
-  expect("In the pool: 3 cookies. 5 groups, 4 in each.")
-  XCTAssertFalse(app.buttons["Share one round"].isEnabled)
+  for _ in 0..<15 { app.buttons["Give one object"].tap() }
+  expect("In the pool: 3. In each group: 4 · 4 · 4 · 4 · 4.")
+  XCTAssertFalse(app.buttons["Give one object"].isEnabled)
   shot("sharing-leftovers")
   app.buttons["Start again"].tap()
-  expect("In the pool: 23 cookies. 5 groups, 0 in each.")
-  XCTAssertTrue(app.buttons["Share one round"].isEnabled)
+  expect("In the pool: 23. In each group: 0 · 0 · 0 · 0 · 0.")
+  XCTAssertTrue(app.buttons["Give one object"].isEnabled)
  }
  func testMouseTraysAndLocalizedChoices() {
   app.buttons["English"].tap(); app.buttons["Mice"].tap()
@@ -78,9 +78,9 @@ final class NativeDragTests: XCTestCase {
  }
  func testParcelSharing() {
   app.buttons["English"].tap(); app.buttons["Share"].tap(); app.buttons["Use parcels"].tap()
-  expect("In the pool: 31 parcels. 4 groups, 0 in each.")
-  for _ in 0..<7 { app.buttons["Share one round"].tap() }
-  expect("In the pool: 3 parcels. 4 groups, 7 in each.")
+  expect("In the pool: 31. In each group: 0 · 0 · 0 · 0.")
+  for _ in 0..<28 { app.buttons["Give one object"].tap() }
+  expect("In the pool: 3. In each group: 7 · 7 · 7 · 7.")
   shot("parcels-leftovers")
  }
 }

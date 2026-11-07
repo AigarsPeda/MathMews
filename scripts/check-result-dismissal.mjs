@@ -43,6 +43,7 @@ function harness(file, extraMocks = {}) {
     ...Object.fromEntries([
       ['@/components/puzzle/PuzzleText', 'PuzzleText'], ['@/components/puzzle/PuzzleButton', 'PuzzleButton'], ['@/components/ui/IconText', 'IconText'], ['@/components/ui/AppIcon', 'AppIcon'],
       ['@/components/puzzle/BossStoryScene', 'BossStoryScene'], ['@/components/puzzle/PuzzleCatCompanion', 'PuzzleCatCompanion'],
+      ['@/components/puzzle/AchievementMovie', 'AchievementMovie'], ['@/components/puzzle/LearningMilestonePerformance', 'LearningMilestonePerformance'],
       ['@/components/ui/AppBottomSheet', 'AppBottomSheet'],
     ].map(([id, name]) => [id, { [name]: name }])),
     ...extraMocks,
@@ -104,6 +105,26 @@ for (const action of ['next', 'retry', 'home', 'swipe']) {
 }
 
 const modifiers = Object.fromEntries(['frame', 'presentationBackground', 'presentationDetents', 'presentationDragIndicator'].map(name => [name, value => ({ name, value })]));
+for (const kind of ['milestone', 'adventure']) {
+  const view = harness('components/puzzle/ResultOverlay.tsx');
+  let continued = 0;
+  const props = { visible: true, correct: true, onContinue: () => continued++,
+    ...(kind === 'milestone' ? { milestone: { lessons: 1, performance: ['puzzleProud', 'puzzleHighPaw'] } }
+      : { adventure: { sceneId: 'train-bridge', label: 'Finished bridge' } }) };
+  let sheet = view.render('ResultOverlay', props);
+  nodes(sheet.props.children(600)).find(n => n.type === 'Pressable' && n.props.accessibilityState?.expanded === false).props.onPress();
+  sheet = view.render('ResultOverlay', props);
+  const contents = nodes(sheet.props.children(600));
+  assert.ok(contents.some(n => n.type === (kind === 'milestone' ? 'LearningMilestonePerformance' : 'AchievementMovie')));
+  assert.ok(!contents.some(n => n.type === 'PuzzleCatCompanion'), 'The selected performance replaces the large feedback cat so it is visible');
+  const next = contents.find(n => n.type === 'PuzzleButton');
+  assert.ok(!next.props.disabled, 'Continue is available while an endpoint performance plays');
+  next.props.onPress(); next.props.onPress();
+  sheet = view.render('ResultOverlay', props);
+  assert.ok(!nodes(sheet.props.children(600)).some(n => ['LearningMilestonePerformance', 'AchievementMovie'].includes(n.type)), 'Closing stops playback immediately');
+  sheet.props.onDismissComplete(); sheet.props.onDismissComplete();
+  assert.equal(continued, 1, 'A playing performance cannot delay or duplicate continuation');
+}
 for (const correct of [true, false]) {
   for (const lateCloseEvent of [true, false]) {
     const view = harness('components/puzzle/ResultOverlay.tsx');

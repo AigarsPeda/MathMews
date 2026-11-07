@@ -15,9 +15,9 @@ export type PetMediaSegment = {
   model?: { duration: number; rate: number };
 };
 
-export type PetScenarioId = "fallAsleep" | "wakeUp" | "standUp" | "playBox";
+export type PetScenarioId = "fallAsleep" | "wakeUp" | "standUp" | "playBox" | "learningMilestone";
 
-export type BuiltInPetScenarioId = Exclude<PetScenarioId, "playBox">;
+export type BuiltInPetScenarioId = Exclude<PetScenarioId, "playBox" | "learningMilestone">;
 
 export type PetMediaScenario = {
   id: PetScenarioId;

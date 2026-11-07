@@ -1,5 +1,7 @@
 import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
 import { PuzzleColors as Colors } from '@/constants/puzzle-theme';
+import { VisualPracticeBoard } from '@/components/puzzle/VisualPracticeBoard';
+import { getPlaceValueTokens } from '@/utils/place-value-tokens';
 import type { PlaceValuePuzzle } from '@/types/puzzle';
 import { changePlaceValue, initialPlaceValue, type PlaceValueAction, type PlaceValueState } from '@/utils/place-value';
 import { useTranslation } from 'react-i18next';
@@ -32,12 +34,10 @@ export function PlaceValueTask({ puzzle, value, onChange, answered }: Props) {
         accessible accessibilityLabel={t(`placeValue.count.${unit}`, { count: state[unit] })}>
         <Text style={styles.heading}>{t(`placeValue.${unit}`)}</Text>
         <Text style={styles.count}>{state[unit]}</Text>
-        <View style={[styles.blocks, unit === 'ones' && styles.ones]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          {Array.from({ length: state[unit] }, (_, i) => unit === 'tens'
-            ? <View key={i} style={styles.rod}>{Array.from({ length: 10 }, (_, j) => <View key={j} style={styles.tenCell} />)}</View>
-            : <View key={i} style={styles.oneCell} />)}
-        </View>
       </View>)}
+    </View>
+    <View accessible accessibilityRole="image" accessibilityLabel={t('actionMotion.exchange', { tens: state.tens, ones: state.ones })} accessibilityLiveRegion="polite">
+      <VisualPracticeBoard key={state.tens * 10 + state.ones} compact tokens={getPlaceValueTokens(state)} boardHeight={140} durationMs={400} staggerMs={0} />
     </View>
     {mode === 'subtract' ? <Text accessibilityLiveRegion="polite" style={styles.status}>
       {t('placeValue.removed', { count: start - state.tens * 10 - state.ones, target: operand })}
@@ -70,11 +70,6 @@ const styles = StyleSheet.create({
   column: { flex: 1, alignItems: 'center', paddingHorizontal: 8 },
   heading: { fontSize: 18, fontWeight: '800', color: Colors.text },
   count: { fontSize: 28, fontWeight: '800', color: Colors.text, marginVertical: 4 },
-  blocks: { minHeight: 126, width: 110, alignContent: 'flex-start', gap: 4 },
-  ones: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  rod: { flexDirection: 'row' },
-  tenCell: { width: 11, height: 11, borderWidth: 0.5, borderColor: Colors.text, backgroundColor: Colors.headerGlow },
-  oneCell: { width: 11, height: 11, borderWidth: 0.5, borderColor: Colors.text, backgroundColor: Colors.coin },
   controls: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   exchanges: { gap: 8 },
   button: { flexGrow: 1, flexBasis: '45%', minHeight: 48, justifyContent: 'center', alignItems: 'center', padding: 10, borderRadius: 12, borderWidth: 1, borderColor: Colors.primary, backgroundColor: Colors.selectedSurface },

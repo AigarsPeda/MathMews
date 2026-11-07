@@ -20,7 +20,7 @@ export function PuzzleCatCompanion({ petType, catSkinId, petName, mood, reaction
       <Text style={styles.message}>{message}</Text>
       <View style={styles.tail} />
     </Animated.View>
-    <PuzzleCatPortrait petType={petType} catSkinId={catSkinId} mood={mood} reaction={reaction} size={portraitSize} />
+    <PuzzleCatPortrait petType={petType} catSkinId={catSkinId} mood={mood} reaction={reaction} size={portraitSize} brief />
   </View>;
 }
 

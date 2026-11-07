@@ -6,6 +6,9 @@ import { BossStoryScene } from "@/components/puzzle/BossStoryScene";
 import type { BossStory } from "@/types/curriculum";
 import type { AppLocale } from "@/types/locale";
 import { PuzzleCatCompanion } from "@/components/puzzle/PuzzleCatCompanion";
+import { AchievementMovie } from '@/components/puzzle/AchievementMovie';
+import { LearningMilestonePerformance } from '@/components/puzzle/LearningMilestonePerformance';
+import type { LearningMilestone } from '@/constants/learning-milestones';
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { LIFE_BUY_COST } from "@/constants/game";
@@ -17,6 +20,8 @@ import { useTranslation } from "react-i18next";
 import { Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 type ResultOverlayProps = {
+  adventure?: { sceneId: string; label: string };
+  milestone?: LearningMilestone;
   visible: boolean;
   bossStory?: { story: BossStory; locale: AppLocale; completed: number };
   correct: boolean;
@@ -42,6 +47,8 @@ type ResultOverlayProps = {
 };
 
 export function ResultOverlay({
+  adventure,
+  milestone,
   visible,
   bossStory,
   correct,
@@ -69,7 +76,9 @@ export function ResultOverlay({
   const actionHandled = useRef(false);
   const pendingAction = useRef<"continue" | "home" | null>(null);
   const [closing, setClosing] = useState(false);
+  const [showPerformance, setShowPerformance] = useState<'milestone' | 'adventure' | null>(null);
   if (!visible && closing) setClosing(false);
+  if (!visible && showPerformance !== null) setShowPerformance(null);
   useEffect(() => {
     if (visible) {
       actionHandled.current = false;
@@ -104,9 +113,9 @@ export function ResultOverlay({
         <ScrollView style={styles.body} nestedScrollEnabled={Platform.OS === "android"} contentContainerStyle={styles.card} showsVerticalScrollIndicator={false}>
           {correct && bossStory ? <BossStoryScene story={bossStory.story} locale={bossStory.locale}
             completed={bossStory.completed} outcome={bossStory.completed === 3} reaction={bossStory.completed < 3} active={visible && !closing} catSkinId={catSkinId} /> : null}
-          {!bossStory ? <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
+          {!bossStory && !showPerformance ? <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
             catSkinId={catSkinId} mood={petMood} reaction={catReaction} petName={petName} message={encouragement} portraitSize={180} /> : null}
-          {bossStory && correct ? <Text style={styles.detail}>{encouragement}</Text> : null}
+          {(bossStory && correct) || showPerformance ? <Text style={styles.detail}>{encouragement}</Text> : null}
 
           <Text
             accessibilityRole="header"
@@ -119,6 +128,14 @@ export function ResultOverlay({
           </Text>
           <Text style={styles.detail}>{detail}</Text>
           {summary ? <Text style={styles.summary}>{summary}</Text> : null}
+          {correct && (milestone || adventure) ? <View style={{ width: '100%', gap: 12 }}>
+            {(['milestone', 'adventure'] as const).filter(kind => kind === 'milestone' ? milestone : adventure).map(kind => <Pressable key={kind} accessibilityRole="button" accessibilityState={{ expanded: showPerformance === kind }} style={{ minHeight: 48, justifyContent: 'center' }} onPress={() => setShowPerformance(value => value === kind ? null : kind)}>
+              <Text style={styles.detail}>{t(showPerformance === kind ? 'actionMotion.hide' : kind === 'milestone' ? 'actionMotion.newPerformance' : 'actionMotion.adventureEnding')}</Text>
+            </Pressable>)}
+            {showPerformance && visible && !closing ? showPerformance === 'milestone' && milestone
+              ? <LearningMilestonePerformance milestone={milestone} catSkinId={catSkinId} />
+              : adventure ? <AchievementMovie sceneId={adventure.sceneId} label={adventure.label} active /> : null : null}
+          </View> : null}
           {correct && pendingCoins > 0 ? <View style={styles.pendingReward}>
             <Text style={styles.coinText}>{t("timedChallenge.pendingCoins", { count: pendingCoins })}</Text>
             <Text style={styles.detail}>{t("timedChallenge.collectOnFinish")}</Text>

@@ -67,7 +67,8 @@
     "assets:trail-props": "/Applications/Blender.app/Contents/MacOS/Blender --background --threads 4 --python-exit-code 1 --python scripts/3d/build-trail-props.py && node scripts/3d/pack-trail-props.mjs",
     "assets:trail-collections": "python3 scripts/3d/rebuild-trail-collections.py",
     "review:trail-collections": "node scripts/3d/review-trail-collections.mjs",
-    "test:trail-collections": "node scripts/check-trail-collections.mjs"
+    "test:trail-collections": "node scripts/check-trail-collections.mjs",
+    "test:action-motion": "node scripts/check-action-motion.mjs && node scripts/check-puzzle-reactions.mjs && node scripts/check-result-dismissal.mjs"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

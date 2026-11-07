@@ -15,7 +15,9 @@ import { ChallengeClock, TimedChallengeActions, TimedChallengeIntro } from "@/co
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
-import { getLevelPuzzles, type LearningSession } from "@/constants/curriculum";
+import { getLevelPuzzles, LEARNING_CATALOG, type LearningSession } from "@/constants/curriculum";
+import { getNewLearningMilestone } from '@/constants/learning-milestones';
+import { getAchievementStory } from '@/constants/achievement-stories';
 import { getChallengePathLocation, getNextPathLevel, getNextPathStep, getPathCompletedIds, getPathProgress, resolvePathSession } from "@/constants/puzzle-path";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
@@ -285,6 +287,10 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     : item.puzzleIds.every(id => entryCompleted.includes(id) || answered && id === puzzle.id));
   const resultProgress = { ...progress, completedPuzzleIds: [...entryCompleted, ...(answered ? [puzzle.id] : [])] };
   const lessonFinished = answered && position.current === position.total && getPathProgress(lesson, resultProgress).complete;
+  const earnedMilestone = useMemo(() => lessonFinished && isCorrect && !isReplay
+    ? getNewLearningMilestone(entryCompleted, [...entryCompleted, puzzle.id]) : undefined,
+  [lessonFinished, isCorrect, isReplay, entryCompleted, puzzle.id]);
+  const endingStory = lessonFinished && isCorrect ? LEARNING_CATALOG.lessons.find(item => item.id === lesson.id)?.levels.find(item => item.story)?.story : undefined;
   const resultMood: PetAnimationState = isCorrect && !expired ? "correct" : "incorrect";
   const nextPuzzleRoute = useMemo(() => {
     if (!isCorrect) return undefined;
@@ -628,6 +634,8 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
         {answered ? (
           <ResultOverlay
             visible
+            milestone={earnedMilestone}
+            adventure={endingStory ? { sceneId: endingStory.sceneId, label: getAchievementStory(endingStory.sceneId, locale).description } : undefined}
             correct={isCorrect && !expired}
             petType={pet.type}
             catSkinId={pet.catSkinId}

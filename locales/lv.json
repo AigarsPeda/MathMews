@@ -1115,7 +1115,7 @@
     "progress3": "Vēl viens solis paveikts. Turpinām atklāt kopā!",
     "retry": "Varam pamēģināt citādi. Es esmu tepat!",
     "retryPatient": "Nav jāsteidzas. Aplūkosim norādes un mēģināsim pa vienam solim.",
-    "persistence": "Vēl viens mēģinājums, un risinājums ir rokā. Dod ķepu!",
+    "persistence": "Tu atradi citu veidu un izlaboji kļūdu. Mums izdevās.",
     "practiceComplete": "Treniņš pabeigts! Izvēlēsimies nākamo piedzīvojumu.",
     "bossStage": "Vēl viens bosa posms pieveikts! Speram nākamo soli kopā!",
     "bossComplete": "Boss pieveikts! Dod ķepu par neatlaidību!",
@@ -1874,5 +1874,24 @@
     "quantity": "Daudzums: {{count}}",
     "discount": "Atlaide: {{percent}}%",
     "workedExample": "Cits piemērs"
+  },
+  "actionMotion": {
+    "giveOne": "Iedot vienu priekšmetu",
+    "sharing": "Vēl nesadalīti: {{remaining}}. Katrā grupā: {{counts}}.",
+    "exchange": "{{tens}} desmiti un {{ones}} vieni. Desmit vieni veido vienu desmitu.",
+    "milestone1": "Mūsu pirmais piedzīvojums",
+    "milestone10": "Desmit kopīgi piedzīvojumi",
+    "milestone50": "Piecdesmit kopīgi piedzīvojumi",
+    "milestoneEarned": "Pilnībā pabeigtas nodarbības: {{count}}.",
+    "collection": "Sasniegumu priekšnesumi",
+    "watch": "Skatīties priekšnesumu",
+    "unlock": "Pabeidz {{count}} nodarbības · pabeigtas {{completed}}",
+    "pause": "Pauze",
+    "resume": "Turpināt",
+    "replay": "Skatīties vēlreiz",
+    "hide": "Paslēpt priekšnesumu",
+    "newPerformance": "Jauns sasnieguma priekšnesums",
+    "adventureEnding": "Skatīties piedzīvojuma beigas",
+    "movies": "Piedzīvojumu filmas"
   }
 }

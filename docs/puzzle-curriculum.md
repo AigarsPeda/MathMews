@@ -297,3 +297,11 @@ Review checks accept one submission per lesson per UTC day, use the existing lif
 Run `node scripts/check-curriculum.mjs` for bilingual content, progression, persistence and learning invariants, including compatibility with saves made before the guided mode was removed.
 
 The research and remaining evaluation work are recorded in [the progression study](puzzle-progression-study-2026-10-24.md). Skip-ahead placement and untimed copies of scored challenges remain separate proposals. Educator review, fluent Latvian review and observation with children remain necessary before expanding the pilot or claiming a learning benefit.
+
+## Action-led animation — November 7, 2026
+
+Sharing now uses one tap per object, stopping at the last full round and leaving the remainder in the pool. Place-value exchanges animate ten stable unit tokens between the ones column and a ten rod. The mathematical state updates immediately; animation does not defer checking, reset or continuation. Corrections use the existing modest nod rather than a random success gesture.
+
+Completed story paths offer their existing achievement movie from the result. Separate milestone performances unlock after 1, 10 and 50 fully completed ten-step paths, including the five everyday categories. They appear in the existing achievement collection, derive from durable puzzle IDs, and do not change wallets, lesson identities or save formats. They compose existing rig performances rather than adding movie assets.
+
+Run `npm run test:action-motion` for object conservation, animation interruption, reduced motion, completion boundaries, correction selection, all three cat coats and immediate result dismissal. Run `node scripts/native/check-puzzle-drag.mjs --action-motion --device <simulator-UDID>` for sharing, regrouping, corrections, adventure playback, milestone controls and the production collection using isolated in-memory progress.

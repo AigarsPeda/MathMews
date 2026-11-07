@@ -6,17 +6,18 @@ import { moderateScale } from "@/utils/scale";
 import { useMemo, useState } from "react";
 import { View } from "react-native";
 
-type Props = { petType: PetType; catSkinId?: string; mood: PetAnimationState; reaction?: PuzzleCatReaction; size: number };
+type Props = { petType: PetType; catSkinId?: string; mood: PetAnimationState; reaction?: PuzzleCatReaction; size: number; brief?: boolean; replayKey?: number };
 
-/** A single performance followed by idle. Callers key each new result/attempt. */
-export function PuzzleCatPortrait({ petType, catSkinId, mood, reaction, size }: Props) {
-  const [finished, setFinished] = useState(false);
-  const playback = useMemo(() => petType === "cat" && reaction && !finished
-    ? { kind: "segment" as const, segment: createPuzzleReactionSegment(reaction), mood }
-    : undefined, [petType, reaction, finished, mood]);
+/** A single performance followed by idle. replayKey restarts it without reloading the cat. */
+export function PuzzleCatPortrait({ petType, catSkinId, mood, reaction, size, brief = false, replayKey = 0 }: Props) {
+  const [performance, setPerformance] = useState({ key: replayKey, finished: false });
+  if (performance.key !== replayKey) setPerformance({ key: replayKey, finished: false });
+  const playback = useMemo(() => petType === "cat" && reaction && !performance.finished
+    ? { kind: "segment" as const, segment: createPuzzleReactionSegment(reaction, brief), mood }
+    : undefined, [petType, reaction, performance, mood, brief]);
   return <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-    <PetDisplay petType={petType} catSkinId={catSkinId} mood={finished ? "idle" : mood}
+    <PetDisplay petType={petType} catSkinId={catSkinId} mood={performance.finished ? "idle" : mood}
       playback={playback}
-      width={moderateScale(size)} onAnimationComplete={() => setFinished(true)} transparentBackground />
+      width={moderateScale(size)} onAnimationComplete={() => setPerformance(current => current.key === replayKey ? { ...current, finished: true } : current)} transparentBackground />
   </View>;
 }

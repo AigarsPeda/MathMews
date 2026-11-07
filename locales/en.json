@@ -1114,7 +1114,7 @@
     "progress3": "That step is done. Let's keep exploring together.",
     "retry": "We can try a different way. I'm right here with you.",
     "retryPatient": "There's no rush. Let's look at the clues and try one small step.",
-    "persistence": "You tried again and found a way. High paw!",
+    "persistence": "You found a new way and corrected it. We did it.",
     "practiceComplete": "Practice finished! Let's choose our next adventure.",
     "bossStage": "Another part of the boss cleared! Let's take the next step together.",
     "bossComplete": "Boss cleared! High paw for sticking with it.",
@@ -1872,5 +1872,24 @@
     "quantity": "Quantity: {{count}}",
     "discount": "{{percent}}% off",
     "workedExample": "A different example"
+  },
+  "actionMotion": {
+    "giveOne": "Give one object",
+    "sharing": "In the pool: {{remaining}}. In each group: {{counts}}.",
+    "exchange": "{{tens}} tens and {{ones}} ones. Ten individual units make one ten.",
+    "milestone1": "Our first adventure",
+    "milestone10": "Ten adventures together",
+    "milestone50": "Fifty adventures together",
+    "milestoneEarned": "Full lessons completed: {{count}}.",
+    "collection": "Milestone performances",
+    "watch": "Watch your performance",
+    "unlock": "Finish {{count}} lessons · {{completed}} completed",
+    "pause": "Pause",
+    "resume": "Resume",
+    "replay": "Play again",
+    "hide": "Hide performance",
+    "newPerformance": "New milestone performance",
+    "adventureEnding": "Watch the adventure ending",
+    "movies": "Adventure movies"
   }
 }
