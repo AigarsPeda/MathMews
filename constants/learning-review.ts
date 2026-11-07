@@ -1,4 +1,5 @@
 import { getBridgeReview } from "@/constants/bridge-review";
+import { getEverydayReview } from "@/constants/everyday-review";
 import { getModelReview } from "@/constants/model-review";
 import { getTopicReview } from "@/constants/topic-review";
 import { numericReview, reviewHash } from "@/utils/review-question";
@@ -9,12 +10,13 @@ import foundationPlans from '@/data/puzzle-foundations.json';
 import easyFractionPairs from '@/data/easy-fraction-pairs.json';
 import mediumFractionTransition from '@/data/medium-fraction-transition.json';
 import hardFractionTransition from '@/data/hard-fraction-transition.json';
-export type ReviewQuestion = { diagram?: {parts:number;colored:number}; prompt: Record<AppLocale,string>; choices: string[]; correctIndex: number; explanation: Record<AppLocale,string> };
+export type ReviewQuestion = { models?: Record<AppLocale, import('@/types/everyday').EverydayModel>; localizedChoices?: Record<AppLocale, string[]>; diagram?: {parts:number;colored:number}; prompt: Record<AppLocale,string>; choices: string[]; correctIndex: number; explanation: Record<AppLocale,string> };
 function numericChoices(answer: number, key: string, maximum = Infinity) {
   return numericReview({ en: '', lv: '', ru: '' }, answer, '', key, [], 0, maximum).choices;
 }
 /** Fresh, self-contained checks. No previous teaching step supplies the answer. */
 export function getLearningReview(lesson: LearningLesson, day: number): ReviewQuestion {
+  const everyday = getEverydayReview(lesson.id, day); if (everyday) return everyday;
   const bridge = getBridgeReview(lesson, day); if (bridge) return bridge;
   const seed = reviewHash(`${lesson.id}/${day}/values`), v = seed % 11;
   const stage = getTopicLessons(lesson.difficulty, lesson.topicId).findIndex(item => item.id === lesson.id);

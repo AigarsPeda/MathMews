@@ -73,12 +73,23 @@ export function checkPaths({ load }) {
       assert.equal(path.getPathProgress(lesson, progress).solved, index + 1);
       if (next) assert.equal(path.getPathEntry(lesson, progress).level.id, next.id, 'Tapping a started level resumes the next puzzle directly');
       assert.equal(path.getPathProgress(lesson, progress).complete, index === 9);
+      if (index < 9) assert.equal(path.getNextPathLevel(lesson, progress), undefined, 'Next level is offered only after finishing the level');
       assert.equal(path.getPathStepState(lesson, level, progress), 'completed');
       if (next) assert.equal(path.getNextPathStep(lesson, level, progress)?.level.id, next.id);
     }
     const nextLesson = track[track.indexOf(lesson) + 1];
-    assert.equal(path.getNextPathStep(lesson, lesson.levels[9], progress), undefined, 'The tenth puzzle ends the level at its topic path');
-    if (nextLesson) assert.ok(path.isPathAvailable(nextLesson, progress));
+    assert.equal(path.getNextPathStep(lesson, lesson.levels[9], progress), undefined, 'The tenth puzzle ends the current level');
+    if (nextLesson) {
+      assert.ok(path.isPathAvailable(nextLesson, progress));
+      const nextEntry = path.getNextPathLevel(lesson, progress);
+      assert.equal(nextEntry.lesson.id, nextLesson.id, 'Next level opens the adjacent number in the same topic and difficulty');
+      assert.equal(nextEntry.level.id, nextLesson.levels[0].id);
+      assert.equal(nextEntry.replay, false);
+      const partialNext = { ...progress, completedPuzzleIds: [...progress.completedPuzzleIds, ...nextLesson.levels.slice(0,3).flatMap(level => level.puzzleIds)] };
+      assert.equal(path.getNextPathLevel(lesson, partialNext).level.id, nextLesson.levels[3].id, 'Existing work in the next level resumes without restarting');
+      const completedNext = { ...progress, completedPuzzleIds: [...progress.completedPuzzleIds, ...nextLesson.levels.flatMap(level => level.puzzleIds)] };
+      assert.equal(path.getNextPathLevel(lesson, completedNext).replay, true, 'An already finished next level uses replay rewards');
+    } else assert.equal(path.getNextPathLevel(lesson, progress), undefined, 'The final level returns to its path instead of jumping topics');
     const replay = path.getPathEntry(lesson, progress);
     assert.equal(replay.level.id, lesson.levels[0].id);
     assert.equal(replay.replay, true);
@@ -116,9 +127,28 @@ export function checkPaths({ load }) {
     assert.equal(result.save.progress.challengeAttempt.status, 'completed');
     assert.equal(applyPuzzleAnswer(result.save, puzzle, true, 'untimed-answer', muchLater).accepted, false, 'Double taps never pay again');
     let timed = createDefaultGameSave();
+    const checkpoint = lesson.levels.slice(0,7).flatMap(level => level.puzzleIds);
+    timed.progress.completedPuzzleIds = checkpoint;
+    timed.progress.unlockedPathLessonIds = [lesson.id];
     timed.progress = timer.beginTimedChallenge(timed.progress, challenge, 'timed', now);
-    assert.equal(applyPuzzleAnswer(timed, puzzle, true, 'timed-answer', now + 1).coins, result.coins, 'Both modes give the same first reward');
     assert.equal(timer.beginTimedChallenge(timed.progress, challenge, 'switch', now + 1, 'untimed').challengeAttempt.id, 'timed', 'Mode selection cannot reset a running clock');
+    let pending = applyPuzzleAnswer(timed, puzzle, true, 'timed-answer', now + 1);
+    assert.equal(pending.coins,0,'Timed coins remain pending until all remaining puzzles finish');
+    const resumed = parseGameSaveFromValue(pending.save).save;
+    assert.equal(path.getPathEntry(lesson,resumed.progress).level.id,lesson.levels[8].id,'Reopening resumes the next puzzle on the same clock');
+    assert.equal(resumed.progress.challengeAttempt.deadlineAt,timed.progress.challengeAttempt.deadlineAt);
+    const expired = timer.settleChallengeTimeout(resumed.progress,resumed.progress.challengeAttempt.deadlineAt);
+    assert.deepEqual(clone(expired.completedPuzzleIds),clone(checkpoint),'Timeout preserves every puzzle completed before choosing the timer');
+    assert.equal(path.resolvePathSession(lesson.difficulty,lesson.id,lesson.levels[8].id,undefined,expired).level.id,challenge.id,'An expired later task returns to the timer choice');
+    assert.equal(path.getPathEntry(lesson,expired).level.id,challenge.id);
+    assert.equal(timer.getTimedRunReward(expired),0);
+    for(const [index,id] of timed.progress.challengeAttempt.puzzleIds.slice(1).entries()) {
+      const nextPuzzle=getPuzzlesByDifficulty('en',lesson.difficulty).find(p=>p.id===id);
+      pending=applyPuzzleAnswer(pending.save,nextPuzzle,true,`timed-following-${index}`,now+2+index);
+      assert.equal(pending.accepted,true);
+    }
+    assert.equal(pending.coins, result.coins * 2 * timed.progress.challengeAttempt.puzzleIds.length,'Successful timed runs pay twice the ordinary reward for all remaining tasks');
+    assert.equal(path.getPathProgress(lesson,pending.save.progress).complete,true);
     const extra = getPuzzlesByDifficulty('en', lesson.difficulty).find(p => p.id === lesson.levels[9].puzzleIds[0]);
     const evidence = applyPuzzleAnswer(createDefaultGameSave(), extra, true, 'extra-answer', now).save;
     assert.ok(parseGameSaveFromValue(evidence).save.progress.learningEvidence[lesson.skillId].independentPuzzleIds.includes(extra.id), 'Review evidence survives reload');
@@ -132,5 +162,5 @@ export function checkPaths({ load }) {
   const second = path.getTopicPaths(first.difficulty, first.topicId)[1];
   const reloaded = parseGameSaveFromValue({ ...createDefaultGameSave(), progress: freshPartial }).save;
   assert.equal(path.isPathAvailable(second, reloaded.progress), false, 'New saves do not gain legacy four-puzzle unlocks');
-  console.log(`Verified ${path.PUZZLE_PATHS.length} ten-puzzle paths: sequential guards, direct play, legacy progress, saved untimed mode, equal rewards and next-level progression.`);
+  console.log(`Verified ${path.PUZZLE_PATHS.length} ten-puzzle paths: guards, saved timed/untimed modes, shared clocks, checkpoint recovery, doubled completion rewards and next-level progression.`);
 }

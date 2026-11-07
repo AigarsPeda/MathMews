@@ -12,7 +12,7 @@ export function checkFoundations({ load }) {
   const { getLearningReview } = load('@/constants/learning-review');
   const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
   const { shufflePuzzleChoices } = load('@/utils/puzzle-practice');
-  const lessons = catalog.lessons.filter(l => l.difficulty !== 'hard');
+  const lessons = catalog.lessons.filter(l => l.difficulty !== 'hard' && l.format !== 'path');
   assert.equal(lessons.length, 120);
   for (const locale of ['en', 'lv', 'ru']) {
     const all = ['easy', 'medium'].flatMap(d => readPuzzles(locale, d));

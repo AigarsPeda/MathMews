@@ -4,19 +4,20 @@ import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { Easing, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
-export function PuzzleProgress({ steps, label, total = steps.length, size = "regular", variant = "puzzle" }: {
-  steps: readonly boolean[]; label: string; total?: number; size?: "regular" | "slim"; variant?: "puzzle" | "trail";
+export function PuzzleProgress({ steps, label, total = steps.length, size = "regular", variant = "puzzle", animated = true }: {
+  steps: readonly boolean[]; label: string; total?: number; size?: "regular" | "slim"; variant?: "puzzle" | "trail"; animated?: boolean;
 }) {
   const completed = Math.min(total, steps.filter(Boolean).length);
   const progress = total > 0 ? completed / total : 0;
   const fill = useSharedValue(progress);
   useEffect(() => {
-    fill.set(withTiming(progress, { duration: 420, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System }));
-  }, [progress, fill]);
+    if (animated) fill.set(withTiming(progress, { duration: 420, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System }));
+    else fill.set(progress);
+  }, [progress, fill, animated]);
   const animatedFill = useAnimatedStyle(() => ({ width: `${fill.get() * 100}%` as `${number}%` }));
   return <View style={[styles.track, size === "slim" && styles.slimTrack, variant === "trail" && styles.trailTrack]} accessible accessibilityRole="progressbar" accessibilityLabel={label}
     accessibilityValue={{ min: 0, max: total, now: completed }}>
-    <Animated.View style={[styles.fill, size === "slim" && styles.slimFill, variant === "trail" && styles.trailFill, animatedFill]}>
+    <Animated.View style={[styles.fill, size === "slim" && styles.slimFill, variant === "trail" && styles.trailFill, animated ? animatedFill : { width: `${progress * 100}%` }]}>
       {variant === "puzzle" ? <View style={[styles.highlight, size === "slim" && styles.slimHighlight]} /> : null}
     </Animated.View>
   </View>;

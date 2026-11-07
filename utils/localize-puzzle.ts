@@ -12,7 +12,7 @@ type LocalizedValue<T> = T extends string
 /** Only display fields can vary by language. Answers and metadata stay shared. */
 export type PuzzleDefinition = Puzzle extends infer P
   ? P extends Puzzle
-    ? { [Key in keyof P]: Key extends "question" | "hint" | "explanation" | "choices" | "payload"
+    ? { [Key in keyof P]: Key extends "question" | "hint" | "explanation" | "choices" | "payload" | "everyday"
         ? LocalizedValue<P[Key]> : P[Key] }
     : never
   : never;

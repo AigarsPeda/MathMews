@@ -3,7 +3,7 @@ import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { LearningLevel } from "@/types/curriculum";
-import { formatChallengeTime } from "@/utils/timed-challenge";
+import { formatChallengeTime, getTimedRunPuzzleIds } from "@/utils/timed-challenge";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -21,7 +21,7 @@ export function ChallengeClock({ milliseconds }: { milliseconds: number }) {
 type IntroProps = {
   mode?: "timed" | "untimed"; onModeChange?: (mode: "timed" | "untimed") => void;
   level: LearningLevel; expired: boolean; lifeLost: boolean; hasLives: boolean; otherActive: boolean;
-  onStart: () => void; onResume: () => void; onRefill: () => void; onHelp?: () => void;
+  onStart: () => void; onResume: () => void; onRefill: () => void;
 };
 export function TimedChallengeIntro({ level, expired, lifeLost, otherActive, mode = "timed", onModeChange }: IntroProps) {
   const { t } = useTranslation();
@@ -35,26 +35,28 @@ export function TimedChallengeIntro({ level, expired, lifeLost, otherActive, mod
           accessibilityRole="radio" accessibilityState={{ checked: mode === value }}
           style={[styles.mode, mode === value && styles.selectedMode]}>
           <Text style={styles.modeText}>{value === "untimed" ? t("puzzlePathDesign.noTimer") : formatChallengeTime((level.timeLimitSeconds ?? 0) * 1000)}</Text>
+          {value === "timed" ? <View style={styles.rewardBadge}><Text style={styles.rewardBadgeText}>{t("timedChallenge.doubleCoins")}</Text></View> : null}
         </Pressable>)}
       </View>
-      <Text style={styles.description}>{t("puzzlePathDesign.sameProgress")}</Text>
+      <Text style={styles.description}>{t(mode === "timed" ? "timedChallenge.doubleReward" : "puzzlePathDesign.sameProgress", { count: getTimedRunPuzzleIds(level).length })}</Text>
       {mode === "timed" ? <Text style={styles.note}>{t("puzzlePathDesign.timerRules")}</Text> : null}
     </>}
   </View>;
 }
 
-export function TimedChallengeActions({ expired, hasLives, otherActive, onStart, onResume, onRefill, onHelp }: IntroProps) {
+export function TimedChallengeActions({ expired, hasLives, otherActive, onStart, onResume, onRefill }: IntroProps) {
   const { t } = useTranslation();
   return <View style={styles.actions}>
     <PuzzleButton onPress={otherActive ? onResume : hasLives ? onStart : onRefill}
       label={t(otherActive ? "timedChallenge.resume" : !hasLives ? "lives.openRefill" : expired ? "timedChallenge.retry" : "timedChallenge.start")} />
-    {onHelp ? <Pressable accessibilityRole="button" onPress={onHelp} style={styles.help}><Text style={styles.helpText}>{t("visualHelp.compactButton")}</Text></Pressable> : null}
   </View>;
 }
 
 const styles = StyleSheet.create({
   modes: { flexDirection: "row", gap: 10, alignSelf: "stretch" },
-  mode: { flex: 1, minHeight: 58, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: "white", borderWidth: 2, borderColor: "#DBD3E8", borderRadius: 16 },
+  mode: { flex: 1, minHeight: 78, gap: 6, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: "white", borderWidth: 2, borderColor: "#DBD3E8", borderRadius: 16 },
+  rewardBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10, backgroundColor: GameColors.rewardSurface },
+  rewardBadgeText: { color: GameColors.coinText, fontSize: moderateScale(13), fontWeight: "800", textAlign: "center" },
   selectedMode: { borderColor: GameColors.primary, backgroundColor: "#FFF0F6" },
   modeText: { color: GameColors.text, fontSize: moderateScale(17), fontWeight: "800" },
   clock: { flexDirection: "row", alignItems: "center", gap: moderateScale(8), paddingVertical: moderateScale(6) },
@@ -68,7 +70,5 @@ const styles = StyleSheet.create({
   note: { color: "#5D408C", fontSize: moderateScale(14), lineHeight: moderateScale(21), textAlign: "center" },
   start: { width: "100%", minHeight: moderateScale(56), padding: moderateScale(14), borderRadius: moderateScale(16), alignItems: "center", justifyContent: "center", backgroundColor: GameColors.primary },
   startText: { color: "white", fontSize: moderateScale(18), fontWeight: "800", textAlign: "center" },
-  help: { minHeight: moderateScale(44), justifyContent: "center", paddingHorizontal: moderateScale(12) },
-  helpText: { color: "#5D408C", fontWeight: "700", fontSize: moderateScale(16) },
   actions: { gap: moderateScale(4), alignItems: "center" },
 });

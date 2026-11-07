@@ -41,4 +41,8 @@ fill=undefined;PuzzleProgress({steps:[],label:'No tasks'});
 assert.equal(fill.get(),0,'An empty session never produces NaN');
 fill=undefined;PuzzleProgress({steps:[true,true,true,true],label:'Complete'});
 assert.equal(fill.get(),1,'A completed session fills the whole bar');
+requests=[];
+const instant=PuzzleProgress({steps:[true,false,false,false],label:'Puzzle 2 of 4',animated:false});
+assert.equal(requests.length,0,'The stationary play header does not animate its progress');
+assert.equal(instant.props.children.props.style.at(-1).width,'25%','Play progress is correct in the same render');
 console.log('Verified continuous progress, saved completion, left-edge anchoring, accessible values and Reduce Motion.');

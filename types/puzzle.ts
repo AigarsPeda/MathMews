@@ -3,6 +3,7 @@ import type { PuzzleObject } from "./puzzle-object";
 export type PuzzleDifficulty = "easy" | "medium" | "hard";
 
 export type PuzzleTopic =
+  | "time" | "data" | "spatial" | "money" | "capacity"
   | "addition"
   | "subtraction"
   | "multiplication"
@@ -182,6 +183,7 @@ export type MultipleChoicePuzzle = PuzzleBase & {
   type?: "multiple_choice";
   choices: string[];
   correctIndex: number;
+  everyday?: { model: import("./everyday").EverydayModel; example: import("./everyday").EverydayExample };
 };
 
 export type ComparePuzzle = PuzzleBase & {

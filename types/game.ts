@@ -160,7 +160,7 @@ export type TopicStatsMap = Partial<
     | "fractions"
     | "equality"
     | "estimation"
-    | "division",
+    | "division" | "time" | "data" | "spatial" | "money" | "capacity",
     TopicAttemptStats
   >
 >;
@@ -174,6 +174,10 @@ export type ChallengeAttempt = {
   deadlineAt: number;
   status: "active" | "expired" | "completed";
   lifeLost?: boolean;
+  /** The timed checkpoint and every later puzzle in this path level. */
+  puzzleIds?: string[];
+  /** A sequential, provisional prefix, committed only when the whole run succeeds. */
+  solvedPuzzleIds?: string[];
 };
 
 export type Progress = {

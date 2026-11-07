@@ -347,7 +347,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       return null;
     }
     const pending = result.coins > 0 && accountRef.current ? [{ userId:accountRef.current,
-      environment:getWalletEnvironment(), puzzleId:puzzle.id, attemptId, amount:result.coins, at:Date.now() }] : [];
+      environment:getWalletEnvironment(), puzzleId:puzzle.id, attemptId:result.rewardAttemptId ?? attemptId,
+      ...(result.challengeLevelId && { challengeLevelId: result.challengeLevelId }), amount:result.coins, at:Date.now() }] : [];
     setSave({ ...result.save, wallet:current.wallet,
       pendingCoinRewards:[...(current.pendingCoinRewards ?? []),...pending] });
     return result.coins;

@@ -182,7 +182,7 @@ assert.deepEqual(webEvents, ['close', 'dismissed']);
 
 console.log('Result actions wait for dismissal, ignore duplicate taps, and work on subsequent results. Platform completion checks passed.');
 
-// Run the production route selection, preload effect and continuation together.
+// Run production route selection and in-place continuation after sheet dismissal.
 const playSource = ts.createSourceFile('app/play.tsx', fs.readFileSync('app/play.tsx', 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 function find(predicate) {
   let result;
@@ -197,39 +197,64 @@ function callback(node, context) {
   }).outputText, context);
 }
 const routeFactory = find(node => ts.isVariableDeclaration(node) && node.name.getText(playSource) === 'nextPuzzleRoute').initializer.arguments[0];
-const preloadEffect = find(node => ts.isCallExpression(node) && node.expression.getText(playSource) === 'useEffect' && node.arguments[0]?.getText(playSource).includes('router.prefetch')).arguments[0];
+const nextLevelFactory = find(node => ts.isVariableDeclaration(node) && node.name.getText(playSource) === 'nextLevelRoute').initializer.arguments[0];
 const continueCallback = find(node => ts.isVariableDeclaration(node) && node.name.getText(playSource) === 'handleContinue').initializer.arguments[0];
 for (const [kind, nextId] of [['practice', 'two'], ['practice', 'challenge'], ['challenge', 'review']]) {
   const routes = [];
   let interactions = 0;
-  const env = { isCorrect: true, isReplay: false, replaySession: false, answered: true, difficulty: 'easy', progress: {}, entryCompleted: [], puzzle: { id: 'current' },
+  const env = { expired: false, isCorrect: true, isReplay: false, replaySession: false, answered: true, difficulty: 'easy', progress: {}, entryCompleted: [], puzzle: { id: 'current' },
     level: { id: 'one', kind }, lesson: { id: 'lesson' },
     getNextPathStep: () => ({ lesson: { id: 'lesson' }, level: { id: nextId } }),
     recordInteraction() { interactions++; }, exitToPath() { routes.push(['path']); },
-    navigation: { replace: (name, params) => routes.push(['replace', { pathname: `/${name}`, params }]) },
-    router: { prefetch: route => routes.push(['prefetch', route]) } };
+    router: { setParams: params => routes.push(['params', params]) } };
   env.nextPuzzleRoute = callback(routeFactory, env)();
   assert.equal(env.nextPuzzleRoute.params.level, nextId);
   assert.equal(env.nextPuzzleRoute.params.phase, undefined, 'Every path step is an individual puzzle');
-  callback(preloadEffect, env)();
-  assert.deepEqual(routes.map(([action]) => action), ['prefetch'], 'Preloading preserves the current puzzle and navigation state');
+  assert.equal(routes.length, 0, 'Preparing the next puzzle preserves the current screen');
   const view = harness('components/puzzle/ResultOverlay.tsx');
   const props = { visible: true, correct: true, onContinue: callback(continueCallback, env) };
   let sheet = view.render('ResultOverlay', props);
   nodes(sheet.props.children(600)).find(node => ['Pressable', 'PuzzleButton'].includes(node.type)).props.onPress();
-  assert.deepEqual(routes.map(([action]) => action), ['prefetch'], 'Tapping Next closes the sheet before replacing the native screen');
+  assert.equal(routes.length, 0, 'Tapping Next closes the sheet before changing puzzle content');
   sheet = view.render('ResultOverlay', props);
   assert.equal(sheet.props.visible, false);
   sheet.props.onDismissComplete();
-  assert.deepEqual(routes.map(([action]) => action), ['prefetch', 'replace']);
-  assert.equal(routes[0][1].params, routes[1][1].params, 'The transition uses the already prepared destination');
-  assert.equal(interactions, 0, 'Continuing does not queue a game-wide rerender before navigation');
+  assert.deepEqual(routes.map(([action]) => action), ['params']);
+  assert.equal(routes[0][1].level, nextId, 'The existing screen receives the next puzzle');
+  assert.equal(routes[0][1].phase, undefined, 'A legacy deep-link phase cannot carry into the next puzzle');
+  assert.equal(interactions, 0, 'Continuing does not queue a game-wide update');
   env.getNextPathStep = () => undefined;
   assert.equal(callback(routeFactory, env)(), undefined, 'A finished topic returns to its path');
   env.isCorrect = false;
   assert.equal(callback(routeFactory, env)(), undefined, 'Incorrect answers do not preload a new puzzle');
 }
-console.log('Production puzzle routes preload beneath the result and replace only after dismissal.');
+console.log('Production puzzle routes update in place only after dismissal.');
+
+for (const action of ['next-level', 'path']) {
+  const routes = [];
+  const env = { expired: false, isCorrect: true, lessonFinished: true, difficulty: 'easy', lesson: { id: 'finished' },
+    progress: {}, entryCompleted: ['earlier'], puzzle: { id: 'last' }, nextPuzzleRoute: undefined,
+    getNextPathLevel: () => ({ lesson: { id: 'next-lesson' }, level: { id: 'next-first' }, replay: false }),
+    router: { setParams: params => routes.push(['params', params]) }, exitToPath: () => routes.push(['path']) };
+  env.nextLevelRoute = callback(nextLevelFactory, env)();
+  assert.equal(env.nextLevelRoute.params.lesson, 'next-lesson');
+  assert.ok(Object.hasOwn(env.nextLevelRoute.params, 'replay'));
+  assert.equal(env.nextLevelRoute.params.replay, undefined, 'An earlier replay flag clears when the next level is fresh');
+  const view = harness('components/puzzle/ResultOverlay.tsx');
+  const props = { visible: true, correct: true, continueLabel: 'Next level', secondaryLabel: 'View path',
+    onContinue: callback(continueCallback, env), onGoHome: env.exitToPath };
+  let sheet = view.render('ResultOverlay', props);
+  const buttons = nodes(sheet.props.children(600)).filter(node => ['Pressable', 'PuzzleButton'].includes(node.type));
+  buttons[action === 'next-level' ? 0 : 1].props.onPress();
+  assert.equal(routes.length, 0, 'Both completion actions wait for the sheet to close');
+  sheet = view.render('ResultOverlay', props);
+  sheet.props.onDismissComplete();
+  assert.equal(routes.length, 1);
+  assert.equal(routes[0][0], action === 'next-level' ? 'params' : 'path', 'Completion actions have distinct destinations');
+  env.lessonFinished = false;
+  assert.equal(callback(nextLevelFactory, env)(), undefined, 'An incomplete level cannot offer the next level');
+}
+console.log('Next level opens the next puzzle after dismissal; View path returns separately.');
 
 const layoutSource = ts.createSourceFile('app/_layout.tsx', fs.readFileSync('app/_layout.tsx', 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const layoutMocks = {};

@@ -1,4 +1,5 @@
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
+import { EverydayDiagram } from "@/components/puzzle/EverydayDiagram";
 import { QuantityTaskScene } from "@/components/puzzle/QuantityTaskScene";
 import type { MultipleChoicePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
@@ -24,6 +25,7 @@ export function MultipleChoiceTask({
   const compactChoices = puzzle.choices.length >= 2 && puzzle.choices.length <= 4 && puzzle.choices.every(choice => choice.length <= 4);
   return (
     <View style={styles.choices}>
+      {puzzle.everyday ? <EverydayDiagram model={puzzle.everyday.model} /> : null}
       {puzzle.taskVisual ? <QuantityTaskScene key={puzzle.id} model={puzzle.taskVisual} disabled={answered} showExpression={puzzle.difficulty !== "hard"} /> : null}
       <View style={[styles.answerChoices, compactChoices && styles.compactChoices]}>
         {puzzle.choices.map((choice, index) => {

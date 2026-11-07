@@ -1,4 +1,5 @@
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
+import { EverydayDiagram } from "@/components/puzzle/EverydayDiagram";
 import { VisualExplanationPlayer } from "@/components/puzzle/VisualExplanationPlayer";
 import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
@@ -33,6 +34,7 @@ export function VisualHelpSheet({
   const [direction, setDirection] = useState<"forward" | "back">("forward");
   const isNumberLine = getPuzzleType(puzzle) === "number_line";
   const explanation = getVisualExplanation(puzzle);
+  const example = puzzle.type === 'multiple_choice' ? puzzle.everyday?.example : undefined;
   if (isNumberLine) explanation.keyframes = NUMBER_LINE_EXAMPLES[direction];
   const key = `${visible}-${puzzle.id}`;
   const [previousKey, setPreviousKey] = useState(key);
@@ -48,7 +50,7 @@ export function VisualHelpSheet({
       >
         <View style={styles.card}>
           <Text style={styles.title}>
-            {t(explanation.titleKey)}
+            {example ? t('everyday.workedExample') : t(explanation.titleKey)}
           </Text>
           <Text style={styles.subtitle}>
             {t("visualHelp.numberLine.subtitle")}
@@ -72,7 +74,11 @@ export function VisualHelpSheet({
             </View>
           ) : null}
 
-          <VisualExplanationPlayer explanation={explanation} progress={progress} onProgressChange={setProgress} stepByStep={isNumberLine} />
+          {example ? <>
+            <Text style={styles.exampleQuestion}>{example.question}</Text>
+            <EverydayDiagram model={example.model} />
+            <Text style={styles.exampleExplanation}>{example.explanation}</Text>
+          </> : <VisualExplanationPlayer explanation={explanation} progress={progress} onProgressChange={setProgress} stepByStep={isNumberLine} />}
 
           <Pressable
             style={[styles.closeBtn, styles.closeBtnPrimary]}
@@ -96,6 +102,8 @@ export function VisualHelpSheet({
 }
 
 const styles = StyleSheet.create({
+  exampleQuestion: { color: GameColors.text, fontSize: 20, lineHeight: 28, fontWeight: '700', textAlign: 'center' },
+  exampleExplanation: { color: GameColors.text, fontSize: 17, lineHeight: 26, alignSelf: 'stretch' },
   scroll: {
     width: "100%",
   },

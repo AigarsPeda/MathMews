@@ -344,6 +344,7 @@ function parseGameSave(
         appliedWalletOrderIds: Array.isArray(parsed.appliedWalletOrderIds) ? [...new Set(parsed.appliedWalletOrderIds.filter((id): id is string => typeof id === 'string'))] : [],
         pendingCoinRewards: Array.isArray(parsed.pendingCoinRewards) ? parsed.pendingCoinRewards.filter(r => isRecord(r)
           && typeof r.userId==='string' && typeof r.puzzleId==='string' && typeof r.attemptId==='string'
+          && (r.challengeLevelId===undefined || typeof r.challengeLevelId==='string')
           && (r.environment==='sandbox' || r.environment==='production') && (r.amount===undefined || typeof r.amount==='number' && Number.isSafeInteger(r.amount) && r.amount>=0) && (r.at===undefined || typeof r.at==='number' && Number.isFinite(r.at))) as GameSave['pendingCoinRewards'] : [],
         walletAuthority: isRecord(parsed.walletAuthority) && typeof parsed.walletAuthority.user_id==='string'
           && typeof parsed.walletAuthority.balance==='number' && Number.isFinite(parsed.walletAuthority.balance)

@@ -23,20 +23,27 @@ export function TopicLevelPath({ lessons, progress, currentLessonId, onPlay, scr
   const { active, reduceMotion } = useAnimationActivity();
   const [width, setWidth] = useState(0);
   const currentIndex = lessons.findIndex(lesson => lesson.id === currentLessonId);
+  const topicId = lessons[0]?.topicId;
   const { points, height, finish, connections } = useMemo(() => {
-    const layout = getTopicPathLayout(width, lessons.length, currentIndex);
+    const layout = getTopicPathLayout(width, lessons.length, currentIndex, topicId);
     const destinations = [...layout.points.slice(1), ...(layout.finish ? [layout.finish] : [])];
     const connections = destinations.map((point, index) => {
-      return Skia.Path.MakeFromSVGString(getTopicPathConnection(width, layout.points[index], point))!;
+      const source = layout.points[index];
+      const height = point.y - source.y + 8;
+      return { top: source.y - 4, height, path: Skia.Path.MakeFromSVGString(getTopicPathConnection(width,
+        { x: source.x, y: 4 }, { x: point.x, y: height - 4 }, topicId))! };
     });
     return { ...layout, connections };
-  }, [width, lessons.length, currentIndex]);
+  }, [width, lessons.length, currentIndex, topicId]);
   return <View style={styles.container} onLayout={e => setWidth(e.nativeEvent.layout.width)}>
     {width > 0 ? <View style={{ height }}>
-      <Canvas pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={StyleSheet.absoluteFill}>
-        {connections.map((path, index) => <Path key={lessons[index].id} path={path} style="stroke" strokeWidth={4}
-          color={getPathProgress(lessons[index], progress).complete ? TopicPathColors.completedConnection : TopicPathColors.connection} strokeCap="round" />)}
-      </Canvas>
+      {/* Keep drawing surfaces short, including when narrow layouts make the trail taller. */}
+      {connections.map((connection, index) => <Canvas key={`${lessons[index].id}:${width}`} pointerEvents="none"
+        accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
+        style={{ position: "absolute", top: connection.top, width, height: connection.height }}>
+        <Path path={connection.path} style="stroke" strokeWidth={4}
+          color={getPathProgress(lessons[index], progress).complete ? TopicPathColors.completedConnection : TopicPathColors.connection} strokeCap="round" />
+      </Canvas>)}
       {currentIndex >= 0 ? <View pointerEvents="none">
         <View style={[styles.startTag, { left: points[currentIndex].x - 68, top: points[currentIndex].y - points[currentIndex].radius - 36 }]}>
           <Text style={styles.startText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.9} maxFontSizeMultiplier={1.2}>{t(getPathProgress(lessons[currentIndex], progress).complete ? "puzzlePathDesign.replay"
@@ -71,7 +78,8 @@ export function TopicLevelPath({ lessons, progress, currentLessonId, onPlay, scr
           {isCurrent ? <CurrentLevelHalo point={point} scrollOffset={scrollOffset} viewportHeight={viewportHeight}
             active={active} reduceMotion={reduceMotion} /> : null}
           <View pointerEvents="none" style={[styles.face, { backgroundColor: palette.face, borderColor: palette.border }]}>
-            <PuzzleGradient colors={[palette.top, palette.face]} />
+            {/* Replace the native paint surface when an unlock changes its palette or size. */}
+            <PuzzleGradient key={`${palette.top}:${point.diameter}`} colors={[palette.top, palette.face]} />
             <View style={[styles.inset, { borderColor: palette.inset }]} />
             {state === "locked" ? <View style={styles.lock} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
               <Feather name="lock" size={13} color={palette.text} />

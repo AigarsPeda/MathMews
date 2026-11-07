@@ -1,4 +1,5 @@
 import { applyBridgePilot, BRIDGE_PLANS } from "./bridge-pilot.mjs";
+import { appendEverydayTopics } from './everyday-topics.mjs';
 import { applyGeometryPilot } from "./geometry-pilot.mjs";
 import { applyHardReasoning } from './hard-reasoning.mjs';
 import { simplifyEasyFractions } from './easy-fractions.mjs';
@@ -422,12 +423,14 @@ simplifyEasyFractions({ puzzles, lessons, pathExtras });
 smoothMediumFractions({ puzzles, lessons, pathExtras });
 smoothHardFractions({ puzzles, lessons, pathExtras });
 writeGenerated('data/puzzle-bridge-lessons.json', BRIDGE_PLANS.map(({id,type,difficulty})=>({id,type,difficulty})));
-writeGenerated('data/puzzle-path-extras.json', pathExtras);
-assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
 addRussianLearningText(topics);
 addRussianLearningText(lessons);
 addRussianLearningText(lessonBossScenes);
 puzzles.ru = Object.fromEntries(['easy', 'medium', 'hard'].map(tier => [tier, puzzles.en[tier].map(russianPuzzle)]));
+const everydayReviews = appendEverydayTopics({ topics, lessons, puzzles, pathExtras });
+assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
+writeGenerated('data/puzzle-path-extras.json', pathExtras);
+writeGenerated('data/everyday-reviews.json', everydayReviews);
 for (const difficulty of ['easy','medium','hard']) {
   const versions = Object.fromEntries(['en', 'lv', 'ru'].map(locale => [locale, puzzles[locale][difficulty]]));
   const definitions = groupPuzzleTranslations(versions, difficulty);

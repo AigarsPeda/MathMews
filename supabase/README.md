@@ -29,6 +29,8 @@ coins through the webhook and ledger, and the running iOS game displayed 100 coi
 A live one-coin admin adjustment also appeared automatically and was reversed with
 a compensating ledger entry. The 100 purchase-test coins remain available for testing.
 
+The November 7 everyday-category expansion is deployed: 1,500 additional puzzle rewards and 150 timed-run registrations. The additive migration preserves existing rows. See [category deployment evidence](deployments/2026-11-07-everyday-categories.json).
+
 ## One project, separate environments
 
 No additional database, Supabase project, Docker container, or paid upgrade is
@@ -72,6 +74,15 @@ applied receipt IDs prevent duplicate quantities. Unique unlocks cannot be charg
 again for the same pet. Phone AsyncStorage remains the only local persistence.
 
 ## Apply the database migrations
+
+The timed-run reward update is deployed as of 2026-11-07. Timed runs cover the
+timer-choice puzzle and the remaining review puzzles in that level. Their progress
+and double coins stay pending until all puzzles finish before the saved deadline.
+`claim_timed_challenge_coins` credits the complete run once, using server-owned
+first-clear/replay amounts and the existing shared daily cap. The migration also
+registers its review-puzzle dependencies. Hosted rollback tests passed all 180
+runs in both wallet environments. See the [deployment record](deployments/2026-11-07-timed-run-rewards.json)
+and [acceptance SQL](tests/timed-run-rewards.sql).
 
 Apply the SQL files in `supabase/migrations` in filename order, using the Supabase
 SQL editor as `postgres`, or your normal migration runner. They are additive and

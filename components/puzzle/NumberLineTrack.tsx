@@ -170,7 +170,7 @@ export function NumberLineTrack({
 const styles = StyleSheet.create({
   viewport: { width: "100%", height: HEIGHT, flexGrow: 0 },
   marker: {
-    position: "absolute", top: LINE_Y - DOT_SIZE / 2, left: 0,
+    position: "absolute", top: LINE_Y - DOT_SIZE / 2, left: 0, zIndex: 1,
     width: DOT_SIZE, height: DOT_SIZE, borderRadius: DOT_SIZE / 2,
     backgroundColor: "#FFFFFF", borderColor: GameColors.primary, borderWidth: 3,
     alignItems: "center", justifyContent: "center",

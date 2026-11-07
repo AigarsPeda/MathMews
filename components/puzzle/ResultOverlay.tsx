@@ -30,6 +30,7 @@ type ResultOverlayProps = {
   detail: string;
   summary?: string;
   coinsEarned?: number;
+  pendingCoins?: number;
   coinType?: "regular" | "sparkle";
   continueLabel?: string;
   onContinue: () => void;
@@ -54,6 +55,7 @@ export function ResultOverlay({
   detail,
   summary,
   coinsEarned = 0,
+  pendingCoins = 0,
   coinType = "regular",
   continueLabel,
   onContinue,
@@ -117,6 +119,10 @@ export function ResultOverlay({
           </Text>
           <Text style={styles.detail}>{detail}</Text>
           {summary ? <Text style={styles.summary}>{summary}</Text> : null}
+          {correct && pendingCoins > 0 ? <View style={styles.pendingReward}>
+            <Text style={styles.coinText}>{t("timedChallenge.pendingCoins", { count: pendingCoins })}</Text>
+            <Text style={styles.detail}>{t("timedChallenge.collectOnFinish")}</Text>
+          </View> : null}
 
           {correct && coinsEarned > 0 && (
             <View
@@ -187,6 +193,8 @@ export function ResultOverlay({
 }
 
 const styles = StyleSheet.create({
+  pendingReward: { width: "100%", gap: moderateScale(6), alignItems: "center", padding: moderateScale(14),
+    borderRadius: moderateScale(16), backgroundColor: GameColors.rewardSurface },
   screen: { flex: 1, width: "100%", backgroundColor: GameColors.background },
   body: { flex: 1, minHeight: 0 },
   card: {

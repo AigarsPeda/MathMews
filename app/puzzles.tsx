@@ -86,7 +86,7 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
       focusFrame.current = null;
       const viewport = trailLayout.current;
       if (!topicId || viewport.positioned || !viewport.width || !viewport.height || !trailScroll.current) return;
-      const layout = getTopicPathLayout(Math.min(viewport.width, 460), lessonCount, recommendedLevel - 1);
+      const layout = getTopicPathLayout(Math.min(viewport.width, 460), lessonCount, recommendedLevel - 1, topicId);
       const point = layout.points[recommendedLevel - 1];
       if (!point || viewport.contentHeight < layout.height) return;
       trailScroll.current.scrollTo({ y: Math.max(0, point.y - viewport.height * 0.45), animated: false });

@@ -718,5 +718,605 @@
   "hard-logic-explore-10": [
     "v2-hard-hard-logic-explore-10-path-review-1",
     "v2-hard-hard-logic-explore-10-path-review-2"
+  ],
+  "easy-time-lesson-1": [
+    "v2-easy-time-lesson-1-9",
+    "v2-easy-time-lesson-1-10"
+  ],
+  "easy-time-lesson-2": [
+    "v2-easy-time-lesson-2-9",
+    "v2-easy-time-lesson-2-10"
+  ],
+  "easy-time-lesson-3": [
+    "v2-easy-time-lesson-3-9",
+    "v2-easy-time-lesson-3-10"
+  ],
+  "easy-time-lesson-4": [
+    "v2-easy-time-lesson-4-9",
+    "v2-easy-time-lesson-4-10"
+  ],
+  "easy-time-lesson-5": [
+    "v2-easy-time-lesson-5-9",
+    "v2-easy-time-lesson-5-10"
+  ],
+  "easy-time-lesson-6": [
+    "v2-easy-time-lesson-6-9",
+    "v2-easy-time-lesson-6-10"
+  ],
+  "easy-time-lesson-7": [
+    "v2-easy-time-lesson-7-9",
+    "v2-easy-time-lesson-7-10"
+  ],
+  "easy-time-lesson-8": [
+    "v2-easy-time-lesson-8-9",
+    "v2-easy-time-lesson-8-10"
+  ],
+  "easy-time-lesson-9": [
+    "v2-easy-time-lesson-9-9",
+    "v2-easy-time-lesson-9-10"
+  ],
+  "easy-time-lesson-10": [
+    "v2-easy-time-lesson-10-9",
+    "v2-easy-time-lesson-10-10"
+  ],
+  "medium-time-lesson-1": [
+    "v2-medium-time-lesson-1-9",
+    "v2-medium-time-lesson-1-10"
+  ],
+  "medium-time-lesson-2": [
+    "v2-medium-time-lesson-2-9",
+    "v2-medium-time-lesson-2-10"
+  ],
+  "medium-time-lesson-3": [
+    "v2-medium-time-lesson-3-9",
+    "v2-medium-time-lesson-3-10"
+  ],
+  "medium-time-lesson-4": [
+    "v2-medium-time-lesson-4-9",
+    "v2-medium-time-lesson-4-10"
+  ],
+  "medium-time-lesson-5": [
+    "v2-medium-time-lesson-5-9",
+    "v2-medium-time-lesson-5-10"
+  ],
+  "medium-time-lesson-6": [
+    "v2-medium-time-lesson-6-9",
+    "v2-medium-time-lesson-6-10"
+  ],
+  "medium-time-lesson-7": [
+    "v2-medium-time-lesson-7-9",
+    "v2-medium-time-lesson-7-10"
+  ],
+  "medium-time-lesson-8": [
+    "v2-medium-time-lesson-8-9",
+    "v2-medium-time-lesson-8-10"
+  ],
+  "medium-time-lesson-9": [
+    "v2-medium-time-lesson-9-9",
+    "v2-medium-time-lesson-9-10"
+  ],
+  "medium-time-lesson-10": [
+    "v2-medium-time-lesson-10-9",
+    "v2-medium-time-lesson-10-10"
+  ],
+  "hard-time-lesson-1": [
+    "v2-hard-time-lesson-1-9",
+    "v2-hard-time-lesson-1-10"
+  ],
+  "hard-time-lesson-2": [
+    "v2-hard-time-lesson-2-9",
+    "v2-hard-time-lesson-2-10"
+  ],
+  "hard-time-lesson-3": [
+    "v2-hard-time-lesson-3-9",
+    "v2-hard-time-lesson-3-10"
+  ],
+  "hard-time-lesson-4": [
+    "v2-hard-time-lesson-4-9",
+    "v2-hard-time-lesson-4-10"
+  ],
+  "hard-time-lesson-5": [
+    "v2-hard-time-lesson-5-9",
+    "v2-hard-time-lesson-5-10"
+  ],
+  "hard-time-lesson-6": [
+    "v2-hard-time-lesson-6-9",
+    "v2-hard-time-lesson-6-10"
+  ],
+  "hard-time-lesson-7": [
+    "v2-hard-time-lesson-7-9",
+    "v2-hard-time-lesson-7-10"
+  ],
+  "hard-time-lesson-8": [
+    "v2-hard-time-lesson-8-9",
+    "v2-hard-time-lesson-8-10"
+  ],
+  "hard-time-lesson-9": [
+    "v2-hard-time-lesson-9-9",
+    "v2-hard-time-lesson-9-10"
+  ],
+  "hard-time-lesson-10": [
+    "v2-hard-time-lesson-10-9",
+    "v2-hard-time-lesson-10-10"
+  ],
+  "easy-data-lesson-1": [
+    "v2-easy-data-lesson-1-9",
+    "v2-easy-data-lesson-1-10"
+  ],
+  "easy-data-lesson-2": [
+    "v2-easy-data-lesson-2-9",
+    "v2-easy-data-lesson-2-10"
+  ],
+  "easy-data-lesson-3": [
+    "v2-easy-data-lesson-3-9",
+    "v2-easy-data-lesson-3-10"
+  ],
+  "easy-data-lesson-4": [
+    "v2-easy-data-lesson-4-9",
+    "v2-easy-data-lesson-4-10"
+  ],
+  "easy-data-lesson-5": [
+    "v2-easy-data-lesson-5-9",
+    "v2-easy-data-lesson-5-10"
+  ],
+  "easy-data-lesson-6": [
+    "v2-easy-data-lesson-6-9",
+    "v2-easy-data-lesson-6-10"
+  ],
+  "easy-data-lesson-7": [
+    "v2-easy-data-lesson-7-9",
+    "v2-easy-data-lesson-7-10"
+  ],
+  "easy-data-lesson-8": [
+    "v2-easy-data-lesson-8-9",
+    "v2-easy-data-lesson-8-10"
+  ],
+  "easy-data-lesson-9": [
+    "v2-easy-data-lesson-9-9",
+    "v2-easy-data-lesson-9-10"
+  ],
+  "easy-data-lesson-10": [
+    "v2-easy-data-lesson-10-9",
+    "v2-easy-data-lesson-10-10"
+  ],
+  "medium-data-lesson-1": [
+    "v2-medium-data-lesson-1-9",
+    "v2-medium-data-lesson-1-10"
+  ],
+  "medium-data-lesson-2": [
+    "v2-medium-data-lesson-2-9",
+    "v2-medium-data-lesson-2-10"
+  ],
+  "medium-data-lesson-3": [
+    "v2-medium-data-lesson-3-9",
+    "v2-medium-data-lesson-3-10"
+  ],
+  "medium-data-lesson-4": [
+    "v2-medium-data-lesson-4-9",
+    "v2-medium-data-lesson-4-10"
+  ],
+  "medium-data-lesson-5": [
+    "v2-medium-data-lesson-5-9",
+    "v2-medium-data-lesson-5-10"
+  ],
+  "medium-data-lesson-6": [
+    "v2-medium-data-lesson-6-9",
+    "v2-medium-data-lesson-6-10"
+  ],
+  "medium-data-lesson-7": [
+    "v2-medium-data-lesson-7-9",
+    "v2-medium-data-lesson-7-10"
+  ],
+  "medium-data-lesson-8": [
+    "v2-medium-data-lesson-8-9",
+    "v2-medium-data-lesson-8-10"
+  ],
+  "medium-data-lesson-9": [
+    "v2-medium-data-lesson-9-9",
+    "v2-medium-data-lesson-9-10"
+  ],
+  "medium-data-lesson-10": [
+    "v2-medium-data-lesson-10-9",
+    "v2-medium-data-lesson-10-10"
+  ],
+  "hard-data-lesson-1": [
+    "v2-hard-data-lesson-1-9",
+    "v2-hard-data-lesson-1-10"
+  ],
+  "hard-data-lesson-2": [
+    "v2-hard-data-lesson-2-9",
+    "v2-hard-data-lesson-2-10"
+  ],
+  "hard-data-lesson-3": [
+    "v2-hard-data-lesson-3-9",
+    "v2-hard-data-lesson-3-10"
+  ],
+  "hard-data-lesson-4": [
+    "v2-hard-data-lesson-4-9",
+    "v2-hard-data-lesson-4-10"
+  ],
+  "hard-data-lesson-5": [
+    "v2-hard-data-lesson-5-9",
+    "v2-hard-data-lesson-5-10"
+  ],
+  "hard-data-lesson-6": [
+    "v2-hard-data-lesson-6-9",
+    "v2-hard-data-lesson-6-10"
+  ],
+  "hard-data-lesson-7": [
+    "v2-hard-data-lesson-7-9",
+    "v2-hard-data-lesson-7-10"
+  ],
+  "hard-data-lesson-8": [
+    "v2-hard-data-lesson-8-9",
+    "v2-hard-data-lesson-8-10"
+  ],
+  "hard-data-lesson-9": [
+    "v2-hard-data-lesson-9-9",
+    "v2-hard-data-lesson-9-10"
+  ],
+  "hard-data-lesson-10": [
+    "v2-hard-data-lesson-10-9",
+    "v2-hard-data-lesson-10-10"
+  ],
+  "easy-spatial-lesson-1": [
+    "v2-easy-spatial-lesson-1-9",
+    "v2-easy-spatial-lesson-1-10"
+  ],
+  "easy-spatial-lesson-2": [
+    "v2-easy-spatial-lesson-2-9",
+    "v2-easy-spatial-lesson-2-10"
+  ],
+  "easy-spatial-lesson-3": [
+    "v2-easy-spatial-lesson-3-9",
+    "v2-easy-spatial-lesson-3-10"
+  ],
+  "easy-spatial-lesson-4": [
+    "v2-easy-spatial-lesson-4-9",
+    "v2-easy-spatial-lesson-4-10"
+  ],
+  "easy-spatial-lesson-5": [
+    "v2-easy-spatial-lesson-5-9",
+    "v2-easy-spatial-lesson-5-10"
+  ],
+  "easy-spatial-lesson-6": [
+    "v2-easy-spatial-lesson-6-9",
+    "v2-easy-spatial-lesson-6-10"
+  ],
+  "easy-spatial-lesson-7": [
+    "v2-easy-spatial-lesson-7-9",
+    "v2-easy-spatial-lesson-7-10"
+  ],
+  "easy-spatial-lesson-8": [
+    "v2-easy-spatial-lesson-8-9",
+    "v2-easy-spatial-lesson-8-10"
+  ],
+  "easy-spatial-lesson-9": [
+    "v2-easy-spatial-lesson-9-9",
+    "v2-easy-spatial-lesson-9-10"
+  ],
+  "easy-spatial-lesson-10": [
+    "v2-easy-spatial-lesson-10-9",
+    "v2-easy-spatial-lesson-10-10"
+  ],
+  "medium-spatial-lesson-1": [
+    "v2-medium-spatial-lesson-1-9",
+    "v2-medium-spatial-lesson-1-10"
+  ],
+  "medium-spatial-lesson-2": [
+    "v2-medium-spatial-lesson-2-9",
+    "v2-medium-spatial-lesson-2-10"
+  ],
+  "medium-spatial-lesson-3": [
+    "v2-medium-spatial-lesson-3-9",
+    "v2-medium-spatial-lesson-3-10"
+  ],
+  "medium-spatial-lesson-4": [
+    "v2-medium-spatial-lesson-4-9",
+    "v2-medium-spatial-lesson-4-10"
+  ],
+  "medium-spatial-lesson-5": [
+    "v2-medium-spatial-lesson-5-9",
+    "v2-medium-spatial-lesson-5-10"
+  ],
+  "medium-spatial-lesson-6": [
+    "v2-medium-spatial-lesson-6-9",
+    "v2-medium-spatial-lesson-6-10"
+  ],
+  "medium-spatial-lesson-7": [
+    "v2-medium-spatial-lesson-7-9",
+    "v2-medium-spatial-lesson-7-10"
+  ],
+  "medium-spatial-lesson-8": [
+    "v2-medium-spatial-lesson-8-9",
+    "v2-medium-spatial-lesson-8-10"
+  ],
+  "medium-spatial-lesson-9": [
+    "v2-medium-spatial-lesson-9-9",
+    "v2-medium-spatial-lesson-9-10"
+  ],
+  "medium-spatial-lesson-10": [
+    "v2-medium-spatial-lesson-10-9",
+    "v2-medium-spatial-lesson-10-10"
+  ],
+  "hard-spatial-lesson-1": [
+    "v2-hard-spatial-lesson-1-9",
+    "v2-hard-spatial-lesson-1-10"
+  ],
+  "hard-spatial-lesson-2": [
+    "v2-hard-spatial-lesson-2-9",
+    "v2-hard-spatial-lesson-2-10"
+  ],
+  "hard-spatial-lesson-3": [
+    "v2-hard-spatial-lesson-3-9",
+    "v2-hard-spatial-lesson-3-10"
+  ],
+  "hard-spatial-lesson-4": [
+    "v2-hard-spatial-lesson-4-9",
+    "v2-hard-spatial-lesson-4-10"
+  ],
+  "hard-spatial-lesson-5": [
+    "v2-hard-spatial-lesson-5-9",
+    "v2-hard-spatial-lesson-5-10"
+  ],
+  "hard-spatial-lesson-6": [
+    "v2-hard-spatial-lesson-6-9",
+    "v2-hard-spatial-lesson-6-10"
+  ],
+  "hard-spatial-lesson-7": [
+    "v2-hard-spatial-lesson-7-9",
+    "v2-hard-spatial-lesson-7-10"
+  ],
+  "hard-spatial-lesson-8": [
+    "v2-hard-spatial-lesson-8-9",
+    "v2-hard-spatial-lesson-8-10"
+  ],
+  "hard-spatial-lesson-9": [
+    "v2-hard-spatial-lesson-9-9",
+    "v2-hard-spatial-lesson-9-10"
+  ],
+  "hard-spatial-lesson-10": [
+    "v2-hard-spatial-lesson-10-9",
+    "v2-hard-spatial-lesson-10-10"
+  ],
+  "easy-money-lesson-1": [
+    "v2-easy-money-lesson-1-9",
+    "v2-easy-money-lesson-1-10"
+  ],
+  "easy-money-lesson-2": [
+    "v2-easy-money-lesson-2-9",
+    "v2-easy-money-lesson-2-10"
+  ],
+  "easy-money-lesson-3": [
+    "v2-easy-money-lesson-3-9",
+    "v2-easy-money-lesson-3-10"
+  ],
+  "easy-money-lesson-4": [
+    "v2-easy-money-lesson-4-9",
+    "v2-easy-money-lesson-4-10"
+  ],
+  "easy-money-lesson-5": [
+    "v2-easy-money-lesson-5-9",
+    "v2-easy-money-lesson-5-10"
+  ],
+  "easy-money-lesson-6": [
+    "v2-easy-money-lesson-6-9",
+    "v2-easy-money-lesson-6-10"
+  ],
+  "easy-money-lesson-7": [
+    "v2-easy-money-lesson-7-9",
+    "v2-easy-money-lesson-7-10"
+  ],
+  "easy-money-lesson-8": [
+    "v2-easy-money-lesson-8-9",
+    "v2-easy-money-lesson-8-10"
+  ],
+  "easy-money-lesson-9": [
+    "v2-easy-money-lesson-9-9",
+    "v2-easy-money-lesson-9-10"
+  ],
+  "easy-money-lesson-10": [
+    "v2-easy-money-lesson-10-9",
+    "v2-easy-money-lesson-10-10"
+  ],
+  "medium-money-lesson-1": [
+    "v2-medium-money-lesson-1-9",
+    "v2-medium-money-lesson-1-10"
+  ],
+  "medium-money-lesson-2": [
+    "v2-medium-money-lesson-2-9",
+    "v2-medium-money-lesson-2-10"
+  ],
+  "medium-money-lesson-3": [
+    "v2-medium-money-lesson-3-9",
+    "v2-medium-money-lesson-3-10"
+  ],
+  "medium-money-lesson-4": [
+    "v2-medium-money-lesson-4-9",
+    "v2-medium-money-lesson-4-10"
+  ],
+  "medium-money-lesson-5": [
+    "v2-medium-money-lesson-5-9",
+    "v2-medium-money-lesson-5-10"
+  ],
+  "medium-money-lesson-6": [
+    "v2-medium-money-lesson-6-9",
+    "v2-medium-money-lesson-6-10"
+  ],
+  "medium-money-lesson-7": [
+    "v2-medium-money-lesson-7-9",
+    "v2-medium-money-lesson-7-10"
+  ],
+  "medium-money-lesson-8": [
+    "v2-medium-money-lesson-8-9",
+    "v2-medium-money-lesson-8-10"
+  ],
+  "medium-money-lesson-9": [
+    "v2-medium-money-lesson-9-9",
+    "v2-medium-money-lesson-9-10"
+  ],
+  "medium-money-lesson-10": [
+    "v2-medium-money-lesson-10-9",
+    "v2-medium-money-lesson-10-10"
+  ],
+  "hard-money-lesson-1": [
+    "v2-hard-money-lesson-1-9",
+    "v2-hard-money-lesson-1-10"
+  ],
+  "hard-money-lesson-2": [
+    "v2-hard-money-lesson-2-9",
+    "v2-hard-money-lesson-2-10"
+  ],
+  "hard-money-lesson-3": [
+    "v2-hard-money-lesson-3-9",
+    "v2-hard-money-lesson-3-10"
+  ],
+  "hard-money-lesson-4": [
+    "v2-hard-money-lesson-4-9",
+    "v2-hard-money-lesson-4-10"
+  ],
+  "hard-money-lesson-5": [
+    "v2-hard-money-lesson-5-9",
+    "v2-hard-money-lesson-5-10"
+  ],
+  "hard-money-lesson-6": [
+    "v2-hard-money-lesson-6-9",
+    "v2-hard-money-lesson-6-10"
+  ],
+  "hard-money-lesson-7": [
+    "v2-hard-money-lesson-7-9",
+    "v2-hard-money-lesson-7-10"
+  ],
+  "hard-money-lesson-8": [
+    "v2-hard-money-lesson-8-9",
+    "v2-hard-money-lesson-8-10"
+  ],
+  "hard-money-lesson-9": [
+    "v2-hard-money-lesson-9-9",
+    "v2-hard-money-lesson-9-10"
+  ],
+  "hard-money-lesson-10": [
+    "v2-hard-money-lesson-10-9",
+    "v2-hard-money-lesson-10-10"
+  ],
+  "easy-capacity-lesson-1": [
+    "v2-easy-capacity-lesson-1-9",
+    "v2-easy-capacity-lesson-1-10"
+  ],
+  "easy-capacity-lesson-2": [
+    "v2-easy-capacity-lesson-2-9",
+    "v2-easy-capacity-lesson-2-10"
+  ],
+  "easy-capacity-lesson-3": [
+    "v2-easy-capacity-lesson-3-9",
+    "v2-easy-capacity-lesson-3-10"
+  ],
+  "easy-capacity-lesson-4": [
+    "v2-easy-capacity-lesson-4-9",
+    "v2-easy-capacity-lesson-4-10"
+  ],
+  "easy-capacity-lesson-5": [
+    "v2-easy-capacity-lesson-5-9",
+    "v2-easy-capacity-lesson-5-10"
+  ],
+  "easy-capacity-lesson-6": [
+    "v2-easy-capacity-lesson-6-9",
+    "v2-easy-capacity-lesson-6-10"
+  ],
+  "easy-capacity-lesson-7": [
+    "v2-easy-capacity-lesson-7-9",
+    "v2-easy-capacity-lesson-7-10"
+  ],
+  "easy-capacity-lesson-8": [
+    "v2-easy-capacity-lesson-8-9",
+    "v2-easy-capacity-lesson-8-10"
+  ],
+  "easy-capacity-lesson-9": [
+    "v2-easy-capacity-lesson-9-9",
+    "v2-easy-capacity-lesson-9-10"
+  ],
+  "easy-capacity-lesson-10": [
+    "v2-easy-capacity-lesson-10-9",
+    "v2-easy-capacity-lesson-10-10"
+  ],
+  "medium-capacity-lesson-1": [
+    "v2-medium-capacity-lesson-1-9",
+    "v2-medium-capacity-lesson-1-10"
+  ],
+  "medium-capacity-lesson-2": [
+    "v2-medium-capacity-lesson-2-9",
+    "v2-medium-capacity-lesson-2-10"
+  ],
+  "medium-capacity-lesson-3": [
+    "v2-medium-capacity-lesson-3-9",
+    "v2-medium-capacity-lesson-3-10"
+  ],
+  "medium-capacity-lesson-4": [
+    "v2-medium-capacity-lesson-4-9",
+    "v2-medium-capacity-lesson-4-10"
+  ],
+  "medium-capacity-lesson-5": [
+    "v2-medium-capacity-lesson-5-9",
+    "v2-medium-capacity-lesson-5-10"
+  ],
+  "medium-capacity-lesson-6": [
+    "v2-medium-capacity-lesson-6-9",
+    "v2-medium-capacity-lesson-6-10"
+  ],
+  "medium-capacity-lesson-7": [
+    "v2-medium-capacity-lesson-7-9",
+    "v2-medium-capacity-lesson-7-10"
+  ],
+  "medium-capacity-lesson-8": [
+    "v2-medium-capacity-lesson-8-9",
+    "v2-medium-capacity-lesson-8-10"
+  ],
+  "medium-capacity-lesson-9": [
+    "v2-medium-capacity-lesson-9-9",
+    "v2-medium-capacity-lesson-9-10"
+  ],
+  "medium-capacity-lesson-10": [
+    "v2-medium-capacity-lesson-10-9",
+    "v2-medium-capacity-lesson-10-10"
+  ],
+  "hard-capacity-lesson-1": [
+    "v2-hard-capacity-lesson-1-9",
+    "v2-hard-capacity-lesson-1-10"
+  ],
+  "hard-capacity-lesson-2": [
+    "v2-hard-capacity-lesson-2-9",
+    "v2-hard-capacity-lesson-2-10"
+  ],
+  "hard-capacity-lesson-3": [
+    "v2-hard-capacity-lesson-3-9",
+    "v2-hard-capacity-lesson-3-10"
+  ],
+  "hard-capacity-lesson-4": [
+    "v2-hard-capacity-lesson-4-9",
+    "v2-hard-capacity-lesson-4-10"
+  ],
+  "hard-capacity-lesson-5": [
+    "v2-hard-capacity-lesson-5-9",
+    "v2-hard-capacity-lesson-5-10"
+  ],
+  "hard-capacity-lesson-6": [
+    "v2-hard-capacity-lesson-6-9",
+    "v2-hard-capacity-lesson-6-10"
+  ],
+  "hard-capacity-lesson-7": [
+    "v2-hard-capacity-lesson-7-9",
+    "v2-hard-capacity-lesson-7-10"
+  ],
+  "hard-capacity-lesson-8": [
+    "v2-hard-capacity-lesson-8-9",
+    "v2-hard-capacity-lesson-8-10"
+  ],
+  "hard-capacity-lesson-9": [
+    "v2-hard-capacity-lesson-9-9",
+    "v2-hard-capacity-lesson-9-10"
+  ],
+  "hard-capacity-lesson-10": [
+    "v2-hard-capacity-lesson-10-9",
+    "v2-hard-capacity-lesson-10-10"
   ]
 }

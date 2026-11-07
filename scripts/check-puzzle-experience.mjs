@@ -74,7 +74,7 @@ for (const lesson of catalog.lessons) {
 }
 
 function renderHarness(file, exportName, mocks = {}) {
-  let cursor = 0, effects = [];
+  let cursor = 0, effects = [], dirty = false;
   const slots = [];
   const same = (a, b) => a && a.length === b.length && a.every((value, i) => Object.is(value, b[i]));
   const react = {
@@ -82,7 +82,7 @@ function renderHarness(file, exportName, mocks = {}) {
       const index = cursor++;
       if (!(index in slots)) {
         const slot = { value: typeof initial === 'function' ? initial() : initial };
-        slot.set = value => { slot.value = typeof value === 'function' ? value(slot.value) : value; };
+        slot.set = value => { const next = typeof value === 'function' ? value(slot.value) : value; dirty ||= !Object.is(next, slot.value); slot.value = next; };
         slots[index] = slot;
       }
       return [slots[index].value, slots[index].set];
@@ -101,12 +101,14 @@ function renderHarness(file, exportName, mocks = {}) {
       });
     },
   };
-  const jsx = (type, props) => ({ type, props });
+  const jsx = (type, props, key) => ({ type, props, key });
   const native = Object.fromEntries(['View', 'Text', 'Pressable', 'ScrollView', 'ActivityIndicator'].map(name => [name, name]));
   const base = {
     react,
     'react/jsx-runtime': { jsx, jsxs: jsx },
     'react-native': { ...native, Platform: { OS: 'ios' }, StyleSheet: { create: value => value } },
+    'react-native-reanimated': { __esModule: true, default: { ScrollView: 'ScrollView' },
+      FadeIn: { duration: duration => ({ reduceMotion: reduceMotion => ({ duration, reduceMotion }) }) }, ReduceMotion: { System: 'system' } },
     'react-i18next': { useTranslation: () => ({ t }) },
     '@/utils/scale': { moderateScale: value => value },
     'expo-font': { useFonts: () => [true, null] },
@@ -124,50 +126,133 @@ function renderHarness(file, exportName, mocks = {}) {
     return loadPure(id);
   } });
   return props => {
-    cursor = 0;
-    const tree = module.exports.TestComponent(props);
+    let tree, renders = 0;
+    do {
+      assert.ok(++renders < 10, 'Render-time state adjustments must settle');
+      cursor = 0; dirty = false; effects = [];
+      tree = module.exports.TestComponent(props);
+    } while (dirty);
     const pending = effects; effects = []; pending.forEach(effect => effect());
     return tree;
   };
 }
 function nodes(node) { return Array.isArray(node) ? node.flatMap(nodes) : node?.props ? [node, ...nodes(node.props.children)] : []; }
-function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, replay = false, kind = 'practice', lifeCount = 3, completedIds = [] } = {}) {
+function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, replay = false, kind = 'practice', lifeCount = 3, completedIds = [], nextPuzzles = [], locale = 'en' } = {}) {
+  const strings = JSON.parse(fs.readFileSync(`locales/${locale}.json`));
+  const tr = (key, values = {}) => {
+    let text = key.split('.').reduce((value, part) => value?.[part], strings) ?? key;
+    for (const [name, value] of Object.entries(values)) text = text.replaceAll(`{{${name}}}`, String(value));
+    return text;
+  };
   const level = { id: 'practice', kind, puzzleIds: [puzzle.id], title: { en: 'Practice' }, description: { en: 'Complete the mission.' } };
   const lesson = { id: 'lesson', difficulty: puzzle.difficulty, title: { en: 'Fractions' }, levels: [level] };
   if (kind !== 'practice') lesson.levels.unshift({ ...level, id: 'earlier-practice', kind: 'practice', puzzleIds: ['earlier-puzzle'] });
   if (!final) lesson.levels.push({ ...level, id: 'next', puzzleIds: ['next-puzzle'] });
   if (hasChallenge) lesson.levels.push({ id: 'challenge', kind: 'challenge', puzzleIds: ['challenge-puzzle'] });
   if (hasBoss) lesson.levels.push({ id: 'boss', kind: 'practice', puzzleIds: ['boss-puzzle'] });
+  for (const next of nextPuzzles) lesson.levels.push({ ...level, id: next.id, puzzleIds: [next.id] });
+  let session = { lesson, level, phase: 0 };
   const attempts = [], routes = [];
   const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { unlockedPathLessonIds: ['lesson'], completedPuzzleIds: [...completedIds, ...(kind !== 'practice' ? ['earlier-puzzle'] : []), ...(replay ? [puzzle.id] : [])], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
-    answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
-  const router = { push: route => routes.push(['push',route]), prefetch: route => routes.push(['prefetch', route]), dismissTo: route => routes.push(['path', route]) };
+    answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; else game.progress.completedPuzzleIds = [...new Set([...game.progress.completedPuzzleIds, p.id])]; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
+  const router = { push: route => routes.push(['push',route]), dismissTo: route => routes.push(['path', route]),
+    setParams: params => { routes.push(['params', params]); session = { lesson, level: lesson.levels.find(item => item.id === params.level), phase: 0 }; } };
   const render = renderHarness('app/play.tsx', 'PlaySession', {
+    'react-i18next': { useTranslation: () => ({ t: tr }) },
     '@/contexts/GameProvider': { useGame: () => game },
-    '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
-    '@/constants/curriculum': { ...curriculum, getLevelPuzzles: () => [puzzle] },
+    '@/contexts/LocaleProvider': { useLocale: () => ({ locale }) },
+    '@/constants/curriculum': { ...curriculum, getLevelPuzzles: (_, __, step) => [nextPuzzles.find(item => item.id === step.id) ?? puzzle] },
     '@/constants/visual-explanations': { hasVisualExplanation: () => true },
     '@/utils/puzzle-practice': { shufflePuzzleChoices: value => value },
-    'expo-router': { useRouter: () => router, useNavigation: () => ({ replace: (...args) => routes.push(['replace', ...args]) }) },
+    'expo-router': { useRouter: () => router },
     'expo-haptics': { ImpactFeedbackStyle: { Light: 'light', Medium: 'medium' }, impactAsync() {} },
     'react-native-safe-area-context': { SafeAreaView: 'SafeAreaView' },
   });
   let tree;
-  function refresh() { tree = render({ session: { lesson, level, phase: 0 } }); return tree; }
+  function refresh() { tree = render({ session: { ...session } }); return tree; }
   refresh();
   const scroll = nodes(tree).find(node => node.type === 'ScrollView');
   assert.ok(scroll);
-  assert.equal(nodes(scroll).some(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === t('play.checkAnswer')), false, 'The shared Check action stays outside scrolling puzzle content');
-  assert.equal(nodes(tree).filter(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === t('play.checkAnswer')).length, 1);
+  assert.equal(nodes(scroll).some(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === tr('play.checkAnswer')), false, 'The shared Check action stays outside scrolling puzzle content');
+  assert.equal(nodes(tree).filter(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === tr('play.checkAnswer')).length, 1);
   return { refresh, attempts, routes, game, tree:()=>tree,
     task: () => nodes(tree).find(node => node.type === 'PuzzleTaskView').props,
-    check: () => nodes(tree).find(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === t('play.checkAnswer')).props,
+    check: () => nodes(tree).find(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === tr('play.checkAnswer')).props,
     card: () => nodes(tree).find(node => node.type === 'PuzzleCard').props,
     result: () => nodes(tree).find(node => node.type === 'ResultOverlay')?.props,
     text: () => nodes(tree).filter(node => ['Text', 'IconText', 'PuzzleText'].includes(node.type)).map(node => node.props.children).join(' '),
   };
 }
 const base = { id: 'test', hint: 'Count carefully.', explanation: 'A worked answer.', difficulty: 'easy', topic: 'fractions' };
+const { PUZZLE_PATHS } = loadPure('@/constants/puzzle-path');
+const gateLesson = PUZZLE_PATHS.find(lesson => lesson.difficulty === 'easy');
+const gateGame = { isReady: true, hasCompletedOnboarding: true, progress: { completedPuzzleIds: [], unlockedPathLessonIds: [gateLesson.id] } };
+let gateParams = { difficulty: 'easy', lessonId: gateLesson.id, levelId: gateLesson.levels[0].id };
+const gateMocks = {
+  '@/contexts/GameProvider': { useGame: () => gateGame },
+  '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
+  'expo-haptics': {},
+  'react-native-safe-area-context': {},
+  'expo-router': { useLocalSearchParams: () => ({ difficulty: gateParams.difficulty, lesson: gateParams.lessonId, level: gateParams.levelId }) },
+};
+const renderGate = renderHarness('app/play.tsx', 'LearningPlayGate', gateMocks);
+const renderScreen = renderHarness('app/play.tsx', 'PlayScreen', gateMocks);
+const initialGate = renderGate(gateParams), initialScreen = renderScreen();
+gateGame.progress.completedPuzzleIds = [gateLesson.levels[0].puzzleIds[0]];
+assert.equal(renderGate(gateParams).props.session, initialGate.props.session, 'Saving completion cannot replace the puzzle beneath its result');
+gateParams = { ...gateParams, levelId: gateLesson.levels[1].id };
+assert.equal(renderScreen().key, initialScreen.key, 'Advancing retains the same gate and screen mount');
+assert.equal(renderGate(gateParams).props.session.level.id, gateParams.levelId, 'Route updates resolve the new puzzle without remounting');
+const continuation = screen({ ...base, type: 'multiple_choice', choices: ['1', '2'], correctIndex: 1 }, {
+  final: true, nextPuzzles: [
+    { ...base, id: 'second', type: 'multiple_choice', choices: ['3', '4'], correctIndex: 0 },
+    { ...base, id: 'third', type: 'order_numbers', payload: { numbers: [3, 1, 2], correctOrder: [1, 2, 3] } },
+  ],
+});
+let shell = continuation.tree();
+for (const [index, choice] of [1, 0].entries()) {
+  continuation.task().onSelectChoice(choice);
+  continuation.task().onGeometryChange(12);
+  continuation.task().onDecimalGridChange(15);
+  continuation.task().onFoundPairsChange([[1, 2]]);
+  continuation.task().onSelectNumberLineValue(7);
+  continuation.task().onTogglePairIndex(1);
+  continuation.task().onDragStateChange(true);
+  continuation.refresh();
+  continuation.check().onPress(); continuation.refresh();
+  assert.ok(continuation.result(), 'Recording progress holds the completed puzzle until dismissal');
+  continuation.result().onContinue(); continuation.refresh();
+  const task = continuation.task();
+  assert.equal(task.puzzle.id, index === 0 ? 'second' : 'third');
+  assert.equal(task.selectedIndex, null, 'Same-type puzzles cannot inherit a selected answer');
+  assert.equal(task.answered, false);
+  assert.equal(task.geometry, null);
+  assert.equal(task.decimalGrid, null);
+  assert.equal(task.numberLineValue, null);
+  assert.equal(task.foundPairs.length, 0);
+  assert.equal(task.pairIndices.length, 0);
+  assert.equal(continuation.result(), undefined, 'A subsequent puzzle unmounts its dismissed result');
+  assert.equal(continuation.check().disabled, index === 0, 'Choice drafts start empty; ordering drafts start with movable pieces');
+  const tree = continuation.tree();
+  assert.equal(tree.type, shell.type, 'The screen shell keeps its component type');
+  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.scrollEnabled, true);
+  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.duration, 180);
+  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.reduceMotion, 'system');
+  assert.equal(nodes(tree).find(node => node.type === 'PuzzleProgress').props.animated, false);
+  assert.equal(nodes(tree).find(node => node.type === 'PuzzleProgress').props.steps.filter(Boolean).length, index + 1);
+  shell = tree;
+}
+assert.notEqual(continuation.attempts[0].id, continuation.attempts[1].id, 'Each puzzle receives a fresh reward attempt ID');
+assert.deepEqual([...continuation.task().numberOrder].sort(), [1, 2, 3], 'A different puzzle type initializes its own pieces');
+assert.notDeepEqual(json(continuation.task().numberOrder), [1, 2, 3], 'Number ordering starts shuffled');
+continuation.task().onSwapOrder(0, continuation.task().numberOrder.indexOf(1)); continuation.refresh();
+continuation.task().onSwapOrder(1, continuation.task().numberOrder.indexOf(2)); continuation.refresh();
+continuation.check().onPress(); continuation.refresh();
+assert.equal(continuation.result().continueLabel, en.puzzlePathDesign.viewPath);
+assert.equal(continuation.result().onGoHome, undefined, 'The end of a path has just one View path action');
+continuation.result().onContinue();
+assert.equal(continuation.routes.at(-1)[0], 'path', 'The final puzzle still returns to its path');
+assert.ok(continuation.routes.every(([action]) => ['params', 'path'].includes(action)), 'Advancing never replaces or pushes the screen');
 const pie = screen({ ...base, type: 'fraction_build', payload: { numerator: 2, denominator: 6 } });
 assert.equal(pie.check().disabled, true);
 pie.task().onToggleFractionSlice(1); pie.refresh();
@@ -260,10 +345,10 @@ for (const options of [
   final.task().onSelectChoice(0); final.refresh(); final.check().onPress(); final.refresh();
   assert.equal(final.result().continueLabel, en.play.nextPuzzle);
   assert.equal(final.result().secondaryLabel, en.puzzlePathDesign.viewPath);
-  assert.equal(final.routes.some(([action]) => action === 'replace'), false, 'Success presents the choice before navigating');
+  assert.equal(final.routes.some(([action]) => action === 'params'), false, 'Success presents the choice before advancing');
   final.result().onContinue();
-  const route = final.routes.find(([action]) => action === 'replace');
-  assert.deepEqual(json(route), ['replace', 'play', { difficulty: 'easy', lesson: 'lesson', level: options.destination }], 'Special levels open directly without forcing a boss checkpoint');
+  const route = final.routes.find(([action]) => action === 'params');
+  assert.deepEqual(json(route), ['params', { difficulty: 'easy', lesson: 'lesson', level: options.destination }], 'Special levels open in place without forcing a boss checkpoint');
   final.result().onGoHome();
   assert.equal(final.routes.at(-1)[0], 'path');
   assert.equal(final.routes.at(-1)[1].pathname, '/puzzles', 'The secondary action lets the player return to the lesson');
@@ -563,3 +648,33 @@ for(const type of ['ratio_table','signed_line','equation_board','coordinate_map'
  assert.equal(state.attempts.length,2);assert.equal(state.result().correct,true);assert.equal(state.result().coinsEarned,getPuzzleCoinReward(tier));
 }
 console.log('Bridge screen checks passed in every difficulty: empty drafts, correction, reset, one-life mistakes, duplicate submissions and rewards.');
+
+const { checkBridgeFeedback } = await import('./puzzles/check-bridge-feedback.mjs');
+checkBridgeFeedback({ load: loadPure });
+
+// Real PlaySession: hints escalate only on accepted distinct mistakes, with drafts intact.
+for (const locale of ['en','lv','ru']) for (const type of ['ratio_table','signed_line','equation_board','coordinate_map']) {
+  const puzzle=allPuzzles.find(p=>p.type===type&&p.difficulty==='medium');
+  const target=loadPure('@/utils/bridge-models').bridgeTarget(puzzle), state=screen(puzzle,{locale});
+  const strings=JSON.parse(fs.readFileSync(`locales/${locale}.json`)).play.attemptHints;
+  const wrongs=type==='equation_board'
+    ? [{equation:{...puzzle.payload}}, {equation:loadPure('@/utils/bridge-models').transformEquation(puzzle.payload,'add',1)}]
+    : typeof target==='number' ? [{value:target+2},{value:target+3}] : [{point:{x:target.y,y:target.x}},{point:{x:target.x,y:target.y+1}}];
+  for (let i=0;i<2;i++) {
+    const draft=wrongs[i]; state.task().onBridgeChange(draft);state.refresh();
+    const check=state.check().onPress; check();check();state.refresh();
+    assert.equal(state.attempts.length,i+1,'Duplicate taps do not escalate feedback or charge twice');
+    assert.equal(state.game.progress.lives.current,2-i);
+    assert.deepEqual(json(state.task().bridge),json(draft),'The child keeps the work that needs correcting');
+    const hint=getPuzzleAttemptHint(puzzle,{kind:'bridge',state:draft},i+1);
+    assert.ok(state.text().includes(strings[hint.key]),`${locale}/${type}: actual mistake is shown`);
+    if(i===1)assert.ok(state.text().includes(strings[hint.detailKey]),'A repeated mistake adds a strategy');
+    assert.equal(state.game.wallet.coins,100);assert.equal(state.game.progress.completedPuzzleIds.length,0);
+  }
+  const right=type==='equation_board'?{equation:{a:1,b:0,c:target}}:typeof target==='number'?{value:target}:{point:target};
+  state.task().onBridgeChange(right);state.refresh();
+  assert.ok(!state.text().includes(strings[getPuzzleAttemptHint(puzzle,{kind:'bridge',state:wrongs[1]},2).key]),'Editing removes stale feedback');
+  state.check().onPress();state.refresh();assert.equal(state.result().correct,true);
+  assert.equal(state.result().coinsEarned,getPuzzleCoinReward(puzzle.difficulty));
+}
+console.log('Localized bridge retry flow passed: specific first hints, expanded second hints, unchanged drafts, duplicate-tap guards, life costs and normal solve rewards.');

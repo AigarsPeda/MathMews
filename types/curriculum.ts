@@ -30,6 +30,8 @@ export type LearningLevel = {
   puzzleIds: string[];
 };
 export type LearningLesson = {
+  /** New paths have seven practice tasks, a challenge and two path reviews. */
+  format?: "path";
   skillId?: string;
   prerequisiteSkillIds?: string[];
   review?: boolean;

@@ -85,6 +85,7 @@ export const PUZZLE_COIN_REWARDS = {
 } as const;
 
 export const BOSS_COIN_REWARD_MULTIPLIER = 2;
+export const TIMED_CHALLENGE_REWARD_MULTIPLIER = 2;
 
 /** Worked help is part of learning and is always free. */
 export function getVisualHelpCost(_difficulty: PuzzleDifficulty): number {

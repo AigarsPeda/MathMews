@@ -16,7 +16,7 @@ import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { getLevelPuzzles, type LearningSession } from "@/constants/curriculum";
-import { getNextPathStep, getPathLocation, getPathProgress, resolvePathSession } from "@/constants/puzzle-path";
+import { getChallengePathLocation, getNextPathLevel, getNextPathStep, getPathCompletedIds, getPathProgress, resolvePathSession } from "@/constants/puzzle-path";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
 import { getVisualHelpCost, MAX_LIVES } from "@/constants/game";
@@ -47,22 +47,22 @@ import {
   getPuzzleType,
 } from "@/utils/puzzle-type";
 import { moderateScale } from "@/utils/scale";
-import { isChallengeOpen } from "@/utils/timed-challenge";
+import { getTimedRunReward, isChallengeOpen } from "@/utils/timed-challenge";
 import * as Haptics from "expo-haptics";
-import { Redirect, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import type { NativeStackNavigationProp } from "expo-router/native-stack";
-import type { ParamListBase } from "expo-router/react-navigation";
+import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   View,
 } from "react-native";
+import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const PUZZLE_CONTENT_ENTER = FadeIn.duration(180).reduceMotion(ReduceMotion.System);
 
 function triggerHaptic(
   style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light,
@@ -133,7 +133,7 @@ export default function PlayScreen() {
   const { locale } = useLocale();
   if (!isReady) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
   const difficulty: PuzzleDifficulty = isPuzzleDifficulty(params.difficulty ?? "") ? params.difficulty as PuzzleDifficulty : "easy";
-  return <LearningPlayGate key={`${locale}-${difficulty}-${params.lesson}-${params.level}-${params.phase}-${params.replay}`}
+  return <LearningPlayGate key={`${locale}-${difficulty}-${params.replay}`}
     difficulty={difficulty} lessonId={params.lesson} levelId={params.level} phaseParam={params.phase} replaySession={params.replay === "1"} />;
 }
 
@@ -143,7 +143,13 @@ function LearningPlayGate({ difficulty, lessonId, levelId, phaseParam, replaySes
   const { progress, hasCompletedOnboarding } = useGame();
   // Freeze entry context. Recording a successful stage must not advance the task
   // until the child dismisses its result, nor turn its first reward into a replay.
-  const [session] = useState(() => resolvePathSession(difficulty, lessonId, levelId, phaseParam, progress));
+  const routeKey = `${lessonId}-${levelId}-${phaseParam}`;
+  const [entry, setEntry] = useState(() => ({ routeKey,
+    session: resolvePathSession(difficulty, lessonId, levelId, phaseParam, progress) }));
+  if (entry.routeKey !== routeKey) {
+    setEntry({ routeKey, session: resolvePathSession(difficulty, lessonId, levelId, phaseParam, progress) });
+  }
+  const { session } = entry;
   if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
   if (!session) return <Redirect href={{ pathname: "/puzzles", params: { difficulty } }} />;
   return <PlaySession session={session} replaySession={replaySession} />;
@@ -152,7 +158,6 @@ function LearningPlayGate({ difficulty, lessonId, levelId, phaseParam, replaySes
 export function PlaySession({ session, replaySession = false }: { session: LearningSession; replaySession?: boolean }) {
   const [fontsLoaded, fontError] = useFonts(PuzzleFontAssets);
   const router = useRouter();
-  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { t } = useTranslation();
   const { locale } = useLocale();
   const { lesson, level, phase: sessionIndex } = session;
@@ -160,17 +165,17 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const { pet, recordLearningHelp, answerPuzzle, buyLife, wallet, isReady, progress, hasCompletedOnboarding, recordInteraction, purchaseVisualHelp, beginChallenge, expireChallenge } = useGame();
   const run = progress.challengeAttempt;
   const [challengeMode, setChallengeMode] = useState<"timed" | "untimed">("untimed");
-  const timed = level.kind === "challenge" && !!level.timeLimitSeconds;
+  const atChallenge = level.kind === "challenge" && !!level.timeLimitSeconds;
   const now = useWorldClockNow(1000, progress.lives.current < MAX_LIVES || run?.status === "active");
   const lives = applyLifeRegen(progress.lives, now);
   const nextLife = msUntilNextLife(lives, now);
   const hasLives = lives.current > 0;
   const puzzles = getLevelPuzzles(locale, lesson, level);
-  const [entryCompleted] = useState(progress.completedPuzzleIds ?? []);
+  const [entryCompleted, setEntryCompleted] = useState(getPathCompletedIds(progress));
   const [initialAttemptId] = useState(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`);
   const attemptId = useRef(initialAttemptId);
   const isReplay = entryCompleted.includes(puzzles[sessionIndex].id);
-  const [puzzle] = useState(() => shufflePuzzleChoices(puzzles[sessionIndex],
+  const [puzzle, setPuzzle] = useState(() => shufflePuzzleChoices(puzzles[sessionIndex],
     `${level.id}-${sessionIndex}-${progress.puzzleStreak}`));
   const position = { current: lesson.levels.findIndex(item => item.id === level.id) + 1, total: lesson.levels.length };
   const [foundPairs, setFoundPairs] = useState<[number, number][]>([]);
@@ -214,9 +219,36 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const [retryCount, setRetryCount] = useState(0);
   const [showVisualHelp, setShowVisualHelp] = useState(false);
   const [showLives, setShowLives] = useState(false);
-  const challengePlayable = !timed || answered || isChallengeOpen(run, puzzle.id, now);
-  const otherActive = run?.status === "active" && run.puzzleId !== puzzle.id && (run.mode === "untimed" || now < run.deadlineAt);
-  const expired = run?.puzzleId === puzzle.id && (run.status === "expired" || run.status === "active" && run.mode !== "untimed" && now >= run.deadlineAt);
+  const sessionKey = `${lesson.id}-${level.id}-${sessionIndex}`;
+  const [activeSessionKey, setActiveSessionKey] = useState(sessionKey);
+  if (activeSessionKey !== sessionKey) {
+    // Reset the attempt before painting the new puzzle. Keep the screen and header mounted.
+    const nextPuzzle = shufflePuzzleChoices(puzzles[sessionIndex], `${level.id}-${sessionIndex}-${progress.puzzleStreak}`);
+    setActiveSessionKey(sessionKey);
+    setPuzzle(nextPuzzle);
+    setEntryCompleted(getPathCompletedIds(progress));
+    setChallengeMode("untimed");
+    setPendingChoice(null); setPendingNumberLine(null); setSelectedOperators(createEmptyOperators(nextPuzzle));
+    setBridge(null); setGeometry(null); setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
+    setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
+    setNumberOrder(createInitialOrder(nextPuzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
+    setLastAttempt(null); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
+    setCoinsEarned(0); setShowVisualHelp(false); setShowLives(false);
+  }
+  useEffect(() => {
+    submittedAnswer.current = null; matchingAttempt.current = null;
+    attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }, [sessionKey]);
+  const inTimedRun = run?.mode !== "untimed" && !!run?.puzzleIds?.includes(puzzle.id);
+  const challengePlayable = !(atChallenge || inTimedRun && run?.status !== "completed") || answered || isChallengeOpen(run, puzzle.id, now);
+  const otherActive = run?.status === "active" && !inTimedRun && run.puzzleId !== puzzle.id && (run.mode === "untimed" || now < run.deadlineAt);
+  const expired = (inTimedRun || run?.puzzleId === puzzle.id) && (run?.status === "expired" || run?.status === "active" && run.mode !== "untimed" && now >= run.deadlineAt);
+
+  useEffect(() => {
+    if (!answered && run?.status === "expired" && inTimedRun && level.id !== run.levelId) {
+      router.setParams({ level: run.levelId, phase: undefined });
+    }
+  }, [answered, run, inTimedRun, level.id, router]);
 
   useEffect(() => {
     if (run?.status === "active" && run.mode !== "untimed" && now >= run.deadlineAt) expireChallenge(run.id);
@@ -234,7 +266,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }, [beginChallenge, level.id, puzzle, recordInteraction, challengeMode]);
   const handleResumeChallenge = useCallback(() => {
-    const location = run && getPathLocation(run.levelId);
+    const location = run && getChallengePathLocation(run);
     if (location) router.replace({ pathname: "/play", params: { difficulty: location.lesson.difficulty, lesson: location.lesson.id, level: location.level.id } });
   }, [run, router]);
 
@@ -253,17 +285,18 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     : item.puzzleIds.every(id => entryCompleted.includes(id) || answered && id === puzzle.id));
   const resultProgress = { ...progress, completedPuzzleIds: [...entryCompleted, ...(answered ? [puzzle.id] : [])] };
   const lessonFinished = answered && position.current === position.total && getPathProgress(lesson, resultProgress).complete;
-  const resultMood: PetAnimationState = isCorrect ? "correct" : "incorrect";
+  const resultMood: PetAnimationState = isCorrect && !expired ? "correct" : "incorrect";
   const nextPuzzleRoute = useMemo(() => {
     if (!isCorrect) return undefined;
     const next = getNextPathStep(lesson, level, { ...progress, completedPuzzleIds: [...entryCompleted, puzzle.id] }, replaySession);
     return next ? { pathname: "/play" as const, params: { difficulty, lesson: next.lesson.id, level: next.level.id, ...(replaySession && { replay: "1" }) } } : undefined;
   }, [difficulty, isCorrect, lesson, level, progress, entryCompleted, puzzle.id, replaySession]);
-
-  useEffect(() => {
-    // Prepare the destination under the result sheet; navigation still waits for dismissal.
-    if (answered && nextPuzzleRoute) router.prefetch(nextPuzzleRoute);
-  }, [answered, nextPuzzleRoute, router]);
+  const nextLevelRoute = useMemo(() => {
+    if (!isCorrect || !lessonFinished) return undefined;
+    const next = getNextPathLevel(lesson, { ...progress, completedPuzzleIds: [...entryCompleted, puzzle.id] });
+    return next ? { pathname: "/play" as const, params: { difficulty, lesson: next.lesson.id, level: next.level.id,
+      replay: next.replay ? "1" : undefined } } : undefined;
+  }, [difficulty, isCorrect, lessonFinished, lesson, progress, entryCompleted, puzzle.id]);
 
   const handleOpenVisualHelp = useCallback(() => {
     if (answered || !hasVisualHelp) return;
@@ -295,12 +328,12 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
       setAnswered(true);
       setLastAttempt(null);
     } else {
-      const hint = getPuzzleAttemptHint(puzzle, draftAnswer);
-      setLastAttempt({ key: draftKey, hint: hint ? t(`play.attemptHints.${hint.key}`) : puzzle.hint });
+      const hint = getPuzzleAttemptHint(puzzle, draftAnswer, retryCount + 1);
+      setLastAttempt({ key: draftKey, hint: hint ? [t(`play.attemptHints.${hint.key}`), hint.detailKey ? t(`play.attemptHints.${hint.detailKey}`) : null].filter(Boolean).join(" ") : puzzle.hint });
       setRetryCount(count => count + 1);
       attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
-  }, [canCheck, draftAnswer, draftKey, puzzle, answerPuzzle, t]);
+  }, [canCheck, draftAnswer, draftKey, puzzle, answerPuzzle, t, retryCount]);
 
   const handleInlineMistake = useCallback(() => {
     const accepted = applyAnswerResult({ correct: false, puzzle,
@@ -417,12 +450,18 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   );
 
   const handleContinue = useCallback(() => {
+    if (expired && run) {
+      setAnswered(false);
+      router.setParams({ level: run.levelId, phase: undefined });
+      return;
+    }
     if (isCorrect) {
-      // Dispatch immediately after dismissal, without a game update or router queue first.
-      if (nextPuzzleRoute) navigation.replace("play", nextPuzzleRoute.params);
+      // Update this route in place after the result sheet has finished closing.
+      const next = nextPuzzleRoute ?? nextLevelRoute;
+      if (next) router.setParams({ ...next.params, phase: undefined });
       else exitToPath();
     }
-  }, [nextPuzzleRoute, exitToPath, isCorrect, navigation]);
+  }, [nextPuzzleRoute, nextLevelRoute, exitToPath, isCorrect, router, expired, run]);
 
   const handleGoHome = useCallback(() => { router.dismissTo("/"); }, [router]);
 
@@ -430,7 +469,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
 
   const companionMessage = getPuzzleCompanionMessage({
-    correct: isCorrect,
+    correct: isCorrect && !expired,
     kind: level.kind,
     finalStage: sessionIndex === puzzles.length - 1,
     practiceFinished: lessonFinished,
@@ -440,8 +479,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     puzzleId: puzzle.id,
   });
   const challengeIntroProps = { level, mode: challengeMode, onModeChange: setChallengeMode, expired: !!expired, lifeLost: !!run?.lifeLost, hasLives, otherActive,
-    onStart: handleBeginChallenge, onResume: handleResumeChallenge, onRefill: () => setShowLives(true),
-    onHelp: hasVisualHelp ? handleOpenVisualHelp : undefined };
+    onStart: handleBeginChallenge, onResume: handleResumeChallenge, onRefill: () => setShowLives(true) };
 
   if (!fontsLoaded && !fontError) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
   return (
@@ -462,15 +500,17 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
             />
           </Pressable>
           <View style={styles.headerProgress}>
-            <PuzzleProgress steps={progressSteps} total={position.total}
+            <PuzzleProgress steps={progressSteps} total={position.total} animated={false}
               label={t(level.kind === "boss" ? "learning.stageOf" : "play.puzzleOf", { number: position.current, total: position.total })} />
           </View>
           <PuzzleLives lives={lives} onPress={() => { recordInteraction(); setShowLives(true); }} />
         </View>
 
-        {timed && challengePlayable && !answered && run && run.mode !== "untimed" ? <ChallengeClock milliseconds={run.deadlineAt - now} /> : null}
+        {run?.status === "active" && run.mode !== "untimed" && (atChallenge || inTimedRun) ? <ChallengeClock milliseconds={run.deadlineAt - now} /> : null}
 
-        <ScrollView
+        <Animated.ScrollView
+          key={puzzle.id}
+          entering={PUZZLE_CONTENT_ENTER}
           scrollEnabled={!isDraggingTile}
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
@@ -554,7 +594,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
             </Pressable>
           ) : null}
           </>}
-        </ScrollView>
+        </Animated.ScrollView>
 
         {challengePlayable ? <View style={styles.answerDock}>
           {!answered && lives.current === 0 ? <View style={styles.emptyLives} accessibilityLiveRegion="polite">
@@ -588,20 +628,21 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
         {answered ? (
           <ResultOverlay
             visible
-            correct={isCorrect}
+            correct={isCorrect && !expired}
             petType={pet.type}
             catSkinId={pet.catSkinId}
             petMood={resultMood}
             catReaction={companionMessage.reaction}
             petName={pet.name}
             encouragement={t(`puzzleCompanion.${companionMessage.key}`, { count: companionMessage.count })}
-            message={t(isCorrect ? lessonFinished ? "puzzlePathDesign.levelComplete" : isReplay ? "play.crackedAgain" : "play.greatJob" : "play.goodTry")}
-            detail={puzzle.explanation}
-            coinsEarned={coinsEarned}
+            message={t(expired ? "timedChallenge.expired" : inTimedRun && run?.status === "completed" ? "timedChallenge.completed" : isCorrect ? lessonFinished ? "puzzlePathDesign.levelComplete" : isReplay ? "play.crackedAgain" : "play.greatJob" : "play.goodTry")}
+            detail={expired ? t(run?.lifeLost ? "timedChallenge.lifeUsed" : "timedChallenge.attemptEnded") : puzzle.explanation}
+            coinsEarned={expired ? 0 : coinsEarned}
+            pendingCoins={!expired && inTimedRun && run?.status === "active" ? getTimedRunReward(progress) : 0}
             coinType={isReplay ? "sparkle" : "regular"}
-            continueLabel={t(isCorrect ? nextPuzzleRoute ? "play.nextPuzzle" : "puzzlePathDesign.viewPath" : "play.tryAgain")}
+            continueLabel={t(expired ? "timedChallenge.retry" : isCorrect ? nextPuzzleRoute ? "play.nextPuzzle" : nextLevelRoute ? "puzzlePathDesign.nextLevel" : "puzzlePathDesign.viewPath" : "play.tryAgain")}
             onContinue={handleContinue}
-            onGoHome={isCorrect ? exitToPath : handleGoHome}
+            onGoHome={isCorrect ? nextPuzzleRoute || nextLevelRoute ? exitToPath : undefined : handleGoHome}
             secondaryLabel={t("puzzlePathDesign.viewPath")}
             onBuyLife={undefined}
             coins={wallet.coins}

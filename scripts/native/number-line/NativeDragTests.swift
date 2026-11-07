@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 final class NativeDragTests: XCTestCase {
  let app = XCUIApplication(bundleIdentifier: "com.mathmews.app")
  func expect(_ text: String) { XCTAssertTrue(app.staticTexts[text].waitForExistence(timeout: 5), "Missing \(text)\n\(app.debugDescription)") }
@@ -8,6 +9,27 @@ final class NativeDragTests: XCTestCase {
   if number.isEnabled { XCTAssertTrue(number.isHittable) }
   // Tap the drawn tick, above the number label's original touch area.
   track.coordinate(withNormalizedOffset: CGVector(dx: (number.frame.midX-track.frame.minX)/track.frame.width, dy: 74.0/152.0)).tap()
+ }
+ func testSelectedMarkerBottomEdge() {
+  app.activate(); expect("Number line touch check"); expect("Selected 8")
+  let track = app.descendants(matching: .any)["number-line-track"].firstMatch
+  let number = app.buttons["Number 8"]
+  let image = app.screenshot().image.cgImage!
+  let scale = CGFloat(image.width) / app.windows.firstMatch.frame.width
+  // The selected-number background begins at 86/152 of the track height.
+  // This point must still show the ring's lower border, rather than that background.
+  let x = number.frame.midX * scale
+  let y = (track.frame.minY + track.frame.height * 86.25 / 152.0) * scale
+  let sample = image.cropping(to: CGRect(x: floor(x), y: floor(y), width: 1, height: 1))!
+  var pixel = [UInt8](repeating: 0, count: 4)
+  pixel.withUnsafeMutableBytes { data in
+   let context = CGContext(data: data.baseAddress, width: 1, height: 1, bitsPerComponent: 8,
+    bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(),
+    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue)!
+   context.draw(sample, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+  }
+  XCTAssertLessThan(pixel[1], 120, "The marker's bottom border stays pink above the number label")
+  let shot = XCTAttachment(screenshot: app.screenshot()); shot.name="number-line-complete-marker"; shot.lifetime = .keepAlways; add(shot)
  }
  func testTicksLabelsButtonsScrollingAndLocking() {
   app.activate(); expect("Number line touch check"); expect("Selected 8")

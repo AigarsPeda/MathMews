@@ -1,3 +1,4 @@
+import { getBridgeAttemptHint } from '@/utils/bridge-attempt-hint';
 import { isBridgePuzzle, bridgeComplete, type BridgeState } from "@/utils/bridge-models";
 import { geometryTarget } from "@/utils/geometry-models";
 import { decimalTotal, type DecimalPlaceState } from "@/utils/decimal-models";
@@ -60,14 +61,14 @@ export function getPuzzlePosition(lesson: LearningLesson, level: LearningLevel, 
     : { current: phase + 1, total: level.puzzleIds.length };
 }
 
-export type AttemptHint = { key: string };
+export type AttemptHint = { key: string; detailKey?: string };
 
 /** Describe the attempt without exposing an unselected answer or the solution. */
-export function getPuzzleAttemptHint(puzzle: Puzzle, answer: PuzzleAnswer): AttemptHint | null {
+export function getPuzzleAttemptHint(puzzle: Puzzle, answer: PuzzleAnswer, attempt = 1): AttemptHint | null {
   const direction = (value: number, target: number, low: string, high: string): AttemptHint => ({
     key: value < target ? low : high,
   });
-  if (isBridgePuzzle(puzzle)) return { key: puzzle.type };
+  if (isBridgePuzzle(puzzle)) return answer.kind === "bridge" ? getBridgeAttemptHint(puzzle, answer.state, attempt) : null;
   if (puzzle.type === "geometry_measure" && answer.kind === "geometry") {
     const { mode, width, height } = puzzle.payload;
     if (mode === "compare") return { key: "geometryCompare" };

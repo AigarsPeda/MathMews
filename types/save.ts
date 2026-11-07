@@ -11,7 +11,7 @@ export type GameSave = {
   accountOwnerId?: string;
   walletAuthority?: { user_id: string; environment: string; balance: number; revision: number };
   appliedWalletOrderIds?: string[];
-  pendingCoinRewards?: { userId: string; environment: string; puzzleId: string; attemptId: string; amount?: number; at?: number }[];
+  pendingCoinRewards?: { userId: string; environment: string; puzzleId: string; attemptId: string; challengeLevelId?: string; amount?: number; at?: number }[];
   pendingWalletPurchases?: import('@/services/wallet/offline-orders').PendingWalletPurchase[];
   walletNotices?: import('@/services/wallet/offline-orders').WalletNotice[];
   worldClock?: import('@/utils/world-clock').WorldClock;

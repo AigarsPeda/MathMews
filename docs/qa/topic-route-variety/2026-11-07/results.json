@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-07",
+  "changes": [
+    "Distinct authored routes for all 11 topics",
+    "Uneven distances between levels with shorter hops and longer winding stretches",
+    "Extra rounded turns on selected connections",
+    "Stable positions across unlocks and reopening",
+    "Shared topic geometry for current-level entry scrolling",
+    "Individual connector canvases prevent tall narrow trails from losing their road drawing"
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "targetedEslint": "passed",
+    "gitDiffCheck": "passed",
+    "routeLayouts": 4840,
+    "geometry": [
+      "unique topic routes",
+      "varying gaps",
+      "extra turns",
+      "stable tile positions",
+      "tile and caption clearance",
+      "sampled road clearance around active titles",
+      "in-bounds monotonic connections"
+    ],
+    "native": {
+      "status": "passed",
+      "device": "iPhone 15 / iOS 27.2 simulator",
+      "test": "testDistinctTopicPaths",
+      "coverage": [
+        "Addition current level 5",
+        "Distinct Subtraction, Numbers and Patterns routes",
+        "Locked future levels",
+        "320-point layout with Latvian title",
+        "Pixel assertion verifies the road remains painted after resizing"
+      ],
+      "resultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-uKbzYm/result.xcresult"
+    }
+  },
+  "screenshots": [
+    "addition-level-5.png",
+    "patterns.png",
+    "narrow-lv.png"
+  ],
+  "limits": [
+    "Android, physical devices and enlarged accessibility text were not verified",
+    "Floating Expo gear and QA controls are development-only"
+  ]
+}

@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 final class NativeLaunchTests: XCTestCase {
  func testHomeReady() {
   let app = XCUIApplication(bundleIdentifier: "com.mathmews.app"); app.activate()
@@ -29,6 +30,46 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(app.buttons["QA Path"].waitForExistence(timeout:25))
  }
  func shot(_ name:String) { let item=XCTAttachment(screenshot:app.screenshot()); item.name=name; item.lifetime = .keepAlways; add(item) }
+ func assertTileSurface(_ tile: XCUIElement, current: Bool) {
+  let frame = tile.frame
+  let screenshot = app.screenshot().image.cgImage!
+  let scale = CGFloat(screenshot.width) / app.windows.firstMatch.frame.width
+  for x in [0.25, 0.75] {
+   for y in [0.22, 0.72] {
+    let rect = CGRect(x: (frame.minX + frame.width * x) * scale,
+      y: (frame.minY + frame.height * y) * scale, width: 1, height: 1)
+    let sample = screenshot.cropping(to: rect)!
+    var pixel = [UInt8](repeating: 0, count: 4)
+    pixel.withUnsafeMutableBytes { data in
+     let context = CGContext(data: data.baseAddress, width: 1, height: 1, bitsPerComponent: 8,
+       bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(),
+       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue)!
+     context.draw(sample, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+    }
+    XCTAssertGreaterThan(pixel[0], 180, "The whole tile repaints after unlocking")
+    if current {
+     XCTAssertLessThan(pixel[1], 100, "The current tile has no stale locked-color square")
+    } else {
+     XCTAssertGreaterThan(pixel[1], 180, "The completed tile no longer retains its pink surface")
+    }
+   }
+  }
+ }
+ func testUnlockedLevelSurfaceUpdates() {
+  app.buttons["QA Path"].tap()
+  assertCurrentLevelVisible(5)
+  assertTileSurface(app.buttons["Level 5"], current: true)
+  shot("unlock-before-level-5")
+  app.buttons["QA Level 6"].tap()
+  assertCurrentLevelVisible(6)
+  assertTileSurface(app.buttons["Level 6"], current: true)
+  assertTileSurface(app.buttons["Level 5"], current: false)
+  shot("unlock-after-level-6")
+  app.buttons["QA Narrow"].tap()
+  assertCurrentLevelVisible(6)
+  assertTileSurface(app.buttons["Level 6"], current: true)
+  shot("unlock-level-6-narrow")
+ }
  func testRussianPathAndPuzzle() {
   app.buttons["QA RU"].tap()
   app.buttons["QA Topics"].tap()
@@ -82,6 +123,48 @@ final class NativeDragTests: XCTestCase {
   assertCurrentLevelVisible(1)
   XCTAssertFalse(app.buttons["Level 2"].isEnabled)
   shot("collection-12-Hard-Fractions")
+ }
+ func testDistinctTopicPaths() {
+  app.buttons["QA Path"].tap()
+  assertCurrentLevelVisible(5)
+  shot("distinct-addition-level-5")
+  var previousPositions = [CGFloat]()
+  for title in ["Subtraction", "Numbers and order", "Patterns"] {
+   app.buttons["QA Theme"].tap()
+   XCTAssertTrue(app.staticTexts[title].firstMatch.waitForExistence(timeout:5))
+   assertCurrentLevelVisible(1)
+   let positions = (1...3).map { app.buttons["Level \($0)"].frame.midX }
+   XCTAssertNotEqual(positions, previousPositions, "Topics use different stop positions")
+   previousPositions = positions
+   XCTAssertFalse(app.buttons["Level 2"].isEnabled)
+   shot("distinct-\(title)")
+  }
+  app.buttons["QA Narrow"].tap()
+  assertCurrentLevelVisible(1)
+  app.buttons["QA LV"].tap()
+  XCTAssertTrue(app.buttons["1. līmenis"].waitForExistence(timeout:5))
+  XCTAssertTrue(app.buttons["1. līmenis"].isHittable)
+  let image = app.screenshot().image.cgImage!
+  let scale = CGFloat(image.width) / app.windows.firstMatch.frame.width
+  let first = app.buttons["1. līmenis"].frame
+  let second = app.buttons["2. līmenis"].frame
+  var pixels = [UInt8](repeating: 0, count: image.width * image.height * 4)
+  pixels.withUnsafeMutableBytes { data in
+   let context = CGContext(data: data.baseAddress, width: image.width, height: image.height,
+    bitsPerComponent: 8, bytesPerRow: image.width * 4, space: CGColorSpaceCreateDeviceRGB(),
+    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue)!
+   context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+  }
+  var roadPixels = 0
+  for y in stride(from: Int(first.maxY * scale) + 8, to: min(image.height, Int(second.minY * scale) - 8), by: 4) {
+   for x in stride(from: 0, to: image.width, by: 4) {
+    let offset = (y * image.width + x) * 4
+    let r = Int(pixels[offset]), g = Int(pixels[offset + 1]), b = Int(pixels[offset + 2])
+    if g > 150 && r > g + 10 && b > r + 5 { roadPixels += 1 }
+   }
+  }
+  XCTAssertGreaterThan(roadPixels, 50, "The road remains painted after resizing a tall trail")
+  shot("distinct-patterns-narrow-lv")
  }
  func testBlenderTrailAndLocalizedCallout() {
   app.buttons["QA Path"].tap()

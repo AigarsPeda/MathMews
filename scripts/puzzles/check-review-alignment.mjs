@@ -98,11 +98,11 @@ export function checkReviewAlignment({load}) {
         assert.equal(q.choices.filter(c=>c===String(expected)).length,1);
         solved++;
       }
-      seen.add(q.prompt.en);positions.add(q.correctIndex);
+      seen.add(q.models ? JSON.stringify(q.models.en) : q.prompt.en);positions.add(q.correctIndex);
     }
     assert.equal(positions.size,3,`${l.id}: answer position varies`);
     if(l.topicId!=='fractions'||['medium-fractions-explore-7','medium-fractions-explore-8','medium-fractions-explore-9'].includes(l.id))
-      assert.ok(seen.size>=(l.id==='easy-multiplication-rows'?5:8),`${l.id}: fresh givens, not just shuffled choices (${seen.size})`);
+      assert.ok(seen.size>=(l.format === 'path' ? 3 : l.id==='easy-multiplication-rows'?5:8),`${l.id}: fresh givens, not just shuffled choices (${seen.size})`);
   }
   for(const id of ['hard-measurement-area','hard-measurement-explore-3','hard-measurement-explore-6','medium-fractions-explore-9','medium-operations-explore-9','hard-measurement-explore-9']){
     const l=LEARNING_CATALOG.lessons.find(l=>l.id===id),prompts=Array.from({length:90},(_,i)=>getLearningReview(l,20760+i).prompt.en).join('\n');
@@ -119,5 +119,5 @@ export function checkReviewAlignment({load}) {
     for(let day=20760;day<20850;day++){const q=getLearningReview(l,day),a=+q.choices[q.correctIndex];ranks.add(q.choices.filter(s=>+s<a).length);}
     assert.equal(ranks.size,3,`${id}: always choosing smallest/largest fails`);
   }
-  console.log(`Verified 90 days × 180 lessons in EN/LV/RU: ${solved} independently solved aligned questions, unique choices, varied givens and answer ranks, deterministic reopening and language parity.`);
+  console.log(`Verified 90 days × ${LEARNING_CATALOG.lessons.length} lessons in EN/LV/RU: ${solved} independently solved aligned questions, unique choices, varied givens and answer ranks, deterministic reopening and language parity.`);
 }

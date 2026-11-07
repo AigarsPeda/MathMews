@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-07",
+  "topics": [
+    "time",
+    "data",
+    "spatial",
+    "money",
+    "capacity"
+  ],
+  "addedLessons": 150,
+  "addedPuzzlesPerLanguage": 1500,
+  "totalLessons": 330,
+  "totalPuzzlesPerLanguage": 3300,
+  "languages": [
+    "en",
+    "lv",
+    "ru"
+  ],
+  "checks": {
+    "puzzleSuite": "passed",
+    "independentEverydayAnswers": "passed, including 1800 daily variants",
+    "original1800ContentRecords": "unchanged from pre-task baseline",
+    "typecheck": "passed",
+    "targetedEslint": "passed",
+    "backend": "117 passed",
+    "iOS": "passed: 11 diagram scenarios, wrong-answer retries, correct answers, disabled checks and 3 localized worked examples"
+  },
+  "native": {
+    "device": "iPhone 15",
+    "udid": "9E0EC1C4-9025-4974-A9DA-CC99F98A86EF",
+    "fixture": "scripts/native/everyday/fixture.tsx",
+    "resultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-fDrBru/result.xcresult",
+    "localeLayoutWidths": [
+      320,
+      393
+    ],
+    "usesRealComponents": true,
+    "writesGameProgress": false,
+    "visualReview": "Confirmed readable graph scales and jug measurements, clear rotation centre, clock hands, wrapping and scrollable localized help."
+  },
+  "server": {
+    "additionalPuzzleRegistrations": 1500,
+    "additionalTimedRunRegistrations": 150,
+    "evidence": "supabase/deployments/2026-11-07-everyday-categories.json"
+  }
+}

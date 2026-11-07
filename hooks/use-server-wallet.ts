@@ -166,7 +166,9 @@ export function useServerWallet({ userId,enabled,activeSaveIdRef,getSave,setSave
             .sort((a,b)=>a.at-b.at)[0];
           if (!reward && !purchase) break;
           if (reward && (!purchase || (reward.at??0)<=purchase.at)) {
-            const rewarded:ServerWallet=await rpc('claim_puzzle_coins',{p_environment:environment,p_puzzle_id:reward.puzzleId,p_attempt_id:reward.attemptId});
+            const rewarded:ServerWallet=reward.challengeLevelId
+              ? await rpc('claim_timed_challenge_coins',{p_environment:environment,p_level_id:reward.challengeLevelId,p_attempt_id:reward.attemptId})
+              : await rpc('claim_puzzle_coins',{p_environment:environment,p_puzzle_id:reward.puzzleId,p_attempt_id:reward.attemptId});
             updateSave(save=>({...save,pendingCoinRewards:(save.pendingCoinRewards??[]).filter(r=>r.attemptId!==reward.attemptId)}));
             accept(rewarded); await persistChanges(); continue;
           }

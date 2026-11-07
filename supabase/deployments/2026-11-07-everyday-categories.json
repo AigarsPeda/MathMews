@@ -1,0 +1,12 @@
+{
+  "migration": "supabase/migrations/20261107230000_everyday_puzzle_catalog.sql",
+  "sha256": "80647e8fd2c4282543c9feda0414a856dfe47efee6b648273cfe7ed415e9722b",
+  "deployedAt": "2026-11-07T21:28:46.229167+00:00",
+  "method": "Supabase SQL Editor; equivalent additive inserts with ON CONFLICT DO NOTHING",
+  "project": "jcfppquntstgxubtlvqo",
+  "verification": {
+    "new_puzzles": 1500,
+    "new_timed_runs": 150
+  },
+  "queryUrl": "https://supabase.com/dashboard/project/jcfppquntstgxubtlvqo/sql/0bddebcf-77a3-4b18-8315-7a2bffd45261"
+}

@@ -1,6 +1,14 @@
 # Topic based puzzle learning
 
-Math Mews now uses difficulty → topic → lesson → puzzle. Each difficulty has six topics, each containing ten lessons. The catalog has 180 lessons, 720 practice puzzles, 180 boss missions containing 540 stages, and 180 optional challenges. That is 1,440 puzzles per language, with complete English and Latvian content. The original 173 level IDs and all 209 original puzzle IDs are retained; existing completions remain saved as new lessons extend each topic.
+Math Mews uses difficulty → topic → lesson → puzzle. Each difficulty has eleven topics, each containing ten lessons. The current catalog has 330 lessons and 3,300 puzzles per language in English, Latvian and Russian. Lessons follow ten-step paths with a timed or untimed final stretch at step eight. The original puzzle identities and earned progress are preserved. Earlier sections below describe the historical story-mission structure; `constants/puzzle-path.ts` defines current navigation.
+
+## Everyday math categories — November 7, 2026
+
+Time and schedules, Data and graphs, Shapes and spatial reasoning, Money and shopping, and Capacity and volume each add ten lessons at every difficulty: 150 lessons and 1,500 puzzles. These lessons use `format: "path"`, seven practice steps, a challenge entry at step eight, and two review steps. They reuse the existing answer, lives, timed-session and save systems. They do not add archived boss achievements.
+
+Author these categories in `scripts/puzzles/everyday-topics.mjs`, then run `npm run puzzles:build`. The builder writes localized questions and diagrams into the shared puzzle assets and twelve daily-review variants per lesson into `data/everyday-reviews.json`. The renderer supports clocks, bar charts, polygons, transformation grids, pretend price tags, graduated vessels and box dimensions. Each puzzle has a worked example with different givens. Canonical units are integer minutes, cents and millilitres; displayed decimals follow the selected language.
+
+`npm run test:puzzles` checks all new answer keys independently from their diagram givens, localized answers, varied examples, progression and original save identities. Run `node scripts/native/check-puzzle-drag.mjs --everyday --device <simulator-UDID>` for native diagram, retry, answer-selection and help-sheet checks, including 320-point Latvian and Russian layouts. Additive reward and timed-run registrations live in `supabase/migrations/20261107230000_everyday_puzzle_catalog.sql`.
 
 ## Choosing what to learn
 

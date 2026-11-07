@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { EverydayDiagram } from '@/components/puzzle/EverydayDiagram';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -38,8 +39,9 @@ export default function ReviewScreen() {
       <Text style={styles.body}>{t('learningReview.reviewPolicy')}</Text>
       {!done || result!==null ? <>
         <Text style={styles.question}>{question.prompt[locale]}</Text>
+        {question.models ? <EverydayDiagram model={question.models[locale]} /> : null}
         {question.diagram ? <View style={styles.diagram} accessible accessibilityLabel={t('learningReview.reviewDiagram',{colored:question.diagram.colored,total:question.diagram.parts})}>{Array.from({length:question.diagram.parts},(_,i)=><View key={i} style={[styles.piece,i<question.diagram!.colored&&styles.colored]}/>)}</View>:null}
-        {question.choices.map((choice,index)=><Pressable key={`${day}-${index}`} accessibilityRole="button" accessibilityState={{selected:selected===index,disabled:done}} disabled={done} onPress={()=>setSelected(index)} style={[styles.choice,selected===index&&styles.selected]}><Text style={styles.subtitle}>{choice}</Text></Pressable>)}
+        {(question.localizedChoices?.[locale] ?? question.choices).map((choice,index)=><Pressable key={`${day}-${index}`} accessibilityRole="button" accessibilityState={{selected:selected===index,disabled:done}} disabled={done} onPress={()=>setSelected(index)} style={[styles.choice,selected===index&&styles.selected]}><Text style={styles.subtitle}>{choice}</Text></Pressable>)}
       </>:null}
       {result!==null?<View accessibilityLiveRegion="polite"><Text style={styles.subtitle}>{t(result?'learningReview.reviewCorrect':'learningReview.reviewTry')}</Text><Text style={styles.body}>{question.explanation[locale]}</Text></View>:done?<Text style={styles.body}>{t('learningReview.reviewDone')}</Text>:null}
       {stale?<Text style={styles.body}>{t('learningReview.reviewStale')}</Text>:null}

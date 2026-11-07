@@ -1,0 +1,23 @@
+{
+  "migration": "supabase/migrations/20261107224500_timed_run_rewards.sql",
+  "sha256": "83f784d8a9aa3ef8bd1dbf497a461fd1527b55eac62dd446a912cea12773eb2a",
+  "deployedAt": "2026-11-07T20:43:10.662Z",
+  "verification": {
+    "timed_levels": 180,
+    "registered_run_puzzles": 540,
+    "authenticated_claims": true
+  },
+  "acceptance": {
+    "environments": [
+      "sandbox",
+      "production"
+    ],
+    "timedLevels": 180,
+    "duplicateClaims": true,
+    "replayRates": true,
+    "ordinaryClaimDeduplication": true,
+    "authenticationRequired": true,
+    "dailyCoinCap": 1000,
+    "fixtureTransactions": "rolled back"
+  }
+}

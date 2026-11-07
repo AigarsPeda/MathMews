@@ -19,10 +19,19 @@ const locations = new Map(PUZZLE_PATHS.flatMap(lesson => lesson.levels.map(level
 const lessonIds = new Set(PUZZLE_PATHS.map(lesson => lesson.id));
 type PathProgress = Pick<Progress, "completedPuzzleIds" | "attemptedPuzzleIds" | "challengeAttempt" | "completedPathLessonIds" | "unlockedPathLessonIds">;
 export const getPathLocation = (id: string) => locations.get(id);
+export function getPathCompletedIds(progress: Pick<Progress, "completedPuzzleIds" | "challengeAttempt">): string[] {
+  return [...new Set([...(progress.completedPuzzleIds ?? []),
+    ...(progress.challengeAttempt?.status === "active" ? progress.challengeAttempt.solvedPuzzleIds ?? [] : [])])];
+}
+export function getChallengePathLocation(attempt: NonNullable<Progress["challengeAttempt"]>) {
+  const start = getPathLocation(attempt.levelId);
+  const level = start?.lesson.levels.find(item => item.puzzleIds.includes(attempt.puzzleId));
+  return start && level ? { lesson: start.lesson, level } : start;
+}
 export const getTopicPaths = (difficulty: PuzzleDifficulty, topicId: string) => PUZZLE_PATHS.filter(l => l.difficulty === difficulty && l.topicId === topicId);
 export const getPathLesson = (difficulty: PuzzleDifficulty, id?: string) => PUZZLE_PATHS.find(l => l.difficulty === difficulty && l.id === id);
 export function getPathProgress(lesson: LearningLesson, progress: PathProgress) {
-  const counts = getLearningProgress(lesson.levels.flatMap(l => l.puzzleIds), progress.completedPuzzleIds ?? []);
+  const counts = getLearningProgress(lesson.levels.flatMap(l => l.puzzleIds), getPathCompletedIds(progress));
   return { ...counts, complete: counts.complete || !!progress.completedPathLessonIds?.includes(lesson.id) };
 }
 /** Count every playable puzzle, including challenges and newly added review tasks. */
@@ -38,10 +47,10 @@ export function isPathAvailable(lesson: LearningLesson, progress: PathProgress):
   return index >= 0 && track.slice(0, index).every(l => getPathProgress(l, progress).complete);
 }
 export function getPathStepState(lesson: LearningLesson, level: LearningLevel, progress: PathProgress) {
-  const completed = progress.completedPuzzleIds ?? [];
+  const completed = getPathCompletedIds(progress);
   if (level.puzzleIds.every(id => completed.includes(id))) return "completed" as const;
   if (!isPathAvailable(lesson, progress)) return "locked" as const;
-  if (progress.challengeAttempt?.levelId === level.id && progress.challengeAttempt.status === "active") return "current" as const;
+  if (progress.challengeAttempt?.puzzleId === level.puzzleIds[0] && progress.challengeAttempt.status === "active") return "current" as const;
   // A previously finished level remains open, including its new review questions.
   if (progress.completedPathLessonIds?.includes(lesson.id)) return "current" as const;
   const index = lesson.levels.findIndex(l => l.id === level.id);
@@ -51,7 +60,7 @@ export function getPathRecommendation(difficulty: PuzzleDifficulty, progress: Pa
   const candidates = PUZZLE_PATHS.filter(l => l.difficulty === difficulty && (!topicId || l.topicId === topicId) && isPathAvailable(l, progress));
   const active = progress.challengeAttempt;
   if (active?.status === "active" && (active.mode === "untimed" || active.deadlineAt > Date.now())) {
-    const location = getPathLocation(active.levelId);
+    const location = getChallengePathLocation(active);
     if (location && candidates.some(l => l.id === location.lesson.id)) return { ...location, resumeChallenge: true };
   }
   const unfinished = candidates.filter(l => !getPathProgress(l, progress).complete);
@@ -92,8 +101,13 @@ export function resolvePathSession(difficulty: PuzzleDifficulty, lessonId: strin
   const phase = phaseParam === undefined && archived?.kind === "boss"
     ? Math.max(0, archived.puzzleIds.findIndex(id => !progress.completedPuzzleIds?.includes(id))) : Number(phaseParam ?? 0);
   if (!Number.isSafeInteger(phase) || phase < 0) return null;
-  const level = archived?.kind === "boss" ? lesson.levels.find(l => l.puzzleIds[0] === archived.puzzleIds[phase])
+  let level = archived?.kind === "boss" ? lesson.levels.find(l => l.puzzleIds[0] === archived.puzzleIds[phase])
     : phase === 0 ? lesson.levels.find(l => l.id === levelId) : undefined;
+  const run = progress.challengeAttempt;
+  if (level && run?.puzzleIds?.includes(level.puzzleIds[0])) {
+    if (run.status === "expired") level = lesson.levels.find(item => item.id === run.levelId);
+    else if (run.status === "active") level = lesson.levels.find(item => item.puzzleIds.includes(run.puzzleId));
+  }
   if (!level || getPathStepState(lesson, level, progress) === "locked") return null;
   return { lesson, level, phase: 0 };
 }
@@ -102,13 +116,22 @@ export function getPathEntry(lesson: LearningLesson, progress: PathProgress) {
   if (!isPathAvailable(lesson, progress)) return;
   const active = progress.challengeAttempt;
   const running = active?.status === "active" && (active.mode === "untimed" || active.deadlineAt > Date.now())
-    ? lesson.levels.find(level => level.id === active.levelId) : undefined;
+    ? lesson.levels.find(level => level.puzzleIds.includes(active.puzzleId)) : undefined;
   const level = running ?? lesson.levels.find(level => getPathStepState(lesson, level, progress) === "current") ?? lesson.levels[0];
   const count = getPathProgress(lesson, progress);
   return { lesson, level, replay: !running && count.solved === count.total };
 }
 
-/** A level is one ten-puzzle session. Its final puzzle returns to the topic path. */
+/** The next numbered level stays on the same topic and respects saved unlocks. */
+export function getNextPathLevel(lesson: LearningLesson, progress: PathProgress) {
+  if (!getPathProgress(lesson, progress).complete) return;
+  const track = getTopicPaths(lesson.difficulty, lesson.topicId);
+  const index = track.findIndex(item => item.id === lesson.id);
+  const next = index >= 0 ? track[index + 1] : undefined;
+  return next ? getPathEntry(next, progress) : undefined;
+}
+
+/** A level is one ten-puzzle session. Continue its unfinished puzzles first. */
 export function getNextPathStep(lesson: LearningLesson, level: LearningLevel, progress: PathProgress, replay = false) {
   const index = lesson.levels.findIndex(l => l.id === level.id);
   if (index < 0) return;

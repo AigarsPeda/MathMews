@@ -41,9 +41,11 @@ For in-app purchases, use an [EAS development build](https://docs.expo.dev/devel
 ## Puzzle learning
 
 Choose a difficulty, topic, lesson and puzzle. Each topic has independent progress.
-The catalog has 180 lessons and 1,800 puzzles per language in English, Latvian and Russian, including 180
-checkpointed boss missions and 180 optional timed challenges. Bosses count toward
-lesson completion but never block the next lesson or another topic. Three shared
+The catalog has 330 lessons and 3,300 puzzles per language in English, Latvian and Russian.
+Each difficulty includes Time and schedules, Data and graphs, Shapes and spatial
+reasoning, Money and shopping, and Capacity and volume, with ten lessons per topic.
+Lessons use ten-step paths, with a timed or untimed final stretch starting at step eight.
+The original 180 story missions remain in the achievement catalog. Three shared
 lives limit scored mistakes. Learn with the cat remains available at zero lives,
 with free supported exercises and no currency or completion rewards. The current
 content revisions preserve existing puzzle IDs and earned progress.

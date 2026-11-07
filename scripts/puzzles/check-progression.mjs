@@ -13,10 +13,15 @@ export function checkProgression({ load }) {
   const catalog = read('data/puzzle-curriculum.json'), extras = read('data/puzzle-path-extras.json');
   const tiers = ['easy', 'medium', 'hard'];
   const english = tiers.map(d => readPuzzles('en', d));
-  const manifest = { version: catalog.version, lessons: catalog.lessons.map(l => ({ id: l.id, difficulty: l.difficulty,
+  const newTopics = new Set(['time', 'data', 'spatial', 'money', 'capacity']);
+  const originalLessons = catalog.lessons.filter(l => !newTopics.has(l.topicId));
+  const originalPuzzles = english.map(list => list.filter(p => !newTopics.has(p.topic)));
+  assert.equal(originalLessons.length, 180, 'Keep every original lesson');
+  assert.equal(originalPuzzles.flat().length, 1800, 'Keep every original puzzle');
+  const manifest = { version: catalog.version, lessons: originalLessons.map(l => ({ id: l.id, difficulty: l.difficulty,
     topicId: l.topicId, skillId: l.skillId, prerequisiteSkillIds: l.prerequisiteSkillIds,
     levels: l.levels.map(v => ({ id: v.id, kind: v.kind, timeLimitSeconds: v.timeLimitSeconds, puzzleIds: v.puzzleIds })) })),
-  extras, puzzles: english.map(list => list.map(p => ({ id: p.id, difficulty: p.difficulty, ageRange: p.ageRange, skillId: p.learning.skillId }))) };
+  extras: Object.fromEntries(originalLessons.map(l => [l.id, extras[l.id]])), puzzles: originalPuzzles.map(list => list.map(p => ({ id: p.id, difficulty: p.difficulty, ageRange: p.ageRange, skillId: p.learning.skillId }))) };
   // Captured before these content revisions. Deliberate future ID changes need a migration review.
   assert.equal(createHash('sha256').update(JSON.stringify(manifest)).digest('hex'),
     '0608f92a590db8ab572dcac746e99f1a7a15c8d4b607e28531c2de2184c1e588',

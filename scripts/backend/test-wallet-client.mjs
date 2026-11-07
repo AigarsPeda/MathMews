@@ -36,7 +36,7 @@ function harness({dev=true,environment='production'}={}) {
       if(failAfterDebit) {failAfterDebit=false;offline=true;return {error:{message:'Connection interrupted'}};}
       return {data:order};
     }
-    if(name==='claim_puzzle_coins' && !rewarded.has(args.p_attempt_id)){rewarded.add(args.p_attempt_id);coinBalance+=25;revision++;}
+    if(['claim_puzzle_coins','claim_timed_challenge_coins'].includes(name) && !rewarded.has(args.p_attempt_id)){rewarded.add(args.p_attempt_id);coinBalance+=25;revision++;}
     if(name==='get_my_game_delivery') return {data:{wallet:wallet(),orders:orders.filter(o=>o.request_payload.save_id===args.p_save_id)}};
     return {data:wallet()};
   },from:()=>{const query={select:()=>query,eq:()=>query,order:()=>query,limit:async()=>({data:[...entries].reverse()})};return query;}};
@@ -68,6 +68,20 @@ function harness({dev=true,environment='production'}={}) {
     reconnect:()=>reconnect(),setSave(next){save=next;},setOffline(value=true){offline=value;},rejectWith(error){forcedRejection=error;},failSettlementSave(){failSettlementSave=true;},pauseWallet(){let release;walletGate=new Promise(resolve=>{release=resolve;});return release;},
     disconnectAfterDebit(){failAfterDebit=true;},disableRecoveryQueue(){queueUnavailable=true;},adjust(amount){coinBalance=amount;revision++;},setAuthUser(id){authUser=id;},setStorePrice(price){storePrice=price;}};
 }
+
+test('a completed timed run queues one durable aggregate payout and survives reconnect',async()=>{
+  const h=harness();await h.api.refresh();h.setOffline(true);
+  h.setSave({...h.save,pendingCoinRewards:[{userId:'account-a',environment:'sandbox',puzzleId:'last-puzzle',
+    challengeLevelId:'timed-start',attemptId:'timed-run-1',amount:25,at:1}]});
+  await h.api.refresh();
+  assert.equal(h.save.pendingCoinRewards.length,1);
+  h.setOffline(false);await h.api.refresh();
+  const claim=h.calls.find(call=>call.name==='claim_timed_challenge_coins');
+  assert.deepEqual(JSON.parse(JSON.stringify(claim.args)),{p_environment:'sandbox',p_level_id:'timed-start',p_attempt_id:'timed-run-1'});
+  assert.equal(h.save.pendingCoinRewards.length,0);
+  assert.equal(h.balance,525);
+  await h.api.refresh();assert.equal(h.balance,525,'Refreshing cannot pay the same run twice');
+});
 
 test('ambiguous purchase is retried with the persisted ID and delivers once after restart/refresh',async()=>{
   const h=harness();h.setStorePrice(12);await h.load('@/services/store-catalog').refreshStoreCatalog();h.disconnectAfterDebit();
