@@ -29529,8 +29529,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "04:00 → 05:00: 60 min = 1 h.",
-      "lv": "04:00 → 05:00: 60 min = 1 h.",
+      "en": "Elapsed time: 04:00 → 05:00: 60 min = 1 h.",
+      "lv": "Pagājušais laiks: 04:00 → 05:00: 60 min = 1 h.",
       "ru": "04:00 → 05:00: 60 мин = 1 ч."
     },
     "choices": [
@@ -29563,8 +29563,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n10:00 → 12:00: 120 min = 2 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n10:00 → 12:00: 120 min = 2 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 10:00 → 12:00: 120 min = 2 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 10:00 → 12:00: 120 min = 2 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n10:00 → 12:00: 120 мин = 2 ч."
         }
       }
@@ -29599,8 +29599,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "05:00 → 07:00: 120 min = 2 h.",
-      "lv": "05:00 → 07:00: 120 min = 2 h.",
+      "en": "Elapsed time: 05:00 → 07:00: 120 min = 2 h.",
+      "lv": "Pagājušais laiks: 05:00 → 07:00: 120 min = 2 h.",
       "ru": "05:00 → 07:00: 120 мин = 2 ч."
     },
     "choices": [
@@ -29633,8 +29633,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n11:00 → 14:00: 180 min = 3 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n11:00 → 14:00: 180 min = 3 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 11:00 → 14:00: 180 min = 3 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 11:00 → 14:00: 180 min = 3 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n11:00 → 14:00: 180 мин = 3 ч."
         }
       }
@@ -29669,8 +29669,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "06:00 → 09:00: 180 min = 3 h.",
-      "lv": "06:00 → 09:00: 180 min = 3 h.",
+      "en": "Elapsed time: 06:00 → 09:00: 180 min = 3 h.",
+      "lv": "Pagājušais laiks: 06:00 → 09:00: 180 min = 3 h.",
       "ru": "06:00 → 09:00: 180 мин = 3 ч."
     },
     "choices": [
@@ -29703,8 +29703,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n01:00 → 02:00: 60 min = 1 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n01:00 → 02:00: 60 min = 1 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 01:00 → 02:00: 60 min = 1 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 01:00 → 02:00: 60 min = 1 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n01:00 → 02:00: 60 мин = 1 ч."
         }
       }
@@ -29739,8 +29739,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "07:00 → 08:00: 60 min = 1 h.",
-      "lv": "07:00 → 08:00: 60 min = 1 h.",
+      "en": "Elapsed time: 07:00 → 08:00: 60 min = 1 h.",
+      "lv": "Pagājušais laiks: 07:00 → 08:00: 60 min = 1 h.",
       "ru": "07:00 → 08:00: 60 мин = 1 ч."
     },
     "choices": [
@@ -29773,8 +29773,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n02:00 → 04:00: 120 min = 2 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n02:00 → 04:00: 120 min = 2 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 02:00 → 04:00: 120 min = 2 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 02:00 → 04:00: 120 min = 2 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n02:00 → 04:00: 120 мин = 2 ч."
         }
       }
@@ -29809,8 +29809,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "08:00 → 10:00: 120 min = 2 h.",
-      "lv": "08:00 → 10:00: 120 min = 2 h.",
+      "en": "Elapsed time: 08:00 → 10:00: 120 min = 2 h.",
+      "lv": "Pagājušais laiks: 08:00 → 10:00: 120 min = 2 h.",
       "ru": "08:00 → 10:00: 120 мин = 2 ч."
     },
     "choices": [
@@ -29843,8 +29843,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n03:00 → 06:00: 180 min = 3 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n03:00 → 06:00: 180 min = 3 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 03:00 → 06:00: 180 min = 3 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 03:00 → 06:00: 180 min = 3 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n03:00 → 06:00: 180 мин = 3 ч."
         }
       }
@@ -29879,8 +29879,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "09:00 → 12:00: 180 min = 3 h.",
-      "lv": "09:00 → 12:00: 180 min = 3 h.",
+      "en": "Elapsed time: 09:00 → 12:00: 180 min = 3 h.",
+      "lv": "Pagājušais laiks: 09:00 → 12:00: 180 min = 3 h.",
       "ru": "09:00 → 12:00: 180 мин = 3 ч."
     },
     "choices": [
@@ -29913,8 +29913,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n04:00 → 05:00: 60 min = 1 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n04:00 → 05:00: 60 min = 1 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 04:00 → 05:00: 60 min = 1 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 04:00 → 05:00: 60 min = 1 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n04:00 → 05:00: 60 мин = 1 ч."
         }
       }
@@ -29949,8 +29949,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "10:00 → 11:00: 60 min = 1 h.",
-      "lv": "10:00 → 11:00: 60 min = 1 h.",
+      "en": "Elapsed time: 10:00 → 11:00: 60 min = 1 h.",
+      "lv": "Pagājušais laiks: 10:00 → 11:00: 60 min = 1 h.",
       "ru": "10:00 → 11:00: 60 мин = 1 ч."
     },
     "choices": [
@@ -29983,8 +29983,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n05:00 → 07:00: 120 min = 2 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n05:00 → 07:00: 120 min = 2 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 05:00 → 07:00: 120 min = 2 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 05:00 → 07:00: 120 min = 2 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n05:00 → 07:00: 120 мин = 2 ч."
         }
       }
@@ -30019,8 +30019,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "11:00 → 13:00: 120 min = 2 h.",
-      "lv": "11:00 → 13:00: 120 min = 2 h.",
+      "en": "Elapsed time: 11:00 → 13:00: 120 min = 2 h.",
+      "lv": "Pagājušais laiks: 11:00 → 13:00: 120 min = 2 h.",
       "ru": "11:00 → 13:00: 120 мин = 2 ч."
     },
     "choices": [
@@ -30053,8 +30053,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n06:00 → 09:00: 180 min = 3 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n06:00 → 09:00: 180 min = 3 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 06:00 → 09:00: 180 min = 3 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 06:00 → 09:00: 180 min = 3 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n06:00 → 09:00: 180 мин = 3 ч."
         }
       }
@@ -30089,8 +30089,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "01:00 → 04:00: 180 min = 3 h.",
-      "lv": "01:00 → 04:00: 180 min = 3 h.",
+      "en": "Elapsed time: 01:00 → 04:00: 180 min = 3 h.",
+      "lv": "Pagājušais laiks: 01:00 → 04:00: 180 min = 3 h.",
       "ru": "01:00 → 04:00: 180 мин = 3 ч."
     },
     "choices": [
@@ -30123,8 +30123,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n07:00 → 08:00: 60 min = 1 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n07:00 → 08:00: 60 min = 1 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 07:00 → 08:00: 60 min = 1 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 07:00 → 08:00: 60 min = 1 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n07:00 → 08:00: 60 мин = 1 ч."
         }
       }
@@ -30159,8 +30159,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "02:00 → 03:00: 60 min = 1 h.",
-      "lv": "02:00 → 03:00: 60 min = 1 h.",
+      "en": "Elapsed time: 02:00 → 03:00: 60 min = 1 h.",
+      "lv": "Pagājušais laiks: 02:00 → 03:00: 60 min = 1 h.",
       "ru": "02:00 → 03:00: 60 мин = 1 ч."
     },
     "choices": [
@@ -30193,8 +30193,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n08:00 → 10:00: 120 min = 2 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n08:00 → 10:00: 120 min = 2 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 08:00 → 10:00: 120 min = 2 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 08:00 → 10:00: 120 min = 2 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n08:00 → 10:00: 120 мин = 2 ч."
         }
       }
@@ -30229,8 +30229,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "10:00 → 13:00: 180 min = 3 h.",
-      "lv": "10:00 → 13:00: 180 min = 3 h.",
+      "en": "Elapsed time: 10:00 → 13:00: 180 min = 3 h.",
+      "lv": "Pagājušais laiks: 10:00 → 13:00: 180 min = 3 h.",
       "ru": "10:00 → 13:00: 180 мин = 3 ч."
     },
     "choices": [
@@ -30263,8 +30263,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n05:00 → 06:00: 60 min = 1 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n05:00 → 06:00: 60 min = 1 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 05:00 → 06:00: 60 min = 1 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 05:00 → 06:00: 60 min = 1 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n05:00 → 06:00: 60 мин = 1 ч."
         }
       }
@@ -30299,8 +30299,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "11:00 → 12:00: 60 min = 1 h.",
-      "lv": "11:00 → 12:00: 60 min = 1 h.",
+      "en": "Elapsed time: 11:00 → 12:00: 60 min = 1 h.",
+      "lv": "Pagājušais laiks: 11:00 → 12:00: 60 min = 1 h.",
       "ru": "11:00 → 12:00: 60 мин = 1 ч."
     },
     "choices": [
@@ -30333,8 +30333,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n06:00 → 08:00: 120 min = 2 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n06:00 → 08:00: 120 min = 2 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 06:00 → 08:00: 120 min = 2 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 06:00 → 08:00: 120 min = 2 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n06:00 → 08:00: 120 мин = 2 ч."
         }
       }
@@ -30369,8 +30369,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "01:00 → 03:00: 120 min = 2 h.",
-      "lv": "01:00 → 03:00: 120 min = 2 h.",
+      "en": "Elapsed time: 01:00 → 03:00: 120 min = 2 h.",
+      "lv": "Pagājušais laiks: 01:00 → 03:00: 120 min = 2 h.",
       "ru": "01:00 → 03:00: 120 мин = 2 ч."
     },
     "choices": [
@@ -30403,8 +30403,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n07:00 → 10:00: 180 min = 3 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n07:00 → 10:00: 180 min = 3 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 07:00 → 10:00: 180 min = 3 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 07:00 → 10:00: 180 min = 3 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n07:00 → 10:00: 180 мин = 3 ч."
         }
       }
@@ -30439,8 +30439,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "02:00 → 05:00: 180 min = 3 h.",
-      "lv": "02:00 → 05:00: 180 min = 3 h.",
+      "en": "Elapsed time: 02:00 → 05:00: 180 min = 3 h.",
+      "lv": "Pagājušais laiks: 02:00 → 05:00: 180 min = 3 h.",
       "ru": "02:00 → 05:00: 180 мин = 3 ч."
     },
     "choices": [
@@ -30473,8 +30473,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n08:00 → 09:00: 60 min = 1 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n08:00 → 09:00: 60 min = 1 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 08:00 → 09:00: 60 min = 1 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 08:00 → 09:00: 60 min = 1 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n08:00 → 09:00: 60 мин = 1 ч."
         }
       }
@@ -30509,8 +30509,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "03:00 → 04:00: 60 min = 1 h.",
-      "lv": "03:00 → 04:00: 60 min = 1 h.",
+      "en": "Elapsed time: 03:00 → 04:00: 60 min = 1 h.",
+      "lv": "Pagājušais laiks: 03:00 → 04:00: 60 min = 1 h.",
       "ru": "03:00 → 04:00: 60 мин = 1 ч."
     },
     "choices": [
@@ -30543,8 +30543,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n09:00 → 11:00: 120 min = 2 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n09:00 → 11:00: 120 min = 2 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 09:00 → 11:00: 120 min = 2 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 09:00 → 11:00: 120 min = 2 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n09:00 → 11:00: 120 мин = 2 ч."
         }
       }
@@ -30579,8 +30579,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "04:00 → 06:00: 120 min = 2 h.",
-      "lv": "04:00 → 06:00: 120 min = 2 h.",
+      "en": "Elapsed time: 04:00 → 06:00: 120 min = 2 h.",
+      "lv": "Pagājušais laiks: 04:00 → 06:00: 120 min = 2 h.",
       "ru": "04:00 → 06:00: 120 мин = 2 ч."
     },
     "choices": [
@@ -30613,8 +30613,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n10:00 → 13:00: 180 min = 3 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n10:00 → 13:00: 180 min = 3 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 10:00 → 13:00: 180 min = 3 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 10:00 → 13:00: 180 min = 3 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n10:00 → 13:00: 180 мин = 3 ч."
         }
       }
@@ -30649,8 +30649,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "05:00 → 08:00: 180 min = 3 h.",
-      "lv": "05:00 → 08:00: 180 min = 3 h.",
+      "en": "Elapsed time: 05:00 → 08:00: 180 min = 3 h.",
+      "lv": "Pagājušais laiks: 05:00 → 08:00: 180 min = 3 h.",
       "ru": "05:00 → 08:00: 180 мин = 3 ч."
     },
     "choices": [
@@ -30683,8 +30683,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n11:00 → 12:00: 60 min = 1 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n11:00 → 12:00: 60 min = 1 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 11:00 → 12:00: 60 min = 1 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 11:00 → 12:00: 60 min = 1 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n11:00 → 12:00: 60 мин = 1 ч."
         }
       }
@@ -30719,8 +30719,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "06:00 → 07:00: 60 min = 1 h.",
-      "lv": "06:00 → 07:00: 60 min = 1 h.",
+      "en": "Elapsed time: 06:00 → 07:00: 60 min = 1 h.",
+      "lv": "Pagājušais laiks: 06:00 → 07:00: 60 min = 1 h.",
       "ru": "06:00 → 07:00: 60 мин = 1 ч."
     },
     "choices": [
@@ -30753,8 +30753,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n01:00 → 03:00: 120 min = 2 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n01:00 → 03:00: 120 min = 2 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 01:00 → 03:00: 120 min = 2 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 01:00 → 03:00: 120 min = 2 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n01:00 → 03:00: 120 мин = 2 ч."
         }
       }
@@ -30789,8 +30789,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "07:00 → 09:00: 120 min = 2 h.",
-      "lv": "07:00 → 09:00: 120 min = 2 h.",
+      "en": "Elapsed time: 07:00 → 09:00: 120 min = 2 h.",
+      "lv": "Pagājušais laiks: 07:00 → 09:00: 120 min = 2 h.",
       "ru": "07:00 → 09:00: 120 мин = 2 ч."
     },
     "choices": [
@@ -30823,8 +30823,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n02:00 → 05:00: 180 min = 3 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n02:00 → 05:00: 180 min = 3 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 02:00 → 05:00: 180 min = 3 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 02:00 → 05:00: 180 min = 3 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n02:00 → 05:00: 180 мин = 3 ч."
         }
       }
@@ -30859,8 +30859,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "08:00 → 11:00: 180 min = 3 h.",
-      "lv": "08:00 → 11:00: 180 min = 3 h.",
+      "en": "Elapsed time: 08:00 → 11:00: 180 min = 3 h.",
+      "lv": "Pagājušais laiks: 08:00 → 11:00: 180 min = 3 h.",
       "ru": "08:00 → 11:00: 180 мин = 3 ч."
     },
     "choices": [
@@ -30893,8 +30893,8 @@
           "ru": "Сколько часов проходит между этими моментами?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n03:00 → 04:00: 60 min = 1 h.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n03:00 → 04:00: 60 min = 1 h.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nElapsed time: 03:00 → 04:00: 60 min = 1 h.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nPagājušais laiks: 03:00 → 04:00: 60 min = 1 h.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n03:00 → 04:00: 60 мин = 1 ч."
         }
       }
@@ -30929,8 +30929,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "05:00 + 120 min → 07:00.",
-      "lv": "05:00 + 120 min → 07:00.",
+      "en": "Finish time: 05:00 + 120 min → 07:00.",
+      "lv": "Beigu laiks: 05:00 + 120 min → 07:00.",
       "ru": "05:00 + 120 мин → 07:00."
     },
     "choices": [
@@ -30963,8 +30963,8 @@
           "ru": "Начни в указанное время. Занятие длится 180 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n11:00 + 180 min → 14:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n11:00 + 180 min → 14:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 11:00 + 180 min → 14:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 11:00 + 180 min → 14:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n11:00 + 180 мин → 14:00."
         }
       }
@@ -30999,8 +30999,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "06:00 + 180 min → 09:00.",
-      "lv": "06:00 + 180 min → 09:00.",
+      "en": "Finish time: 06:00 + 180 min → 09:00.",
+      "lv": "Beigu laiks: 06:00 + 180 min → 09:00.",
       "ru": "06:00 + 180 мин → 09:00."
     },
     "choices": [
@@ -31033,8 +31033,8 @@
           "ru": "Начни в указанное время. Занятие длится 60 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n01:00 + 60 min → 02:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n01:00 + 60 min → 02:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 01:00 + 60 min → 02:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 01:00 + 60 min → 02:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n01:00 + 60 мин → 02:00."
         }
       }
@@ -31069,8 +31069,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "07:00 + 60 min → 08:00.",
-      "lv": "07:00 + 60 min → 08:00.",
+      "en": "Finish time: 07:00 + 60 min → 08:00.",
+      "lv": "Beigu laiks: 07:00 + 60 min → 08:00.",
       "ru": "07:00 + 60 мин → 08:00."
     },
     "choices": [
@@ -31103,8 +31103,8 @@
           "ru": "Начни в указанное время. Занятие длится 120 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n02:00 + 120 min → 04:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n02:00 + 120 min → 04:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 02:00 + 120 min → 04:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 02:00 + 120 min → 04:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n02:00 + 120 мин → 04:00."
         }
       }
@@ -31139,8 +31139,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "08:00 + 120 min → 10:00.",
-      "lv": "08:00 + 120 min → 10:00.",
+      "en": "Finish time: 08:00 + 120 min → 10:00.",
+      "lv": "Beigu laiks: 08:00 + 120 min → 10:00.",
       "ru": "08:00 + 120 мин → 10:00."
     },
     "choices": [
@@ -31173,8 +31173,8 @@
           "ru": "Начни в указанное время. Занятие длится 180 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n03:00 + 180 min → 06:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n03:00 + 180 min → 06:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 03:00 + 180 min → 06:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 03:00 + 180 min → 06:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n03:00 + 180 мин → 06:00."
         }
       }
@@ -31209,8 +31209,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "09:00 + 180 min → 12:00.",
-      "lv": "09:00 + 180 min → 12:00.",
+      "en": "Finish time: 09:00 + 180 min → 12:00.",
+      "lv": "Beigu laiks: 09:00 + 180 min → 12:00.",
       "ru": "09:00 + 180 мин → 12:00."
     },
     "choices": [
@@ -31243,8 +31243,8 @@
           "ru": "Начни в указанное время. Занятие длится 60 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n04:00 + 60 min → 05:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n04:00 + 60 min → 05:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 04:00 + 60 min → 05:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 04:00 + 60 min → 05:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n04:00 + 60 мин → 05:00."
         }
       }
@@ -31279,8 +31279,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "10:00 + 60 min → 11:00.",
-      "lv": "10:00 + 60 min → 11:00.",
+      "en": "Finish time: 10:00 + 60 min → 11:00.",
+      "lv": "Beigu laiks: 10:00 + 60 min → 11:00.",
       "ru": "10:00 + 60 мин → 11:00."
     },
     "choices": [
@@ -31313,8 +31313,8 @@
           "ru": "Начни в указанное время. Занятие длится 120 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n05:00 + 120 min → 07:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n05:00 + 120 min → 07:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 05:00 + 120 min → 07:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 05:00 + 120 min → 07:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n05:00 + 120 мин → 07:00."
         }
       }
@@ -31349,8 +31349,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "11:00 + 120 min → 13:00.",
-      "lv": "11:00 + 120 min → 13:00.",
+      "en": "Finish time: 11:00 + 120 min → 13:00.",
+      "lv": "Beigu laiks: 11:00 + 120 min → 13:00.",
       "ru": "11:00 + 120 мин → 13:00."
     },
     "choices": [
@@ -31383,8 +31383,8 @@
           "ru": "Начни в указанное время. Занятие длится 180 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n06:00 + 180 min → 09:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n06:00 + 180 min → 09:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 06:00 + 180 min → 09:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 06:00 + 180 min → 09:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n06:00 + 180 мин → 09:00."
         }
       }
@@ -31419,8 +31419,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "01:00 + 180 min → 04:00.",
-      "lv": "01:00 + 180 min → 04:00.",
+      "en": "Finish time: 01:00 + 180 min → 04:00.",
+      "lv": "Beigu laiks: 01:00 + 180 min → 04:00.",
       "ru": "01:00 + 180 мин → 04:00."
     },
     "choices": [
@@ -31453,8 +31453,8 @@
           "ru": "Начни в указанное время. Занятие длится 60 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n07:00 + 60 min → 08:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n07:00 + 60 min → 08:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 07:00 + 60 min → 08:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 07:00 + 60 min → 08:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n07:00 + 60 мин → 08:00."
         }
       }
@@ -31489,8 +31489,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "02:00 + 60 min → 03:00.",
-      "lv": "02:00 + 60 min → 03:00.",
+      "en": "Finish time: 02:00 + 60 min → 03:00.",
+      "lv": "Beigu laiks: 02:00 + 60 min → 03:00.",
       "ru": "02:00 + 60 мин → 03:00."
     },
     "choices": [
@@ -31523,8 +31523,8 @@
           "ru": "Начни в указанное время. Занятие длится 120 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n08:00 + 120 min → 10:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n08:00 + 120 min → 10:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 08:00 + 120 min → 10:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 08:00 + 120 min → 10:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n08:00 + 120 мин → 10:00."
         }
       }
@@ -31559,8 +31559,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "03:00 + 120 min → 05:00.",
-      "lv": "03:00 + 120 min → 05:00.",
+      "en": "Finish time: 03:00 + 120 min → 05:00.",
+      "lv": "Beigu laiks: 03:00 + 120 min → 05:00.",
       "ru": "03:00 + 120 мин → 05:00."
     },
     "choices": [
@@ -31593,8 +31593,8 @@
           "ru": "Начни в указанное время. Занятие длится 180 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n09:00 + 180 min → 12:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n09:00 + 180 min → 12:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 09:00 + 180 min → 12:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 09:00 + 180 min → 12:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n09:00 + 180 мин → 12:00."
         }
       }
@@ -31629,8 +31629,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "11:00 + 60 min → 12:00.",
-      "lv": "11:00 + 60 min → 12:00.",
+      "en": "Finish time: 11:00 + 60 min → 12:00.",
+      "lv": "Beigu laiks: 11:00 + 60 min → 12:00.",
       "ru": "11:00 + 60 мин → 12:00."
     },
     "choices": [
@@ -31663,8 +31663,8 @@
           "ru": "Начни в указанное время. Занятие длится 120 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n06:00 + 120 min → 08:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n06:00 + 120 min → 08:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 06:00 + 120 min → 08:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 06:00 + 120 min → 08:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n06:00 + 120 мин → 08:00."
         }
       }
@@ -31699,8 +31699,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "01:00 + 120 min → 03:00.",
-      "lv": "01:00 + 120 min → 03:00.",
+      "en": "Finish time: 01:00 + 120 min → 03:00.",
+      "lv": "Beigu laiks: 01:00 + 120 min → 03:00.",
       "ru": "01:00 + 120 мин → 03:00."
     },
     "choices": [
@@ -31733,8 +31733,8 @@
           "ru": "Начни в указанное время. Занятие длится 180 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n07:00 + 180 min → 10:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n07:00 + 180 min → 10:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 07:00 + 180 min → 10:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 07:00 + 180 min → 10:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n07:00 + 180 мин → 10:00."
         }
       }
@@ -31769,8 +31769,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "02:00 + 180 min → 05:00.",
-      "lv": "02:00 + 180 min → 05:00.",
+      "en": "Finish time: 02:00 + 180 min → 05:00.",
+      "lv": "Beigu laiks: 02:00 + 180 min → 05:00.",
       "ru": "02:00 + 180 мин → 05:00."
     },
     "choices": [
@@ -31803,8 +31803,8 @@
           "ru": "Начни в указанное время. Занятие длится 60 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n08:00 + 60 min → 09:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n08:00 + 60 min → 09:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 08:00 + 60 min → 09:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 08:00 + 60 min → 09:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n08:00 + 60 мин → 09:00."
         }
       }
@@ -31839,8 +31839,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "03:00 + 60 min → 04:00.",
-      "lv": "03:00 + 60 min → 04:00.",
+      "en": "Finish time: 03:00 + 60 min → 04:00.",
+      "lv": "Beigu laiks: 03:00 + 60 min → 04:00.",
       "ru": "03:00 + 60 мин → 04:00."
     },
     "choices": [
@@ -31873,8 +31873,8 @@
           "ru": "Начни в указанное время. Занятие длится 120 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n09:00 + 120 min → 11:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n09:00 + 120 min → 11:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 09:00 + 120 min → 11:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 09:00 + 120 min → 11:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n09:00 + 120 мин → 11:00."
         }
       }
@@ -31909,8 +31909,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "04:00 + 120 min → 06:00.",
-      "lv": "04:00 + 120 min → 06:00.",
+      "en": "Finish time: 04:00 + 120 min → 06:00.",
+      "lv": "Beigu laiks: 04:00 + 120 min → 06:00.",
       "ru": "04:00 + 120 мин → 06:00."
     },
     "choices": [
@@ -31943,8 +31943,8 @@
           "ru": "Начни в указанное время. Занятие длится 180 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n10:00 + 180 min → 13:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n10:00 + 180 min → 13:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 10:00 + 180 min → 13:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 10:00 + 180 min → 13:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n10:00 + 180 мин → 13:00."
         }
       }
@@ -31979,8 +31979,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "05:00 + 180 min → 08:00.",
-      "lv": "05:00 + 180 min → 08:00.",
+      "en": "Finish time: 05:00 + 180 min → 08:00.",
+      "lv": "Beigu laiks: 05:00 + 180 min → 08:00.",
       "ru": "05:00 + 180 мин → 08:00."
     },
     "choices": [
@@ -32013,8 +32013,8 @@
           "ru": "Начни в указанное время. Занятие длится 60 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n11:00 + 60 min → 12:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n11:00 + 60 min → 12:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 11:00 + 60 min → 12:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 11:00 + 60 min → 12:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n11:00 + 60 мин → 12:00."
         }
       }
@@ -32049,8 +32049,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "06:00 + 60 min → 07:00.",
-      "lv": "06:00 + 60 min → 07:00.",
+      "en": "Finish time: 06:00 + 60 min → 07:00.",
+      "lv": "Beigu laiks: 06:00 + 60 min → 07:00.",
       "ru": "06:00 + 60 мин → 07:00."
     },
     "choices": [
@@ -32083,8 +32083,8 @@
           "ru": "Начни в указанное время. Занятие длится 120 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n01:00 + 120 min → 03:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n01:00 + 120 min → 03:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 01:00 + 120 min → 03:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 01:00 + 120 min → 03:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n01:00 + 120 мин → 03:00."
         }
       }
@@ -32119,8 +32119,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "07:00 + 120 min → 09:00.",
-      "lv": "07:00 + 120 min → 09:00.",
+      "en": "Finish time: 07:00 + 120 min → 09:00.",
+      "lv": "Beigu laiks: 07:00 + 120 min → 09:00.",
       "ru": "07:00 + 120 мин → 09:00."
     },
     "choices": [
@@ -32153,8 +32153,8 @@
           "ru": "Начни в указанное время. Занятие длится 180 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n02:00 + 180 min → 05:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n02:00 + 180 min → 05:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 02:00 + 180 min → 05:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 02:00 + 180 min → 05:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n02:00 + 180 мин → 05:00."
         }
       }
@@ -32189,8 +32189,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "08:00 + 180 min → 11:00.",
-      "lv": "08:00 + 180 min → 11:00.",
+      "en": "Finish time: 08:00 + 180 min → 11:00.",
+      "lv": "Beigu laiks: 08:00 + 180 min → 11:00.",
       "ru": "08:00 + 180 мин → 11:00."
     },
     "choices": [
@@ -32223,8 +32223,8 @@
           "ru": "Начни в указанное время. Занятие длится 60 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n03:00 + 60 min → 04:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n03:00 + 60 min → 04:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 03:00 + 60 min → 04:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 03:00 + 60 min → 04:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n03:00 + 60 мин → 04:00."
         }
       }
@@ -32259,8 +32259,8 @@
       "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени."
     },
     "explanation": {
-      "en": "09:00 + 60 min → 10:00.",
-      "lv": "09:00 + 60 min → 10:00.",
+      "en": "Finish time: 09:00 + 60 min → 10:00.",
+      "lv": "Beigu laiks: 09:00 + 60 min → 10:00.",
       "ru": "09:00 + 60 мин → 10:00."
     },
     "choices": [
@@ -32293,8 +32293,8 @@
           "ru": "Начни в указанное время. Занятие длится 120 минут. Когда оно закончится?"
         },
         "explanation": {
-          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\n04:00 + 120 min → 06:00.",
-          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\n04:00 + 120 min → 06:00.",
+          "en": "The short hand tracks hours; the long hand tracks minutes. One hour is 60 minutes. Count forward or backward from the given time.\n\nFinish time: 04:00 + 120 min → 06:00.",
+          "lv": "Īsais rādītājs rāda stundas, garais — minūtes. Vienā stundā ir 60 minūtes. Skaiti uz priekšu vai atpakaļ no dotā laika.\n\nBeigu laiks: 04:00 + 120 min → 06:00.",
           "ru": "Короткая стрелка показывает часы, длинная — минуты. В часе 60 минут. Отсчитывай вперёд или назад от заданного времени.\n\n04:00 + 120 мин → 06:00."
         }
       }
@@ -66984,6 +66984,2605 @@
       ],
       "role": "review",
       "representation": "capacity",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-1",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. Three groups of cats are coming. How many places do they need altogether?",
+      "lv": "Sagatavo pikniku. Ieradīsies trīs kaķu grupas. Cik vietu kopā vajadzēs?",
+      "ru": "Подготовь пикник. Придут три группы котов. Сколько мест им нужно всего?"
+    },
+    "hint": {
+      "en": "Add all three bars.",
+      "lv": "Saskaiti visus trīs stabiņus.",
+      "ru": "Сложи значения всех трёх столбцов."
+    },
+    "explanation": {
+      "en": "3 + 5 + 2 = 10 places.",
+      "lv": "3 + 5 + 2 = 10 vietas.",
+      "ru": "3 + 5 + 2 = 10 мест."
+    },
+    "choices": [
+      "10",
+      "11",
+      "12"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "bars",
+        "task": "total",
+        "values": [
+          3,
+          5,
+          2
+        ],
+        "step": 1,
+        "index": 0,
+        "subject": "cats",
+        "label": {
+          "en": "Cats in groups A, B and C: 3, 5, 2.",
+          "lv": "Kaķi grupās A, B un C: 3, 5, 2.",
+          "ru": "Коты в группах A, B и C: 3, 5, 2."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "bars",
+          "task": "total",
+          "values": [
+            6,
+            8,
+            5
+          ],
+          "step": 1,
+          "index": 0,
+          "subject": "cats",
+          "label": {
+            "en": "Cats in groups A, B and C: 6, 8, 5.",
+            "lv": "Kaķi grupās A, B un C: 6, 8, 5.",
+            "ru": "Коты в группах A, B и C: 6, 8, 5."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. Three groups of cats are coming. How many places do they need altogether?",
+          "lv": "Sagatavo pikniku. Ieradīsies trīs kaķu grupas. Cik vietu kopā vajadzēs?",
+          "ru": "Подготовь пикник. Придут три группы котов. Сколько мест им нужно всего?"
+        },
+        "explanation": {
+          "en": "Add all three bars.\n\n6 + 8 + 5 = 19 places.",
+          "lv": "Saskaiti visus trīs stabiņus.\n\n6 + 8 + 5 = 19 vietas.",
+          "ru": "Сложи значения всех трёх столбцов.\n\n6 + 8 + 5 = 19 мест."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "practice",
+      "representation": "bars",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-2",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. Buy one of each item. How many euros will you spend?",
+      "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
+      "ru": "Подготовь пикник. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "(2 + 3): 5 euros.",
+      "lv": "(2 + 3): 5 eiro.",
+      "ru": "(2 + 3): 5 евро."
+    },
+    "choices": [
+      "6",
+      "7",
+      "5"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "total",
+        "prices": [
+          200,
+          300
+        ],
+        "quantities": [
+          1,
+          1
+        ],
+        "paid": 700,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "picnic baskets. Prices: €2, €3. Budget: €7. Discount: 0%.",
+          "lv": "piknika grozi. Cenas: €2, €3. Budžets: €7. Atlaide: 0%.",
+          "ru": "корзины для пикника. Цены: €2, €3. Бюджет: €7. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "total",
+          "prices": [
+            500,
+            600
+          ],
+          "quantities": [
+            1,
+            1
+          ],
+          "paid": 1600,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "picnic baskets. Prices: €5, €6. Budget: €16. Discount: 0%.",
+            "lv": "piknika grozi. Cenas: €5, €6. Budžets: €16. Atlaide: 0%.",
+            "ru": "корзины для пикника. Цены: €5, €6. Бюджет: €16. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. Buy one of each item. How many euros will you spend?",
+          "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
+          "ru": "Подготовь пикник. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n(5 + 6): 11 euros.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n(5 + 6): 11 eiro.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n(5 + 6): 11 евро."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "practice",
+      "representation": "money",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-3",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. Start preparing at the time shown. You need 60 minutes. At what time will everything be ready?",
+      "lv": "Sagatavo pikniku. Sāc gatavoties parādītajā laikā. Tev vajag 60 minūtes. Cikos viss būs gatavs?",
+      "ru": "Подготовь пикник. Начни подготовку в указанное время. Тебе нужно 60 минут. Когда всё будет готово?"
+    },
+    "hint": {
+      "en": "Count forward by the preparation time.",
+      "lv": "Skaiti uz priekšu par sagatavošanās ilgumu.",
+      "ru": "Отсчитай время подготовки вперёд."
+    },
+    "explanation": {
+      "en": "10:00 + 60 minutes gives 11:00.",
+      "lv": "10:00 + 60 minūtes dod 11:00.",
+      "ru": "10:00 + 60 минут даёт 11:00."
+    },
+    "choices": [
+      "12:00",
+      "11:00",
+      "11:30"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "clock",
+        "task": "finish",
+        "minutes": 600,
+        "duration": 60,
+        "analog": true,
+        "label": {
+          "en": "Clock: 10:00. Preparation takes 60 minutes.",
+          "lv": "Pulkstenis: 10:00. Sagatavošanās ilgst 60 minūtes.",
+          "ru": "На часах 10:00. Подготовка занимает 60 минут."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "clock",
+          "task": "finish",
+          "minutes": 780,
+          "duration": 60,
+          "analog": true,
+          "label": {
+            "en": "Clock: 13:00. Preparation takes 60 minutes.",
+            "lv": "Pulkstenis: 13:00. Sagatavošanās ilgst 60 minūtes.",
+            "ru": "На часах 13:00. Подготовка занимает 60 минут."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. Start preparing at the time shown. You need 60 minutes. At what time will everything be ready?",
+          "lv": "Sagatavo pikniku. Sāc gatavoties parādītajā laikā. Tev vajag 60 minūtes. Cikos viss būs gatavs?",
+          "ru": "Подготовь пикник. Начни подготовку в указанное время. Тебе нужно 60 минут. Когда всё будет готово?"
+        },
+        "explanation": {
+          "en": "Count forward by the preparation time.\n\n13:00 + 60 minutes gives 14:00.",
+          "lv": "Skaiti uz priekšu par sagatavošanās ilgumu.\n\n13:00 + 60 minūtes dod 14:00.",
+          "ru": "Отсчитай время подготовки вперёд.\n\n13:00 + 60 минут даёт 14:00."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "practice",
+      "representation": "clock",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-4",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. Put one ribbon at every corner of these mats. How many ribbons are needed?",
+      "lv": "Sagatavo pikniku. Pie katra šo paklājiņu stūra pieliec lenti. Cik lenšu vajag?",
+      "ru": "Подготовь пикник. Положи ленту у каждого угла этих ковриков. Сколько лент нужно?"
+    },
+    "hint": {
+      "en": "Count the corners of every mat, then add them.",
+      "lv": "Saskaiti katra paklājiņa stūrus un saskaiti tos kopā.",
+      "ru": "Посчитай углы каждого коврика, затем сложи их."
+    },
+    "explanation": {
+      "en": "4 + 4 = 8 ribbons.",
+      "lv": "4 + 4 = 8 lentes.",
+      "ru": "4 + 4 = 8 лент."
+    },
+    "choices": [
+      "8",
+      "9",
+      "10"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "shapes",
+        "task": "corners",
+        "sides": [
+          4,
+          4
+        ],
+        "rectangle": false,
+        "label": {
+          "en": "Mats for the cats. Sides on each mat: 4, 4.",
+          "lv": "Paklājiņi kaķiem. Malas katram paklājiņam: 4, 4.",
+          "ru": "Коврики для котов. Стороны каждого коврика: 4, 4."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "shapes",
+          "task": "corners",
+          "sides": [
+            4,
+            4,
+            4
+          ],
+          "rectangle": false,
+          "label": {
+            "en": "Mats for the cats. Sides on each mat: 4, 4, 4.",
+            "lv": "Paklājiņi kaķiem. Malas katram paklājiņam: 4, 4, 4.",
+            "ru": "Коврики для котов. Стороны каждого коврика: 4, 4, 4."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. Put one ribbon at every corner of these mats. How many ribbons are needed?",
+          "lv": "Sagatavo pikniku. Pie katra šo paklājiņu stūra pieliec lenti. Cik lenšu vajag?",
+          "ru": "Подготовь пикник. Положи ленту у каждого угла этих ковриков. Сколько лент нужно?"
+        },
+        "explanation": {
+          "en": "Count the corners of every mat, then add them.\n\n4 + 4 + 4 = 12 ribbons.",
+          "lv": "Saskaiti katra paklājiņa stūrus un saskaiti tos kopā.\n\n4 + 4 + 4 = 12 lentes.",
+          "ru": "Посчитай углы каждого коврика, затем сложи их.\n\n4 + 4 + 4 = 12 лент."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "practice",
+      "representation": "shapes",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-5",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. How much water is packed in both containers, in ml?",
+      "lv": "Sagatavo pikniku. Cik ūdens ir abos traukos kopā, ml?",
+      "ru": "Подготовь пикник. Сколько воды в обоих сосудах вместе, мл?"
+    },
+    "hint": {
+      "en": "Add the amounts of water, not the container capacities.",
+      "lv": "Saskaiti ūdens daudzumus, nevis trauku ietilpības.",
+      "ru": "Сложи количество воды, а не вместимость сосудов."
+    },
+    "explanation": {
+      "en": "400 + 200 = 600 ml of water.",
+      "lv": "400 + 200 = 600 ml ūdens.",
+      "ru": "400 + 200 = 600 мл воды."
+    },
+    "choices": [
+      "601",
+      "602",
+      "600"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "capacity",
+        "task": "total",
+        "amounts": [
+          400,
+          200
+        ],
+        "capacities": [
+          500,
+          400
+        ],
+        "portion": 100,
+        "unit": "ml",
+        "label": {
+          "en": "Fresh water for the cats: 400, 200 ml.",
+          "lv": "Svaigs ūdens kaķiem: 400, 200 ml.",
+          "ru": "Свежая вода для котов: 400, 200 мл."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "capacity",
+          "task": "total",
+          "amounts": [
+            700,
+            200
+          ],
+          "capacities": [
+            800,
+            400
+          ],
+          "portion": 100,
+          "unit": "ml",
+          "label": {
+            "en": "Fresh water for the cats: 700, 200 ml.",
+            "lv": "Svaigs ūdens kaķiem: 700, 200 ml.",
+            "ru": "Свежая вода для котов: 700, 200 мл."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. How much water is packed in both containers, in ml?",
+          "lv": "Sagatavo pikniku. Cik ūdens ir abos traukos kopā, ml?",
+          "ru": "Подготовь пикник. Сколько воды в обоих сосудах вместе, мл?"
+        },
+        "explanation": {
+          "en": "Add the amounts of water, not the container capacities.\n\n700 + 200 = 900 ml of water.",
+          "lv": "Saskaiti ūdens daudzumus, nevis trauku ietilpības.\n\n700 + 200 = 900 ml ūdens.",
+          "ru": "Сложи количество воды, а не вместимость сосудов.\n\n700 + 200 = 900 мл воды."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "application",
+      "representation": "capacity",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-6",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. How many more places does group B need than group A?",
+      "lv": "Sagatavo pikniku. Par cik vairāk vietu vajag B grupai nekā A grupai?",
+      "ru": "Подготовь пикник. На сколько больше мест нужно группе B, чем группе A?"
+    },
+    "hint": {
+      "en": "Subtract the smaller group from the larger group.",
+      "lv": "No lielākās grupas atņem mazāko.",
+      "ru": "Вычти меньшую группу из большей."
+    },
+    "explanation": {
+      "en": "5 − 3 = 2 places.",
+      "lv": "5 − 3 = 2 vietas.",
+      "ru": "5 − 3 = 2 мест."
+    },
+    "choices": [
+      "4",
+      "2",
+      "3"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "bars",
+        "task": "difference",
+        "values": [
+          3,
+          5,
+          2
+        ],
+        "step": 1,
+        "index": 0,
+        "subject": "cats",
+        "label": {
+          "en": "Cats in groups A, B and C: 3, 5, 2.",
+          "lv": "Kaķi grupās A, B un C: 3, 5, 2.",
+          "ru": "Коты в группах A, B и C: 3, 5, 2."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "bars",
+          "task": "difference",
+          "values": [
+            6,
+            8,
+            5
+          ],
+          "step": 1,
+          "index": 0,
+          "subject": "cats",
+          "label": {
+            "en": "Cats in groups A, B and C: 6, 8, 5.",
+            "lv": "Kaķi grupās A, B un C: 6, 8, 5.",
+            "ru": "Коты в группах A, B и C: 6, 8, 5."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. How many more places does group B need than group A?",
+          "lv": "Sagatavo pikniku. Par cik vairāk vietu vajag B grupai nekā A grupai?",
+          "ru": "Подготовь пикник. На сколько больше мест нужно группе B, чем группе A?"
+        },
+        "explanation": {
+          "en": "Subtract the smaller group from the larger group.\n\n8 − 6 = 2 places.",
+          "lv": "No lielākās grupas atņem mazāko.\n\n8 − 6 = 2 vietas.",
+          "ru": "Вычти меньшую группу из большей.\n\n8 − 6 = 2 мест."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "application",
+      "representation": "bars",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-7",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. Buy one of each item and pay €7. How many euros should come back as change?",
+      "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €7. Cik eiro saņemsi atlikumā?",
+      "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €7. Сколько евро сдачи нужно получить?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "7 − (2 + 3): 2 euros.",
+      "lv": "7 − (2 + 3): 2 eiro.",
+      "ru": "7 − (2 + 3): 2 евро."
+    },
+    "choices": [
+      "2",
+      "3",
+      "4"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "change",
+        "prices": [
+          200,
+          300
+        ],
+        "quantities": [
+          1,
+          1
+        ],
+        "paid": 700,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "picnic baskets. Prices: €2, €3. Budget: €7. Discount: 0%.",
+          "lv": "piknika grozi. Cenas: €2, €3. Budžets: €7. Atlaide: 0%.",
+          "ru": "корзины для пикника. Цены: €2, €3. Бюджет: €7. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "change",
+          "prices": [
+            500,
+            600
+          ],
+          "quantities": [
+            1,
+            1
+          ],
+          "paid": 1600,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "picnic baskets. Prices: €5, €6. Budget: €16. Discount: 0%.",
+            "lv": "piknika grozi. Cenas: €5, €6. Budžets: €16. Atlaide: 0%.",
+            "ru": "корзины для пикника. Цены: €5, €6. Бюджет: €16. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. Buy one of each item and pay €16. How many euros should come back as change?",
+          "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €16. Cik eiro saņemsi atlikumā?",
+          "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €16. Сколько евро сдачи нужно получить?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n16 − (5 + 6): 5 euros.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n16 − (5 + 6): 5 eiro.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n16 − (5 + 6): 5 евро."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "application",
+      "representation": "money",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-8",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. The cats arrive at the time shown. Preparation takes 60 minutes. When should you start?",
+      "lv": "Sagatavo pikniku. Kaķi ieradīsies parādītajā laikā. Sagatavošanās ilgst 60 minūtes. Cikos jāsāk?",
+      "ru": "Подготовь пикник. Коты придут в указанное время. Подготовка занимает 60 минут. Когда нужно начать?"
+    },
+    "hint": {
+      "en": "Count backward by the preparation time.",
+      "lv": "Skaiti atpakaļ par sagatavošanās ilgumu.",
+      "ru": "Отсчитай время подготовки назад."
+    },
+    "explanation": {
+      "en": "11:00 − 60 minutes gives 10:00.",
+      "lv": "11:00 − 60 minūtes dod 10:00.",
+      "ru": "11:00 − 60 минут даёт 10:00."
+    },
+    "choices": [
+      "10:30",
+      "11:00",
+      "10:00"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "clock",
+        "task": "start",
+        "minutes": 660,
+        "duration": 60,
+        "analog": true,
+        "label": {
+          "en": "Clock: 11:00. Preparation takes 60 minutes.",
+          "lv": "Pulkstenis: 11:00. Sagatavošanās ilgst 60 minūtes.",
+          "ru": "На часах 11:00. Подготовка занимает 60 минут."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "clock",
+          "task": "start",
+          "minutes": 840,
+          "duration": 60,
+          "analog": true,
+          "label": {
+            "en": "Clock: 14:00. Preparation takes 60 minutes.",
+            "lv": "Pulkstenis: 14:00. Sagatavošanās ilgst 60 minūtes.",
+            "ru": "На часах 14:00. Подготовка занимает 60 минут."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. The cats arrive at the time shown. Preparation takes 60 minutes. When should you start?",
+          "lv": "Sagatavo pikniku. Kaķi ieradīsies parādītajā laikā. Sagatavošanās ilgst 60 minūtes. Cikos jāsāk?",
+          "ru": "Подготовь пикник. Коты придут в указанное время. Подготовка занимает 60 минут. Когда нужно начать?"
+        },
+        "explanation": {
+          "en": "Count backward by the preparation time.\n\n14:00 − 60 minutes gives 13:00.",
+          "lv": "Skaiti atpakaļ par sagatavošanās ilgumu.\n\n14:00 − 60 minūtes dod 13:00.",
+          "ru": "Отсчитай время подготовки назад.\n\n14:00 − 60 минут даёт 13:00."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "application",
+      "representation": "clock",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-9",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. Each water station needs 100 ml. How many stations can you fill?",
+      "lv": "Sagatavo pikniku. Katrai ūdens vietai vajag 100 ml. Cik vietas vari piepildīt?",
+      "ru": "Подготовь пикник. На каждое место с водой нужно 100 мл. Сколько мест можно наполнить?"
+    },
+    "hint": {
+      "en": "Count equal portions until the water is used up.",
+      "lv": "Skaiti vienādas porcijas, līdz ūdens izlietots.",
+      "ru": "Отсчитывай равные порции, пока вода не закончится."
+    },
+    "explanation": {
+      "en": "400 ÷ 100 = 4 water stations.",
+      "lv": "400 ÷ 100 = 4 ūdens vietas.",
+      "ru": "400 ÷ 100 = 4 мест с водой."
+    },
+    "choices": [
+      "6",
+      "4",
+      "5"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "capacity",
+        "task": "servings",
+        "amounts": [
+          400
+        ],
+        "capacities": [
+          500
+        ],
+        "portion": 100,
+        "unit": "ml",
+        "label": {
+          "en": "Fresh water for the cats: 400 ml.",
+          "lv": "Svaigs ūdens kaķiem: 400 ml.",
+          "ru": "Свежая вода для котов: 400 мл."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "capacity",
+          "task": "servings",
+          "amounts": [
+            700
+          ],
+          "capacities": [
+            800
+          ],
+          "portion": 100,
+          "unit": "ml",
+          "label": {
+            "en": "Fresh water for the cats: 700 ml.",
+            "lv": "Svaigs ūdens kaķiem: 700 ml.",
+            "ru": "Свежая вода для котов: 700 мл."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. Each water station needs 100 ml. How many stations can you fill?",
+          "lv": "Sagatavo pikniku. Katrai ūdens vietai vajag 100 ml. Cik vietas vari piepildīt?",
+          "ru": "Подготовь пикник. На каждое место с водой нужно 100 мл. Сколько мест можно наполнить?"
+        },
+        "explanation": {
+          "en": "Count equal portions until the water is used up.\n\n700 ÷ 100 = 7 water stations.",
+          "lv": "Skaiti vienādas porcijas, līdz ūdens izlietots.\n\n700 ÷ 100 = 7 ūdens vietas.",
+          "ru": "Отсчитывай равные порции, пока вода не закончится.\n\n700 ÷ 100 = 7 мест с водой."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "capacity",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-picnic-10",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Prepare a picnic. Your pretend budget is €7. How many items can you buy at this price?",
+      "lv": "Sagatavo pikniku. Tavs spēļu budžets ir €7. Cik priekšmetu vari nopirkt par šo cenu?",
+      "ru": "Подготовь пикник. Твой учебный бюджет — €7. Сколько предметов можно купить по этой цене?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "7 ÷ 2: 3 whole items fit in the budget.",
+      "lv": "7 ÷ 2: 3 veseli priekšmeti ietilpst budžetā.",
+      "ru": "7 ÷ 2: 3 целых предметов можно купить."
+    },
+    "choices": [
+      "3",
+      "4",
+      "5"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "afford",
+        "prices": [
+          200
+        ],
+        "quantities": [
+          1
+        ],
+        "paid": 700,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "picnic ribbons. Prices: €2. Budget: €7. Discount: 0%.",
+          "lv": "piknika lentes. Cenas: €2. Budžets: €7. Atlaide: 0%.",
+          "ru": "ленты для пикника. Цены: €2. Бюджет: €7. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "afford",
+          "prices": [
+            500
+          ],
+          "quantities": [
+            1
+          ],
+          "paid": 1600,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "picnic ribbons. Prices: €5. Budget: €16. Discount: 0%.",
+            "lv": "piknika lentes. Cenas: €5. Budžets: €16. Atlaide: 0%.",
+            "ru": "ленты для пикника. Цены: €5. Бюджет: €16. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Prepare a picnic. Your pretend budget is €16. How many items can you buy at this price?",
+          "lv": "Sagatavo pikniku. Tavs spēļu budžets ir €16. Cik priekšmetu vari nopirkt par šo cenu?",
+          "ru": "Подготовь пикник. Твой учебный бюджет — €16. Сколько предметов можно купить по этой цене?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n16 ÷ 5: 3 whole items fit in the budget.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n16 ÷ 5: 3 veseli priekšmeti ietilpst budžetā.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n16 ÷ 5: 3 целых предметов можно купить."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "role": "review",
+      "representation": "money",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-1",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. Three groups of cats are coming. How many places do they need altogether?",
+      "lv": "Iekārto lasīšanas stūrīti. Ieradīsies trīs kaķu grupas. Cik vietu kopā vajadzēs?",
+      "ru": "Устрой уголок для чтения. Придут три группы котов. Сколько мест им нужно всего?"
+    },
+    "hint": {
+      "en": "Add all three bars.",
+      "lv": "Saskaiti visus trīs stabiņus.",
+      "ru": "Сложи значения всех трёх столбцов."
+    },
+    "explanation": {
+      "en": "4 + 6 + 3 = 13 places.",
+      "lv": "4 + 6 + 3 = 13 vietas.",
+      "ru": "4 + 6 + 3 = 13 мест."
+    },
+    "choices": [
+      "13",
+      "14",
+      "15"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "bars",
+        "task": "total",
+        "values": [
+          4,
+          6,
+          3
+        ],
+        "step": 1,
+        "index": 0,
+        "subject": "cats",
+        "label": {
+          "en": "Cats in groups A, B and C: 4, 6, 3.",
+          "lv": "Kaķi grupās A, B un C: 4, 6, 3.",
+          "ru": "Коты в группах A, B и C: 4, 6, 3."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "bars",
+          "task": "total",
+          "values": [
+            7,
+            9,
+            6
+          ],
+          "step": 1,
+          "index": 0,
+          "subject": "cats",
+          "label": {
+            "en": "Cats in groups A, B and C: 7, 9, 6.",
+            "lv": "Kaķi grupās A, B un C: 7, 9, 6.",
+            "ru": "Коты в группах A, B и C: 7, 9, 6."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. Three groups of cats are coming. How many places do they need altogether?",
+          "lv": "Iekārto lasīšanas stūrīti. Ieradīsies trīs kaķu grupas. Cik vietu kopā vajadzēs?",
+          "ru": "Устрой уголок для чтения. Придут три группы котов. Сколько мест им нужно всего?"
+        },
+        "explanation": {
+          "en": "Add all three bars.\n\n7 + 9 + 6 = 22 places.",
+          "lv": "Saskaiti visus trīs stabiņus.\n\n7 + 9 + 6 = 22 vietas.",
+          "ru": "Сложи значения всех трёх столбцов.\n\n7 + 9 + 6 = 22 мест."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "practice",
+      "representation": "bars",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-2",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. Buy one of each item. How many euros will you spend?",
+      "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
+      "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "(3 + 4): 7 euros.",
+      "lv": "(3 + 4): 7 eiro.",
+      "ru": "(3 + 4): 7 евро."
+    },
+    "choices": [
+      "8",
+      "9",
+      "7"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "total",
+        "prices": [
+          300,
+          400
+        ],
+        "quantities": [
+          1,
+          1
+        ],
+        "paid": 1000,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "books. Prices: €3, €4. Budget: €10. Discount: 0%.",
+          "lv": "grāmatas. Cenas: €3, €4. Budžets: €10. Atlaide: 0%.",
+          "ru": "книги. Цены: €3, €4. Бюджет: €10. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "total",
+          "prices": [
+            600,
+            700
+          ],
+          "quantities": [
+            1,
+            1
+          ],
+          "paid": 1900,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "books. Prices: €6, €7. Budget: €19. Discount: 0%.",
+            "lv": "grāmatas. Cenas: €6, €7. Budžets: €19. Atlaide: 0%.",
+            "ru": "книги. Цены: €6, €7. Бюджет: €19. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. Buy one of each item. How many euros will you spend?",
+          "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
+          "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n(6 + 7): 13 euros.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n(6 + 7): 13 eiro.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n(6 + 7): 13 евро."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "practice",
+      "representation": "money",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-3",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. Start preparing at the time shown. You need 60 minutes. At what time will everything be ready?",
+      "lv": "Iekārto lasīšanas stūrīti. Sāc gatavoties parādītajā laikā. Tev vajag 60 minūtes. Cikos viss būs gatavs?",
+      "ru": "Устрой уголок для чтения. Начни подготовку в указанное время. Тебе нужно 60 минут. Когда всё будет готово?"
+    },
+    "hint": {
+      "en": "Count forward by the preparation time.",
+      "lv": "Skaiti uz priekšu par sagatavošanās ilgumu.",
+      "ru": "Отсчитай время подготовки вперёд."
+    },
+    "explanation": {
+      "en": "11:00 + 60 minutes gives 12:00.",
+      "lv": "11:00 + 60 minūtes dod 12:00.",
+      "ru": "11:00 + 60 минут даёт 12:00."
+    },
+    "choices": [
+      "13:00",
+      "12:00",
+      "12:30"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "clock",
+        "task": "finish",
+        "minutes": 660,
+        "duration": 60,
+        "analog": true,
+        "label": {
+          "en": "Clock: 11:00. Preparation takes 60 minutes.",
+          "lv": "Pulkstenis: 11:00. Sagatavošanās ilgst 60 minūtes.",
+          "ru": "На часах 11:00. Подготовка занимает 60 минут."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "clock",
+          "task": "finish",
+          "minutes": 840,
+          "duration": 60,
+          "analog": true,
+          "label": {
+            "en": "Clock: 14:00. Preparation takes 60 minutes.",
+            "lv": "Pulkstenis: 14:00. Sagatavošanās ilgst 60 minūtes.",
+            "ru": "На часах 14:00. Подготовка занимает 60 минут."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. Start preparing at the time shown. You need 60 minutes. At what time will everything be ready?",
+          "lv": "Iekārto lasīšanas stūrīti. Sāc gatavoties parādītajā laikā. Tev vajag 60 minūtes. Cikos viss būs gatavs?",
+          "ru": "Устрой уголок для чтения. Начни подготовку в указанное время. Тебе нужно 60 минут. Когда всё будет готово?"
+        },
+        "explanation": {
+          "en": "Count forward by the preparation time.\n\n14:00 + 60 minutes gives 15:00.",
+          "lv": "Skaiti uz priekšu par sagatavošanās ilgumu.\n\n14:00 + 60 minūtes dod 15:00.",
+          "ru": "Отсчитай время подготовки вперёд.\n\n14:00 + 60 минут даёт 15:00."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "practice",
+      "representation": "clock",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-4",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. Put one ribbon at every corner of these mats. How many ribbons are needed?",
+      "lv": "Iekārto lasīšanas stūrīti. Pie katra šo paklājiņu stūra pieliec lenti. Cik lenšu vajag?",
+      "ru": "Устрой уголок для чтения. Положи ленту у каждого угла этих ковриков. Сколько лент нужно?"
+    },
+    "hint": {
+      "en": "Count the corners of every mat, then add them.",
+      "lv": "Saskaiti katra paklājiņa stūrus un saskaiti tos kopā.",
+      "ru": "Посчитай углы каждого коврика, затем сложи их."
+    },
+    "explanation": {
+      "en": "4 + 4 = 8 ribbons.",
+      "lv": "4 + 4 = 8 lentes.",
+      "ru": "4 + 4 = 8 лент."
+    },
+    "choices": [
+      "8",
+      "9",
+      "10"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "shapes",
+        "task": "corners",
+        "sides": [
+          4,
+          4
+        ],
+        "rectangle": false,
+        "label": {
+          "en": "Mats for the cats. Sides on each mat: 4, 4.",
+          "lv": "Paklājiņi kaķiem. Malas katram paklājiņam: 4, 4.",
+          "ru": "Коврики для котов. Стороны каждого коврика: 4, 4."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "shapes",
+          "task": "corners",
+          "sides": [
+            4,
+            4,
+            4
+          ],
+          "rectangle": false,
+          "label": {
+            "en": "Mats for the cats. Sides on each mat: 4, 4, 4.",
+            "lv": "Paklājiņi kaķiem. Malas katram paklājiņam: 4, 4, 4.",
+            "ru": "Коврики для котов. Стороны каждого коврика: 4, 4, 4."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. Put one ribbon at every corner of these mats. How many ribbons are needed?",
+          "lv": "Iekārto lasīšanas stūrīti. Pie katra šo paklājiņu stūra pieliec lenti. Cik lenšu vajag?",
+          "ru": "Устрой уголок для чтения. Положи ленту у каждого угла этих ковриков. Сколько лент нужно?"
+        },
+        "explanation": {
+          "en": "Count the corners of every mat, then add them.\n\n4 + 4 + 4 = 12 ribbons.",
+          "lv": "Saskaiti katra paklājiņa stūrus un saskaiti tos kopā.\n\n4 + 4 + 4 = 12 lentes.",
+          "ru": "Посчитай углы каждого коврика, затем сложи их.\n\n4 + 4 + 4 = 12 лент."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "practice",
+      "representation": "shapes",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-5",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. How much water is packed in both containers, in ml?",
+      "lv": "Iekārto lasīšanas stūrīti. Cik ūdens ir abos traukos kopā, ml?",
+      "ru": "Устрой уголок для чтения. Сколько воды в обоих сосудах вместе, мл?"
+    },
+    "hint": {
+      "en": "Add the amounts of water, not the container capacities.",
+      "lv": "Saskaiti ūdens daudzumus, nevis trauku ietilpības.",
+      "ru": "Сложи количество воды, а не вместимость сосудов."
+    },
+    "explanation": {
+      "en": "500 + 200 = 700 ml of water.",
+      "lv": "500 + 200 = 700 ml ūdens.",
+      "ru": "500 + 200 = 700 мл воды."
+    },
+    "choices": [
+      "701",
+      "702",
+      "700"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "capacity",
+        "task": "total",
+        "amounts": [
+          500,
+          200
+        ],
+        "capacities": [
+          600,
+          400
+        ],
+        "portion": 100,
+        "unit": "ml",
+        "label": {
+          "en": "Fresh water for the cats: 500, 200 ml.",
+          "lv": "Svaigs ūdens kaķiem: 500, 200 ml.",
+          "ru": "Свежая вода для котов: 500, 200 мл."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "capacity",
+          "task": "total",
+          "amounts": [
+            800,
+            200
+          ],
+          "capacities": [
+            900,
+            400
+          ],
+          "portion": 100,
+          "unit": "ml",
+          "label": {
+            "en": "Fresh water for the cats: 800, 200 ml.",
+            "lv": "Svaigs ūdens kaķiem: 800, 200 ml.",
+            "ru": "Свежая вода для котов: 800, 200 мл."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. How much water is packed in both containers, in ml?",
+          "lv": "Iekārto lasīšanas stūrīti. Cik ūdens ir abos traukos kopā, ml?",
+          "ru": "Устрой уголок для чтения. Сколько воды в обоих сосудах вместе, мл?"
+        },
+        "explanation": {
+          "en": "Add the amounts of water, not the container capacities.\n\n800 + 200 = 1000 ml of water.",
+          "lv": "Saskaiti ūdens daudzumus, nevis trauku ietilpības.\n\n800 + 200 = 1000 ml ūdens.",
+          "ru": "Сложи количество воды, а не вместимость сосудов.\n\n800 + 200 = 1000 мл воды."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "application",
+      "representation": "capacity",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-6",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. How many more places does group B need than group A?",
+      "lv": "Iekārto lasīšanas stūrīti. Par cik vairāk vietu vajag B grupai nekā A grupai?",
+      "ru": "Устрой уголок для чтения. На сколько больше мест нужно группе B, чем группе A?"
+    },
+    "hint": {
+      "en": "Subtract the smaller group from the larger group.",
+      "lv": "No lielākās grupas atņem mazāko.",
+      "ru": "Вычти меньшую группу из большей."
+    },
+    "explanation": {
+      "en": "6 − 4 = 2 places.",
+      "lv": "6 − 4 = 2 vietas.",
+      "ru": "6 − 4 = 2 мест."
+    },
+    "choices": [
+      "4",
+      "2",
+      "3"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "bars",
+        "task": "difference",
+        "values": [
+          4,
+          6,
+          3
+        ],
+        "step": 1,
+        "index": 0,
+        "subject": "cats",
+        "label": {
+          "en": "Cats in groups A, B and C: 4, 6, 3.",
+          "lv": "Kaķi grupās A, B un C: 4, 6, 3.",
+          "ru": "Коты в группах A, B и C: 4, 6, 3."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "bars",
+          "task": "difference",
+          "values": [
+            7,
+            9,
+            6
+          ],
+          "step": 1,
+          "index": 0,
+          "subject": "cats",
+          "label": {
+            "en": "Cats in groups A, B and C: 7, 9, 6.",
+            "lv": "Kaķi grupās A, B un C: 7, 9, 6.",
+            "ru": "Коты в группах A, B и C: 7, 9, 6."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. How many more places does group B need than group A?",
+          "lv": "Iekārto lasīšanas stūrīti. Par cik vairāk vietu vajag B grupai nekā A grupai?",
+          "ru": "Устрой уголок для чтения. На сколько больше мест нужно группе B, чем группе A?"
+        },
+        "explanation": {
+          "en": "Subtract the smaller group from the larger group.\n\n9 − 7 = 2 places.",
+          "lv": "No lielākās grupas atņem mazāko.\n\n9 − 7 = 2 vietas.",
+          "ru": "Вычти меньшую группу из большей.\n\n9 − 7 = 2 мест."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "application",
+      "representation": "bars",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-7",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. Buy one of each item and pay €10. How many euros should come back as change?",
+      "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €10. Cik eiro saņemsi atlikumā?",
+      "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €10. Сколько евро сдачи нужно получить?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "10 − (3 + 4): 3 euros.",
+      "lv": "10 − (3 + 4): 3 eiro.",
+      "ru": "10 − (3 + 4): 3 евро."
+    },
+    "choices": [
+      "3",
+      "4",
+      "5"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "change",
+        "prices": [
+          300,
+          400
+        ],
+        "quantities": [
+          1,
+          1
+        ],
+        "paid": 1000,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "books. Prices: €3, €4. Budget: €10. Discount: 0%.",
+          "lv": "grāmatas. Cenas: €3, €4. Budžets: €10. Atlaide: 0%.",
+          "ru": "книги. Цены: €3, €4. Бюджет: €10. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "change",
+          "prices": [
+            600,
+            700
+          ],
+          "quantities": [
+            1,
+            1
+          ],
+          "paid": 1900,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "books. Prices: €6, €7. Budget: €19. Discount: 0%.",
+            "lv": "grāmatas. Cenas: €6, €7. Budžets: €19. Atlaide: 0%.",
+            "ru": "книги. Цены: €6, €7. Бюджет: €19. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. Buy one of each item and pay €19. How many euros should come back as change?",
+          "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €19. Cik eiro saņemsi atlikumā?",
+          "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €19. Сколько евро сдачи нужно получить?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n19 − (6 + 7): 6 euros.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n19 − (6 + 7): 6 eiro.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n19 − (6 + 7): 6 евро."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "application",
+      "representation": "money",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-8",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. The cats arrive at the time shown. Preparation takes 60 minutes. When should you start?",
+      "lv": "Iekārto lasīšanas stūrīti. Kaķi ieradīsies parādītajā laikā. Sagatavošanās ilgst 60 minūtes. Cikos jāsāk?",
+      "ru": "Устрой уголок для чтения. Коты придут в указанное время. Подготовка занимает 60 минут. Когда нужно начать?"
+    },
+    "hint": {
+      "en": "Count backward by the preparation time.",
+      "lv": "Skaiti atpakaļ par sagatavošanās ilgumu.",
+      "ru": "Отсчитай время подготовки назад."
+    },
+    "explanation": {
+      "en": "12:00 − 60 minutes gives 11:00.",
+      "lv": "12:00 − 60 minūtes dod 11:00.",
+      "ru": "12:00 − 60 минут даёт 11:00."
+    },
+    "choices": [
+      "11:30",
+      "12:00",
+      "11:00"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "clock",
+        "task": "start",
+        "minutes": 720,
+        "duration": 60,
+        "analog": true,
+        "label": {
+          "en": "Clock: 12:00. Preparation takes 60 minutes.",
+          "lv": "Pulkstenis: 12:00. Sagatavošanās ilgst 60 minūtes.",
+          "ru": "На часах 12:00. Подготовка занимает 60 минут."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "clock",
+          "task": "start",
+          "minutes": 900,
+          "duration": 60,
+          "analog": true,
+          "label": {
+            "en": "Clock: 15:00. Preparation takes 60 minutes.",
+            "lv": "Pulkstenis: 15:00. Sagatavošanās ilgst 60 minūtes.",
+            "ru": "На часах 15:00. Подготовка занимает 60 минут."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. The cats arrive at the time shown. Preparation takes 60 minutes. When should you start?",
+          "lv": "Iekārto lasīšanas stūrīti. Kaķi ieradīsies parādītajā laikā. Sagatavošanās ilgst 60 minūtes. Cikos jāsāk?",
+          "ru": "Устрой уголок для чтения. Коты придут в указанное время. Подготовка занимает 60 минут. Когда нужно начать?"
+        },
+        "explanation": {
+          "en": "Count backward by the preparation time.\n\n15:00 − 60 minutes gives 14:00.",
+          "lv": "Skaiti atpakaļ par sagatavošanās ilgumu.\n\n15:00 − 60 minūtes dod 14:00.",
+          "ru": "Отсчитай время подготовки назад.\n\n15:00 − 60 минут даёт 14:00."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "application",
+      "representation": "clock",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-9",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. Each water station needs 100 ml. How many stations can you fill?",
+      "lv": "Iekārto lasīšanas stūrīti. Katrai ūdens vietai vajag 100 ml. Cik vietas vari piepildīt?",
+      "ru": "Устрой уголок для чтения. На каждое место с водой нужно 100 мл. Сколько мест можно наполнить?"
+    },
+    "hint": {
+      "en": "Count equal portions until the water is used up.",
+      "lv": "Skaiti vienādas porcijas, līdz ūdens izlietots.",
+      "ru": "Отсчитывай равные порции, пока вода не закончится."
+    },
+    "explanation": {
+      "en": "500 ÷ 100 = 5 water stations.",
+      "lv": "500 ÷ 100 = 5 ūdens vietas.",
+      "ru": "500 ÷ 100 = 5 мест с водой."
+    },
+    "choices": [
+      "7",
+      "5",
+      "6"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "capacity",
+        "task": "servings",
+        "amounts": [
+          500
+        ],
+        "capacities": [
+          600
+        ],
+        "portion": 100,
+        "unit": "ml",
+        "label": {
+          "en": "Fresh water for the cats: 500 ml.",
+          "lv": "Svaigs ūdens kaķiem: 500 ml.",
+          "ru": "Свежая вода для котов: 500 мл."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "capacity",
+          "task": "servings",
+          "amounts": [
+            800
+          ],
+          "capacities": [
+            900
+          ],
+          "portion": 100,
+          "unit": "ml",
+          "label": {
+            "en": "Fresh water for the cats: 800 ml.",
+            "lv": "Svaigs ūdens kaķiem: 800 ml.",
+            "ru": "Свежая вода для котов: 800 мл."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. Each water station needs 100 ml. How many stations can you fill?",
+          "lv": "Iekārto lasīšanas stūrīti. Katrai ūdens vietai vajag 100 ml. Cik vietas vari piepildīt?",
+          "ru": "Устрой уголок для чтения. На каждое место с водой нужно 100 мл. Сколько мест можно наполнить?"
+        },
+        "explanation": {
+          "en": "Count equal portions until the water is used up.\n\n800 ÷ 100 = 8 water stations.",
+          "lv": "Skaiti vienādas porcijas, līdz ūdens izlietots.\n\n800 ÷ 100 = 8 ūdens vietas.",
+          "ru": "Отсчитывай равные порции, пока вода не закончится.\n\n800 ÷ 100 = 8 мест с водой."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "review",
+      "representation": "capacity",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-reading-corner-10",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Make a reading corner. Your pretend budget is €10. How many items can you buy at this price?",
+      "lv": "Iekārto lasīšanas stūrīti. Tavs spēļu budžets ir €10. Cik priekšmetu vari nopirkt par šo cenu?",
+      "ru": "Устрой уголок для чтения. Твой учебный бюджет — €10. Сколько предметов можно купить по этой цене?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "10 ÷ 3: 3 whole items fit in the budget.",
+      "lv": "10 ÷ 3: 3 veseli priekšmeti ietilpst budžetā.",
+      "ru": "10 ÷ 3: 3 целых предметов можно купить."
+    },
+    "choices": [
+      "3",
+      "4",
+      "5"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "afford",
+        "prices": [
+          300
+        ],
+        "quantities": [
+          1
+        ],
+        "paid": 1000,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "bookmarks. Prices: €3. Budget: €10. Discount: 0%.",
+          "lv": "grāmatzīmes. Cenas: €3. Budžets: €10. Atlaide: 0%.",
+          "ru": "закладки. Цены: €3. Бюджет: €10. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "afford",
+          "prices": [
+            600
+          ],
+          "quantities": [
+            1
+          ],
+          "paid": 1900,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "bookmarks. Prices: €6. Budget: €19. Discount: 0%.",
+            "lv": "grāmatzīmes. Cenas: €6. Budžets: €19. Atlaide: 0%.",
+            "ru": "закладки. Цены: €6. Бюджет: €19. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Make a reading corner. Your pretend budget is €19. How many items can you buy at this price?",
+          "lv": "Iekārto lasīšanas stūrīti. Tavs spēļu budžets ir €19. Cik priekšmetu vari nopirkt par šo cenu?",
+          "ru": "Устрой уголок для чтения. Твой учебный бюджет — €19. Сколько предметов можно купить по этой цене?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n19 ÷ 6: 3 whole items fit in the budget.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n19 ÷ 6: 3 veseli priekšmeti ietilpst budžetā.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n19 ÷ 6: 3 целых предметов можно купить."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "role": "review",
+      "representation": "money",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-1",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. Three groups of cats are coming. How many places do they need altogether?",
+      "lv": "Izplāno kaķu ballīti. Ieradīsies trīs kaķu grupas. Cik vietu kopā vajadzēs?",
+      "ru": "Спланируй кошачью вечеринку. Придут три группы котов. Сколько мест им нужно всего?"
+    },
+    "hint": {
+      "en": "Add all three bars.",
+      "lv": "Saskaiti visus trīs stabiņus.",
+      "ru": "Сложи значения всех трёх столбцов."
+    },
+    "explanation": {
+      "en": "5 + 7 + 4 = 16 places.",
+      "lv": "5 + 7 + 4 = 16 vietas.",
+      "ru": "5 + 7 + 4 = 16 мест."
+    },
+    "choices": [
+      "16",
+      "17",
+      "18"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "bars",
+        "task": "total",
+        "values": [
+          5,
+          7,
+          4
+        ],
+        "step": 1,
+        "index": 0,
+        "subject": "cats",
+        "label": {
+          "en": "Cats in groups A, B and C: 5, 7, 4.",
+          "lv": "Kaķi grupās A, B un C: 5, 7, 4.",
+          "ru": "Коты в группах A, B и C: 5, 7, 4."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "bars",
+          "task": "total",
+          "values": [
+            8,
+            10,
+            7
+          ],
+          "step": 1,
+          "index": 0,
+          "subject": "cats",
+          "label": {
+            "en": "Cats in groups A, B and C: 8, 10, 7.",
+            "lv": "Kaķi grupās A, B un C: 8, 10, 7.",
+            "ru": "Коты в группах A, B и C: 8, 10, 7."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. Three groups of cats are coming. How many places do they need altogether?",
+          "lv": "Izplāno kaķu ballīti. Ieradīsies trīs kaķu grupas. Cik vietu kopā vajadzēs?",
+          "ru": "Спланируй кошачью вечеринку. Придут три группы котов. Сколько мест им нужно всего?"
+        },
+        "explanation": {
+          "en": "Add all three bars.\n\n8 + 10 + 7 = 25 places.",
+          "lv": "Saskaiti visus trīs stabiņus.\n\n8 + 10 + 7 = 25 vietas.",
+          "ru": "Сложи значения всех трёх столбцов.\n\n8 + 10 + 7 = 25 мест."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "practice",
+      "representation": "bars",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-2",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. Buy one of each item. How many euros will you spend?",
+      "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
+      "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "(4 + 5): 9 euros.",
+      "lv": "(4 + 5): 9 eiro.",
+      "ru": "(4 + 5): 9 евро."
+    },
+    "choices": [
+      "10",
+      "11",
+      "9"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "total",
+        "prices": [
+          400,
+          500
+        ],
+        "quantities": [
+          1,
+          1
+        ],
+        "paid": 1300,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "party decorations. Prices: €4, €5. Budget: €13. Discount: 0%.",
+          "lv": "ballītes rotājumi. Cenas: €4, €5. Budžets: €13. Atlaide: 0%.",
+          "ru": "украшения для вечеринки. Цены: €4, €5. Бюджет: €13. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "total",
+          "prices": [
+            700,
+            800
+          ],
+          "quantities": [
+            1,
+            1
+          ],
+          "paid": 2200,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "party decorations. Prices: €7, €8. Budget: €22. Discount: 0%.",
+            "lv": "ballītes rotājumi. Cenas: €7, €8. Budžets: €22. Atlaide: 0%.",
+            "ru": "украшения для вечеринки. Цены: €7, €8. Бюджет: €22. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. Buy one of each item. How many euros will you spend?",
+          "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
+          "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n(7 + 8): 15 euros.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n(7 + 8): 15 eiro.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n(7 + 8): 15 евро."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "practice",
+      "representation": "money",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-3",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. Start preparing at the time shown. You need 60 minutes. At what time will everything be ready?",
+      "lv": "Izplāno kaķu ballīti. Sāc gatavoties parādītajā laikā. Tev vajag 60 minūtes. Cikos viss būs gatavs?",
+      "ru": "Спланируй кошачью вечеринку. Начни подготовку в указанное время. Тебе нужно 60 минут. Когда всё будет готово?"
+    },
+    "hint": {
+      "en": "Count forward by the preparation time.",
+      "lv": "Skaiti uz priekšu par sagatavošanās ilgumu.",
+      "ru": "Отсчитай время подготовки вперёд."
+    },
+    "explanation": {
+      "en": "12:00 + 60 minutes gives 13:00.",
+      "lv": "12:00 + 60 minūtes dod 13:00.",
+      "ru": "12:00 + 60 минут даёт 13:00."
+    },
+    "choices": [
+      "14:00",
+      "13:00",
+      "13:30"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "clock",
+        "task": "finish",
+        "minutes": 720,
+        "duration": 60,
+        "analog": true,
+        "label": {
+          "en": "Clock: 12:00. Preparation takes 60 minutes.",
+          "lv": "Pulkstenis: 12:00. Sagatavošanās ilgst 60 minūtes.",
+          "ru": "На часах 12:00. Подготовка занимает 60 минут."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "clock",
+          "task": "finish",
+          "minutes": 900,
+          "duration": 60,
+          "analog": true,
+          "label": {
+            "en": "Clock: 15:00. Preparation takes 60 minutes.",
+            "lv": "Pulkstenis: 15:00. Sagatavošanās ilgst 60 minūtes.",
+            "ru": "На часах 15:00. Подготовка занимает 60 минут."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. Start preparing at the time shown. You need 60 minutes. At what time will everything be ready?",
+          "lv": "Izplāno kaķu ballīti. Sāc gatavoties parādītajā laikā. Tev vajag 60 minūtes. Cikos viss būs gatavs?",
+          "ru": "Спланируй кошачью вечеринку. Начни подготовку в указанное время. Тебе нужно 60 минут. Когда всё будет готово?"
+        },
+        "explanation": {
+          "en": "Count forward by the preparation time.\n\n15:00 + 60 minutes gives 16:00.",
+          "lv": "Skaiti uz priekšu par sagatavošanās ilgumu.\n\n15:00 + 60 minūtes dod 16:00.",
+          "ru": "Отсчитай время подготовки вперёд.\n\n15:00 + 60 минут даёт 16:00."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "practice",
+      "representation": "clock",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-4",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. Put one ribbon at every corner of these mats. How many ribbons are needed?",
+      "lv": "Izplāno kaķu ballīti. Pie katra šo paklājiņu stūra pieliec lenti. Cik lenšu vajag?",
+      "ru": "Спланируй кошачью вечеринку. Положи ленту у каждого угла этих ковриков. Сколько лент нужно?"
+    },
+    "hint": {
+      "en": "Count the corners of every mat, then add them.",
+      "lv": "Saskaiti katra paklājiņa stūrus un saskaiti tos kopā.",
+      "ru": "Посчитай углы каждого коврика, затем сложи их."
+    },
+    "explanation": {
+      "en": "4 + 4 = 8 ribbons.",
+      "lv": "4 + 4 = 8 lentes.",
+      "ru": "4 + 4 = 8 лент."
+    },
+    "choices": [
+      "8",
+      "9",
+      "10"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "shapes",
+        "task": "corners",
+        "sides": [
+          4,
+          4
+        ],
+        "rectangle": false,
+        "label": {
+          "en": "Mats for the cats. Sides on each mat: 4, 4.",
+          "lv": "Paklājiņi kaķiem. Malas katram paklājiņam: 4, 4.",
+          "ru": "Коврики для котов. Стороны каждого коврика: 4, 4."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "shapes",
+          "task": "corners",
+          "sides": [
+            4,
+            4,
+            4
+          ],
+          "rectangle": false,
+          "label": {
+            "en": "Mats for the cats. Sides on each mat: 4, 4, 4.",
+            "lv": "Paklājiņi kaķiem. Malas katram paklājiņam: 4, 4, 4.",
+            "ru": "Коврики для котов. Стороны каждого коврика: 4, 4, 4."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. Put one ribbon at every corner of these mats. How many ribbons are needed?",
+          "lv": "Izplāno kaķu ballīti. Pie katra šo paklājiņu stūra pieliec lenti. Cik lenšu vajag?",
+          "ru": "Спланируй кошачью вечеринку. Положи ленту у каждого угла этих ковриков. Сколько лент нужно?"
+        },
+        "explanation": {
+          "en": "Count the corners of every mat, then add them.\n\n4 + 4 + 4 = 12 ribbons.",
+          "lv": "Saskaiti katra paklājiņa stūrus un saskaiti tos kopā.\n\n4 + 4 + 4 = 12 lentes.",
+          "ru": "Посчитай углы каждого коврика, затем сложи их.\n\n4 + 4 + 4 = 12 лент."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "practice",
+      "representation": "shapes",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-5",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. How much water is packed in both containers, in ml?",
+      "lv": "Izplāno kaķu ballīti. Cik ūdens ir abos traukos kopā, ml?",
+      "ru": "Спланируй кошачью вечеринку. Сколько воды в обоих сосудах вместе, мл?"
+    },
+    "hint": {
+      "en": "Add the amounts of water, not the container capacities.",
+      "lv": "Saskaiti ūdens daudzumus, nevis trauku ietilpības.",
+      "ru": "Сложи количество воды, а не вместимость сосудов."
+    },
+    "explanation": {
+      "en": "600 + 200 = 800 ml of water.",
+      "lv": "600 + 200 = 800 ml ūdens.",
+      "ru": "600 + 200 = 800 мл воды."
+    },
+    "choices": [
+      "801",
+      "802",
+      "800"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "capacity",
+        "task": "total",
+        "amounts": [
+          600,
+          200
+        ],
+        "capacities": [
+          700,
+          400
+        ],
+        "portion": 100,
+        "unit": "ml",
+        "label": {
+          "en": "Fresh water for the cats: 600, 200 ml.",
+          "lv": "Svaigs ūdens kaķiem: 600, 200 ml.",
+          "ru": "Свежая вода для котов: 600, 200 мл."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "capacity",
+          "task": "total",
+          "amounts": [
+            900,
+            200
+          ],
+          "capacities": [
+            1000,
+            400
+          ],
+          "portion": 100,
+          "unit": "ml",
+          "label": {
+            "en": "Fresh water for the cats: 900, 200 ml.",
+            "lv": "Svaigs ūdens kaķiem: 900, 200 ml.",
+            "ru": "Свежая вода для котов: 900, 200 мл."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. How much water is packed in both containers, in ml?",
+          "lv": "Izplāno kaķu ballīti. Cik ūdens ir abos traukos kopā, ml?",
+          "ru": "Спланируй кошачью вечеринку. Сколько воды в обоих сосудах вместе, мл?"
+        },
+        "explanation": {
+          "en": "Add the amounts of water, not the container capacities.\n\n900 + 200 = 1100 ml of water.",
+          "lv": "Saskaiti ūdens daudzumus, nevis trauku ietilpības.\n\n900 + 200 = 1100 ml ūdens.",
+          "ru": "Сложи количество воды, а не вместимость сосудов.\n\n900 + 200 = 1100 мл воды."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "application",
+      "representation": "capacity",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-6",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. How many more places does group B need than group A?",
+      "lv": "Izplāno kaķu ballīti. Par cik vairāk vietu vajag B grupai nekā A grupai?",
+      "ru": "Спланируй кошачью вечеринку. На сколько больше мест нужно группе B, чем группе A?"
+    },
+    "hint": {
+      "en": "Subtract the smaller group from the larger group.",
+      "lv": "No lielākās grupas atņem mazāko.",
+      "ru": "Вычти меньшую группу из большей."
+    },
+    "explanation": {
+      "en": "7 − 5 = 2 places.",
+      "lv": "7 − 5 = 2 vietas.",
+      "ru": "7 − 5 = 2 мест."
+    },
+    "choices": [
+      "4",
+      "2",
+      "3"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "bars",
+        "task": "difference",
+        "values": [
+          5,
+          7,
+          4
+        ],
+        "step": 1,
+        "index": 0,
+        "subject": "cats",
+        "label": {
+          "en": "Cats in groups A, B and C: 5, 7, 4.",
+          "lv": "Kaķi grupās A, B un C: 5, 7, 4.",
+          "ru": "Коты в группах A, B и C: 5, 7, 4."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "bars",
+          "task": "difference",
+          "values": [
+            8,
+            10,
+            7
+          ],
+          "step": 1,
+          "index": 0,
+          "subject": "cats",
+          "label": {
+            "en": "Cats in groups A, B and C: 8, 10, 7.",
+            "lv": "Kaķi grupās A, B un C: 8, 10, 7.",
+            "ru": "Коты в группах A, B и C: 8, 10, 7."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. How many more places does group B need than group A?",
+          "lv": "Izplāno kaķu ballīti. Par cik vairāk vietu vajag B grupai nekā A grupai?",
+          "ru": "Спланируй кошачью вечеринку. На сколько больше мест нужно группе B, чем группе A?"
+        },
+        "explanation": {
+          "en": "Subtract the smaller group from the larger group.\n\n10 − 8 = 2 places.",
+          "lv": "No lielākās grupas atņem mazāko.\n\n10 − 8 = 2 vietas.",
+          "ru": "Вычти меньшую группу из большей.\n\n10 − 8 = 2 мест."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "application",
+      "representation": "bars",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-7",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. Buy one of each item and pay €13. How many euros should come back as change?",
+      "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €13. Cik eiro saņemsi atlikumā?",
+      "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €13. Сколько евро сдачи нужно получить?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "13 − (4 + 5): 4 euros.",
+      "lv": "13 − (4 + 5): 4 eiro.",
+      "ru": "13 − (4 + 5): 4 евро."
+    },
+    "choices": [
+      "4",
+      "5",
+      "6"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "change",
+        "prices": [
+          400,
+          500
+        ],
+        "quantities": [
+          1,
+          1
+        ],
+        "paid": 1300,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "party decorations. Prices: €4, €5. Budget: €13. Discount: 0%.",
+          "lv": "ballītes rotājumi. Cenas: €4, €5. Budžets: €13. Atlaide: 0%.",
+          "ru": "украшения для вечеринки. Цены: €4, €5. Бюджет: €13. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "change",
+          "prices": [
+            700,
+            800
+          ],
+          "quantities": [
+            1,
+            1
+          ],
+          "paid": 2200,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "party decorations. Prices: €7, €8. Budget: €22. Discount: 0%.",
+            "lv": "ballītes rotājumi. Cenas: €7, €8. Budžets: €22. Atlaide: 0%.",
+            "ru": "украшения для вечеринки. Цены: €7, €8. Бюджет: €22. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. Buy one of each item and pay €22. How many euros should come back as change?",
+          "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €22. Cik eiro saņemsi atlikumā?",
+          "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €22. Сколько евро сдачи нужно получить?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n22 − (7 + 8): 7 euros.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n22 − (7 + 8): 7 eiro.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n22 − (7 + 8): 7 евро."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "application",
+      "representation": "money",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-8",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. The cats arrive at the time shown. Preparation takes 60 minutes. When should you start?",
+      "lv": "Izplāno kaķu ballīti. Kaķi ieradīsies parādītajā laikā. Sagatavošanās ilgst 60 minūtes. Cikos jāsāk?",
+      "ru": "Спланируй кошачью вечеринку. Коты придут в указанное время. Подготовка занимает 60 минут. Когда нужно начать?"
+    },
+    "hint": {
+      "en": "Count backward by the preparation time.",
+      "lv": "Skaiti atpakaļ par sagatavošanās ilgumu.",
+      "ru": "Отсчитай время подготовки назад."
+    },
+    "explanation": {
+      "en": "13:00 − 60 minutes gives 12:00.",
+      "lv": "13:00 − 60 minūtes dod 12:00.",
+      "ru": "13:00 − 60 минут даёт 12:00."
+    },
+    "choices": [
+      "12:30",
+      "13:00",
+      "12:00"
+    ],
+    "correctIndex": 2,
+    "everyday": {
+      "model": {
+        "kind": "clock",
+        "task": "start",
+        "minutes": 780,
+        "duration": 60,
+        "analog": true,
+        "label": {
+          "en": "Clock: 13:00. Preparation takes 60 minutes.",
+          "lv": "Pulkstenis: 13:00. Sagatavošanās ilgst 60 minūtes.",
+          "ru": "На часах 13:00. Подготовка занимает 60 минут."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "clock",
+          "task": "start",
+          "minutes": 960,
+          "duration": 60,
+          "analog": true,
+          "label": {
+            "en": "Clock: 16:00. Preparation takes 60 minutes.",
+            "lv": "Pulkstenis: 16:00. Sagatavošanās ilgst 60 minūtes.",
+            "ru": "На часах 16:00. Подготовка занимает 60 минут."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. The cats arrive at the time shown. Preparation takes 60 minutes. When should you start?",
+          "lv": "Izplāno kaķu ballīti. Kaķi ieradīsies parādītajā laikā. Sagatavošanās ilgst 60 minūtes. Cikos jāsāk?",
+          "ru": "Спланируй кошачью вечеринку. Коты придут в указанное время. Подготовка занимает 60 минут. Когда нужно начать?"
+        },
+        "explanation": {
+          "en": "Count backward by the preparation time.\n\n16:00 − 60 minutes gives 15:00.",
+          "lv": "Skaiti atpakaļ par sagatavošanās ilgumu.\n\n16:00 − 60 minūtes dod 15:00.",
+          "ru": "Отсчитай время подготовки назад.\n\n16:00 − 60 минут даёт 15:00."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "application",
+      "representation": "clock",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-9",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. Each water station needs 100 ml. How many stations can you fill?",
+      "lv": "Izplāno kaķu ballīti. Katrai ūdens vietai vajag 100 ml. Cik vietas vari piepildīt?",
+      "ru": "Спланируй кошачью вечеринку. На каждое место с водой нужно 100 мл. Сколько мест можно наполнить?"
+    },
+    "hint": {
+      "en": "Count equal portions until the water is used up.",
+      "lv": "Skaiti vienādas porcijas, līdz ūdens izlietots.",
+      "ru": "Отсчитывай равные порции, пока вода не закончится."
+    },
+    "explanation": {
+      "en": "600 ÷ 100 = 6 water stations.",
+      "lv": "600 ÷ 100 = 6 ūdens vietas.",
+      "ru": "600 ÷ 100 = 6 мест с водой."
+    },
+    "choices": [
+      "8",
+      "6",
+      "7"
+    ],
+    "correctIndex": 1,
+    "everyday": {
+      "model": {
+        "kind": "capacity",
+        "task": "servings",
+        "amounts": [
+          600
+        ],
+        "capacities": [
+          700
+        ],
+        "portion": 100,
+        "unit": "ml",
+        "label": {
+          "en": "Fresh water for the cats: 600 ml.",
+          "lv": "Svaigs ūdens kaķiem: 600 ml.",
+          "ru": "Свежая вода для котов: 600 мл."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "capacity",
+          "task": "servings",
+          "amounts": [
+            900
+          ],
+          "capacities": [
+            1000
+          ],
+          "portion": 100,
+          "unit": "ml",
+          "label": {
+            "en": "Fresh water for the cats: 900 ml.",
+            "lv": "Svaigs ūdens kaķiem: 900 ml.",
+            "ru": "Свежая вода для котов: 900 мл."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. Each water station needs 100 ml. How many stations can you fill?",
+          "lv": "Izplāno kaķu ballīti. Katrai ūdens vietai vajag 100 ml. Cik vietas vari piepildīt?",
+          "ru": "Спланируй кошачью вечеринку. На каждое место с водой нужно 100 мл. Сколько мест можно наполнить?"
+        },
+        "explanation": {
+          "en": "Count equal portions until the water is used up.\n\n900 ÷ 100 = 9 water stations.",
+          "lv": "Skaiti vienādas porcijas, līdz ūdens izlietots.\n\n900 ÷ 100 = 9 ūdens vietas.",
+          "ru": "Отсчитывай равные порции, пока вода не закончится.\n\n900 ÷ 100 = 9 мест с водой."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "review",
+      "representation": "capacity",
+      "reasoningSteps": 1
+    }
+  },
+  {
+    "id": "v2-easy-cat-plans-cat-party-10",
+    "difficulty": "easy",
+    "type": "multiple_choice",
+    "topic": "cat-plans",
+    "ageRange": [
+      5,
+      7
+    ],
+    "question": {
+      "en": "Plan a cat party. Your pretend budget is €13. How many items can you buy at this price?",
+      "lv": "Izplāno kaķu ballīti. Tavs spēļu budžets ir €13. Cik priekšmetu vari nopirkt par šo cenu?",
+      "ru": "Спланируй кошачью вечеринку. Твой учебный бюджет — €13. Сколько предметов можно купить по этой цене?"
+    },
+    "hint": {
+      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
+      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
+      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+    },
+    "explanation": {
+      "en": "13 ÷ 4: 3 whole items fit in the budget.",
+      "lv": "13 ÷ 4: 3 veseli priekšmeti ietilpst budžetā.",
+      "ru": "13 ÷ 4: 3 целых предметов можно купить."
+    },
+    "choices": [
+      "3",
+      "4",
+      "5"
+    ],
+    "correctIndex": 0,
+    "everyday": {
+      "model": {
+        "kind": "money",
+        "task": "afford",
+        "prices": [
+          400
+        ],
+        "quantities": [
+          1
+        ],
+        "paid": 1300,
+        "discount": 0,
+        "unit": "euros",
+        "label": {
+          "en": "paper stars. Prices: €4. Budget: €13. Discount: 0%.",
+          "lv": "papīra zvaigznes. Cenas: €4. Budžets: €13. Atlaide: 0%.",
+          "ru": "бумажные звёзды. Цены: €4. Бюджет: €13. Скидка: 0%."
+        }
+      },
+      "example": {
+        "model": {
+          "kind": "money",
+          "task": "afford",
+          "prices": [
+            700
+          ],
+          "quantities": [
+            1
+          ],
+          "paid": 2200,
+          "discount": 0,
+          "unit": "euros",
+          "label": {
+            "en": "paper stars. Prices: €7. Budget: €22. Discount: 0%.",
+            "lv": "papīra zvaigznes. Cenas: €7. Budžets: €22. Atlaide: 0%.",
+            "ru": "бумажные звёзды. Цены: €7. Бюджет: €22. Скидка: 0%."
+          }
+        },
+        "question": {
+          "en": "Plan a cat party. Your pretend budget is €22. How many items can you buy at this price?",
+          "lv": "Izplāno kaķu ballīti. Tavs spēļu budžets ir €22. Cik priekšmetu vari nopirkt par šo cenu?",
+          "ru": "Спланируй кошачью вечеринку. Твой учебный бюджет — €22. Сколько предметов можно купить по этой цене?"
+        },
+        "explanation": {
+          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n22 ÷ 7: 3 whole items fit in the budget.",
+          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n22 ÷ 7: 3 veseli priekšmeti ietilpst budžetā.",
+          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n22 ÷ 7: 3 целых предметов можно купить."
+        }
+      }
+    },
+    "learning": {
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "role": "review",
+      "representation": "money",
       "reasoningSteps": 1
     }
   }

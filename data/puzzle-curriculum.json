@@ -2,6 +2,20 @@
   "version": 2,
   "topics": [
     {
+      "id": "cat-plans",
+      "title": {
+        "en": "Cat plans",
+        "lv": "Kaķu plāni",
+        "ru": "Планы для котов"
+      },
+      "description": {
+        "en": "Use maths to prepare something for the cats.",
+        "lv": "Izmanto matemātiku, lai kaut ko sagatavotu kaķiem.",
+        "ru": "Используй математику, чтобы подготовить что-нибудь для котов."
+      },
+      "icon": "cat"
+    },
+    {
       "id": "addition",
       "title": {
         "en": "Addition",
@@ -63446,6 +63460,1476 @@
           },
           "puzzleIds": [
             "v2-hard-capacity-lesson-10-8"
+          ],
+          "timeLimitSeconds": 300
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "easy-cat-plans-picnic",
+      "difficulty": "easy",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Prepare a picnic",
+        "lv": "Sagatavo pikniku",
+        "ru": "Подготовь пикник"
+      },
+      "description": {
+        "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+        "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+        "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+      },
+      "completion": {
+        "en": "The picnic is ready. There is a place and water for every cat.",
+        "lv": "Pikniks ir gatavs. Katram kaķim ir vieta un ūdens.",
+        "ru": "Пикник готов. Для каждого кота есть место и вода."
+      },
+      "skillId": "easy.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "levels": [
+        {
+          "id": "easy-cat-plans-picnic-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-picnic-1"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-picnic-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-picnic-2"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-picnic-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-picnic-3"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-picnic-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-picnic-4"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-picnic-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-picnic-5"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-picnic-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-picnic-6"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-picnic-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-picnic-7"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-picnic-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-picnic-8"
+          ],
+          "timeLimitSeconds": 180
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "easy-cat-plans-reading-corner",
+      "difficulty": "easy",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Make a reading corner",
+        "lv": "Iekārto lasīšanas stūrīti",
+        "ru": "Устрой уголок для чтения"
+      },
+      "description": {
+        "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+        "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+        "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+      },
+      "completion": {
+        "en": "The reading corner is ready. The cats can settle beside the books.",
+        "lv": "Lasīšanas stūrītis ir gatavs. Kaķi var iekārtoties blakus grāmatām.",
+        "ru": "Уголок для чтения готов. Коты могут устроиться рядом с книгами."
+      },
+      "skillId": "easy.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.picnic"
+      ],
+      "levels": [
+        {
+          "id": "easy-cat-plans-reading-corner-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-reading-corner-1"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-reading-corner-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-reading-corner-2"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-reading-corner-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-reading-corner-3"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-reading-corner-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-reading-corner-4"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-reading-corner-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-reading-corner-5"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-reading-corner-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-reading-corner-6"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-reading-corner-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-reading-corner-7"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-reading-corner-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-reading-corner-8"
+          ],
+          "timeLimitSeconds": 180
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "easy-cat-plans-cat-party",
+      "difficulty": "easy",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Plan a cat party",
+        "lv": "Izplāno kaķu ballīti",
+        "ru": "Спланируй кошачью вечеринку"
+      },
+      "description": {
+        "en": "Invite the cats, plan the decorations and get everything ready on time.",
+        "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+        "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+      },
+      "completion": {
+        "en": "The party is ready. The cats have places, water and decorations.",
+        "lv": "Ballīte ir gatava. Kaķiem ir vietas, ūdens un rotājumi.",
+        "ru": "Вечеринка готова. Для котов подготовлены места, вода и украшения."
+      },
+      "skillId": "easy.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "easy.cat-plans.reading-corner"
+      ],
+      "levels": [
+        {
+          "id": "easy-cat-plans-cat-party-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-cat-party-1"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-cat-party-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-cat-party-2"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-cat-party-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-cat-party-3"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-cat-party-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-cat-party-4"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-cat-party-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-cat-party-5"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-cat-party-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-cat-party-6"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-cat-party-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-cat-party-7"
+          ]
+        },
+        {
+          "id": "easy-cat-plans-cat-party-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-easy-cat-plans-cat-party-8"
+          ],
+          "timeLimitSeconds": 180
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "medium-cat-plans-picnic",
+      "difficulty": "medium",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Prepare a picnic",
+        "lv": "Sagatavo pikniku",
+        "ru": "Подготовь пикник"
+      },
+      "description": {
+        "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+        "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+        "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+      },
+      "completion": {
+        "en": "The picnic is ready. There is a place and water for every cat.",
+        "lv": "Pikniks ir gatavs. Katram kaķim ir vieta un ūdens.",
+        "ru": "Пикник готов. Для каждого кота есть место и вода."
+      },
+      "skillId": "medium.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "levels": [
+        {
+          "id": "medium-cat-plans-picnic-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-picnic-1"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-picnic-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-picnic-2"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-picnic-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-picnic-3"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-picnic-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-picnic-4"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-picnic-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-picnic-5"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-picnic-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-picnic-6"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-picnic-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-picnic-7"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-picnic-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-picnic-8"
+          ],
+          "timeLimitSeconds": 240
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "medium-cat-plans-reading-corner",
+      "difficulty": "medium",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Make a reading corner",
+        "lv": "Iekārto lasīšanas stūrīti",
+        "ru": "Устрой уголок для чтения"
+      },
+      "description": {
+        "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+        "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+        "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+      },
+      "completion": {
+        "en": "The reading corner is ready. The cats can settle beside the books.",
+        "lv": "Lasīšanas stūrītis ir gatavs. Kaķi var iekārtoties blakus grāmatām.",
+        "ru": "Уголок для чтения готов. Коты могут устроиться рядом с книгами."
+      },
+      "skillId": "medium.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "medium.cat-plans.picnic"
+      ],
+      "levels": [
+        {
+          "id": "medium-cat-plans-reading-corner-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-reading-corner-1"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-reading-corner-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-reading-corner-2"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-reading-corner-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-reading-corner-3"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-reading-corner-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-reading-corner-4"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-reading-corner-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-reading-corner-5"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-reading-corner-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-reading-corner-6"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-reading-corner-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-reading-corner-7"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-reading-corner-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-reading-corner-8"
+          ],
+          "timeLimitSeconds": 240
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "medium-cat-plans-cat-party",
+      "difficulty": "medium",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Plan a cat party",
+        "lv": "Izplāno kaķu ballīti",
+        "ru": "Спланируй кошачью вечеринку"
+      },
+      "description": {
+        "en": "Invite the cats, plan the decorations and get everything ready on time.",
+        "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+        "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+      },
+      "completion": {
+        "en": "The party is ready. The cats have places, water and decorations.",
+        "lv": "Ballīte ir gatava. Kaķiem ir vietas, ūdens un rotājumi.",
+        "ru": "Вечеринка готова. Для котов подготовлены места, вода и украшения."
+      },
+      "skillId": "medium.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "medium.cat-plans.reading-corner"
+      ],
+      "levels": [
+        {
+          "id": "medium-cat-plans-cat-party-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-cat-party-1"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-cat-party-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-cat-party-2"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-cat-party-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-cat-party-3"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-cat-party-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-cat-party-4"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-cat-party-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-cat-party-5"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-cat-party-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-cat-party-6"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-cat-party-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-cat-party-7"
+          ]
+        },
+        {
+          "id": "medium-cat-plans-cat-party-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-medium-cat-plans-cat-party-8"
+          ],
+          "timeLimitSeconds": 240
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "hard-cat-plans-picnic",
+      "difficulty": "hard",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Prepare a picnic",
+        "lv": "Sagatavo pikniku",
+        "ru": "Подготовь пикник"
+      },
+      "description": {
+        "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+        "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+        "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+      },
+      "completion": {
+        "en": "The picnic is ready. There is a place and water for every cat.",
+        "lv": "Pikniks ir gatavs. Katram kaķim ir vieta un ūdens.",
+        "ru": "Пикник готов. Для каждого кота есть место и вода."
+      },
+      "skillId": "hard.cat-plans.picnic",
+      "prerequisiteSkillIds": [],
+      "levels": [
+        {
+          "id": "hard-cat-plans-picnic-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-picnic-1"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-picnic-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-picnic-2"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-picnic-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-picnic-3"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-picnic-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-picnic-4"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-picnic-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-picnic-5"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-picnic-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-picnic-6"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-picnic-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-picnic-7"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-picnic-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Prepare a picnic",
+            "lv": "Sagatavo pikniku",
+            "ru": "Подготовь пикник"
+          },
+          "description": {
+            "en": "Count the guests, pack supplies and choose a time for the cat picnic.",
+            "lv": "Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.",
+            "ru": "Посчитай гостей, собери припасы и выбери время для кошачьего пикника."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-picnic-8"
+          ],
+          "timeLimitSeconds": 300
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "hard-cat-plans-reading-corner",
+      "difficulty": "hard",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Make a reading corner",
+        "lv": "Iekārto lasīšanas stūrīti",
+        "ru": "Устрой уголок для чтения"
+      },
+      "description": {
+        "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+        "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+        "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+      },
+      "completion": {
+        "en": "The reading corner is ready. The cats can settle beside the books.",
+        "lv": "Lasīšanas stūrītis ir gatavs. Kaķi var iekārtoties blakus grāmatām.",
+        "ru": "Уголок для чтения готов. Коты могут устроиться рядом с книгами."
+      },
+      "skillId": "hard.cat-plans.reading-corner",
+      "prerequisiteSkillIds": [
+        "hard.cat-plans.picnic"
+      ],
+      "levels": [
+        {
+          "id": "hard-cat-plans-reading-corner-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-reading-corner-1"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-reading-corner-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-reading-corner-2"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-reading-corner-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-reading-corner-3"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-reading-corner-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-reading-corner-4"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-reading-corner-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-reading-corner-5"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-reading-corner-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-reading-corner-6"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-reading-corner-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-reading-corner-7"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-reading-corner-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Make a reading corner",
+            "lv": "Iekārto lasīšanas stūrīti",
+            "ru": "Устрой уголок для чтения"
+          },
+          "description": {
+            "en": "Arrange places, choose books and plan a quiet reading time with the cats.",
+            "lv": "Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.",
+            "ru": "Подготовь места, выбери книги и запланируй тихое чтение с котами."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-reading-corner-8"
+          ],
+          "timeLimitSeconds": 300
+        }
+      ]
+    },
+    {
+      "format": "path",
+      "id": "hard-cat-plans-cat-party",
+      "difficulty": "hard",
+      "topicId": "cat-plans",
+      "title": {
+        "en": "Plan a cat party",
+        "lv": "Izplāno kaķu ballīti",
+        "ru": "Спланируй кошачью вечеринку"
+      },
+      "description": {
+        "en": "Invite the cats, plan the decorations and get everything ready on time.",
+        "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+        "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+      },
+      "completion": {
+        "en": "The party is ready. The cats have places, water and decorations.",
+        "lv": "Ballīte ir gatava. Kaķiem ir vietas, ūdens un rotājumi.",
+        "ru": "Вечеринка готова. Для котов подготовлены места, вода и украшения."
+      },
+      "skillId": "hard.cat-plans.cat-party",
+      "prerequisiteSkillIds": [
+        "hard.cat-plans.reading-corner"
+      ],
+      "levels": [
+        {
+          "id": "hard-cat-plans-cat-party-step-1",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-cat-party-1"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-cat-party-step-2",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-cat-party-2"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-cat-party-step-3",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-cat-party-3"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-cat-party-step-4",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-cat-party-4"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-cat-party-step-5",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-cat-party-5"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-cat-party-step-6",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-cat-party-6"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-cat-party-step-7",
+          "kind": "practice",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-cat-party-7"
+          ]
+        },
+        {
+          "id": "hard-cat-plans-cat-party-step-8",
+          "kind": "challenge",
+          "title": {
+            "en": "Plan a cat party",
+            "lv": "Izplāno kaķu ballīti",
+            "ru": "Спланируй кошачью вечеринку"
+          },
+          "description": {
+            "en": "Invite the cats, plan the decorations and get everything ready on time.",
+            "lv": "Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.",
+            "ru": "Пригласи котов, спланируй украшения и подготовь всё вовремя."
+          },
+          "puzzleIds": [
+            "v2-hard-cat-plans-cat-party-8"
           ],
           "timeLimitSeconds": 300
         }

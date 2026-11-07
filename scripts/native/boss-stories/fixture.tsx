@@ -87,7 +87,7 @@ export default function BossFixture() {
       </View>
     </ScrollView>
     {result !== null ? <ResultOverlay visible correct={result} petType={pet.type} catSkinId={coat} petName="Minka"
-      petMood={result ? "correct" : "idle"} bossStory={{ story, locale, completed }}
+      petMood={result ? "correct" : "idle"}
       encouragement={result ? completed === 3 ? story.outcome[locale] : story.stages[phase].after[locale] : language.t("puzzleCompanion.retry")}
       message={language.t(result ? completed === 3 ? "learning.bossComplete" : "play.greatJob" : "play.goodTry")}
       detail={result ? "A completed task changes the mission scene." : "This task has not changed the scene."}

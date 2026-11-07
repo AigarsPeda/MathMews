@@ -284,7 +284,7 @@ async function harness(screen = 'store', compiled = false) {
         React.createElement(clockContext.Provider, { value: clock },
           React.createElement(Screen, screen !== 'home-header' ? {} : {
             layout: 'home', coins: game.wallet.coins, streak: game.progress.streak,
-            lives: game.progress.lives, completedPuzzleIds: game.progress.completedPuzzleIds,
+            lives: game.progress.lives,
           }))))), root, null, null));
   await render();
   return { drawFrames, props: name => props.get(name), count: name => counts.get(name) ?? 0, calls, load, update,
@@ -1260,18 +1260,19 @@ test(`Store refreshes affordability, ownership, placements, catalog prices, and 
   } finally { await h.close(); }
 });
 
-test(`Home header ignores unrelated pet updates while wallet, achievements, lives, and local sheets stay live (${mode})`, async () => {
+test(`Home header ignores unrelated pet updates while wallet, lives, and local sheets stay live (${mode})`, async () => {
   const h = await harness('home-header', compiled);
   try {
-    const count = h.count('CoinCounter'), achievements = h.count('Pressable'), gameReads = h.count('gameReads');
+    const count = h.count('CoinCounter'), lifeControls = h.count('Pressable'), gameReads = h.count('gameReads');
     await h.setGame({ pet: { ...h.game.pet, name: 'Changed pet' } });
     assert.equal(h.count('CoinCounter'), count);
     assert.equal(h.count('gameReads'), gameReads, 'No whole-game subscription in the Home header');
-    assert.equal(h.count('Pressable'), achievements, 'Achievements must not subscribe to the entire save');
+    assert.equal(h.count('Pressable'), lifeControls, 'Life controls must not subscribe to the entire save');
     await h.setGame({ wallet: { coins: 23 } });
     assert.equal(h.props('CoinCounter').coins, 23);
+    const beforeCompletion = h.count('Pressable');
     await h.setGame({ progress: { ...h.game.progress, completedPuzzleIds: h.load('@/utils/boss-achievements').getBossAchievements()[0].level.puzzleIds } });
-    assert.ok(h.count('Pressable') > achievements);
+    assert.equal(h.count('Pressable'), beforeCompletion, 'Puzzle completions do not render a retired collection control');
     await h.setGame({ progress: { ...h.game.progress, lives: { current: 1, nextRegenAt: Date.now() + 60000 } } });
     assert.equal(h.props('BuyLifeSheet').lives.current, 1);
     const livesLabel = h.props('Pressable').accessibilityLabel;

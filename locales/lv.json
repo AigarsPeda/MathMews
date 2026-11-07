@@ -1089,6 +1089,7 @@
     "hard": "Grūts"
   },
   "topic": {
+    "cat-plans": "Kaķu plāni",
     "addition": "Saskaitīšana",
     "subtraction": "Atņemšana",
     "multiplication": "Reizināšana",
@@ -1271,6 +1272,7 @@
   },
   "play": {
     "puzzleOf": "Uzdevums {{number}} no {{total}}",
+    "backToPath": "Atpakaļ uz taku",
     "adjustAnswer": "Vēl nav pareizi. Pielāgo atbildi un pārbaudi vēlreiz.",
     "attemptHints": {
       "fractionTooFew": "Iekrāsots par maz daļu. Pieskaries tukšai daļai, lai to iekrāsotu.",
@@ -1421,7 +1423,8 @@
     "a11yTimer": "Nākamā dzīvība pēc {{time}}",
     "a11yProgress": "{{percent}} procenti līdz nākamajai dzīvībai",
     "mistakeCost": "Katra nepareiza atbilde izmanto 1 dzīvību.",
-    "checkPaused": "Atbilžu pārbaude ir apturēta. Ievadītās atbildes paliek savās vietās.",
+    "refillToRetry": "Papildini dzīvības, lai mēģinātu vēlreiz",
+    "checkPaused": "Papildini dzīvību, lai mēģinātu vēlreiz, vai atgriezies uz takas. Pabeigtie uzdevumi ir saglabāti.",
     "openRefill": "Dzīvības un papildināšana",
     "workedExample": "Apskati atrisinātu piemēru"
   },
@@ -1632,6 +1635,7 @@
     "missionReady": "Misija ir pabeigta"
   },
   "timedChallenge": {
+    "finishLevel": "Pabeidz šo līmeni",
     "doubleCoins": "2× monētas",
     "completed": "Izaicinājums laikā pabeigts!",
     "collectOnFinish": "Pabeidz mēģinājumu laikā, lai saņemtu dubulto atlīdzību.",
@@ -1868,6 +1872,7 @@
     "moveBy": "Maini x par {{x}} un y par {{y}}."
   },
   "everyday": {
+    "cats": "Kaķi",
     "toys": "Rotaļlietas",
     "pretendMoney": "Mācību nauda",
     "pack": "Komplektā: {{count}}",
@@ -1878,20 +1883,6 @@
   "actionMotion": {
     "giveOne": "Iedot vienu priekšmetu",
     "sharing": "Vēl nesadalīti: {{remaining}}. Katrā grupā: {{counts}}.",
-    "exchange": "{{tens}} desmiti un {{ones}} vieni. Desmit vieni veido vienu desmitu.",
-    "milestone1": "Mūsu pirmais piedzīvojums",
-    "milestone10": "Desmit kopīgi piedzīvojumi",
-    "milestone50": "Piecdesmit kopīgi piedzīvojumi",
-    "milestoneEarned": "Pilnībā pabeigtas nodarbības: {{count}}.",
-    "collection": "Sasniegumu priekšnesumi",
-    "watch": "Skatīties priekšnesumu",
-    "unlock": "Pabeidz {{count}} nodarbības · pabeigtas {{completed}}",
-    "pause": "Pauze",
-    "resume": "Turpināt",
-    "replay": "Skatīties vēlreiz",
-    "hide": "Paslēpt priekšnesumu",
-    "newPerformance": "Jauns sasnieguma priekšnesums",
-    "adventureEnding": "Skatīties piedzīvojuma beigas",
-    "movies": "Piedzīvojumu filmas"
+    "exchange": "{{tens}} desmiti un {{ones}} vieni. Desmit vieni veido vienu desmitu."
   }
 }

@@ -24,15 +24,15 @@ export function checkPaths({ load }) {
       const track = path.getTopicPaths(difficulty, topic.id);
       const ids = track.flatMap(lesson => lesson.levels.flatMap(level => level.puzzleIds));
       const counts = progress => path.getTopicPathProgress(difficulty, topic.id, progress);
-      assert.deepEqual(clone(counts(fresh)), { solved: 0, total: 100, complete: false }, 'New topics include all ten puzzles in each of ten levels');
+      assert.deepEqual(clone(counts(fresh)), { solved: 0, total: ids.length, complete: false }, 'Topic counts include all ten puzzles in every level');
       const elsewhere = path.PUZZLE_PATHS.filter(lesson => lesson.difficulty !== difficulty || lesson.topicId !== topic.id)
         .flatMap(lesson => lesson.levels.flatMap(level => level.puzzleIds));
       const partial = { ...fresh, completedPuzzleIds: [...ids.slice(0, 9), ids[0], ...elsewhere], attemptedPuzzleIds: [ids[9]] };
       assert.equal(counts(partial).solved, 9, 'Count challenges and reviews once; ignore other topics, difficulties, replays and incorrect attempts');
-      assert.equal(counts(partial).total - counts(partial).solved, 91);
+      assert.equal(counts(partial).total - counts(partial).solved, ids.length - 9);
       const inherited = { ...fresh, completedPathLessonIds: track.map(lesson => lesson.id), completedPuzzleIds: ids.slice(0, 7) };
       assert.equal(counts(inherited).solved, 7, 'Legacy level completion never invents solved answers for newly added puzzles');
-      assert.deepEqual(clone(counts({ ...fresh, completedPuzzleIds: ids })), { solved: 100, total: 100, complete: true });
+      assert.deepEqual(clone(counts({ ...fresh, completedPuzzleIds: ids })), { solved: ids.length, total: ids.length, complete: true });
     }
   }
   {

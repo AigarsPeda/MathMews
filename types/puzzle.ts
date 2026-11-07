@@ -3,6 +3,7 @@ import type { PuzzleObject } from "./puzzle-object";
 export type PuzzleDifficulty = "easy" | "medium" | "hard";
 
 export type PuzzleTopic =
+  | "cat-plans"
   | "time" | "data" | "spatial" | "money" | "capacity"
   | "addition"
   | "subtraction"

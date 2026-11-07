@@ -727,7 +727,6 @@ const HomeContent = memo(function HomeContent({ game, homeActive, reduceMotion }
               coins={wallet.coins}
               streak={progress.streak}
               lives={progress.lives}
-              completedPuzzleIds={progress.completedPuzzleIds}
             />
             <View style={styles.settingsDivider} />
             <HeaderChip style={styles.settingsButton} onPress={handleOpenSettings}

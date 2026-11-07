@@ -794,7 +794,6 @@ const StoreContent = memo(function StoreContent({ game }: { game: ReturnType<typ
             coins={wallet.coins}
             streak={progress.streak}
             lives={progress.lives}
-            completedPuzzleIds={progress.completedPuzzleIds}
           />
         </View>
 

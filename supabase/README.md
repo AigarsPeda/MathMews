@@ -31,6 +31,8 @@ a compensating ledger entry. The 100 purchase-test coins remain available for te
 
 The November 7 everyday-category expansion is deployed: 1,500 additional puzzle rewards and 150 timed-run registrations. The additive migration preserves existing rows. See [category deployment evidence](deployments/2026-11-07-everyday-categories.json).
 
+The November 8 Cat plans migration is deployed: 90 additional puzzle rewards and nine three-task timed runs. All reward amounts and ordered task lists match the migration. See [deployment evidence](deployments/2026-11-08-cat-plans.json).
+
 ## One project, separate environments
 
 No additional database, Supabase project, Docker container, or paid upgrade is

@@ -22,10 +22,8 @@ final class NativeDragTests: XCTestCase {
   XCTAssertGreaterThanOrEqual(heart(3).frame.height, 44)
   XCTAssertLessThanOrEqual(coins.frame.height, 56)
   XCTAssertEqual(coins.frame.minY, heart(3).frame.minY, accuracy: 1)
-  let achievements=app.buttons["Open achievements. 0 of 180 rewards unlocked"]
-  XCTAssertTrue(achievements.isHittable)
-  XCTAssertEqual(achievements.frame.width, coins.frame.width, accuracy: 1)
-  XCTAssertLessThanOrEqual(achievements.frame.maxX, heart(3).frame.minX)
+  XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label CONTAINS 'Open achievements'")).firstMatch.exists)
+  XCTAssertLessThanOrEqual(streak.frame.maxX, heart(3).frame.minX)
   XCTAssertFalse(heart(3).label.contains("Next life")); shot("home-lives-full")
   app.buttons["Lose"].tap(); XCTAssertTrue(heart(2).waitForExistence(timeout: 5))
   let initial = heart(2).label
@@ -38,12 +36,10 @@ final class NativeDragTests: XCTestCase {
   let buy = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Buy a life for")).firstMatch
   XCTAssertTrue(buy.waitForExistence(timeout: 5)); buy.tap()
   XCTAssertTrue(heart(3).waitForExistence(timeout: 5)); XCTAssertFalse(heart(3).label.contains("Next life"))
-  app.buttons["Earn"].tap()
-  let earned=app.buttons["Open achievements. 2 of 180 rewards unlocked"]
-  XCTAssertTrue(earned.waitForExistence(timeout:5))
-  app.buttons["Reopen"].tap(); XCTAssertTrue(earned.waitForExistence(timeout:5)); shot("home-achievements-earned")
-  earned.tap(); XCTAssertTrue(app.staticTexts["Achievements"].waitForExistence(timeout:5))
-  app.buttons["Back"].tap(); XCTAssertTrue(app.buttons["Reset"].waitForExistence(timeout:5))
+  app.buttons["Legacy progress"].tap()
+  app.buttons["Reopen"].tap(); XCTAssertTrue(heart(3).waitForExistence(timeout: 5))
+  XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label CONTAINS 'Open achievements'")).firstMatch.exists)
+  shot("home-legacy-progress-without-rewards")
  }
  func testRegenerationAndNarrowLatvianHeader() {
   app.buttons["Empty"].tap(); XCTAssertTrue(heart(0).waitForExistence(timeout: 5)); shot("home-lives-empty")

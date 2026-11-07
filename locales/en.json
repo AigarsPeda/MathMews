@@ -1088,6 +1088,7 @@
     "hard": "Hard"
   },
   "topic": {
+    "cat-plans": "Cat plans",
     "addition": "Addition",
     "subtraction": "Subtraction",
     "multiplication": "Multiplication",
@@ -1270,6 +1271,7 @@
   },
   "play": {
     "puzzleOf": "Puzzle {{number}} of {{total}}",
+    "backToPath": "Back to path",
     "adjustAnswer": "Not quite. Adjust your answer and check again.",
     "attemptHints": {
       "fractionTooFew": "You’ve shaded too few pieces. Tap an empty slice to fill it.",
@@ -1420,7 +1422,8 @@
     "a11yTimer": "Next life in {{time}}",
     "a11yProgress": "{{percent}} percent until next life",
     "mistakeCost": "Each incorrect answer uses 1 life.",
-    "checkPaused": "Answer checking is paused. Your work stays in place.",
+    "refillToRetry": "Refill lives to try again",
+    "checkPaused": "Refill a life to try again, or return to the path. Completed tasks are saved.",
     "openRefill": "Lives and refill",
     "workedExample": "See a worked example"
   },
@@ -1630,6 +1633,7 @@
     "missionReady": "The mission is complete"
   },
   "timedChallenge": {
+    "finishLevel": "Finish this level",
     "doubleCoins": "2× coins",
     "completed": "Timed run complete!",
     "collectOnFinish": "Finish the timed run to collect your double reward.",
@@ -1866,6 +1870,7 @@
     "moveBy": "Change x by {{x}} and y by {{y}}."
   },
   "everyday": {
+    "cats": "Cats",
     "toys": "Toys",
     "pretendMoney": "Practice money",
     "pack": "Pack of {{count}}",
@@ -1876,20 +1881,6 @@
   "actionMotion": {
     "giveOne": "Give one object",
     "sharing": "In the pool: {{remaining}}. In each group: {{counts}}.",
-    "exchange": "{{tens}} tens and {{ones}} ones. Ten individual units make one ten.",
-    "milestone1": "Our first adventure",
-    "milestone10": "Ten adventures together",
-    "milestone50": "Fifty adventures together",
-    "milestoneEarned": "Full lessons completed: {{count}}.",
-    "collection": "Milestone performances",
-    "watch": "Watch your performance",
-    "unlock": "Finish {{count}} lessons · {{completed}} completed",
-    "pause": "Pause",
-    "resume": "Resume",
-    "replay": "Play again",
-    "hide": "Hide performance",
-    "newPerformance": "New milestone performance",
-    "adventureEnding": "Watch the adventure ending",
-    "movies": "Adventure movies"
+    "exchange": "{{tens}} tens and {{ones}} ones. Ten individual units make one ten."
   }
 }

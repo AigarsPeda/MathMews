@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-08",
+  "scope": "Remove the collection and boss presentation; keep coins and timers; add three cat plans per difficulty",
+  "changes": [
+    "Removed collection links from home, Settings and topic selection; old collection route redirects to topics",
+    "Removed achievement movies, milestone performances and boss scenes from results",
+    "Kept original puzzle IDs, normal coin grants, durable timers and existing progress",
+    "Added 90 cat-plan tasks with separate worked examples, daily reviews and practical completion text",
+    "Simplified timer choice to the normal Berry layout",
+    "Added explicit Try again, refill-to-retry and Back to path actions with localized recovery instructions"
+  ],
+  "ci": {
+    "failedRun": "https://github.com/AigarsPeda/MathMews/actions/runs/42418385663",
+    "cause": "The Time explanation for v2-easy-time-lesson-7-1 was the same abbreviated equation in English and Latvian; the existing localization assertion rejected it.",
+    "fix": "Localize elapsed-time and finish-time descriptions in the generator. Keep the assertion and mathematical data unchanged.",
+    "localChecks": {
+      "game": "All 16 core checks passed, including 339 durable timers, 3390 puzzle registrations and original identity compatibility",
+      "backend": "117 tests passed",
+      "typecheck": "App and backend passed",
+      "lint": "Full eslint --max-warnings 0 passed",
+      "catalog": "Sync check and 3 catalog tests passed",
+      "release": "5 tests passed",
+      "startup": "All startup checks passed",
+      "assets": "Runtime asset verification passed",
+      "motion": "Action-motion regression passed",
+      "header": "Header subscription and refill checks passed with and without React Compiler",
+      "recovery": "Production-screen regressions cover preserved drafts, no life charge for retry, zero-life refill, restored checking, path exit and failure-sheet dismissal"
+    },
+    "remoteStatus": "Hosted verification is tracked in GitHub Actions for the pushed commit."
+  },
+  "native": {
+    "results": "native-results.json",
+    "device": "iPhone 15 simulator",
+    "coverage": [
+      "Topic selection without rewards and three-stop cat-plan trail",
+      "Simplified timer chooser",
+      "Complete three timed picnic tasks with one clock and a 24-coin payment",
+      "Practical completion text with immediate Next level and no performances",
+      "Reading-corner and party tasks",
+      "Latvian and Russian party tasks at 320-point width",
+      "Home header without collection metric",
+      "Life countdown, refill and regeneration after collection removal",
+      "Reopening legacy boss completions does not restore a reward control",
+      "Narrow Latvian home header with a seven-digit wallet",
+      "Wrong clock answer, explicit Try again, unchanged-answer guard and correction",
+      "Last life lost on the capacity task, working refill sheet, preserved draft and continuation",
+      "Timed run completion awards 24 coins after subtracting the displayed refill price",
+      "Back to path after a wrong party answer"
+    ],
+    "isolation": "Production screens under an in-memory GameContext; no player save or cloud mutation.",
+    "homeResults": "home-native-results.json",
+    "recoveryResults": "recovery-native-results.json",
+    "fixtureNote": "Navigation tests keep Fast Refresh unchanged so leaving the fixture does not reload the router. Test progress and refill spending stay in memory."
+  },
+  "evidence": {
+    "flow.jpg": [
+      "topics-without-rewards",
+      "three-cat-plans",
+      "simple-timer-choice",
+      "plan-complete"
+    ],
+    "tasks-and-languages.jpg": [
+      "Clock with visible preparation duration",
+      "Water with consistent ml units",
+      "Shopping with visible budget",
+      "Latvian chart of cats",
+      "Russian chart of cats",
+      "Home account header"
+    ],
+    "mistake-recovery.png": "Actionable retry after a wrong clock answer",
+    "empty-lives-recovery.png": "Refill and Back to path remain tappable with zero lives",
+    "returned-to-path.png": "Back to path returns directly to the Cat plans trail"
+  },
+  "verificationLimits": [
+    "Physical devices and Android were not exercised",
+    "Reduce Motion is covered by retained action-motion regressions"
+  ],
+  "database": "supabase/deployments/2026-11-08-cat-plans.json"
+}

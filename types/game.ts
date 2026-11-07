@@ -160,7 +160,7 @@ export type TopicStatsMap = Partial<
     | "fractions"
     | "equality"
     | "estimation"
-    | "division" | "time" | "data" | "spatial" | "money" | "capacity",
+    | "division" | "time" | "data" | "spatial" | "money" | "capacity" | "cat-plans",
     TopicAttemptStats
   >
 >;

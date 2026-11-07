@@ -42,19 +42,9 @@ for (let tens = 0; tens < 9; tens++) for (let ones = 10; ones < 20; ones++) {
   assert.equal(new Set(exchanged.map(t => t.y)).size, 1);
   assert.ok(after.every(t => t.x > 0 && t.x < 300 && t.y > 0 && t.y < 140));
 }
-const { PUZZLE_PATHS } = load('@/constants/puzzle-path');
-const { countFinishedLessons, getNewLearningMilestone, LEARNING_MILESTONES } = load('@/constants/learning-milestones');
-const ids = count => PUZZLE_PATHS.slice(0, count).flatMap(l => l.levels.flatMap(v => v.puzzleIds));
-for (const milestone of LEARNING_MILESTONES) {
-  const finished = ids(milestone.lessons), before = finished.slice(0, -1);
-  assert.equal(countFinishedLessons(before), milestone.lessons - 1, 'Nine steps cannot collect a full-lesson milestone');
-  assert.equal(getNewLearningMilestone(before, finished)?.lessons, milestone.lessons);
-  assert.equal(getNewLearningMilestone(finished, [...finished, finished.at(-1)]), undefined, 'Replays and duplicate callbacks grant no new performance');
-  assert.equal(countFinishedLessons(JSON.parse(JSON.stringify(finished))), milestone.lessons, 'Collection survives save/reopen without new save fields');
-}
 const { getPuzzleCompanionMessage } = load('@/utils/puzzle-companion');
 for (const kind of ['practice', 'challenge', 'boss']) assert.equal(getPuzzleCompanionMessage({ correct: true, kind, retries: 1, finalStage: true, practiceFinished: true, replay: false, completedCount: 50, puzzleId: 'correction' }).reaction, 'puzzleProud', 'Correcting a mistake keeps its quiet nod even at an endpoint');
-console.log('Verified single-object sharing, visible partial rounds and remainders, ten conserved units per exchange, correction priority and persistent milestone boundaries without replay rewards.');
+console.log('Verified single-object sharing, visible partial rounds and remainders, ten conserved units per exchange, and correction priority.');
 
 // Exercise the actual token renderer with native animation calls captured.
 const animationCalls = [], shared = []; let cursor = 0, reduceMotion = false, active = true, cleanups = [];

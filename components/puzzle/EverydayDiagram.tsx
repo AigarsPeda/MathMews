@@ -36,7 +36,7 @@ export function EverydayDiagram({ model }: { model: EverydayModel }) {
     const max = Math.max(...visibleValues) + (model.task === 'missing' ? model.step : 0);
     const ticks = Array.from({ length: max / model.step + 1 }, (_, i) => i * model.step);
     content = <View style={styles.chart}>
-      <Text style={styles.caption}>{t('everyday.toys')}</Text>
+      <Text style={styles.caption}>{t(model.subject === 'cats' ? 'everyday.cats' : 'everyday.toys')}</Text>
       <View style={styles.plot}>
         {ticks.map(value => <View key={value} style={[styles.gridline, { bottom: value / max * 180 + 28 }]}>
           <Text style={styles.axisLabel}>{value}</Text><View style={styles.rule} />

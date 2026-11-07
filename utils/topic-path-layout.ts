@@ -3,6 +3,7 @@ export type TopicPathPoint = { x: number; y: number; diameter: number; radius: n
 // Authored per topic so returning players recognize their trail. Positions never
 // depend on progress, and every stop leaves the opposite side free for its title.
 const topicRoutes: Record<string, { lanes: number[]; gaps: number[]; radius: number; bend: number }> = {
+  "cat-plans": { lanes: [0, 1, 0.15], gaps: [256, 280], radius: 34, bend: 0.5 },
   time:          { lanes: [0, 0.9, 0.9, 0.1, 1, 0.1, 0.1, 1, 0.85, 0], gaps: [192, 256, 176, 344, 208, 280, 164, 256, 368], radius: 34, bend: 0.46 },
   data:          { lanes: [1, 0.15, 0.85, 0, 0, 1, 0.15, 0.85, 1, 0], gaps: [280, 164, 208, 256, 368, 176, 344, 192, 256], radius: 30, bend: 0.54 },
   spatial:       { lanes: [0.15, 1, 0, 0.85, 0.85, 0, 1, 0.15, 1, 0], gaps: [176, 344, 192, 280, 164, 368, 208, 256, 192], radius: 24, bend: 0.5 },

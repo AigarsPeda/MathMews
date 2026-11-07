@@ -7,7 +7,6 @@ import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleProgress } from "@/components/puzzle/PuzzleProgress";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
-import { AchievementsLink } from "@/components/puzzle/AchievementsLink";
 import { getLearningTopics } from "@/constants/curriculum";
 import { getPathEntry, getPathProgress, getPathRecommendation, getPathResumeRecommendation, getTopicPaths, getTopicPathProgress } from "@/constants/puzzle-path";
 import { PuzzleColors as GameColors, TopicPathColors } from "@/constants/puzzle-theme";
@@ -125,7 +124,6 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
         </Pressable>
         {topic ? <Text style={styles.trailTitle} accessibilityRole="header">{topic.title[locale]}</Text> : null}
         {topic ? <Text style={styles.difficultyLabel}>{t(`difficulty.${difficulty}`)}</Text> : null}
-        {!topic ? <AchievementsLink /> : null}
       </View>
       <Animated.ScrollView ref={trailScroll} key={`${difficulty}:${topic?.id ?? "selection"}`} style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}
         onScroll={onTrailScroll} scrollEventThrottle={16}

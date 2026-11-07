@@ -8,10 +8,8 @@ import { useWorldClockNow } from "@/hooks/use-world-clock-now";
 import type { LivesState } from "@/types/game";
 import { applyLifeRegen, formatRegenClock, msUntilNextLife } from "@/utils/lives";
 import { moderateScale } from "@/utils/scale";
-import { getBossAchievements } from "@/utils/boss-achievements";
-import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -20,25 +18,7 @@ type GameHeaderStatsProps = {
   coins: number;
   streak?: number;
   lives: LivesState;
-  completedPuzzleIds?: readonly string[];
 };
-
-function HomeAchievementsStat({ layout, completedPuzzleIds }: { layout: HomeMetricLayout; completedPuzzleIds?: readonly string[] }) {
-  const { t } = useTranslation(), router = useRouter();
-  const { recordInteraction } = useGameActions();
-  const achievements = useMemo(() => getBossAchievements(completedPuzzleIds), [completedPuzzleIds]);
-  const count = achievements.filter(item => item.collected).length;
-  const compact = layout === 'compact';
-  return <Pressable style={({ pressed }) => [styles.livesMetric, compact && styles.compactMetric, layout === 'stacked' && styles.stackedMetric, pressed && { opacity: .7 }]} accessibilityRole="button"
-    accessibilityLabel={`${t('achievements.open')}. ${t('achievements.count', { count, total: achievements.length })}`}
-    onPress={() => { recordInteraction(); triggerHaptic(); router.push('/achievements'); }}>
-    {!compact ? <Text style={styles.metricLabel}>{t('achievements.shortTitle')}</Text> : null}
-    <View style={styles.achievementValueRow}>
-      <AppIcon name="boss-badge" size={moderateScale(16)} />
-      <Text style={styles.achievementCount}>{count}{!compact ? <Text style={styles.achievementTotal}>{` ${t('achievements.ofTotal', { total: achievements.length })}`}</Text> : null}</Text>
-    </View>
-  </Pressable>;
-}
 
 function triggerHaptic(
   style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light,
@@ -81,7 +61,6 @@ export const GameHeaderStats = memo(function GameHeaderStats({
   coins,
   streak = 0,
   lives,
-  completedPuzzleIds,
 }: GameHeaderStatsProps) {
   const { recordInteraction } = useGameActions();
   const [showCoinSheet, setShowCoinSheet] = useState(false);
@@ -101,7 +80,7 @@ export const GameHeaderStats = memo(function GameHeaderStats({
         compact
         layout={layout}
         onPress={handleOpenCoinSheet}
-        homeAccessory={layout === 'home' ? metricLayout => <><HomeAchievementsStat layout={metricLayout} completedPuzzleIds={completedPuzzleIds} />{metricLayout !== 'stacked' ? <View style={styles.metricDivider} /> : null}<HomeLivesStat lives={lives} coins={coins} layout={metricLayout} /></> : undefined}
+        homeAccessory={layout === 'home' ? metricLayout => <HomeLivesStat lives={lives} coins={coins} layout={metricLayout} /> : undefined}
       />
       <CoinPackSheet
         visible={showCoinSheet}
@@ -116,10 +95,6 @@ const styles = StyleSheet.create({
   compactMetric: { minHeight: 48, paddingHorizontal: moderateScale(2), paddingVertical: moderateScale(4) },
   stackedMetric: { flex: 0, width: '50%' },
   metricLabel: { color: GameColors.textMuted, fontSize: moderateScale(11), lineHeight: moderateScale(14), fontWeight: '600', textAlign: 'center' },
-  metricDivider: { width: 1, height: moderateScale(28), backgroundColor: GameColors.cardBorder },
-  achievementValueRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: moderateScale(2) },
-  achievementCount: { flexShrink: 1, minWidth: 0, color: GameColors.text, fontSize: moderateScale(16), lineHeight: moderateScale(20), fontWeight: '700', textAlign: 'center', fontVariant: ['tabular-nums'] },
-  achievementTotal: { color: GameColors.textMuted, fontWeight: '400' },
   livesValueRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: moderateScale(2) },
   livesCount: { color: GameColors.primary, fontSize: moderateScale(16), lineHeight: moderateScale(20), fontWeight: '700', fontVariant: ['tabular-nums'] },
   countdown: { flexShrink: 1, color: GameColors.textMuted, fontSize: moderateScale(11), fontWeight: '600', fontVariant: ['tabular-nums'], marginLeft: moderateScale(2) },

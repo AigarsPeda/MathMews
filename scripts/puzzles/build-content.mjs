@@ -1,5 +1,6 @@
 import { applyBridgePilot, BRIDGE_PLANS } from "./bridge-pilot.mjs";
 import { appendEverydayTopics } from './everyday-topics.mjs';
+import { appendCatPlans } from './cat-plans.mjs';
 import { applyGeometryPilot } from "./geometry-pilot.mjs";
 import { applyHardReasoning } from './hard-reasoning.mjs';
 import { simplifyEasyFractions } from './easy-fractions.mjs';
@@ -428,6 +429,7 @@ addRussianLearningText(lessons);
 addRussianLearningText(lessonBossScenes);
 puzzles.ru = Object.fromEntries(['easy', 'medium', 'hard'].map(tier => [tier, puzzles.en[tier].map(russianPuzzle)]));
 const everydayReviews = appendEverydayTopics({ topics, lessons, puzzles, pathExtras });
+Object.assign(everydayReviews, appendCatPlans({ topics, lessons, puzzles, pathExtras }));
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
 writeGenerated('data/puzzle-path-extras.json', pathExtras);
 writeGenerated('data/everyday-reviews.json', everydayReviews);

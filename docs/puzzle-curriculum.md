@@ -298,10 +298,18 @@ Run `node scripts/check-curriculum.mjs` for bilingual content, progression, pers
 
 The research and remaining evaluation work are recorded in [the progression study](puzzle-progression-study-2026-10-24.md). Skip-ahead placement and untimed copies of scored challenges remain separate proposals. Educator review, fluent Latvian review and observation with children remain necessary before expanding the pilot or claiming a learning benefit.
 
-## Action-led animation — November 7, 2026
+## Action-led animation, November 7, 2026
 
 Sharing now uses one tap per object, stopping at the last full round and leaving the remainder in the pool. Place-value exchanges animate ten stable unit tokens between the ones column and a ten rod. The mathematical state updates immediately; animation does not defer checking, reset or continuation. Corrections use the existing modest nod rather than a random success gesture.
 
-Completed story paths offer their existing achievement movie from the result. Separate milestone performances unlock after 1, 10 and 50 fully completed ten-step paths, including the five everyday categories. They appear in the existing achievement collection, derive from durable puzzle IDs, and do not change wallets, lesson identities or save formats. They compose existing rig performances rather than adding movie assets.
+The rewards collection and optional result performances were retired on November 8. Brief feedback and instructional object movement remain.
 
-Run `npm run test:action-motion` for object conservation, animation interruption, reduced motion, completion boundaries, correction selection, all three cat coats and immediate result dismissal. Run `node scripts/native/check-puzzle-drag.mjs --action-motion --device <simulator-UDID>` for sharing, regrouping, corrections, adventure playback, milestone controls and the production collection using isolated in-memory progress.
+Run `npm run test:action-motion` for object conservation, animation interruption, reduced motion, correction selection, all three cat coats and immediate result dismissal. Run `node scripts/native/check-puzzle-drag.mjs --action-motion --device <simulator-UDID>` for sharing, regrouping, corrections and immediate continuation using isolated in-memory progress.
+
+## Cat plans and simpler lessons, November 8, 2026
+
+The app uses ordinary ten-task paths with a timed final section. Boss story data and original puzzle IDs remain for saved-progress and reward compatibility; they do not create boss screens, gates or result movies. The rewards collection and its home, Settings and topic links are removed. Old collection links return to topics. Cat-care coins and existing timer rewards remain unchanged.
+
+Cat plans adds Prepare a picnic, Make a reading corner and Plan a cat party at each difficulty, with 90 new tasks in English, Latvian and Russian. Each plan uses seven preparation tasks followed by the existing three-task timer choice, with separate worked examples and daily reviews. The result describes the prepared activity rather than unlocking a collectible. Authoring lives in `scripts/puzzles/cat-plans.mjs`; rebuild with `npm run puzzles:build`. Run `node scripts/puzzles/check-cat-plans.mjs` or `npm run test:game` for content, server registrations and removal checks. The forward-only migration `20261108010000_cat_plans.sql` registers the new normal coin amounts and timed runs. It is deployed and all 90 reward entries and nine timer lists are verified; see [deployment evidence](../supabase/deployments/2026-11-08-cat-plans.json).
+
+The GitHub failure at commit `85615ebe` was the localization assertion for the Time topic: abbreviated equations were identical in English and Latvian. The generator now labels elapsed time and finish time in each language while preserving the numbers and answers. The localization assertion remains enabled.

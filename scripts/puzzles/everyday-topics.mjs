@@ -56,7 +56,7 @@ function timeTask(tier, focus, n) {
     answer = tier === 0 ? duration / 60 : duration;
     question = tier === 0 ? T('How many hours pass between these times?', 'Cik stundu paiet starp šiem laikiem?', 'Сколько часов проходит между этими моментами?')
       : T(`How many minutes pass${start + duration >= 1440 ? ', going into the next day' : ' on the same day'}?`, `Cik minūšu paiet${start + duration >= 1440 ? ', pārejot nākamajā dienā' : ' tajā pašā dienā'}?`, `Сколько минут проходит${start + duration >= 1440 ? ' до следующего дня' : ' в тот же день'}?`);
-    explanation = T(`${clock(start)} → ${clock(start + duration)}: ${duration} min${tier === 0 ? ` = ${answer} h` : ''}.`, `${clock(start)} → ${clock(start + duration)}: ${duration} min${tier === 0 ? ` = ${answer} h` : ''}.`, `${clock(start)} → ${clock(start + duration)}: ${duration} мин${tier === 0 ? ` = ${answer} ч` : ''}.`);
+    explanation = T(`Elapsed time: ${clock(start)} → ${clock(start + duration)}: ${duration} min${tier === 0 ? ` = ${answer} h` : ''}.`, `Pagājušais laiks: ${clock(start)} → ${clock(start + duration)}: ${duration} min${tier === 0 ? ` = ${answer} h` : ''}.`, `${clock(start)} → ${clock(start + duration)}: ${duration} мин${tier === 0 ? ` = ${answer} ч` : ''}.`);
   } else if (tier === 0 && focus === 4 || tier === 1 && [2, 3].includes(focus) || tier === 2 && [1, 2, 3].includes(focus)) {
     if (tier === 2) { start = 22 * 60 + minute; duration = 70 + n % 12 * 10; }
     const backwards = focus === (tier === 1 ? 3 : 2);
@@ -65,7 +65,7 @@ function timeTask(tier, focus, n) {
     question = backwards ? T(`The activity ends at the shown time and lasts ${duration} minutes. When did it start?`, `Nodarbe beidzas norādītajā laikā un ilgst ${duration} minūtes. Kad tā sākās?`, `Занятие заканчивается в указанное время и длится ${duration} минут. Когда оно началось?`)
       : tier === 2 && focus === 3 ? T(`Wait ${duration - 40} minutes, then travel for 40 minutes. What time will you arrive?`, `Gaidi ${duration - 40} minūtes, tad brauc 40 minūtes. Cikos ieradīsies?`, `Подожди ${duration - 40} минут, затем потрать 40 минут на дорогу. Во сколько прибудешь?`)
         : T(`Start at the shown time. The activity lasts ${duration} minutes. When does it finish?`, `Sāc norādītajā laikā. Nodarbe ilgst ${duration} minūtes. Kad tā beidzas?`, `Начни в указанное время. Занятие длится ${duration} минут. Когда оно закончится?`);
-    explanation = T(`${clock(start)} + ${duration} min → ${clock(start + duration)}.`, `${clock(start)} + ${duration} min → ${clock(start + duration)}.`, `${clock(start)} + ${duration} мин → ${clock(start + duration)}.`);
+    explanation = T(`Finish time: ${clock(start)} + ${duration} min → ${clock(start + duration)}.`, `Beigu laiks: ${clock(start)} + ${duration} min → ${clock(start + duration)}.`, `${clock(start)} + ${duration} мин → ${clock(start + duration)}.`);
   }
   model.label = model.analog
     ? T(`Short hand: ${h}${minute ? ` toward ${h % 12 + 1}` : ''}. Long hand: ${minute / 5 || 12}.`, `Īsais rādītājs: ${h}${minute ? ` virzienā uz ${h % 12 + 1}` : ''}. Garais rādītājs: ${minute / 5 || 12}.`, `Короткая стрелка: ${h}${minute ? ` в сторону ${h % 12 + 1}` : ''}. Длинная стрелка: ${minute / 5 || 12}.`)

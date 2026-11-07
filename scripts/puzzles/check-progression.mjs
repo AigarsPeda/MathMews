@@ -13,7 +13,7 @@ export function checkProgression({ load }) {
   const catalog = read('data/puzzle-curriculum.json'), extras = read('data/puzzle-path-extras.json');
   const tiers = ['easy', 'medium', 'hard'];
   const english = tiers.map(d => readPuzzles('en', d));
-  const newTopics = new Set(['time', 'data', 'spatial', 'money', 'capacity']);
+  const newTopics = new Set(['time', 'data', 'spatial', 'money', 'capacity', 'cat-plans']);
   const originalLessons = catalog.lessons.filter(l => !newTopics.has(l.topicId));
   const originalPuzzles = english.map(list => list.filter(p => !newTopics.has(p.topic)));
   assert.equal(originalLessons.length, 180, 'Keep every original lesson');

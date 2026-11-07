@@ -47,7 +47,7 @@ export function getVisualHelpTemplateKey(puzzle: Puzzle): ExampleKey {
     case "operations": return "target_build";
     case "logic": return "odd_range";
     // These tasks render their own separate, authored worked-example diagram.
-    case "time": case "data": case "spatial": case "money": case "capacity": return "addition";
+    case "cat-plans": case "time": case "data": case "spatial": case "money": case "capacity": return "addition";
   }
 }
 

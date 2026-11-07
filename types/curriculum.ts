@@ -30,6 +30,8 @@ export type LearningLevel = {
   puzzleIds: string[];
 };
 export type LearningLesson = {
+  /** A practical outcome shown after all ten tasks, without a collectible reward. */
+  completion?: LearningText;
   /** New paths have seven practice tasks, a challenge and two path reviews. */
   format?: "path";
   skillId?: string;

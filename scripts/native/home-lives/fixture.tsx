@@ -18,7 +18,7 @@ import type { GameSave } from '@/types/save';
 import { LEARNING_CATALOG } from '@/constants/curriculum';
 
 const PREVIOUS_FAST_REFRESH = true;
-const actionNames = ['Reset', 'Lose', 'Empty', 'Quick', 'FullSoon', 'Reopen', 'Narrow', 'LV', 'Earn'];
+const actionNames = ['Reset', 'Lose', 'Empty', 'Quick', 'FullSoon', 'Reopen', 'Narrow', 'LV', 'Legacy progress'];
 export default function HomeLivesFixture() {
   const realGame = useGame(), insets = useSafeAreaInsets();
   const paddingTop = insets.top + moderateScale(4);
@@ -53,13 +53,13 @@ export default function HomeLivesFixture() {
     Reopen: () => { commit(parseGameSaveFromValue(JSON.stringify(current.current))!.save); setRevision(n => n + 1); },
     Narrow: () => { setNarrow(true); commit({ ...current.current, wallet: { coins: 1234567 } }); },
     LV: () => { void language.changeLanguage('lv'); },
-    Earn: () => commit({ ...current.current, progress: { ...current.current.progress, completedPuzzleIds: LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === 'boss')).slice(0,2).flatMap(level => level.puzzleIds) } }),
+    "Legacy progress": () => commit({ ...current.current, progress: { ...current.current.progress, completedPuzzleIds: LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === 'boss')).slice(0,2).flatMap(level => level.puzzleIds) } }),
   };
   return <I18nextProvider i18n={language}><GameActionsContext.Provider value={game}><GameContext.Provider value={game}>
     <View style={{ flex: 1, paddingTop, paddingHorizontal: moderateScale(16), backgroundColor: GameColors.background }}>
       <View style={{ width: narrow ? 280 : '100%', alignSelf: 'center' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: GameColors.card, borderWidth: 1, borderColor: GameColors.cardBorder, borderRadius: moderateScale(16), paddingHorizontal: moderateScale(4) }}>
-          <GameHeaderStats key={revision} layout="home" coins={save.wallet.coins} streak={2} lives={save.progress.lives} completedPuzzleIds={save.progress.completedPuzzleIds} />
+          <GameHeaderStats key={revision} layout="home" coins={save.wallet.coins} streak={2} lives={save.progress.lives} />
           <View style={{ width: 1, height: moderateScale(28), backgroundColor: GameColors.cardBorder }} />
           <HeaderChip style={{ width: 44, height: 44, minHeight: 44, maxHeight: 44, borderWidth: 0, backgroundColor: 'transparent' }} onPress={() => {}} accessibilityLabel="Settings">
             <AppIcon name="settings" size={moderateScale(18)} />

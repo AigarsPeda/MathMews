@@ -174,14 +174,23 @@ function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, 
   const scroll = nodes(tree).find(node => node.type === 'ScrollView');
   assert.ok(scroll);
   assert.equal(nodes(scroll).some(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === tr('play.checkAnswer')), false, 'The shared Check action stays outside scrolling puzzle content');
-  assert.equal(nodes(tree).filter(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === tr('play.checkAnswer')).length, 1);
+  assert.equal(nodes(tree).filter(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === tr(lifeCount === 0 ? 'lives.refillToRetry' : 'play.checkAnswer')).length, 1);
   return { refresh, attempts, routes, game, tree:()=>tree,
     task: () => nodes(tree).find(node => node.type === 'PuzzleTaskView').props,
+    primary: () => nodes(tree).find(node => node.type === 'PuzzleButton').props,
     check: () => nodes(tree).find(node => node.type === 'PuzzleButton' && node.props.accessibilityLabel === tr('play.checkAnswer')).props,
     card: () => nodes(tree).find(node => node.type === 'PuzzleCard').props,
     result: () => nodes(tree).find(node => node.type === 'ResultOverlay')?.props,
     text: () => nodes(tree).filter(node => ['Text', 'IconText', 'PuzzleText'].includes(node.type)).map(node => node.props.children).join(' '),
   };
+}
+function retry(view) {
+  const before = view.attempts.length, lives = view.game.progress.lives.current;
+  assert.equal(view.primary().label, en.play.tryAgain);
+  assert.equal(view.primary().disabled, false, 'A mistake offers an actionable retry');
+  view.primary().onPress(); view.refresh();
+  assert.equal(view.attempts.length, before, 'Retry does not submit the unchanged answer');
+  assert.equal(view.game.progress.lives.current, lives, 'Retry does not spend a life');
 }
 const base = { id: 'test', hint: 'Count carefully.', explanation: 'A worked answer.', difficulty: 'easy', topic: 'fractions' };
 const { PUZZLE_PATHS } = loadPure('@/constants/puzzle-path');
@@ -265,6 +274,7 @@ assert.equal(pie.attempts[0].correct, false);
 assert.equal(pie.result(), undefined, 'Mistakes are handled in place, without opening a result sheet');
 assert.equal(pie.task().answered, false);
 assert.deepEqual(json(pie.task().fractionSelectedSlices), [1, 4, 5], 'Incorrect answers preserve exact slice selection');
+retry(pie);
 assert.equal(pie.check().disabled, true, 'Checking the unchanged wrong draft is disabled');
 assert.ok(pie.text().includes(en.play.attemptHints.fractionTooMany));
 pie.task().onToggleFractionSlice(4); pie.refresh();
@@ -344,7 +354,7 @@ for (const options of [
   const final = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { ...options, final: true });
   final.task().onSelectChoice(0); final.refresh(); final.check().onPress(); final.refresh();
   assert.equal(final.result().continueLabel, en.play.nextPuzzle);
-  assert.equal(final.result().secondaryLabel, en.puzzlePathDesign.viewPath);
+  assert.equal(final.result().secondaryLabel, en.play.backToPath);
   assert.equal(final.routes.some(([action]) => action === 'params'), false, 'Success presents the choice before advancing');
   final.result().onContinue();
   const route = final.routes.find(([action]) => action === 'params');
@@ -499,8 +509,11 @@ assert.equal(threeLives.attempts.length,3);
 assert.ok(threeLives.text().includes(en.lives.outOfLives));
 assert.equal(threeLives.task().hasLives,false);
 threeLives.task().onSelectChoice(0);threeLives.refresh();
-assert.equal(threeLives.check().disabled,true);
-threeLives.check().onPress();threeLives.refresh();
+assert.equal(threeLives.primary().label,en.lives.refillToRetry);
+assert.equal(threeLives.primary().disabled,false);
+threeLives.primary().onPress();threeLives.refresh();
+assert.ok(nodes(threeLives.tree()).some(n=>n.type==='BuyLifeSheet'),'The empty-life primary action opens refill');
+assert.equal(threeLives.attempts.length,3,'Refill never submits an answer');
 assert.equal(threeLives.result(),undefined,'No success sheet can appear at zero lives');
 const workedExample=nodes(threeLives.tree()).find(n=>n.type==='Pressable'&&nodes(n).some(child=>child.props.children===en.lives.workedExample));
 assert.ok(workedExample,'Help remains available without lives');workedExample.props.onPress();threeLives.refresh();
@@ -511,7 +524,17 @@ assert.equal(threeLives.game.progress.lives.current,0);
 
 const reopenedNoLives=screen({...base,type:'multiple_choice',choices:['4','5'],correctIndex:0},{lifeCount:0});
 reopenedNoLives.task().onSelectChoice(0);reopenedNoLives.refresh();
-assert.equal(reopenedNoLives.check().disabled,true,'Reopening cannot bypass the life gate');
+assert.equal(reopenedNoLives.primary().label,en.lives.refillToRetry,'Reopening offers refill without bypassing the life gate');
+reopenedNoLives.primary().onPress();reopenedNoLives.refresh();
+const refill = nodes(reopenedNoLives.tree()).find(n=>n.type==='BuyLifeSheet');
+assert.ok(refill); await refill.props.onBuyLife();reopenedNoLives.refresh();
+assert.equal(reopenedNoLives.task().selectedIndex,0,'Refill preserves the draft');
+assert.equal(reopenedNoLives.check().disabled,false,'A refilled life restores checking');
+reopenedNoLives.check().onPress();reopenedNoLives.refresh();
+assert.equal(reopenedNoLives.result().correct,true);
+const pathExit=nodes(threeLives.tree()).find(n=>n.type==='Pressable'&&nodes(n).some(child=>child.props.children===en.play.backToPath));
+assert.ok(pathExit,'An empty-life puzzle offers a path exit');pathExit.props.onPress();
+assert.equal(threeLives.routes.at(-1)[1].pathname,'/puzzles');
 const staleLife=screen({...base,type:'multiple_choice',choices:['4','5'],correctIndex:0});
 staleLife.task().onSelectChoice(0);staleLife.refresh();
 const staleCheck=staleLife.check().onPress;staleLife.game.progress.lives.current=0;
@@ -592,7 +615,7 @@ for (const kind of ['decimal_grid','decimal_place_value']) {
   const wrong=grid?0:{ones:0,tenths:0,hundredths:0};
   update(wrong);state.check().onPress();state.refresh();
   assert.equal(state.attempts.length,1);assert.equal(state.attempts[0].correct,false);
-  assert.equal(state.game.progress.lives.current,2);assert.equal(state.check().disabled,true);
+  assert.equal(state.game.progress.lives.current,2);retry(state);assert.equal(state.check().disabled,true);
   assert.deepEqual(json(state.task()[grid?'decimalGrid':'decimalPlace']),wrong);
   update(null);assert.equal(state.check().disabled,true,'Reset clears readiness without spending a life');
   const n=puzzle.payload.hundredths;
@@ -615,7 +638,7 @@ for (const mode of ['area','perimeter','compare','missing_area','missing_perimet
   assert.equal(state.check().disabled,true);
   state.task().onGeometryChange(0);state.refresh();state.check().onPress();state.refresh();
   assert.equal(state.game.progress.lives.current,2);assert.equal(state.attempts[0].correct,false);
-  assert.equal(state.task().geometry,0);assert.equal(state.check().disabled,true,'Same wrong answer cannot spend another life');
+  assert.equal(state.task().geometry,0);retry(state);assert.equal(state.check().disabled,true,'Same wrong answer cannot spend another life');
   state.task().onGeometryChange(null);state.refresh();assert.equal(state.check().disabled,true);
   state.task().onGeometryChange(target);state.refresh();const submit=state.check().onPress;submit();submit();state.refresh();
   assert.equal(state.attempts.length,2);assert.equal(state.result().correct,true);
@@ -642,7 +665,7 @@ for(const type of ['ratio_table','signed_line','equation_board','coordinate_map'
  const right=type==='equation_board'?{equation:{a:1,b:0,c:target}}:typeof target==='number'?{value:target}:{point:target};
  assert.equal(state.check().disabled,true);
  state.task().onBridgeChange(wrong);state.refresh();state.check().onPress();state.refresh();
- assert.equal(state.game.progress.lives.current,2);assert.equal(state.attempts[0].correct,false);assert.equal(state.check().disabled,true);
+ assert.equal(state.game.progress.lives.current,2);assert.equal(state.attempts[0].correct,false);retry(state);assert.equal(state.check().disabled,true);
  state.task().onBridgeChange(null);state.refresh();assert.equal(state.check().disabled,true);assert.equal(state.game.progress.lives.current,2);
  state.task().onBridgeChange(right);state.refresh();const submit=state.check().onPress;submit();submit();state.refresh();
  assert.equal(state.attempts.length,2);assert.equal(state.result().correct,true);assert.equal(state.result().coinsEarned,getPuzzleCoinReward(tier));

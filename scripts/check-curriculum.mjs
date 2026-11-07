@@ -1,3 +1,4 @@
+import { checkCatPlans } from './puzzles/check-cat-plans.mjs';
 import { checkEverydayTopics } from './puzzles/check-everyday-topics.mjs';
 import { BRIDGE_PLANS, BRIDGE_TYPES } from "./puzzles/bridge-pilot.mjs";
 import { GEOMETRY_PILOT_LESSONS } from "./puzzles/geometry-pilot.mjs";
@@ -226,7 +227,7 @@ for(const tier of tiers) assert.ok(getLearningTopics(tier).length > 0);
 const bossTitles={en:new Set(),lv:new Set(),ru:new Set()};
 for(const tier of tiers) for(const topic of getLearningTopics(tier)) {
   const lessons=getTopicLessons(tier,topic.id);
-  assert.ok(lessons.length>=10,`${tier}/${topic.id}: at least ten lessons`);
+  assert.ok(lessons.length >= (topic.id === "cat-plans" ? 3 : 10), `${tier}/${topic.id}: the authored topic is complete`);
   assert.ok(lessons.some(lesson=>lesson.levels.some(level=>level.kind==='challenge' && level.timeLimitSeconds>=60)),`${tier}/${topic.id}: timed challenges are present`);
   const topicBosses=lessons.flatMap(lesson=>lesson.levels.filter(level=>level.kind==='boss'));
   assert.equal(topicBosses.length,lessons.filter(l => l.format !== 'path').length,`${tier}/${topic.id}: archived story bosses remain complete`);
@@ -768,3 +769,4 @@ const { checkReviewAlignment } = await import('./puzzles/check-review-alignment.
 checkReviewAlignment({load});
 
 checkEverydayTopics();
+checkCatPlans();

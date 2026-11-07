@@ -15,9 +15,7 @@ import { ChallengeClock, TimedChallengeActions, TimedChallengeIntro } from "@/co
 import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
-import { getLevelPuzzles, LEARNING_CATALOG, type LearningSession } from "@/constants/curriculum";
-import { getNewLearningMilestone } from '@/constants/learning-milestones';
-import { getAchievementStory } from '@/constants/achievement-stories';
+import { getLevelPuzzles, type LearningSession } from "@/constants/curriculum";
 import { getChallengePathLocation, getNextPathLevel, getNextPathStep, getPathCompletedIds, getPathProgress, resolvePathSession } from "@/constants/puzzle-path";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
@@ -58,6 +56,7 @@ import {
   ActivityIndicator,
   Platform,
   Pressable,
+  type ScrollView,
   StyleSheet,
   View,
 } from "react-native";
@@ -192,6 +191,8 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   >(() => createEmptyOperators(puzzle));
   const [answered, setAnswered] = useState(false);
   const [lastAttempt, setLastAttempt] = useState<{ key: string; hint: string } | null>(null);
+  const [editingRetry, setEditingRetry] = useState(false);
+  const taskScroll = useRef<ScrollView>(null);
   const submittedAnswer = useRef<string | null>(null);
   const matchingAttempt = useRef<string | null>(null);
   const [bridge, setBridge] = useState<BridgeState | null>(null);
@@ -234,7 +235,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     setBridge(null); setGeometry(null); setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
     setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
     setNumberOrder(createInitialOrder(nextPuzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
-    setLastAttempt(null); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
+    setLastAttempt(null); setEditingRetry(false); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
     setCoinsEarned(0); setShowVisualHelp(false); setShowLives(false);
   }
   useEffect(() => {
@@ -263,7 +264,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     setBridge(null); setGeometry(null); setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
     setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
     setNumberOrder(createInitialOrder(puzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
-    setLastAttempt(null); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
+    setLastAttempt(null); setEditingRetry(false); setRetryCount(0); setIsDraggingTile(false); setAnswered(false); setIsCorrect(false);
     submittedAnswer.current = null; matchingAttempt.current = null;
     attemptId.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }, [beginChallenge, level.id, puzzle, recordInteraction, challengeMode]);
@@ -282,15 +283,12 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     matchedCount: fractionMatchMatchedIds.length / 2, pairs: foundPairs, challenge: challengeAnswer,
   }), [puzzle, bridge, geometry, decimalGrid, decimalPlace, fractionStrip, placeValue, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
   const draftKey = JSON.stringify(draftAnswer);
+  const offerRetry = !answered && hasLives && !!lastAttempt && draftKey === lastAttempt.key && !editingRetry;
   const canCheck = hasLives && challengePlayable && !answered && draftAnswer !== null && draftKey !== lastAttempt?.key;
   const progressSteps = lesson.levels.map((item, index) => replaySession ? index < position.current - 1 || answered && index === position.current - 1
     : item.puzzleIds.every(id => entryCompleted.includes(id) || answered && id === puzzle.id));
   const resultProgress = { ...progress, completedPuzzleIds: [...entryCompleted, ...(answered ? [puzzle.id] : [])] };
   const lessonFinished = answered && position.current === position.total && getPathProgress(lesson, resultProgress).complete;
-  const earnedMilestone = useMemo(() => lessonFinished && isCorrect && !isReplay
-    ? getNewLearningMilestone(entryCompleted, [...entryCompleted, puzzle.id]) : undefined,
-  [lessonFinished, isCorrect, isReplay, entryCompleted, puzzle.id]);
-  const endingStory = lessonFinished && isCorrect ? LEARNING_CATALOG.lessons.find(item => item.id === lesson.id)?.levels.find(item => item.story)?.story : undefined;
   const resultMood: PetAnimationState = isCorrect && !expired ? "correct" : "incorrect";
   const nextPuzzleRoute = useMemo(() => {
     if (!isCorrect) return undefined;
@@ -334,6 +332,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
       setAnswered(true);
       setLastAttempt(null);
     } else {
+      setEditingRetry(false);
       const hint = getPuzzleAttemptHint(puzzle, draftAnswer, retryCount + 1);
       setLastAttempt({ key: draftKey, hint: hint ? [t(`play.attemptHints.${hint.key}`), hint.detailKey ? t(`play.attemptHints.${hint.detailKey}`) : null].filter(Boolean).join(" ") : puzzle.hint });
       setRetryCount(count => count + 1);
@@ -469,8 +468,6 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     }
   }, [nextPuzzleRoute, nextLevelRoute, exitToPath, isCorrect, router, expired, run]);
 
-  const handleGoHome = useCallback(() => { router.dismissTo("/"); }, [router]);
-
   if (!isReady) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
   if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
 
@@ -484,7 +481,9 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
     completedCount: new Set(entryCompleted).size + (isCorrect && !isReplay ? 1 : 0),
     puzzleId: puzzle.id,
   });
-  const challengeIntroProps = { level, mode: challengeMode, onModeChange: setChallengeMode, expired: !!expired, lifeLost: !!run?.lifeLost, hasLives, otherActive,
+  const challengeIntroProps = { level, title: lesson.topicId === 'cat-plans' ? lesson.title[locale] : undefined,
+    description: lesson.topicId === 'cat-plans' ? lesson.description[locale] : undefined,
+    mode: challengeMode, onModeChange: setChallengeMode, expired: !!expired, lifeLost: !!run?.lifeLost, hasLives, otherActive,
     onStart: handleBeginChallenge, onResume: handleResumeChallenge, onRefill: () => setShowLives(true) };
 
   if (!fontsLoaded && !fontError) return <View style={styles.loading}><ActivityIndicator color={GameColors.primary} /></View>;
@@ -507,7 +506,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
           </Pressable>
           <View style={styles.headerProgress}>
             <PuzzleProgress steps={progressSteps} total={position.total} animated={false}
-              label={t(level.kind === "boss" ? "learning.stageOf" : "play.puzzleOf", { number: position.current, total: position.total })} />
+              label={t("play.puzzleOf", { number: position.current, total: position.total })} />
           </View>
           <PuzzleLives lives={lives} onPress={() => { recordInteraction(); setShowLives(true); }} />
         </View>
@@ -515,6 +514,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
         {run?.status === "active" && run.mode !== "untimed" && (atChallenge || inTimedRun) ? <ChallengeClock milliseconds={run.deadlineAt - now} /> : null}
 
         <Animated.ScrollView
+          ref={taskScroll}
           key={puzzle.id}
           entering={PUZZLE_CONTENT_ENTER}
           scrollEnabled={!isDraggingTile}
@@ -607,9 +607,6 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
             <Text style={styles.attemptTitle}>{t("lives.outOfLives")}</Text>
             <Text style={styles.attemptHint}>{t("lives.checkPaused")}</Text>
             {nextLife !== null ? <Text style={styles.lifePolicy}>{t("lives.nextLifeIn", { time: formatRegenCountdown(nextLife) })}</Text> : null}
-            <Pressable onPress={() => setShowLives(true)} accessibilityRole="button" style={styles.lifeAction}>
-              <Text style={styles.lifeActionText}>{t("lives.openRefill")}</Text>
-            </Pressable>
           </View> : null}
           {!answered && lives.current > 0 && lastAttempt && draftKey === lastAttempt.key ? (
             <View style={styles.attemptFeedback} accessibilityLiveRegion="polite" accessible>
@@ -623,19 +620,33 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
             <Text style={styles.lifeActionText}>{t("lives.workedExample")}</Text>
           </Pressable> : null}
           <PuzzleButton
-            label={t("play.checkAnswer")}
-            accessibilityLabel={t("play.checkAnswer")}
-            accessibilityState={{ disabled: !canCheck }}
-            disabled={!canCheck}
-            onPress={handleCheckAnswer}
+            label={t(!hasLives ? "lives.refillToRetry" : offerRetry ? "play.tryAgain" : "play.checkAnswer")}
+            accessibilityLabel={t(!hasLives ? "lives.refillToRetry" : offerRetry ? "play.tryAgain" : "play.checkAnswer")}
+            accessibilityState={{ disabled: hasLives && !offerRetry && !canCheck }}
+            disabled={hasLives && !offerRetry && !canCheck}
+            onPress={() => {
+              if (!hasLives) { setShowLives(true); return; }
+              if (offerRetry) {
+                setEditingRetry(true);
+                taskScroll.current?.scrollTo({ y: 0, animated: false });
+                return;
+              }
+              handleCheckAnswer();
+            }}
           />
-        </View> : <View style={styles.answerDock}><TimedChallengeActions {...challengeIntroProps} /></View>}
+          {!answered && (!hasLives || retryCount > 0) ? <Pressable onPress={exitToPath} accessibilityRole="button" style={styles.lifeAction}>
+            <Text style={styles.lifeActionText}>{t("play.backToPath")}</Text>
+          </Pressable> : null}
+        </View> : <View style={styles.answerDock}>
+          <TimedChallengeActions {...challengeIntroProps} />
+          <Pressable onPress={exitToPath} accessibilityRole="button" style={styles.lifeAction}>
+            <Text style={styles.lifeActionText}>{t("play.backToPath")}</Text>
+          </Pressable>
+        </View>}
 
         {answered ? (
           <ResultOverlay
             visible
-            milestone={earnedMilestone}
-            adventure={endingStory ? { sceneId: endingStory.sceneId, label: getAchievementStory(endingStory.sceneId, locale).description } : undefined}
             correct={isCorrect && !expired}
             petType={pet.type}
             catSkinId={pet.catSkinId}
@@ -645,13 +656,14 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
             encouragement={t(`puzzleCompanion.${companionMessage.key}`, { count: companionMessage.count })}
             message={t(expired ? "timedChallenge.expired" : inTimedRun && run?.status === "completed" ? "timedChallenge.completed" : isCorrect ? lessonFinished ? "puzzlePathDesign.levelComplete" : isReplay ? "play.crackedAgain" : "play.greatJob" : "play.goodTry")}
             detail={expired ? t(run?.lifeLost ? "timedChallenge.lifeUsed" : "timedChallenge.attemptEnded") : puzzle.explanation}
+            summary={isCorrect && !expired && lessonFinished ? lesson.completion?.[locale] : undefined}
             coinsEarned={expired ? 0 : coinsEarned}
             pendingCoins={!expired && inTimedRun && run?.status === "active" ? getTimedRunReward(progress) : 0}
             coinType={isReplay ? "sparkle" : "regular"}
             continueLabel={t(expired ? "timedChallenge.retry" : isCorrect ? nextPuzzleRoute ? "play.nextPuzzle" : nextLevelRoute ? "puzzlePathDesign.nextLevel" : "puzzlePathDesign.viewPath" : "play.tryAgain")}
             onContinue={handleContinue}
-            onGoHome={isCorrect ? nextPuzzleRoute || nextLevelRoute ? exitToPath : undefined : handleGoHome}
-            secondaryLabel={t("puzzlePathDesign.viewPath")}
+            onGoHome={isCorrect && !expired && !nextPuzzleRoute && !nextLevelRoute ? undefined : exitToPath}
+            secondaryLabel={t("play.backToPath")}
             onBuyLife={undefined}
             coins={wallet.coins}
           />

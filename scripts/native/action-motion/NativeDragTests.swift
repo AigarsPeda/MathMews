@@ -48,16 +48,5 @@ final class NativeDragTests: XCTestCase {
   tap("place-value-reset"); XCTAssertTrue(app.staticTexts["1 tens 15 ones"].waitForExistence(timeout: 5))
   tap("Corrected result"); XCTAssertTrue(app.buttons["Continue now"].waitForExistence(timeout:5)); shot("corrected-nod")
   tap("Continue now"); XCTAssertTrue(app.staticTexts["Continued 1"].waitForExistence(timeout:5))
-  tap("Corrected result"); tap("New milestone performance"); shot("milestone-result")
-  tap("Continue now"); XCTAssertTrue(app.staticTexts["Continued 2"].waitForExistence(timeout:5))
-  tap("Corrected result"); tap("Watch the adventure ending"); shot("adventure-ending")
-  tap("Continue now"); XCTAssertTrue(app.staticTexts["Continued 3"].waitForExistence(timeout:5))
-  tap("pilot-next"); XCTAssertTrue(app.staticTexts["Ten adventures together"].waitForExistence(timeout:5)); shot("ten-lessons")
-  if app.buttons["Pause"].exists { tap("Pause"); XCTAssertTrue(app.buttons["Resume"].exists); tap("Resume") }
-  tap("Play again"); tap("pilot-next"); XCTAssertTrue(app.staticTexts["Fifty adventures together"].waitForExistence(timeout:5)); shot("fifty-lessons")
-  tap("pilot-next"); XCTAssertTrue(app.staticTexts["Milestone performances"].waitForExistence(timeout:5)); shot("milestone-collection")
-  XCTAssertFalse(app.buttons["learning-milestone-50"].isEnabled)
-  tap("learning-milestone-10"); XCTAssertTrue(app.staticTexts["Ten adventures together"].waitForExistence(timeout:5)); shot("collected-performance")
-  tap("Close")
  }
 }

@@ -1,0 +1,16 @@
+{
+  "migration": "supabase/migrations/20261108010000_cat_plans.sql",
+  "sha256": "78548caafaa4aab87eaf034076e2fccdd62dc023127f6e8f6c397f51d4bedc5d",
+  "deployedAt": "2026-11-07T22:29:07.666699+00:00",
+  "method": "Supabase SQL Editor; exact additive migration followed by matching every reward rate and ordered timer puzzle list",
+  "project": "jcfppquntstgxubtlvqo",
+  "verification": {
+    "before": {
+      "cat_puzzles": 0,
+      "cat_timers": 0
+    },
+    "matching_puzzles": 90,
+    "matching_timed_runs": 9
+  },
+  "queryUrl": "https://supabase.com/dashboard/project/jcfppquntstgxubtlvqo/sql/7783bfc3-b0f8-4a91-aa34-d32438ccf209"
+}

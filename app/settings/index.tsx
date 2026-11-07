@@ -6,7 +6,6 @@ import { PrivacyLink } from "@/components/settings/PrivacyLink";
 import { DataManagementSection } from "@/components/settings/DataManagementSection";
 import { AccountRecoverySection } from '@/components/settings/AccountRecoverySection';
 import { LicensesLink } from "@/components/settings/LicensesLink";
-import { AchievementsLink } from "@/components/puzzle/AchievementsLink";
 import { GameColors } from "@/constants/game";
 import { useLocale } from "@/contexts/LocaleProvider";
 import { APP_LOCALES, type AppLocale } from "@/types/locale";
@@ -64,7 +63,6 @@ export default function SettingsScreen() {
         </Pressable>
 
         <Text style={styles.title}>{t("settings.title")}</Text>
-        <AchievementsLink />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t("settings.language")}</Text>
