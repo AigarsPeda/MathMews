@@ -2,8 +2,7 @@ import { PUZZLE_RETRY_REACTIONS, PUZZLE_SUCCESS_REACTIONS, type PuzzleCatReactio
 
 type CompanionContext = {
   correct: boolean;
-  kind: "practice" | "boss" | "challenge";
-  finalStage: boolean;
+  kind: "practice" | "challenge";
   practiceFinished: boolean;
   replay: boolean;
   retries: number;
@@ -15,7 +14,6 @@ type CompanionContext = {
 function getCompanionText(context: CompanionContext): { key: string; count?: number } {
   if (!context.correct) return { key: context.retries > 0 ? "retryPatient" : "retry" };
   if (context.retries > 0) return { key: 'persistence' };
-  if (context.kind === "boss") return { key: context.finalStage ? "bossComplete" : "bossStage" };
   if (context.kind === "challenge") return { key: "challengeComplete" };
   if (context.replay) return { key: "replay" };
   if (context.practiceFinished) return { key: "practiceComplete" };
@@ -32,7 +30,7 @@ export function getPuzzleCompanionMessage(context: CompanionContext): { key: str
   const reaction = !context.correct
     ? PUZZLE_RETRY_REACTIONS[(hash + context.retries) % PUZZLE_RETRY_REACTIONS.length]
     : context.retries > 0 ? "puzzleProud"
-    : ["progress2", "bossComplete"].includes(message.key) ? "puzzleHighPaw"
+    : message.key === "progress2" ? "puzzleHighPaw"
     : message.key === "milestone" || message.key === "practiceComplete" || message.key === "challengeComplete" ? "puzzleBounce"
     : PUZZLE_SUCCESS_REACTIONS[(hash + context.completedCount) % PUZZLE_SUCCESS_REACTIONS.length];
   return { ...message, reaction };

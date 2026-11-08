@@ -61,11 +61,10 @@ export function checkBridgeModels({load}){
  }
  const {createDefaultGameSave,parseGameSaveFromValue}=load('@/utils/game-storage');
  const {resetPuzzleProgress,lifetimePuzzleIds}=load('@/utils/reset-puzzle-progress');
- const {getBossAchievements}=load('@/utils/boss-achievements');
  const {applyPuzzleAnswer}=load('@/utils/game-operations');
  const {PUZZLE_PATHS}=load('@/constants/puzzle-path');
  const save=createDefaultGameSave();save.progress.completedPuzzleIds=lists.en.slice(0,20).map(p=>p.id);
- const boss=catalog.lessons[0].levels.find(l=>l.kind==='boss');save.progress.completedPuzzleIds.push(...boss.puzzleIds);
+ const group=catalog.lessons[0].levels.find(l=>l.puzzleIds.length>1);save.progress.completedPuzzleIds.push(...group.puzzleIds);
  save.progress.attemptedPuzzleIds=[...save.progress.completedPuzzleIds];save.progress.completedPathLessonIds=[PUZZLE_PATHS[0].id];save.progress.unlockedPathLessonIds=[PUZZLE_PATHS[1].id];
  save.progress.visualHelpsUnlocked=[lists.en[0].id];save.progress.processedAttemptIds=['receipt-kept'];save.progress.streak=7;save.wallet.coins=853;
  save.pet.stats.level=1+Math.floor(save.progress.completedPuzzleIds.length/10);
@@ -74,7 +73,6 @@ export function checkBridgeModels({load}){
  assert.deepEqual(json(reset.pet),original.pet);assert.deepEqual(json(reset.wallet),original.wallet);
  for(const k of ['roomsUnlocked','bedsUnlocked','toysUnlocked','decorationsUnlocked','skinsUnlocked','visualHelpsUnlocked','lives','processedAttemptIds','streak'])assert.deepEqual(json(reset.progress[k]),original.progress[k]);
  assert.equal(reset.progress.completedPuzzleIds.length,0);assert.equal(reset.progress.attemptedPuzzleIds.length,0);assert.equal(reset.progress.unlockedPathLessonIds.length,0);
- assert.equal(getBossAchievements(reset.progress.completedPuzzleIds).filter(a=>a.collected).length,0,'Achievements reset with learning progress');
  const restored=parseGameSaveFromValue(JSON.stringify(reset)).save;assert.equal(restored.pet.stats.level,save.pet.stats.level);assert.equal(restored.wallet.coins,853);assert.equal(restored.progress.completedPuzzleIds.length,0);
  assert.deepEqual(json(lifetimePuzzleIds(restored.progress)),json(save.progress.completedPuzzleIds));
  for(const bad of [null,{},'bad',42]){const malformed=json(reset);malformed.progress.lifetimeCompletedPuzzleIds=bad;const parsed=parseGameSaveFromValue(JSON.stringify(malformed));assert.ok(parsed.save);assert.equal(parsed.save.wallet.coins,853);assert.equal(parsed.save.progress.lifetimeCompletedPuzzleIds.length,0);}

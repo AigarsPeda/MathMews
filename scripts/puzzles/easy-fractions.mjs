@@ -1,10 +1,63 @@
 import pairsByStage from '../../data/easy-fraction-pairs.json' with { type: 'json' };
 
-/** Familiar pieces and one equivalence step throughout the later Easy paths. */
+/** Revisit halves through different questions without introducing smaller parts. */
+function varyIntroductoryHalves(byId, lv) {
+  const text = (en, latvian) => lv ? latvian : en;
+  const specs = {
+    'v2-easy-fractions-parts-3': {
+      type: 'compare', correctIndex: 1, payload: { optionA: '1/2', optionB: '2/2' },
+      question: text('Which is more: one half or one whole?', 'Kas ir vairāk: viena puse vai viens vesels?'),
+      explanation: text('A whole has 2 halves. It is more than 1 half.', 'Veselajam ir 2 puses. Tas ir vairāk nekā 1 puse.'),
+    },
+    'v2-easy-fractions-parts-4': {
+      type: 'true_false', isTrue: true, payload: { statement: '1/2 + 1/2 = 1' },
+      question: text('Do 2 halves make one whole?', 'Vai 2 puses veido vienu veselo?'),
+      explanation: text('Yes. Put the 2 equal halves together to make one whole.', 'Jā. Saliec abas vienādās puses kopā, lai iegūtu vienu veselo.'),
+    },
+    'v2-easy-fractions-lesson-1-boss-1': {
+      type: 'fraction_build', payload: { numerator: 2, denominator: 2, hideTarget: true },
+      question: text('Color both equal parts to make one whole.', 'Iekrāso abas vienādās daļas, lai izveidotu vienu veselo.'),
+      explanation: text('Both halves are colored. 2/2 is one whole.', 'Abas puses ir iekrāsotas. 2/2 ir viens vesels.'),
+    },
+    'v2-easy-fractions-lesson-1-boss-2': {
+      type: 'multiple_choice', choices: ['1', '2', '3'], correctIndex: 1,
+      question: text('How many halves make one whole?', 'Cik pušu veido vienu veselo?'),
+      explanation: text('2 equal halves make one whole.', '2 vienādas puses veido vienu veselo.'),
+    },
+    'v2-easy-fractions-lesson-1-boss-3': {
+      type: 'fraction_match', payload: { pairs: [
+        { numerator: 1, denominator: 2, visual: 'grid' }, { numerator: 2, denominator: 2, visual: 'pie' },
+      ] },
+      question: text('Match one half and one whole to their pictures.', 'Savieno vienu pusi un vienu veselo ar to attēliem.'),
+      explanation: text('1/2 colors one of the 2 equal parts. 2/2 colors both.', '1/2 iekrāso vienu no 2 vienādām daļām. 2/2 iekrāso abas.'),
+    },
+    'v2-easy-easy-fractions-parts-path-review-1': {
+      type: 'true_false', isTrue: false, payload: { statement: '1/2 = 2/2' },
+      question: text('Is one half the same amount as one whole?', 'Vai viena puse ir tikpat daudz kā viens vesels?'),
+      explanation: text('No. 1/2 is one half; 2/2 is both halves.', 'Nē. 1/2 ir viena puse; 2/2 ir abas puses.'),
+    },
+    'v2-easy-easy-fractions-parts-path-review-2': {
+      type: 'multiple_choice', choices: ['0/2', '1/2', '2/2'], correctIndex: 1,
+      question: text('A cookie is split into 2 equal pieces. Eat one piece. What fraction is left?', 'Cepums sadalīts 2 vienādos gabalos. Vienu gabalu apēd. Kāda daļa paliek?'),
+      explanation: text('One of the 2 equal pieces remains. That is 1/2.', 'Paliek viens no 2 vienādajiem gabaliem. Tā ir 1/2.'),
+    },
+  };
+  for (const [id, spec] of Object.entries(specs)) {
+    const p = byId.get(id), { difficulty, ageRange, learning } = p;
+    for (const key of Object.keys(p)) delete p[key];
+    Object.assign(p, { id, difficulty, ageRange, topic: 'fractions', ...spec,
+      hint: text('Think of a whole split into 2 equal parts. Count how many parts you need.', 'Iedomājies veselo, kas sadalīts 2 vienādās daļās. Saskaiti, cik daļu vajag.'),
+      helpTemplate: 'fraction_build',
+      learning: { ...learning, representation: spec.type.startsWith('fraction') ? 'fraction-model' : 'symbols', reasoningSteps: 1 } });
+  }
+}
+
+/** Varied halves first, then familiar pieces and simple equivalence in later Easy paths. */
 export function simplifyEasyFractions({ puzzles, lessons, pathExtras }) {
   const track = lessons.filter(l => l.difficulty === 'easy' && l.topicId === 'fractions');
   for (const locale of ['en', 'lv']) {
     const lv = locale === 'lv', byId = new Map(puzzles[locale].easy.map(p => [p.id, p]));
+    varyIntroductoryHalves(byId, lv);
     track.forEach((lesson, stage) => {
       if (stage < 4) return;
       const ids = [...['practice', 'boss', 'challenge'].flatMap(kind => lesson.levels.filter(l => l.kind === kind).flatMap(l => l.puzzleIds)), ...pathExtras[lesson.id]];

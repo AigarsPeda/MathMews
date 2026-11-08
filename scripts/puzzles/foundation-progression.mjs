@@ -1,6 +1,7 @@
 /** Explicit lesson ranges replace unrelated random quantities in the foundation tracks. */
 import { balanceTruthValues, revisePairTiles } from './progression-revisions.mjs';
 import fs from 'node:fs';
+import { taskFingerprint } from './task-repetition.mjs';
 
 const plans = JSON.parse(fs.readFileSync(new URL('../../data/puzzle-foundations.json', import.meta.url), 'utf8'));
 
@@ -54,7 +55,7 @@ function repair(api, topic, sequence) {
 
 function numbers(api, stage, slot, type) {
   const limit = stage === 0 ? 10 : 20;
-  const low = 1 + (stage * 3 + slot * 2) % (limit - 6);
+  const low = stage === 0 ? 1 + Math.floor(slot / 4) : 1 + (stage * 3 + slot) % (limit - 6);
   if (type === 'sort_buckets') {
     const boundary = stage === 0 ? 5 : 9 + stage;
     return api.task(type, 'comparison', api.text(`Sort every number: below ${boundary} or at least ${boundary}.`, `Sašķiro visus skaitļus: zem ${boundary} vai vismaz ${boundary}.`),
@@ -73,15 +74,15 @@ function numbers(api, stage, slot, type) {
 }
 
 function multiply(api, difficulty, stage, slot, type) {
-  const easy = difficulty === 'easy', tables = (easy ? EASY_TABLES : MEDIUM_TABLES)[stage];
-  const size = tables[slot % tables.length];
+  const easy = difficulty === 'easy', tables = easy && stage === 1 ? [5] : (easy ? EASY_TABLES : MEDIUM_TABLES)[stage];
+  const size = tables[(slot + stage) % tables.length];
   // Ten distinct row counts in Medium; small visible groups in the first Easy lessons.
-  let groups = easy ? stage < 2 ? 1 + slot : 2 + slot % 5 : 2 + slot;
-  if (!easy) {
+  let groups = easy ? stage < 2 ? 1 + slot : 2 + (slot + stage * 2) % 9 : 2 + slot + stage % 2;
+  if (!easy || stage >= 2) {
     const used = new Set();
     for (let i = 0; i <= slot; i++) {
-      groups = 2 + i;
-      const factor = tables[i % tables.length], key = () => [groups, factor].sort((a, b) => a - b).join(',');
+      groups = easy ? 2 + (i + stage * 2) % 9 : 2 + i + stage % 2;
+      const factor = tables[(i + stage) % tables.length], key = () => [groups, factor].sort((a, b) => a - b).join(',');
       while (used.has(key())) groups++;
       used.add(key());
     }
@@ -101,7 +102,7 @@ function divide(api, stage, slot, type) {
   // The sharing board has room for five plates and a small pool of counters.
   const tables = sharing ? stage === 0 ? [2, 5] : [3, 4, 5] : MEDIUM_TABLES[stage];
   const people = tables[(stage + slot) % tables.length];
-  const each = 2 + (stage + slot) % (sharing ? 5 : 9);
+  const each = 2 + (stage * 2 + slot) % (sharing ? 5 : 9);
   const remainder = stage === 0 ? 0 : sharing ? 1 + (stage + slot) % (people - 1) : 0;
   const index = { fair_share: 0, multiple_choice: 1, function_machine: 2, fix_mistake: 3, repair_pattern: 0 }[type];
   return api.divideSet(people * each + remainder, people)[index];
@@ -128,11 +129,11 @@ function arithmetic(api, topic, stage, slot, type) {
 function operations(api, stage, slot, type) {
   const { text, task } = api;
   if (stage >= 6 && type !== 'route_grid') {
-    const divisor = [2, 3, 4, 5][(stage + slot) % 4], quotient = 4 + slot % 7;
+    const divisor = [2, 3, 4, 5][(stage + slot) % 4], quotient = 4 + slot;
     return api.operationSet(divisor * quotient, divisor, 3 + stage + slot % 5, true)[{ operation_path: 0, target_build: 1, function_machine: 2, compare: 3 }[type]];
   }
   // First follow two additions/subtractions; introduce multiplication before division.
-  const a = 7 + stage + slot, b = 2 + (stage + slot) % 4, c = 1 + (stage + slot) % 3;
+  const a = 7 + stage * 11 + slot, b = 2 + (stage + slot) % 4, c = 1 + (stage + slot) % 3;
   const first = stage < 3 ? '+' : stage < 5 ? '×' : '÷';
   const start = first === '÷' ? a * b : a;
   const intermediate = first === '+' ? start + b : first === '×' ? start * b : a;
@@ -168,9 +169,11 @@ export function applyFoundationProgression(api) {
   const { puzzles, lessons, pathExtras } = api;
   for (const locale of ['en', 'lv']) for (const difficulty of ['easy', 'medium']) {
     const list = puzzles[locale][difficulty], byId = new Map(list.map(p => [p.id, p]));
+    let previousDivision = new Set();
     for (const lesson of lessons.filter(l => l.difficulty === difficulty)) {
       const track = lessons.filter(l => l.difficulty === difficulty && l.topicId === lesson.topicId), stage = track.indexOf(lesson);
       const ids = [...['practice', 'boss', 'challenge'].flatMap(kind => lesson.levels.filter(l => l.kind === kind).flatMap(l => l.puzzleIds)), ...pathExtras[lesson.id]];
+      const divisionExamples = new Set();
       ids.forEach((id, slot) => {
         const p = byId.get(id), topic = lesson.topicId;
         // Finale quantities are part of the authored story. Keep those applications.
@@ -178,7 +181,14 @@ export function applyFoundationProgression(api) {
         let spec, constrained = false;
         if (difficulty === 'easy' && topic === 'numbers') { spec = numbers(api, stage, slot, p.type); constrained = p.type === 'multiple_choice'; }
         if (topic === 'multiplication') spec = multiply(api, difficulty, stage, slot, p.type);
-        if (difficulty === 'medium' && topic === 'division') spec = divide(api, stage, slot, p.type);
+        if (difficulty === 'medium' && topic === 'division') {
+          for (let variant = 0; variant < 100; variant++) {
+            spec = divide(api, stage, slot + variant, p.type);
+            const key = taskFingerprint(spec);
+            if (!previousDivision.has(key) && !divisionExamples.has(key)) { divisionExamples.add(key); break; }
+            if (variant === 99) throw new Error(`${id}: needs more sharing examples`);
+          }
+        }
         if (difficulty === 'medium' && ['addition', 'subtraction'].includes(topic) && p.type !== 'place_value') spec = arithmetic(api, topic, stage, slot, p.type);
         if (difficulty === 'medium' && topic === 'operations') spec = operations(api, stage, slot, p.type);
         if (difficulty === 'easy' && topic === 'patterns') {
@@ -186,11 +196,13 @@ export function applyFoundationProgression(api) {
           if (p.type === 'repair_pattern') spec = repair(api, 'patterns', Array.from({ length: 5 }, (_, i) => 1 + stage + i * up));
           else {
             const index = p.type === 'pattern_next' ? slot === 3 ? 3 : 0 : p.type === 'function_machine' ? 1 : 2;
-            spec = api.patternSet([[1 + slot, '+', up], [3 + slot, '+', other], [up * 5 + slot, '−', up], [other * 5 + slot, '−', other]])[index];
+            const offset = stage < 2 ? (slot + stage * 3) % 10 : slot + stage * 11;
+            spec = api.patternSet([[1 + offset, '+', up], [3 + offset, '+', other], [up * 5 + offset, '−', up], [other * 5 + offset, '−', other]])[index];
           }
         }
         if (spec) replace(p, spec, locale, stage + slot, constrained);
       });
+      if (lesson.topicId === 'division') previousDivision = divisionExamples;
     }
     revisePairTiles(list);
     balanceTruthValues(list, locale);

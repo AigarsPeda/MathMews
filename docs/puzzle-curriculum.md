@@ -1,6 +1,14 @@
 # Topic based puzzle learning
 
-Math Mews uses difficulty → topic → lesson → puzzle. Each difficulty has eleven topics, each containing ten lessons. The current catalog has 330 lessons and 3,300 puzzles per language in English, Latvian and Russian. Lessons follow ten-step paths with a timed or untimed final stretch at step eight. The original puzzle identities and earned progress are preserved. Earlier sections below describe the historical story-mission structure; `constants/puzzle-path.ts` defines current navigation.
+Math Mews uses difficulty → topic → lesson → puzzle. Each difficulty has eleven regular topics with ten lessons each, plus three Cat plans. The current catalog has 339 lessons and 3,390 puzzles per language in English, Latvian and Russian. Lessons follow ten-step paths with a timed or untimed final stretch at step eight. The original puzzle identities and earned progress are preserved. Earlier sections below describe the historical story-mission structure; `constants/puzzle-path.ts` defines current navigation.
+
+## Current rewards and task kinds, November 8, 2026
+
+The current catalog has 339 ten-task lessons and 3,390 puzzles per language. All untimed puzzles use ordinary difficulty rewards: 4/7/9 coins for a first clear and 2/3/4 for a replay, in Easy/Medium/Hard order. Choosing the timer at step eight and finishing the remaining three tasks before the deadline pays twice those ordinary rates. Choosing untimed play never grants the timer bonus. Pending timed progress pays only after the entire run succeeds; expiry clears the pending reward.
+
+The shipped catalog contains only practice and challenge kinds. Retired mission labels, story metadata, scene components, collection/share helpers and their localized messages are removed from the app. Original puzzle IDs and grouped-route IDs remain for saved progress and old links. Historical authoring/art sources and previously applied database migrations remain archival material.
+
+The matching server reward migration is `supabase/migrations/20261108153000_regular_puzzle_rewards.sql`. All 540 affected rates were updated and verified on the hosted server. Regular first clears/replays and all 339 timer scopes passed transaction-only acceptance checks in sandbox and production. See `supabase/deployments/2026-11-08-regular-puzzle-rewards.json`. Existing ledger entries are retained.
 
 ## Everyday math categories — November 7, 2026
 

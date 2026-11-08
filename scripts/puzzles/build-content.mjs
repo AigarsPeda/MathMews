@@ -5,6 +5,7 @@ import { appendCatPlans } from './cat-plans.mjs';
 import { applyGeometryPilot } from "./geometry-pilot.mjs";
 import { applyHardReasoning } from './hard-reasoning.mjs';
 import { simplifyEasyFractions } from './easy-fractions.mjs';
+import { varyFractionExamples } from './fraction-variety.mjs';
 import { smoothMediumFractions } from './medium-fraction-transition.mjs';
 import { smoothHardFractions } from './hard-fraction-transition.mjs';
 import { applyFoundationProgression } from './foundation-progression.mjs';
@@ -424,6 +425,7 @@ applyBridgePilot({ puzzles, lessons, pathExtras });
 simplifyEasyFractions({ puzzles, lessons, pathExtras });
 smoothMediumFractions({ puzzles, lessons, pathExtras });
 smoothHardFractions({ puzzles, lessons, pathExtras });
+varyFractionExamples({ puzzles, lessons, pathExtras });
 writeGenerated('data/puzzle-bridge-lessons.json', BRIDGE_PLANS.map(({id,type,difficulty})=>({id,type,difficulty})));
 addRussianLearningText(topics);
 addRussianLearningText(lessons);
@@ -444,6 +446,9 @@ for (const difficulty of ['easy','medium','hard']) {
   }
   writeGenerated(`assets/puzzles/${difficulty}.json`, definitions);
 }
-writeGenerated('data/puzzle-curriculum.json', {version:2,topics,lessons});
-writeGenerated('data/lesson-boss-scenes.json', lessonBossScenes);
+// Older authoring groups preserve puzzle identities, but ship as ordinary practice.
+// Scene scripts remain archival art sources and are excluded from the app catalog.
+const catalogLessons = lessons.map(lesson => ({ ...lesson, levels: lesson.levels.map(({ story, ...level }) =>
+  level.kind === 'boss' ? { ...level, kind: 'practice', title: lesson.title, description: lesson.description } : level) }));
+writeGenerated('data/puzzle-curriculum.json', {version:2,topics,lessons:catalogLessons});
 console.log(`${process.argv.includes('--check') ? 'Verified generated' : 'Authored'} ${lessons.length} lessons and ${Object.values(puzzles.en).flat().length} puzzles per language.`);

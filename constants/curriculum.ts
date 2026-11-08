@@ -13,15 +13,6 @@ const TIMED_PUZZLES = new Map(LEARNING_CATALOG.lessons.flatMap(lesson => lesson.
 export function getLearningLevelLocation(id: string) { return LEVEL_LOCATIONS.get(id); }
 export function getTimedChallengeLevel(puzzleId: string) { return TIMED_PUZZLES.get(puzzleId); }
 
-const PUZZLE_LEVEL_KINDS = new Map(LEARNING_CATALOG.lessons.flatMap(lesson =>
-  lesson.levels.flatMap(level => level.puzzleIds.map(id => [id, level.kind] as const)),
-));
-
-/** Use the authored catalog for rewards, including answers resumed from a save. */
-export function getPuzzleLevelKind(puzzleId: string): LearningLevel["kind"] | undefined {
-  return PUZZLE_LEVEL_KINDS.get(puzzleId);
-}
-
 export function getTopicLessons(difficulty: PuzzleDifficulty, topicId: string): LearningLesson[] {
   return LEARNING_CATALOG.lessons.filter(lesson => lesson.difficulty === difficulty && lesson.topicId === topicId);
 }
@@ -40,10 +31,11 @@ export function getLevelPuzzles(locale: AppLocale, lesson: LearningLesson, level
 }
 
 export function getPracticeIds(lesson: LearningLesson): string[] {
-  return lesson.levels.filter(level => level.kind === "practice").flatMap(level => level.puzzleIds);
+  // Keep original unlock checkpoints when migrating saves from grouped lessons.
+  return lesson.levels.filter(level => level.kind === "practice" && level.puzzleIds.length === 1).flatMap(level => level.puzzleIds);
 }
 
-/** Bosses count toward completion; challenges remain optional. Unlocks use practice only. */
+/** Required task IDs for older saves; current navigation uses the full ten-task path. */
 export function getRequiredIds(lesson: LearningLesson): string[] {
   return lesson.levels.filter(level => level.kind !== "challenge").flatMap(level => level.puzzleIds);
 }
@@ -70,7 +62,7 @@ export function getLearningLevelState(lesson: LearningLesson, level: LearningLev
   const progress = getLearningProgress(level.puzzleIds, completedIds);
   if (progress.complete) return "completed" as const;
   if (!isLessonAvailable(lesson, completedIds)) return "locked" as const;
-  if (level.kind !== "practice") {
+  if (level.kind === "challenge" || level.puzzleIds.length > 1) {
     return progress.solved > 0 || getLearningProgress(getPracticeIds(lesson), completedIds).complete ? "current" as const : "locked" as const;
   }
   const index = lesson.levels.findIndex(item => item.id === level.id);
@@ -101,13 +93,13 @@ export function resolveLearningSession(difficulty: PuzzleDifficulty, lessonId: s
 export function getNextPracticeLevel(lesson: LearningLesson, level: LearningLevel) {
   if (level.kind !== "practice") return undefined;
   const index = lesson.levels.findIndex(item => item.id === level.id);
-  return lesson.levels.slice(index + 1).find(item => item.kind === "practice");
+  return lesson.levels.slice(index + 1).find(item => item.kind === "practice" && item.puzzleIds.length === 1);
 }
 
-/** Offer unlocked, unfinished special levels after practice or a challenge. */
+/** Compatibility for older grouped lesson links. Current play uses puzzle-path. */
 export function getNextSpecialLevel(lesson: LearningLesson, level: LearningLevel, completedIds: readonly string[]) {
-  if (level.kind === "boss" || getNextPracticeLevel(lesson, level)) return undefined;
-  const available = (kind: LearningLevel["kind"]) => lesson.levels.find(item =>
-    item.kind === kind && item.id !== level.id && getLearningLevelState(lesson, item, completedIds) === "current");
-  return (level.kind === "practice" ? available("challenge") : undefined) ?? available("boss");
+  if (level.puzzleIds.length > 1 || getNextPracticeLevel(lesson, level)) return undefined;
+  const available = lesson.levels.filter(item => item.id !== level.id && getLearningLevelState(lesson, item, completedIds) === "current");
+  return (level.kind === "practice" ? available.find(item => item.kind === "challenge") : undefined)
+    ?? available.find(item => item.puzzleIds.length > 1);
 }

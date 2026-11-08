@@ -1,4 +1,6 @@
 /** Replace Hard sorting with reasoning while retaining saved puzzle identities. */
+import assert from 'node:assert/strict';
+import { logicClaim } from './expanded-lessons.mjs';
 const text = (en, lv) => ({ en, lv });
 
 function choices(puzzle, answer, wrong, ordinal) {
@@ -80,5 +82,28 @@ export function applyHardReasoning({ puzzles, lessons, pathExtras }) {
         }
       }
     });
+    varyClaims(track, byId, pathExtras, locale);
   }
+}
+
+/** A different hidden worked example does not make a new universal claim. */
+function varyClaims(track, byId, pathExtras, locale) {
+  let previous = new Set();
+  track.forEach((lesson, stage) => {
+    const seen = new Set(previous), current = new Set();
+    const ids = [...lesson.levels.flatMap(l => l.puzzleIds), ...pathExtras[lesson.id]];
+    ids.forEach((id, slot) => {
+      const p = byId.get(id);
+      if (p.type !== 'true_false' || !p.payload.hideStatement) return;
+      if (seen.has(p.question)) {
+        const candidates = Array.from({ length: 8 }, (_, i) => logicClaim(i, 2 * (20 + stage * 10 + slot), text,
+          (type, topic, question, payload, hint, explanation, extra) => ({ type, topic, question, payload, hint, explanation, ...extra })));
+        const spec = candidates.find(q => q.isTrue === p.isTrue && !seen.has(q.question[locale]));
+        assert.ok(spec, `${id}: needs a different reasoning claim`);
+        Object.assign(p, spec, { question: spec.question[locale], hint: spec.hint[locale], explanation: spec.explanation[locale] });
+      }
+      seen.add(p.question); current.add(p.question);
+    });
+    previous = current;
+  });
 }

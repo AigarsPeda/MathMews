@@ -15,7 +15,6 @@ for (const name of [...success, ...retry]) {
   assert.ok(Math.abs(brief.model.duration / brief.model.rate - .75) < .00001, 'Ordinary feedback fits within 750 ms');
 }
 assert.equal(reaction({ retries: 1 }), 'puzzleProud', 'A corrected mistake gets the modest nod');
-assert.equal(reaction({ kind: 'boss', finalStage: true }), 'puzzleHighPaw');
 assert.equal(reaction({ completedCount: 5 }), 'puzzleBounce');
 assert.equal(reaction({}), reaction({}), 'Rendering again does not reroll the reaction');
 assert.equal(new Set([0, 1, 2].map(retries => reaction({ correct: false, retries }))).size, 3, 'Mistakes cycle through all three gentle performances');

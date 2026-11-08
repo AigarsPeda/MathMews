@@ -30,9 +30,9 @@ export function expandLessons(api) {
         case 'division': { const groups=3+s%(j===0?3:7), each=3+s*7%(j===0?4:9); return [groups*each+(s%3===0?0:1+s%(groups-1)),groups]; }
         case 'fractions': { const pairs=[]; for(let den=3;den<=(d==='hard'?16:12);den++) for(let num=1;num<den-1;num++) pairs.push([num,den,d==='hard']); return pairs[(s*7)%pairs.length]; }
         case 'operations': { const divisor=2+s*5%8, quotient=3+s*7%13; return [divisor*quotient,divisor,2+s*11%12,d!=='hard']; }
-        case 'percentages': return [20*(3+s*3%19),[10,20,25,50][(r+j)%4],s%2===0];
+        case 'percentages': return [20*(3+s*3%19+r),[10,20,25,50][(r+j)%4],s%2===0];
         case 'measurement': return [5+s*3%14,3+s*5%9];
-        case 'logic': return [2*(10+s),s%2?'multiply':'subtract'];
+        case 'logic': return [2*(10+s+3*r),s%2?'multiply':'subtract'];
         default: return [];
       }
     });
@@ -80,7 +80,7 @@ function arithmeticStory(topic,[a,b],r,text,choice) {
   return choice(topic,questions[r%4],answer,[answer+1,answer+2],text('Track what is added or taken away.', 'Seko tam, ko pievieno vai atņem.'),text(`${a} ${add?'+':'−'} ${b} = ${answer}.`,`${a} ${add?'+':'−'} ${b} = ${answer}.`));
 }
 
-function logicClaim(r,n,text,task) {
+export function logicClaim(r,n,text,task) {
   const claims=[
     ['Adding two even numbers always gives an even total. Is that true?','Divu pāra skaitļu summa vienmēr ir pāra skaitlis. Vai tā ir?',true,`${n} + 2 = ${n+2}`],
     ['An odd number plus an even number is always odd. Is that true?','Nepāra skaitlis plus pāra skaitlis vienmēr ir nepāra skaitlis. Vai tā ir?',true,`${n+1} + 2 = ${n+3}`],

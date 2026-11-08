@@ -17,7 +17,7 @@ const fractionGoals = [
 ];
 export function arithmetic(stage, slot, boss, locale) {
   if (boss && stage >= 1) slot += 8;
-  const lv=locale==='lv', a=stage<2 ? (stage===1 ? [4,2,5,3,6,4,7,3,4,5,6][slot] : 2+slot) : stage===2 ? 5+slot : 7+slot%3;
+  const lv=locale==='lv', a=stage>=8 ? 12+(stage-8)*12+slot : stage<2 ? (stage===1 ? [4,2,5,3,6,4,7,3,4,5,8][slot] : 2+slot) : stage===2 ? 5+slot : 7+slot%3;
   const b=stage<2 ? (stage===1 ? [2,5,3,4,1,5,2,6,4,5,2][slot] : 1+(slot+(boss?1:0))%3) : stage===2 ? 2+slot%2 : 4+slot%4;
   const total=a+b, base={topic:'addition',hint:lv?`Sāc ar ${a} un pieskaiti ${b}.`:`Start with ${a} and add ${b}.`,explanation:`${a} + ${b} = ${total}.`};
   if(stage===3) base.hint=lv?`Lai no ${a} iegūtu 10, vajag ${10-a}. Sadali ${b} un pieskaiti pārējo.`:`It takes ${10-a} to reach 10 from ${a}. Split ${b}, then add what remains.`;
@@ -25,7 +25,7 @@ export function arithmetic(stage, slot, boss, locale) {
   if(stage===5) return {...base,type:'pair_sum',question:lv?`Izvēlies divas kartītes, kuru summa ir ${total}.`:`Choose two tiles that make ${total}.`,payload:{numbers:[a,b,1,total-1],target:total,correctIndices:[0,1]},hint:lv?'Izvēlies vienu kartīti un atrodi trūkstošo daļu.':'Choose one tile and find the missing part.'};
   if(stage===7 || stage===6 && slot%2===1) return {...base,type:'fix_mistake',question:lv?'Kurš labojums dod pareizo kopskaitu?':'Which repair gives the correct total?',payload:{wrongWork:[`${a} + ${b} = ${total-1}`],choices:[total,total-1,total+1].map(n=>`${a} + ${b} = ${n}`)},correctIndex:0};
   if(stage===2 || stage===9 && slot===1) return {...base,type:'number_line',question:lv?`Sāc ar ${a} un lec ${b} soļus uz priekšu.`:`Start at ${a} and jump forward ${b}.`,payload:{start:a,jump:b,min:0,max:total+3,correctValue:total}};
-  return {...base,type:'multiple_choice',question:lv?`Kaķim ir ${a} lentes, un viņš pievieno vēl ${b}. Cik lenšu kopā?`:`The cat has ${a} ribbons and adds ${b} more. How many altogether?`,choices:[total,total-1,total+1].map(String),correctIndex:0,taskVisual:{kind:'join',left:a,right:b,object:'ribbon'}};
+  return {...base,type:'multiple_choice',question:lv?`Kaķim ir ${a} lentes, un viņš pievieno vēl ${b}. Cik lenšu kopā?`:`The cat has ${a} ribbons and adds ${b} more. How many altogether?`,choices:[total,total-1,total+1].map(String),correctIndex:0,...(total<=20?{taskVisual:{kind:'join',left:a,right:b,object:'ribbon'}}:{})};
 }
 function fraction(stage,slot,boss,locale) {
   const lv=locale==='lv', d=stage===0?2:stage===1?4:[3,4,6,8][(slot+(boss?1:0))%4], n=stage<3?1:1+slot%(d-1);

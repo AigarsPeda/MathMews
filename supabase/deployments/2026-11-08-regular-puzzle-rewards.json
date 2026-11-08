@@ -1,0 +1,43 @@
+{
+  "migration": "supabase/migrations/20261108153000_regular_puzzle_rewards.sql",
+  "sha256": "c0824f8260e5d411b64f38b8104d47e44b930bda9144377d30e492723b49e808",
+  "deployedAt": "2026-11-08T16:05:02.648774+00:00",
+  "method": "Supabase SQL Editor; exact migration followed by all affected catalog rows and transaction-only payout regression suites",
+  "project": "jcfppquntstgxubtlvqo",
+  "queryUrl": "https://supabase.com/dashboard/project/jcfppquntstgxubtlvqo/sql/6d9511b0-4184-40fe-9cd1-6dc13462d839",
+  "verification": {
+    "before": {
+      "expected_puzzles": 540,
+      "registered_puzzles": 540,
+      "normalized_puzzles": 0,
+      "timed_runs": 339
+    },
+    "after": {
+      "expected_puzzles": 540,
+      "registered_puzzles": 540,
+      "normalized_puzzles": 540,
+      "timed_runs": 339
+    },
+    "payoutChecks": {
+      "verifiedAt": "2026-11-08T16:05:40.450049+00:00",
+      "environments": [
+        "sandbox",
+        "production"
+      ],
+      "regularPuzzlesPerEnvironment": 54,
+      "timedRunsPerEnvironment": 339,
+      "checks": [
+        "regular first clears",
+        "regular replays",
+        "duplicate attempt protection",
+        "timed first clears at double reward",
+        "timed replays at double replay reward",
+        "ordinary claims after timed completion",
+        "unknown scope rejection",
+        "cross-kind attempt reuse rejection",
+        "1000-coin daily cap"
+      ],
+      "testFixturesRolledBack": true
+    }
+  }
+}

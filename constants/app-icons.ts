@@ -13,7 +13,6 @@ export const APP_ICON_SOURCES = {
   "bedroom-bed": require("@/assets/icons/bedroom-bed.png"),
   "blue-dot": require("@/assets/icons/blue-dot.png"),
   "book": require("@/assets/icons/book.png"),
-  "boss-badge": require("@/assets/icons/boss-badge.png"),
   "box": require("@/assets/icons/box.png"),
   "brain": require("@/assets/icons/brain.png"),
   "broken-heart": require("@/assets/icons/broken-heart.png"),

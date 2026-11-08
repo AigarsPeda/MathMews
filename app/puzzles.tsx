@@ -18,13 +18,13 @@ import { useLocale } from "@/contexts/LocaleProvider";
 import type { LearningLesson } from "@/types/curriculum";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
-import { getTopicPathLayout } from "@/utils/topic-path-layout";
-import { Redirect, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import { useIsFocused } from "expo-router/react-navigation";
 import { useFonts } from "expo-font";
-import { memo, useCallback, useLayoutEffect, useRef } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { memo, useLayoutEffect, useRef, useState } from "react";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import Animated, { Easing, ReduceMotion, useAnimatedScrollHandler, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { Easing, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PuzzlesScreen() {
@@ -36,6 +36,12 @@ export default function PuzzlesScreen() {
 const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboarding, progress }:
   Pick<ReturnType<typeof useGame>, "isReady" | "hasCompletedOnboarding" | "progress">) {
   const router = useRouter();
+  const isFocused = useIsFocused();
+  // Reset on return before painting, while keeping the outgoing trail mounted.
+  const [focusEntry, setFocusEntry] = useState({ focused: isFocused, revision: 0 });
+  if (focusEntry.focused !== isFocused) {
+    setFocusEntry({ focused: isFocused, revision: focusEntry.revision + Number(isFocused) });
+  }
   const { t } = useTranslation();
   const { locale } = useLocale();
   const params = useLocalSearchParams<{ difficulty?: string; topic?: string; lesson?: string }>();
@@ -63,45 +69,6 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
   const recommendedProgress = recommendation ? getPathProgress(recommendation.lesson, progress) : undefined;
   const lessons = topic ? getTopicPaths(difficulty, topic.id) : [];
   const recommendedLevel = lessons.findIndex(lesson => lesson.id === recommendation?.lesson.id) + 1;
-  const topicId = params.topic;
-  const lessonCount = Number(lessons.length);
-  const trailScroll = useRef<ScrollView>(null);
-  const trailOffset = useSharedValue(0);
-  const trailViewport = useSharedValue(0);
-  const onTrailScroll = useAnimatedScrollHandler(event => {
-    trailOffset.set(event.contentOffset.y);
-  });
-  const trailLayout = useRef({ width: 0, height: 0, contentHeight: 0, positioned: false });
-  const focusFrame = useRef<number | null>(null);
-  useLayoutEffect(() => {
-    trailLayout.current.contentHeight = 0;
-    trailLayout.current.positioned = false;
-    trailOffset.set(0);
-  }, [topic?.id, difficulty, trailOffset]);
-
-  const focusCurrentLevel = useCallback(() => {
-    if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
-    // Native content bounds must be committed before issuing the scroll command.
-    focusFrame.current = requestAnimationFrame(() => {
-      focusFrame.current = null;
-      const viewport = trailLayout.current;
-      if (!topicId || viewport.positioned || !viewport.width || !viewport.height || !trailScroll.current) return;
-      const layout = getTopicPathLayout(Math.min(viewport.width, 460), lessonCount, recommendedLevel - 1, topicId);
-      const point = layout.points[recommendedLevel - 1];
-      if (!point || viewport.contentHeight < layout.height) return;
-      trailScroll.current.scrollTo({ y: Math.max(0, point.y - viewport.height * 0.45), animated: false });
-      viewport.positioned = true;
-    });
-  }, [topicId, lessonCount, recommendedLevel]);
-  useFocusEffect(useCallback(() => {
-    trailLayout.current.positioned = false;
-    focusCurrentLevel();
-    return () => {
-      if (focusFrame.current !== null) cancelAnimationFrame(focusFrame.current);
-      focusFrame.current = null;
-    };
-  }, [focusCurrentLevel]));
-
   function play(lesson: LearningLesson) {
     const entry = getPathEntry(lesson, progress);
     if (!entry) return;
@@ -126,20 +93,10 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
         {topic ? <Text style={styles.trailTitle} accessibilityRole="header">{topic.title[locale]}</Text> : null}
         {topic ? <Text style={styles.difficultyLabel}>{t(`difficulty.${difficulty}`)}</Text> : null}
       </View>
-      <Animated.ScrollView ref={trailScroll} key={`${difficulty}:${topic?.id ?? "selection"}`} style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}
-        onScroll={onTrailScroll} scrollEventThrottle={16}
-        onLayout={({ nativeEvent: { layout } }) => {
-          if (trailLayout.current.width !== layout.width || trailLayout.current.height !== layout.height) trailLayout.current.positioned = false;
-          trailLayout.current.width = layout.width;
-          trailLayout.current.height = layout.height;
-          trailViewport.set(layout.height);
-          focusCurrentLevel();
-        }} onContentSizeChange={(_width, height) => {
-          trailLayout.current.contentHeight = height;
-          focusCurrentLevel();
-        }}>
-        {topic ? <TopicLevelPath lessons={lessons} progress={progress} currentLessonId={recommendation?.lesson.id} onPlay={play}
-          scrollOffset={trailOffset} viewportHeight={trailViewport} /> : <>
+      {topic ? <TopicLevelPath key={`${difficulty}:${topic.id}`} lessons={lessons} progress={progress}
+        currentLessonId={recommendation?.lesson.id} onPlay={play} entryKey={focusEntry.revision} />
+        : <Animated.ScrollView key={`${difficulty}:selection`} style={styles.scroll}
+        contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Text style={styles.title} accessibilityRole="header">{t("puzzlePathDesign.chooseTopic")}</Text>
           <DifficultyPicker selected={difficulty} onSelect={tier => { if (tier !== difficulty) router.setParams({ difficulty: tier }); }} />
           <Animated.View style={[styles.selectionContent, selectionStyle]}>
@@ -172,8 +129,7 @@ const PuzzlesContent = memo(function PuzzlesContent({ isReady, hasCompletedOnboa
             })}
           </Animated.View>
           <Pressable onPress={() => router.push("/stats")} style={styles.secondary} accessibilityRole="button"><Text style={styles.backText}>{t("stats.title")}</Text></Pressable>
-        </>}
-      </Animated.ScrollView>
+      </Animated.ScrollView>}
       {topic && recommendation ? <View style={styles.pathAction}>
         {topic.id === "cat-plans" ? <CatPlanDecoration lessonId={recommendation.lesson.id} earned={progress.catPlanRewardsClaimed?.includes(recommendation.lesson.id)} /> : null}
         <PuzzleButton palette={TopicPathColors.current} label={t(recommendedProgress?.complete ? "puzzlePathDesign.replay" : "puzzlePathDesign.playLevel", { number: recommendedLevel })} onPress={() => play(recommendation.lesson)} />

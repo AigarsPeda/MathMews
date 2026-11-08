@@ -1,6 +1,7 @@
 /** Five additive topic tracks. Integer minutes, cents and millilitres are canonical. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { taskFingerprint } from './task-repetition.mjs';
 const shopNames = Object.fromEntries(['en','lv','ru'].map(locale => [locale, JSON.parse(fs.readFileSync(new URL(`../../locales/${locale}.json`, import.meta.url))).everyday.shopItems]));
 const T = (en, lv, ru) => ({ en, lv, ru });
 const tiers = ['easy', 'medium', 'hard'];
@@ -46,7 +47,7 @@ const titles = {
 function result(model, question, answer, hint, explanation, options) {
   return { model, question, answer, hint, explanation, options };
 }
-function timeTask(tier, focus, n) {
+function timeTask(tier, focus, n, application = false) {
   const h = 1 + n % 11, minute = tier === 0 ? focus === 1 ? 30 : focus === 2 ? [15, 45][n % 2] : 0 : (1 + n % 11) * 5;
   let start = h * 60 + minute, duration = tier === 0 ? (1 + n % 3) * 60 : 15 + n % 12 * 5;
   const model = { kind: 'clock', task: 'read', minutes: start, analog: true };
@@ -59,7 +60,7 @@ function timeTask(tier, focus, n) {
     question = tier === 0 ? T('How many hours pass between these times?', 'Cik stundu paiet starp šiem laikiem?', 'Сколько часов проходит между этими моментами?')
       : T(`How many minutes pass${start + duration >= 1440 ? ', going into the next day' : ' on the same day'}?`, `Cik minūšu paiet${start + duration >= 1440 ? ', pārejot nākamajā dienā' : ' tajā pašā dienā'}?`, `Сколько минут проходит${start + duration >= 1440 ? ' до следующего дня' : ' в тот же день'}?`);
     explanation = T(`Elapsed time: ${clock(start)} → ${clock(start + duration)}: ${duration} min${tier === 0 ? ` = ${answer} h` : ''}.`, `Pagājušais laiks: ${clock(start)} → ${clock(start + duration)}: ${duration} min${tier === 0 ? ` = ${answer} h` : ''}.`, `${clock(start)} → ${clock(start + duration)}: ${duration} мин${tier === 0 ? ` = ${answer} ч` : ''}.`);
-  } else if (tier === 0 && focus === 4 || tier === 1 && [2, 3].includes(focus) || tier === 2 && [1, 2, 3].includes(focus)) {
+  } else if (tier === 0 && (focus === 4 || application && focus < 3) || tier === 1 && ([2, 3].includes(focus) || application && focus === 0) || tier === 2 && [1, 2, 3].includes(focus)) {
     if (tier === 2) { start = 22 * 60 + minute; duration = 70 + n % 12 * 10; }
     const backwards = focus === (tier === 1 ? 3 : 2);
     Object.assign(model, { task: backwards ? 'start' : 'finish', minutes: backwards ? (start + duration) % 1440 : start, duration, analog: false });
@@ -79,8 +80,9 @@ function timeTask(tier, focus, n) {
 
 function dataTask(tier, focus, n) {
   const step = tier === 0 ? 1 : tier === 1 ? focus === 0 ? 2 : 5 : [10, 20, 25][n % 3];
-  const base = 1 + n % 4, values = [base, base + 1 + n % 2, base + 3 + n % 3].map(v => v * step);
-  if (n % 2) values.reverse();
+  const base = 1 + n % 5, values = [base, base + 1 + Math.floor(n / 5) % 3, base + 4 + Math.floor(n / 15) % 4].map(v => v * step);
+  const order = [[0,1,2], [1,2,0], [2,0,1], [2,1,0], [1,0,2], [0,2,1]][Math.floor(n / 60) % 6];
+  const ordered = order.map(i => values[i]); values.splice(0, 3, ...ordered);
   const task = tier === 0 ? ['read', 'most', 'least', 'total', 'difference'][focus]
     : tier === 1 ? ['read', 'read', 'total', 'difference', 'missing'][focus] : ['read', 'range', 'mean', 'missing', 'difference'][focus];
   if (task === 'mean') values[2] += ((3 - sum(values) / step % 3) % 3) * step;
@@ -112,24 +114,35 @@ function spatialTask(tier, focus, n) {
   const polygon = tier === 0 && focus < 3 || tier === 1 && focus === 0 || tier === 2 && focus === 3;
   const hint = T('Trace each straight side or corner once. For a grid move, keep the same distance from the mirror or the centre of the turn.', 'Katru taisno malu vai stūri skaiti vienreiz. Režģī saglabā attālumu līdz spogulim vai pagrieziena centram.', 'Посчитай каждую прямую сторону или вершину один раз. На сетке сохраняй расстояние до зеркала или центра поворота.');
   if (polygon) {
-    const sides = tier === 2 ? [5 + n % 6] : tier === 1 ? [3 + n % 4] : focus === 2 ? [3 + n % 4, 3 + Math.floor(n / 4) % 4] : [3 + n % 6];
-    const rectangle = tier === 1 && n % 3 === 0;
-    if (rectangle) sides[0] = 4;
+    const minimum = tier === 2 ? 5 : 3, maximum = tier === 2 ? 10 : 8;
+    const collections = [];
+    for (let a = minimum; a <= maximum; a++) {
+      if (!(tier === 0 && focus === 2)) collections.push([a]);
+      for (let b = a; b <= maximum; b++) {
+        collections.push([a, b]);
+        if (tier === 0) for (let c = b; c <= maximum; c++) collections.push([a, b, c]);
+      }
+    }
+    const rectangle = tier === 1 && n % (collections.length + 1) === collections.length;
+    const sides = rectangle ? [4] : collections[n % collections.length];
     const task = tier > 0 ? 'symmetry' : focus === 1 ? 'corners' : 'sides';
     const model = { kind: 'shapes', task, sides, rectangle, label: T(`${rectangle ? 'Rectangle with unequal adjacent sides' : 'Regular shapes'}, sides: ${sides.join(', ')}.`, `${rectangle ? 'Taisnstūris ar nevienādām blakusmalām' : 'Regulāras figūras'}, malas: ${sides.join(', ')}.`, `${rectangle ? 'Прямоугольник с неравными соседними сторонами' : 'Правильные фигуры'}, стороны: ${sides.join(', ')}.`) };
-    const answer = task === 'symmetry' ? rectangle ? 2 : sides[0] : sum(sides);
-    const question = task === 'symmetry' ? T('How many lines of symmetry does this shape have?', 'Cik simetrijas asu ir šai figūrai?', 'Сколько осей симметрии у этой фигуры?')
-      : task === 'corners' ? T('How many corners does this shape have?', 'Cik stūru ir šai figūrai?', 'Сколько вершин у этой фигуры?')
+    const answer = task === 'symmetry' && rectangle ? 2 : sum(sides);
+    const question = task === 'symmetry' ? sides.length === 1 ? T('How many lines of symmetry does this shape have?', 'Cik simetrijas asu ir šai figūrai?', 'Сколько осей симметрии у этой фигуры?') : T('How many lines of symmetry do these shapes have altogether?', 'Cik simetrijas asu ir šīm figūrām kopā?', 'Сколько всего осей симметрии у этих фигур?')
+      : task === 'corners' ? T('How many corners do these shapes have altogether?', 'Cik stūru ir šīm figūrām kopā?', 'Сколько всего вершин у этих фигур?')
         : T('How many straight sides do these shapes have altogether?', 'Cik taisnu malu ir šīm figūrām kopā?', 'Сколько всего прямых сторон у этих фигур?');
-    const explanation = task === 'symmetry' ? T(`There are ${answer} mirror lines that split the shape into matching halves.`, `Ir ${answer} simetrijas asis, kas sadala figūru vienādās spoguļpusēs.`, `Есть ${answer} осей симметрии, делящих фигуру на зеркально равные половины.`)
+    const explanation = task === 'symmetry' ? sides.length === 1 ? T(`There are ${answer} mirror lines that split the shape into matching halves.`, `Ir ${answer} simetrijas asis, kas sadala figūru vienādās spoguļpusēs.`, `Есть ${answer} осей симметрии, делящих фигуру на зеркально равные половины.`)
+      : T(`Count each shape's symmetry lines, then add: ${sides.join(' + ')} = ${answer}.`, `Saskaiti katras figūras simetrijas asis un tad saskaiti kopā: ${sides.join(' + ')} = ${answer}.`, `Посчитай оси симметрии каждой фигуры, затем сложи: ${sides.join(' + ')} = ${answer}.`)
       : T(`Count once around each shape: ${sides.join(' + ')} = ${answer}.`, `Skaiti vienreiz apkārt katrai figūrai: ${sides.join(' + ')} = ${answer}.`, `Обойди каждую фигуру один раз: ${sides.join(' + ')} = ${answer}.`);
     return result(model, question, answer, hint, explanation);
   }
-  const size = tier === 0 ? 3 : 5, row = n % size, col = Math.floor(n / size) % size;
+  const size = tier === 0 ? 3 + Math.floor(n / 9) % 2 : tier === 2 ? 5 + Math.floor(n / 25) % 2 : 5;
+  const row = n % size, col = Math.floor(n / size) % size;
   const task = tier === 0 ? focus === 3 ? 'reflect' : 'translate' : tier === 1 ? focus === 1 ? 'reflect' : [2, 4].includes(focus) ? 'rotate' : 'translate' : focus === 0 ? 'reflect' : [1, 4].includes(focus) ? 'rotate' : 'translate';
   const turns = tier === 1 ? focus === 4 ? 2 : 1 : 3;
-  const dx = col < size - 1 ? tier === 2 ? size - 1 - col : 1 : -1;
-  const dy = tier === 2 ? row < size - 1 ? 1 : -1 : 0;
+  const vertical = tier === 0 && Math.floor(n / (size * size)) % 2 === 1;
+  const dx = vertical ? 0 : col < size - 1 ? tier === 2 ? size - 1 - col : 1 : -1;
+  const dy = vertical || tier === 2 ? row < size - 1 ? 1 : -1 : 0;
   let x = col, y = row;
   if (task === 'reflect') x = size - 1 - x;
   if (task === 'translate') { x += dx; y += dy; }
@@ -138,7 +151,8 @@ function spatialTask(tier, focus, n) {
   const model = { kind: 'grid', task, size, start, turns, dx, dy, label: T(`${size} by ${size} grid, numbered left to right, top to bottom. Marked square: ${start}.`, `${size} reiz ${size} režģis, numurēts no kreisās uz labo un no augšas uz leju. Atzīmētais lauciņš: ${start}.`, `Сетка ${size} на ${size}, номера слева направо, сверху вниз. Отмечена клетка ${start}.`) };
   const question = task === 'reflect' ? T('Reflect the marked square across the vertical middle line. Which square does it reach?', 'Atspoguļo atzīmēto lauciņu pret vertikālo viduslīniju. Kurā lauciņā tas nonāk?', 'Отрази отмеченную клетку относительно вертикальной средней линии. В какую клетку она попадёт?')
     : task === 'rotate' ? T(`Turn the marked square ${turns} quarter-turn${turns === 1 ? '' : 's'} clockwise around the grid centre. Which square does it reach?`, `Pagriez atzīmēto lauciņu par ${turns} ceturtdaļpagriezieniem pulksteņa rādītāja virzienā ap režģa centru. Kur tas nonāk?`, `Поверни отмеченную клетку на ${turns} четверти оборота по часовой стрелке вокруг центра сетки. Куда она попадёт?`)
-      : T(`Move ${Math.abs(dx)} square${Math.abs(dx) === 1 ? '' : 's'} ${dx > 0 ? 'right' : 'left'}${dy ? ` and 1 ${dy > 0 ? 'down' : 'up'}` : ''}. Which square does the mark reach?`, `Pārvieto par ${Math.abs(dx)} lauciņiem pa ${dx > 0 ? 'labi' : 'kreisi'}${dy ? ` un par 1 ${dy > 0 ? 'uz leju' : 'uz augšu'}` : ''}. Kurā lauciņā nonāk atzīme?`, `Передвинь на ${Math.abs(dx)} клеток ${dx > 0 ? 'вправо' : 'влево'}${dy ? ` и на 1 ${dy > 0 ? 'вниз' : 'вверх'}` : ''}. В какой клетке будет метка?`);
+      : vertical ? T(`Move 1 square ${dy > 0 ? 'down' : 'up'}. Which square does the mark reach?`, `Pārvieto par 1 lauciņu ${dy > 0 ? 'uz leju' : 'uz augšu'}. Kurā lauciņā nonāk atzīme?`, `Передвинь на 1 клетку ${dy > 0 ? 'вниз' : 'вверх'}. В какой клетке будет метка?`)
+        : T(`Move ${Math.abs(dx)} square${Math.abs(dx) === 1 ? '' : 's'} ${dx > 0 ? 'right' : 'left'}${dy ? ` and 1 ${dy > 0 ? 'down' : 'up'}` : ''}. Which square does the mark reach?`, `Pārvieto par ${Math.abs(dx)} lauciņiem pa ${dx > 0 ? 'labi' : 'kreisi'}${dy ? ` un par 1 ${dy > 0 ? 'uz leju' : 'uz augšu'}` : ''}. Kurā lauciņā nonāk atzīme?`, `Передвинь на ${Math.abs(dx)} клеток ${dx > 0 ? 'вправо' : 'влево'}${dy ? ` и на 1 ${dy > 0 ? 'вниз' : 'вверх'}` : ''}. В какой клетке будет метка?`);
   const explanation = T(`The mark moves from square ${start} to square ${answer}, in row ${y + 1}, column ${x + 1}.`, `Atzīme pārvietojas no ${start}. uz ${answer}. lauciņu, ${y + 1}. rindā un ${x + 1}. kolonnā.`, `Метка перемещается из клетки ${start} в клетку ${answer}, строка ${y + 1}, столбец ${x + 1}.`);
   const options = [answer, ...Array.from({ length: size * size }, (_, i) => (answer + n + i) % (size * size) + 1).filter(v => v !== answer).slice(0, 2)];
   return result(model, question, answer, hint, explanation, options);
@@ -147,12 +161,13 @@ function spatialTask(tier, focus, n) {
 function moneyTask(tier, focus, n) {
   const cents = tier === 0 && focus === 0;
   let prices = tier === 0 ? cents ? [5, 10, 20].slice(0, 1 + n % 3).concat([1, 2, 5, 10][Math.floor(n / 3) % 4]) : [100 * (1 + n % 8), 100 * (1 + Math.floor(n / 8) % 5)]
-    : [125 + n % 12 * 25, 50 + Math.floor(n / 3) % 8 * 25];
+    : [125 + n % 12 * 25, 50 + Math.floor(n / 12) % 8 * 25];
+  if (cents && n >= 12) prices.push([1, 2, 5, 10][Math.floor(n / 12) % 4]);
   let task = tier === 0 ? focus < 3 ? 'total' : 'change' : tier === 1 ? ['total', 'total', 'change', 'unit', 'total'][focus] : ['discount', 'unit', 'change', 'afford', 'change'][focus];
   let quantities = prices.map(() => 1), discount = 0, paid = tier === 0 ? 2000 : 2000 + n % 4 * 500;
   if (task === 'unit') { const count = 2 + n % 4; prices = [(tier === 2 ? 75 : 50) * (2 + n % 7) * count]; quantities = [count]; }
   if (tier === 1 && focus === 4) quantities = [2 + n % 3, 1];
-  if (tier === 2 && [0, 2, 4].includes(focus)) { prices = [500 + n % 10 * 100]; quantities = [1]; discount = [10, 20, 25, 50][n % 4]; }
+  if (tier === 2 && [0, 2, 4].includes(focus)) { prices = [500 + n % 10 * 100]; quantities = [1]; discount = [10, 20, 25, 50][Math.floor(n / 10) % 4]; }
   if (task === 'afford') { prices = [125 + n % 7 * 25]; quantities = [1]; }
   const total = sum(prices.map((p, i) => p * quantities[i] * (100 - discount) / 100));
   const raw = task === 'change' ? paid - total : task === 'unit' ? prices[0] / quantities[0] : task === 'afford' ? Math.floor(paid / prices[0]) : total;
@@ -199,13 +214,14 @@ function capacityTask(tier, focus, n) {
     servings: T('Divide the liquid amount by one cup’s capacity. Count only full cups; a leftover amount does not fill another cup.', 'Izdali šķidruma daudzumu ar vienas krūzes ietilpību. Skaiti tikai pilnas krūzes; atlikums nepiepilda vēl vienu krūzi.', 'Раздели объём жидкости на вместимость чашки. Считай только полные чашки: остатка не хватит ещё на одну полную чашку.'),
     containers: T('Divide the liquid amount by one bottle’s capacity. If any liquid is left over, it needs one more bottle.', 'Izdali šķidruma daudzumu ar vienas pudeles ietilpību. Ja šķidrums paliek pāri, tam vajag vēl vienu pudeli.', 'Раздели объём жидкости на вместимость бутылки. Если жидкость осталась, для неё нужна ещё одна бутылка.'),
   }[task];
-  const portion = tier === 0 ? 100 : [125, 200, 250][n % 3];
+  const portion = tier === 0 ? [100, 200, 250][Math.floor(n / 7) % 3] : [125, 200, 250][Math.floor(n / 9) % 3];
   let amounts = [(1 + n % 8) * (tier === 0 ? 100 : 125)];
-  if (task === 'total') amounts.push((1 + Math.floor(n / 4) % 4) * (tier === 0 ? 100 : 250));
+  if (task === 'total') amounts.push((1 + Math.floor(n / 8) % 6) * (tier === 0 ? 100 : 250));
   if (task === 'servings') amounts = [portion * (2 + n % 7) + (tier === 2 ? 25 : 0)];
   if (task === 'containers') amounts = [1000 + n % 9 * 125];
-  if (task === 'litres') amounts = [(tier === 1 ? 1 + n % 8 : 5 + n % 24) * 250];
-  const capacities = amounts.map(v => Math.ceil((v + 100) / 500) * 500);
+  if (task === 'litres') amounts = [(tier === 1 ? 1 + n % 20 : 5 + n % 24) * 250];
+  const capacities = amounts.map(v => task === 'read' ? 1000 + Math.floor(n / 8) % 3 * 100
+    : Math.ceil((v + 100) / 500) * 500 + (task === 'space' ? Math.floor(n / 8) % 3 * 100 : 0));
   const answer = task === 'total' ? sum(amounts) : task === 'space' ? capacities[0] - amounts[0] : task === 'servings' ? Math.floor(amounts[0] / portion)
     : task === 'containers' ? Math.ceil(amounts[0] / portion) : task === 'litres' ? amounts[0] / 1000 : amounts[0];
   const model = { kind: 'capacity', task, amounts, capacities, portion, unit: task === 'litres' ? 'l' : 'ml', label: T(`Liquid amounts: ${amounts.join(', ')} ml. Container capacities: ${capacities.join(', ')} ml.`, `Šķidruma daudzumi: ${amounts.join(', ')} ml. Trauku ietilpības: ${capacities.join(', ')} ml.`, `Объёмы жидкости: ${amounts.join(', ')} мл. Вместимость ёмкостей: ${capacities.join(', ')} мл.`) };
@@ -237,6 +253,7 @@ function choicesFor(spec, n, locale) {
 }
 export function appendEverydayTopics({ topics, lessons, puzzles, pathExtras }) {
   const daily = {};
+  const used = new Map();
   for (const [topicId, title, icon, description] of definitions) {
     topics.push({ id: topicId, title, icon, description });
     for (const [tier, difficulty] of tiers.entries()) for (let stage = 0; stage < 10; stage++) {
@@ -248,7 +265,19 @@ export function appendEverydayTopics({ topics, lessons, puzzles, pathExtras }) {
       const generated = [];
       for (let slot = 0; slot < 10; slot++) {
         const n = stage * 17 + slot;
-        const spec = factories[topicId](tier, focus, n), example = factories[topicId](tier, focus, n + 127);
+        const seen = used.get(`${difficulty}/${topicId}`) ?? new Set();
+        let spec;
+        for (let variant = 0; variant < 5000; variant++) {
+          const candidate = factories[topicId](tier, focus, n + variant, stage % 2 === 1);
+          const key = taskFingerprint({ type: 'multiple_choice', question: candidate.question.en, everyday: { model: localize(candidate.model, 'en') } });
+          if (seen.has(key)) continue;
+          spec = candidate; seen.add(key); break;
+        }
+        assert.ok(spec, `${id}: author more distinct examples of this skill`);
+        used.set(`${difficulty}/${topicId}`, seen);
+        let example = factories[topicId](tier, focus, n + 127, stage % 2 === 1);
+        // A finite shape/clock pool can cycle back to the task's own worked example.
+        for (let offset = 128; JSON.stringify(example.model) === JSON.stringify(spec.model); offset++) example = factories[topicId](tier, focus, n + offset, stage % 2 === 1);
         const puzzleId = `v2-${id}-${slot + 1}`;
         for (const locale of ['en', 'lv', 'ru']) {
           const p = { id: puzzleId, difficulty, type: 'multiple_choice', topic: topicId, ageRange: tier === 0 ? [5, 7] : tier === 1 ? [7, 10] : [10, 12],

@@ -33,6 +33,8 @@ The November 7 everyday-category expansion is deployed: 1,500 additional puzzle 
 
 The November 8 Cat plans migration is deployed: 90 additional puzzle rewards and nine three-task timed runs. All reward amounts and ordered task lists match the migration. See [deployment evidence](deployments/2026-11-08-cat-plans.json).
 
+The November 8 regular-puzzle reward update is deployed: 540 former mission tasks now use the ordinary difficulty rates for both first clears and replays. The separate timed completion multiplier remains 2x. Hosted checks passed regular first/replay payouts, duplicate protection and all 339 timed scopes in both environments, with test fixtures rolled back. See [deployment evidence](deployments/2026-11-08-regular-puzzle-rewards.json). This supersedes the historical doubled mission rewards described above.
+
 ## One project, separate environments
 
 No additional database, Supabase project, Docker container, or paid upgrade is

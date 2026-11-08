@@ -4,10 +4,10 @@ import type { LearningLesson, LearningLevel } from "@/types/curriculum";
 import type { Progress } from "@/types/game";
 import type { PuzzleDifficulty } from "@/types/puzzle";
 
-/** Navigation is independent of the archived story/reward catalog. Puzzle IDs never change. */
+/** Expand older grouped tasks into the current path without changing saved IDs. */
 export const PUZZLE_PATHS: LearningLesson[] = LEARNING_CATALOG.lessons.map(lesson => {
-  const practice = lesson.levels.filter(level => level.kind === "practice");
-  const applications = lesson.levels.filter(level => level.kind === "boss").flatMap(level =>
+  const practice = lesson.levels.filter(level => level.kind === "practice" && level.puzzleIds.length === 1);
+  const applications = lesson.levels.filter(level => level.kind === "practice" && level.puzzleIds.length > 1).flatMap(level =>
     level.puzzleIds.map((id, index): LearningLevel => ({ id: `${level.id}-step-${index + 1}`, kind: "practice",
       title: lesson.title, description: lesson.description, puzzleIds: [id] })));
   const challenge = lesson.levels.filter(level => level.kind === "challenge");
@@ -98,12 +98,13 @@ export function resolvePathSession(difficulty: PuzzleDifficulty, lessonId: strin
   phaseParam: string | undefined, progress: PathProgress): LearningSession | null {
   const lesson = getPathLesson(difficulty, lessonId);
   if (!lesson || !levelId || phaseParam !== undefined && !/^\d+$/.test(phaseParam)) return null;
-  // Old story deep links land on the corresponding individual puzzle.
+  // Older grouped-task links land on the corresponding individual puzzle.
   const archived = LEARNING_CATALOG.lessons.find(l => l.id === lessonId)?.levels.find(l => l.id === levelId);
-  const phase = phaseParam === undefined && archived?.kind === "boss"
+  const grouped = archived && archived.puzzleIds.length > 1;
+  const phase = phaseParam === undefined && grouped
     ? Math.max(0, archived.puzzleIds.findIndex(id => !progress.completedPuzzleIds?.includes(id))) : Number(phaseParam ?? 0);
   if (!Number.isSafeInteger(phase) || phase < 0) return null;
-  let level = archived?.kind === "boss" ? lesson.levels.find(l => l.puzzleIds[0] === archived.puzzleIds[phase])
+  let level = grouped ? lesson.levels.find(l => l.puzzleIds[0] === archived.puzzleIds[phase])
     : phase === 0 ? lesson.levels.find(l => l.id === levelId) : undefined;
   const run = progress.challengeAttempt;
   if (level && run?.puzzleIds?.includes(level.puzzleIds[0])) {

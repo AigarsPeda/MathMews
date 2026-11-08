@@ -10,19 +10,35 @@ import { getTopicPathConnection, getTopicPathLayout, getTopicPathCallout } from 
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { Feather } from "@expo/vector-icons";
 import { useAnimationActivity } from "@/hooks/use-animation-activity";
-import Animated, { cancelAnimation, Easing, ReduceMotion, useAnimatedReaction, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, ReduceMotion, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from "react-native-reanimated";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
+import { moderateScale } from "@/utils/scale";
 
-export function TopicLevelPath({ lessons, progress, currentLessonId, onPlay, scrollOffset, viewportHeight }: {
-  scrollOffset: SharedValue<number>; viewportHeight: SharedValue<number>;
+type TopicLevelPathProps = {
+  entryKey: number;
   lessons: LearningLesson[]; progress: Progress; currentLessonId?: string; onPlay: (lesson: LearningLesson) => void;
+};
+
+export function TopicLevelPath(props: TopicLevelPathProps) {
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
+  return <View style={styles.viewport} onLayout={({ nativeEvent: { layout } }) => {
+    setViewport(previous => previous.width === layout.width && previous.height === layout.height
+      ? previous : { width: layout.width, height: layout.height });
+  }}>
+    {viewport.width > 0 && viewport.height > 0 ? <MeasuredTopicLevelPath {...props}
+      key={`${viewport.width}:${viewport.height}:${props.currentLessonId}:${props.entryKey}`}
+      width={Math.min(viewport.width, 460)} height={viewport.height} /> : null}
+  </View>;
+}
+
+function MeasuredTopicLevelPath({ lessons, progress, currentLessonId, onPlay, width, height: viewportSize }: TopicLevelPathProps & {
+  width: number; height: number;
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const { active, reduceMotion } = useAnimationActivity();
-  const [width, setWidth] = useState(0);
   const currentIndex = lessons.findIndex(lesson => lesson.id === currentLessonId);
   const topicId = lessons[0]?.topicId;
   const { points, height, finish, connections } = useMemo(() => {
@@ -36,8 +52,18 @@ export function TopicLevelPath({ lessons, progress, currentLessonId, onPlay, scr
     });
     return { ...layout, connections };
   }, [width, lessons.length, currentIndex, topicId]);
-  return <View style={styles.container} onLayout={e => setWidth(e.nativeEvent.layout.width)}>
-    {width > 0 ? <View style={{ height }}>
+  const paddingBottom = moderateScale(20);
+  const currentPoint = points[currentIndex];
+  const initialOffset = currentPoint ? Math.max(0, Math.min(currentPoint.y - viewportSize * 0.45,
+    height + paddingBottom - viewportSize)) : 0;
+  const scrollOffset = useSharedValue(initialOffset);
+  const viewportHeight = useSharedValue(viewportSize);
+  const onScroll = useAnimatedScrollHandler(event => scrollOffset.set(event.contentOffset.y));
+  // Mount with final content bounds and offset together, without a post-paint scroll.
+  return <Animated.ScrollView style={styles.viewport} contentContainerStyle={{ paddingBottom }}
+    contentOffset={{ x: 0, y: initialOffset }} onScroll={onScroll} scrollEventThrottle={16}
+    showsVerticalScrollIndicator={false}>
+    <View style={[styles.container, { width, height }]}>
       {/* Keep drawing surfaces short, including when narrow layouts make the trail taller. */}
       {connections.map((connection, index) => <Canvas key={`${lessons[index].id}:${width}`} pointerEvents="none"
         accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
@@ -92,8 +118,8 @@ export function TopicLevelPath({ lessons, progress, currentLessonId, onPlay, scr
           </View> : null}
         </Pressable>;
       })}
-    </View> : null}
-  </View>;
+    </View>
+  </Animated.ScrollView>;
 }
 function CurrentLevelHalo({ point, scrollOffset, viewportHeight, active, reduceMotion }: {
   point: ReturnType<typeof getTopicPathLayout>["points"][number];
@@ -129,6 +155,7 @@ const FACE_BORDER = 1;
 const FACE_INSET = 7;
 
 const styles = StyleSheet.create({
+  viewport: { flex: 1 },
   container: { width: "100%", maxWidth: 460, alignSelf: "center" },
   node: { position: "absolute", borderRadius: TILE_RADIUS, paddingBottom: 5,
     shadowColor: "#665C50", shadowOpacity: 0.17, shadowRadius: 9, shadowOffset: { width: 0, height: 8 }, elevation: 4 },

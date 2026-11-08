@@ -25,7 +25,7 @@ export function solveEveryday(model, question) {
       if (model.task === 'range') return Math.max(...v) - Math.min(...v);
       return sum(v) / v.length;
     }
-    case 'shapes': return model.task === 'symmetry' ? model.rectangle ? 2 : model.sides[0] : sum(model.sides);
+    case 'shapes': return model.task === 'symmetry' && model.rectangle ? 2 : sum(model.sides);
     case 'grid': {
       let row = Math.floor((model.start - 1) / model.size), col = (model.start - 1) % model.size;
       if (model.task === 'reflect') col = model.size - 1 - col;

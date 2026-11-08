@@ -4,7 +4,7 @@ import { recordLearningAttempt } from "@/utils/learning-evidence";
 import type { LearningAttemptContext } from "@/types/learning";
 import { FEED_HAPPINESS_BOOST, FEED_HUNGER_RESTORE, getPuzzleCoinReward, PUZZLE_HAPPINESS_BOOST, PUZZLE_REPLAY_HAPPINESS_BOOST } from "@/constants/game";
 import { getPuzzlesByDifficulty, PUZZLE_DIFFICULTIES, PUZZLE_CONTENT_VERSION } from "@/constants/puzzles";
-import { getPuzzleLevelKind, getTimedChallengeLevel } from "@/constants/curriculum";
+import { getTimedChallengeLevel } from "@/constants/curriculum";
 import type { Progress, PuzzleProgress } from "@/types/game";
 import type { Puzzle } from "@/types/puzzle";
 import type { GameSave } from "@/types/save";
@@ -58,7 +58,7 @@ export function applyPuzzleAnswer(save: GameSave, puzzle: Puzzle, correct: boole
   const nextRun = inTimedRun && correct ? { ...run!, solvedPuzzleIds, status: runFinished ? "completed" as const : "active" as const,
     puzzleId: runFinished ? puzzle.id : run!.puzzleIds![solvedPuzzleIds!.length] } : run;
   const coins = inTimedRun ? runFinished ? getTimedRunReward({ ...save.progress, challengeAttempt: nextRun }) : 0
-    : correct ? getPuzzleCoinReward(puzzle.difficulty, replay, getPuzzleLevelKind(puzzle.id)) : 0;
+    : correct ? getPuzzleCoinReward(puzzle.difficulty, replay) : 0;
   const ids = inTimedRun ? runFinished ? [...new Set([...completed, ...solvedPuzzleIds!])] : completed
     : correct && !replay ? [...completed, puzzle.id] : completed;
   const date = new Date(now);

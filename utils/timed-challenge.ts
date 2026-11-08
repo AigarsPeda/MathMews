@@ -1,4 +1,4 @@
-import { getLearningLevelLocation, getPuzzleLevelKind } from "@/constants/curriculum";
+import { getLearningLevelLocation } from "@/constants/curriculum";
 import { getPuzzleCoinReward, TIMED_CHALLENGE_REWARD_MULTIPLIER } from "@/constants/game";
 import { getPathLocation } from "@/constants/puzzle-path";
 import type { LearningLevel } from "@/types/curriculum";
@@ -18,9 +18,9 @@ export function getTimedRunPuzzleIds(level: LearningLevel): string[] {
 export function getTimedRunReward(progress: Pick<Progress, "challengeAttempt" | "completedPuzzleIds">): number {
   const run = progress.challengeAttempt;
   const location = run && getPathLocation(run.levelId);
-  if (!run?.puzzleIds || !location) return 0;
+  if (!run?.puzzleIds || run.mode === "untimed" || run.status === "expired" || !location) return 0;
   return (run.solvedPuzzleIds ?? []).reduce((sum, id) => sum + TIMED_CHALLENGE_REWARD_MULTIPLIER *
-    getPuzzleCoinReward(location.lesson.difficulty, progress.completedPuzzleIds?.includes(id), getPuzzleLevelKind(id)), 0);
+    getPuzzleCoinReward(location.lesson.difficulty, progress.completedPuzzleIds?.includes(id)), 0);
 }
 
 /** Settle once, at the original deadline, then regenerate lives up to the current time. */

@@ -2592,5 +2592,20 @@
   "Share the seedlings into __N0__ equal groups. Count the seedlings in one group.": "Разделите саженцы на __N0__ равных групп. Посчитайте саженцы в одной группе.",
   "Share the seedlings into __N0__ equal groups. Count the seedlings in __N1__ groups.": "Разделите саженцы на __N0__ равных групп. Посчитайте саженцы в __N1__ группах.",
   "Which fraction equals __N0__?": "Какая дробь равна __N0__?",
-  "Write the decimal as tenths, then simplify the fraction.": "Запишите десятичную дробь в десятых, затем сократите дробь."
+  "Write the decimal as tenths, then simplify the fraction.": "Запишите десятичную дробь в десятых, затем сократите дробь.",
+  "A cookie is split into __N0__ equal pieces. Eat one piece. What fraction is left?": "Печенье разделили на __N0__ равные части. Одну часть съели. Какая доля осталась?",
+  "A whole has __N0__ halves. It is more than __N1__ half.": "В целом __N0__ половины. Это больше, чем __N1__ половина.",
+  "Both halves are colored. __N0__/__N1__ is one whole.": "Обе половины закрашены. __N0__/__N1__ — это одно целое.",
+  "Color both equal parts to make one whole.": "Закрась обе равные части, чтобы получилось одно целое.",
+  "Do __N0__ halves make one whole?": "Составляют ли __N0__ половины одно целое?",
+  "How many halves make one whole?": "Сколько половин составляют одно целое?",
+  "Is one half the same amount as one whole?": "Равна ли половина целому?",
+  "Match one half and one whole to their pictures.": "Соедини половину и целое с их рисунками.",
+  "No. __N0__/__N1__ is one half; __N2__/__N3__ is both halves.": "Нет. __N0__/__N1__ — это одна половина; __N2__/__N3__ — обе половины.",
+  "One of the __N0__ equal pieces remains. That is __N1__/__N2__.": "Осталась одна из __N0__ равных частей. Это __N1__/__N2__.",
+  "Think of a whole split into __N0__ equal parts. Count how many parts you need.": "Представь целое, разделённое на __N0__ равные части. Посчитай, сколько частей нужно.",
+  "Which is more: one half or one whole?": "Что больше: половина или целое?",
+  "Yes. Put the __N0__ equal halves together to make one whole.": "Да. Соедини __N0__ равные половины, чтобы получилось одно целое.",
+  "__N0__ equal halves make one whole.": "__N0__ равные половины составляют одно целое.",
+  "__N0__/__N1__ colors one of the __N2__ equal parts. __N3__/__N4__ colors both.": "__N0__/__N1__ означает, что закрашена одна из __N2__ равных частей. __N3__/__N4__ означает, что закрашены обе."
 }

@@ -68,7 +68,7 @@ for (const lesson of catalog.lessons) {
   for (const [index, level] of practices.entries()) {
     assert.deepEqual(json(getPuzzlePosition(lesson, level, 0)), { current: index + 1, total: practices.length });
   }
-  for (const level of lesson.levels.filter(level => level.kind === 'boss')) {
+  for (const level of lesson.levels.filter(level => level.kind !== 'practice')) {
     for (let phase = 0; phase < level.puzzleIds.length; phase++) assert.deepEqual(json(getPuzzlePosition(lesson, level, phase)), { current: phase + 1, total: level.puzzleIds.length });
   }
 }
@@ -145,7 +145,7 @@ function renderHarness(file, exportName, mocks = {}) {
   };
 }
 function nodes(node) { return Array.isArray(node) ? node.flatMap(nodes) : node?.props ? [node, ...nodes(node.props.children)] : []; }
-function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, replay = false, kind = 'practice', lifeCount = 3, completedIds = [], nextPuzzles = [], locale = 'en', lessonOverride, claimedRewards = [] } = {}) {
+function screen(puzzle, { final = false, hasFollowingTask = false, hasChallenge = false, replay = false, kind = 'practice', lifeCount = 3, completedIds = [], nextPuzzles = [], locale = 'en', lessonOverride, claimedRewards = [] } = {}) {
   const strings = JSON.parse(fs.readFileSync(`locales/${locale}.json`));
   const tr = (key, values = {}) => {
     let text = key.split('.').reduce((value, part) => value?.[part], strings) ?? key;
@@ -157,12 +157,12 @@ function screen(puzzle, { final = false, hasBoss = false, hasChallenge = false, 
   if (kind !== 'practice') lesson.levels.unshift({ ...level, id: 'earlier-practice', kind: 'practice', puzzleIds: ['earlier-puzzle'] });
   if (!final) lesson.levels.push({ ...level, id: 'next', puzzleIds: ['next-puzzle'] });
   if (hasChallenge) lesson.levels.push({ id: 'challenge', kind: 'challenge', puzzleIds: ['challenge-puzzle'] });
-  if (hasBoss) lesson.levels.push({ id: 'boss', kind: 'practice', puzzleIds: ['boss-puzzle'] });
+  if (hasFollowingTask) lesson.levels.push({ id: 'following', kind: 'practice', puzzleIds: ['following-puzzle'] });
   for (const next of nextPuzzles) lesson.levels.push({ ...level, id: next.id, puzzleIds: [next.id] });
   let session = { lesson, level, phase: 0 };
   const attempts = [], routes = [];
   const game = { pet: { name: 'Minka', type: 'cat' }, wallet: { coins: 100 }, progress: { decorationsUnlocked: [], decorationQuantities: {}, catPlanRewardsClaimed: claimedRewards, unlockedPathLessonIds: ['lesson'], completedPuzzleIds: [...completedIds, ...(kind !== 'practice' ? ['earlier-puzzle'] : []), ...(replay ? [puzzle.id] : [])], puzzleStreak: 0, lives: {current:lifeCount,nextRegenAt:lifeCount<3 ? Date.now()+1800000 : null} }, isReady: true, hasCompletedOnboarding: true,
-    answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; else game.progress.completedPuzzleIds = [...new Set([...game.progress.completedPuzzleIds, p.id])]; if (correct && lessonOverride) game.progress = loadPure('@/utils/cat-plan-rewards').grantCatPlanRewards(game).progress; return correct ? getPuzzleCoinReward(p.difficulty, replay, kind) : 0; }, requestRoomDecoration: target => routes.push(['decorate', target]), buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
+    answerPuzzle: (p, correct, id) => { if(game.progress.lives.current===0) return null; attempts.push({ puzzle: p.id, correct, id }); if(!correct) game.progress.lives.current--; else game.progress.completedPuzzleIds = [...new Set([...game.progress.completedPuzzleIds, p.id])]; if (correct && lessonOverride) game.progress = loadPure('@/utils/cat-plan-rewards').grantCatPlanRewards(game).progress; return correct ? getPuzzleCoinReward(p.difficulty, replay) : 0; }, requestRoomDecoration: target => routes.push(['decorate', target]), buyLife:async()=>{game.progress.lives.current=Math.min(3,game.progress.lives.current+1); return true;}, recordInteraction() {}, recordLearningHelp(id) {game.progress.learningSupportIds=[...(game.progress.learningSupportIds??[]),id];}, purchaseVisualHelp() {} };
   const router = { push: route => routes.push(['push',route]), dismissTo: route => routes.push(['path', route]),
     setParams: params => { routes.push(['params', params]); session = { lesson, level: lesson.levels.find(item => item.id === params.level), phase: 0 }; } };
   const render = renderHarness('app/play.tsx', 'PlaySession', {
@@ -347,19 +347,19 @@ assert.equal(matching.result(), undefined, 'Completing matches waits for the sam
 assert.equal(matching.check().disabled, false);
 matching.check().onPress(); matching.refresh(); assert.equal(matching.result().correct, true);
 
-for (const hasBoss of [false, true]) {
-  const final = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { final: true, hasBoss });
+for (const hasFollowingTask of [false, true]) {
+  const final = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { final: true, hasFollowingTask });
   final.task().onSelectChoice(0); final.refresh(); final.check().onPress(); final.refresh();
-  assert.equal(final.result().message, hasBoss ? en.play.greatJob : en.puzzlePathDesign.levelComplete);
+  assert.equal(final.result().message, hasFollowingTask ? en.play.greatJob : en.puzzlePathDesign.levelComplete);
   assert.equal(final.result().summary, undefined, 'Path completion keeps the result concise');
-  assert.equal(final.result().continueLabel, hasBoss ? en.play.nextPuzzle : en.puzzlePathDesign.viewPath);
+  assert.equal(final.result().continueLabel, hasFollowingTask ? en.play.nextPuzzle : en.puzzlePathDesign.viewPath);
 }
 
 for (const options of [
-  { hasChallenge: true, hasBoss: true, destination: 'challenge' },
-  { hasBoss: true, kind: 'challenge', destination: 'boss' },
-  { hasChallenge: true, hasBoss: true, replay: true, destination: 'challenge' },
-  { hasChallenge: true, hasBoss: true, completedIds: ['challenge-puzzle'], destination: 'boss' },
+  { hasChallenge: true, hasFollowingTask: true, destination: 'challenge' },
+  { hasFollowingTask: true, kind: 'challenge', destination: 'following' },
+  { hasChallenge: true, hasFollowingTask: true, replay: true, destination: 'challenge' },
+  { hasChallenge: true, hasFollowingTask: true, completedIds: ['challenge-puzzle'], destination: 'following' },
 ]) {
   const final = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, { ...options, final: true });
   final.task().onSelectChoice(0); final.refresh(); final.check().onPress(); final.refresh();
@@ -368,14 +368,14 @@ for (const options of [
   assert.equal(final.routes.some(([action]) => action === 'params'), false, 'Success presents the choice before advancing');
   final.result().onContinue();
   const route = final.routes.find(([action]) => action === 'params');
-  assert.deepEqual(json(route), ['params', { difficulty: 'easy', lesson: 'lesson', level: options.destination }], 'Special levels open in place without forcing a boss checkpoint');
+  assert.deepEqual(json(route), ['params', { difficulty: 'easy', lesson: 'lesson', level: options.destination }], 'Special levels open in place without forcing a task checkpoint');
   final.result().onGoHome();
   assert.equal(final.routes.at(-1)[0], 'path');
   assert.equal(final.routes.at(-1)[1].pathname, '/puzzles', 'The secondary action lets the player return to the lesson');
 }
 
 const completedSpecials = screen({ ...base, choices: ['A', 'B'], correctIndex: 0 }, {
-  final: true, hasChallenge: true, hasBoss: true, completedIds: ['challenge-puzzle', 'boss-puzzle'],
+  final: true, hasChallenge: true, hasFollowingTask: true, completedIds: ['challenge-puzzle', 'following-puzzle'],
 });
 completedSpecials.task().onSelectChoice(0); completedSpecials.refresh(); completedSpecials.check().onPress(); completedSpecials.refresh();
 assert.equal(completedSpecials.result().continueLabel, en.puzzlePathDesign.viewPath, 'Completed special levels are not offered again');
@@ -510,13 +510,6 @@ items()[1].props.onPress(); challengeTree = renderBudget(budgetProps); assert.eq
 assert.equal(getPuzzleAttemptHint(budgetProps.puzzle, { kind: 'budget', indices: [0, 2] }).key, 'budgetTooMuch');
 console.log('All four challenge types preserve local work, update the shared action, disable incomplete drafts and grade corrections.');
 
-for (const difficulty of ['easy', 'medium', 'hard']) {
-  for (const replay of [false, true]) {
-    assert.equal(getPuzzleCoinReward(difficulty, replay, 'boss'), 2 * getPuzzleCoinReward(difficulty, replay), 'Boss rewards remain doubled without a question badge');
-    assert.equal(getPuzzleCoinReward(difficulty, replay, 'challenge'), getPuzzleCoinReward(difficulty, replay), 'Optional challenge rates stay unchanged');
-  }
-}
-console.log('Boss rewards remain double for first clears and replays on every difficulty.');
 const threeLives=screen({...base,type:'multiple_choice',choices:['4','5','6'],correctIndex:0});
 for(const [index,left] of [[1,2],[2,1],[1,0]]) {
   threeLives.task().onSelectChoice(index);threeLives.refresh();

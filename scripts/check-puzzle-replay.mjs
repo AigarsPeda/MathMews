@@ -53,7 +53,7 @@ function harness() {
       StyleSheet: { create: x => x }, Platform: { OS: 'ios' } },
     'react-native-safe-area-context': { SafeAreaView: view('SafeAreaView') },
     'react-native-reanimated': { __esModule: true, default: { ScrollView: view('ScrollView') },
-      FadeIn: { duration: () => ({ reduceMotion: () => ({}) }) }, ReduceMotion: { System: 'system' } },
+      FadeInRight: { duration: () => ({ easing: () => ({ withInitialValues: () => ({ reduceMotion: () => ({}) }) }) }) }, Easing: { cubic: 'cubic', out: x => x }, ReduceMotion: { System: 'system' } },
     '@react-native-async-storage/async-storage': {},
   };
   function load(id) {
@@ -166,7 +166,6 @@ for (const explicitReplay of [false, true]) test(`timed replay survives re-entry
 test('every path preserves replay progress, unlocks, timeout checkpoints and reward amounts', () => {
   const h = harness();
   const { getPuzzleCoinReward } = h.load('@/constants/game');
-  const { getPuzzleLevelKind } = h.load('@/constants/curriculum');
   let cases = 0;
   for (const lesson of h.paths.PUZZLE_PATHS) {
     h.save = h.storage.createDefaultGameSave(); complete(h, lesson);
@@ -180,8 +179,8 @@ test('every path preserves replay progress, unlocks, timeout checkpoints and rew
         const result = h.operations.applyPuzzleAnswer(save, puzzle, true, id, h.now + index);
         assert.equal(result.accepted, true); save = result.save;
         const expectedCoins = mode === 'timed' ? index < 9 ? 0 : 2 * lesson.levels.slice(7).reduce((sum, step) =>
-          sum + getPuzzleCoinReward(lesson.difficulty, true, getPuzzleLevelKind(step.puzzleIds[0])), 0)
-          : getPuzzleCoinReward(lesson.difficulty, true, getPuzzleLevelKind(puzzle.id));
+          sum + getPuzzleCoinReward(lesson.difficulty, true), 0)
+          : getPuzzleCoinReward(lesson.difficulty, true);
         assert.equal(result.coins, expectedCoins, 'Replay rewards settle once at the replay rate');
         assert.equal(h.operations.applyPuzzleAnswer(save, puzzle, true, id, h.now + index).accepted, false);
         assert.deepEqual(clone(save.progress.completedPuzzleIds), clone(baseline.progress.completedPuzzleIds));

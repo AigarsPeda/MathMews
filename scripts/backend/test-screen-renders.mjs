@@ -76,7 +76,8 @@ async function harness(screen = 'store', compiled = false) {
     React.useLayoutEffect(() => { latest.current = read; }, [read]);
     return React.useMemo(() => ({ read: () => latest.current(), get: () => latest.current() }), []);
   }
-  const searchParams = {};
+  let searchParams = {};
+  const paramsContext = React.createContext(searchParams);
   const stageCamera = { x: shared(0), y: shared(0), scale: shared(1), zoom: 1, gesture: {} };
   let stageActivity = { activity: null, scale: shared(1), facing: shared(1), objectX: shared(0), objectY: shared(0),
     clearBlockedActivity() {}, startActivity() {}, returnHome() {}, stopActivity() {} };
@@ -129,7 +130,8 @@ async function harness(screen = 'store', compiled = false) {
       StyleSheet: { create: x => x }, PanResponder: { create: handlers => ({ panHandlers: handlers }) }, useWindowDimensions: () => dimensions,
       Dimensions: { get: () => dimensions }, PixelRatio: { roundToNearestPixel: x => x } },
     'react-native-safe-area-context': { SafeAreaView: view('SafeAreaView'), useSafeAreaInsets: () => insets },
-    'expo-router': { useRouter: () => router, useLocalSearchParams: () => searchParams, Redirect: view('Redirect'), useFocusEffect: fn => { const { active } = React.useContext(activityContext); React.useEffect(() => active ? fn() : undefined, [active, fn]); } },
+    'expo-router': { useRouter: () => router, useLocalSearchParams: () => React.useContext(paramsContext), Redirect: view('Redirect'), useFocusEffect: fn => { const { active } = React.useContext(activityContext); React.useEffect(() => active ? fn() : undefined, [active, fn]); } },
+    'expo-router/react-navigation': { useIsFocused: () => React.useContext(activityContext).active },
     'expo-haptics': { ImpactFeedbackStyle: { Light: 'light' } },
     'react-i18next': { useTranslation: () => ({ t: React.useContext(translationContext) }) },
     '@/contexts/GameProvider': { useGame: () => { counts.set('gameReads', (counts.get('gameReads') ?? 0) + 1); return React.useContext(gameContext); }, useGameActions: () => actions },
@@ -278,6 +280,7 @@ async function harness(screen = 'store', compiled = false) {
   const root = renderer.createContainer({}, 1, null, false, null, '', onError, onError, onError, null);
   async function update(fn) { await act(async () => { await fn(); }); if (errors.length) throw errors[0]; }
   const render = () => update(() => renderer.updateContainer(
+    React.createElement(paramsContext.Provider, { value: searchParams },
     React.createElement(activityContext.Provider, { value: activity },
     React.createElement(translationContext.Provider, { value: translate },
       React.createElement(gameContext.Provider, { value: game },
@@ -285,7 +288,7 @@ async function harness(screen = 'store', compiled = false) {
           React.createElement(Screen, screen !== 'home-header' ? {} : {
             layout: 'home', coins: game.wallet.coins, streak: game.progress.streak,
             lives: game.progress.lives,
-          }))))), root, null, null));
+          })))))), root, null, null));
   await render();
   return { drawFrames, props: name => props.get(name), count: name => counts.get(name) ?? 0, calls, load, update,
     get now() { return clock; },
@@ -295,6 +298,7 @@ async function harness(screen = 'store', compiled = false) {
     async setRoomActivity(next) { stageActivity = { ...stageActivity, ...next }; await render(); },
     async setStage(next) { stageProps = { ...stageProps, ...next }; await render(); },
     async setActive(active) { activity = { ...activity, active }; await render(); },
+    async setParams(next) { searchParams = { ...searchParams, ...next }; await render(); },
     async advance(ms) { clock += ms; await update(() => { for (const callback of [...timers.values()]) callback(); }); },
     get game() { return game; }, async setGame(next) { game = { ...game, ...next }; await render(); },
     async setLanguage() { translate = (key, values) => `translated:${key}:${JSON.stringify(values)}`; await render(); },
@@ -1195,6 +1199,28 @@ test(`Puzzles skips furniture navigation updates but refreshes learning progress
   } finally { await h.close(); }
 });
 
+test(`Topic entry targets the current level before paint, including returning from play (${mode})`, async () => {
+  const h = await harness('puzzles', compiled);
+  try {
+    const track = h.load('@/constants/puzzle-path').getTopicPaths('easy', 'addition');
+    const completed = track.slice(0, 6).flatMap(lesson => lesson.levels.flatMap(level => level.puzzleIds));
+    await h.setGame({ progress: { ...h.game.progress, completedPuzzleIds: completed } });
+    await h.setParams({ difficulty: 'easy', topic: 'addition' });
+    assert.equal(h.props('TopicLevelPath').currentLessonId, track[6].id);
+    assert.equal(h.frameCount, 0, 'Opening never schedules a scroll for a later frame');
+    const entry = h.props('TopicLevelPath').entryKey;
+    await h.setActive(false);
+    assert.equal(h.props('TopicLevelPath').entryKey, entry, 'The outgoing path stays mounted during navigation');
+    await h.setGame({ progress: { ...h.game.progress, completedPuzzleIds: [...completed, ...track[6].levels.flatMap(level => level.puzzleIds)] } });
+    const beforeReturn = h.count('TopicLevelPath');
+    await h.setActive(true);
+    assert.equal(h.props('TopicLevelPath').currentLessonId, track[7].id);
+    assert.equal(h.props('TopicLevelPath').entryKey, entry + 1);
+    assert.equal(h.count('TopicLevelPath'), beforeReturn + 1, 'Return commits only the newly positioned path');
+    assert.equal(h.frameCount, 0, 'Returning never schedules a visible scroll');
+  } finally { await h.close(); }
+});
+
 test(`static room colliders survive navigation and refresh geometry, removals and physics worlds (${mode})`, async () => {
   const h = await harness('colliders', compiled);
   try {
@@ -1271,7 +1297,7 @@ test(`Home header ignores unrelated pet updates while wallet, lives, and local s
     await h.setGame({ wallet: { coins: 23 } });
     assert.equal(h.props('CoinCounter').coins, 23);
     const beforeCompletion = h.count('Pressable');
-    await h.setGame({ progress: { ...h.game.progress, completedPuzzleIds: h.load('@/utils/boss-achievements').getBossAchievements()[0].level.puzzleIds } });
+    await h.setGame({ progress: { ...h.game.progress, completedPuzzleIds: h.load('@/constants/puzzle-path').PUZZLE_PATHS[0].levels.map(level => level.puzzleIds[0]) } });
     assert.equal(h.count('Pressable'), beforeCompletion, 'Puzzle completions do not render a retired collection control');
     await h.setGame({ progress: { ...h.game.progress, lives: { current: 1, nextRegenAt: Date.now() + 60000 } } });
     assert.equal(h.props('BuyLifeSheet').lives.current, 1);

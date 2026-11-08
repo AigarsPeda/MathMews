@@ -43,7 +43,7 @@ for (let tens = 0; tens < 9; tens++) for (let ones = 10; ones < 20; ones++) {
   assert.ok(after.every(t => t.x > 0 && t.x < 300 && t.y > 0 && t.y < 140));
 }
 const { getPuzzleCompanionMessage } = load('@/utils/puzzle-companion');
-for (const kind of ['practice', 'challenge', 'boss']) assert.equal(getPuzzleCompanionMessage({ correct: true, kind, retries: 1, finalStage: true, practiceFinished: true, replay: false, completedCount: 50, puzzleId: 'correction' }).reaction, 'puzzleProud', 'Correcting a mistake keeps its quiet nod even at an endpoint');
+for (const kind of ['practice', 'challenge']) assert.equal(getPuzzleCompanionMessage({ correct: true, kind, retries: 1, finalStage: true, practiceFinished: true, replay: false, completedCount: 50, puzzleId: 'correction' }).reaction, 'puzzleProud', 'Correcting a mistake keeps its quiet nod even at an endpoint');
 console.log('Verified single-object sharing, visible partial rounds and remainders, ten conserved units per exchange, and correction priority.');
 
 // Exercise the actual token renderer with native animation calls captured.

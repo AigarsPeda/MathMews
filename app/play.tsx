@@ -497,7 +497,6 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
   const companionMessage = getPuzzleCompanionMessage({
     correct: isCorrect && !expired,
     kind: level.kind,
-    finalStage: sessionIndex === puzzles.length - 1,
     practiceFinished: lessonFinished,
     replay: isReplay,
     retries: retryCount,

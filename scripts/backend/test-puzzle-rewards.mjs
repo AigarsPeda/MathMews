@@ -5,9 +5,9 @@ import vm from 'node:vm';
 import test from 'node:test';
 import ts from 'typescript';
 
-test('new boss stages receive double rewards; practice and challenges retain regular rates; rerunning is idempotent', () => {
+test('all puzzle registrations use ordinary first-clear and replay rates; rerunning is idempotent', () => {
   const catalog = { lessons: ['easy', 'medium', 'hard'].map(tier => ({ levels: [
-    { kind: 'boss', puzzleIds: [`future-${tier}-stage`] },
+    { kind: 'practice', puzzleIds: [`future-${tier}-stage`] },
     { kind: 'practice', puzzleIds: [`future-${tier}-practice`] },
     { kind: 'challenge', puzzleIds: [`future-${tier}-challenge`] },
   ] })) };
@@ -36,7 +36,7 @@ test('new boss stages receive double rewards; practice and challenges retain reg
   run();
   assert.equal(writes.length, 1);
   for (const [tier, first, replay] of [['easy', 4, 2], ['medium', 7, 3], ['hard', 9, 4]]) {
-    assert.ok(writes[0].includes(`('future-${tier}-stage',${first * 2},${replay * 2})`));
+    assert.ok(writes[0].includes(`('future-${tier}-stage',${first},${replay})`));
     for (const kind of ['practice', 'challenge']) assert.ok(writes[0].includes(`('future-${tier}-${kind}',${first},${replay})`));
   }
   run();

@@ -32,7 +32,7 @@ export function bossTasks(entry,index,api) {
   if(topic==='patterns') {
     const step=2+index%4;
     return api.patternSet(d==='hard'
-      ? [[3+index,'×',2+index%3],[31+index,'−',4+index],[(2+index%3)**4*(2+index),'÷',2+index%3],[40+index,'+',step]]
+      ? [[3+index,'×',2+index%3],[31+index,'−',4+index],[(2+index%3)**4*(3+index),'÷',2+index%3],[40+index,'+',step]]
       : [[2+index,'+',step],[23+index,'−',step+1],[(step+2)*6+index,'−',step+2],[3+index,'+',step+3]]).slice(0,3);
   }
   const factories={addition:api.addSet,subtraction:api.subtractSet,numbers:api.numberSet,multiplication:api.multiplySet,division:api.divideSet,fractions:api.fractionSet,operations:api.operationSet,percentages:api.percentSet,measurement:api.measureSet,logic:api.logicSet};
@@ -51,7 +51,7 @@ export function bossTasks(entry,index,api) {
       case 'operations': { const divisor=3+(index+j)%7,quotient=5+index+j*2; args=[divisor*quotient,divisor,4+index+j,d!=='hard']; break; }
       case 'percentages': args=[20*(5+index+j*3),[10,20,25,50][s%4],s%2===0]; break;
       case 'measurement': args=[7+index+j*3,4+(index+2*j)%7]; break;
-      case 'logic': args=[2*(13+index*5+j*3),index%2?'subtract':'multiply']; break;
+      case 'logic': args=[2*(13+index*(d==='hard'?8:5)+j*3),index%2?'subtract':'multiply']; break;
     }
     if(topic==='addition' || topic==='multiplication') {
       const key=()=>args.slice(0,2).sort((a,b)=>a-b).join(',');

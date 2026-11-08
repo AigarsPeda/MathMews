@@ -16,6 +16,7 @@ const core = [
   "check-curriculum",
   "check-puzzle-experience",
   "check-puzzle-replay",
+  "check-topic-path-entry",
   "check-puzzle-clarity",
   "check-puzzle-drag",
   "check-result-dismissal",

@@ -9,24 +9,14 @@ export type LearningTopic = {
   description: LearningText;
   icon: AppIconName;
 };
-export type BossStory = {
-  sceneId: string;
-  backstory?: LearningText;
-  /** Cat participation before the mission and after its three tasks. */
-  catActions: LearningText[];
-  intro: LearningText;
-  outcome: LearningText;
-  stages: { title: LearningText; before: LearningText; after: LearningText }[];
-};
 export type LearningLevel = {
   id: string;
-  kind: "practice" | "boss" | "challenge";
+  kind: "practice" | "challenge";
   title: LearningText;
   description: LearningText;
-  story?: BossStory;
-  /** Only challenges have a deadline; practice and story bosses remain untimed. */
+  /** Challenges offer a choice between timed and untimed play. */
   timeLimitSeconds?: number;
-  /** Boss stages are separate puzzles, saved after each successful stage. */
+  /** Older grouped tasks retain their original IDs for saved progress and links. */
   puzzleIds: string[];
 };
 export type LearningLesson = {

@@ -53,7 +53,7 @@ export default function HomeLivesFixture() {
     Reopen: () => { commit(parseGameSaveFromValue(JSON.stringify(current.current))!.save); setRevision(n => n + 1); },
     Narrow: () => { setNarrow(true); commit({ ...current.current, wallet: { coins: 1234567 } }); },
     LV: () => { void language.changeLanguage('lv'); },
-    "Legacy progress": () => commit({ ...current.current, progress: { ...current.current.progress, completedPuzzleIds: LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.kind === 'boss')).slice(0,2).flatMap(level => level.puzzleIds) } }),
+    "Legacy progress": () => commit({ ...current.current, progress: { ...current.current.progress, completedPuzzleIds: LEARNING_CATALOG.lessons.flatMap(lesson => lesson.levels.filter(level => level.puzzleIds.length > 1)).slice(0,2).flatMap(level => level.puzzleIds) } }),
   };
   return <I18nextProvider i18n={language}><GameActionsContext.Provider value={game}><GameContext.Provider value={game}>
     <View style={{ flex: 1, paddingTop, paddingHorizontal: moderateScale(16), backgroundColor: GameColors.background }}>

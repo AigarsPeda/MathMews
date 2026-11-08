@@ -22,10 +22,10 @@ export function checkProgression({ load }) {
     topicId: l.topicId, skillId: l.skillId, prerequisiteSkillIds: l.prerequisiteSkillIds,
     levels: l.levels.map(v => ({ id: v.id, kind: v.kind, timeLimitSeconds: v.timeLimitSeconds, puzzleIds: v.puzzleIds })) })),
   extras: Object.fromEntries(originalLessons.map(l => [l.id, extras[l.id]])), puzzles: originalPuzzles.map(list => list.map(p => ({ id: p.id, difficulty: p.difficulty, ageRange: p.ageRange, skillId: p.learning.skillId }))) };
-  // Captured before these content revisions. Deliberate future ID changes need a migration review.
+  // Updated only for ordinary task classification. IDs, order, skills and timer durations are unchanged.
   assert.equal(createHash('sha256').update(JSON.stringify(manifest)).digest('hex'),
-    '0608f92a590db8ab572dcac746e99f1a7a15c8d4b607e28531c2de2184c1e588',
-    'Retain all 1,800 puzzle identities, lesson IDs, skill IDs, reward kinds, timer durations and path ordering');
+    'a1aae40c32fcf7665e15259824bb85c8e7d0ced003c5a551c7cff7a9f4540808',
+    'Retain all 1,800 puzzle identities, lesson IDs, skill IDs, ordinary task kinds, timer durations and path ordering');
   const { PUZZLE_CONTENT_VERSION } = load('@/constants/puzzles');
   const { shufflePuzzleChoices } = load('@/utils/puzzle-practice');
   const { checkPuzzleAnswer, getValidPairs } = load('@/utils/puzzle-type');
@@ -37,7 +37,7 @@ export function checkProgression({ load }) {
     const hardLogic = catalog.lessons.filter(l => l.difficulty === 'hard' && l.topicId === 'logic');
     const reasoningIds = hardLogic.flatMap(l => [
       l.levels.filter(level => level.kind === 'practice')[2].puzzleIds[0],
-      l.levels.find(level => level.kind === 'boss').puzzleIds[2],
+      l.levels.find(level => level.puzzleIds.length > 1).puzzleIds[2],
     ]);
     assert.equal(reasoningIds.length, 20);
     assert.ok(!all.some(p => p.difficulty === 'hard' && p.type === 'order_numbers'), 'Hard no longer tests basic whole-number sorting');
@@ -225,7 +225,7 @@ export function checkProgression({ load }) {
       const puzzle = english.flat().find(p => p.id === first.levels[7].puzzleIds[0]);
       const result = applyPuzzleAnswer(restored, puzzle, true, 'revised-challenge', now + 1);
       assert.equal(result.accepted, true);
-      assert.equal(result.coins, getPuzzleCoinReward('easy', false, 'challenge'));
+      assert.equal(result.coins, getPuzzleCoinReward('easy', false));
       assert.equal(result.save.progress.challengeAttempt.status, 'completed');
       assert.equal(applyPuzzleAnswer(result.save, puzzle, true, 'revised-challenge', now + 2).accepted, false);
     }

@@ -91,7 +91,6 @@ function checkLearningText(value) {
 }
 const catalog = read('data/puzzle-curriculum.json');
 checkLearningText(catalog);
-checkLearningText(read('data/lesson-boss-scenes.json'));
 const numbers = text => (text.match(/\d+(?:[.,]\d+)?/g) ?? []).map(n => n.replace(',', '.')).sort();
 const displayKeys = new Set(['question','hint','explanation','choices','statement','expression','optionA','optionB','leftDisplay','wrongWork','label']);
 function comparePuzzle(source, translated, location, display = false) {

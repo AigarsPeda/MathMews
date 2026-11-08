@@ -11,19 +11,47 @@ const familiar = ([n, d], context) => {
   assert.ok([2, 3, 4, 5, 6, 8].includes(d), `${context}: use familiar pieces with at most eight parts`);
 };
 
-/** Check the complete later paths, including distractors, help and daily checks. */
+/** Check opening variety and the later paths, including distractors, help and daily checks. */
 export function checkEasyFractions({ load }) {
-  const lessons = read('data/puzzle-curriculum.json').lessons
-    .filter(l => l.difficulty === 'easy' && l.topicId === 'fractions').slice(4);
+  const track = read('data/puzzle-curriculum.json').lessons
+    .filter(l => l.difficulty === 'easy' && l.topicId === 'fractions');
+  const lessons = track.slice(4);
   const extras = read('data/puzzle-path-extras.json');
   const { getLearningReview } = load('@/constants/learning-review');
   const { getVisualExplanation } = load('@/constants/visual-explanations');
   const { checkPuzzleAnswer } = load('@/utils/puzzle-type');
   const { shufflePuzzleChoices } = load('@/utils/puzzle-practice');
+  const { PUZZLE_PATHS } = load('@/constants/puzzle-path');
+  const intro = PUZZLE_PATHS.find(l => l.id === track[0].id);
   assert.equal(lessons.length, 6);
 
   for (const locale of ['en', 'lv', 'ru']) {
     const byId = new Map(readPuzzles(locale, 'easy').map(p => [p.id, p]));
+    const opening = intro.levels.flatMap(l => l.puzzleIds).map(id => byId.get(id));
+    assert.equal(opening.length, 10, 'Keep the complete first-level session');
+    assert.ok(new Set(opening.map(p => p.type)).size >= 6, 'Practise halves through different activities');
+    assert.equal(new Set(opening.map(p => JSON.stringify([p.type, p.question, p.payload, p.choices]))).size, 10,
+      'Every first-level task asks a different question');
+    assert.ok(opening.every((p, i) => !i || p.type !== opening[i - 1].type), 'Do not repeat an interaction back to back');
+    assert.equal(opening.filter(p => p.type === 'fraction_build').length, 2, 'Color a half once, then build a whole');
+    for (const p of opening) {
+      const v = p.payload;
+      if (p.type === 'fraction_build') assert.equal(v.denominator, 2);
+      if (p.type === 'fraction_match') assert.ok(v.pairs.every(pair => pair.denominator === 2));
+      if (p.type === 'sort_buckets') assert.ok([...v.targets, ...v.fractions].every(([, d]) => d === 2));
+      assert.equal(getVisualExplanation(p).keyframes.length, 3, `${p.id}: picture help remains available`);
+      for (let seed = 0; seed < 12; seed++) {
+        const shuffled = shufflePuzzleChoices(p, `intro-halves/${seed}`);
+        if (p.type === 'multiple_choice' || p.type === 'compare' || p.type === 'true_false') {
+          const options = shuffled.choices ?? (p.type === 'compare' ? [shuffled.payload.optionA, shuffled.payload.optionB] : [true, false]);
+          options.forEach((option, index) => {
+            const expected = p.type === 'compare' ? option === '2/2' : p.type === 'true_false' ? option === p.isTrue
+              : option === (p.id.endsWith('boss-2') ? '2' : '1/2');
+            assert.equal(checkPuzzleAnswer(shuffled, { kind: 'choice', index }), expected, `${p.id}: accept only the correct answer after shuffling`);
+          });
+        }
+      }
+    }
     for (const lesson of lessons) {
       const tasks = [...lesson.levels.flatMap(l => l.puzzleIds), ...extras[lesson.id]].map(id => byId.get(id));
       assert.equal(tasks.length, 10);
@@ -100,5 +128,5 @@ export function checkEasyFractions({ load }) {
       }
     }
   }
-  console.log('Verified all 60 later Easy fraction tasks in three languages: familiar parts, equal-denominator comparisons, simple equivalence, reachable strips, four-card sorting, help and 33 daily-review variants per lesson.');
+  console.log('Verified ten distinct opening fraction tasks with six activity types, plus all 60 later Easy fraction tasks in three languages: familiar parts, equal-denominator comparisons, simple equivalence, reachable strips, four-card sorting, help and 33 daily-review variants per lesson.');
 }

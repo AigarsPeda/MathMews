@@ -61,7 +61,7 @@ function subtraction(stage, slot, locale, key) {
   let [a, b] = small[slot];
   if (stage === 2) { a = 11 + slot; b = a - 10; }
   if (stage === 3) { a = 11 + slot % 8; b = a - 10 + 1 + slot % 3; }
-  if (stage >= 4) { a = 12 + slot + (stage >= 8 ? 5 : 0); b = 2 + slot * 3 % 7; }
+  if (stage >= 4) { a = 12 + slot + (stage >= 8 ? 5 + (stage - 8) * 11 : 0); b = 2 + slot * 3 % 7; }
   const result = a - b;
   const hint = stage === 2
     ? text(`Split ${a} into 10 and ${b}. Take away ${b}.`, `Sadali ${a} skaitļos 10 un ${b}. Atņem ${b}.`)

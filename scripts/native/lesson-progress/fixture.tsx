@@ -21,12 +21,12 @@ const topicFor = (tier: PuzzleDifficulty) => tier === 'hard' ? 'patterns' : 'add
 function mixedSave(tier: PuzzleDifficulty): GameSave {
   const save = createDefaultGameSave(), lessons = getTopicLessons(tier, topicFor(tier));
   const ids = lessons.flatMap((lesson, index) => {
-    const practice = getPracticeIds(lesson), boss = lesson.levels.find(level => level.kind === 'boss')!, challenge = lesson.levels.find(level => level.kind === 'challenge')!;
-    if (index === 0) return [...practice, ...boss.puzzleIds, ...challenge.puzzleIds];
+    const practice = getPracticeIds(lesson), group = lesson.levels.find(level => level.puzzleIds.length > 1)!, challenge = lesson.levels.find(level => level.kind === 'challenge')!;
+    if (index === 0) return [...practice, ...group.puzzleIds, ...challenge.puzzleIds];
     if (index === 1) return practice.slice(0, 2);
     if (index === 2) return [...practice, ...challenge.puzzleIds];
-    if (index === 3) return [...practice, boss.puzzleIds[0]];
-    if (index === 4) return [...practice, ...boss.puzzleIds];
+    if (index === 3) return [...practice, group.puzzleIds[0]];
+    if (index === 4) return [...practice, ...group.puzzleIds];
     return [];
   });
   return { ...save, progress: { ...save.progress, completedPuzzleIds: ids } };

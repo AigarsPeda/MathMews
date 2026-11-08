@@ -10,7 +10,7 @@ import { I18nextProvider } from "react-i18next";
 import { Pressable, ScrollView, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type Scenario = "progress" | "retry" | "boss" | "latvian" | "long" | "stage";
+type Scenario = "progress" | "retry" | "complete" | "latvian" | "long" | "stage";
 function Button({ label, onPress }: { label: string; onPress: () => void }) {
   return <Pressable accessibilityRole="button" onPress={onPress} style={{ padding: 16, borderRadius: 12, backgroundColor: "#E3FAF7" }}><Text>{label}</Text></Pressable>;
 }
@@ -37,10 +37,9 @@ function CompanionPage({ pageNumber, onReset }: { pageNumber: number; onReset: (
   if (!__DEV__) return <Redirect href="/" />;
   const language = scenario === "latvian" ? latvian : english;
   const correct = scenario !== "retry" && scenario !== "long";
-  const bossFinal = scenario === "boss" || scenario === "latvian";
-  const boss = bossFinal || scenario === "stage";
-  const message = getPuzzleCompanionMessage({ correct, kind: boss ? "boss" : "practice", finalStage: bossFinal,
-    practiceFinished: false, replay: false, retries: correct ? 0 : 2, completedCount: 5, puzzleId: "fixture" });
+  const lessonFinal = scenario === "complete" || scenario === "latvian";
+  const message = getPuzzleCompanionMessage({ correct, kind: "practice",
+    practiceFinished: lessonFinal, replay: false, retries: correct ? 0 : 2, completedCount: 5, puzzleId: "fixture" });
   function show(next: Scenario, clip?: PuzzleCatReaction) { setReaction(clip); setAdvancing(false); setScenario(next); setVisible(true); }
   return <I18nextProvider i18n={language}><SafeAreaView style={{ flex: 1, backgroundColor: "#FFF5EB" }}>
     <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
@@ -50,8 +49,8 @@ function CompanionPage({ pageNumber, onReset }: { pageNumber: number; onReset: (
       <Button label="Next puzzle flow" onPress={()=>{show("progress");setAdvancing(true);}} />
       <Button label="Progress moment" onPress={()=>show("progress")} />
       <Button label="Retry moment" onPress={()=>show("retry")} />
-      <Button label="Boss moment" onPress={()=>show("boss")} />
-      <Button label="Boss stage moment" onPress={()=>show("stage")} />
+      <Button label="Completion moment" onPress={()=>show("complete")} />
+      <Button label="Completion stage moment" onPress={()=>show("stage")} />
       <Button label="Latvian moment" onPress={()=>show("latvian")} />
       <Button label="Long hint moment" onPress={()=>show("long")} />
       <Button label="High paw animation" onPress={()=>show("progress", "puzzleHighPaw")} />
@@ -65,7 +64,7 @@ function CompanionPage({ pageNumber, onReset }: { pageNumber: number; onReset: (
     </ScrollView>
     <ResultOverlay key={puzzleNumber} visible={visible} correct={correct} petType={pet.type} catSkinId={pet.catSkinId} petName="Minka"
       petMood={correct ? "correct" : "incorrect"} catReaction={reaction ?? message.reaction} encouragement={language.t(`puzzleCompanion.${message.key}`,{count:message.count})}
-      message={language.t(bossFinal ? "learning.bossComplete" : correct ? "play.greatJob" : "play.goodTry")}
+      message={language.t(lessonFinal ? "learning.bossComplete" : correct ? "play.greatJob" : "play.goodTry")}
       detail={scenario === "long" ? "Count each group once, then put them together. ".repeat(18) + "End of the clue." : correct ? "4 + 3 = 7." : "Count each group once, then put them together."}
       continueLabel={scenario === "stage" ? language.t("learning.nextStage") : undefined}
       coinsEarned={correct ? 4 : 0} onContinue={()=>{setContinued(n=>n+1);setVisible(false);if(advancing)router.replace({pathname:"/companion-qa" as "/play",params:{puzzle:String(puzzleNumber+1)}});}}

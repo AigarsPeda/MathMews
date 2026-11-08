@@ -44,10 +44,10 @@ function payload(type,tier,i){
   const b=tier==='easy'?1+i%3:tier==='medium'?(a===1?(i%4===0?3:-2):0):(i%2===0?3+i%4:-2-i%4);
   return {a,b,c:a*x+b,guided};
  }
- const points=[[1,2],[3,1],[2,4],[4,3],[0,2],[3,4],[2,0],[4,1],[1,3],[0,0]],start={x:1+i%3,y:1+(i+1)%3};
+ const points=[[1,2],[3,1],[2,4],[4,3],[0,2],[3,4],[2,0],[4,1],[1,3],[0,0]],start={x:1+i%3,y:1+Math.floor(i/3)};
  if(tier==='easy')return {mode:'plot',min:0,max:4,start:{x:0,y:0},end:{x:points[i][0],y:points[i][1]},guided};
  if(tier==='medium')return {mode:i<3?'plot':i%3===0?'distance':'translate',min:0,max:6,start,end:i<3?{x:points[i][0],y:points[i][1]}:i%3===0?{x:start.x+2,y:start.y}:{x:i%2===0?2:-1,y:i%2===0?-1:2},guided};
- const s={x:-3+i%4,y:2-i%4};
+ const s={x:-3+i%4,y:2-Math.floor(i/4)};
  return {mode:i<3?'plot':i%3===0?'distance':'translate',min:-4,max:4,start:s,end:i<3?{x:[-2,3,-1][i],y:[3,-2,-3][i]}:i%3===0?{x:s.x+4,y:s.y}:{x:2,y:-1},guided};
 }
 export function bridgeSolution(type,p){

@@ -1,0 +1,126 @@
+{
+  "result": "passed",
+  "platform": "Android",
+  "android_release": "16",
+  "api": "36",
+  "device": "emulator-5580",
+  "cases": [
+    {
+      "scenario": "initial-level-5",
+      "level": 5,
+      "first_path_hierarchy": 1,
+      "tile_bounds": [
+        696,
+        900,
+        969,
+        1173
+      ],
+      "viewport_bounds": [
+        59,
+        300,
+        1021,
+        1934
+      ],
+      "seconds_to_first_path": 2.125
+    },
+    {
+      "scenario": "open-level-5",
+      "level": 5,
+      "first_path_hierarchy": 2,
+      "tile_bounds": [
+        696,
+        900,
+        969,
+        1173
+      ],
+      "viewport_bounds": [
+        59,
+        300,
+        1021,
+        1934
+      ],
+      "seconds_to_first_path": 3.488
+    },
+    {
+      "scenario": "updated-level-10",
+      "level": 10,
+      "first_path_hierarchy": 1,
+      "tile_bounds": [
+        199,
+        1135,
+        472,
+        1408
+      ],
+      "viewport_bounds": [
+        59,
+        300,
+        1021,
+        1934
+      ],
+      "seconds_to_first_path": 1.821
+    },
+    {
+      "scenario": "open-level-10",
+      "level": 10,
+      "first_path_hierarchy": 2,
+      "tile_bounds": [
+        199,
+        1135,
+        472,
+        1408
+      ],
+      "viewport_bounds": [
+        59,
+        300,
+        1021,
+        1934
+      ],
+      "seconds_to_first_path": 2.57
+    },
+    {
+      "scenario": "narrow-level-10",
+      "level": 10,
+      "first_path_hierarchy": 1,
+      "tile_bounds": [
+        199,
+        1135,
+        472,
+        1408
+      ],
+      "viewport_bounds": [
+        179,
+        300,
+        901,
+        1934
+      ],
+      "seconds_to_first_path": 0.293
+    },
+    {
+      "scenario": "return-from-puzzle",
+      "level": 10,
+      "first_path_hierarchy": 1,
+      "tile_bounds": [
+        286,
+        910,
+        538,
+        1162
+      ],
+      "viewport_bounds": [
+        179,
+        300,
+        901,
+        1934
+      ],
+      "seconds_to_first_path": 2.215
+    }
+  ],
+  "native_crashes": false,
+  "device_type": "Disposable Pixel 9 emulator; no physical Android device tested",
+  "checks": "First observed native path hierarchy has the entire current tile inside its viewport; manual scrolling and Android Back were exercised.",
+  "source_sha256": {
+    "app/puzzles.tsx": "0c4bcb3c953c50e45619cedb40d412f7fd13fd26d62daab0bc50dc7ddcfd0c26",
+    "components/puzzle/TopicLevelPath.tsx": "a2cac4d1b5e722e47814373f7ab0c61ed1b34655d2a8aa67a53f93cd4d070d7c"
+  },
+  "apk_sha256": "5d4990953942ffc0fd5ffe284df8f065b2e4eda58d769eceee4c08c09b49a5d2",
+  "recording_review": "Opening level 10 and returning from a puzzle show the current tile in its final position from its first visible frame, without scrolling from the top."
+}
