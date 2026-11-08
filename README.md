@@ -97,6 +97,12 @@ checks; they no longer block every unrelated change. Detailed audits keep their
 assertions and fail normally. Moving a check out of automatic CI does not fix an
 existing failure, including the recorded boss-render/model hash mismatch.
 
+Keep raw QA screenshots, recordings and profiling logs in a temporary output
+directory. Retain only captures linked from a design guide or review report in
+`docs/qa/`. Native `build/` and `.cxx/` folders, Python caches and Blender backup
+files are disposable; the next build recreates its generated outputs. Preserve
+dependency sources, lockfiles and the original editable artwork.
+
 Add a default check only when it protects a user action or saved data and is not
 already covered. Keep full coat/frame-rate sweeps, visual measurements and machine
 timing budgets in the detailed suite. The function-machine answer check now lives

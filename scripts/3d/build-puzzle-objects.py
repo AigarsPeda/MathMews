@@ -67,13 +67,25 @@ def ribbon(color):
     knot.rotation_euler.z = -.06
 
 def star(color):
-    pts = [(math.cos(math.pi/2+i*math.pi/5)*(.52 if i%2==0 else .24), math.sin(math.pi/2+i*math.pi/5)*(.52 if i%2==0 else .24), .06) for i in range(10)]
-    mesh = bpy.data.meshes.new('Five point paper star'); mesh.from_pydata(pts, [], [list(range(10))]); mesh.update()
-    obj = bpy.data.objects.new('Thick paper star', mesh); bpy.context.collection.objects.link(obj)
-    obj.data.materials.append(scope['material'](color))
-    mod = obj.modifiers.new('Paper thickness', 'SOLIDIFY'); mod.thickness = .06
-    mod = obj.modifiers.new('Soft cut edges', 'BEVEL'); mod.width = .018; mod.segments = 3
-    obj.modifiers.new('Paper normals', 'WEIGHTED_NORMAL')
+    # Round the silhouette itself, so the tips stay soft even at 24 points.
+    corners = [Vector((math.cos(math.pi/2+i*math.pi/5)*(.52 if i%2==0 else .27),
+                       math.sin(math.pi/2+i*math.pi/5)*(.52 if i%2==0 else .27), .10)) for i in range(10)]
+    pts = []
+    for i, corner in enumerate(corners):
+        distance = .075 if i%2 == 0 else .035
+        start = corner + (corners[(i-1)%10]-corner).normalized()*distance
+        end = corner + (corners[(i+1)%10]-corner).normalized()*distance
+        for j in range(9):
+            t = j/8
+            pts.append((1-t)**2*start + 2*(1-t)*t*corner + t*t*end)
+    mesh = bpy.data.meshes.new('Rounded five point star'); mesh.from_pydata(pts, [], [list(range(len(pts)))]); mesh.update()
+    obj = bpy.data.objects.new('Soft counting star', mesh); bpy.context.collection.objects.link(obj)
+    obj.data.materials.append(scope['material']('Counting star '+color, 'FFB82E' if color == 'gold' else 'F5687D', roughness=.85))
+    mod = obj.modifiers.new('Star thickness', 'SOLIDIFY'); mod.thickness = .09
+    mod = obj.modifiers.new('Soft rim', 'BEVEL'); mod.width = .018; mod.segments = 4
+    obj.modifiers.new('Star normals', 'WEIGHTED_NORMAL')
+    highlight = scope['material']('Star highlight '+color, 'FFE394' if color == 'gold' else 'FFB8C1', roughness=1)
+    curve('Small upper-left highlight', [(-.125,.19,.105),(-.095,.25,.105),(-.065,.31,.105)], .017, highlight)
 
 def cookie():
     cylinder('Baked biscuit', (0, 0, .10), .43, .16, 'gold')
@@ -131,6 +143,11 @@ for name, build in builders.items():
     objects = [o for o in scene.objects if o.type in {'MESH', 'CURVE'}]
     camera = scene.camera
     camera.location = (1.6, -5, 5.5) if name == 'mouse' else (2, -5, 7)
+    if name.startswith('star'):
+        camera.location = (0, 0, 7)
+        camera.name = 'Upright front-facing star camera'
+        for light in scene.objects:
+            if light.type == 'LIGHT': light.data.energy *= .45
     if name.startswith('ribbon-'):
         camera.location = (0, -.15, 7)
         for light in scene.objects:

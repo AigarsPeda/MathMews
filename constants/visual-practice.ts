@@ -164,7 +164,7 @@ export const VISUAL_PRACTICE = {
     [...stripParts(2, 1, 35, "reference"), ...stripParts(4, n, 95, "work")], n === 2 ? "1/2 = 2/4" : undefined))),
   easy_fraction_compare: frames("easy_fraction_compare", [0, 1, 2].map(step => board("1/3   ?   2/3",
     [...stripParts(3, step === 0 ? 0 : 1, 35, "top"), ...stripParts(3, step === 0 ? 0 : 2, 95, "bottom")], step === 2 ? "1/3 < 2/3" : undefined))),
-  ratio_table: frames("ratio_table", [board("1 : 3",[tile("a","1",80),tile("b","3",220)]),board("× 2",[tile("a","2",80),tile("b","?",220)]),board("2 : 6",[tile("a","2",80),tile("b","6",220)],"1 × 2 : 3 × 2")]),
+  ratio_table: frames("ratio_table", [board("1 → 3 L",[tile("a","1",80),tile("b","3 L",220)]),board("× 2",[tile("a","2",80),tile("b","? L",220)]),board("2 → 6 L",[tile("a","2",80),tile("b","6 L",220)],"3 L × 2 = 6 L")]),
   bridge_positive: working("bridge_positive", "3 + 2 = ?", [["3","+1","4"],["4","+1","5"],["3","+2","5"]]),
   signed_line: working("signed_line", "−2 + 3 = ?", [["−2","+1","−1"],["−1","+1","0"],["0","+1","1"]]),
   equation_board: frames("equation_board", [0,1,2].map(step=>board("x + 2 = 6",[

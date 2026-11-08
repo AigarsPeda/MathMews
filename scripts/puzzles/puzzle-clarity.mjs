@@ -20,6 +20,12 @@ export function applyPuzzleClarity({ puzzles }) {
   for (const tier of ['easy', 'medium', 'hard']) for (let index = 0; index < puzzles.en[tier].length; index++) {
     const source = structuredClone(puzzles.en[tier][index]);
     let question, hint, explanation, contextObjects;
+    if (source.type === 'equation_board') question = T('Get one x on its own.', 'Atstāj vienu x atsevišķi.', 'Оставь слева только x.');
+    if (source.type === 'ratio_table') {
+      const n = source.payload.targetA;
+      question = T(`How many litres are in ${n} ${n === 1 ? 'bottle' : 'bottles'}?`, `Cik litru ir ${n} ${n === 1 ? 'pudelē' : 'pudelēs'}?`, `Сколько литров в ${n} ${n === 1 ? 'бутылке' : 'бутылках'}?`);
+      hint = T('Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.', 'Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.', 'Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество.');
+    }
     // Removed story scenes cannot supply visual information to these models.
     if (source.id === 'v2-easy-numbers-train-1') question = T('Arrange the numbered stops from smallest to largest.', 'Sakārto pieturu numurus no mazākā līdz lielākajam.', 'Расположи номера остановок от меньшего к большему.');
     if (source.type === 'function_machine' && /gear|lantern|tracker|amplifier/.test(source.question)) question = T('Which rule turns this machine’s input into its output?', 'Kurš likums pārveido šīs mašīnas ievadi izvadē?', 'Какое правило превращает входное число машины в выходное?');

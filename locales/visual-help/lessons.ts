@@ -11,7 +11,7 @@ export const visualLessonsEn = {
   easy_fraction_half: {"title": "The same amount in smaller pieces", "s0": "This example shows one half of a strip.", "s1": "Split each half into two equal pieces. One quarter is too little.", "s2": "Two quarters cover the same length as one half: 1/2 = 2/4."},
   easy_fraction_compare: {"title": "Compare equal-sized pieces", "s0": "Both strips are the same length and have three equal parts.", "s1": "Shade one third above and two thirds below.", "s2": "Two shaded thirds cover more than one shaded third: 2/3 > 1/3."},
 
-  ratio_table: {"title": "Scale a ratio", "s0": "One group has three items.", "s1": "Double the number of groups.", "s2": "Double the items too: two groups have six items."},
+  ratio_table: {"title": "Scale a ratio", "s0": "In this separate example, one bottle holds three litres of water.", "s1": "Double the number of bottles.", "s2": "Double the total litres too. Two bottles hold six litres."},
   bridge_positive: {"title": "Move from zero", "s0": "Start at three. One step right reaches four.", "s1": "One more step right reaches five.", "s2": "Two steps right add two: three plus two is five."},
   signed_line: {"title": "Cross zero", "s0": "Start at minus two. One step right reaches minus one.", "s1": "One more step right reaches zero.", "s2": "One more reaches one. Minus two plus three is one."},
   equation_board: {"title": "Keep the balance", "s0": "In this separate example, x plus two equals six.", "s1": "Subtract two from both sides to keep them equal.", "s2": "One x is left. Six minus two is four, so x equals four."},
@@ -90,7 +90,7 @@ export const visualLessonsLv = {
   easy_fraction_half: {"title": "Tas pats daudzums mazākās daļās", "s0": "Šajā piemērā iekrāsota puse joslas.", "s1": "Sadali katru pusi divās vienādās daļās. Viena ceturtdaļa ir par maz.", "s2": "Divas ceturtdaļas aizņem tikpat lielu garumu kā viena puse: 1/2 = 2/4."},
   easy_fraction_compare: {"title": "Salīdzini vienāda lieluma daļas", "s0": "Abas joslas ir vienāda garuma un sadalītas trīs vienādās daļās.", "s1": "Augšā iekrāso vienu trešdaļu, apakšā divas trešdaļas.", "s2": "Divas iekrāsotas trešdaļas ir vairāk nekā viena: 2/3 > 1/3."},
 
-  ratio_table: {"title": "Mērogo attiecību", "s0": "Vienā grupā ir trīs priekšmeti.", "s1": "Divkāršo grupu skaitu.", "s2": "Divkāršo arī priekšmetus: divās grupās ir seši priekšmeti."},
+  ratio_table: {"title": "Mērogo attiecību", "s0": "Šajā atsevišķajā piemērā vienā pudelē ir trīs litri ūdens.", "s1": "Divkāršo pudeļu skaitu.", "s2": "Divkāršo arī kopējo litru skaitu. Divās pudelēs ir seši litri."},
   bridge_positive: {"title": "Pārvietojies no nulles", "s0": "Sāc pie trīs. Viens solis pa labi sasniedz četri.", "s1": "Vēl viens solis pa labi sasniedz pieci.", "s2": "Divi soļi pa labi pieskaita divi: trīs plus divi ir pieci."},
   signed_line: {"title": "Šķērso nulli", "s0": "Sāc pie mīnus divi. Viens solis pa labi sasniedz mīnus viens.", "s1": "Vēl viens solis pa labi sasniedz nulli.", "s2": "Vēl viens sasniedz viens. Mīnus divi plus trīs ir viens."},
   equation_board: {"title": "Saglabā līdzsvaru", "s0": "Šajā atsevišķajā piemērā x plus divi ir seši.", "s1": "Atņem divi abās pusēs, lai tās paliktu vienādas.", "s2": "Paliek viens x. Seši mīnus divi ir četri, tāpēc x ir četri."},

@@ -4137,9 +4137,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -4174,9 +4174,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -4211,9 +4211,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -4248,9 +4248,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -10052,14 +10052,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 1 bottle?",
+      "lv": "Cik litru ir 1 pudelē?",
+      "ru": "Сколько литров в 1 бутылке?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "12 ÷ 3 × 1 = 4.",
     "payload": {
@@ -10089,14 +10089,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 6 bottles?",
+      "lv": "Cik litru ir 6 pudelēs?",
+      "ru": "Сколько литров в 6 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "20 ÷ 4 × 6 = 30.",
     "payload": {
@@ -10126,14 +10126,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 4 bottles?",
+      "lv": "Cik litru ir 4 pudelēs?",
+      "ru": "Сколько литров в 4 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "18 ÷ 6 × 4 = 12.",
     "payload": {
@@ -10163,14 +10163,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 3 bottles?",
+      "lv": "Cik litru ir 3 pudelēs?",
+      "ru": "Сколько литров в 3 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "35 ÷ 5 × 3 = 21.",
     "payload": {
@@ -13430,9 +13430,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -13467,9 +13467,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -13504,9 +13504,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -13541,9 +13541,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -19785,14 +19785,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 12 bottles?",
+      "lv": "Cik litru ir 12 pudelēs?",
+      "ru": "Сколько литров в 12 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "36 ÷ 9 × 12 = 48.",
     "payload": {
@@ -19822,14 +19822,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 10 bottles?",
+      "lv": "Cik litru ir 10 pudelēs?",
+      "ru": "Сколько литров в 10 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "24 ÷ 8 × 10 = 30.",
     "payload": {
@@ -19859,14 +19859,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 9 bottles?",
+      "lv": "Cik litru ir 9 pudelēs?",
+      "ru": "Сколько литров в 9 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "30 ÷ 6 × 9 = 45.",
     "payload": {
@@ -19896,14 +19896,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 2 bottles?",
+      "lv": "Cik litru ir 2 pudelēs?",
+      "ru": "Сколько литров в 2 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "28 ÷ 4 × 2 = 14.",
     "payload": {
@@ -23157,9 +23157,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -23194,9 +23194,9 @@
     },
     "type": "equation_board",
     "question": {
-      "en": "Leave one x alone by doing the same operation to both sides.",
-      "lv": "Atstāj vienu x atsevišķi, abās pusēs veicot vienādu darbību.",
-      "ru": "Оставь один x отдельно, выполняя одинаковые действия с обеими частями."
+      "en": "Get one x on its own.",
+      "lv": "Atstāj vienu x atsevišķi.",
+      "ru": "Оставь слева только x."
     },
     "hint": {
       "en": "Undo the added or subtracted amount, then divide both sides into equal groups.",
@@ -25876,14 +25876,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 5 bottles?",
+      "lv": "Cik litru ir 5 pudelēs?",
+      "ru": "Сколько литров в 5 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "42 ÷ 7 × 5 = 30.",
     "payload": {
@@ -25913,14 +25913,14 @@
     },
     "type": "ratio_table",
     "question": {
-      "en": "Complete the missing amount in the ratio table.",
-      "lv": "Aizpildi trūkstošo daudzumu attiecību tabulā.",
-      "ru": "Заполни пропущенное количество в таблице отношений."
+      "en": "How many litres are in 14 bottles?",
+      "lv": "Cik litru ir 14 pudelēs?",
+      "ru": "Сколько литров в 14 бутылках?"
     },
     "hint": {
-      "en": "Keep the same amount per group. Scale both quantities by the same factor.",
-      "lv": "Saglabā vienādu daudzumu katrā grupā. Abus daudzumus reizini ar vienādu skaitli.",
-      "ru": "Сохраняй одинаковое количество в каждой группе. Умножай обе величины на одно число."
+      "en": "Use the known total to find how much water is in the requested bottles. Every bottle holds the same amount.",
+      "lv": "Izmanto zināmo kopējo daudzumu, lai atrastu ūdens daudzumu prasītajās pudelēs. Katrā pudelē ir vienāds daudzums.",
+      "ru": "Используй известный общий объём, чтобы найти объём воды в нужном числе бутылок. В каждой бутылке одинаковое количество."
     },
     "explanation": "40 ÷ 8 × 14 = 70.",
     "payload": {

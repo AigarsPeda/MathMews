@@ -60,8 +60,8 @@ The same rule applies to spatial grids, difficulty tabs, chart highlights and tr
 | Fraction cards and strips | [FractionGridChart](../components/puzzle/FractionGridChart.tsx), [FractionStripTask](../components/puzzle/FractionStripTask.tsx) | Equal cells; comparison strips share the same whole width and contiguous partitions |
 | Integer and signed number lines | [NumberLineTrack](../components/puzzle/NumberLineTrack.tsx) | Uniform spacing, marker centered on a tick, scroll position and full touch targets |
 | Fraction number lines | [FractionNumberLineTask](../components/puzzle/FractionNumberLineTask.tsx) | A pale lavender stage and purple marker; endpoints stay 0 and 1, with equal intervals |
-| Balances and equations | [BalanceScale](../components/puzzle/BalanceScale.tsx), [EquationBoardModel](../components/puzzle/EquationBoardModel.tsx) | Equal pans on a level beam; labelled units, explicit zero and the same operation on both sides |
-| Ratio tables | [RatioTableModel](../components/puzzle/RatioTableModel.tsx) | Fixed quantity columns, matching scale factors and an answer cell that follows the learner’s input |
+| Balances and equations | [BalanceScale](../components/puzzle/BalanceScale.tsx), [EquationBoardModel](../components/puzzle/EquationBoardModel.tsx) | Equal pans on a level beam; labelled units, explicit zero and one current equation |
+| Ratio tables | [RatioTableModel](../components/puzzle/RatioTableModel.tsx) | Identical bottles, labelled total litres and one missing total beside its keypad |
 | Decimal models | [DecimalGridTask](../components/puzzle/DecimalGridTask.tsx), [DecimalPlaceValueTask](../components/puzzle/DecimalPlaceValueTask.tsx) | Bright gold quantities with a pale cream frame; square whole, exact tenths/hundredths, and 100:10:1 block areas |
 | Unit grids and coordinates | [GeometryMeasureTask](../components/puzzle/GeometryMeasureTask.tsx), [BridgeTask](../components/puzzle/BridgeTask.tsx) | Equal units, readable axes, exact point centers and dimensions |
 | Bars, clocks, jugs and solids | [EverydayDiagram](../components/puzzle/EverydayDiagram.tsx) | Bar heights, hand angles, liquid amount/capacity ratio, vertices and face relationships |
@@ -69,15 +69,16 @@ The same rule applies to spatial grids, difficulty tabs, chart highlights and tr
 
 For bars, a highlight must stay below the measured top. For jugs, keep the water surface horizontal and the handle outside the scale. For equalities, changing both sides must preserve their meaning; never add a decorative tilt that implies inequality.
 
-## Explain the relationship
+## Explain the task before the method
 
-A recognizable diagram must also explain the learner's action. Use one primary model with labels attached to its quantities. Remove a second representation when it adds interpretation work without teaching another step.
+A learner should be able to name the given information, the unknown and their next action from the initial screen. Every number needs a nearby quantity label, mathematical role or action verb. Keep one current model and one answer location. Worked arithmetic belongs in optional picture help.
 
-- Ratio tables use [RatioTableModel](../components/puzzle/RatioTableModel.tsx). Keep Groups and Items in fixed columns. Guided examples put the same multiplication or division arrow between both pairs of values. Easy examples show the contents of one known group and question marks in the requested groups. Do not fill the requested groups with the answer. The answer cell follows the learner's input, including incorrect input, without marking it correct before Check.
-- Equation boards use [EquationBoardModel](../components/puzzle/EquationBoardModel.tsx) with the shared balance. An x tile is one unknown; a tile labelled 1 is one unit. Negative units carry an explicit minus sign. Larger constants use a number rather than an unreadable pile. Keep the complete current equation visible alongside the model. After an operation, show the preceding equation and the same operation over both sides, leading to the new equation. Reset removes this step. Operation buttons announce that they affect both sides.
-- Never turn an entered answer into a given. Do not show a solved value, completed target diagram or success color merely because the learner has typed a number. Independent ratio practice omits the scaling hint.
+- Ratio tables use [RatioTableModel](../components/puzzle/RatioTableModel.tsx). Ask how many litres the pictured bottles hold. Every bottle holds the same amount; the known row labels the total litres for all its bottles. The requested row has exactly one answer cell, directly above the keypad. It follows the learner's input, including mistakes, without marking correctness before Check. Bottles remain identical across both rows, including fractional per-bottle rates. Show up to six countable bottles; larger counts use a numeral under the Bottles heading. Never put question marks inside individual bottles when only their combined total is unknown.
+- Equation boards use [EquationBoardModel](../components/puzzle/EquationBoardModel.tsx) with the shared balance. Explain x as the unknown number and ask the learner to get one x on its own. Keep one current equation. Buttons say Add, Subtract or Divide by, with an instruction that each action affects both sides. Offer division only when every term divides without fractions. Keep action words intact in two columns, or one column with larger text. A short sentence reports the last action; do not leave duplicate operator labels floating above the scale. Once x is isolated, replace the operation choices with the instruction to Check answer. Reset restores the initial task and clears that status.
+- An x tile is one unknown and a tile labelled 1 is one unit. Subtracted amounts use a minus sign before their whole group; negative totals use signed numerals. Large constants use numerals instead of an unreadable pile of tiles. Preserve exact quantities and explicit zero.
+- Countable givens can support counting in beginner tasks. Do not confuse showing the quantities needed to solve a problem with automatically printing its numeric answer. The unresolved answer belongs only in its intended answer location.
 
-These recipes apply the context-specific representations described in [Duolingo's math development article](https://blog.duolingo.com/developing-math/) using the app's existing Nunito, Berry controls and diagram materials. Reference examples inform how a model teaches; the live app and shared components remain the style authority.
+These recipes use the app's Nunito, Berry controls and shared diagram materials. [Duolingo's math development article](https://blog.duolingo.com/developing-math/) informs the use of concept-specific representations. The app's existing components remain the visual reference. Review comprehension separately from functional correctness; a passing tap test alone does not prove that a learner understands the screen.
 
 ## Objects and icons
 
@@ -132,4 +133,4 @@ Phone layout review: [full iPhone 15 chart screen](qa/chart-phone-layout/2026-11
 
 [Clock and ribbon examples](qa/clock-ribbon/2026-11-08/preview.png) show the compact time-answer row and the revised Blender bow at caption size.
 
-[Ratio and equation teaching examples](qa/bridge-teaching/2026-11-08/results.json) include [an unsolved ratio](qa/bridge-teaching/2026-11-08/en-easy-ratio-start.png), [equal operations](qa/bridge-teaching/2026-11-08/en-easy-equation.png) and [division in Latvian](qa/bridge-teaching/2026-11-08/lv-medium-equation.png). These are native component fixtures with development controls.
+Current equation and ratio examples: [equation](qa/bridge-intuitive/2026-11-08/en-equation-easy-initial.png), [ratio](qa/bridge-intuitive/2026-11-08/en-ratio-easy-initial.png), and [review evidence](qa/bridge-intuitive/2026-11-08/README.md). These supersede the earlier arrow-based bridge examples.

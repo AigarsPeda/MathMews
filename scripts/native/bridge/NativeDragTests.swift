@@ -46,9 +46,10 @@ final class NativeDragTests: XCTestCase {
   shot("en-easy-ratio-start");enter(9);tap("pilot-check");expect("Try again");tap("bridge-reset");enter(4);shot("en-easy-ratio");solve();next()
   tap("bridge-step-1",2);shot("en-easy-line");solve();next()
   shot("en-easy-equation-start");tap("bridge-add--1")
-  XCTAssertTrue(app.descendants(matching:.any)["bridge-equation-step"].firstMatch.exists)
+  XCTAssertTrue(app.staticTexts["bridge-equation-ready"].exists)
+  XCTAssertFalse(app.buttons["bridge-add-1"].exists)
   tap("bridge-reset")
-  XCTAssertFalse(app.descendants(matching:.any)["bridge-equation-step"].firstMatch.exists)
+  XCTAssertFalse(app.staticTexts["bridge-equation-ready"].exists)
   XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   tap("bridge-add--1");shot("en-easy-equation");solve();next()
   let grid=app.descendants(matching:.any)["bridge-plot"].firstMatch

@@ -61,10 +61,13 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
+import Animated, { Easing, FadeInRight, ReduceMotion } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const PUZZLE_CONTENT_ENTER = FadeIn.duration(180).reduceMotion(ReduceMotion.System);
+const PUZZLE_CONTENT_ENTER = FadeInRight.duration(280)
+  .easing(Easing.out(Easing.cubic))
+  .withInitialValues({ opacity: 0, transform: [{ translateX: moderateScale(28) }] })
+  .reduceMotion(ReduceMotion.System);
 
 function triggerHaptic(
   style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light,
@@ -525,7 +528,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
             />
           </Pressable>
           <View style={styles.headerProgress}>
-            <PuzzleProgress steps={progressSteps} total={position.total} animated={false}
+            <PuzzleProgress steps={progressSteps} total={position.total}
               label={t("play.puzzleOf", { number: position.current, total: position.total })} />
           </View>
           <PuzzleLives lives={lives} onPress={() => { recordInteraction(); setShowLives(true); }} />

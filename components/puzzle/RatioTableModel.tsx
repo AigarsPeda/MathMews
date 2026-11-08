@@ -4,66 +4,51 @@ import type { RatioTablePuzzle } from '@/types/puzzle';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-/** Keep the given pair, the shared change and the learner's pair in one table. */
+/** Identical bottles give the ratio a unit; only the requested total is unknown. */
 export function RatioTableModel({ puzzle, answer }: { puzzle: RatioTablePuzzle; answer: number | null }) {
   const { t } = useTranslation();
-  const { a, b, targetA, guided } = puzzle.payload;
-  const divisor = (x: number, y: number): number => y === 0 ? x : divisor(y, x % y);
-  const common = divisor(a, targetA);
-  const factor = targetA % a === 0 ? `× ${targetA / a}`
-    : a % targetA === 0 ? `÷ ${a / targetA}` : `× ${targetA / common}/${a / common}`;
-  const pictures = guided && puzzle.difficulty === 'easy';
-  const groups = (count: number, known: boolean) => <View style={styles.groups}>
-    {Array.from({ length: count }, (_, i) => <View key={i} style={[styles.group, !known && styles.emptyGroup]}>
-      {known ? Array.from({ length: b }, (_, j) => <View key={j} style={styles.unit} />)
-        : <Text style={styles.groupQuestion}>?</Text>}
+  const { a, b, targetA } = puzzle.payload;
+  const bottles = (count: number) => <View style={styles.bottles} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    {Array.from({ length: count }, (_, i) => <View key={i} style={styles.bottle}>
+      <View style={styles.neck} /><View style={styles.body} /><View style={styles.cap} />
     </View>)}
   </View>;
   return <View testID="bridge-ratio-model" style={styles.table}>
-    <View style={styles.row}>
-      <Text style={styles.heading}>{t('bridge.groups')}</Text>
-      <Text style={styles.heading}>{t('bridge.items')}</Text>
+    <Text style={styles.instruction}>{t('bridge.sameBottles')}</Text>
+    <View style={styles.headings}>
+      <Text style={[styles.heading, styles.bottleColumn]}>{t('bridge.bottles')}</Text>
+      <Text style={[styles.heading, styles.waterColumn]}>{t('bridge.totalLitres')}</Text>
     </View>
-    <View style={styles.row} accessible accessibilityLabel={t('bridge.ratioPair', { groups: a, items: b })}>
-      <View style={styles.cell}><Text style={styles.number}>{a}</Text></View>
-      <View style={styles.cell}><Text style={styles.number}>{b}</Text></View>
-    </View>
-    {pictures ? <View accessible accessibilityLabel={t('bridge.knownGroup', { count: b })} style={styles.pictureRow}>
-      {groups(1, true)}<Text style={styles.caption}>{t('bridge.knownGroup', { count: b })}</Text>
-    </View> : null}
-    {guided ? <View style={styles.change} accessible accessibilityLabel={t('bridge.ratioChange', { operation: factor })}>
-      {[0, 1].map(column => <View key={column} style={styles.changeCell}>
-        <View style={styles.arrow}><View style={styles.arrowHead} /></View><Text style={styles.factor}>{factor}</Text>
-      </View>)}
-    </View> : null}
-    <View style={[styles.row, styles.target]} accessible accessibilityLabel={t('bridge.ratioPair', { groups: targetA, items: answer ?? '?' })}>
-      <View style={styles.cell}><Text style={styles.number}>{targetA}</Text></View>
-      <View style={styles.cell}><Text testID="bridge-ratio-answer" style={[styles.number, styles.answer]}>{answer ?? '?'}</Text></View>
-    </View>
-    {pictures ? <View style={styles.pictureRow} accessible accessibilityLabel={t('bridge.unknownGroups', { count: targetA })}>
-      {groups(targetA, false)}<Text style={styles.caption}>{t('bridge.unknownGroups', { count: targetA })}</Text>
-    </View> : null}
+    {[{ count: a, total: b, target: false }, { count: targetA, total: answer, target: true }].map(row => <View key={String(row.target)} style={[styles.row, row.target && styles.targetRow]}>
+      <View style={styles.bottleColumn}>
+        {row.count <= 6 ? bottles(row.count) : null}
+        <Text style={[styles.count, row.count > 6 && styles.largeCount]} accessibilityLabel={t('bridge.bottleCount', { count: row.count })}>{row.count}</Text>
+      </View>
+      <View style={styles.waterColumn}>
+        <Text testID={row.target ? 'bridge-value' : undefined}
+          accessibilityLabel={row.target ? t('bridge.litresAnswer', { amount: row.total ?? '?' }) : t('bridge.litresGiven', { amount: row.total })}
+          style={[styles.amount, row.target && styles.answer]}>{row.total ?? '?'}</Text>
+      </View>
+    </View>)}
   </View>;
 }
 
 const styles = StyleSheet.create({
-  table: { gap: 4 },
-  row: { flexDirection: 'row', alignItems: 'stretch' },
-  heading: { flex: 1, fontSize: 16, lineHeight: 22, fontWeight: '700', textAlign: 'center', color: C.textMuted, paddingVertical: 4 },
-  cell: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 6 },
-  number: { fontSize: 26, lineHeight: 34, fontWeight: '900', color: C.text },
-  answer: { color: C.primaryDark },
-  target: { backgroundColor: D.geometrySurface, borderRadius: 12 },
-  change: { flexDirection: 'row', paddingVertical: 4 },
-  changeCell: { flex: 1, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center' },
-  arrow: { width: 2, height: 26, backgroundColor: D.geometryEdge, marginBottom: 4 },
-  arrowHead: { position: 'absolute', bottom: 0, left: -4, width: 10, height: 10, borderBottomWidth: 2, borderRightWidth: 2, borderColor: D.geometryEdge, transform: [{ rotate: '45deg' }] },
-  factor: { fontSize: 17, lineHeight: 24, fontWeight: '700', color: D.geometryEdge },
-  pictureRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 4 },
-  groups: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' },
-  group: { minWidth: 42, minHeight: 30, padding: 6, borderWidth: 2, borderColor: D.geometryEdge, backgroundColor: D.geometrySurface, borderRadius: 8, flexDirection: 'row', gap: 4, alignItems: 'center', justifyContent: 'center' },
-  emptyGroup: { backgroundColor: C.card, borderStyle: 'dashed' },
-  unit: { width: 10, height: 10, borderRadius: 3, backgroundColor: D.geometryEdge },
-  groupQuestion: { fontSize: 16, lineHeight: 18, fontWeight: '700', color: D.geometryEdge },
-  caption: { fontSize: 14, lineHeight: 20, color: C.textMuted, flexShrink: 1, textAlign: 'center' },
+  table: { gap: 8 },
+  instruction: { fontSize: 16, lineHeight: 22, color: C.textMuted, textAlign: 'center' },
+  headings: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12 },
+  heading: { fontSize: 16, lineHeight: 22, fontWeight: '700', color: C.text, textAlign: 'center' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 },
+  targetRow: { backgroundColor: D.geometrySurface, borderRadius: 12 },
+  bottleColumn: { flex: 1, alignItems: 'center', gap: 6 },
+  waterColumn: { width: '38%', alignItems: 'center' },
+  bottles: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center', maxWidth: '100%' },
+  bottle: { width: 20, height: 38 },
+  neck: { position: 'absolute', top: 3, left: 6, width: 8, height: 10, borderWidth: 2, borderColor: D.geometryEdge, backgroundColor: D.geometrySurface },
+  body: { position: 'absolute', top: 11, width: 20, height: 27, borderWidth: 2, borderColor: D.geometryEdge, backgroundColor: D.geometrySurface, borderTopLeftRadius: 6, borderTopRightRadius: 6, borderBottomLeftRadius: 4, borderBottomRightRadius: 4 },
+  cap: { position: 'absolute', top: 0, left: 5, width: 10, height: 5, backgroundColor: D.geometryEdge, borderRadius: 2 },
+  count: { fontSize: 20, lineHeight: 28, fontWeight: '700', color: C.text },
+  largeCount: { fontSize: 28, lineHeight: 36 },
+  amount: { fontSize: 28, lineHeight: 36, fontWeight: '900', color: C.text, textAlign: 'center' },
+  answer: { minWidth: 64, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 2, borderRadius: 8, borderColor: C.primary, backgroundColor: C.card, color: C.primaryDark },
 });

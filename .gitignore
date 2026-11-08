@@ -50,5 +50,15 @@ assets/3d/blender/
 scripts/3d/__pycache__/
 scripts/3d/trail_collections/__pycache__/
 
+# Disposable compiler caches, Blender backups and raw QA captures
+__pycache__/
+*.py[cod]
+*.blend[0-9]
+*.xcresult/
+/docs/qa/**/*.mp4
+/docs/qa/**/*.mov
+/docs/qa/**/*.webm
+/docs/qa/**/*.log
+
 
 .impeccable

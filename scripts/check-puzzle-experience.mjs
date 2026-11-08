@@ -108,7 +108,9 @@ function renderHarness(file, exportName, mocks = {}) {
     'react/jsx-runtime': { jsx, jsxs: jsx },
     'react-native': { ...native, useWindowDimensions: () => ({ width: 393, height: 852, fontScale: 1 }), Platform: { OS: 'ios' }, StyleSheet: { create: value => value } },
     'react-native-reanimated': { __esModule: true, default: { ScrollView: 'ScrollView' },
-      FadeIn: { duration: duration => ({ reduceMotion: reduceMotion => ({ duration, reduceMotion }) }) }, ReduceMotion: { System: 'system' } },
+      FadeInRight: { duration: duration => ({
+        easing(easing) { return { withInitialValues: initialValues => ({ reduceMotion: reduceMotion => ({ duration, easing, initialValues, reduceMotion }) }) }; },
+      }) }, Easing: { cubic: 'cubic', out: curve => `out-${curve}` }, ReduceMotion: { System: 'system' } },
     'react-i18next': { useTranslation: () => ({ t }) },
     '@/utils/scale': { moderateScale: value => value },
     'expo-font': { useFonts: () => [true, null] },
@@ -251,9 +253,11 @@ for (const [index, choice] of [1, 0].entries()) {
   const tree = continuation.tree();
   assert.equal(tree.type, shell.type, 'The screen shell keeps its component type');
   assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.scrollEnabled, true);
-  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.duration, 180);
+  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.duration, 280);
+  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.easing, 'out-cubic');
+  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.initialValues.transform[0].translateX, 28);
   assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.reduceMotion, 'system');
-  assert.equal(nodes(tree).find(node => node.type === 'PuzzleProgress').props.animated, false);
+  assert.notEqual(nodes(tree).find(node => node.type === 'PuzzleProgress').props.animated, false, 'The persistent play header animates each progress update');
   assert.equal(nodes(tree).find(node => node.type === 'PuzzleProgress').props.steps.filter(Boolean).length, index + 1);
   shell = tree;
 }
