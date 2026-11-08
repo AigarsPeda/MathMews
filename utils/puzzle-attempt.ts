@@ -1,4 +1,5 @@
 import { getBridgeAttemptHint } from '@/utils/bridge-attempt-hint';
+import { responseComplete, type ResponseValue } from '@/utils/puzzle-response';
 import { isBridgePuzzle, bridgeComplete, type BridgeState } from "@/utils/bridge-models";
 import { geometryTarget } from "@/utils/geometry-models";
 import { decimalTotal, type DecimalPlaceState } from "@/utils/decimal-models";
@@ -11,6 +12,7 @@ import { evaluateExpression, runOperationPath } from "@/utils/puzzle-math";
 import { getOperatorSlotCount, getValidPairs, type PuzzleAnswer } from "@/utils/puzzle-type";
 
 export type PuzzleDraft = {
+  response?: ResponseValue;
   bridge?: BridgeState | null;
   geometry?: number | null;
   decimalGrid?: number | null;
@@ -30,6 +32,8 @@ export type PuzzleDraft = {
 
 /** A complete draft enables the shared Check button, regardless of puzzle type. */
 export function getPuzzleDraftAnswer(puzzle: Puzzle, draft: PuzzleDraft): PuzzleAnswer | null {
+  // Model-only tools omit this field. Live play supplies an explicit empty draft.
+  if (puzzle.response && draft.response !== undefined) return draft.response !== null && responseComplete(puzzle, draft.response) ? { kind: 'response', value: draft.response } : null;
   if (isBridgePuzzle(puzzle)) return bridgeComplete(puzzle, draft.bridge) ? { kind: "bridge", state: draft.bridge } : null;
   if (isOptionalChallengePuzzle(puzzle)) return draft.challenge;
   switch (puzzle.type) {
@@ -65,6 +69,7 @@ export type AttemptHint = { key: string; detailKey?: string };
 
 /** Describe the attempt without exposing an unselected answer or the solution. */
 export function getPuzzleAttemptHint(puzzle: Puzzle, answer: PuzzleAnswer, attempt = 1): AttemptHint | null {
+  if (answer.kind === 'response') return null;
   const direction = (value: number, target: number, low: string, high: string): AttemptHint => ({
     key: value < target ? low : high,
   });

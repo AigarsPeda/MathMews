@@ -1,0 +1,90 @@
+[
+  {
+    "at": 1794160042.3213692,
+    "message": "Tap QA Replay"
+  },
+  {
+    "at": 1794160043.4581618,
+    "message": "Tap Answer 10"
+  },
+  {
+    "at": 1794160044.415533,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794160046.262252,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794160053.165958,
+    "message": "Passed consecutive Android puzzle change normal-1-to-2"
+  },
+  {
+    "at": 1794160053.567261,
+    "message": "Tap response-key-5"
+  },
+  {
+    "at": 1794160054.39323,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794160055.3281941,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794160059.124598,
+    "message": "Passed consecutive Android puzzle change normal-2-to-3"
+  },
+  {
+    "at": 1794160059.4586701,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794160060.197851,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794160063.088833,
+    "message": "Tap response-key-:"
+  },
+  {
+    "at": 1794160063.697818,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794160064.126066,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794160064.937464,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794160065.758757,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794160070.602793,
+    "message": "Passed consecutive Android puzzle change normal-3-to-4"
+  },
+  {
+    "at": 1794160070.770869,
+    "message": "Tap Answer 8"
+  },
+  {
+    "at": 1794160071.4822242,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794160072.312125,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794160078.8142238,
+    "message": "Passed consecutive Android puzzle change normal-4-to-5"
+  },
+  {
+    "at": 1794160078.945746,
+    "message": "Android progress and consecutive puzzle transition functional checks passed."
+  }
+]

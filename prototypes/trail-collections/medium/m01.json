@@ -1,8 +1,0 @@
-{
-  "id": "m01",
-  "collection": "medium",
-  "builder": "notebook",
-  "meshObjects": 16,
-  "samples": 48,
-  "renderSize": 640
-}

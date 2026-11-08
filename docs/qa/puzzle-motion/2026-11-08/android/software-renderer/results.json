@@ -1,0 +1,112 @@
+{
+  "result": "functional_checks_passed",
+  "platform": "Android",
+  "android_release": "16",
+  "api": "36",
+  "device": "emulator-5580",
+  "cases": [
+    {
+      "scenario": "normal-1-to-2",
+      "progress_bounds": [
+        282,
+        197,
+        858,
+        240
+      ],
+      "question_after": [
+        59,
+        321,
+        1021,
+        579
+      ],
+      "check_bounds": [
+        59,
+        1909,
+        1021,
+        2060
+      ],
+      "progress_before": "Puzzle 1 of 10",
+      "progress_after": "Puzzle 2 of 10",
+      "check_enabled": "false",
+      "video": "normal-1-to-2.mp4"
+    },
+    {
+      "scenario": "normal-2-to-3",
+      "progress_bounds": [
+        282,
+        197,
+        858,
+        240
+      ],
+      "question_after": [
+        59,
+        321,
+        1021,
+        665
+      ],
+      "check_bounds": [
+        59,
+        1909,
+        1021,
+        2060
+      ],
+      "progress_before": "Puzzle 2 of 10",
+      "progress_after": "Puzzle 3 of 10",
+      "check_enabled": "false",
+      "video": "normal-2-to-3.mp4"
+    },
+    {
+      "scenario": "normal-3-to-4",
+      "progress_bounds": [
+        282,
+        197,
+        858,
+        240
+      ],
+      "question_after": [
+        59,
+        321,
+        1021,
+        665
+      ],
+      "check_bounds": [
+        59,
+        1909,
+        1021,
+        2060
+      ],
+      "progress_before": "Puzzle 3 of 10",
+      "progress_after": "Puzzle 4 of 10",
+      "check_enabled": "false",
+      "video": "normal-3-to-4.mp4"
+    },
+    {
+      "scenario": "normal-4-to-5",
+      "progress_bounds": [
+        282,
+        197,
+        858,
+        240
+      ],
+      "question_after": [
+        59,
+        321,
+        1021,
+        579
+      ],
+      "check_bounds": [
+        59,
+        1909,
+        1021,
+        2060
+      ],
+      "progress_before": "Puzzle 4 of 10",
+      "progress_after": "Puzzle 5 of 10",
+      "check_enabled": "false",
+      "video": "normal-4-to-5.mp4"
+    }
+  ],
+  "native_crashes": false,
+  "animations_enabled": "null",
+  "smoothness": "inconclusive"
+}

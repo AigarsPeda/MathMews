@@ -1,4 +1,6 @@
 import { BridgeTask } from "@/components/puzzle/BridgeTask";
+import { PuzzleResponseTask } from '@/components/puzzle/PuzzleResponseTask';
+import type { ResponseValue } from '@/utils/puzzle-response';
 import { isBridgePuzzle, type BridgeState } from "@/utils/bridge-models";
 import { GeometryMeasureTask } from "@/components/puzzle/GeometryMeasureTask";
 import { DecimalGridTask } from "@/components/puzzle/DecimalGridTask";
@@ -52,6 +54,8 @@ import {
 
 type PuzzleTaskViewProps = {
   puzzle: Puzzle;
+  responseValue?: ResponseValue;
+  onResponseChange?: (value: ResponseValue) => void;
   bridge?: BridgeState | null;
   onBridgeChange?: (value: BridgeState | null) => void;
   geometry: number | null;
@@ -96,6 +100,7 @@ type PuzzleTaskViewProps = {
 
 export function PuzzleTaskView({
   puzzle,
+  responseValue = null, onResponseChange,
   bridge, onBridgeChange,
   geometry, onGeometryChange,
   decimalGrid, onDecimalGridChange, decimalPlace, onDecimalPlaceChange,
@@ -129,6 +134,7 @@ export function PuzzleTaskView({
   onSwapOrder,
   onTapFractionMatchCard,
 }: PuzzleTaskViewProps) {
+  if (puzzle.response && onResponseChange) return <PuzzleResponseTask puzzle={puzzle} value={responseValue} onChange={onResponseChange} answered={answered} incorrectAttempt={incorrectAttempt} isCorrect={isCorrect} />;
   if (isBridgePuzzle(puzzle) && onBridgeChange) return <BridgeTask puzzle={puzzle} value={bridge ?? null} onChange={onBridgeChange} answered={answered} />;
   if (puzzle.type === "geometry_measure") return <GeometryMeasureTask puzzle={puzzle} value={geometry} onChange={onGeometryChange} answered={answered} />;
   if (puzzle.type === "decimal_grid") return <DecimalGridTask puzzle={puzzle} value={decimalGrid} onChange={onDecimalGridChange} answered={answered} />;

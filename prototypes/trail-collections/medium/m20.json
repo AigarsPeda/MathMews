@@ -1,8 +1,0 @@
-{
-  "id": "m20",
-  "collection": "medium",
-  "builder": "pouch",
-  "meshObjects": 10,
-  "samples": 48,
-  "renderSize": 640
-}

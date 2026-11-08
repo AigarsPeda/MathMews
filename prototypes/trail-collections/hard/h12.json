@@ -1,8 +1,0 @@
-{
-  "id": "h12",
-  "collection": "hard",
-  "builder": "gears",
-  "meshObjects": 9,
-  "samples": 48,
-  "renderSize": 640
-}

@@ -1,0 +1,161 @@
+diff --git a/components/pet/native/NativeCatDisplay.tsx b/components/pet/native/NativeCatDisplay.tsx
+index 4b1be3eb..05483aa0 100644
+--- a/components/pet/native/NativeCatDisplay.tsx
++++ b/components/pet/native/NativeCatDisplay.tsx
+@@ -1,5 +1,5 @@
+ import { useStartupVisualReady } from "@/contexts/StartupVisualContext";
+-import { useCallback, useState } from 'react';
++import { createContext, useCallback, useContext, useLayoutEffect, useState } from 'react';
+ import { Pressable, StyleSheet } from 'react-native';
+ import { DefaultLight, FilamentScene, FilamentView, useFilamentContext } from 'react-native-filament';
+ import { NativeCatActor, useCatModel } from './NativeCatActor';
+@@ -20,12 +20,19 @@ type Props = {
+   onAnimationComplete?: () => void;
+   onStepComplete?: (index: number) => void;
+ };
++/** Native sheets can stop drawing a portrait before their surface is detached. */
++export const NativePortraitActivityContext = createContext(true);
+ function PortraitScene(props: Props) {
+   const model = useCatModel(props.skinId);
+   const [ready, setReady] = useState(false);
+   useStartupVisualReady(ready);
+-  const { camera } = useFilamentContext();
++  const { camera, choreographer } = useFilamentContext();
++  const presentationActive = useContext(NativePortraitActivityContext);
+   const { active, reduceMotion } = useAnimationActivity();
++  useLayoutEffect(() => {
++    if (!presentationActive || !active || props.playing === false) choreographer.stop();
++    else if (ready) choreographer.start();
++  }, [active, choreographer, presentationActive, props.playing, ready]);
+   return <FilamentView style={StyleSheet.flatten(StyleSheet.absoluteFill)} enableTransparentRendering renderCallback={() => {
+       'worklet';
+       camera.setOrthographicProjection(-1.35, 1.35, -1.35, 1.35, .1, 40);
+diff --git a/components/puzzle/ResultOverlay.tsx b/components/puzzle/ResultOverlay.tsx
+index fb3be0c9..0c0b1581 100644
+--- a/components/puzzle/ResultOverlay.tsx
++++ b/components/puzzle/ResultOverlay.tsx
+@@ -4,6 +4,7 @@ import { PuzzleButton } from "@/components/puzzle/PuzzleButton";
+ import { PuzzleGradient, PuzzleHeaderGlow } from "@/components/puzzle/PuzzleGradient";
+ import { AppIcon } from "@/components/ui/AppIcon";
+ import { PuzzleCatCompanion } from "@/components/puzzle/PuzzleCatCompanion";
++import { NativePortraitActivityContext } from "@/components/pet/native/NativeCatDisplay";
+ import { AppBottomSheet } from "@/components/ui/AppBottomSheet";
+ import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+ import { LIFE_BUY_COST } from "@/constants/game";
+@@ -100,8 +101,10 @@ export function ResultOverlay({
+       {contentHeight => <View style={[styles.screen, contentHeight !== undefined && { height: contentHeight, flex: 0 }]}>
+         <PuzzleHeaderGlow color={GameColors.rewardGlow} />
+         <ScrollView style={styles.body} nestedScrollEnabled={Platform.OS === "android"} contentContainerStyle={styles.card} showsVerticalScrollIndicator={false}>
+-          {decorationLessonId ? <CatPlanDecoration lessonId={decorationLessonId} earned /> : <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
+-            catSkinId={catSkinId} mood={petMood} reaction={catReaction} petName={petName} message={encouragement} portraitSize={180} />}
++          <NativePortraitActivityContext.Provider value={visible && !closing}>
++            {decorationLessonId ? <CatPlanDecoration lessonId={decorationLessonId} earned /> : <PuzzleCatCompanion key={`${visible}-${petMood}-${catReaction}-${encouragement}`} petType={petType}
++              catSkinId={catSkinId} mood={petMood} reaction={catReaction} petName={petName} message={encouragement} portraitSize={180} />}
++          </NativePortraitActivityContext.Provider>
+ 
+           <Text
+             accessibilityRole="header"
+diff --git a/scripts/check-result-dismissal.mjs b/scripts/check-result-dismissal.mjs
+index 0ff52cdc..be137b8b 100644
+--- a/scripts/check-result-dismissal.mjs
++++ b/scripts/check-result-dismissal.mjs
+@@ -4,7 +4,7 @@ import fs from 'node:fs';
+ import vm from 'node:vm';
+ import ts from 'typescript';
+ 
+-function harness(file, extraMocks = {}) {
++function harness(file, extraMocks = {}, exportForTest = '') {
+   const slots = [];
+   let cursor = 0;
+   let effects = [];
+@@ -30,15 +30,20 @@ function harness(file, extraMocks = {}) {
+       }
+     },
+   };
++  react.useLayoutEffect = react.useEffect;
++  react.useCallback = fn => fn;
++  react.createContext = current => ({ current, Provider: 'PortraitActivity' });
++  react.useContext = context => context.current;
+   const jsx = (type, props) => ({ type, props });
+   const mocks = {
+     react,
+     'react/jsx-runtime': { jsx, jsxs: jsx },
+-    'react-native': { Platform: { OS: 'ios' }, StyleSheet: { create: styles => styles }, View: 'View', Pressable: 'Pressable', ScrollView: 'ScrollView' },
++    'react-native': { Platform: { OS: 'ios' }, StyleSheet: { create: styles => styles, flatten: styles => styles, absoluteFill: {} }, View: 'View', Pressable: 'Pressable', ScrollView: 'ScrollView' },
+     'react-i18next': { useTranslation: () => ({ t: key => key }) },
+     '@/utils/scale': { moderateScale: value => value },
+     '@/constants/game': { GameColors: { background: '#FFF5EB' }, LIFE_BUY_COST: 10 },
+     '@/constants/puzzle-theme': { PuzzleColors: { background: '#FFFFFF' } },
++    '@/components/pet/native/NativeCatDisplay': { NativePortraitActivityContext: { Provider: 'PortraitActivity' } },
+     '@/components/puzzle/PuzzleGradient': { PuzzleGradient: 'PuzzleGradient', PuzzleHeaderGlow: 'PuzzleHeaderGlow' },
+     ...Object.fromEntries([
+       ['@/components/puzzle/PuzzleText', 'PuzzleText'], ['@/components/puzzle/PuzzleButton', 'PuzzleButton'], ['@/components/ui/IconText', 'IconText'], ['@/components/ui/AppIcon', 'AppIcon'],
+@@ -49,13 +54,14 @@ function harness(file, extraMocks = {}) {
+     ...extraMocks,
+   };
+   const module = { exports: {} };
+-  vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), {
++  vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8') + (exportForTest ? `\nexport { ${exportForTest} as TestComponent };` : ''), {
+     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
+   }).outputText, { module, exports: module.exports, require: id => {
+     assert.ok(id in mocks, `Mock ${id}`);
+     return mocks[id];
+   } });
+   return {
++    exports: module.exports,
+     render(name, props) {
+       cursor = 0;
+       const tree = module.exports[name](props);
+@@ -80,6 +86,7 @@ for (const action of ['next', 'retry', 'home', 'failure-path', 'swipe']) {
+     petName: 'Minka', encouragement: 'Good job', message: 'Great job!', detail: '26',
+     onContinue: () => calls.push('continue'), onGoHome: () => calls.push('home') };
+   let sheet = view.render('ResultOverlay', props);
++  assert.equal(nodes(sheet.props.children(600)).find(node => node.type === 'PortraitActivity').props.value, true);
+   const buttons = nodes(sheet.props.children(600)).filter(node => ['Pressable', 'PuzzleButton'].includes(node.type));
+   const press = action === 'swipe' ? sheet.props.onClose : buttons[['home', 'failure-path'].includes(action) ? 1 : 0].props.onPress;
+   press();
+@@ -87,6 +94,7 @@ for (const action of ['next', 'retry', 'home', 'failure-path', 'swipe']) {
+   assert.deepEqual(calls, [], `${action} must wait for the sheet to close`);
+   sheet = view.render('ResultOverlay', props);
+   assert.equal(sheet.props.visible, false, `${action} starts closing while its parent still holds the result`);
++  assert.equal(nodes(sheet.props.children(600)).find(node => node.type === 'PortraitActivity').props.value, false, 'The native portrait stops before the sheet closes');
+   assert.ok(nodes(sheet.props.children(600)).filter(node => ['Pressable', 'PuzzleButton'].includes(node.type)).every(node => node.props.disabled), 'Actions are disabled while closing');
+   sheet.props.onClose();
+   sheet.props.onDismissComplete();
+@@ -246,6 +254,7 @@ for (const action of ['next-level', 'path']) {
+   const props = { visible: true, correct: true, continueLabel: 'Next level', secondaryLabel: 'View path',
+     onContinue: callback(continueCallback, env), onGoHome: env.exitToPath };
+   let sheet = view.render('ResultOverlay', props);
++  assert.equal(nodes(sheet.props.children(600)).find(node => node.type === 'PortraitActivity').props.value, true);
+   const buttons = nodes(sheet.props.children(600)).filter(node => ['Pressable', 'PuzzleButton'].includes(node.type));
+   buttons[action === 'next-level' ? 0 : 1].props.onPress();
+   assert.equal(routes.length, 0, 'Both completion actions wait for the sheet to close');
+@@ -294,3 +303,28 @@ for (const platform of ['ios', 'android']) {
+   }
+ }
+ console.log('Native transition backgrounds match the puzzle in light and dark mode, with forward replacement animation.');
++
++// Stop the actual native renderer, including a model that becomes ready during dismissal.
++{
++ const calls=[];const choreographer={start:()=>calls.push('start'),stop:()=>calls.push('stop')};
++ const portrait=harness('components/pet/native/NativeCatDisplay.tsx',{
++  '@/contexts/StartupVisualContext':{useStartupVisualReady(){}},
++  'react-native-filament':{FilamentView:'FilamentView',DefaultLight:'DefaultLight',FilamentScene:'FilamentScene',useFilamentContext:()=>({camera:{},choreographer})},
++  './NativeCatActor':{useCatModel:()=>({}),NativeCatActor:'NativeCatActor'},
++  '@/hooks/use-animation-activity':{useAnimationActivity:()=>({active:true,reduceMotion:false})},
++  '@/components/recovery/RecoveryBoundary':{RecoveryBoundary:'RecoveryBoundary'},
++  '@/components/recovery/SceneLoadGuard':{SceneLoadGuard:'SceneLoadGuard'},
++  '@/lib/graphics-mode':{useGraphicsMode:()=> '3d',enableSimpleGraphicsForSession(){}},
++  './StaticCatDisplay':{StaticCatDisplay:'StaticCatDisplay'},
++ },'PortraitScene');
++ const context=portrait.exports.NativePortraitActivityContext;
++ let tree=portrait.render('TestComponent',{});
++ nodes(tree).find(n=>n.type==='NativeCatActor').props.onReady();
++ portrait.render('TestComponent',{});assert.deepEqual(calls,['start']);
++ context.current=false;tree=portrait.render('TestComponent',{});assert.deepEqual(calls,['start','stop']);
++ nodes(tree).find(n=>n.type==='NativeCatActor').props.onReady();portrait.render('TestComponent',{});
++ assert.deepEqual(calls,['start','stop'],'A late ready callback cannot restart a closing portrait');
++ context.current=true;portrait.render('TestComponent',{});assert.deepEqual(calls,['start','stop','start']);
++ portrait.render('TestComponent',{playing:false});assert.equal(calls.at(-1),'stop');
++ console.log('Native portraits stop drawing before dismissal, stay paused on late readiness and resume when shown.');
++}

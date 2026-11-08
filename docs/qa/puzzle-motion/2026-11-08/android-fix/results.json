@@ -1,0 +1,44 @@
+{
+  "result": "native_fixes_verified",
+  "platform": "Android 16 / API 36",
+  "device": "disposable Pixel 9 AVD, 1080x2424, host GPU",
+  "fixed": [
+    "Screens 4.26.2 concurrent listener initialization and teardown race",
+    "Reanimated 4.5.1 stale settled animated props after delayed sync, plus nested-view collector counter drift"
+  ],
+  "debug_cold_launches": 10,
+  "final_release_cold_launches": 3,
+  "final_release_puzzle_transitions": 4,
+  "final_release_native_crashes": false,
+  "final_release_persistent_blank_screens": false,
+  "progress_retention_pixel_checks": "passed before each answer and after typing, including a three-second idle beyond the old eviction threshold",
+  "smoothness": "interpolation verified, emulator still reports frame drops; no physical-device performance claim",
+  "source_sha256": {
+    "scripts/native/patch-android-screen-listener.mjs": "d8282139bb69e1e39809bc072ab1b8129646b9b74367526fb0d662fab1d14366",
+    "scripts/native/patch-reanimated-settled-props.mjs": "f6d866dba876270a5008a4cc9222ddb8a3fe66756e305109544ec4f32a3117ab",
+    "scripts/native/patches/react-native-screens-4.26.2-removal-listener.patch": "88973fd6ab8cbd5a37b7a903fa3147e5dc57a0453fb441f79a7adf0df9ae3318",
+    "scripts/native/patches/react-native-reanimated-4.5.1-settled-props.patch": "bf3458f668e910b0270f3defac653cd97c8a2c1fc2841798e3f6aa10c214cbdc",
+    "app/play.tsx": "7b7438c52450902ed06c7ba55b165fbe5108c270ec574fc2d8b576fc8dc01085",
+    "components/puzzle/PuzzleProgress.tsx": "399dbe47368ae1cc13c1170eb842f2aea53dc9e7fbc691d077471404184aa2c4"
+  },
+  "before_apk_sha256": "5d4990953942ffc0fd5ffe284df8f065b2e4eda58d769eceee4c08c09b49a5d2",
+  "debug_apk_sha256": "03663dec7937597523efc58dacd25fe3823f2eade425a26c3750544515bb45c5",
+  "release_qa_apk_sha256": "6296523a7dc1ed381bbcefd8d8a87af26c8fb22e3c9439c33100e37631ba4c06",
+  "tests": [
+    "test:android-screen-listener",
+    "test:settled-animation-props",
+    "check-puzzle-progress.mjs",
+    "test:result-dismissal"
+  ],
+  "upstream": [
+    "https://github.com/software-mansion/react-native-screens/pull/4413",
+    "https://github.com/software-mansion/react-native-reanimated/pull/9527"
+  ],
+  "typecheck": "passed",
+  "cleanup": {
+    "temporary_app_route_removed": true,
+    "qa_release_apk_removed_from_normal_build_outputs": true,
+    "disposable_emulator_removed": true,
+    "dedicated_metro_stopped": true
+  }
+}

@@ -12,8 +12,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
-type Props = { puzzle: BridgePuzzle; value: BridgeState | null; onChange: (value: BridgeState | null) => void; answered: boolean };
-export function BridgeTask({ puzzle, value, onChange, answered }: Props) {
+type Props = { puzzle: BridgePuzzle; value: BridgeState | null; onChange: (value: BridgeState | null) => void; answered: boolean; readOnly?: boolean };
+export function BridgeTask({ puzzle, value, onChange, answered, readOnly = false }: Props) {
   const { t } = useTranslation();
   const [lastAction, setLastAction] = useState<{ puzzleId: string; equation: BridgeState['equation']; action: 'add' | 'subtract' | 'divide'; amount: number } | null>(null);
   const { fontScale } = useWindowDimensions();
@@ -21,7 +21,7 @@ export function BridgeTask({ puzzle, value, onChange, answered }: Props) {
   const button = (id: string, label: string, action: () => void, disabled = false, small = false) =>
     <Pressable key={id} testID={id} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled: answered || disabled }}
       disabled={answered || disabled} onPress={action} style={[styles.button, small && styles.small, (answered || disabled) && styles.disabled]}><Text style={styles.buttonText}>{label}</Text></Pressable>;
-  const numeric = (showAnswer = true) => <View style={styles.group}>
+  const numeric = (showAnswer = true) => readOnly ? null : <View style={styles.group}>
     {showAnswer ? <View style={styles.answerRow}><Text style={styles.note}>{t('bridge.answer')}</Text><Text testID="bridge-value" style={styles.answer}>{value?.value ?? '?'}</Text></View> : <Text style={styles.note}>{t('bridge.enterLitres')}</Text>}
     {[['1','2','3','4','5'],['6','7','8','9','0']].map((row,i)=><View key={i} style={styles.row}>{row.map(d=>button(`bridge-digit-${d}`,d,()=>onChange({value:appendGeometryDigit(value?.value??null,Number(d))}),false,true))}</View>)}
   </View>;
@@ -33,12 +33,12 @@ export function BridgeTask({ puzzle, value, onChange, answered }: Props) {
     </>;
   } else if(puzzle.type==='signed_line') {
     const {min,max,start,mode,delta}=puzzle.payload;
-    const current=value?.value??0;
+    const current=readOnly?start:value?.value??0;
     model=<>
       <Text style={styles.equation}>{mode==='place'?String(start):`${start} ${delta<0?'−':'+'} ${Math.abs(delta)} = ?`}</Text>
       <NumberLineTrack min={min} max={max} start={mode==='place'?0:start} value={current} onSelect={n=>onChange({value:n})} disabled={answered}/>
-      <Text testID="bridge-value" style={styles.answer}>{value?.value??'?'}</Text>
-      <View style={styles.row}>{[-1,1].map(d=>button(`bridge-step-${d}`,t(d<0?'puzzleTypes.numberLineMoveLeft':'puzzleTypes.numberLineMoveRight'),()=>onChange({value:current+d}),current+d<min||current+d>max,true))}</View>
+      {!readOnly ? <Text testID="bridge-value" style={styles.answer}>{value?.value??'?'}</Text> : null}
+      {!readOnly ? <View style={styles.row}>{[-1,1].map(d=>button(`bridge-step-${d}`,t(d<0?'puzzleTypes.numberLineMoveLeft':'puzzleTypes.numberLineMoveRight'),()=>onChange({value:current+d}),current+d<min||current+d>max,true))}</View> : null}
     </>;
   } else if(puzzle.type==='equation_board') {
     const {a,b,c}=puzzle.payload, equation=value?.equation??{a,b,c};
@@ -46,9 +46,9 @@ export function BridgeTask({ puzzle, value, onChange, answered }: Props) {
     const actionMessage = lastAction?.puzzleId === puzzle.id && lastAction.equation === value?.equation ? t(`bridge.did_${lastAction.action}`, { amount: lastAction.amount }) : null;
     const operations: ['add'|'divide',number][]=[['add',-1],['add',1],...(puzzle.difficulty==='easy'?[]:[['add',-5],['add',5],['divide',2],['divide',3],['divide',4]] as ['add'|'divide',number][])];
     model=<>
-      <Text style={styles.guide}>{t('bridge.xMeaning')}</Text>
+      {!readOnly ? <Text style={styles.guide}>{t('bridge.xMeaning')}</Text> : null}
       <EquationBoardModel equation={equation} />
-      {isolated ? <Text testID="bridge-equation-ready" accessibilityLiveRegion="polite" style={styles.ready}>{t('bridge.equationReady')}</Text> : <>
+      {readOnly ? null : isolated ? <Text testID="bridge-equation-ready" accessibilityLiveRegion="polite" style={styles.ready}>{t('bridge.equationReady')}</Text> : <>
         <Text accessibilityLiveRegion="polite" style={styles.note}>{actionMessage ?? t('bridge.chooseOperation')}</Text>
         <View testID="bridge-operations" style={styles.operations}>{operations.map(([op,n])=>{
           const candidate=transformEquation(equation,op,n);
@@ -89,21 +89,21 @@ export function BridgeTask({ puzzle, value, onChange, answered }: Props) {
           {mode!=='distance'?<Pressable testID="bridge-plot" accessible={false} disabled={answered} style={StyleSheet.absoluteFill} onPress={e=>{const x=Math.round(e.nativeEvent.locationX/size)+min,y=max-Math.round(e.nativeEvent.locationY/size);onChange({point:{x:Math.min(max,Math.max(min,x)),y:Math.min(max,Math.max(min,y))}});}}/>:null}
         </View>
       </View>
-      {mode==='distance'?numeric():<View style={styles.group}>
+      {readOnly ? null : mode==='distance'?numeric():<View style={styles.group}>
         <Text testID="bridge-point" style={styles.answer}>{value?.point?`(${point.x}, ${point.y})`:'(?, ?)'}</Text>
         <View style={styles.operations}>{(['x','y'] as const).flatMap(axis=>[-1,1].map(d=>button(`bridge-${axis}-${d}`,`${axis} ${d>0?'+':'−'} 1`,()=>onChange({point:{...point,[axis]:point[axis]+d}}),point[axis]+d<min||point[axis]+d>max,true)))}</View>
       </View>}
     </>;
   }
   return <View style={[styles.wrap, puzzle.type === 'coordinate_map' && styles.coordinateWrap]} onLayout={e=>setWidth(e.nativeEvent.layout.width)}>
-    {puzzle.payload.guided && puzzle.type !== 'equation_board' && puzzle.type !== 'ratio_table'?<Text style={styles.guide}>{t(`bridge.guide_${puzzle.type}`)}</Text>:null}
+    {!readOnly && puzzle.payload.guided && puzzle.type !== 'equation_board' && puzzle.type !== 'ratio_table'?<Text style={styles.guide}>{t(`bridge.guide_${puzzle.type}`)}</Text>:null}
     {model}
-    <View style={styles.footer}>
+    {!readOnly ? <View style={styles.footer}>
       {puzzle.type === 'signed_line' ? button('bridge-zero',t('bridge.selectZero'),()=>onChange({value:0}),false,true) : null}
       {puzzle.type === 'coordinate_map' && puzzle.payload.mode !== 'distance' ? button('bridge-origin',t('bridge.selectOrigin'),()=>onChange({point:{x:0,y:0}}),false,true) : null}
       {puzzle.type === 'ratio_table' || puzzle.type === 'coordinate_map' && puzzle.payload.mode === 'distance' ? button('bridge-erase',t('geometryModels.eraseShort'),()=>onChange({value:value?.value!=null && value.value>=10 ? Math.floor(value.value/10) : null}),false,true) : null}
       {button('bridge-reset',t('geometryModels.reset'),()=>onChange(null),false,true)}
-    </View>
+    </View> : null}
   </View>;
 }
 const styles=StyleSheet.create({

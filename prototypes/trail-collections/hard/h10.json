@@ -1,8 +1,0 @@
-{
-  "id": "h10",
-  "collection": "hard",
-  "builder": "sundial",
-  "meshObjects": 4,
-  "samples": 48,
-  "renderSize": 640
-}

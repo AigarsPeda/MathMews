@@ -6,6 +6,7 @@ import { applyGeometryPilot } from "./geometry-pilot.mjs";
 import { applyHardReasoning } from './hard-reasoning.mjs';
 import { simplifyEasyFractions } from './easy-fractions.mjs';
 import { varyFractionExamples } from './fraction-variety.mjs';
+import { applyActivityMix } from './activity-mix.mjs';
 import { smoothMediumFractions } from './medium-fraction-transition.mjs';
 import { smoothHardFractions } from './hard-fraction-transition.mjs';
 import { applyFoundationProgression } from './foundation-progression.mjs';
@@ -434,6 +435,7 @@ puzzles.ru = Object.fromEntries(['easy', 'medium', 'hard'].map(tier => [tier, pu
 const everydayReviews = appendEverydayTopics({ topics, lessons, puzzles, pathExtras });
 Object.assign(everydayReviews, appendCatPlans({ topics, lessons, puzzles, pathExtras }));
 applyPuzzleClarity({ puzzles });
+applyActivityMix({ puzzles, lessons, pathExtras });
 assert.equal(new Set(lessons.map(lesson => lesson.id)).size, lessons.length, "Lesson IDs must be unique");
 writeGenerated('data/puzzle-path-extras.json', pathExtras);
 writeGenerated('data/everyday-reviews.json', everydayReviews);

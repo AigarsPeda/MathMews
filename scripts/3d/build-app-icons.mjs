@@ -6,7 +6,7 @@ import sharp from 'sharp';
 const output = path.resolve('assets/icons');
 await fs.mkdir(output, { recursive: true });
 const starter = ['paw','feed','play','sofa','sleep','puzzles','settings','home'];
-const paletteIcons = new Set(['challenge-timer.png', 'boss-badge.png', 'weather-sunrise.png', 'weather-sunset.png']);
+const paletteIcons = new Set(['challenge-timer.png', 'weather-sunrise.png', 'weather-sunset.png']);
 const speedIcons = new Set(['clock-real-time.png', 'clock-fast.png', 'clock-very-fast.png']);
 for (const name of starter) await sharp(`docs/art/icon-study/${name}.png`).resize(256,256).png().toFile(`${output}/${name}.png`);
 for (const file of await fs.readdir('docs/art/app-icons')) {

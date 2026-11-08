@@ -1,0 +1,52 @@
+{
+  "before": {
+    "entry_samples": 4,
+    "entry_frame_intervals": 83,
+    "entry_worst_gap_ms": 299.9999879999086,
+    "entry_gaps_over_50ms": 1,
+    "entry_interval_p95_ms": 16.666666000150144,
+    "bar_intervals": 371,
+    "bar_worst_gap_ms": 33.33333199983463,
+    "bar_intervals_over_25ms": 1,
+    "bar_gfx": {
+      "frames": 304,
+      "janky_frames": 39,
+      "janky_percent": 12.828947368421053
+    },
+    "entry_gfx": {
+      "frames": 103,
+      "janky_frames": 26,
+      "janky_percent": 25.24271844660194
+    },
+    "answer_gfx": {
+      "frames": 203,
+      "janky_frames": 44,
+      "janky_percent": 21.67487684729064
+    }
+  },
+  "after": {
+    "entry_samples": 4,
+    "entry_frame_intervals": 92,
+    "entry_worst_gap_ms": 33.33333200030029,
+    "entry_gaps_over_50ms": 0,
+    "entry_interval_p95_ms": 16.666666000150144,
+    "bar_intervals": 372,
+    "bar_worst_gap_ms": 16.666666000150144,
+    "bar_intervals_over_25ms": 0,
+    "bar_gfx": {
+      "frames": 377,
+      "janky_frames": 29,
+      "janky_percent": 7.6923076923076925
+    },
+    "entry_gfx": {
+      "frames": 119,
+      "janky_frames": 29,
+      "janky_percent": 24.369747899159663
+    },
+    "answer_gfx": {
+      "frames": 204,
+      "janky_frames": 56,
+      "janky_percent": 27.450980392156865
+    }
+  }
+}

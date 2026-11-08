@@ -1,8 +1,0 @@
-{
-  "id": "m16",
-  "collection": "medium",
-  "builder": "dominoes",
-  "meshObjects": 19,
-  "samples": 48,
-  "renderSize": 640
-}

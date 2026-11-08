@@ -1,0 +1,10 @@
+{
+  "fixture_removed": true,
+  "qa_sources_in_bundle": false,
+  "source_sha256": {
+    "components/puzzle/PuzzleProgress.tsx": "5421abfc398fe18207449fe106c42d1c547249ef9a6c67991aef880e313f1018",
+    "components/puzzle/PuzzleContentTransition.tsx": "55d212b5e11a04242420dd8d29a8cbd709c7f457c79851ad57a753523b93c69f",
+    "app/play.tsx": "dff1e8db5e81176e170f88be4fa87b16eeb1a9bf4866c5cd08c6bf0187860db3"
+  },
+  "apk_sha256": "ae38e56a3b8c4c6f3b98de1a5a6b353673519d45cc91256b0458398a226f5106"
+}

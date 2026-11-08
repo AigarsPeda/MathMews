@@ -92,7 +92,7 @@ function checkLearningText(value) {
 const catalog = read('data/puzzle-curriculum.json');
 checkLearningText(catalog);
 const numbers = text => (text.match(/\d+(?:[.,]\d+)?/g) ?? []).map(n => n.replace(',', '.')).sort();
-const displayKeys = new Set(['question','hint','explanation','choices','statement','expression','optionA','optionB','leftDisplay','wrongWork','label']);
+const displayKeys = new Set(['question','hint','explanation','choices','statement','expression','optionA','optionB','leftDisplay','wrongWork','label','prompt','proposed','options']);
 function comparePuzzle(source, translated, location, display = false) {
   if (typeof source === 'string') {
     if (display) {
@@ -127,10 +127,6 @@ for (const lesson of load('@/constants/curriculum').LEARNING_CATALOG.lessons) {
     assert.deepEqual(numbers(review.explanation.ru), numbers(review.explanation.en), lesson.id);
   }
 }
-const { getAchievementStory } = load('@/constants/achievement-stories');
-for (const kind of ['bridge','book','loom','clock','balloon','sorter','boat','fountain','beacon','trophy']) {
-  for (const text of Object.values(getAchievementStory(`test-${kind}`, 'ru'))) assert.match(text, /[А-Яа-яЁё]/);
-}
 const { getPrivacyPolicyContent } = load('@/legal/privacy-policy-content');
 const policy = getPrivacyPolicyContent('ru');
 assert.equal(policy.sections.length, getPrivacyPolicyContent('en').sections.length);
@@ -140,4 +136,4 @@ for (const tag of ['ru', 'ru-RU']) assert.equal(decimalLabel(104, 2, tag), '1,04
 assert.equal(decimalLabel(104, 2, 'en'), '1.04');
 const { formatGameStartedDate } = load('@/utils/format-game-date');
 assert.match(formatGameStartedDate(Date.UTC(2026, 10, 4), 'ru'), /нояб/);
-console.log(`Verified Russian locale selection, persistence, device detection, UI and walkthrough coverage, plurals, ${puzzleCount} identical puzzle answer/reward definitions, 180 lesson reviews and achievement stories.`);
+console.log(`Verified Russian locale selection, persistence, device detection, UI and walkthrough coverage, plurals, ${puzzleCount} identical puzzle answer/reward definitions, lesson reviews.`);

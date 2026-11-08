@@ -1,8 +1,0 @@
-{
-  "id": "m04",
-  "collection": "medium",
-  "builder": "stopwatch",
-  "meshObjects": 10,
-  "samples": 48,
-  "renderSize": 640
-}

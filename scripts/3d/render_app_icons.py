@@ -97,20 +97,6 @@ def challenge_timer():
     art.sphere('Clock spindle',(0,-.23,.85),(.065,.04,.065),'gold')
 
 
-def boss_badge():
-    study.extruded_shape('Golden mission shield',[(-.62,1.35),(0,1.51),(.62,1.35),(.55,.70),(.33,.34),(0,.14),(-.33,.34),(-.55,.70)],'gold',.28)
-    study.extruded_shape('Teal shield inset',[(-.48,1.24),(0,1.36),(.48,1.24),(.40,.72),(.24,.44),(0,.29),(-.24,.44),(-.40,.72)],'teal',.08,(0,-.18,0))
-    art.sphere('Mission paw pad',(0,-.28,.72),(.22,.08,.18),'cream')
-    for x,z in [(-.24,1.00),(0,1.10),(.24,1.00)]:
-        art.sphere('Mission paw toe',(x,-.28,z),(.10,.06,.12),'cream')
-    study.extruded_shape('Small mission crown',[(-.40,1.48),(-.45,1.81),(-.19,1.66),(0,1.94),(.19,1.66),(.45,1.81),(.40,1.48)],'gold',.20)
-    art.sphere('Crown coral jewel',(0,-.14,1.65),(.065,.035,.075),'coral')
-
-
-
-
-
-
 def coin():
     art.cylinder('Golden coin',(0,0,.8),.7,.19,'gold',rotation=(math.pi/2,0,0))
     art.torus('Coin raised rim',(0,-.105,.8),.59,.04,'orange',rotation=(math.pi/2,0,0))
@@ -699,7 +685,7 @@ extra += [(name,lambda label=label,color=color:tile(label,color)) for name,label
     ('addition','+','teal'),('subtraction','−','coral'),('multiplication','×','gold'),
     ('division','÷','lilac'),('equality','=','teal'),('patterns','123','lilac'),
     ('fractions','½','coral'),('operations','±','gold')]]
-extra += [('challenge-timer',challenge_timer),('boss-badge',boss_badge)]
+extra += [('challenge-timer',challenge_timer)]
 extra += [('weather-sun',weather_sun),('weather-moon',weather_moon),('weather-rain',weather_rain),
           ('weather-snow',weather_snow),('weather-leaves',weather_leaves),('weather-auto',weather_auto)]
 extra += [('weather-sunrise',lambda:horizon_sun(True)),('weather-sunset',lambda:horizon_sun(False))]

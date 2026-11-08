@@ -1,0 +1,58 @@
+[
+  {
+    "scenario": "run0-after-1-to-2-entry-frames.txt",
+    "slowest_frame_ms": 384.314236,
+    "main_to_sync_ms": 358.890277,
+    "layout_to_draw_ms": 354.003667,
+    "issue_to_swap_ms": 1.524459
+  },
+  {
+    "scenario": "run0-after-2-to-3-entry-frames.txt",
+    "slowest_frame_ms": 384.341726,
+    "main_to_sync_ms": 6.513559,
+    "layout_to_draw_ms": 3.20275,
+    "issue_to_swap_ms": 4.268
+  },
+  {
+    "scenario": "run0-after-3-to-4-entry-frames.txt",
+    "slowest_frame_ms": 100.364301,
+    "main_to_sync_ms": 86.693593,
+    "layout_to_draw_ms": 0.064459,
+    "issue_to_swap_ms": 1.52375
+  },
+  {
+    "scenario": "run0-after-4-to-5-entry-frames.txt",
+    "slowest_frame_ms": 94.311391,
+    "main_to_sync_ms": 21.312016,
+    "layout_to_draw_ms": 0.051125,
+    "issue_to_swap_ms": 22.459626
+  },
+  {
+    "scenario": "run1-before-1-to-2-entry-frames.txt",
+    "slowest_frame_ms": 50.737215,
+    "main_to_sync_ms": 3.962674,
+    "layout_to_draw_ms": 0.043333,
+    "issue_to_swap_ms": 2.24125
+  },
+  {
+    "scenario": "run1-before-2-to-3-entry-frames.txt",
+    "slowest_frame_ms": 63.896346,
+    "main_to_sync_ms": 36.328596,
+    "layout_to_draw_ms": 0.093708,
+    "issue_to_swap_ms": 3.708083
+  },
+  {
+    "scenario": "run1-before-3-to-4-entry-frames.txt",
+    "slowest_frame_ms": 467.1655,
+    "main_to_sync_ms": 447.576125,
+    "layout_to_draw_ms": 0.071584,
+    "issue_to_swap_ms": 11.776833
+  },
+  {
+    "scenario": "run1-before-4-to-5-entry-frames.txt",
+    "slowest_frame_ms": 435.783804,
+    "main_to_sync_ms": 37.058762,
+    "layout_to_draw_ms": 0.079792,
+    "issue_to_swap_ms": 10.976834
+  }
+]

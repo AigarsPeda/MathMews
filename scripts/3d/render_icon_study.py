@@ -19,7 +19,7 @@ import render_assets as art
 
 # UI symbols need level axes and a readable face at small sizes.
 FRONT_ICONS = {
-    'cat', 'challenge-timer', 'boss-badge',
+    'cat', 'challenge-timer',
     'paw', 'settings', 'sleep', 'puzzles', 'heart', 'broken-heart', 'brain', 'lightbulb',
     'coin', 'flame', 'sparkle', 'film', 'lock', 'search', 'zoom-in', 'zoom-out',
     'check', 'warning', 'rotate', 'undo', 'restore', 'save', 'pause',

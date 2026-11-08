@@ -1,0 +1,136 @@
+{
+  "result": "functional_checks_passed",
+  "platform": "Android",
+  "android_release": "16",
+  "api": "36",
+  "device": "emulator-5580",
+  "cases": [
+    {
+      "scenario": "normal-1-to-2",
+      "progress_bounds": [
+        282,
+        197,
+        858,
+        240
+      ],
+      "question_after": [
+        59,
+        321,
+        1021,
+        579
+      ],
+      "check_bounds": [
+        59,
+        1909,
+        1021,
+        2060
+      ],
+      "progress_before": "Puzzle 1 of 10",
+      "progress_after": "Puzzle 2 of 10",
+      "check_enabled": "false",
+      "video": "software-renderer/normal-1-to-2.mp4"
+    },
+    {
+      "scenario": "normal-2-to-3",
+      "progress_bounds": [
+        282,
+        197,
+        858,
+        240
+      ],
+      "question_after": [
+        59,
+        321,
+        1021,
+        665
+      ],
+      "check_bounds": [
+        59,
+        1909,
+        1021,
+        2060
+      ],
+      "progress_before": "Puzzle 2 of 10",
+      "progress_after": "Puzzle 3 of 10",
+      "check_enabled": "false",
+      "video": "software-renderer/normal-2-to-3.mp4"
+    },
+    {
+      "scenario": "normal-3-to-4",
+      "progress_bounds": [
+        282,
+        197,
+        858,
+        240
+      ],
+      "question_after": [
+        59,
+        321,
+        1021,
+        665
+      ],
+      "check_bounds": [
+        59,
+        1909,
+        1021,
+        2060
+      ],
+      "progress_before": "Puzzle 3 of 10",
+      "progress_after": "Puzzle 4 of 10",
+      "check_enabled": "false",
+      "video": "software-renderer/normal-3-to-4.mp4"
+    },
+    {
+      "scenario": "normal-4-to-5",
+      "progress_bounds": [
+        282,
+        197,
+        858,
+        240
+      ],
+      "question_after": [
+        59,
+        321,
+        1021,
+        579
+      ],
+      "check_bounds": [
+        59,
+        1909,
+        1021,
+        2060
+      ],
+      "progress_before": "Puzzle 4 of 10",
+      "progress_after": "Puzzle 5 of 10",
+      "check_enabled": "false",
+      "video": "software-renderer/normal-4-to-5.mp4"
+    }
+  ],
+  "native_crashes": false,
+  "animations_enabled": "null",
+  "smoothness": "inconclusive",
+  "renderer": "SwiftShader (software)",
+  "hardware_renderer": {
+    "renderer": "Apple M1 Max / Metal through Android Emulator OpenGL ES Translator",
+    "result": "inconclusive",
+    "symptoms": [
+      "One run showed blank play area after Next puzzle.",
+      "Subsequent attempts had startup/font-loading and UI automation instability.",
+      "A development reload produced SIGSEGV in React Native MountingCoordinator::pullTransaction; cause not isolated."
+    ],
+    "crash_log": "hardware-renderer/native-crashes.log"
+  },
+  "verification": {
+    "progress": "Intermediate green-fill widths present in recorded frames; final progress advances cumulatively.",
+    "puzzle_entry": "Slide/fade changes visible in captured frames; insufficient steady frame timing to certify smoothness.",
+    "geometry": "Header and answer dock have identical bounds before/after all four software-rendered transitions.",
+    "answers": "Each new puzzle starts with disabled Check answer.",
+    "performance": "Software renderer reported substantial jank; hardware rerun unstable. No physical Android device was available."
+  },
+  "source_sha256": {
+    "app/play.tsx": "7b7438c52450902ed06c7ba55b165fbe5108c270ec574fc2d8b576fc8dc01085",
+    "components/puzzle/PuzzleProgress.tsx": "399dbe47368ae1cc13c1170eb842f2aea53dc9e7fbc691d077471404184aa2c4",
+    "components/puzzle/ResultOverlay.tsx": "4cda9fdfeac010429f7b14c80e0068726502507346004d5afbb4d5a5f02c113c"
+  },
+  "apk_sha256": "5d4990953942ffc0fd5ffe284df8f065b2e4eda58d769eceee4c08c09b49a5d2"
+}

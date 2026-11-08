@@ -165,6 +165,11 @@ export type FractionMatchPayload = {
 };
 
 type PuzzleBase = {
+  /** Alternate interaction over the same mathematical givens and stable puzzle ID. */
+  response?:
+    | { kind: "write"; answer: string; format: "number" | "clock" | "fraction"; denominator?: number; prompt?: string }
+    | { kind: "choose"; options: string[]; correctIndex: number; prompt?: string }
+    | { kind: "judge"; proposed: string; isCorrect: boolean; prompt?: string };
   learning?: { skillId: string; prerequisiteSkillIds: string[]; role: "practice" | "review" | "application"; representation: string; reasoningSteps: number };
   taskVisual?: QuantityTaskModel;
   contextObjects?: { object: PuzzleObject; count?: number; role?: "start" | "add" | "remove"; primary?: boolean }[];

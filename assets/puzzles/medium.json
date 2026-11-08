@@ -65,6 +65,20 @@
       "role": "practice",
       "representation": "objects",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "choose",
+      "options": [
+        "3 × 10 + 5 × 1",
+        "2 × 10 + 5 × 1",
+        "2 × 10 + 6 × 1"
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "Bundle ten ones. Which groups do you get?",
+        "lv": "Apvieno desmit vienus. Kādas grupas iegūsti?",
+        "ru": "Объедини десять единиц. Какие группы получатся?"
+      }
     }
   },
   {
@@ -378,6 +392,20 @@
       "role": "practice",
       "representation": "objects",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "choose",
+      "options": [
+        "3 × 10 + 11 × 1",
+        "2 × 10 + 11 × 1",
+        "2 × 10 + 12 × 1"
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "Split one ten into ones. Which groups do you get?",
+        "lv": "Sadali vienu desmitu vienos. Kādas grupas iegūsti?",
+        "ru": "Раздели один десяток на единицы. Какие группы получатся?"
+      }
     }
   },
   {
@@ -2100,6 +2128,15 @@
       "role": "application",
       "representation": "symbols",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "7 each, 3 left",
+        "lv": "Katram 7, atlikums 3",
+        "ru": "Каждому по 7, остаток 3"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -4034,7 +4071,21 @@
       "c": 15,
       "guided": true
     },
-    "helpTemplate": "equation_board"
+    "helpTemplate": "equation_board",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "6",
+        "5",
+        "4"
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "What value of x balances this equation?",
+        "lv": "Kāda x vērtība līdzsvaro šo vienādojumu?",
+        "ru": "Какое значение x уравновешивает это уравнение?"
+      }
+    }
   },
   {
     "id": "v2-medium-addition-explore-8-3",
@@ -4071,7 +4122,21 @@
       "c": 0,
       "guided": true
     },
-    "helpTemplate": "equation_board"
+    "helpTemplate": "equation_board",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "3",
+        "1",
+        "2"
+      ],
+      "correctIndex": 2,
+      "prompt": {
+        "en": "What value of x balances this equation?",
+        "lv": "Kāda x vērtība līdzsvaro šo vienādojumu?",
+        "ru": "Какое значение x уравновешивает это уравнение?"
+      }
+    }
   },
   {
     "id": "v2-medium-addition-explore-8-4",
@@ -5496,7 +5561,21 @@
       "max": 6,
       "guided": true
     },
-    "helpTemplate": "signed_line"
+    "helpTemplate": "signed_line",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "-1",
+        "-2",
+        "-3"
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "Start at -3. What number is 1 step right?",
+        "lv": "Sāc pie -3. Kurš skaitlis ir 1 soli pa labi?",
+        "ru": "Начни с -3. Какое число на 1 шаг вправо?"
+      }
+    }
   },
   {
     "id": "v2-medium-subtraction-explore-8-3",
@@ -5535,7 +5614,21 @@
       "max": 6,
       "guided": true
     },
-    "helpTemplate": "signed_line"
+    "helpTemplate": "signed_line",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "4",
+        "2",
+        "3"
+      ],
+      "correctIndex": 2,
+      "prompt": {
+        "en": "Start at 2. What number is 1 step right?",
+        "lv": "Sāc pie 2. Kurš skaitlis ir 1 soli pa labi?",
+        "ru": "Начни с 2. Какое число на 1 шаг вправо?"
+      }
+    }
   },
   {
     "id": "v2-medium-subtraction-explore-8-4",
@@ -6967,7 +7060,16 @@
       "targetA": 6,
       "guided": true
     },
-    "helpTemplate": "ratio_table"
+    "helpTemplate": "ratio_table",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "5",
+        "4",
+        "3"
+      ],
+      "correctIndex": 1
+    }
   },
   {
     "id": "v2-medium-multiplication-explore-8-3",
@@ -7004,7 +7106,16 @@
       "targetA": 6,
       "guided": true
     },
-    "helpTemplate": "ratio_table"
+    "helpTemplate": "ratio_table",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "16",
+        "14",
+        "15"
+      ],
+      "correctIndex": 2
+    }
   },
   {
     "id": "v2-medium-multiplication-explore-8-4",
@@ -9833,7 +9944,33 @@
       ],
       "guided": true
     },
-    "helpTemplate": "decimal_place_tenths"
+    "helpTemplate": "decimal_place_tenths",
+    "response": {
+      "kind": "choose",
+      "options": [
+        {
+          "en": "0 × 1 + 7 × 0.1 + 0 × 0.01",
+          "lv": "0 × 1 + 7 × 0,1 + 0 × 0,01",
+          "ru": "0 × 1 + 7 × 0,1 + 0 × 0,01"
+        },
+        {
+          "en": "0 × 1 + 6 × 0.1 + 0 × 0.01",
+          "lv": "0 × 1 + 6 × 0,1 + 0 × 0,01",
+          "ru": "0 × 1 + 6 × 0,1 + 0 × 0,01"
+        },
+        {
+          "en": "0 × 1 + 6 × 0.1 + 1 × 0.01",
+          "lv": "0 × 1 + 6 × 0,1 + 1 × 0,01",
+          "ru": "0 × 1 + 6 × 0,1 + 1 × 0,01"
+        }
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "Which groups show 0.6?",
+        "lv": "Kuras grupas rāda 0,6?",
+        "ru": "Какие группы показывают 0,6?"
+      }
+    }
   },
   {
     "id": "v2-medium-fractions-explore-7-3",
@@ -10008,7 +10145,33 @@
       ],
       "guided": true
     },
-    "helpTemplate": "decimal_place_build"
+    "helpTemplate": "decimal_place_build",
+    "response": {
+      "kind": "choose",
+      "options": [
+        {
+          "en": "0 × 1 + 4 × 0.1 + 5 × 0.01",
+          "lv": "0 × 1 + 4 × 0,1 + 5 × 0,01",
+          "ru": "0 × 1 + 4 × 0,1 + 5 × 0,01"
+        },
+        {
+          "en": "0 × 1 + 3 × 0.1 + 5 × 0.01",
+          "lv": "0 × 1 + 3 × 0,1 + 5 × 0,01",
+          "ru": "0 × 1 + 3 × 0,1 + 5 × 0,01"
+        },
+        {
+          "en": "0 × 1 + 3 × 0.1 + 6 × 0.01",
+          "lv": "0 × 1 + 3 × 0,1 + 6 × 0,01",
+          "ru": "0 × 1 + 3 × 0,1 + 6 × 0,01"
+        }
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "Which groups show 0.35?",
+        "lv": "Kuras grupas rāda 0,35?",
+        "ru": "Какие группы показывают 0,35?"
+      }
+    }
   },
   {
     "id": "v2-medium-fractions-explore-8-3",
@@ -10190,7 +10353,21 @@
       ],
       "guided": true
     },
-    "helpTemplate": "decimal_place_bundle"
+    "helpTemplate": "decimal_place_bundle",
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "0 × 1 + 4 × 0.1 + 6 × 0.01",
+        "lv": "0 × 1 + 4 × 0,1 + 6 × 0,01",
+        "ru": "0 × 1 + 4 × 0,1 + 6 × 0,01"
+      },
+      "isCorrect": true,
+      "prompt": {
+        "en": "Bundle ten 0.01 pieces into one 0.1. Which groups do you get?",
+        "lv": "Apvieno desmit 0,01 daļas vienā 0,1. Kādas grupas iegūsti?",
+        "ru": "Объедини десять частей по 0,01 в одну часть 0,1. Какие группы получатся?"
+      }
+    }
   },
   {
     "id": "v2-medium-fractions-explore-9-3",
@@ -11633,7 +11810,21 @@
       },
       "guided": true
     },
-    "helpTemplate": "coordinate_map"
+    "helpTemplate": "coordinate_map",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "(5; 1)",
+        "(4; 1)",
+        "(4; 0)"
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "Start at A (3; 1). Move 1 unit right. Where do you finish?",
+        "lv": "Sāc punktā A (3; 1). Pārvietojies par 1 vienību pa labi. Kur nonāc?",
+        "ru": "Начни в точке A (3; 1). Сдвинься на 1 единицу вправо. Где окажешься?"
+      }
+    }
   },
   {
     "id": "v2-medium-operations-explore-9-3",
@@ -11678,7 +11869,21 @@
       },
       "guided": true
     },
-    "helpTemplate": "coordinate_map"
+    "helpTemplate": "coordinate_map",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "(4; 4)",
+        "(3; 3)",
+        "(3; 4)"
+      ],
+      "correctIndex": 2,
+      "prompt": {
+        "en": "Start at A (2; 4). Move 1 unit right. Where do you finish?",
+        "lv": "Sāc punktā A (2; 4). Pārvietojies par 1 vienību pa labi. Kur nonāc?",
+        "ru": "Начни в точке A (2; 4). Сдвинься на 1 единицу вправо. Где окажешься?"
+      }
+    }
   },
   {
     "id": "v2-medium-operations-explore-9-4",
@@ -11978,6 +12183,16 @@
       "role": "application",
       "representation": "objects",
       "reasoningSteps": 2
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "6 × 10 + 4 × 1",
+      "isCorrect": false,
+      "prompt": {
+        "en": "Calculate the shown operation. Which tens and ones make the result?",
+        "lv": "Aprēķini parādīto darbību. Kuri desmiti un vieni veido rezultātu?",
+        "ru": "Вычисли показанное действие. Какие десятки и единицы составляют результат?"
+      }
     }
   },
   {
@@ -13131,7 +13346,17 @@
       "c": 24,
       "guided": false
     },
-    "helpTemplate": "equation_board"
+    "helpTemplate": "equation_board",
+    "response": {
+      "kind": "judge",
+      "proposed": "9",
+      "isCorrect": false,
+      "prompt": {
+        "en": "What value of x balances this equation?",
+        "lv": "Kāda x vērtība līdzsvaro šo vienādojumu?",
+        "ru": "Какое значение x уравновешивает это уравнение?"
+      }
+    }
   },
   {
     "id": "v2-medium-addition-lesson-8-boss-1",
@@ -13168,7 +13393,21 @@
       "c": 7,
       "guided": false
     },
-    "helpTemplate": "equation_board"
+    "helpTemplate": "equation_board",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "5",
+        "4",
+        "3"
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "What value of x balances this equation?",
+        "lv": "Kāda x vērtība līdzsvaro šo vienādojumu?",
+        "ru": "Какое значение x уравновешивает это уравнение?"
+      }
+    }
   },
   {
     "id": "v2-medium-addition-lesson-8-boss-2",
@@ -13205,7 +13444,17 @@
       "c": 28,
       "guided": false
     },
-    "helpTemplate": "equation_board"
+    "helpTemplate": "equation_board",
+    "response": {
+      "kind": "judge",
+      "proposed": "6",
+      "isCorrect": false,
+      "prompt": {
+        "en": "What value of x balances this equation?",
+        "lv": "Kāda x vērtība līdzsvaro šo vienādojumu?",
+        "ru": "Какое значение x уравновешивает это уравнение?"
+      }
+    }
   },
   {
     "id": "v2-medium-addition-lesson-8-boss-3",
@@ -13453,6 +13702,16 @@
       "role": "application",
       "representation": "objects",
       "reasoningSteps": 2
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "3 × 10 + 6 × 1",
+      "isCorrect": false,
+      "prompt": {
+        "en": "Calculate the shown operation. Which tens and ones make the result?",
+        "lv": "Aprēķini parādīto darbību. Kuri desmiti un vieni veido rezultātu?",
+        "ru": "Вычисли показанное действие. Какие десятки и единицы составляют результат?"
+      }
     }
   },
   {
@@ -14668,7 +14927,12 @@
       "max": 6,
       "guided": false
     },
-    "helpTemplate": "signed_line"
+    "helpTemplate": "signed_line",
+    "response": {
+      "kind": "judge",
+      "proposed": "-2",
+      "isCorrect": true
+    }
   },
   {
     "id": "v2-medium-subtraction-lesson-8-boss-1",
@@ -14707,7 +14971,16 @@
       "max": 6,
       "guided": false
     },
-    "helpTemplate": "signed_line"
+    "helpTemplate": "signed_line",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "-1",
+        "-2",
+        "-3"
+      ],
+      "correctIndex": 1
+    }
   },
   {
     "id": "v2-medium-subtraction-lesson-8-boss-2",
@@ -14746,7 +15019,12 @@
       "max": 6,
       "guided": false
     },
-    "helpTemplate": "signed_line"
+    "helpTemplate": "signed_line",
+    "response": {
+      "kind": "judge",
+      "proposed": "0",
+      "isCorrect": false
+    }
   },
   {
     "id": "v2-medium-subtraction-lesson-8-boss-3",
@@ -16222,7 +16500,12 @@
       "targetA": 12,
       "guided": false
     },
-    "helpTemplate": "ratio_table"
+    "helpTemplate": "ratio_table",
+    "response": {
+      "kind": "judge",
+      "proposed": "20",
+      "isCorrect": true
+    }
   },
   {
     "id": "v2-medium-multiplication-lesson-8-boss-1",
@@ -16259,7 +16542,16 @@
       "targetA": 9,
       "guided": false
     },
-    "helpTemplate": "ratio_table"
+    "helpTemplate": "ratio_table",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "13",
+        "12",
+        "11"
+      ],
+      "correctIndex": 1
+    }
   },
   {
     "id": "v2-medium-multiplication-lesson-8-boss-2",
@@ -16296,7 +16588,12 @@
       "targetA": 4,
       "guided": false
     },
-    "helpTemplate": "ratio_table"
+    "helpTemplate": "ratio_table",
+    "response": {
+      "kind": "judge",
+      "proposed": "14",
+      "isCorrect": true
+    }
   },
   {
     "id": "v2-medium-multiplication-lesson-8-boss-3",
@@ -19568,7 +19865,33 @@
       ],
       "guided": false
     },
-    "helpTemplate": "decimal_place_build"
+    "helpTemplate": "decimal_place_build",
+    "response": {
+      "kind": "choose",
+      "options": [
+        {
+          "en": "1 × 1 + 7 × 0.1 + 3 × 0.01",
+          "lv": "1 × 1 + 7 × 0,1 + 3 × 0,01",
+          "ru": "1 × 1 + 7 × 0,1 + 3 × 0,01"
+        },
+        {
+          "en": "1 × 1 + 6 × 0.1 + 3 × 0.01",
+          "lv": "1 × 1 + 6 × 0,1 + 3 × 0,01",
+          "ru": "1 × 1 + 6 × 0,1 + 3 × 0,01"
+        },
+        {
+          "en": "1 × 1 + 6 × 0.1 + 4 × 0.01",
+          "lv": "1 × 1 + 6 × 0,1 + 4 × 0,01",
+          "ru": "1 × 1 + 6 × 0,1 + 4 × 0,01"
+        }
+      ],
+      "correctIndex": 1,
+      "prompt": {
+        "en": "Which groups show 1.63?",
+        "lv": "Kuras grupas rāda 1,63?",
+        "ru": "Какие группы показывают 1,63?"
+      }
+    }
   },
   {
     "id": "v2-medium-fractions-lesson-9-boss-1",
@@ -19703,7 +20026,33 @@
       ],
       "guided": false
     },
-    "helpTemplate": "decimal_place_build"
+    "helpTemplate": "decimal_place_build",
+    "response": {
+      "kind": "choose",
+      "options": [
+        {
+          "en": "1 × 1 + 0 × 0.1 + 9 × 0.01",
+          "lv": "1 × 1 + 0 × 0,1 + 9 × 0,01",
+          "ru": "1 × 1 + 0 × 0,1 + 9 × 0,01"
+        },
+        {
+          "en": "1 × 1 + 1 × 0.1 + 9 × 0.01",
+          "lv": "1 × 1 + 1 × 0,1 + 9 × 0,01",
+          "ru": "1 × 1 + 1 × 0,1 + 9 × 0,01"
+        },
+        {
+          "en": "1 × 1 + 0 × 0.1 + 10 × 0.01",
+          "lv": "1 × 1 + 0 × 0,1 + 10 × 0,01",
+          "ru": "1 × 1 + 0 × 0,1 + 10 × 0,01"
+        }
+      ],
+      "correctIndex": 0,
+      "prompt": {
+        "en": "Which groups show 1.09?",
+        "lv": "Kuras grupas rāda 1,09?",
+        "ru": "Какие группы показывают 1,09?"
+      }
+    }
   },
   {
     "id": "v2-medium-operations-lesson-1-challenge-1",
@@ -21048,7 +21397,12 @@
       },
       "guided": false
     },
-    "helpTemplate": "coordinate_map"
+    "helpTemplate": "coordinate_map",
+    "response": {
+      "kind": "judge",
+      "proposed": "(1; 5)",
+      "isCorrect": true
+    }
   },
   {
     "id": "v2-medium-operations-lesson-9-boss-1",
@@ -21093,7 +21447,16 @@
       },
       "guided": false
     },
-    "helpTemplate": "coordinate_map"
+    "helpTemplate": "coordinate_map",
+    "response": {
+      "kind": "choose",
+      "options": [
+        "(5; 1)",
+        "(4; 1)",
+        "(4; 0)"
+      ],
+      "correctIndex": 1
+    }
   },
   {
     "id": "v2-medium-operations-lesson-9-boss-2",
@@ -21138,7 +21501,12 @@
       },
       "guided": false
     },
-    "helpTemplate": "coordinate_map"
+    "helpTemplate": "coordinate_map",
+    "response": {
+      "kind": "judge",
+      "proposed": "(3; 4)",
+      "isCorrect": false
+    }
   },
   {
     "id": "v2-medium-operations-lesson-9-boss-3",
@@ -26522,6 +26890,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "02:10",
+      "format": "clock"
     }
   },
   {
@@ -26596,6 +26969,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "03:15",
+      "format": "clock"
     }
   },
   {
@@ -26744,6 +27122,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "05:25",
+      "format": "clock"
     }
   },
   {
@@ -26818,6 +27201,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "06:30",
+      "isCorrect": true
     }
   },
   {
@@ -26966,6 +27354,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "08:40",
+      "isCorrect": true
     }
   },
   {
@@ -27254,6 +27647,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "09:25",
+      "format": "clock"
     }
   },
   {
@@ -27324,6 +27722,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "10:35",
+      "format": "clock"
     }
   },
   {
@@ -27464,6 +27867,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "12:55",
+      "format": "clock"
     }
   },
   {
@@ -27534,6 +27942,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "02:10",
+      "isCorrect": true
     }
   },
   {
@@ -27674,6 +28087,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "03:30",
+      "isCorrect": true
     }
   },
   {
@@ -27954,6 +28372,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "70",
+      "format": "number"
     }
   },
   {
@@ -28024,6 +28447,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "15",
+      "format": "number"
     }
   },
   {
@@ -28164,6 +28592,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "25",
+      "format": "number"
     }
   },
   {
@@ -28234,6 +28667,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "30",
+      "isCorrect": true
     }
   },
   {
@@ -28374,6 +28812,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "38",
+      "isCorrect": false
     }
   },
   {
@@ -28654,6 +29097,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "35",
+      "format": "number"
     }
   },
   {
@@ -28724,6 +29172,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "40",
+      "format": "number"
     }
   },
   {
@@ -28864,6 +29317,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "50",
+      "format": "number"
     }
   },
   {
@@ -28934,6 +29392,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "53",
+      "isCorrect": false
     }
   },
   {
@@ -29074,6 +29537,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "65",
+      "isCorrect": true
     }
   },
   {
@@ -29354,6 +29822,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "05:20",
+      "format": "clock"
     }
   },
   {
@@ -29424,6 +29897,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "06:30",
+      "format": "clock"
     }
   },
   {
@@ -29564,6 +30042,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "07:50",
+      "format": "clock"
     }
   },
   {
@@ -29634,6 +30117,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "08:45",
+      "isCorrect": false
     }
   },
   {
@@ -29774,6 +30262,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "11:05",
+      "isCorrect": false
     }
   },
   {
@@ -30054,6 +30547,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "11:15",
+      "format": "clock"
     }
   },
   {
@@ -30124,6 +30622,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "12:25",
+      "format": "clock"
     }
   },
   {
@@ -30264,6 +30767,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "02:50",
+      "format": "clock"
     }
   },
   {
@@ -30334,6 +30842,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "04:05",
+      "isCorrect": false
     }
   },
   {
@@ -30474,6 +30987,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "06:25",
+      "isCorrect": false
     }
   },
   {
@@ -30754,6 +31272,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "05:25",
+      "format": "clock"
     }
   },
   {
@@ -30824,6 +31347,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "06:30",
+      "format": "clock"
     }
   },
   {
@@ -30964,6 +31492,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "08:40",
+      "format": "clock"
     }
   },
   {
@@ -31034,6 +31567,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "09:50",
+      "isCorrect": false
     }
   },
   {
@@ -31174,6 +31712,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "11:55",
+      "isCorrect": true
     }
   },
   {
@@ -31454,6 +31997,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "11:55",
+      "format": "clock"
     }
   },
   {
@@ -31524,6 +32072,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "01:05",
+      "format": "clock"
     }
   },
   {
@@ -31664,6 +32217,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "03:15",
+      "format": "clock"
     }
   },
   {
@@ -31734,6 +32292,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "04:20",
+      "isCorrect": true
     }
   },
   {
@@ -31874,6 +32437,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "06:35",
+      "isCorrect": false
     }
   },
   {
@@ -32154,6 +32722,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "40",
+      "format": "number"
     }
   },
   {
@@ -32224,6 +32797,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "45",
+      "format": "number"
     }
   },
   {
@@ -32364,6 +32942,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "55",
+      "format": "number"
     }
   },
   {
@@ -32434,6 +33017,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "60",
+      "isCorrect": true
     }
   },
   {
@@ -32574,6 +33162,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "70",
+      "isCorrect": true
     }
   },
   {
@@ -32854,6 +33447,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "65",
+      "format": "number"
     }
   },
   {
@@ -32924,6 +33522,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "70",
+      "format": "number"
     }
   },
   {
@@ -33064,6 +33667,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "20",
+      "format": "number"
     }
   },
   {
@@ -33134,6 +33742,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "25",
+      "isCorrect": true
     }
   },
   {
@@ -33274,6 +33887,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "34",
+      "isCorrect": false
     }
   },
   {
@@ -33574,6 +34192,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "6",
+      "format": "number"
     }
   },
   {
@@ -33654,6 +34277,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "14",
+      "format": "number"
     }
   },
   {
@@ -33814,6 +34442,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "12",
+      "format": "number"
     }
   },
   {
@@ -33894,6 +34527,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "10",
+      "isCorrect": true
     }
   },
   {
@@ -34054,6 +34692,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "11",
+      "isCorrect": false
     }
   },
   {
@@ -34378,6 +35021,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "8",
+      "format": "number"
     }
   },
   {
@@ -34460,6 +35108,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "12",
+      "format": "number"
     }
   },
   {
@@ -34624,6 +35277,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4",
+      "format": "number"
     }
   },
   {
@@ -34706,6 +35364,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "10",
+      "isCorrect": true
     }
   },
   {
@@ -34870,6 +35533,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "11",
+      "isCorrect": false
     }
   },
   {
@@ -35198,6 +35866,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "35",
+      "format": "number"
     }
   },
   {
@@ -35280,6 +35953,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "10",
+      "format": "number"
     }
   },
   {
@@ -35444,6 +36122,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "50",
+      "format": "number"
     }
   },
   {
@@ -35526,6 +36209,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "25",
+      "isCorrect": true
     }
   },
   {
@@ -35690,6 +36378,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "40",
+      "isCorrect": true
     }
   },
   {
@@ -36018,6 +36711,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "25",
+      "format": "number"
     }
   },
   {
@@ -36100,6 +36798,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "55",
+      "format": "number"
     }
   },
   {
@@ -36264,6 +36967,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "20",
+      "format": "number"
     }
   },
   {
@@ -36346,6 +37054,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "45",
+      "isCorrect": true
     }
   },
   {
@@ -36510,6 +37223,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "35",
+      "isCorrect": true
     }
   },
   {
@@ -36838,6 +37556,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "105",
+      "format": "number"
     }
   },
   {
@@ -36920,6 +37643,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "50",
+      "format": "number"
     }
   },
   {
@@ -37084,6 +37812,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "80",
+      "format": "number"
     }
   },
   {
@@ -37166,6 +37899,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "94",
+      "isCorrect": false
     }
   },
   {
@@ -37330,6 +38068,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "45",
+      "isCorrect": true
     }
   },
   {
@@ -37658,6 +38401,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "70",
+      "format": "number"
     }
   },
   {
@@ -37740,6 +38488,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "85",
+      "format": "number"
     }
   },
   {
@@ -37904,6 +38657,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "115",
+      "format": "number"
     }
   },
   {
@@ -37986,6 +38744,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "52",
+      "isCorrect": false
     }
   },
   {
@@ -38150,6 +38913,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "80",
+      "isCorrect": true
     }
   },
   {
@@ -38478,6 +39246,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "15",
+      "format": "number"
     }
   },
   {
@@ -38560,6 +39333,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "15",
+      "format": "number"
     }
   },
   {
@@ -38724,6 +39502,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "30",
+      "format": "number"
     }
   },
   {
@@ -38806,6 +39589,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "30",
+      "isCorrect": true
     }
   },
   {
@@ -38970,6 +39758,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "30",
+      "isCorrect": true
     }
   },
   {
@@ -39298,6 +40091,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "20",
+      "format": "number"
     }
   },
   {
@@ -39380,6 +40178,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "20",
+      "format": "number"
     }
   },
   {
@@ -39544,6 +40347,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "20",
+      "format": "number"
     }
   },
   {
@@ -39626,6 +40434,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "20",
+      "isCorrect": true
     }
   },
   {
@@ -39790,6 +40603,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "20",
+      "isCorrect": true
     }
   },
   {
@@ -40122,6 +40940,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "20",
+      "format": "number"
     }
   },
   {
@@ -40206,6 +41029,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "45",
+      "format": "number"
     }
   },
   {
@@ -40374,6 +41202,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "15",
+      "format": "number"
     }
   },
   {
@@ -40458,6 +41291,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "35",
+      "isCorrect": true
     }
   },
   {
@@ -40626,6 +41464,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "28",
+      "isCorrect": false
     }
   },
   {
@@ -40962,6 +41805,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "25",
+      "format": "number"
     }
   },
   {
@@ -41046,6 +41894,11 @@
       "role": "practice",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "15",
+      "format": "number"
     }
   },
   {
@@ -41214,6 +42067,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "15",
+      "format": "number"
     }
   },
   {
@@ -41298,6 +42156,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "30",
+      "isCorrect": true
     }
   },
   {
@@ -41466,6 +42329,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "5",
+      "isCorrect": true
     }
   },
   {
@@ -41793,6 +42661,11 @@
       "role": "practice",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "6",
+      "format": "number"
     }
   },
   {
@@ -41873,6 +42746,11 @@
       "role": "practice",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "7",
+      "format": "number"
     }
   },
   {
@@ -42032,6 +42910,11 @@
       "role": "application",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "9",
+      "format": "number"
     }
   },
   {
@@ -42112,6 +42995,11 @@
       "role": "application",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "9",
+      "isCorrect": false
     }
   },
   {
@@ -42270,6 +43158,11 @@
       "role": "application",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "4",
+      "isCorrect": true
     }
   },
   {
@@ -42592,6 +43485,11 @@
       "role": "practice",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "6",
+      "format": "number"
     }
   },
   {
@@ -42674,6 +43572,11 @@
       "role": "practice",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "12",
+      "format": "number"
     }
   },
   {
@@ -42837,6 +43740,11 @@
       "role": "application",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "14",
+      "format": "number"
     }
   },
   {
@@ -42918,6 +43826,11 @@
       "role": "application",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "7",
+      "isCorrect": true
     }
   },
   {
@@ -43082,6 +43995,11 @@
       "role": "application",
       "representation": "shapes",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "16",
+      "isCorrect": false
     }
   },
   {
@@ -43408,6 +44326,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3",
+      "format": "number"
     }
   },
   {
@@ -43490,6 +44413,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "8",
+      "format": "number"
     }
   },
   {
@@ -43654,6 +44582,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "18",
+      "format": "number"
     }
   },
   {
@@ -43736,6 +44669,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "23",
+      "isCorrect": true
     }
   },
   {
@@ -43900,6 +44838,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "7",
+      "isCorrect": true
     }
   },
   {
@@ -44228,6 +45171,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "15",
+      "format": "number"
     }
   },
   {
@@ -44310,6 +45258,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "20",
+      "format": "number"
     }
   },
   {
@@ -44474,6 +45427,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4",
+      "format": "number"
     }
   },
   {
@@ -44556,6 +45514,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "9",
+      "isCorrect": true
     }
   },
   {
@@ -44720,6 +45683,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "4",
+      "isCorrect": false
     }
   },
   {
@@ -45048,6 +46016,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "16",
+      "format": "number"
     }
   },
   {
@@ -45130,6 +46103,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "25",
+      "format": "number"
     }
   },
   {
@@ -45294,6 +46272,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "23",
+      "format": "number"
     }
   },
   {
@@ -45376,6 +46359,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "21",
+      "isCorrect": false
     }
   },
   {
@@ -45540,6 +46528,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "5",
+      "isCorrect": true
     }
   },
   {
@@ -45868,6 +46861,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "14",
+      "format": "number"
     }
   },
   {
@@ -45950,6 +46948,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "13",
+      "format": "number"
     }
   },
   {
@@ -46114,6 +47117,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "11",
+      "format": "number"
     }
   },
   {
@@ -46196,6 +47204,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "12",
+      "isCorrect": false
     }
   },
   {
@@ -46360,6 +47373,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "12",
+      "isCorrect": false
     }
   },
   {
@@ -46688,6 +47706,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "17",
+      "format": "number"
     }
   },
   {
@@ -46770,6 +47793,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "22",
+      "format": "number"
     }
   },
   {
@@ -46934,6 +47962,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "8",
+      "format": "number"
     }
   },
   {
@@ -47016,6 +48049,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "22",
+      "isCorrect": false
     }
   },
   {
@@ -47180,6 +48218,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "23",
+      "isCorrect": true
     }
   },
   {
@@ -47508,6 +48551,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4",
+      "format": "number"
     }
   },
   {
@@ -47590,6 +48638,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "9",
+      "format": "number"
     }
   },
   {
@@ -47754,6 +48807,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "19",
+      "format": "number"
     }
   },
   {
@@ -47836,6 +48894,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "24",
+      "isCorrect": true
     }
   },
   {
@@ -48000,6 +49063,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "7",
+      "isCorrect": true
     }
   },
   {
@@ -48328,6 +49396,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "13",
+      "format": "number"
     }
   },
   {
@@ -48410,6 +49483,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "8",
+      "format": "number"
     }
   },
   {
@@ -48574,6 +49652,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "22",
+      "format": "number"
     }
   },
   {
@@ -48656,6 +49739,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "17",
+      "isCorrect": true
     }
   },
   {
@@ -48820,6 +49908,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "7",
+      "isCorrect": true
     }
   },
   {
@@ -49148,6 +50241,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "5",
+      "format": "number"
     }
   },
   {
@@ -49230,6 +50328,11 @@
       "role": "practice",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "24",
+      "format": "number"
     }
   },
   {
@@ -49394,6 +50497,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "14",
+      "format": "number"
     }
   },
   {
@@ -49476,6 +50584,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "18",
+      "isCorrect": false
     }
   },
   {
@@ -49640,6 +50753,11 @@
       "role": "application",
       "representation": "grid",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "10",
+      "isCorrect": false
     }
   },
   {
@@ -50012,6 +51130,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "2",
+      "format": "number"
     }
   },
   {
@@ -50120,6 +51243,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "2.25",
+      "format": "number"
     }
   },
   {
@@ -50336,6 +51464,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "2.75",
+      "format": "number"
     }
   },
   {
@@ -50436,6 +51569,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "3",
+      "isCorrect": true
     }
   },
   {
@@ -50660,6 +51798,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "3.5",
+        "lv": "3,5",
+        "ru": "3,5"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -51092,6 +52239,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3.5",
+      "format": "number"
     }
   },
   {
@@ -51202,6 +52354,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3.75",
+      "format": "number"
     }
   },
   {
@@ -51418,6 +52575,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4.25",
+      "format": "number"
     }
   },
   {
@@ -51532,6 +52694,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "4.25",
+        "lv": "4,25",
+        "ru": "4,25"
+      },
+      "isCorrect": false
     }
   },
   {
@@ -51760,6 +52931,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "2.25",
+        "lv": "2,25",
+        "ru": "2,25"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -52200,6 +53380,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "5",
+      "format": "number"
     }
   },
   {
@@ -52310,6 +53495,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "2.5",
+      "format": "number"
     }
   },
   {
@@ -52522,6 +53712,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3",
+      "format": "number"
     }
   },
   {
@@ -52636,6 +53831,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "3.25",
+        "lv": "3,25",
+        "ru": "3,25"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -52864,6 +54068,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "3.75",
+        "lv": "3,75",
+        "ru": "3,75"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -53296,6 +54509,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3.75",
+      "format": "number"
     }
   },
   {
@@ -53398,6 +54616,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4",
+      "format": "number"
     }
   },
   {
@@ -53626,6 +54849,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4.5",
+      "format": "number"
     }
   },
   {
@@ -53740,6 +54968,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "4.75",
+        "lv": "4,75",
+        "ru": "4,75"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -53952,6 +55189,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "5",
+      "isCorrect": false
     }
   },
   {
@@ -54376,6 +55618,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "19.75",
+      "format": "number"
     }
   },
   {
@@ -54490,6 +55737,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "24.5",
+      "format": "number"
     }
   },
   {
@@ -54710,6 +55962,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "16.75",
+      "format": "number"
     }
   },
   {
@@ -54824,6 +56081,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "21.25",
+        "lv": "21,25",
+        "ru": "21,25"
+      },
+      "isCorrect": false
     }
   },
   {
@@ -55036,6 +56302,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "32",
+      "isCorrect": false
     }
   },
   {
@@ -55468,6 +56739,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "26",
+      "format": "number"
     }
   },
   {
@@ -55578,6 +56854,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "30.75",
+      "format": "number"
     }
   },
   {
@@ -55802,6 +57083,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "20.25",
+      "format": "number"
     }
   },
   {
@@ -55904,6 +57190,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "27",
+      "isCorrect": false
     }
   },
   {
@@ -56124,6 +57415,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "14.5",
+        "lv": "14,5",
+        "ru": "14,5"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -56544,6 +57844,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3.5",
+      "format": "number"
     }
   },
   {
@@ -56640,6 +57945,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4",
+      "format": "number"
     }
   },
   {
@@ -56844,6 +58154,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "1.5",
+      "format": "number"
     }
   },
   {
@@ -56940,6 +58255,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "2",
+      "isCorrect": true
     }
   },
   {
@@ -57140,6 +58460,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "2",
+      "isCorrect": false
     }
   },
   {
@@ -57540,6 +58865,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "1.5",
+      "format": "number"
     }
   },
   {
@@ -57636,6 +58966,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "2",
+      "format": "number"
     }
   },
   {
@@ -57836,6 +59171,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3",
+      "format": "number"
     }
   },
   {
@@ -57944,6 +59284,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "3.25",
+        "lv": "3,25",
+        "ru": "3,25"
+      },
+      "isCorrect": false
     }
   },
   {
@@ -58136,6 +59485,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "3",
+      "isCorrect": false
     }
   },
   {
@@ -58552,6 +59906,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "11.25",
+      "format": "number"
     }
   },
   {
@@ -58662,6 +60021,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "6.75",
+      "format": "number"
     }
   },
   {
@@ -58882,6 +60246,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "14.25",
+      "format": "number"
     }
   },
   {
@@ -58996,6 +60365,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "8.75",
+        "lv": "8,75",
+        "ru": "8,75"
+      },
+      "isCorrect": false
     }
   },
   {
@@ -59220,6 +60598,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "16.75",
+        "lv": "16,75",
+        "ru": "16,75"
+      },
+      "isCorrect": false
     }
   },
   {
@@ -59644,6 +61031,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "12.75",
+      "format": "number"
     }
   },
   {
@@ -59754,6 +61146,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "17.5",
+      "format": "number"
     }
   },
   {
@@ -59978,6 +61375,11 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "6.25",
+      "format": "number"
     }
   },
   {
@@ -60092,6 +61494,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "8.75",
+        "lv": "8,75",
+        "ru": "8,75"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -60316,6 +61727,15 @@
       "role": "application",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "8.75",
+        "lv": "8,75",
+        "ru": "8,75"
+      },
+      "isCorrect": false
     }
   },
   {
@@ -60740,6 +62160,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "0.5",
+      "format": "number"
     }
   },
   {
@@ -60838,6 +62263,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "0.75",
+      "format": "number"
     }
   },
   {
@@ -61018,6 +62448,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "1.25",
+      "format": "number"
     }
   },
   {
@@ -61112,6 +62547,15 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "1.25",
+        "lv": "1,25",
+        "ru": "1,25"
+      },
+      "isCorrect": false
     }
   },
   {
@@ -61292,6 +62736,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "3",
+      "isCorrect": false
     }
   },
   {
@@ -61672,6 +63121,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4.75",
+      "format": "number"
     }
   },
   {
@@ -61760,6 +63214,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "5",
+      "format": "number"
     }
   },
   {
@@ -61948,6 +63407,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3",
+      "format": "number"
     }
   },
   {
@@ -62044,6 +63508,15 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": {
+        "en": "3.25",
+        "lv": "3,25",
+        "ru": "3,25"
+      },
+      "isCorrect": true
     }
   },
   {
@@ -62236,6 +63709,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "4",
+      "isCorrect": false
     }
   },
   {
@@ -62604,6 +64082,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "1750",
+      "format": "number"
     }
   },
   {
@@ -62696,6 +64179,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "1875",
+      "format": "number"
     }
   },
   {
@@ -62880,6 +64368,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "2125",
+      "format": "number"
     }
   },
   {
@@ -62972,6 +64465,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "2251",
+      "isCorrect": false
     }
   },
   {
@@ -63156,6 +64654,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "1749",
+      "isCorrect": false
     }
   },
   {
@@ -63524,6 +65027,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "875",
+      "format": "number"
     }
   },
   {
@@ -63616,6 +65124,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "1000",
+      "format": "number"
     }
   },
   {
@@ -63800,6 +65313,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "1250",
+      "format": "number"
     }
   },
   {
@@ -63892,6 +65410,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "624",
+      "isCorrect": false
     }
   },
   {
@@ -64076,6 +65599,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "875",
+      "isCorrect": true
     }
   },
   {
@@ -64436,6 +65964,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "450",
+      "format": "number"
     }
   },
   {
@@ -64524,6 +66057,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "325",
+      "format": "number"
     }
   },
   {
@@ -64700,6 +66238,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "375",
+      "format": "number"
     }
   },
   {
@@ -64788,6 +66331,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "249",
+      "isCorrect": false
     }
   },
   {
@@ -64964,6 +66512,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "500",
+      "isCorrect": true
     }
   },
   {
@@ -65316,6 +66869,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "225",
+      "format": "number"
     }
   },
   {
@@ -65404,6 +66962,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "600",
+      "format": "number"
     }
   },
   {
@@ -65580,6 +67143,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "450",
+      "format": "number"
     }
   },
   {
@@ -65668,6 +67236,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "327",
+      "isCorrect": false
     }
   },
   {
@@ -65844,6 +67417,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "125",
+      "isCorrect": true
     }
   },
   {
@@ -66200,6 +67778,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "7",
+      "format": "number"
     }
   },
   {
@@ -66290,6 +67873,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "8",
+      "format": "number"
     }
   },
   {
@@ -66470,6 +68058,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3",
+      "format": "number"
     }
   },
   {
@@ -66560,6 +68153,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "2",
+      "isCorrect": false
     }
   },
   {
@@ -66740,6 +68338,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "5",
+      "isCorrect": false
     }
   },
   {
@@ -67100,6 +68703,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "3",
+      "format": "number"
     }
   },
   {
@@ -67190,6 +68798,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "4",
+      "format": "number"
     }
   },
   {
@@ -67370,6 +68983,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "6",
+      "format": "number"
     }
   },
   {
@@ -67460,6 +69078,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "6",
+      "isCorrect": false
     }
   },
   {
@@ -67640,6 +69263,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "7",
+      "isCorrect": false
     }
   },
   {
@@ -68000,6 +69628,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "10",
+      "format": "number"
     }
   },
   {
@@ -68090,6 +69723,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "11",
+      "format": "number"
     }
   },
   {
@@ -68270,6 +69908,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "13",
+      "format": "number"
     }
   },
   {
@@ -68360,6 +70003,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "16",
+      "isCorrect": false
     }
   },
   {
@@ -68540,6 +70188,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "14",
+      "isCorrect": false
     }
   },
   {
@@ -68900,6 +70553,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "5",
+      "format": "number"
     }
   },
   {
@@ -68990,6 +70648,11 @@
       "role": "practice",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "5",
+      "format": "number"
     }
   },
   {
@@ -69170,6 +70833,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "6",
+      "format": "number"
     }
   },
   {
@@ -69260,6 +70928,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "7",
+      "isCorrect": true
     }
   },
   {
@@ -69440,6 +71113,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "9",
+      "isCorrect": false
     }
   },
   {
@@ -69806,6 +71484,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "5",
+      "format": "number"
     }
   },
   {
@@ -69882,6 +71565,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "10:35",
+      "format": "clock"
     }
   },
   {
@@ -70057,6 +71745,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "750",
+      "format": "number"
     }
   },
   {
@@ -70143,6 +71836,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "5",
+      "isCorrect": false
     }
   },
   {
@@ -70319,6 +72017,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "11:00",
+      "isCorrect": false
     }
   },
   {
@@ -70691,6 +72394,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "7",
+      "format": "number"
     }
   },
   {
@@ -70769,6 +72477,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "11:35",
+      "format": "clock"
     }
   },
   {
@@ -70948,6 +72661,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "875",
+      "format": "number"
     }
   },
   {
@@ -71036,6 +72754,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "5",
+      "isCorrect": false
     }
   },
   {
@@ -71216,6 +72939,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "11:00",
+      "isCorrect": true
     }
   },
   {
@@ -71592,6 +73320,11 @@
       "role": "practice",
       "representation": "money",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "9",
+      "format": "number"
     }
   },
   {
@@ -71670,6 +73403,11 @@
       "role": "practice",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "12:35",
+      "format": "clock"
     }
   },
   {
@@ -71849,6 +73587,11 @@
       "role": "application",
       "representation": "capacity",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "write",
+      "answer": "1000",
+      "format": "number"
     }
   },
   {
@@ -71937,6 +73680,11 @@
       "role": "application",
       "representation": "bars",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "4",
+      "isCorrect": true
     }
   },
   {
@@ -72117,6 +73865,11 @@
       "role": "application",
       "representation": "clock",
       "reasoningSteps": 1
+    },
+    "response": {
+      "kind": "judge",
+      "proposed": "12:30",
+      "isCorrect": false
     }
   },
   {

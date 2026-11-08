@@ -1,8 +1,0 @@
-{
-  "id": "h19",
-  "collection": "hard",
-  "builder": "hourglass",
-  "meshObjects": 11,
-  "samples": 48,
-  "renderSize": 640
-}

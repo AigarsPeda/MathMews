@@ -1,8 +1,0 @@
-{
-  "id": "h06",
-  "collection": "hard",
-  "builder": "molecule",
-  "meshObjects": 20,
-  "samples": 48,
-  "renderSize": 640
-}

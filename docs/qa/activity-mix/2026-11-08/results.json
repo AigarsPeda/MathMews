@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-08",
+  "levelsAudited": 339,
+  "puzzlesAudited": 3390,
+  "levelsWithAlternateResponses": 226,
+  "alternateResponses": 987,
+  "activityContract": {
+    "minimumFormats": 3,
+    "maximumOfOneFormat": 5,
+    "maximumConsecutive": 2,
+    "violations": 0
+  },
+  "locales": [
+    "en",
+    "lv",
+    "ru"
+  ],
+  "checks": {
+    "puzzleSuite": "passed",
+    "independentResponseSolutions": "passed in all three languages",
+    "typecheck": "passed",
+    "generatedContent": "passed",
+    "repetitionAudit": "passed"
+  },
+  "native": {
+    "device": "iPhone 15 simulator",
+    "os": "iOS 27.2",
+    "cases": 27,
+    "finalWordingAndLayoutRetestCases": 6,
+    "widths": [
+      393,
+      320
+    ],
+    "fixture": "Production response components and grading with disposable drafts. Shared PlaySession retry, lives, rewards and reset are checked separately in check-puzzle-experience.mjs.",
+    "fullResultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-NbK2qi/result.xcresult",
+    "finalResultBundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-FPtWWB/result.xcresult"
+  },
+  "sourceSha256": {
+    "components/puzzle/PuzzleResponseTask.tsx": "6b9d7b0295967a13db62851dec736948acd567581b611f7d6c402e23befc92cb",
+    "scripts/puzzles/activity-mix.mjs": "0acad96cb21e18be9223af2f4a3fc218887e3cd8b0b5d59cc5c7cf1417c09d13",
+    "utils/puzzle-response.ts": "fb640cc374e984c45cf917f4a9baf040e22fd418e9312421f4f25a90dd61dbdc",
+    "scripts/native/activity-mix/fixture.tsx": "7c8343bac4cee205664caa31cc5b2b2911b072a9f42b905c3cfee1d8a8bf8546"
+  },
+  "captures": [
+    "decimal-entry-en.png",
+    "decimal-groups-ru-320.png",
+    "equation-choice-ru-320.png",
+    "judge-answer-ru-320.png",
+    "number-entry-en.png",
+    "place-value-ru-320.png",
+    "time-entry-en.png"
+  ]
+}

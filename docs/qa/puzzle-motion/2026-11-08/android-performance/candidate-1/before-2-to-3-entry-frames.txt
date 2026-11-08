@@ -1,0 +1,135 @@
+Applications Graphics Acceleration Info:
+Uptime: 740222 Realtime: 740222
+
+** Graphics info for pid 5912 [com.mathmews.app] **
+
+Stats since: 730980851056ns
+Total frames rendered: 28
+Janky frames: 8 (28.57%)
+Janky frames (legacy): 20 (71.43%)
+50th percentile: 22ms
+90th percentile: 61ms
+95th percentile: 117ms
+99th percentile: 150ms
+Number Missed Vsync: 1
+Number High input latency: 34
+Number Slow UI thread: 4
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 6
+Number Frame deadline missed: 8
+Number Frame deadline missed (legacy): 5
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=1 9ms=1 10ms=1 11ms=0 12ms=0 13ms=1 14ms=0 15ms=1 16ms=1 17ms=2 18ms=0 19ms=1 20ms=2 21ms=1 22ms=3 23ms=2 24ms=0 25ms=1 26ms=3 27ms=1 28ms=0 29ms=0 30ms=0 31ms=0 32ms=1 34ms=1 36ms=0 38ms=0 40ms=0 42ms=0 44ms=0 46ms=0 48ms=0 53ms=1 57ms=0 61ms=1 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=1 121ms=0 125ms=0 129ms=0 133ms=0 150ms=1 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+50th gpu percentile: 15ms
+90th gpu percentile: 4950ms
+95th gpu percentile: 4950ms
+99th gpu percentile: 4950ms
+GPU HISTOGRAM: 1ms=0 2ms=1 3ms=1 4ms=0 5ms=4 6ms=1 7ms=0 8ms=1 9ms=2 10ms=2 11ms=0 12ms=0 13ms=0 14ms=0 15ms=3 16ms=1 17ms=2 18ms=1 19ms=1 20ms=3 21ms=1 22ms=1 23ms=0 24ms=0 25ms=0 4950ms=3
+
+Pipeline=Skia (OpenGL)
+Memory policy:
+  Max surface area: 2617920
+  Max resource usage: 125.66MB (x48)
+  Background retention: 50% (altUiHidden = true)
+  GPU Context timeout: 10
+Contexts: 2 (stopped = 1)
+CPU Caches:
+  Glyph Cache: 485.66 KB (1 entry)
+  Glyph Count: 74 
+Total CPU memory usage:
+  497312 bytes, 485.66 KB (0.00 bytes is purgeable)
+GPU Caches:
+  Image:
+    Texture: 1.50 MB (6 entries)
+  Scratch:
+    RenderTarget: 7.19 MB (3 entries)
+    Texture: 2.00 MB (4 entries)
+    Buffer Object: 174.00 KB (5 entries)
+  Other:
+    Other: 45.91 KB (1 entry)
+    Buffer Object: 26.50 KB (5 entries)
+    StencilAttachment: 768.00 KB (2 entries)
+Layer Info:
+    GlLayer size 1080x769
+    GlLayer size 630x630
+  Layers Total         4794.61 KB (numLayers = 2)
+Total GPU memory usage:
+  12245412 bytes, 11.68 MB (8.31 MB is purgeable)
+TextureView: 1080x769
+TextureView: 630x630
+
+GraphicBufferAllocator buffers:
+            Handle |         Size |     W (Stride) x H | Layers |   Format |      Usage | Requestor
+0xb4000074d7df1d60 |      unknown | 1080 (   0) x 2424 |      1 |        1 | 0x     b00 | VRI[MainActivity]#0(BLAST Consumer)0
+0xb4000074d7df24d0 |      unknown | 1080 (   0) x 2424 |      1 |        1 | 0x     b00 | VRI[MainActivity]#0(BLAST Consumer)0
+0xb4000074d7df3d50 |      unknown | 1080 (   0) x 2424 |      1 |        1 | 0x     b00 | VRI[MainActivity]#0(BLAST Consumer)0
+0xb4000074d7e37200 |      unknown |  630 (   0) x  630 |      1 |        1 | 0x     300 | SurfaceTexture-0-5912-14
+0xb4000074d7e61e40 |      unknown |  630 (   0) x  630 |      1 |        1 | 0x     300 | SurfaceTexture-0-5912-14
+0xb4000074d7e64fb0 |      unknown | 1080 (   0) x  769 |      1 |        1 | 0x     300 | SurfaceTexture-0-5912-3
+0xb4000074d7e68cf0 |      unknown | 1080 (   0) x  769 |      1 |        1 | 0x     300 | SurfaceTexture-0-5912-3
+0xb4000074d7e8ec30 |      unknown |  630 (   0) x  630 |      1 |        1 | 0x     300 | SurfaceTexture-0-5912-14
+Total allocated by GraphicBufferAllocator (estimate): 0.00 KB
+Imported gralloc buffers:
++ name:SurfaceTexture-0-5912-14, id:326, size:1550.70KiB, w/h:630x630, usage: 0x300, req fmt:1, fourcc/mod:875708993/0, dataspace: 0x0, compressed: false
++ name:SurfaceTexture-0-5912-14, id:325, size:1550.70KiB, w/h:630x630, usage: 0x300, req fmt:1, fourcc/mod:875708993/0, dataspace: 0x0, compressed: false
++ name:SurfaceTexture-0-5912-14, id:324, size:1550.70KiB, w/h:630x630, usage: 0x300, req fmt:1, fourcc/mod:875708993/0, dataspace: 0x0, compressed: false
++ name:SurfaceTexture-0-5912-3, id:272, size:3244.53KiB, w/h:1080x769, usage: 0x300, req fmt:1, fourcc/mod:875708993/0, dataspace: 0x0, compressed: false
++ name:SurfaceTexture-0-5912-3, id:271, size:3244.53KiB, w/h:1080x769, usage: 0x300, req fmt:1, fourcc/mod:875708993/0, dataspace: 0x0, compressed: false
++ name:VRI[MainActivity]#0(BLAST Consumer)0, id:257, size:10226.56KiB, w/h:1080x2424, usage: 0xb00, req fmt:1, fourcc/mod:875708993/0, dataspace: 0x8810000, compressed: false
++ name:VRI[MainActivity]#0(BLAST Consumer)0, id:256, size:10226.56KiB, w/h:1080x2424, usage: 0xb00, req fmt:1, fourcc/mod:875708993/0, dataspace: 0x8810000, compressed: false
++ name:VRI[MainActivity]#0(BLAST Consumer)0, id:255, size:10226.56KiB, w/h:1080x2424, usage: 0xb00, req fmt:1, fourcc/mod:875708993/0, dataspace: 0x8810000, compressed: false
+Total imported by gralloc: 41820.86KiB
+
+Profile data in ms:
+
+	com.mathmews.app/com.mathmews.app.MainActivity/android.view.ViewRootImpl@fbc8a2d (visibility=0)
+Window: com.mathmews.app/com.mathmews.app.MainActivity
+Stats since: 730980218598ns
+Total frames rendered: 12
+Janky frames: 4 (33.33%)
+Janky frames (legacy): 10 (83.33%)
+50th percentile: 26ms
+90th percentile: 117ms
+95th percentile: 150ms
+99th percentile: 150ms
+Number Missed Vsync: 1
+Number High input latency: 16
+Number Slow UI thread: 2
+Number Slow bitmap uploads: 0
+Number Slow issue draw commands: 3
+Number Frame deadline missed: 4
+Number Frame deadline missed (legacy): 2
+HISTOGRAM: 5ms=0 6ms=0 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=1 14ms=0 15ms=0 16ms=1 17ms=0 18ms=0 19ms=1 20ms=1 21ms=0 22ms=1 23ms=1 24ms=0 25ms=0 26ms=3 27ms=0 28ms=0 29ms=0 30ms=0 31ms=0 32ms=1 34ms=0 36ms=0 38ms=0 40ms=0 42ms=0 44ms=0 46ms=0 48ms=0 53ms=0 57ms=0 61ms=0 65ms=0 69ms=0 73ms=0 77ms=0 81ms=0 85ms=0 89ms=0 93ms=0 97ms=0 101ms=0 105ms=0 109ms=0 113ms=0 117ms=1 121ms=0 125ms=0 129ms=0 133ms=0 150ms=1 200ms=0 250ms=0 300ms=0 350ms=0 400ms=0 450ms=0 500ms=0 550ms=0 600ms=0 650ms=0 700ms=0 750ms=0 800ms=0 850ms=0 900ms=0 950ms=0 1000ms=0 1050ms=0 1100ms=0 1150ms=0 1200ms=0 1250ms=0 1300ms=0 1350ms=0 1400ms=0 1450ms=0 1500ms=0 1550ms=0 1600ms=0 1650ms=0 1700ms=0 1750ms=0 1800ms=0 1850ms=0 1900ms=0 1950ms=0 2000ms=0 2050ms=0 2100ms=0 2150ms=0 2200ms=0 2250ms=0 2300ms=0 2350ms=0 2400ms=0 2450ms=0 2500ms=0 2550ms=0 2600ms=0 2650ms=0 2700ms=0 2750ms=0 2800ms=0 2850ms=0 2900ms=0 2950ms=0 3000ms=0 3050ms=0 3100ms=0 3150ms=0 3200ms=0 3250ms=0 3300ms=0 3350ms=0 3400ms=0 3450ms=0 3500ms=0 3550ms=0 3600ms=0 3650ms=0 3700ms=0 3750ms=0 3800ms=0 3850ms=0 3900ms=0 3950ms=0 4000ms=0 4050ms=0 4100ms=0 4150ms=0 4200ms=0 4250ms=0 4300ms=0 4350ms=0 4400ms=0 4450ms=0 4500ms=0 4550ms=0 4600ms=0 4650ms=0 4700ms=0 4750ms=0 4800ms=0 4850ms=0 4900ms=0 4950ms=0
+50th gpu percentile: 17ms
+90th gpu percentile: 21ms
+95th gpu percentile: 4950ms
+99th gpu percentile: 4950ms
+GPU HISTOGRAM: 1ms=0 2ms=1 3ms=0 4ms=0 5ms=2 6ms=1 7ms=0 8ms=0 9ms=0 10ms=0 11ms=0 12ms=0 13ms=0 14ms=0 15ms=2 16ms=0 17ms=2 18ms=0 19ms=0 20ms=2 21ms=1 22ms=0 23ms=0 24ms=0 25ms=0 4950ms=1
+
+
+
+---PROFILEDATA---
+Flags,FrameTimelineVsyncId,IntendedVsync,Vsync,InputEventId,HandleInputStart,AnimationStart,PerformTraversalsStart,DrawStart,FrameDeadline,FrameStartTime,FrameInterval,WorkloadTarget,SyncQueued,SyncStart,IssueDrawCommandsStart,SwapBuffers,FrameCompleted,DequeueBufferDuration,QueueBufferDuration,GpuCompleted,SwapBuffersCompleted,DisplayPresentTime,CommandSubmissionCompleted,
+0,49792,731248080183,731248080183,0,731249705473,731249705889,731250803764,731250886556,731264746849,731249703181,16666666,16666666,731251029556,731254858598,731254955931,731261153931,731265190514,2375,326042,731265190514,731263867056,0,731261153931,
+0,55592,738181413239,738181413239,0,738185668893,738185669559,738257437143,738257541684,738198079905,738185665809,16666666,16666666,738277006060,738277685351,738277921101,738292971935,738298649185,1833,135000,738298649185,738294764976,0,738292971935,
+0,55613,738214746571,738331413233,0,738345671101,738345671893,738346430643,738346480185,738331413233,738345386851,16666666,16666666,738346574560,738346592768,738346661185,738348205935,738365145351,2459,150583,738365145351,738349125185,0,738348205935,
+0,55708,738348079899,738348079899,0,738354572976,738354573351,738364752268,738364842185,738398079897,738354570643,16666666,16666666,738366521560,738367425768,738368907768,738370495643,738375175351,2208,108250,738375175351,738371099851,0,738370495643,
+0,55723,738364746565,738364746565,0,738367818310,738367818435,738368679726,738368721310,738414746563,738367817226,16666666,16666666,738368794185,738371133185,738371377810,738374535226,738393842893,8665000,103583,738393842893,738383885185,0,738374535226,
+0,55745,738381413231,738381413231,0,738385121351,738385121768,738386098476,738386188893,738431413229,738385119435,16666666,16666666,738386298268,738386320143,738386396935,738391867810,738400992601,7053125,554500,738393847643,738400992601,0,738391867810,
+0,55767,738398079897,738398079897,0,738401039893,738401040435,738401634851,738401684768,738448079895,738401038351,16666666,16666666,738401786101,738401803185,738401871851,738403488143,738420445393,12441459,165292,738420445393,738416784976,0,738403488143,
+0,55789,738414746563,738414746563,0,738417362393,738417363101,738417951476,738418009310,738464746561,738417360143,16666666,16666666,738418124143,738418387726,738418469560,738419616185,738438897435,13221208,129416,738438897435,738433756893,0,738419616185,
+0,55804,738431413229,738431413229,0,738433767060,738433767643,738434422851,738434470601,738481413227,738433765185,16666666,16666666,738434568101,738435046726,738435165143,738438221435,738458659601,13331917,99792,738458659601,738452295851,0,738438221435,
+0,55812,738448079895,738448079895,0,738450090643,738450091143,738450597810,738450640435,738498079893,738450088851,16666666,16666666,738450736018,738452320768,738452416476,738455300476,738469985685,7993500,161417,738469985685,738466744435,0,738455300476,
+0,55820,738464746561,738464746561,0,738466226060,738466226726,738467019476,738467073351,738514746559,738466222976,16666666,16666666,738467182101,738467314726,738467409018,738468942643,738498424101,13521000,166166,738498424101,738483554060,0,738468942643,
+0,55948,738764746549,738764746549,0,738765066351,738765066851,738766041935,738766094393,738781413215,738765063643,16666666,16666666,738766526726,738766556060,738766637351,738767581101,738781704435,2291,202000,738781704435,738772939226,0,738767581101,
+---PROFILEDATA---
+
+
+View hierarchy:
+
+  com.mathmews.app/com.mathmews.app.MainActivity/android.view.ViewRootImpl@fbc8a2d
+  104 views, 210.70 kB of render nodes
+
+
+Total ViewRootImpl   : 1
+Total attached Views : 104
+Total RenderNode     : 210.70 kB (used) / 688.46 kB (capacity)

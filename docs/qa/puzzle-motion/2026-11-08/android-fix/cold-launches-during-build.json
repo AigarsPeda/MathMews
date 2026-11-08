@@ -1,0 +1,24 @@
+{
+  "requested": 20,
+  "passed": 3,
+  "launches": [
+    {
+      "launch": 1,
+      "pid": "9547",
+      "react_ran": true,
+      "survived": true
+    },
+    {
+      "launch": 2,
+      "pid": "9666",
+      "react_ran": true,
+      "survived": true
+    },
+    {
+      "launch": 3,
+      "pid": "9827",
+      "react_ran": true,
+      "survived": true
+    }
+  ]
+}

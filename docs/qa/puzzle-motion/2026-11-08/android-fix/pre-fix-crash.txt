@@ -1,0 +1,30 @@
+--------- beginning of crash
+F/libc    ( 5775): Fatal signal 11 (SIGSEGV), code 2 (SEGV_ACCERR), fault addr 0x73b69b23e8 in tid 5824 (mqt_v_js), pid 5775 (om.mathmews.app)
+F/DEBUG   ( 5856): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+F/DEBUG   ( 5856): Build fingerprint: 'google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.D1/13818094:user/release-keys'
+F/DEBUG   ( 5856): Revision: '0'
+F/DEBUG   ( 5856): ABI: 'arm64'
+F/DEBUG   ( 5856): Timestamp: 2026-11-08 19:38:39.120016374+0200
+F/DEBUG   ( 5856): Process uptime: 8s
+F/DEBUG   ( 5856): Cmdline: com.mathmews.app
+F/DEBUG   ( 5856): pid: 5775, tid: 5824, name: mqt_v_js  >>> com.mathmews.app <<<
+F/DEBUG   ( 5856): uid: 10214
+F/DEBUG   ( 5856): tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+F/DEBUG   ( 5856): pac_enabled_keys: 000000000000000f (PR_PAC_APIAKEY, PR_PAC_APIBKEY, PR_PAC_APDAKEY, PR_PAC_APDBKEY)
+F/DEBUG   ( 5856): signal 11 (SIGSEGV), code 2 (SEGV_ACCERR), fault addr 0x00000073b69b23e8
+F/DEBUG   ( 5856): Cause: trying to execute non-executable memory.
+F/DEBUG   ( 5856):     x0  b40000736695d2e0  x1  0000000000000001  x2  b400007366984778  x3  0000000000000071
+F/DEBUG   ( 5856):     x4  0000000000000001  x5  00000072d97f0c28  x6  b4000073c69e1c70  x7  0000000000000002
+F/DEBUG   ( 5856):     x8  b4000073b69b23e8  x9  8305a637e1340206  x10 0000000000000000  x11 0000000000000001
+F/DEBUG   ( 5856):     x12 000000000000015b  x13 000000007fffffff  x14 000000000001eb44  x15 000024eab9410624
+F/DEBUG   ( 5856):     x16 0000000000000001  x17 00000072db57698c  x18 00000072d8318000  x19 00000072d97f0db0
+F/DEBUG   ( 5856):     x20 0000000000000001  x21 0000000000000001  x22 00000072d97f0848  x23 b4000073c6924a30
+F/DEBUG   ( 5856):     x24 00000072d93d87c0  x25 00000072d97f1d68  x26 0000000000000002  x27 b4000073e6c2be10
+F/DEBUG   ( 5856):     x28 b4000073e6c2a08d  x29 00000072d97f0d10
+F/DEBUG   ( 5856):     lr  00000071bc420898  sp  00000072d97f07c0  pc  00000073b69b23e8  pst 00000000a0001000
+F/DEBUG   ( 5856): 94 total frames
+F/DEBUG   ( 5856): backtrace:
+F/DEBUG   ( 5856):       #00 pc 00000000000673e8  [anon:scudo:primary]
+F/DEBUG   ( 5856):       #01 pc 00000000011a5894  /data/app/~~OAnfy6JADyzjxUKNb-7ugw==/com.mathmews.app-8aWrrNwZ6BgF7EijzUBRkQ==/base.apk!libreactnative.so (offset 0x3d04000) (facebook::react::MountingCoordinator::pullTransaction(bool) const+524) (BuildId: e59970ac57f947b8fe2e1ffcdcc218fa16367ed2)
+F/DEBUG   ( 5856):       #02 pc 0000000000cc720c  /data/app/~~OAnfy6JADyzjxUKNb-7ugw==/com.mathmews.app-8aWrrNwZ6BgF7EijzUBRkQ==/base.apk!libreactnative.so (offset 0x3d04000) (facebook::react::FabricUIManagerBinding::schedulerDidFinishTransaction(std::__ndk1::shared_ptr<facebook::react::MountingCoordinator const> const&)+72) (BuildId: e59970ac57f947b8fe2e1ffcdcc218fa16367ed2)
+F/DEBUG   ( 5856):       #03 pc 000000000122e6a4  /data/app/~~OAnfy6JADyzjxUKNb-7ugw==/com.mathmews.app-8aWrrNwZ6BgF7EijzUBRkQ==/base.apk!libreactnative.so (offset 0x3d04000) (facebook::react::Scheduler::uiManagerDidFinishTransaction(std::__ndk1::shared_ptr<facebook::react::MountingCoordinator const>, bool)+100) (BuildId: e59970ac57f947b8fe2e1ffcdcc218fa16367ed2)

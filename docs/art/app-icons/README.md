@@ -32,7 +32,7 @@ The cat icon uses the companion's shared Blender head, including its plush coat 
 
 The verification checks transparent borders, dimensions, the 3 MiB compressed budget, translated inline images, preservation of math notation, and coverage of every illustration marker in both puzzle locales. The Blender orientation check verifies level symbol axes and all four arrow directions in the saved scenes. Native menu tests also check original-color images and disabled/destructive action behavior.
 
-The timed challenge uses `challenge-timer`, a lavender stopwatch with gold controls. Boss missions use `boss-badge`, a gold crown above a teal paw shield. Both are front-facing scenes in `source/icons.blend`, authored in `render_app_icons.py`, and registered in `constants/app-icons.ts`. Rebuild with `render_app_icons.py -- --only challenge-timer,boss-badge`, then `npm run assets:icons`. Their runtime PNGs use palette compression to keep the full icon family below the existing 3 MiB budget; full-color source renders remain here. The saved-source orientation audit covers every front-facing UI symbol.
+The timed challenge uses `challenge-timer`, a front-facing lavender stopwatch with gold controls. Its scene is in `source/icons.blend`, authored in `render_app_icons.py` and registered in `constants/app-icons.ts`. Rebuild with `render_app_icons.py -- --only challenge-timer`, then `npm run assets:icons`. Its runtime PNG uses palette compression. The obsolete boss badge was removed when boss presentations were retired.
 
 
 

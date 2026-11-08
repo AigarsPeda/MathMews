@@ -1,8 +1,0 @@
-{
-  "id": "m12",
-  "collection": "medium",
-  "builder": "camera",
-  "meshObjects": 9,
-  "samples": 48,
-  "renderSize": 640
-}

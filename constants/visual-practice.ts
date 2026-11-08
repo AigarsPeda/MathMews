@@ -251,7 +251,7 @@ export const VISUAL_PRACTICE = {
   subtraction: takeAway("subtraction", "🍎", 7, [2, 2], "7 − 2 = ?", ["7 − 2 = 5", "7 − 2 = 5"]),
   addition: frames("addition", [0, 1, 2].map(step => board("2 + 4 = ?", counters(6, "🎈", i => step === 0
     ? [i < 2 ? 48 + i * 40 : 178 + (i - 2) % 2 * 40, 34 + (i < 2 ? 0 : Math.floor((i - 2) / 2) * 42)]
-    : [40 + i * 44, 55], i => ({ tone: step === 2 ? "secondary" : undefined, scale: step === 2 ? 1.12 : 1 })), step === 2 ? "2 + 4 = 6" : undefined))),
+    : [40 + i * 44, 55], () => ({ tone: step === 2 ? "secondary" : undefined, scale: step === 2 ? 1.12 : 1 })), step === 2 ? "2 + 4 = 6" : undefined))),
   multiplication: frames("multiplication", [0, 1, 2].map(step => board("3 × 3 = ?", counters(9, "🧸", i => [106 + i % 3 * 44, 24 + Math.floor(i / 3) * 42],
     i => ({ visible: i < (step + 1) * 3 })), step === 2 ? "3 + 3 + 3 = 9" : undefined))),
   division: share("division", 8, false),

@@ -1,8 +1,0 @@
-{
-  "id": "m11",
-  "collection": "medium",
-  "builder": "telescope",
-  "meshObjects": 10,
-  "samples": 48,
-  "renderSize": 640
-}

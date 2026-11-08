@@ -1,8 +1,0 @@
-{
-  "id": "h09",
-  "collection": "hard",
-  "builder": "caliper",
-  "meshObjects": 10,
-  "samples": 48,
-  "renderSize": 640
-}

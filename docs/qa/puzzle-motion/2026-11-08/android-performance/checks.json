@@ -1,0 +1,52 @@
+{
+  "puzzle_experience": {
+    "passed": true,
+    "command": "npm run test:puzzle-experience"
+  },
+  "result_dismissal": {
+    "passed": true,
+    "command": "npm run test:result-dismissal"
+  },
+  "typecheck": {
+    "passed": true,
+    "command": "npm run typecheck"
+  },
+  "diff_whitespace": {
+    "passed": true,
+    "command": "git diff --check"
+  },
+  "optimized_final_qa_build": {
+    "passed": true
+  },
+  "clean_production_release_build": {
+    "passed": true,
+    "qa_route_absent": true
+  },
+  "final_native_play": {
+    "passed": true,
+    "transitions": 8,
+    "progress_retained": true,
+    "answers_reset": true,
+    "scroll_reset_before_paint": true,
+    "clock_and_shape_painted": true,
+    "native_crashes": 0
+  },
+  "normal_and_reduce_motion": {
+    "passed": true,
+    "pixel_interpolation_verified": true
+  },
+  "clean_production_cold_starts": {
+    "passed": true,
+    "launches": 3,
+    "visible_content_pixel_checked": true,
+    "native_crashes": 0
+  },
+  "cleanup": {
+    "temporary_app_route_removed": true,
+    "baseline_modules_removed": true,
+    "qa_apk_quarantined": true,
+    "production_bundle_qa_free": true,
+    "animation_scales_restored_to": 1,
+    "disposable_avd_removed": true
+  }
+}

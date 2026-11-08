@@ -53,6 +53,7 @@ export function TrueFalseTask({
                 disabled={answered}
                 onPress={() => onSelect(index)}
                 accessibilityRole="button"
+                accessibilityState={{ disabled: answered, selected }}
               >
                 <Text style={styles.optionLabel}>{label}</Text>
               </Pressable>

@@ -1,8 +1,0 @@
-{
-  "id": "h18",
-  "collection": "hard",
-  "builder": "rover",
-  "meshObjects": 75,
-  "samples": 48,
-  "renderSize": 640
-}

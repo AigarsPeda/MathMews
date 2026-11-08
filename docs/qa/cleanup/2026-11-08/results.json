@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-08",
+  "scope": "Repository usage audit of app routes, source imports, platform variants, static and dynamic asset catalogs, build scripts, tests, configuration and documentation.",
+  "removed": {
+    "files": 2827,
+    "fileBytes": 960187276,
+    "MiB": 915.71,
+    "families": [
+      "Retired achievement GIFs, posters and locked previews",
+      "Retired 3D boss dioramas and editable Blender scenes",
+      "Unused 2D picnic pilot, production package and generators",
+      "Unused decorative trail sprites, source scenes and generators",
+      "Unused character and path concept images",
+      "Dedicated tests and QA artifacts for retired presentations",
+      "Expo starter reset script",
+      "Unused boss badge, locale-label export, parameters and achievement translations"
+    ],
+    "dependency": "expo-sharing"
+  },
+  "retained": [
+    "Current app and native room media, including every catalog item and all cat coats",
+    "Instructional puzzle object art and animation",
+    "Boss story data and puzzle IDs required by the curriculum builder and saved-progress compatibility",
+    "Legacy /achievements redirect for older links",
+    "Platform variants, global asset declarations, framework and peer dependencies",
+    "Current art sources, licenses, release migrations, research and QA evidence"
+  ],
+  "testMaintenance": {
+    "renamed": "scripts/check-trail-collections.mjs -> scripts/check-topic-path-layout.mjs",
+    "change": "Removed retired sprite checks; retained route geometry checks, added three-stop paths, and treated short cat-plan routes separately from full topic trails. Included in the core game suite.",
+    "cases": 8024
+  },
+  "usageAudit": {
+    "unreachableAppModules": [],
+    "unreferencedAssetFiles": [],
+    "exceptions": [
+      "types/assets.d.ts supplies global declarations",
+      "docs/site.js is a public website entrypoint",
+      "Archived profiling console scripts support retained QA reports"
+    ],
+    "method": "Trace imports, requires and platform alternatives from app and tooling entrypoints, then cross-check asset paths and names against code, configuration, generators and documentation. Dynamic weather icons were inspected separately."
+  },
+  "validation": {
+    "baselineTypecheckAndLint": "passed",
+    "typecheckAfterCleanup": "passed",
+    "typecheckWithNoUnusedLocalsAndParameters": "passed",
+    "mobileExport": "passed for iOS and Android",
+    "startup": "passed",
+    "runtimeAssets": "passed, including 435 required native models",
+    "puzzles": "passed",
+    "puzzleArt": "passed",
+    "icons": "passed, 82 icons",
+    "locales": "passed",
+    "topicPathLayout": "passed, 8024 cases across 17 topics",
+    "gameCore": "20 checks passed; check-puzzle-replay fails in nine React harness cases because its Reanimated mock lacks Animated.View used by concurrent app/play.tsx changes",
+    "fullLint": "Blocked by react-hooks/refs and dependency warnings in the concurrent temporary app/android-motion-qa.tsx fixture",
+    "lintExcludingTemporaryQaRoute": "passed"
+  },
+  "notes": [
+    "Existing and concurrent puzzle, animation and native QA work was preserved.",
+    "Generated native builds, installed dependencies and active local caches were not bulk-deleted.",
+    "This records static usage and build verification; no new simulator acceptance run was performed."
+  ]
+}

@@ -12,7 +12,7 @@ vm.runInNewContext(ts.transpileModule(source, {
 export const localizePuzzle = module.exports.localizePuzzle;
 
 const locales = ['en', 'lv', 'ru'];
-const displayKeys = new Set(['question', 'hint', 'explanation', 'choices', 'label', 'statement', 'expression', 'optionA', 'optionB', 'leftDisplay', 'wrongWork']);
+const displayKeys = new Set(['question', 'hint', 'explanation', 'choices', 'label', 'statement', 'expression', 'optionA', 'optionB', 'leftDisplay', 'wrongWork', 'prompt', 'proposed', 'options']);
 
 /** Collapse locale copies, rejecting any difference in puzzle structure or answers. */
 export function groupPuzzleTranslations(versions, location = 'puzzle', display = false) {

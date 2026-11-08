@@ -4,6 +4,14 @@ import type { Puzzle } from "@/types/puzzle";
 export function shufflePuzzleChoices(puzzle: Puzzle, seed: string): Puzzle {
   let state = 2166136261;
   for (const character of seed) state = Math.imul(state ^ character.charCodeAt(0), 16777619) >>> 0;
+  if (puzzle.response?.kind === 'choose') {
+    const response = puzzle.response, indices = response.options.map((_, index) => index);
+    for (let i = indices.length - 1; i > 0; i--) {
+      state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+      const j = state % (i + 1); [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    puzzle = { ...puzzle, response: { ...response, options: indices.map(i => response.options[i]), correctIndex: indices.indexOf(response.correctIndex) } };
+  }
   if (puzzle.type === "pair_sum" || puzzle.type === "find_all_pairs") {
     const indices = puzzle.payload.numbers.map((_, index) => index);
     for (let i = indices.length - 1; i > 0; i--) {

@@ -1,0 +1,326 @@
+[
+  {
+    "at": 1794165535.229012,
+    "message": "Tap QA Before"
+  },
+  {
+    "at": 1794165535.4766002,
+    "message": "Tap QA Bar"
+  },
+  {
+    "at": 1794165536.8011441,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165537.6808221,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165538.569765,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165539.4531462,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165540.3468359,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165541.228354,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165542.11271,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165543.0403872,
+    "message": "Tap QA After"
+  },
+  {
+    "at": 1794165543.2383082,
+    "message": "Tap QA Bar"
+  },
+  {
+    "at": 1794165544.475987,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165545.3476229,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165546.2439559,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165547.135482,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165548.019361,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165548.905226,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165549.783125,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165550.725321,
+    "message": "Tap QA After"
+  },
+  {
+    "at": 1794165550.9225888,
+    "message": "Tap QA Bar"
+  },
+  {
+    "at": 1794165552.1587179,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165553.050241,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165553.933456,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165554.817871,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165555.698821,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165556.5850549,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165557.4695868,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165558.394494,
+    "message": "Tap QA Before"
+  },
+  {
+    "at": 1794165558.604359,
+    "message": "Tap QA Bar"
+  },
+  {
+    "at": 1794165559.841517,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165560.752162,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165561.637938,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165562.520455,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165563.402766,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165564.2852879,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165565.175373,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794165566.151659,
+    "message": "Tap QA After"
+  },
+  {
+    "at": 1794165566.37259,
+    "message": "Tap QA Play"
+  },
+  {
+    "at": 1794165570.201556,
+    "message": "Tap Answer 10"
+  },
+  {
+    "at": 1794165570.963261,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794165572.735787,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794165580.265595,
+    "message": "Passed run0-after-1-to-2"
+  },
+  {
+    "at": 1794165582.99742,
+    "message": "Tap response-key-5"
+  },
+  {
+    "at": 1794165583.911944,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794165585.9123578,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794165594.175734,
+    "message": "Passed run0-after-2-to-3"
+  },
+  {
+    "at": 1794165596.9569228,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794165597.595873,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794165599.806617,
+    "message": "Tap response-key-:"
+  },
+  {
+    "at": 1794165600.426531,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794165601.073892,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794165601.939166,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794165603.7129998,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794165612.137393,
+    "message": "Passed run0-after-3-to-4"
+  },
+  {
+    "at": 1794165614.5037398,
+    "message": "Tap Answer 8"
+  },
+  {
+    "at": 1794165615.2483451,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794165616.983405,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794165624.552185,
+    "message": "Passed run0-after-4-to-5"
+  },
+  {
+    "at": 1794165624.617614,
+    "message": "Tap QA Before"
+  },
+  {
+    "at": 1794165624.838783,
+    "message": "Tap QA Play"
+  },
+  {
+    "at": 1794165628.5537841,
+    "message": "Tap Answer 10"
+  },
+  {
+    "at": 1794165629.313101,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794165631.049568,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794165638.5568252,
+    "message": "Passed run1-before-1-to-2"
+  },
+  {
+    "at": 1794165641.218785,
+    "message": "Tap response-key-5"
+  },
+  {
+    "at": 1794165642.075763,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794165643.8171499,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794165651.288521,
+    "message": "Passed run1-before-2-to-3"
+  },
+  {
+    "at": 1794165653.934627,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794165654.448877,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794165656.5623941,
+    "message": "Tap response-key-:"
+  },
+  {
+    "at": 1794165657.17671,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794165657.760619,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794165658.619536,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794165660.391797,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794165665.065017,
+    "message": "Passed run1-before-3-to-4"
+  },
+  {
+    "at": 1794165667.50635,
+    "message": "Tap Answer 8"
+  },
+  {
+    "at": 1794165668.24398,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794165669.985339,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794165674.2944891,
+    "message": "Passed run1-before-4-to-5"
+  },
+  {
+    "at": 1794165674.421419,
+    "message": "Native A/B performance and regression checks passed."
+  }
+]

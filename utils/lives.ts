@@ -4,7 +4,7 @@ import type { LivesState } from "@/types/game";
 
 const REGEN_MS = LIFE_REGEN_MINUTES * 60 * 1000;
 
-export function createDefaultLives(now = Date.now()): LivesState {
+export function createDefaultLives(): LivesState {
   return { current: MAX_LIVES, nextRegenAt: null };
 }
 

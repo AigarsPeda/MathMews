@@ -1,8 +1,0 @@
-{
-  "id": "h07",
-  "collection": "hard",
-  "builder": "circuit",
-  "meshObjects": 29,
-  "samples": 48,
-  "renderSize": 640
-}

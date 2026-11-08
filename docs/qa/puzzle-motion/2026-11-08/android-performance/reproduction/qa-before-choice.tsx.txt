@@ -1,0 +1,69 @@
+import { useChoiceLayout } from '@/components/puzzle/useChoiceLayout';
+import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
+import { EverydayDiagram } from "@/scripts/native/puzzle-motion/qa-before-diagram";
+import { QuantityTaskScene } from "@/components/puzzle/QuantityTaskScene";
+import type { MultipleChoicePuzzle } from "@/types/puzzle";
+import { moderateScale } from "@/utils/scale";
+import { StyleSheet, View } from "react-native";
+
+type MultipleChoiceTaskProps = {
+  puzzle: MultipleChoicePuzzle;
+  selectedIndex: number | null;
+  isCorrect: boolean;
+  answered: boolean;
+  incorrectAttempt?: boolean;
+  onSelect: (index: number) => void;
+};
+
+export function MultipleChoiceTask({
+  puzzle,
+  selectedIndex,
+  isCorrect,
+  answered,
+  incorrectAttempt = false,
+  onSelect,
+}: MultipleChoiceTaskProps) {
+  const choiceLayout = useChoiceLayout(puzzle.choices);
+  return (
+    <View style={styles.choices}>
+      {puzzle.everyday ? <EverydayDiagram model={puzzle.everyday.model} /> : null}
+      {puzzle.taskVisual ? <QuantityTaskScene key={puzzle.id} model={puzzle.taskVisual} disabled={answered} showExpression={puzzle.difficulty !== "hard"} /> : null}
+      <View onLayout={choiceLayout.onLayout} style={choiceLayout.container}>
+        {puzzle.choices.map((choice, index) => {
+        let result: "correct" | "wrong" | null = null;
+        if (answered || incorrectAttempt) {
+          if (isCorrect && index === puzzle.correctIndex) {
+            result = "correct";
+          } else if (!isCorrect && index === selectedIndex) {
+            result = "wrong";
+          }
+        }
+
+        return (
+          <ChoiceButton
+            key={`${puzzle.id}-${choice}`}
+            label={choice}
+            selected={selectedIndex === index}
+            disabled={answered}
+            result={result}
+            style={choiceLayout.item}
+            onPress={() => onSelect(index)}
+          />
+        );
+        })}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  choices: {
+    flexGrow: 0,
+    alignSelf: "stretch",
+    gap: moderateScale(12),
+  },
+  answerChoices: { gap: moderateScale(12) },
+  compactChoices: { flexDirection: "row", flexWrap: "wrap" },
+  twoColumnChoice: { width: "48%", flexGrow: 1 },
+  threeColumnChoice: { width: "30%", flexGrow: 1 },
+});

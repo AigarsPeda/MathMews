@@ -1647,37 +1647,6 @@
     "otherActive": "You already have a timed challenge in progress. Finish that attempt first.",
     "resume": "Resume active challenge"
   },
-  "achievements": {
-    "ofTotal": "of {{total}}",
-    "unlocked": "Movie unlocked! Watch your new reward in Achievements.",
-    "view": "View achievement",
-    "title": "Achievements",
-    "shortTitle": "Awards",
-    "open": "Open achievements",
-    "description": "Little worlds you brought to life. Watch your rewards and share a favorite.",
-    "share": "Share GIF",
-    "preparingShare": "Preparing…",
-    "shareUnavailable": "Sharing is not available on this device.",
-    "shareError": "We couldn't share this animation. Please try again.",
-    "count": "{{count}} of {{total}} rewards unlocked",
-    "all": "All rewards",
-    "collected": "Collected",
-    "play": "Ready to watch",
-    "progress": "{{count}} of 3 stages",
-    "emptyTitle": "Your first movie is waiting",
-    "emptyBody": "Complete puzzles 5, 6 and 7 in a level to unlock its movie. Your movies stay here to watch and share.",
-    "replayFree": "Watching an achievement uses no lives and gives no extra coins.",
-    "watch": "Watch",
-    "howToUnlock": "How to unlock",
-    "pause": "Pause",
-    "resume": "Play",
-    "youDidIt": "You made this happen!",
-    "unlockTitle": "Bring this world to life",
-    "unlockBody": "Complete puzzles 5, 6 and 7 in this level to unlock its movie. You have completed {{count}} of 3.",
-    "unlockHint": "Open the lesson to see the mission and what you need to finish first.",
-    "goToLesson": "Open lesson",
-    "shareHint": "Watch it again, or send the movie to someone who will laugh with you."
-  },
   "lessonProgress": {
     "practice": "Practice",
     "challenge": "Challenge",
@@ -1923,5 +1892,15 @@
     "start": "At the start",
     "add": "Added",
     "remove": "Taken away"
+  },
+  "activityMix": {
+    "write": "Enter your answer.",
+    "writeTime": "Enter the time as hours:minutes.",
+    "writeFraction": "Enter the fraction as top/bottom.",
+    "judge": "Is this answer correct?",
+    "answer": "Your answer",
+    "erase": "Erase last digit",
+    "clear": "Clear",
+    "sign": "Change sign"
   }
 }

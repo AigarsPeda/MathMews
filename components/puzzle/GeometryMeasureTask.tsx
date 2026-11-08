@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-type Props = { puzzle: GeometryMeasurePuzzle; value: number | null; onChange: (value: number | null) => void; answered: boolean };
-export function GeometryMeasureTask({ puzzle, value, onChange, answered }: Props) {
+type Props = { puzzle: GeometryMeasurePuzzle; value: number | null; onChange: (value: number | null) => void; answered: boolean; readOnly?: boolean };
+export function GeometryMeasureTask({ puzzle, value, onChange, answered, readOnly = false }: Props) {
   const { t } = useTranslation();
   const [available, setAvailable] = useState(280);
   const [marked, setMarked] = useState(0);
@@ -48,10 +48,11 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered }: Props
     </Pressable>;
   const reset = () => { setMarked(0); onChange(null); };
   return <View style={styles.wrap} onLayout={e => setAvailable(e.nativeEvent.layout.width)}>
-    {guided ? <Text style={styles.guide}>{t(`geometryModels.guide_${mode}`)}</Text> : null}
+    {guided && !readOnly ? <Text style={styles.guide}>{t(`geometryModels.guide_${mode}`)}</Text> : null}
     {missing ? <Text style={styles.given}>{t(`geometryModels.given_${measure}`, { value: measure === 'area' ? width * height : 2 * (width + height) })}</Text> : null}
     {mode === 'compare' && other ? <View style={styles.comparison}>{picture(width, height, 'A')}{picture(other.width, other.height, 'B')}</View> : picture(width, height, '')}
     {!missing ? <Text style={styles.note}>{t('geometryModels.unitSquare')}</Text> : null}
+    {!readOnly ? <>
     {guided && (mode === 'area' || mode === 'perimeter') ? <View style={styles.support}>
       {button('geometry-mark', t(mode === 'area' ? 'geometryModels.coverSquare' : 'geometryModels.traceEdge'), () => setMarked(marked + 1), marked >= (mode === 'area' ? width * height : 2 * (width + height)))}
       <Text style={[styles.note, styles.markedCount]}>{t(mode === 'area' ? 'geometryModels.squaresMarked' : 'geometryModels.edgesMarked', { count: marked })}</Text>
@@ -69,6 +70,7 @@ export function GeometryMeasureTask({ puzzle, value, onChange, answered }: Props
       <Text style={[styles.resetText, (answered || value === null && marked === 0) && styles.disabled]}>{t('geometryModels.reset')}</Text>
     </Pressable>
     </View>
+    </> : null}
   </View>;
 }
 const styles = StyleSheet.create({

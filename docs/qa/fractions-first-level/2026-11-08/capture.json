@@ -1,0 +1,47 @@
+{
+  "lesson": "easy-fractions-parts",
+  "device": "iPhone 15",
+  "locale": "en",
+  "screens": [
+    {
+      "screenshot": "01-color-half.png",
+      "failure": false
+    },
+    {
+      "screenshot": "02-match.png",
+      "failure": false
+    },
+    {
+      "screenshot": "03-compare.png",
+      "failure": false
+    },
+    {
+      "screenshot": "04-true-false.png",
+      "failure": false
+    },
+    {
+      "screenshot": "05-color-whole.png",
+      "failure": false
+    },
+    {
+      "screenshot": "06-count-halves.png",
+      "failure": false
+    },
+    {
+      "screenshot": "07-match-whole.png",
+      "failure": false
+    },
+    {
+      "screenshot": "08-sort.png",
+      "failure": false
+    },
+    {
+      "screenshot": "09-judge-equivalence.png",
+      "failure": false
+    },
+    {
+      "screenshot": "10-cookie-story.png",
+      "failure": false
+    }
+  ]
+}

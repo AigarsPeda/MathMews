@@ -1,4 +1,5 @@
 import { isBridgePuzzle, checkBridgeAnswer, type BridgeState } from "@/utils/bridge-models";
+import { checkPuzzleResponse, type ResponseValue } from '@/utils/puzzle-response';
 import { checkGeometryAnswer } from "@/utils/geometry-models";
 import { checkDecimalGrid, checkDecimalPlace, type DecimalPlaceState } from "@/utils/decimal-models";
 import { validFractionPoint, validFractionStrip, type FractionStripState } from "@/utils/fraction-models";
@@ -58,6 +59,7 @@ export function getPuzzleType(puzzle: Puzzle): PuzzleType {
 }
 
 export type PuzzleAnswer =
+  | { kind: "response"; value: Exclude<ResponseValue, null> }
   | { kind: "bridge"; state: BridgeState }
   | { kind: "fraction_point"; tick: number }
   | { kind: "geometry"; value: number }
@@ -84,6 +86,7 @@ export function getValidPairs(numbers: readonly number[], target: number): [numb
 }
 
 export function checkPuzzleAnswer(puzzle: Puzzle, answer: PuzzleAnswer): boolean {
+  if (answer.kind === 'response') return checkPuzzleResponse(puzzle, answer.value);
   if (isBridgePuzzle(puzzle)) return answer.kind === "bridge" && checkBridgeAnswer(puzzle, answer.state);
   if (puzzle.type === "geometry_measure") return answer.kind === "geometry" && checkGeometryAnswer(puzzle, answer.value);
   if (puzzle.type === "decimal_grid") return answer.kind === "decimal_grid" && checkDecimalGrid(puzzle, answer.shaded);

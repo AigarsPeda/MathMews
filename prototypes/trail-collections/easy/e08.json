@@ -1,8 +1,0 @@
-{
-  "id": "e08",
-  "collection": "easy",
-  "builder": "abacus",
-  "meshObjects": 30,
-  "samples": 48,
-  "renderSize": 640
-}

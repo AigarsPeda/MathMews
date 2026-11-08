@@ -1,5 +1,6 @@
 import { getCatPlanReward } from "@/constants/cat-plan-rewards";
 import type { BridgeState } from "@/utils/bridge-models";
+import type { ResponseValue } from '@/utils/puzzle-response';
 import type { DecimalPlaceState } from "@/utils/decimal-models";
 import type { FractionStripState } from "@/utils/fraction-models";
 import type { PlaceValueState } from "@/utils/place-value";
@@ -10,6 +11,7 @@ import { PuzzleHeaderGlow } from "@/components/puzzle/PuzzleGradient";
 import { useFonts } from "expo-font";
 import { PuzzleLives } from "@/components/puzzle/PuzzleLives";
 import { PuzzleProgress } from "@/components/puzzle/PuzzleProgress";
+import { PuzzleContentTransition } from "@/components/puzzle/PuzzleContentTransition";
 import { PuzzleTaskView } from "@/components/puzzle/PuzzleTaskView";
 import { ResultOverlay } from "@/components/puzzle/ResultOverlay";
 import { ChallengeClock, TimedChallengeActions, TimedChallengeIntro } from "@/components/puzzle/TimedChallenge";
@@ -51,23 +53,17 @@ import { moderateScale } from "@/utils/scale";
 import { getTimedRunReward, isChallengeOpen } from "@/utils/timed-challenge";
 import * as Haptics from "expo-haptics";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Platform,
   Pressable,
-  type ScrollView,
+  ScrollView,
   StyleSheet,
   View,
 } from "react-native";
-import Animated, { Easing, FadeInRight, ReduceMotion } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const PUZZLE_CONTENT_ENTER = FadeInRight.duration(280)
-  .easing(Easing.out(Easing.cubic))
-  .withInitialValues({ opacity: 0, transform: [{ translateX: moderateScale(28) }] })
-  .reduceMotion(ReduceMotion.System);
 
 function triggerHaptic(
   style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light,
@@ -197,6 +193,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
   const [isDraggingTile, setIsDraggingTile] = useState(false);
 
   const [pendingChoice, setPendingChoice] = useState<number | null>(null);
+  const [responseValue, setResponseValue] = useState<ResponseValue>(null);
   const [pendingNumberLine, setPendingNumberLine] = useState<number | null>(
     null,
   );
@@ -207,6 +204,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
   const [lastAttempt, setLastAttempt] = useState<{ key: string; hint: string } | null>(null);
   const [editingRetry, setEditingRetry] = useState(false);
   const taskScroll = useRef<ScrollView>(null);
+  useLayoutEffect(() => { taskScroll.current?.scrollTo({ y: 0, animated: false }); }, [puzzle.id]);
   const layoutSize = useRef({ viewportHeight: 0, contentHeight: 0 });
   const reportLayout = (size: Partial<typeof layoutSize.current>) => {
     Object.assign(layoutSize.current, size);
@@ -253,7 +251,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
     setEntryCompleted(getPathCompletedIds(progress));
     setEntryRewardIds(progress.catPlanRewardsClaimed ?? []);
     setChallengeMode("untimed");
-    setPendingChoice(null); setPendingNumberLine(null); setSelectedOperators(createEmptyOperators(nextPuzzle));
+    setResponseValue(null); setPendingChoice(null); setPendingNumberLine(null); setSelectedOperators(createEmptyOperators(nextPuzzle));
     setBridge(null); setGeometry(null); setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
     setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
     setNumberOrder(createInitialOrder(nextPuzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
@@ -282,7 +280,7 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
   const handleBeginChallenge = useCallback(() => {
     if (!beginChallenge(level.id, challengeMode)) return;
     recordInteraction();
-    setPendingChoice(null); setPendingNumberLine(null); setSelectedOperators(createEmptyOperators(puzzle));
+    setResponseValue(null); setPendingChoice(null); setPendingNumberLine(null); setSelectedOperators(createEmptyOperators(puzzle));
     setBridge(null); setGeometry(null); setDecimalGrid(null); setDecimalPlace(null); setFractionStrip(null); setPlaceValue(null);
     setChallengeAnswer(null); setFoundPairs([]); setPairIndices([]); setFractionSelectedSlices([]);
     setNumberOrder(createInitialOrder(puzzle)); setFractionMatchMatchedIds([]); setFractionMatchSelectedId(null); setFractionMatchWrongIds([]);
@@ -300,10 +298,11 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
   const hasVisualHelp = hasVisualExplanation(puzzle);
 
   const draftAnswer = useMemo(() => getPuzzleDraftAnswer(puzzle, {
+    response: responseValue,
     bridge, geometry, decimalGrid, decimalPlace, fractionStrip, placeValue, choice: pendingChoice, operators: selectedOperators, shaded: fractionPieces,
     numberLine: pendingNumberLine, pairIndices, order: numberOrder,
     matchedCount: fractionMatchMatchedIds.length / 2, pairs: foundPairs, challenge: challengeAnswer,
-  }), [puzzle, bridge, geometry, decimalGrid, decimalPlace, fractionStrip, placeValue, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
+  }), [puzzle, responseValue, bridge, geometry, decimalGrid, decimalPlace, fractionStrip, placeValue, pendingChoice, selectedOperators, fractionPieces, pendingNumberLine, pairIndices, numberOrder, fractionMatchMatchedIds.length, foundPairs, challengeAnswer]);
   const draftKey = JSON.stringify(draftAnswer);
   const offerRetry = !answered && hasLives && !!lastAttempt && draftKey === lastAttempt.key && !editingRetry;
   const canCheck = hasLives && challengePlayable && !answered && draftAnswer !== null && draftKey !== lastAttempt?.key;
@@ -535,22 +534,21 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
 
         {run?.status === "active" && run.mode !== "untimed" && (atChallenge || inTimedRun) ? <ChallengeClock milliseconds={run.deadlineAt - now} /> : null}
 
-        <Animated.ScrollView
+        <ScrollView
           ref={taskScroll}
           onLayout={onLayoutMeasured ? event => reportLayout({ viewportHeight: event.nativeEvent.layout.height }) : undefined}
           onContentSizeChange={onLayoutMeasured ? (_width, height) => reportLayout({ contentHeight: height }) : undefined}
-          key={puzzle.id}
-          entering={PUZZLE_CONTENT_ENTER}
           scrollEnabled={!isDraggingTile}
           style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+          <PuzzleContentTransition key={puzzle.id} style={styles.scrollContent}
+            onLayout={onLayoutMeasured ? event => reportLayout({ contentHeight: event.nativeEvent.layout.height }) : undefined}>
           {!challengePlayable ? <TimedChallengeIntro {...challengeIntroProps} /> : <>
-          <PuzzleCard puzzle={puzzle} />
+          <PuzzleCard puzzle={puzzle.response?.prompt ? { ...puzzle, question: puzzle.response.prompt } : puzzle} />
 
           <View style={styles.taskArea}>
-            {!["order_numbers", "multiple_choice", "balance", "fair_share", "function_machine", "fix_mistake", "estimate", "place_value", "fraction_strip", "decimal_grid", "decimal_place_value", "geometry_measure", "sort_buckets", "repair_pattern", "route_grid", "budget_plan", "operation_path", "find_all_pairs", "ratio_table", "signed_line", "coordinate_map", "equation_board"].includes(getPuzzleType(puzzle)) && !('payload' in puzzle && puzzle.payload && 'guided' in puzzle.payload && puzzle.payload.guided) && !(progress.completedPuzzleIds ?? []).some(
+            {!puzzle.response && !["order_numbers", "multiple_choice", "balance", "fair_share", "function_machine", "fix_mistake", "estimate", "place_value", "fraction_strip", "decimal_grid", "decimal_place_value", "geometry_measure", "sort_buckets", "repair_pattern", "route_grid", "budget_plan", "operation_path", "find_all_pairs", "ratio_table", "signed_line", "coordinate_map", "equation_board"].includes(getPuzzleType(puzzle)) && !('payload' in puzzle && puzzle.payload && 'guided' in puzzle.payload && puzzle.payload.guided) && !(progress.completedPuzzleIds ?? []).some(
               (id) =>
                 puzzles.find((item) => item.id === id)?.type === puzzle.type,
             ) && (
@@ -560,6 +558,8 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
             )}
             <PuzzleTaskView
               puzzle={puzzle}
+              responseValue={responseValue}
+              onResponseChange={setResponseValue}
               hasLives={hasLives && challengePlayable}
               onIncorrectAttempt={handleInlineMistake}
               bridge={bridge}
@@ -625,7 +625,8 @@ export function PlaySession({ session, replaySession = false, onLayoutMeasured }
             </Pressable>
           ) : null}
           </>}
-        </Animated.ScrollView>
+          </PuzzleContentTransition>
+        </ScrollView>
 
         {challengePlayable ? <View style={styles.answerDock}>
           {!answered && lives.current === 0 ? <View style={styles.emptyLives} accessibilityLiveRegion="polite">

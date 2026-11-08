@@ -1,8 +1,0 @@
-{
-  "id": "m09",
-  "collection": "medium",
-  "builder": "puzzlecube",
-  "meshObjects": 14,
-  "samples": 48,
-  "renderSize": 640
-}

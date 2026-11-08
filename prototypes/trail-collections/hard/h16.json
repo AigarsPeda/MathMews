@@ -1,8 +1,0 @@
-{
-  "id": "h16",
-  "collection": "hard",
-  "builder": "architecture",
-  "meshObjects": 13,
-  "samples": 48,
-  "renderSize": 640
-}

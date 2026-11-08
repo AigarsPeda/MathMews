@@ -45,7 +45,7 @@ The catalog has 330 lessons and 3,300 puzzles per language in English, Latvian a
 Each difficulty includes Time and schedules, Data and graphs, Shapes and spatial
 reasoning, Money and shopping, and Capacity and volume, with ten lessons per topic.
 Lessons use ten-step paths, with a timed or untimed final stretch starting at step eight.
-The original 180 story missions remain in the achievement catalog. Three shared
+The original story IDs remain for saved-progress compatibility. Three shared
 lives limit scored mistakes. Learn with the cat remains available at zero lives,
 with free supported exercises and no currency or completion rewards. The current
 content revisions preserve existing puzzle IDs and earned progress.
@@ -89,13 +89,14 @@ Detailed checks are available when the affected feature changes or before releas
 | `npm run test:game:all` | Essential and detailed game checks, plus UI render/drag tests |
 | `npm run test:ui` | Screen-render and drag internals |
 | `npm run test:puzzles` | Puzzle content, grading, progression, interactions and locales |
-| `npm run test:puzzle-art` | Boss renders, model provenance, atlases and puzzle illustrations |
+| `npm run test:puzzle-art` | Puzzle illustrations, object counts and retained Blender sources |
+| `npm run test:topic-path-layout` | Lesson routes, callouts and narrow-screen bounds |
 
 The **Detailed feature audits** GitHub workflow runs a selected audit manually.
 Animation, native-renderer and model changes still need their relevant detailed
 checks; they no longer block every unrelated change. Detailed audits keep their
 assertions and fail normally. Moving a check out of automatic CI does not fix an
-existing failure, including the recorded boss-render/model hash mismatch.
+existing failure.
 
 Keep raw QA screenshots, recordings and profiling logs in a temporary output
 directory. Retain only captures linked from a design guide or review report in

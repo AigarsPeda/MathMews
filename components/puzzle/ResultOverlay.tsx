@@ -87,6 +87,7 @@ export function ResultOverlay({
     setClosing(true);
   };
   const handleDismissComplete = () => {
+    console.info("[Handoff] result.complete " + Date.now());
     // A swipe may finish before iOS sends its presentation-change event.
     const action = pendingAction.current ?? (!actionHandled.current && visible ? "continue" : null);
     actionHandled.current = true;

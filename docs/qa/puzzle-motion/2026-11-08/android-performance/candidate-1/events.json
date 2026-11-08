@@ -1,0 +1,326 @@
+[
+  {
+    "at": 1794162559.568369,
+    "message": "Tap QA Before"
+  },
+  {
+    "at": 1794162559.911169,
+    "message": "Tap QA Bar"
+  },
+  {
+    "at": 1794162561.356735,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162562.171532,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162563.0429518,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162563.933155,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162564.793761,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162565.5785291,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162566.37584,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162567.238073,
+    "message": "Tap QA After"
+  },
+  {
+    "at": 1794162567.4421608,
+    "message": "Tap QA Bar"
+  },
+  {
+    "at": 1794162568.678869,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162569.5800178,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162570.441185,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162571.30867,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162572.137815,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162572.91242,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162573.7355862,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162574.715181,
+    "message": "Tap QA After"
+  },
+  {
+    "at": 1794162574.914231,
+    "message": "Tap QA Bar"
+  },
+  {
+    "at": 1794162576.151959,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162577.131423,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162578.1089852,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162579.012819,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162579.819853,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162580.705626,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162581.4774048,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162582.5712729,
+    "message": "Tap QA Before"
+  },
+  {
+    "at": 1794162582.796138,
+    "message": "Tap QA Bar"
+  },
+  {
+    "at": 1794162584.055928,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162584.913617,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162585.778761,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162586.6228611,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162587.5206232,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162588.405038,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162589.278283,
+    "message": "Tap QA Advance"
+  },
+  {
+    "at": 1794162590.155371,
+    "message": "Tap QA Before"
+  },
+  {
+    "at": 1794162590.361994,
+    "message": "Tap QA Play"
+  },
+  {
+    "at": 1794162594.266312,
+    "message": "Tap Answer 10"
+  },
+  {
+    "at": 1794162595.041472,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794162597.265861,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794162607.398203,
+    "message": "Passed before-1-to-2"
+  },
+  {
+    "at": 1794162610.570477,
+    "message": "Tap response-key-5"
+  },
+  {
+    "at": 1794162611.5993621,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794162613.5463839,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794162622.821093,
+    "message": "Passed before-2-to-3"
+  },
+  {
+    "at": 1794162625.690816,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794162626.27672,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794162628.5769181,
+    "message": "Tap response-key-:"
+  },
+  {
+    "at": 1794162629.756371,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794162630.479569,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794162631.425225,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794162634.027564,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794162642.1025128,
+    "message": "Passed before-3-to-4"
+  },
+  {
+    "at": 1794162645.035085,
+    "message": "Tap Answer 8"
+  },
+  {
+    "at": 1794162645.915179,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794162647.6624472,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794162656.334307,
+    "message": "Passed before-4-to-5"
+  },
+  {
+    "at": 1794162656.391642,
+    "message": "Tap QA After"
+  },
+  {
+    "at": 1794162656.5959098,
+    "message": "Tap QA Play"
+  },
+  {
+    "at": 1794162660.498684,
+    "message": "Tap Answer 10"
+  },
+  {
+    "at": 1794162661.253408,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794162662.7491982,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794162668.1131442,
+    "message": "Passed after-1-to-2"
+  },
+  {
+    "at": 1794162670.8969758,
+    "message": "Tap response-key-5"
+  },
+  {
+    "at": 1794162671.728687,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794162673.240074,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794162681.471342,
+    "message": "Passed after-2-to-3"
+  },
+  {
+    "at": 1794162684.1925461,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794162684.74258,
+    "message": "Tap response-key-1"
+  },
+  {
+    "at": 1794162686.893122,
+    "message": "Tap response-key-:"
+  },
+  {
+    "at": 1794162687.4941351,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794162688.051418,
+    "message": "Tap response-key-0"
+  },
+  {
+    "at": 1794162688.892135,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794162690.451114,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794162698.454677,
+    "message": "Passed after-3-to-4"
+  },
+  {
+    "at": 1794162700.836423,
+    "message": "Tap Answer 8"
+  },
+  {
+    "at": 1794162701.587827,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794162703.006337,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794162711.2718358,
+    "message": "Passed after-4-to-5"
+  },
+  {
+    "at": 1794162711.378768,
+    "message": "Native A/B performance and regression checks passed."
+  }
+]

@@ -1,8 +1,0 @@
-{
-  "id": "m02",
-  "collection": "medium",
-  "builder": "geometry",
-  "meshObjects": 54,
-  "samples": 48,
-  "renderSize": 640
-}

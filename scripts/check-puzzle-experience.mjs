@@ -101,13 +101,19 @@ function renderHarness(file, exportName, mocks = {}) {
       });
     },
   };
-  const jsx = (type, props, key) => ({ type, props, key });
+  react.useLayoutEffect = react.useEffect;
+  const jsx = (type, props, key) => {
+    if (type === 'ScrollView' && props.ref && !props.ref.current) props.ref.current = {
+      scrollCalls: [], scrollTo(options) { this.scrollCalls.push(options); },
+    };
+    return { type, props, key };
+  };
   const native = Object.fromEntries(['View', 'Text', 'Pressable', 'ScrollView', 'ActivityIndicator'].map(name => [name, name]));
   const base = {
     react,
     'react/jsx-runtime': { jsx, jsxs: jsx },
     'react-native': { ...native, useWindowDimensions: () => ({ width: 393, height: 852, fontScale: 1 }), Platform: { OS: 'ios' }, StyleSheet: { create: value => value } },
-    'react-native-reanimated': { __esModule: true, default: { ScrollView: 'ScrollView' },
+    'react-native-reanimated': { __esModule: true, default: { ScrollView: 'ScrollView', View: 'AnimatedView' },
       FadeInRight: { duration: duration => ({
         easing(easing) { return { withInitialValues: initialValues => ({ reduceMotion: reduceMotion => ({ duration, easing, initialValues, reduceMotion }) }) }; },
       }) }, Easing: { cubic: 'cubic', out: curve => `out-${curve}` }, ReduceMotion: { System: 'system' } },
@@ -227,9 +233,11 @@ const continuation = screen({ ...base, type: 'multiple_choice', choices: ['1', '
   ],
 });
 let shell = continuation.tree();
+const persistentScroller = nodes(shell).find(node => node.type === 'ScrollView').props.ref.current;
 for (const [index, choice] of [1, 0].entries()) {
   continuation.task().onSelectChoice(choice);
   continuation.task().onGeometryChange(12);
+  continuation.task().onResponseChange('42');
   continuation.task().onDecimalGridChange(15);
   continuation.task().onFoundPairsChange([[1, 2]]);
   continuation.task().onSelectNumberLineValue(7);
@@ -244,6 +252,7 @@ for (const [index, choice] of [1, 0].entries()) {
   assert.equal(task.selectedIndex, null, 'Same-type puzzles cannot inherit a selected answer');
   assert.equal(task.answered, false);
   assert.equal(task.geometry, null);
+  assert.equal(task.responseValue, null, 'A new puzzle clears the alternate answer draft');
   assert.equal(task.decimalGrid, null);
   assert.equal(task.numberLineValue, null);
   assert.equal(task.foundPairs.length, 0);
@@ -253,10 +262,11 @@ for (const [index, choice] of [1, 0].entries()) {
   const tree = continuation.tree();
   assert.equal(tree.type, shell.type, 'The screen shell keeps its component type');
   assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.scrollEnabled, true);
-  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.duration, 280);
-  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.easing, 'out-cubic');
-  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.initialValues.transform[0].translateX, 28);
-  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.entering.reduceMotion, 'system');
+  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').key, undefined, 'The native scroll view stays mounted between puzzles');
+  assert.equal(nodes(tree).find(node => node.type === 'ScrollView').props.ref.current, persistentScroller);
+  assert.equal(persistentScroller.scrollCalls.at(-1).y, 0);
+  assert.equal(persistentScroller.scrollCalls.at(-1).animated, false, 'The next question starts at the top without a scroll animation');
+  assert.equal(nodes(tree).find(node => node.type === 'PuzzleContentTransition').key, task.puzzle.id);
   assert.notEqual(nodes(tree).find(node => node.type === 'PuzzleProgress').props.animated, false, 'The persistent play header animates each progress update');
   assert.equal(nodes(tree).find(node => node.type === 'PuzzleProgress').props.steps.filter(Boolean).length, index + 1);
   shell = tree;
@@ -620,7 +630,7 @@ console.log('Review screen requires selection, submits once, charges one life on
 
 // Decimal drafts use the production screen's Check, life costs and result flow.
 for (const kind of ['decimal_grid','decimal_place_value']) {
-  const puzzle=allPuzzles.find(p=>p.type===kind && (kind==='decimal_grid'||p.payload.mode==='build'));
+  const puzzle=allPuzzles.find(p=>p.type===kind && !p.response && (kind==='decimal_grid'||p.payload.mode==='build'));
   const state=screen(puzzle), grid=kind==='decimal_grid';
   const update=value=>{state.task()[grid?'onDecimalGridChange':'onDecimalPlaceChange'](value);state.refresh();};
   assert.equal(state.check().disabled,true);
@@ -645,7 +655,8 @@ assert.equal(nodes(decimalTree).find(n=>n.props.testID==='decimal-grid-value').p
 console.log('Decimal screen checks passed: correction, one-life costs, resets, duplicate submission, rewards and localized precision.');
 
 for (const mode of ['area','perimeter','compare','missing_area','missing_perimeter']) {
-  const puzzle=allPuzzles.find(p=>p.type==='geometry_measure'&&p.payload.mode===mode);
+  // Exercise each original board control separately from alternate response formats.
+  const puzzle={...allPuzzles.find(p=>p.type==='geometry_measure'&&p.payload.mode===mode),response:undefined};
   const target=loadPure('@/utils/geometry-models').geometryTarget(puzzle), state=screen(puzzle);
   assert.equal(state.check().disabled,true);
   state.task().onGeometryChange(0);state.refresh();state.check().onPress();state.refresh();
@@ -683,6 +694,23 @@ for(const type of ['ratio_table','signed_line','equation_board','coordinate_map'
  assert.equal(state.attempts.length,2);assert.equal(state.result().correct,true);assert.equal(state.result().coinsEarned,getPuzzleCoinReward(tier));
 }
 console.log('Bridge screen checks passed in every difficulty: empty drafts, correction, reset, one-life mistakes, duplicate submissions and rewards.');
+
+for (const kind of ['write', 'choose', 'judge']) {
+  const puzzle = allPuzzles.find(p => p.response?.kind === kind), r = puzzle.response;
+  const state = screen(puzzle), right = kind === 'write' ? r.answer : kind === 'choose' ? String(r.correctIndex) : r.isCorrect;
+  const wrong = kind === 'write' ? '999' : kind === 'choose' ? String((r.correctIndex + 1) % r.options.length) : !r.isCorrect;
+  assert.equal(state.check().disabled, true);
+  state.task().onResponseChange(wrong); state.refresh(); state.check().onPress(); state.refresh();
+  assert.equal(state.game.progress.lives.current, 2); assert.equal(state.attempts.length, 1);
+  assert.equal(state.task().responseValue, wrong, 'A rejected response remains editable');
+  retry(state); assert.equal(state.check().disabled, true);
+  state.task().onResponseChange(null); state.refresh(); assert.equal(state.check().disabled, true);
+  state.task().onResponseChange(right); state.refresh(); const submit = state.check().onPress;
+  submit(); submit(); state.refresh();
+  assert.equal(state.attempts.length, 2); assert.equal(state.result().correct, true);
+  assert.equal(state.result().coinsEarned, getPuzzleCoinReward(puzzle.difficulty));
+}
+console.log('All alternate activities use the real shared Check, preserve drafts, charge one life per accepted mistake and prevent duplicate rewards.');
 
 const { checkBridgeFeedback } = await import('./puzzles/check-bridge-feedback.mjs');
 checkBridgeFeedback({ load: loadPure });

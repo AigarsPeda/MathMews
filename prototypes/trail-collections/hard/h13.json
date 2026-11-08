@@ -1,8 +1,0 @@
-{
-  "id": "h13",
-  "collection": "hard",
-  "builder": "mobius",
-  "meshObjects": 5,
-  "samples": 48,
-  "renderSize": 640
-}

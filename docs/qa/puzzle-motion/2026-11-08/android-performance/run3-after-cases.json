@@ -1,0 +1,90 @@
+[
+  {
+    "scenario": "run3-after-1-to-2",
+    "bar_bounds": [
+      282,
+      197,
+      858,
+      240
+    ],
+    "dock_bounds": [
+      59,
+      1902,
+      1021,
+      2053
+    ],
+    "question_bounds": [
+      59,
+      321,
+      1021,
+      579
+    ],
+    "answer_reset": true
+  },
+  {
+    "scenario": "run3-after-2-to-3",
+    "bar_bounds": [
+      282,
+      197,
+      858,
+      240
+    ],
+    "dock_bounds": [
+      59,
+      1902,
+      1021,
+      2053
+    ],
+    "question_bounds": [
+      59,
+      321,
+      1021,
+      665
+    ],
+    "answer_reset": true
+  },
+  {
+    "scenario": "run3-after-3-to-4",
+    "bar_bounds": [
+      282,
+      197,
+      858,
+      240
+    ],
+    "dock_bounds": [
+      59,
+      1902,
+      1021,
+      2053
+    ],
+    "question_bounds": [
+      59,
+      321,
+      1021,
+      665
+    ],
+    "answer_reset": true
+  },
+  {
+    "scenario": "run3-after-4-to-5",
+    "bar_bounds": [
+      282,
+      197,
+      858,
+      240
+    ],
+    "dock_bounds": [
+      59,
+      1902,
+      1021,
+      2053
+    ],
+    "question_bounds": [
+      59,
+      321,
+      1021,
+      579
+    ],
+    "answer_reset": true
+  }
+]

@@ -1,8 +1,0 @@
-{
-  "id": "m13",
-  "collection": "medium",
-  "builder": "terrarium",
-  "meshObjects": 60,
-  "samples": 48,
-  "renderSize": 640
-}

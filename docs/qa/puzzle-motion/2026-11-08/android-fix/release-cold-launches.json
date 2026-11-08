@@ -1,0 +1,24 @@
+{
+  "requested": 3,
+  "passed": 3,
+  "launches": [
+    {
+      "launch": 1,
+      "pid": "16596",
+      "destination_painted": true,
+      "native_crash": false
+    },
+    {
+      "launch": 2,
+      "pid": "17214",
+      "destination_painted": true,
+      "native_crash": false
+    },
+    {
+      "launch": 3,
+      "pid": "17841",
+      "destination_painted": true,
+      "native_crash": false
+    }
+  ]
+}
