@@ -1,0 +1,86 @@
+{
+  "baseline_3d_no_frame_profiler": {
+    "samples": 4,
+    "median_route_ms": 5082.0,
+    "worst_route_ms": 5512,
+    "worst_layout_ms": 5561
+  },
+  "stress_run_before_final_dispatch_guard": {
+    "samples": 15,
+    "median_route_ms": 13,
+    "worst_route_ms": 43,
+    "worst_layout_ms": 419
+  },
+  "final_native_binary": {
+    "samples": 4,
+    "median_route_ms": 17.0,
+    "worst_route_ms": 25,
+    "worst_layout_ms": 70,
+    "rows": [
+      {
+        "close_to_route_ms": 19,
+        "close_to_layout_ms": 57
+      },
+      {
+        "close_to_route_ms": 15,
+        "close_to_layout_ms": 48
+      },
+      {
+        "close_to_route_ms": 10,
+        "close_to_layout_ms": 45
+      },
+      {
+        "close_to_route_ms": 25,
+        "close_to_layout_ms": 70
+      }
+    ],
+    "native_frame_loops_started": 4,
+    "native_frame_loops_stopped": 4
+  },
+  "functional_checks": {
+    "ordinary_continuations": 12,
+    "android_back": true,
+    "duplicate_next": true,
+    "swipe_dismissal": true,
+    "exit_result": true,
+    "normal_and_reduced_motion": true,
+    "progress_and_answer_reset": true,
+    "native_crashes": 0
+  },
+  "remaining_scope": {
+    "physical_android_unverified": true,
+    "ios_runtime_unverified": true,
+    "cold_emulator_gpu_frame_ms": 408,
+    "cold_back_close_to_layout_ms": 419
+  },
+  "tests": {
+    "native": true,
+    "sanitizers": true,
+    "recovery": true,
+    "dismissal": true,
+    "puzzle": true,
+    "typecheck": true
+  },
+  "clean_production_build": {
+    "passed": true,
+    "qa_modules_absent": true,
+    "timestamp_markers_absent": true,
+    "native_library_matches_final_qa": true,
+    "native_library_sha256": "4f23c7a97f8af9315aca4e6817e5d1b2418a23aa43744438e5fb4dfa72ff1a46",
+    "apk_sha256": "5acc0f933f01aa509fd03ca6b14bc3a6bc7114c187b5f2b418ba4a841b94e5f5",
+    "cold_launch": {
+      "launch": 1,
+      "ready": true,
+      "seconds": 5.71,
+      "check": "Visible onboarding text after the loading cover; no assertion about 3D asset-load duration."
+    }
+  },
+  "cleanup": {
+    "qa_route_removed": true,
+    "timestamp_markers_removed": true,
+    "recordings_raw_traces_rejected_experiments_removed": true,
+    "qa_apks_removed": true,
+    "disposable_avd_removed": true,
+    "task_specific_temporary_files_removed": true
+  }
+}

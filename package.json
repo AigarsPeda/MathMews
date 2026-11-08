@@ -58,7 +58,8 @@
     "test:action-motion": "node scripts/check-action-motion.mjs && node scripts/check-puzzle-reactions.mjs && node scripts/check-result-dismissal.mjs",
     "test:android-screen-listener": "node scripts/check-android-screen-listener.mjs",
     "test:settled-animation-props": "node scripts/check-settled-animation-props.mjs",
-    "test:topic-path-layout": "node scripts/check-topic-path-layout.mjs"
+    "test:topic-path-layout": "node scripts/check-topic-path-layout.mjs",
+    "test:filament-listeners": "python3 scripts/native/check-filament-listeners.py"
   },
   "dependencies": {
     "@expo/ui": "~57.0.21",

@@ -1,0 +1,143 @@
+--- a/cpp/RNFListenerManager.h
++++ b/cpp/RNFListenerManager.h
+@@ -16,12 +16,14 @@
+ 
+ template <typename Callback> class ListenerManager : public std::enable_shared_from_this<ListenerManager<Callback>> {
+ private:
+-  std::list<Callback> _listeners;
+-  // recursive mutex allows listeners to be removed within their actual callback.
+-  std::recursive_mutex _mutex;
+-  // this holds the amount of listeners that were just removed.
+-  // this is used to allow listeners to be "automagically" removed within the forEach loop.
+-  std::atomic_size_t _removedListenersCount;
++  struct Entry {
++    explicit Entry(Callback value) : callback(std::move(value)), active(true) {}
++    Callback callback;
++    std::atomic_bool active;
++  };
++  std::list<std::shared_ptr<Entry>> _listeners;
++  std::mutex _mutex;
++  std::recursive_mutex _dispatchMutex;
+ 
+ public:
+   /**
+@@ -32,18 +34,20 @@
+    * so make sure to keep a strong reference to the subscription in memory.
+    */
+   std::shared_ptr<Listener> add(Callback listener) {
+-    std::unique_lock lock(_mutex);
+-
+-    _listeners.push_back(std::move(listener));
+-    auto id = --_listeners.end();
+-
++    auto entry = std::make_shared<Entry>(std::move(listener));
++    {
++      std::unique_lock lock(_mutex);
++      _listeners.push_back(entry);
++    }
+     auto weakThis = std::weak_ptr<ListenerManager<Callback>>(shared());
+-    return Listener::create([id, weakThis] {
+-      auto sharedThis = weakThis.lock();
+-      if (sharedThis) {
+-        std::unique_lock lock(sharedThis->_mutex);
+-        sharedThis->_listeners.erase(id);
+-        sharedThis->_removedListenersCount++;
++    auto weakEntry = std::weak_ptr<Entry>(entry);
++    return Listener::create([weakEntry, weakThis] {
++      auto entry = weakEntry.lock();
++      if (!entry) return;
++      entry->active = false;
++      if (auto manager = weakThis.lock()) {
++        std::unique_lock lock(manager->_mutex);
++        manager->_listeners.remove(entry);
+       }
+     });
+   }
+@@ -56,20 +60,27 @@
+    * @param callback The callback to run for each listener.
+    */
+   void forEach(std::function<LoopCallback>&& callback) {
+-    std::unique_lock lock(_mutex);
++    // Preserve serialized/reentrant dispatch without blocking list mutation.
++    std::unique_lock dispatchLock(_dispatchMutex);
++    std::list<std::shared_ptr<Entry>> snapshot;
++    {
++      std::unique_lock lock(_mutex);
++      snapshot = _listeners;
++    }
++    // A slow render must not block cancellation on the JS or UI thread.
++    // Snapshot ownership keeps a callback alive while an in-flight frame ends.
++    for (const auto& entry : snapshot) {
++      if (entry->active) callback(entry->callback);
++    }
++  }
+ 
+-    _removedListenersCount = 0;
+-    for (auto iterator = _listeners.begin(); iterator != _listeners.end(); /* increment done manually */) {
+-      const auto& listener = *iterator;
+-      callback(listener);
+-
+-      if (_removedListenersCount > 0) {
+-        // do not increment iterator as one (or more) Listeners were just removed.
+-        _removedListenersCount--;
+-      } else {
+-        // no Listeners were removed, we go to the next item in the list
+-        iterator++;
+-      }
++  void clear() {
++    // Release captures outside the lock; their cleanup can remove listeners.
++    std::list<std::shared_ptr<Entry>> removed;
++    {
++      std::unique_lock lock(_mutex);
++      for (const auto& entry : _listeners) entry->active = false;
++      removed.splice(removed.end(), _listeners);
+     }
+   }
+ 
+--- a/cpp/RNFListener.h
++++ b/cpp/RNFListener.h
+@@ -5,6 +5,7 @@
+ #pragma once
+ 
+ #include "jsi/RNFHybridObject.h"
++#include <atomic>
+ #include <functional>
+ #include <memory>
+ 
+@@ -25,7 +26,7 @@
+ 
+ private:
+   ListenerRemover _remove;
+-  bool _isRemoved;
++  std::atomic_bool _isRemoved;
+   static constexpr auto TAG = "Listener";
+ };
+ 
+--- a/cpp/RNFListener.cpp
++++ b/cpp/RNFListener.cpp
+@@ -21,11 +21,10 @@
+ }
+ 
+ void Listener::remove() {
+-  if (_isRemoved) {
++  if (_isRemoved.exchange(true)) {
+     return;
+   }
+   _remove();
+-  _isRemoved = true;
+ }
+ 
+ std::shared_ptr<Listener> Listener::create(ListenerRemover&& remover) {
+--- a/cpp/RNFChoreographer.cpp
++++ b/cpp/RNFChoreographer.cpp
+@@ -17,8 +17,8 @@
+ 
+ void Choreographer::removeAllListeners() {
+   Logger::log(TAG, "Removing all listeners");
+-  // Simply create a new ListenerManager, so the memory of the old one gets freed.
+-  _listeners = ListenerManager<OnFrameCallback>::create();
++  // Keep the manager stable while another thread finishes its current frame.
++  _listeners->clear();
+ }
+ 
+ } // namespace margelo

@@ -20,7 +20,6 @@ export function PuzzleContentTransition({ children, style, onLayout }: {
     onLayout?.(event);
     if (started.current) return;
     started.current = true;
-    console.info("[Handoff] content.layout " + Date.now());
     arrival.set(withTiming(1, { duration: 280, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System }));
   }}>{children}</Animated.View>;
 }

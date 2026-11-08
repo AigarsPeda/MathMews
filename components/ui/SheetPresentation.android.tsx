@@ -14,10 +14,8 @@ export function SheetPresentation({ visible, expanded, onClose, onDismissComplet
   useEffect(() => {
     if (visible) return;
     let cancelled = false;
-    console.info("[Handoff] js.hide " + Date.now());
     // hide() resolves after the native closing animation, unlike onDismissRequest.
     sheetRef.current?.hide().then(() => {
-      console.info("[Handoff] js.resolved " + Date.now());
       if (cancelled) return;
       setMounted(false);
       dismissComplete.current?.();
