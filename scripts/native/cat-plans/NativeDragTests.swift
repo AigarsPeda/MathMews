@@ -67,7 +67,7 @@ final class NativeDragTests: XCTestCase {
   buy.tap()
   XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 5)); tap("Try again")
   tap("Answer 4"); tap("Check answer"); tap("Next puzzle")
-  XCTAssertTrue(heading("Prepare a picnic. Your pretend budget").waitForExistence(timeout: 5)); shot("picnic-budget")
+  XCTAssertTrue(heading("Prepare a picnic. You have").waitForExistence(timeout: 5)); shot("picnic-budget")
   tap("Answer 3"); tap("Check answer")
   XCTAssertTrue(heading("The picnic is ready.").waitForExistence(timeout: 5)); shot("plan-complete")
   XCTAssertTrue(app.staticTexts["Run completed"].exists)

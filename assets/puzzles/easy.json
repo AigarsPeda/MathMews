@@ -67083,14 +67083,14 @@
       7
     ],
     "question": {
-      "en": "Prepare a picnic. Buy one of each item. How many euros will you spend?",
-      "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
-      "ru": "Подготовь пикник. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+      "en": "Prepare a picnic. Buy 1 apple and 1 cookie. What is the total cost in euros?",
+      "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu. Cik eiro tie maksā kopā?",
+      "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье. Сколько евро они стоят вместе?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Add the price of the first item to the price of the second item.",
+      "lv": "Pieskaiti pirmā priekšmeta cenai otrā priekšmeta cenu.",
+      "ru": "Прибавь к цене первого предмета цену второго."
     },
     "explanation": {
       "en": "(2 + 3): 5 euros.",
@@ -67118,10 +67118,14 @@
         "paid": 700,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €2, €3. Budget: €7. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €2, €3. Budžets: €7. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €2, €3. Бюджет: €7. Скидка: 0%."
+          "en": "Apple: €2. Cookie: €3.",
+          "lv": "Ābols: €2. Cepums: €3.",
+          "ru": "Яблоко: €2. Печенье: €3."
         }
       },
       "example": {
@@ -67139,21 +67143,25 @@
           "paid": 1600,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "apple",
+            "cookie"
+          ],
           "label": {
-            "en": "picnic baskets. Prices: €5, €6. Budget: €16. Discount: 0%.",
-            "lv": "piknika grozi. Cenas: €5, €6. Budžets: €16. Atlaide: 0%.",
-            "ru": "корзины для пикника. Цены: €5, €6. Бюджет: €16. Скидка: 0%."
+            "en": "Apple: €5. Cookie: €6.",
+            "lv": "Ābols: €5. Cepums: €6.",
+            "ru": "Яблоко: €5. Печенье: €6."
           }
         },
         "question": {
-          "en": "Prepare a picnic. Buy one of each item. How many euros will you spend?",
-          "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
-          "ru": "Подготовь пикник. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+          "en": "Prepare a picnic. Buy 1 apple and 1 cookie. What is the total cost in euros?",
+          "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu. Cik eiro tie maksā kopā?",
+          "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье. Сколько евро они стоят вместе?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n(5 + 6): 11 euros.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n(5 + 6): 11 eiro.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n(5 + 6): 11 евро."
+          "en": "Add the price of the first item to the price of the second item.\n\n(5 + 6): 11 euros.",
+          "lv": "Pieskaiti pirmā priekšmeta cenai otrā priekšmeta cenu.\n\n(5 + 6): 11 eiro.",
+          "ru": "Прибавь к цене первого предмета цену второго.\n\n(5 + 6): 11 евро."
         }
       }
     },
@@ -67508,14 +67516,14 @@
       7
     ],
     "question": {
-      "en": "Prepare a picnic. Buy one of each item and pay €7. How many euros should come back as change?",
-      "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €7. Cik eiro saņemsi atlikumā?",
-      "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €7. Сколько евро сдачи нужно получить?"
+      "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €7. How many euros should you get back?",
+      "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €7. Cik eiro saņemsi atlikumā?",
+      "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €7. Сколько евро сдачи ты получишь?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Add the two prices. Subtract that total from the amount you pay.",
+      "lv": "Saskaiti abas cenas. Atņem kopējo cenu no samaksātās summas.",
+      "ru": "Сложи две цены. Вычти общую стоимость из суммы, которую ты платишь."
     },
     "explanation": {
       "en": "7 − (2 + 3): 2 euros.",
@@ -67543,10 +67551,14 @@
         "paid": 700,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €2, €3. Budget: €7. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €2, €3. Budžets: €7. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €2, €3. Бюджет: €7. Скидка: 0%."
+          "en": "Apple: €2. Cookie: €3. Budget: €7.",
+          "lv": "Ābols: €2. Cepums: €3. Budžets: €7.",
+          "ru": "Яблоко: €2. Печенье: €3. Бюджет: €7."
         }
       },
       "example": {
@@ -67564,21 +67576,25 @@
           "paid": 1600,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "apple",
+            "cookie"
+          ],
           "label": {
-            "en": "picnic baskets. Prices: €5, €6. Budget: €16. Discount: 0%.",
-            "lv": "piknika grozi. Cenas: €5, €6. Budžets: €16. Atlaide: 0%.",
-            "ru": "корзины для пикника. Цены: €5, €6. Бюджет: €16. Скидка: 0%."
+            "en": "Apple: €5. Cookie: €6. Budget: €16.",
+            "lv": "Ābols: €5. Cepums: €6. Budžets: €16.",
+            "ru": "Яблоко: €5. Печенье: €6. Бюджет: €16."
           }
         },
         "question": {
-          "en": "Prepare a picnic. Buy one of each item and pay €16. How many euros should come back as change?",
-          "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €16. Cik eiro saņemsi atlikumā?",
-          "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €16. Сколько евро сдачи нужно получить?"
+          "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €16. How many euros should you get back?",
+          "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €16. Cik eiro saņemsi atlikumā?",
+          "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €16. Сколько евро сдачи ты получишь?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n16 − (5 + 6): 5 euros.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n16 − (5 + 6): 5 eiro.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n16 − (5 + 6): 5 евро."
+          "en": "Add the two prices. Subtract that total from the amount you pay.\n\n16 − (5 + 6): 5 euros.",
+          "lv": "Saskaiti abas cenas. Atņem kopējo cenu no samaksātās summas.\n\n16 − (5 + 6): 5 eiro.",
+          "ru": "Сложи две цены. Вычти общую стоимость из суммы, которую ты платишь.\n\n16 − (5 + 6): 5 евро."
         }
       }
     },
@@ -67762,14 +67778,14 @@
       7
     ],
     "question": {
-      "en": "Prepare a picnic. Your pretend budget is €7. How many items can you buy at this price?",
-      "lv": "Sagatavo pikniku. Tavs spēļu budžets ir €7. Cik priekšmetu vari nopirkt par šo cenu?",
-      "ru": "Подготовь пикник. Твой учебный бюджет — €7. Сколько предметов можно купить по этой цене?"
+      "en": "Prepare a picnic. You have €7. How many apples can you buy?",
+      "lv": "Sagatavo pikniku. Tev ir €7. Cik ābolus vari nopirkt?",
+      "ru": "Подготовь пикник. У тебя €7. Сколько яблок можно купить?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Count how many times the price fits into your budget.",
+      "lv": "Saskaiti, cik reizes cena ietilpst tavā budžetā.",
+      "ru": "Посчитай, сколько раз цена помещается в твой бюджет."
     },
     "explanation": {
       "en": "7 ÷ 2: 3 whole items fit in the budget.",
@@ -67795,10 +67811,13 @@
         "paid": 700,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple"
+        ],
         "label": {
-          "en": "picnic ribbons. Prices: €2. Budget: €7. Discount: 0%.",
-          "lv": "piknika lentes. Cenas: €2. Budžets: €7. Atlaide: 0%.",
-          "ru": "ленты для пикника. Цены: €2. Бюджет: €7. Скидка: 0%."
+          "en": "Apple: €2. Budget: €7.",
+          "lv": "Ābols: €2. Budžets: €7.",
+          "ru": "Яблоко: €2. Бюджет: €7."
         }
       },
       "example": {
@@ -67814,21 +67833,24 @@
           "paid": 1600,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "apple"
+          ],
           "label": {
-            "en": "picnic ribbons. Prices: €5. Budget: €16. Discount: 0%.",
-            "lv": "piknika lentes. Cenas: €5. Budžets: €16. Atlaide: 0%.",
-            "ru": "ленты для пикника. Цены: €5. Бюджет: €16. Скидка: 0%."
+            "en": "Apple: €5. Budget: €16.",
+            "lv": "Ābols: €5. Budžets: €16.",
+            "ru": "Яблоко: €5. Бюджет: €16."
           }
         },
         "question": {
-          "en": "Prepare a picnic. Your pretend budget is €16. How many items can you buy at this price?",
-          "lv": "Sagatavo pikniku. Tavs spēļu budžets ir €16. Cik priekšmetu vari nopirkt par šo cenu?",
-          "ru": "Подготовь пикник. Твой учебный бюджет — €16. Сколько предметов можно купить по этой цене?"
+          "en": "Prepare a picnic. You have €16. How many apples can you buy?",
+          "lv": "Sagatavo pikniku. Tev ir €16. Cik ābolus vari nopirkt?",
+          "ru": "Подготовь пикник. У тебя €16. Сколько яблок можно купить?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n16 ÷ 5: 3 whole items fit in the budget.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n16 ÷ 5: 3 veseli priekšmeti ietilpst budžetā.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n16 ÷ 5: 3 целых предметов можно купить."
+          "en": "Count how many times the price fits into your budget.\n\n16 ÷ 5: 3 whole items fit in the budget.",
+          "lv": "Saskaiti, cik reizes cena ietilpst tavā budžetā.\n\n16 ÷ 5: 3 veseli priekšmeti ietilpst budžetā.",
+          "ru": "Посчитай, сколько раз цена помещается в твой бюджет.\n\n16 ÷ 5: 3 целых предметов можно купить."
         }
       }
     },
@@ -67938,14 +67960,14 @@
       7
     ],
     "question": {
-      "en": "Make a reading corner. Buy one of each item. How many euros will you spend?",
-      "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
-      "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+      "en": "Make a reading corner. Buy 1 book and 1 plant. What is the total cost in euros?",
+      "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu. Cik eiro tie maksā kopā?",
+      "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение. Сколько евро они стоят вместе?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Add the price of the first item to the price of the second item.",
+      "lv": "Pieskaiti pirmā priekšmeta cenai otrā priekšmeta cenu.",
+      "ru": "Прибавь к цене первого предмета цену второго."
     },
     "explanation": {
       "en": "(3 + 4): 7 euros.",
@@ -67973,10 +67995,14 @@
         "paid": 1000,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €3, €4. Budget: €10. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €3, €4. Budžets: €10. Atlaide: 0%.",
-          "ru": "книги. Цены: €3, €4. Бюджет: €10. Скидка: 0%."
+          "en": "Book: €3. Plant: €4.",
+          "lv": "Grāmata: €3. Augs: €4.",
+          "ru": "Книга: €3. Растение: €4."
         }
       },
       "example": {
@@ -67994,21 +68020,25 @@
           "paid": 1900,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "book",
+            "plant"
+          ],
           "label": {
-            "en": "books. Prices: €6, €7. Budget: €19. Discount: 0%.",
-            "lv": "grāmatas. Cenas: €6, €7. Budžets: €19. Atlaide: 0%.",
-            "ru": "книги. Цены: €6, €7. Бюджет: €19. Скидка: 0%."
+            "en": "Book: €6. Plant: €7.",
+            "lv": "Grāmata: €6. Augs: €7.",
+            "ru": "Книга: €6. Растение: €7."
           }
         },
         "question": {
-          "en": "Make a reading corner. Buy one of each item. How many euros will you spend?",
-          "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
-          "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+          "en": "Make a reading corner. Buy 1 book and 1 plant. What is the total cost in euros?",
+          "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu. Cik eiro tie maksā kopā?",
+          "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение. Сколько евро они стоят вместе?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n(6 + 7): 13 euros.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n(6 + 7): 13 eiro.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n(6 + 7): 13 евро."
+          "en": "Add the price of the first item to the price of the second item.\n\n(6 + 7): 13 euros.",
+          "lv": "Pieskaiti pirmā priekšmeta cenai otrā priekšmeta cenu.\n\n(6 + 7): 13 eiro.",
+          "ru": "Прибавь к цене первого предмета цену второго.\n\n(6 + 7): 13 евро."
         }
       }
     },
@@ -68373,14 +68403,14 @@
       7
     ],
     "question": {
-      "en": "Make a reading corner. Buy one of each item and pay €10. How many euros should come back as change?",
-      "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €10. Cik eiro saņemsi atlikumā?",
-      "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €10. Сколько евро сдачи нужно получить?"
+      "en": "Make a reading corner. Buy 1 book and 1 plant and pay €10. How many euros should you get back?",
+      "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €10. Cik eiro saņemsi atlikumā?",
+      "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €10. Сколько евро сдачи ты получишь?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Add the two prices. Subtract that total from the amount you pay.",
+      "lv": "Saskaiti abas cenas. Atņem kopējo cenu no samaksātās summas.",
+      "ru": "Сложи две цены. Вычти общую стоимость из суммы, которую ты платишь."
     },
     "explanation": {
       "en": "10 − (3 + 4): 3 euros.",
@@ -68408,10 +68438,14 @@
         "paid": 1000,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €3, €4. Budget: €10. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €3, €4. Budžets: €10. Atlaide: 0%.",
-          "ru": "книги. Цены: €3, €4. Бюджет: €10. Скидка: 0%."
+          "en": "Book: €3. Plant: €4. Budget: €10.",
+          "lv": "Grāmata: €3. Augs: €4. Budžets: €10.",
+          "ru": "Книга: €3. Растение: €4. Бюджет: €10."
         }
       },
       "example": {
@@ -68429,21 +68463,25 @@
           "paid": 1900,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "book",
+            "plant"
+          ],
           "label": {
-            "en": "books. Prices: €6, €7. Budget: €19. Discount: 0%.",
-            "lv": "grāmatas. Cenas: €6, €7. Budžets: €19. Atlaide: 0%.",
-            "ru": "книги. Цены: €6, €7. Бюджет: €19. Скидка: 0%."
+            "en": "Book: €6. Plant: €7. Budget: €19.",
+            "lv": "Grāmata: €6. Augs: €7. Budžets: €19.",
+            "ru": "Книга: €6. Растение: €7. Бюджет: €19."
           }
         },
         "question": {
-          "en": "Make a reading corner. Buy one of each item and pay €19. How many euros should come back as change?",
-          "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €19. Cik eiro saņemsi atlikumā?",
-          "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €19. Сколько евро сдачи нужно получить?"
+          "en": "Make a reading corner. Buy 1 book and 1 plant and pay €19. How many euros should you get back?",
+          "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €19. Cik eiro saņemsi atlikumā?",
+          "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €19. Сколько евро сдачи ты получишь?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n19 − (6 + 7): 6 euros.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n19 − (6 + 7): 6 eiro.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n19 − (6 + 7): 6 евро."
+          "en": "Add the two prices. Subtract that total from the amount you pay.\n\n19 − (6 + 7): 6 euros.",
+          "lv": "Saskaiti abas cenas. Atņem kopējo cenu no samaksātās summas.\n\n19 − (6 + 7): 6 eiro.",
+          "ru": "Сложи две цены. Вычти общую стоимость из суммы, которую ты платишь.\n\n19 − (6 + 7): 6 евро."
         }
       }
     },
@@ -68633,14 +68671,14 @@
       7
     ],
     "question": {
-      "en": "Make a reading corner. Your pretend budget is €10. How many items can you buy at this price?",
-      "lv": "Iekārto lasīšanas stūrīti. Tavs spēļu budžets ir €10. Cik priekšmetu vari nopirkt par šo cenu?",
-      "ru": "Устрой уголок для чтения. Твой учебный бюджет — €10. Сколько предметов можно купить по этой цене?"
+      "en": "Make a reading corner. You have €10. How many books can you buy?",
+      "lv": "Iekārto lasīšanas stūrīti. Tev ir €10. Cik grāmatas vari nopirkt?",
+      "ru": "Устрой уголок для чтения. У тебя €10. Сколько книг можно купить?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Count how many times the price fits into your budget.",
+      "lv": "Saskaiti, cik reizes cena ietilpst tavā budžetā.",
+      "ru": "Посчитай, сколько раз цена помещается в твой бюджет."
     },
     "explanation": {
       "en": "10 ÷ 3: 3 whole items fit in the budget.",
@@ -68666,10 +68704,13 @@
         "paid": 1000,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book"
+        ],
         "label": {
-          "en": "bookmarks. Prices: €3. Budget: €10. Discount: 0%.",
-          "lv": "grāmatzīmes. Cenas: €3. Budžets: €10. Atlaide: 0%.",
-          "ru": "закладки. Цены: €3. Бюджет: €10. Скидка: 0%."
+          "en": "Book: €3. Budget: €10.",
+          "lv": "Grāmata: €3. Budžets: €10.",
+          "ru": "Книга: €3. Бюджет: €10."
         }
       },
       "example": {
@@ -68685,21 +68726,24 @@
           "paid": 1900,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "book"
+          ],
           "label": {
-            "en": "bookmarks. Prices: €6. Budget: €19. Discount: 0%.",
-            "lv": "grāmatzīmes. Cenas: €6. Budžets: €19. Atlaide: 0%.",
-            "ru": "закладки. Цены: €6. Бюджет: €19. Скидка: 0%."
+            "en": "Book: €6. Budget: €19.",
+            "lv": "Grāmata: €6. Budžets: €19.",
+            "ru": "Книга: €6. Бюджет: €19."
           }
         },
         "question": {
-          "en": "Make a reading corner. Your pretend budget is €19. How many items can you buy at this price?",
-          "lv": "Iekārto lasīšanas stūrīti. Tavs spēļu budžets ir €19. Cik priekšmetu vari nopirkt par šo cenu?",
-          "ru": "Устрой уголок для чтения. Твой учебный бюджет — €19. Сколько предметов можно купить по этой цене?"
+          "en": "Make a reading corner. You have €19. How many books can you buy?",
+          "lv": "Iekārto lasīšanas stūrīti. Tev ir €19. Cik grāmatas vari nopirkt?",
+          "ru": "Устрой уголок для чтения. У тебя €19. Сколько книг можно купить?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n19 ÷ 6: 3 whole items fit in the budget.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n19 ÷ 6: 3 veseli priekšmeti ietilpst budžetā.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n19 ÷ 6: 3 целых предметов можно купить."
+          "en": "Count how many times the price fits into your budget.\n\n19 ÷ 6: 3 whole items fit in the budget.",
+          "lv": "Saskaiti, cik reizes cena ietilpst tavā budžetā.\n\n19 ÷ 6: 3 veseli priekšmeti ietilpst budžetā.",
+          "ru": "Посчитай, сколько раз цена помещается в твой бюджет.\n\n19 ÷ 6: 3 целых предметов можно купить."
         }
       }
     },
@@ -68811,14 +68855,14 @@
       7
     ],
     "question": {
-      "en": "Plan a cat party. Buy one of each item. How many euros will you spend?",
-      "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
-      "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+      "en": "Plan a cat party. Buy 1 balloon and 1 cupcake. What is the total cost in euros?",
+      "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu. Cik eiro tie maksā kopā?",
+      "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс. Сколько евро они стоят вместе?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Add the price of the first item to the price of the second item.",
+      "lv": "Pieskaiti pirmā priekšmeta cenai otrā priekšmeta cenu.",
+      "ru": "Прибавь к цене первого предмета цену второго."
     },
     "explanation": {
       "en": "(4 + 5): 9 euros.",
@@ -68846,10 +68890,14 @@
         "paid": 1300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €4, €5. Budget: €13. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €4, €5. Budžets: €13. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €4, €5. Бюджет: €13. Скидка: 0%."
+          "en": "Balloon: €4. Cupcake: €5.",
+          "lv": "Balons: €4. Kēksiņš: €5.",
+          "ru": "Шарик: €4. Кекс: €5."
         }
       },
       "example": {
@@ -68867,21 +68915,25 @@
           "paid": 2200,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "balloon",
+            "cupcake"
+          ],
           "label": {
-            "en": "party decorations. Prices: €7, €8. Budget: €22. Discount: 0%.",
-            "lv": "ballītes rotājumi. Cenas: €7, €8. Budžets: €22. Atlaide: 0%.",
-            "ru": "украшения для вечеринки. Цены: €7, €8. Бюджет: €22. Скидка: 0%."
+            "en": "Balloon: €7. Cupcake: €8.",
+            "lv": "Balons: €7. Kēksiņš: €8.",
+            "ru": "Шарик: €7. Кекс: €8."
           }
         },
         "question": {
-          "en": "Plan a cat party. Buy one of each item. How many euros will you spend?",
-          "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta. Cik eiro iztērēsi?",
-          "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида. Сколько евро потратишь?"
+          "en": "Plan a cat party. Buy 1 balloon and 1 cupcake. What is the total cost in euros?",
+          "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu. Cik eiro tie maksā kopā?",
+          "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс. Сколько евро они стоят вместе?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n(7 + 8): 15 euros.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n(7 + 8): 15 eiro.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n(7 + 8): 15 евро."
+          "en": "Add the price of the first item to the price of the second item.\n\n(7 + 8): 15 euros.",
+          "lv": "Pieskaiti pirmā priekšmeta cenai otrā priekšmeta cenu.\n\n(7 + 8): 15 eiro.",
+          "ru": "Прибавь к цене первого предмета цену второго.\n\n(7 + 8): 15 евро."
         }
       }
     },
@@ -69246,14 +69298,14 @@
       7
     ],
     "question": {
-      "en": "Plan a cat party. Buy one of each item and pay €13. How many euros should come back as change?",
-      "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €13. Cik eiro saņemsi atlikumā?",
-      "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €13. Сколько евро сдачи нужно получить?"
+      "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €13. How many euros should you get back?",
+      "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €13. Cik eiro saņemsi atlikumā?",
+      "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €13. Сколько евро сдачи ты получишь?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Add the two prices. Subtract that total from the amount you pay.",
+      "lv": "Saskaiti abas cenas. Atņem kopējo cenu no samaksātās summas.",
+      "ru": "Сложи две цены. Вычти общую стоимость из суммы, которую ты платишь."
     },
     "explanation": {
       "en": "13 − (4 + 5): 4 euros.",
@@ -69281,10 +69333,14 @@
         "paid": 1300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €4, €5. Budget: €13. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €4, €5. Budžets: €13. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €4, €5. Бюджет: €13. Скидка: 0%."
+          "en": "Balloon: €4. Cupcake: €5. Budget: €13.",
+          "lv": "Balons: €4. Kēksiņš: €5. Budžets: €13.",
+          "ru": "Шарик: €4. Кекс: €5. Бюджет: €13."
         }
       },
       "example": {
@@ -69302,21 +69358,25 @@
           "paid": 2200,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "balloon",
+            "cupcake"
+          ],
           "label": {
-            "en": "party decorations. Prices: €7, €8. Budget: €22. Discount: 0%.",
-            "lv": "ballītes rotājumi. Cenas: €7, €8. Budžets: €22. Atlaide: 0%.",
-            "ru": "украшения для вечеринки. Цены: €7, €8. Бюджет: €22. Скидка: 0%."
+            "en": "Balloon: €7. Cupcake: €8. Budget: €22.",
+            "lv": "Balons: €7. Kēksiņš: €8. Budžets: €22.",
+            "ru": "Шарик: €7. Кекс: €8. Бюджет: €22."
           }
         },
         "question": {
-          "en": "Plan a cat party. Buy one of each item and pay €22. How many euros should come back as change?",
-          "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €22. Cik eiro saņemsi atlikumā?",
-          "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €22. Сколько евро сдачи нужно получить?"
+          "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €22. How many euros should you get back?",
+          "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €22. Cik eiro saņemsi atlikumā?",
+          "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €22. Сколько евро сдачи ты получишь?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n22 − (7 + 8): 7 euros.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n22 − (7 + 8): 7 eiro.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n22 − (7 + 8): 7 евро."
+          "en": "Add the two prices. Subtract that total from the amount you pay.\n\n22 − (7 + 8): 7 euros.",
+          "lv": "Saskaiti abas cenas. Atņem kopējo cenu no samaksātās summas.\n\n22 − (7 + 8): 7 eiro.",
+          "ru": "Сложи две цены. Вычти общую стоимость из суммы, которую ты платишь.\n\n22 − (7 + 8): 7 евро."
         }
       }
     },
@@ -69506,14 +69566,14 @@
       7
     ],
     "question": {
-      "en": "Plan a cat party. Your pretend budget is €13. How many items can you buy at this price?",
-      "lv": "Izplāno kaķu ballīti. Tavs spēļu budžets ir €13. Cik priekšmetu vari nopirkt par šo cenu?",
-      "ru": "Спланируй кошачью вечеринку. Твой учебный бюджет — €13. Сколько предметов можно купить по этой цене?"
+      "en": "Plan a cat party. You have €13. How many balloons can you buy?",
+      "lv": "Izplāno kaķu ballīti. Tev ir €13. Cik balonus vari nopirkt?",
+      "ru": "Спланируй кошачью вечеринку. У тебя €13. Сколько шариков можно купить?"
     },
     "hint": {
-      "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.",
-      "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.",
-      "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет."
+      "en": "Count how many times the price fits into your budget.",
+      "lv": "Saskaiti, cik reizes cena ietilpst tavā budžetā.",
+      "ru": "Посчитай, сколько раз цена помещается в твой бюджет."
     },
     "explanation": {
       "en": "13 ÷ 4: 3 whole items fit in the budget.",
@@ -69539,10 +69599,13 @@
         "paid": 1300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon"
+        ],
         "label": {
-          "en": "paper stars. Prices: €4. Budget: €13. Discount: 0%.",
-          "lv": "papīra zvaigznes. Cenas: €4. Budžets: €13. Atlaide: 0%.",
-          "ru": "бумажные звёзды. Цены: €4. Бюджет: €13. Скидка: 0%."
+          "en": "Balloon: €4. Budget: €13.",
+          "lv": "Balons: €4. Budžets: €13.",
+          "ru": "Шарик: €4. Бюджет: €13."
         }
       },
       "example": {
@@ -69558,21 +69621,24 @@
           "paid": 2200,
           "discount": 0,
           "unit": "euros",
+          "items": [
+            "balloon"
+          ],
           "label": {
-            "en": "paper stars. Prices: €7. Budget: €22. Discount: 0%.",
-            "lv": "papīra zvaigznes. Cenas: €7. Budžets: €22. Atlaide: 0%.",
-            "ru": "бумажные звёзды. Цены: €7. Бюджет: €22. Скидка: 0%."
+            "en": "Balloon: €7. Budget: €22.",
+            "lv": "Balons: €7. Budžets: €22.",
+            "ru": "Шарик: €7. Бюджет: €22."
           }
         },
         "question": {
-          "en": "Plan a cat party. Your pretend budget is €22. How many items can you buy at this price?",
-          "lv": "Izplāno kaķu ballīti. Tavs spēļu budžets ir €22. Cik priekšmetu vari nopirkt par šo cenu?",
-          "ru": "Спланируй кошачью вечеринку. Твой учебный бюджет — €22. Сколько предметов можно купить по этой цене?"
+          "en": "Plan a cat party. You have €22. How many balloons can you buy?",
+          "lv": "Izplāno kaķu ballīti. Tev ir €22. Cik balonus vari nopirkt?",
+          "ru": "Спланируй кошачью вечеринку. У тебя €22. Сколько шариков можно купить?"
         },
         "explanation": {
-          "en": "Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.\n\n22 ÷ 7: 3 whole items fit in the budget.",
-          "lv": "Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.\n\n22 ÷ 7: 3 veseli priekšmeti ietilpst budžetā.",
-          "ru": "Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.\n\n22 ÷ 7: 3 целых предметов можно купить."
+          "en": "Count how many times the price fits into your budget.\n\n22 ÷ 7: 3 whole items fit in the budget.",
+          "lv": "Saskaiti, cik reizes cena ietilpst tavā budžetā.\n\n22 ÷ 7: 3 veseli priekšmeti ietilpst budžetā.",
+          "ru": "Посчитай, сколько раз цена помещается в твой бюджет.\n\n22 ÷ 7: 3 целых предметов можно купить."
         }
       }
     },

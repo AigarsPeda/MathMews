@@ -720,3 +720,18 @@ console.log('Localized bridge retry flow passed: specific first hints, expanded 
   assert.equal(replay.result().decorationLessonId, undefined, 'Replay does not announce another item');
 }
 console.log('Cat-plan completion previews its earned furnishing and opens the existing placement flow without a duplicate replay reward.');
+
+// Shopping diagrams identify the objects being priced without revealing a sum.
+{
+  const model = allPuzzles.find(p => p.id === 'v2-easy-cat-plans-picnic-2').everyday.model;
+  const render = renderHarness('components/puzzle/EverydayDiagram.tsx', 'EverydayDiagram', {
+    '@shopify/react-native-skia': {},
+    '@/contexts/LocaleProvider': { useLocale: () => ({ locale: 'en' }) },
+  });
+  const tree = nodes(render({ model }));
+  assert.deepEqual(tree.filter(n => n.type === 'AppIcon').map(n => n.props.name), ['apple', 'cookie']);
+  for (const label of ['Apple', 'Cookie', '€2', '€3']) assert.ok(tree.some(n => n.props.children === label), `Show ${label}`);
+  assert.ok(!tree.some(n => n.props.children === '€5'), 'The diagram must not reveal the answer');
+  assert.equal(tree[0].props.accessibilityLabel, 'Apple: €2. Cookie: €3.');
+  console.log('Verified pictured shopping items, visible names/prices, matching accessible givens and no answer leak.');
+}

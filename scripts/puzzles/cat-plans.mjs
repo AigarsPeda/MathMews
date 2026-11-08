@@ -1,6 +1,8 @@
 /** Three practical cat plans, using the same ten-step paths and final timer as other lessons. */
+import fs from 'node:fs';
 const T = (en, lv, ru) => ({ en, lv, ru });
 const locales = ['en', 'lv', 'ru'];
+const itemNames = Object.fromEntries(locales.map(locale => [locale, JSON.parse(fs.readFileSync(new URL(`../../locales/${locale}.json`, import.meta.url))).everyday.shopItems]));
 const tiers = ['easy', 'medium', 'hard'];
 const clock = minutes => `${Math.floor(minutes / 60)}`.padStart(2, '0') + ':' + `${minutes % 60}`.padStart(2, '0');
 const number = (value, locale) => String(value).replace('.', locale === 'en' ? '.' : ',');
@@ -8,18 +10,18 @@ const plans = [
   { id: 'picnic', title: T('Prepare a picnic', 'Sagatavo pikniku', 'Подготовь пикник'),
     description: T('Count the guests, pack supplies and choose a time for the cat picnic.', 'Saskaiti viesus, sagatavo krājumus un izvēlies kaķu piknika laiku.', 'Посчитай гостей, собери припасы и выбери время для кошачьего пикника.'),
     completion: T('The picnic is ready. There is a place and water for every cat.', 'Pikniks ir gatavs. Katram kaķim ir vieta un ūdens.', 'Пикник готов. Для каждого кота есть место и вода.'),
-    supplies: T('picnic baskets', 'piknika grozi', 'корзины для пикника'),
-    decorations: T('picnic ribbons', 'piknika lentes', 'ленты для пикника') },
+    items: ['apple', 'cookie'], purchase: T('Buy 1 apple and 1 cookie', 'Nopērc 1 ābolu un 1 cepumu', 'Купи 1 яблоко и 1 печенье'),
+    buyMany: T('How many apples can you buy?', 'Cik ābolus vari nopirkt?', 'Сколько яблок можно купить?') },
   { id: 'reading-corner', title: T('Make a reading corner', 'Iekārto lasīšanas stūrīti', 'Устрой уголок для чтения'),
     description: T('Arrange places, choose books and plan a quiet reading time with the cats.', 'Iekārto vietas, izvēlies grāmatas un plāno mierīgu lasīšanas laiku ar kaķiem.', 'Подготовь места, выбери книги и запланируй тихое чтение с котами.'),
     completion: T('The reading corner is ready. The cats can settle beside the books.', 'Lasīšanas stūrītis ir gatavs. Kaķi var iekārtoties blakus grāmatām.', 'Уголок для чтения готов. Коты могут устроиться рядом с книгами.'),
-    supplies: T('books', 'grāmatas', 'книги'),
-    decorations: T('bookmarks', 'grāmatzīmes', 'закладки') },
+    items: ['book', 'plant'], purchase: T('Buy 1 book and 1 plant', 'Nopērc 1 grāmatu un 1 augu', 'Купи 1 книгу и 1 растение'),
+    buyMany: T('How many books can you buy?', 'Cik grāmatas vari nopirkt?', 'Сколько книг можно купить?') },
   { id: 'cat-party', title: T('Plan a cat party', 'Izplāno kaķu ballīti', 'Спланируй кошачью вечеринку'),
     description: T('Invite the cats, plan the decorations and get everything ready on time.', 'Ielūdz kaķus, plāno rotājumus un visu sagatavo laikus.', 'Пригласи котов, спланируй украшения и подготовь всё вовремя.'),
     completion: T('The party is ready. The cats have places, water and decorations.', 'Ballīte ir gatava. Kaķiem ir vietas, ūdens un rotājumi.', 'Вечеринка готова. Для котов подготовлены места, вода и украшения.'),
-    supplies: T('party decorations', 'ballītes rotājumi', 'украшения для вечеринки'),
-    decorations: T('paper stars', 'papīra zvaigznes', 'бумажные звёзды') },
+    items: ['balloon', 'cupcake'], purchase: T('Buy 1 balloon and 1 cupcake', 'Nopērc 1 balonu un 1 kēksiņu', 'Купи 1 шарик и 1 кекс'),
+    buyMany: T('How many balloons can you buy?', 'Cik balonus vari nopirkt?', 'Сколько шариков можно купить?') },
 ];
 const intro = (plan, text) => Object.fromEntries(locales.map(locale => [locale, `${plan.title[locale]}. ${text[locale]}`]));
 
@@ -42,14 +44,19 @@ function task(plan, tier, slot, variant) {
     const price = (n + 1) * 100, second = (n + 2) * 100, paid = price * (tier + 3) + 100;
     const discount = tier === 2 && slot === 1 ? 20 : 0;
     model = { kind: 'money', task: slot === 9 ? 'afford' : slot === 6 ? 'change' : 'total',
-      prices: slot === 9 ? [price] : [price, second], quantities: slot === 9 ? [1] : [1, 1], paid, discount, unit: 'euros' };
-    const prices = model.prices.map(p => `€${p / 100}`).join(', '), supplies = slot === 9 ? plan.decorations : plan.supplies;
-    model.label = T(`${supplies.en}. Prices: ${prices}. Budget: €${paid / 100}. Discount: ${discount}%.`, `${supplies.lv}. Cenas: ${prices}. Budžets: €${paid / 100}. Atlaide: ${discount}%.`, `${supplies.ru}. Цены: ${prices}. Бюджет: €${paid / 100}. Скидка: ${discount}%.`);
+      prices: slot === 9 ? [price] : [price, second], quantities: slot === 9 ? [1] : [1, 1], paid, discount, unit: 'euros', items: slot === 9 ? plan.items.slice(0, 1) : plan.items };
+    model.label = Object.fromEntries(locales.map(locale => [locale,
+      model.items.map((item, i) => `${itemNames[locale][item]}: €${model.prices[i] / 100}.`).join(' ')
+      + (slot === 1 ? '' : ` ${T('Budget', 'Budžets', 'Бюджет')[locale]}: €${paid / 100}.`)
+      + (discount ? ` ${T('Discount', 'Atlaide', 'Скидка')[locale]}: ${discount}%.` : '')]));
     answer = slot === 9 ? Math.floor(paid / price) : slot === 6 ? (paid - price - second) / 100 : (price + second) * (1 - discount / 100) / 100;
-    question = slot === 9 ? T(`Your pretend budget is €${paid / 100}. How many items can you buy at this price?`, `Tavs spēļu budžets ir €${paid / 100}. Cik priekšmetu vari nopirkt par šo cenu?`, `Твой учебный бюджет — €${paid / 100}. Сколько предметов можно купить по этой цене?`)
-      : slot === 6 ? T(`Buy one of each item and pay €${paid / 100}. How many euros should come back as change?`, `Nopērc pa vienam no katra priekšmeta un samaksā €${paid / 100}. Cik eiro saņemsi atlikumā?`, `Купи по одному предмету каждого вида и заплати €${paid / 100}. Сколько евро сдачи нужно получить?`)
-      : T(`Buy one of each item${discount ? ` with ${discount}% off` : ''}. How many euros will you spend?`, `Nopērc pa vienam no katra priekšmeta${discount ? ` ar ${discount}% atlaidi` : ''}. Cik eiro iztērēsi?`, `Купи по одному предмету каждого вида${discount ? ` со скидкой ${discount}%` : ''}. Сколько евро потратишь?`);
-    hint = T('Work out the total price first. For change, subtract it from the budget; for a quantity, count how many prices fit.', 'Vispirms aprēķini kopējo cenu. Atlikumam atņem to no budžeta; daudzumam skaiti, cik cenas tajā ietilpst.', 'Сначала найди общую стоимость. Для сдачи вычти её из бюджета; для количества посчитай, сколько покупок он позволяет.');
+    question = slot === 9 ? T(`You have €${paid / 100}. ${plan.buyMany.en}`, `Tev ir €${paid / 100}. ${plan.buyMany.lv}`, `У тебя €${paid / 100}. ${plan.buyMany.ru}`)
+      : slot === 6 ? T(`${plan.purchase.en} and pay €${paid / 100}. How many euros should you get back?`, `${plan.purchase.lv} un samaksā €${paid / 100}. Cik eiro saņemsi atlikumā?`, `${plan.purchase.ru} и заплати €${paid / 100}. Сколько евро сдачи ты получишь?`)
+      : T(`${plan.purchase.en}${discount ? ` with ${discount}% off` : ''}. What is the total cost in euros?`, `${plan.purchase.lv}${discount ? ` ar ${discount}% atlaidi` : ''}. Cik eiro tie maksā kopā?`, `${plan.purchase.ru}${discount ? ` со скидкой ${discount}%` : ''}. Сколько евро они стоят вместе?`);
+    hint = slot === 9 ? T('Count how many times the price fits into your budget.', 'Saskaiti, cik reizes cena ietilpst tavā budžetā.', 'Посчитай, сколько раз цена помещается в твой бюджет.')
+      : slot === 6 ? T('Add the two prices. Subtract that total from the amount you pay.', 'Saskaiti abas cenas. Atņem kopējo cenu no samaksātās summas.', 'Сложи две цены. Вычти общую стоимость из суммы, которую ты платишь.')
+      : discount ? T(`Add the two prices, then take ${discount}% off the total.`, `Saskaiti abas cenas, tad atņem ${discount}% no kopsummas.`, `Сложи две цены, затем вычти ${discount}% от общей суммы.`)
+      : T('Add the price of the first item to the price of the second item.', 'Pieskaiti pirmā priekšmeta cenai otrā priekšmeta cenu.', 'Прибавь к цене первого предмета цену второго.');
     const work = slot === 9 ? `${paid / 100} ÷ ${price / 100}` : slot === 6 ? `${paid / 100} − (${price / 100} + ${second / 100})` : `(${price / 100} + ${second / 100})${discount ? ' × 0.8' : ''}`;
     explanation = T(`${work}: ${answer}${slot === 9 ? ' whole items fit in the budget' : ' euros'}.`, `${work.replace('0.8', '0,8')}: ${number(answer, 'lv')}${slot === 9 ? ' veseli priekšmeti ietilpst budžetā' : ' eiro'}.`, `${work.replace('0.8', '0,8')}: ${number(answer, 'ru')}${slot === 9 ? ' целых предметов можно купить' : ' евро'}.`);
   } else if (slot === 2 || slot === 7) {

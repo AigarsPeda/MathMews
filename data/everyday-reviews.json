@@ -82261,9 +82261,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €19. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €19. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €19. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €19. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €19. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €19. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "19 − (6 + 7): 6 euros.",
@@ -82302,10 +82302,14 @@
         "paid": 1900,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €6, €7. Budget: €19. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €6, €7. Budžets: €19. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €6, €7. Бюджет: €19. Скидка: 0%."
+          "en": "Apple: €6. Cookie: €7. Budget: €19.",
+          "lv": "Ābols: €6. Cepums: €7. Budžets: €19.",
+          "ru": "Яблоко: €6. Печенье: €7. Бюджет: €19."
         }
       }
     },
@@ -82358,9 +82362,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €25. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €25. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €25. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €25. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €25. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €25. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "25 − (8 + 9): 8 euros.",
@@ -82399,10 +82403,14 @@
         "paid": 2500,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €8, €9. Budget: €25. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €8, €9. Budžets: €25. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €8, €9. Бюджет: €25. Скидка: 0%."
+          "en": "Apple: €8. Cookie: €9. Budget: €25.",
+          "lv": "Ābols: €8. Cepums: €9. Budžets: €25.",
+          "ru": "Яблоко: €8. Печенье: €9. Бюджет: €25."
         }
       }
     },
@@ -82455,9 +82463,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €31. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €31. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €31. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €31. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €31. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €31. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "31 − (10 + 11): 10 euros.",
@@ -82496,10 +82504,14 @@
         "paid": 3100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €10, €11. Budget: €31. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €10, €11. Budžets: €31. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €10, €11. Бюджет: €31. Скидка: 0%."
+          "en": "Apple: €10. Cookie: €11. Budget: €31.",
+          "lv": "Ābols: €10. Cepums: €11. Budžets: €31.",
+          "ru": "Яблоко: €10. Печенье: €11. Бюджет: €31."
         }
       }
     },
@@ -82552,9 +82564,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €37. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €37. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €37. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €37. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €37. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €37. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "37 − (12 + 13): 12 euros.",
@@ -82593,10 +82605,14 @@
         "paid": 3700,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €12, €13. Budget: €37. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €12, €13. Budžets: €37. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €12, €13. Бюджет: €37. Скидка: 0%."
+          "en": "Apple: €12. Cookie: €13. Budget: €37.",
+          "lv": "Ābols: €12. Cepums: €13. Budžets: €37.",
+          "ru": "Яблоко: €12. Печенье: €13. Бюджет: €37."
         }
       }
     },
@@ -82649,9 +82665,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €43. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €43. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €43. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €43. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €43. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €43. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "43 − (14 + 15): 14 euros.",
@@ -82690,10 +82706,14 @@
         "paid": 4300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €14, €15. Budget: €43. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €14, €15. Budžets: €43. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €14, €15. Бюджет: €43. Скидка: 0%."
+          "en": "Apple: €14. Cookie: €15. Budget: €43.",
+          "lv": "Ābols: €14. Cepums: €15. Budžets: €43.",
+          "ru": "Яблоко: €14. Печенье: €15. Бюджет: €43."
         }
       }
     },
@@ -82746,9 +82766,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €49. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €49. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €49. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €49. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €49. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €49. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "49 − (16 + 17): 16 euros.",
@@ -82787,10 +82807,14 @@
         "paid": 4900,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €16, €17. Budget: €49. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €16, €17. Budžets: €49. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €16, €17. Бюджет: €49. Скидка: 0%."
+          "en": "Apple: €16. Cookie: €17. Budget: €49.",
+          "lv": "Ābols: €16. Cepums: €17. Budžets: €49.",
+          "ru": "Яблоко: €16. Печенье: €17. Бюджет: €49."
         }
       }
     }
@@ -82845,9 +82869,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €22. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €22. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €22. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €22. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €22. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €22. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "22 − (7 + 8): 7 euros.",
@@ -82886,10 +82910,14 @@
         "paid": 2200,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €7, €8. Budget: €22. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €7, €8. Budžets: €22. Atlaide: 0%.",
-          "ru": "книги. Цены: €7, €8. Бюджет: €22. Скидка: 0%."
+          "en": "Book: €7. Plant: €8. Budget: €22.",
+          "lv": "Grāmata: €7. Augs: €8. Budžets: €22.",
+          "ru": "Книга: €7. Растение: €8. Бюджет: €22."
         }
       }
     },
@@ -82942,9 +82970,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €28. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €28. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €28. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €28. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €28. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €28. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "28 − (9 + 10): 9 euros.",
@@ -82983,10 +83011,14 @@
         "paid": 2800,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €9, €10. Budget: €28. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €9, €10. Budžets: €28. Atlaide: 0%.",
-          "ru": "книги. Цены: €9, €10. Бюджет: €28. Скидка: 0%."
+          "en": "Book: €9. Plant: €10. Budget: €28.",
+          "lv": "Grāmata: €9. Augs: €10. Budžets: €28.",
+          "ru": "Книга: €9. Растение: €10. Бюджет: €28."
         }
       }
     },
@@ -83039,9 +83071,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €34. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €34. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €34. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €34. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €34. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €34. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "34 − (11 + 12): 11 euros.",
@@ -83080,10 +83112,14 @@
         "paid": 3400,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €11, €12. Budget: €34. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €11, €12. Budžets: €34. Atlaide: 0%.",
-          "ru": "книги. Цены: €11, €12. Бюджет: €34. Скидка: 0%."
+          "en": "Book: €11. Plant: €12. Budget: €34.",
+          "lv": "Grāmata: €11. Augs: €12. Budžets: €34.",
+          "ru": "Книга: €11. Растение: €12. Бюджет: €34."
         }
       }
     },
@@ -83136,9 +83172,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €40. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €40. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €40. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €40. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €40. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €40. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "40 − (13 + 14): 13 euros.",
@@ -83177,10 +83213,14 @@
         "paid": 4000,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €13, €14. Budget: €40. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €13, €14. Budžets: €40. Atlaide: 0%.",
-          "ru": "книги. Цены: €13, €14. Бюджет: €40. Скидка: 0%."
+          "en": "Book: €13. Plant: €14. Budget: €40.",
+          "lv": "Grāmata: €13. Augs: €14. Budžets: €40.",
+          "ru": "Книга: €13. Растение: €14. Бюджет: €40."
         }
       }
     },
@@ -83233,9 +83273,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €46. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €46. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €46. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €46. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €46. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €46. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "46 − (15 + 16): 15 euros.",
@@ -83274,10 +83314,14 @@
         "paid": 4600,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €15, €16. Budget: €46. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €15, €16. Budžets: €46. Atlaide: 0%.",
-          "ru": "книги. Цены: €15, €16. Бюджет: €46. Скидка: 0%."
+          "en": "Book: €15. Plant: €16. Budget: €46.",
+          "lv": "Grāmata: €15. Augs: €16. Budžets: €46.",
+          "ru": "Книга: €15. Растение: €16. Бюджет: €46."
         }
       }
     },
@@ -83330,9 +83374,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €52. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €52. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €52. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €52. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €52. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €52. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "52 − (17 + 18): 17 euros.",
@@ -83371,10 +83415,14 @@
         "paid": 5200,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €17, €18. Budget: €52. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €17, €18. Budžets: €52. Atlaide: 0%.",
-          "ru": "книги. Цены: €17, €18. Бюджет: €52. Скидка: 0%."
+          "en": "Book: €17. Plant: €18. Budget: €52.",
+          "lv": "Grāmata: €17. Augs: €18. Budžets: €52.",
+          "ru": "Книга: €17. Растение: €18. Бюджет: €52."
         }
       }
     }
@@ -83429,9 +83477,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €25. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €25. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €25. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €25. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €25. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €25. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "25 − (8 + 9): 8 euros.",
@@ -83470,10 +83518,14 @@
         "paid": 2500,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €8, €9. Budget: €25. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €8, €9. Budžets: €25. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €8, €9. Бюджет: €25. Скидка: 0%."
+          "en": "Balloon: €8. Cupcake: €9. Budget: €25.",
+          "lv": "Balons: €8. Kēksiņš: €9. Budžets: €25.",
+          "ru": "Шарик: €8. Кекс: €9. Бюджет: €25."
         }
       }
     },
@@ -83526,9 +83578,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €31. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €31. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €31. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €31. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €31. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €31. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "31 − (10 + 11): 10 euros.",
@@ -83567,10 +83619,14 @@
         "paid": 3100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €10, €11. Budget: €31. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €10, €11. Budžets: €31. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €10, €11. Бюджет: €31. Скидка: 0%."
+          "en": "Balloon: €10. Cupcake: €11. Budget: €31.",
+          "lv": "Balons: €10. Kēksiņš: €11. Budžets: €31.",
+          "ru": "Шарик: €10. Кекс: €11. Бюджет: €31."
         }
       }
     },
@@ -83623,9 +83679,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €37. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €37. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €37. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €37. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €37. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €37. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "37 − (12 + 13): 12 euros.",
@@ -83664,10 +83720,14 @@
         "paid": 3700,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €12, €13. Budget: €37. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €12, €13. Budžets: €37. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €12, €13. Бюджет: €37. Скидка: 0%."
+          "en": "Balloon: €12. Cupcake: €13. Budget: €37.",
+          "lv": "Balons: €12. Kēksiņš: €13. Budžets: €37.",
+          "ru": "Шарик: €12. Кекс: €13. Бюджет: €37."
         }
       }
     },
@@ -83720,9 +83780,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €43. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €43. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €43. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €43. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €43. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €43. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "43 − (14 + 15): 14 euros.",
@@ -83761,10 +83821,14 @@
         "paid": 4300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €14, €15. Budget: €43. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €14, €15. Budžets: €43. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €14, €15. Бюджет: €43. Скидка: 0%."
+          "en": "Balloon: €14. Cupcake: €15. Budget: €43.",
+          "lv": "Balons: €14. Kēksiņš: €15. Budžets: €43.",
+          "ru": "Шарик: €14. Кекс: €15. Бюджет: €43."
         }
       }
     },
@@ -83817,9 +83881,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €49. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €49. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €49. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €49. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €49. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €49. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "49 − (16 + 17): 16 euros.",
@@ -83858,10 +83922,14 @@
         "paid": 4900,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €16, €17. Budget: €49. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €16, €17. Budžets: €49. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €16, €17. Бюджет: €49. Скидка: 0%."
+          "en": "Balloon: €16. Cupcake: €17. Budget: €49.",
+          "lv": "Balons: €16. Kēksiņš: €17. Budžets: €49.",
+          "ru": "Шарик: €16. Кекс: €17. Бюджет: €49."
         }
       }
     },
@@ -83914,9 +83982,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €55. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €55. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €55. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €55. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €55. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €55. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "55 − (18 + 19): 18 euros.",
@@ -83955,10 +84023,14 @@
         "paid": 5500,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €18, €19. Budget: €55. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €18, €19. Budžets: €55. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €18, €19. Бюджет: €55. Скидка: 0%."
+          "en": "Balloon: €18. Cupcake: €19. Budget: €55.",
+          "lv": "Balons: €18. Kēksiņš: €19. Budžets: €55.",
+          "ru": "Шарик: €18. Кекс: €19. Бюджет: €55."
         }
       }
     }
@@ -84013,9 +84085,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €25. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €25. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €25. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €25. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €25. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €25. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "25 − (6 + 7): 12 euros.",
@@ -84054,10 +84126,14 @@
         "paid": 2500,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €6, €7. Budget: €25. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €6, €7. Budžets: €25. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €6, €7. Бюджет: €25. Скидка: 0%."
+          "en": "Apple: €6. Cookie: €7. Budget: €25.",
+          "lv": "Ābols: €6. Cepums: €7. Budžets: €25.",
+          "ru": "Яблоко: €6. Печенье: €7. Бюджет: €25."
         }
       }
     },
@@ -84110,9 +84186,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €33. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €33. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €33. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €33. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €33. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €33. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "33 − (8 + 9): 16 euros.",
@@ -84151,10 +84227,14 @@
         "paid": 3300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €8, €9. Budget: €33. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €8, €9. Budžets: €33. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €8, €9. Бюджет: €33. Скидка: 0%."
+          "en": "Apple: €8. Cookie: €9. Budget: €33.",
+          "lv": "Ābols: €8. Cepums: €9. Budžets: €33.",
+          "ru": "Яблоко: €8. Печенье: €9. Бюджет: €33."
         }
       }
     },
@@ -84207,9 +84287,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €41. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €41. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €41. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €41. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €41. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €41. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "41 − (10 + 11): 20 euros.",
@@ -84248,10 +84328,14 @@
         "paid": 4100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €10, €11. Budget: €41. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €10, €11. Budžets: €41. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €10, €11. Бюджет: €41. Скидка: 0%."
+          "en": "Apple: €10. Cookie: €11. Budget: €41.",
+          "lv": "Ābols: €10. Cepums: €11. Budžets: €41.",
+          "ru": "Яблоко: €10. Печенье: €11. Бюджет: €41."
         }
       }
     },
@@ -84304,9 +84388,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €49. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €49. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €49. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €49. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €49. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €49. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "49 − (12 + 13): 24 euros.",
@@ -84345,10 +84429,14 @@
         "paid": 4900,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €12, €13. Budget: €49. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €12, €13. Budžets: €49. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €12, €13. Бюджет: €49. Скидка: 0%."
+          "en": "Apple: €12. Cookie: €13. Budget: €49.",
+          "lv": "Ābols: €12. Cepums: €13. Budžets: €49.",
+          "ru": "Яблоко: €12. Печенье: €13. Бюджет: €49."
         }
       }
     },
@@ -84401,9 +84489,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €57. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €57. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €57. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €57. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €57. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €57. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "57 − (14 + 15): 28 euros.",
@@ -84442,10 +84530,14 @@
         "paid": 5700,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €14, €15. Budget: €57. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €14, €15. Budžets: €57. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €14, €15. Бюджет: €57. Скидка: 0%."
+          "en": "Apple: €14. Cookie: €15. Budget: €57.",
+          "lv": "Ābols: €14. Cepums: €15. Budžets: €57.",
+          "ru": "Яблоко: €14. Печенье: €15. Бюджет: €57."
         }
       }
     },
@@ -84498,9 +84590,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €65. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €65. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €65. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €65. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €65. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €65. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "65 − (16 + 17): 32 euros.",
@@ -84539,10 +84631,14 @@
         "paid": 6500,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €16, €17. Budget: €65. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €16, €17. Budžets: €65. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €16, €17. Бюджет: €65. Скидка: 0%."
+          "en": "Apple: €16. Cookie: €17. Budget: €65.",
+          "lv": "Ābols: €16. Cepums: €17. Budžets: €65.",
+          "ru": "Яблоко: €16. Печенье: €17. Бюджет: €65."
         }
       }
     }
@@ -84597,9 +84693,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €29. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €29. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €29. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €29. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €29. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €29. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "29 − (7 + 8): 14 euros.",
@@ -84638,10 +84734,14 @@
         "paid": 2900,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €7, €8. Budget: €29. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €7, €8. Budžets: €29. Atlaide: 0%.",
-          "ru": "книги. Цены: €7, €8. Бюджет: €29. Скидка: 0%."
+          "en": "Book: €7. Plant: €8. Budget: €29.",
+          "lv": "Grāmata: €7. Augs: €8. Budžets: €29.",
+          "ru": "Книга: €7. Растение: €8. Бюджет: €29."
         }
       }
     },
@@ -84694,9 +84794,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €37. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €37. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €37. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €37. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €37. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €37. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "37 − (9 + 10): 18 euros.",
@@ -84735,10 +84835,14 @@
         "paid": 3700,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €9, €10. Budget: €37. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €9, €10. Budžets: €37. Atlaide: 0%.",
-          "ru": "книги. Цены: €9, €10. Бюджет: €37. Скидка: 0%."
+          "en": "Book: €9. Plant: €10. Budget: €37.",
+          "lv": "Grāmata: €9. Augs: €10. Budžets: €37.",
+          "ru": "Книга: €9. Растение: €10. Бюджет: €37."
         }
       }
     },
@@ -84791,9 +84895,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €45. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €45. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €45. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €45. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €45. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €45. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "45 − (11 + 12): 22 euros.",
@@ -84832,10 +84936,14 @@
         "paid": 4500,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €11, €12. Budget: €45. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €11, €12. Budžets: €45. Atlaide: 0%.",
-          "ru": "книги. Цены: €11, €12. Бюджет: €45. Скидка: 0%."
+          "en": "Book: €11. Plant: €12. Budget: €45.",
+          "lv": "Grāmata: €11. Augs: €12. Budžets: €45.",
+          "ru": "Книга: €11. Растение: €12. Бюджет: €45."
         }
       }
     },
@@ -84888,9 +84996,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €53. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €53. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €53. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €53. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €53. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €53. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "53 − (13 + 14): 26 euros.",
@@ -84929,10 +85037,14 @@
         "paid": 5300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €13, €14. Budget: €53. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €13, €14. Budžets: €53. Atlaide: 0%.",
-          "ru": "книги. Цены: €13, €14. Бюджет: €53. Скидка: 0%."
+          "en": "Book: €13. Plant: €14. Budget: €53.",
+          "lv": "Grāmata: €13. Augs: €14. Budžets: €53.",
+          "ru": "Книга: €13. Растение: €14. Бюджет: €53."
         }
       }
     },
@@ -84985,9 +85097,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €61. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €61. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €61. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €61. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €61. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €61. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "61 − (15 + 16): 30 euros.",
@@ -85026,10 +85138,14 @@
         "paid": 6100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €15, €16. Budget: €61. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €15, €16. Budžets: €61. Atlaide: 0%.",
-          "ru": "книги. Цены: €15, €16. Бюджет: €61. Скидка: 0%."
+          "en": "Book: €15. Plant: €16. Budget: €61.",
+          "lv": "Grāmata: €15. Augs: €16. Budžets: €61.",
+          "ru": "Книга: €15. Растение: €16. Бюджет: €61."
         }
       }
     },
@@ -85082,9 +85198,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €69. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €69. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €69. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €69. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €69. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €69. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "69 − (17 + 18): 34 euros.",
@@ -85123,10 +85239,14 @@
         "paid": 6900,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €17, €18. Budget: €69. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €17, €18. Budžets: €69. Atlaide: 0%.",
-          "ru": "книги. Цены: €17, €18. Бюджет: €69. Скидка: 0%."
+          "en": "Book: €17. Plant: €18. Budget: €69.",
+          "lv": "Grāmata: €17. Augs: €18. Budžets: €69.",
+          "ru": "Книга: €17. Растение: €18. Бюджет: €69."
         }
       }
     }
@@ -85181,9 +85301,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €33. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €33. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €33. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €33. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €33. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €33. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "33 − (8 + 9): 16 euros.",
@@ -85222,10 +85342,14 @@
         "paid": 3300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €8, €9. Budget: €33. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €8, €9. Budžets: €33. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €8, €9. Бюджет: €33. Скидка: 0%."
+          "en": "Balloon: €8. Cupcake: €9. Budget: €33.",
+          "lv": "Balons: €8. Kēksiņš: €9. Budžets: €33.",
+          "ru": "Шарик: €8. Кекс: €9. Бюджет: €33."
         }
       }
     },
@@ -85278,9 +85402,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €41. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €41. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €41. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €41. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €41. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €41. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "41 − (10 + 11): 20 euros.",
@@ -85319,10 +85443,14 @@
         "paid": 4100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €10, €11. Budget: €41. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €10, €11. Budžets: €41. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €10, €11. Бюджет: €41. Скидка: 0%."
+          "en": "Balloon: €10. Cupcake: €11. Budget: €41.",
+          "lv": "Balons: €10. Kēksiņš: €11. Budžets: €41.",
+          "ru": "Шарик: €10. Кекс: €11. Бюджет: €41."
         }
       }
     },
@@ -85375,9 +85503,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €49. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €49. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €49. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €49. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €49. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €49. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "49 − (12 + 13): 24 euros.",
@@ -85416,10 +85544,14 @@
         "paid": 4900,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €12, €13. Budget: €49. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €12, €13. Budžets: €49. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €12, €13. Бюджет: €49. Скидка: 0%."
+          "en": "Balloon: €12. Cupcake: €13. Budget: €49.",
+          "lv": "Balons: €12. Kēksiņš: €13. Budžets: €49.",
+          "ru": "Шарик: €12. Кекс: €13. Бюджет: €49."
         }
       }
     },
@@ -85472,9 +85604,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €57. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €57. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €57. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €57. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €57. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €57. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "57 − (14 + 15): 28 euros.",
@@ -85513,10 +85645,14 @@
         "paid": 5700,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €14, €15. Budget: €57. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €14, €15. Budžets: €57. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €14, €15. Бюджет: €57. Скидка: 0%."
+          "en": "Balloon: €14. Cupcake: €15. Budget: €57.",
+          "lv": "Balons: €14. Kēksiņš: €15. Budžets: €57.",
+          "ru": "Шарик: €14. Кекс: €15. Бюджет: €57."
         }
       }
     },
@@ -85569,9 +85705,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €65. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €65. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €65. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €65. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €65. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €65. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "65 − (16 + 17): 32 euros.",
@@ -85610,10 +85746,14 @@
         "paid": 6500,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €16, €17. Budget: €65. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €16, €17. Budžets: €65. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €16, €17. Бюджет: €65. Скидка: 0%."
+          "en": "Balloon: €16. Cupcake: €17. Budget: €65.",
+          "lv": "Balons: €16. Kēksiņš: €17. Budžets: €65.",
+          "ru": "Шарик: €16. Кекс: €17. Бюджет: €65."
         }
       }
     },
@@ -85666,9 +85806,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €73. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €73. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €73. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €73. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €73. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €73. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "73 − (18 + 19): 36 euros.",
@@ -85707,10 +85847,14 @@
         "paid": 7300,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €18, €19. Budget: €73. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €18, €19. Budžets: €73. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €18, €19. Бюджет: €73. Скидка: 0%."
+          "en": "Balloon: €18. Cupcake: €19. Budget: €73.",
+          "lv": "Balons: €18. Kēksiņš: €19. Budžets: €73.",
+          "ru": "Шарик: €18. Кекс: €19. Бюджет: €73."
         }
       }
     }
@@ -85765,9 +85909,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €31. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €31. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €31. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €31. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €31. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €31. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "31 − (6 + 7): 18 euros.",
@@ -85806,10 +85950,14 @@
         "paid": 3100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €6, €7. Budget: €31. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €6, €7. Budžets: €31. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €6, €7. Бюджет: €31. Скидка: 0%."
+          "en": "Apple: €6. Cookie: €7. Budget: €31.",
+          "lv": "Ābols: €6. Cepums: €7. Budžets: €31.",
+          "ru": "Яблоко: €6. Печенье: €7. Бюджет: €31."
         }
       }
     },
@@ -85862,9 +86010,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €41. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €41. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €41. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €41. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €41. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €41. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "41 − (8 + 9): 24 euros.",
@@ -85903,10 +86051,14 @@
         "paid": 4100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €8, €9. Budget: €41. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €8, €9. Budžets: €41. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €8, €9. Бюджет: €41. Скидка: 0%."
+          "en": "Apple: €8. Cookie: €9. Budget: €41.",
+          "lv": "Ābols: €8. Cepums: €9. Budžets: €41.",
+          "ru": "Яблоко: €8. Печенье: €9. Бюджет: €41."
         }
       }
     },
@@ -85959,9 +86111,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €51. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €51. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €51. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €51. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €51. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €51. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "51 − (10 + 11): 30 euros.",
@@ -86000,10 +86152,14 @@
         "paid": 5100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €10, €11. Budget: €51. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €10, €11. Budžets: €51. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €10, €11. Бюджет: €51. Скидка: 0%."
+          "en": "Apple: €10. Cookie: €11. Budget: €51.",
+          "lv": "Ābols: €10. Cepums: €11. Budžets: €51.",
+          "ru": "Яблоко: €10. Печенье: €11. Бюджет: €51."
         }
       }
     },
@@ -86056,9 +86212,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €61. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €61. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €61. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €61. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €61. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €61. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "61 − (12 + 13): 36 euros.",
@@ -86097,10 +86253,14 @@
         "paid": 6100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €12, €13. Budget: €61. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €12, €13. Budžets: €61. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €12, €13. Бюджет: €61. Скидка: 0%."
+          "en": "Apple: €12. Cookie: €13. Budget: €61.",
+          "lv": "Ābols: €12. Cepums: €13. Budžets: €61.",
+          "ru": "Яблоко: €12. Печенье: €13. Бюджет: €61."
         }
       }
     },
@@ -86153,9 +86313,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €71. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €71. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €71. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €71. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €71. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €71. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "71 − (14 + 15): 42 euros.",
@@ -86194,10 +86354,14 @@
         "paid": 7100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €14, €15. Budget: €71. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €14, €15. Budžets: €71. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €14, €15. Бюджет: €71. Скидка: 0%."
+          "en": "Apple: €14. Cookie: €15. Budget: €71.",
+          "lv": "Ābols: €14. Cepums: €15. Budžets: €71.",
+          "ru": "Яблоко: €14. Печенье: €15. Бюджет: €71."
         }
       }
     },
@@ -86250,9 +86414,9 @@
     },
     {
       "prompt": {
-        "en": "Prepare a picnic. Buy one of each item and pay €81. How many euros should come back as change?",
-        "lv": "Sagatavo pikniku. Nopērc pa vienam no katra priekšmeta un samaksā €81. Cik eiro saņemsi atlikumā?",
-        "ru": "Подготовь пикник. Купи по одному предмету каждого вида и заплати €81. Сколько евро сдачи нужно получить?"
+        "en": "Prepare a picnic. Buy 1 apple and 1 cookie and pay €81. How many euros should you get back?",
+        "lv": "Sagatavo pikniku. Nopērc 1 ābolu un 1 cepumu un samaksā €81. Cik eiro saņemsi atlikumā?",
+        "ru": "Подготовь пикник. Купи 1 яблоко и 1 печенье и заплати €81. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "81 − (16 + 17): 48 euros.",
@@ -86291,10 +86455,14 @@
         "paid": 8100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "apple",
+          "cookie"
+        ],
         "label": {
-          "en": "picnic baskets. Prices: €16, €17. Budget: €81. Discount: 0%.",
-          "lv": "piknika grozi. Cenas: €16, €17. Budžets: €81. Atlaide: 0%.",
-          "ru": "корзины для пикника. Цены: €16, €17. Бюджет: €81. Скидка: 0%."
+          "en": "Apple: €16. Cookie: €17. Budget: €81.",
+          "lv": "Ābols: €16. Cepums: €17. Budžets: €81.",
+          "ru": "Яблоко: €16. Печенье: €17. Бюджет: €81."
         }
       }
     }
@@ -86349,9 +86517,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €36. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €36. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €36. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €36. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €36. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €36. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "36 − (7 + 8): 21 euros.",
@@ -86390,10 +86558,14 @@
         "paid": 3600,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €7, €8. Budget: €36. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €7, €8. Budžets: €36. Atlaide: 0%.",
-          "ru": "книги. Цены: €7, €8. Бюджет: €36. Скидка: 0%."
+          "en": "Book: €7. Plant: €8. Budget: €36.",
+          "lv": "Grāmata: €7. Augs: €8. Budžets: €36.",
+          "ru": "Книга: €7. Растение: €8. Бюджет: €36."
         }
       }
     },
@@ -86446,9 +86618,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €46. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €46. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €46. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €46. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €46. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €46. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "46 − (9 + 10): 27 euros.",
@@ -86487,10 +86659,14 @@
         "paid": 4600,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €9, €10. Budget: €46. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €9, €10. Budžets: €46. Atlaide: 0%.",
-          "ru": "книги. Цены: €9, €10. Бюджет: €46. Скидка: 0%."
+          "en": "Book: €9. Plant: €10. Budget: €46.",
+          "lv": "Grāmata: €9. Augs: €10. Budžets: €46.",
+          "ru": "Книга: €9. Растение: €10. Бюджет: €46."
         }
       }
     },
@@ -86543,9 +86719,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €56. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €56. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €56. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €56. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €56. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €56. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "56 − (11 + 12): 33 euros.",
@@ -86584,10 +86760,14 @@
         "paid": 5600,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €11, €12. Budget: €56. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €11, €12. Budžets: €56. Atlaide: 0%.",
-          "ru": "книги. Цены: €11, €12. Бюджет: €56. Скидка: 0%."
+          "en": "Book: €11. Plant: €12. Budget: €56.",
+          "lv": "Grāmata: €11. Augs: €12. Budžets: €56.",
+          "ru": "Книга: €11. Растение: €12. Бюджет: €56."
         }
       }
     },
@@ -86640,9 +86820,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €66. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €66. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €66. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €66. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €66. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €66. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "66 − (13 + 14): 39 euros.",
@@ -86681,10 +86861,14 @@
         "paid": 6600,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €13, €14. Budget: €66. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €13, €14. Budžets: €66. Atlaide: 0%.",
-          "ru": "книги. Цены: €13, €14. Бюджет: €66. Скидка: 0%."
+          "en": "Book: €13. Plant: €14. Budget: €66.",
+          "lv": "Grāmata: €13. Augs: €14. Budžets: €66.",
+          "ru": "Книга: €13. Растение: €14. Бюджет: €66."
         }
       }
     },
@@ -86737,9 +86921,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €76. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €76. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €76. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €76. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €76. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €76. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "76 − (15 + 16): 45 euros.",
@@ -86778,10 +86962,14 @@
         "paid": 7600,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €15, €16. Budget: €76. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €15, €16. Budžets: €76. Atlaide: 0%.",
-          "ru": "книги. Цены: €15, €16. Бюджет: €76. Скидка: 0%."
+          "en": "Book: €15. Plant: €16. Budget: €76.",
+          "lv": "Grāmata: €15. Augs: €16. Budžets: €76.",
+          "ru": "Книга: €15. Растение: €16. Бюджет: €76."
         }
       }
     },
@@ -86834,9 +87022,9 @@
     },
     {
       "prompt": {
-        "en": "Make a reading corner. Buy one of each item and pay €86. How many euros should come back as change?",
-        "lv": "Iekārto lasīšanas stūrīti. Nopērc pa vienam no katra priekšmeta un samaksā €86. Cik eiro saņemsi atlikumā?",
-        "ru": "Устрой уголок для чтения. Купи по одному предмету каждого вида и заплати €86. Сколько евро сдачи нужно получить?"
+        "en": "Make a reading corner. Buy 1 book and 1 plant and pay €86. How many euros should you get back?",
+        "lv": "Iekārto lasīšanas stūrīti. Nopērc 1 grāmatu un 1 augu un samaksā €86. Cik eiro saņemsi atlikumā?",
+        "ru": "Устрой уголок для чтения. Купи 1 книгу и 1 растение и заплати €86. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "86 − (17 + 18): 51 euros.",
@@ -86875,10 +87063,14 @@
         "paid": 8600,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "book",
+          "plant"
+        ],
         "label": {
-          "en": "books. Prices: €17, €18. Budget: €86. Discount: 0%.",
-          "lv": "grāmatas. Cenas: €17, €18. Budžets: €86. Atlaide: 0%.",
-          "ru": "книги. Цены: €17, €18. Бюджет: €86. Скидка: 0%."
+          "en": "Book: €17. Plant: €18. Budget: €86.",
+          "lv": "Grāmata: €17. Augs: €18. Budžets: €86.",
+          "ru": "Книга: €17. Растение: €18. Бюджет: €86."
         }
       }
     }
@@ -86933,9 +87125,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €41. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €41. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €41. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €41. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €41. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €41. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "41 − (8 + 9): 24 euros.",
@@ -86974,10 +87166,14 @@
         "paid": 4100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €8, €9. Budget: €41. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €8, €9. Budžets: €41. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €8, €9. Бюджет: €41. Скидка: 0%."
+          "en": "Balloon: €8. Cupcake: €9. Budget: €41.",
+          "lv": "Balons: €8. Kēksiņš: €9. Budžets: €41.",
+          "ru": "Шарик: €8. Кекс: €9. Бюджет: €41."
         }
       }
     },
@@ -87030,9 +87226,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €51. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €51. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €51. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €51. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €51. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €51. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "51 − (10 + 11): 30 euros.",
@@ -87071,10 +87267,14 @@
         "paid": 5100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €10, €11. Budget: €51. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €10, €11. Budžets: €51. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €10, €11. Бюджет: €51. Скидка: 0%."
+          "en": "Balloon: €10. Cupcake: €11. Budget: €51.",
+          "lv": "Balons: €10. Kēksiņš: €11. Budžets: €51.",
+          "ru": "Шарик: €10. Кекс: €11. Бюджет: €51."
         }
       }
     },
@@ -87127,9 +87327,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €61. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €61. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €61. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €61. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €61. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €61. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "61 − (12 + 13): 36 euros.",
@@ -87168,10 +87368,14 @@
         "paid": 6100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €12, €13. Budget: €61. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €12, €13. Budžets: €61. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €12, €13. Бюджет: €61. Скидка: 0%."
+          "en": "Balloon: €12. Cupcake: €13. Budget: €61.",
+          "lv": "Balons: €12. Kēksiņš: €13. Budžets: €61.",
+          "ru": "Шарик: €12. Кекс: €13. Бюджет: €61."
         }
       }
     },
@@ -87224,9 +87428,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €71. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €71. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €71. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €71. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €71. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €71. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "71 − (14 + 15): 42 euros.",
@@ -87265,10 +87469,14 @@
         "paid": 7100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €14, €15. Budget: €71. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €14, €15. Budžets: €71. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €14, €15. Бюджет: €71. Скидка: 0%."
+          "en": "Balloon: €14. Cupcake: €15. Budget: €71.",
+          "lv": "Balons: €14. Kēksiņš: €15. Budžets: €71.",
+          "ru": "Шарик: €14. Кекс: €15. Бюджет: €71."
         }
       }
     },
@@ -87321,9 +87529,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €81. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €81. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €81. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €81. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €81. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €81. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "81 − (16 + 17): 48 euros.",
@@ -87362,10 +87570,14 @@
         "paid": 8100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €16, €17. Budget: €81. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €16, €17. Budžets: €81. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €16, €17. Бюджет: €81. Скидка: 0%."
+          "en": "Balloon: €16. Cupcake: €17. Budget: €81.",
+          "lv": "Balons: €16. Kēksiņš: €17. Budžets: €81.",
+          "ru": "Шарик: €16. Кекс: €17. Бюджет: €81."
         }
       }
     },
@@ -87418,9 +87630,9 @@
     },
     {
       "prompt": {
-        "en": "Plan a cat party. Buy one of each item and pay €91. How many euros should come back as change?",
-        "lv": "Izplāno kaķu ballīti. Nopērc pa vienam no katra priekšmeta un samaksā €91. Cik eiro saņemsi atlikumā?",
-        "ru": "Спланируй кошачью вечеринку. Купи по одному предмету каждого вида и заплати €91. Сколько евро сдачи нужно получить?"
+        "en": "Plan a cat party. Buy 1 balloon and 1 cupcake and pay €91. How many euros should you get back?",
+        "lv": "Izplāno kaķu ballīti. Nopērc 1 balonu un 1 kēksiņu un samaksā €91. Cik eiro saņemsi atlikumā?",
+        "ru": "Спланируй кошачью вечеринку. Купи 1 шарик и 1 кекс и заплати €91. Сколько евро сдачи ты получишь?"
       },
       "explanation": {
         "en": "91 − (18 + 19): 54 euros.",
@@ -87459,10 +87671,14 @@
         "paid": 9100,
         "discount": 0,
         "unit": "euros",
+        "items": [
+          "balloon",
+          "cupcake"
+        ],
         "label": {
-          "en": "party decorations. Prices: €18, €19. Budget: €91. Discount: 0%.",
-          "lv": "ballītes rotājumi. Cenas: €18, €19. Budžets: €91. Atlaide: 0%.",
-          "ru": "украшения для вечеринки. Цены: €18, €19. Бюджет: €91. Скидка: 0%."
+          "en": "Balloon: €18. Cupcake: €19. Budget: €91.",
+          "lv": "Balons: €18. Kēksiņš: €19. Budžets: €91.",
+          "ru": "Шарик: €18. Кекс: €19. Бюджет: €91."
         }
       }
     }

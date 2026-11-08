@@ -18,7 +18,7 @@ final class NativeLaunchTests: XCTestCase {
   // A fresh simulator may stop at onboarding; never create a cloud save for QA.
   let onboarding = app.textFields.firstMatch
   let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-   (settings.exists && settings.isHittable) || (onboarding.exists && onboarding.isHittable) || app.buttons["pilot-next"].exists
+   (settings.exists && settings.isHittable) || (onboarding.exists && onboarding.isHittable) || app.buttons["pilot-next"].exists || app.buttons["Level 1"].exists
   }, object: nil)
   XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 60), .completed)
  }
@@ -33,6 +33,29 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(b.isHittable, id); b.tap()
  }
  func shot(_ name: String) { let a=XCTAttachment(screenshot: app.screenshot()); a.name=name; a.lifetime = .keepAlways; add(a) }
+ func testShoppingItems() {
+  continueAfterFailure=false; app.activate()
+  let springboard=XCUIApplication(bundleIdentifier: "com.apple.springboard")
+  if springboard.buttons["Open"].waitForExistence(timeout:2) { springboard.buttons["Open"].tap() }
+  if app.buttons["Open"].exists { app.buttons["Open"].tap() }
+  tap("pilot-shopping")
+  XCTAssertTrue(app.staticTexts["Prepare a picnic. Buy 1 apple and 1 cookie. What is the total cost in euros?"].waitForExistence(timeout:8))
+  XCTAssertTrue(app.descendants(matching:.any)["Apple: €2. Cookie: €3."].exists)
+  XCTAssertFalse(app.staticTexts["Practice money"].exists)
+  shot("picnic-shopping-en")
+  tap("Answer 5"); tap("pilot-check"); XCTAssertTrue(app.staticTexts["Correct"].exists)
+  tap("pilot-help")
+  XCTAssertTrue(app.staticTexts["A different example"].waitForExistence(timeout:8))
+  XCTAssertTrue(app.descendants(matching:.any)["Apple: €5. Cookie: €6."].exists)
+  shot("picnic-shopping-help")
+  tap("Try my puzzle")
+  tap("pilot-language")
+  XCTAssertTrue(app.descendants(matching:.any)["Ābols: €2. Cepums: €3."].waitForExistence(timeout:5))
+  shot("picnic-shopping-lv-320")
+  tap("pilot-language")
+  XCTAssertTrue(app.descendants(matching:.any)["Яблоко: €2. Печенье: €3."].waitForExistence(timeout:5))
+  shot("picnic-shopping-ru-320")
+ }
  func testEverydayTopics() {
   continueAfterFailure=false; app.activate()
   let springboard=XCUIApplication(bundleIdentifier: "com.apple.springboard")

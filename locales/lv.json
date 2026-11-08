@@ -1877,7 +1877,15 @@
     "pack": "Komplektā: {{count}}",
     "quantity": "Daudzums: {{count}}",
     "discount": "Atlaide: {{percent}}%",
-    "workedExample": "Cits piemērs"
+    "workedExample": "Cits piemērs",
+    "shopItems": {
+      "apple": "Ābols",
+      "cookie": "Cepums",
+      "book": "Grāmata",
+      "plant": "Augs",
+      "balloon": "Balons",
+      "cupcake": "Kēksiņš"
+    }
   },
   "actionMotion": {
     "giveOne": "Iedot vienu priekšmetu",

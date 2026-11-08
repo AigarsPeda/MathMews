@@ -1875,7 +1875,15 @@
     "pack": "Pack of {{count}}",
     "quantity": "Quantity: {{count}}",
     "discount": "{{percent}}% off",
-    "workedExample": "A different example"
+    "workedExample": "A different example",
+    "shopItems": {
+      "apple": "Apple",
+      "cookie": "Cookie",
+      "book": "Book",
+      "plant": "Plant",
+      "balloon": "Balloon",
+      "cupcake": "Cupcake"
+    }
   },
   "actionMotion": {
     "giveOne": "Give one object",

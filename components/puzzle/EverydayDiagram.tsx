@@ -1,5 +1,6 @@
 import { Canvas, Circle, Line, Path, Skia } from '@shopify/react-native-skia';
 import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
+import { AppIcon } from '@/components/ui/AppIcon';
 import { PuzzleColors as C } from '@/constants/puzzle-theme';
 import type { EverydayModel } from '@/types/everyday';
 import { useLocale } from '@/contexts/LocaleProvider';
@@ -76,8 +77,9 @@ export function EverydayDiagram({ model }: { model: EverydayModel }) {
     </View>;
   } else if (model.kind === 'money') {
     content = <View style={styles.money}>
-      <Text style={styles.caption}>{t('everyday.pretendMoney')}</Text>
-      <View style={styles.priceRow}>{model.prices.map((price, i) => <View key={i} style={styles.price}>
+      {!model.items ? <Text style={styles.caption}>{t('everyday.pretendMoney')}</Text> : null}
+      <View style={styles.priceRow}>{model.prices.map((price, i) => <View key={i} style={model.items?.[i] ? styles.shopItem : styles.price}>
+        {model.items?.[i] ? <><AppIcon name={model.items[i]} size={64} /><Text style={styles.itemName}>{t(`everyday.shopItems.${model.items[i]}`)}</Text></> : null}
         <Text style={styles.amount}>{model.unit === 'cents' ? `${price} c` : `€${decimal(price / 100)}`}</Text>
         {model.quantities[i] > 1 ? <Text style={styles.caption}>{t(model.task === 'unit' ? 'everyday.pack' : 'everyday.quantity', { count: model.quantities[i] })}</Text> : null}
       </View>)}</View>
@@ -142,6 +144,8 @@ const styles = StyleSheet.create({
   money: { width: '100%', gap: 16 },
   priceRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
   price: { minWidth: 92, padding: 16, borderWidth: 2, borderColor: C.cardBorder, borderRadius: 12, gap: 6 },
+  shopItem: { width: 132, maxWidth: '100%', paddingVertical: 8, alignItems: 'center', gap: 6 },
+  itemName: { fontSize: 17, lineHeight: 23, fontWeight: '700', color: C.text, textAlign: 'center' },
   amount: { fontSize: 26, fontWeight: '900', textAlign: 'center', color: C.text },
   discount: { textAlign: 'center', color: C.primaryDark, fontWeight: '700', fontSize: 18 },
   vessels: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 24 },

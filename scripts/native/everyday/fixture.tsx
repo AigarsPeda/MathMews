@@ -15,7 +15,7 @@ import { I18nextProvider } from 'react-i18next';
 import { Pressable, ScrollView, TurboModuleRegistry, View, type TurboModule } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 const PREVIOUS_FAST_REFRESH = true;
-const ids = ['easy-time-lesson-3-1','medium-data-lesson-3-1','easy-spatial-lesson-5-1','medium-spatial-lesson-5-1','medium-money-lesson-5-1','easy-capacity-lesson-1-1','hard-capacity-lesson-1-1','hard-time-lesson-1-1','hard-data-lesson-7-1','hard-money-lesson-5-1','medium-capacity-lesson-9-1'];
+const ids = ['easy-time-lesson-3-1','medium-data-lesson-3-1','easy-spatial-lesson-5-1','medium-spatial-lesson-5-1','medium-money-lesson-5-1','easy-capacity-lesson-1-1','hard-capacity-lesson-1-1','hard-time-lesson-1-1','hard-data-lesson-7-1','hard-money-lesson-5-1','medium-capacity-lesson-9-1','easy-cat-plans-picnic-2'];
 export default function EverydayFixture() {
   useEffect(() => {
     if (!__DEV__) return;
@@ -34,7 +34,8 @@ export default function EverydayFixture() {
   const control = (label: string, id: string, onPress: () => void, disabled = false) => <Pressable testID={id} accessibilityRole="button" onPress={onPress} disabled={disabled} style={{ minHeight: 48, padding: 12, justifyContent: 'center' }}><Text>{label}</Text></Pressable>;
   return <I18nextProvider i18n={language}><LocaleContext.Provider value={{ locale, isReady: true, setLocale: changeLocale }}>
     <SafeAreaView style={{ flex: 1, backgroundColor: C.background, width: locale === 'en' ? '100%' : 320, alignSelf: 'center' }}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+        {control('Shopping', 'pilot-shopping', () => { setSlot(11); setChoice(null); setResult(''); })}
         {control('Next', 'pilot-next', () => { setSlot((slot + 1) % ids.length); setChoice(null); setResult(''); })}
         {control('Language', 'pilot-language', () => { void changeLocale(locale === 'en' ? 'lv' : locale === 'lv' ? 'ru' : 'en'); })}
         {control('Picture help', 'pilot-help', () => setHelp(true))}

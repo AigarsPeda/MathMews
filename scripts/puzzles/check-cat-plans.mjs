@@ -33,6 +33,14 @@ export function checkCatPlans() {
           assert.equal(new Set(p.choices).size, 3);
           assert.notDeepEqual(p.everyday.model, p.everyday.example.model, 'Worked help must use its own quantities');
           const model = p.everyday.model;
+          if (model.kind === 'money') {
+            const names = JSON.parse(fs.readFileSync(`locales/${locale}.json`)).everyday.shopItems;
+            for (const shown of [model, p.everyday.example.model]) {
+              assert.equal(shown.items.length, shown.prices.length, 'Every price belongs to a pictured, named item');
+              shown.items.forEach((item, i) => assert.ok(shown.label.includes(`${names[item]}: €${shown.prices[i] / 100}`), 'Screen readers get the same item-price pairing'));
+            }
+            if (model.task === 'total') assert.doesNotMatch(model.label, /Budget|Budžets|Бюджет/, 'An addition task has no irrelevant budget');
+          }
           if (model.kind === 'clock') assert.ok(p.question.includes(String(model.duration)), 'Preparation duration must be visible, not only in hidden diagram data');
           if (model.kind === 'money' && ['afford', 'change'].includes(model.task)) assert.ok(p.question.includes(`€${model.paid / 100}`), 'Shopping budget must be visible');
           if (model.kind === 'capacity') assert.equal(model.unit, 'ml', 'Container givens are displayed in millilitres');

@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-08",
+  "change": "Cat-plan shopping tasks show named, pictured items with their prices. Prompts name what to buy; hints explain only the current calculation.",
+  "scope": "All 27 Cat-plan shopping tasks, their separate worked examples and related daily reviews in English, Latvian and Russian.",
+  "checks": [
+    "App typecheck and targeted ESLint passed",
+    "Catalog and locale checks passed",
+    "Puzzle-experience and full curriculum regressions passed",
+    "Existing IDs, prices, quantities, choices, answers and review calculations match the previous commit",
+    "iPhone 15 simulator: named accessible prices, correct answer, independent worked example, Latvian/Russian at 320 points"
+  ],
+  "native": "native-results.json",
+  "limits": [
+    "Native screenshots use a disposable fixture with production question, choice, diagram and help components.",
+    "Android and physical devices were not exercised."
+  ]
+}
