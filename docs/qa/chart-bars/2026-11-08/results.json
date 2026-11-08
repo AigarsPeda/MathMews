@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-08",
+  "component": "components/puzzle/EverydayDiagram.tsx",
+  "change": "Shared berry, teal and lavender bars with rounded tops, internal shading and unchanged measured heights.",
+  "checks": {
+    "typecheck": "passed",
+    "everydayTopics": "passed",
+    "puzzleExperience": "passed",
+    "native": {
+      "device": "iPhone 15 simulator",
+      "test": "NativeDragTests/testEverydayTopics",
+      "result": "passed",
+      "coverage": [
+        "English bar reading and grading",
+        "Latvian missing-value chart at 320-point width",
+        "Separate worked-example chart",
+        "Existing everyday puzzle flows in English, Latvian and Russian"
+      ]
+    },
+    "visualReview": "Reviewed native bar and missing-bar screenshots; tops align with gridlines and bases align with zero."
+  }
+}

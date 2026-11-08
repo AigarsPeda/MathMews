@@ -1,0 +1,55 @@
+--------- beginning of crash
+F/libc    (10967): Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 11045 (FilamentRendere), pid 10967 (om.mathmews.app)
+F/DEBUG   (12026): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+F/DEBUG   (12026): Build fingerprint: 'google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.D1/13818094:user/release-keys'
+F/DEBUG   (12026): Revision: '0'
+F/DEBUG   (12026): ABI: 'arm64'
+F/DEBUG   (12026): Timestamp: 2026-11-08 12:53:54.189580822+0200
+F/DEBUG   (12026): Process uptime: 143s
+F/DEBUG   (12026): Cmdline: com.mathmews.app
+F/DEBUG   (12026): pid: 10967, tid: 11045, name: FilamentRendere  >>> com.mathmews.app <<<
+F/DEBUG   (12026): uid: 10214
+F/DEBUG   (12026): tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+F/DEBUG   (12026): pac_enabled_keys: 000000000000000f (PR_PAC_APIAKEY, PR_PAC_APIBKEY, PR_PAC_APDAKEY, PR_PAC_APDBKEY)
+F/DEBUG   (12026): signal 6 (SIGABRT), code -6 (SI_TKILL), fault addr --------
+F/DEBUG   (12026): Abort message: 'Caused HeapTaskDaemon failure : SuspendAll timeout; remaining threads: Thread[49,tid=11045,Runnable,Thread*=0xb40000739d51e350,peer=0x2842b68,"FilamentRenderer"], Info for FilamentRenderer: state&flags: 0x9, Java/native priority: 7/-4, barrier value: 1, Target states: [11045 (FilamentRendere) S 455 455 0 0 -1 4194368 309159 822 0 3 375 170 0 5 16 -4 126 0 176325 5381, 11045 (FilamentRendere) S 455 455 0 0 -1 4194368 309159 822 0 3 375 170 0 5 16 -4 126 0 176325 5381] Final wait time: 17.907s; appr. total wait time: 42.977s'
+F/DEBUG   (12026):     x0  b400007334a9b26c  x1  0000000000000089  x2  0000000000000013  x3  0000000000000000
+F/DEBUG   (12026):     x4  0000000000000000  x5  00000000ffffffff  x6  00000000ffffffff  x7  656d6172466e6967
+F/DEBUG   (12026):     x8  0000000000000062  x9  0000000000000189  x10 00000074b8d84f30  x11 000000008cc5080c
+F/DEBUG   (12026):     x12 0000000000020002  x13 000000007fffffff  x14 000000000009cf42  x15 0000246d6ff653f6
+F/DEBUG   (12026):     x16 00000070083bf610  x17 00000074b8d22c00  x18 0000007006e34000  x19 b400007334a9b268
+F/DEBUG   (12026):     x20 0000000000000000  x21 b400007334a9b26c  x22 0000000000000013  x23 0000000000000000
+F/DEBUG   (12026):     x24 b40000726d5869a0  x25 000000720cef1638  x26 0000000000000002  x27 b4000073edcb67f0
+F/DEBUG   (12026):     x28 b40000737dad43a4  x29 000000720cef14b8
+F/DEBUG   (12026):     lr  000000700833d11c  sp  000000720cef1380  pc  00000074b8d22c1c  pst 0000000040001000
+F/DEBUG   (12026): 2 total frames
+F/DEBUG   (12026): backtrace:
+F/DEBUG   (12026):       #00 pc 0000000000095c1c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   (12026):       #01 pc 000000000071e118  /data/app/~~vMmzH8Uewyw10mrXd8MBJw==/com.mathmews.app-_hHKp0N9M_MesVnyd7XnDA==/base.apk!libreact-native-filament.so (offset 0x7a44000) (BuildId: f2c931d6c25603d93f9b4af0a7237f50ca788f9d)
+F/libc    (12174): Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 12256 (FilamentRendere), pid 12174 (om.mathmews.app)
+F/DEBUG   (12531): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+F/DEBUG   (12531): Build fingerprint: 'google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.D1/13818094:user/release-keys'
+F/DEBUG   (12531): Revision: '0'
+F/DEBUG   (12531): ABI: 'arm64'
+F/DEBUG   (12531): Timestamp: 2026-11-08 12:54:47.911785140+0200
+F/DEBUG   (12531): Process uptime: 39s
+F/DEBUG   (12531): Cmdline: com.mathmews.app
+F/DEBUG   (12531): pid: 12174, tid: 12256, name: FilamentRendere  >>> com.mathmews.app <<<
+F/DEBUG   (12531): uid: 10214
+F/DEBUG   (12531): tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+F/DEBUG   (12531): pac_enabled_keys: 000000000000000f (PR_PAC_APIAKEY, PR_PAC_APIBKEY, PR_PAC_APDAKEY, PR_PAC_APDBKEY)
+F/DEBUG   (12531): signal 6 (SIGABRT), code -6 (SI_TKILL), fault addr --------
+F/DEBUG   (12531): Abort message: 'Caused HeapTaskDaemon failure : SuspendAll timeout; remaining threads: Thread[33,tid=12256,Runnable,Thread*=0xb40000739d56e2b0,peer=0x2841458,"FilamentRenderer"], Info for FilamentRenderer: state&flags: 0x9, Java/native priority: 7/-4, barrier value: 1, Target states: [12256 (FilamentRendere) S 455 455 0 0 -1 4194368 25627 377 0 0 12 3 0 0 16 -4 103 0 192172 53009162, 12256 (FilamentRendere) S 455 455 0 0 -1 4194368 25627 377 0 0 12 3 0 0 16 -4 103 0 192172 53009162] Final wait time: 10.041s; appr. total wait time: 24.099s'
+F/DEBUG   (12531):     x0  b40000733455df0c  x1  0000000000000089  x2  0000000000000011  x3  0000000000000000
+F/DEBUG   (12531):     x4  0000000000000000  x5  00000000ffffffff  x6  00000000ffffffff  x7  656d6172466e6967
+F/DEBUG   (12531):     x8  0000000000000062  x9  0000000000000189  x10 ffffffffffef4c30  x11 0000000000000001
+F/DEBUG   (12531):     x12 000000000000078a  x13 000000007fffffff  x14 00000000000a2b2e  x15 0000246dd4830792
+F/DEBUG   (12531):     x16 00000070093a5610  x17 00000074b8d22c00  x18 00000070db06c000  x19 b40000733455df08
+F/DEBUG   (12531):     x20 0000000000000000  x21 b40000733455df0c  x22 0000000000000011  x23 0000000000000000
+F/DEBUG   (12531):     x24 b40000726d4aee30  x25 000000720cf00638  x26 0000000000000002  x27 b4000073eda8d0f0
+F/DEBUG   (12531):     x28 b40000737d7b6fe4  x29 000000720cf004b8
+F/DEBUG   (12531):     lr  000000700932311c  sp  000000720cf00380  pc  00000074b8d22c1c  pst 0000000040001000
+F/DEBUG   (12531): 2 total frames
+F/DEBUG   (12531): backtrace:
+F/DEBUG   (12531):       #00 pc 0000000000095c1c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   (12531):       #01 pc 000000000071e118  /data/app/~~vMmzH8Uewyw10mrXd8MBJw==/com.mathmews.app-_hHKp0N9M_MesVnyd7XnDA==/base.apk!libreact-native-filament.so (offset 0x7a44000) (BuildId: f2c931d6c25603d93f9b4af0a7237f50ca788f9d)

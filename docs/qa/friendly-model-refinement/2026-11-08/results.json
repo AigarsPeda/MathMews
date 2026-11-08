@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-08",
+  "changes": [
+    "Shape highlights run parallel to the upper edge with equal inset and end gaps",
+    "Fraction strips and decimal grids use soft rounded frames outside the measured field",
+    "Empty portions are white, internal rules are light blue; shape and unit geometry are retained",
+    "Shared frame metrics derive a 6-point inner radius from the 12-point outer radius and 6-point inset; clips and boundary strokes share that radius."
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "targeted_eslint": "passed",
+    "fraction_models": "passed",
+    "decimal_models": "passed",
+    "everyday_topics": "passed",
+    "diff_whitespace": "passed",
+    "guide_links": "passed"
+  },
+  "native": {
+    "platform": "iOS simulator, iPhone 15",
+    "result": "Three production visualizations rendered and inspected",
+    "bundle": "brainpet-native-drag-KXLfky/result.xcresult"
+  },
+  "scope": "Visual refinement; native interaction suites from the previous pass were not repeated. Touch coordinate handlers and grading are unchanged."
+}

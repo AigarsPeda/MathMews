@@ -1,6 +1,7 @@
+import { useChoiceLayout } from '@/components/puzzle/useChoiceLayout';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { DiagramColors as D, PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { FunctionMachinePuzzle } from "@/types/puzzle";
 import { moderateScale } from "@/utils/scale";
 import { useTranslation } from "react-i18next";
@@ -26,6 +27,8 @@ export function FunctionMachineTask({
   const { t } = useTranslation();
   const { input, output, choices } = puzzle.payload;
 
+  const choiceLayout = useChoiceLayout(choices);
+
   return (
     <View style={styles.wrap}>
       <View style={styles.machineRow}>
@@ -45,7 +48,7 @@ export function FunctionMachineTask({
         </View>
       </View>
 
-      <View style={styles.choices}>
+      <View onLayout={choiceLayout.onLayout} style={choiceLayout.container}>
         {choices.map((choice, index) => {
           let result: "correct" | "wrong" | null = null;
           if (answered || incorrectAttempt) {
@@ -60,6 +63,7 @@ export function FunctionMachineTask({
             <ChoiceButton
               key={`${puzzle.id}-${choice}`}
               label={choice}
+              style={choiceLayout.item}
               selected={selectedIndex === index}
               disabled={answered}
               result={result}
@@ -74,7 +78,7 @@ export function FunctionMachineTask({
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: moderateScale(16),
+    gap: moderateScale(8),
   },
   machineRow: {
     flexDirection: "row",
@@ -87,8 +91,9 @@ const styles = StyleSheet.create({
     minWidth: moderateScale(72),
     borderRadius: moderateScale(16),
     borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    backgroundColor: GameColors.background,
+    borderBottomWidth: 4,
+    borderColor: D.geometryEdge,
+    backgroundColor: D.geometrySurface,
     paddingVertical: moderateScale(10),
     paddingHorizontal: moderateScale(12),
     alignItems: "center",
@@ -110,8 +115,9 @@ const styles = StyleSheet.create({
     minWidth: moderateScale(88),
     borderRadius: moderateScale(18),
     borderWidth: 2,
-    borderColor: "#C9B6FF",
-    backgroundColor: "#F3EEFF",
+    borderBottomWidth: 4,
+    borderColor: D.solidSide,
+    backgroundColor: D.solidTop,
     paddingVertical: moderateScale(12),
     paddingHorizontal: moderateScale(14),
     alignItems: "center",
@@ -120,13 +126,13 @@ const styles = StyleSheet.create({
   machineLabel: {
     fontSize: moderateScale(11),
     fontWeight: "700",
-    color: "#6B4FCF",
+    color: GameColors.text,
     textTransform: "uppercase",
   },
   machineSymbol: {
     fontSize: moderateScale(28),
     fontWeight: "800",
-    color: "#6B4FCF",
+    color: GameColors.text,
   },
   choices: {
     gap: moderateScale(12),

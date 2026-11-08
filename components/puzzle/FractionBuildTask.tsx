@@ -90,7 +90,7 @@ export function FractionBuildTask({
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: moderateScale(12),
+    gap: moderateScale(8),
     alignItems: "center",
   },
   fractionDisplay: {
@@ -116,15 +116,11 @@ const styles = StyleSheet.create({
     fontVariant: ["tabular-nums"],
   },
   chartCard: {
-    backgroundColor: GameColors.card,
-    borderRadius: moderateScale(18),
-    borderWidth: 2,
-    borderColor: GameColors.cardBorder,
     padding: moderateScale(12),
   },
   controls: {
     width: "100%",
-    gap: moderateScale(12),
+    gap: moderateScale(8),
   },
   pieceControls: {
     flexDirection: "row",
@@ -136,8 +132,9 @@ const styles = StyleSheet.create({
     minHeight: moderateScale(56),
     borderRadius: moderateScale(16),
     borderWidth: 2,
-    borderColor: GameColors.cardBorder,
-    backgroundColor: GameColors.card,
+    borderBottomWidth: 4,
+    borderColor: GameColors.primary,
+    backgroundColor: GameColors.selectedSurface,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

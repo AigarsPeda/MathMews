@@ -1,0 +1,12 @@
+I/om.mathmews.app(12792): Explicit concurrent mark compact GC freed 4024KB AllocSpace bytes, 0(0B) LOS objects, 43% free, 31MB/55MB, paused 5.091ms,1.044ms total 132.607ms
+I/om.mathmews.app(12792): Explicit concurrent mark compact GC freed 316KB AllocSpace bytes, 0(0B) LOS objects, 43% free, 31MB/55MB, paused 284us,981us total 74.398ms
+I/om.mathmews.app(12792): hprof: heap dump "/data/local/tmp/brainpet-replay-gc-0.hprof" starting...
+I/om.mathmews.app(12792): hprof: heap dump completed (80MB) in 2.139s objects 1235970 objects with stack traces 0
+I/om.mathmews.app(12792): Explicit concurrent mark compact GC freed 2384KB AllocSpace bytes, 3(60KB) LOS objects, 43% free, 31MB/55MB, paused 301us,1.429ms total 78.245ms
+I/om.mathmews.app(12792): Explicit concurrent mark compact GC freed 232KB AllocSpace bytes, 0(0B) LOS objects, 43% free, 31MB/55MB, paused 364us,1.663ms total 162.190ms
+I/om.mathmews.app(12792): hprof: heap dump "/data/local/tmp/brainpet-replay-gc-1.hprof" starting...
+I/om.mathmews.app(12792): hprof: heap dump completed (80MB) in 1.902s objects 1236564 objects with stack traces 0
+I/om.mathmews.app(12792): Explicit concurrent mark compact GC freed 1376KB AllocSpace bytes, 0(0B) LOS objects, 43% free, 31MB/55MB, paused 444us,1.611ms total 61.027ms
+I/om.mathmews.app(12792): Explicit concurrent mark compact GC freed 188KB AllocSpace bytes, 0(0B) LOS objects, 43% free, 31MB/55MB, paused 214us,1.723ms total 91.774ms
+I/om.mathmews.app(12792): hprof: heap dump "/data/local/tmp/brainpet-replay-gc-2.hprof" starting...
+I/om.mathmews.app(12792): hprof: heap dump completed (80MB) in 1.826s objects 1236752 objects with stack traces 0

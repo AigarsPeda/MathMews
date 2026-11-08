@@ -47,11 +47,11 @@ final class NativeDragTests: XCTestCase {
   if app.buttons["Open"].exists { app.buttons["Open"].tap() }
   expect("What is the area of this rectangle?"); XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   XCTAssertTrue(shape().exists); XCTAssertEqual(shape().frame.width/2,shape().frame.height/3,accuracy:0.5)
-  tap("geometry-mark",6); expect("Squares covered: 6"); XCTAssertFalse(app.buttons["geometry-mark"].isEnabled)
+  tap("geometry-mark",6); expect("Covered: 6"); XCTAssertFalse(app.buttons["geometry-mark"].isEnabled)
   XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   enter(10); tap("pilot-check"); expect("Try again"); tap("geometry-erase",2); enter(6)
   shot("en-area-squares"); tap("pilot-check"); expect("Correct"); XCTAssertFalse(app.buttons["geometry-digit-1"].isEnabled)
-  next(); tap("geometry-mark",10); expect("Boundary edges traced: 10"); enter(10)
+  next(); tap("geometry-mark",10); expect("Traced: 10"); enter(10)
   shot("en-perimeter-edges"); tap("pilot-check"); expect("Correct")
   next(); tap("pilot-language"); expect("Kuram taisnstūrim ir lielāks perimetrs?")
   XCTAssertEqual(app.buttons["geometry-choice-2"].label,"Vienādi perimetri")

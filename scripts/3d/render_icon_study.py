@@ -19,7 +19,7 @@ import render_assets as art
 
 # UI symbols need level axes and a readable face at small sizes.
 FRONT_ICONS = {
-    'challenge-timer', 'boss-badge',
+    'cat', 'challenge-timer', 'boss-badge',
     'paw', 'settings', 'sleep', 'puzzles', 'heart', 'broken-heart', 'brain', 'lightbulb',
     'coin', 'flame', 'sparkle', 'film', 'lock', 'search', 'zoom-in', 'zoom-out',
     'check', 'warning', 'rotate', 'undo', 'restore', 'save', 'pause',
@@ -47,10 +47,13 @@ def frame_icon(scene, front=False):
         points.extend(evaluated.matrix_world @ vertex.co for vertex in mesh.vertices)
         evaluated.to_mesh_clear()
     center = Vector(tuple((min(p[i] for p in points)+max(p[i] for p in points))/2 for i in range(3)))
-    direction = (0, -9, 0) if front else art.ROOM_VIEW_DIRECTION
+    # Food needs a near-front view: a steep room view hides the apple dimple
+    # and makes the circular cookie look like a thin oval token.
+    food_view = scene.name in {'Icon apple', 'Icon cookie'}
+    direction = (0, -9, 0) if front else (1.8, -9, 2.4) if food_view else art.ROOM_VIEW_DIRECTION
     scene.camera.location = center + Vector(direction)
-    scene.camera.name = 'Front-facing icon camera' if front else 'Isometric object camera'
-    scene['icon_view'] = 'front' if front else 'isometric'
+    scene.camera.name = 'Front-facing icon camera' if front else 'Food icon camera' if food_view else 'Isometric object camera'
+    scene['icon_view'] = 'front' if front else 'food' if food_view else 'isometric'
     art.aim(scene.camera, center)
     bpy.context.view_layer.update()
     inverse = scene.camera.matrix_world.inverted()

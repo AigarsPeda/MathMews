@@ -31,8 +31,10 @@ export function getChallengePathLocation(attempt: NonNullable<Progress["challeng
 export const getTopicPaths = (difficulty: PuzzleDifficulty, topicId: string) => PUZZLE_PATHS.filter(l => l.difficulty === difficulty && l.topicId === topicId);
 export const getPathLesson = (difficulty: PuzzleDifficulty, id?: string) => PUZZLE_PATHS.find(l => l.difficulty === difficulty && l.id === id);
 export function getPathProgress(lesson: LearningLesson, progress: PathProgress) {
-  const counts = getLearningProgress(lesson.levels.flatMap(l => l.puzzleIds), getPathCompletedIds(progress));
-  return { ...counts, complete: counts.complete || !!progress.completedPathLessonIds?.includes(lesson.id) };
+  const ids = lesson.levels.flatMap(l => l.puzzleIds);
+  const counts = getLearningProgress(ids, getPathCompletedIds(progress));
+  // Timed answers can fill the run's progress, but only settled answers unlock levels.
+  return { ...counts, complete: getLearningProgress(ids, progress.completedPuzzleIds ?? []).complete || !!progress.completedPathLessonIds?.includes(lesson.id) };
 }
 /** Count every playable puzzle, including challenges and newly added review tasks. */
 export function getTopicPathProgress(difficulty: PuzzleDifficulty, topicId: string, progress: PathProgress) {
@@ -117,9 +119,9 @@ export function getPathEntry(lesson: LearningLesson, progress: PathProgress) {
   const active = progress.challengeAttempt;
   const running = active?.status === "active" && (active.mode === "untimed" || active.deadlineAt > Date.now())
     ? lesson.levels.find(level => level.puzzleIds.includes(active.puzzleId)) : undefined;
-  const level = running ?? lesson.levels.find(level => getPathStepState(lesson, level, progress) === "current") ?? lesson.levels[0];
-  const count = getPathProgress(lesson, progress);
-  return { lesson, level, replay: !running && count.solved === count.total };
+  const retry = active?.status === "expired" ? lesson.levels.find(level => level.id === active.levelId) : undefined;
+  const level = running ?? retry ?? lesson.levels.find(level => getPathStepState(lesson, level, progress) === "current") ?? lesson.levels[0];
+  return { lesson, level, replay: getLearningProgress(lesson.levels.flatMap(item => item.puzzleIds), progress.completedPuzzleIds ?? []).complete };
 }
 
 /** The next numbered level stays on the same topic and respects saved unlocks. */
@@ -135,6 +137,13 @@ export function getNextPathLevel(lesson: LearningLesson, progress: PathProgress)
 export function getNextPathStep(lesson: LearningLesson, level: LearningLevel, progress: PathProgress, replay = false) {
   const index = lesson.levels.findIndex(l => l.id === level.id);
   if (index < 0) return;
+  const run = progress.challengeAttempt;
+  // A replay's remaining tasks are already permanently completed. Follow the
+  // active run's cursor instead of searching for an unfinished saved answer.
+  if (run?.status === "active" && run.puzzleIds?.includes(level.puzzleIds[0])) {
+    const next = lesson.levels.find(item => item.puzzleIds.includes(run.puzzleId));
+    return next && next.id !== level.id ? { lesson, level: next } : undefined;
+  }
   const next = replay ? lesson.levels[index + 1]
     : lesson.levels.slice(index + 1).find(item => getPathStepState(lesson, item, progress) === "current");
   if (next && getPathStepState(lesson, next, progress) !== "locked") return { lesson, level: next };

@@ -167,6 +167,7 @@ export type FractionMatchPayload = {
 type PuzzleBase = {
   learning?: { skillId: string; prerequisiteSkillIds: string[]; role: "practice" | "review" | "application"; representation: string; reasoningSteps: number };
   taskVisual?: QuantityTaskModel;
+  contextObjects?: { object: PuzzleObject; count?: number; role?: "start" | "add" | "remove"; primary?: boolean }[];
   /** Selects an independent worked example, never an answer to this task. */
   helpTemplate?: keyof typeof import("@/constants/visual-practice").VISUAL_PRACTICE;
   /** Authored quantities for worked help, shared across locales. */
@@ -371,7 +372,7 @@ export type RouteGridPuzzle = PuzzleBase & {
 };
 export type BudgetPlanPuzzle = PuzzleBase & {
   type: "budget_plan";
-  payload: { budget: number; remaining: number; pickCount: number; items: { label: string; price: number; discountPercent: number }[] };
+  payload: { budget: number; remaining: number; pickCount: number; items: { label: string; price: number; discountPercent: number; object?: PuzzleObject }[] };
 };
 export type OptionalChallengePuzzle = SortBucketsPuzzle | RepairPatternPuzzle | RouteGridPuzzle | BudgetPlanPuzzle;
 

@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-08",
+  "rule": "innerRadius = max(0, outerRadius - actualInset); include padding and border width after scaling",
+  "coverage": [
+    "fraction strips and decimal grids",
+    "difficulty tabs",
+    "spatial-grid cells",
+    "trail-tile insets",
+    "room, bed, toy, decoration and cat store cards",
+    "chart-bar highlight",
+    "clock dial"
+  ],
+  "already_consistent": [
+    "zero-inset progress fills",
+    "compensated home-room viewport",
+    "native border interiors and measuring-jug clip"
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "targeted_eslint": "passed",
+    "git_diff_check": "passed",
+    "store_placement_flow": "passed",
+    "store_categories": "passed",
+    "puzzle_progress": "passed",
+    "puzzle_paths": "passed",
+    "everyday_topics": "passed",
+    "native_review": "passed: 6 screens, iPhone 15 simulator"
+  },
+  "screenshots": [
+    "Rooms.png",
+    "Items.png",
+    "Cats.png",
+    "Models.png",
+    "Path.png",
+    "Narrow.png"
+  ],
+  "scope": "Native review fixture uses production components and no-op purchase callbacks. Narrow content width is 320 points. Android and physical devices were not reviewed."
+}

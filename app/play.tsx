@@ -17,7 +17,7 @@ import { VisualHelpSheet } from "@/components/puzzle/VisualHelpSheet";
 import { BackButtonLabel } from "@/components/ui/BackButtonLabel";
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { getLevelPuzzles, type LearningSession } from "@/constants/curriculum";
-import { getChallengePathLocation, getNextPathLevel, getNextPathStep, getPathCompletedIds, getPathProgress, resolvePathSession } from "@/constants/puzzle-path";
+import { getChallengePathLocation, getNextPathLevel, getNextPathStep, getPathCompletedIds, getPathEntry, getPathProgress, resolvePathSession } from "@/constants/puzzle-path";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { PuzzleFontAssets } from "@/constants/puzzle-fonts";
 import { getVisualHelpCost, MAX_LIVES } from "@/constants/game";
@@ -146,18 +146,27 @@ function LearningPlayGate({ difficulty, lessonId, levelId, phaseParam, replaySes
   // Freeze entry context. Recording a successful stage must not advance the task
   // until the child dismisses its result, nor turn its first reward into a replay.
   const routeKey = `${lessonId}-${levelId}-${phaseParam}`;
-  const [entry, setEntry] = useState(() => ({ routeKey,
-    session: resolvePathSession(difficulty, lessonId, levelId, phaseParam, progress) }));
+  const resolveEntry = () => {
+    const session = resolvePathSession(difficulty, lessonId, levelId, phaseParam, progress);
+    return { routeKey, session, replay: replaySession || !!session && !!getPathEntry(session.lesson, progress)?.replay };
+  };
+  const [entry, setEntry] = useState(resolveEntry);
   if (entry.routeKey !== routeKey) {
-    setEntry({ routeKey, session: resolvePathSession(difficulty, lessonId, levelId, phaseParam, progress) });
+    setEntry(resolveEntry());
   }
   const { session } = entry;
   if (!hasCompletedOnboarding) return <Redirect href="/onboarding/name-pet" />;
   if (!session) return <Redirect href={{ pathname: "/puzzles", params: { difficulty } }} />;
-  return <PlaySession session={session} replaySession={replaySession} />;
+  return <PlaySession session={session} replaySession={entry.replay} />;
 }
 
-export function PlaySession({ session, replaySession = false }: { session: LearningSession; replaySession?: boolean }) {
+export type PuzzleLayoutMeasurement = { puzzleId: string; viewportHeight: number; contentHeight: number };
+
+export function PlaySession({ session, replaySession = false, onLayoutMeasured }: {
+  session: LearningSession; replaySession?: boolean;
+  /** Native layout review only; observing does not change the screen or player state. */
+  onLayoutMeasured?: (measurement: PuzzleLayoutMeasurement) => void;
+}) {
   const [fontsLoaded, fontError] = useFonts(PuzzleFontAssets);
   const router = useRouter();
   const { t } = useTranslation();
@@ -195,6 +204,13 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
   const [lastAttempt, setLastAttempt] = useState<{ key: string; hint: string } | null>(null);
   const [editingRetry, setEditingRetry] = useState(false);
   const taskScroll = useRef<ScrollView>(null);
+  const layoutSize = useRef({ viewportHeight: 0, contentHeight: 0 });
+  const reportLayout = (size: Partial<typeof layoutSize.current>) => {
+    Object.assign(layoutSize.current, size);
+    if (layoutSize.current.viewportHeight && layoutSize.current.contentHeight) {
+      onLayoutMeasured?.({ puzzleId: puzzle.id, ...layoutSize.current });
+    }
+  };
   const submittedAnswer = useRef<string | null>(null);
   const matchingAttempt = useRef<string | null>(null);
   const [bridge, setBridge] = useState<BridgeState | null>(null);
@@ -519,6 +535,8 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
 
         <Animated.ScrollView
           ref={taskScroll}
+          onLayout={onLayoutMeasured ? event => reportLayout({ viewportHeight: event.nativeEvent.layout.height }) : undefined}
+          onContentSizeChange={onLayoutMeasured ? (_width, height) => reportLayout({ contentHeight: height }) : undefined}
           key={puzzle.id}
           entering={PUZZLE_CONTENT_ENTER}
           scrollEnabled={!isDraggingTile}
@@ -530,7 +548,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
           <PuzzleCard puzzle={puzzle} />
 
           <View style={styles.taskArea}>
-            {puzzle.type !== "order_numbers" && puzzle.type !== "multiple_choice" && !(progress.completedPuzzleIds ?? []).some(
+            {!["order_numbers", "multiple_choice", "balance", "fair_share", "function_machine", "fix_mistake", "estimate", "place_value", "fraction_strip", "decimal_grid", "decimal_place_value", "geometry_measure", "sort_buckets", "repair_pattern", "route_grid", "budget_plan", "operation_path", "find_all_pairs", "ratio_table", "signed_line", "coordinate_map", "equation_board"].includes(getPuzzleType(puzzle)) && !('payload' in puzzle && puzzle.payload && 'guided' in puzzle.payload && puzzle.payload.guided) && !(progress.completedPuzzleIds ?? []).some(
               (id) =>
                 puzzles.find((item) => item.id === id)?.type === puzzle.type,
             ) && (
@@ -588,6 +606,7 @@ export function PlaySession({ session, replaySession = false }: { session: Learn
           </View>
           {!answered && hasVisualHelp ? (
             <Pressable
+              testID="puzzle-picture-help"
               style={styles.visualHelpBtn}
               onPress={handleOpenVisualHelp}
               accessibilityRole="button"
@@ -701,7 +720,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginBottom: 12,
   },
-  answerDock: { paddingTop: moderateScale(16), paddingBottom: moderateScale(8), borderTopWidth: 1, borderTopColor: GameColors.cardBorder, gap: moderateScale(12), backgroundColor: GameColors.background },
+  answerDock: { paddingTop: moderateScale(8), paddingBottom: moderateScale(8), borderTopWidth: 1, borderTopColor: GameColors.cardBorder, gap: moderateScale(12), backgroundColor: GameColors.background },
   attemptFeedback: { flexDirection: "row", alignItems: "center", gap: moderateScale(8), padding: moderateScale(14), borderRadius: moderateScale(14), backgroundColor: GameColors.warningSurface },
   attemptCopy: { flex: 1, gap: moderateScale(3) },
   attemptTitle: { fontSize: moderateScale(15), fontWeight: "800", color: "#875100" },
@@ -756,8 +775,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 0,
-    gap: moderateScale(12),
-    paddingBottom: moderateScale(16),
+    gap: moderateScale(8),
+    paddingBottom: moderateScale(8),
   },
   taskArea: {
     flexGrow: 0,

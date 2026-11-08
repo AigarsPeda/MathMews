@@ -1,17 +1,23 @@
+import { insetRadius } from '@/utils/border-radius';
 import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
-import { PuzzleColors as Colors } from '@/constants/puzzle-theme';
+import { DiagramColors, DiagramFrameMetrics as Frame, PuzzleColors as Colors } from '@/constants/puzzle-theme';
 import type { FractionStripPuzzle } from '@/types/puzzle';
 import { fractionTickAt, partitionFractionStrip, type FractionStripState } from '@/utils/fraction-models';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+const INNER_RADIUS = insetRadius(Frame.outerRadius, Frame.inset);
+
 type Props = { puzzle: FractionStripPuzzle; value: FractionStripState | null; onChange: (state: FractionStripState | null) => void; answered: boolean };
 
 /** Every strip uses the same full width. Borders divide the whole without gaps. */
 function Pieces({ parts, shaded }: { parts: number; shaded: number }) {
   return <View style={styles.pieces} pointerEvents="none">
-    {Array.from({ length: parts }, (_, i) => <View key={i} style={[styles.piece, i < shaded && styles.filled, i === parts - 1 && styles.lastPiece]} />)}
+    <View style={styles.segments}>
+      {Array.from({ length: parts }, (_, i) => <View key={i} style={[styles.piece, i < shaded && styles.filled, i === parts - 1 && styles.lastPiece]} />)}
+    </View>
+    <View style={styles.boundary} />
   </View>;
 }
 
@@ -43,7 +49,7 @@ export function FractionStripTask({ puzzle, value, onChange, answered }: Props) 
     <Text style={styles.label}>{t('fractionModels.yourStrip')}{parts !== null ? ` · ${shaded ?? 0}/${parts}` : ''}</Text>
     <Pressable testID="fraction-strip-board" style={styles.touchStrip} disabled={answered || parts === null}
       onLayout={e => setWidth(e.nativeEvent.layout.width)}
-      onPress={e => { if (parts !== null) { const count = fractionTickAt(e.nativeEvent.locationX, width, parts); if (count !== null) setShaded(count); } }}
+      onPress={e => { if (parts !== null) { const count = fractionTickAt(e.nativeEvent.locationX - Frame.inset, width - Frame.inset * 2, parts); if (count !== null) setShaded(count); } }}
       accessibilityRole="adjustable" accessibilityLabel={t('fractionModels.yourStrip')}
       accessibilityState={{ disabled: answered || parts === null }}
       accessibilityValue={{ min: 0, max: parts ?? 1, now: shaded ?? 0, text: parts === null ? t('fractionModels.chooseParts') : t('fractionModels.shaded', { count: shaded ?? 0, total: parts }) }}
@@ -55,41 +61,45 @@ export function FractionStripTask({ puzzle, value, onChange, answered }: Props) 
       {([-1, 1] as const).map(direction => {
         const disabled = answered || parts === null || (direction < 0 ? (shaded ?? 0) === 0 : shaded === parts);
         return <Pressable key={direction} testID={direction < 0 ? 'fraction-strip-remove' : 'fraction-strip-add'}
-          accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled} onPress={() => setShaded((shaded ?? 0) + direction)}
+          accessibilityRole="button" accessibilityLabel={t(direction < 0 ? 'fractionModels.remove' : 'fractionModels.add')} accessibilityState={{ disabled }} disabled={disabled} onPress={() => setShaded((shaded ?? 0) + direction)}
           style={({ pressed }) => [styles.button, disabled && styles.disabled, pressed && styles.pressed]}>
-          <Text style={styles.buttonText}>{t(direction < 0 ? 'fractionModels.remove' : 'fractionModels.add')}</Text>
+          <Text style={styles.buttonText}>{direction < 0 ? '− 1' : '+ 1'}</Text>
         </Pressable>;
       })}
-    </View>
-    <Pressable testID="fraction-strip-reset" accessibilityRole="button" accessibilityState={{ disabled: answered || value === null }}
+    <Pressable testID="fraction-strip-reset" accessibilityRole="button" accessibilityLabel={t('fractionModels.reset')} accessibilityState={{ disabled: answered || value === null }}
       disabled={answered || value === null} onPress={() => onChange(null)} style={styles.reset}>
-      <Text style={[styles.resetText, (answered || value === null) && styles.disabled]}>{t('fractionModels.reset')}</Text>
+      <Text style={[styles.resetText, (answered || value === null) && styles.disabled]}>{t('geometryModels.reset')}</Text>
     </Pressable>
+    </View>
   </View>;
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: 14 },
+  wrap: { gap: 8 },
   guide: { color: Colors.textMuted, fontSize: 16, lineHeight: 23, textAlign: 'center' },
   label: { color: Colors.text, fontSize: 18, fontWeight: '700' },
-  reference: { gap: 10 },
-  pieces: { width: '100%', height: 52, flexDirection: 'row', borderWidth: 1, borderColor: Colors.text, backgroundColor: Colors.background },
-  piece: { flex: 1, borderRightWidth: 1, borderRightColor: Colors.text },
+  reference: { gap: 8 },
+  pieces: { width: '100%', height: 52 + Frame.inset * 2, padding: Frame.inset, flexDirection: 'row', borderRadius: Frame.outerRadius, backgroundColor: DiagramColors.fractionSurface },
+  // Clip only the whole’s outside corners; internal partitions keep their spacing.
+
+  boundary: { position: 'absolute', top: Frame.inset, bottom: Frame.inset, left: Frame.inset, right: Frame.inset, borderWidth: 1, borderRadius: INNER_RADIUS, borderColor: DiagramColors.fractionGrid },
+  segments: { flex: 1, flexDirection: 'row', borderRadius: INNER_RADIUS, overflow: 'hidden' },
+  piece: { flex: 1, backgroundColor: Colors.card, borderRightWidth: 1, borderRightColor: DiagramColors.fractionGrid },
   lastPiece: { borderRightWidth: 0 },
-  filled: { backgroundColor: Colors.primary, borderRightColor: Colors.background },
-  touchStrip: { minHeight: 64, justifyContent: 'center' },
-  partitionGroup: { gap: 10 },
+  filled: { backgroundColor: DiagramColors.fractionFill, borderRightColor: DiagramColors.highlight },
+  touchStrip: { minHeight: 52 + Frame.inset * 2, justifyContent: 'center' },
+  partitionGroup: { gap: 6 },
   choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  choice: { minWidth: 72, minHeight: 48, padding: 10, borderRadius: 12, borderWidth: 1, borderColor: Colors.cardBorder, justifyContent: 'center', alignItems: 'center' },
+  choice: { minWidth: 72, minHeight: 48, padding: 10, borderRadius: 12, borderWidth: 2, borderBottomWidth: 4, borderColor: Colors.cardBorder, justifyContent: 'center', alignItems: 'center' },
   chosen: { borderColor: Colors.primary, backgroundColor: Colors.selectedSurface },
   choiceText: { color: Colors.text, fontSize: 16, fontWeight: '700' },
   chosenText: { color: Colors.primaryDark },
   note: { color: Colors.textMuted, fontSize: 14, lineHeight: 20 },
   controls: { flexDirection: 'row', gap: 10 },
-  button: { flex: 1, minHeight: 48, padding: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.selectedSurface, borderColor: Colors.primary, borderWidth: 1, borderRadius: 12 },
+  button: { flex: 1, minHeight: 48, padding: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.selectedSurface, borderColor: Colors.primary, borderWidth: 2, borderBottomWidth: 4, borderRadius: 12 },
   buttonText: { color: Colors.primaryDark, fontSize: 16, fontWeight: '700', textAlign: 'center' },
   disabled: { opacity: 0.4 },
   pressed: { backgroundColor: Colors.selectedStrong },
-  reset: { minHeight: 44, padding: 8, justifyContent: 'center', alignItems: 'center' },
-  resetText: { color: Colors.textMuted, fontSize: 16, textDecorationLine: 'underline' },
+  reset: { flex: 1, minHeight: 48, padding: 8, justifyContent: 'center', alignItems: 'center' },
+  resetText: { textAlign: 'center', color: Colors.textMuted, fontSize: 16, textDecorationLine: 'underline' },
 });

@@ -1,6 +1,6 @@
 """Blender-authored counting objects. Rebuild with Blender --background --python this_file."""
 from pathlib import Path
-import bpy, math, json
+import bpy, math, json, sys
 from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,12 +28,43 @@ def mouse():
     curve('Back seam', [(-.12, 0, .585), (.14, 0, .575), (.34, 0, .50)], .012, 'mouse-ear')
 
 def ribbon(color):
-    for x in [-1, 1]:
-        loop = sphere('Soft ribbon loop', (x*.27, 0, .13), (.32, .18, .105), color)
-        loop.rotation_euler.z = x*.24
-        tail = box('Ribbon tail', (x*.18, -.25, .075), (.20, .42, .055), color, .025)
-        tail.rotation_euler.z = x*.35
-    sphere('Tied ribbon knot', (0, 0, .15), (.13, .16, .12), color)
+    """A tied fabric bow: folded broad loops, a wrapped knot and fishtail ends."""
+    fabric = scope['material']('Ribbon fabric '+color, '309BC5' if color == 'blue' else 'DF537E', roughness=.78)
+
+    def cloth(name, vertices, faces):
+        mesh = bpy.data.meshes.new(name)
+        mesh.from_pydata(vertices, [], faces); mesh.update()
+        obj = bpy.data.objects.new(name, mesh); bpy.context.collection.objects.link(obj)
+        obj.data.materials.append(fabric)
+        for face in mesh.polygons: face.use_smooth = True
+        thickness = obj.modifiers.new('Fabric thickness', 'SOLIDIFY'); thickness.thickness = .018
+        edge = obj.modifiers.new('Soft fabric edges', 'BEVEL'); edge.width = .012; edge.segments = 3
+        obj.modifiers.new('Fabric normals', 'WEIGHTED_NORMAL')
+        return obj
+
+    for side in [-1, 1]:
+        # A continuous band folds back underneath itself, widening away from the knot.
+        vertices, faces = [], []
+        steps, across = 48, 8
+        for i in range(steps+1):
+            t = i / steps
+            reach = math.sin(math.pi*t)
+            for j in range(across+1):
+                u = j/across*2-1
+                vertices.append((side*(.08+.57*reach-.11*reach*u*u), .09+.17*reach+u*(.06+.20*reach),
+                                 .10+.13*math.sin(math.tau*t)+.06*(1-u*u)*reach))
+        for i in range(steps):
+            for j in range(across):
+                a = i*(across+1)+j
+                face = (a,a+1,a+across+2,a+across+1)
+                faces.append(face if side == 1 else tuple(reversed(face)))
+        cloth('Folded bow loop', vertices, faces)
+        points = [(.015,.08),(.19,.06),(.45,-.55),(.29,-.49),(.17,-.66),(-.045,-.09)]
+        tail = [(side*x,y,.015+.025*math.cos(y*6)) for x,y in points]
+        order = tuple(range(len(tail)))
+        cloth('V-notched ribbon tail', tail, [order if side == 1 else tuple(reversed(order))])
+    knot = box('Wrapped fabric knot', (0,.075,.205), (.23,.27,.20), fabric, .07)
+    knot.rotation_euler.z = -.06
 
 def star(color):
     pts = [(math.cos(math.pi/2+i*math.pi/5)*(.52 if i%2==0 else .24), math.sin(math.pi/2+i*math.pi/5)*(.52 if i%2==0 else .24), .06) for i in range(10)]
@@ -80,8 +111,16 @@ def carriage():
         box('Carriage coupling', (x, 0, .18), (.20, .10, .06), 'gold', .02)
 
 builders = {'mouse': mouse, 'ribbon-red': lambda: ribbon('coral'), 'ribbon-blue': lambda: ribbon('blue'), 'star': lambda: star('gold'), 'star-red': lambda: star('coral'), 'cookie': cookie, 'parcel': parcel, 'planting-tile': planting_tile, 'carriage': carriage}
+selected = set(sys.argv[sys.argv.index('--only')+1].split(',')) if '--only' in sys.argv else set(builders)
+if not selected.issubset(builders): raise ValueError('Unknown puzzle object in --only')
+if '--only' in sys.argv:
+    bpy.ops.wm.open_mainfile(filepath=str(SOURCE))
+    for scene in list(bpy.data.scenes):
+        if scene.name.removeprefix('Puzzle object - ') in selected:
+            bpy.data.scenes.remove(scene)
 scenes = []
 for name, build in builders.items():
+    if name not in selected: continue
     scene = bpy.data.scenes.new('Puzzle object - '+name)
     scene.world = bpy.data.worlds.new('Soft studio - '+name)
     bpy.context.window.scene = scene
@@ -92,6 +131,11 @@ for name, build in builders.items():
     objects = [o for o in scene.objects if o.type in {'MESH', 'CURVE'}]
     camera = scene.camera
     camera.location = (1.6, -5, 5.5) if name == 'mouse' else (2, -5, 7)
+    if name.startswith('ribbon-'):
+        camera.location = (0, -.15, 7)
+        for light in scene.objects:
+            if light.type == 'LIGHT': light.data.energy *= .55
+        camera.name = 'Front-facing bow camera'
     aim(camera, (0, 0, .22))
     bpy.context.view_layer.update()
     # Bezier control bounds can dwarf a thin tail or seam. Frame the rendered

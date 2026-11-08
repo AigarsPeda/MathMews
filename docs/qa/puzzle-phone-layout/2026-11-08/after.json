@@ -1,0 +1,3413 @@
+[
+  {
+    "puzzleId": "v2-easy-numbers-train-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 261,
+    "id": "v2-easy-numbers-train-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "order_numbers"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-4-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 261,
+    "id": "v2-easy-numbers-explore-4-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "order_numbers"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-explore-4-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 331.6666564941406,
+    "id": "v2-easy-fractions-explore-4-2",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "compare"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-train-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 510.6666564941406,
+    "id": "v2-easy-numbers-train-2",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "compare"
+  },
+  {
+    "puzzleId": "v2-hard-logic-explore-10-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 397.3333435058594,
+    "id": "v2-hard-logic-explore-10-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 582.6666870117188,
+    "id": "v2-hard-measurement-explore-7-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice"
+  },
+  {
+    "puzzleId": "v2-easy-addition-lesson-3-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.6666564941406,
+    "id": "v2-easy-addition-lesson-3-challenge-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "number_line"
+  },
+  {
+    "puzzleId": "v2-easy-easy-subtraction-explore-3-path-review-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.6666564941406,
+    "id": "v2-easy-easy-subtraction-explore-3-path-review-2",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "number_line"
+  },
+  {
+    "puzzleId": "v2-easy-patterns-music-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 383,
+    "id": "v2-easy-patterns-music-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "pattern_next"
+  },
+  {
+    "puzzleId": "v2-hard-patterns-lesson-9-boss-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 350.6666564941406,
+    "id": "v2-hard-patterns-lesson-9-boss-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "pattern_next"
+  },
+  {
+    "puzzleId": "v2-medium-multiplication-theatre-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 428.3333435058594,
+    "id": "v2-medium-multiplication-theatre-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "function_machine"
+  },
+  {
+    "puzzleId": "v2-medium-operations-lanterns-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 325.33331298828125,
+    "id": "v2-medium-operations-lanterns-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "function_machine"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-garden-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 559,
+    "id": "v2-hard-fractions-garden-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "fraction_build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-fountain-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 530.3333740234375,
+    "id": "v2-medium-fractions-fountain-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "fraction_match"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-10-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 493.9999694824219,
+    "id": "v2-medium-fractions-explore-10-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "fraction_match"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-pictures-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 319,
+    "id": "v2-easy-fractions-pictures-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "fraction_strip:build"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-pictures-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 416.3333435058594,
+    "id": "v2-easy-fractions-pictures-2",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "fraction_number_line"
+  },
+  {
+    "puzzleId": "v2-easy-addition-picnic-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.6666564941406,
+    "id": "v2-easy-addition-picnic-2",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "balance"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tickets-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 476.3333435058594,
+    "id": "v2-medium-addition-tickets-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "balance"
+  },
+  {
+    "puzzleId": "v2-hard-percentages-shop-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 428.9999694824219,
+    "id": "v2-hard-percentages-shop-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "fix_mistake"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tickets-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 517.3333740234375,
+    "id": "v2-medium-addition-tickets-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "fix_mistake"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-explore-6-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 399.3333435058594,
+    "id": "v2-hard-fractions-explore-6-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "fraction_equivalent"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-explore-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 399.3333435058594,
+    "id": "v2-hard-fractions-explore-7-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "fraction_equivalent"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-expedition-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 541,
+    "id": "v2-hard-measurement-expedition-5-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "sort_buckets"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-expedition-10-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.6666564941406,
+    "id": "v2-hard-fractions-expedition-10-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "sort_buckets"
+  },
+  {
+    "puzzleId": "v2-easy-patterns-stepping-stones-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 513.3333740234375,
+    "id": "v2-easy-patterns-stepping-stones-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "repair_pattern"
+  },
+  {
+    "puzzleId": "v2-hard-patterns-lesson-6-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 513.3333740234375,
+    "id": "v2-hard-patterns-lesson-6-challenge-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "repair_pattern"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 576,
+    "id": "v2-easy-numbers-explore-8-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "signed_line:place"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 576,
+    "id": "v2-medium-subtraction-explore-8-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "signed_line:place"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-8-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 520,
+    "id": "v2-easy-numbers-explore-8-4",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "signed_line:move"
+  },
+  {
+    "puzzleId": "v2-hard-operations-explore-8-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 576,
+    "id": "v2-hard-operations-explore-8-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "signed_line:move"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-easy-numbers-explore-9-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "coordinate_map:plot"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-9-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-hard-measurement-explore-9-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "coordinate_map:plot"
+  },
+  {
+    "puzzleId": "v2-easy-addition-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 350.6666564941406,
+    "id": "v2-easy-addition-explore-6-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "pair_sum"
+  },
+  {
+    "puzzleId": "v2-medium-addition-regroup-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 424.6666564941406,
+    "id": "v2-medium-addition-regroup-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "pair_sum"
+  },
+  {
+    "puzzleId": "v2-easy-addition-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 488.9999694824219,
+    "id": "v2-easy-addition-explore-8-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "equation_board"
+  },
+  {
+    "puzzleId": "v2-hard-operations-explore-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 571.6666870117188,
+    "id": "v2-hard-operations-explore-9-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "equation_board"
+  },
+  {
+    "puzzleId": "v2-medium-addition-pair-hunt-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-medium-addition-pair-hunt-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "find_all_pairs"
+  },
+  {
+    "puzzleId": "v2-hard-logic-pair-hunt-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 570.6666870117188,
+    "id": "v2-hard-logic-pair-hunt-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "find_all_pairs"
+  },
+  {
+    "puzzleId": "v2-hard-logic-clues-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 315.6666564941406,
+    "id": "v2-hard-logic-clues-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "true_false"
+  },
+  {
+    "puzzleId": "v2-hard-logic-explore-6-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 283.33331298828125,
+    "id": "v2-hard-logic-explore-6-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "true_false"
+  },
+  {
+    "puzzleId": "v2-easy-multiplication-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 556,
+    "id": "v2-easy-multiplication-explore-8-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "ratio_table"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 520,
+    "id": "v2-hard-measurement-explore-8-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "ratio_table"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 536.3333740234375,
+    "id": "v2-easy-fractions-explore-6-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "fraction_strip:equivalent"
+  },
+  {
+    "puzzleId": "v2-easy-time-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 433.9999694824219,
+    "id": "v2-easy-time-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:clock:read"
+  },
+  {
+    "puzzleId": "v2-medium-time-lesson-1-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 433.9999694824219,
+    "id": "v2-medium-time-lesson-1-4",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:clock:read"
+  },
+  {
+    "puzzleId": "v2-hard-time-lesson-1-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 295.6666564941406,
+    "id": "v2-hard-time-lesson-1-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:clock:elapsed"
+  },
+  {
+    "puzzleId": "v2-hard-time-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 295.6666564941406,
+    "id": "v2-hard-time-lesson-1-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:clock:elapsed"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 531.3333740234375,
+    "id": "v2-easy-cat-plans-reading-corner-3",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:clock:finish"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-easy-data-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:bars:read"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-1-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-hard-data-lesson-1-5",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:bars:read"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 442.9999694824219,
+    "id": "v2-easy-data-lesson-3-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:bars:most"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-easy-data-lesson-5-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:bars:least"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 503.6666564941406,
+    "id": "v2-easy-cat-plans-reading-corner-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:bars:total"
+  },
+  {
+    "puzzleId": "v2-medium-data-lesson-5-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 442.9999694824219,
+    "id": "v2-medium-data-lesson-5-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:bars:total"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-easy-cat-plans-reading-corner-6",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:bars:difference"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-hard-data-lesson-9-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:bars:difference"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 397.3333435058594,
+    "id": "v2-easy-spatial-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:shapes:sides"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-5-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 397.3333435058594,
+    "id": "v2-easy-spatial-lesson-5-5",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:shapes:sides"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 493.6666564941406,
+    "id": "v2-easy-cat-plans-reading-corner-4",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:shapes:corners"
+  },
+  {
+    "puzzleId": "v2-medium-cat-plans-reading-corner-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 582.3333740234375,
+    "id": "v2-medium-cat-plans-reading-corner-4",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:shapes:corners"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 529.6666870117188,
+    "id": "v2-easy-spatial-lesson-7-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:grid:reflect"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-2-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 529.6666870117188,
+    "id": "v2-hard-spatial-lesson-2-6",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:grid:reflect"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-5-8",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-hard-spatial-lesson-5-8",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:grid:translate"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-5-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-hard-spatial-lesson-5-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:grid:translate"
+  },
+  {
+    "puzzleId": "v2-hard-cat-plans-reading-corner-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.9999694824219,
+    "id": "v2-hard-cat-plans-reading-corner-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:money:total"
+  },
+  {
+    "puzzleId": "v2-hard-cat-plans-cat-party-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.9999694824219,
+    "id": "v2-hard-cat-plans-cat-party-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:money:total"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-7",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 468.3333435058594,
+    "id": "v2-easy-cat-plans-reading-corner-7",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:money:change"
+  },
+  {
+    "puzzleId": "v2-medium-cat-plans-cat-party-7",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 468.3333435058594,
+    "id": "v2-medium-cat-plans-cat-party-7",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:money:change"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 454.9999694824219,
+    "id": "v2-easy-capacity-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:read"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-1-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 454.9999694824219,
+    "id": "v2-easy-capacity-lesson-1-6",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:read"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 519.3333740234375,
+    "id": "v2-easy-cat-plans-reading-corner-5",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:total"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-3-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-3-6",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:total"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-easy-capacity-lesson-5-1",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:space"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-5-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-5-4",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:space"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-9",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 519.3333740234375,
+    "id": "v2-easy-cat-plans-reading-corner-9",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:servings"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-7-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:servings"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-8",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 531.3333740234375,
+    "id": "v2-easy-cat-plans-reading-corner-8",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:clock:start"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-10",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 435.9999694824219,
+    "id": "v2-easy-cat-plans-reading-corner-10",
+    "difficulty": "easy",
+    "locale": "en",
+    "variant": "multiple_choice:money:afford"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-7-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 403.6666564941406,
+    "id": "v2-hard-money-lesson-7-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:money:afford"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 548.6666870117188,
+    "id": "v2-medium-addition-tens-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 467.6666564941406,
+    "id": "v2-medium-addition-tens-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "place_value:bundle"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 515.6666870117188,
+    "id": "v2-medium-addition-tens-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "place_value:add"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-parts-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 467.6666564941406,
+    "id": "v2-medium-subtraction-parts-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "place_value:split"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-parts-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 599,
+    "id": "v2-medium-subtraction-parts-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "place_value:subtract"
+  },
+  {
+    "puzzleId": "v2-medium-division-parcels-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 551,
+    "id": "v2-medium-division-parcels-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "fair_share"
+  },
+  {
+    "puzzleId": "v2-medium-division-leftovers-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 518.6666870117188,
+    "id": "v2-medium-division-leftovers-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "fair_share"
+  },
+  {
+    "puzzleId": "v2-medium-operations-routes-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 597.3333740234375,
+    "id": "v2-medium-operations-routes-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "operation_path"
+  },
+  {
+    "puzzleId": "v2-hard-hard-operations-explore-10-path-review-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 597.3333740234375,
+    "id": "v2-hard-hard-operations-explore-10-path-review-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "operation_path"
+  },
+  {
+    "puzzleId": "v2-medium-operations-explore-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 473.9999694824219,
+    "id": "v2-medium-operations-explore-7-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "target_build"
+  },
+  {
+    "puzzleId": "v2-hard-operations-strategies-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 451.9999694824219,
+    "id": "v2-hard-operations-strategies-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "target_build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 605.3333740234375,
+    "id": "v2-medium-fractions-explore-8-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "decimal_grid"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-8-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 526,
+    "id": "v2-medium-fractions-explore-8-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "decimal_place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 526,
+    "id": "v2-medium-fractions-explore-9-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "decimal_place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 560.3333740234375,
+    "id": "v2-medium-fractions-explore-9-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "decimal_place_value:bundle"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 560.3333740234375,
+    "id": "v2-medium-fractions-explore-9-3",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "decimal_place_value:split"
+  },
+  {
+    "puzzleId": "v2-hard-logic-lesson-8-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-hard-logic-lesson-8-challenge-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "route_grid"
+  },
+  {
+    "puzzleId": "v2-hard-operations-power-detour-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 552,
+    "id": "v2-hard-operations-power-detour-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "route_grid"
+  },
+  {
+    "puzzleId": "v2-medium-operations-explore-9-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-medium-operations-explore-9-4",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "coordinate_map:distance"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-9-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-hard-measurement-explore-9-4",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "coordinate_map:distance"
+  },
+  {
+    "puzzleId": "v2-medium-operations-lesson-9-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 585.6666870117188,
+    "id": "v2-medium-operations-lesson-9-challenge-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "coordinate_map:translate"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-lesson-9-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 585.6666870117188,
+    "id": "v2-hard-measurement-lesson-9-challenge-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "coordinate_map:translate"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 475.3333435058594,
+    "id": "v2-hard-data-lesson-7-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:bars:missing"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-8-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-hard-data-lesson-8-6",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:bars:missing"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 365,
+    "id": "v2-medium-spatial-lesson-1-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:shapes:symmetry"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 529.6666870117188,
+    "id": "v2-medium-spatial-lesson-9-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:grid:rotate"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-5-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 529.6666870117188,
+    "id": "v2-medium-spatial-lesson-5-4",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:grid:rotate"
+  },
+  {
+    "puzzleId": "v2-medium-money-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 483.9999694824219,
+    "id": "v2-medium-money-lesson-7-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:money:unit"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-4-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 439.9999694824219,
+    "id": "v2-hard-money-lesson-4-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:money:unit"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-1-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:litres"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-1-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-1-6",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:litres"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 551.6666870117188,
+    "id": "v2-medium-capacity-lesson-9-1",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:containers"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 551.6666870117188,
+    "id": "v2-medium-capacity-lesson-9-2",
+    "difficulty": "medium",
+    "locale": "en",
+    "variant": "multiple_choice:capacity:containers"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-area-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 616,
+    "id": "v2-hard-measurement-area-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "geometry_measure:area"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-rates-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 348,
+    "id": "v2-hard-measurement-rates-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "estimate"
+  },
+  {
+    "puzzleId": "v2-hard-percentages-expedition-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 537.3333740234375,
+    "id": "v2-hard-percentages-expedition-5-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "budget_plan"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 616,
+    "id": "v2-hard-measurement-explore-3-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "geometry_measure:perimeter"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 528,
+    "id": "v2-hard-measurement-explore-6-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "geometry_measure:compare"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 590.6666870117188,
+    "id": "v2-hard-measurement-explore-6-2",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "geometry_measure:missing_area"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 613.6666870117188,
+    "id": "v2-hard-measurement-explore-6-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "geometry_measure:missing_perimeter"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 475.3333435058594,
+    "id": "v2-hard-data-lesson-3-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:bars:range"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-3-7",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-hard-data-lesson-3-7",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:bars:range"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 454.9999694824219,
+    "id": "v2-hard-data-lesson-5-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:bars:mean"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-5-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 478.9999694824219,
+    "id": "v2-hard-data-lesson-5-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:bars:mean"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 444.3333435058594,
+    "id": "v2-hard-money-lesson-1-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:money:discount"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-2-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 444.3333435058594,
+    "id": "v2-hard-money-lesson-2-3",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:money:discount"
+  },
+  {
+    "puzzleId": "v2-hard-capacity-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 477.3333435058594,
+    "id": "v2-hard-capacity-lesson-9-1",
+    "difficulty": "hard",
+    "locale": "en",
+    "variant": "multiple_choice:solid"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-small-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 261,
+    "id": "v2-easy-numbers-small-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "order_numbers"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-4-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 261,
+    "id": "v2-easy-numbers-explore-4-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "order_numbers"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-train-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 510.6666564941406,
+    "id": "v2-easy-numbers-train-2",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "compare"
+  },
+  {
+    "puzzleId": "v2-hard-logic-explore-10-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 397.3333435058594,
+    "id": "v2-hard-logic-explore-10-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 582.6666870117188,
+    "id": "v2-hard-measurement-explore-7-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice"
+  },
+  {
+    "puzzleId": "v2-easy-subtraction-lesson-4-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.6666564941406,
+    "id": "v2-easy-subtraction-lesson-4-challenge-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "number_line"
+  },
+  {
+    "puzzleId": "v2-easy-easy-subtraction-explore-3-path-review-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.6666564941406,
+    "id": "v2-easy-easy-subtraction-explore-3-path-review-2",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "number_line"
+  },
+  {
+    "puzzleId": "v2-easy-patterns-music-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 383,
+    "id": "v2-easy-patterns-music-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "pattern_next"
+  },
+  {
+    "puzzleId": "v2-hard-patterns-lesson-9-boss-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 350.6666564941406,
+    "id": "v2-hard-patterns-lesson-9-boss-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "pattern_next"
+  },
+  {
+    "puzzleId": "v2-medium-multiplication-theatre-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 428.3333435058594,
+    "id": "v2-medium-multiplication-theatre-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "function_machine"
+  },
+  {
+    "puzzleId": "v2-medium-operations-lanterns-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 293,
+    "id": "v2-medium-operations-lanterns-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "function_machine"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-garden-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 559,
+    "id": "v2-hard-fractions-garden-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "fraction_build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-fountain-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.9999694824219,
+    "id": "v2-medium-fractions-fountain-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "fraction_match"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-10-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 493.9999694824219,
+    "id": "v2-medium-fractions-explore-10-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "fraction_match"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-pictures-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 330.6666564941406,
+    "id": "v2-easy-fractions-pictures-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "fraction_strip:build"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-pictures-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 416.3333435058594,
+    "id": "v2-easy-fractions-pictures-2",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "fraction_number_line"
+  },
+  {
+    "puzzleId": "v2-easy-addition-picnic-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 476.3333435058594,
+    "id": "v2-easy-addition-picnic-2",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "balance"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tickets-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 443.9999694824219,
+    "id": "v2-medium-addition-tickets-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "balance"
+  },
+  {
+    "puzzleId": "v2-hard-percentages-shop-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 461.3333435058594,
+    "id": "v2-hard-percentages-shop-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "fix_mistake"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tickets-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 517.3333740234375,
+    "id": "v2-medium-addition-tickets-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "fix_mistake"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-explore-6-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 399.3333435058594,
+    "id": "v2-hard-fractions-explore-6-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "fraction_equivalent"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-explore-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 367,
+    "id": "v2-hard-fractions-explore-7-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "fraction_equivalent"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-expedition-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 541,
+    "id": "v2-hard-measurement-expedition-5-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "sort_buckets"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-expedition-10-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.6666564941406,
+    "id": "v2-hard-fractions-expedition-10-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "sort_buckets"
+  },
+  {
+    "puzzleId": "v2-hard-patterns-signal-gaps-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 545.6666870117188,
+    "id": "v2-hard-patterns-signal-gaps-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "repair_pattern"
+  },
+  {
+    "puzzleId": "v2-hard-patterns-lesson-6-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 545.6666870117188,
+    "id": "v2-hard-patterns-lesson-6-challenge-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "repair_pattern"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 599,
+    "id": "v2-easy-numbers-explore-8-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "signed_line:place"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 599,
+    "id": "v2-medium-subtraction-explore-8-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "signed_line:place"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-8-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 543,
+    "id": "v2-easy-numbers-explore-8-4",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "signed_line:move"
+  },
+  {
+    "puzzleId": "v2-hard-operations-explore-8-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 599,
+    "id": "v2-hard-operations-explore-8-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "signed_line:move"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-easy-numbers-explore-9-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "coordinate_map:plot"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-9-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-hard-measurement-explore-9-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "coordinate_map:plot"
+  },
+  {
+    "puzzleId": "v2-easy-addition-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 350.6666564941406,
+    "id": "v2-easy-addition-explore-6-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "pair_sum"
+  },
+  {
+    "puzzleId": "v2-medium-addition-regroup-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 424.6666564941406,
+    "id": "v2-medium-addition-regroup-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "pair_sum"
+  },
+  {
+    "puzzleId": "v2-easy-addition-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 456.6666564941406,
+    "id": "v2-easy-addition-explore-8-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "equation_board"
+  },
+  {
+    "puzzleId": "v2-hard-operations-explore-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 539.3333740234375,
+    "id": "v2-hard-operations-explore-9-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "equation_board"
+  },
+  {
+    "puzzleId": "v2-medium-addition-pair-hunt-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-medium-addition-pair-hunt-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "find_all_pairs"
+  },
+  {
+    "puzzleId": "v2-hard-logic-pair-hunt-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 570.6666870117188,
+    "id": "v2-hard-logic-pair-hunt-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "find_all_pairs"
+  },
+  {
+    "puzzleId": "v2-hard-logic-clues-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 315.6666564941406,
+    "id": "v2-hard-logic-clues-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "true_false"
+  },
+  {
+    "puzzleId": "v2-hard-logic-explore-6-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 283.33331298828125,
+    "id": "v2-hard-logic-explore-6-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "true_false"
+  },
+  {
+    "puzzleId": "v2-easy-multiplication-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 556,
+    "id": "v2-easy-multiplication-explore-8-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "ratio_table"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 520,
+    "id": "v2-hard-measurement-explore-8-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "ratio_table"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 580.3333740234375,
+    "id": "v2-easy-fractions-explore-6-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "fraction_strip:equivalent"
+  },
+  {
+    "puzzleId": "v2-easy-time-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 401.6666564941406,
+    "id": "v2-easy-time-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:clock:read"
+  },
+  {
+    "puzzleId": "v2-medium-time-lesson-1-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 401.6666564941406,
+    "id": "v2-medium-time-lesson-1-4",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:clock:read"
+  },
+  {
+    "puzzleId": "v2-hard-time-lesson-1-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 295.6666564941406,
+    "id": "v2-hard-time-lesson-1-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:clock:elapsed"
+  },
+  {
+    "puzzleId": "v2-hard-time-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 295.6666564941406,
+    "id": "v2-hard-time-lesson-1-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:clock:elapsed"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 498.6666564941406,
+    "id": "v2-easy-cat-plans-reading-corner-3",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:clock:finish"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 406.6666564941406,
+    "id": "v2-easy-data-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:read"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-1-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 406.6666564941406,
+    "id": "v2-hard-data-lesson-1-5",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:read"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 442.9999694824219,
+    "id": "v2-easy-data-lesson-3-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:most"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-easy-data-lesson-5-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:least"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 503.6666564941406,
+    "id": "v2-easy-cat-plans-reading-corner-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:total"
+  },
+  {
+    "puzzleId": "v2-medium-data-lesson-5-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 410.6666564941406,
+    "id": "v2-medium-data-lesson-5-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:total"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-easy-cat-plans-reading-corner-6",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:difference"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-hard-data-lesson-9-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:difference"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 365,
+    "id": "v2-easy-spatial-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:shapes:sides"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-5-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 365,
+    "id": "v2-easy-spatial-lesson-5-5",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:shapes:sides"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 461.3333435058594,
+    "id": "v2-easy-cat-plans-reading-corner-4",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:shapes:corners"
+  },
+  {
+    "puzzleId": "v2-medium-cat-plans-reading-corner-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 550,
+    "id": "v2-medium-cat-plans-reading-corner-4",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:shapes:corners"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-easy-spatial-lesson-7-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:grid:reflect"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-2-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-hard-spatial-lesson-2-6",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:grid:reflect"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-5-7",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-hard-spatial-lesson-5-7",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:grid:translate"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-5-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-hard-spatial-lesson-5-5",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:grid:translate"
+  },
+  {
+    "puzzleId": "v2-hard-cat-plans-reading-corner-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.9999694824219,
+    "id": "v2-hard-cat-plans-reading-corner-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:money:total"
+  },
+  {
+    "puzzleId": "v2-hard-cat-plans-cat-party-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.9999694824219,
+    "id": "v2-hard-cat-plans-cat-party-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:money:total"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-7",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 468.3333435058594,
+    "id": "v2-easy-cat-plans-reading-corner-7",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:money:change"
+  },
+  {
+    "puzzleId": "v2-medium-money-lesson-5-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 403.6666564941406,
+    "id": "v2-medium-money-lesson-5-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:money:change"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 422.6666564941406,
+    "id": "v2-easy-capacity-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:read"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-1-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 422.6666564941406,
+    "id": "v2-easy-capacity-lesson-1-6",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:read"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 519.3333740234375,
+    "id": "v2-easy-cat-plans-reading-corner-5",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:total"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-3-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 454.6666564941406,
+    "id": "v2-medium-capacity-lesson-3-6",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:total"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-easy-capacity-lesson-5-1",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:space"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-5-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-5-4",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:space"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-9",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 519.3333740234375,
+    "id": "v2-easy-cat-plans-reading-corner-9",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:servings"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-7-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:servings"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-8",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 498.6666564941406,
+    "id": "v2-easy-cat-plans-reading-corner-8",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:clock:start"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-10",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 435.9999694824219,
+    "id": "v2-easy-cat-plans-reading-corner-10",
+    "difficulty": "easy",
+    "locale": "lv",
+    "variant": "multiple_choice:money:afford"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-7-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 403.6666564941406,
+    "id": "v2-hard-money-lesson-7-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:money:afford"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 581,
+    "id": "v2-medium-addition-tens-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 499.9999694824219,
+    "id": "v2-medium-addition-tens-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "place_value:bundle"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 515.6666870117188,
+    "id": "v2-medium-addition-tens-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "place_value:add"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-parts-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 499.9999694824219,
+    "id": "v2-medium-subtraction-parts-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "place_value:split"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-parts-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 616.6666870117188,
+    "id": "v2-medium-subtraction-parts-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "place_value:subtract"
+  },
+  {
+    "puzzleId": "v2-medium-division-parcels-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 556,
+    "id": "v2-medium-division-parcels-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "fair_share"
+  },
+  {
+    "puzzleId": "v2-medium-division-leftovers-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 556,
+    "id": "v2-medium-division-leftovers-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "fair_share"
+  },
+  {
+    "puzzleId": "v2-medium-operations-routes-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 565,
+    "id": "v2-medium-operations-routes-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "operation_path"
+  },
+  {
+    "puzzleId": "v2-hard-hard-operations-explore-10-path-review-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 565,
+    "id": "v2-hard-hard-operations-explore-10-path-review-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "operation_path"
+  },
+  {
+    "puzzleId": "v2-medium-operations-explore-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 506.3333435058594,
+    "id": "v2-medium-operations-explore-7-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "target_build"
+  },
+  {
+    "puzzleId": "v2-hard-operations-strategies-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 451.9999694824219,
+    "id": "v2-hard-operations-strategies-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "target_build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 605.3333740234375,
+    "id": "v2-medium-fractions-explore-8-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "decimal_grid"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-8-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 526,
+    "id": "v2-medium-fractions-explore-8-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "decimal_place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 526,
+    "id": "v2-medium-fractions-explore-9-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "decimal_place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 560.3333740234375,
+    "id": "v2-medium-fractions-explore-9-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "decimal_place_value:bundle"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 560.3333740234375,
+    "id": "v2-medium-fractions-explore-9-3",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "decimal_place_value:split"
+  },
+  {
+    "puzzleId": "v2-hard-logic-lesson-8-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-hard-logic-lesson-8-challenge-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "route_grid"
+  },
+  {
+    "puzzleId": "v2-hard-operations-power-detour-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 519.6666870117188,
+    "id": "v2-hard-operations-power-detour-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "route_grid"
+  },
+  {
+    "puzzleId": "v2-medium-operations-explore-9-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-medium-operations-explore-9-4",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "coordinate_map:distance"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-9-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-hard-measurement-explore-9-4",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "coordinate_map:distance"
+  },
+  {
+    "puzzleId": "v2-medium-operations-lesson-9-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 585.6666870117188,
+    "id": "v2-medium-operations-lesson-9-challenge-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "coordinate_map:translate"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-lesson-9-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 585.6666870117188,
+    "id": "v2-hard-measurement-lesson-9-challenge-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "coordinate_map:translate"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 442.9999694824219,
+    "id": "v2-hard-data-lesson-7-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:missing"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-8-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-hard-data-lesson-8-6",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:missing"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 365,
+    "id": "v2-medium-spatial-lesson-1-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:shapes:symmetry"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 562.3333740234375,
+    "id": "v2-medium-spatial-lesson-5-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:grid:rotate"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-5-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 562.3333740234375,
+    "id": "v2-medium-spatial-lesson-5-4",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:grid:rotate"
+  },
+  {
+    "puzzleId": "v2-medium-money-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 505.9999694824219,
+    "id": "v2-medium-money-lesson-7-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:money:unit"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-4-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 461.9999694824219,
+    "id": "v2-hard-money-lesson-4-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:money:unit"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-1-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:litres"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-1-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-1-6",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:litres"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 551.6666870117188,
+    "id": "v2-medium-capacity-lesson-9-1",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:containers"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 551.6666870117188,
+    "id": "v2-medium-capacity-lesson-9-2",
+    "difficulty": "medium",
+    "locale": "lv",
+    "variant": "multiple_choice:capacity:containers"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-area-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 616,
+    "id": "v2-hard-measurement-area-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "geometry_measure:area"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-rates-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 440.6666564941406,
+    "id": "v2-hard-measurement-rates-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "estimate"
+  },
+  {
+    "puzzleId": "v2-hard-percentages-camp-budget-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 537.3333740234375,
+    "id": "v2-hard-percentages-camp-budget-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "budget_plan"
+  },
+  {
+    "puzzleId": "v2-hard-percentages-expedition-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 537.3333740234375,
+    "id": "v2-hard-percentages-expedition-5-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "budget_plan"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 616,
+    "id": "v2-hard-measurement-explore-3-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "geometry_measure:perimeter"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 528,
+    "id": "v2-hard-measurement-explore-6-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "geometry_measure:compare"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 590.6666870117188,
+    "id": "v2-hard-measurement-explore-6-2",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "geometry_measure:missing_area"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 590.6666870117188,
+    "id": "v2-hard-measurement-explore-6-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "geometry_measure:missing_perimeter"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 442.9999694824219,
+    "id": "v2-hard-data-lesson-3-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:range"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-3-7",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-hard-data-lesson-3-7",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:range"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 454.9999694824219,
+    "id": "v2-hard-data-lesson-5-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:mean"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-5-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 478.9999694824219,
+    "id": "v2-hard-data-lesson-5-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:bars:mean"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 411.9999694824219,
+    "id": "v2-hard-money-lesson-1-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:money:discount"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-2-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 411.9999694824219,
+    "id": "v2-hard-money-lesson-2-3",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:money:discount"
+  },
+  {
+    "puzzleId": "v2-hard-capacity-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 477.3333435058594,
+    "id": "v2-hard-capacity-lesson-9-1",
+    "difficulty": "hard",
+    "locale": "lv",
+    "variant": "multiple_choice:solid"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-small-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 293.33331298828125,
+    "id": "v2-easy-numbers-small-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "order_numbers"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-4-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 293.33331298828125,
+    "id": "v2-easy-numbers-explore-4-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "order_numbers"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-train-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 532.6666870117188,
+    "id": "v2-easy-numbers-train-2",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "compare"
+  },
+  {
+    "puzzleId": "v2-hard-logic-explore-10-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 420.3333435058594,
+    "id": "v2-hard-logic-explore-10-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 602.6666870117188,
+    "id": "v2-hard-measurement-explore-7-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice"
+  },
+  {
+    "puzzleId": "v2-easy-subtraction-lesson-4-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.6666564941406,
+    "id": "v2-easy-subtraction-lesson-4-challenge-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "number_line"
+  },
+  {
+    "puzzleId": "v2-easy-easy-subtraction-explore-3-path-review-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.6666564941406,
+    "id": "v2-easy-easy-subtraction-explore-3-path-review-2",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "number_line"
+  },
+  {
+    "puzzleId": "v2-easy-patterns-music-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 437.3333435058594,
+    "id": "v2-easy-patterns-music-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "pattern_next"
+  },
+  {
+    "puzzleId": "v2-hard-patterns-lesson-9-boss-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 372.6666564941406,
+    "id": "v2-hard-patterns-lesson-9-boss-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "pattern_next"
+  },
+  {
+    "puzzleId": "v2-medium-multiplication-theatre-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 460.6666564941406,
+    "id": "v2-medium-multiplication-theatre-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "function_machine"
+  },
+  {
+    "puzzleId": "v2-medium-operations-lanterns-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 325.33331298828125,
+    "id": "v2-medium-operations-lanterns-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "function_machine"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-garden-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 613.3333740234375,
+    "id": "v2-hard-fractions-garden-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "fraction_build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-fountain-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 549.3333740234375,
+    "id": "v2-medium-fractions-fountain-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "fraction_match"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-10-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 513,
+    "id": "v2-medium-fractions-explore-10-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "fraction_match"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-pictures-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 353.6666564941406,
+    "id": "v2-easy-fractions-pictures-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "fraction_strip:build"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-pictures-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 470.3333435058594,
+    "id": "v2-easy-fractions-pictures-2",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "fraction_number_line"
+  },
+  {
+    "puzzleId": "v2-easy-addition-picnic-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.6666564941406,
+    "id": "v2-easy-addition-picnic-2",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "balance"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tickets-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 443.9999694824219,
+    "id": "v2-medium-addition-tickets-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "balance"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tickets-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 582,
+    "id": "v2-medium-addition-tickets-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "fix_mistake"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-explore-5-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 421.3333435058594,
+    "id": "v2-hard-fractions-explore-5-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "fraction_equivalent"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-explore-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 421.3333435058594,
+    "id": "v2-hard-fractions-explore-7-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "fraction_equivalent"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-expedition-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 595.6666870117188,
+    "id": "v2-hard-measurement-expedition-5-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "sort_buckets"
+  },
+  {
+    "puzzleId": "v2-hard-fractions-expedition-10-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 531,
+    "id": "v2-hard-fractions-expedition-10-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "sort_buckets"
+  },
+  {
+    "puzzleId": "v2-easy-patterns-stepping-stones-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 600.6666870117188,
+    "id": "v2-easy-patterns-stepping-stones-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "repair_pattern"
+  },
+  {
+    "puzzleId": "v2-hard-patterns-lesson-6-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 600.6666870117188,
+    "id": "v2-hard-patterns-lesson-6-challenge-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "repair_pattern"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 576,
+    "id": "v2-easy-numbers-explore-8-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "signed_line:place"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 576,
+    "id": "v2-medium-subtraction-explore-8-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "signed_line:place"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-8-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 552.3333740234375,
+    "id": "v2-easy-numbers-explore-8-4",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "signed_line:move"
+  },
+  {
+    "puzzleId": "v2-hard-operations-explore-8-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 608.3333740234375,
+    "id": "v2-hard-operations-explore-8-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "signed_line:move"
+  },
+  {
+    "puzzleId": "v2-easy-numbers-explore-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-easy-numbers-explore-9-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "coordinate_map:plot"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-9-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-hard-measurement-explore-9-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "coordinate_map:plot"
+  },
+  {
+    "puzzleId": "v2-easy-addition-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 350.6666564941406,
+    "id": "v2-easy-addition-explore-6-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "pair_sum"
+  },
+  {
+    "puzzleId": "v2-medium-addition-regroup-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 424.6666564941406,
+    "id": "v2-medium-addition-regroup-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "pair_sum"
+  },
+  {
+    "puzzleId": "v2-easy-addition-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 509.9999694824219,
+    "id": "v2-easy-addition-explore-8-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "equation_board"
+  },
+  {
+    "puzzleId": "v2-hard-operations-explore-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 592.6666870117188,
+    "id": "v2-hard-operations-explore-9-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "equation_board"
+  },
+  {
+    "puzzleId": "v2-medium-addition-pair-hunt-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 529.6666870117188,
+    "id": "v2-medium-addition-pair-hunt-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "find_all_pairs"
+  },
+  {
+    "puzzleId": "v2-hard-logic-pair-hunt-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 570.6666870117188,
+    "id": "v2-hard-logic-pair-hunt-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "find_all_pairs"
+  },
+  {
+    "puzzleId": "v2-hard-logic-clues-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 402.6666564941406,
+    "id": "v2-hard-logic-clues-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "true_false"
+  },
+  {
+    "puzzleId": "v2-hard-logic-explore-6-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 305.33331298828125,
+    "id": "v2-hard-logic-explore-6-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "true_false"
+  },
+  {
+    "puzzleId": "v2-easy-multiplication-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 599.3333740234375,
+    "id": "v2-easy-multiplication-explore-8-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "ratio_table"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 563.3333740234375,
+    "id": "v2-hard-measurement-explore-8-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "ratio_table"
+  },
+  {
+    "puzzleId": "v2-easy-fractions-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 580.3333740234375,
+    "id": "v2-easy-fractions-explore-6-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "fraction_strip:equivalent"
+  },
+  {
+    "puzzleId": "v2-easy-time-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 433.9999694824219,
+    "id": "v2-easy-time-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:clock:read"
+  },
+  {
+    "puzzleId": "v2-medium-time-lesson-1-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 433.9999694824219,
+    "id": "v2-medium-time-lesson-1-4",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:clock:read"
+  },
+  {
+    "puzzleId": "v2-easy-time-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 295.6666564941406,
+    "id": "v2-easy-time-lesson-7-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:clock:elapsed"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-cat-party-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 563.6666870117188,
+    "id": "v2-easy-cat-plans-cat-party-3",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:clock:finish"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-easy-data-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:read"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-1-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-hard-data-lesson-1-5",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:read"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 442.9999694824219,
+    "id": "v2-easy-data-lesson-3-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:most"
+  },
+  {
+    "puzzleId": "v2-easy-data-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 438.9999694824219,
+    "id": "v2-easy-data-lesson-5-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:least"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-cat-party-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 540.3333740234375,
+    "id": "v2-easy-cat-plans-cat-party-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:total"
+  },
+  {
+    "puzzleId": "v2-hard-cat-plans-cat-party-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 540.3333740234375,
+    "id": "v2-hard-cat-plans-cat-party-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:total"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-cat-party-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 507.6666564941406,
+    "id": "v2-easy-cat-plans-cat-party-6",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:difference"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-hard-data-lesson-9-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:difference"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 365,
+    "id": "v2-easy-spatial-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:shapes:sides"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-5-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 365,
+    "id": "v2-easy-spatial-lesson-5-5",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:shapes:sides"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-cat-party-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 526.3333740234375,
+    "id": "v2-easy-cat-plans-cat-party-4",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:shapes:corners"
+  },
+  {
+    "puzzleId": "v2-medium-cat-plans-cat-party-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 615,
+    "id": "v2-medium-cat-plans-cat-party-4",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:shapes:corners"
+  },
+  {
+    "puzzleId": "v2-easy-spatial-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 562.3333740234375,
+    "id": "v2-easy-spatial-lesson-7-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:grid:reflect"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-2-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 562.3333740234375,
+    "id": "v2-hard-spatial-lesson-2-6",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:grid:reflect"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-5-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-hard-spatial-lesson-5-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:grid:translate"
+  },
+  {
+    "puzzleId": "v2-hard-spatial-lesson-5-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 497.3333435058594,
+    "id": "v2-hard-spatial-lesson-5-5",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:grid:translate"
+  },
+  {
+    "puzzleId": "v2-hard-cat-plans-reading-corner-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 508.9999694824219,
+    "id": "v2-hard-cat-plans-reading-corner-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:money:total"
+  },
+  {
+    "puzzleId": "v2-medium-money-lesson-10-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 375.33331298828125,
+    "id": "v2-medium-money-lesson-10-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:money:total"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-reading-corner-7",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 468.3333435058594,
+    "id": "v2-easy-cat-plans-reading-corner-7",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:money:change"
+  },
+  {
+    "puzzleId": "v2-medium-money-lesson-5-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 403.6666564941406,
+    "id": "v2-medium-money-lesson-5-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:money:change"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 454.9999694824219,
+    "id": "v2-easy-capacity-lesson-1-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:read"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-1-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 454.9999694824219,
+    "id": "v2-easy-capacity-lesson-1-6",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:read"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-cat-party-5",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 519.3333740234375,
+    "id": "v2-easy-cat-plans-cat-party-5",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:total"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-3-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-3-6",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:total"
+  },
+  {
+    "puzzleId": "v2-easy-capacity-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 519.3333740234375,
+    "id": "v2-easy-capacity-lesson-5-1",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:space"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-5-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 519.3333740234375,
+    "id": "v2-medium-capacity-lesson-5-4",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:space"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-cat-party-9",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 584.3333740234375,
+    "id": "v2-easy-cat-plans-cat-party-9",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:servings"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-7-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:servings"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-cat-party-8",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 563.6666870117188,
+    "id": "v2-easy-cat-plans-cat-party-8",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:clock:start"
+  },
+  {
+    "puzzleId": "v2-easy-cat-plans-cat-party-10",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 468.3333435058594,
+    "id": "v2-easy-cat-plans-cat-party-10",
+    "difficulty": "easy",
+    "locale": "ru",
+    "variant": "multiple_choice:money:afford"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-7-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 403.6666564941406,
+    "id": "v2-hard-money-lesson-7-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:money:afford"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 598.6666870117188,
+    "id": "v2-medium-addition-tens-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 517.6666870117188,
+    "id": "v2-medium-addition-tens-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "place_value:bundle"
+  },
+  {
+    "puzzleId": "v2-medium-addition-tens-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 533.3333740234375,
+    "id": "v2-medium-addition-tens-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "place_value:add"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-parts-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 517.6666870117188,
+    "id": "v2-medium-subtraction-parts-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "place_value:split"
+  },
+  {
+    "puzzleId": "v2-medium-subtraction-parts-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 616.6666870117188,
+    "id": "v2-medium-subtraction-parts-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "place_value:subtract"
+  },
+  {
+    "puzzleId": "v2-medium-division-parcels-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 588.3333740234375,
+    "id": "v2-medium-division-parcels-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "fair_share"
+  },
+  {
+    "puzzleId": "v2-medium-division-leftovers-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 556,
+    "id": "v2-medium-division-leftovers-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "fair_share"
+  },
+  {
+    "puzzleId": "v2-medium-operations-routes-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 597.3333740234375,
+    "id": "v2-medium-operations-routes-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "operation_path"
+  },
+  {
+    "puzzleId": "v2-hard-hard-operations-explore-10-path-review-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 597.3333740234375,
+    "id": "v2-hard-hard-operations-explore-10-path-review-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "operation_path"
+  },
+  {
+    "puzzleId": "v2-medium-operations-explore-7-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 578.6666870117188,
+    "id": "v2-medium-operations-explore-7-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "target_build"
+  },
+  {
+    "puzzleId": "v2-hard-operations-strategies-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 491.6666564941406,
+    "id": "v2-hard-operations-strategies-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "target_build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-8-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 605.3333740234375,
+    "id": "v2-medium-fractions-explore-8-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "decimal_grid"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-8-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 526,
+    "id": "v2-medium-fractions-explore-8-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "decimal_place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 526,
+    "id": "v2-medium-fractions-explore-9-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "decimal_place_value:build"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 560.3333740234375,
+    "id": "v2-medium-fractions-explore-9-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "decimal_place_value:bundle"
+  },
+  {
+    "puzzleId": "v2-medium-fractions-explore-9-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 560.3333740234375,
+    "id": "v2-medium-fractions-explore-9-3",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "decimal_place_value:split"
+  },
+  {
+    "puzzleId": "v2-hard-logic-lesson-8-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 526,
+    "id": "v2-hard-logic-lesson-8-challenge-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "route_grid"
+  },
+  {
+    "puzzleId": "v2-hard-operations-power-detour-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 606.6666870117188,
+    "id": "v2-hard-operations-power-detour-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "route_grid"
+  },
+  {
+    "puzzleId": "v2-medium-operations-explore-9-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-medium-operations-explore-9-4",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "coordinate_map:distance"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-9-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 612.6666870117188,
+    "id": "v2-hard-measurement-explore-9-4",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "coordinate_map:distance"
+  },
+  {
+    "puzzleId": "v2-medium-operations-lesson-9-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 585.6666870117188,
+    "id": "v2-medium-operations-lesson-9-challenge-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "coordinate_map:translate"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-lesson-9-challenge-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 585.6666870117188,
+    "id": "v2-hard-measurement-lesson-9-challenge-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "coordinate_map:translate"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 475.3333435058594,
+    "id": "v2-hard-data-lesson-7-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:missing"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-8-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-hard-data-lesson-8-6",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:missing"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 365,
+    "id": "v2-medium-spatial-lesson-1-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:shapes:symmetry"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 562.3333740234375,
+    "id": "v2-medium-spatial-lesson-5-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:grid:rotate"
+  },
+  {
+    "puzzleId": "v2-medium-spatial-lesson-5-4",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 562.3333740234375,
+    "id": "v2-medium-spatial-lesson-5-4",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:grid:rotate"
+  },
+  {
+    "puzzleId": "v2-medium-money-lesson-7-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 505.9999694824219,
+    "id": "v2-medium-money-lesson-7-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:money:unit"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-4-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 461.9999694824219,
+    "id": "v2-hard-money-lesson-4-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:money:unit"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-1-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:litres"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-1-6",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 486.9999694824219,
+    "id": "v2-medium-capacity-lesson-1-6",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:litres"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 584.3333740234375,
+    "id": "v2-medium-capacity-lesson-9-1",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:containers"
+  },
+  {
+    "puzzleId": "v2-medium-capacity-lesson-9-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 584.3333740234375,
+    "id": "v2-medium-capacity-lesson-9-2",
+    "difficulty": "medium",
+    "locale": "ru",
+    "variant": "multiple_choice:capacity:containers"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-area-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 616,
+    "id": "v2-hard-measurement-area-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "geometry_measure:area"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-rates-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 440.6666564941406,
+    "id": "v2-hard-measurement-rates-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "estimate"
+  },
+  {
+    "puzzleId": "v2-hard-percentages-camp-budget-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 562,
+    "id": "v2-hard-percentages-camp-budget-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "budget_plan"
+  },
+  {
+    "puzzleId": "v2-hard-percentages-expedition-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 562,
+    "id": "v2-hard-percentages-expedition-5-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "budget_plan"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 616,
+    "id": "v2-hard-measurement-explore-3-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "geometry_measure:perimeter"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 528,
+    "id": "v2-hard-measurement-explore-6-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "geometry_measure:compare"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-2",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 613.6666870117188,
+    "id": "v2-hard-measurement-explore-6-2",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "geometry_measure:missing_area"
+  },
+  {
+    "puzzleId": "v2-hard-measurement-explore-6-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 613.6666870117188,
+    "id": "v2-hard-measurement-explore-6-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "geometry_measure:missing_perimeter"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-3-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 475.3333435058594,
+    "id": "v2-hard-data-lesson-3-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:range"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-3-7",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 471.3333435058594,
+    "id": "v2-hard-data-lesson-3-7",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:range"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-5-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 454.9999694824219,
+    "id": "v2-hard-data-lesson-5-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:mean"
+  },
+  {
+    "puzzleId": "v2-hard-data-lesson-5-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 478.9999694824219,
+    "id": "v2-hard-data-lesson-5-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:bars:mean"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-1-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 444.3333435058594,
+    "id": "v2-hard-money-lesson-1-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:money:discount"
+  },
+  {
+    "puzzleId": "v2-hard-money-lesson-2-3",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 444.3333435058594,
+    "id": "v2-hard-money-lesson-2-3",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:money:discount"
+  },
+  {
+    "puzzleId": "v2-hard-capacity-lesson-9-1",
+    "viewportHeight": 621.3333740234375,
+    "contentHeight": 542.3333740234375,
+    "id": "v2-hard-capacity-lesson-9-1",
+    "difficulty": "hard",
+    "locale": "ru",
+    "variant": "multiple_choice:solid"
+  }
+]

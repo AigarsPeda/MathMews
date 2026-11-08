@@ -1,4 +1,4 @@
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { DiagramColors } from "@/constants/puzzle-theme";
 import { getFractionGridSize } from "@/utils/fraction-match";
 import { moderateScale } from "@/utils/scale";
 import { StyleSheet, View } from "react-native";
@@ -9,8 +9,8 @@ type FractionGridChartProps = {
   size?: number;
 };
 
-const SHADED_COLOR = GameColors.secondary;
-const EMPTY_COLOR = "#ECECEC";
+const SHADED_COLOR = DiagramColors.fractionFill;
+const EMPTY_COLOR = DiagramColors.fractionSurface;
 
 export function FractionGridChart({
   denominator,
@@ -53,6 +53,6 @@ const styles = StyleSheet.create({
   cell: {
     borderRadius: moderateScale(4),
     borderWidth: 1,
-    borderColor: "#FFFFFF",
+    borderColor: DiagramColors.fractionEdge,
   },
 });

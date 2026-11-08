@@ -1,4 +1,4 @@
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { DiagramColors, PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { moderateScale } from "@/utils/scale";
 import { getFractionSliceAtPoint } from "@/utils/fraction-pie";
@@ -17,9 +17,9 @@ type FractionPieChartProps = {
   isCorrect?: boolean;
 };
 
-const FILLED_COLOR = GameColors.secondary;
-const EMPTY_COLOR = "#ECECEC";
-const STROKE_COLOR = "#FFFFFF";
+const FILLED_COLOR = DiagramColors.fractionFill;
+const EMPTY_COLOR = DiagramColors.fractionSurface;
+const STROKE_COLOR = DiagramColors.fractionEdge;
 
 function createWedgePath(
   cx: number,
@@ -82,7 +82,7 @@ export function FractionPieChart({
     });
     return path;
   });
-  const fillColor = showResult ? isCorrect ? GameColors.success : "#FF9F43" : FILLED_COLOR;
+  const fillColor = showResult ? isCorrect ? GameColors.success : GameColors.incorrect : FILLED_COLOR;
 
   const slices = useMemo(() => {
     return Array.from({ length: denominator }, (_, index) => {
@@ -92,6 +92,8 @@ export function FractionPieChart({
       };
     });
   }, [center, denominator, radius]);
+
+  const outline = useMemo(() => createWedgePath(center, center, radius, 0, 360), [center, radius]);
 
   return (
     <View style={[styles.wrap, { width: size, height: size }]}>
@@ -114,6 +116,7 @@ export function FractionPieChart({
             strokeWidth={2}
           />
         ))}
+        <Path path={outline} color={DiagramColors.fractionEdge} style="stroke" strokeWidth={3} />
       </Canvas>
       {onToggleSlice ? (
         <Pressable

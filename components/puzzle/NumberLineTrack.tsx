@@ -1,10 +1,10 @@
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
-import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
+import { DiagramColors, PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { moderateScale } from "@/utils/scale";
 import { Canvas, Path, Skia } from "@shopify/react-native-skia";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 
 type NumberLineTrackProps = {
@@ -32,6 +32,8 @@ export function NumberLineTrack({
   correctValue, wrongValue, fit = false, hops = 0, direction = 1,
 }: NumberLineTrackProps) {
   const { t } = useTranslation();
+  const { fontScale } = useWindowDimensions();
+  const trackHeight = Math.max(HEIGHT, LINE_Y + moderateScale(24 + 42 * fontScale));
   const scroll = useRef<ScrollView>(null);
   const scrolling = useRef(false);
   const [viewport, setViewport] = useState(0);
@@ -116,11 +118,11 @@ export function NumberLineTrack({
       onScrollBeginDrag={() => { scrolling.current = true; }}
       onLayout={(event) => setViewport(event.nativeEvent.layout.width)}
       onContentSizeChange={(nextWidth) => setContentWidth(nextWidth)}
-      style={styles.viewport}
+      style={[styles.viewport, { height: trackHeight }]}
     >
-      <View style={{ width, height: HEIGHT }}>
+      <View style={{ width, height: trackHeight }}>
         <Canvas pointerEvents="none" style={StyleSheet.absoluteFill}>
-          <Path path={paths.line} color={GameColors.textMuted} style="stroke" strokeWidth={2} />
+          <Path path={paths.line} color={DiagramColors.geometryEdge} style="stroke" strokeWidth={3} strokeCap="round" />
           {paths.jumps.map(({ arc }, index) => (
             <Path key={`arc-${index}`} path={arc} color={GameColors.primary} style="stroke" strokeWidth={3} />
           ))}
@@ -168,14 +170,14 @@ export function NumberLineTrack({
 }
 
 const styles = StyleSheet.create({
-  viewport: { width: "100%", height: HEIGHT, flexGrow: 0 },
+  viewport: { width: "100%", height: HEIGHT, flexGrow: 0, backgroundColor: DiagramColors.geometrySurface, borderRadius: moderateScale(16) },
   marker: {
     position: "absolute", top: LINE_Y - DOT_SIZE / 2, left: 0, zIndex: 1,
     width: DOT_SIZE, height: DOT_SIZE, borderRadius: DOT_SIZE / 2,
-    backgroundColor: "#FFFFFF", borderColor: GameColors.primary, borderWidth: 3,
+    backgroundColor: DiagramColors.geometryFill, borderColor: DiagramColors.geometryEdge, borderWidth: 3,
     alignItems: "center", justifyContent: "center",
   },
-  markerDot: { width: moderateScale(12), height: moderateScale(12), borderRadius: moderateScale(6), backgroundColor: GameColors.primary },
+  markerDot: { width: moderateScale(12), height: moderateScale(12), borderRadius: moderateScale(6), backgroundColor: DiagramColors.geometrySurface },
   hopNumber: {
     position: "absolute", top: moderateScale(18), width: moderateScale(24),
     textAlign: "center", fontSize: moderateScale(18), fontWeight: "800", color: GameColors.primary,
@@ -183,7 +185,7 @@ const styles = StyleSheet.create({
   numbers: { position: "absolute", top: 0, bottom: 0, flexDirection: "row" },
   numberTarget: { height: "100%", paddingTop: LINE_Y + moderateScale(12), alignItems: "center", justifyContent: "flex-start" },
   number: { fontSize: moderateScale(19), lineHeight: moderateScale(28), fontWeight: "700", color: GameColors.text },
-  currentNumber: { color: GameColors.primary, backgroundColor: GameColors.background, borderRadius: moderateScale(8), paddingHorizontal: moderateScale(6) },
+  currentNumber: { color: DiagramColors.geometryEdge, backgroundColor: GameColors.background, borderRadius: moderateScale(8), paddingHorizontal: moderateScale(6) },
   correctNumber: { color: GameColors.success },
   wrongNumber: { color: GameColors.primaryDark },
   start: { fontSize: moderateScale(9), lineHeight: moderateScale(14), fontWeight: "800", color: GameColors.textMuted, textTransform: "uppercase" },

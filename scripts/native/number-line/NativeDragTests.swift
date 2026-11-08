@@ -28,7 +28,8 @@ final class NativeDragTests: XCTestCase {
     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue)!
    context.draw(sample, in: CGRect(x: 0, y: 0, width: 1, height: 1))
   }
-  XCTAssertLessThan(pixel[1], 120, "The marker's bottom border stays pink above the number label")
+  XCTAssertGreaterThan(Int(pixel[1]) - Int(pixel[0]), 40, "The teal marker border stays above the number label")
+  XCTAssertGreaterThan(Int(pixel[2]) - Int(pixel[0]), 40, "The marker border remains blue, not the pale label background")
   let shot = XCTAttachment(screenshot: app.screenshot()); shot.name="number-line-complete-marker"; shot.lifetime = .keepAlways; add(shot)
  }
  func testTicksLabelsButtonsScrollingAndLocking() {

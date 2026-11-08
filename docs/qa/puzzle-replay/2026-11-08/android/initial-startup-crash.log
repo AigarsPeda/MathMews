@@ -1,0 +1,79 @@
+--------- beginning of crash
+F/libc    ( 3712): Fatal signal 6 (SIGABRT), code -6 (SI_TKILL) in tid 4456 (FilamentRendere), pid 3712 (om.mathmews.app)
+F/DEBUG   ( 5235): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+F/DEBUG   ( 5235): Build fingerprint: 'google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.D1/13818094:user/release-keys'
+F/DEBUG   ( 5235): Revision: '0'
+F/DEBUG   ( 5235): ABI: 'arm64'
+F/DEBUG   ( 5235): Timestamp: 2026-11-08 12:18:55.383911817+0200
+F/DEBUG   ( 5235): Process uptime: 68s
+F/DEBUG   ( 5235): Cmdline: com.mathmews.app
+F/DEBUG   ( 5235): pid: 3712, tid: 4456, name: FilamentRendere  >>> com.mathmews.app <<<
+F/DEBUG   ( 5235): uid: 10214
+F/DEBUG   ( 5235): tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+F/DEBUG   ( 5235): pac_enabled_keys: 000000000000000f (PR_PAC_APIAKEY, PR_PAC_APIBKEY, PR_PAC_APDAKEY, PR_PAC_APDBKEY)
+F/DEBUG   ( 5235): signal 6 (SIGABRT), code -6 (SI_TKILL), fault addr --------
+F/DEBUG   ( 5235): Abort message: 'Caused HeapTaskDaemon failure : SuspendAll timeout; remaining threads: Thread[59,tid=4456,Runnable,Thread*=0xb4000078fe5e4cf0,peer=0x283ec58,"FilamentRenderer"], Info for FilamentRenderer: state&flags: 0x9, Java/native priority: 7/-4, barrier value: 1, Target states: [4456 (FilamentRendere) S 452 452 0 0 -1 4194368 30721 375 18 1 22 5 0 0 16 -4 115 0 10489 527784222, 4456 (FilamentRendere) S 452 452 0 0 -1 4194368 30721 375 18 1 22 5 0 0 16 -4 115 0 10489 527784222] Final wait time: 10.009s; appr. total wait time: 24.023s'
+F/DEBUG   ( 5235):     x0  b4000079155307cc  x1  0000000000000089  x2  0000000000000045  x3  0000000000000000
+F/DEBUG   ( 5235):     x4  0000000000000000  x5  00000000ffffffff  x6  00000000ffffffff  x7  656d6172466e6967
+F/DEBUG   ( 5235):     x8  0000000000000062  x9  0000000000000189  x10 ffffffffffe1c9e0  x11 0000000000000001
+F/DEBUG   ( 5235):     x12 0000000000000074  x13 000000007fffffff  x14 000000000000cabc  x15 00002461cd2e4780
+F/DEBUG   ( 5235):     x16 00000075b25b6110  x17 0000007b340edc00  x18 00000075b0918000  x19 b4000079155307c8
+F/DEBUG   ( 5235):     x20 0000000000000000  x21 b4000079155307cc  x22 0000000000000045  x23 0000000000000000
+F/DEBUG   ( 5235):     x24 b4000079fe468e30  x25 000000787c136638  x26 0000000000000002  x27 b40000797ea48d30
+F/DEBUG   ( 5235):     x28 b4000078ae765a84  x29 000000787c1364b8
+F/DEBUG   ( 5235):     lr  00000075b2533c1c  sp  000000787c136380  pc  0000007b340edc1c  pst 0000000040001000
+F/DEBUG   ( 5235): 2 total frames
+F/DEBUG   ( 5235): backtrace:
+F/DEBUG   ( 5235):       #00 pc 0000000000095c1c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   ( 5235):       #01 pc 000000000071dc18  /data/app/~~qZ0lwnhngfEfMBJfjkAgVA==/com.mathmews.app-XHG6MMzfKjBNrxSNZF8QNg==/base.apk!libreact-native-filament.so (offset 0x300c000) (BuildId: 607d17c02609118b150f119a95f6d5d8cd2889e9)
+F/libc    ( 6621): Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 6623 (Signal Catcher), pid 6621 (om.mathmews.app)
+F/DEBUG   ( 7247): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+F/DEBUG   ( 7247): Build fingerprint: 'google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.D1/13818094:user/release-keys'
+F/DEBUG   ( 7247): Revision: '0'
+F/DEBUG   ( 7247): ABI: 'arm64'
+F/DEBUG   ( 7247): Timestamp: 2026-11-08 12:20:27.139142110+0200
+F/DEBUG   ( 7247): Process uptime: 39s
+F/DEBUG   ( 7247): Cmdline: com.mathmews.app
+F/DEBUG   ( 7247): pid: 6621, tid: 6623, name: Signal Catcher  >>> com.mathmews.app <<<
+F/DEBUG   ( 7247): uid: 10214
+F/DEBUG   ( 7247): tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+F/DEBUG   ( 7247): pac_enabled_keys: 000000000000000f (PR_PAC_APIAKEY, PR_PAC_APIBKEY, PR_PAC_APDAKEY, PR_PAC_APDBKEY)
+F/DEBUG   ( 7247): signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr --------
+F/DEBUG   ( 7247): Abort message: '02000000-0e000000 rw-p 00000000 00:00 0                                  [anon:dalvik-main space]'
+F/DEBUG   ( 7247):     x0  0000000000000000  x1  00000000000019df  x2  0000000000000006  x3  00000078546f1260
+F/DEBUG   ( 7247):     x4  0000000000026c91  x5  0000000000026c91  x6  0000000000026c91  x7  7f7f7f7f7f7f7f7f
+F/DEBUG   ( 7247):     x8  00000000000000f0  x9  ff642b5c061d7dfc  x10 000000ff00000020  x11 000000009fdd4f54
+F/DEBUG   ( 7247):     x12 000000000012800c  x13 000000007fffffff  x14 000000000001a606  x15 000024627307760c
+F/DEBUG   ( 7247):     x16 0000007b341430f8  x17 0000007b3412a140  x18 0000007853794000  x19 00000000000019dd
+F/DEBUG   ( 7247):     x20 00000000000019df  x21 00000000ffffffff  x22 000000788b80d000  x23 000000788b80ee20
+F/DEBUG   ( 7247):     x24 b4000078fe456010  x25 0000000000fffff9  x26 000000005a000000  x27 000000788ac5eed0
+F/DEBUG   ( 7247):     x28 0000000000000014  x29 00000078546f12e0
+F/DEBUG   ( 7247):     lr  0000007b340c878c  sp  00000078546f1260  pc  0000007b340c87b0  pst 0000000000001000
+F/DEBUG   ( 7247): 26 total frames
+F/DEBUG   ( 7247): backtrace:
+F/DEBUG   ( 7247):       #00 pc 00000000000707b0  /apex/com.android.runtime/lib64/bionic/libc.so (abort+156) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   ( 7247):       #01 pc 00000000008a14a4  /apex/com.android.art/lib64/libart.so (art::Runtime::Abort(char const*)+476) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #02 pc 0000000000016188  /apex/com.android.art/lib64/libbase.so (android::base::SetAborter(std::__1::function<void (char const*)>&&)::$_0::__invoke(char const*)+80) (BuildId: 5e1c2a9a9b42ab6e6a3f44738913b9f7)
+F/DEBUG   ( 7247):       #03 pc 0000000000015730  /apex/com.android.art/lib64/libbase.so (android::base::LogMessage::~LogMessage()+544) (BuildId: 5e1c2a9a9b42ab6e6a3f44738913b9f7)
+F/DEBUG   ( 7247):       #04 pc 0000000000308a28  /apex/com.android.art/lib64/libart.so (art::ArtMethod::GetOatQuickMethodHeader(unsigned long)+1508) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #05 pc 00000000004c9c6c  /apex/com.android.art/lib64/libart.so (art::DumpNativeStack(std::__1::basic_ostream<char, std::__1::char_traits<char>>&, unwindstack::AndroidLocalUnwinder&, int, char const*, art::ArtMethod*, void*, bool)+1136) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #06 pc 00000000004379b8  /apex/com.android.art/lib64/libart.so (art::Thread::DumpStack(std::__1::basic_ostream<char, std::__1::char_traits<char>>&, unwindstack::AndroidLocalUnwinder&, bool, bool) const+436) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #07 pc 00000000004376d4  /apex/com.android.art/lib64/libart.so (art::DumpCheckpoint::Run(art::Thread*)+120) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #08 pc 00000000004884d0  /apex/com.android.art/lib64/libart.so (art::ThreadList::RunCheckpoint(art::Closure*, art::Closure*, bool, bool)+1516) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #09 pc 00000000004c8f64  /apex/com.android.art/lib64/libart.so (art::ThreadList::Dump(std::__1::basic_ostream<char, std::__1::char_traits<char>>&, bool)+232) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #10 pc 00000000008a53cc  /apex/com.android.art/lib64/libart.so (art::AbortState::Dump(std::__1::basic_ostream<char, std::__1::char_traits<char>>&) const+204) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #11 pc 00000000008a160c  /apex/com.android.art/lib64/libart.so (art::Runtime::Abort(char const*)+836) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #12 pc 0000000000016188  /apex/com.android.art/lib64/libbase.so (android::base::SetAborter(std::__1::function<void (char const*)>&&)::$_0::__invoke(char const*)+80) (BuildId: 5e1c2a9a9b42ab6e6a3f44738913b9f7)
+F/DEBUG   ( 7247):       #13 pc 0000000000015730  /apex/com.android.art/lib64/libbase.so (android::base::LogMessage::~LogMessage()+544) (BuildId: 5e1c2a9a9b42ab6e6a3f44738913b9f7)
+F/DEBUG   ( 7247):       #14 pc 0000000000308a28  /apex/com.android.art/lib64/libart.so (art::ArtMethod::GetOatQuickMethodHeader(unsigned long)+1508) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #15 pc 00000000004c9c6c  /apex/com.android.art/lib64/libart.so (art::DumpNativeStack(std::__1::basic_ostream<char, std::__1::char_traits<char>>&, unwindstack::AndroidLocalUnwinder&, int, char const*, art::ArtMethod*, void*, bool)+1136) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #16 pc 00000000004379b8  /apex/com.android.art/lib64/libart.so (art::Thread::DumpStack(std::__1::basic_ostream<char, std::__1::char_traits<char>>&, unwindstack::AndroidLocalUnwinder&, bool, bool) const+436) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #17 pc 00000000004376d4  /apex/com.android.art/lib64/libart.so (art::DumpCheckpoint::Run(art::Thread*)+120) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #18 pc 00000000004884d0  /apex/com.android.art/lib64/libart.so (art::ThreadList::RunCheckpoint(art::Closure*, art::Closure*, bool, bool)+1516) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #19 pc 00000000004c8f64  /apex/com.android.art/lib64/libart.so (art::ThreadList::Dump(std::__1::basic_ostream<char, std::__1::char_traits<char>>&, bool)+232) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #20 pc 00000000004c8a20  /apex/com.android.art/lib64/libart.so (art::ThreadList::DumpForSigQuit(std::__1::basic_ostream<char, std::__1::char_traits<char>>&)+336) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #21 pc 00000000004c5a64  /apex/com.android.art/lib64/libart.so (art::Runtime::DumpForSigQuit(std::__1::basic_ostream<char, std::__1::char_traits<char>>&)+48) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #22 pc 000000000054433c  /apex/com.android.art/lib64/libart.so (art::SignalCatcher::HandleSigQuit()+544) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #23 pc 00000000005423cc  /apex/com.android.art/lib64/libart.so (art::SignalCatcher::Run(void*)+440) (BuildId: b229f9d1b6196afaae086f29f029f907)
+F/DEBUG   ( 7247):       #24 pc 0000000000080df8  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+232) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   ( 7247):       #25 pc 0000000000073dd8  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: 2445fc73ede03b9536eef49355aff375)

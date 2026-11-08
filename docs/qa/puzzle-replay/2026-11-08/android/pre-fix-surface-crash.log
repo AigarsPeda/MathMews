@@ -1,0 +1,36 @@
+--------- beginning of crash
+F/libc    ( 5127): FORTIFY: pthread_mutex_lock called on a destroyed mutex (0xb40000725d749560)
+F/libc    ( 5127): Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 5341 (FEngine::loop), pid 5127 (om.mathmews.app)
+F/DEBUG   ( 5407): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+F/DEBUG   ( 5407): Build fingerprint: 'google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.D1/13818094:user/release-keys'
+F/DEBUG   ( 5407): Revision: '0'
+F/DEBUG   ( 5407): ABI: 'arm64'
+F/DEBUG   ( 5407): Timestamp: 2026-11-08 12:26:41.515287586+0200
+F/DEBUG   ( 5407): Process uptime: 24s
+F/DEBUG   ( 5407): Cmdline: com.mathmews.app
+F/DEBUG   ( 5407): pid: 5127, tid: 5341, name: FEngine::loop  >>> com.mathmews.app <<<
+F/DEBUG   ( 5407): uid: 10214
+F/DEBUG   ( 5407): tagged_addr_ctrl: 0000000000000001 (PR_TAGGED_ADDR_ENABLE)
+F/DEBUG   ( 5407): pac_enabled_keys: 000000000000000f (PR_PAC_APIAKEY, PR_PAC_APIBKEY, PR_PAC_APDAKEY, PR_PAC_APDBKEY)
+F/DEBUG   ( 5407): signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr --------
+F/DEBUG   ( 5407): Abort message: 'FORTIFY: pthread_mutex_lock called on a destroyed mutex (0xb40000725d749560)'
+F/DEBUG   ( 5407):     x0  0000000000000000  x1  00000000000014dd  x2  0000000000000006  x3  00000068d320aee0
+F/DEBUG   ( 5407):     x4  6b6b60621f6a626e  x5  6b6b60621f6a626e  x6  6b6b60621f6a626e  x7  7f7f7f7f7f7f7f7f
+F/DEBUG   ( 5407):     x8  00000000000000f0  x9  4533b3f244605f2a  x10 000000ff00000020  x11 0000000000000000
+F/DEBUG   ( 5407):     x12 000000006af04e61  x13 000000007fffffff  x14 000000000001bb1a  x15 000024648a993b25
+F/DEBUG   ( 5407):     x16 00000074b8d780f8  x17 00000074b8d5f140  x18 00000068b84dc000  x19 0000000000001407
+F/DEBUG   ( 5407):     x20 00000000000014dd  x21 00000000ffffffff  x22 b40000725d749360  x23 b4000073cd656f18
+F/DEBUG   ( 5407):     x24 b40000736d5d51d0  x25 00000068d320b868  x26 00000068d320b880  x27 0000007182ea0420
+F/DEBUG   ( 5407):     x28 00000068d310f000  x29 00000068d320af60
+F/DEBUG   ( 5407):     lr  00000074b8cfd78c  sp  00000068d320aee0  pc  00000074b8cfd7b0  pst 0000000000001000
+F/DEBUG   ( 5407): 9 total frames
+F/DEBUG   ( 5407): backtrace:
+F/DEBUG   ( 5407):       #00 pc 00000000000707b0  /apex/com.android.runtime/lib64/bionic/libc.so (abort+156) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   ( 5407):       #01 pc 0000000000074334  /apex/com.android.runtime/lib64/bionic/libc.so (__fortify_fatal(char const*, ...)+128) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   ( 5407):       #02 pc 00000000000824f4  /apex/com.android.runtime/lib64/bionic/libc.so (HandleUsingDestroyedMutex(pthread_mutex_t*, char const*)+60) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   ( 5407):       #03 pc 0000000000082364  /apex/com.android.runtime/lib64/bionic/libc.so (pthread_mutex_lock+216) (BuildId: 2445fc73ede03b9536eef49355aff375)
+F/DEBUG   ( 5407):       #04 pc 00000000000a2bf8  /system/lib64/libc++.so (std::__1::__shared_mutex_base::lock_shared()+20) (BuildId: ada37e5198285720b02f7d77fd27626c7782fe29)
+F/DEBUG   ( 5407):       #05 pc 000000000011db04  /system/lib64/libgui.so (android::Surface::hook_query(ANativeWindow const*, int, int*)+44) (BuildId: c40b7f7a9f7dd695cd1788be7a624a3a)
+F/DEBUG   ( 5407):       #06 pc 0000000000023968  /system/lib64/libEGL.so (void* android::eglCreateWindowSurfaceTmpl<int, void* (*)(void*, void*, ANativeWindow*, int const*)>(android::egl_display_t*, android::egl_connection_t*, void*, ANativeWindow*, int const*, void* (*)(void*, void*, ANativeWindow*, int const*))+92) (BuildId: 560b202ecfe5fc0fb631571bc371ee90)
+F/DEBUG   ( 5407):       #07 pc 00000000000238e0  /system/lib64/libEGL.so (android::eglCreateWindowSurfaceImpl(void*, void*, ANativeWindow*, int const*)+80) (BuildId: 560b202ecfe5fc0fb631571bc371ee90)
+F/DEBUG   ( 5407):       #08 pc 00000000005b76d8  /data/app/~~qZ0lwnhngfEfMBJfjkAgVA==/com.mathmews.app-XHG6MMzfKjBNrxSNZF8QNg==/base.apk!libreact-native-filament.so (offset 0x300c000) (BuildId: 607d17c02609118b150f119a95f6d5d8cd2889e9)

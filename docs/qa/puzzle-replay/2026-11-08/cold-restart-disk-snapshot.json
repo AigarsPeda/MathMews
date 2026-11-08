@@ -1,0 +1,8 @@
+{
+  "storage": "production AsyncStorage key",
+  "completed_picnic_tasks": 10,
+  "challenge_status": "expired",
+  "current_puzzle": "v2-easy-cat-plans-picnic-8",
+  "pending_solved_ids": [],
+  "lives": 2
+}

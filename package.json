@@ -49,7 +49,7 @@
     "catalog:build": "node scripts/catalog/build.mjs",
     "test:catalog": "node --test scripts/catalog/test-*.mjs",
     "puzzles:build": "node scripts/puzzles/build-content.mjs",
-    "test:puzzles": "node --test scripts/puzzles/test-catalog.mjs && node scripts/check-curriculum.mjs && node scripts/check-puzzle-experience.mjs && node scripts/check-puzzle-drag.mjs && node scripts/check-locales.mjs",
+    "test:puzzles": "node --test scripts/puzzles/test-catalog.mjs && node scripts/check-curriculum.mjs && node scripts/check-puzzle-experience.mjs && node scripts/check-puzzle-clarity.mjs && node scripts/check-puzzle-drag.mjs && node scripts/check-locales.mjs",
     "test:puzzle-art": "node scripts/check-boss-assets.mjs && node scripts/check-puzzle-objects.mjs",
     "test:locales": "node scripts/check-locales.mjs",
     "test:puzzles:ios": "node scripts/native/check-puzzle-drag.mjs",

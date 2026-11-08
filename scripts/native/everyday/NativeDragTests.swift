@@ -33,6 +33,40 @@ final class NativeDragTests: XCTestCase {
   XCTAssertTrue(b.isHittable, id); b.tap()
  }
  func shot(_ name: String) { let a=XCTAttachment(screenshot: app.screenshot()); a.name=name; a.lifetime = .keepAlways; add(a) }
+ func testPuzzleClarity() {
+  continueAfterFailure=false; app.activate()
+  let springboard=XCUIApplication(bundleIdentifier: "com.apple.springboard")
+  if springboard.buttons["Open"].waitForExistence(timeout:2) { springboard.buttons["Open"].tap() }
+  if app.buttons["Open"].exists { app.buttons["Open"].tap() }
+  tap("pilot-clarity")
+  for i in 0..<6 {
+   shot("clarity-\(i)-en")
+   if i == 0 {
+    XCTAssertTrue(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS 'whole pack'")).firstMatch.waitForExistence(timeout:8))
+    tap("pilot-help"); XCTAssertTrue(app.staticTexts["A different example"].waitForExistence(timeout:8)); shot("clarity-pack-help"); tap("Try my puzzle")
+   }
+   if i == 1 || i == 2 {
+    tap("pilot-language"); shot("clarity-container-\(i)-lv-320")
+    tap("pilot-language"); shot("clarity-container-\(i)-ru-320")
+    tap("pilot-language")
+   }
+   if i != 4 {
+    let answer = ["3","6","4","8","38","6"][i]
+    tap("Answer " + answer); tap("pilot-check"); XCTAssertTrue(app.staticTexts["Correct"].exists)
+   }
+   if i == 4 {
+    XCTAssertTrue(app.descendants(matching:.any)["At the start 23 shells"].exists)
+    XCTAssertTrue(app.descendants(matching:.any)["Added 15 shells"].exists)
+    tap("Answer 38"); tap("pilot-check"); XCTAssertTrue(app.staticTexts["Correct"].exists)
+    tap("pilot-language"); shot("clarity-shells-lv-320")
+    tap("pilot-language"); shot("clarity-shells-ru-320")
+    tap("pilot-language")
+   }
+   if i < 5 { tap("pilot-next") }
+  }
+  tap("pilot-language"); shot("clarity-coins-lv-320")
+  tap("pilot-language"); shot("clarity-coins-ru-320")
+ }
  func testShoppingItems() {
   continueAfterFailure=false; app.activate()
   let springboard=XCUIApplication(bundleIdentifier: "com.apple.springboard")

@@ -1,3 +1,4 @@
+import { useChoiceLayout } from '@/components/puzzle/useChoiceLayout';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
@@ -24,13 +25,15 @@ export function EstimateTask({
 }: EstimateTaskProps) {
   const { expression, choices } = puzzle.payload;
 
+  const choiceLayout = useChoiceLayout(choices);
+
   return (
     <View style={styles.wrap}>
       <View style={styles.exprCard}>
         <Text style={styles.expression}>{expression}</Text>
       </View>
 
-      <View style={styles.choices}>
+      <View onLayout={choiceLayout.onLayout} style={choiceLayout.container}>
         {choices.map((choice, index) => {
           let result: "correct" | "wrong" | null = null;
           if (answered || incorrectAttempt) {
@@ -45,6 +48,7 @@ export function EstimateTask({
             <ChoiceButton
               key={`${puzzle.id}-${choice}`}
               label={choice}
+              style={choiceLayout.item}
               selected={selectedIndex === index}
               disabled={answered}
               result={result}
@@ -59,7 +63,7 @@ export function EstimateTask({
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: moderateScale(16),
+    gap: moderateScale(8),
   },
   exprCard: {
     backgroundColor: GameColors.card,

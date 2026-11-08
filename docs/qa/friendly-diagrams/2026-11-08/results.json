@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-08",
+  "direction": "Six supplied Duolingo references: flat color, bold silhouettes, broad highlights, larger models and tactile controls within the light Math Mews palette.",
+  "changes": [
+    "Flat warm and blue polygons with precise sides",
+    "Golden clock with colored hands and fewer competing details",
+    "Flat chart and water fills; wider single jug, compact paired jugs",
+    "Larger area units and blue mathematical boundaries",
+    "Consistent coordinate board span up to 280 points with centered 28-point markers",
+    "Geometry and bridge controls match existing answer button depth"
+  ],
+  "validation": {
+    "typecheck": "passed",
+    "targetedLint": "passed",
+    "puzzleExperience": "passed",
+    "everydayTopics": "passed",
+    "geometryModels": "passed",
+    "bridgeModels": "passed",
+    "native": {
+      "device": "iPhone 15 simulator",
+      "tests": [
+        "testEverydayTopics",
+        "testGeometry",
+        "testBridge"
+      ],
+      "result": "passed",
+      "languages": [
+        "English",
+        "Latvian",
+        "Russian"
+      ],
+      "verified": [
+        "Equal unit scales",
+        "Hidden dimensions",
+        "Touch coordinate mapping",
+        "Translations and negative coordinates",
+        "Wrong answer recovery and correct answers"
+      ]
+    }
+  },
+  "visualReview": [
+    "everyday-review.png",
+    "geometry-review.png",
+    "coordinate-review.png"
+  ],
+  "textContrast": {
+    "dimensionLabels": 5.27,
+    "pointLabels": 5.39
+  }
+}

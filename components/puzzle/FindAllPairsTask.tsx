@@ -85,7 +85,7 @@ export function FindAllPairsTask({ puzzle, pairs, answered, onChange, canAttempt
   </View>;
 }
 const styles = StyleSheet.create({
-  wrap: { gap: moderateScale(14) }, goal: { fontSize: moderateScale(22), fontWeight: "800", color: GameColors.text, textAlign: "center" },
+  wrap: { gap: moderateScale(8) }, goal: { fontSize: moderateScale(22), fontWeight: "800", color: GameColors.text, textAlign: "center" },
   progress: { fontSize: moderateScale(16), color: "#5D408C", fontWeight: "700", textAlign: "center" },
   tiles: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(12), justifyContent: "center" },
   tile: { minHeight: moderateScale(60), minWidth: moderateScale(64), padding: moderateScale(12), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, alignItems: "center", justifyContent: "center" },
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   number: { fontSize: moderateScale(24), fontWeight: "800", color: GameColors.text },
   add: { minHeight: moderateScale(48), backgroundColor: "#F3EEFF", borderRadius: moderateScale(14), padding: moderateScale(12), alignItems: "center", justifyContent: "center" },
   addText: { color: "#5D408C", fontSize: moderateScale(17), fontWeight: "800" },
-  disabled: { opacity: 0.5 }, feedback: { minHeight: moderateScale(44), color: GameColors.text, fontSize: moderateScale(15), lineHeight: moderateScale(22), textAlign: "center" },
-  collection: { gap: moderateScale(8) }, pair: { minHeight: moderateScale(48), borderRadius: moderateScale(12), borderWidth: 2, padding: moderateScale(12) },
+  disabled: { opacity: 0.5 }, feedback: { minHeight: moderateScale(22), color: GameColors.text, fontSize: moderateScale(15), lineHeight: moderateScale(22), textAlign: "center" },
+  collection: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(8) }, pair: { flexGrow: 1, minHeight: moderateScale(48), borderRadius: moderateScale(12), borderWidth: 2, padding: moderateScale(8) },
   pairText: { fontSize: moderateScale(18), fontWeight: "700", color: GameColors.secondaryDark, textAlign: "center" },
 });

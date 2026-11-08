@@ -53,7 +53,7 @@ final class NativeDragTests: XCTestCase {
   tap("Try again"); XCTAssertFalse(app.buttons["Check answer"].isEnabled)
   XCTAssertTrue(app.staticTexts["Lives 2"].exists)
   tap("Answer 10:00"); tap("Check answer"); tap("Next puzzle")
-  XCTAssertTrue(heading("Prepare a picnic. Each water station").waitForExistence(timeout: 5)); shot("picnic-water")
+  XCTAssertTrue(heading("Prepare a picnic. Each bowl").waitForExistence(timeout: 5)); shot("picnic-water")
   tap("qa-Last life")
   let wrongWater = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Answer ' AND label != 'Answer 4'")).firstMatch
   XCTAssertTrue(wrongWater.waitForExistence(timeout: 5)); wrongWater.tap(); tap("Check answer")

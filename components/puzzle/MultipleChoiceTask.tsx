@@ -1,3 +1,4 @@
+import { useChoiceLayout } from '@/components/puzzle/useChoiceLayout';
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
 import { EverydayDiagram } from "@/components/puzzle/EverydayDiagram";
 import { QuantityTaskScene } from "@/components/puzzle/QuantityTaskScene";
@@ -22,12 +23,12 @@ export function MultipleChoiceTask({
   incorrectAttempt = false,
   onSelect,
 }: MultipleChoiceTaskProps) {
-  const compactChoices = puzzle.choices.length >= 2 && puzzle.choices.length <= 4 && puzzle.choices.every(choice => choice.length <= 4);
+  const choiceLayout = useChoiceLayout(puzzle.choices);
   return (
     <View style={styles.choices}>
       {puzzle.everyday ? <EverydayDiagram model={puzzle.everyday.model} /> : null}
       {puzzle.taskVisual ? <QuantityTaskScene key={puzzle.id} model={puzzle.taskVisual} disabled={answered} showExpression={puzzle.difficulty !== "hard"} /> : null}
-      <View style={[styles.answerChoices, compactChoices && styles.compactChoices]}>
+      <View onLayout={choiceLayout.onLayout} style={choiceLayout.container}>
         {puzzle.choices.map((choice, index) => {
         let result: "correct" | "wrong" | null = null;
         if (answered || incorrectAttempt) {
@@ -45,7 +46,7 @@ export function MultipleChoiceTask({
             selected={selectedIndex === index}
             disabled={answered}
             result={result}
-            style={compactChoices ? puzzle.choices.length === 3 ? styles.threeColumnChoice : styles.twoColumnChoice : undefined}
+            style={choiceLayout.item}
             onPress={() => onSelect(index)}
           />
         );

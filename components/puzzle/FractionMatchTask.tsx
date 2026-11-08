@@ -71,7 +71,7 @@ export function FractionMatchTask({
     <View style={styles.wrap}>
       <Text style={styles.instruction}>{t("puzzleTypes.fractionMatchHint")}</Text>
 
-      <View style={styles.grid}>
+      <View style={[styles.grid, cards.length === 4 && styles.twoPairs]}>
         {cards.map((card) => {
           const selected = selectedId === card.id;
           const matchedIndex = matchedIds.indexOf(card.id);
@@ -143,11 +143,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: moderateScale(10),
   },
+  twoPairs: { maxWidth: moderateScale(236), alignSelf: "center" },
   card: {
     width: moderateScale(108),
     minHeight: moderateScale(108),
     borderRadius: moderateScale(18),
     borderWidth: 2,
+    borderBottomWidth: 4,
     borderColor: GameColors.cardBorder,
     backgroundColor: GameColors.card,
     alignItems: "center",
@@ -171,8 +173,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3EDFC",
   },
   cardWrong: {
-    borderColor: "#FF9F43",
-    backgroundColor: "rgba(255, 159, 67, 0.12)",
+    borderColor: GameColors.incorrect,
+    backgroundColor: GameColors.incorrectSurface,
   },
   cardMuted: {
     opacity: 0.7,

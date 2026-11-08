@@ -1,0 +1,133 @@
+{
+  "result": "passed",
+  "platform": "Android",
+  "device": "emulator-5580",
+  "android_release": "16",
+  "api": "36",
+  "dev_server_port": 8082,
+  "fast_refresh": "disabled before launch",
+  "graphics_mode": "3d",
+  "scenarios": [
+    "Full ten-task timed replay and opening level 2",
+    "Three cold restarts before an answer, with result open, and between later tasks; finish into level 2",
+    "Deadline expires while force-stopped; one-life loss survives another restart; untimed retry finishes into level 2",
+    "Normal 3D home renders through three forced garbage collections and a 45-second startup soak without fallback"
+  ],
+  "process_restarts": [
+    {
+      "old_pid": "10755",
+      "new_pid": "11483",
+      "saved_run": {
+        "id": "challenge-1794137878937-anippbosa7s",
+        "deadlineAt": 1794138058937,
+        "puzzleId": "v2-easy-cat-plans-picnic-8",
+        "status": "active"
+      },
+      "restored": {
+        "id": "challenge-1794137878937-anippbosa7s",
+        "deadlineAt": 1794138058937,
+        "puzzleId": "v2-easy-cat-plans-picnic-8",
+        "status": "active",
+        "solved": 0
+      },
+      "level_2_unlocked": true,
+      "lives": 3
+    },
+    {
+      "old_pid": "11483",
+      "new_pid": "11781",
+      "saved_run": {
+        "id": "challenge-1794137878937-anippbosa7s",
+        "deadlineAt": 1794138058937,
+        "puzzleId": "v2-easy-cat-plans-picnic-9",
+        "status": "active"
+      },
+      "restored": {
+        "id": "challenge-1794137878937-anippbosa7s",
+        "deadlineAt": 1794138058937,
+        "puzzleId": "v2-easy-cat-plans-picnic-9",
+        "status": "active",
+        "solved": 1
+      },
+      "level_2_unlocked": true,
+      "lives": 3
+    },
+    {
+      "old_pid": "11781",
+      "new_pid": "12087",
+      "saved_run": {
+        "id": "challenge-1794137878937-anippbosa7s",
+        "deadlineAt": 1794138058937,
+        "puzzleId": "v2-easy-cat-plans-picnic-10",
+        "status": "active"
+      },
+      "restored": {
+        "id": "challenge-1794137878937-anippbosa7s",
+        "deadlineAt": 1794138058937,
+        "puzzleId": "v2-easy-cat-plans-picnic-10",
+        "status": "active",
+        "solved": 2
+      },
+      "level_2_unlocked": true,
+      "lives": 3
+    },
+    {
+      "old_pid": "12087",
+      "new_pid": "12501",
+      "saved_run": {
+        "id": "challenge-1794137969118-ycb0om6iih",
+        "deadlineAt": 1794137992651,
+        "puzzleId": "v2-easy-cat-plans-picnic-9",
+        "status": "active"
+      },
+      "restored": {
+        "id": "challenge-1794137969118-ycb0om6iih",
+        "deadlineAt": 1794137992651,
+        "puzzleId": "v2-easy-cat-plans-picnic-8",
+        "status": "expired",
+        "solved": 0
+      },
+      "level_2_unlocked": true,
+      "lives": 2
+    },
+    {
+      "old_pid": "12501",
+      "new_pid": "12792",
+      "saved_run": {
+        "id": "challenge-1794137969118-ycb0om6iih",
+        "deadlineAt": 1794137992651,
+        "puzzleId": "v2-easy-cat-plans-picnic-8",
+        "status": "expired"
+      },
+      "restored": {
+        "id": "challenge-1794137969118-ycb0om6iih",
+        "deadlineAt": 1794137992651,
+        "puzzleId": "v2-easy-cat-plans-picnic-8",
+        "status": "expired",
+        "solved": 0
+      },
+      "level_2_unlocked": true,
+      "lives": 2
+    }
+  ],
+  "elapsed_seconds": 330.89,
+  "forced_gc_checks": [
+    {
+      "pid": "12792",
+      "forced_collection": 1,
+      "heap_dump_bytes": 84720818
+    },
+    {
+      "pid": "12792",
+      "forced_collection": 2,
+      "heap_dump_bytes": 84738560
+    },
+    {
+      "pid": "12792",
+      "forced_collection": 3,
+      "heap_dump_bytes": 84744528
+    }
+  ],
+  "persistence": "Production GameProvider, AsyncStorage SQLite save, native Android views and result sheets",
+  "test_setup": "Disposable real player profile; production commands seed completed level 1. No memory save is supplied after restart."
+}

@@ -1,5 +1,7 @@
 /** Five additive topic tracks. Integer minutes, cents and millilitres are canonical. */
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const shopNames = Object.fromEntries(['en','lv','ru'].map(locale => [locale, JSON.parse(fs.readFileSync(new URL(`../../locales/${locale}.json`, import.meta.url))).everyday.shopItems]));
 const T = (en, lv, ru) => ({ en, lv, ru });
 const tiers = ['easy', 'medium', 'hard'];
 const sum = xs => xs.reduce((a, b) => a + b, 0);
@@ -155,30 +157,48 @@ function moneyTask(tier, focus, n) {
   const total = sum(prices.map((p, i) => p * quantities[i] * (100 - discount) / 100));
   const raw = task === 'change' ? paid - total : task === 'unit' ? prices[0] / quantities[0] : task === 'afford' ? Math.floor(paid / prices[0]) : total;
   const answer = cents || task === 'afford' ? raw : raw / 100;
-  const model = { kind: 'money', task, prices, quantities, paid, discount, unit: cents ? 'cents' : 'euros' };
+  const items = ['apple', 'cookie', 'book'];
+  const model = { kind: 'money', task, prices, quantities, paid, discount, unit: cents ? 'cents' : 'euros',
+    ...(cents ? { coins: true } : { items: prices.map((_, i) => items[i]) }) };
   const question = task === 'total' ? cents ? T('How many cents are shown altogether?', 'Cik centu ir parādīts kopā?', 'Сколько всего центов показано?') : T('What is the total price in euros?', 'Kāda ir kopējā cena eiro?', 'Какова общая цена в евро?')
     : task === 'change' ? T(`Pay with €${paid / 100}. How many euros remain${discount ? ' after the discount' : ''}?`, `Samaksā ar €${paid / 100}. Cik eiro paliek${discount ? ' pēc atlaides' : ''}?`, `Заплати €${paid / 100}. Сколько евро останется${discount ? ' после скидки' : ''}?`)
       : task === 'unit' ? T(`The pack contains ${quantities[0]} equal items. What does one cost in euros?`, `Komplektā ir ${quantities[0]} vienādi priekšmeti. Cik eiro maksā viens?`, `В наборе ${quantities[0]} одинаковых предметов. Сколько евро стоит один?`)
         : task === 'afford' ? T(`With €${paid / 100}, how many whole items can you buy?`, `Cik veselus priekšmetus vari nopirkt par €${paid / 100}?`, `Сколько целых предметов можно купить за €${paid / 100}?`)
           : T('What is the sale price in euros?', 'Kāda ir cena ar atlaidi eiro?', 'Какова цена со скидкой в евро?');
-  model.label = T(`Pretend prices in cents: ${prices.join(', ')}. Quantities: ${quantities.join(', ')}. Discount: ${discount}%.`, `Izdomātas cenas centos: ${prices.join(', ')}. Daudzumi: ${quantities.join(', ')}. Atlaide: ${discount}%.`, `Учебные цены в центах: ${prices.join(', ')}. Количества: ${quantities.join(', ')}. Скидка: ${discount}%.`);
-  const hint = T('100 cents make €1. Use the quantity on each price tag. For change, subtract the cost from the amount paid. A discount reduces the original price.', '100 centi ir €1. Izmanto uz cenu zīmes norādīto daudzumu. Atlikumam atņem cenu no samaksātās summas. Atlaide samazina sākotnējo cenu.', '100 центов составляют €1. Учитывай количество на каждом ценнике. Для сдачи вычти стоимость из уплаченной суммы. Скидка уменьшает исходную цену.');
+  model.label = Object.fromEntries(['en','lv','ru'].map(locale => [locale, cents
+    ? `${T('Coins in cents', 'Monētas centos', 'Монеты в центах')[locale]}: ${prices.join(', ')}.`
+    : prices.map((price, i) => `${shopNames[locale][items[i]]}: ${quantities[i]} ${task === 'unit' ? T('in the pack; whole pack', 'komplektā; viss komplekts', 'в наборе; весь набор')[locale] : T('× each', '× katrs', '× за штуку')[locale]} €${number(price / 100, locale)}.`).join(' ')
+      + (discount ? ` ${T('Discount', 'Atlaide', 'Скидка')[locale]}: ${discount}%.` : '')]));
+  const hint = task === 'unit' ? T('The shown price is for the whole pack. Divide it by the number of items in the pack.', 'Parādīta visa komplekta cena. Izdali to ar priekšmetu skaitu komplektā.', 'Показана цена всего набора. Раздели её на число предметов в наборе.')
+    : task === 'afford' ? T('Divide your budget by the price of one item. Count only whole items.', 'Izdali budžetu ar viena priekšmeta cenu. Skaiti tikai veselus priekšmetus.', 'Раздели бюджет на цену одного предмета. Считай только целые предметы.')
+    : task === 'change' ? T('Find the total cost, applying any discount first. Subtract it from the amount paid.', 'Aprēķini kopējo cenu, vispirms piemērojot atlaidi, ja tāda ir. Atņem cenu no samaksātās summas.', 'Найди общую стоимость с учётом скидки, если она есть. Вычти её из уплаченной суммы.')
+    : task === 'discount' ? T('Work out the discount amount, then subtract it from the original price.', 'Aprēķini atlaides summu un atņem to no sākotnējās cenas.', 'Найди сумму скидки и вычти её из первоначальной цены.')
+    : cents ? T('Add the value of every coin shown.', 'Saskaiti visu parādīto monētu vērtības.', 'Сложи значения всех показанных монет.')
+    : T('Multiply each price by its quantity, then add the costs. 100 cents make €1.', 'Reizini katru cenu ar daudzumu un saskaiti izmaksas. 100 centi ir €1.', 'Умножь каждую цену на количество, затем сложи стоимости. 100 центов составляют €1.');
   const detail = task === 'unit' ? `${prices[0]} ÷ ${quantities[0]} = ${raw}` : task === 'change' ? `${paid} − ${total} = ${raw}` : task === 'afford' ? `${raw} × ${prices[0]} ≤ ${paid}; ${raw + 1} × ${prices[0]} > ${paid}` : `${total}`;
   const explanation = T(`${detail} cents${task === 'afford' ? `. You can buy ${answer} items.` : `; answer: ${answer}${cents ? ' cents' : ' euros'}.`}`, `${detail} centi${task === 'afford' ? `. Vari nopirkt ${answer} priekšmetus.` : `; atbilde: ${number(answer, 'lv')}${cents ? ' centi' : ' eiro'}.`}`, `${detail} центов${task === 'afford' ? `. Можно купить ${answer} предметов.` : `; ответ: ${number(answer, 'ru')}${cents ? ' центов' : ' евро'}.`}`);
   return result(model, question, answer, hint, explanation);
 }
 
 function capacityTask(tier, focus, n) {
-  const hint = T('Read the marks from zero. One litre is 1000 ml. Add amounts to combine them; subtract to find free space. A box volume is length × width × height.', 'Lasi iedaļas no nulles. Viens litrs ir 1000 ml. Daudzumus saskaiti, brīvo vietu atrodi atņemot. Kastes tilpums ir garums × platums × augstums.', 'Читай отметки от нуля. Один литр равен 1000 мл. Объёмы складывай, свободное место находи вычитанием. Объём коробки: длина × ширина × высота.');
+  const volumeHint = T('A box volume is length × width × height. Think of equal layers of unit cubes.', 'Kastes tilpums ir garums × platums × augstums. Iedomājies vienādus vienības kubu slāņus.', 'Объём коробки равен длине × ширине × высоте. Представь одинаковые слои единичных кубиков.');
   if (tier === 2 && [0, 4].includes(focus)) {
     const width = 2 + n % 7, height = 2 + Math.floor(n / 7) % 5, depth = 2 + Math.floor(n / 3) % 4;
     const model = { kind: 'solid', width, height, depth, label: T(`Box: ${width} cm × ${height} cm × ${depth} cm.`, `Kaste: ${width} cm × ${height} cm × ${depth} cm.`, `Коробка: ${width} см × ${height} см × ${depth} см.`) };
     const answer = width * height * depth;
     const question = focus === 0 ? T('What is the volume of this box in cm³?', 'Kāds ir šīs kastes tilpums cm³?', 'Каков объём этой коробки в см³?')
       : T('A second box must hold the same volume. How many unit cubes must it hold?', 'Otrai kastei vajadzīgs tāds pats tilpums. Cik vienības kubu tai jāietilpina?', 'Вторая коробка должна иметь такой же объём. Сколько единичных кубиков она должна вмещать?');
-    return result(model, question, answer, hint, T(`${width} × ${height} × ${depth} = ${answer} cm³.`, `${width} × ${height} × ${depth} = ${answer} cm³.`, `${width} × ${height} × ${depth} = ${answer} см³.`));
+    return result(model, question, answer, volumeHint, T(`${width} × ${height} × ${depth} = ${answer} cm³.`, `${width} × ${height} × ${depth} = ${answer} cm³.`, `${width} × ${height} × ${depth} = ${answer} см³.`));
   }
   const task = tier === 0 ? ['read', 'total', 'space', 'servings', 'total'][focus] : tier === 1 ? ['litres', 'total', 'space', 'servings', 'containers'][focus] : focus === 1 ? 'litres' : focus === 2 ? 'servings' : 'containers';
+  const hint = {
+    read: T('Read the scale from zero. Equal gaps stand for equal amounts; find the mark at the water level.', 'Lasi skalu no nulles. Vienādi atstatumi nozīmē vienādus daudzumus; atrodi iedaļu ūdens līmenī.', 'Читай шкалу от нуля. Равные промежутки обозначают равные объёмы; найди отметку на уровне воды.'),
+    total: T('Add the amounts of liquid. A container’s capacity tells how much it could hold, not how much is inside.', 'Saskaiti šķidruma daudzumus. Trauka ietilpība rāda, cik tajā varētu ietilpt, nevis cik tajā ir.', 'Сложи объёмы жидкости. Вместимость показывает, сколько поместится в ёмкость, а не сколько в ней сейчас.'),
+    space: T('Subtract the amount already inside from the full capacity to find the space left.', 'Atņem jau iepildīto daudzumu no pilnas ietilpības, lai atrastu brīvo vietu.', 'Вычти уже налитый объём из полной вместимости, чтобы найти свободное место.'),
+    litres: T('One litre is 1000 millilitres. Divide millilitres by 1000 to express the same amount in litres.', 'Viens litrs ir 1000 mililitru. Dali mililitrus ar 1000, lai to pašu daudzumu izteiktu litros.', 'Один литр равен 1000 миллилитрам. Раздели миллилитры на 1000, чтобы выразить тот же объём в литрах.'),
+    servings: T('Divide the liquid amount by one cup’s capacity. Count only full cups; a leftover amount does not fill another cup.', 'Izdali šķidruma daudzumu ar vienas krūzes ietilpību. Skaiti tikai pilnas krūzes; atlikums nepiepilda vēl vienu krūzi.', 'Раздели объём жидкости на вместимость чашки. Считай только полные чашки: остатка не хватит ещё на одну полную чашку.'),
+    containers: T('Divide the liquid amount by one bottle’s capacity. If any liquid is left over, it needs one more bottle.', 'Izdali šķidruma daudzumu ar vienas pudeles ietilpību. Ja šķidrums paliek pāri, tam vajag vēl vienu pudeli.', 'Раздели объём жидкости на вместимость бутылки. Если жидкость осталась, для неё нужна ещё одна бутылка.'),
+  }[task];
   const portion = tier === 0 ? 100 : [125, 200, 250][n % 3];
   let amounts = [(1 + n % 8) * (tier === 0 ? 100 : 125)];
   if (task === 'total') amounts.push((1 + Math.floor(n / 4) % 4) * (tier === 0 ? 100 : 250));
@@ -189,6 +209,7 @@ function capacityTask(tier, focus, n) {
   const answer = task === 'total' ? sum(amounts) : task === 'space' ? capacities[0] - amounts[0] : task === 'servings' ? Math.floor(amounts[0] / portion)
     : task === 'containers' ? Math.ceil(amounts[0] / portion) : task === 'litres' ? amounts[0] / 1000 : amounts[0];
   const model = { kind: 'capacity', task, amounts, capacities, portion, unit: task === 'litres' ? 'l' : 'ml', label: T(`Liquid amounts: ${amounts.join(', ')} ml. Container capacities: ${capacities.join(', ')} ml.`, `Šķidruma daudzumi: ${amounts.join(', ')} ml. Trauku ietilpības: ${capacities.join(', ')} ml.`, `Объёмы жидкости: ${amounts.join(', ')} мл. Вместимость ёмкостей: ${capacities.join(', ')} мл.`) };
+  if (task === 'servings' || task === 'containers') model.portionContainer = task === 'servings' ? 'cup' : 'bottle';
   const question = task === 'read' ? T('How many millilitres are in the jug?', 'Cik mililitru ir mērtraukā?', 'Сколько миллилитров в кувшине?')
     : task === 'total' ? T('How many millilitres are there altogether?', 'Cik mililitru ir kopā?', 'Сколько всего миллилитров?')
       : task === 'space' ? T('How many more millilitres will fill the container?', 'Cik mililitru vēl vajag, lai piepildītu trauku?', 'Сколько ещё миллилитров нужно до полного заполнения?')

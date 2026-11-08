@@ -24,11 +24,14 @@ export function QuantityTaskScene({ model, disabled, showExpression = true }: { 
     : model.kind === "array" ? t(`${sceneKeys}.${step ? "arrayBuilt" : "arrayReady"}`, { rows: model.rows, columns: model.columns, objects })
     : t(`${sceneKeys}.${model.kind}${step ? "Done" : "Ready"}`, { left: model.left, right: model.right, objects });
   return <View style={styles.wrap}>
-    {sharing ? <View style={styles.cat} pointerEvents="none"><PuzzleCatPortrait replayKey={step} petType="cat" mood="idle" reaction={step > 0 && !disabled ? 'puzzleHighPaw' : undefined} size={72} brief /></View> : null}
+
     <View accessible accessibilityRole="image" accessibilityLabel={description} accessibilityLiveRegion="polite">
       <VisualPracticeBoard compact durationMs={sharing ? 280 : undefined} staggerMs={sharing ? 0 : undefined} boardHeight={getQuantityTaskHeight(model)} prompt={showExpression ? prompt : undefined} tokens={getQuantityTaskTokens(model, step, sharing ? step : undefined)} />
     </View>
-    {sharing || model.kind === "array" ? <Text style={styles.caption} accessibilityLiveRegion="polite">{description}</Text> : null}
+    {sharing || model.kind === "array" ? <View style={styles.captionRow}>
+      {sharing ? <View pointerEvents="none"><PuzzleCatPortrait replayKey={step} petType="cat" mood="idle" reaction={step > 0 && !disabled ? 'puzzleHighPaw' : undefined} size={32} brief /></View> : null}
+      <Text style={styles.caption} accessibilityLiveRegion="polite">{description}</Text>
+    </View> : null}
     <View style={styles.controls}>
       <Pressable disabled={disabled || (sharing && finished)} accessibilityRole="button"
         accessibilityState={{ disabled: disabled || (sharing && finished) }}
@@ -46,11 +49,11 @@ export function QuantityTaskScene({ model, disabled, showExpression = true }: { 
 }
 
 const styles = StyleSheet.create({
-  cat: { alignItems: 'center', height: 72 },
-  wrap: { gap: moderateScale(10), marginBottom: moderateScale(6) },
-  caption: { color: GameColors.textMuted, fontSize: moderateScale(14), lineHeight: moderateScale(20), textAlign: "center" },
+  captionRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  wrap: { gap: moderateScale(6) },
+  caption: { flex: 1, color: GameColors.textMuted, fontSize: moderateScale(14), lineHeight: moderateScale(20), textAlign: "center" },
   controls: { flexDirection: "row", gap: moderateScale(10) },
-  button: { flex: 1, minHeight: moderateScale(48), padding: moderateScale(12), borderRadius: moderateScale(12), backgroundColor: "#E3FAF7", alignItems: "center", justifyContent: "center" },
+  button: { flex: 1, minHeight: moderateScale(48), padding: moderateScale(12), borderRadius: moderateScale(12), borderWidth: 1, borderColor: GameColors.primary, backgroundColor: GameColors.selectedSurface, alignItems: "center", justifyContent: "center" },
   buttonText: { color: GameColors.secondaryDark, fontSize: moderateScale(16), fontWeight: "800", textAlign: "center" },
   disabled: { opacity: 0.45 },
   pressed: { opacity: 0.75 },

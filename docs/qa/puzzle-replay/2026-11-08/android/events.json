@@ -1,0 +1,302 @@
+[
+  {
+    "at": 1794136113.53107,
+    "message": "Android production provider fixture is ready"
+  },
+  {
+    "at": 1794136113.5310879,
+    "message": "Tap QA Seed full replay"
+  },
+  {
+    "at": 1794136113.642515,
+    "message": "Tap Answer 10"
+  },
+  {
+    "at": 1794136114.384943,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136115.549518,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136116.855933,
+    "message": "Tap Answer 5"
+  },
+  {
+    "at": 1794136116.968291,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136118.362494,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136119.183226,
+    "message": "Tap Answer 11:00"
+  },
+  {
+    "at": 1794136119.301976,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136120.743068,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136121.505298,
+    "message": "Tap Answer 8"
+  },
+  {
+    "at": 1794136121.620585,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136122.7435882,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136123.769693,
+    "message": "Tap Answer 600"
+  },
+  {
+    "at": 1794136123.880708,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136124.863422,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136126.019382,
+    "message": "Tap Answer 2"
+  },
+  {
+    "at": 1794136126.1454341,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136127.165788,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136128.1398468,
+    "message": "Tap Answer 2"
+  },
+  {
+    "at": 1794136128.259307,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136129.678677,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136130.451184,
+    "message": "Tap pace-timed"
+  },
+  {
+    "at": 1794136130.650304,
+    "message": "Tap Start challenge"
+  },
+  {
+    "at": 1794136131.336726,
+    "message": "Tap Answer 10:00"
+  },
+  {
+    "at": 1794136131.454766,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136132.48937,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136133.660285,
+    "message": "Tap Answer 4"
+  },
+  {
+    "at": 1794136133.781881,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136134.926712,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136135.971016,
+    "message": "Tap Answer 3"
+  },
+  {
+    "at": 1794136136.0928352,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136137.7061791,
+    "message": "Tap Next level"
+  },
+  {
+    "at": 1794136138.698067,
+    "message": "Android full replay passed: every Next puzzle stayed in the level; level 2 opens"
+  },
+  {
+    "at": 1794136138.69809,
+    "message": "Tap QA Seed replay"
+  },
+  {
+    "at": 1794136138.815941,
+    "message": "Tap pace-timed"
+  },
+  {
+    "at": 1794136139.661102,
+    "message": "Tap Start challenge"
+  },
+  {
+    "at": 1794136158.662176,
+    "message": "Android force-stop/relaunch passed: task 8, active, same deadline, level 2 open"
+  },
+  {
+    "at": 1794136158.662216,
+    "message": "Tap QA Resume disk replay"
+  },
+  {
+    "at": 1794136158.770568,
+    "message": "Tap Answer 10:00"
+  },
+  {
+    "at": 1794136159.6428978,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136179.40374,
+    "message": "Android force-stop/relaunch passed: task 9, active, same deadline, level 2 open"
+  },
+  {
+    "at": 1794136179.403797,
+    "message": "Tap QA Resume disk replay"
+  },
+  {
+    "at": 1794136179.5052779,
+    "message": "Tap Answer 4"
+  },
+  {
+    "at": 1794136180.1778119,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136181.600276,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136199.81082,
+    "message": "Dismissed the recorded development warning overlay"
+  },
+  {
+    "at": 1794136200.9665751,
+    "message": "Android force-stop/relaunch passed: task 10, active, same deadline, level 2 open"
+  },
+  {
+    "at": 1794136200.966635,
+    "message": "Tap QA Resume disk replay"
+  },
+  {
+    "at": 1794136201.062911,
+    "message": "Tap Answer 3"
+  },
+  {
+    "at": 1794136201.84965,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136203.339859,
+    "message": "Tap Next level"
+  },
+  {
+    "at": 1794136204.65712,
+    "message": "Tap QA Seed replay"
+  },
+  {
+    "at": 1794136204.781516,
+    "message": "Tap pace-timed"
+  },
+  {
+    "at": 1794136205.277781,
+    "message": "Tap Start challenge"
+  },
+  {
+    "at": 1794136205.8393369,
+    "message": "Tap Answer 10:00"
+  },
+  {
+    "at": 1794136205.962188,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136207.362831,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136208.148145,
+    "message": "Tap QA Near deadline"
+  },
+  {
+    "at": 1794136244.882048,
+    "message": "Android force-stop/relaunch passed: task 8, expired, same deadline, level 2 open"
+  },
+  {
+    "at": 1794136262.834593,
+    "message": "Android force-stop/relaunch passed: task 8, expired, same deadline, level 2 open"
+  },
+  {
+    "at": 1794136262.834646,
+    "message": "Tap QA Resume disk replay"
+  },
+  {
+    "at": 1794136263.523625,
+    "message": "Tap pace-untimed"
+  },
+  {
+    "at": 1794136263.811313,
+    "message": "Tap Try again"
+  },
+  {
+    "at": 1794136263.914376,
+    "message": "Tap Answer 10:00"
+  },
+  {
+    "at": 1794136264.328013,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136265.308154,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136266.600443,
+    "message": "Tap Answer 4"
+  },
+  {
+    "at": 1794136266.727471,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136268.086924,
+    "message": "Tap Next puzzle"
+  },
+  {
+    "at": 1794136269.0097868,
+    "message": "Tap Answer 3"
+  },
+  {
+    "at": 1794136269.117465,
+    "message": "Tap Check answer"
+  },
+  {
+    "at": 1794136270.470332,
+    "message": "Tap Next level"
+  },
+  {
+    "at": 1794136271.7668748,
+    "message": "Android replay suite passed: 3 scenarios, 5 real process restarts"
+  }
+]

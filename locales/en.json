@@ -1154,7 +1154,16 @@
     "cookie": "cookies",
     "parcel": "parcels",
     "planting_tile": "planting spaces",
-    "carriage": "train carriages"
+    "carriage": "train carriages",
+    "book": "books",
+    "shell": "shells",
+    "leaf": "leaves",
+    "chair": "chairs",
+    "guest": "guests",
+    "plant": "plants",
+    "coin": "coins",
+    "ball": "balls",
+    "box": "boxes"
   },
   "puzzleTypes": {
     "fractionMatchTryAgain": "Those pictures and fractions don’t match. Try again; your completed pairs are saved.",
@@ -1597,7 +1606,7 @@
     "spareTiles": "Spare tiles. Some will stay unused.",
     "numberTile": "Number {{number}}",
     "checkPattern": "Check the whole pattern",
-    "routeInstructions": "Move up, down, left or right. Apply the square you enter. Do not reuse squares. Use whole numbers, zero or above.",
+    "routeInstructions": "Move ↑ ↓ ← →. Apply each square’s operation once. Keep results whole and at least 0.",
     "routeGoal": "Reach {{target}} at the exit in exactly {{moves}} moves",
     "routeStatus": "Number {{value}} · {{count}} of {{total}} moves",
     "startValue": "Start {{value}}",
@@ -1612,7 +1621,7 @@
     "undoStep": "Undo last move",
     "checkRoute": "Check my route",
     "budgetGoal": "Budget {{budget}} · Choose {{count}} items · Leave {{remaining}}",
-    "budgetInstructions": "These are pretend prices. Select your supplies, then check your plan. Your game coins stay in your wallet.",
+    "budgetInstructions": "Use pretend coins. Your game wallet stays the same.",
     "itemsSelected": "{{count}} of {{total}} items selected",
     "price": "{{price}} pretend coins",
     "discount": "{{percent}}% off",
@@ -1622,7 +1631,8 @@
     "returnToBank": "Return to the tile bank",
     "returnHere": "Drag a tile back here to take it out of a basket.",
     "placeInGap": "Move to position {{position}}",
-    "dragA11yHint": "Drag to a destination. With a screen reader, use the available actions to choose where to put the tile."
+    "dragA11yHint": "Drag to a destination. With a screen reader, use the available actions to choose where to put the tile.",
+    "priceShort": "{{price}} coins"
   },
   "bossStory": {
     "scene": "Mission scene: {{count}} of {{total}} tasks complete",
@@ -1761,7 +1771,7 @@
       "ones": "Ones: {{count}}"
     },
     "guide": {
-      "build": "Use tens and ones to make the number. Each long block holds ten ones.",
+      "build": "One long block = 10 ones.",
       "bundle": "Exchange ten ones for one ten. The amount stays the same.",
       "split": "Exchange one ten for ten ones. The amount stays the same.",
       "add": "Add the second number, then exchange ten ones for one ten.",
@@ -1788,12 +1798,12 @@
     "tapLine": "Tap the line, or use the buttons to move one step.",
     "pointSelected": "Your point is marked on the line.",
     "stripGuide": "The strip is one whole. Shade the required number of equal parts.",
-    "equalGuide": "Both strips are the same length. Use different parts to shade the same amount.",
+    "equalGuide": "Same whole, different parts. Shade the same amount.",
     "referenceLabel": "Reference strip: {{numerator}}/{{denominator}} of one whole",
     "reference": "Reference",
     "chooseParts": "Choose equal parts",
     "parts": "{{count}} parts",
-    "partitionResets": "Choosing new parts clears your shading.",
+    "partitionResets": "New parts clear your shading.",
     "yourStrip": "Your strip",
     "shaded": "Shaded parts: {{count}} of {{total}}",
     "remove": "Unshade one part",
@@ -1802,14 +1812,14 @@
   },
   "decimalModels": {
     "tenthsGuide": "The square is one whole. Each of its 10 equal strips is one tenth, or 0.1.",
-    "hundredthsGuide": "The square is one whole. Each of its 100 small squares is one hundredth, or 0.01. A full row is 0.10, the same as 0.1.",
+    "hundredthsGuide": "100 squares = 1 whole.\n1 square = 0.01 · 1 row = 0.10 = 0.1",
     "oneWhole": "1 whole",
     "gridLabel": "Decimal grid",
     "shaded": "{{count}} of {{total}} parts shaded",
     "tapGrid": "Tap the grid to start.",
     "unshade": "Unshade {{count}} parts",
     "shade": "Shade {{count}} parts",
-    "gridControls": "Tap to shade up to a part. Use + or − to adjust.",
+    "gridControls": "Tap a part, or adjust with + and −.",
     "reset": "Start again",
     "placeGuide": "Build the number in its place-value columns. A zero means that place is empty.",
     "exchangeGuide": "Ten hundredths make one tenth. Exchange the pieces without changing the total.",
@@ -1828,8 +1838,8 @@
     "blockScaleTenths": "A square is 1. A strip is one tenth, or 0.1."
   },
   "geometryModels": {
-    "guide_area": "Area measures the inside. Cover the rectangle with equal unit squares, without gaps or overlaps.",
-    "guide_perimeter": "Perimeter measures the boundary. Trace each unit edge around the outside once.",
+    "guide_area": "Area is the inside: cover it with unit squares, with no gaps or overlaps.",
+    "guide_perimeter": "Perimeter is the boundary: trace every outside edge once.",
     "guide_compare": "Both rectangles cover the same area. Their boundaries can have different lengths.",
     "guide_missing_area": "Area equals width × height. Use the area and the known side to find the other side.",
     "guide_missing_perimeter": "The perimeter includes two widths and two heights. Find half the perimeter, then subtract the known side.",
@@ -1838,11 +1848,11 @@
     "notToScale": "Not to scale",
     "given_area": "Area: {{value}} square units",
     "given_perimeter": "Perimeter: {{value}} units",
-    "unitSquare": "Each square is 1 unit wide and 1 unit high.",
-    "coverSquare": "Cover one square",
-    "traceEdge": "Trace one boundary edge",
-    "squaresMarked": "Squares covered: {{count}}",
-    "edgesMarked": "Boundary edges traced: {{count}}",
+    "unitSquare": "Each small square is 1 × 1 unit.",
+    "coverSquare": "Cover 1 square",
+    "traceEdge": "Trace 1 edge",
+    "squaresMarked": "Covered: {{count}}",
+    "edgesMarked": "Traced: {{count}}",
     "equal": "Equal perimeters",
     "sideAnswer": "Missing side, in units",
     "areaAnswer": "Area, in square units",
@@ -1850,23 +1860,30 @@
     "erase": "Erase last digit",
     "reset": "Start again",
     "oneUnit": "1 unit",
-    "manyUnits": "{{value}} units"
+    "manyUnits": "{{value}} units",
+    "eraseShort": "Erase"
   },
   "bridge": {
+    "ratioPair": "{{groups}} groups, {{items}} items",
+    "knownGroup": "1 group holds {{count}} items",
+    "unknownGroups": "{{count}} equal groups",
+    "ratioChange": "Apply {{operation}} to both quantities",
+    "operationBoth": "{{operation}} on both sides",
     "answer": "Your answer",
     "groups": "Groups",
     "items": "Items",
     "linkedLines": "Matching positions show matching quantities.",
     "original": "Starting equation",
-    "bothSides": "Apply each operation to both sides. Finish with x alone.",
-    "divideWhole": "Divide only when every term makes a whole number.",
+    "bothSides": "Each button changes both sides equally.",
+    "divideWhole": "Each term must divide into whole numbers.",
     "selectZero": "Select zero",
     "selectOrigin": "Select (0, 0)",
     "guide_ratio_table": "One group always holds the same amount. Match both rows of the table.",
     "guide_signed_line": "Zero is the reference point. Numbers increase to the right.",
     "guide_equation_board": "Keep both sides equal. Undo extra amounts and split equal groups.",
-    "guide_coordinate_map": "Read (x, y): move across first, then up or down. Each grid interval is one unit.",
-    "moveBy": "Change x by {{x}} and y by {{y}}."
+    "guide_coordinate_map": "Read (x, y): across, then up or down. Each step is 1 unit.",
+    "moveBy": "Change x by {{x}} and y by {{y}}.",
+    "linkedLinesTitle": "Linked quantities"
   },
   "everyday": {
     "cats": "Cats",
@@ -1883,7 +1900,15 @@
       "plant": "Plant",
       "balloon": "Balloon",
       "cupcake": "Cupcake"
-    }
+    },
+    "catCount": "Number of cats",
+    "toyCount": "Number of toys",
+    "ribbonPerCorner": "Mats: 1 ribbon at each corner",
+    "priceEach": "Price each",
+    "packPrice": "Whole pack price",
+    "portion_cup": "Each cup: {{amount}} ml",
+    "portion_bottle": "Each bottle: {{amount}} ml",
+    "portion_bowl": "Each bowl: {{amount}} ml"
   },
   "actionMotion": {
     "giveOne": "Give one object",
@@ -1897,5 +1922,10 @@
     "forYourHouse": "Complete this plan to add it to your house items.",
     "inYourItems": "Added to your items. Ready to place in the house.",
     "placeInHouse": "Place in house"
+  },
+  "objectGivens": {
+    "start": "At the start",
+    "add": "Added",
+    "remove": "Taken away"
   }
 }

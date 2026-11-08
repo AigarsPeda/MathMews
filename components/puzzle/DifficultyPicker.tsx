@@ -1,3 +1,4 @@
+import { insetRadius } from '@/utils/border-radius';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { getPuzzleCoinReward } from "@/constants/game";
@@ -9,6 +10,10 @@ import { useEffect, useState } from "react";
 import Animated, { Easing, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
+
+const PICKER_RADIUS = moderateScale(14);
+const PICKER_INSET = moderateScale(4);
+const TAB_RADIUS = insetRadius(PICKER_RADIUS, PICKER_INSET);
 
 type DifficultyPickerProps = {
   selected: PuzzleDifficulty;
@@ -53,7 +58,7 @@ export function DifficultyPicker({
   const [width, setWidth] = useState(0);
   const selectedIndex = PUZZLE_DIFFICULTIES.indexOf(selected);
   const position = useSharedValue(selectedIndex);
-  const inset = moderateScale(4);
+  const inset = PICKER_INSET;
   const tabWidth = Math.max(0, (width - inset * 4) / PUZZLE_DIFFICULTIES.length);
   useEffect(() => {
     position.set(withTiming(selectedIndex, { duration: 240, easing: Easing.out(Easing.cubic), reduceMotion: ReduceMotion.System }));
@@ -78,9 +83,9 @@ export function DifficultyPicker({
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    gap: moderateScale(4),
-    padding: moderateScale(4),
-    borderRadius: moderateScale(14),
+    gap: PICKER_INSET,
+    padding: PICKER_INSET,
+    borderRadius: PICKER_RADIUS,
     backgroundColor: "#ECEBF7",
   },
   tab: {
@@ -88,7 +93,7 @@ const styles = StyleSheet.create({
     minHeight: moderateScale(44),
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: moderateScale(10),
+    borderRadius: TAB_RADIUS,
     backgroundColor: "transparent",
     paddingHorizontal: moderateScale(6),
     paddingVertical: moderateScale(8),
@@ -96,8 +101,8 @@ const styles = StyleSheet.create({
   },
   highlight: {
     position: "absolute",
-    top: moderateScale(4), bottom: moderateScale(4), left: moderateScale(4),
-    borderRadius: moderateScale(10),
+    top: PICKER_INSET, bottom: PICKER_INSET, left: PICKER_INSET,
+    borderRadius: TAB_RADIUS,
     backgroundColor: GameColors.primary,
     borderBottomWidth: 3,
     borderBottomColor: GameColors.primaryDark,

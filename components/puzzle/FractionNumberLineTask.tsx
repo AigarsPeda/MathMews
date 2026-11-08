@@ -1,5 +1,5 @@
 import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
-import { PuzzleColors as Colors } from '@/constants/puzzle-theme';
+import { DiagramColors, PuzzleColors as Colors } from '@/constants/puzzle-theme';
 import type { FractionNumberLinePuzzle } from '@/types/puzzle';
 import { fractionTickAt } from '@/utils/fraction-models';
 import { useState } from 'react';
@@ -53,15 +53,15 @@ export function FractionNumberLineTask({ puzzle, value, onChange, answered }: Pr
 const styles = StyleSheet.create({
   wrap: { gap: 16 },
   guide: { color: Colors.textMuted, fontSize: 16, lineHeight: 23, textAlign: 'center' },
-  track: { height: 112, minHeight: 48 },
+  track: { height: 112, minHeight: 48, borderRadius: 16, backgroundColor: DiagramColors.fractionSurface },
   axis: { position: 'absolute', top: 30, left: 16, right: 16, height: 70 },
-  rule: { position: 'absolute', top: 12, left: 0, right: 0, height: 2, backgroundColor: Colors.text },
+  rule: { position: 'absolute', top: 12, left: 0, right: 0, height: 3, borderRadius: 2, backgroundColor: DiagramColors.fractionEdge },
   tickPosition: { position: 'absolute', top: 0, width: 0, alignItems: 'center' },
-  tick: { width: 2, height: 26, backgroundColor: Colors.text },
-  marker: { position: 'absolute', top: 3, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.primary, borderWidth: 3, borderColor: Colors.background },
+  tick: { width: 3, height: 26, borderRadius: 2, backgroundColor: DiagramColors.fractionEdge },
+  marker: { position: 'absolute', top: -1, width: 28, height: 28, borderRadius: 14, backgroundColor: DiagramColors.fractionFill, borderWidth: 3, borderColor: DiagramColors.fractionEdge },
   label: { position: 'absolute', top: 34, width: 46, textAlign: 'center', color: Colors.text, fontSize: 16, fontWeight: '700' },
   controls: { flexDirection: 'row', gap: 10 },
-  button: { flex: 1, minHeight: 48, padding: 12, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.selectedSurface, borderColor: Colors.primary, borderWidth: 1, borderRadius: 12 },
+  button: { flex: 1, minHeight: 48, padding: 12, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.selectedSurface, borderColor: Colors.primary, borderWidth: 2, borderBottomWidth: 4, borderRadius: 12 },
   buttonText: { color: Colors.primaryDark, fontSize: 16, fontWeight: '700', textAlign: 'center' },
   disabled: { opacity: 0.4 },
   pressed: { backgroundColor: Colors.selectedStrong },

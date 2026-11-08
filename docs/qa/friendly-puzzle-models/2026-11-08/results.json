@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-08",
+  "platform": "iOS Simulator, iPhone 15",
+  "scope": [
+    "fractions",
+    "integer and signed number lines",
+    "balances and equation boards",
+    "decimal models",
+    "function machines",
+    "flat shape highlights",
+    "puzzle style guide"
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "targeted_eslint": "passed",
+    "diff_whitespace": "passed",
+    "fraction_animation_and_touch": "passed",
+    "number_line_animation_and_privacy": "passed",
+    "fraction_decimal_bridge_models": "passed",
+    "puzzle_experience": "passed across 3390 authored puzzles",
+    "action_motion": "passed",
+    "everyday_topics": "passed",
+    "guide_links_and_colors": "passed"
+  },
+  "native": [
+    {
+      "suite": "Fraction models",
+      "result": "passed",
+      "bundle": "brainpet-native-drag-C8AxoL/result.xcresult",
+      "coverage": "Direct selection, correction, resetting, equivalent strips, answer locking and narrow Latvian layouts"
+    },
+    {
+      "suite": "Bridge",
+      "result": "passed",
+      "bundle": "brainpet-native-drag-yNBiSV/result.xcresult",
+      "coverage": "Equation transformations, signed lines, ratios and coordinates in English, Latvian and Russian"
+    },
+    {
+      "suite": "Number lines",
+      "result": "2 tests passed",
+      "bundle": "brainpet-native-drag-cGemK3/result.xcresult",
+      "coverage": "Marker layering, tick/label taps, step controls, wide-range scrolling and locking"
+    },
+    {
+      "suite": "Visual review",
+      "result": "passed and screenshots inspected",
+      "bundle": "brainpet-native-drag-O70GMA/result.xcresult",
+      "coverage": "Production balance, pie, matching, function machine, decimal grid and units; flat polygon highlights"
+    }
+  ],
+  "test_maintenance": "Updated fraction fixture assertions to current offered partitions and quantities; result-color checks follow the shared error token. The number-line pixel assertion now checks its teal border.",
+  "visual_findings_fixed": [
+    "Centered scale contents",
+    "Four matching cards form a two-by-two grid",
+    "Replaced flat-polygon side facets with a short inset highlight"
+  ],
+  "limitations": [
+    "Native rendering reviewed on iOS simulator; Android and physical devices were not exercised in this pass."
+  ]
+}

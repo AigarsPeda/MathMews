@@ -18,13 +18,14 @@ export function PlaceValueTask({ puzzle, value, onChange, answered }: Props) {
   const { t } = useTranslation();
   const state = value ?? initialPlaceValue(puzzle);
   const { mode, start, operand, guided } = puzzle.payload;
+  const shortActions: Partial<Record<PlaceValueAction, string>> = { addTen: '+ 10', addOne: '+ 1', removeTen: '− 10', removeOne: '− 1' };
   const button = (action: PlaceValueAction, label: string) => {
     const next = changePlaceValue(puzzle, state, action);
     const disabled = answered || next === state;
-    return <Pressable key={action} accessibilityRole="button" accessibilityState={{ disabled }}
+    return <Pressable key={action} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled }}
       testID={`place-value-${action}`} disabled={disabled} onPress={() => onChange(next)}
       style={({ pressed }) => [styles.button, disabled && styles.disabled, pressed && styles.pressed]}>
-      <Text style={styles.buttonText}>{label}</Text>
+      <Text style={styles.buttonText}>{shortActions[action] ?? label}</Text>
     </Pressable>;
   };
   return <View style={styles.wrap}>
@@ -54,29 +55,29 @@ export function PlaceValueTask({ puzzle, value, onChange, answered }: Props) {
     <View style={styles.exchanges}>
       {mode !== 'split' ? button('bundle', t('placeValue.bundle')) : null}
       {mode === 'split' || mode === 'subtract' ? button('split', t('placeValue.split')) : null}
-    </View>
     <Pressable accessibilityRole="button" accessibilityState={{ disabled: answered || value === null }}
-      disabled={answered || value === null} onPress={() => onChange(null)} testID="place-value-reset"
+      disabled={answered || value === null} onPress={() => onChange(null)} testID="place-value-reset" accessibilityLabel={t('placeValue.reset')}
       style={[styles.reset, (answered || value === null) && styles.disabled]}>
-      <Text style={styles.resetText}>{t('placeValue.reset')}</Text>
+      <Text style={styles.resetText}>{t('geometryModels.reset')}</Text>
     </Pressable>
+    </View>
   </View>;
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: 12 },
+  wrap: { gap: 8 },
   instruction: { fontSize: 16, lineHeight: 23, color: Colors.textMuted, textAlign: 'center' },
-  board: { flexDirection: 'row', borderColor: Colors.cardBorder, borderWidth: 1, borderRadius: 16, paddingVertical: 14 },
-  column: { flex: 1, alignItems: 'center', paddingHorizontal: 8 },
+  board: { flexDirection: 'row', borderColor: Colors.cardBorder, borderWidth: 1, borderRadius: 16, paddingVertical: 6 },
+  column: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, alignItems: 'center', paddingHorizontal: 8 },
   heading: { fontSize: 18, fontWeight: '800', color: Colors.text },
   count: { fontSize: 28, fontWeight: '800', color: Colors.text, marginVertical: 4 },
   controls: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  exchanges: { gap: 8 },
+  exchanges: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
   button: { flexGrow: 1, flexBasis: '45%', minHeight: 48, justifyContent: 'center', alignItems: 'center', padding: 10, borderRadius: 12, borderWidth: 1, borderColor: Colors.primary, backgroundColor: Colors.selectedSurface },
   buttonText: { fontSize: 16, fontWeight: '700', color: Colors.primaryDark, textAlign: 'center' },
   disabled: { opacity: 0.4 },
   pressed: { backgroundColor: Colors.selectedStrong },
   status: { fontSize: 17, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  reset: { minHeight: 44, padding: 8, alignItems: 'center', justifyContent: 'center' },
-  resetText: { fontSize: 16, color: Colors.textMuted, textDecorationLine: 'underline' },
+  reset: { flexBasis: '30%', flexGrow: 1, minHeight: 44, padding: 8, alignItems: 'center', justifyContent: 'center' },
+  resetText: { textAlign: 'center', fontSize: 16, color: Colors.textMuted, textDecorationLine: 'underline' },
 });

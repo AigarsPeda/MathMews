@@ -61,3 +61,5 @@ await import('./patch-filament-recovery.mjs');
 await import('./patch-filament-shadows.mjs');
 
 await import('./patch-filament-performance.mjs');
+await import('./patch-filament-surface-lifetime.mjs');
+await import('./patch-filament-android-gc.mjs');

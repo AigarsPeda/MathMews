@@ -6,7 +6,10 @@ function counter(id: number, x: number, y: number, primary = false): PracticeTok
 }
 
 export function getQuantityTaskHeight(model: QuantityTaskModel): number {
-  if (model.kind === "array") return Math.max(140, model.rows * (model.object ? 28 : 16) + 24);
+  if (model.kind === "array") {
+    const pitch = model.object ? model.rows * model.columns > 64 ? 18 : 28 : 16;
+    return Math.max(140, Math.max(model.rows, Math.ceil(model.rows * model.columns / 10)) * pitch + 24);
+  }
   if (model.kind === "share") return 140;
   const groupRows = model.kind === "join" ? Math.ceil(Math.max(model.left, model.right) / 5) : 0;
   const resultRows = Math.ceil((model.kind === "join" ? model.left + model.right : model.left) / 10);
@@ -19,8 +22,8 @@ export function getQuantityTaskTokens(model: QuantityTaskModel, step: number, de
   if (!model.object) return tokens;
   return tokens.map(token => token.id.startsWith("counter-") ? {
     ...token, object: model.object,
-    width: model.kind === "share" ? 16 : model.kind === "array" ? Math.min(24, 270 / model.columns) : 24,
-    height: model.kind === "share" ? 16 : 24,
+    width: model.kind === "share" ? 16 : model.kind === "array" ? Math.min(model.rows * model.columns > 64 ? 16 : 24, 270 / model.columns) : 24,
+    height: model.kind === "share" || model.kind === "array" && model.rows * model.columns > 64 ? 16 : 24,
   } : token);
 }
 
@@ -47,7 +50,7 @@ function buildQuantityTaskTokens(model: QuantityTaskModel, step: number, dealtCo
       const row = Math.floor(index / model.columns), column = index % model.columns;
       return step > 0
         ? counter(index, (column + 0.5) * 300 / model.columns, 15 + (row + 0.5) * (getQuantityTaskHeight(model) - 30) / model.rows, row % 2 === 0)
-        : counter(index, 24 + (index % 10) * 28, 18 + Math.floor(index / 10) * (model.object ? 26 : 15), row % 2 === 0);
+        : counter(index, 24 + (index % 10) * 28, 18 + Math.floor(index / 10) * (model.object ? model.rows * model.columns > 64 ? 18 : 26 : 15), row % 2 === 0);
     });
   }
   const count = model.kind === "join" ? model.left + model.right : model.left;

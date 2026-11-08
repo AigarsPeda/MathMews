@@ -1,5 +1,5 @@
 import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
-import { PuzzleColors as Colors } from '@/constants/puzzle-theme';
+import { DiagramColors, PuzzleColors as Colors } from '@/constants/puzzle-theme';
 import type { DecimalPlaceValuePuzzle } from '@/types/puzzle';
 import { changeDecimalPlace, decimalLabel, decimalTotal, initialDecimalPlace, type DecimalAction, type DecimalPlaceState } from '@/utils/decimal-models';
 import { useTranslation } from 'react-i18next';
@@ -41,15 +41,15 @@ export function DecimalPlaceValueTask({ puzzle, value, onChange, answered }: Pro
   </View>;
 }
 const styles = StyleSheet.create({
-  wrap: { gap: 16 }, guide: { color: Colors.textMuted, fontSize: 16, lineHeight: 23, textAlign: 'center' },
-  columns: { flexDirection: 'row', gap: 8 }, column: { flex: 1, alignItems: 'center', gap: 10 },
+  wrap: { gap: 8 }, guide: { color: Colors.textMuted, fontSize: 16, lineHeight: 23, textAlign: 'center' },
+  columns: { flexDirection: 'row', gap: 8 }, column: { flex: 1, alignItems: 'center', gap: 6 },
   unit: { color: Colors.text, fontSize: 14, fontWeight: '700', textAlign: 'center' }, unitValue: { color: Colors.textMuted, fontSize: 16 },
   count: { color: Colors.text, fontSize: 28, fontWeight: '800' },
-  blocks: { minHeight: 92, flexDirection: 'row', flexWrap: 'wrap', gap: 3, alignContent: 'flex-start', width: '100%', justifyContent: 'center' },
-  block: { backgroundColor: Colors.primary }, whole: { width: 40, height: 40 }, tenth: { width: 4, height: 40 }, hundredth: { width: 4, height: 4 },
-  controls: { flexDirection: 'column', gap: 6, width: '100%' },
-  button: { minHeight: 48, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: Colors.primary, backgroundColor: Colors.selectedSurface, justifyContent: 'center', alignItems: 'center' },
-  compact: { flex: 1, paddingHorizontal: 0 }, buttonText: { color: Colors.primaryDark, fontSize: 18, fontWeight: '700', textAlign: 'center' },
+  blocks: { minHeight: 80, flexDirection: 'row', flexWrap: 'wrap', gap: 3, alignContent: 'flex-start', width: '100%', justifyContent: 'center' },
+  block: { backgroundColor: DiagramColors.decimalFill }, whole: { width: 40, height: 40 }, tenth: { width: 4, height: 40 }, hundredth: { width: 4, height: 4 },
+  controls: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, width: '100%' },
+  button: { minHeight: 48, padding: 12, borderRadius: 12, borderWidth: 2, borderBottomWidth: 4, borderColor: Colors.primary, backgroundColor: Colors.selectedSurface, justifyContent: 'center', alignItems: 'center' },
+  compact: { flex: 1, minWidth: 44, paddingHorizontal: 0 }, buttonText: { color: Colors.primaryDark, fontSize: 18, fontWeight: '700', textAlign: 'center' },
   total: { color: Colors.text, fontSize: 22, fontWeight: '700', textAlign: 'center' }, disabled: { opacity: 0.4 },
   reset: { minHeight: 44, alignItems: 'center', justifyContent: 'center' }, resetText: { color: Colors.textMuted, fontSize: 16, textDecorationLine: 'underline' },
 });

@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-08",
+  "palettes": {
+    "geometry": "blue",
+    "fraction": "lavender",
+    "decimal": "bright gold, matching the shapes"
+  },
+  "checks": {
+    "typecheck": "passed",
+    "targetedEslint": "passed",
+    "fractionAnimationAndTouches": "passed, including result colors and Reduce Motion",
+    "puzzleExperience": "passed across 3390 authored puzzles",
+    "nativeReview": "passed, seven production component screens on iPhone 15 simulator",
+    "goldRefinement": "passed: typecheck, token lint, diff check and native Shapes/Decimals/Units captures after concurrent simulator runs completed"
+  },
+  "captures": [
+    "Shapes",
+    "Strips",
+    "Decimals",
+    "Fractions",
+    "Matching",
+    "Units",
+    "Line"
+  ],
+  "contrast": "See contrast.json. Bright gold is a decorative material; numeric values, grid divisions and accessible quantities also communicate the amount. Dark text stays outside filled cells. The earlier 3:1 decimal fill claim applies only to the superseded amber palette.",
+  "scope": "Color token changes only; geometry, touch mapping, labels, corner formula, primary actions and feedback colors retained. Native screenshots show sample drafts, not necessarily correct answers. Android and physical devices not reviewed."
+}

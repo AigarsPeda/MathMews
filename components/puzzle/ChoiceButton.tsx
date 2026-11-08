@@ -2,7 +2,7 @@ import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { useTranslation } from "react-i18next";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import { moderateScale } from "@/utils/scale";
-import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, type StyleProp, type ViewStyle, type TextStyle } from "react-native";
 
 type ChoiceButtonProps = {
   label: string;
@@ -10,6 +10,7 @@ type ChoiceButtonProps = {
   disabled: boolean;
   result?: "correct" | "wrong" | null;
   style?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
   onPress: () => void;
 };
 
@@ -19,6 +20,7 @@ export function ChoiceButton({
   disabled,
   result = null,
   style,
+  labelStyle,
   onPress,
 }: ChoiceButtonProps) {
   const { t } = useTranslation();
@@ -42,7 +44,7 @@ export function ChoiceButton({
       accessibilityState={{ disabled, selected }}
     >
       <Text
-        style={[styles.label, (showCorrect || showWrong) && styles.labelResult]}
+        style={[styles.label, labelStyle, (showCorrect || showWrong) && styles.labelResult]}
       >
         {label}
       </Text>

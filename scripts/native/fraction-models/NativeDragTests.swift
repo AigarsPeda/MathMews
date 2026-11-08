@@ -56,7 +56,7 @@ final class NativeDragTests: XCTestCase {
   next(); linePoint(4,4); expect("Point 4"); XCTAssertFalse(app.buttons["fraction-line-right"].isEnabled)
   tap("fraction-line-left"); expect("Point 3"); shot("en-independent-quarters"); tap("pilot-check"); expect("Correct")
   next(); XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
-  tap("fraction-strip-parts-3"); XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
+  tap("fraction-strip-parts-8"); XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   tap("fraction-strip-add"); tap("pilot-check"); expect("Try again")
   tap("fraction-strip-parts-4"); expect("4 parts none shaded"); XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   tap("fraction-strip-add",2); shot("en-equivalent-half"); tap("pilot-check"); expect("Correct")
@@ -64,14 +64,20 @@ final class NativeDragTests: XCTestCase {
   XCTAssertEqual(app.buttons["fraction-line-right"].label,"Soli pa labi")
   linePoint(4,6); expect("Point 4"); shot("lv-line-thirds-sixths"); tap("pilot-check"); expect("Correct")
   next(); XCTAssertEqual(app.buttons["fraction-strip-add"].label,"Iekrāso vienu daļu")
-  tap("fraction-strip-parts-8"); tap("fraction-strip-add",6); expect("8 parts 6 shaded")
+  tap("fraction-strip-parts-8"); tap("fraction-strip-add",4); expect("8 parts 4 shaded")
   tap("fraction-strip-reset"); expect("none parts none shaded"); XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   tap("fraction-strip-parts-8")
   let board=app.descendants(matching: .any)["fraction-strip-board"].firstMatch
-  board.coordinate(withNormalizedOffset: CGVector(dx: 0.75, dy: 0.5)).tap()
-  expect("8 parts 6 shaded"); shot("lv-equivalent-eighths"); tap("pilot-check"); expect("Correct")
-  tap("pilot-again"); tap("fraction-strip-parts-12"); tap("fraction-strip-add",9)
-  expect("12 parts 9 shaded"); shot("lv-alternative-twelfths"); tap("pilot-check"); expect("Correct")
+  // The six-point frame is decoration, not part of the fraction's measured whole.
+  let inset = 6.0, inner = board.frame.width - inset * 2
+  for (fraction, shaded) in [(0.05,0),(0.125,1),(0.5,4),(0.95,8)] {
+   board.coordinate(withNormalizedOffset: CGVector(dx: (inset + inner * fraction) / board.frame.width, dy: 0.5)).tap()
+   expect("8 parts \(shaded) shaded")
+  }
+  board.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+  expect("8 parts 4 shaded"); shot("lv-equivalent-eighths"); tap("pilot-check"); expect("Correct")
+  tap("pilot-again"); tap("fraction-strip-parts-4"); tap("fraction-strip-add",2)
+  expect("4 parts 2 shaded"); shot("lv-alternative-quarters"); tap("pilot-check"); expect("Correct")
   next(); linePoint(5,6); expect("Point 5"); shot("lv-independent-sixths"); tap("pilot-check"); expect("Correct")
  }
 }

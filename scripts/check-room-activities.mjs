@@ -155,6 +155,7 @@ assert.equal(render().activity.plan.kind, 'mouseChase');
 const total = render().activity.plan.steps.reduce((sum, step) => sum + step.durationMs, 0);
 advance(total); assert.equal(render().activity, null, 'Completed activity returns to the saved placement');
 assert.equal(petX.get(), -30); assert.equal(petY.get(), 30);
+assert.equal(activityCompletions.length, 0, 'Automatic play cannot award care boosts while the player is idle');
 console.log('Verified sofas, mirrored/scaled seating, toy eligibility, mouse chases, idle timing, interruption, care/edit blocking, background pause, Reduce Motion, and saved placement preservation.');
 
 const sofaCommand = buildRoomActivity(furnished, 0, 'sofaSleep');

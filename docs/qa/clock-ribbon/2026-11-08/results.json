@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-08",
+  "device": "iPhone 15 simulator, 393 × 852 logical points",
+  "clock": {
+    "default": "All three times share one row, answers and picture help are visible, native swipe leaves question position unchanged, selecting 11:00 enables Check answer",
+    "translations": "Latvian and Russian screenshots and answer/help reachability passed",
+    "accessibility": "At accessibility-large, times use full-width choices and remain on one line. Content scrolls; help and the fixed check action remain usable. Reviewed with the screen mounted at the selected text size; simulator restored to large."
+  },
+  "ribbon": {
+    "source": "prototypes/puzzle-objects/puzzle-objects.blend",
+    "geometry": "Continuous folded fabric loops, rounded knot, V-notched tails, front camera",
+    "variants": [
+      "ribbon-blue",
+      "ribbon-red"
+    ],
+    "preservation": "All nine editable object scenes preserved; only ribbon renders replaced"
+  },
+  "checks": {
+    "typecheck": "passed",
+    "targetedLint": "passed",
+    "puzzleExperience": "3390 authored puzzles passed",
+    "puzzleObjects": "221 illustrated puzzles and nine renders passed",
+    "native": "Default clock fit and selection, translated reachability, ribbon caption, large-text unbroken labels passed"
+  },
+  "limitations": "Android and physical-device rendering not reviewed"
+}

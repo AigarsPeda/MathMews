@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-08",
+  "renderer": "Blender 5.2.3 LTS",
+  "icons": [
+    "apple",
+    "cookie"
+  ],
+  "source": "docs/art/app-icons/source/icons.blend",
+  "checks": {
+    "bundle": "83 transparent, unclipped 256 x 256 icons; total 2.94 MiB",
+    "orientation": "52 upright UI symbols and all four arrow directions passed",
+    "native": {
+      "device": "iPhone 15 simulator",
+      "test": "NativeDragTests/testShoppingItems",
+      "result": "passed",
+      "coverage": [
+        "English shopping illustration and correct answer",
+        "Picture help illustration",
+        "Latvian at 320-point width",
+        "Russian at 320-point width"
+      ]
+    }
+  },
+  "visualReview": "Reviewed both icons at 64 and 24 pixels and all four native screenshots."
+}

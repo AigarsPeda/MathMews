@@ -200,7 +200,8 @@ export function useRoomActivity(
           return;
         }
         if (plan.kind === "bowlEat" && !completed?.plan.steps.some(step => step.native?.blocked)) feedComplete.current?.();
-        if (completed && plan.kind !== "returnHome" && !completed.plan.steps.some(step => step.native?.blocked)) activityComplete.current?.(plan.kind, plan.targetInstanceId);
+        // Ambient play keeps the room lively; care boosts require a player command.
+        if (completed && plan.userRequested && plan.kind !== "returnHome" && !completed.plan.steps.some(step => step.native?.blocked)) activityComplete.current?.(plan.kind, plan.targetInstanceId);
         if (roomVisible) timer = setTimeout(startIdle, roomIdleDelay(latestOptions.current) + (turn.current % 5) * 700);
         return;
       }

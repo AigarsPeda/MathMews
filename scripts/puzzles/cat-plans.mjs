@@ -34,7 +34,7 @@ function task(plan, tier, slot, variant) {
     model = { kind: 'bars', task: total ? 'total' : 'difference', values, step: scale, index: 0, subject: 'cats',
       label: T(`Cats in groups A, B and C: ${values.join(', ')}.`, `Kaķi grupās A, B un C: ${values.join(', ')}.`, `Коты в группах A, B и C: ${values.join(', ')}.`) };
     answer = total ? values.reduce((a, b) => a + b) : values[1] - values[0];
-    question = total ? T('Three groups of cats are coming. How many places do they need altogether?', 'Ieradīsies trīs kaķu grupas. Cik vietu kopā vajadzēs?', 'Придут три группы котов. Сколько мест им нужно всего?')
+    question = total ? T('Three groups of cats are coming. Each cat needs 1 place. How many places are needed?', 'Ieradīsies trīs kaķu grupas. Katram kaķim vajag 1 vietu. Cik vietu vajag kopā?', 'Придут три группы котов. Каждому коту нужно 1 место. Сколько мест нужно всего?')
       : T('How many more places does group B need than group A?', 'Par cik vairāk vietu vajag B grupai nekā A grupai?', 'На сколько больше мест нужно группе B, чем группе A?');
     hint = total ? T('Add all three bars.', 'Saskaiti visus trīs stabiņus.', 'Сложи значения всех трёх столбцов.')
       : T('Subtract the smaller group from the larger group.', 'No lielākās grupas atņem mazāko.', 'Вычти меньшую группу из большей.');
@@ -76,7 +76,7 @@ function task(plan, tier, slot, variant) {
     const sides = tier === 0 ? [4, 4] : tier === 1 ? [3, 4, 3] : [6, 4, 6];
     // A different number of mats gives the worked example its own givens.
     if (variant >= 3) sides.push(4);
-    model = { kind: 'shapes', task: 'corners', sides, rectangle: false,
+    model = { kind: 'shapes', task: 'corners', sides, rectangle: false, context: 'mats',
       label: T(`Mats for the cats. Sides on each mat: ${sides.join(', ')}.`, `Paklājiņi kaķiem. Malas katram paklājiņam: ${sides.join(', ')}.`, `Коврики для котов. Стороны каждого коврика: ${sides.join(', ')}.`) };
     answer = sides.reduce((a, b) => a + b);
     question = T('Put one ribbon at every corner of these mats. How many ribbons are needed?', 'Pie katra šo paklājiņu stūra pieliec lenti. Cik lenšu vajag?', 'Положи ленту у каждого угла этих ковриков. Сколько лент нужно?');
@@ -87,15 +87,15 @@ function task(plan, tier, slot, variant) {
     const amount = (n + 3) * portion;
     const total = slot === 4;
     model = { kind: 'capacity', task: total ? 'total' : 'servings', amounts: total ? [amount, portion * 2] : [amount],
-      capacities: total ? [amount + portion, portion * 4] : [amount + portion], portion, unit,
+      capacities: total ? [amount + portion, portion * 4] : [amount + portion], portion, unit, ...(!total && { portionContainer: 'bowl' }),
       label: T(`Fresh water for the cats: ${total ? `${amount}, ${portion * 2}` : amount} ml.`, `Svaigs ūdens kaķiem: ${total ? `${amount}, ${portion * 2}` : amount} ml.`, `Свежая вода для котов: ${total ? `${amount}, ${portion * 2}` : amount} мл.`) };
     answer = total ? amount + portion * 2 : amount / portion;
     question = total ? T(`How much water is packed in both containers, in ${unit}?`, `Cik ūdens ir abos traukos kopā, ${unit}?`, `Сколько воды в обоих сосудах вместе, ${unit === 'l' ? 'л' : 'мл'}?`)
-      : T(`Each water station needs ${portion} ${unit}. How many stations can you fill?`, `Katrai ūdens vietai vajag ${portion} ${unit}. Cik vietas vari piepildīt?`, `На каждое место с водой нужно ${portion} ${unit === 'l' ? 'л' : 'мл'}. Сколько мест можно наполнить?`);
+      : T(`Each bowl holds ${portion} ${unit}. How many full bowls can you fill?`, `Katrā bļodā ietilpst ${portion} ${unit}. Cik pilnas bļodas vari pieliet?`, `Каждая миска вмещает ${portion} ${unit === 'l' ? 'л' : 'мл'}. Сколько полных мисок можно наполнить?`);
     hint = total ? T('Add the amounts of water, not the container capacities.', 'Saskaiti ūdens daudzumus, nevis trauku ietilpības.', 'Сложи количество воды, а не вместимость сосудов.')
       : T('Count equal portions until the water is used up.', 'Skaiti vienādas porcijas, līdz ūdens izlietots.', 'Отсчитывай равные порции, пока вода не закончится.');
     const work = total ? `${amount} + ${portion * 2} = ${answer}` : `${amount} ÷ ${portion} = ${answer}`;
-    explanation = T(`${work}${total ? ` ${unit} of water` : ' water stations'}.`, `${work}${total ? ` ${unit} ūdens` : ' ūdens vietas'}.`, `${work}${total ? ` ${unit === 'l' ? 'л' : 'мл'} воды` : ' мест с водой'}.`);
+    explanation = T(`${work}${total ? ` ${unit} of water` : ' full bowls'}.`, `${work}${total ? ` ${unit} ūdens` : ' pilnas bļodas'}.`, `${work}${total ? ` ${unit === 'l' ? 'л' : 'мл'} воды` : ' полных мисок'}.`);
   }
   return { model, question: intro(plan, question), answer, hint, explanation, options };
 }

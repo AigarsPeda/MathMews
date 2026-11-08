@@ -1,3 +1,4 @@
+import { useChoiceLayout } from '@/components/puzzle/useChoiceLayout';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { ChoiceButton } from "@/components/puzzle/ChoiceButton";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
@@ -26,6 +27,8 @@ export function FixMistakeTask({
   const { t } = useTranslation();
   const { wrongWork, choices } = puzzle.payload;
 
+  const choiceLayout = useChoiceLayout(choices);
+
   return (
     <View style={styles.wrap}>
       <View style={styles.wrongCard}>
@@ -37,7 +40,7 @@ export function FixMistakeTask({
         ))}
       </View>
 
-      <View style={styles.choices}>
+      <View onLayout={choiceLayout.onLayout} style={choiceLayout.container}>
         {choices.map((choice, index) => {
           let result: "correct" | "wrong" | null = null;
           if (answered || incorrectAttempt) {
@@ -52,6 +55,7 @@ export function FixMistakeTask({
             <ChoiceButton
               key={`${puzzle.id}-${choice}`}
               label={choice}
+              style={choiceLayout.item}
               selected={selectedIndex === index}
               disabled={answered}
               result={result}
@@ -66,7 +70,7 @@ export function FixMistakeTask({
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: moderateScale(16),
+    gap: moderateScale(8),
   },
   wrongCard: {
     backgroundColor: "rgba(255, 159, 67, 0.1)",

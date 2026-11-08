@@ -24,6 +24,8 @@ const renderer = Reconciler({
 
 async function harness() {
   const cache = new Map(), stored = new Map(), timers = new Map();
+  let now = Date.now(), appStateListener;
+  class ClockDate extends Date { static now() { return now; } }
   let writes = 0, cloud, server, value, actions, stateRenders = 0, actionRenders = 0;
   let auth = { isAuthReady: true, userId: 'a' };
   const walletAPI = { spend: async () => 'purchased', refresh: async () => {}, isReady: true };
@@ -36,7 +38,9 @@ async function harness() {
   };
   const mocks = {
     react: React, 'react/jsx-runtime': await import('react/jsx-runtime'),
-    'react-native': { Platform: { OS: 'ios' }, AppState: { currentState: 'active', addEventListener: () => ({ remove() {} }) },
+    'react-native': { Platform: { OS: 'ios' }, AppState: { currentState: 'active', addEventListener: (_event, listener) => {
+      appStateListener = listener; return { remove() { appStateListener = undefined; } };
+    } },
       Dimensions: { get: () => ({ width: 390, height: 844 }) }, PixelRatio: { roundToNearestPixel: n => n } },
     '@react-native-async-storage/async-storage': storage,
     '@/contexts/AuthProvider': { useAuth: () => auth },
@@ -61,7 +65,7 @@ async function harness() {
     vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
       module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true,
     } }).outputText, { module, exports: module.exports, require: child => load(child, path.dirname(file)),
-      Date, Math, Map, Set, Promise, console, __DEV__: false, process: { env: { EXPO_PUBLIC_APP_ENVIRONMENT: 'sandbox' } },
+      Date: ClockDate, Math, Map, Set, Promise, console, __DEV__: false, process: { env: { EXPO_PUBLIC_APP_ENVIRONMENT: 'sandbox' } },
       setTimeout: (fn, delay) => { timers.set(delay, fn); return delay; }, clearTimeout: id => timers.delete(id),
       setInterval: (fn, delay) => { timers.set(delay, fn); return delay; }, clearInterval: id => timers.delete(id),
     });
@@ -82,11 +86,38 @@ async function harness() {
     get value() { return value; }, get actions() { return actions; }, get save() { return cloud.getSave(); },
     get counts() { return { stateRenders, actionRenders, writes }; },
     async update(fn) { await act(async () => { fn(); }); if (errors.length) throw errors[0]; },
+    async tickAfter(ms, resume = false) {
+      now += ms;
+      await act(async () => { if (resume) appStateListener('active'); else timers.get(60_000)(); });
+      if (errors.length) throw errors[0];
+    },
     setSave(next) { cloud.setSave(next); }, setAuthority(next) { server.authorityRef.current = next; },
     async switchAccount(userId) { auth = { ...auth, userId }; await render(); },
     async close() { await act(async () => { renderer.updateContainer(null, root, null, null); }); },
   };
 }
+
+test('care stats decay during idle ticks and catch up once on foreground resume', async () => {
+  const h = await harness();
+  try {
+    await h.update(() => h.actions.setPet(pet => ({ ...pet, stats: { ...pet.stats, hunger: 100, happiness: 100 } })));
+    const level = h.save.pet.stats.level;
+    await h.tickAfter(60_000);
+    assert.ok(Math.abs(h.value.pet.stats.hunger - (100 - 5 / 60)) < 1e-9);
+    assert.ok(Math.abs(h.value.pet.stats.happiness - (100 - 1 / 60)) < 1e-9);
+    await h.update(() => h.actions.recordInteraction());
+    await h.tickAfter(59 * 60_000);
+    assert.ok(Math.abs(h.value.pet.stats.hunger - 95) < 1e-9);
+    assert.ok(Math.abs(h.value.pet.stats.happiness - 99) < 1e-9, 'Ordinary app taps cannot reset care decay');
+    await h.tickAfter(23 * 3_600_000, true);
+    assert.equal(h.value.pet.stats.hunger, 0);
+    assert.ok(Math.abs(h.value.pet.stats.happiness - 34) < 1e-9, 'Returning from the background applies all elapsed real time');
+    const stats = h.value.pet.stats;
+    await h.tickAfter(0, true);
+    assert.equal(h.value.pet.stats, stats, 'Repeated active events cannot apply the absence twice');
+    assert.equal(h.value.pet.stats.level, level);
+  } finally { await h.close(); }
+});
 
 test('no-op game actions retain the save and do not render or persist', async () => {
   const h = await harness();

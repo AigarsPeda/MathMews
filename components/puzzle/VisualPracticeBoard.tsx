@@ -85,7 +85,7 @@ export function VisualPracticeBoard({ prompt, tokens, result, compact = false, b
   const [width, setWidth] = useState(0);
   const ratio = width / PRACTICE_BOARD_WIDTH;
   return (
-    <View style={styles.stage}>
+    <View style={[styles.stage, compact && styles.compactStage]}>
       {prompt ? <Text style={styles.prompt}>{prompt}</Text> : null}
       <View testID="practice-board" style={[styles.board, { aspectRatio: PRACTICE_BOARD_WIDTH / boardHeight }]} onLayout={event => setWidth(event.nativeEvent.layout.width)}>
         {width > 0 ? tokens.map((token, i) => (
@@ -106,6 +106,7 @@ export function VisualPracticeBoard({ prompt, tokens, result, compact = false, b
 
 const styles = StyleSheet.create({
   stage: { width: "100%", backgroundColor: GameColors.background, borderRadius: moderateScale(16), padding: moderateScale(12) },
+  compactStage: { padding: moderateScale(6) },
   prompt: { fontSize: moderateScale(18), fontWeight: "800", color: GameColors.text, textAlign: "center", minHeight: moderateScale(28) },
   board: { width: "100%", overflow: "hidden" },
   token: { position: "absolute", left: 0, top: 0, alignItems: "center", justifyContent: "center" },

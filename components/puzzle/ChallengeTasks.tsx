@@ -1,3 +1,4 @@
+import { PuzzleObjectImage } from '@/components/puzzle/PuzzleObjectImage';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleColors as GameColors } from "@/constants/puzzle-theme";
 import type { BudgetPlanPuzzle, OptionalChallengePuzzle, RepairPatternPuzzle, RouteGridPuzzle, SortBucketsPuzzle } from "@/types/puzzle";
@@ -7,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { PuzzleDragBoard, PuzzleDragTile, PuzzleDropArea } from "@/components/puzzle/PuzzleDragBoard";
 import { movePatternTile } from "@/utils/puzzle-drag";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 
 type Controls = { answered: boolean; onAnswerChange: (answer: ChallengeAnswer | null) => void; onDragStateChange: (dragging: boolean) => void };
 
@@ -96,7 +97,7 @@ function RepairPatternTask({ puzzle, answered, onAnswerChange, onDragStateChange
 
 function RouteGridTask({ puzzle, answered, onAnswerChange }: Controls & { puzzle: RouteGridPuzzle }) {
   const { t } = useTranslation();
-  const { cells, columns, moves, start, target } = puzzle.payload;
+  const { cells, columns, moves, start } = puzzle.payload;
   const [path, setPath] = useState<number[]>([0]);
   const value = getRouteValue(puzzle, path)!;
   const current = path.at(-1)!;
@@ -104,7 +105,6 @@ function RouteGridTask({ puzzle, answered, onAnswerChange }: Controls & { puzzle
   useEffect(() => onAnswerChange(answer), [answer, onAnswerChange]);
   return <View style={styles.wrap}>
     <Text style={styles.instructions}>{t("challenges.routeInstructions")}</Text>
-    <Text style={styles.goal}>{t("challenges.routeGoal", { target, moves })}</Text>
     <Text style={styles.status} accessibilityLiveRegion="polite">{t("challenges.routeStatus", { value, count: path.length - 1, total: moves })}</Text>
     {Array.from({ length: Math.ceil(cells.length / columns) }, (_, row) => <View key={row} style={styles.gridRow}>{cells.slice(row * columns, (row + 1) * columns).map((step, col) => {
       const index = row * columns + col;
@@ -126,19 +126,19 @@ function RouteGridTask({ puzzle, answered, onAnswerChange }: Controls & { puzzle
 
 function BudgetPlanTask({ puzzle, answered, onAnswerChange }: Controls & { puzzle: BudgetPlanPuzzle }) {
   const { t } = useTranslation();
-  const { budget, remaining, pickCount, items } = puzzle.payload;
+  const { fontScale } = useWindowDimensions();
+  const { pickCount, items } = puzzle.payload;
   const [selected, setSelected] = useState<number[]>([]);
   const answer = useMemo<ChallengeAnswer | null>(() => selected.length === pickCount ? { kind: "budget", indices: selected } : null, [selected, pickCount]);
   useEffect(() => onAnswerChange(answer), [answer, onAnswerChange]);
   return <View style={styles.wrap}>
-    <Text style={styles.goal}>{t("challenges.budgetGoal", { budget, remaining, count: pickCount })}</Text>
     <Text style={styles.instructions}>{t("challenges.budgetInstructions")}</Text>
     <Text style={styles.status} accessibilityLiveRegion="polite">{t("challenges.itemsSelected", { count: selected.length, total: pickCount })}</Text>
-    {items.map((item, i) => <Pressable key={i} disabled={answered} onPress={() => setSelected(current => current.includes(i) ? current.filter(n => n !== i) : [...current, i])}
-      accessibilityRole="checkbox" accessibilityState={{ checked: selected.includes(i), disabled: answered }} style={[styles.shopItem, selected.includes(i) && styles.selected]}>
-      <View style={styles.itemHeading}><Text style={styles.itemTitle}>{item.label}</Text><Text style={styles.price}>{t("challenges.price", { price: item.price })}</Text></View>
+    <View style={styles.shopGrid}>{items.map((item, i) => <Pressable key={i} disabled={answered} onPress={() => setSelected(current => current.includes(i) ? current.filter(n => n !== i) : [...current, i])}
+      accessibilityRole="checkbox" accessibilityState={{ checked: selected.includes(i), disabled: answered }} style={[styles.shopItem, fontScale > 1.2 && styles.wideShopItem, selected.includes(i) && styles.selected]}>
+      <View style={styles.itemHeading}>{item.object ? <View style={{ width: 48, height: 48 }}><PuzzleObjectImage object={item.object} /></View> : null}<Text style={styles.itemTitle}>{item.label}</Text><Text style={styles.price}>{t("challenges.priceShort", { price: item.price })}</Text></View>
       <Text style={styles.instructions}>{item.discountPercent ? t("challenges.discount", { percent: item.discountPercent }) : t("challenges.noDiscount")}</Text>
-    </Pressable>)}
+    </Pressable>)}</View>
   </View>;
 }
 
@@ -152,7 +152,7 @@ export function ChallengeTask({ puzzle, ...controls }: Controls & { puzzle: Opti
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: moderateScale(16) },
+  wrap: { gap: moderateScale(8) },
   instructions: { fontSize: moderateScale(15), lineHeight: moderateScale(22), color: GameColors.text },
   status: { fontSize: moderateScale(16), fontWeight: "700", color: "#5D408C", textAlign: "center" },
   goal: { fontSize: moderateScale(20), fontWeight: "800", color: GameColors.text, textAlign: "center" },
@@ -169,11 +169,13 @@ const styles = StyleSheet.create({
   bucketTitle: { fontSize: moderateScale(17), fontWeight: "800", color: "#5D408C", textAlign: "center" },
   groupItems: { fontSize: moderateScale(17), lineHeight: moderateScale(26), color: GameColors.text, textAlign: "center" },
   gridRow: { flexDirection: "row", gap: moderateScale(10) },
-  gridCell: { flex: 1, minHeight: moderateScale(80), padding: moderateScale(8), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, justifyContent: "center", gap: moderateScale(4) },
+  gridCell: { flex: 1, minHeight: moderateScale(64), padding: moderateScale(8), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, justifyContent: "center", gap: moderateScale(4) },
   gridLabel: { fontSize: moderateScale(12), color: GameColors.text, textAlign: "center" }, unavailable: { backgroundColor: GameColors.background },
   action: { minHeight: moderateScale(50), padding: moderateScale(12), borderRadius: moderateScale(14), backgroundColor: "#5D408C", alignItems: "center", justifyContent: "center" },
   actionText: { fontSize: moderateScale(17), fontWeight: "800", color: GameColors.card, textAlign: "center" }, disabled: { opacity: 0.5 },
-  shopItem: { minHeight: moderateScale(70), padding: moderateScale(14), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, gap: moderateScale(6) },
-  itemHeading: { flexDirection: "row", gap: moderateScale(12), alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" },
-  itemTitle: { flexShrink: 1, fontSize: moderateScale(18), fontWeight: "800", color: GameColors.text }, price: { fontSize: moderateScale(16), fontWeight: "700", color: GameColors.coinText },
+  shopGrid: { flexDirection: "row", flexWrap: "wrap", gap: moderateScale(8) },
+  wideShopItem: { width: "100%" },
+  shopItem: { width: "48%", flexGrow: 1, minHeight: moderateScale(70), padding: moderateScale(8), borderRadius: moderateScale(14), borderWidth: 2, borderColor: GameColors.cardBorder, backgroundColor: GameColors.card, gap: moderateScale(6) },
+  itemHeading: { gap: moderateScale(4), alignItems: "center" },
+  itemTitle: { textAlign: "center", flexShrink: 1, fontSize: moderateScale(18), fontWeight: "800", color: GameColors.text }, price: { fontSize: moderateScale(16), fontWeight: "700", color: GameColors.coinText },
 });

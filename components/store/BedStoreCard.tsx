@@ -1,3 +1,4 @@
+import { StoreCardLayout } from '@/constants/store-card-layout';
 import { StorePromotion } from "@/components/store/StorePromotion";
 import { IconText as Text } from "@/components/ui/IconText";
 import { getCatBedSource } from "@/constants/cat-beds";
@@ -135,10 +136,10 @@ const styles = StyleSheet.create({
   card: {
     width: "48%",
     backgroundColor: GameColors.card,
-    borderRadius: moderateScale(16),
-    borderWidth: 2,
+    borderRadius: StoreCardLayout.radius,
+    borderWidth: StoreCardLayout.borderWidth,
     borderColor: GameColors.cardBorder,
-    padding: moderateScale(10),
+    padding: StoreCardLayout.padding,
     gap: moderateScale(8),
   },
   cardEquipped: {
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
   },
   previewWrap: {
     aspectRatio: 1,
-    borderRadius: moderateScale(12),
+    borderRadius: StoreCardLayout.innerRadius,
     overflow: "hidden",
     backgroundColor: "#E8D8C8",
     position: "relative",
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
   },
   actionBtn: {
     minHeight: moderateScale(48),
-    borderRadius: moderateScale(12),
+    borderRadius: StoreCardLayout.innerRadius,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: moderateScale(8),

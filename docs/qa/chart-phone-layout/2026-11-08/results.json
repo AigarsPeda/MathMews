@@ -1,0 +1,22 @@
+{
+  "device": "iPhone 15 iOS simulator, 393 \u00d7 852 logical points",
+  "screen": "Production PlaySession with the first easy picnic chart and disposable local progress",
+  "defaultText": {
+    "en": "Question, all three answers and picture help visible; a native swipe leaves the question position unchanged; selecting 11 enables Check answer",
+    "lv": "Full screen fits in reviewed capture; answer and picture-help controls reachable",
+    "ru": "Full screen fits in reviewed capture; answer and picture-help controls reachable"
+  },
+  "largeText": "accessibility-large: enlarged question scrolls; help and all answer choices remain reachable; Check answer remains in the fixed dock. Simulator restored to large afterward.",
+  "chart": "Plot scales with viewport height while preserving the common zero baseline and value ratios. Dense tick scales and larger text retain at least 20 \u00d7 fontScale points between ticks.",
+  "typography": "Bold 16/22 subject, bold tabular 14/20 scale, heavy 17/24 group letters",
+  "art": "Existing Blender companion head rendered with a front-facing orthographic camera; no new character model",
+  "checks": {
+    "typecheck": "passed",
+    "targetedLint": "passed",
+    "puzzleExperience": "passed across 3390 authored puzzles",
+    "icons": "83 transparent unclipped icons, 2.94 MiB",
+    "blenderOrientation": "53 front-facing symbols, passed",
+    "native": "Default-fit assertion, answer selection, two translated captures and accessibility-large reachability passed"
+  },
+  "limits": "Android and physical-device rendering not reviewed"
+}

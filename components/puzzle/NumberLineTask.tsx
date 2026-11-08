@@ -75,16 +75,16 @@ const styles = StyleSheet.create({
     textAlign: "center", lineHeight: moderateScale(26),
   },
   lineCard: {
-    backgroundColor: GameColors.card, borderRadius: moderateScale(18),
-    borderWidth: 2, borderColor: GameColors.cardBorder, padding: moderateScale(12),
+    gap: moderateScale(12),
   },
   controls: { flexDirection: "row", gap: moderateScale(12) },
   stepButton: {
     flex: 1, minHeight: moderateScale(52), padding: moderateScale(10),
-    borderRadius: moderateScale(12), backgroundColor: GameColors.background,
+    borderRadius: moderateScale(12), backgroundColor: GameColors.selectedSurface,
+    borderWidth: 2, borderBottomWidth: 4, borderColor: GameColors.primary,
     alignItems: "center", justifyContent: "center",
   },
-  stepButtonText: { fontSize: moderateScale(17), fontWeight: "800", color: GameColors.text },
+  stepButtonText: { fontSize: moderateScale(17), fontWeight: "800", color: GameColors.primaryDark },
   disabled: { opacity: 0.35 },
   hint: { fontSize: moderateScale(14), lineHeight: moderateScale(20), color: GameColors.textMuted, textAlign: "center" },
 });

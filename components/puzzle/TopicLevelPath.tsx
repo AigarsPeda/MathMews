@@ -1,3 +1,4 @@
+import { insetRadius } from '@/utils/border-radius';
 import { PuzzleText as Text } from "@/components/puzzle/PuzzleText";
 import { PuzzleGradient } from "@/components/puzzle/PuzzleGradient";
 import { getPathProgress, isPathAvailable } from "@/constants/puzzle-path";
@@ -123,13 +124,17 @@ function CurrentLevelHalo({ point, scrollOffset, viewportHeight, active, reduceM
     <Animated.View style={[styles.ring, styles.pulseRing, pulse]} />
   </View>;
 }
+const TILE_RADIUS = 25;
+const FACE_BORDER = 1;
+const FACE_INSET = 7;
+
 const styles = StyleSheet.create({
   container: { width: "100%", maxWidth: 460, alignSelf: "center" },
-  node: { position: "absolute", borderRadius: 25, paddingBottom: 5,
+  node: { position: "absolute", borderRadius: TILE_RADIUS, paddingBottom: 5,
     shadowColor: "#665C50", shadowOpacity: 0.17, shadowRadius: 9, shadowOffset: { width: 0, height: 8 }, elevation: 4 },
-  face: { flex: 1, borderRadius: 25, borderWidth: 1, overflow: "hidden", alignItems: "center", justifyContent: "center" },
-  inset: { position: "absolute", top: 7, right: 7, bottom: 7, left: 7, borderRadius: 19, borderWidth: 1 },
-  ring: { position: "absolute", top: -8, right: -8, bottom: -8, left: -8, borderRadius: 33, borderWidth: 6, borderColor: TopicPathColors.halo },
+  face: { flex: 1, borderRadius: TILE_RADIUS, borderWidth: FACE_BORDER, overflow: "hidden", alignItems: "center", justifyContent: "center" },
+  inset: { position: "absolute", top: FACE_INSET, right: FACE_INSET, bottom: FACE_INSET, left: FACE_INSET, borderRadius: insetRadius(TILE_RADIUS, FACE_BORDER + FACE_INSET), borderWidth: 1 },
+  ring: { position: "absolute", top: -8, right: -8, bottom: -8, left: -8, borderRadius: TILE_RADIUS + 8, borderWidth: 6, borderColor: TopicPathColors.halo },
   pulseRing: { borderWidth: 3, borderColor: TopicPathColors.current.face },
   startTag: { position: "absolute", minHeight: 28, width: 136, flexDirection: "row", gap: 5,
     justifyContent: "center", alignItems: "center", paddingHorizontal: 8, paddingVertical: 3,

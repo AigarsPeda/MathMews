@@ -74,6 +74,8 @@ export function OperationPathTask({
   return (
     <View style={styles.wrap}>
       <View style={styles.goalRow}>
+        <Text style={styles.startLabel}>{t("puzzleTypes.operationPathStart")}</Text>
+        <NumberBubble value={start} />
         <Text style={styles.goalLabel}>{t("puzzleTypes.goal")}</Text>
         <NumberBubble value={target} large />
       </View>
@@ -83,10 +85,7 @@ export function OperationPathTask({
       ) : null}
 
       <View style={styles.pathCard}>
-        <View style={styles.startRow}>
-          <Text style={styles.startLabel}>{t("puzzleTypes.operationPathStart")}</Text>
-          <NumberBubble value={start} />
-        </View>
+
 
         {steps.map((step, index) => {
           const selected = selectedOperators[index] ?? null;
@@ -173,13 +172,13 @@ export function OperationPathTask({
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: moderateScale(14),
+    gap: moderateScale(8),
   },
   goalRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: moderateScale(10),
+    gap: moderateScale(6),
   },
   goalLabel: {
     fontSize: moderateScale(16),
@@ -191,14 +190,14 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(18),
     borderWidth: 2,
     borderColor: GameColors.cardBorder,
-    padding: moderateScale(14),
-    gap: moderateScale(14),
+    padding: moderateScale(8),
+    gap: moderateScale(8),
   },
   startRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: moderateScale(10),
+    gap: moderateScale(6),
     paddingBottom: moderateScale(4),
     borderBottomWidth: 1,
     borderBottomColor: GameColors.cardBorder,
@@ -209,7 +208,7 @@ const styles = StyleSheet.create({
     color: GameColors.textMuted,
   },
   stepBlock: {
-    gap: moderateScale(10),
+    gap: moderateScale(6),
   },
   stepLabel: {
     fontSize: moderateScale(13),
@@ -235,7 +234,7 @@ const styles = StyleSheet.create({
     borderColor: GameColors.cardBorder,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: moderateScale(8),
+    paddingHorizontal: moderateScale(4),
   },
   numberBubbleLarge: {
     minWidth: moderateScale(52),

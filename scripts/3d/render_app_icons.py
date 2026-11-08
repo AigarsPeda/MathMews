@@ -353,17 +353,108 @@ def scale():
 
 
 def apple():
-    art.sphere('Apple left',(-.19,0,.69),(.45,.39,.53),'coral')
-    art.sphere('Apple right',(.19,0,.69),(.45,.39,.53),'coral')
-    stroke('Apple stem',[(0,1.13),(.06,1.47)],'wood',.057)
-    leaf=art.sphere('Apple leaf',(.28,0,1.38),(.27,.075,.11),'sage')
-    leaf.rotation_euler.y=-.45
+    skin = art.material('Apple red skin', 'D93643', roughness=.29)
+    skin.node_tree.nodes['Principled BSDF'].inputs['Coat Weight'].default_value = .22
+    # One continuous surface, broad shoulders and a recessed stem socket.
+    segments, rings = 96, 48
+    vertices, faces = [], []
+    for j in range(rings+1):
+        t = math.pi*j/rings
+        radius = .65*math.sin(t)*(1+.12*math.cos(t))
+        z = .78+.60*math.cos(t)-.17*math.exp(-(t/.27)**2)+.065*math.exp(-((math.pi-t)/.25)**2)
+        for i in range(segments):
+            a = math.tau*i/segments
+            lobe = math.cos(5*a+.35)
+            r = radius*(1+.035*lobe*abs(math.cos(t))**3)
+            vertices.append((r*math.cos(a), r*math.sin(a)*.91,
+                             z+.025*lobe*math.sin(t)*abs(math.cos(t))**4))
+    for j in range(rings):
+        for i in range(segments):
+            a, b = j*segments+i, j*segments+(i+1)%segments
+            faces.append((a, a+segments, b+segments, b))
+    mesh = bpy.data.meshes.new('Continuous lobed apple surface')
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new('Red apple body with stem dimple', mesh)
+    bpy.context.collection.objects.link(obj)
+    art.finish(obj, obj.name, skin)
+    for face in mesh.polygons:
+        face.use_smooth = True
+    stem = art.material('Apple woody stem', '74452B', roughness=.8)
+    art.curve('Curved apple stem', [(0,0,1.20), (.015,0,1.38), (.08,.015,1.55)], .043, stem)
+    art.sphere('Stem cut end', (.08,.015,1.55), (.043,.041,.018), 'B68B56')
+    # A pointed leaf with a folded midrib, rather than an oval bead.
+    vertices, faces = [], []
+    for j in range(17):
+        t = j/16
+        x, z = .04+.53*t, 1.43+.17*math.sin(t*math.pi*.78)
+        width = .145*math.sin(math.pi*t)**.8
+        vertices.extend([(x,-width,z-.04*math.sin(math.pi*t)),
+                         (x,-.012,z+.035*math.sin(math.pi*t)),
+                         (x,width*.70,z-.055*math.sin(math.pi*t))])
+    for j in range(16):
+        a = j*3
+        faces.extend([(a,a+3,a+4,a+1),(a+1,a+4,a+5,a+2)])
+    mesh = bpy.data.meshes.new('Pointed folded leaf surface')
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    leaf = bpy.data.objects.new('Fresh green apple leaf', mesh)
+    bpy.context.collection.objects.link(leaf)
+    art.finish(leaf, leaf.name, '4B923E')
+    for face in mesh.polygons:
+        face.use_smooth = True
+    solid = leaf.modifiers.new('Leaf thickness', 'SOLIDIFY')
+    solid.thickness = .012
+    art.curve('Leaf midrib', [(.07,-.014,1.45),(.27,-.014,1.58),(.53,-.014,1.56)], .009, '93BD57')
 
 
 def cookie():
-    art.cylinder('Golden cookie',(0,0,.8),.67,.19,'gold',rotation=(math.pi/2,0,0))
-    for x,z in [(-.32,.94),(.20,1.20),(.36,.65),(-.21,.47),(.02,.8)]:
-        art.sphere('Chocolate chip',(x,-.12,z),(.09,.034,.08),'brown')
+    dough = art.material('Baked cookie dough', 'DDA257', roughness=.86)
+    nodes, links = dough.node_tree.nodes, dough.node_tree.links
+    noise = nodes.new('ShaderNodeTexNoise')
+    noise.inputs['Scale'].default_value = 34
+    noise.inputs['Detail'].default_value = 2
+    bump = nodes.new('ShaderNodeBump')
+    bump.inputs['Strength'].default_value = .19
+    bump.inputs['Distance'].default_value = .022
+    links.new(noise.outputs['Fac'], bump.inputs['Height'])
+    links.new(bump.outputs['Normal'], nodes.get('Principled BSDF').inputs['Normal'])
+    edge = art.material('Toasted cookie edge', 'B87837', roughness=.88)
+    # Rounded biscuit cross-section with an uneven baked perimeter and domed face.
+    profile = [(0,-.165),(.23,-.162),(.46,-.145),(.61,-.112),(.675,-.055),
+               (.69,.018),(.665,.092),(.60,.125),(.36,.14),(0,.14)]
+    segments = 96
+    vertices, faces = [], []
+    for radius, depth in profile:
+        for i in range(segments):
+            a = math.tau*i/segments
+            r = radius*(1+.015*math.sin(7*a)+.010*math.sin(11*a+.7)+.007*math.cos(17*a))
+            vertices.append((r*math.cos(a), depth, .8+r*math.sin(a)))
+    for j in range(len(profile)-1):
+        for i in range(segments):
+            a, b = j*segments+i, j*segments+(i+1)%segments
+            faces.append((a,a+segments,b+segments,b))
+    mesh = bpy.data.meshes.new('Domed baked biscuit surface')
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new('Golden baked chocolate chunk cookie', mesh)
+    bpy.context.collection.objects.link(obj)
+    art.finish(obj, obj.name, dough)
+    mesh.materials.append(edge)
+    for face in mesh.polygons:
+        face.use_smooth = True
+        face.material_index = 1 if 4*segments <= face.index < 7*segments else 0
+    chocolate = art.material('Dark chocolate chunks', '49271C', roughness=.58)
+    for i, (x,z,size,angle) in enumerate([
+        (-.30,1.16,.16,-.28),(.09,1.29,.14,.34),(.37,1.02,.17,-.45),
+        (-.06,.91,.18,.20),(-.43,.76,.13,.47),(.24,.64,.17,-.14),(-.16,.40,.15,.38),
+    ]):
+        chunk = art.box('Embedded chocolate chunk '+str(i+1), (x,-.16,z),
+                        (size,.075,size*.80), chocolate, .024)
+        chunk.rotation_euler.y = angle
+    for x,z,r in [(-.12,1.22,.022),(.27,1.15,.018),(-.33,.95,.024),(.10,.48,.022),
+                  (.43,.78,.02),(-.30,.55,.016),(.11,1.06,.017),(.02,.65,.022)]:
+        art.sphere('Small toasted crumb', (x,-.156,z), (r,.012,r*.70), edge)
 
 
 def cupcake():

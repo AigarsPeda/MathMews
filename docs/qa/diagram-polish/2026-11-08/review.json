@@ -1,0 +1,95 @@
+{
+  "date": "2026-11-08",
+  "references": [
+    "https://blog.duolingo.com/shape-language-duolingos-art-style/",
+    "https://blog.duolingo.com/developing-math/",
+    "https://blog.duolingo.com/core-tabs-redesign/"
+  ],
+  "principles": [
+    "Recognizable silhouettes and only useful detail",
+    "Consistent reusable materials",
+    "Exact mathematical geometry and readable scales",
+    "Use Math Mews palette and original artwork"
+  ],
+  "findings": [
+    {
+      "family": "Capacity",
+      "issue": "Bare vessel outline, labels inside water, unrelated berry liquid line",
+      "resolution": "Glass jug silhouette, handle, teal water, external scale; exact 200-point measuring range"
+    },
+    {
+      "family": "Analog and digital clocks",
+      "issue": "Unfinished dial and unframed digital values",
+      "resolution": "Mint rim, white dial and quiet digital panels"
+    },
+    {
+      "family": "Counting shapes",
+      "issue": "Sparse outlines unlike dimensional icon family",
+      "resolution": "Soft berry fill with exact polygon vertices"
+    },
+    {
+      "family": "Solids",
+      "issue": "Wireframe does not distinguish faces",
+      "resolution": "Three lavender face tones with original dimensions"
+    },
+    {
+      "family": "Spatial grids",
+      "issue": "Sharp isolated cells",
+      "resolution": "Soft frame and rounded tiles"
+    },
+    {
+      "family": "Fraction pies and grids",
+      "issue": "Separate hard-coded gray neutral",
+      "resolution": "Shared diagram neutral, preserving partition areas and touch behavior"
+    },
+    {
+      "family": "Counting and sharing",
+      "issue": "Mint action surface paired with berry action text",
+      "resolution": "Use established Berry action styles"
+    }
+  ],
+  "retained": [
+    {
+      "family": "Bar charts and shopping",
+      "reason": "Use the polished shared bars and original Blender icons from earlier passes"
+    },
+    {
+      "family": "Decimal and area grids, fraction strips",
+      "reason": "Exact equal units and straight boundaries support the learning task; existing Berry selection and labels are consistent"
+    },
+    {
+      "family": "Number lines and bridge diagrams",
+      "reason": "Keep readable tick spacing, known/unknown distinctions and precise positions"
+    },
+    {
+      "family": "Place value, balance and function machines",
+      "reason": "Existing rounded controls, clear numbers and distinct mathematical states already fit the puzzle UI"
+    }
+  ],
+  "reviewEvidence": {
+    "source": "EverydayDiagram, FractionPieChart, FractionGridChart, FractionStripTask, DecimalGridTask, GeometryMeasureTask, NumberLineTrack, BridgeTask, PlaceValueTask, QuantityTaskScene, VisualPracticeBoard, BalanceTask, FunctionMachineTask",
+    "existingCaptures": [
+      "docs/qa/geometry/2026-11-04/review-0.png",
+      "docs/qa/bridge/2026-11-04/review-0.png",
+      "docs/qa/decimal-models/2026-11-01/english.png"
+    ]
+  },
+  "checks": {
+    "typecheck": "passed",
+    "fractionAnimationAndTouch": "passed",
+    "puzzleExperience": "passed",
+    "everydayTopics": "passed",
+    "actionMotion": "passed",
+    "native": {
+      "result": "passed",
+      "device": "iPhone 15 simulator",
+      "test": "NativeDragTests/testEverydayTopics",
+      "languages": [
+        "en",
+        "lv",
+        "ru"
+      ],
+      "screenshots": "Reviewed fresh captures of clock, shapes, grid, capacity read, cuboid and Russian capacity; full captures retained in this directory."
+    }
+  }
+}

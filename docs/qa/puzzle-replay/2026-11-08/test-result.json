@@ -1,0 +1,158 @@
+{
+  "date": "2026-11-08",
+  "fixes": [
+    "Preserve replay state when reopening completed levels, including links without a replay flag.",
+    "Follow the active timed run cursor even when remaining tasks have permanent completion.",
+    "Use settled puzzle answers for completion and unlocks.",
+    "Reopen expired replays at the timer checkpoint."
+  ],
+  "core": {
+    "command": "npm run test:game",
+    "passed": 19,
+    "checks": [
+      "Passed check-world-clock (1.1s).",
+      "Passed check-crash-recovery (0.6s).",
+      "Passed check-game-systems (1.4s).",
+      "Passed check-store-placement-flow (0.6s).",
+      "Passed check-room-editing (0.9s).",
+      "Passed check-room-transition (0.4s).",
+      "Passed check-cat-task-chains (11.0s).",
+      "Passed check-cat-collision-recovery (3.3s).",
+      "Passed check-filament-shared-value (0.3s).",
+      "Passed check-filament-surface-lifetime (1.3s).",
+      "Passed check-curriculum (20.3s).",
+      "Passed check-puzzle-experience (4.3s).",
+      "Passed check-puzzle-replay (6.6s).",
+      "Passed check-puzzle-clarity (1.3s).",
+      "Passed check-puzzle-drag (0.3s).",
+      "Passed check-result-dismissal (0.5s).",
+      "Passed check-answer-feedback (0.3s).",
+      "Passed check-locales (0.8s).",
+      "Passed puzzles/test-catalog (0.3s)."
+    ]
+  },
+  "replay_regressions": {
+    "command": "node --test scripts/check-puzzle-replay.mjs",
+    "passed": 10,
+    "paths": 339,
+    "replay_answer_transitions": 2034,
+    "pace_modes": [
+      "timed",
+      "untimed"
+    ],
+    "covers": [
+      "Full first clear and replay through all ten tasks",
+      "Re-entry and save reload without replay flag",
+      "Next-level navigation and permanent unlocks",
+      "Wrong answers and duplicate submissions",
+      "Timeout while a result sheet is open",
+      "Timeout checkpoint and untimed retry",
+      "Replay reward rates and one-time furnishings",
+      "Resuming another active challenge",
+      "Pending answers cannot grant permanent completion"
+    ]
+  },
+  "provider": {
+    "command": "node --test scripts/backend/test-game-provider.mjs",
+    "passed": 8
+  },
+  "native": {
+    "command": "node scripts/native/check-puzzle-drag.mjs --replay --device <simulator-UDID>",
+    "result_bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-HGsUbx/result.xcresult",
+    "summary": "native-summary.json",
+    "scenarios": [
+      "Full replay and next level",
+      "Reopen timed replay without replay flag",
+      "Timeout and untimed retry"
+    ]
+  },
+  "static_checks": {
+    "typecheck": "passed",
+    "targeted_eslint": "passed",
+    "git_diff_check": "passed"
+  },
+  "cold_restart": {
+    "command": "node scripts/native/check-puzzle-drag.mjs --replay-cold --device <simulator-UDID>",
+    "result": "passed",
+    "native_scenarios": 2,
+    "process_terminations_and_relaunches": 5,
+    "summary": "native-cold-summary.json",
+    "raw_disk_snapshot": "cold-restart-disk-snapshot.json",
+    "result_bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-S5LVDg/result.xcresult",
+    "persistence": "Production GameProvider, save queue, AsyncStorage, and load/normalization code. No replacement in-memory save after relaunch.",
+    "harness_bypass": "Onboarding gate only; test seed is written through the production provider on a disposable simulator.",
+    "verified": [
+      "Restart before the first timed answer",
+      "Restart while a successful answer sheet is open",
+      "Restart between later tasks",
+      "Same run ID, absolute deadline, saved answers and next task after each restart",
+      "Finish the replay and play level 2",
+      "Deadline passes while app process is stopped",
+      "Expiry resets pending progress to the timer checkpoint and costs one life",
+      "A further restart does not charge another life",
+      "Level 2 remains unlocked through every restart and expiry"
+    ],
+    "supporting_checks": {
+      "replay_and_provider_tests": 18,
+      "typecheck": "passed",
+      "targeted_eslint": "passed",
+      "git_diff_check": "passed"
+    }
+  },
+  "android": {
+    "result": "passed",
+    "summary": "android-3d/test-result.json",
+    "build": "android-3d/build.json",
+    "device": "Disposable Android 16 / API 36 / arm64 emulator",
+    "graphics_mode_tested": "Normal 3D",
+    "native_scenarios": 4,
+    "process_terminations_and_relaunches": 5,
+    "forced_garbage_collections": 3,
+    "startup_soak_seconds": 45,
+    "command": "PYTHONPATH=/tmp/brainpet-uiautomator2 python3 -u scripts/native/check-android-puzzle-replay.py --device emulator-5580 --port 8082 --output docs/qa/puzzle-replay/2026-11-08/android-3d",
+    "verified": [
+      "All ten replay tasks advance without returning to the hub; Next level opens the first task in level 2.",
+      "Process restart before an answer, with a success sheet open, and between later tasks restores the same run ID, absolute deadline, saved answers and next task.",
+      "The absolute deadline passes while the process is stopped; expiry resets pending answers to the checkpoint and charges one life.",
+      "Another restart retains the expired status and does not charge a second life.",
+      "Level 2 remains unlocked through replay, all five restarts, expiry and untimed retry.",
+      "Live graphics mode remains 3D after relaunches and task transitions, with no automatic Simple Graphics fallback.",
+      "Home native TextureView stays mounted through three completed forced managed-heap collections and the stability wait.",
+      "No native app crash recorded in the emulator crash buffer."
+    ],
+    "startup_fix": {
+      "description": "Remove FastNative from the Android Filament frame callback. Frame listeners can block in the native driver; normal JNI lets ART suspend the renderer for garbage collection.",
+      "patch": "scripts/native/patch-filament-android-gc.mjs",
+      "applied_by": "npm postinstall",
+      "diagnosis": "The historical crash binary build ID matches the local native library; address 0x71e118 resolves to utils::Condition::wait_until. The Java frame callback used FastNative, which forbids blocking calls that prevent GC suspension.",
+      "android_guidance": "https://developer.android.com/ndk/guides/jni-tips#faster_native_calls_with_fastnative_and_criticalnative",
+      "historical_crash": "android/remaining-3d-startup-crash.log",
+      "gc_evidence": "android-3d/forced-gc.log",
+      "compiled_and_installed": "Compiled class has no FastNative annotation; installed APK SHA-256 matches the verified new build."
+    },
+    "native_surface_fix": {
+      "description": "Retain the Android native Surface through Filament swapchain driver creation, queued destruction and flush.",
+      "patch": "scripts/native/patch-filament-surface-lifetime.mjs",
+      "regression": "scripts/check-filament-surface-lifetime.mjs",
+      "build": "Android arm64 debug APK built and installed successfully.",
+      "result": "Deterministic queued-driver regression passed; surface mutex crash not observed after rebuild."
+    },
+    "persistence": "Production GameProvider, AsyncStorage SQLite save, native Android views and result sheets. No replacement memory save after restart.",
+    "supporting_checks": {
+      "core_checks": 19,
+      "provider_tests": 8,
+      "typecheck": "passed",
+      "targeted_eslint": "passed",
+      "python_syntax": "passed",
+      "git_diff_check": "passed"
+    },
+    "limitations": [
+      "Android emulator tested; no physical Android device tested."
+    ]
+  },
+  "android_simple_graphics": {
+    "result": "passed",
+    "summary": "android/test-result.json",
+    "note": "Historical run before the Android frame JNI fix; the former 3D limitation is resolved by the normal 3D run."
+  }
+}

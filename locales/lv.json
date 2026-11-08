@@ -1155,7 +1155,16 @@
     "cookie": "cepumi",
     "parcel": "sūtījumi",
     "planting_tile": "stādvietas",
-    "carriage": "vagoni"
+    "carriage": "vagoni",
+    "book": "grāmatas",
+    "shell": "gliemežvāki",
+    "leaf": "lapas",
+    "chair": "krēsli",
+    "guest": "viesi",
+    "plant": "augi",
+    "coin": "monētas",
+    "ball": "bumbas",
+    "box": "kastes"
   },
   "puzzleTypes": {
     "fractionMatchTryAgain": "Šis attēls neatbilst daļai. Mēģini vēlreiz; jau savienotie pāri ir saglabāti.",
@@ -1599,7 +1608,7 @@
     "spareTiles": "Rezerves kartītes. Dažas paliks neizmantotas.",
     "numberTile": "Skaitlis {{number}}",
     "checkPattern": "Pārbaudīt visu virkni",
-    "routeInstructions": "Ej augšup, lejup, pa kreisi vai pa labi. Izpildi lauciņa darbību. Neatkārto lauciņus. Izmanto veselus skaitļus no nulles uz augšu.",
+    "routeInstructions": "Ej ↑ ↓ ← →. Izpildi katra lauciņa darbību vienu reizi. Rezultātiem jābūt veseliem un vismaz 0.",
     "routeGoal": "Sasniedz {{target}} pie izejas tieši {{moves}} soļos",
     "routeStatus": "Skaitlis {{value}} · {{count}} no {{total}} soļiem",
     "startValue": "Sākums {{value}}",
@@ -1614,7 +1623,7 @@
     "undoStep": "Atsaukt pēdējo soli",
     "checkRoute": "Pārbaudīt ceļu",
     "budgetGoal": "Budžets {{budget}} · Izvēlies {{count}} priekšmetus · Atstāj {{remaining}}",
-    "budgetInstructions": "Šīs ir stāsta cenas. Izvēlies krājumus un pārbaudi plānu. Tavas spēles monētas paliek makā.",
+    "budgetInstructions": "Izmanto izdomātas monētas. Spēles maks nemainās.",
     "itemsSelected": "Izvēlēti {{count}} no {{total}} priekšmetiem",
     "price": "{{price}} izdomātas monētas",
     "discount": "{{percent}}% atlaide",
@@ -1624,7 +1633,8 @@
     "returnToBank": "Atgriezt pie rezerves kartītēm",
     "returnHere": "Atvelc kartīti šeit, lai izņemtu to no groza.",
     "placeInGap": "Pārvietot uz {{position}}. vietu",
-    "dragA11yHint": "Velc uz mērķi. Ar ekrāna lasītāju izmanto pieejamās darbības, lai izvēlētos kartītes vietu."
+    "dragA11yHint": "Velc uz mērķi. Ar ekrāna lasītāju izmanto pieejamās darbības, lai izvēlētos kartītes vietu.",
+    "priceShort": "{{price}} monētas"
   },
   "bossStory": {
     "scene": "Misijas aina: pabeigti {{count}} no {{total}} uzdevumiem",
@@ -1763,7 +1773,7 @@
       "ones": "Vieni: {{count}}"
     },
     "guide": {
-      "build": "Izveido skaitli no desmitiem un vieniem. Katrā garajā klucītī ir desmit vieni.",
+      "build": "Viens garais klucītis = 10 vieni.",
       "bundle": "Samaini desmit vienus pret vienu desmitu. Daudzums nemainās.",
       "split": "Samaini vienu desmitu pret desmit vieniem. Daudzums nemainās.",
       "add": "Pievieno otro skaitli, tad samaini desmit vienus pret vienu desmitu.",
@@ -1790,12 +1800,12 @@
     "tapLine": "Pieskaries taisnei vai izmanto pogas, lai pārvietotos par vienu soli.",
     "pointSelected": "Tavs punkts ir atzīmēts uz taisnes.",
     "stripGuide": "Josla ir viens veselais. Iekrāso vajadzīgo skaitu vienādu daļu.",
-    "equalGuide": "Abas joslas ir vienāda garuma. Izmanto citas daļas, lai iekrāsotu tikpat daudz.",
+    "equalGuide": "Tas pats veselais, citas daļas. Iekrāso tikpat daudz.",
     "referenceLabel": "Parauga josla: {{numerator}}/{{denominator}} no veselā",
     "reference": "Paraugs",
     "chooseParts": "Izvēlies vienādas daļas",
     "parts": "{{count}} daļas",
-    "partitionResets": "Izvēloties citas daļas, iekrāsojums tiek notīrīts.",
+    "partitionResets": "Jaunas daļas notīra iekrāsojumu.",
     "yourStrip": "Tava josla",
     "shaded": "Iekrāsotās daļas: {{count}} no {{total}}",
     "remove": "Notīri vienu daļu",
@@ -1804,14 +1814,14 @@
   },
   "decimalModels": {
     "tenthsGuide": "Kvadrāts ir viens veselais. Katra no 10 vienādajām joslām ir viena desmitdaļa jeb 0,1.",
-    "hundredthsGuide": "Kvadrāts ir viens veselais. Katrs no 100 mazajiem kvadrātiņiem ir viena simtdaļa jeb 0,01. Pilna rinda ir 0,10, tikpat daudz kā 0,1.",
+    "hundredthsGuide": "100 rūtiņas = 1 veselais.\n1 rūtiņa = 0,01 · 1 rinda = 0,10 = 0,1",
     "oneWhole": "1 veselais",
     "gridLabel": "Decimāldaļu režģis",
     "shaded": "Iekrāsotas {{count}} no {{total}} daļām",
     "tapGrid": "Pieskaries režģim, lai sāktu.",
     "unshade": "Notīri {{count}} daļas",
     "shade": "Iekrāso {{count}} daļas",
-    "gridControls": "Pieskaries daļai, lai iekrāsotu līdz tai. Pielāgo ar + vai −.",
+    "gridControls": "Pieskaries daļai vai pielāgo ar + un −.",
     "reset": "Sāc no jauna",
     "placeGuide": "Veido skaitli šķiru kolonnās. Nulle nozīmē, ka šī šķira ir tukša.",
     "exchangeGuide": "Desmit simtdaļas veido vienu desmitdaļu. Samaini daļas, nemainot kopējo daudzumu.",
@@ -1830,8 +1840,8 @@
     "blockScaleTenths": "Kvadrāts ir 1. Josla ir viena desmitdaļa jeb 0,1."
   },
   "geometryModels": {
-    "guide_area": "Laukums mēra iekšpusi. Noklāj taisnstūri ar vienādiem vienības kvadrātiem bez spraugām un pārklāšanās.",
-    "guide_perimeter": "Perimetrs mēra ārējo malu. Izseko katru vienības nogriezni ārējā malā vienu reizi.",
+    "guide_area": "Laukums ir iekšpuse: noklāj to ar vienības kvadrātiem bez spraugām un pārklāšanās.",
+    "guide_perimeter": "Perimetrs ir robeža: apvelc katru ārējo malu vienu reizi.",
     "guide_compare": "Abu taisnstūru laukumi ir vienādi. To ārējo malu kopgarums var atšķirties.",
     "guide_missing_area": "Laukums ir platums × augstums. Izmanto laukumu un zināmo malu, lai atrastu otru malu.",
     "guide_missing_perimeter": "Perimetru veido divi platumi un divi augstumi. Atrodi pusi perimetra un atņem zināmo malu.",
@@ -1840,11 +1850,11 @@
     "notToScale": "Nav mērogā",
     "given_area": "Laukums: {{value}} kvadrātvienības",
     "given_perimeter": "Perimetrs: {{value}} vienības",
-    "unitSquare": "Katra kvadrāta platums un augstums ir 1 vienība.",
-    "coverSquare": "Noklāj vienu kvadrātu",
-    "traceEdge": "Izseko vienu ārējās malas nogriezni",
-    "squaresMarked": "Noklātie kvadrāti: {{count}}",
-    "edgesMarked": "Izsekotie ārējās malas nogriežņi: {{count}}",
+    "unitSquare": "Katrs rūtiņas kvadrāts ir 1 × 1 vienība.",
+    "coverSquare": "Noklāt 1 rūtiņu",
+    "traceEdge": "Apvilkt 1 malu",
+    "squaresMarked": "Noklāti: {{count}}",
+    "edgesMarked": "Apvilkti: {{count}}",
     "equal": "Vienādi perimetri",
     "sideAnswer": "Nezināmā mala vienībās",
     "areaAnswer": "Laukums kvadrātvienībās",
@@ -1852,23 +1862,30 @@
     "erase": "Dzēs pēdējo ciparu",
     "reset": "Sāc no jauna",
     "oneUnit": "1 vienība",
-    "manyUnits": "{{value}} vienības"
+    "manyUnits": "{{value}} vienības",
+    "eraseShort": "Dzēst"
   },
   "bridge": {
+    "ratioPair": "Grupas: {{groups}}, vienības: {{items}}",
+    "knownGroup": "Priekšmeti 1 grupā: {{count}}",
+    "unknownGroups": "{{count}} vienādas grupas",
+    "ratioChange": "Veic {{operation}} ar abiem daudzumiem",
+    "operationBoth": "{{operation}} abās pusēs",
     "answer": "Tava atbilde",
     "groups": "Grupas",
     "items": "Priekšmeti",
     "linkedLines": "Atbilstošas vietas rāda atbilstošus daudzumus.",
     "original": "Sākuma vienādojums",
-    "bothSides": "Katru darbību veic abās pusēs. Beigās atstāj x atsevišķi.",
-    "divideWhole": "Dali tikai tad, ja katrs loceklis dod veselu skaitli.",
+    "bothSides": "Katra poga vienādi maina abas puses.",
+    "divideWhole": "Katram loceklim jādalās veselos skaitļos.",
     "selectZero": "Izvēlies nulli",
     "selectOrigin": "Izvēlies (0, 0)",
     "guide_ratio_table": "Katrā grupā vienmēr ir vienāds daudzums. Saskaņo abas tabulas rindas.",
     "guide_signed_line": "Nulle ir atskaites punkts. Skaitļi palielinās pa labi.",
     "guide_equation_board": "Saglabā abas puses vienādas. Atcel papildu daudzumus un sadali vienādās grupās.",
-    "guide_coordinate_map": "Nolasi (x, y): vispirms horizontāli, tad uz augšu vai leju. Katrs režģa intervāls ir viena vienība.",
-    "moveBy": "Maini x par {{x}} un y par {{y}}."
+    "guide_coordinate_map": "Lasi (x, y): vispirms sānis, tad augšup vai lejup. Katrs solis ir 1 vienība.",
+    "moveBy": "Maini x par {{x}} un y par {{y}}.",
+    "linkedLinesTitle": "Saistītie daudzumi"
   },
   "everyday": {
     "cats": "Kaķi",
@@ -1885,7 +1902,15 @@
       "plant": "Augs",
       "balloon": "Balons",
       "cupcake": "Kēksiņš"
-    }
+    },
+    "catCount": "Kaķu skaits",
+    "toyCount": "Rotaļlietu skaits",
+    "ribbonPerCorner": "Paklājiņi: 1 lente pie katra stūra",
+    "priceEach": "Cena par vienu",
+    "packPrice": "Visa komplekta cena",
+    "portion_cup": "Katra krūze: {{amount}} ml",
+    "portion_bottle": "Katra pudele: {{amount}} ml",
+    "portion_bowl": "Katra bļoda: {{amount}} ml"
   },
   "actionMotion": {
     "giveOne": "Iedot vienu priekšmetu",
@@ -1899,5 +1924,10 @@
     "forYourHouse": "Pabeidz šo plānu, lai pievienotu to mājas priekšmetiem.",
     "inYourItems": "Pievienota taviem priekšmetiem. Vari to novietot mājā.",
     "placeInHouse": "Novietot mājā"
+  },
+  "objectGivens": {
+    "start": "Sākumā",
+    "add": "Pievieno",
+    "remove": "Atņem"
   }
 }

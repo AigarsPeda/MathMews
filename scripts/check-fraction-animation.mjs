@@ -71,7 +71,7 @@ function harness(reducedMotion = false) {
     'react-native': { View: 'View', Pressable: 'Pressable', StyleSheet: { create: styles => styles } },
     '@/utils/fraction-pie': selectionModule.exports,
     '@/utils/scale': { moderateScale: value => value },
-    '@/constants/puzzle-theme': { PuzzleColors: { secondary: '#4ECDC4', success: '#247A3C' } },
+    '@/constants/puzzle-theme': { PuzzleColors: { secondary: '#4ECDC4', success: '#247A3C', incorrect: '#C82E39', card: '#FFFFFF' }, DiagramColors: { fractionSurface: '#F2ECFA', fractionFill: '#9874D0', fractionEdge: '#65438F' } },
     '@shopify/react-native-skia': { Canvas: 'Canvas', Path: 'Path', Skia: { Path: { Make: path } } },
     'react-native-reanimated': {
       useSharedValue: value => react.useMemo(() => shared(value), []),
@@ -146,7 +146,7 @@ assert.equal(angle(tree), 270, 'Changing denominators immediately shows the new 
 tree = view.render({ denominator: 4, shaded: 3, showResult: true, isCorrect: true });
 assert.equal(filled(tree).props.color, '#247A3C');
 tree = view.render({ denominator: 4, shaded: 3, showResult: true, isCorrect: false });
-assert.equal(filled(tree).props.color, '#FF9F43');
+assert.equal(filled(tree).props.color, '#C82E39');
 tree = view.render({ denominator: 4, shaded: 2 });
 view.advance(60);
 const atUnmount = angle(tree);

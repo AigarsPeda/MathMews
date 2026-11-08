@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-08",
+  "device": "iPhone 15, iOS 27.2 simulator",
+  "changes": [
+    "Connected ratio table with matching scale-factor arrows in guided tasks",
+    "Known-group illustration without automatic target totals",
+    "Equation x tiles and signed unit tiles with bounded countable quantities",
+    "Previous equation and identical operation on both sides",
+    "Reset hides stale operation history"
+  ],
+  "checks": {
+    "typecheck": "passed",
+    "eslint_changed_components": "passed",
+    "locales": "passed",
+    "puzzle_experience": "passed",
+    "native_bridge": "passed, 14 scenarios; English Easy, narrow Latvian Medium, narrow Russian Hard; correction, reset, grading, disabled state, equation-step reset"
+  },
+  "native_result_bundle": "/var/folders/xc/s0pspdrj03d4l87l37mvyg4h0000gn/T/brainpet-native-drag-10ItrZ/result.xcresult",
+  "screenshots": [
+    "ru-hard-equation.png",
+    "ru-hard-equation-start.png",
+    "ru-hard-ratio.png",
+    "lv-medium-equation.png",
+    "lv-medium-equation-start.png",
+    "lv-medium-ratio.png",
+    "en-easy-equation.png",
+    "en-easy-equation-start.png",
+    "en-easy-ratio.png",
+    "en-easy-ratio-start.png"
+  ],
+  "limitations": [
+    "Native screenshots use an isolated fixture with development controls, not the production play header and dock.",
+    "Android, physical devices and large Dynamic Type were not exercised in this run."
+  ],
+  "reference": "https://blog.duolingo.com/developing-math/"
+}

@@ -1,10 +1,13 @@
+import { insetRadius } from '@/utils/border-radius';
 import { PuzzleText as Text } from '@/components/puzzle/PuzzleText';
-import { PuzzleColors as Colors } from '@/constants/puzzle-theme';
+import { DiagramColors, DiagramFrameMetrics as Frame, PuzzleColors as Colors } from '@/constants/puzzle-theme';
 import type { DecimalGridPuzzle } from '@/types/puzzle';
 import { decimalGridCell, decimalLabel } from '@/utils/decimal-models';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
+
+const INNER_RADIUS = insetRadius(Frame.outerRadius, Frame.inset);
 
 type Props = { puzzle: DecimalGridPuzzle; value: number | null; onChange: (value: number | null) => void; answered: boolean };
 export function DecimalGridTask({ puzzle, value, onChange, answered }: Props) {
@@ -23,8 +26,10 @@ export function DecimalGridTask({ puzzle, value, onChange, answered }: Props) {
       accessibilityState={{ disabled: answered }} accessibilityValue={{ min: 0, max: scale, now: value ?? 0, text: t('decimalModels.shaded', { count: value ?? 0, total: scale }) }}
       accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
       onAccessibilityAction={e => change(e.nativeEvent.actionName === 'increment' ? 1 : -1)}>
+      <View pointerEvents="none" style={styles.frame} />
       <View pointerEvents="none" style={styles.cells}>{Array.from({ length: scale }, (_, i) => <View key={i}
         style={[styles.cell, { height: scale === 10 ? '100%' : '10%' }, i < (value ?? 0) && styles.filled]} />)}</View>
+      <View pointerEvents="none" style={styles.boundary} />
     </Pressable>
     <Text testID="decimal-grid-value" style={styles.value}>{value === null ? t('decimalModels.tapGrid') : `${value}/${scale} = ${decimalLabel(value * 100 / scale, scale === 100 ? 2 : digits, i18n.language)}`}</Text>
     <View style={styles.controls}>{(scale === 100 ? [-10, -1, 1, 10] : [-1, 1]).map(amount => {
@@ -43,15 +48,18 @@ export function DecimalGridTask({ puzzle, value, onChange, answered }: Props) {
   </View>;
 }
 const styles = StyleSheet.create({
-  wrap: { gap: 14 }, guide: { color: Colors.textMuted, fontSize: 16, lineHeight: 23, textAlign: 'center' },
+  wrap: { gap: 8 }, guide: { color: Colors.textMuted, fontSize: 16, lineHeight: 23, textAlign: 'center' },
   label: { color: Colors.text, fontSize: 16, fontWeight: '700', textAlign: 'center' },
-  grid: { width: '100%', maxWidth: 220, alignSelf: 'center', borderLeftWidth: 1, borderTopWidth: 1, borderColor: Colors.text },
-  cells: { flex: 1, flexDirection: 'row', flexWrap: 'wrap' },
-  cell: { width: '10%', borderRightWidth: 1, borderBottomWidth: 1, borderColor: Colors.text, backgroundColor: Colors.background },
-  filled: { backgroundColor: Colors.primary, borderColor: Colors.background },
+  grid: { width: '100%', maxWidth: 220, alignSelf: 'center', marginVertical: Frame.inset },
+  // Decoration extends outward; the 10×10 field and its touch coordinates stay square.
+  frame: { position: 'absolute', top: -Frame.inset, bottom: -Frame.inset, left: -Frame.inset, right: -Frame.inset, borderRadius: Frame.outerRadius, backgroundColor: DiagramColors.decimalSurface },
+  boundary: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, borderWidth: 1, borderRadius: INNER_RADIUS, borderColor: DiagramColors.decimalGrid },
+  cells: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', borderRadius: INNER_RADIUS, overflow: 'hidden' },
+  cell: { width: '10%', borderRightWidth: 1, borderBottomWidth: 1, borderColor: DiagramColors.decimalGrid, backgroundColor: Colors.card },
+  filled: { backgroundColor: DiagramColors.decimalFill, borderColor: DiagramColors.highlight },
   value: { color: Colors.text, fontSize: 20, fontWeight: '700', textAlign: 'center' },
   controls: { flexDirection: 'row', gap: 8 },
-  button: { flex: 1, minHeight: 48, padding: 10, borderRadius: 12, borderWidth: 1, borderColor: Colors.primary, backgroundColor: Colors.selectedSurface, alignItems: 'center', justifyContent: 'center' },
+  button: { flex: 1, minHeight: 48, padding: 10, borderRadius: 12, borderWidth: 2, borderBottomWidth: 4, borderColor: Colors.primary, backgroundColor: Colors.selectedSurface, alignItems: 'center', justifyContent: 'center' },
   buttonText: { color: Colors.primaryDark, fontSize: 18, fontWeight: '700' }, disabled: { opacity: 0.4 },
   reset: { minHeight: 44, alignItems: 'center', justifyContent: 'center' }, resetText: { color: Colors.textMuted, fontSize: 16, textDecorationLine: 'underline' },
 });

@@ -43,8 +43,13 @@ final class NativeDragTests: XCTestCase {
   if springboard.buttons["Open"].waitForExistence(timeout:2) { springboard.buttons["Open"].tap() }
   if app.buttons["Open"].exists { app.buttons["Open"].tap() }
   XCTAssertTrue(app.buttons["pilot-next"].waitForExistence(timeout:30));XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
-  enter(9);tap("pilot-check");expect("Try again");tap("bridge-reset");enter(4);shot("en-easy-ratio");solve();next()
+  shot("en-easy-ratio-start");enter(9);tap("pilot-check");expect("Try again");tap("bridge-reset");enter(4);shot("en-easy-ratio");solve();next()
   tap("bridge-step-1",2);shot("en-easy-line");solve();next()
+  shot("en-easy-equation-start");tap("bridge-add--1")
+  XCTAssertTrue(app.descendants(matching:.any)["bridge-equation-step"].firstMatch.exists)
+  tap("bridge-reset")
+  XCTAssertFalse(app.descendants(matching:.any)["bridge-equation-step"].firstMatch.exists)
+  XCTAssertFalse(app.buttons["pilot-check"].isEnabled)
   tap("bridge-add--1");shot("en-easy-equation");solve();next()
   let grid=app.descendants(matching:.any)["bridge-plot"].firstMatch
   XCTAssertTrue(grid.waitForExistence(timeout:8));XCTAssertEqual(grid.frame.width,grid.frame.height,accuracy:0.5)
@@ -52,11 +57,11 @@ final class NativeDragTests: XCTestCase {
   expect("(1, 2)");tap("bridge-reset");tap("bridge-x-1");tap("bridge-y-1",2);shot("en-easy-coordinates");solve();next()
   enter(6);shot("lv-medium-ratio");solve();next()
   tap("bridge-step--1");shot("lv-medium-negatives");solve();next()
-  tap("bridge-divide-2");shot("lv-medium-equation");solve();next()
+  shot("lv-medium-equation-start");tap("bridge-divide-2");shot("lv-medium-equation");solve();next()
   tap("bridge-x-1",4);tap("bridge-y-1",2);shot("lv-medium-coordinates");solve();next()
   enter(4);shot("ru-hard-ratio");solve();next()
   tap("bridge-step-1",2);shot("ru-hard-negatives");solve();next()
-  tap("bridge-add--1",3);tap("bridge-divide-2");shot("ru-hard-equation");solve();next()
+  shot("ru-hard-equation-start");tap("bridge-add--1",3);tap("bridge-divide-2");shot("ru-hard-equation");solve();next()
   tap("bridge-x--1");tap("bridge-y-1");shot("ru-hard-coordinates");solve();next()
   tap("bridge-zero");shot("lv-zero-answer");solve();next()
   enter(4);shot("ru-grid-distance");solve()

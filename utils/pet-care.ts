@@ -44,7 +44,7 @@ export function applyPetTimeDecay(
     return pet;
   }
 
-  const hours = Math.min(elapsedMs / MS_PER_HOUR, 6);
+  const hours = elapsedMs / MS_PER_HOUR;
   const hunger = Math.max(0, Math.min(100, pet.stats.hunger - HUNGER_DECAY_PER_HOUR * hours));
 
   let happinessLoss = HAPPINESS_DECAY_PER_HOUR * hours;

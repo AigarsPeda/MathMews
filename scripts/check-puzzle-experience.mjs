@@ -106,7 +106,7 @@ function renderHarness(file, exportName, mocks = {}) {
   const base = {
     react,
     'react/jsx-runtime': { jsx, jsxs: jsx },
-    'react-native': { ...native, Platform: { OS: 'ios' }, StyleSheet: { create: value => value } },
+    'react-native': { ...native, useWindowDimensions: () => ({ width: 393, height: 852, fontScale: 1 }), Platform: { OS: 'ios' }, StyleSheet: { create: value => value } },
     'react-native-reanimated': { __esModule: true, default: { ScrollView: 'ScrollView' },
       FadeIn: { duration: duration => ({ reduceMotion: reduceMotion => ({ duration, reduceMotion }) }) }, ReduceMotion: { System: 'system' } },
     'react-i18next': { useTranslation: () => ({ t }) },
@@ -117,6 +117,12 @@ function renderHarness(file, exportName, mocks = {}) {
     '@/hooks/use-world-clock-now': { useWorldClockNow: () => Date.now() },
     ...mocks,
   };
+  // Layout hooks use the same React slots and native dimensions as the component.
+  const choiceLayoutModule = { exports: {} };
+  vm.runInNewContext(ts.transpileModule(fs.readFileSync('components/puzzle/useChoiceLayout.ts', 'utf8'), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText, { module: choiceLayoutModule, exports: choiceLayoutModule.exports, require: id => base[id] });
+  base['@/components/puzzle/useChoiceLayout'] = choiceLayoutModule.exports;
   const module = { exports: {} };
   const source = fs.readFileSync(file, 'utf8') + `\nexport { ${exportName} as TestComponent };`;
   const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
@@ -387,7 +393,7 @@ pair.check().onPress(); pair.refresh(); assert.equal(pair.result().correct, true
 const matchingTask = renderHarness('components/puzzle/FractionMatchTask.tsx', 'FractionMatchTask');
 const matchingProps = { puzzle: matching.task().puzzle, matchedIds: [], selectedId: null, wrongIds: [cards[0].id, cards[1].id], answered: false, isCorrect: false, onTapCard() {} };
 const mismatchTree = matchingTask(matchingProps);
-const mismatchedCards = nodes(mismatchTree).filter(node => node.type === 'Pressable' && node.props.style.some(style => style?.borderColor === '#FF9F43'));
+const mismatchedCards = nodes(mismatchTree).filter(node => node.type === 'Pressable' && node.props.style.some(style => style?.borderColor === loadPure('@/constants/puzzle-theme').PuzzleColors.incorrect));
 assert.equal(mismatchedCards.length, 2, 'Only the two chosen mismatched cards receive feedback');
 assert.ok(nodes(mismatchTree).some(node => node.props.children === en.puzzleTypes.fractionMatchTryAgain));
 
@@ -440,6 +446,15 @@ const hardOperations = screen(allPuzzles.find(p => p.id === 'v2-hard-operations-
 assert.ok(hardOperations.text().includes(en.play.mechanicIntro.target_buildHard));
 assert.ok(!hardOperations.text().includes(en.play.mechanicIntro.target_build), 'The live Hard screen must not teach the operation order before a choice');
 console.log(`Puzzle experience checks passed across ${allPuzzles.length} authored puzzles: readiness, correction, hints, progress, matching, completion, tap-to-swap and Hard answer visibility.`);
+
+// A compact budget heading must retain every given even when the authored prompt is generic.
+const renderPuzzleCard = renderHarness('components/puzzle/PuzzleCard.tsx', 'PuzzleCard');
+for (const puzzle of allPuzzles.filter(p => p.type === 'budget_plan')) {
+  const heading = nodes(renderPuzzleCard({ puzzle })).find(node => node.props.testID === 'puzzle-question').props.children;
+  for (const number of [puzzle.payload.budget, puzzle.payload.pickCount, puzzle.payload.remaining]) {
+    assert.ok(heading.includes(String(number)), `${puzzle.id}: the budget, item count and required remainder stay visible`);
+  }
+}
 
 // Child-owned challenge drafts report readiness without resetting their local work.
 let challengeDraft;
